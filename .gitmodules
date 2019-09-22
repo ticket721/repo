@@ -10,3 +10,7 @@
 	path = modules/ethvtx
 	url = git@github.com:ticket721/ethvtx
 	branch = develop
+[submodule "modules/test-geth"]
+	path = modules/test-geth
+	url = git@github.com:ticket721/test-geth
+	branch = master
