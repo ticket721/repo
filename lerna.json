@@ -1,0 +1,10 @@
+{
+  "packages": [
+    "modules/e712",
+    "modules/mTKN",
+    "modules/ethvtx",
+    "modules/ethvtx/react" ,
+    "modules/ethvtx/examples"
+  ],
+  "version": "1.0.0"
+}

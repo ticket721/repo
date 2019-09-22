@@ -1,0 +1,12 @@
+[submodule "modules/e712"]
+	path = modules/e712
+	url = git@github.com:ticket721/e712
+	branch = master
+[submodule "modules/mTKN"]
+	path = modules/mTKN
+	url = git@github.com:ticket721/mTKN
+	branch = master
+[submodule "modules/ethvtx"]
+	path = modules/ethvtx
+	url = git@github.com:ticket721/ethvtx
+	branch = develop

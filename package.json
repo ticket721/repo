@@ -1,0 +1,14 @@
+{
+  "name": "@ticket721/repo",
+  "private": true,
+  "devDependencies": {
+    "lerna": "^3.16.4"
+  },
+  "scripts": {
+    "setup:submodules:clone": "git submodule update --init --recursive",
+    "setup:submodules:checkout": "cd modules/e712 && git checkout master && cd ../ethvtx && git checkout develop && cd ../mTKN && git checkout master",
+    "setup:submodules": "npm run setup:submodules:clone && npm run setup:submodules:checkout",
+    "setup": "npm run setup:submodules",
+    "postinstall": "lerna bootstrap"
+  }
+}
