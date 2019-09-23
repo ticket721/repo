@@ -1,0 +1,20 @@
+{
+
+    "network": {
+        "type": "geth",
+        "host": "127.0.0.1",
+        "port": 8545,
+        "protocol": "http",
+        "network_id": 2702,
+
+        "config": {
+            "mnemonic": "cross uniform panic climb universe awful surprise list dutch ability label cat",
+            "image": "ticket721/test-geth",
+            "version": "latest",
+            "container_name": "t721-ethnode",
+            "accounts": 10
+        }
+
+    }
+
+}

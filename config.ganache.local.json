@@ -1,0 +1,20 @@
+{
+    "network": {
+        "type": "ganache",
+        "host": "127.0.0.1",
+        "port": 8545,
+        "protocol": "http",
+        "network_id": 2702,
+
+        "config": {
+            "mnemonic": "cross uniform panic climb universe awful surprise list dutch ability label cat",
+            "image": "trufflesuite/ganache-cli",
+            "version": "v6.3.0",
+            "container_name": "t721-ethnode",
+            "gasLimit": "0xffffffffff",
+            "gasPrice": "0x2540BE400"
+        }
+
+    }
+
+}

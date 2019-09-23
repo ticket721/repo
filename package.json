@@ -1,14 +1,33 @@
 {
   "name": "@ticket721/repo",
   "private": true,
-  "devDependencies": {
-    "lerna": "^3.16.4"
-  },
   "scripts": {
     "setup:submodules:clone": "git submodule update --init --recursive",
     "setup:submodules:checkout": "cd modules/e712 && git checkout master && cd ../ethvtx && git checkout develop && cd ../mTKN && git checkout master",
     "setup:submodules": "npm run setup:submodules:clone && npm run setup:submodules:checkout",
-    "setup": "npm run setup:submodules",
+    "setup:portals": "portalize init ./portalize.config.json",
+    "setup": "npm run setup:submodules && npm run setup:portals",
+
+    "clean:portals": "portalize dismantle ./portalize.config.json",
+    "clean": "npm run clean:portals",
+
+    "doc:network": "rm -rf network/doc && typedoc --tsconfig typedoc.tsconfig.json --excludeNotExported --plugin typedoc-plugin-markdown --readme none --theme markdown --out network/doc --mode file --name '@ticket721_repo/network_engine' network/index.ts",
+    "doc": "npm run doc:network",
     "postinstall": "lerna bootstrap"
+  },
+  "dependencies": {
+    "lerna": "^3.16.4",
+    "typedoc": "^0.15.0",
+    "typedoc-plugin-markdown": "^2.2.6",
+    "@mojotech/json-type-validation": "^3.1.0",
+    "@types/dockerode": "^2.5.20",
+    "@types/signale": "^1.2.1",
+    "dockerode": "^2.5.8",
+    "gulp": "^4.0.2",
+    "portalize": "^1.0.4",
+    "signale": "^1.4.0",
+    "ts-node": "^8.4.1",
+    "typescript": "^3.6.3",
+    "web3": "^1.2.1"
   }
 }

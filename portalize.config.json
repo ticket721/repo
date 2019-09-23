@@ -1,0 +1,10 @@
+[
+  {
+    "path": "portal",
+    "name": "main"
+  },
+  {
+    "path": "./network/portal",
+    "name": "network"
+  }
+]
