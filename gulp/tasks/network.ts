@@ -3,7 +3,7 @@ import { get_config }    from '../utils/get_config';
 import { repo_log }      from '../utils/log';
 
 /**
- * Call the `run` method on the NetworkEngine
+ * Gulp task that calls the `run` method on the NetworkEngine
  */
 export async function network_run(): Promise<void> {
 
@@ -20,6 +20,9 @@ export async function network_run(): Promise<void> {
     repo_log.success(`Completed task network::run`);
 }
 
+/**
+ * Gulp task that calls the `clean` method on the NetworkEngine
+ */
 export async function network_clean(): Promise<void> {
     repo_log.info(`Starting task network::clean`);
     console.log();

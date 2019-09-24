@@ -1,14 +1,14 @@
 {
-  "compilerOptions": {
-    "module": "commonjs",
-    "target": "es5",
-    "sourceMap": true
-  },
-  "include": [
-    "gulp",
-    "network"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es5",
+        "sourceMap": true
+    },
+    "include": [
+        "gulp",
+        "network"
+    ],
+    "exclude": [
+        "node_modules"
+    ]
 }
