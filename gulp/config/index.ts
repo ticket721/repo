@@ -1,11 +1,13 @@
-import { NetworkConfig } from '../../network/config';
-import { Signale }       from 'signale';
+import { NetworkConfig }   from '../../network/config';
+import { ContractsConfig } from '../../contracts/config';
 
 /**
  * Configuration required to use the T721 Monorepo
  */
 export interface T721Config {
+    name: string;
     network: NetworkConfig;
+    contracts: ContractsConfig;
 }
 
 /**
@@ -14,6 +16,7 @@ export interface T721Config {
 export abstract class Engine<Config> {
 
     config: Config;
+    name: string;
 
     abstract async run(): Promise<void>;
     abstract async clean(): Promise<void>;

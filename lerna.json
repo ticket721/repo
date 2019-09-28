@@ -1,10 +1,11 @@
 {
     "packages": [
         "modules/e712",
-        "modules/mTKN",
+        "modules/erc2280",
         "modules/ethvtx",
         "modules/ethvtx/react" ,
-        "modules/ethvtx/examples"
+        "modules/ethvtx/examples",
+        "contracts/contracts_modules/daiplus"
     ],
     "version": "1.0.0"
 }

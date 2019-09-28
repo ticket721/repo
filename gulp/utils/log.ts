@@ -8,7 +8,7 @@ const config = {
         },
 
         info: {
-            badge: '▶',
+            badge: '➡️',
             label: ''
         },
 
@@ -25,6 +25,20 @@ const config = {
         success: {
             badge: '✅',
             label: ''
+        },
+
+        spawnlog: {
+            badge: '📙',
+            label: '',
+            color: 'white',
+            logLevel: 'info'
+        },
+
+        spawnerr: {
+            badge: '📕',
+            label: '',
+            color: 'red',
+            logLevel: 'error'
         }
     }
 

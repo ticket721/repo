@@ -1,5 +1,8 @@
 {
+    "name": "local_ganache",
+
     "network": {
+        "name": "local_ganache",
         "type": "ganache",
         "host": "127.0.0.1",
         "port": 8545,
@@ -15,6 +18,18 @@
             "gasPrice": "0x2540BE400"
         }
 
+    },
+
+    "contracts": {
+        "modules": [
+            {
+                "name": "daiplus",
+                "recover": true,
+                "active": true,
+                "test": false
+            }
+        ],
+        "artifacts": true
     }
 
 }

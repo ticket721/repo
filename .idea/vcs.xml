@@ -2,7 +2,9 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/contracts/contracts_modules/daiplus" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/modules/e712" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/modules/erc2280" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/modules/ethvtx" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/modules/mTKN" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/modules/test-geth" vcs="Git" />

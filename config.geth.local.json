@@ -1,5 +1,7 @@
 {
 
+    "name": "local_geth",
+
     "network": {
         "type": "geth",
         "host": "127.0.0.1",
@@ -15,6 +17,17 @@
             "accounts": 10
         }
 
+    },
+
+    "contracts": {
+        "modules": [
+            {
+                "name": "daiplus",
+                "recover": false,
+                "active": true
+            }
+        ],
+        "artifacts": false
     }
 
 }
