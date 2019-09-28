@@ -18,7 +18,7 @@ export async function GanacheRunner(config: NetworkConfig): Promise<void> {
     try {
         await pull_image(docker, config.config.image, config.config.version);
     } catch (e) {
-        network_log.fatal(`GanacheRunner error while pulling ${config.config.image}:${config.config.version}`);
+        network_log.fatal(`GanacheRunner | error while pulling ${config.config.image}:${config.config.version}`);
         network_log.fatal(e);
         process.exit(1);
     }
@@ -26,7 +26,7 @@ export async function GanacheRunner(config: NetworkConfig): Promise<void> {
     try {
         await run_ganache(docker, config);
     } catch (e) {
-        network_log.fatal(`GanacheRunner error while creating ${config.config.image}:${config.config.version} (${config.config.container_name})`);
+        network_log.fatal(`GanacheRunner | error while creating ${config.config.image}:${config.config.version} (${config.config.container_name})`);
         network_log.fatal(e);
         process.exit(1);
     }

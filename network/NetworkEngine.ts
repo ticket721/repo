@@ -1,7 +1,7 @@
 import { Engine }                  from '../gulp/config';
 import { NetworkConfig }           from './config';
 import { network_log }             from './utils/network_log';
-import { print_config }            from './utils/print_config';
+import { print_network_config }    from './utils/print_network_config';
 import { GanacheRunner }           from './core/GanacheRunner';
 import { eth_node_liveness_check } from './utils/eth_node_liveness_check';
 import { eth_node_check_net_id }   from './utils/eth_node_check_net_id';
@@ -22,24 +22,25 @@ import { NetworkConfigGuard }      from './config/NetworkConfig';
  */
 export class NetworkEngine extends Engine<NetworkConfig> {
 
-    constructor(config: NetworkConfig) {
+    constructor(config: NetworkConfig, name: string) {
         super();
         this.config = config;
+        this.name = name;
 
-        network_log.info('NetworkEngine::constructor started');
+        network_log.info('NetworkEngine::constructor | started');
         network_log.info('');
         try {
             NetworkConfigGuard.runWithException(this.config);
         } catch (e) {
-            network_log.fatal(`NetworkEngine::constructor error in configuration`);
+            network_log.fatal(`NetworkEngine::constructor | error in configuration`);
             network_log.fatal(`at ${e.at}`);
             network_log.fatal(e.message);
             process.exit(1);
         }
         check_network_portal();
-        print_config(config);
+        print_network_config(config, name);
         network_log.info('');
-        network_log.success('NetworkEngine::constructor completed');
+        network_log.success('NetworkEngine::constructor | completed');
     }
 
     /**
@@ -49,7 +50,7 @@ export class NetworkEngine extends Engine<NetworkConfig> {
      */
     async run(): Promise<void> {
         console.log();
-        network_log.info('NetworkEngine::run started');
+        network_log.info('NetworkEngine::run | started');
 
         switch (this.config.type) {
             case 'ganache': {
@@ -68,13 +69,13 @@ export class NetworkEngine extends Engine<NetworkConfig> {
             } catch (e) {
                 if (idx < 19) {
                     network_log.warn();
-                    network_log.warn(`NetworkEngine::run error during liveness check [${idx} / 20]`);
+                    network_log.warn(`NetworkEngine::run | error during liveness check [${idx} / 20]`);
                     network_log.warn(e.message);
 
                     await new Promise((ok: any, ko: any): void => void setTimeout(ok, 5000));
 
                 } else {
-                    network_log.fatal(`NetworkEngine::run error during liveness check`);
+                    network_log.fatal(`NetworkEngine::run | error during liveness check`);
                     network_log.fatal(e);
                     process.exit(1);
                 }
@@ -84,16 +85,16 @@ export class NetworkEngine extends Engine<NetworkConfig> {
         try {
             await eth_node_check_net_id(this.config.host, this.config.port, this.config.protocol, this.config.network_id);
         } catch (e) {
-            network_log.fatal(`NetworkEngine::run error during network id check`);
+            network_log.fatal(`NetworkEngine::run | error during network id check`);
             network_log.fatal(e);
             process.exit(1);
         }
 
-        network_log.info('NetworkEngine::run saving config to portal');
-        await save_portal(this.config);
-        network_log.success('NetworkEngine::run saved config to portal');
+        network_log.info('NetworkEngine::run | saving config to portal');
+        await save_portal(this.config, this.name);
+        network_log.success('NetworkEngine::run | saved config to portal');
 
-        network_log.success('NetworkEngine::run completed');
+        network_log.success('NetworkEngine::run | completed');
     }
 
     /**
@@ -101,7 +102,7 @@ export class NetworkEngine extends Engine<NetworkConfig> {
      */
     async clean(): Promise<void> {
         console.log();
-        network_log.info('NetworkEngine::clean started');
+        network_log.info('NetworkEngine::clean | started');
 
         switch (this.config.type) {
             case 'ganache': {
@@ -114,11 +115,11 @@ export class NetworkEngine extends Engine<NetworkConfig> {
             }
         }
 
-        network_log.info('NetworkEngine::clean cleaning portal');
+        network_log.info('NetworkEngine::clean | cleaning portal');
         await clean_portal();
-        network_log.success('NetworkEngine::clean cleaned portal');
+        network_log.success('NetworkEngine::clean | cleaned portal');
 
-        network_log.success('NetworkEngine::clean completed');
+        network_log.success('NetworkEngine::clean | completed');
     }
 
 }

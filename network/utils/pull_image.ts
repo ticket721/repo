@@ -9,7 +9,7 @@ import * as Dockerode  from 'dockerode';
  * @param version
  */
 export async function pull_image(docker: Dockerode, image: string, version: string): Promise<void> {
-    network_log.info(`Docker::pull Pulling ${image}:${version}`);
+    network_log.info(`Docker::pull | pulling ${image}:${version}`);
 
     return new Promise((ok, ko) => {
         docker.pull(`${image}:${version}`, (err, res) => {
@@ -19,7 +19,7 @@ export async function pull_image(docker: Dockerode, image: string, version: stri
             }
 
             docker.modem.followProgress(res, () => {
-                network_log.success(`Docker::pull Pulled ${image}:${version}`);
+                network_log.success(`Docker::pull | pulled ${image}:${version}`);
                 ok();
             });
 

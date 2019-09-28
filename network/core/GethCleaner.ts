@@ -16,7 +16,7 @@ export async function GethCleaner(config: NetworkConfig): Promise<void> {
     try {
         await kill_container(docker, config.config.container_name);
     } catch (e) {
-        network_log.fatal(`GethCleaner error while killing ${config.config.container_name}`);
+        network_log.fatal(`GethCleaner | error while killing ${config.config.container_name}`);
         network_log.fatal(e);
         process.exit(1);
     }

@@ -16,7 +16,7 @@ export async function GanacheCleaner(config: NetworkConfig): Promise<void> {
     try {
         await kill_container(docker, config.config.container_name);
     } catch (e) {
-        network_log.fatal(`GanacheCleaner error while killing ${config.config.container_name}`);
+        network_log.fatal(`GanacheCleaner | error while killing ${config.config.container_name}`);
         network_log.fatal(e);
         process.exit(1);
     }

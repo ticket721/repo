@@ -7,7 +7,7 @@ import { network_log } from './network_log';
  */
 export function check_network_portal(): void {
     if (!fs.existsSync(from_root('network/portal'))) {
-        network_log.fatal(`Missing portal at ${from_root('network/portal')}`);
+        network_log.fatal(`check_network_portal | missing portal at ${from_root('network/portal')}`);
         process.exit(1);
     }
 }

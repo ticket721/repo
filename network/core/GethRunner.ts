@@ -18,7 +18,7 @@ export async function GethRunner(config: NetworkConfig): Promise<void> {
     try {
         await pull_image(docker, config.config.image, config.config.version);
     } catch (e) {
-        network_log.fatal(`GethRunner error while pulling ${config.config.image}:${config.config.version}`);
+        network_log.fatal(`GethRunner | error while pulling ${config.config.image}:${config.config.version}`);
         network_log.fatal(e);
         process.exit(1);
     }
@@ -26,7 +26,7 @@ export async function GethRunner(config: NetworkConfig): Promise<void> {
     try {
         await run_geth(docker, config);
     } catch (e) {
-        network_log.fatal(`GethRunner error while creating ${config.config.image}:${config.config.version} (${config.config.container_name})`);
+        network_log.fatal(`GethRunner | error while creating ${config.config.image}:${config.config.version} (${config.config.container_name})`);
         network_log.fatal(e);
         process.exit(1);
     }

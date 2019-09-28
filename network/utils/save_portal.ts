@@ -6,10 +6,14 @@ import { NetworkConfig } from '../config';
  * Utility to save configuration to portal.
  *
  * @param config
+ * @param net_name
  */
-export async function save_portal(config: NetworkConfig): Promise<void> {
+export async function save_portal(config: NetworkConfig, net_name: string): Promise<void> {
     Portalize.get.setPortal(from_root('./network/portal'));
     Portalize.get.setModuleName('network');
 
-    Portalize.get.add('network.json', config);
+    Portalize.get.add('network.json', {
+        ...config,
+        name: net_name
+    });
 }
