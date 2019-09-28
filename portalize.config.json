@@ -6,5 +6,9 @@
     {
         "path": "./network/portal",
         "name": "network"
+    },
+    {
+        "path": "./contracts/portal",
+        "name": "contracts"
     }
 ]
