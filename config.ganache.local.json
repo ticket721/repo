@@ -2,7 +2,6 @@
     "name": "local_ganache",
 
     "network": {
-        "name": "local_ganache",
         "type": "ganache",
         "host": "127.0.0.1",
         "port": 8545,
@@ -24,12 +23,23 @@
         "modules": [
             {
                 "name": "daiplus",
-                "recover": true,
+                "recover": false,
                 "active": true,
-                "test": false
+                "test": true,
+                "arguments": [
+                    "DaiPlus Local Meta-Stablecoin v1.0",
+                    "Dai+",
+                    18
+                ]
             }
         ],
-        "artifacts": true
+        "artifacts": true,
+        "provider": {
+            "type": "hdwallet",
+            "mnemonic": "cross uniform panic climb universe awful surprise list dutch ability label cat",
+            "account_index": 0,
+            "account_number": 10
+        }
     }
 
 }

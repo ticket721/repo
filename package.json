@@ -9,8 +9,9 @@
         "setup": "npm run setup:submodules && npm run setup:portals",
         "clean:portals": "portalize dismantle ./portalize.config.json",
         "clean": "npm run clean:portals",
-        "doc:network": "rm -rf network/doc && typedoc --tsconfig typedoc.tsconfig.json --excludeNotExported --plugin typedoc-plugin-markdown --readme none --theme markdown --out network/doc --mode file --name '@ticket721_repo/network_engine' network/index.ts",
-        "doc": "npm run doc:network",
+        "doc:network": "rm -rf network/doc && typedoc --tsconfig typedoc.tsconfig.json --excludeNotExported --readme none --theme markdown --out network/doc --mode file --name '@ticket721_repo/network_engine' network/index.ts",
+        "doc:contracts": "rm -rf contracts/doc && typedoc --tsconfig typedoc.tsconfig.json --excludeNotExported --readme none --theme markdown --out contracts/doc --mode file --name '@ticket721_repo/contracts_engine' contracts/index.ts",
+        "doc": "npm run doc:network && npm run doc:contracts",
         "postinstall": "lerna bootstrap"
     },
     "dependencies": {
@@ -28,6 +29,7 @@
         "lerna": "^3.16.4",
         "portalize": "^1.0.4",
         "signale": "^1.4.0",
+        "truffle-hdwallet-provider": "^1.0.17",
         "ts-node": "^8.4.1",
         "typedoc": "^0.15.0",
         "typedoc-plugin-markdown": "^2.2.6",
@@ -42,11 +44,5 @@
         "typedoc.tsconfig.json",
         "gulp/**/*.ts",
         "network/**/*.ts"
-    ],
-    "husky": {
-        "hooks": {
-            "pre-commit": "editorconfig-cli",
-            "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
-        }
-    }
+    ]
 }
