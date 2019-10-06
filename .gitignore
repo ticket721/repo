@@ -169,6 +169,8 @@ fabric.properties
 /portal
 /contracts/portal
 /network/portal
+/network/doc
+/contracts/doc
 config.ropsten.remote.json
 config.rinkeby.remote.json
 
