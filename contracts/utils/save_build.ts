@@ -2,10 +2,16 @@ import { from_root } from '../../gulp/utils/from_root';
 import * as path from 'path';
 import * as fse from 'fs-extra';
 
-export function save_build(mod: string, net_name: string): void {
-    const build_dir_path = from_root(path.join('contracts', 'contracts_modules', mod, 'build'));
-    const dest_copy_path = from_root(path.join('artifacts', net_name, mod, 'build'));
-    const artifact_dir = from_root(path.join('artifacts', net_name, mod));
+/**
+ * Utility to copy a build directory from a contract module to the artifact directory
+ *
+ * @param module_name
+ * @param net_name
+ */
+export function save_build(module_name: string, net_name: string): void {
+    const build_dir_path = from_root(path.join('contracts', 'contracts_modules', module_name, 'build'));
+    const dest_copy_path = from_root(path.join('artifacts', net_name, module_name, 'build'));
+    const artifact_dir = from_root(path.join('artifacts', net_name, module_name));
 
     fse.ensureDirSync(artifact_dir);
 

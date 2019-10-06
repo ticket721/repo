@@ -3,16 +3,28 @@ import { Engine }                                from '../gulp/config';
 import { contracts_log, module_log }             from './utils/contracts_log';
 import { check_contracts_portal }                from './utils/check_contracts_portal';
 import { print_contracts_config } from './utils/print_contracts_config';
-import { from_root }              from '../gulp/utils/from_root';
-import { truffle_migrate }        from './utils/truffle_migrate';
-import { clear_build }            from './utils/clear_build';
-import { save_build }             from './utils/save_build';
-import { recover_build }          from './utils/recover_build';
-import { truffle_test }           from './utils/truffle_test';
-import * as path                  from 'path';
-import { portal_injection }       from './utils/portal_injection';
-import { clean_portal }           from './utils/clean_portal';
+import { from_root }        from '../gulp/utils/from_root';
+import { truffle_migrate }  from './utils/truffle_migrate';
+import { clear_build }      from './utils/clear_build';
+import { save_build }       from './utils/save_build';
+import { recover_build }    from './utils/recover_build';
+import { truffle_test }     from './utils/truffle_test';
+import * as path            from 'path';
+import { portal_injection } from './utils/portal_injection';
+import { clean_portal }     from './utils/clean_portal';
+import { EtherscanVerify }  from './utils/post_migration/EtherscanVerify';
 
+/**
+ * Contracts Engine, used to consume `ContractsConfiguration` objects and do the following:
+ *
+ * - For each contracts module:
+ *  - Run tests if required
+ *  - Recover previous build artifacts if required
+ *  - Run Truffle Migration
+ *  - Save build artifacts if required
+ *  - Run post migration actions if any is defined
+ *  -
+ */
 export class ContractsEngine extends Engine<ContractsConfig> {
 
     constructor(config: ContractsConfig, name: string) {
@@ -30,16 +42,19 @@ export class ContractsEngine extends Engine<ContractsConfig> {
             contracts_log.fatal(e.message);
             process.exit(1);
         }
-        check_contracts_portal();
         print_contracts_config(config);
         contracts_log.success('ContractsEngine::constructor | completed');
 
     }
 
-
+    /**
+     * Main method. Required network configuration setup before being called. Manages all
+     * the contracts modules, migrations, test, post migrations etc ...
+     */
     public async run(): Promise<void> {
         console.log();
         contracts_log.info('ContractsEngine::run | started');
+        check_contracts_portal();
         const current_dir = process.cwd();
 
         for (const mod of this.config.modules) {
@@ -95,6 +110,24 @@ export class ContractsEngine extends Engine<ContractsConfig> {
                 process.exit(1);
             }
 
+            if (this.config.post_migration) {
+                for (const post_migration_module of this.config.post_migration) {
+                    modlog.info(`ContractsEngine::run | starting post migration module ${post_migration_module.type}`);
+                    try {
+                        switch (post_migration_module.type) {
+                            case 'etherscan_verify': {
+                                await EtherscanVerify(this.config, post_migration_module, mod.name, this.name);
+                                break ;
+                            }
+                        }
+                    } catch (e) {
+                        modlog.fatal(`ContractsEngine::run | post migration module ${post_migration_module.type} crashed`);
+                        process.exit(1);
+                    }
+                    modlog.success(`ContractsEngine::run | finished post migration module ${post_migration_module.type}`);
+                }
+            }
+
             if (this.config.artifacts === true) {
                 modlog.info(`ContractsEngine::run | saving build artifacts`);
                 save_build(mod.name, this.name);
@@ -119,6 +152,9 @@ export class ContractsEngine extends Engine<ContractsConfig> {
         contracts_log.success('ContractsEngine::run | completed');
     }
 
+    /**
+     * Cleans all work previously done in the portal by the ContractsEngine
+     */
     public async clean(): Promise<void> {
         console.log();
         contracts_log.info('ContractsEngine::run | started');

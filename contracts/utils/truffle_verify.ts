@@ -2,11 +2,12 @@ import {spawn}        from 'child_process';
 import { module_log } from './contracts_log';
 
 /**
- * Utility to run `truffle test` commands
+ * Utility to run `truffle run verify` commands
  *
+ * @param contract
  * @param module_name
  */
-export async function truffle_test(module_name: string): Promise<void> {
+export async function truffle_verify(contract: string, module_name: string): Promise<void> {
 
     return new Promise((ok: any, ko: any): void => {
 
@@ -14,7 +15,7 @@ export async function truffle_test(module_name: string): Promise<void> {
         const modlog = module_log(module_name);
 
         try {
-            truffle = spawn('truffle', ['test']);
+            truffle = spawn('truffle', ['run', 'verify', contract, '--network', module_name]);
             modlog.info(`Spawning command: ${truffle.spawnargs.join(' ')}`);
         } catch (e) {
             modlog.fatal(`Could not run command 'truffle migrate'`);

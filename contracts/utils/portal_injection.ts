@@ -3,7 +3,14 @@ import * as path     from 'path';
 import { Portalize } from 'portalize';
 import { from_root } from '../../gulp/utils/from_root';
 
-export function portal_injection(path_to_build: string, mod: string): void {
+/**
+ * Utility that takes a build directory and creates an artifact containing all directory informations
+ * inside the portal
+ *
+ * @param path_to_build
+ * @param module_name
+ */
+export function portal_injection(path_to_build: string, module_name: string): void {
     const files = fse.readdirSync(path.join(path_to_build, 'contracts'));
 
     const artifact = {};
@@ -18,10 +25,10 @@ export function portal_injection(path_to_build: string, mod: string): void {
     Portalize.get.setPortal(from_root('contracts/portal'));
     Portalize.get.setModuleName('contracts');
 
-    if (fse.existsSync(from_root(`contracts/portal/contracts/${mod}.json`))) {
-        fse.unlinkSync(from_root(`contracts/portal/contracts/${mod}.json`)) ;
+    if (fse.existsSync(from_root(`contracts/portal/contracts/${module_name}.json`))) {
+        fse.unlinkSync(from_root(`contracts/portal/contracts/${module_name}.json`)) ;
     }
 
-    Portalize.get.add(`${mod}.json`, artifact);
+    Portalize.get.add(`${module_name}.json`, artifact);
 
 }
