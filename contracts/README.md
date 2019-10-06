@@ -4,8 +4,4 @@
 
 ### Summary
 
-This module handle the Ethereum Smart Contracts of T721.
-
-### Documentation
-
-The TypeDoc documentation can be found [here](./doc/README.md)
+This module handles the Ethereum Smart Contracts of T721.
