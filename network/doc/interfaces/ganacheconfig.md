@@ -37,7 +37,7 @@ Interface used to configure new Ganache instances.
 
 • **container_name**: *string*
 
-*Defined in [network/config/GanacheConfig.ts:38](https://github.com/ticket721/repo/blob/8d2bda3/network/config/GanacheConfig.ts#L38)*
+*Defined in [network/config/GanacheConfig.ts:38](https://github.com/ticket721/repo/blob/1f3415f/network/config/GanacheConfig.ts#L38)*
 
 Name given to the created docker container
 
@@ -47,7 +47,7 @@ ___
 
 • **gasLimit**: *string*
 
-*Defined in [network/config/GanacheConfig.ts:43](https://github.com/ticket721/repo/blob/8d2bda3/network/config/GanacheConfig.ts#L43)*
+*Defined in [network/config/GanacheConfig.ts:43](https://github.com/ticket721/repo/blob/1f3415f/network/config/GanacheConfig.ts#L43)*
 
 Gas limit per block. Value as Hex String.
 
@@ -57,7 +57,7 @@ ___
 
 • **gasPrice**: *string*
 
-*Defined in [network/config/GanacheConfig.ts:48](https://github.com/ticket721/repo/blob/8d2bda3/network/config/GanacheConfig.ts#L48)*
+*Defined in [network/config/GanacheConfig.ts:48](https://github.com/ticket721/repo/blob/1f3415f/network/config/GanacheConfig.ts#L48)*
 
 Gas Price. Value as Hex String.
 
@@ -67,7 +67,7 @@ ___
 
 • **image**: *string*
 
-*Defined in [network/config/GanacheConfig.ts:28](https://github.com/ticket721/repo/blob/8d2bda3/network/config/GanacheConfig.ts#L28)*
+*Defined in [network/config/GanacheConfig.ts:28](https://github.com/ticket721/repo/blob/1f3415f/network/config/GanacheConfig.ts#L28)*
 
 Docker Image name to use for the Ganache container that will be created.
 
@@ -77,7 +77,7 @@ ___
 
 • **mnemonic**: *string*
 
-*Defined in [network/config/GanacheConfig.ts:23](https://github.com/ticket721/repo/blob/8d2bda3/network/config/GanacheConfig.ts#L23)*
+*Defined in [network/config/GanacheConfig.ts:23](https://github.com/ticket721/repo/blob/1f3415f/network/config/GanacheConfig.ts#L23)*
 
 The mnemonic (12 word list) that will be used to generated the 10 first accounts.
 Each account will have 100 test ethers.
@@ -88,6 +88,6 @@ ___
 
 • **version**: *string*
 
-*Defined in [network/config/GanacheConfig.ts:33](https://github.com/ticket721/repo/blob/8d2bda3/network/config/GanacheConfig.ts#L33)*
+*Defined in [network/config/GanacheConfig.ts:33](https://github.com/ticket721/repo/blob/1f3415f/network/config/GanacheConfig.ts#L33)*
 
 Docker Image version to use for the Ganache container that will be created.

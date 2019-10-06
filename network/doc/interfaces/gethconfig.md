@@ -35,7 +35,7 @@ Interface used to configure new Ganache instances.
 
 • **accounts**: *number*
 
-*Defined in [network/config/GethConfig.ts:42](https://github.com/ticket721/repo/blob/8d2bda3/network/config/GethConfig.ts#L42)*
+*Defined in [network/config/GethConfig.ts:42](https://github.com/ticket721/repo/blob/1f3415f/network/config/GethConfig.ts#L42)*
 
 Number of account to create and unlock
 
@@ -45,7 +45,7 @@ ___
 
 • **container_name**: *string*
 
-*Defined in [network/config/GethConfig.ts:37](https://github.com/ticket721/repo/blob/8d2bda3/network/config/GethConfig.ts#L37)*
+*Defined in [network/config/GethConfig.ts:37](https://github.com/ticket721/repo/blob/1f3415f/network/config/GethConfig.ts#L37)*
 
 Name given to the created docker container
 
@@ -55,7 +55,7 @@ ___
 
 • **image**: *string*
 
-*Defined in [network/config/GethConfig.ts:27](https://github.com/ticket721/repo/blob/8d2bda3/network/config/GethConfig.ts#L27)*
+*Defined in [network/config/GethConfig.ts:27](https://github.com/ticket721/repo/blob/1f3415f/network/config/GethConfig.ts#L27)*
 
 Docker Image name to use for the test Geth container that will be created.
 
@@ -65,7 +65,7 @@ ___
 
 • **mnemonic**: *string*
 
-*Defined in [network/config/GethConfig.ts:22](https://github.com/ticket721/repo/blob/8d2bda3/network/config/GethConfig.ts#L22)*
+*Defined in [network/config/GethConfig.ts:22](https://github.com/ticket721/repo/blob/1f3415f/network/config/GethConfig.ts#L22)*
 
 The mnemonic (12 word list) that will be used to generated the 10 first accounts.
 Each account will have 100 test ethers.
@@ -76,6 +76,6 @@ ___
 
 • **version**: *string*
 
-*Defined in [network/config/GethConfig.ts:32](https://github.com/ticket721/repo/blob/8d2bda3/network/config/GethConfig.ts#L32)*
+*Defined in [network/config/GethConfig.ts:32](https://github.com/ticket721/repo/blob/1f3415f/network/config/GethConfig.ts#L32)*
 
 Docker Image version to use for the test Geth container that will be created.

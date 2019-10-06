@@ -65,7 +65,7 @@ export class NetworkEngine extends Engine<NetworkConfig> {
 
         for (let idx = 0; idx < 20; ++idx) {
             try {
-                await eth_node_liveness_check(this.config.host, this.config.port, this.config.protocol);
+                await eth_node_liveness_check(this.config.host, this.config.port, this.config.protocol, this.config.path);
             } catch (e) {
                 if (idx < 19) {
                     network_log.warn();
@@ -83,7 +83,7 @@ export class NetworkEngine extends Engine<NetworkConfig> {
         }
 
         try {
-            await eth_node_check_net_id(this.config.host, this.config.port, this.config.protocol, this.config.network_id);
+            await eth_node_check_net_id(this.config.host, this.config.port, this.config.protocol, this.config.network_id, this.config.path);
         } catch (e) {
             network_log.fatal(`NetworkEngine::run | error during network id check`);
             network_log.fatal(e);

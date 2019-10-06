@@ -22,6 +22,7 @@ Network Engine, used to consume `NetworkConfiguration` objects and do the follow
 ### Properties
 
 * [config](networkengine.md#config)
+* [name](networkengine.md#name)
 
 ### Methods
 
@@ -32,15 +33,16 @@ Network Engine, used to consume `NetworkConfiguration` objects and do the follow
 
 ###  constructor
 
-\+ **new NetworkEngine**(`config`: [NetworkConfig](../interfaces/networkconfig.md)): *[NetworkEngine](networkengine.md)*
+\+ **new NetworkEngine**(`config`: [NetworkConfig](../interfaces/networkconfig.md), `name`: string): *[NetworkEngine](networkengine.md)*
 
-*Defined in [network/NetworkEngine.ts:23](https://github.com/ticket721/repo/blob/8d2bda3/network/NetworkEngine.ts#L23)*
+*Defined in [network/NetworkEngine.ts:23](https://github.com/ticket721/repo/blob/1f3415f/network/NetworkEngine.ts#L23)*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
 `config` | [NetworkConfig](../interfaces/networkconfig.md) |
+`name` | string |
 
 **Returns:** *[NetworkEngine](networkengine.md)*
 
@@ -52,7 +54,17 @@ Name | Type |
 
 *Inherited from [Engine](engine.md).[config](engine.md#config)*
 
-*Defined in [gulp/config/index.ts:16](https://github.com/ticket721/repo/blob/8d2bda3/gulp/config/index.ts#L16)*
+*Defined in [gulp/config/index.ts:18](https://github.com/ticket721/repo/blob/1f3415f/gulp/config/index.ts#L18)*
+
+___
+
+###  name
+
+• **name**: *string*
+
+*Inherited from [Engine](engine.md).[name](engine.md#name)*
+
+*Defined in [gulp/config/index.ts:19](https://github.com/ticket721/repo/blob/1f3415f/gulp/config/index.ts#L19)*
 
 ## Methods
 
@@ -62,7 +74,7 @@ Name | Type |
 
 *Overrides [Engine](engine.md).[clean](engine.md#abstract-clean)*
 
-*Defined in [network/NetworkEngine.ts:102](https://github.com/ticket721/repo/blob/8d2bda3/network/NetworkEngine.ts#L102)*
+*Defined in [network/NetworkEngine.ts:103](https://github.com/ticket721/repo/blob/1f3415f/network/NetworkEngine.ts#L103)*
 
 Cleans any work previously done by the `run` method. Should never crash, even if nothing to clean.
 
@@ -76,7 +88,7 @@ ___
 
 *Overrides [Engine](engine.md).[run](engine.md#abstract-run)*
 
-*Defined in [network/NetworkEngine.ts:50](https://github.com/ticket721/repo/blob/8d2bda3/network/NetworkEngine.ts#L50)*
+*Defined in [network/NetworkEngine.ts:51](https://github.com/ticket721/repo/blob/1f3415f/network/NetworkEngine.ts#L51)*
 
 Main method, used to raise any Docker container if need (if `type` is `ganache` or `geth`). Then performs
 liveness check by retrieving current network ID and check if it matches provided one. Finally writes configuration

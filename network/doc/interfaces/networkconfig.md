@@ -36,6 +36,7 @@ Configuration required for the network engine module.
 * [config](networkconfig.md#config)
 * [host](networkconfig.md#host)
 * [network_id](networkconfig.md#network_id)
+* [path](networkconfig.md#optional-path)
 * [port](networkconfig.md#port)
 * [protocol](networkconfig.md#protocol)
 * [type](networkconfig.md#type)
@@ -44,9 +45,9 @@ Configuration required for the network engine module.
 
 ###  config
 
-• **config**: *[GanacheConfig](ganacheconfig.md) | [GethConfig](gethconfig.md)*
+• **config**: *[GanacheConfig](ganacheconfig.md) | [GethConfig](gethconfig.md) | [RemoteConfig](remoteconfig.md)*
 
-*Defined in [network/config/NetworkConfig.ts:59](https://github.com/ticket721/repo/blob/8d2bda3/network/config/NetworkConfig.ts#L59)*
+*Defined in [network/config/NetworkConfig.ts:65](https://github.com/ticket721/repo/blob/1f3415f/network/config/NetworkConfig.ts#L65)*
 
 In-depth configuration depending on provided `type`
 
@@ -56,7 +57,7 @@ ___
 
 • **host**: *string*
 
-*Defined in [network/config/NetworkConfig.ts:39](https://github.com/ticket721/repo/blob/8d2bda3/network/config/NetworkConfig.ts#L39)*
+*Defined in [network/config/NetworkConfig.ts:40](https://github.com/ticket721/repo/blob/1f3415f/network/config/NetworkConfig.ts#L40)*
 
 Hostname of the node
 
@@ -66,9 +67,19 @@ ___
 
 • **network_id**: *number*
 
-*Defined in [network/config/NetworkConfig.ts:54](https://github.com/ticket721/repo/blob/8d2bda3/network/config/NetworkConfig.ts#L54)*
+*Defined in [network/config/NetworkConfig.ts:60](https://github.com/ticket721/repo/blob/1f3415f/network/config/NetworkConfig.ts#L60)*
 
 Network ID of the node
+
+___
+
+### `Optional` path
+
+• **path**? : *string*
+
+*Defined in [network/config/NetworkConfig.ts:50](https://github.com/ticket721/repo/blob/1f3415f/network/config/NetworkConfig.ts#L50)*
+
+Extra path if endpoint is not on root
 
 ___
 
@@ -76,7 +87,7 @@ ___
 
 • **port**: *number*
 
-*Defined in [network/config/NetworkConfig.ts:44](https://github.com/ticket721/repo/blob/8d2bda3/network/config/NetworkConfig.ts#L44)*
+*Defined in [network/config/NetworkConfig.ts:45](https://github.com/ticket721/repo/blob/1f3415f/network/config/NetworkConfig.ts#L45)*
 
 JSON-RPC port on the node
 
@@ -86,7 +97,7 @@ ___
 
 • **protocol**: *"http" | "https"*
 
-*Defined in [network/config/NetworkConfig.ts:49](https://github.com/ticket721/repo/blob/8d2bda3/network/config/NetworkConfig.ts#L49)*
+*Defined in [network/config/NetworkConfig.ts:55](https://github.com/ticket721/repo/blob/1f3415f/network/config/NetworkConfig.ts#L55)*
 
 Communication procotol
 
@@ -96,6 +107,6 @@ ___
 
 • **type**: *"ganache" | "geth" | "remote"*
 
-*Defined in [network/config/NetworkConfig.ts:34](https://github.com/ticket721/repo/blob/8d2bda3/network/config/NetworkConfig.ts#L34)*
+*Defined in [network/config/NetworkConfig.ts:35](https://github.com/ticket721/repo/blob/1f3415f/network/config/NetworkConfig.ts#L35)*
 
 Network configuration type
