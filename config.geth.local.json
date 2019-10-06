@@ -1,12 +1,11 @@
 {
-
+    "name": "local_geth",
     "network": {
         "type": "geth",
         "host": "127.0.0.1",
         "port": 8545,
         "protocol": "http",
         "network_id": 2702,
-
         "config": {
             "mnemonic": "cross uniform panic climb universe awful surprise list dutch ability label cat",
             "image": "ticket721/test-geth",
@@ -14,7 +13,27 @@
             "container_name": "t721-ethnode",
             "accounts": 10
         }
-
+    },
+    "contracts": {
+        "modules": [
+            {
+                "name": "daiplus",
+                "recover": false,
+                "active": true,
+                "test": true,
+                "arguments": [
+                    "DaiPlus Local Meta-Stablecoin v1.0",
+                    "Dai+",
+                    18
+                ]
+            }
+        ],
+        "artifacts": false,
+        "provider": {
+            "type": "hdwallet",
+            "mnemonic": "cross uniform panic climb universe awful surprise list dutch ability label cat",
+            "account_index": 0,
+            "account_number": 10
+        }
     }
-
 }

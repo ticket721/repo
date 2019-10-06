@@ -1,7 +1,8 @@
-import { constant, Decoder, number, object, oneOf, string } from '@mojotech/json-type-validation';
+import { constant, Decoder, number, object, oneOf, optional, string } from '@mojotech/json-type-validation';
 
 import { GanacheConfig, GanacheConfigGuard } from './GanacheConfig';
 import { GethConfig, GethConfigGuard }       from './GethConfig';
+import { RemoteConfig, RemoteConfigGuard }   from './RemoteConfig';
 
 /**
  * Configuration required for the network engine module.
@@ -44,6 +45,11 @@ export interface NetworkConfig {
     port: number;
 
     /**
+     * Extra path if endpoint is not on root
+     */
+    path?: string;
+
+    /**
      * Communication procotol
      */
     protocol: 'http' | 'https';
@@ -56,17 +62,18 @@ export interface NetworkConfig {
     /**
      * In-depth configuration depending on provided `type`
      */
-    config: GanacheConfig | GethConfig;
+    config: GanacheConfig | GethConfig | RemoteConfig;
 }
 
 /**
  * TypeGuard instance to check provided JSON configs.
  */
 export const NetworkConfigGuard: Decoder<NetworkConfig> = object({
-    config: oneOf<GanacheConfig | GethConfig>(GanacheConfigGuard, GethConfigGuard),
+    config: oneOf<GanacheConfig | GethConfig | RemoteConfig>(GanacheConfigGuard, GethConfigGuard, RemoteConfigGuard),
     type: oneOf(constant('ganache'), constant('geth'), constant('remote')),
     protocol: oneOf(constant('http'), constant('https')),
     host: string(),
     port: number(),
+    path: optional(string()),
     network_id: number(),
 });

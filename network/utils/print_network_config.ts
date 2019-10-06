@@ -22,9 +22,13 @@ function print_geth_config(config: GethConfig): void {
  *
  * @param config
  */
-export function print_config(config: NetworkConfig): void {
+export function print_network_config(config: NetworkConfig, name: string): void {
     network_log.info(`Network Type: ${config.type}`);
+    network_log.info(`Network Name: ${name}`);
     network_log.info(`Node Host: ${config.host}`);
+    if (config.path) {
+        network_log.info(`Node Path: ${config.path}`);
+    }
     network_log.info(`Node Port: ${config.port}`);
     network_log.info(`Node Communication Protocol: ${config.protocol}`);
     network_log.info(`Network ID: ${config.network_id}`);

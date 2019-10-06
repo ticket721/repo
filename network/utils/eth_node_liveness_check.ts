@@ -6,9 +6,10 @@ const Web3 = require('web3');
  * @param host
  * @param port
  * @param protocol
+ * @param path
  */
-export async function eth_node_liveness_check(host: string, port: number, protocol: string): Promise<void> {
-    const web3 = new Web3(new Web3.providers.HttpProvider(`${protocol}://${host}:${port}`));
+export async function eth_node_liveness_check(host: string, port: number, protocol: string, path?: string): Promise<void> {
+    const web3 = new Web3(new Web3.providers.HttpProvider(`${protocol}://${host}:${port}${path || ''}`));
 
     await web3.eth.net.getId();
 

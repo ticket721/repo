@@ -10,7 +10,7 @@ import { GanacheConfig, NetworkConfig } from '../config';
  */
 export async function run_ganache(docker: Dockerode, config: NetworkConfig): Promise<void> {
     const ganache_config: GanacheConfig = config.config as GanacheConfig;
-    network_log.info(`Docker::createContainer creating ${ganache_config.image}:${ganache_config.version} (${ganache_config.container_name})`);
+    network_log.info(`Docker::createContainer | creating ${ganache_config.image}:${ganache_config.version} (${ganache_config.container_name})`);
     const container = await docker.createContainer({
             Image: `${ganache_config.image}:${ganache_config.version}`,
             ExposedPorts: {
@@ -39,5 +39,5 @@ export async function run_ganache(docker: Dockerode, config: NetworkConfig): Pro
         }
     );
     await container.start();
-    network_log.success(`Docker::createContainer created ${ganache_config.image}:${ganache_config.version} (${ganache_config.container_name})`);
+    network_log.success(`Docker::createContainer | created ${ganache_config.image}:${ganache_config.version} (${ganache_config.container_name})`);
 }

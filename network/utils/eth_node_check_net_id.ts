@@ -7,9 +7,10 @@ const Web3 = require('web3');
  * @param port
  * @param protocol
  * @param expected_net_id
+ * @param path
  */
-export async function eth_node_check_net_id(host: string, port: number, protocol: string, expected_net_id: number): Promise<void> {
-    const web3 = new Web3(new Web3.providers.HttpProvider(`${protocol}://${host}:${port}`));
+export async function eth_node_check_net_id(host: string, port: number, protocol: string, expected_net_id: number, path?: string): Promise<void> {
+    const web3 = new Web3(new Web3.providers.HttpProvider(`${protocol}://${host}:${port}${path || ''}`));
 
     const net_id = await web3.eth.net.getId();
 

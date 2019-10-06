@@ -12,7 +12,7 @@ export async function network_run(): Promise<void> {
 
     const config = await get_config();
 
-    const ne: NetworkEngine = new NetworkEngine(config.network);
+    const ne: NetworkEngine = new NetworkEngine(config.network, config.name);
 
     await ne.run();
 
@@ -29,7 +29,7 @@ export async function network_clean(): Promise<void> {
 
     const config = await get_config();
 
-    const ne: NetworkEngine = new NetworkEngine(config.network);
+    const ne: NetworkEngine = new NetworkEngine(config.network, config.name);
 
     await ne.clean();
 

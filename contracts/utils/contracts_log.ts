@@ -1,0 +1,9 @@
+import { Signale }  from 'signale';
+import { core_log } from '../../gulp/utils/log';
+
+/**
+ * Contracts Logging Utility
+ */
+export const contracts_log: Signale = core_log.scope('🔗');
+
+export const module_log = (module_name: string): Signale => core_log.scope('🔗', module_name);

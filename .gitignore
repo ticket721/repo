@@ -167,4 +167,10 @@ fabric.properties
 .idea/caches/build_file_checksums.ser
 
 /portal
+/contracts/portal
 /network/portal
+/network/doc
+/contracts/doc
+config.ropsten.remote.json
+config.rinkeby.remote.json
+
