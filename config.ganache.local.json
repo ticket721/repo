@@ -31,6 +31,16 @@
                     "Dai+",
                     18
                 ]
+            },
+            {
+                "name": "ticketforge",
+                "recover": false,
+                "active": true,
+                "test": true,
+                "arguments": [
+                    "Ticket Forge",
+                    "TKT"
+                ]
             }
         ],
         "artifacts": true,
