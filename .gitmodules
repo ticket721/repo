@@ -17,3 +17,6 @@
 [submodule "modules/erc2280"]
 	path = modules/erc2280
 	url = git@github.com:ticket721/erc2280
+[submodule "contracts/contracts_modules/ticketforge"]
+	path = contracts/contracts_modules/ticketforge
+	url = git@github.com:ticket721/ticketforge
