@@ -28,7 +28,7 @@ try {
 
         let artifact;
         try {
-            artifact = Portalize.get.get(contract_module.name, {module: 'contracts'});
+            artifact = Portalize.get.get(`${contract_module.name}.json`, {module: 'contracts'});
         } catch (e) {
             artifact = null;
         }

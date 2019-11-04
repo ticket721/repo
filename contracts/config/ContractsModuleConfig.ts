@@ -28,6 +28,11 @@ export interface ContractsModuleConfig {
     test: boolean;
 
     /**
+     * If value set to yes, will handle openzeppelin SDK alongside truffle
+     */
+    upgradeable: boolean;
+
+    /**
      * Optional arguments that are injected into the truffle-config.js in
      * the extra-config section. Can be recovered in the migration files
      * and used as pleased.
@@ -43,6 +48,7 @@ export const ContractsModuleConfigGuard: Decoder<ContractsModuleConfig> = object
     active: boolean(),
     recover: boolean(),
     test: boolean(),
+    upgradeable: boolean(),
     arguments: optional(array(oneOf<string | number>(string(), number())))
 });
 

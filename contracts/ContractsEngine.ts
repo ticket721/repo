@@ -4,15 +4,18 @@ import { contracts_log, module_log }             from './utils/contracts_log';
 import { check_contracts_portal }                from './utils/check_contracts_portal';
 import { print_contracts_config } from './utils/print_contracts_config';
 import { from_root }        from '../gulp/utils/from_root';
-import { truffle_migrate }  from './utils/truffle_migrate';
-import { clear_build }      from './utils/clear_build';
-import { save_build }       from './utils/save_build';
-import { recover_build }    from './utils/recover_build';
-import { truffle_test }     from './utils/truffle_test';
-import * as path            from 'path';
-import { portal_injection } from './utils/portal_injection';
-import { clean_portal }     from './utils/clean_portal';
-import { EtherscanVerify }  from './utils/post_migration/EtherscanVerify';
+import { truffle_migrate }         from './utils/truffle_migrate';
+import { clear_build }             from './utils/clear_build';
+import { save_build }              from './utils/save_build';
+import { recover_build }             from './utils/recover_build';
+import { truffle_test }              from './utils/truffle_test';
+import * as path                     from 'path';
+import { portal_injection }          from './utils/portal_injection';
+import { clean_portal }              from './utils/clean_portal';
+import { EtherscanVerify }           from './utils/post_migration/EtherscanVerify';
+import { clear_upgradeable_build }   from './utils/clear_upgradeable_build';
+import { save_upgradeable_build }    from './utils/save_upgradeable_build';
+import { recover_upgradeable_build } from './utils/recover_upgreadable_build';
 
 /**
  * Contracts Engine, used to consume `ContractsConfiguration` objects and do the following:
@@ -63,6 +66,9 @@ export class ContractsEngine extends Engine<ContractsConfig> {
             try {
                 modlog.info(`ContractsEngine::run | clearing any previous build artifacts`);
                 clear_build(mod.name);
+                if (mod.upgradeable) {
+                    clear_upgradeable_build(mod.name);
+                }
                 modlog.success(`ContractsEngine::run | finished clearing build artifacts`);
             } catch (e) {
                 modlog.fatal(`ContractsEngine::run | cannot clear build directory`);
@@ -73,6 +79,9 @@ export class ContractsEngine extends Engine<ContractsConfig> {
             if (mod.recover) {
                 modlog.info(`ContractsEngine::run | recovering previous build artifacts`);
                 recover_build(mod.name, this.name);
+                if (mod.upgradeable) {
+                    recover_upgradeable_build(mod.name, this.name);
+                }
                 modlog.success(`ContractsEngine::run | recovered previous build artifacts`);
             }
 
@@ -131,6 +140,9 @@ export class ContractsEngine extends Engine<ContractsConfig> {
             if (this.config.artifacts === true) {
                 modlog.info(`ContractsEngine::run | saving build artifacts`);
                 save_build(mod.name, this.name);
+                if (mod.upgradeable) {
+                    save_upgradeable_build(mod.name, this.name);
+                }
                 modlog.success(`ContractsEngine::run | saving build artifacts`);
             }
 
@@ -157,9 +169,9 @@ export class ContractsEngine extends Engine<ContractsConfig> {
      */
     public async clean(): Promise<void> {
         console.log();
-        contracts_log.info('ContractsEngine::run | started');
+        contracts_log.info('ContractsEngine::clean | started');
         await clean_portal();
-        contracts_log.success('ContractsEngine::run | completed');
+        contracts_log.success('ContractsEngine::clean | completed');
     }
 
 }
