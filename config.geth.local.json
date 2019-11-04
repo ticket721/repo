@@ -18,9 +18,10 @@
         "modules": [
             {
                 "name": "daiplus",
-                "recover": false,
+                "recover": true,
                 "active": true,
-                "test": true,
+                "test": false,
+                "upgradeable": false,
                 "arguments": [
                     "DaiPlus Local Meta-Stablecoin v1.0",
                     "Dai+",
@@ -29,16 +30,28 @@
             },
             {
                 "name": "ticketforge",
-                "recover": false,
+                "recover": true,
                 "active": true,
-                "test": true,
+                "test": false,
+                "upgradeable": false,
+                "arguments": [
+                    "Ticket Forge",
+                    "TKT"
+                ]
+            },
+            {
+                "name": "metamarketplace",
+                "recover": true,
+                "active": true,
+                "test": false,
+                "upgradeable": true,
                 "arguments": [
                     "Ticket Forge",
                     "TKT"
                 ]
             }
         ],
-        "artifacts": false,
+        "artifacts": true,
         "provider": {
             "type": "hdwallet",
             "mnemonic": "cross uniform panic climb universe awful surprise list dutch ability label cat",
