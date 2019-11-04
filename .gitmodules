@@ -10,13 +10,16 @@
 	path = modules/test-geth
 	url = git@github.com:ticket721/test-geth
 	branch = master
+[submodule "modules/erc2280"]
+	path = modules/erc2280
+	url = git@github.com:ticket721/erc2280
 [submodule "contracts/contracts_modules/daiplus"]
 	path = contracts/contracts_modules/daiplus
 	url = git@github.com:ticket721/daiplus
 	branch = develop
-[submodule "modules/erc2280"]
-	path = modules/erc2280
-	url = git@github.com:ticket721/erc2280
 [submodule "contracts/contracts_modules/ticketforge"]
 	path = contracts/contracts_modules/ticketforge
 	url = git@github.com:ticket721/ticketforge
+[submodule "contracts/contracts_modules/metamarketplace"]
+	path = contracts/contracts_modules/metamarketplace
+	url = git@github.com:ticket721/metamarketplace

@@ -8,7 +8,7 @@ const config = {
         },
 
         info: {
-            badge: '➡️',
+            badge: '📢',
             label: ''
         },
 
@@ -17,8 +17,8 @@ const config = {
             label: ''
         },
 
-        warning: {
-            badge: '⚠️',
+        warn: {
+            badge: '🔸',
             label: ''
         },
 
