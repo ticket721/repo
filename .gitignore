@@ -168,6 +168,7 @@ fabric.properties
 
 /portal
 /contracts/portal
+/contracts/run_args.js
 /network/portal
 /network/doc
 /contracts/doc

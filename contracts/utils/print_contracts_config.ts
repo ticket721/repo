@@ -8,9 +8,6 @@ import { contracts_log }                          from './contracts_log';
  */
 export function print_contracts_module_config(config: ContractsModuleConfig): void {
     contracts_log.info(`  Name: ${config.name}`);
-    contracts_log.info(`  Active: ${config.active}`);
-    contracts_log.info(`  Recover mode: ${config.recover}`);
-    contracts_log.info(`  Tests: ${config.test}`);
     contracts_log.info(`  Upgradeable: ${config.upgradeable}`);
     contracts_log.info();
 }

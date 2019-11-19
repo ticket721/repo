@@ -5,7 +5,10 @@
         "modules/ethvtx",
         "modules/ethvtx/react" ,
         "modules/ethvtx/examples",
-        "contracts/contracts_modules/daiplus"
+        "contracts/contracts_modules/daiplus",
+        "contracts/contracts_modules/metamarketplace",
+        "contracts/contracts_modules/t721controller",
+        "contracts/contracts_modules/ticketforge"
     ],
     "version": "1.0.0"
 }

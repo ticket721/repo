@@ -23,7 +23,7 @@ const config = {
         },
 
         success: {
-            badge: '✅',
+            badge: '🥝',
             label: ''
         },
 

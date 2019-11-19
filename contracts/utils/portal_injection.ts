@@ -16,7 +16,7 @@ export function portal_injection(path_to_build: string, module_name: string): vo
     const artifact = {};
 
     for (const file of files) {
-        const content = require(path.join(path_to_build, 'contracts', file));
+        const content = JSON.parse(fse.readFileSync(path.join(path_to_build, 'contracts', file)));
         const filename = file.split('.').slice(0, -1).join('.');
 
         artifact[filename] = content;

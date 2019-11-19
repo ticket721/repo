@@ -11,33 +11,9 @@ export interface ContractsModuleConfig {
     name: string;
 
     /**
-     * If module should be deployed during migration or ignored
-     */
-    active: boolean;
-
-    /**
-     * If artifacts should be recovered and placed into the contracts
-     * modules. Truffle will find out at what point in the migration
-     * we are and will continue from there only.
-     */
-    recover: boolean;
-
-    /**
-     * If tests should be launched before deploying anything
-     */
-    test: boolean;
-
-    /**
      * If value set to yes, will handle openzeppelin SDK alongside truffle
      */
     upgradeable: boolean;
-
-    /**
-     * Optional arguments that are injected into the truffle-config.js in
-     * the extra-config section. Can be recovered in the migration files
-     * and used as pleased.
-     */
-    arguments?: (string | number)[];
 }
 
 /**
@@ -45,11 +21,7 @@ export interface ContractsModuleConfig {
  */
 export const ContractsModuleConfigGuard: Decoder<ContractsModuleConfig> = object({
     name: string(),
-    active: boolean(),
-    recover: boolean(),
-    test: boolean(),
-    upgradeable: boolean(),
-    arguments: optional(array(oneOf<string | number>(string(), number())))
+    upgradeable: boolean()
 });
 
 
