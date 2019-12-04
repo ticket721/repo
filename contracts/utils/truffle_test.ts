@@ -5,13 +5,14 @@ import { module_log } from './contracts_log';
  * Utility to run `truffle test` commands
  *
  * @param module_name
+ * @param mig
  */
-export async function truffle_test(module_name: string): Promise<void> {
+export async function truffle_test(module_name: string, mig: string): Promise<void> {
 
     return new Promise((ok: any, ko: any): void => {
 
         let truffle;
-        const modlog = module_log(module_name);
+        const modlog = module_log(mig, module_name);
 
         try {
             truffle = spawn('truffle', ['test']);

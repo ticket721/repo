@@ -5,17 +5,20 @@ import { module_log } from './contracts_log';
  * Utility to run `truffle migrate` commands
  *
  * @param module_name
+ * @param mig
  * @param net_name
+ * @param start
+ * @param end
  */
-export async function truffle_migrate(module_name: string, net_name: string): Promise<void> {
+export async function truffle_migrate(module_name: string, mig: string, net_name: string, start: number, end: number): Promise<void> {
 
     return new Promise((ok: any, ko: any): void => {
 
         let truffle;
-        const modlog = module_log(module_name);
+        const modlog = module_log(mig, module_name);
 
         try {
-            truffle = spawn('truffle', ['migrate', '--network', net_name]);
+            truffle = spawn('truffle', ['migrate', '--network', net_name, '--from', start.toString(), '--to', end.toString()]);
             modlog.info(`Spawning command: ${truffle.spawnargs.join(' ')}`);
         } catch (e) {
             modlog.fatal(`Could not run command 'truffle migrate'`);

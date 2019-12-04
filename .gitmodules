@@ -23,3 +23,6 @@
 [submodule "contracts/contracts_modules/metamarketplace"]
 	path = contracts/contracts_modules/metamarketplace
 	url = git@github.com:ticket721/metamarketplace
+[submodule "contracts/contracts_modules/t721controller"]
+	path = contracts/contracts_modules/t721controller
+	url = git@github.com:ticket721/t721controller

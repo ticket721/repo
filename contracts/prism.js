@@ -22,7 +22,7 @@ try {
 
     const t721_config = require(from_root(process.env.T721_CONFIG));
 
-    const external_modules = {};
+    const artifacts = {};
 
     for (const contract_module of t721_config.contracts.modules) {
 
@@ -33,11 +33,13 @@ try {
             artifact = null;
         }
 
-        external_modules[contract_module.name] = {
-            artifact,
-            arguments: contract_module.arguments || null
-        };
+        artifacts[contract_module.name] = artifact;
     }
+
+    let args = null;
+    try {
+        args = require('./run_args.js');
+    } catch (e) {}
 
     let provider;
 
@@ -68,9 +70,8 @@ try {
                 provider
             }
         },
-        extra_config: {
-            external_modules
-        }
+        artifacts,
+        args
     };
 
     if (t721_config.contracts.post_migration) {

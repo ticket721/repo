@@ -7,6 +7,7 @@ import {
     HttpProviderGuard
 }                                                            from './ProviderConfigs';
 import { PostMigrationConfigGuard, PostMigrationConfigs }    from './PostMigrationConfigs';
+import { MigrationConfig, MigrationConfigGuard }             from './MigrationConfig';
 
 /**
  * Configuration required for the contracts engine module.
@@ -48,14 +49,6 @@ export interface ContractsConfig {
     modules: ContractsModuleConfig[];
 
     /**
-     * Determines if artifacts should be preserved in the artifacts directory.
-     * Very useful in production, artifacts can be pushed to VCS and migration
-     * can recover the previously created artifacts for a configuration to
-     * properly continue deployments.
-     */
-    artifacts: boolean;
-
-    /**
      * Provider to use to connect to the node. The node information are
      * fetched from the portal and directly injected into the truffle-config.js of
      * the contracts_modules
@@ -67,6 +60,11 @@ export interface ContractsConfig {
      * ex: Etherscan Contract Verification
      */
     post_migration?: PostMigrationConfigs;
+
+    /**
+     * List of modules and truffle migration steps to invoke
+     */
+    migrations: MigrationConfig[]
 }
 
 /**
@@ -74,7 +72,7 @@ export interface ContractsConfig {
  */
 export const ContractsConfigGuard: Decoder<ContractsConfig> = object({
     modules: array(ContractsModuleConfigGuard),
-    artifacts: boolean(),
     provider: oneOf(HttpProviderGuard, HDWalletProviderGuard),
-    post_migration: optional(PostMigrationConfigGuard)
+    post_migration: optional(PostMigrationConfigGuard),
+    migrations: array(MigrationConfigGuard)
 });
