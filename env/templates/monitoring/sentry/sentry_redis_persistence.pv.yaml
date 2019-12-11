@@ -1,0 +1,26 @@
+{{- if .Values.monitoring.sentry.enabled -}}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+    name: "{{ include "env.fullname" . }}--sentry-redis-persistence--pv"
+    labels:
+        {{ include "env.labels" . | nindent 8 }}
+spec:
+    storageClassName: "standard"
+    capacity:
+        storage: {{ .Values.sentry.redis.master.persistence.size }}
+    accessModes:
+        - {{ .Values.sentry.redis.persistence.accessMode }}
+        {{- if .Values.dev }}
+    claimRef:
+        namespace: default
+        name: "{{ .Values.sentry.redis.persistence.existingClaim }}"
+    hostPath:
+        path: /tmp/sentry_redis
+        {{ else }}
+    gcePersistentDisk:
+        pdName: {{ .Values.monitoring.sentry.persistence.redis.gceVolume }}
+        fsType: {{ .Values.monitoring.sentry.persistence.redis.gceVolumeType }}
+        {{ end }}
+{{- end -}}
+

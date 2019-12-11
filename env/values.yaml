@@ -1,0 +1,72 @@
+dev: true
+
+serviceAccount:
+    create: true
+
+monitoring:
+    sentry:
+        enabled: true
+        persistence:
+            filesystem:
+                gceVolume: sentry-fs-disk
+                gceVolumeType: ext4
+            postgresql:
+                gceVolume: sentry-pg-disk
+                gceVolumeType: ext4
+            redis:
+                gceVolume: sentry-redis-disk
+                gceVolumeType: ext4
+    prometheus:
+        enabled: true
+    grafana:
+        persistence:
+            gceVolume: grafana-disk
+            gceVolumeType: ext4
+
+prometheus:
+    prometheusOperator:
+        createCustomResource: false
+    grafana:
+        adminPassword: admin
+        service:
+            type: NodePort
+        persistence:
+            enabled: true
+            accessMode: ReadWriteOnce
+            existingClaim: grafana-persistence--pvc
+            size: 10Gi
+
+sentry:
+    service:
+        type: NodePort
+    redis:
+        persistence:
+            existingClaim: sentry-redis-persistence--pvc
+            accessMode: ReadWriteOnce
+        securityContext:
+            enabled: true
+            runAsUser: 0
+            fsGroup: 2000
+        master:
+            persistence:
+                enabled: true
+                size: 10Gi
+        slave:
+            persistence:
+                enabled: true
+                size: 10Gi
+    postgresql:
+        postgresqlPassword: dbpass
+        persistence:
+            enabled: true
+            accessMode: ReadWriteOnce
+            existingClaim: sentry-pg-persistence--pvc
+            size: 10Gi
+    filestore:
+        filesystem:
+            persistence:
+                enabled: false
+                accessMode: ReadWriteOnce
+                existingClaim: sentry-fs-persistence--pvc
+                size: 10Gi
+
