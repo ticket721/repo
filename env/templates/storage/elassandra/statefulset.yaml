@@ -1,0 +1,229 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ template "env.fullname" . }}
+  labels:
+    app: {{ template "env.name" . }}
+    chart: {{ template "env.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  serviceName: {{ template "env.fullname" . }}
+  replicas: {{ .Values.storage.elassandra.config.cluster_size }}
+  podManagementPolicy: {{ .Values.storage.elassandra.podManagementPolicy }}
+  updateStrategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: {{ template "env.name" . }}
+      release: {{ .Release.Name }}
+            {{- if .Values.storage.elassandra.podLabels }}
+            {{ toYaml .Values.storage.elassandra.podLabels | indent 8 }}
+        {{- end }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "env.name" . }}
+        release: {{ .Release.Name }}
+{{- if .Values.storage.elassandra.podLabels }}
+{{ toYaml .Values.storage.elassandra.podLabels | indent 8 }}
+{{- end }}
+{{- if .Values.storage.elassandra.annotations }}
+      annotations:
+{{ toYaml .Values.storage.elassandra.annotations | indent 8 }}
+{{- end }}
+    spec:
+{{- if .Values.storage.elassandra.selector }}
+{{ toYaml .Values.storage.elassandra.selector | indent 6 }}
+{{- end }}
+      {{- if .Values.storage.elassandra.securityContext.enabled }}
+      securityContext:
+        fsGroup: {{ default 999 .Values.storage.elassandra.securityContext.fsGroup }}
+        runAsUser: {{ default 999 .Values.storage.elassandra.securityContext.runAsUser }}
+      {{- end }}
+{{- if .Values.storage.elassandra.affinity }}
+      affinity:
+{{ toYaml .Values.storage.elassandra.affinity | indent 8 }}
+{{- end }}
+      initContainers:
+      - name: increase-vm-max-map-count
+        image: busybox
+        imagePullPolicy: IfNotPresent
+        command: ["sysctl", "-w", "vm.max_map_count=1048575"]
+        securityContext:
+          privileged: true
+      - name: increase-ulimit
+        image: busybox
+        command: [ "sh","-c","ulimit -l unlimited" ]
+        securityContext:
+          privileged: true
+      containers:
+      - name: {{ template "env.fullname" . }}
+        image: "{{ .Values.storage.elassandra.image.repo }}:{{ .Values.storage.elassandra.image.tag }}"
+        imagePullPolicy: {{ .Values.storage.elassandra.image.pullPolicy | quote }}
+        terminationMessagePolicy: "FallbackToLogsOnError"
+        securityContext:
+          privileged: false
+          # applying fix in: https://github.com/kubernetes/kubernetes/issues/3595#issuecomment-287692878 
+          # https://docs.docker.com/engine/reference/run/#operator-exclusive-options
+          capabilities:
+            add: ["IPC_LOCK", "SYS_RESOURCE"]
+        resources:
+{{ toYaml .Values.storage.elassandra.resources | indent 10 }}
+        env:
+        {{- $seed_size := default 1 .Values.storage.elassandra.config.seed_size | int -}}
+        {{- $global := . }}
+        - name: CASSANDRA_SEEDS
+          value: "{{- range $i, $e := until $seed_size }}{{ template "env.fullname" $global }}-{{ $i }}.{{ template "env.fullname" $global }}.{{ $global.Release.Namespace }}.svc.cluster.local{{- if (lt ( add1 $i ) $seed_size ) }},{{- end }}{{- end }}"
+        - name: MAX_HEAP_SIZE
+          value: {{ default "2048M" .Values.storage.elassandra.config.max_heap_size | quote }}
+        - name: HEAP_NEWSIZE
+          value: {{ default "200M" .Values.storage.elassandra.config.heap_new_size | quote }}
+        - name: CASSANDRA_ENDPOINT_SNITCH
+          value: {{ default "GossipingPropertyFileSnitch" .Values.storage.elassandra.config.endpoint_snitch | quote }}
+        - name: CASSANDRA_CLUSTER_NAME
+          value: {{ default "Elassandra" .Values.storage.elassandra.config.cluster_name | quote }}
+        - name: CASSANDRA_DC
+          value: {{ default "DC1" .Values.storage.elassandra.config.dc_name | quote }}
+        - name: CASSANDRA_RACK
+          value: {{ default "RAC1" .Values.storage.elassandra.config.rack_name | quote }}
+        - name: CASSANDRA_START_RPC
+          value: {{ default "false" .Values.storage.elassandra.config.start_rpc | quote }}
+        - name: CASSANDRA_DAEMON
+          value: {{- if .Values.storage.elassandra.elasticsearch.enabled }} "org.apache.cassandra.service.ElassandraDaemon" {{ else }} "org.apache.cassandra.service.CassandraDaemon" {{- end }}
+        - name: JVM_DEBUG_PORT
+          value: {{ default "4242" .Values.storage.elassandra.debug.port | quote }}
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath:  metadata.namespace
+        - name: PERSISTENCE_ENABLED
+          value: "{{ default false .Values.storage.elassandra.persistence.enabled }}"
+        {{- range $key, $val := .Values.storage.elassandra.env }}
+        - name: {{ $key }}
+          value: {{ $val | quote }}
+        {{- end }}
+        livenessProbe:
+          tcpSocket:
+            port: 7000
+          initialDelaySeconds: {{ .Values.storage.elassandra.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.storage.elassandra.livenessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.storage.elassandra.livenessProbe.timeoutSeconds }}
+          successThreshold: {{ .Values.storage.elassandra.livenessProbe.successThreshold }}
+          failureThreshold: {{ .Values.storage.elassandra.livenessProbe.failureThreshold }}
+        readinessProbe:
+          exec:
+            command: [ "/bin/bash", "-c", "/ready-probe.sh" ]
+          initialDelaySeconds: {{ .Values.storage.elassandra.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.storage.elassandra.readinessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.storage.elassandra.readinessProbe.timeoutSeconds }}
+          successThreshold: {{ .Values.storage.elassandra.readinessProbe.successThreshold }}
+          failureThreshold: {{ .Values.storage.elassandra.readinessProbe.failureThreshold }}
+        ports:
+        - name: intra
+          containerPort: 7000
+        - name: tls
+          containerPort: 7001
+        - name: jmx
+          containerPort: 7199
+        - name: cql
+          containerPort: {{ default 9042 .Values.storage.elassandra.config.ports.cql }}
+        - name: thrift
+          containerPort: {{ default 9160 .Values.storage.elassandra.config.ports.thrift }}
+        - name: elasticsearch
+          containerPort: {{ default 9200 .Values.storage.elassandra.config.ports.elasticsearch }}
+        - name: transport
+          containerPort: {{ default 9300 .Values.storage.elassandra.config.ports.transport }}
+{{- if .Values.storage.elassandra.config.ports.agent }}          
+        - name: agent
+          containerPort: {{ .Values.storage.elassandra.config.ports.agent }}
+{{- end }}
+{{- if .Values.storage.elassandra.debug.enabled }}
+        - name: jdwp
+          containerPort: {{ default 4242 .Values.storage.elassandra.debug.port }}
+        args: ["-f", "-d" ]
+{{- end }}
+        volumeMounts:
+          - name: data
+            mountPath: /var/lib/cassandra
+{{- range $key, $val := .Values.storage.elassandra.inits }}
+          - name: inits-volume
+            mountPath: /docker-entrypoint-init.d/{{ $key }}
+            subPath: {{ $key }}
+{{- end }}
+{{- range $key, $val := .Values.storage.elassandra.configs }}
+          - name: configs-volume
+            mountPath: /configfiles/{{ $key }}
+            subPath: {{ $key }}
+{{- end }}
+{{- range $key, $val := .Values.storage.elassandra.scripts }}
+          - name: scripts-volume
+            mountPath: /usr/share/cassandra/scripts/{{ $key }}
+            subPath: {{ $key }}
+{{- end }}
+{{- if .Values.storage.elassandra.extraVolumeMounts }}
+{{ toYaml .Values.storage.elassandra.extraVolumeMounts | indent 8 }}
+{{- end }}
+        lifecycle:
+          preStop:
+            exec:
+              command: ["/bin/sh", "-c", "exec nodetool drain"]
+      terminationGracePeriodSeconds: {{ default 30 .Values.storage.elassandra.podSettings.terminationGracePeriodSeconds }}
+      {{- if .Values.storage.elassandra.priorityClassName }}
+      priorityClassName: {{ .Values.storage.elassandra.priorityClassName }}
+      {{- end }}
+      {{- if .Values.storage.elassandra.image.pullSecrets }}
+      imagePullSecrets:
+        - name: {{ .Values.storage.elassandra.image.pullSecrets }}
+      {{- end }}
+      volumes:
+        - name: scripts-volume
+          configMap:
+            name: {{ template "env.fullname" . }}-scripts
+{{- if .Values.storage.elassandra.inits }}
+        - name: inits-volume
+          configMap:
+            name: {{ template "env.fullname" . }}-inits
+{{- end }}
+{{- if .Values.storage.elassandra.configs }}
+        - name: configs-volume
+          configMap:
+            name: {{ template "env.fullname" . }}-configs
+{{- end }}
+{{- if not .Values.storage.elassandra.persistence.enabled }}
+        - name: data
+          emptyDir: {}
+{{- else }}
+{{- if .Values.storage.elassandra.extraVolumes }}
+{{ toYaml .Values.storage.elassandra.extraVolumes | indent 6 }}
+{{- end }}
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+      labels:
+        app: {{ template "env.name" . }}
+        chart: {{ template "env.chart" . }}
+        release: {{ .Release.Name }}
+        heritage: {{ .Release.Service }}
+    spec:
+      accessModes:
+        - {{ .Values.storage.elassandra.persistence.accessMode | quote }}
+      resources:
+        requests:
+          storage: {{ .Values.storage.elassandra.persistence.size | quote }}
+    {{- if .Values.storage.elassandra.persistence.storageClass }}
+    {{- if (eq "-" .Values.storage.elassandra.persistence.storageClass) }}
+      storageClassName: ""
+    {{- else }}
+      storageClassName: "{{ .Values.storage.elassandra.persistence.storageClass }}"
+    {{- end }}
+    {{- end }}
+{{- end }}

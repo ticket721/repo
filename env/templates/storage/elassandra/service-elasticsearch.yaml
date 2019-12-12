@@ -1,0 +1,21 @@
+{{- if .Values.storage.elassandra.elasticsearch.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-elasticsearch
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ template "env.name" . }}
+    chart: {{ template "env.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: {{ .Values.storage.elassandra.service.elasticsearch.type }}
+  ports:
+  - name: elasticsearch
+    port: {{ default 9200 .Values.storage.elassandra.config.ports.elasticsearch }}
+    targetPort: {{ default 9200 .Values.storage.elassandra.config.ports.elasticsearch }}
+  selector:
+    app: {{ template "env.name" . }}
+    release: {{ .Release.Name }}
+{{- end -}}
