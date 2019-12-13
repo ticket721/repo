@@ -12,9 +12,12 @@
         "doc:network": "rm -rf network/doc && typedoc --tsconfig typedoc.tsconfig.json --excludeNotExported --readme none --theme markdown --out network/doc --mode file --name '@ticket721_repo/network_engine' network/index.ts",
         "doc:contracts": "rm -rf contracts/doc && typedoc --tsconfig typedoc.tsconfig.json --excludeNotExported --readme none --theme markdown --out contracts/doc --mode file --name '@ticket721_repo/contracts_engine' contracts/index.ts",
         "doc": "npm run doc:network && npm run doc:contracts",
-        "postinstall": "lerna bootstrap"
+        "postinstall": "lerna bootstrap",
+        "install:ticket721sources": "lerna bootstrap --scope '@ticket721sources/*'",
+        "merge_coverage_reports": "mkdir coverage && lcov-result-merger './sources/server/coverage/lcov.info' './coverage/lcov.info'"
     },
     "dependencies": {
+        "lcov-result-merger": "^3.1.0",
         "@commitlint/cli": "^7.5.2",
         "@commitlint/config-conventional": "^7.5.0",
         "@htmlacademy/editorconfig-cli": "^1.0.0",

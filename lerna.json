@@ -8,7 +8,10 @@
         "contracts/contracts_modules/daiplus",
         "contracts/contracts_modules/metamarketplace",
         "contracts/contracts_modules/t721controller",
-        "contracts/contracts_modules/ticketforge"
+        "contracts/contracts_modules/ticketforge",
+        "contracts/contracts_modules/refract",
+        "sources",
+        "sources/server"
     ],
     "version": "1.0.0"
 }

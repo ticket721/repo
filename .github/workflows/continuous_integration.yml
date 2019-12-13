@@ -1,0 +1,32 @@
+name: T721 CI
+
+on: [push]
+
+jobs:
+    build:
+
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v1
+            - name: Use Node.js 12.x
+              uses: actions/setup-node@v1.2.0
+              with:
+                  node-version: 12.x
+
+            - name: Install required tools globally
+              run: npm install -g lerna@3.16.4 lcov-result-merger@3.1.0
+
+            - name: Install @ticket721source dependencies
+              run: npm run install:ticket721sources
+
+            - name: Run @ticket721sources/server tests
+              run: cd sources/server && npm run test:cov
+
+            - name: Merge reports
+              run: npm run merge_coverage_reports
+
+            - name: Coveralls
+              uses: coverallsapp/github-action@master
+              with:
+                github-token: ${{ secrets.github_token }}
