@@ -11,7 +11,10 @@
         "contracts/contracts_modules/ticketforge",
         "contracts/contracts_modules/refract",
         "sources",
-        "sources/server"
+        "sources/server",
+        "sources/migrations",
+        "sources/global",
+        "sources/sdk"
     ],
     "version": "1.0.0"
 }

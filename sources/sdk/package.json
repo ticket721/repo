@@ -1,0 +1,13 @@
+{
+    "name": "@ticket721sources/sdk",
+    "version": "1.0.0",
+    "description": "Handle server requests",
+    "main": "index.js",
+    "scripts": {},
+    "author": "Iulian Rotaru",
+    "license": "MIT",
+    "dependencies": {},
+    "devDependencies": {
+        "supertest": "^4.0.2"
+    }
+}

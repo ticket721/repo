@@ -20,8 +20,11 @@ jobs:
             - name: Install @ticket721source dependencies
               run: npm run install:ticket721sources
 
-            - name: Run @ticket721sources/server tests
+            - name: Run @ticket721sources/server unitary tests
               run: cd sources/server && npm run test:cov
+
+            - name: Run @ticket721sources/server e2e tests
+              run: sudo sysctl -w vm.max_map_count=262144 && cd sources/server && npm run test:e2e:cov
 
             - name: Merge reports
               run: npm run merge_coverage_reports

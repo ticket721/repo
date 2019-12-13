@@ -1,20 +1,25 @@
-import { Controller, Get } from '@nestjs/common';
-import { AppService }      from './app.service';
-import { ApiResponse }     from '@nestjs/swagger';
+import { Controller, Get, Injectable, Param } from '@nestjs/common';
+import { AppService }               from './app.service';
+import { ApiResponse }              from '@nestjs/swagger';
+import { StatusCodes, StatusNames } from './utils/codes';
+import { APIInfos }                 from './app.types';
 
 /**
  * [/ Controller]: Controller containing root routes of the API
  */
 @Controller()
+@Injectable()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+
+    constructor(private readonly appService: AppService) {}
 
     /**
-     * [GET /] : Recover a welcome message
+     * [GET /] : Recover api infos
      */
-  @Get()
-  @ApiResponse({ status: 200, description: 'The response was succesful'})
-  getHello(): string {
-    return this.appService.getHello();
-  }
+    @Get()
+    @ApiResponse({ status: StatusCodes.OK, description: StatusNames[StatusCodes.OK]})
+    getAPIInfos(): APIInfos {
+        return this.appService.getAPIInfos();
+    }
+
 }
