@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-cassandra
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ template "env.name" . }}
+    chart: {{ template "env.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: {{ .Values.storage.elassandra.service.cassandra.type }}
+  ports:
+  - name: cql
+    port: {{ default 9042 .Values.storage.elassandra.config.ports.cql }}
+    targetPort: {{ default 9042 .Values.storage.elassandra.config.ports.cql }}
+  - name: jmx
+    port: {{ default 7199 .Values.storage.elassandra.config.ports.jmx }}
+    targetPort: {{ default 7199 .Values.storage.elassandra.config.ports.jmx }}
+  - name: thrift
+    port: {{ default 9160 .Values.storage.elassandra.config.ports.thrift }}
+    targetPort: {{ default 9160 .Values.storage.elassandra.config.ports.thrift }}
+  selector:
+    app: {{ template "env.name" . }}
+    release: {{ .Release.Name }}
