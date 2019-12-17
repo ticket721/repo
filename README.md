@@ -13,7 +13,8 @@ This Monorepo contains the infrastructure of the T721 Platform.
 | [`modules`](./modules/README.md) | Public NPM modules |
 | [`network`](./network/README.md) | Network Engine Sources |
 | [`contracts`](./contracts/README.md) | Contracts Engine Sources |
-| [`end`](./env/README.md) | Helm T721 Infrastructure Configuration |
+| [`env`](./env/README.md) | Helm T721 Infrastructure Configuration |
+| [`sources`](./sources/README.md) | T721 Components sources (server, apps, services) |
 
 ## Setup
 
