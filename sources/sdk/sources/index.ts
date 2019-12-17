@@ -1,0 +1,83 @@
+import { AxiosInstance, AxiosResponse, default as axios } from 'axios';
+
+// APP
+import { getAPIInfos }   from './app/app';
+import * as request                  from 'supertest';
+import { localLogin, localRegister } from './app/api/authentication';
+
+interface HTTPHeader {
+    [key: string]: string;
+}
+
+export class T721SDK {
+
+    public host: string;
+    public port: number;
+    public protocol: 'http' | 'https';
+    public axios: AxiosInstance;
+
+    constructor() {
+        this.getApiInfos = this.getApiInfos.bind(this);
+        this.localRegister = this.localRegister.bind(this);
+        this.localLogin = this.localLogin.bind(this);
+    }
+
+    connect(host: string, port: number, protocol: 'http' | 'https' = 'http') {
+        this.host = host;
+        this.port = port;
+        this.protocol = protocol;
+        this.axios = axios.create({
+            baseURL: `${this.protocol}://${this.host}:${this.port.toString()}`,
+            timeout: 30000,
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+    }
+
+    local(http: any) {
+        const res = request(http).get('/');
+        this.axios = axios.create({
+            baseURL: res.url,
+            timeout: 30000,
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+    }
+
+    async get(route: string, headers: HTTPHeader): Promise<AxiosResponse> {
+
+        if (this.axios) {
+            return this.axios({
+                method: 'get',
+                headers,
+                url: route,
+            });
+        } else {
+            throw new Error(`Client not connected`);
+        }
+
+    }
+
+    async post<Body>(route: string, headers: HTTPHeader, body: Body): Promise<AxiosResponse> {
+
+        if (this.axios) {
+            return this.axios({
+                method: 'post',
+                headers,
+                data: body,
+                url: route,
+            });
+        } else {
+            throw new Error(`Client not connected`);
+        }
+
+    }
+
+    public getApiInfos = getAPIInfos;
+
+    public localRegister = localRegister;
+    public localLogin = localLogin;
+}
+

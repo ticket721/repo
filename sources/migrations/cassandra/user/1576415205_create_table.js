@@ -8,7 +8,8 @@ var migration1576415205 = {
         password text,
         type text,
         wallet text,
-        address text
+        address text,
+        role text
         );`;
         var params = [];
         db.execute(query, params, { prepare: true }, function (err) {
