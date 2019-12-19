@@ -1,9 +1,15 @@
 import { AxiosInstance, AxiosResponse, default as axios } from 'axios';
 
+export { AxiosResponse } from 'axios';
+
 // APP
-import { getAPIInfos }   from './app/app';
-import * as request                  from 'supertest';
-import { localLogin, localRegister } from './app/api/authentication';
+import { getAPIInfos } from './app/app';
+import * as request    from 'supertest';
+
+// AUTHENTICATION
+import { localLogin, localRegister, web3Register, web3RegisterPayload, web3Login, web3LoginPayload } from './app/api/authentication';
+
+export { FailedRegisterReport } from './app/api/authentication';
 
 interface HTTPHeader {
     [key: string]: string;
@@ -20,6 +26,8 @@ export class T721SDK {
         this.getApiInfos = this.getApiInfos.bind(this);
         this.localRegister = this.localRegister.bind(this);
         this.localLogin = this.localLogin.bind(this);
+        this.web3Register = this.web3Register.bind(this);
+        this.web3Login = this.web3Login.bind(this);
     }
 
     connect(host: string, port: number, protocol: 'http' | 'https' = 'http') {
@@ -79,5 +87,9 @@ export class T721SDK {
 
     public localRegister = localRegister;
     public localLogin = localLogin;
+    public web3Register = web3Register;
+    public web3RegisterPayload = web3RegisterPayload;
+    public web3Login = web3Login;
+    public web3LoginPayload = web3LoginPayload;
 }
 

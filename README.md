@@ -41,3 +41,10 @@ npm install
 | `contracts::run` | Reads the provided configuration and runs contracts tests, migrations and post-migrations. Everything is saved to the portal. | `T721_CONFIG` | `network::run` |
 | `contracts::clean` | Reads the provided configuration and cleans everything that is network engine related. | `T721_CONFIG` | |
 
+## Status
+
+| Name | Status |
+| :---: | :---: |
+| Coveralls | [![Coverage Status](https://coveralls.io/repos/github/ticket721/repo/badge.svg?branch=develop)](https://coveralls.io/github/ticket721/repo?branch=develop) |
+
+

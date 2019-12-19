@@ -7,20 +7,25 @@
     "scripts": {
         "prebuild": "rimraf dist",
         "build": "nest build",
-        "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+        "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
         "start": "nest start",
-        "start:dev": "nest start --watch",
-        "start:debug": "nest start --debug --watch",
-        "start:prod": "node dist/main",
+        "start:server:dev": "nest start server --watch",
+        "start:server:debug": "nest start server --debug --watch",
+        "start:server:prod": "node dist/main",
         "doc:serve": "compodoc -p compodoc-tsconfig.json --theme stripe --unitTestCoverage ./coverage/coverage-summary.json -s",
         "lint": "tslint -p tsconfig.json -c tslint.json",
-        "test": "ts-mocha --timeout 10000 'src/**/*.spec.ts'",
-        "test:cov": "nyc --reporter=lcov --reporter=json-summary npm run test",
-        "test:e2e": "env NODE_ENV=test-e2e ts-mocha --timeout 30000 'test/**/*.e2e-spec.ts'",
-        "test:e2e:cov": "nyc --report-dir=coverage-e2e npm run test:e2e"
+        "test:server": "ts-mocha -p apps/server/tsconfig.app.json --paths --timeout 10000 'apps/server/src/**/*.spec.ts'",
+        "test:server:cov": "nyc --report-dir=reports/server/coverage --reporter=lcov --reporter=json-summary npm run test:server",
+        "test:server:e2e": "env NODE_ENV=test-e2e ts-mocha -p apps/server/tsconfig.app.json --paths --timeout 30000 'apps/server/test/**/*.e2e-spec.ts'",
+        "test:server:e2e:cov": "nyc --report-dir=reports/server/coverage-e2e npm run test:server:e2e",
+        "test:common": "ts-mocha -p libs/common/tsconfig.lib.json --paths --timeout 10000 'libs/common/src/**/*.spec.ts'",
+        "test:common:cov": "nyc --report-dir=reports/common/coverage --reporter=lcov --reporter=json-summary npm run test:common",
+        "test:common:e2e": "env NODE_ENV=test-e2e ts-mocha -p libs/common/tsconfig.lib.json --paths --timeout 30000 'libs/common/test/**/*.e2e-spec.ts'",
+        "test:common:e2e:cov": "nyc --report-dir=reports/common/coverage-e2e npm run test:common:e2e"
     },
     "dependencies": {
         "@iaminfinity/express-cassandra": "6.0.0",
+        "@nestjs/bull": "0.0.1-beta.4",
         "@nestjs/common": "6.10.11",
         "@nestjs/core": "6.10.11",
         "@nestjs/jwt": "6.1.1",
@@ -29,6 +34,8 @@
         "@nestjs/swagger": "4.0.9",
         "@ticket721sources/global": "1.0.0",
         "bcrypt": "3.0.7",
+        "bull": "3.12.1",
+        "bull-board": "^0.6.0",
         "chai": "4.2.0",
         "chai-as-promised": "7.1.1",
         "class-transformer": "0.2.3",
@@ -37,8 +44,9 @@
         "elasticsearch": "16.5.0",
         "git-branch": "2.0.1",
         "mocha": "6.2.2",
+        "nest-schedule": "0.6.3",
         "passport": "0.4.1",
-        "passport-jwt": "^4.0.0",
+        "passport-jwt": "4.0.0",
         "passport-local": "1.0.0",
         "reflect-metadata": "0.1.13",
         "rimraf": "3.0.0",
@@ -53,6 +61,7 @@
         "@nestjs/schematics": "^6.7.0",
         "@nestjs/testing": "^6.7.1",
         "@ticket721sources/sdk": "1.0.0",
+        "@types/bull": "^3.10.6",
         "@types/chai": "^4.2.7",
         "@types/dotenv": "^8.2.0",
         "@types/express": "^4.17.1",
@@ -61,6 +70,8 @@
         "@types/passport-jwt": "^3.0.3",
         "@types/passport-local": "^1.0.33",
         "@types/supertest": "^2.0.8",
+        "chai-shallow-deep-equal": "^1.4.6",
+        "chai-subset": "^1.6.0",
         "dockerode": "^3.0.2",
         "fs-extra": "^8.1.0",
         "nyc": "^14.1.1",
@@ -85,13 +96,16 @@
         ],
         "exclude": [
             "node_modules",
-            "src/**/*.spec.ts",
-            "test/**/*.e2e-spec.ts",
+
+            "apps/server/src/**/*.spec.ts",
+            "apps/server/test",
+            "apps/server/src/main.ts",
+            "apps/server/src/utils/HttpException.filter.ts",
+            "apps/server/src/authentication/Jwt.strategy.ts",
+
             "dist",
-            "src/main.ts",
             "test",
-            "src/logger/*",
-            "src/utils/HttpException.filter.ts"
+            "libs/common/src/logger/*"
         ]
     }
 }

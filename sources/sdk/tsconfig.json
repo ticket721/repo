@@ -11,7 +11,27 @@
         "outDir": "./lib",
         "baseUrl": "./sources",
         "incremental": true,
-        "resolveJsonModule": true
+        "resolveJsonModule": true,
+        "paths": {
+            "@lib/common/": [
+                "../../server/libs/common/src"
+            ],
+            "@lib/common/*": [
+                "../../server/libs/common/src/*"
+            ],
+            "@app/server/": [
+                "../../server/apps/server/src"
+            ],
+            "@app/server/*": [
+                "../../server/apps/server/src/*"
+            ],
+            "@app/antenna/": [
+                "../../server/apps/antenna/src"
+            ],
+            "@app/antenna/*": [
+                "../../server/apps/antenna/src/*"
+            ]
+        }
     },
     "exclude": ["node_modules", "lib"]
 }

@@ -26,14 +26,17 @@ jobs:
             - name: Build @ticket721sources/sdk
               run: cd sources/sdk && npm run build
 
-            - name: Run @ticket721sources/server unitary tests
-              run: cd sources/server && npm run test:cov
-
             - name: Run @ticket721sources/global unitary tests
               run: cd sources/global && npm run test:cov
 
-            - name: Run @ticket721sources/server e2e tests
-              run: sudo sysctl -w vm.max_map_count=262144 && cd sources/server && npm run test:e2e:cov
+            - name: Run @ticket721sources/server @app/server unitary tests
+              run: cd sources/server && npm run test:server:cov
+
+            - name: Run @ticket721sources/server @lib/common unitary tests
+              run: cd sources/server && npm run test:common:cov
+
+            - name: Run @ticket721sources/server @app/server e2e tests
+              run: sudo sysctl -w vm.max_map_count=262144 && cd sources/server && npm run test:server:e2e:cov
 
             - name: Merge reports
               run: npm run merge_coverage_reports

@@ -6,10 +6,10 @@
     "license": "MIT",
     "main": "./lib/index.js",
     "scripts": {
-        "test": "ts-mocha **/*.spec.ts",
+        "test": "ts-mocha --timeout 20000 **/*.spec.ts",
         "test:cov": "nyc npm run test",
         "build": "tsc",
-	"watch": "watch 'npm run build' sources"
+        "watch": "watch 'npm run build' sources"
     },
     "dependencies": {
         "cassandra-driver": "3.6.0",

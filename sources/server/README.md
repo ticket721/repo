@@ -5,27 +5,47 @@
 ## Installation
 
 ```bash
-$ npm install
+$ lerna bootstrap --scope='@ticket721sources/*'
 ```
 
-## Unitary Tests
+## Testing
+
+### Apps
+
+#### Server
+
+##### Unitary Tests
 
 ```bash
 # unit tests
-$ npm run test
+npm run test:server
 
 # test coverage
-$ npm run test:cov
+npm run test:server:cov
 ```
 
-## E2E Tests
+##### E@E Tests
 
 ```bash
 # unit tests
-$ npm run test:e2e
+npm run test:server:e2e
 
 # test coverage
-$ npm run test:e2e:cov
+npm run test:server:e2e:cov
+```
+
+### Libs
+
+#### Common
+
+##### Unitary Tests
+
+```bash
+# unit tests
+npm run test:common
+
+# test coverage
+npm run test:common:cov
 ```
 
 ## Documentation
@@ -44,6 +64,8 @@ npm run doc:serve
 
 ## Configuration
 
+### @apps/server
+
 Configuration of the API happens in the appropriate environment file inside the `env` directory.
 
 | Name | Description | Default | Required |
@@ -56,5 +78,9 @@ Configuration of the API happens in the appropriate environment file inside the 
 | `ELASTICSEARCH_PROTOCOL` | Protocol of ElasticSearch endpoint | `http` | false |
 | `JWT_SECRET` | Secret key for the JWT token signatures | `undefined` | true |
 | `JWT_EXPIRATION` | String for the token expiration | `24h` | false |
+| `BULL_REDIS_HOST` | Hostname / IP of the Redis instance used by Bull | `undefined` | true |
+| `BULL_REDIS_PORT` | Port of the Redis instance used by Bull | `undefined` | true |
+| `BULL_BOARD` | `true` if the bull board should be exposed | `false` | false |
+| `AUTH_SIGNATURE_TIMEOUT` | String for login signature expiration | `30000` | false |
 
 

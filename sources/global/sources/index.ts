@@ -4,3 +4,5 @@ export { isAddress, toAcceptedAddressFormat }                                fro
 export { setVerbosity }                                                      from './log';
 export { isKeccak256, toAcceptedKeccak256Format, keccak256 }                 from './hash';
 export { Wallet }                                                            from 'ethers';
+export { Web3LoginSigner }                                                   from './signers/Web3Login';
+export { Web3RegisterSigner }                                                from './signers/Web3Register';

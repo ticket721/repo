@@ -10,7 +10,27 @@
         "outDir": "./dist",
         "baseUrl": "./",
         "incremental": true,
-        "resolveJsonModule": true
+        "resolveJsonModule": true,
+        "paths": {
+            "@lib/common/": [
+                "libs/common/src"
+            ],
+            "@lib/common/*": [
+                "libs/common/src/*"
+            ],
+            "@app/server/": [
+                "apps/server/src"
+            ],
+            "@app/server/*": [
+                "apps/server/src/*"
+            ],
+            "@app/antenna/": [
+                "apps/antenna/src"
+            ],
+            "@app/antenna/*": [
+                "apps/antenna/src/*"
+            ]
+        }
     },
     "exclude": [
         "node_modules",

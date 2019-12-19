@@ -15,7 +15,7 @@
         "doc": "npm run doc:network && npm run doc:contracts",
         "postinstall": "lerna bootstrap",
         "install:ticket721sources": "lerna bootstrap --scope '@ticket721sources/*'",
-        "merge_coverage_reports": "rm -rf coverage && mkdir coverage && lcov-result-merger './sources/*/coverage*/lcov.info' './coverage/lcov.info'"
+        "merge_coverage_reports": "rm -rf coverage && mkdir coverage && lcov-result-merger './sources/**/coverage*/lcov.info' './coverage/lcov.info'"
     },
     "dependencies": {
         "lcov-result-merger": "^3.1.0",
