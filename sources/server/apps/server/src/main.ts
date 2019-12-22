@@ -10,7 +10,7 @@ import { Queue }                          from 'bull';
 import { UI, setQueues }                  from 'bull-board';
 
 /**
- * Main application, starting the T721 API
+ * Main application, starting the T721 Server API
  */
 async function main() {
     const app = await NestFactory.create<NestExpressApplication>(ServerModule, {

@@ -1,13 +1,11 @@
 import { Injectable }                       from '@nestjs/common';
 import {
-    InjectRepository, InjectModel, BaseModel
+    InjectRepository, InjectModel, BaseModel,
 }                                           from '@iaminfinity/express-cassandra';
-import { types } from 'cassandra-driver';
+import { types }                            from 'cassandra-driver';
 import { Web3TokensRepository }             from './Web3Tokens.repository';
 import { Web3TokenEntity }                  from './entities/Web3Token.entity';
-import { toAcceptedAddressFormat }          from '@ticket721sources/global';
 import { ServiceResponse }                  from '@app/server/utils/ServiceResponse';
-import { ESSearchReturn }                   from '@app/server/utils/ESSearchReturn';
 import { RegisterWeb3TokenServiceInputDto } from '@app/server/web3token/dto/RegisterWeb3TokenServiceInput.dto';
 import { Web3TokenDto }                     from '@app/server/web3token/dto/Web3Token.dto';
 
@@ -41,7 +39,7 @@ export class Web3TokensService {
             const created_token = await this.web3TokensRepository.save(
                 this.web3TokensRepository.create({
                     timestamp: (types.Long as any).fromNumber(token.timestamp),
-                    address: token.address
+                    address: token.address,
                 }),
             ).toPromise();
 
@@ -68,7 +66,7 @@ export class Web3TokensService {
         try {
             const existing_token: Web3TokenDto = await this.web3TokensRepository.findOne({
                 timestamp: (types.Long as any).fromNumber(token.timestamp),
-                address: token.address
+                address: token.address,
             }).toPromise();
 
             return {

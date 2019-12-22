@@ -4,6 +4,9 @@ import { Web3TokenEntity }        from '@app/server/web3token/entities/Web3Token
 import { Web3TokensRepository }   from '@app/server/web3token/Web3Tokens.repository';
 import { Web3TokensService }      from '@app/server/web3token/Web3Tokens.service';
 
+/**
+ * Module to handle the creation and verification of web3 tokens. They prevent replay attacks
+ */
 @Module({
     imports: [
         ExpressCassandraModule.forFeature([Web3TokenEntity, Web3TokensRepository]),
