@@ -13,7 +13,8 @@ This Monorepo contains the infrastructure of the T721 Platform.
 | [`modules`](./modules/README.md) | Public NPM modules |
 | [`network`](./network/README.md) | Network Engine Sources |
 | [`contracts`](./contracts/README.md) | Contracts Engine Sources |
-| [`end`](./env/README.md) | Helm T721 Infrastructure Configuration |
+| [`env`](./env/README.md) | Helm T721 Infrastructure Configuration |
+| [`sources`](./sources/README.md) | T721 Components sources (server, apps, services) |
 
 ## Setup
 
@@ -39,4 +40,11 @@ npm install
 | `network::clean` | Reads the provided configuration and cleans everything that is network engine related. | `T721_CONFIG` | |
 | `contracts::run` | Reads the provided configuration and runs contracts tests, migrations and post-migrations. Everything is saved to the portal. | `T721_CONFIG` | `network::run` |
 | `contracts::clean` | Reads the provided configuration and cleans everything that is network engine related. | `T721_CONFIG` | |
+
+## Status
+
+| Name | Status |
+| :---: | :---: |
+| Coveralls | [![Coverage Status](https://coveralls.io/repos/github/ticket721/repo/badge.svg?branch=develop)](https://coveralls.io/github/ticket721/repo?branch=develop) |
+
 

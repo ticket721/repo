@@ -159,11 +159,12 @@ spec:
             mountPath: /docker-entrypoint-init.d/{{ $key }}
             subPath: {{ $key }}
 {{- end }}
-{{- range $key, $val := .Values.storage.elassandra.configs }}
-          - name: configs-volume
-            mountPath: /configfiles/{{ $key }}
-            subPath: {{ $key }}
-{{- end }}
+          - name: cassandra-yaml
+            mountPath: /configfiles/cassandra.yaml
+            subPath: cassandra.yaml
+          - name: cassandra-env-sh
+            mountPath: /configfiles/cassandra-env.sh
+            subPath: cassandra-env.sh
 {{- range $key, $val := .Values.storage.elassandra.scripts }}
           - name: scripts-volume
             mountPath: /usr/share/cassandra/scripts/{{ $key }}
@@ -193,11 +194,12 @@ spec:
           configMap:
             name: {{ template "env.fullname" . }}-inits
 {{- end }}
-{{- if .Values.storage.elassandra.configs }}
-        - name: configs-volume
+        - name: cassandra-yaml
           configMap:
-            name: {{ template "env.fullname" . }}-configs
-{{- end }}
+            name: {{ template "env.fullname" . }}-cassandra-yaml
+        - name: cassandra-env-sh
+          configMap:
+            name: {{ template "env.fullname" . }}-cassandra-env-sh
 {{- if not .Values.storage.elassandra.persistence.enabled }}
         - name: data
           emptyDir: {}

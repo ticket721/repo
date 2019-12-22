@@ -1,39 +1,51 @@
-# Server
+# server
 
 ## Description
-
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
 ## Installation
 
 ```bash
-$ npm install
+$ lerna bootstrap --scope='@ticket721sources/*'
 ```
 
-## Running the app
+## Testing
 
-```bash
-# development
-$ npm run start
+### Apps
 
-# watch mode
-$ npm run start:dev
+#### Server
 
-# production mode
-$ npm run start:prod
-```
-
-## Test
+##### Unitary Tests
 
 ```bash
 # unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
+npm run test:server
 
 # test coverage
-$ npm run test:cov
+npm run test:server:cov
+```
+
+##### E@E Tests
+
+```bash
+# unit tests
+npm run test:server:e2e
+
+# test coverage
+npm run test:server:e2e:cov
+```
+
+### Libs
+
+#### Common
+
+##### Unitary Tests
+
+```bash
+# unit tests
+npm run test:common
+
+# test coverage
+npm run test:common:cov
 ```
 
 ## Documentation
@@ -49,4 +61,26 @@ Serve the source documentation localy by running:
 ```bash
 npm run doc:serve
 ```
+
+## Configuration
+
+### @apps/server
+
+Configuration of the API happens in the appropriate environment file inside the `env` directory.
+
+| Name | Description | Default | Required |
+| :---: | :---: | :---: | :---: |
+| `API_PORT` | Port used to expose the api | 3000 | false |
+| `CASSANDRA_CONTACT_POINTS` | List of hostnames / IPs of cassandra nodes of the cluster, delimited by `+`. ex: `127.0.0.1+192.168.0.1` for 2 contact points | `undefined` | true |
+| `CASSANDRA_PORT` | Port on which the client connects to cassandra | `undefined` | true |
+| `ELASTICSEARCH_HOST` | Hostname / IP of ElasticSearch endpoint | `undefined` | true |
+| `ELASTICSEARCH_PORT` | Port of ElasticSearch endpoint | `undefined` | true |
+| `ELASTICSEARCH_PROTOCOL` | Protocol of ElasticSearch endpoint | `http` | false |
+| `JWT_SECRET` | Secret key for the JWT token signatures | `undefined` | true |
+| `JWT_EXPIRATION` | String for the token expiration | `24h` | false |
+| `BULL_REDIS_HOST` | Hostname / IP of the Redis instance used by Bull | `undefined` | true |
+| `BULL_REDIS_PORT` | Port of the Redis instance used by Bull | `undefined` | true |
+| `BULL_BOARD` | `true` if the bull board should be exposed | `false` | false |
+| `AUTH_SIGNATURE_TIMEOUT` | String for login signature expiration | `30000` | false |
+
 

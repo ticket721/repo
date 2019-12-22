@@ -17,11 +17,26 @@ jobs:
             - name: Install required tools globally
               run: npm install -g lerna@3.16.4 lcov-result-merger@3.1.0
 
-            - name: Install @ticket721source dependencies
+            - name: Install @ticket721sources dependencies
               run: npm run install:ticket721sources
 
-            - name: Run @ticket721sources/server tests
-              run: cd sources/server && npm run test:cov
+            - name: Build @ticket721sources/global
+              run: cd sources/global && npm run build
+
+            - name: Build @ticket721sources/sdk
+              run: cd sources/sdk && npm run build
+
+            - name: Run @ticket721sources/global unitary tests
+              run: cd sources/global && npm run test:cov
+
+            - name: Run @ticket721sources/server @app/server unitary tests
+              run: cd sources/server && npm run test:server:cov
+
+            - name: Run @ticket721sources/server @lib/common unitary tests
+              run: cd sources/server && npm run test:common:cov
+
+            - name: Run @ticket721sources/server @app/server e2e tests
+              run: sudo sysctl -w vm.max_map_count=262144 && cd sources/server && npm run test:server:e2e:cov
 
             - name: Merge reports
               run: npm run merge_coverage_reports
