@@ -20,7 +20,7 @@ import { AuthenticationController }    from '@app/server/authentication/Authenti
         Web3TokensModule,
         JwtModule.registerAsync(
             {
-                imports: [ConfigModule.forRoot(Config)],
+                imports: [ConfigModule.register(Config)],
                 useFactory: async (configService: ConfigService): Promise<JwtModuleOptions> => ({
                     secret: configService.get('JWT_SECRET'),
                     signOptions: {
@@ -29,7 +29,7 @@ import { AuthenticationController }    from '@app/server/authentication/Authenti
                 }),
                 inject: [ConfigService],
             }),
-        ConfigModule.forRoot(Config),
+        ConfigModule.register(Config),
     ],
     providers: [
         AuthenticationService,

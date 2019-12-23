@@ -1,6 +1,7 @@
-import * as dotenv from 'dotenv';
-import * as Joi    from '@hapi/joi';
-import * as fs     from 'fs';
+import * as dotenv  from 'dotenv';
+import * as Joi     from '@hapi/joi';
+import * as fs      from 'fs';
+import { hostname } from 'os';
 
 export type EnvConfig = Record<string, string>;
 
@@ -58,5 +59,33 @@ export class ConfigService {
         }
 
         return validatedEnvConfig;
+    }
+
+    private numRegExp = /^[0123456789]+$/;
+
+    getRole(): number {
+        if (this.get('NODE_ENV') === 'development') {
+            return 0;
+            /* istanbul ignore next */
+        } else {
+            if (!this.get('HOSTNAME_PREFIX')) {
+                throw new Error(`Config validation error: in NODE_ENV=${this.get('NODE_ENV')}, HOSTNAME_PREFIX are required env vars`)
+            }
+
+            const prefix: string = this.get('HOSTNAME_PREFIX');
+            const hn: string = hostname();
+            if (hn.indexOf(prefix) !== 0) {
+                throw new Error(`Invalid HOSTNAME_PREFIX value, cannot be found in real hostname: prefix ${this.get('HOSTNAME_PREFIX')} hostname ${hn}`);
+            }
+
+            if (!this.numRegExp.test(hn.slice(prefix.length + 1))) {
+                throw new Error(`Invalid hostname configuration: got hostname ${hn}, while expecting something like ${prefix}-ID`);
+            }
+
+            const idx = parseInt(hn.slice(prefix.length + 1));
+
+            return idx;
+
+        }
     }
 }

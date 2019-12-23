@@ -17,6 +17,7 @@ import { Web3TokensRepository }  from '@app/server/web3token/Web3Tokens.reposito
 import { Web3TokenDto }          from '@app/server/web3token/dto/Web3Token.dto';
 import { Web3TokenEntity }       from '@app/server/web3token/entities/Web3Token.entity';
 import { types }                 from 'cassandra-driver';
+import { ConfigService }         from '@lib/common/config/Config.service';
 
 use(chaiAsPromised);
 
@@ -31,8 +32,16 @@ describe('Web3Tokens Service', function() {
     beforeEach(async function() {
 
         const web3TokenEntityModelMock: Web3TokenEntityModelMock = mock(Web3TokenEntityModelMock);
-
         const web3TokensRepositoryMock: Web3TokensRepository = mock(Web3TokensRepository);
+        const configServiceMock: ConfigService = mock(ConfigService);
+
+        const ConfigServiceProvider = {
+            provide: ConfigService,
+            useValue: instance(configServiceMock),
+        };
+
+        when(configServiceMock.get('AUTH_SIGNATURE_TIMEOUT')).thenReturn('30');
+
 
         const Web3TokenModelProvider = {
             provide: 'Web3TokenEntityModel',
@@ -48,6 +57,7 @@ describe('Web3Tokens Service', function() {
             providers: [
                 Web3TokenModelProvider,
                 Web3TokensRepositoryProvider,
+                ConfigServiceProvider,
                 Web3TokensService,
             ],
         }).compile();
@@ -55,6 +65,7 @@ describe('Web3Tokens Service', function() {
         this.web3TokensService = module.get<Web3TokensService>(Web3TokensService);
         this.web3TokenEntityModelMock = web3TokenEntityModelMock;
         this.web3TokensRepositoryMock = web3TokensRepositoryMock;
+        this.configServiceMock = configServiceMock;
 
     });
 
@@ -89,7 +100,7 @@ describe('Web3Tokens Service', function() {
             };
 
             when(web3TokensRepositoryMock.create(deepEqual(token))).thenReturn(token);
-            when(web3TokensRepositoryMock.save(deepEqual(token))).thenCall(injected_cb);
+            when(web3TokensRepositoryMock.save(deepEqual(token), deepEqual({ttl: parseInt('30')}))).thenCall(injected_cb);
 
             const res = await web3TokensService.register({
                 timestamp,
@@ -102,6 +113,7 @@ describe('Web3Tokens Service', function() {
                 address
             });
 
+            verify(web3TokensRepositoryMock.save(deepEqual(token), deepEqual({ttl: parseInt('30')}))).called();
 
         });
 
@@ -134,7 +146,7 @@ describe('Web3Tokens Service', function() {
             };
 
             when(web3TokensRepositoryMock.create(deepEqual(token))).thenReturn(token);
-            when(web3TokensRepositoryMock.save(deepEqual(token))).thenCall(injected_cb);
+            when(web3TokensRepositoryMock.save(deepEqual(token), deepEqual({ttl: parseInt('30')}))).thenCall(injected_cb);
 
             const res = await web3TokensService.register({
                 timestamp,
@@ -144,6 +156,7 @@ describe('Web3Tokens Service', function() {
             expect(res.error).to.equal('unexpected_error');
             expect(res.response).to.equal(null);
 
+            verify(web3TokensRepositoryMock.save(deepEqual(token), deepEqual({ttl: parseInt('30')}))).called();
 
         });
 
@@ -192,6 +205,8 @@ describe('Web3Tokens Service', function() {
                 address
             });
 
+            verify(web3TokensRepositoryMock.findOne(deepEqual(token))).called();
+
         });
 
         it('unexpected error', async function () {
@@ -232,6 +247,7 @@ describe('Web3Tokens Service', function() {
             expect(res.error).to.equal('unexpected_error');
             expect(res.response).to.equal(null);
 
+            verify(web3TokensRepositoryMock.findOne(deepEqual(token))).called();
 
         });
 

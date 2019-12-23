@@ -4,7 +4,7 @@ import { ConfigModule }                  from '@lib/common/config/Config.module'
 import { Config }                        from '../utils/Config.joi';
 
 @Module({
-    imports: [ConfigModule.forRoot(Config)],
+    imports: [ConfigModule.register(Config)],
     providers: [ExpressCassandraConfigService],
     exports: [ExpressCassandraConfigService],
 })

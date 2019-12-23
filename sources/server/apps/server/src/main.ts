@@ -33,9 +33,9 @@ async function main() {
 
     if (configService.get('BULL_BOARD') === 'true') {
 
-        const queue = app.get<Queue>(getQueueToken('queue'));
-        setQueues(queue);
-        app.use('/admin/queues', UI);
+        //const web3token_clear = app.get<Queue>(getQueueToken('web3token/clear'));
+        //setQueues([web3token_clear]);
+        //app.use('/admin/queues', UI);
 
     }
 

@@ -41,7 +41,7 @@ export class AuthenticationService {
 
         const web3LoginSigner: Web3LoginSigner = new Web3LoginSigner(1); // recover from web3 module
 
-        const verification: [boolean, string] = await web3LoginSigner.verifyAuthenticationProof(signature, parseInt(timestamp), parseInt(this.configService.get('AUTH_SIGNATURE_TIMEOUT')));
+        const verification: [boolean, string] = await web3LoginSigner.verifyAuthenticationProof(signature, parseInt(timestamp), parseInt(this.configService.get('AUTH_SIGNATURE_TIMEOUT')) * 1000);
 
         if (verification[0] === false) {
             return {
@@ -154,7 +154,7 @@ export class AuthenticationService {
 
         const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(1);
 
-        const verification: [boolean, string] = await web3RegisterSigner.verifyRegistrationProof(signature, parseInt(timestamp), email, username, parseInt(this.configService.get('AUTH_SIGNATURE_TIMEOUT')));
+        const verification: [boolean, string] = await web3RegisterSigner.verifyRegistrationProof(signature, parseInt(timestamp), email, username, parseInt(this.configService.get('AUTH_SIGNATURE_TIMEOUT')) * 1000);
 
         if (verification[0] === false) {
             return {
