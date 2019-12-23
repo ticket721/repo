@@ -32,7 +32,8 @@
         "@nestjs/passport": "6.1.1",
         "@nestjs/platform-express": "6.10.11",
         "@nestjs/swagger": "4.0.9",
-        "@ticket721sources/global": "1.0.0",
+        "@ticket721sources/global": "file:../global",
+        "@ticket721sources/sdk": "file:../sdk",
         "bcrypt": "3.0.7",
         "bull": "3.12.1",
         "bull-board": "^0.6.0",
@@ -52,6 +53,7 @@
         "rimraf": "3.0.0",
         "rxjs": "6.5.3",
         "swagger-ui-express": "4.1.2",
+        "web3": "1.2.4",
         "winston": "3.2.1"
     },
     "devDependencies": {
@@ -60,7 +62,6 @@
         "@nestjs/cli": "^6.9.0",
         "@nestjs/schematics": "^6.7.0",
         "@nestjs/testing": "^6.7.1",
-        "@ticket721sources/sdk": "1.0.0",
         "@types/bull": "^3.10.6",
         "@types/chai": "^4.2.7",
         "@types/dotenv": "^8.2.0",
@@ -96,13 +97,11 @@
         ],
         "exclude": [
             "node_modules",
-
             "apps/server/src/**/*.spec.ts",
             "apps/server/test",
             "apps/server/src/main.ts",
             "apps/server/src/utils/HttpException.filter.ts",
             "apps/server/src/authentication/Jwt.strategy.ts",
-
             "dist",
             "test",
             "libs/common/src/logger/*"

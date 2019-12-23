@@ -13,8 +13,9 @@
         "doc:network": "rm -rf network/doc && typedoc --tsconfig typedoc.tsconfig.json --excludeNotExported --readme none --theme markdown --out network/doc --mode file --name '@ticket721_repo/network_engine' network/index.ts",
         "doc:contracts": "rm -rf contracts/doc && typedoc --tsconfig typedoc.tsconfig.json --excludeNotExported --readme none --theme markdown --out contracts/doc --mode file --name '@ticket721_repo/contracts_engine' contracts/index.ts",
         "doc": "npm run doc:network && npm run doc:contracts",
-        "postinstall": "lerna bootstrap",
-        "install:ticket721sources": "lerna bootstrap --scope '@ticket721sources/*'",
+        "install:ticket721sources": "lerna bootstrap --scope '@ticket721sources/*' && lerna exec 'npm install' --scope '@ticket721sources/*'",
+        "install:ticket721contracts": "lerna bootstrap --scope '@ticket721contracts/*' && lerna exec 'npm install' --scope '@ticket721contracts/*'",
+        "bootstrap": "lerna bootstrap && lerna exec 'npm install'",
         "merge_coverage_reports": "rm -rf coverage && mkdir coverage && lcov-result-merger './sources/**/coverage*/lcov.info' './coverage/lcov.info'"
     },
     "dependencies": {
@@ -31,14 +32,14 @@
         "gulp": "^4.0.2",
         "husky": "^1.3.1",
         "lerna": "^3.16.4",
-        "portalize": "^1.0.4",
+        "portalize": "1.0.4",
         "signale": "^1.4.0",
-        "truffle-hdwallet-provider": "^1.0.17",
+        "truffle-hdwallet-provider": "1.0.17",
         "ts-node": "^8.4.1",
         "typedoc": "^0.15.0",
         "typedoc-plugin-markdown": "^2.2.6",
         "typescript": "^3.6.3",
-        "web3": "^1.2.1"
+        "web3": "1.2.1"
     },
     "editorconfig-cli": [
         "gulpfile.ts",

@@ -9,4 +9,8 @@ services:
         image: "redis:5.0.7"
         ports:
             - "32412:6379"
+    ganache:
+        image: "trufflesuite/ganache-cli:v6.7.0"
+        ports:
+            - "8545:8545"
 

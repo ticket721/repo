@@ -64,9 +64,9 @@ export class ConfigService {
     private numRegExp = /^[0123456789]+$/;
 
     getRole(): number {
+        /* istanbul ignore else */
         if (this.get('NODE_ENV') === 'development') {
             return 0;
-            /* istanbul ignore next */
         } else {
             if (!this.get('HOSTNAME_PREFIX')) {
                 throw new Error(`Config validation error: in NODE_ENV=${this.get('NODE_ENV')}, HOSTNAME_PREFIX are required env vars`)
@@ -82,9 +82,7 @@ export class ConfigService {
                 throw new Error(`Invalid hostname configuration: got hostname ${hn}, while expecting something like ${prefix}-ID`);
             }
 
-            const idx = parseInt(hn.slice(prefix.length + 1));
-
-            return idx;
+            return parseInt(hn.slice(prefix.length + 1));
 
         }
     }

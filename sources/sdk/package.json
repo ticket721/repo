@@ -1,20 +1,20 @@
 {
-  "name": "@ticket721sources/sdk",
-  "version": "1.0.0",
-  "description": "Handle server requests",
-  "main": "./lib/sdk/sources",
-  "scripts": {
-    "build": "tsc",
-    "watch": "watch 'npm run build' sources"
-  },
-  "author": "Iulian Rotaru",
-  "license": "MIT",
-  "dependencies": {
-    "@ticket721sources/global": "1.0.0"
-  },
-  "devDependencies": {
-    "supertest": "^4.0.2",
-    "typescript": "3.7.3",
-    "watch": "^1.0.2"
-  }
+    "name": "@ticket721sources/sdk",
+    "version": "1.0.0",
+    "description": "Handle server requests",
+    "main": "./lib/sdk/sources",
+    "scripts": {
+        "build": "tsc",
+        "watch": "watch 'npm run build' sources"
+    },
+    "author": "Iulian Rotaru",
+    "license": "MIT",
+    "dependencies": {
+        "@ticket721sources/global": "file:../global"
+    },
+    "devDependencies": {
+        "supertest": "^4.0.2",
+        "typescript": "3.7.3",
+        "watch": "^1.0.2"
+    }
 }

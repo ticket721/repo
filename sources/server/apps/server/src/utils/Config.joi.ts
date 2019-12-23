@@ -14,6 +14,10 @@ export const Config: Joi.ObjectSchema = Joi.object({
     ELASTICSEARCH_PORT: Joi.number().required(),
     ELASTICSEARCH_PROTOCOL: Joi.string().default('http'),
 
+    ETHEREUM_NODE_HOST: Joi.string().required(),
+    ETHEREUM_NODE_PORT: Joi.number().required(),
+    ETHEREUM_NODE_PROTOCOL: Joi.string().default('http'),
+
     JWT_SECRET: Joi.string().required(),
     JWT_EXPIRATION: Joi.string().default('24h'),
     BCRYPT_SALT_ROUNDS: Joi.number().default(9),

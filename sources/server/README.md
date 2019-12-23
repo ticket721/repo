@@ -76,6 +76,9 @@ Configuration of the API happens in the appropriate environment file inside the 
 | `ELASTICSEARCH_HOST` | Hostname / IP of ElasticSearch endpoint | `undefined` | true |
 | `ELASTICSEARCH_PORT` | Port of ElasticSearch endpoint | `undefined` | true |
 | `ELASTICSEARCH_PROTOCOL` | Protocol of ElasticSearch endpoint | `http` | false |
+| `ETHEREUM_NODE_HOST` | Hostname / IP of Ethereum node endpoint | `undefined` | true |
+| `ETHEREUM_NODE_PORT` | Port of Ethereum node endpoint | `undefined` | true |
+| `ETHEREUM_NODE_PROTOCOL` | Protocol of Ethereum node endpoint | `http` | false |
 | `JWT_SECRET` | Secret key for the JWT token signatures | `undefined` | true |
 | `JWT_EXPIRATION` | String for the token expiration | `24h` | false |
 | `BULL_REDIS_HOST` | Hostname / IP of the Redis instance used by Bull | `undefined` | true |

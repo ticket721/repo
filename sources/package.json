@@ -9,7 +9,7 @@
         "ethereum-address": "0.0.4",
         "ethers": "4.0.40",
         "lodash": "4.17.15",
-        "@ticket721/e712": "0.2.0"
+        "@ticket721/e712": "0.2.2"
     },
     "devDependencies": {
         "@types/hapi__joi": "16.0.4"

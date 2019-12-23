@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="JavaScriptLibraryMappings">
-    <excludedPredefinedLibrary name="repo/contracts/contracts_modules/daiplus/node_modules" />
     <excludedPredefinedLibrary name="repo/contracts/contracts_modules/metamarketplace/node_modules" />
     <excludedPredefinedLibrary name="repo/contracts/contracts_modules/refract/node_modules" />
     <excludedPredefinedLibrary name="repo/contracts/contracts_modules/t721controller/node_modules" />

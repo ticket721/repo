@@ -3,6 +3,24 @@ import {spawn}        from 'child_process';
 import * as fs        from 'fs-extra';
 const Docker = new Dockerode();
 
+export async function pull_ganache_image(): Promise<void> {
+
+    return new Promise((ok, ko) => {
+        Docker.pull(`trufflesuite/ganache-cli:v6.7.0`, (err, res) => {
+
+            if (err) {
+                return ko(err);
+            }
+
+            Docker.modem.followProgress(res, () => {
+                ok();
+            });
+
+        });
+
+    });
+}
+
 export async function pull_redis_image(): Promise<void> {
 
     return new Promise((ok, ko) => {
@@ -38,6 +56,54 @@ export async function pull_elassandra_image(): Promise<void> {
 
     });
 }
+
+export async function run_ganache(ganachePort: number): Promise<void> {
+
+    const container = await Docker.createContainer({
+            Image: `trufflesuite/ganache-cli:v6.7.0`,
+            ExposedPorts: {
+                '8545': {}
+            },
+            HostConfig: {
+                AutoRemove: true,
+                PortBindings: {
+                    '8545': [
+                        {
+                            HostPort: ganachePort.toString()
+                        },
+                    ]
+                },
+            },
+            name: 'ganache-e2e-instance',
+        },
+    );
+    await container.start();
+    const logOpts = {
+        stdout: true,
+        stderr: true,
+        tail: 100,
+        follow: true,
+    };
+    return new Promise((ok, ko) => {
+
+        container.logs(logOpts, (err, data) => {
+            if (err) {
+                return ko(err);
+            }
+            data.setEncoding('utf8');
+            data.on('data', function (_data) {
+                process.stdout.write(_data);
+                if (_data.indexOf('Listening on 0.0.0.0:8545') !== -1) {
+                    process.stdout.write('\n');
+                    data.removeAllListeners('data');
+                    return ok();
+                }
+            });
+        });
+
+    });
+}
+
 
 export async function run_redis(redisPort: number): Promise<void> {
 
@@ -147,7 +213,7 @@ export async function kill_container(container_name: string) {
     }
 }
 
-export const startDocker = async (cassandraPort: number, elasticSearchPort: number, redisPort: number) => {
+export const startDocker = async (cassandraPort: number, elasticSearchPort: number, redisPort: number, ganachePort: number) => {
     console.log('Started pulling elassandra:6.8.4.0');
     await pull_elassandra_image();
     console.log('Pulled elassandra:6.8.4.0');
@@ -161,6 +227,13 @@ export const startDocker = async (cassandraPort: number, elasticSearchPort: numb
     console.log('Starting redis:5.0.7 container');
     await run_redis(redisPort);
     console.log('Started redis:5.0.7 container');
+    
+    console.log('Started pulling trufflesuite/ganache-cli:v6.7.0');
+    await pull_ganache_image();
+    console.log('Pulled trufflesuite/ganache-cli:v6.7.0');
+    console.log('Starting trufflesuite/ganache-cli:v6.7.0 container');
+    await run_ganache(ganachePort);
+    console.log('Started trufflesuite/ganache-cli:v6.7.0 container');
 };
 
 export const stopDocker = async () => {
@@ -171,6 +244,10 @@ export const stopDocker = async () => {
     console.log('Stoping redis:5.0.7 container');
     await kill_container('redis-e2e-instance');
     console.log('Stopped redis:5.0.7 container');
+    
+    console.log('Stoping trufflesuite/ganache-cli:v6.7.0 container');
+    await kill_container('ganache-e2e-instance');
+    console.log('Stopped trufflesuite/ganache-cli:v6.7.0 container');
 };
 
 export const runMigrations = async (cassandraPort: number, elasticSearchPort: number) => {

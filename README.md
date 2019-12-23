@@ -30,6 +30,9 @@ npm run setup
 # install dependencies
 npm install
 
+# install lerna modules dependencies
+npm run bootstrap
+
 ```
 
 ## Gulp
