@@ -7,6 +7,7 @@ import { Test, TestingModule }          from '@nestjs/testing';
 import { ServerService }                from './Server.service';
 import { APIInfos }                     from './Server.types';
 import { ConfigService }                from '@lib/common/config/Config.service';
+import { WinstonLoggerService }         from '@lib/common/logger/WinstonLogger.service';
 
 use(chaiAsPromised);
 
@@ -21,8 +22,13 @@ describe('ServerService', () => {
             useValue: instance(configServiceMock),
         };
 
+        const WinstonLoggerServiceProvider = {
+            provide: WinstonLoggerService,
+            useValue: new WinstonLoggerService('server')
+        };
+
         const app: TestingModule = await Test.createTestingModule({
-            providers: [ConfigServiceProvider, ServerService],
+            providers: [ConfigServiceProvider, ServerService, WinstonLoggerServiceProvider],
         }).compile();
 
         const appService: ServerService = app.get<ServerService>(ServerService);

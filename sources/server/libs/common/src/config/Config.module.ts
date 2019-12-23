@@ -4,7 +4,7 @@ import * as Joi                  from '@hapi/joi';
 
 @Module({})
 export class ConfigModule {
-    static forRoot(joi: Joi.ObjectSchema): DynamicModule {
+    static register(joi: Joi.ObjectSchema): DynamicModule {
         return {
             module: ConfigModule,
             providers: [

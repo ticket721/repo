@@ -38,7 +38,7 @@ describe('Authentication Service', function() {
             useValue: instance(configServiceMock),
         };
 
-        when(configServiceMock.get('AUTH_SIGNATURE_TIMEOUT')).thenReturn('30000');
+        when(configServiceMock.get('AUTH_SIGNATURE_TIMEOUT')).thenReturn('30');
 
         const module: TestingModule = await Test.createTestingModule({
             providers: [

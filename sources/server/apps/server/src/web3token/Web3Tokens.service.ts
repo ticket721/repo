@@ -8,25 +8,32 @@ import { Web3TokenEntity }                  from './entities/Web3Token.entity';
 import { ServiceResponse }                  from '@app/server/utils/ServiceResponse';
 import { RegisterWeb3TokenServiceInputDto } from '@app/server/web3token/dto/RegisterWeb3TokenServiceInput.dto';
 import { Web3TokenDto }                     from '@app/server/web3token/dto/Web3Token.dto';
+import { Interval, NestSchedule }           from 'nest-schedule';
+import { ConfigService }                    from '@lib/common/config/Config.service';
+import { ESSearchReturn }                   from '@app/server/utils/ESSearchReturn';
+import { toAcceptedAddressFormat }          from '@ticket721sources/global';
 
 /**
  * Utilities and services around the user entity
  */
 @Injectable()
-export class Web3TokensService {
+export class Web3TokensService extends NestSchedule {
 
     /**
      * Dependency Injection
      *
      * @param web3TokensRepository
      * @param web3TokensEntity
+     * @param configService
      */
     constructor(
         @InjectRepository(Web3TokensRepository)
         private readonly web3TokensRepository: Web3TokensRepository,
         @InjectModel(Web3TokenEntity)
         private readonly web3TokensEntity: BaseModel<Web3TokenEntity>,
+        private readonly configService: ConfigService,
     ) {
+        super();
     }
 
     /**
@@ -41,6 +48,9 @@ export class Web3TokensService {
                     timestamp: (types.Long as any).fromNumber(token.timestamp),
                     address: token.address,
                 }),
+                {
+                    ttl: parseInt(this.configService.get('AUTH_SIGNATURE_TIMEOUT'))
+                }
             ).toPromise();
 
             return {

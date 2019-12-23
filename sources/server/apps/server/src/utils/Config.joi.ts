@@ -22,7 +22,7 @@ export const Config: Joi.ObjectSchema = Joi.object({
     BULL_REDIS_PORT: Joi.number().required(),
     BULL_BOARD: Joi.bool().default(false),
 
-    AUTH_SIGNATURE_TIMEOUT: Joi.number().default(30000)
+    AUTH_SIGNATURE_TIMEOUT: Joi.number().default(30)
 
 });
 
