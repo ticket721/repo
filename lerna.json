@@ -3,8 +3,6 @@
         "modules/e712",
         "modules/erc2280",
         "modules/ethvtx",
-        "modules/ethvtx/react" ,
-        "modules/ethvtx/examples",
         "contracts/contracts_modules/daiplus",
         "contracts/contracts_modules/metamarketplace",
         "contracts/contracts_modules/t721controller",

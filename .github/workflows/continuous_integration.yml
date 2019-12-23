@@ -14,31 +14,48 @@ jobs:
               with:
                   node-version: 12.x
 
-            - name: Install required tools globally
+            - name: Setup SSH Agent
+              uses: webfactory/ssh-agent@v0.1.1
+              with:
+                  ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+            - name: Install required tools globally (npm install -g lerna lcov-result-merger)
               run: npm install -g lerna@3.16.4 lcov-result-merger@3.1.0
 
-            - name: Install @ticket721sources dependencies
+            - name: Setup submodules (npm run setup:submodules:clone)
+              run: npm run setup:submodules:clone
+
+            - name: Install main dependencies (npm install)
+              run: npm install
+
+            - name: Install contracts dependencies (npm run install:ticket721)
+              run: npm run install:ticket721
+
+            - name: Install sources dependencies (npm run install:ticket721sources)
               run: npm run install:ticket721sources
 
-            - name: Build @ticket721sources/global
+            - name: Setup portals (npm run setup:portals)
+              run: npm run setup:portals
+
+            - name: Build @ticket721sources/global (npm run build in sources/global)
               run: cd sources/global && npm run build
 
-            - name: Build @ticket721sources/sdk
+            - name: Build @ticket721sources/sdk (npm run build in sources/sdk)
               run: cd sources/sdk && npm run build
 
-            - name: Run @ticket721sources/global unitary tests
+            - name: Run @ticket721sources/global unitary tests (npm run test:cov in sources/global)
               run: cd sources/global && npm run test:cov
 
-            - name: Run @ticket721sources/server @app/server unitary tests
+            - name: Run @ticket721sources/server @app/server unitary tests (npm run test:server:cov in sources/server)
               run: cd sources/server && npm run test:server:cov
 
-            - name: Run @ticket721sources/server @lib/common unitary tests
+            - name: Run @ticket721sources/server @lib/common unitary tests (npm run test:common:cov in sources/server)
               run: cd sources/server && npm run test:common:cov
 
-            - name: Run @ticket721sources/server @app/server e2e tests
+            - name: Run @ticket721sources/server @app/server e2e tests (npm run test:server:e2e:cov in sources/server)
               run: sudo sysctl -w vm.max_map_count=262144 && cd sources/server && npm run test:server:e2e:cov
 
-            - name: Merge reports
+            - name: Merge reports (npm run merge_coverage_reports)
               run: npm run merge_coverage_reports
 
             - name: Coveralls

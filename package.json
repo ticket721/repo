@@ -7,14 +7,19 @@
         "setup:submodules:checkout_contracts": "cd contracts/contracts_modules/daiplus && git checkout develop && cd ../metamarketplace && git checkout develop && cd ../refract && git checkout develop && cd ../t721controller && git checkout develop && cd ../ticketforge && git checkout develop",
         "setup:submodules": "npm run setup:submodules:clone && npm run setup:submodules:checkout_modules && npm run setup:submodules:checkout_contracts",
         "setup:portals": "portalize init ./portalize.config.json",
+
         "setup": "npm run setup:submodules && npm run setup:portals",
         "clean:portals": "portalize dismantle ./portalize.config.json",
         "clean": "npm run clean:portals",
+
         "doc:network": "rm -rf network/doc && typedoc --tsconfig typedoc.tsconfig.json --excludeNotExported --readme none --theme markdown --out network/doc --mode file --name '@ticket721_repo/network_engine' network/index.ts",
         "doc:contracts": "rm -rf contracts/doc && typedoc --tsconfig typedoc.tsconfig.json --excludeNotExported --readme none --theme markdown --out contracts/doc --mode file --name '@ticket721_repo/contracts_engine' contracts/index.ts",
         "doc": "npm run doc:network && npm run doc:contracts",
-        "postinstall": "lerna bootstrap",
+
         "install:ticket721sources": "lerna bootstrap --scope '@ticket721sources/*'",
+        "install:ticket721": "lerna bootstrap --scope '@ticket721/*'",
+        "install:full": "lerna bootstrap",
+
         "merge_coverage_reports": "rm -rf coverage && mkdir coverage && lcov-result-merger './sources/**/coverage*/lcov.info' './coverage/lcov.info'"
     },
     "dependencies": {
