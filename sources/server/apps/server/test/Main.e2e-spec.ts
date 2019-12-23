@@ -16,6 +16,7 @@ use(chaiAsPromised);
 const cassandraPort = 32702;
 const elasticSearchPort = 32610;
 const redisPort = 32412;
+const ganachePort = 38545;
 
 describe('AppController (e2e)', () => {
 
@@ -28,7 +29,7 @@ describe('AppController (e2e)', () => {
         this.timeout(60000 * 30); // 30 mins to pull & run elassandra
 
         if (process.env.NO_DEPLOY !== 'true') {
-            await startDocker(cassandraPort, elasticSearchPort, redisPort);
+            await startDocker(cassandraPort, elasticSearchPort, redisPort, ganachePort);
         }
         await runMigrations(cassandraPort, elasticSearchPort);
 

@@ -1,20 +1,23 @@
 import { Module }                        from '@nestjs/common';
 import { ExpressCassandraModule }        from '@iaminfinity/express-cassandra';
-import { AuthenticationModule }         from './authentication/Authentication.module';
+import { AuthenticationModule }          from './authentication/Authentication.module';
 import { ServerController }              from './Server.controller';
 import { ServerService }                 from './Server.service';
 import { ScheduleModule }                from 'nest-schedule';
 import { UsersRepository }               from '@lib/common/users/Users.repository';
 import { UserEntity }                    from '@lib/common/users/entities/User.entity';
 import { UsersModule }                   from '@lib/common/users/Users.module';
-import { ConfigModule }                  from '@lib/common/config/Config.module';
-import { Config }                        from './utils/Config.joi';
-import { ExpressCassandraConfigModule }  from '@app/server/express-cassandra/ExpressCassandraConfig.module';
-import { ExpressCassandraConfigService } from '@app/server/express-cassandra/ExpressCassandraConfig.service';
-import { Web3TokenEntity }               from '@app/server/web3token/entities/Web3Token.entity';
-import { Web3TokensRepository }          from '@app/server/web3token/Web3Tokens.repository';
-import { Web3TokensModule }              from '@app/server/web3token/Web3Tokens.module';
-import { WinstonLoggerService }          from '@lib/common/logger/WinstonLogger.service';
+import { ConfigModule }                   from '@lib/common/config/Config.module';
+import { Config }                         from './utils/Config.joi';
+import { ExpressCassandraConfigModule }   from '@app/server/express-cassandra/ExpressCassandraConfig.module';
+import { ExpressCassandraConfigService }  from '@app/server/express-cassandra/ExpressCassandraConfig.service';
+import { Web3TokenEntity }                from '@app/server/web3token/entities/Web3Token.entity';
+import { Web3TokensRepository }           from '@app/server/web3token/Web3Tokens.repository';
+import { Web3TokensModule }               from '@app/server/web3token/Web3Tokens.module';
+import { WinstonLoggerService }           from '@lib/common/logger/WinstonLogger.service';
+import * as Web3                          from 'web3';
+import { ConfigService }                 from '@lib/common/config/Config.service';
+import { Web3Module, Web3ModuleOptions } from '@lib/common/web3/Web3.module';
 
 @Module({
     imports: [
@@ -29,6 +32,16 @@ import { WinstonLoggerService }          from '@lib/common/logger/WinstonLogger.
         UsersModule,
         Web3TokensModule,
         AuthenticationModule,
+        Web3Module.registerAsync({
+            imports: [ConfigModule.register(Config)],
+            useFactory: (configService: ConfigService): Web3ModuleOptions => ({
+                Web3,
+                host: configService.get('ETHEREUM_NODE_HOST'),
+                port: configService.get('ETHEREUM_NODE_PORT'),
+                protocol: configService.get('ETHEREUM_NODE_PROTOCOL')
+            }),
+            inject: [ConfigService]
+        })
     ],
     controllers: [
         ServerController,
@@ -37,8 +50,8 @@ import { WinstonLoggerService }          from '@lib/common/logger/WinstonLogger.
         ServerService,
         {
             provide: WinstonLoggerService,
-            useValue: new WinstonLoggerService('server')
-        }
+            useValue: new WinstonLoggerService('server'),
+        },
     ],
 })
 export class ServerModule {
