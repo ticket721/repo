@@ -36,7 +36,7 @@
         "@ticket721sources/sdk": "file:../sdk",
         "bcrypt": "3.0.7",
         "bull": "3.12.1",
-        "bull-board": "^0.6.0",
+        "bull-board": "0.6.0",
         "chai": "4.2.0",
         "chai-as-promised": "7.1.1",
         "class-transformer": "0.2.3",
