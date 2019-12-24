@@ -1,0 +1,93 @@
+{
+    "name": "remote_ganache",
+
+    "network": {
+        "type": "remote",
+        "host": "127.0.0.1",
+        "port": 8545,
+        "protocol": "http",
+        "network_id": 2702,
+
+        "config": {
+
+        }
+
+    },
+
+    "contracts": {
+        "migrations": [
+            {
+                "name": "initial_deployment",
+                "serie": [
+                    {
+                        "name": "daiplus",
+                        "test": false,
+                        "range": [1, 2],
+                        "args": {
+                            "ERC20": {
+                                "name": "DaiPlus Local Meta-Stablecoin v1.0",
+                                "symbol": "Dai+",
+                                "decimals": 18
+                            }
+                        }
+                    },
+                    {
+                        "name": "ticketforge",
+                        "test": false,
+                        "range": [1, 2],
+                        "args": {
+                            "ERC721": {
+                                "name": "Ticket Forge",
+                                "symbol": "TKT"
+                            }
+                        }
+                    },
+                    {
+                        "name": "metamarketplace",
+                        "test": false,
+                        "range": [1, 2]
+                    },
+                    {
+                        "name": "t721controller",
+                        "test": false,
+                        "range": [1, 2]
+                    },
+                    {
+                        "name": "refract",
+                        "test": false,
+                        "range": [1, 2]
+                    }
+                ]
+            }
+        ],
+        "modules": [
+            {
+                "name": "daiplus",
+                "upgradeable": false
+            },
+            {
+                "name": "ticketforge",
+                "upgradeable": false
+            },
+            {
+                "name": "metamarketplace",
+                "upgradeable": false
+            },
+            {
+                "name": "t721controller",
+                "upgradeable": false
+            },
+            {
+                "name": "refract",
+                "upgradeable": false
+            }
+        ],
+        "provider": {
+            "type": "hdwallet",
+            "mnemonic": "cross uniform panic climb universe awful surprise list dutch ability label cat",
+            "account_index": 0,
+            "account_number": 10
+        }
+    }
+
+}
