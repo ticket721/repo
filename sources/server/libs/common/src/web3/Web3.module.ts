@@ -1,15 +1,8 @@
-import { DynamicModule, Module, Type } from '@nestjs/common';
-import { Web3Service }                 from '@lib/common/web3/Web3.service';
-
-export interface Web3ModuleOptions {
-    Web3: any;
-    host: string;
-    port: string;
-    protocol: string;
-}
+import { DynamicModule, Module }           from '@nestjs/common';
+import { Web3Service, Web3ServiceOptions } from '@lib/common/web3/Web3.service';
 
 export interface Web3ModuleAsyncOptions extends Pick<DynamicModule, 'imports'> {
-    useFactory: (...args: any[]) => Promise<Web3ModuleOptions> | Web3ModuleOptions;
+    useFactory: (...args: any[]) => Promise<Web3ServiceOptions> | Web3ServiceOptions;
     inject?: any[];
 }
 
@@ -26,9 +19,9 @@ export class Web3Module {
                 {
                     provide: 'WEB3_MODULE_OPTIONS',
                     useFactory: options.useFactory,
-                    inject: options.inject
+                    inject: options.inject,
                 },
-                Web3Service
+                Web3Service,
             ],
             exports: [
                 Web3Service,

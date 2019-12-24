@@ -63,7 +63,6 @@ export class ConfigService {
     private numRegExp = /^[0123456789]+$/;
 
     getRole(hostname?: string): number {
-        /* istanbul ignore else */
         if (this.get('NODE_ENV') === 'development') {
             return 0;
         } else {

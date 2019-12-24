@@ -16,7 +16,7 @@ export class ServerController {
      *
      * @param appService
      */
-    constructor(private readonly appService: ServerService) {}
+    constructor /* istanbul ignore next */ (private readonly appService: ServerService) {}
 
     /**
      * [GET /] : Recover api infos

@@ -15,13 +15,13 @@
         "doc:serve": "compodoc -p compodoc-tsconfig.json --theme stripe --unitTestCoverage ./coverage/coverage-summary.json -s",
         "lint": "tslint -p tsconfig.json -c tslint.json",
         "test:server": "ts-mocha -p apps/server/tsconfig.app.json --paths --timeout 10000 'apps/server/src/**/*.spec.ts'",
-        "test:server:cov": "nyc --report-dir=reports/server/coverage --reporter=lcov --reporter=json-summary npm run test:server",
+        "test:server:cov": "nyc --report-dir=coverage-server npm run test:server",
         "test:server:e2e": "env NODE_ENV=test-e2e ts-mocha -p apps/server/tsconfig.app.json --paths --timeout 30000 'apps/server/test/**/*.e2e-spec.ts'",
-        "test:server:e2e:cov": "nyc --report-dir=reports/server/coverage-e2e npm run test:server:e2e",
+        "test:server:e2e:cov": "nyc --report-dir=coverage-server-e2e npm run test:server:e2e",
         "test:common": "ts-mocha -p libs/common/tsconfig.lib.json --paths --timeout 10000 'libs/common/src/**/*.spec.ts'",
-        "test:common:cov": "nyc --report-dir=reports/common/coverage --reporter=lcov --reporter=json-summary npm run test:common",
+        "test:common:cov": "nyc --report-dir=coverage-common npm run test:common",
         "test:common:e2e": "env NODE_ENV=test-e2e ts-mocha -p libs/common/tsconfig.lib.json --paths --timeout 30000 'libs/common/test/**/*.e2e-spec.ts'",
-        "test:common:e2e:cov": "nyc --report-dir=reports/common/coverage-e2e npm run test:common:e2e"
+        "test:common:e2e:cov": "nyc --report-dir=coverage-common-e2e npm run test:common:e2e"
     },
     "dependencies": {
         "@iaminfinity/express-cassandra": "6.0.0",
@@ -58,7 +58,7 @@
     },
     "devDependencies": {
         "@compodoc/compodoc": "^1.1.11",
-        "@istanbuljs/nyc-config-typescript": "^0.1.3",
+        "@istanbuljs/nyc-config-typescript": "0.1.3",
         "@nestjs/cli": "^6.9.0",
         "@nestjs/schematics": "^6.7.0",
         "@nestjs/testing": "^6.7.1",
@@ -87,7 +87,7 @@
     },
     "nyc": {
         "extends": "@istanbuljs/nyc-config-typescript",
-        "all": false,
+        "all": true,
         "reporter": [
             "text",
             "lcov"
@@ -97,14 +97,14 @@
         ],
         "exclude": [
             "node_modules",
-            "apps/server/src/**/*.spec.ts",
+            "**/*.spec.ts",
+            "**/*.module.ts",
+            "dist",
+            "test",
             "apps/server/test",
             "apps/server/src/main.ts",
             "apps/server/src/utils/HttpException.filter.ts",
             "apps/server/src/authentication/Jwt.strategy.ts",
-            "**/*.module.ts",
-            "dist",
-            "test",
             "libs/common/src/logger/*"
         ]
     }

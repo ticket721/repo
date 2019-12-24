@@ -34,27 +34,10 @@ describe('Web3 Service', function () {
             port: '8545'
         });
 
-        const instance = web3Service.get();
-        expect(instance).to.not.equal(undefined);
-
-        const net = await web3Service.net();
-        expect(net).to.equal(1);
-
-    });
-
-    it('build service (pre-fetch net id)', async function () {
-
-        const web3Service = new Web3Service({
-            Web3: Web3Mock,
-            host: '127.0.0.1',
-            protocol: 'http',
-            port: '8545'
-        });
-
-        const instance = web3Service.get();
-        expect(instance).to.not.equal(undefined);
-
         await web3Service.onModuleInit();
+
+        const instance = web3Service.get();
+        expect(instance).to.not.equal(undefined);
 
         const net = await web3Service.net();
         expect(net).to.equal(1);
@@ -70,6 +53,8 @@ describe('Web3 Service', function () {
             port: '8545'
         });
 
+        await web3Service.onModuleInit();
+
         const instance = web3Service.get();
         expect(instance).to.not.equal(undefined);
 
@@ -80,15 +65,14 @@ describe('Web3 Service', function () {
 
     it('build invalid service', async function () {
 
-        expect((): void => {
-            new Web3Service({
-                Web3: Web3Mock,
-                host: '127.0.0.1',
-                protocol: 'ptth',
-                port: '8545'
-            })
-        }).to.throw('Unknown protocol ptth to build web3 instance')
+        const web3 = new Web3Service({
+            Web3: Web3Mock,
+            host: '127.0.0.1',
+            protocol: 'ptth',
+            port: '8545'
+        });
 
+        await expect(web3.onModuleInit()).to.eventually.be.rejectedWith('Unknown protocol ptth to build web3 instance')
 
     });
 
