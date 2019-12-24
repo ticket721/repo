@@ -3,10 +3,7 @@
   <component name="JavaScriptLibraryMappings">
     <excludedPredefinedLibrary name="repo/contracts/contracts_modules/metamarketplace/node_modules" />
     <excludedPredefinedLibrary name="repo/contracts/contracts_modules/refract/node_modules" />
-    <excludedPredefinedLibrary name="repo/contracts/contracts_modules/t721controller/node_modules" />
     <excludedPredefinedLibrary name="repo/contracts/contracts_modules/ticketforge/node_modules" />
-    <excludedPredefinedLibrary name="repo/modules/e712/node_modules" />
-    <excludedPredefinedLibrary name="repo/modules/erc2280/node_modules" />
     <excludedPredefinedLibrary name="repo/modules/ethvtx/examples/node_modules" />
     <excludedPredefinedLibrary name="repo/modules/ethvtx/node_modules" />
     <excludedPredefinedLibrary name="repo/modules/ethvtx/react/node_modules" />
