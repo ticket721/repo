@@ -40,8 +40,8 @@
         ],
         "exclude": [
             "**/*.spec.ts",
-            "log/*.ts",
-            "index.ts"
+            "sources/log/*.ts",
+            "sources/index.ts"
         ]
     },
     "jest": {
