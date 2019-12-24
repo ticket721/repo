@@ -1,7 +1,6 @@
 import * as dotenv  from 'dotenv';
 import * as Joi     from '@hapi/joi';
 import * as fs      from 'fs';
-import { hostname } from 'os';
 
 export type EnvConfig = Record<string, string>;
 
@@ -63,26 +62,30 @@ export class ConfigService {
 
     private numRegExp = /^[0123456789]+$/;
 
-    getRole(): number {
+    getRole(hostname?: string): number {
         /* istanbul ignore else */
         if (this.get('NODE_ENV') === 'development') {
             return 0;
         } else {
+
+            if (!hostname) {
+                throw new Error(`Hostname is required to get current role`);
+            }
+
             if (!this.get('HOSTNAME_PREFIX')) {
-                throw new Error(`Config validation error: in NODE_ENV=${this.get('NODE_ENV')}, HOSTNAME_PREFIX are required env vars`)
+                throw new Error(`Config validation error: in NODE_ENV=${this.get('NODE_ENV')}, HOSTNAME_PREFIX is required`)
             }
 
             const prefix: string = this.get('HOSTNAME_PREFIX');
-            const hn: string = hostname();
-            if (hn.indexOf(prefix) !== 0) {
-                throw new Error(`Invalid HOSTNAME_PREFIX value, cannot be found in real hostname: prefix ${this.get('HOSTNAME_PREFIX')} hostname ${hn}`);
+            if (hostname.indexOf(prefix) !== 0) {
+                throw new Error(`Invalid HOSTNAME_PREFIX value, cannot be found in real hostname: prefix ${this.get('HOSTNAME_PREFIX')} hostname ${hostname}`);
             }
 
-            if (!this.numRegExp.test(hn.slice(prefix.length + 1))) {
-                throw new Error(`Invalid hostname configuration: got hostname ${hn}, while expecting something like ${prefix}-ID`);
+            if (!this.numRegExp.test(hostname.slice(prefix.length + 1))) {
+                throw new Error(`Invalid hostname configuration: got hostname ${hostname}, while expecting something like ${prefix}-ID`);
             }
 
-            return parseInt(hn.slice(prefix.length + 1));
+            return parseInt(hostname.slice(prefix.length + 1));
 
         }
     }

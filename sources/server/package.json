@@ -102,6 +102,7 @@
             "apps/server/src/main.ts",
             "apps/server/src/utils/HttpException.filter.ts",
             "apps/server/src/authentication/Jwt.strategy.ts",
+            "**/*.module.ts",
             "dist",
             "test",
             "libs/common/src/logger/*"
