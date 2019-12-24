@@ -87,7 +87,7 @@
     },
     "nyc": {
         "extends": "@istanbuljs/nyc-config-typescript",
-        "all": true,
+        "all": false,
         "reporter": [
             "text",
             "lcov"
