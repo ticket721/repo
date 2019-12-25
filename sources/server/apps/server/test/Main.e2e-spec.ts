@@ -23,6 +23,8 @@ const context: {
     sdk: null
 };
 
+const getCtx = (): {app: INestApplication; sdk: T721SDK;} => context;
+
 describe('AppController (e2e)', () => {
 
     let app: INestApplication;
@@ -74,14 +76,14 @@ describe('AppController (e2e)', () => {
 
     describe('AppController', () => {
 
-        test('/ (GET)', getApiInfo.bind(null, context));
+        test('/ (GET)', getApiInfo.bind(null, getCtx));
 
     });
 
     describe('AuthenticationController', () => {
 
-        test('/authentication/local/register & /authentication/local/login (POST)', register.bind(null, context));
-        test('/authentication/web3/register & /authentication/web3/login (POST)', web3register.bind(null, context));
+        test('/authentication/local/register & /authentication/local/login (POST)', register.bind(null, getCtx));
+        test('/authentication/web3/register & /authentication/web3/login (POST)', web3register.bind(null, getCtx));
 
     });
 

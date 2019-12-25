@@ -2,10 +2,11 @@ import { T721SDK, AxiosResponse }                                               
 import { Wallet, createWallet, toAcceptedAddressFormat, Web3LoginSigner, Web3RegisterSigner } from '@ticket721sources/global';
 import { LocalRegisterResponseDto }                                                           from '@app/server/authentication/dto/LocalRegisterResponse.dto';
 import { LocalLoginResponseDto }                                                              from '@app/server/authentication/dto/LocalLoginResponse.dto';
+import { INestApplication }                                                                   from '@nestjs/common';
 
-export async function register(context: any): Promise<void> {
+export async function register(getCtx: () => {app: INestApplication; sdk: T721SDK;}): Promise<void> {
     jest.setTimeout(60000);
-    const { sdk }: { sdk: T721SDK } = context;
+    const { sdk }: { sdk: T721SDK } = getCtx();
 
     const wallet: Wallet = await createWallet();
     const password = 'xqd65g87sh76_98d-';
@@ -73,9 +74,9 @@ export async function register(context: any): Promise<void> {
 
 }
 
-export async function web3register(context: any): Promise<void> {
+export async function web3register(getCtx: () => {app: INestApplication; sdk: T721SDK;}): Promise<void> {
     jest.setTimeout(60000);
-    const { sdk }: { sdk: T721SDK } = context;
+    const { sdk }: { sdk: T721SDK } = getCtx();
 
     const email = 'test@test.com';
     const username = 'mortimr';

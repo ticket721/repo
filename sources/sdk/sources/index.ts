@@ -4,7 +4,7 @@ export { AxiosResponse } from 'axios';
 
 // APP
 import { getAPIInfos } from './app/app';
-import * as request    from 'supertest';
+import request         from 'supertest';
 
 // AUTHENTICATION
 import { localLogin, localRegister, web3Register, web3RegisterPayload, web3Login, web3LoginPayload } from './app/api/authentication';
