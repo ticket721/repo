@@ -21,7 +21,7 @@ export class ServerService implements OnModuleInit {
      * @param configService
      * @param loggerService
      */
-    constructor(
+    constructor /* instanbul ignore next */ (
         private readonly configService: ConfigService,
         private readonly loggerService: WinstonLoggerService
     ) {}

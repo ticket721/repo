@@ -19,7 +19,7 @@ export class Web3Strategy extends PassportStrategy(Strategy, 'web3') {
      * @param authenticationService
      * @param web3TokensService
      */
-    constructor(
+    constructor /* instanbul ignore next */ (
         private readonly authenticationService: AuthenticationService,
         private readonly web3TokensService: Web3TokensService
     ) {

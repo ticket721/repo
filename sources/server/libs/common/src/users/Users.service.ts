@@ -22,7 +22,7 @@ export class UsersService {
      * @param usersRepository
      * @param userEntity
      */
-    constructor(
+    constructor /* instanbul ignore next */ (
         @InjectRepository(UsersRepository)
         private readonly usersRepository: UsersRepository,
         @InjectModel(UserEntity)

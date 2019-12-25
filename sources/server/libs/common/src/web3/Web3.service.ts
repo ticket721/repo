@@ -27,7 +27,7 @@ export class Web3Service implements OnModuleInit {
      *
      * @param options
      */
-     constructor (@Inject('WEB3_MODULE_OPTIONS') private readonly options: Web3ServiceOptions) {}
+     constructor /*istanbul ignore next */ (@Inject('WEB3_MODULE_OPTIONS') private readonly options: Web3ServiceOptions) {}
 
     /**
      * Recover the Web3 instance

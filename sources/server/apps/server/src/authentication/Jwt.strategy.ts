@@ -16,7 +16,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
      * @param configService
      * @param usersService
      */
-    constructor(private readonly configService: ConfigService, private readonly usersService: UsersService) {
+    constructor /* instanbul ignore next */ (private readonly configService: ConfigService, private readonly usersService: UsersService) {
         super({
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
             ignoreExpiration: false,

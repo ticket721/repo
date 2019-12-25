@@ -13,7 +13,7 @@ export class ExpressCassandraConfigService {
      *
      * @param config
      */
-    constructor(private readonly config: ConfigService) {
+    constructor /* instanbul ignore next */ (private readonly config: ConfigService) {
     }
 
     /**

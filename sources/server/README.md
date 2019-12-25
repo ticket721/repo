@@ -32,6 +32,17 @@ npm run test:server:e2e
 npm run test:server:e2e:cov
 ```
 
+## Writing tests
+
+### What do we test
+
+Any Service, Controller, Utility, Function that is developed by us should be tested.
+
+### What can be ignored
+
+Implementations usage => loggers, external dependencies, libraries.
+They should be removed from coverage.
+
 ## Documentation
 
 ### API

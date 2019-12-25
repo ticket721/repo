@@ -25,7 +25,7 @@ export class AuthenticationService {
      * @param usersService
      * @param configService
      */
-    constructor(
+    constructor /* instanbul ignore next */ (
         private readonly usersService: UsersService,
         private readonly configService: ConfigService
     ) {

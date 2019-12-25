@@ -16,7 +16,7 @@ export class LocalStrategy extends PassportStrategy(Strategy, 'local') {
      *
      * @param authenticationService
      */
-    constructor(private readonly authenticationService: AuthenticationService) {
+    constructor /* instanbul ignore next */ (private readonly authenticationService: AuthenticationService) {
         super({
             usernameField: 'email',
         });

@@ -37,7 +37,7 @@ export class AuthenticationController {
      * @param authenticationService
      * @param jwtService
      */
-    constructor(
+    constructor /* instanbul ignore next */ (
         private readonly authenticationService: AuthenticationService,
         private readonly jwtService: JwtService
     ) {
@@ -53,6 +53,7 @@ export class AuthenticationController {
     @ApiResponse({ status: StatusCodes.Unauthorized, description: StatusNames[StatusCodes.Unauthorized] })
     @ApiResponse({ status: StatusCodes.InternalServerError, description: StatusNames[StatusCodes.InternalServerError] })
     @UseFilters(new HttpExceptionFilter())
+    /* istanbul ignore next */
     async web3Login(@Request() req): Promise<Web3LoginResponseDto> {
         return {
             user: req.user,
@@ -73,6 +74,7 @@ export class AuthenticationController {
     @ApiResponse({ status: StatusCodes.Unauthorized, description: StatusNames[StatusCodes.Unauthorized] })
     @ApiResponse({ status: StatusCodes.InternalServerError, description: StatusNames[StatusCodes.InternalServerError] })
     @UseFilters(new HttpExceptionFilter())
+    /* istanbul ignore next */
     async localLogin(@Request() req): Promise<LocalLoginResponseDto> {
         return {
             user: req.user,

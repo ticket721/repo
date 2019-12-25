@@ -138,6 +138,34 @@ describe('Authentication Service', function() {
 
         });
 
+        test('unexpected error', async function() {
+
+            const authenticationService: AuthenticationService = context.authenticationService;
+            const usersServiceMock: UsersService = context.usersServiceMock;
+
+            const wallet: Wallet = await createWallet();
+            const address = toAcceptedAddressFormat(wallet.address);
+
+            const web3LoginSigner: Web3LoginSigner = new Web3LoginSigner(1);
+            const loginPayload = web3LoginSigner.generateAuthenticationProofPayload();
+            const loginSignature = await web3LoginSigner.sign(wallet.privateKey, loginPayload[1]);
+
+            const errorServiceResponse: Promise<ServiceResponse<UserDto>> = Promise.resolve({
+                response: null,
+                error: 'unexpected_error',
+            });
+
+            when(usersServiceMock.findByAddress(address)).thenReturn(errorServiceResponse);
+
+            const res = await authenticationService.validateWeb3User(loginPayload[0].toString(), loginSignature.hex);
+
+            expect(res.response).toEqual(null);
+            expect(res.error).toEqual('unexpected_error');
+
+            verify(usersServiceMock.findByAddress(address)).called();
+
+        });
+
         test('signature of the past', async function() {
 
             const authenticationService: AuthenticationService = context.authenticationService;
@@ -395,6 +423,58 @@ describe('Authentication Service', function() {
 
         });
 
+        test('signature in the future', async function() {
+
+            const authenticationService: AuthenticationService = context.authenticationService;
+            const usersServiceMock: UsersService = context.usersServiceMock;
+            const web3TokensServiceMock: Web3TokensService = this.web3TokensServiceMock;
+
+            const email = 'test@test.com';
+            const username = 'salut';
+            const wallet: Wallet = await createWallet();
+            const other_wallet: Wallet = await createWallet();
+            const address = toAcceptedAddressFormat(other_wallet.address);
+
+            const future = Date.now() + 1000000;
+            const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(1);
+            const registerPayload = web3RegisterSigner.generatePayload({
+                email, username, timestamp: future
+            }, 'Web3Register');
+            const registerSignature = await web3RegisterSigner.sign(wallet.privateKey, registerPayload);
+
+            const serviceResponse: ServiceResponse<UserDto> = {
+                response: {
+                    email,
+                    username,
+                    wallet: null,
+                    address,
+                    type: 'web3',
+                    password: null,
+                    id: '0',
+                    role: 'authenticated',
+                },
+                error: null,
+            };
+
+            const emptyServiceResponse: Promise<ServiceResponse<UserDto>> = Promise.resolve({
+                response: null,
+                error: null,
+            });
+
+            when(usersServiceMock.findByAddress(address)).thenReturn(emptyServiceResponse);
+            when(usersServiceMock.findByEmail(email)).thenReturn(emptyServiceResponse);
+            when(usersServiceMock.findByUsername(username)).thenReturn(emptyServiceResponse);
+
+            const res = await authenticationService.createWeb3User(email, username, future.toString(), address, registerSignature.hex);
+
+            expect(res.response).toEqual(null);
+            expect(res.error).toEqual('signature_is_in_the_future');
+
+            verify(usersServiceMock.findByAddress(address)).called();
+            verify(usersServiceMock.findByEmail(email)).called();
+            verify(usersServiceMock.findByUsername(username)).called();
+
+        });
         test('invalid signature', async function() {
 
             const authenticationService: AuthenticationService = context.authenticationService;
@@ -923,6 +1003,29 @@ describe('Authentication Service', function() {
 
             expect(res.response).toEqual(null);
             expect(res.error).toEqual('unexpected_error');
+            verify(usersServiceMock.findByEmail(email)).called();
+
+        });
+
+        test('invalid credentials', async function() {
+
+            const authenticationService: AuthenticationService = context.authenticationService;
+            const usersServiceMock: UsersService = context.usersServiceMock;
+
+            const email = 'test@test.com';
+            const hashedp = toAcceptedKeccak256Format(keccak256('salut'));
+
+            const serviceResponse: ServiceResponse<UserDto> = {
+                response: null,
+                error: null,
+            };
+
+            when(usersServiceMock.findByEmail(email)).thenReturn(Promise.resolve(serviceResponse));
+
+            const res = await authenticationService.validateUser(email, hashedp);
+
+            expect(res.response).toEqual(null);
+            expect(res.error).toEqual('invalid_credentials');
             verify(usersServiceMock.findByEmail(email)).called();
 
         });
