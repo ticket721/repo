@@ -19,9 +19,9 @@
         "zxcvbn": "4.4.2"
     },
     "devDependencies": {
-        "@types/jest": "^24.0.24",
-        "jest": "^24.9.0",
-        "ts-jest": "^24.2.0",
+        "@types/jest": "24.0.24",
+        "jest": "24.9.0",
+        "ts-jest": "24.2.0",
         "typescript": "3.7.4",
         "watch": "^1.0.2"
     }
