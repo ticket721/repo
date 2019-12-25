@@ -16,7 +16,8 @@
         "install:ticket721sources": "lerna bootstrap --scope '@ticket721sources/*' && lerna exec 'npm install' --scope '@ticket721sources/*'",
         "install:ticket721contracts": "lerna bootstrap --scope '@ticket721contracts/*'",
         "bootstrap": "lerna bootstrap && lerna exec 'npm install' --scope '@ticket721sources/*'",
-        "merge_coverage_reports": "rm -rf coverage && mkdir coverage && lcov-result-merger './sources/**/coverage*/lcov.info' './coverage/lcov.info'"
+        "merge_coverage_reports": "rm -rf coverage && mkdir coverage && lcov-result-merger './sources/**/coverage*/lcov.info' './coverage/lcov.info'",
+        "codecov:upload": "(curl -s https://codecov.io/bash) > /tmp/codecov.sh && chmod +x /tmp/codecov.sh && /tmp/codecov.sh -f sources/global/coverage/lcov.info -f sources/server/coverage-common/lcov.info -f sources/server/coverage-server/lcov.info -f sources/server/coverage-server-e2e/lcov.info"
     },
     "dependencies": {
         "lcov-result-merger": "3.1.0",

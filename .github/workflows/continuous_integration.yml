@@ -55,10 +55,7 @@ jobs:
             - name: Run @ticket721sources/server @app/server e2e tests (npm run test:server:e2e:cov in sources/server)
               run: sudo sysctl -w vm.max_map_count=262144 && cd sources/server && npm run test:server:e2e:cov
 
-            - name: Merge reports (npm run merge_coverage_reports)
-              run: npm run merge_coverage_reports
-
-            - name: Coveralls
-              uses: coverallsapp/github-action@master
-              with:
-                github-token: ${{ secrets.github_token }}
+            - name: Codecov (npm run codecov:upload)
+              run: npm run codecov:upload
+              env:
+                CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
