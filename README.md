@@ -48,6 +48,7 @@ npm run bootstrap
 
 | Name | Status |
 | :---: | :---: |
-| Coveralls | [![Coverage Status](https://coveralls.io/repos/github/ticket721/repo/badge.svg?branch=develop)](https://coveralls.io/github/ticket721/repo?branch=develop) |
+| Codecov | [![codecov](https://codecov.io/gh/ticket721/repo/branch/develop/graph/badge.svg)](https://codecov.io/gh/ticket721/repo) |
+
 
 
