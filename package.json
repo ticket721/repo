@@ -32,7 +32,7 @@
         "fs-extra": "8.1.0",
         "gulp": "4.0.2",
         "husky": "3.1.0",
-        "lerna": "3.16.4",
+        "lerna": "3.19.0",
         "portalize": "1.0.4",
         "signale": "1.4.0",
         "truffle-hdwallet-provider": "1.0.17",
