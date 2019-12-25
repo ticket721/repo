@@ -46,11 +46,8 @@ jobs:
             - name: Run @ticket721sources/global unitary tests (npm run test:cov in sources/global)
               run: cd sources/global && npm run test:cov
 
-            - name: Run @ticket721sources/server @app/server unitary tests (npm run test:server:cov in sources/server)
-              run: cd sources/server && npm run test:server:cov
-
-            - name: Run @ticket721sources/server @lib/common unitary tests (npm run test:common:cov in sources/server)
-              run: cd sources/server && npm run test:common:cov
+            - name: Run @ticket721sources/server @app/server, @lib/common unitary tests (npm run test:cov in sources/server)
+              run: cd sources/server && npm run test:cov
 
             - name: Run @ticket721sources/server @app/server e2e tests (npm run test:server:e2e:cov in sources/server)
               run: sudo sysctl -w vm.max_map_count=262144 && cd sources/server && npm run test:server:e2e:cov
