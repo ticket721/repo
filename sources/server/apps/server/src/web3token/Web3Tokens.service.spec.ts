@@ -1,31 +1,34 @@
-import { use, expect }                                        from 'chai';
-import * as chaiAsPromised                                    from 'chai-as-promised';
-import { Test, TestingModule }                                from '@nestjs/testing';
-import { anyString, deepEqual, instance, mock, verify, when } from 'ts-mockito';
+import { Test, TestingModule }                     from '@nestjs/testing';
+import { deepEqual, instance, mock, verify, when } from 'ts-mockito';
 import {
     createWallet,
-    encryptWallet,
-    keccak256, toAcceptedAddressFormat,
-    toAcceptedKeccak256Format,
-    Wallet,
-    Web3RegisterSigner,
-    Web3LoginSigner
-}                                from '@ticket721sources/global';
-import { Web3TokensService }     from '@app/server/web3token/Web3Tokens.service';
-import { EsSearchOptionsStatic } from '@iaminfinity/express-cassandra/dist/orm/interfaces/externals/express-cassandra.interface';
-import { Web3TokensRepository }  from '@app/server/web3token/Web3Tokens.repository';
-import { Web3TokenDto }          from '@app/server/web3token/dto/Web3Token.dto';
-import { Web3TokenEntity }       from '@app/server/web3token/entities/Web3Token.entity';
-import { types }                 from 'cassandra-driver';
-import { ConfigService }         from '@lib/common/config/Config.service';
-
-use(chaiAsPromised);
+    toAcceptedAddressFormat,
+}                                                  from '@ticket721sources/global';
+import { Web3TokensService }                       from '@app/server/web3token/Web3Tokens.service';
+import { EsSearchOptionsStatic }                   from '@iaminfinity/express-cassandra/dist/orm/interfaces/externals/express-cassandra.interface';
+import { Web3TokensRepository }                    from '@app/server/web3token/Web3Tokens.repository';
+import { Web3TokenDto }                            from '@app/server/web3token/dto/Web3Token.dto';
+import { Web3TokenEntity }                         from '@app/server/web3token/entities/Web3Token.entity';
+import { types }                                   from 'cassandra-driver';
+import { ConfigService }                           from '@lib/common/config/Config.service';
 
 class Web3TokenEntityModelMock {
     search(options: EsSearchOptionsStatic, callback?: (err: any, ret: any) => void): void {
         return;
     }
 }
+
+const context: {
+    web3TokensService: Web3TokensService,
+    web3TokenEntityModelMock: Web3TokenEntityModelMock,
+    web3TokensRepositoryMock: Web3TokensRepository,
+    configServiceMock: ConfigService
+} = {
+    web3TokensService: null,
+    web3TokenEntityModelMock: null,
+    web3TokensRepositoryMock: null,
+    configServiceMock: null,
+};
 
 describe('Web3Tokens Service', function() {
 
@@ -41,7 +44,6 @@ describe('Web3Tokens Service', function() {
         };
 
         when(configServiceMock.get('AUTH_SIGNATURE_TIMEOUT')).thenReturn('30');
-
 
         const Web3TokenModelProvider = {
             provide: 'Web3TokenEntityModel',
@@ -62,20 +64,19 @@ describe('Web3Tokens Service', function() {
             ],
         }).compile();
 
-        this.web3TokensService = module.get<Web3TokensService>(Web3TokensService);
-        this.web3TokenEntityModelMock = web3TokenEntityModelMock;
-        this.web3TokensRepositoryMock = web3TokensRepositoryMock;
-        this.configServiceMock = configServiceMock;
+        context.web3TokensService = module.get<Web3TokensService>(Web3TokensService);
+        context.web3TokenEntityModelMock = web3TokenEntityModelMock;
+        context.web3TokensRepositoryMock = web3TokensRepositoryMock;
+        context.configServiceMock = configServiceMock;
 
     });
 
-    describe('register', function () {
+    describe('register', function() {
 
-        it('should register a web3 token', async function () {
+        it('should register a web3 token', async function() {
 
-            const web3TokensService = this.web3TokensService;
-            const web3TokenEntityModelMock = this.web3TokenEntityModelMock;
-            const web3TokensRepositoryMock: Web3TokensRepository = this.web3TokensRepositoryMock;
+            const web3TokensService = context.web3TokensService;
+            const web3TokensRepositoryMock: Web3TokensRepository = context.web3TokensRepositoryMock;
 
             const timestamp = Date.now();
             const wallet = await createWallet();
@@ -83,13 +84,13 @@ describe('Web3Tokens Service', function() {
 
             const token: Web3TokenDto = {
                 timestamp: (types.Long as any).fromNumber(timestamp),
-                address
+                address,
             };
 
             const generated_cb = async (): Promise<Web3TokenEntity> => {
                 return {
                     timestamp,
-                    address
+                    address,
                 };
             };
 
@@ -100,28 +101,27 @@ describe('Web3Tokens Service', function() {
             };
 
             when(web3TokensRepositoryMock.create(deepEqual(token))).thenReturn(token);
-            when(web3TokensRepositoryMock.save(deepEqual(token), deepEqual({ttl: parseInt('30')}))).thenCall(injected_cb);
+            when(web3TokensRepositoryMock.save(deepEqual(token), deepEqual({ ttl: parseInt('30') }))).thenCall(injected_cb);
 
             const res = await web3TokensService.register({
                 timestamp,
-                address
+                address,
             });
 
-            expect(res.error).to.equal(null);
-            expect(res.response).to.deep.equal({
+            expect(res.error).toEqual(null);
+            expect(res.response).toEqual({
                 timestamp,
-                address
+                address,
             });
 
-            verify(web3TokensRepositoryMock.save(deepEqual(token), deepEqual({ttl: parseInt('30')}))).called();
+            verify(web3TokensRepositoryMock.save(deepEqual(token), deepEqual({ ttl: parseInt('30') }))).called();
 
         });
 
-        it('unexpected error', async function () {
+        it('unexpected error', async function() {
 
-            const web3TokensService = this.web3TokensService;
-            const web3TokenEntityModelMock = this.web3TokenEntityModelMock;
-            const web3TokensRepositoryMock: Web3TokensRepository = this.web3TokensRepositoryMock;
+            const web3TokensService = context.web3TokensService;
+            const web3TokensRepositoryMock: Web3TokensRepository = context.web3TokensRepositoryMock;
 
             const timestamp = Date.now();
             const wallet = await createWallet();
@@ -129,13 +129,13 @@ describe('Web3Tokens Service', function() {
 
             const token: Web3TokenDto = {
                 timestamp: (types.Long as any).fromNumber(timestamp),
-                address
+                address,
             };
 
             const generated_cb = async (): Promise<Web3TokenEntity> => {
                 return {
                     timestamp,
-                    address
+                    address,
                 };
             };
 
@@ -146,29 +146,28 @@ describe('Web3Tokens Service', function() {
             };
 
             when(web3TokensRepositoryMock.create(deepEqual(token))).thenReturn(token);
-            when(web3TokensRepositoryMock.save(deepEqual(token), deepEqual({ttl: parseInt('30')}))).thenCall(injected_cb);
+            when(web3TokensRepositoryMock.save(deepEqual(token), deepEqual({ ttl: parseInt('30') }))).thenCall(injected_cb);
 
             const res = await web3TokensService.register({
                 timestamp,
-                address
+                address,
             });
 
-            expect(res.error).to.equal('unexpected_error');
-            expect(res.response).to.equal(null);
+            expect(res.error).toEqual('unexpected_error');
+            expect(res.response).toEqual(null);
 
-            verify(web3TokensRepositoryMock.save(deepEqual(token), deepEqual({ttl: parseInt('30')}))).called();
+            verify(web3TokensRepositoryMock.save(deepEqual(token), deepEqual({ ttl: parseInt('30') }))).called();
 
         });
 
     });
 
-    describe('check', function () {
+    describe('check', function() {
 
-        it('should check a web3 token', async function () {
+        it('should check a web3 token', async function() {
 
-            const web3TokensService = this.web3TokensService;
-            const web3TokenEntityModelMock = this.web3TokenEntityModelMock;
-            const web3TokensRepositoryMock: Web3TokensRepository = this.web3TokensRepositoryMock;
+            const web3TokensService = context.web3TokensService;
+            const web3TokensRepositoryMock: Web3TokensRepository = context.web3TokensRepositoryMock;
 
             const timestamp = Date.now();
             const wallet = await createWallet();
@@ -176,13 +175,13 @@ describe('Web3Tokens Service', function() {
 
             const token: Web3TokenDto = {
                 timestamp: (types.Long as any).fromNumber(timestamp),
-                address
+                address,
             };
 
             const generated_cb = async (): Promise<Web3TokenEntity> => {
                 return {
                     timestamp,
-                    address
+                    address,
                 };
             };
 
@@ -196,24 +195,23 @@ describe('Web3Tokens Service', function() {
 
             const res = await web3TokensService.check({
                 timestamp,
-                address
+                address,
             });
 
-            expect(res.error).to.equal(null);
-            expect(res.response).to.deep.equal({
+            expect(res.error).toEqual(null);
+            expect(res.response).toEqual({
                 timestamp,
-                address
+                address,
             });
 
             verify(web3TokensRepositoryMock.findOne(deepEqual(token))).called();
 
         });
 
-        it('unexpected error', async function () {
+        it('unexpected error', async function() {
 
-            const web3TokensService = this.web3TokensService;
-            const web3TokenEntityModelMock = this.web3TokenEntityModelMock;
-            const web3TokensRepositoryMock: Web3TokensRepository = this.web3TokensRepositoryMock;
+            const web3TokensService = context.web3TokensService;
+            const web3TokensRepositoryMock: Web3TokensRepository = context.web3TokensRepositoryMock;
 
             const timestamp = Date.now();
             const wallet = await createWallet();
@@ -221,13 +219,13 @@ describe('Web3Tokens Service', function() {
 
             const token: Web3TokenDto = {
                 timestamp: (types.Long as any).fromNumber(timestamp),
-                address
+                address,
             };
 
             const generated_cb = async (): Promise<Web3TokenEntity> => {
                 return {
                     timestamp,
-                    address
+                    address,
                 };
             };
 
@@ -241,16 +239,15 @@ describe('Web3Tokens Service', function() {
 
             const res = await web3TokensService.check({
                 timestamp,
-                address
+                address,
             });
 
-            expect(res.error).to.equal('unexpected_error');
-            expect(res.response).to.equal(null);
+            expect(res.error).toEqual('unexpected_error');
+            expect(res.response).toEqual(null);
 
             verify(web3TokensRepositoryMock.findOne(deepEqual(token))).called();
 
         });
-
 
     });
 

@@ -1,5 +1,3 @@
-import { use, expect }                  from 'chai';
-import * as chaiAsPromised              from 'chai-as-promised';
 import { mock, when, instance, verify } from 'ts-mockito';
 import * as pack                        from '../../../package.json';
 import * as branch                      from 'git-branch';
@@ -9,9 +7,15 @@ import { APIInfos }                     from './Server.types';
 import { ConfigService }                from '@lib/common/config/Config.service';
 import { WinstonLoggerService }         from '@lib/common/logger/WinstonLogger.service';
 
-use(chaiAsPromised);
+const context: {
+    serverService: ServerService,
+    configServiceMock: ConfigService
+} = {
+    serverService: null,
+    configServiceMock: null
+};
 
-describe('ServerService', () => {
+describe('Server Service', () => {
 
     beforeEach(async function() {
 
@@ -31,23 +35,23 @@ describe('ServerService', () => {
             providers: [ConfigServiceProvider, ServerService, WinstonLoggerServiceProvider],
         }).compile();
 
-        const appService: ServerService = app.get<ServerService>(ServerService);
+        const serverService: ServerService = app.get<ServerService>(ServerService);
 
-        this.configServiceMock = configServiceMock;
-        this.appService = appService;
+        context.configServiceMock = configServiceMock;
+        context.serverService = serverService;
 
     });
 
     it('build and get info with NODE_ENV=development', async function() {
 
-        const { appService, configServiceMock }: { appService: ServerService, configServiceMock: ConfigService } = this as any;
+        const { serverService, configServiceMock }: { serverService: ServerService, configServiceMock: ConfigService } = context;
 
         when(configServiceMock.get('NODE_ENV')).thenReturn('development');
 
-        const res: APIInfos = appService.getAPIInfos();
-        expect(res.name).to.equal('t721api');
-        expect(res.version).to.equal(pack.version);
-        expect(res.env).to.equal(`development@${branch.sync()}`);
+        const res: APIInfos = serverService.getAPIInfos();
+        expect(res.name).toEqual('t721api');
+        expect(res.version).toEqual(pack.version);
+        expect(res.env).toEqual(`development@${branch.sync()}`);
 
         verify(configServiceMock.get('NODE_ENV')).called();
 
@@ -55,14 +59,14 @@ describe('ServerService', () => {
 
     it('build and get info with NODE_ENV=production', async function() {
 
-        const { appService, configServiceMock }: { appService: ServerService, configServiceMock: ConfigService } = this as any;
+        const { serverService, configServiceMock }: { serverService: ServerService, configServiceMock: ConfigService } = context;
 
         when(configServiceMock.get('NODE_ENV')).thenReturn('production');
 
-        const res: APIInfos = appService.getAPIInfos();
-        expect(res.name).to.equal('t721api');
-        expect(res.version).to.equal(pack.version);
-        expect(res.env).to.equal(`production@${branch.sync()}`);
+        const res: APIInfos = serverService.getAPIInfos();
+        expect(res.name).toEqual('t721api');
+        expect(res.version).toEqual(pack.version);
+        expect(res.env).toEqual(`production@${branch.sync()}`);
 
         verify(configServiceMock.get('NODE_ENV')).called();
 

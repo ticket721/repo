@@ -1,5 +1,3 @@
-import { use, expect }                                                    from 'chai';
-import * as chaiAsPromised                                                from 'chai-as-promised';
 import { Test, TestingModule }                                            from '@nestjs/testing';
 import { anyFunction, anything, deepEqual, instance, mock, verify, when } from 'ts-mockito';
 import {
@@ -17,16 +15,23 @@ import {
 }                                      from '@iaminfinity/express-cassandra/dist/orm/interfaces/externals/express-cassandra.interface';
 import { CreateUserServiceInputDto }   from './dto/CreateUserServiceInput.dto';
 import { ESSearchHit, ESSearchReturn } from '@app/server/utils/ESSearchReturn';
-import { Web3TokenEntity }             from '@app/server/web3token/entities/Web3Token.entity';
 import { uuid }                        from '@iaminfinity/express-cassandra';
-
-use(chaiAsPromised);
 
 class UserEntityModelMock {
     search(options: EsSearchOptionsStatic, callback?: (err: any, ret: any) => void): void {
         return;
     }
 }
+
+const context: {
+    usersService: UsersService,
+    userEntityModelMock: UserEntityModelMock,
+    usersRepositoryMock: UsersRepository
+} = {
+    usersService: null,
+    userEntityModelMock: null,
+    usersRepositoryMock: null
+};
 
 describe('Users Service', function() {
 
@@ -54,19 +59,19 @@ describe('Users Service', function() {
             ],
         }).compile();
 
-        this.usersService = module.get<UsersService>(UsersService);
-        this.userEntityModelMock = userEntityModelMock;
-        this.usersRepositoryMock = usersRepositoryMock;
+        context.usersService = module.get<UsersService>(UsersService);
+        context.userEntityModelMock = userEntityModelMock;
+        context.usersRepositoryMock = usersRepositoryMock;
 
     });
 
     describe('findById', function() {
 
-        it('should return existing user', async function() {
+        test('should return existing user', async function() {
 
-            const usersService: UsersService = this.usersService;
-            const userEntityModelMock: UserEntityModelMock = this.userEntityModelMock;
-            const usersRepositoryMock: UsersRepository = this.usersRepositoryMock;
+            const usersService: UsersService = context.usersService;
+            const userEntityModelMock: UserEntityModelMock = context.userEntityModelMock;
+            const usersRepositoryMock: UsersRepository = context.usersRepositoryMock;
 
             const email = 'test@test.com';
             const username = 'salut';
@@ -99,8 +104,8 @@ describe('Users Service', function() {
 
             const res = await usersService.findById(id);
 
-            expect(res.error).to.equal(null);
-            expect(res.response).to.deep.equal({
+            expect(res.error).toEqual(null);
+            expect(res.response).toEqual({
                 username,
                 email,
                 wallet: encrypted_string,
@@ -113,11 +118,11 @@ describe('Users Service', function() {
 
         });
 
-        it('unexpected search error', async function() {
+        test('unexpected search error', async function() {
 
-            const usersService: UsersService = this.usersService;
-            const userEntityModelMock: UserEntityModelMock = this.userEntityModelMock;
-            const usersRepositoryMock: UsersRepository = this.usersRepositoryMock;
+            const usersService: UsersService = context.usersService;
+            const userEntityModelMock: UserEntityModelMock = context.userEntityModelMock;
+            const usersRepositoryMock: UsersRepository = context.usersRepositoryMock;
 
             const email = 'test@test.com';
             const username = 'salut';
@@ -150,8 +155,8 @@ describe('Users Service', function() {
 
             const res = await usersService.findById(id);
 
-            expect(res.error).to.equal('unexpected_error');
-            expect(res.response).to.equal(null)
+            expect(res.error).toEqual('unexpected_error');
+            expect(res.response).toEqual(null)
 
         });
 
@@ -159,10 +164,10 @@ describe('Users Service', function() {
 
     describe('findByAddress', function() {
 
-        it('should return existing user', async function() {
+        test('should return existing user', async function() {
 
-            const usersService: UsersService = this.usersService;
-            const userEntityModelMock: UserEntityModelMock = this.userEntityModelMock;
+            const usersService: UsersService = context.usersService;
+            const userEntityModelMock: UserEntityModelMock = context.userEntityModelMock;
 
             const email = 'test@test.com';
             const username = 'salut';
@@ -222,8 +227,8 @@ describe('Users Service', function() {
 
             const res = await usersService.findByAddress(address);
 
-            expect(res.error).to.equal(null);
-            expect(res.response).to.deep.equal({
+            expect(res.error).toEqual(null);
+            expect(res.response).toEqual({
                 username,
                 email,
                 address: toAcceptedAddressFormat(address),
@@ -249,18 +254,18 @@ describe('Users Service', function() {
 
         });
 
-        it('should return null on invalid address', async function() {
+        test('should return null on invalid address', async function() {
 
-            const usersService: UsersService = this.usersService;
-            const userEntityModelMock: UserEntityModelMock = this.userEntityModelMock;
+            const usersService: UsersService = context.usersService;
+            const userEntityModelMock: UserEntityModelMock = context.userEntityModelMock;
 
             const wallet: Wallet = await createWallet();
             const address = wallet.address.slice(4);
 
             const res = await usersService.findByAddress(address);
 
-            expect(res.error).to.equal('invalid_address_format');
-            expect(res.response).to.equal(null);
+            expect(res.error).toEqual('invalid_address_format');
+            expect(res.response).toEqual(null);
 
             verify(userEntityModelMock.search(
                 anything(),
@@ -269,10 +274,10 @@ describe('Users Service', function() {
 
         });
 
-        it('unexpected search error', async function() {
+        test('unexpected search error', async function() {
 
-            const usersService: UsersService = this.usersService;
-            const userEntityModelMock: UserEntityModelMock = this.userEntityModelMock;
+            const usersService: UsersService = context.usersService;
+            const userEntityModelMock: UserEntityModelMock = context.userEntityModelMock;
 
             const wallet: Wallet = await createWallet();
             const address = wallet.address;
@@ -298,8 +303,8 @@ describe('Users Service', function() {
 
             const res = await usersService.findByAddress(address);
 
-            expect(res.error).to.equal('unexpected_error');
-            expect(res.response).to.equal(null);
+            expect(res.error).toEqual('unexpected_error');
+            expect(res.response).toEqual(null);
 
             verify(userEntityModelMock.search(
                 deepEqual({
@@ -316,10 +321,10 @@ describe('Users Service', function() {
 
         });
 
-        it('search with no hits', async function() {
+        test('search with no hits', async function() {
 
-            const usersService: UsersService = this.usersService;
-            const userEntityModelMock: UserEntityModelMock = this.userEntityModelMock;
+            const usersService: UsersService = context.usersService;
+            const userEntityModelMock: UserEntityModelMock = context.userEntityModelMock;
 
             const wallet: Wallet = await createWallet();
             const address = wallet.address;
@@ -358,8 +363,8 @@ describe('Users Service', function() {
 
             const res = await usersService.findByAddress(address);
 
-            expect(res.error).to.equal(null);
-            expect(res.response).to.equal(null);
+            expect(res.error).toEqual(null);
+            expect(res.response).toEqual(null);
 
             verify(userEntityModelMock.search(
                 deepEqual({
@@ -380,10 +385,10 @@ describe('Users Service', function() {
 
     describe('findByUsername', function() {
 
-        it('should return existing user', async function() {
+        test('should return existing user', async function() {
 
-            const usersService: UsersService = this.usersService;
-            const userEntityModelMock: UserEntityModelMock = this.userEntityModelMock;
+            const usersService: UsersService = context.usersService;
+            const userEntityModelMock: UserEntityModelMock = context.userEntityModelMock;
 
             const email = 'test@test.com';
             const username = 'salut';
@@ -443,8 +448,8 @@ describe('Users Service', function() {
 
             const res = await usersService.findByUsername(username);
 
-            expect(res.error).to.equal(null);
-            expect(res.response).to.deep.equal({
+            expect(res.error).toEqual(null);
+            expect(res.response).toEqual({
                 username,
                 email,
                 address: toAcceptedAddressFormat(address),
@@ -470,10 +475,10 @@ describe('Users Service', function() {
 
         });
 
-        it('unexpected search error', async function() {
+        test('unexpected search error', async function() {
 
-            const usersService: UsersService = this.usersService;
-            const userEntityModelMock: UserEntityModelMock = this.userEntityModelMock;
+            const usersService: UsersService = context.usersService;
+            const userEntityModelMock: UserEntityModelMock = context.userEntityModelMock;
 
             const username = 'salut';
             const wallet: Wallet = await createWallet();
@@ -499,8 +504,8 @@ describe('Users Service', function() {
 
             const res = await usersService.findByUsername(username);
 
-            expect(res.error).to.equal('unexpected_error');
-            expect(res.response).to.equal(null);
+            expect(res.error).toEqual('unexpected_error');
+            expect(res.response).toEqual(null);
 
             verify(userEntityModelMock.search(
                 deepEqual({
@@ -517,10 +522,10 @@ describe('Users Service', function() {
 
         });
 
-        it('search with no hits', async function() {
+        test('search with no hits', async function() {
 
-            const usersService: UsersService = this.usersService;
-            const userEntityModelMock: UserEntityModelMock = this.userEntityModelMock;
+            const usersService: UsersService = context.usersService;
+            const userEntityModelMock: UserEntityModelMock = context.userEntityModelMock;
 
             const username = 'salut';
             const wallet: Wallet = await createWallet();
@@ -561,8 +566,8 @@ describe('Users Service', function() {
 
             const res = await usersService.findByUsername(username);
 
-            expect(res.error).to.equal(null);
-            expect(res.response).to.equal(null);
+            expect(res.error).toEqual(null);
+            expect(res.response).toEqual(null);
 
             verify(userEntityModelMock.search(
                 deepEqual({
@@ -583,10 +588,10 @@ describe('Users Service', function() {
 
     describe('findByEmail', function() {
 
-        it('should return existing user', async function() {
+        test('should return existing user', async function() {
 
-            const usersService: UsersService = this.usersService;
-            const userEntityModelMock: UserEntityModelMock = this.userEntityModelMock;
+            const usersService: UsersService = context.usersService;
+            const userEntityModelMock: UserEntityModelMock = context.userEntityModelMock;
 
             const email = 'test@test.com';
             const username = 'salut';
@@ -646,8 +651,8 @@ describe('Users Service', function() {
 
             const res = await usersService.findByEmail(email);
 
-            expect(res.error).to.equal(null);
-            expect(res.response).to.deep.equal({
+            expect(res.error).toEqual(null);
+            expect(res.response).toEqual({
                 username,
                 email,
                 address: toAcceptedAddressFormat(address),
@@ -673,10 +678,10 @@ describe('Users Service', function() {
 
         });
 
-        it('unexpected search error', async function() {
+        test('unexpected search error', async function() {
 
-            const usersService: UsersService = this.usersService;
-            const userEntityModelMock: UserEntityModelMock = this.userEntityModelMock;
+            const usersService: UsersService = context.usersService;
+            const userEntityModelMock: UserEntityModelMock = context.userEntityModelMock;
 
             const email = 'test@test.com';
             const wallet: Wallet = await createWallet();
@@ -701,8 +706,8 @@ describe('Users Service', function() {
 
             const res = await usersService.findByEmail(email);
 
-            expect(res.error).to.equal('unexpected_error');
-            expect(res.response).to.equal(null);
+            expect(res.error).toEqual('unexpected_error');
+            expect(res.response).toEqual(null);
 
             verify(userEntityModelMock.search(
                 deepEqual({
@@ -719,10 +724,10 @@ describe('Users Service', function() {
 
         });
 
-        it('search with no hits', async function() {
+        test('search with no hits', async function() {
 
-            const usersService: UsersService = this.usersService;
-            const userEntityModelMock: UserEntityModelMock = this.userEntityModelMock;
+            const usersService: UsersService = context.usersService;
+            const userEntityModelMock: UserEntityModelMock = context.userEntityModelMock;
 
             const email = 'test@test.com';
 
@@ -760,8 +765,8 @@ describe('Users Service', function() {
 
             const res = await usersService.findByEmail(email);
 
-            expect(res.error).to.equal(null);
-            expect(res.response).to.equal(null);
+            expect(res.error).toEqual(null);
+            expect(res.response).toEqual(null);
 
             verify(userEntityModelMock.search(
                 deepEqual({
@@ -782,10 +787,10 @@ describe('Users Service', function() {
 
     describe('create', function() {
 
-        it('should create user', async function() {
+        test('should create user', async function() {
 
-            const usersService: UsersService = this.usersService;
-            const usersRepositoryMock: UsersRepository = this.usersRepositoryMock;
+            const usersService: UsersService = context.usersService;
+            const usersRepositoryMock: UsersRepository = context.usersRepositoryMock;
 
             const email = 'test@test.com';
             const username = 'salut';
@@ -826,15 +831,15 @@ describe('Users Service', function() {
             verify(usersRepositoryMock.create(deepEqual(create_args))).called();
             verify(usersRepositoryMock.save(deepEqual(entity))).called();
 
-            expect(res.error).to.equal(null);
-            expect(res.response).to.deep.equal(entity);
+            expect(res.error).toEqual(null);
+            expect(res.response).toEqual(entity);
 
         });
 
-        it('should return unexpected error', async function() {
+        test('should return unexpected error', async function() {
 
-            const usersService: UsersService = this.usersService;
-            const usersRepositoryMock: UsersRepository = this.usersRepositoryMock;
+            const usersService: UsersService = context.usersService;
+            const usersRepositoryMock: UsersRepository = context.usersRepositoryMock;
 
             const email = 'test@test.com';
             const username = 'salut';
@@ -870,8 +875,8 @@ describe('Users Service', function() {
             verify(usersRepositoryMock.create(deepEqual(create_args))).called();
             verify(usersRepositoryMock.save(deepEqual(entity))).called();
 
-            expect(res.error).to.equal('unexpected_error');
-            expect(res.response).to.equal(null);
+            expect(res.error).toEqual('unexpected_error');
+            expect(res.response).toEqual(null);
 
         });
 

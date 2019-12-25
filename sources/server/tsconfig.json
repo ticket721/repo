@@ -23,12 +23,6 @@
             ],
             "@app/server/*": [
                 "apps/server/src/*"
-            ],
-            "@app/antenna/": [
-                "apps/antenna/src"
-            ],
-            "@app/antenna/*": [
-                "apps/antenna/src/*"
             ]
         }
     },

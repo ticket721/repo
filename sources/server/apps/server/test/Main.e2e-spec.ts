@@ -1,5 +1,3 @@
-import { use, expect }                      from 'chai';
-import * as chaiAsPromised                  from 'chai-as-promised';
 import { Test, TestingModule }              from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { T721SDK }                          from '@ticket721sources/sdk';
@@ -12,11 +10,18 @@ import {
 import { register, web3register }           from './api/Authentication.case';
 import { ServerModule }                     from '../src/Server.module';
 
-use(chaiAsPromised);
 const cassandraPort = 32702;
 const elasticSearchPort = 32610;
 const redisPort = 32412;
 const ganachePort = 38545;
+
+const context: {
+    app: INestApplication,
+    sdk: T721SDK
+} = {
+    app: null,
+    sdk: null
+};
 
 describe('AppController (e2e)', () => {
 
@@ -24,9 +29,7 @@ describe('AppController (e2e)', () => {
     let sdk: T721SDK;
     let first: boolean = true;
 
-    before(async function() {
-
-        this.timeout(60000 * 30); // 30 mins to pull & run elassandra
+    beforeAll(async function() {
 
         if (process.env.NO_DEPLOY !== 'true') {
             await startDocker(cassandraPort, elasticSearchPort, redisPort, ganachePort);
@@ -45,14 +48,13 @@ describe('AppController (e2e)', () => {
         sdk = new T721SDK();
         sdk.local(app.getHttpServer());
 
-        this.app = app;
-        this.sdk = sdk;
-        this.expect = expect;
+        context.app = app;
+        context.sdk = sdk;
 
-    });
+    }, 60000 * 30);
 
-    after(async function() {
-        await app.close();
+    afterAll(async function() {
+        await context.app.close();
         if (process.env.NO_DEPLOY !== 'true') {
             await stopDocker();
         }
@@ -72,14 +74,14 @@ describe('AppController (e2e)', () => {
 
     describe('AppController', () => {
 
-        it('/ (GET)', getApiInfo);
+        test('/ (GET)', getApiInfo.bind(null, context));
 
     });
 
     describe('AuthenticationController', () => {
 
-        it('/authentication/local/register & /authentication/local/login (POST)', register);
-        it('/authentication/web3/register & /authentication/web3/login (POST)', web3register);
+        test('/authentication/local/register & /authentication/local/login (POST)', register.bind(null, context));
+        test('/authentication/web3/register & /authentication/web3/login (POST)', web3register.bind(null, context));
 
     });
 

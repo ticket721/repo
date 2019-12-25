@@ -1,17 +1,17 @@
 import { T721SDK }  from '@ticket721sources/sdk';
-import ExpectStatic = Chai.ExpectStatic;
 import * as pack    from '../../../package.json';
 import * as branch  from 'git-branch';
 import { APIInfos } from '../src/Server.types';
 
-export async function getApiInfo(): Promise<void> {
-    const { sdk, expect }: { sdk: T721SDK, expect: ExpectStatic } = this;
+export async function getApiInfo(context: any): Promise<void> {
+    jest.setTimeout(60000);
+    const { sdk }: { sdk: T721SDK } = context;
 
     const res = await sdk.getApiInfos();
-    expect(res.status).to.equal(200);
+    expect(res.status).toEqual(200);
     const data: APIInfos = res.data;
-    expect(data).to.not.be.undefined;
-    expect(data.name).to.equal('t721api');
-    expect(data.version).to.equal(pack.version);
-    expect(data.env).to.equal(`development@${branch.sync()}`);
+    expect(data).toBeDefined();
+    expect(data.name).toEqual('t721api');
+    expect(data.version).toEqual(pack.version);
+    expect(data.env).toEqual(`development@${branch.sync()}`);
 }

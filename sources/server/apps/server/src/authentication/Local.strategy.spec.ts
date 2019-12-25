@@ -1,6 +1,3 @@
-import { use, expect }                  from 'chai';
-import * as chaiAsPromised              from 'chai-as-promised';
-import * as chaiSubset                  from 'chai-subset';
 import { Test, TestingModule }          from '@nestjs/testing';
 import { instance, mock, verify, when } from 'ts-mockito';
 import { AuthenticationService }        from './Authentication.service';
@@ -12,10 +9,15 @@ import {
     Wallet,
 }                                       from '@ticket721sources/global';
 import { LocalStrategy }                from './Local.strategy';
-import { StatusCodes, StatusNames }     from '../utils/codes';
+import { StatusCodes }                  from '../utils/codes';
 
-use(chaiAsPromised);
-use(chaiSubset);
+const context: {
+    localStrategy: LocalStrategy,
+    authenticationServiceMock: AuthenticationService
+} = {
+    localStrategy: null,
+    authenticationServiceMock: null
+};
 
 describe('Local Strategy', function() {
 
@@ -35,17 +37,17 @@ describe('Local Strategy', function() {
             ],
         }).compile();
 
-        this.localStrategy = module.get<LocalStrategy>(LocalStrategy);
-        this.authenticationServiceMock = authenticationServiceMock;
+        context.localStrategy = module.get<LocalStrategy>(LocalStrategy);
+        context.authenticationServiceMock = authenticationServiceMock;
 
     });
 
     describe('validate', function() {
 
-        it('should validate user', async function() {
+        test('should validate user', async function() {
 
-            const localStrategy: LocalStrategy = this.localStrategy;
-            const authenticationServiceMock: AuthenticationService = this.authenticationServiceMock;
+            const localStrategy: LocalStrategy = context.localStrategy;
+            const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
 
             const email = 'test@test.com';
             const username = 'salut';
@@ -70,7 +72,7 @@ describe('Local Strategy', function() {
 
             const res = await localStrategy.validate(email, hashedp);
 
-            expect(res).to.deep.equal({
+            expect(res).toEqual({
                 username,
                 email,
                 wallet: encrypted_string,
@@ -84,10 +86,10 @@ describe('Local Strategy', function() {
 
         });
 
-        it('should throw unauthorized exception', async function() {
+        test('should throw unauthorized exception', async function() {
 
-            const localStrategy: LocalStrategy = this.localStrategy;
-            const authenticationServiceMock: AuthenticationService = this.authenticationServiceMock;
+            const localStrategy: LocalStrategy = context.localStrategy;
+            const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
 
             const email = 'test@test.com';
             const username = 'salut';
@@ -102,34 +104,26 @@ describe('Local Strategy', function() {
                 error: 'invalid_credentials',
             }));
 
-            try {
-                await localStrategy.validate(email, hashedp);
-                expect(0).to.equal(1);
-            } catch (e) {
-                if (!e.status && !e.response && !e.message) {
-                    throw e;
-                }
-                expect(e).to.containSubset({
+            await expect(localStrategy.validate(email, hashedp)).rejects.toMatchObject({
+                status: StatusCodes.Unauthorized,
+                response: {
                     status: StatusCodes.Unauthorized,
-                    response: {
-                        status: StatusCodes.Unauthorized,
-                        message: 'invalid_credentials',
-                    },
-                    message: {
-                        status: StatusCodes.Unauthorized,
-                        message: 'invalid_credentials',
-                    },
-                });
-            }
+                    message: 'invalid_credentials',
+                },
+                message: {
+                    status: StatusCodes.Unauthorized,
+                    message: 'invalid_credentials',
+                }
+            });
 
             verify(authenticationServiceMock.validateUser(email, hashedp)).called();
 
         });
 
-        it('should throw internal error exception', async function() {
+        test('should throw internal error exception', async function() {
 
-            const localStrategy: LocalStrategy = this.localStrategy;
-            const authenticationServiceMock: AuthenticationService = this.authenticationServiceMock;
+            const localStrategy: LocalStrategy = context.localStrategy;
+            const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
 
             const email = 'test@test.com';
             const username = 'salut';
@@ -144,25 +138,17 @@ describe('Local Strategy', function() {
                 error: 'internal_error',
             }));
 
-            try {
-                await localStrategy.validate(email, hashedp);
-                expect(0).to.equal(1);
-            } catch (e) {
-                if (!e.status && !e.response && !e.message) {
-                    throw e;
-                }
-                expect(e).to.containSubset({
+            await expect(localStrategy.validate(email, hashedp)).rejects.toMatchObject({
+                status: StatusCodes.InternalServerError,
+                response: {
                     status: StatusCodes.InternalServerError,
-                    response: {
-                        status: StatusCodes.InternalServerError,
-                        message: 'internal_error',
-                    },
-                    message: {
-                        status: StatusCodes.InternalServerError,
-                        message: 'internal_error',
-                    },
-                });
-            }
+                    message: 'internal_error',
+                },
+                message: {
+                    status: StatusCodes.InternalServerError,
+                    message: 'internal_error',
+                }
+            });
 
             verify(authenticationServiceMock.validateUser(email, hashedp)).called();
 

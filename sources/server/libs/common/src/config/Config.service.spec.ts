@@ -1,8 +1,4 @@
-import { use, expect }     from 'chai';
-import * as chaiAsPromised from 'chai-as-promised';
 import { ConfigService }   from './Config.service';
-
-use(chaiAsPromised);
 
 import * as Joi from '@hapi/joi';
 
@@ -31,9 +27,9 @@ describe('Config Service', () => {
     it('build with invalid env', () => {
 
         expect(() => {
-                const configService = new ConfigService(Config);
+                new ConfigService(Config);
             },
-        ).to.be.throw('Config validation error');
+        ).toThrow('Config validation error');
 
 
     });
@@ -52,7 +48,7 @@ describe('Config Service', () => {
         };
 
         const configService = new ConfigService(Config);
-        expect(configService.get('API_PORT')).to.equal('3000');
+        expect(configService.get('API_PORT')).toEqual('3000');
 
         process.env = old_env;
 
@@ -73,7 +69,7 @@ describe('Config Service', () => {
         };
 
         const configService = new ConfigService(Config);
-        expect(configService.getRole()).to.equal(0);
+        expect(configService.getRole()).toEqual(0);
 
         process.env = old_env;
 
@@ -97,7 +93,7 @@ describe('Config Service', () => {
 
         expect((): void => {
             configService.getRole()
-        }).to.throw('Hostname is required to get current role');
+        }).toThrow('Hostname is required to get current role');
 
         process.env = old_env;
 
@@ -121,7 +117,7 @@ describe('Config Service', () => {
 
         expect((): void => {
             configService.getRole('test-0')
-        }).to.throw('Config validation error: in NODE_ENV=production, HOSTNAME_PREFIX is required');
+        }).toThrow('Config validation error: in NODE_ENV=production, HOSTNAME_PREFIX is required');
 
         process.env = old_env;
 
@@ -146,7 +142,7 @@ describe('Config Service', () => {
 
         expect((): void => {
             configService.getRole('test-0')
-        }).to.throw('Invalid HOSTNAME_PREFIX value, cannot be found in real hostname: prefix salut hostname test-0');
+        }).toThrow('Invalid HOSTNAME_PREFIX value, cannot be found in real hostname: prefix salut hostname test-0');
 
         process.env = old_env;
 
@@ -171,7 +167,7 @@ describe('Config Service', () => {
 
         expect((): void => {
             configService.getRole('test-x')
-        }).to.throw('Invalid hostname configuration: got hostname test-x, while expecting something like test-ID');
+        }).toThrow('Invalid hostname configuration: got hostname test-x, while expecting something like test-ID');
 
         process.env = old_env;
 
@@ -196,7 +192,7 @@ describe('Config Service', () => {
 
         const idx = configService.getRole('test-0');
 
-        expect(idx).to.equal(0);
+        expect(idx).toEqual(0);
 
         process.env = old_env;
 
@@ -221,7 +217,7 @@ describe('Config Service', () => {
 
         const idx = configService.getRole('test-1');
 
-        expect(idx).to.equal(1);
+        expect(idx).toEqual(1);
 
         process.env = old_env;
 

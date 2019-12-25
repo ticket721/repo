@@ -10,21 +10,19 @@ $ lerna bootstrap --scope='@ticket721sources/*'
 
 ## Testing
 
-### Apps
-
-#### Server
-
-##### Unitary Tests
+### Unitary Tests
 
 ```bash
 # unit tests
-npm run test:server
+npm run test
 
 # test coverage
-npm run test:server:cov
+npm run test:cov
 ```
 
-##### E@E Tests
+### E2E Tests
+
+#### @apps/server
 
 ```bash
 # unit tests
@@ -32,20 +30,6 @@ npm run test:server:e2e
 
 # test coverage
 npm run test:server:e2e:cov
-```
-
-### Libs
-
-#### Common
-
-##### Unitary Tests
-
-```bash
-# unit tests
-npm run test:common
-
-# test coverage
-npm run test:common:cov
 ```
 
 ## Documentation

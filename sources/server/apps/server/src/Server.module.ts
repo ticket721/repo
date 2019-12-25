@@ -7,17 +7,18 @@ import { ScheduleModule }                from 'nest-schedule';
 import { UsersRepository }               from '@lib/common/users/Users.repository';
 import { UserEntity }                    from '@lib/common/users/entities/User.entity';
 import { UsersModule }                   from '@lib/common/users/Users.module';
-import { ConfigModule }                   from '@lib/common/config/Config.module';
-import { Config }                         from './utils/Config.joi';
-import { ExpressCassandraConfigModule }   from '@app/server/express-cassandra/ExpressCassandraConfig.module';
-import { ExpressCassandraConfigService }  from '@app/server/express-cassandra/ExpressCassandraConfig.service';
-import { Web3TokenEntity }                from '@app/server/web3token/entities/Web3Token.entity';
-import { Web3TokensRepository }           from '@app/server/web3token/Web3Tokens.repository';
-import { Web3TokensModule }               from '@app/server/web3token/Web3Tokens.module';
-import { WinstonLoggerService }           from '@lib/common/logger/WinstonLogger.service';
-import * as Web3                          from 'web3';
+import { ConfigModule }                  from '@lib/common/config/Config.module';
+import { Config }                        from './utils/Config.joi';
+import { ExpressCassandraConfigModule }  from '@app/server/express-cassandra/ExpressCassandraConfig.module';
+import { ExpressCassandraConfigService } from '@app/server/express-cassandra/ExpressCassandraConfig.service';
+import { Web3TokenEntity }               from '@app/server/web3token/entities/Web3Token.entity';
+import { Web3TokensRepository }          from '@app/server/web3token/Web3Tokens.repository';
+import { Web3TokensModule }              from '@app/server/web3token/Web3Tokens.module';
+import { WinstonLoggerService }          from '@lib/common/logger/WinstonLogger.service';
+import * as Web3                         from 'web3';
 import { ConfigService }                 from '@lib/common/config/Config.service';
-import { Web3Module, Web3ModuleOptions } from '@lib/common/web3/Web3.module';
+import { Web3Module }                    from '@lib/common/web3/Web3.module';
+import { Web3ServiceOptions }            from '@lib/common/web3/Web3.service';
 
 @Module({
     imports: [
@@ -34,14 +35,14 @@ import { Web3Module, Web3ModuleOptions } from '@lib/common/web3/Web3.module';
         AuthenticationModule,
         Web3Module.registerAsync({
             imports: [ConfigModule.register(Config)],
-            useFactory: (configService: ConfigService): Web3ModuleOptions => ({
+            useFactory: (configService: ConfigService): Web3ServiceOptions => ({
                 Web3,
                 host: configService.get('ETHEREUM_NODE_HOST'),
                 port: configService.get('ETHEREUM_NODE_PORT'),
-                protocol: configService.get('ETHEREUM_NODE_PROTOCOL')
+                protocol: configService.get('ETHEREUM_NODE_PROTOCOL'),
             }),
-            inject: [ConfigService]
-        })
+            inject: [ConfigService],
+        }),
     ],
     controllers: [
         ServerController,

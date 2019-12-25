@@ -1,33 +1,25 @@
-import { use, expect }                  from 'chai';
-import * as chaiAsPromised              from 'chai-as-promised';
-import * as chaiSubset                  from 'chai-subset';
 import { Test, TestingModule }                     from '@nestjs/testing';
 import { deepEqual, instance, mock, verify, when } from 'ts-mockito';
-import { AuthenticationService } from './Authentication.service';
+import { AuthenticationService }                   from './Authentication.service';
 import {
     createWallet,
-    encryptWallet,
-    keccak256, toAcceptedAddressFormat,
-    toAcceptedKeccak256Format,
+    toAcceptedAddressFormat,
     Wallet,
-    Web3LoginSigner
-}                                from '@ticket721sources/global';
-import { Web3Strategy }          from '@app/server/authentication/Web3.strategy';
-import { Web3TokensService }     from '@app/server/web3token/Web3Tokens.service';
-import { StatusCodes }           from '@app/server/utils/codes';
+    Web3LoginSigner,
+}                                                  from '@ticket721sources/global';
+import { Web3Strategy }                            from '@app/server/authentication/Web3.strategy';
+import { Web3TokensService }                       from '@app/server/web3token/Web3Tokens.service';
+import { StatusCodes }                             from '@app/server/utils/codes';
 
-use(chaiAsPromised);
-use(chaiSubset);
-
-const check_throw = async (call: Promise<any>, res: any): Promise<void> => {
-    try {
-        await call;
-        throw {____invalid: true};
-    } catch (e) {
-        if (e.____invalid) throw new Error(`Expected to throw, but didn't`)
-        expect(e).to.containSubset(res);
-    }
-}
+const context: {
+    localStrategy: Web3Strategy,
+    authenticationServiceMock: AuthenticationService,
+    web3TokensServiceMock: Web3TokensService
+} = {
+    localStrategy: null,
+    authenticationServiceMock: null,
+    web3TokensServiceMock: null
+};
 
 describe('Web3 Strategy', function() {
 
@@ -43,7 +35,7 @@ describe('Web3 Strategy', function() {
 
         const Web3TokensServiceProvider = {
             provide: Web3TokensService,
-            useValue: instance(web3TokensServiceMock)
+            useValue: instance(web3TokensServiceMock),
         };
 
         const module: TestingModule = await Test.createTestingModule({
@@ -54,9 +46,9 @@ describe('Web3 Strategy', function() {
             ],
         }).compile();
 
-        this.localStrategy = module.get<Web3Strategy>(Web3Strategy);
-        this.authenticationServiceMock = authenticationServiceMock;
-        this.web3TokensServiceMock = web3TokensServiceMock;
+        context.localStrategy = module.get<Web3Strategy>(Web3Strategy);
+        context.authenticationServiceMock = authenticationServiceMock;
+        context.web3TokensServiceMock = web3TokensServiceMock;
 
     });
 
@@ -64,9 +56,9 @@ describe('Web3 Strategy', function() {
 
         it('should validate user', async function() {
 
-            const localStrategy: Web3Strategy = this.localStrategy;
-            const authenticationServiceMock: AuthenticationService = this.authenticationServiceMock;
-            const web3TokensServiceMock: Web3TokensService = this.web3TokensServiceMock;
+            const localStrategy: Web3Strategy = context.localStrategy;
+            const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
+            const web3TokensServiceMock: Web3TokensService = context.web3TokensServiceMock;
 
             const email = 'test@test.com';
             const username = 'salut';
@@ -90,22 +82,22 @@ describe('Web3 Strategy', function() {
                 error: null,
             }));
 
-            when(web3TokensServiceMock.check(deepEqual({timestamp: parseInt(timestamp), address}))).thenReturn(Promise.resolve({
+            when(web3TokensServiceMock.check(deepEqual({ timestamp: parseInt(timestamp), address }))).thenReturn(Promise.resolve({
                 response: null,
-                error: null
+                error: null,
             }));
 
-            when(web3TokensServiceMock.register(deepEqual({timestamp: parseInt(timestamp), address}))).thenReturn(Promise.resolve({
+            when(web3TokensServiceMock.register(deepEqual({ timestamp: parseInt(timestamp), address }))).thenReturn(Promise.resolve({
                 response: {
                     timestamp: parseInt(timestamp),
-                    address
+                    address,
                 },
-                error: null
+                error: null,
             }));
 
             const res = await localStrategy.validate(timestamp, login_signature.hex);
 
-            expect(res).to.deep.equal({
+            expect(res).toEqual({
                 username,
                 email,
                 wallet: null,
@@ -116,16 +108,16 @@ describe('Web3 Strategy', function() {
             });
 
             verify(authenticationServiceMock.validateWeb3User(timestamp, login_signature.hex)).called();
-            verify(web3TokensServiceMock.check(deepEqual({timestamp: parseInt(timestamp), address}))).called();
-            verify(web3TokensServiceMock.register(deepEqual({timestamp: parseInt(timestamp), address}))).called();
+            verify(web3TokensServiceMock.check(deepEqual({ timestamp: parseInt(timestamp), address }))).called();
+            verify(web3TokensServiceMock.register(deepEqual({ timestamp: parseInt(timestamp), address }))).called();
 
         });
 
         it('invalid signature', async function() {
 
-            const localStrategy: Web3Strategy = this.localStrategy;
-            const authenticationServiceMock: AuthenticationService = this.authenticationServiceMock;
-            const web3TokensServiceMock: Web3TokensService = this.web3TokensServiceMock;
+            const localStrategy: Web3Strategy = context.localStrategy;
+            const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
+            const web3TokensServiceMock: Web3TokensService = context.web3TokensServiceMock;
 
             const email = 'test@test.com';
             const username = 'salut';
@@ -138,45 +130,45 @@ describe('Web3 Strategy', function() {
 
             when(authenticationServiceMock.validateWeb3User(timestamp, login_signature.hex)).thenReturn(Promise.resolve({
                 response: null,
-                error: 'invalid_signature'
+                error: 'invalid_signature',
             }));
 
-            when(web3TokensServiceMock.check(deepEqual({timestamp: parseInt(timestamp), address}))).thenReturn(Promise.resolve({
+            when(web3TokensServiceMock.check(deepEqual({ timestamp: parseInt(timestamp), address }))).thenReturn(Promise.resolve({
                 response: null,
-                error: null
+                error: null,
             }));
 
-            when(web3TokensServiceMock.register(deepEqual({timestamp: parseInt(timestamp), address}))).thenReturn(Promise.resolve({
+            when(web3TokensServiceMock.register(deepEqual({ timestamp: parseInt(timestamp), address }))).thenReturn(Promise.resolve({
                 response: {
                     timestamp: parseInt(timestamp),
-                    address
+                    address,
                 },
-                error: null
+                error: null,
             }));
 
-            await check_throw(localStrategy.validate(timestamp, login_signature.hex), {
+            await expect(localStrategy.validate(timestamp, login_signature.hex)).rejects.toMatchObject({
                 response: {
                     status: StatusCodes.Unauthorized,
-                    message: 'invalid_signature'
+                    message: 'invalid_signature',
                 },
                 status: StatusCodes.Unauthorized,
                 message: {
                     status: StatusCodes.Unauthorized,
-                    message: 'invalid_signature'
-                }
+                    message: 'invalid_signature',
+                },
             });
 
             verify(authenticationServiceMock.validateWeb3User(timestamp, login_signature.hex)).called();
-            verify(web3TokensServiceMock.check(deepEqual({timestamp: parseInt(timestamp), address}))).never();
-            verify(web3TokensServiceMock.register(deepEqual({timestamp: parseInt(timestamp), address}))).never();
+            verify(web3TokensServiceMock.check(deepEqual({ timestamp: parseInt(timestamp), address }))).never();
+            verify(web3TokensServiceMock.register(deepEqual({ timestamp: parseInt(timestamp), address }))).never();
 
         });
-        
+
         it('signature timed out', async function() {
 
-            const localStrategy: Web3Strategy = this.localStrategy;
-            const authenticationServiceMock: AuthenticationService = this.authenticationServiceMock;
-            const web3TokensServiceMock: Web3TokensService = this.web3TokensServiceMock;
+            const localStrategy: Web3Strategy = context.localStrategy;
+            const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
+            const web3TokensServiceMock: Web3TokensService = context.web3TokensServiceMock;
 
             const email = 'test@test.com';
             const username = 'salut';
@@ -189,45 +181,45 @@ describe('Web3 Strategy', function() {
 
             when(authenticationServiceMock.validateWeb3User(timestamp, login_signature.hex)).thenReturn(Promise.resolve({
                 response: null,
-                error: 'signature_timed_out'
+                error: 'signature_timed_out',
             }));
 
-            when(web3TokensServiceMock.check(deepEqual({timestamp: parseInt(timestamp), address}))).thenReturn(Promise.resolve({
+            when(web3TokensServiceMock.check(deepEqual({ timestamp: parseInt(timestamp), address }))).thenReturn(Promise.resolve({
                 response: null,
-                error: null
+                error: null,
             }));
 
-            when(web3TokensServiceMock.register(deepEqual({timestamp: parseInt(timestamp), address}))).thenReturn(Promise.resolve({
+            when(web3TokensServiceMock.register(deepEqual({ timestamp: parseInt(timestamp), address }))).thenReturn(Promise.resolve({
                 response: {
                     timestamp: parseInt(timestamp),
-                    address
+                    address,
                 },
-                error: null
+                error: null,
             }));
 
-            await check_throw(localStrategy.validate(timestamp, login_signature.hex), {
+            await expect(localStrategy.validate(timestamp, login_signature.hex)).rejects.toMatchObject({
                 response: {
                     status: StatusCodes.Unauthorized,
-                    message: 'signature_timed_out'
+                    message: 'signature_timed_out',
                 },
                 status: StatusCodes.Unauthorized,
                 message: {
                     status: StatusCodes.Unauthorized,
-                    message: 'signature_timed_out'
-                }
+                    message: 'signature_timed_out',
+                },
             });
 
             verify(authenticationServiceMock.validateWeb3User(timestamp, login_signature.hex)).called();
-            verify(web3TokensServiceMock.check(deepEqual({timestamp: parseInt(timestamp), address}))).never();
-            verify(web3TokensServiceMock.register(deepEqual({timestamp: parseInt(timestamp), address}))).never();
+            verify(web3TokensServiceMock.check(deepEqual({ timestamp: parseInt(timestamp), address }))).never();
+            verify(web3TokensServiceMock.register(deepEqual({ timestamp: parseInt(timestamp), address }))).never();
 
         });
 
         it('signature is in the future', async function() {
 
-            const localStrategy: Web3Strategy = this.localStrategy;
-            const authenticationServiceMock: AuthenticationService = this.authenticationServiceMock;
-            const web3TokensServiceMock: Web3TokensService = this.web3TokensServiceMock;
+            const localStrategy: Web3Strategy = context.localStrategy;
+            const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
+            const web3TokensServiceMock: Web3TokensService = context.web3TokensServiceMock;
 
             const email = 'test@test.com';
             const username = 'salut';
@@ -240,45 +232,45 @@ describe('Web3 Strategy', function() {
 
             when(authenticationServiceMock.validateWeb3User(timestamp, login_signature.hex)).thenReturn(Promise.resolve({
                 response: null,
-                error: 'signature_is_in_the_future'
+                error: 'signature_is_in_the_future',
             }));
 
-            when(web3TokensServiceMock.check(deepEqual({timestamp: parseInt(timestamp), address}))).thenReturn(Promise.resolve({
+            when(web3TokensServiceMock.check(deepEqual({ timestamp: parseInt(timestamp), address }))).thenReturn(Promise.resolve({
                 response: null,
-                error: null
+                error: null,
             }));
 
-            when(web3TokensServiceMock.register(deepEqual({timestamp: parseInt(timestamp), address}))).thenReturn(Promise.resolve({
+            when(web3TokensServiceMock.register(deepEqual({ timestamp: parseInt(timestamp), address }))).thenReturn(Promise.resolve({
                 response: {
                     timestamp: parseInt(timestamp),
-                    address
+                    address,
                 },
-                error: null
+                error: null,
             }));
 
-            await check_throw(localStrategy.validate(timestamp, login_signature.hex), {
+            await expect(localStrategy.validate(timestamp, login_signature.hex)).rejects.toMatchObject({
                 response: {
                     status: StatusCodes.Unauthorized,
-                    message: 'signature_is_in_the_future'
+                    message: 'signature_is_in_the_future',
                 },
                 status: StatusCodes.Unauthorized,
                 message: {
                     status: StatusCodes.Unauthorized,
-                    message: 'signature_is_in_the_future'
-                }
+                    message: 'signature_is_in_the_future',
+                },
             });
 
             verify(authenticationServiceMock.validateWeb3User(timestamp, login_signature.hex)).called();
-            verify(web3TokensServiceMock.check(deepEqual({timestamp: parseInt(timestamp), address}))).never();
-            verify(web3TokensServiceMock.register(deepEqual({timestamp: parseInt(timestamp), address}))).never();
+            verify(web3TokensServiceMock.check(deepEqual({ timestamp: parseInt(timestamp), address }))).never();
+            verify(web3TokensServiceMock.register(deepEqual({ timestamp: parseInt(timestamp), address }))).never();
 
         });
 
         it('signature check fail', async function() {
 
-            const localStrategy: Web3Strategy = this.localStrategy;
-            const authenticationServiceMock: AuthenticationService = this.authenticationServiceMock;
-            const web3TokensServiceMock: Web3TokensService = this.web3TokensServiceMock;
+            const localStrategy: Web3Strategy = context.localStrategy;
+            const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
+            const web3TokensServiceMock: Web3TokensService = context.web3TokensServiceMock;
 
             const email = 'test@test.com';
             const username = 'salut';
@@ -291,45 +283,45 @@ describe('Web3 Strategy', function() {
 
             when(authenticationServiceMock.validateWeb3User(timestamp, login_signature.hex)).thenReturn(Promise.resolve({
                 response: null,
-                error: 'signature_check_fail'
+                error: 'signature_check_fail',
             }));
 
-            when(web3TokensServiceMock.check(deepEqual({timestamp: parseInt(timestamp), address}))).thenReturn(Promise.resolve({
+            when(web3TokensServiceMock.check(deepEqual({ timestamp: parseInt(timestamp), address }))).thenReturn(Promise.resolve({
                 response: null,
-                error: null
+                error: null,
             }));
 
-            when(web3TokensServiceMock.register(deepEqual({timestamp: parseInt(timestamp), address}))).thenReturn(Promise.resolve({
+            when(web3TokensServiceMock.register(deepEqual({ timestamp: parseInt(timestamp), address }))).thenReturn(Promise.resolve({
                 response: {
                     timestamp: parseInt(timestamp),
-                    address
+                    address,
                 },
-                error: null
+                error: null,
             }));
 
-            await check_throw(localStrategy.validate(timestamp, login_signature.hex), {
+            await expect(localStrategy.validate(timestamp, login_signature.hex)).rejects.toMatchObject({
                 response: {
                     status: StatusCodes.UnprocessableEntity,
-                    message: 'signature_check_fail'
+                    message: 'signature_check_fail',
                 },
                 status: StatusCodes.UnprocessableEntity,
                 message: {
                     status: StatusCodes.UnprocessableEntity,
-                    message: 'signature_check_fail'
-                }
+                    message: 'signature_check_fail',
+                },
             });
 
             verify(authenticationServiceMock.validateWeb3User(timestamp, login_signature.hex)).called();
-            verify(web3TokensServiceMock.check(deepEqual({timestamp: parseInt(timestamp), address}))).never();
-            verify(web3TokensServiceMock.register(deepEqual({timestamp: parseInt(timestamp), address}))).never();
+            verify(web3TokensServiceMock.check(deepEqual({ timestamp: parseInt(timestamp), address }))).never();
+            verify(web3TokensServiceMock.register(deepEqual({ timestamp: parseInt(timestamp), address }))).never();
 
         });
-        
+
         it('users service internal error', async function() {
 
-            const localStrategy: Web3Strategy = this.localStrategy;
-            const authenticationServiceMock: AuthenticationService = this.authenticationServiceMock;
-            const web3TokensServiceMock: Web3TokensService = this.web3TokensServiceMock;
+            const localStrategy: Web3Strategy = context.localStrategy;
+            const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
+            const web3TokensServiceMock: Web3TokensService = context.web3TokensServiceMock;
 
             const email = 'test@test.com';
             const username = 'salut';
@@ -342,45 +334,45 @@ describe('Web3 Strategy', function() {
 
             when(authenticationServiceMock.validateWeb3User(timestamp, login_signature.hex)).thenReturn(Promise.resolve({
                 response: null,
-                error: 'this_error_does_not_exist'
+                error: 'this_error_does_not_exist',
             }));
 
-            when(web3TokensServiceMock.check(deepEqual({timestamp: parseInt(timestamp), address}))).thenReturn(Promise.resolve({
+            when(web3TokensServiceMock.check(deepEqual({ timestamp: parseInt(timestamp), address }))).thenReturn(Promise.resolve({
                 response: null,
-                error: null
+                error: null,
             }));
 
-            when(web3TokensServiceMock.register(deepEqual({timestamp: parseInt(timestamp), address}))).thenReturn(Promise.resolve({
+            when(web3TokensServiceMock.register(deepEqual({ timestamp: parseInt(timestamp), address }))).thenReturn(Promise.resolve({
                 response: {
                     timestamp: parseInt(timestamp),
-                    address
+                    address,
                 },
-                error: null
+                error: null,
             }));
 
-            await check_throw(localStrategy.validate(timestamp, login_signature.hex), {
+            await expect(localStrategy.validate(timestamp, login_signature.hex)).rejects.toMatchObject({
                 response: {
                     status: StatusCodes.InternalServerError,
-                    message: 'this_error_does_not_exist'
+                    message: 'this_error_does_not_exist',
                 },
                 status: StatusCodes.InternalServerError,
                 message: {
                     status: StatusCodes.InternalServerError,
-                    message: 'this_error_does_not_exist'
-                }
+                    message: 'this_error_does_not_exist',
+                },
             });
 
             verify(authenticationServiceMock.validateWeb3User(timestamp, login_signature.hex)).called();
-            verify(web3TokensServiceMock.check(deepEqual({timestamp: parseInt(timestamp), address}))).never();
-            verify(web3TokensServiceMock.register(deepEqual({timestamp: parseInt(timestamp), address}))).never();
+            verify(web3TokensServiceMock.check(deepEqual({ timestamp: parseInt(timestamp), address }))).never();
+            verify(web3TokensServiceMock.register(deepEqual({ timestamp: parseInt(timestamp), address }))).never();
 
         });
 
         it('token check unexpected error', async function() {
 
-            const localStrategy: Web3Strategy = this.localStrategy;
-            const authenticationServiceMock: AuthenticationService = this.authenticationServiceMock;
-            const web3TokensServiceMock: Web3TokensService = this.web3TokensServiceMock;
+            const localStrategy: Web3Strategy = context.localStrategy;
+            const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
+            const web3TokensServiceMock: Web3TokensService = context.web3TokensServiceMock;
 
             const email = 'test@test.com';
             const username = 'salut';
@@ -404,42 +396,42 @@ describe('Web3 Strategy', function() {
                 error: null,
             }));
 
-            when(web3TokensServiceMock.check(deepEqual({timestamp: parseInt(timestamp), address}))).thenReturn(Promise.resolve({
+            when(web3TokensServiceMock.check(deepEqual({ timestamp: parseInt(timestamp), address }))).thenReturn(Promise.resolve({
                 response: null,
-                error: 'unexpected_error'
+                error: 'unexpected_error',
             }));
 
-            when(web3TokensServiceMock.register(deepEqual({timestamp: parseInt(timestamp), address}))).thenReturn(Promise.resolve({
+            when(web3TokensServiceMock.register(deepEqual({ timestamp: parseInt(timestamp), address }))).thenReturn(Promise.resolve({
                 response: {
                     timestamp: parseInt(timestamp),
-                    address
+                    address,
                 },
-                error: null
+                error: null,
             }));
 
-            await check_throw(localStrategy.validate(timestamp, login_signature.hex), {
+            await expect(localStrategy.validate(timestamp, login_signature.hex)).rejects.toMatchObject({
                 response: {
                     status: StatusCodes.InternalServerError,
-                    message: 'unexpected_error'
+                    message: 'unexpected_error',
                 },
                 status: StatusCodes.InternalServerError,
                 message: {
                     status: StatusCodes.InternalServerError,
-                    message: 'unexpected_error'
-                }
+                    message: 'unexpected_error',
+                },
             });
 
             verify(authenticationServiceMock.validateWeb3User(timestamp, login_signature.hex)).called();
-            verify(web3TokensServiceMock.check(deepEqual({timestamp: parseInt(timestamp), address}))).called();
-            verify(web3TokensServiceMock.register(deepEqual({timestamp: parseInt(timestamp), address}))).never();
+            verify(web3TokensServiceMock.check(deepEqual({ timestamp: parseInt(timestamp), address }))).called();
+            verify(web3TokensServiceMock.register(deepEqual({ timestamp: parseInt(timestamp), address }))).never();
 
         });
 
         it('token duplicate usage', async function() {
 
-            const localStrategy: Web3Strategy = this.localStrategy;
-            const authenticationServiceMock: AuthenticationService = this.authenticationServiceMock;
-            const web3TokensServiceMock: Web3TokensService = this.web3TokensServiceMock;
+            const localStrategy: Web3Strategy = context.localStrategy;
+            const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
+            const web3TokensServiceMock: Web3TokensService = context.web3TokensServiceMock;
 
             const email = 'test@test.com';
             const username = 'salut';
@@ -463,45 +455,45 @@ describe('Web3 Strategy', function() {
                 error: null,
             }));
 
-            when(web3TokensServiceMock.check(deepEqual({timestamp: parseInt(timestamp), address}))).thenReturn(Promise.resolve({
+            when(web3TokensServiceMock.check(deepEqual({ timestamp: parseInt(timestamp), address }))).thenReturn(Promise.resolve({
                 response: {
                     timestamp: parseInt(timestamp),
-                    address
+                    address,
                 },
-                error: null
+                error: null,
             }));
 
-            when(web3TokensServiceMock.register(deepEqual({timestamp: parseInt(timestamp), address}))).thenReturn(Promise.resolve({
+            when(web3TokensServiceMock.register(deepEqual({ timestamp: parseInt(timestamp), address }))).thenReturn(Promise.resolve({
                 response: {
                     timestamp: parseInt(timestamp),
-                    address
+                    address,
                 },
-                error: null
+                error: null,
             }));
 
-            await check_throw(localStrategy.validate(timestamp, login_signature.hex), {
+            await expect(localStrategy.validate(timestamp, login_signature.hex)).rejects.toMatchObject({
                 response: {
                     status: StatusCodes.Unauthorized,
-                    message: 'duplicate_token_usage'
+                    message: 'duplicate_token_usage',
                 },
                 status: StatusCodes.Unauthorized,
                 message: {
                     status: StatusCodes.Unauthorized,
-                    message: 'duplicate_token_usage'
-                }
+                    message: 'duplicate_token_usage',
+                },
             });
 
             verify(authenticationServiceMock.validateWeb3User(timestamp, login_signature.hex)).called();
-            verify(web3TokensServiceMock.check(deepEqual({timestamp: parseInt(timestamp), address}))).called();
-            verify(web3TokensServiceMock.register(deepEqual({timestamp: parseInt(timestamp), address}))).never();
+            verify(web3TokensServiceMock.check(deepEqual({ timestamp: parseInt(timestamp), address }))).called();
+            verify(web3TokensServiceMock.register(deepEqual({ timestamp: parseInt(timestamp), address }))).never();
 
         });
 
         it('token register unexpected error', async function() {
 
-            const localStrategy: Web3Strategy = this.localStrategy;
-            const authenticationServiceMock: AuthenticationService = this.authenticationServiceMock;
-            const web3TokensServiceMock: Web3TokensService = this.web3TokensServiceMock;
+            const localStrategy: Web3Strategy = context.localStrategy;
+            const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
+            const web3TokensServiceMock: Web3TokensService = context.web3TokensServiceMock;
 
             const email = 'test@test.com';
             const username = 'salut';
@@ -525,31 +517,31 @@ describe('Web3 Strategy', function() {
                 error: null,
             }));
 
-            when(web3TokensServiceMock.check(deepEqual({timestamp: parseInt(timestamp), address}))).thenReturn(Promise.resolve({
+            when(web3TokensServiceMock.check(deepEqual({ timestamp: parseInt(timestamp), address }))).thenReturn(Promise.resolve({
                 response: null,
-                error: null
+                error: null,
             }));
 
-            when(web3TokensServiceMock.register(deepEqual({timestamp: parseInt(timestamp), address}))).thenReturn(Promise.resolve({
+            when(web3TokensServiceMock.register(deepEqual({ timestamp: parseInt(timestamp), address }))).thenReturn(Promise.resolve({
                 response: null,
-                error: 'unexpected_error'
+                error: 'unexpected_error',
             }));
 
-            await check_throw(localStrategy.validate(timestamp, login_signature.hex), {
+            await expect(localStrategy.validate(timestamp, login_signature.hex)).rejects.toMatchObject({
                 response: {
                     status: StatusCodes.InternalServerError,
-                    message: 'unexpected_error'
+                    message: 'unexpected_error',
                 },
                 status: StatusCodes.InternalServerError,
                 message: {
                     status: StatusCodes.InternalServerError,
-                    message: 'unexpected_error'
-                }
+                    message: 'unexpected_error',
+                },
             });
 
             verify(authenticationServiceMock.validateWeb3User(timestamp, login_signature.hex)).called();
-            verify(web3TokensServiceMock.check(deepEqual({timestamp: parseInt(timestamp), address}))).called();
-            verify(web3TokensServiceMock.register(deepEqual({timestamp: parseInt(timestamp), address}))).called();
+            verify(web3TokensServiceMock.check(deepEqual({ timestamp: parseInt(timestamp), address }))).called();
+            verify(web3TokensServiceMock.register(deepEqual({ timestamp: parseInt(timestamp), address }))).called();
 
         });
     });

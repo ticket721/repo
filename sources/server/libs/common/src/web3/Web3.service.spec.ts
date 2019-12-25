@@ -1,7 +1,3 @@
-import { use, expect }     from 'chai';
-import * as chaiAsPromised from 'chai-as-promised';
-
-use(chaiAsPromised);
 
 import { Web3Service } from '@lib/common/web3/Web3.service';
 
@@ -37,10 +33,10 @@ describe('Web3 Service', function () {
         await web3Service.onModuleInit();
 
         const instance = web3Service.get();
-        expect(instance).to.not.equal(undefined);
+        expect(instance).toBeDefined();
 
         const net = await web3Service.net();
-        expect(net).to.equal(1);
+        expect(net).toEqual(1);
 
     });
 
@@ -56,10 +52,10 @@ describe('Web3 Service', function () {
         await web3Service.onModuleInit();
 
         const instance = web3Service.get();
-        expect(instance).to.not.equal(undefined);
+        expect(instance).toBeDefined();
 
         const net = await web3Service.net();
-        expect(net).to.equal(1);
+        expect(net).toEqual(1);
 
     });
 
@@ -72,7 +68,9 @@ describe('Web3 Service', function () {
             port: '8545'
         });
 
-        await expect(web3.onModuleInit()).to.eventually.be.rejectedWith('Unknown protocol ptth to build web3 instance')
+        await expect(web3.onModuleInit()).rejects.toMatchObject({
+            message: 'Unknown protocol ptth to build web3 instance'
+        })
 
     });
 
