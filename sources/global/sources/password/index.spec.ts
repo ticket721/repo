@@ -1,7 +1,3 @@
-import {use, expect} from 'chai';
-import * as chaiAsPromised from 'chai-as-promised';
-use(chaiAsPromised);
-
 import {setVerbosity}                                  from '../log';
 import { getPasswordStrength, PasswordStrengthReport } from './index';
 
@@ -11,36 +7,36 @@ describe('Password', function() {
 
     describe('getPasswordStrength', function() {
 
-        it('check "test" password', function() {
+        test('check "test" password', async function() {
             const report: PasswordStrengthReport = getPasswordStrength('test');
-            expect(report.score).to.equal(0);
-            expect(report.feedback.warning).to.equal('This is a top-100 common password');
-            expect(report.feedback.suggestions).to.deep.equal([
+            expect(report.score).toEqual(0);
+            expect(report.feedback.warning).toEqual('This is a top-100 common password');
+            expect(report.feedback.suggestions).toEqual([
                 'Add another word or two. Uncommon words are better.'
             ]);
         });
 
-        it('check "sqdc123_+" ', function() {
+        test('check "sqdc123_+" ', async function() {
             const report: PasswordStrengthReport = getPasswordStrength('sqdc123_+');
-            expect(report.score).to.equal(3);
-            expect(report.feedback.warning).to.equal('');
-            expect(report.feedback.suggestions).to.deep.equal([]);
+            expect(report.score).toEqual(3);
+            expect(report.feedback.warning).toEqual('');
+            expect(report.feedback.suggestions).toEqual([]);
         });
 
-        it('check "password123"', function() {
+        test('check "password123"', async function() {
             const report: PasswordStrengthReport = getPasswordStrength('password123');
-            expect(report.score).to.equal(0);
-            expect(report.feedback.warning).to.equal('This is a very common password');
-            expect(report.feedback.suggestions).to.deep.equal([
+            expect(report.score).toEqual(0);
+            expect(report.feedback.warning).toEqual('This is a very common password');
+            expect(report.feedback.suggestions).toEqual([
                 'Add another word or two. Uncommon words are better.'
             ]);
         });
 
-        it('check "9j7G5D6y8G5e4W33rt5N-_"', function() {
+        test('check "9j7G5D6y8G5e4W33rt5N-_"', async function() {
             const report: PasswordStrengthReport = getPasswordStrength('9j7G5D6y8G5e4W33rt5N-_');
-            expect(report.score).to.equal(4);
-            expect(report.feedback.warning).to.equal('');
-            expect(report.feedback.suggestions).to.deep.equal([]);
+            expect(report.score).toEqual(4);
+            expect(report.feedback.warning).toEqual('');
+            expect(report.feedback.suggestions).toEqual([]);
         });
 
     });

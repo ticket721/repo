@@ -1,7 +1,3 @@
-import {use, expect} from 'chai';
-import * as chaiAsPromised from 'chai-as-promised';
-use(chaiAsPromised);
-
 import {setVerbosity}                                                        from '../log';
 import { createWallet, EncryptedWallet, encryptWallet, isV3EncryptedWallet } from './index';
 import { isAddress }                                                         from '../address';
@@ -11,12 +7,12 @@ setVerbosity(true);
 
 describe('Wallet', function() {
 
-    it('generate wallet', async function() {
+    test('generate wallet', async function() {
         const wallet: Wallet = await createWallet();
-        expect(isAddress(wallet.address)).to.be.true;
+        expect(isAddress(wallet.address)).toBeTruthy();
     });
 
-    it('encrypt wallet', async function() {
+    test('encrypt wallet', async function() {
         const wallet: Wallet = await createWallet();
         let _progress = 0;
         const encrypted = await encryptWallet(wallet, 'salut123', (progress: number) => {
@@ -24,28 +20,28 @@ describe('Wallet', function() {
                 _progress = 1;
             }
         });
-        expect(_progress).to.equal(1);
-        expect(encrypted).to.not.be.undefined;
-        expect(typeof encrypted).to.equal('string');
+        expect(_progress).toEqual(1);
+        expect(encrypted).toBeDefined();
+        expect(typeof encrypted).toEqual('string');
     });
 
-    it('check encrypted wallet format', async function() {
+    test('check encrypted wallet format', async function() {
         const wallet: Wallet = await createWallet();
         const encrypted = await encryptWallet(wallet, 'salut123');
         const parsedEncrypted: EncryptedWallet = JSON.parse(encrypted);
-        expect(isV3EncryptedWallet(parsedEncrypted)).to.be.true;
+        expect(isV3EncryptedWallet(parsedEncrypted)).toBeTruthy();
     });
 
-    it('check invalid encrypted wallet format', async function() {
+    test('check invalid encrypted wallet format', async function() {
         const wallet: Wallet = await createWallet();
         const encrypted = await encryptWallet(wallet, 'salut123');
         const parsedEncrypted: EncryptedWallet = JSON.parse(encrypted);
         parsedEncrypted.version = 2;
-        expect(isV3EncryptedWallet(parsedEncrypted)).to.be.false;
+        expect(isV3EncryptedWallet(parsedEncrypted)).toBeFalsy();
     });
 
-    it('check invalid null encrypted wallet format', async function() {
-        expect(isV3EncryptedWallet(null)).to.be.false;
+    test('check invalid null encrypted wallet format', async function() {
+        expect(isV3EncryptedWallet(null)).toBeFalsy();
     });
 
 });

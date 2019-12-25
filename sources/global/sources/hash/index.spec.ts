@@ -1,7 +1,3 @@
-import {use, expect} from 'chai';
-import * as chaiAsPromised from 'chai-as-promised';
-use(chaiAsPromised);
-
 import {setVerbosity}                                        from '../log';
 import { isKeccak256, keccak256, toAcceptedKeccak256Format } from './index';
 
@@ -13,48 +9,48 @@ describe('Hash', function() {
 
     describe('keccak256', function() {
 
-        it('Should perform keccak256 hash', function() {
-            expect(keccak256('ticket721')).to.equal(ticket721);
+        test('Should perform keccak256 hash', async function() {
+            expect(keccak256('ticket721')).toEqual(ticket721);
         });
 
     });
 
     describe('isKeccak256', function() {
 
-        it('Should find given hash valid', function() {
-            expect(isKeccak256(ticket721)).to.equal(true);
+        test('Should find given hash valid', async function() {
+            expect(isKeccak256(ticket721)).toEqual(true);
         });
 
-        it('Should find given unprefixed hash valid', function() {
-            expect(isKeccak256(ticket721.slice(2))).to.equal(true);
+        test('Should find given unprefixed hash valid', async function() {
+            expect(isKeccak256(ticket721.slice(2))).toEqual(true);
         });
 
-        it('Should find given short hash invalid', function() {
-            expect(isKeccak256(ticket721.slice(3))).to.equal(false);
+        test('Should find given short hash invalid', async function() {
+            expect(isKeccak256(ticket721.slice(3))).toEqual(false);
         });
 
-        it('Should find given invalid characters invalid', function() {
-            expect(isKeccak256('+'.repeat(128))).to.equal(false);
+        test('Should find given invalid characters invalid', async function() {
+            expect(isKeccak256('+'.repeat(128))).toEqual(false);
         });
 
     });
 
     describe('toAcceptedKeccak256Format', function() {
 
-        it('Should not change format', function() {
-            expect(toAcceptedKeccak256Format(ticket721)).to.equal(ticket721);
+        test('Should not change format', async function() {
+            expect(toAcceptedKeccak256Format(ticket721)).toEqual(ticket721);
         });
 
-        it('Should lowercase', function() {
-            expect(toAcceptedKeccak256Format(ticket721.toUpperCase())).to.equal(ticket721);
+        test('Should lowercase', async function() {
+            expect(toAcceptedKeccak256Format(ticket721.toUpperCase())).toEqual(ticket721);
         });
 
-        it('Should add prefix', function() {
-            expect(toAcceptedKeccak256Format(ticket721.slice(2))).to.equal(ticket721);
+        test('Should add prefix', async function() {
+            expect(toAcceptedKeccak256Format(ticket721.slice(2))).toEqual(ticket721);
         });
 
-        it('Should return null', function() {
-            expect(toAcceptedKeccak256Format(ticket721.slice(3))).to.equal(null);
+        test('Should return null', async function() {
+            expect(toAcceptedKeccak256Format(ticket721.slice(3))).toEqual(null);
         });
 
     });

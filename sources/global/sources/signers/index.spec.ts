@@ -1,22 +1,19 @@
-import {use, expect}          from 'chai';
-import * as chaiAsPromised    from 'chai-as-promised';
 import { createWallet }       from '../wallet';
 import { Web3LoginSigner }    from './Web3Login';
 import { EIP712DomainType }   from '@ticket721/e712';
 import { Web3RegisterSigner } from './Web3Register';
-use(chaiAsPromised);
 
 describe('Signers', function () {
 
     describe('Web3Login', function () {
 
-        it('should sign and verify Web3Login payload', async function () {
+        test('should sign and verify Web3Login payload', async function () {
 
             const wallet = await createWallet();
             const signer = new Web3LoginSigner(1);
 
             const payload = signer.generateAuthenticationProofPayload();
-            expect(payload).to.deep.equal([
+            expect(payload).toEqual([
                 payload[0],
                 {
                     domain: {
@@ -42,7 +39,7 @@ describe('Signers', function () {
             ]);
 
             const signed_payload = await signer.generateAuthenticationProof(wallet.privateKey);
-            expect(signed_payload).to.deep.equal([
+            expect(signed_payload).toEqual([
                 signed_payload[0],
                 {
                     hex: signed_payload[1].hex,
@@ -50,23 +47,23 @@ describe('Signers', function () {
                     v: signed_payload[1].v,
                     s: signed_payload[1].s
                 }
-            ])
+            ]);
 
             const verification = await signer.verifyAuthenticationProof(signed_payload[1].hex, signed_payload[0], 30000);
-            expect(verification).to.deep.equal([
+            expect(verification).toEqual([
                 true,
                 wallet.address
             ]);
 
         });
 
-        it('should sign and fail verify Web3Login payload', async function () {
+        test('should sign and fail verify Web3Login payload', async function () {
 
             const wallet = await createWallet();
             const signer = new Web3LoginSigner(1);
 
             const payload = signer.generateAuthenticationProofPayload();
-            expect(payload).to.deep.equal([
+            expect(payload).toEqual([
                 payload[0],
                 {
                     domain: {
@@ -92,7 +89,7 @@ describe('Signers', function () {
             ]);
 
             const signed_payload = await signer.generateAuthenticationProof(wallet.privateKey);
-            expect(signed_payload).to.deep.equal([
+            expect(signed_payload).toEqual([
                 signed_payload[0],
                 {
                     hex: signed_payload[1].hex,
@@ -103,20 +100,20 @@ describe('Signers', function () {
             ]);
 
             const verification = await signer.verifyAuthenticationProof('0x' + signed_payload[1].hex.slice(6), signed_payload[0], 30000);
-            expect(verification).to.deep.equal([
+            expect(verification).toEqual([
                 false,
                 'signature_check_fail'
             ]);
 
         });
 
-        it('timed out', async function () {
+        test('timed out', async function () {
 
             const wallet = await createWallet();
             const signer = new Web3LoginSigner(1);
 
             const payload = signer.generateAuthenticationProofPayload();
-            expect(payload).to.deep.equal([
+            expect(payload).toEqual([
                 payload[0],
                 {
                     domain: {
@@ -142,7 +139,7 @@ describe('Signers', function () {
             ]);
 
             const signed_payload = await signer.generateAuthenticationProof(wallet.privateKey);
-            expect(signed_payload).to.deep.equal([
+            expect(signed_payload).toEqual([
                 signed_payload[0],
                 {
                     hex: signed_payload[1].hex,
@@ -155,14 +152,14 @@ describe('Signers', function () {
             await new Promise((ok, ko) => setTimeout(ok, 100));
 
             const verification = await signer.verifyAuthenticationProof(signed_payload[1].hex, signed_payload[0], 0);
-            expect(verification).to.deep.equal([
+            expect(verification).toEqual([
                 false,
                 'signature_timed_out'
             ]);
 
         });
 
-        it('signature is in the future', async function () {
+        test('signature is in the future', async function () {
 
             const wallet = await createWallet();
             const signer = new Web3LoginSigner(1);
@@ -175,7 +172,7 @@ describe('Signers', function () {
             const signature = await signer.sign(wallet.privateKey, payload);
 
             const verification = await signer.verifyAuthenticationProof(signature.hex, timestamp, 30000);
-            expect(verification).to.deep.equal([
+            expect(verification).toEqual([
                 false,
                 'signature_is_in_the_future'
             ]);
@@ -186,7 +183,7 @@ describe('Signers', function () {
 
     describe('Web3Register', function () {
 
-        it('should sign and verify Web3Register payload', async function () {
+        test('should sign and verify Web3Register payload', async function () {
 
             const wallet = await createWallet();
             const signer = new Web3RegisterSigner(1);
@@ -194,7 +191,7 @@ describe('Signers', function () {
             const username = 'mortimr';
 
             const payload = signer.generateRegistrationProofPayload(email, username);
-            expect(payload).to.deep.equal([
+            expect(payload).toEqual([
                 payload[0],
                 {
                     domain: {
@@ -230,7 +227,7 @@ describe('Signers', function () {
             ]);
 
             const signed_payload = await signer.generateRegistrationProof(email, username, wallet.privateKey);
-            expect(signed_payload).to.deep.equal([
+            expect(signed_payload).toEqual([
                 signed_payload[0],
                 {
                     hex: signed_payload[1].hex,
@@ -241,14 +238,14 @@ describe('Signers', function () {
             ]);
 
             const verification = await signer.verifyRegistrationProof(signed_payload[1].hex, signed_payload[0], email, username, 30000);
-            expect(verification).to.deep.equal([
+            expect(verification).toEqual([
                 true,
                 wallet.address
             ]);
 
         });
 
-        it('should sign and fail verify Web3Register payload', async function () {
+        test('should sign and fail verify Web3Register payload', async function () {
 
             const wallet = await createWallet();
             const signer = new Web3RegisterSigner(1);
@@ -256,7 +253,7 @@ describe('Signers', function () {
             const username = 'mortimr';
 
             const payload = signer.generateRegistrationProofPayload(email, username);
-            expect(payload).to.deep.equal([
+            expect(payload).toEqual([
                 payload[0],
                 {
                     domain: {
@@ -292,7 +289,7 @@ describe('Signers', function () {
             ]);
 
             const signed_payload = await signer.generateRegistrationProof(email, username, wallet.privateKey);
-            expect(signed_payload).to.deep.equal([
+            expect(signed_payload).toEqual([
                 signed_payload[0],
                 {
                     hex: signed_payload[1].hex,
@@ -303,14 +300,14 @@ describe('Signers', function () {
             ]);
 
             const verification = await signer.verifyRegistrationProof('0x' + signed_payload[1].hex.slice(6), signed_payload[0], email, username, 30000);
-            expect(verification).to.deep.equal([
+            expect(verification).toEqual([
                 false,
                 'signature_check_fail'
             ]);
 
         });
 
-        it('timed out', async function () {
+        test('timed out', async function () {
 
             const wallet = await createWallet();
             const signer = new Web3RegisterSigner(1);
@@ -318,7 +315,7 @@ describe('Signers', function () {
             const username = 'mortimr';
 
             const payload = signer.generateRegistrationProofPayload(email, username);
-            expect(payload).to.deep.equal([
+            expect(payload).toEqual([
                 payload[0],
                 {
                     domain: {
@@ -354,7 +351,7 @@ describe('Signers', function () {
             ]);
 
             const signed_payload = await signer.generateRegistrationProof(email, username, wallet.privateKey);
-            expect(signed_payload).to.deep.equal([
+            expect(signed_payload).toEqual([
                 signed_payload[0],
                 {
                     hex: signed_payload[1].hex,
@@ -367,14 +364,14 @@ describe('Signers', function () {
             await new Promise((ok, ko) => setTimeout(ok, 100));
 
             const verification = await signer.verifyRegistrationProof(signed_payload[1].hex, signed_payload[0], email, username, 0);
-            expect(verification).to.deep.equal([
+            expect(verification).toEqual([
                 false,
                 'signature_timed_out'
             ]);
 
         });
 
-        it('signature is in the future', async function () {
+        test('signature is in the future', async function () {
 
             const wallet = await createWallet();
             const signer = new Web3RegisterSigner(1);
@@ -391,7 +388,7 @@ describe('Signers', function () {
             const signature = await signer.sign(wallet.privateKey, payload);
 
             const verification = await signer.verifyRegistrationProof(signature.hex, timestamp, email, username, 30000);
-            expect(verification).to.deep.equal([
+            expect(verification).toEqual([
                 false,
                 'signature_is_in_the_future'
             ]);

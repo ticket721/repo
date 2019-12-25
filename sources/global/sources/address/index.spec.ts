@@ -1,7 +1,3 @@
-import {use, expect} from 'chai';
-import * as chaiAsPromised from 'chai-as-promised';
-use(chaiAsPromised);
-
 import { isAddress, toAcceptedAddressFormat } from './index';
 import {setVerbosity}                         from '../log';
 
@@ -13,44 +9,44 @@ describe('Address', function() {
 
     describe('isAddress', function() {
 
-        it('Checking valid prefixed + checksummed address', function() {
-            expect(isAddress(perfect)).to.be.true;
+        test('Checking valid prefixed + checksummed address', async function() {
+            expect(isAddress(perfect)).toBeTruthy();
         });
 
-        it('Checking valid checksummed address', function() {
-            expect(isAddress(perfect.slice(2))).to.be.true;
+        test('Checking valid checksummed address', async function() {
+            expect(isAddress(perfect.slice(2))).toBeTruthy();
         });
 
-        it('Checking valid prefixed address', function() {
-            expect(isAddress(perfect.toLowerCase())).to.be.true;
+        test('Checking valid prefixed address', async function() {
+            expect(isAddress(perfect.toLowerCase())).toBeTruthy();
         });
 
-        it('Checking valid address', function() {
-            expect(isAddress(perfect.slice(2).toLowerCase())).to.be.true;
+        test('Checking valid address', async function() {
+            expect(isAddress(perfect.slice(2).toLowerCase())).toBeTruthy();
         });
 
-        it('Checking invalid address', function() {
-            expect(isAddress(perfect.slice(4))).to.be.false;
+        test('Checking invalid address', async function() {
+            expect(isAddress(perfect.slice(4))).toBeFalsy();
         });
 
     });
 
     describe('toAcceptedAddressFormat', function() {
 
-        it('Should not change the address', function() {
-            expect(perfect).to.equal(toAcceptedAddressFormat(perfect));
+        test('Should not change the address', async function() {
+            expect(perfect).toEqual(toAcceptedAddressFormat(perfect));
         });
 
-        it('Should recapitalize', function() {
-            expect(toAcceptedAddressFormat(perfect.toLowerCase())).to.equal(perfect);
+        test('Should recapitalize', async function() {
+            expect(toAcceptedAddressFormat(perfect.toLowerCase())).toEqual(perfect);
         });
 
-        it('Should add prefix', function() {
-            expect(toAcceptedAddressFormat(perfect.slice(2))).to.equal(perfect);
+        test('Should add prefix', async function() {
+            expect(toAcceptedAddressFormat(perfect.slice(2))).toEqual(perfect);
         });
 
-        it('Should return null', function() {
-            expect(toAcceptedAddressFormat(perfect.slice(4))).to.equal(null);
+        test('Should return null', async function() {
+            expect(toAcceptedAddressFormat(perfect.slice(4))).toEqual(null);
         });
 
     });
