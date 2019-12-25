@@ -12,6 +12,7 @@
         "baseUrl": "./sources",
         "incremental": true,
         "resolveJsonModule": true,
+        "esModuleInterop": true,
         "paths": {
             "@lib/common/": [
                 "../../server/libs/common/src"
