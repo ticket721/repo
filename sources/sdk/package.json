@@ -2,7 +2,9 @@
     "name": "@ticket721sources/sdk",
     "version": "1.0.0",
     "description": "Handle server requests",
-    "main": "./lib/sdk/sources",
+    "main": "lib/sdk/sources/index.js",
+    "module": "lib/sdk/sources/index.js",
+    "types": "lib/sdk/sources/index.d.ts",
     "scripts": {
         "build": "tsc",
         "watch": "watch 'npm run build' sources"
