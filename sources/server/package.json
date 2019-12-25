@@ -26,7 +26,7 @@
         "@nestjs/core": "6.10.12",
         "@nestjs/jwt": "6.1.1",
         "@nestjs/passport": "6.1.1",
-        "@nestjs/platform-express": "6.10.11",
+        "@nestjs/platform-express": "6.10.12",
         "@nestjs/swagger": "4.0.9",
         "@ticket721sources/global": "file:../global",
         "@ticket721sources/sdk": "file:../sdk",
