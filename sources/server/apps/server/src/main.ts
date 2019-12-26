@@ -8,6 +8,7 @@ import { ConfigService }                  from '@lib/common/config/Config.servic
 import { getQueueToken }                  from '@nestjs/bull';
 import { Queue }                          from 'bull';
 import { UI, setQueues }                  from 'bull-board';
+import { ShutdownService }                from '@lib/common/shutdown/Shutdown.service';
 
 /**
  * Main application, starting the T721 Server API
@@ -38,6 +39,8 @@ async function main() {
         //app.use('/admin/queues', UI);
 
     }
+
+    app.get(ShutdownService).subscribeToShutdown(() => app.close());
 
     await app.listen(configService.get('API_PORT'));
 }

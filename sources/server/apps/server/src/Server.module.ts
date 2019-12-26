@@ -19,6 +19,9 @@ import * as Web3                         from 'web3';
 import { ConfigService }                 from '@lib/common/config/Config.service';
 import { Web3Module }                    from '@lib/common/web3/Web3.module';
 import { Web3ServiceOptions }            from '@lib/common/web3/Web3.service';
+import { ContractsModule }               from '@lib/common/contracts/Contracts.module';
+import { ContractsServiceOptions }       from '@lib/common/contracts/Contracts.service';
+import { ShutdownModule }                from '@lib/common/shutdown/Shutdown.module';
 
 @Module({
     imports: [
@@ -43,6 +46,14 @@ import { Web3ServiceOptions }            from '@lib/common/web3/Web3.service';
             }),
             inject: [ConfigService],
         }),
+        ContractsModule.registerAsync({
+            imports: [ConfigModule.register(Config)],
+            useFactory: (configService: ConfigService): ContractsServiceOptions => ({
+                artifact_path: configService.get('CONTRACTS_ARTIFACTS_PATH')
+            }),
+            inject: [ConfigService],
+        }),
+        ShutdownModule
     ],
     controllers: [
         ServerController,

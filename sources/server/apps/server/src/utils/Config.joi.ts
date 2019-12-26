@@ -18,6 +18,8 @@ export const Config: Joi.ObjectSchema = Joi.object({
     ETHEREUM_NODE_PORT: Joi.number().required(),
     ETHEREUM_NODE_PROTOCOL: Joi.string().default('http'),
 
+    CONTRACTS_ARTIFACTS_PATH: Joi.string().required(),
+
     JWT_SECRET: Joi.string().required(),
     JWT_EXPIRATION: Joi.string().default('24h'),
     BCRYPT_SALT_ROUNDS: Joi.number().default(9),
