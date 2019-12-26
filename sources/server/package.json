@@ -38,7 +38,7 @@
         "dotenv": "8.2.0",
         "elasticsearch": "16.5.0",
         "git-branch": "2.0.1",
-        "nest-schedule": "0.6.3",
+        "nest-schedule": "0.6.4",
         "passport": "0.4.1",
         "passport-jwt": "4.0.0",
         "passport-local": "1.0.0",
