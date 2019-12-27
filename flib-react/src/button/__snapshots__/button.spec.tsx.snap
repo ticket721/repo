@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Button Rendering Snapshot Tests Button renders correctly 1`] = `
+<button
+  name="test"
+  onClick={[Function]}
+  style={
+    Object {
+      "backgroundColor": "#188ae2",
+      "borderColor": "#188ae2",
+      "borderRadius": 7,
+      "cursor": "pointer",
+      "padding": 10,
+    }
+  }
+>
+  test
+</button>
+`;

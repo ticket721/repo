@@ -1,2 +1,1 @@
-# flib
-flib (front libraries) are all about reusable components that are composing our identity
+# flib-react (frontend libraries for React + Typescript)
