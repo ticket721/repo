@@ -1,4 +1,4 @@
-import { DynamicModule, Module }           from '@nestjs/common';
+import { DynamicModule, Global, Module }   from '@nestjs/common';
 import { Web3Service, Web3ServiceOptions } from '@lib/common/web3/Web3.service';
 
 export interface Web3ModuleAsyncOptions extends Pick<DynamicModule, 'imports'> {
@@ -9,6 +9,7 @@ export interface Web3ModuleAsyncOptions extends Pick<DynamicModule, 'imports'> {
 /**
  * Module to build & serve a web3 instance
  */
+@Global()
 @Module({})
 export class Web3Module {
     static registerAsync(options: Web3ModuleAsyncOptions): DynamicModule {

@@ -23,7 +23,7 @@ export class ServerService implements OnModuleInit {
      */
     constructor /* instanbul ignore next */ (
         private readonly configService: ConfigService,
-        private readonly loggerService: WinstonLoggerService
+        private readonly loggerService: WinstonLoggerService,
     ) {}
 
     /**
@@ -40,7 +40,7 @@ export class ServerService implements OnModuleInit {
     /**
      * System boot
      */
-    onModuleInit(): void {
+    async onModuleInit(): Promise<void> {
         const pod_infos: number = this.configService.getRole();
 
         this.loggerService.log(`Started instance #${pod_infos}`);

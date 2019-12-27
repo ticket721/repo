@@ -25,8 +25,8 @@ jobs:
             - name: Setup submodules (npm run setup:submodules:clone)
               run: npm run setup:submodules:clone
 
-            - name: Install main dependencies (npm install)
-              run: npm install
+            - name: Install main dependencies (npm install --ignore-scripts)
+              run: npm install --ignore-scripts
 
             - name: Install contracts dependencies (npm run install:ticket721contracts)
               run: npm run install:ticket721contracts

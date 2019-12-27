@@ -10,12 +10,12 @@ export interface Web3ServiceOptions {
 /**
  * Utility to build and serve a Web3 instance
  */
-export class Web3Service implements OnModuleInit {
+export class Web3Service {
 
     /**
      * Web3 instance
      */
-    private web3: any;
+    private readonly web3: any;
 
     /**
      * Pre-fetched network id
@@ -27,26 +27,7 @@ export class Web3Service implements OnModuleInit {
      *
      * @param options
      */
-     constructor /*istanbul ignore next */ (@Inject('WEB3_MODULE_OPTIONS') private readonly options: Web3ServiceOptions) {}
-
-    /**
-     * Recover the Web3 instance
-     */
-    public get<Web3Interface = any>(): Web3Interface {
-        return this.web3;
-    }
-
-    /**
-     * Recover the network id
-     */
-    public async net(): Promise<number> {
-        return this.net_id;
-    }
-
-    /**
-     * Called when module starts
-     */
-    async onModuleInit(): Promise<void> {
+    constructor (@Inject('WEB3_MODULE_OPTIONS') private readonly options: Web3ServiceOptions) {
 
         switch (this.options.protocol) {
             case 'http':
@@ -59,7 +40,28 @@ export class Web3Service implements OnModuleInit {
                 throw new Error(`Unknown protocol ${this.options.protocol} to build web3 instance`);
         }
 
+    }
+
+    /**
+     * Recover the Web3 instance
+     */
+    public get<Web3Interface = any>(): Web3Interface {
+        return this.web3;
+    }
+
+    /**
+     * First call should fetch with this helper
+     */
+    private async fetchNetwork(): Promise<number> {
         this.net_id = await this.web3.eth.net.getId();
+        return this.net_id;
+    }
+
+    /**
+     * Recover the network id
+     */
+    public async net(): Promise<number> {
+        return this.net_id || this.fetchNetwork();
     }
 
 }

@@ -4,7 +4,7 @@
     "network": {
         "type": "remote",
         "host": "127.0.0.1",
-        "port": 8545,
+        "port": 38545,
         "protocol": "http",
         "network_id": 2702,
 
