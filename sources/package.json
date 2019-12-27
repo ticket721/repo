@@ -12,6 +12,6 @@
         "@ticket721/e712": "0.2.4"
     },
     "devDependencies": {
-        "@types/hapi__joi": "16.0.4"
+        "@types/hapi__joi": "16.0.5"
     }
 }
