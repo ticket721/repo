@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-export interface IButtonProps extends React.ComponentProps<any> {
+export interface ButtonProps extends React.ComponentProps<any> {
     /**
      * Title of the button
      */
@@ -26,7 +26,7 @@ const colors = {
 /**
  * This is a Button component
  */
-export const Button: React.FunctionComponent<IButtonProps> = (props: IButtonProps): JSX.Element => {
+export const Button: React.FunctionComponent<ButtonProps> = (props: ButtonProps): JSX.Element => {
 
     return <button
         name={props.title}

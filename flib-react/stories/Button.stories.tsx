@@ -1,4 +1,4 @@
-import * as React          from 'react';
+import * as React                  from 'react';
 import { action }                  from '@storybook/addon-actions';
 import { select, text, withKnobs } from '@storybook/addon-knobs';
 import { Button }                  from '../src/button';
@@ -12,6 +12,32 @@ export default {
 };
 
 export const showcase = () => (
+    <div style={{
+        width: '100%',
+        height: '100%'
+    }}>
+        <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+        }}>
+            <Button
+                title={text('Title', 'Button Title')}
+                onClick={action('clicked')}
+                type={select('Type', {
+                    Primary: 'primary',
+                    Warning: 'warning',
+                    Error: 'error'
+                }, 'primary')
+                }
+            >
+            </Button>
+
+        </div>
+    </div>
+);
+
+export const types = () => (
     <div style={{
         width: '100%',
         height: '100%'
@@ -45,33 +71,6 @@ export const showcase = () => (
                 >
                 </Button>
             </div>
-
-        </div>
-    </div>
-);
-
-export const types = () => (
-    <div style={{
-        width: '100%',
-        height: '100%'
-    }}>
-        <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-        }}>
-            <Button
-                title={text('Title', 'Button Title')}
-                onClick={action('clicked')}
-                type={
-                    select('Type', {
-                        Primary: 'primary',
-                        Warning: 'warning',
-                        Error: 'error'
-                    }, 'primary')
-                }
-            >
-            </Button>
 
         </div>
     </div>

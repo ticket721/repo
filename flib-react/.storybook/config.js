@@ -4,7 +4,8 @@ import { themes } from '@storybook/theming';
 
 addParameters({
     options: {
-        theme: themes.dark
+        theme: themes.dark,
+        name: 'T721 React FLIB'
     },
     docs: {
         container: DocsContainer,

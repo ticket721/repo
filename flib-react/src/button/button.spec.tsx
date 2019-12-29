@@ -1,14 +1,14 @@
 import * as React       from 'react';
-import * as renderer    from 'react-test-renderer';
-import { IButtonProps } from '@components/button/index';
-import { Button }       from './index';
+import * as renderer   from 'react-test-renderer';
+import { ButtonProps } from '@components/button/index';
+import { Button }      from './index';
 import { shallow }      from 'enzyme';
 
 describe('Button Rendering Snapshot Tests', function () {
 
     it('Button renders correctly', function () {
 
-        const props: IButtonProps = {
+        const props: ButtonProps = {
             onClick: () => {
             },
             type: 'primary',
@@ -31,7 +31,7 @@ describe('Button Functional DOM Tests', function () {
 
         let value = false;
 
-        const props: IButtonProps = {
+        const props: ButtonProps = {
             onClick: () => {
                 value = true;
             },

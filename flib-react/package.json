@@ -13,7 +13,8 @@
   },
   "scripts": {
     "storybook": "start-storybook -p 6006",
-    "test": "jest --coverage"
+    "test": "jest --coverage",
+    "test:update-snapshots": "jest --coverage -u"
   },
   "repository": {
     "type": "git",
@@ -34,14 +35,15 @@
     "@commitlint/cli": "^8.2.0",
     "@commitlint/config-conventional": "^8.2.0",
     "@htmlacademy/editorconfig-cli": "^1.0.0",
-    "@storybook/addon-actions": "5.3.0-rc.3",
-    "@storybook/addon-centered": "^5.3.0-rc.3",
-    "@storybook/addon-docs": "5.3.0-rc.3",
-    "@storybook/addon-info": "5.3.0-rc.3",
-    "@storybook/addon-knobs": "5.3.0-rc.3",
-    "@storybook/addon-links": "5.3.0-rc.3",
-    "@storybook/addons": "5.3.0-rc.3",
-    "@storybook/react": "5.3.0-rc.3",
+    "@storybook/addon-actions": "5.3.0-rc.4",
+    "@storybook/addon-centered": "^5.3.0-rc.4",
+    "@storybook/addon-docs": "5.3.0-rc.4",
+    "@storybook/addon-info": "5.3.0-rc.4",
+    "@storybook/addon-knobs": "5.3.0-rc.4",
+    "@storybook/addon-links": "5.3.0-rc.4",
+    "@storybook/addon-options": "5.3.0-rc.4",
+    "@storybook/addons": "5.3.0-rc.4",
+    "@storybook/react": "5.3.0-rc.4",
     "@types/enzyme": "^3.10.4",
     "@types/enzyme-adapter-react-16": "^1.0.5",
     "@types/html-webpack-plugin": "^3.2.1",
