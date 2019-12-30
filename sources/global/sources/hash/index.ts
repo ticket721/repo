@@ -8,7 +8,7 @@ export const isKeccak256 = (hash: string): boolean => {
     log(`address::isKeccak256 | verifying ${hash}`);
 
     if (hash.length === hashLength + 2) {
-        hash = hash.slice(2)
+        hash = hash.slice(2);
     } else if (hash.length !== hashLength) {
         return false;
     }

@@ -1,10 +1,12 @@
-import { T721SDK }          from '@ticket721sources/sdk';
-import * as pack            from '../../../package.json';
-import * as branch          from 'git-branch';
-import { APIInfos }         from '../src/Server.types';
+import { T721SDK } from '@ticket721sources/sdk';
+import pack from '../../../package.json';
+import branch from 'git-branch';
+import { APIInfos } from '../src/Server.types';
 import { INestApplication } from '@nestjs/common';
 
-export async function getApiInfo(getCtx: () => {app: INestApplication; sdk: T721SDK;}): Promise<void> {
+export async function getApiInfo(
+    getCtx: () => { app: INestApplication; sdk: T721SDK },
+): Promise<void> {
     jest.setTimeout(60000);
     const { sdk }: { sdk: T721SDK } = getCtx();
 

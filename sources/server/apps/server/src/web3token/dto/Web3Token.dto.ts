@@ -1,4 +1,3 @@
-
 /**
  * Web3 Token format
  */

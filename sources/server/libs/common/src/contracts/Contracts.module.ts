@@ -1,9 +1,15 @@
-import { DynamicModule, Global, Module }             from '@nestjs/common';
-import { ContractsService, ContractsServiceOptions } from '@lib/common/contracts/Contracts.service';
-import { WinstonLoggerService }                      from '@lib/common/logger/WinstonLogger.service';
+import { DynamicModule, Global, Module } from '@nestjs/common';
+import {
+    ContractsService,
+    ContractsServiceOptions,
+} from '@lib/common/contracts/Contracts.service';
+import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
 
-export interface ContractsModuleAsyncOptions extends Pick<DynamicModule, 'imports'> {
-    useFactory: (...args: any[]) => Promise<ContractsServiceOptions> | ContractsServiceOptions;
+export interface ContractsModuleAsyncOptions
+    extends Pick<DynamicModule, 'imports'> {
+    useFactory: (
+        ...args: any[]
+    ) => Promise<ContractsServiceOptions> | ContractsServiceOptions;
     inject?: any[];
 }
 
@@ -24,11 +30,9 @@ export class ContractsModule {
                 {
                     provide: WinstonLoggerService,
                     useValue: new WinstonLoggerService('contracts'),
-                }
+                },
             ],
-            exports: [
-                ContractsService
-            ]
+            exports: [ContractsService],
         };
     }
 }

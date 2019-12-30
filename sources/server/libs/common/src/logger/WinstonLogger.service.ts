@@ -1,4 +1,4 @@
-import { LoggerService }                            from '@nestjs/common';
+import { LoggerService } from '@nestjs/common';
 import { createLogger, format, Logger, transports } from 'winston';
 
 /**
@@ -10,7 +10,6 @@ const { combine, timestamp, printf, json } = format;
  * Utility to handle all the logs of the API
  */
 export class WinstonLoggerService implements LoggerService {
-
     /**
      * Instance of the Logger
      */
@@ -20,13 +19,9 @@ export class WinstonLoggerService implements LoggerService {
      * Builds the logger. Console is used when not in production
      */
     constructor(section: string) {
-
         this.logger = createLogger({
             level: process.env['LOG_LEVEL'] || 'info',
-            format: combine(
-                timestamp(),
-                json(),
-            ),
+            format: combine(timestamp(), json()),
             defaultMeta: { section },
             transports: [
                 new transports.File({
@@ -34,23 +29,26 @@ export class WinstonLoggerService implements LoggerService {
                     level: 'error',
                     dirname: process.env['LOG_DIR'] || '/tmp',
                 }),
-                new transports.File({ filename: `combined.log`, dirname: process.env['LOG_DIR'] || '/tmp' }),
+                new transports.File({
+                    filename: `combined.log`,
+                    dirname: process.env['LOG_DIR'] || '/tmp',
+                }),
             ],
         });
 
-        const myFormat = printf((data) => {
-            return `[ ${data.timestamp} | ${data.section ? data.section + ' | ' : ''}${data.level} ] ${data.message}`;
+        const myFormat = printf(data => {
+            return `[ ${data.timestamp} | ${
+                data.section ? data.section + ' | ' : ''
+            }${data.level} ] ${data.message}`;
         });
 
         if (process.env.NODE_ENV !== 'production') {
-            this.logger.add(new transports.Console({
-                format: combine(
-                    timestamp(),
-                    myFormat,
-                ),
-            }));
+            this.logger.add(
+                new transports.Console({
+                    format: combine(timestamp(), myFormat),
+                }),
+            );
         }
-
     }
 
     /**

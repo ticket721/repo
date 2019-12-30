@@ -25,7 +25,13 @@ export interface FailedRegisterReport {
     report: PasswordStrengthReport;
 }
 
-export async function localRegister(email: string, password: string, username: string, wallet: Wallet, progress: ProgressCallback): Promise<AxiosResponse<LocalRegisterResponseDto> | FailedRegisterReport> {
+export async function localRegister(
+    email: string,
+    password: string,
+    username: string,
+    wallet: Wallet,
+    progress: ProgressCallback,
+): Promise<AxiosResponse<LocalRegisterResponseDto> | FailedRegisterReport> {
 
     const self: T721SDK = this;
 
@@ -41,24 +47,24 @@ export async function localRegister(email: string, password: string, username: s
         };
     }
 
-    let last_emitted = 0;
-    const encrypted: string = await encryptWallet(wallet, password, (encryption_progress: number): void => {
-        if (Math.floor((encryption_progress / 100) * 80) > last_emitted) {
-            last_emitted = Math.floor((encryption_progress / 100) * 80);
-            progress(10 + last_emitted);
+    let lastEmitted = 0;
+    const encrypted: string = await encryptWallet(wallet, password, (encryptionProgress: number): void => {
+        if (Math.floor((encryptionProgress / 100) * 80) > lastEmitted) {
+            lastEmitted = Math.floor((encryptionProgress / 100) * 80);
+            progress(10 + lastEmitted);
         }
     });
 
     const hashed = toAcceptedKeccak256Format(keccak256(password));
 
-    const create_user: LocalRegisterInputDto = {
+    const createUser: LocalRegisterInputDto = {
         username,
         password: hashed,
         email,
         wallet: JSON.parse(encrypted),
     };
 
-    return self.post<LocalRegisterInputDto>('/authentication/local/register', {}, create_user);
+    return self.post<LocalRegisterInputDto>('/authentication/local/register', {}, createUser);
 }
 
 export async function localLogin(email: string, password: string): Promise<AxiosResponse<LocalLoginResponseDto>> {
@@ -67,19 +73,25 @@ export async function localLogin(email: string, password: string): Promise<Axios
 
     const hashed = toAcceptedKeccak256Format(keccak256(password));
 
-    const login_user: LocalLoginInputDto = {
+    const loginUser: LocalLoginInputDto = {
         password: hashed,
         email,
     };
 
-    return self.post<LocalLoginInputDto>('/authentication/local/login', {}, login_user);
+    return self.post<LocalLoginInputDto>('/authentication/local/login', {}, loginUser);
 }
 
-export async function web3Register(email: string, username: string, timestamp: number, address: string, signature: string): Promise<AxiosResponse<Web3RegisterResponseDto>> {
+export async function web3Register(
+    email: string,
+    username: string,
+    timestamp: number,
+    address: string,
+    signature: string,
+): Promise<AxiosResponse<Web3RegisterResponseDto>> {
 
     const self: T721SDK = this;
 
-    const create_web3_user: Web3RegisterInputDto = {
+    const createWeb3User: Web3RegisterInputDto = {
         email,
         username,
         timestamp: timestamp.toString(),
@@ -87,30 +99,27 @@ export async function web3Register(email: string, username: string, timestamp: n
         signature,
     };
 
-    return self.post<Web3RegisterInputDto>('/authentication/web3/register', {}, create_web3_user);
+    return self.post<Web3RegisterInputDto>('/authentication/web3/register', {}, createWeb3User);
 }
 
 export async function web3Login(timestamp: number, signature: string): Promise<AxiosResponse<Web3RegisterResponseDto>> {
 
     const self: T721SDK = this;
 
-    const login_web3_user: Web3LoginInputDto = {
+    const loginWeb3User: Web3LoginInputDto = {
         timestamp: timestamp.toString(),
         signature,
     };
 
-    return self.post<Web3LoginInputDto>('/authentication/web3/login', {}, login_web3_user);
+    return self.post<Web3LoginInputDto>('/authentication/web3/login', {}, loginWeb3User);
 }
 
-
-export function web3RegisterPayload(email: string, username: string, network_id: number): [number, EIP712Payload] {
-    const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(network_id);
+export function web3RegisterPayload(email: string, username: string, networkId: number): [number, EIP712Payload] {
+    const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(networkId);
     return web3RegisterSigner.generateRegistrationProofPayload(email, username);
 }
 
-export function web3LoginPayload(network_id: number): [number, EIP712Payload] {
-    const web3LoginSigner: Web3LoginSigner = new Web3LoginSigner(network_id);
+export function web3LoginPayload(networkId: number): [number, EIP712Payload] {
+    const web3LoginSigner: Web3LoginSigner = new Web3LoginSigner(networkId);
     return web3LoginSigner.generateAuthenticationProofPayload();
 }
-
-

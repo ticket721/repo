@@ -1,8 +1,10 @@
-import { DynamicModule, Global, Module }   from '@nestjs/common';
+import { DynamicModule, Global, Module } from '@nestjs/common';
 import { Web3Service, Web3ServiceOptions } from '@lib/common/web3/Web3.service';
 
 export interface Web3ModuleAsyncOptions extends Pick<DynamicModule, 'imports'> {
-    useFactory: (...args: any[]) => Promise<Web3ServiceOptions> | Web3ServiceOptions;
+    useFactory: (
+        ...args: any[]
+    ) => Promise<Web3ServiceOptions> | Web3ServiceOptions;
     inject?: any[];
 }
 
@@ -24,9 +26,7 @@ export class Web3Module {
                 },
                 Web3Service,
             ],
-            exports: [
-                Web3Service,
-            ],
+            exports: [Web3Service],
         };
     }
 }

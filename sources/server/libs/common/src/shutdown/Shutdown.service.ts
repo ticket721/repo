@@ -1,5 +1,5 @@
-import { Subject }              from 'rxjs';
-import { Injectable }           from '@nestjs/common';
+import { Subject } from 'rxjs';
+import { Injectable } from '@nestjs/common';
 import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
 
 /**
@@ -14,8 +14,7 @@ export class ShutdownService {
      *
      * @param winstonLoggerService
      */
-    constructor(private readonly winstonLoggerService: WinstonLoggerService) {
-    }
+    constructor(private readonly winstonLoggerService: WinstonLoggerService) {}
 
     /**
      * Add method to call on shutdown.

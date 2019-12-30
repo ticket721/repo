@@ -25,7 +25,7 @@ export interface ESSearchHit<DocumentType> {
     /**
      * Source fields of the hit
      */
-    _source: DocumentType
+    _source: DocumentType;
 }
 
 /**
@@ -65,7 +65,7 @@ export interface ESSearchReturn<DocumentType> {
          * Total number of failed replying shards
          */
         failed: number;
-    },
+    };
     /**
      * Results of the query
      */
@@ -83,6 +83,6 @@ export interface ESSearchReturn<DocumentType> {
         /**
          * Array of hits
          */
-        hits: ESSearchHit<DocumentType>[]
-    }
+        hits: ESSearchHit<DocumentType>[];
+    };
 }

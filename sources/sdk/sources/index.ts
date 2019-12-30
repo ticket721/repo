@@ -92,4 +92,3 @@ export class T721SDK {
     public web3Login = web3Login;
     public web3LoginPayload = web3LoginPayload;
 }
-

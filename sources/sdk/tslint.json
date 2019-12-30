@@ -3,8 +3,7 @@
     "extends": ["../tslint.json"],
     "linterOptions": {
         "exclude": [
-            "**/*.spec.ts",
-            "./apps/server/test/**/*.ts"
+            "**/*.spec.ts"
         ]
     }
 }

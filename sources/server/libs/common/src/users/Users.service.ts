@@ -1,58 +1,59 @@
-import { Injectable }                from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import {
-    InjectRepository, InjectModel, BaseModel, uuid,
-}                                    from '@iaminfinity/express-cassandra';
-import { UsersRepository }           from './Users.repository';
-import { UserEntity }                from './entities/User.entity';
-import { UserDto }                   from './dto/User.dto';
+    InjectRepository,
+    InjectModel,
+    BaseModel,
+    uuid,
+} from '@iaminfinity/express-cassandra';
+import { UsersRepository } from './Users.repository';
+import { UserEntity } from './entities/User.entity';
+import { UserDto } from './dto/User.dto';
 import { CreateUserServiceInputDto } from './dto/CreateUserServiceInput.dto';
-import { toAcceptedAddressFormat }   from '@ticket721sources/global';
-import { ServiceResponse }           from '@app/server/utils/ServiceResponse';
-import { ESSearchReturn }            from '@app/server/utils/ESSearchReturn';
+import { toAcceptedAddressFormat } from '@ticket721sources/global';
+import { ServiceResponse } from '@app/server/utils/ServiceResponse';
+import { ESSearchReturn } from '@app/server/utils/ESSearchReturn';
 
 /**
  * Utilities and services around the user entity
  */
 @Injectable()
 export class UsersService {
-
     /**
      * Dependency Injection
      *
      * @param usersRepository
      * @param userEntity
      */
-    constructor /* instanbul ignore next */ (
+    constructor /* instanbul ignore next */(
         @InjectRepository(UsersRepository)
         private readonly usersRepository: UsersRepository,
         @InjectModel(UserEntity)
         private readonly userEntity: BaseModel<UserEntity>,
-    ) {
-    }
+    ) {}
 
     /**
      * Create a new user
      *
      * @param user
      */
-    async create(user: CreateUserServiceInputDto): Promise<ServiceResponse<UserDto>> {
+    async create(
+        user: CreateUserServiceInputDto,
+    ): Promise<ServiceResponse<UserDto>> {
         try {
-            const created_user = await this.usersRepository.save(
-                this.usersRepository.create(user),
-            ).toPromise();
+            const createdUser = await this.usersRepository
+                .save(this.usersRepository.create(user))
+                .toPromise();
 
             return {
-                response: created_user,
+                response: createdUser,
                 error: null,
             };
-
         } catch (e) {
             return {
                 response: null,
                 error: 'unexpected_error',
             };
         }
-
     }
 
     /**
@@ -62,7 +63,9 @@ export class UsersService {
      */
     async findById(id: string): Promise<ServiceResponse<UserDto>> {
         try {
-            const user: UserDto = await this.usersRepository.findOne({ id: uuid(id) as any }).toPromise();
+            const user: UserDto = await this.usersRepository
+                .findOne({ id: uuid(id) as any })
+                .toPromise();
             return {
                 response: user || null,
                 error: null,
@@ -70,8 +73,8 @@ export class UsersService {
         } catch (e) {
             return {
                 response: null,
-                error: 'unexpected_error'
-            }
+                error: 'unexpected_error',
+            };
         }
     }
 
@@ -81,11 +84,10 @@ export class UsersService {
      * @param address
      */
     async findByAddress(address: string): Promise<ServiceResponse<UserDto>> {
-
         let res: ESSearchReturn<UserDto>;
-        const formatted_address = toAcceptedAddressFormat(address);
+        const formattedAddress = toAcceptedAddressFormat(address);
 
-        if (!formatted_address) {
+        if (!formattedAddress) {
             return {
                 response: null,
                 error: 'invalid_address_format',
@@ -94,18 +96,23 @@ export class UsersService {
 
         try {
             res = await new Promise<ESSearchReturn<UserDto>>((ok, ko): void => {
-                this.userEntity.search({
-                    body: {
-                        query: {
-                            match: {
-                                address,
+                this.userEntity.search(
+                    {
+                        body: {
+                            query: {
+                                match: {
+                                    address,
+                                },
                             },
                         },
                     },
-                }, (err, resp): void => {
-                    if (err) return ko(err);
-                    ok(resp);
-                });
+                    (err, resp): void => {
+                        if (err) {
+                            return ko(err);
+                        }
+                        ok(resp);
+                    },
+                );
             });
         } catch (e) {
             return {
@@ -125,7 +132,6 @@ export class UsersService {
             response: res.hits.hits[0]._source,
             error: null,
         };
-
     }
 
     /**
@@ -134,23 +140,27 @@ export class UsersService {
      * @param email
      */
     async findByEmail(email: string): Promise<ServiceResponse<UserDto>> {
-
         let res: ESSearchReturn<UserDto>;
 
         try {
             res = await new Promise<ESSearchReturn<UserDto>>((ok, ko): void => {
-                this.userEntity.search({
-                    body: {
-                        query: {
-                            match: {
-                                email,
+                this.userEntity.search(
+                    {
+                        body: {
+                            query: {
+                                match: {
+                                    email,
+                                },
                             },
                         },
                     },
-                }, (err, resp): void => {
-                    if (err) return ko(err);
-                    ok(resp);
-                });
+                    (err, resp): void => {
+                        if (err) {
+                            return ko(err);
+                        }
+                        ok(resp);
+                    },
+                );
             });
         } catch (e) {
             return {
@@ -170,7 +180,6 @@ export class UsersService {
             response: res.hits.hits[0]._source,
             error: null,
         };
-
     }
 
     /**
@@ -179,23 +188,27 @@ export class UsersService {
      * @param username
      */
     async findByUsername(username: string): Promise<ServiceResponse<UserDto>> {
-
         let res: ESSearchReturn<UserDto>;
 
         try {
             res = await new Promise<ESSearchReturn<UserDto>>((ok, ko): void => {
-                this.userEntity.search({
-                    body: {
-                        query: {
-                            match: {
-                                username,
+                this.userEntity.search(
+                    {
+                        body: {
+                            query: {
+                                match: {
+                                    username,
+                                },
                             },
                         },
                     },
-                }, (err, resp): void => {
-                    if (err) return ko(err);
-                    ok(resp);
-                });
+                    (err, resp): void => {
+                        if (err) {
+                            return ko(err);
+                        }
+                        ok(resp);
+                    },
+                );
             });
         } catch (e) {
             return {
@@ -215,7 +228,5 @@ export class UsersService {
             response: res.hits.hits[0]._source,
             error: null,
         };
-
     }
-
 }

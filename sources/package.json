@@ -9,9 +9,11 @@
         "ethereum-address": "0.0.4",
         "ethers": "4.0.41",
         "lodash": "4.17.15",
-        "@ticket721/e712": "0.2.4"
+        "@ticket721/e712": "0.2.4",
+        "web3": "1.2.4"
     },
     "devDependencies": {
-        "@types/hapi__joi": "16.0.5"
+        "@types/hapi__joi": "16.0.5",
+        "@types/node": "12.12.22"
     }
 }

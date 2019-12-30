@@ -1,7 +1,7 @@
-import { Module }                        from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ExpressCassandraConfigService } from './ExpressCassandraConfig.service';
-import { ConfigModule }                  from '@lib/common/config/Config.module';
-import { Config }                        from '../utils/Config.joi';
+import { ConfigModule } from '@lib/common/config/Config.module';
+import { Config } from '../utils/Config.joi';
 
 @Module({
     imports: [ConfigModule.register(Config)],

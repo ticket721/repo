@@ -1,5 +1,5 @@
-import { ApiProperty }         from '@nestjs/swagger';
-import { IsEmail, IsString }   from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsEmail, IsString } from 'class-validator';
 
 /**
  * Input when authenticated with a local account

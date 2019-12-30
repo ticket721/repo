@@ -1,4 +1,4 @@
-import { UserDto }         from './User.dto';
+import { UserDto } from './User.dto';
 
 /**
  * Data type returned when searching for users

@@ -1,8 +1,8 @@
 import { Wallet }           from 'ethers';
 import { ProgressCallback } from 'ethers/utils';
 import { isAddress }        from '../address';
-import * as Joi             from '@hapi/joi';
-import { log, log_err }     from '../log';
+import * as Joi        from '@hapi/joi';
+import { log, logErr } from '../log';
 
 export const createWallet = async (): Promise<Wallet> => {
     log(`wallet::createWallet | creating wallet`);
@@ -22,7 +22,7 @@ export interface EncryptedWallet {
         kdf: string;
         kdfparams: any;
         mac: string;
-    }
+    };
 }
 
 export const encryptWallet = async (wallet: Wallet, password: string, cb?: ProgressCallback): Promise<any> => {
@@ -33,7 +33,7 @@ export const encryptWallet = async (wallet: Wallet, password: string, cb?: Progr
 export const isV3EncryptedWallet = (wallet: EncryptedWallet): boolean => {
     log(`wallet::isV3EncryptedWallet | verifying wallet format`);
     if (!wallet) {
-        log_err(`wallet::isV3EncryptedWallet | ${wallet} value provided`);
+        logErr(`wallet::isV3EncryptedWallet | ${wallet} value provided`);
         return false;
     }
 
@@ -55,8 +55,8 @@ export const isV3EncryptedWallet = (wallet: EncryptedWallet): boolean => {
     const { error } = V3EncryptedWalletSchema.validate(wallet);
 
     if (error) {
-        log_err(`wallet::isV3EncryptedWallet | invalid wallet`);
-        log_err(error);
+        logErr(`wallet::isV3EncryptedWallet | invalid wallet`);
+        logErr(error);
         return false;
     }
 
