@@ -1,6 +1,9 @@
 name: FLIB React CI
 
-on: [push]
+on:
+    push:
+        branches-ignore:
+            - gh-pages
 
 jobs:
     build:
