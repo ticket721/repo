@@ -29,3 +29,4 @@ jobs:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                   BRANCH: gh-pages
                   FOLDER: dist
+                  TARGET_FOLDER: public
