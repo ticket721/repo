@@ -13,6 +13,7 @@
   },
   "scripts": {
     "storybook": "start-storybook -p 6006",
+    "build": "build-storybook -c .storybook -o dist",
     "test": "jest --coverage",
     "test:update-snapshots": "jest --coverage -u"
   },
