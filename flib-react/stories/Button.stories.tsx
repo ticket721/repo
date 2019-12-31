@@ -22,7 +22,7 @@ export const showcase = () => (
             justifyContent: 'center'
         }}>
             <Button
-                title={text('Title', 'Click on me !')}
+                title={text('Button Title', 'Click on me !')}
                 onClick={action('clicked')}
                 type={select('Type', {
                     Primary: 'primary',
@@ -49,7 +49,7 @@ export const types = () => (
         }}>
             <div style={{margin: 5}}>
                 <Button
-                    title={text('Title', 'Click on me !')}
+                    title={text('Button Title', 'Click on me !')}
                     onClick={action('clicked')}
                     type={'primary'}
                 >
@@ -57,7 +57,7 @@ export const types = () => (
             </div>
             <div style={{margin: 5}}>
                 <Button
-                    title={text('Title', 'Click on me !')}
+                    title={text('Button Title', 'Click on me !')}
                     onClick={action('clicked')}
                     type={'warning'}
                 >
@@ -65,7 +65,7 @@ export const types = () => (
             </div>
             <div style={{margin: 5}}>
                 <Button
-                    title={text('Title', 'Click on me !')}
+                    title={text('Button Title', 'Click on me !')}
                     onClick={action('clicked')}
                     type={'error'}
                 >
