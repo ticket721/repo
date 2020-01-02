@@ -464,7 +464,7 @@ jobs:
               run: sudo sysctl -w vm.max_map_count=262144 && cd sources/server && npm run test:server:e2e:cov
 
     coverage:
-        needs: install
+        needs: [global, sdk, server, server-e2e]
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v1
