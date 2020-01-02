@@ -244,17 +244,11 @@ jobs:
             - name: Setup submodules (npm run setup:submodules:clone)
               run: npm run setup:submodules:clone
 
-            - name: CACHE sources/server/coverage-common
+            - name: CACHE sources/server/coverage
               uses: actions/cache@v1
               with:
-                  path: sources/server/coverage-common
-                  key: ${{ runner.os }}-coverage-common-${{ github.sha }}
-
-            - name: CACHE sources/server/coverage-server
-              uses: actions/cache@v1
-              with:
-                  path: sources/server/coverage-server
-                  key: ${{ runner.os }}-coverage-server-${{ github.sha }}
+                  path: sources/server/coverage
+                  key: ${{ runner.os }}-server-coverage-${{ github.sha }}
 
             - name: CACHE /node_modules
               uses: actions/cache@v1
@@ -485,17 +479,11 @@ jobs:
                   path: sources/global/coverage
                   key: ${{ runner.os }}-global-coverage-${{ github.sha }}
 
-            - name: CACHE sources/server/coverage-common
+            - name: CACHE sources/server/coverage
               uses: actions/cache@v1
               with:
-                  path: sources/server/coverage-common
-                  key: ${{ runner.os }}-coverage-common-${{ github.sha }}
-
-            - name: CACHE sources/server/coverage-server
-              uses: actions/cache@v1
-              with:
-                  path: sources/server/coverage-server
-                  key: ${{ runner.os }}-coverage-server-${{ github.sha }}
+                  path: sources/server/coverage
+                  key: ${{ runner.os }}-server-coverage-${{ github.sha }}
 
             - name: CACHE sources/server/coverage-server-e2e
               uses: actions/cache@v1
