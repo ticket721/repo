@@ -757,7 +757,7 @@ describe('Authentication Service', function() {
 
             const emptyServiceResponse: Promise<ServiceResponse<
                 UserDto
-            >> = Promise.resolve({
+                >> = Promise.resolve({
                 response: null,
                 error: null,
             });
@@ -822,6 +822,189 @@ describe('Authentication Service', function() {
             verify(usersServiceMock.findByAddress(resultAddress)).called();
             verify(usersServiceMock.findByEmail(email)).called();
             verify(usersServiceMock.findByUsername(username)).called();
+        });
+
+        test('user by email error', async function() {
+            const authenticationService: AuthenticationService =
+                context.authenticationService;
+            const usersServiceMock: UsersService = context.usersServiceMock;
+            const refractFactoryV0Service: RefractFactoryV0Service =
+                context.refractFactoryV0Service;
+
+            const email = 'test@test.com';
+            const username = 'salut';
+            const wallet: Wallet = await createWallet();
+            const address = wallet.address;
+            const hashedp = toAcceptedKeccak256Format(keccak256('salut'));
+            const encrypted_string = await encryptWallet(wallet, hashedp);
+            const encrypted = JSON.parse(encrypted_string);
+
+            const serviceResponse: ServiceResponse<UserDto> = {
+                response: {
+                    email,
+                    username,
+                    wallet: encrypted_string,
+                    address: resultAddress,
+                    type: 't721',
+                    password: hashedp,
+                    id: '0',
+                    role: 'authenticated',
+                },
+                error: null,
+            };
+
+            const emptyServiceResponse: Promise<ServiceResponse<
+                UserDto
+            >> = Promise.resolve({
+                response: null,
+                error: null,
+            });
+
+            when(usersServiceMock.findByEmail(email)).thenReturn(
+                Promise.resolve({
+                    response: null,
+                    error: 'unexpected_error'
+                })
+            );
+
+            const res = await authenticationService.createT721User(
+                email,
+                hashedp,
+                username,
+                encrypted,
+            );
+
+            expect(res.error).toEqual('unexpected_error');
+            expect(res.response).toEqual(null);
+
+            verify(usersServiceMock.findByEmail(email)).called();
+        });
+
+        test('user by username error', async function() {
+            const authenticationService: AuthenticationService =
+                context.authenticationService;
+            const usersServiceMock: UsersService = context.usersServiceMock;
+            const refractFactoryV0Service: RefractFactoryV0Service =
+                context.refractFactoryV0Service;
+
+            const email = 'test@test.com';
+            const username = 'salut';
+            const wallet: Wallet = await createWallet();
+            const address = wallet.address;
+            const hashedp = toAcceptedKeccak256Format(keccak256('salut'));
+            const encrypted_string = await encryptWallet(wallet, hashedp);
+            const encrypted = JSON.parse(encrypted_string);
+
+            const serviceResponse: ServiceResponse<UserDto> = {
+                response: {
+                    email,
+                    username,
+                    wallet: encrypted_string,
+                    address: resultAddress,
+                    type: 't721',
+                    password: hashedp,
+                    id: '0',
+                    role: 'authenticated',
+                },
+                error: null,
+            };
+
+            const emptyServiceResponse: Promise<ServiceResponse<
+                UserDto
+                >> = Promise.resolve({
+                response: null,
+                error: null,
+            });
+
+            when(usersServiceMock.findByEmail(email)).thenReturn(
+                emptyServiceResponse
+            );
+
+            when(usersServiceMock.findByUsername(username)).thenReturn(
+                Promise.resolve({
+                    response: null,
+                    error: 'unexpected_error'
+                })
+            );
+
+            const res = await authenticationService.createT721User(
+                email,
+                hashedp,
+                username,
+                encrypted,
+            );
+
+            expect(res.error).toEqual('unexpected_error');
+            expect(res.response).toEqual(null);
+
+            verify(usersServiceMock.findByEmail(email)).called();
+            verify(usersServiceMock.findByUsername(username)).called();
+        });
+
+        test('user by address error', async function() {
+            const authenticationService: AuthenticationService =
+                context.authenticationService;
+            const usersServiceMock: UsersService = context.usersServiceMock;
+            const refractFactoryV0Service: RefractFactoryV0Service =
+                context.refractFactoryV0Service;
+
+            const email = 'test@test.com';
+            const username = 'salut';
+            const wallet: Wallet = await createWallet();
+            const address = wallet.address;
+            const hashedp = toAcceptedKeccak256Format(keccak256('salut'));
+            const encrypted_string = await encryptWallet(wallet, hashedp);
+            const encrypted = JSON.parse(encrypted_string);
+
+            const serviceResponse: ServiceResponse<UserDto> = {
+                response: {
+                    email,
+                    username,
+                    wallet: encrypted_string,
+                    address: resultAddress,
+                    type: 't721',
+                    password: hashedp,
+                    id: '0',
+                    role: 'authenticated',
+                },
+                error: null,
+            };
+
+            const emptyServiceResponse: Promise<ServiceResponse<
+                UserDto
+                >> = Promise.resolve({
+                response: null,
+                error: null,
+            });
+
+            when(usersServiceMock.findByEmail(email)).thenReturn(
+                emptyServiceResponse
+            );
+
+            when(usersServiceMock.findByAddress(resultAddress)).thenReturn(
+                Promise.resolve({
+                    response: null,
+                    error: 'unexpected_error'
+                })
+            );
+
+            when(usersServiceMock.findByUsername(username)).thenReturn(
+                emptyServiceResponse
+            );
+
+            const res = await authenticationService.createT721User(
+                email,
+                hashedp,
+                username,
+                encrypted,
+            );
+
+            expect(res.error).toEqual('unexpected_error');
+            expect(res.response).toEqual(null);
+
+            verify(usersServiceMock.findByEmail(email)).called();
+            verify(usersServiceMock.findByUsername(username)).called();
+            verify(usersServiceMock.findByAddress(resultAddress)).called();
         });
 
         test('email already in use', async function() {
