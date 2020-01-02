@@ -108,6 +108,12 @@ jobs:
               with:
                   node-version: 12.x
 
+            - name: CACHE sources/global/coverage
+              uses: actions/cache@v1
+              with:
+                  path: sources/global/coverage
+                  key: ${{ runner.os }}-global-coverage-${{ github.sha }}
+
             - name: CACHE /node_modules
               uses: actions/cache@v1
               with:
@@ -158,11 +164,6 @@ jobs:
             - name: Test @ticket721sources/global (npm run test:cov in sources/global)
               working-directory: sources/global
               run: npm run test:cov
-
-            - name: Codecov (npm run codecov:upload)
-              run: npm run codecov:upload
-              env:
-                  CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
     sdk:
         needs: install
@@ -225,11 +226,6 @@ jobs:
               working-directory: sources/sdk
               run: npm run lint
 
-            - name: Codecov (npm run codecov:upload)
-              run: npm run codecov:upload
-              env:
-                  CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-
     server:
         needs: install
         runs-on: ubuntu-latest
@@ -247,6 +243,18 @@ jobs:
 
             - name: Setup submodules (npm run setup:submodules:clone)
               run: npm run setup:submodules:clone
+
+            - name: CACHE sources/server/coverage-common
+              uses: actions/cache@v1
+              with:
+                  path: sources/server/coverage-common
+                  key: ${{ runner.os }}-coverage-common-${{ github.sha }}
+
+            - name: CACHE sources/server/coverage-server
+              uses: actions/cache@v1
+              with:
+                  path: sources/server/coverage-server
+                  key: ${{ runner.os }}-coverage-server-${{ github.sha }}
 
             - name: CACHE /node_modules
               uses: actions/cache@v1
@@ -344,10 +352,6 @@ jobs:
               working-directory: sources/server
               run: npm run test:cov
 
-            - name: Codecov (npm run codecov:upload)
-              run: npm run codecov:upload
-              env:
-                  CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
     server-e2e:
         needs: install
@@ -369,6 +373,12 @@ jobs:
 
             - name: Setup submodules (npm run setup:submodules:clone)
               run: npm run setup:submodules:clone
+
+            - name: CACHE sources/server/coverage-server-e2e
+              uses: actions/cache@v1
+              with:
+                  path: sources/server/coverage-server-e2e
+                  key: ${{ runner.os }}-coverage-server-e2e-${{ github.sha }}
 
             - name: CACHE /node_modules
               uses: actions/cache@v1
@@ -452,6 +462,46 @@ jobs:
 
             - name: Run @ticket721sources/server @app/server e2e tests (npm run test:server:e2e:cov in sources/server)
               run: sudo sysctl -w vm.max_map_count=262144 && cd sources/server && npm run test:server:e2e:cov
+
+    coverage:
+        needs: install
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v1
+            - name: Use Node.js 12.x
+              uses: actions/setup-node@v1.2.0
+              with:
+                  node-version: 12.x
+
+            - name: CACHE /node_modules
+              uses: actions/cache@v1
+              with:
+                  path: ./node_modules
+                  key: ${{ runner.os }}-${{ hashFiles('package-lock.json') }}-root
+
+            - name: CACHE sources/global/coverage
+              uses: actions/cache@v1
+              with:
+                  path: sources/global/coverage
+                  key: ${{ runner.os }}-global-coverage-${{ github.sha }}
+
+            - name: CACHE sources/server/coverage-common
+              uses: actions/cache@v1
+              with:
+                  path: sources/server/coverage-common
+                  key: ${{ runner.os }}-coverage-common-${{ github.sha }}
+
+            - name: CACHE sources/server/coverage-server
+              uses: actions/cache@v1
+              with:
+                  path: sources/server/coverage-server
+                  key: ${{ runner.os }}-coverage-server-${{ github.sha }}
+
+            - name: CACHE sources/server/coverage-server-e2e
+              uses: actions/cache@v1
+              with:
+                  path: sources/server/coverage-server-e2e
+                  key: ${{ runner.os }}-coverage-server-e2e-${{ github.sha }}
 
             - name: Codecov (npm run codecov:upload)
               run: npm run codecov:upload
