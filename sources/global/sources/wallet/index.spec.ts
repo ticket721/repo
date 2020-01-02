@@ -15,7 +15,7 @@ describe('Wallet', function() {
     test('encrypt wallet', async function() {
         const wallet: Wallet = await createWallet();
         let _progress = 0;
-        const encrypted = await encryptWallet(wallet, 'salut123', (progress: number) => {
+        const encrypted = await encryptWallet(wallet, 'salutsalut123', (progress: number) => {
             if (progress === 1) {
                 _progress = 1;
             }
@@ -27,14 +27,14 @@ describe('Wallet', function() {
 
     test('check encrypted wallet format', async function() {
         const wallet: Wallet = await createWallet();
-        const encrypted = await encryptWallet(wallet, 'salut123');
+        const encrypted = await encryptWallet(wallet, 'salutsalut123');
         const parsedEncrypted: EncryptedWallet = JSON.parse(encrypted);
         expect(isV3EncryptedWallet(parsedEncrypted)).toBeTruthy();
     });
 
     test('check invalid encrypted wallet format', async function() {
         const wallet: Wallet = await createWallet();
-        const encrypted = await encryptWallet(wallet, 'salut123');
+        const encrypted = await encryptWallet(wallet, 'salutsalut123');
         const parsedEncrypted: EncryptedWallet = JSON.parse(encrypted);
         parsedEncrypted.version = 2;
         expect(isV3EncryptedWallet(parsedEncrypted)).toBeFalsy();

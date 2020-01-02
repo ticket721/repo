@@ -17,21 +17,31 @@ import { UsersService } from '@lib/common/users/Users.service';
 import { ConfigService } from '@lib/common/config/Config.service';
 import { UserDto } from '@lib/common/users/dto/User.dto';
 import { Web3TokensService } from '@app/server/web3token/Web3Tokens.service';
+import { RefractFactoryV0Service } from '@lib/common/contracts/refract/RefractFactory.V0.service';
 
 const context: {
     authenticationService: AuthenticationService;
     usersServiceMock: UsersService;
     configServiceMock: ConfigService;
+    refractFactoryV0Service: RefractFactoryV0Service;
 } = {
     authenticationService: null,
     usersServiceMock: null,
     configServiceMock: null,
+    refractFactoryV0Service: null,
 };
+
+const resultAddress = toAcceptedAddressFormat(
+    '0x87c02dec6b33498b489e1698801fc2ef79d02eef',
+);
 
 describe('Authentication Service', function() {
     beforeEach(async function() {
         const usersServiceMock: UsersService = mock(UsersService);
         const configServiceMock: ConfigService = mock(ConfigService);
+        const refractFactoryServiceMock: RefractFactoryV0Service = mock(
+            RefractFactoryV0Service,
+        );
 
         const UsersServiceProvider = {
             provide: UsersService,
@@ -43,6 +53,11 @@ describe('Authentication Service', function() {
             useValue: instance(configServiceMock),
         };
 
+        const RefractFactoryV0ServiceProvider = {
+            provide: RefractFactoryV0Service,
+            useValue: instance(refractFactoryServiceMock),
+        };
+
         when(configServiceMock.get('AUTH_SIGNATURE_TIMEOUT')).thenReturn('30');
 
         const module: TestingModule = await Test.createTestingModule({
@@ -50,14 +65,27 @@ describe('Authentication Service', function() {
                 UsersServiceProvider,
                 ConfigServiceProvider,
                 AuthenticationService,
+                RefractFactoryV0ServiceProvider,
             ],
         }).compile();
+
+        const contract_instance = {
+            methods: {
+                predict: (...args: any[]) => ({
+                    call: async () => resultAddress,
+                }),
+            },
+        };
+        when(refractFactoryServiceMock.get()).thenReturn(
+            Promise.resolve(contract_instance),
+        );
 
         context.authenticationService = module.get<AuthenticationService>(
             AuthenticationService,
         );
         context.usersServiceMock = usersServiceMock;
         context.configServiceMock = configServiceMock;
+        context.refractFactoryV0Service = refractFactoryServiceMock;
     });
 
     describe('validateWeb3User', function() {
@@ -702,6 +730,8 @@ describe('Authentication Service', function() {
             const authenticationService: AuthenticationService =
                 context.authenticationService;
             const usersServiceMock: UsersService = context.usersServiceMock;
+            const refractFactoryV0Service: RefractFactoryV0Service =
+                context.refractFactoryV0Service;
 
             const email = 'test@test.com';
             const username = 'salut';
@@ -716,7 +746,7 @@ describe('Authentication Service', function() {
                     email,
                     username,
                     wallet: encrypted_string,
-                    address: toAcceptedAddressFormat(address),
+                    address: resultAddress,
                     type: 't721',
                     password: hashedp,
                     id: '0',
@@ -738,7 +768,7 @@ describe('Authentication Service', function() {
                         email,
                         username,
                         wallet: encrypted_string,
-                        address: toAcceptedAddressFormat(address),
+                        address: resultAddress,
                         type: 't721',
                         password: anyString(),
                         role: 'authenticated',
@@ -746,7 +776,7 @@ describe('Authentication Service', function() {
                 ),
             ).thenReturn(Promise.resolve(serviceResponse));
 
-            when(usersServiceMock.findByAddress(address)).thenReturn(
+            when(usersServiceMock.findByAddress(resultAddress)).thenReturn(
                 emptyServiceResponse,
             );
             when(usersServiceMock.findByEmail(email)).thenReturn(
@@ -769,7 +799,7 @@ describe('Authentication Service', function() {
                 email,
                 username,
                 wallet: encrypted_string,
-                address: toAcceptedAddressFormat(address),
+                address: resultAddress,
                 type: 't721',
                 id: '0',
                 role: 'authenticated',
@@ -781,7 +811,7 @@ describe('Authentication Service', function() {
                         email,
                         username,
                         wallet: encrypted_string,
-                        address: toAcceptedAddressFormat(address),
+                        address: resultAddress,
                         type: 't721',
                         password: anyString(),
                         role: 'authenticated',
@@ -789,7 +819,7 @@ describe('Authentication Service', function() {
                 ),
             ).called();
 
-            verify(usersServiceMock.findByAddress(address)).called();
+            verify(usersServiceMock.findByAddress(resultAddress)).called();
             verify(usersServiceMock.findByEmail(email)).called();
             verify(usersServiceMock.findByUsername(username)).called();
         });
@@ -949,7 +979,7 @@ describe('Authentication Service', function() {
                     email,
                     username,
                     wallet: encrypted,
-                    address: toAcceptedAddressFormat(address),
+                    address: resultAddress,
                     type: 't721',
                     password: hashedp,
                     id: '0',
@@ -971,7 +1001,7 @@ describe('Authentication Service', function() {
             when(usersServiceMock.findByUsername(username)).thenReturn(
                 emptyServiceResponse,
             );
-            when(usersServiceMock.findByAddress(address)).thenReturn(
+            when(usersServiceMock.findByAddress(resultAddress)).thenReturn(
                 Promise.resolve(serviceResponse),
             );
 
@@ -986,7 +1016,7 @@ describe('Authentication Service', function() {
             expect(res.error).toEqual('address_already_in_use');
             verify(usersServiceMock.findByUsername(username)).called();
             verify(usersServiceMock.findByEmail(email)).called();
-            verify(usersServiceMock.findByAddress(address)).called();
+            verify(usersServiceMock.findByAddress(resultAddress)).called();
         });
 
         test('invalid password', async function() {
@@ -1014,7 +1044,7 @@ describe('Authentication Service', function() {
             when(usersServiceMock.findByUsername(username)).thenReturn(
                 emptyServiceResponse,
             );
-            when(usersServiceMock.findByAddress(address)).thenReturn(
+            when(usersServiceMock.findByAddress(resultAddress)).thenReturn(
                 emptyServiceResponse,
             );
 
@@ -1029,7 +1059,7 @@ describe('Authentication Service', function() {
             expect(res.error).toEqual('password_should_be_keccak256');
             verify(usersServiceMock.findByUsername(username)).called();
             verify(usersServiceMock.findByEmail(email)).called();
-            verify(usersServiceMock.findByAddress(address)).called();
+            verify(usersServiceMock.findByAddress(resultAddress)).called();
         });
 
         test('email query internal error', async function() {
@@ -1128,7 +1158,7 @@ describe('Authentication Service', function() {
             when(usersServiceMock.findByUsername(username)).thenReturn(
                 emptyServiceResponse,
             );
-            when(usersServiceMock.findByAddress(address)).thenReturn(
+            when(usersServiceMock.findByAddress(resultAddress)).thenReturn(
                 Promise.resolve({
                     response: null,
                     error: 'unexpected_error',
@@ -1146,7 +1176,7 @@ describe('Authentication Service', function() {
             expect(res.error).toEqual('unexpected_error');
             verify(usersServiceMock.findByEmail(email)).called();
             verify(usersServiceMock.findByUsername(username)).called();
-            verify(usersServiceMock.findByAddress(address)).called();
+            verify(usersServiceMock.findByAddress(resultAddress)).called();
         });
 
         test('create user internal error', async function() {
@@ -1175,7 +1205,7 @@ describe('Authentication Service', function() {
                         email,
                         username,
                         wallet: encrypted_string,
-                        address: toAcceptedAddressFormat(address),
+                        address: resultAddress,
                         type: 't721',
                         password: anyString(),
                         role: 'authenticated',
@@ -1188,7 +1218,7 @@ describe('Authentication Service', function() {
                 }),
             );
 
-            when(usersServiceMock.findByAddress(address)).thenReturn(
+            when(usersServiceMock.findByAddress(resultAddress)).thenReturn(
                 emptyServiceResponse,
             );
             when(usersServiceMock.findByEmail(email)).thenReturn(
@@ -1209,14 +1239,14 @@ describe('Authentication Service', function() {
             expect(res.error).toEqual('unexpected_error');
             verify(usersServiceMock.findByEmail(email)).called();
             verify(usersServiceMock.findByUsername(username)).called();
-            verify(usersServiceMock.findByAddress(address)).called();
+            verify(usersServiceMock.findByAddress(resultAddress)).called();
             verify(
                 usersServiceMock.create(
                     deepEqual({
                         email,
                         username,
                         wallet: encrypted_string,
-                        address: toAcceptedAddressFormat(address),
+                        address: resultAddress,
                         type: 't721',
                         password: anyString(),
                         role: 'authenticated',

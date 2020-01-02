@@ -37,9 +37,6 @@ export async function register(
     expect(resp.data).toBeDefined();
     expect(resp.data.user.email).toEqual(email);
     expect(resp.data.user.username).toEqual(username);
-    expect(resp.data.user.address).toEqual(
-        toAcceptedAddressFormat(wallet.address),
-    );
     expect(resp.data.token).toBeDefined();
     expect(resp.status).toEqual(201);
     expect(resp.statusText).toEqual('Created');
@@ -51,9 +48,6 @@ export async function register(
     expect(auth_res.data).toBeDefined();
     expect(auth_res.data.user.email).toEqual(email);
     expect(auth_res.data.user.username).toEqual(username);
-    expect(auth_res.data.user.address).toEqual(
-        toAcceptedAddressFormat(wallet.address),
-    );
     expect(auth_res.data.token).toBeDefined();
     expect(auth_res.status).toEqual(200);
     expect(auth_res.statusText).toEqual('OK');
@@ -86,26 +80,6 @@ export async function register(
                 statusCode: 409,
                 name: 'Conflict',
                 message: 'username_already_in_use',
-            },
-            status: 409,
-            statusText: 'Conflict',
-        },
-    });
-
-    await expect(
-        sdk.localRegister(
-            'test2@test.com',
-            password,
-            'mortimr2',
-            wallet,
-            () => {},
-        ),
-    ).rejects.toMatchObject({
-        response: {
-            data: {
-                statusCode: 409,
-                name: 'Conflict',
-                message: 'address_already_in_use',
             },
             status: 409,
             statusText: 'Conflict',

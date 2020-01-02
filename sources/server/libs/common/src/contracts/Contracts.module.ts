@@ -4,6 +4,10 @@ import {
     ContractsServiceOptions,
 } from '@lib/common/contracts/Contracts.service';
 import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
+import { TicketforgeService } from '@lib/common/contracts/Ticketforge.service';
+import { RefractFactoryV0Service } from '@lib/common/contracts/refract/RefractFactory.V0.service';
+import { T721ControllerV0Service } from '@lib/common/contracts/t721controller/T721Controller.V0.service';
+import { MetaMarketplaceV0Service } from '@lib/common/contracts/metamarketplace/MetaMarketplace.V0.service';
 
 export interface ContractsModuleAsyncOptions
     extends Pick<DynamicModule, 'imports'> {
@@ -31,8 +35,18 @@ export class ContractsModule {
                     provide: WinstonLoggerService,
                     useValue: new WinstonLoggerService('contracts'),
                 },
+                TicketforgeService,
+                RefractFactoryV0Service,
+                T721ControllerV0Service,
+                MetaMarketplaceV0Service,
             ],
-            exports: [ContractsService],
+            exports: [
+                ContractsService,
+                TicketforgeService,
+                RefractFactoryV0Service,
+                T721ControllerV0Service,
+                MetaMarketplaceV0Service,
+            ],
         };
     }
 }

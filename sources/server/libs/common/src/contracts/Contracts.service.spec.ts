@@ -33,6 +33,9 @@ const configureWeb3Service = (
 
     const modules = fs.readdirSync(artifactsPath);
     for (const mod of modules) {
+        if (!fs.statSync(path.join(artifactsPath, mod)).isDirectory()) {
+            continue;
+        }
         const artifacts = fs.readdirSync(
             path.join(artifactsPath, mod, 'build', 'contracts'),
         );

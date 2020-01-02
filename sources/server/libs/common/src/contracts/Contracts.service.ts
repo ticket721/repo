@@ -9,24 +9,32 @@ export interface ContractsServiceOptions {
     artifact_path: string;
 }
 
-export interface ABIInput {
-    name: string;
-    type: string;
-    components?: ABIInput[];
-    indexed?: boolean;
+export type AbiType = 'function' | 'constructor' | 'event' | 'fallback';
+export type StateMutabilityType = 'pure' | 'view' | 'nonpayable' | 'payable';
+
+export interface AbiItem {
+    anonymous?: boolean;
+    constant?: boolean;
+    inputs?: AbiInput[];
+    name?: string;
+    outputs?: AbiOutput[];
+    payable?: boolean;
+    stateMutability?: StateMutabilityType;
+    type: AbiType;
 }
 
-export type ABIOutput = ABIInput;
-
-export interface ABISegment {
-    type?: 'function' | 'constructor' | 'fallback' | 'event';
-    anonymous?: boolean;
-    payable?: boolean;
-    constant?: boolean;
+export interface AbiInput {
     name: string;
-    inputs: ABIInput[];
-    outputs: ABIOutput[];
-    stateMutability: 'pure' | 'view' | 'nonpayable' | 'payable';
+    type: string;
+    indexed?: boolean;
+    components?: AbiInput[];
+}
+
+export interface AbiOutput {
+    name: string;
+    type: string;
+    components?: AbiOutput[];
+    internalType?: string;
 }
 
 export interface ContractLink {
@@ -37,7 +45,7 @@ export interface ContractLink {
 export interface NetworkInfo {
     address: string;
     events: {
-        [key: string]: ABIOutput;
+        [key: string]: AbiOutput;
     };
     links: ContractLink[];
     transactionHash: string;
@@ -50,7 +58,7 @@ export interface CompilerInfo {
 
 export interface ContractArtifact {
     contractName: string;
-    abi: ABISegment[];
+    abi: AbiItem[] | AbiItem;
     metadata: string;
     bytecode: string;
     deployedBytecode: string;
@@ -116,6 +124,16 @@ export class ContractsService {
                 this.options.artifact_path,
             );
             for (const artifact of artifactContent) {
+                if (
+                    !fs
+                        .statSync(
+                            path.join(this.options.artifact_path, artifact),
+                        )
+                        .isDirectory()
+                ) {
+                    continue;
+                }
+
                 const contractsModuleDir = path.join(
                     this.options.artifact_path,
                     artifact,

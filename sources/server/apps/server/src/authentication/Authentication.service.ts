@@ -8,11 +8,13 @@ import {
     isKeccak256,
     Web3LoginSigner,
     Web3RegisterSigner,
+    keccak256,
 } from '@ticket721sources/global';
 import { ServiceResponse } from '../utils/ServiceResponse';
 import { UsersService } from '@lib/common/users/Users.service';
 import { ConfigService } from '@lib/common/config/Config.service';
 import { UserDto } from '@lib/common/users/dto/User.dto';
+import { RefractFactoryV0Service } from '@lib/common/contracts/refract/RefractFactory.V0.service';
 
 /**
  * Authentication services and utilities
@@ -24,10 +26,12 @@ export class AuthenticationService {
      *
      * @param usersService
      * @param configService
+     * @param refractFactoryService
      */
     constructor /* instanbul ignore next */(
         private readonly usersService: UsersService,
         private readonly configService: ConfigService,
+        private readonly refractFactoryService: RefractFactoryV0Service,
     ) {}
 
     /**
@@ -287,8 +291,15 @@ export class AuthenticationService {
         }
 
         const address = toAcceptedAddressFormat(wallet.address);
+
+        const refractFactoryV0 = await this.refractFactoryService.get();
+        const salt = keccak256(email);
+        const finalAddress: string = toAcceptedAddressFormat(
+            await refractFactoryV0.methods.predict(address, salt).call(),
+        );
+
         const addressUserResp: ServiceResponse<UserDto> = await this.usersService.findByAddress(
-            address,
+            finalAddress,
         );
         if (addressUserResp.error) {
             return addressUserResp;
@@ -318,7 +329,7 @@ export class AuthenticationService {
                 ),
                 username,
                 wallet: JSON.stringify(wallet),
-                address,
+                address: finalAddress,
                 type: 't721',
                 role: 'authenticated',
             },
