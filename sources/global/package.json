@@ -15,7 +15,7 @@
         "lint": "tslint --project ."
     },
     "dependencies": {
-        "cassandra-driver": "3.6.0",
+        "cassandra-driver": "4.3.1",
         "js-sha3": "0.8.0",
         "zxcvbn": "4.4.2"
     },
