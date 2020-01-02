@@ -757,7 +757,7 @@ describe('Authentication Service', function() {
 
             const emptyServiceResponse: Promise<ServiceResponse<
                 UserDto
-                >> = Promise.resolve({
+            >> = Promise.resolve({
                 response: null,
                 error: null,
             });
@@ -863,8 +863,8 @@ describe('Authentication Service', function() {
             when(usersServiceMock.findByEmail(email)).thenReturn(
                 Promise.resolve({
                     response: null,
-                    error: 'unexpected_error'
-                })
+                    error: 'unexpected_error',
+                }),
             );
 
             const res = await authenticationService.createT721User(
@@ -911,20 +911,20 @@ describe('Authentication Service', function() {
 
             const emptyServiceResponse: Promise<ServiceResponse<
                 UserDto
-                >> = Promise.resolve({
+            >> = Promise.resolve({
                 response: null,
                 error: null,
             });
 
             when(usersServiceMock.findByEmail(email)).thenReturn(
-                emptyServiceResponse
+                emptyServiceResponse,
             );
 
             when(usersServiceMock.findByUsername(username)).thenReturn(
                 Promise.resolve({
                     response: null,
-                    error: 'unexpected_error'
-                })
+                    error: 'unexpected_error',
+                }),
             );
 
             const res = await authenticationService.createT721User(
@@ -972,24 +972,24 @@ describe('Authentication Service', function() {
 
             const emptyServiceResponse: Promise<ServiceResponse<
                 UserDto
-                >> = Promise.resolve({
+            >> = Promise.resolve({
                 response: null,
                 error: null,
             });
 
             when(usersServiceMock.findByEmail(email)).thenReturn(
-                emptyServiceResponse
+                emptyServiceResponse,
             );
 
             when(usersServiceMock.findByAddress(resultAddress)).thenReturn(
                 Promise.resolve({
                     response: null,
-                    error: 'unexpected_error'
-                })
+                    error: 'unexpected_error',
+                }),
             );
 
             when(usersServiceMock.findByUsername(username)).thenReturn(
-                emptyServiceResponse
+                emptyServiceResponse,
             );
 
             const res = await authenticationService.createT721User(
