@@ -1,43 +1,53 @@
-import { Test, TestingModule }                                            from '@nestjs/testing';
-import { anyFunction, anything, deepEqual, instance, mock, verify, when } from 'ts-mockito';
+import { Test, TestingModule } from '@nestjs/testing';
+import {
+    anyFunction,
+    anything,
+    deepEqual,
+    instance,
+    mock,
+    verify,
+    when,
+} from 'ts-mockito';
 import {
     createWallet,
     encryptWallet,
-    keccak256, toAcceptedAddressFormat,
+    keccak256,
+    toAcceptedAddressFormat,
     toAcceptedKeccak256Format,
     Wallet,
-}                                      from '@ticket721sources/global';
-import { UsersService }                from './Users.service';
-import { UserEntity }                  from './entities/User.entity';
-import { UsersRepository }             from './Users.repository';
-import {
-    EsSearchOptionsStatic,
-}                                      from '@iaminfinity/express-cassandra/dist/orm/interfaces/externals/express-cassandra.interface';
-import { CreateUserServiceInputDto }   from './dto/CreateUserServiceInput.dto';
+} from '@ticket721sources/global';
+import { UsersService } from './Users.service';
+import { UserEntity } from './entities/User.entity';
+import { UsersRepository } from './Users.repository';
+import { EsSearchOptionsStatic } from '@iaminfinity/express-cassandra/dist/orm/interfaces/externals/express-cassandra.interface';
+import { CreateUserServiceInputDto } from './dto/CreateUserServiceInput.dto';
 import { ESSearchHit, ESSearchReturn } from '@app/server/utils/ESSearchReturn';
-import { uuid }                        from '@iaminfinity/express-cassandra';
+import { uuid } from '@iaminfinity/express-cassandra';
 
 class UserEntityModelMock {
-    search(options: EsSearchOptionsStatic, callback?: (err: any, ret: any) => void): void {
+    search(
+        options: EsSearchOptionsStatic,
+        callback?: (err: any, ret: any) => void,
+    ): void {
         return;
     }
 }
 
 const context: {
-    usersService: UsersService,
-    userEntityModelMock: UserEntityModelMock,
-    usersRepositoryMock: UsersRepository
+    usersService: UsersService;
+    userEntityModelMock: UserEntityModelMock;
+    usersRepositoryMock: UsersRepository;
 } = {
     usersService: null,
     userEntityModelMock: null,
-    usersRepositoryMock: null
+    usersRepositoryMock: null,
 };
 
 describe('Users Service', function() {
-
     beforeEach(async function() {
-
-        const userEntityModelMock: UserEntityModelMock = mock(UserEntityModelMock);
+        const userEntityModelMock: UserEntityModelMock = mock(
+            UserEntityModelMock,
+        );
 
         const usersRepositoryMock: UsersRepository = mock(UsersRepository);
 
@@ -62,16 +72,15 @@ describe('Users Service', function() {
         context.usersService = module.get<UsersService>(UsersService);
         context.userEntityModelMock = userEntityModelMock;
         context.usersRepositoryMock = usersRepositoryMock;
-
     });
 
     describe('findById', function() {
-
         test('should return existing user', async function() {
-
             const usersService: UsersService = context.usersService;
-            const userEntityModelMock: UserEntityModelMock = context.userEntityModelMock;
-            const usersRepositoryMock: UsersRepository = context.usersRepositoryMock;
+            const userEntityModelMock: UserEntityModelMock =
+                context.userEntityModelMock;
+            const usersRepositoryMock: UsersRepository =
+                context.usersRepositoryMock;
 
             const email = 'test@test.com';
             const username = 'salut';
@@ -90,7 +99,7 @@ describe('Users Service', function() {
                     password: hashedp,
                     id,
                     type: 't721',
-                    role: 'authenticated'
+                    role: 'authenticated',
                 };
             };
 
@@ -100,7 +109,9 @@ describe('Users Service', function() {
                 };
             };
 
-            when(usersRepositoryMock.findOne(deepEqual({id: uuid(id) as any}))).thenCall(injected_cb);
+            when(
+                usersRepositoryMock.findOne(deepEqual({ id: uuid(id) as any })),
+            ).thenCall(injected_cb);
 
             const res = await usersService.findById(id);
 
@@ -113,16 +124,16 @@ describe('Users Service', function() {
                 password: hashedp,
                 id,
                 type: 't721',
-                role: 'authenticated'
-            })
-
+                role: 'authenticated',
+            });
         });
 
         test('unexpected search error', async function() {
-
             const usersService: UsersService = context.usersService;
-            const userEntityModelMock: UserEntityModelMock = context.userEntityModelMock;
-            const usersRepositoryMock: UsersRepository = context.usersRepositoryMock;
+            const userEntityModelMock: UserEntityModelMock =
+                context.userEntityModelMock;
+            const usersRepositoryMock: UsersRepository =
+                context.usersRepositoryMock;
 
             const email = 'test@test.com';
             const username = 'salut';
@@ -141,7 +152,7 @@ describe('Users Service', function() {
                     password: hashedp,
                     id,
                     type: 't721',
-                    role: 'authenticated'
+                    role: 'authenticated',
                 };
             };
 
@@ -151,23 +162,22 @@ describe('Users Service', function() {
                 };
             };
 
-            when(usersRepositoryMock.findOne(deepEqual({id: uuid(id) as any}))).thenCall(injected_cb);
+            when(
+                usersRepositoryMock.findOne(deepEqual({ id: uuid(id) as any })),
+            ).thenCall(injected_cb);
 
             const res = await usersService.findById(id);
 
             expect(res.error).toEqual('unexpected_error');
-            expect(res.response).toEqual(null)
-
+            expect(res.response).toEqual(null);
         });
-
     });
 
     describe('findByAddress', function() {
-
         test('should return existing user', async function() {
-
             const usersService: UsersService = context.usersService;
-            const userEntityModelMock: UserEntityModelMock = context.userEntityModelMock;
+            const userEntityModelMock: UserEntityModelMock =
+                context.userEntityModelMock;
 
             const email = 'test@test.com';
             const username = 'salut';
@@ -178,52 +188,53 @@ describe('Users Service', function() {
 
             const injected_cb = (options: any, cb: any): void => {
                 cb(null, {
-                        took: 2,
-                        timed_out: false,
-                        _shards: {
-                            total: 2,
-                            successful: 2,
-                            skipped: 0,
-                            failed: 0,
-                        },
-                        hits: {
-                            total: 1,
-                            max_score: 0.5,
-                            hits: [
-                                {
-                                    _index: 'ticket721_user',
-                                    _type: 'user',
-                                    _id: '0',
-                                    _score: 0.5,
-                                    _source: {
-                                        username,
-                                        email,
-                                        password: hashedp,
-                                        wallet: encrypted_string,
-                                        address: toAcceptedAddressFormat(address),
-                                        id: '0',
-                                        type: 't721',
-                                        role: 'authenticated',
-                                    },
-                                } as ESSearchHit<UserEntity>,
-                            ],
-                        },
-                    } as ESSearchReturn<UserEntity>,
-                );
+                    took: 2,
+                    timed_out: false,
+                    _shards: {
+                        total: 2,
+                        successful: 2,
+                        skipped: 0,
+                        failed: 0,
+                    },
+                    hits: {
+                        total: 1,
+                        max_score: 0.5,
+                        hits: [
+                            {
+                                _index: 'ticket721_user',
+                                _type: 'user',
+                                _id: '0',
+                                _score: 0.5,
+                                _source: {
+                                    username,
+                                    email,
+                                    password: hashedp,
+                                    wallet: encrypted_string,
+                                    address: toAcceptedAddressFormat(address),
+                                    id: '0',
+                                    type: 't721',
+                                    role: 'authenticated',
+                                },
+                            } as ESSearchHit<UserEntity>,
+                        ],
+                    },
+                } as ESSearchReturn<UserEntity>);
             };
 
-            when(userEntityModelMock.search(
-                deepEqual({
-                    body: {
-                        query: {
-                            match: {
-                                address,
+            when(
+                userEntityModelMock.search(
+                    deepEqual({
+                        body: {
+                            query: {
+                                match: {
+                                    address,
+                                },
                             },
                         },
-                    },
-                }),
-                anyFunction(),
-            )).thenCall(injected_cb);
+                    }),
+                    anyFunction(),
+                ),
+            ).thenCall(injected_cb);
 
             const res = await usersService.findByAddress(address);
 
@@ -239,25 +250,26 @@ describe('Users Service', function() {
                 role: 'authenticated',
             });
 
-            verify(userEntityModelMock.search(
-                deepEqual({
-                    body: {
-                        query: {
-                            match: {
-                                address,
+            verify(
+                userEntityModelMock.search(
+                    deepEqual({
+                        body: {
+                            query: {
+                                match: {
+                                    address,
+                                },
                             },
                         },
-                    },
-                }),
-                anyFunction(),
-            )).called();
-
+                    }),
+                    anyFunction(),
+                ),
+            ).called();
         });
 
         test('should return null on invalid address', async function() {
-
             const usersService: UsersService = context.usersService;
-            const userEntityModelMock: UserEntityModelMock = context.userEntityModelMock;
+            const userEntityModelMock: UserEntityModelMock =
+                context.userEntityModelMock;
 
             const wallet: Wallet = await createWallet();
             const address = wallet.address.slice(4);
@@ -267,17 +279,15 @@ describe('Users Service', function() {
             expect(res.error).toEqual('invalid_address_format');
             expect(res.response).toEqual(null);
 
-            verify(userEntityModelMock.search(
-                anything(),
-                anyFunction(),
-            )).never();
-
+            verify(
+                userEntityModelMock.search(anything(), anyFunction()),
+            ).never();
         });
 
         test('unexpected search error', async function() {
-
             const usersService: UsersService = context.usersService;
-            const userEntityModelMock: UserEntityModelMock = context.userEntityModelMock;
+            const userEntityModelMock: UserEntityModelMock =
+                context.userEntityModelMock;
 
             const wallet: Wallet = await createWallet();
             const address = wallet.address;
@@ -288,107 +298,110 @@ describe('Users Service', function() {
                 cb({ error: 'exists' }, null);
             };
 
-            when(userEntityModelMock.search(
-                deepEqual({
-                    body: {
-                        query: {
-                            match: {
-                                address,
+            when(
+                userEntityModelMock.search(
+                    deepEqual({
+                        body: {
+                            query: {
+                                match: {
+                                    address,
+                                },
                             },
                         },
-                    },
-                }),
-                anyFunction(),
-            )).thenCall(injected_cb);
+                    }),
+                    anyFunction(),
+                ),
+            ).thenCall(injected_cb);
 
             const res = await usersService.findByAddress(address);
 
             expect(res.error).toEqual('unexpected_error');
             expect(res.response).toEqual(null);
 
-            verify(userEntityModelMock.search(
-                deepEqual({
-                    body: {
-                        query: {
-                            match: {
-                                address,
+            verify(
+                userEntityModelMock.search(
+                    deepEqual({
+                        body: {
+                            query: {
+                                match: {
+                                    address,
+                                },
                             },
                         },
-                    },
-                }),
-                anyFunction(),
-            )).called();
-
+                    }),
+                    anyFunction(),
+                ),
+            ).called();
         });
 
         test('search with no hits', async function() {
-
             const usersService: UsersService = context.usersService;
-            const userEntityModelMock: UserEntityModelMock = context.userEntityModelMock;
+            const userEntityModelMock: UserEntityModelMock =
+                context.userEntityModelMock;
 
             const wallet: Wallet = await createWallet();
             const address = wallet.address;
 
             const injected_cb = (options: any, cb: any): void => {
                 cb(null, {
-                        took: 2,
-                        timed_out: false,
-                        _shards: {
-                            total: 2,
-                            successful: 2,
-                            skipped: 0,
-                            failed: 0,
-                        },
-                        hits: {
-                            total: 0,
-                            max_score: 0,
-                            hits: [],
-                        },
-                    } as ESSearchReturn<UserEntity>,
-                );
+                    took: 2,
+                    timed_out: false,
+                    _shards: {
+                        total: 2,
+                        successful: 2,
+                        skipped: 0,
+                        failed: 0,
+                    },
+                    hits: {
+                        total: 0,
+                        max_score: 0,
+                        hits: [],
+                    },
+                } as ESSearchReturn<UserEntity>);
             };
 
-            when(userEntityModelMock.search(
-                deepEqual({
-                    body: {
-                        query: {
-                            match: {
-                                address,
+            when(
+                userEntityModelMock.search(
+                    deepEqual({
+                        body: {
+                            query: {
+                                match: {
+                                    address,
+                                },
                             },
                         },
-                    },
-                }),
-                anyFunction(),
-            )).thenCall(injected_cb);
+                    }),
+                    anyFunction(),
+                ),
+            ).thenCall(injected_cb);
 
             const res = await usersService.findByAddress(address);
 
             expect(res.error).toEqual(null);
             expect(res.response).toEqual(null);
 
-            verify(userEntityModelMock.search(
-                deepEqual({
-                    body: {
-                        query: {
-                            match: {
-                                address,
+            verify(
+                userEntityModelMock.search(
+                    deepEqual({
+                        body: {
+                            query: {
+                                match: {
+                                    address,
+                                },
                             },
                         },
-                    },
-                }),
-                anyFunction(),
-            )).called();
-
+                    }),
+                    anyFunction(),
+                ),
+            ).called();
         });
-
     });
 
     describe('findByUsername', function() {
-
         test('should return existing user', async function() {
-
             const usersService: UsersService = context.usersService;
-            const userEntityModelMock: UserEntityModelMock = context.userEntityModelMock;
+            const userEntityModelMock: UserEntityModelMock =
+                context.userEntityModelMock;
 
             const email = 'test@test.com';
             const username = 'salut';
@@ -399,52 +412,53 @@ describe('Users Service', function() {
 
             const injected_cb = (options: any, cb: any): void => {
                 cb(null, {
-                        took: 2,
-                        timed_out: false,
-                        _shards: {
-                            total: 2,
-                            successful: 2,
-                            skipped: 0,
-                            failed: 0,
-                        },
-                        hits: {
-                            total: 1,
-                            max_score: 0.5,
-                            hits: [
-                                {
-                                    _index: 'ticket721_user',
-                                    _type: 'user',
-                                    _id: '0',
-                                    _score: 0.5,
-                                    _source: {
-                                        username,
-                                        email,
-                                        password: hashedp,
-                                        wallet: encrypted_string,
-                                        address: toAcceptedAddressFormat(address),
-                                        id: '0',
-                                        type: 't721',
-                                        role: 'authenticated',
-                                    },
-                                } as ESSearchHit<UserEntity>,
-                            ],
-                        },
-                    } as ESSearchReturn<UserEntity>,
-                );
+                    took: 2,
+                    timed_out: false,
+                    _shards: {
+                        total: 2,
+                        successful: 2,
+                        skipped: 0,
+                        failed: 0,
+                    },
+                    hits: {
+                        total: 1,
+                        max_score: 0.5,
+                        hits: [
+                            {
+                                _index: 'ticket721_user',
+                                _type: 'user',
+                                _id: '0',
+                                _score: 0.5,
+                                _source: {
+                                    username,
+                                    email,
+                                    password: hashedp,
+                                    wallet: encrypted_string,
+                                    address: toAcceptedAddressFormat(address),
+                                    id: '0',
+                                    type: 't721',
+                                    role: 'authenticated',
+                                },
+                            } as ESSearchHit<UserEntity>,
+                        ],
+                    },
+                } as ESSearchReturn<UserEntity>);
             };
 
-            when(userEntityModelMock.search(
-                deepEqual({
-                    body: {
-                        query: {
-                            match: {
-                                username,
+            when(
+                userEntityModelMock.search(
+                    deepEqual({
+                        body: {
+                            query: {
+                                match: {
+                                    username,
+                                },
                             },
                         },
-                    },
-                }),
-                anyFunction(),
-            )).thenCall(injected_cb);
+                    }),
+                    anyFunction(),
+                ),
+            ).thenCall(injected_cb);
 
             const res = await usersService.findByUsername(username);
 
@@ -460,25 +474,26 @@ describe('Users Service', function() {
                 role: 'authenticated',
             });
 
-            verify(userEntityModelMock.search(
-                deepEqual({
-                    body: {
-                        query: {
-                            match: {
-                                username,
+            verify(
+                userEntityModelMock.search(
+                    deepEqual({
+                        body: {
+                            query: {
+                                match: {
+                                    username,
+                                },
                             },
                         },
-                    },
-                }),
-                anyFunction(),
-            )).called();
-
+                    }),
+                    anyFunction(),
+                ),
+            ).called();
         });
 
         test('unexpected search error', async function() {
-
             const usersService: UsersService = context.usersService;
-            const userEntityModelMock: UserEntityModelMock = context.userEntityModelMock;
+            const userEntityModelMock: UserEntityModelMock =
+                context.userEntityModelMock;
 
             const username = 'salut';
             const wallet: Wallet = await createWallet();
@@ -489,43 +504,46 @@ describe('Users Service', function() {
                 cb({ error: 'exists' }, null);
             };
 
-            when(userEntityModelMock.search(
-                deepEqual({
-                    body: {
-                        query: {
-                            match: {
-                                username,
+            when(
+                userEntityModelMock.search(
+                    deepEqual({
+                        body: {
+                            query: {
+                                match: {
+                                    username,
+                                },
                             },
                         },
-                    },
-                }),
-                anyFunction(),
-            )).thenCall(injected_cb);
+                    }),
+                    anyFunction(),
+                ),
+            ).thenCall(injected_cb);
 
             const res = await usersService.findByUsername(username);
 
             expect(res.error).toEqual('unexpected_error');
             expect(res.response).toEqual(null);
 
-            verify(userEntityModelMock.search(
-                deepEqual({
-                    body: {
-                        query: {
-                            match: {
-                                username,
+            verify(
+                userEntityModelMock.search(
+                    deepEqual({
+                        body: {
+                            query: {
+                                match: {
+                                    username,
+                                },
                             },
                         },
-                    },
-                }),
-                anyFunction(),
-            )).called();
-
+                    }),
+                    anyFunction(),
+                ),
+            ).called();
         });
 
         test('search with no hits', async function() {
-
             const usersService: UsersService = context.usersService;
-            const userEntityModelMock: UserEntityModelMock = context.userEntityModelMock;
+            const userEntityModelMock: UserEntityModelMock =
+                context.userEntityModelMock;
 
             const username = 'salut';
             const wallet: Wallet = await createWallet();
@@ -534,64 +552,64 @@ describe('Users Service', function() {
 
             const injected_cb = (options: any, cb: any): void => {
                 cb(null, {
-                        took: 2,
-                        timed_out: false,
-                        _shards: {
-                            total: 2,
-                            successful: 2,
-                            skipped: 0,
-                            failed: 0,
-                        },
-                        hits: {
-                            total: 0,
-                            max_score: 0,
-                            hits: [],
-                        },
-                    } as ESSearchReturn<UserEntity>,
-                );
+                    took: 2,
+                    timed_out: false,
+                    _shards: {
+                        total: 2,
+                        successful: 2,
+                        skipped: 0,
+                        failed: 0,
+                    },
+                    hits: {
+                        total: 0,
+                        max_score: 0,
+                        hits: [],
+                    },
+                } as ESSearchReturn<UserEntity>);
             };
 
-            when(userEntityModelMock.search(
-                deepEqual({
-                    body: {
-                        query: {
-                            match: {
-                                username,
+            when(
+                userEntityModelMock.search(
+                    deepEqual({
+                        body: {
+                            query: {
+                                match: {
+                                    username,
+                                },
                             },
                         },
-                    },
-                }),
-                anyFunction(),
-            )).thenCall(injected_cb);
+                    }),
+                    anyFunction(),
+                ),
+            ).thenCall(injected_cb);
 
             const res = await usersService.findByUsername(username);
 
             expect(res.error).toEqual(null);
             expect(res.response).toEqual(null);
 
-            verify(userEntityModelMock.search(
-                deepEqual({
-                    body: {
-                        query: {
-                            match: {
-                                username,
+            verify(
+                userEntityModelMock.search(
+                    deepEqual({
+                        body: {
+                            query: {
+                                match: {
+                                    username,
+                                },
                             },
                         },
-                    },
-                }),
-                anyFunction(),
-            )).called();
-
+                    }),
+                    anyFunction(),
+                ),
+            ).called();
         });
-
     });
 
     describe('findByEmail', function() {
-
         test('should return existing user', async function() {
-
             const usersService: UsersService = context.usersService;
-            const userEntityModelMock: UserEntityModelMock = context.userEntityModelMock;
+            const userEntityModelMock: UserEntityModelMock =
+                context.userEntityModelMock;
 
             const email = 'test@test.com';
             const username = 'salut';
@@ -602,52 +620,53 @@ describe('Users Service', function() {
 
             const injected_cb = (options: any, cb: any): void => {
                 cb(null, {
-                        took: 2,
-                        timed_out: false,
-                        _shards: {
-                            total: 2,
-                            successful: 2,
-                            skipped: 0,
-                            failed: 0,
-                        },
-                        hits: {
-                            total: 1,
-                            max_score: 0.5,
-                            hits: [
-                                {
-                                    _index: 'ticket721_user',
-                                    _type: 'user',
-                                    _id: '0',
-                                    _score: 0.5,
-                                    _source: {
-                                        username,
-                                        email,
-                                        password: hashedp,
-                                        wallet: encrypted_string,
-                                        address: toAcceptedAddressFormat(address),
-                                        id: '0',
-                                        type: 't721',
-                                        role: 'authenticated',
-                                    },
-                                } as ESSearchHit<UserEntity>,
-                            ],
-                        },
-                    } as ESSearchReturn<UserEntity>,
-                );
+                    took: 2,
+                    timed_out: false,
+                    _shards: {
+                        total: 2,
+                        successful: 2,
+                        skipped: 0,
+                        failed: 0,
+                    },
+                    hits: {
+                        total: 1,
+                        max_score: 0.5,
+                        hits: [
+                            {
+                                _index: 'ticket721_user',
+                                _type: 'user',
+                                _id: '0',
+                                _score: 0.5,
+                                _source: {
+                                    username,
+                                    email,
+                                    password: hashedp,
+                                    wallet: encrypted_string,
+                                    address: toAcceptedAddressFormat(address),
+                                    id: '0',
+                                    type: 't721',
+                                    role: 'authenticated',
+                                },
+                            } as ESSearchHit<UserEntity>,
+                        ],
+                    },
+                } as ESSearchReturn<UserEntity>);
             };
 
-            when(userEntityModelMock.search(
-                deepEqual({
-                    body: {
-                        query: {
-                            match: {
-                                email,
+            when(
+                userEntityModelMock.search(
+                    deepEqual({
+                        body: {
+                            query: {
+                                match: {
+                                    email,
+                                },
                             },
                         },
-                    },
-                }),
-                anyFunction(),
-            )).thenCall(injected_cb);
+                    }),
+                    anyFunction(),
+                ),
+            ).thenCall(injected_cb);
 
             const res = await usersService.findByEmail(email);
 
@@ -663,25 +682,26 @@ describe('Users Service', function() {
                 role: 'authenticated',
             });
 
-            verify(userEntityModelMock.search(
-                deepEqual({
-                    body: {
-                        query: {
-                            match: {
-                                email,
+            verify(
+                userEntityModelMock.search(
+                    deepEqual({
+                        body: {
+                            query: {
+                                match: {
+                                    email,
+                                },
                             },
                         },
-                    },
-                }),
-                anyFunction(),
-            )).called();
-
+                    }),
+                    anyFunction(),
+                ),
+            ).called();
         });
 
         test('unexpected search error', async function() {
-
             const usersService: UsersService = context.usersService;
-            const userEntityModelMock: UserEntityModelMock = context.userEntityModelMock;
+            const userEntityModelMock: UserEntityModelMock =
+                context.userEntityModelMock;
 
             const email = 'test@test.com';
             const wallet: Wallet = await createWallet();
@@ -691,106 +711,109 @@ describe('Users Service', function() {
                 cb({ error: 'exists' }, null);
             };
 
-            when(userEntityModelMock.search(
-                deepEqual({
-                    body: {
-                        query: {
-                            match: {
-                                email,
+            when(
+                userEntityModelMock.search(
+                    deepEqual({
+                        body: {
+                            query: {
+                                match: {
+                                    email,
+                                },
                             },
                         },
-                    },
-                }),
-                anyFunction(),
-            )).thenCall(injected_cb);
+                    }),
+                    anyFunction(),
+                ),
+            ).thenCall(injected_cb);
 
             const res = await usersService.findByEmail(email);
 
             expect(res.error).toEqual('unexpected_error');
             expect(res.response).toEqual(null);
 
-            verify(userEntityModelMock.search(
-                deepEqual({
-                    body: {
-                        query: {
-                            match: {
-                                email,
+            verify(
+                userEntityModelMock.search(
+                    deepEqual({
+                        body: {
+                            query: {
+                                match: {
+                                    email,
+                                },
                             },
                         },
-                    },
-                }),
-                anyFunction(),
-            )).called();
-
+                    }),
+                    anyFunction(),
+                ),
+            ).called();
         });
 
         test('search with no hits', async function() {
-
             const usersService: UsersService = context.usersService;
-            const userEntityModelMock: UserEntityModelMock = context.userEntityModelMock;
+            const userEntityModelMock: UserEntityModelMock =
+                context.userEntityModelMock;
 
             const email = 'test@test.com';
 
             const injected_cb = (options: any, cb: any): void => {
                 cb(null, {
-                        took: 2,
-                        timed_out: false,
-                        _shards: {
-                            total: 2,
-                            successful: 2,
-                            skipped: 0,
-                            failed: 0,
-                        },
-                        hits: {
-                            total: 0,
-                            max_score: 0,
-                            hits: [],
-                        },
-                    } as ESSearchReturn<UserEntity>,
-                );
+                    took: 2,
+                    timed_out: false,
+                    _shards: {
+                        total: 2,
+                        successful: 2,
+                        skipped: 0,
+                        failed: 0,
+                    },
+                    hits: {
+                        total: 0,
+                        max_score: 0,
+                        hits: [],
+                    },
+                } as ESSearchReturn<UserEntity>);
             };
 
-            when(userEntityModelMock.search(
-                deepEqual({
-                    body: {
-                        query: {
-                            match: {
-                                email,
+            when(
+                userEntityModelMock.search(
+                    deepEqual({
+                        body: {
+                            query: {
+                                match: {
+                                    email,
+                                },
                             },
                         },
-                    },
-                }),
-                anyFunction(),
-            )).thenCall(injected_cb);
+                    }),
+                    anyFunction(),
+                ),
+            ).thenCall(injected_cb);
 
             const res = await usersService.findByEmail(email);
 
             expect(res.error).toEqual(null);
             expect(res.response).toEqual(null);
 
-            verify(userEntityModelMock.search(
-                deepEqual({
-                    body: {
-                        query: {
-                            match: {
-                                email,
+            verify(
+                userEntityModelMock.search(
+                    deepEqual({
+                        body: {
+                            query: {
+                                match: {
+                                    email,
+                                },
                             },
                         },
-                    },
-                }),
-                anyFunction(),
-            )).called();
-
+                    }),
+                    anyFunction(),
+                ),
+            ).called();
         });
-
     });
 
     describe('create', function() {
-
         test('should create user', async function() {
-
             const usersService: UsersService = context.usersService;
-            const usersRepositoryMock: UsersRepository = context.usersRepositoryMock;
+            const usersRepositoryMock: UsersRepository =
+                context.usersRepositoryMock;
 
             const email = 'test@test.com';
             const username = 'salut';
@@ -823,23 +846,28 @@ describe('Users Service', function() {
                 };
             };
 
-            when(usersRepositoryMock.create(deepEqual(create_args))).thenReturn(entity);
-            when(usersRepositoryMock.save(deepEqual(entity))).thenCall(injected_cb);
+            when(usersRepositoryMock.create(deepEqual(create_args))).thenReturn(
+                entity,
+            );
+            when(usersRepositoryMock.save(deepEqual(entity))).thenCall(
+                injected_cb,
+            );
 
-            const res = await usersService.create(create_args as CreateUserServiceInputDto);
+            const res = await usersService.create(
+                create_args as CreateUserServiceInputDto,
+            );
 
             verify(usersRepositoryMock.create(deepEqual(create_args))).called();
             verify(usersRepositoryMock.save(deepEqual(entity))).called();
 
             expect(res.error).toEqual(null);
             expect(res.response).toEqual(entity);
-
         });
 
         test('should return unexpected error', async function() {
-
             const usersService: UsersService = context.usersService;
-            const usersRepositoryMock: UsersRepository = context.usersRepositoryMock;
+            const usersRepositoryMock: UsersRepository =
+                context.usersRepositoryMock;
 
             const email = 'test@test.com';
             const username = 'salut';
@@ -867,19 +895,22 @@ describe('Users Service', function() {
                 throw new Error('Unexpected internal error');
             };
 
-            when(usersRepositoryMock.create(deepEqual(create_args))).thenReturn(entity);
-            when(usersRepositoryMock.save(deepEqual(entity))).thenCall(injected_cb);
+            when(usersRepositoryMock.create(deepEqual(create_args))).thenReturn(
+                entity,
+            );
+            when(usersRepositoryMock.save(deepEqual(entity))).thenCall(
+                injected_cb,
+            );
 
-            const res = await usersService.create(create_args as CreateUserServiceInputDto);
+            const res = await usersService.create(
+                create_args as CreateUserServiceInputDto,
+            );
 
             verify(usersRepositoryMock.create(deepEqual(create_args))).called();
             verify(usersRepositoryMock.save(deepEqual(entity))).called();
 
             expect(res.error).toEqual('unexpected_error');
             expect(res.response).toEqual(null);
-
         });
-
     });
-
 });

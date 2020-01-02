@@ -1,4 +1,3 @@
-
 /**
  * Input format when registering a used token for a web3 account
  */

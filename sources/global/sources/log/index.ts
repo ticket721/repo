@@ -6,7 +6,7 @@ export const log = (msg: any): void => {
     }
 };
 
-export const log_err = (msg: any): void => {
+export const logErr = (msg: any): void => {
     if (verbose) {
         console.error(msg);
     }

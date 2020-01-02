@@ -1,15 +1,15 @@
-import { Module }                      from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
-import { ConfigModule }                from '@lib/common/config/Config.module';
-import { ConfigService }               from '@lib/common/config/Config.service';
-import { UsersModule }                 from '@lib/common/users/Users.module';
-import { Web3TokensModule }            from '@app/server/web3token/Web3Tokens.module';
-import { Web3Strategy }                from '@app/server/authentication/Web3.strategy';
-import { Config }                      from '@app/server/utils/Config.joi';
-import { LocalStrategy }               from '@app/server/authentication/Local.strategy';
-import { JwtStrategy }                 from '@app/server/authentication/Jwt.strategy';
-import { AuthenticationService }       from '@app/server/authentication/Authentication.service';
-import { AuthenticationController }    from '@app/server/authentication/Authentication.controller';
+import { ConfigModule } from '@lib/common/config/Config.module';
+import { ConfigService } from '@lib/common/config/Config.service';
+import { UsersModule } from '@lib/common/users/Users.module';
+import { Web3TokensModule } from '@app/server/web3token/Web3Tokens.module';
+import { Web3Strategy } from '@app/server/authentication/Web3.strategy';
+import { Config } from '@app/server/utils/Config.joi';
+import { LocalStrategy } from '@app/server/authentication/Local.strategy';
+import { JwtStrategy } from '@app/server/authentication/Jwt.strategy';
+import { AuthenticationService } from '@app/server/authentication/Authentication.service';
+import { AuthenticationController } from '@app/server/authentication/Authentication.controller';
 
 /**
  * Authentication module. Handles users registrations and authentication
@@ -18,28 +18,26 @@ import { AuthenticationController }    from '@app/server/authentication/Authenti
     imports: [
         UsersModule,
         Web3TokensModule,
-        JwtModule.registerAsync(
-            {
-                imports: [ConfigModule.register(Config)],
-                useFactory: async (configService: ConfigService): Promise<JwtModuleOptions> => ({
-                    secret: configService.get('JWT_SECRET'),
-                    signOptions: {
-                        expiresIn: configService.get('JWT_EXPIRATION'),
-                    },
-                }),
-                inject: [ConfigService],
+        JwtModule.registerAsync({
+            imports: [ConfigModule.register(Config)],
+            useFactory: async (
+                configService: ConfigService,
+            ): Promise<JwtModuleOptions> => ({
+                secret: configService.get('JWT_SECRET'),
+                signOptions: {
+                    expiresIn: configService.get('JWT_EXPIRATION'),
+                },
             }),
+            inject: [ConfigService],
+        }),
         ConfigModule.register(Config),
     ],
     providers: [
         AuthenticationService,
         LocalStrategy,
         JwtStrategy,
-        Web3Strategy
+        Web3Strategy,
     ],
-    controllers: [
-        AuthenticationController
-    ],
+    controllers: [AuthenticationController],
 })
-export class AuthenticationModule {
-}
+export class AuthenticationModule {}

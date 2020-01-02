@@ -1,7 +1,4 @@
-import {
-    Entity,
-    Column
-} from '@iaminfinity/express-cassandra';
+import { Entity, Column } from '@iaminfinity/express-cassandra';
 
 /**
  * Entity representing a user
@@ -10,15 +7,15 @@ import {
     table_name: 'web3token',
     key: [['timestamp', 'address']],
     es_index_mapping: {
-        discover: ".*"
-    }
+        discover: '.*',
+    },
 } as any)
 export class Web3TokenEntity {
     /**
      * Timestamp used to generate auth proof
      */
     @Column({
-        type: 'bigint'
+        type: 'bigint',
     })
     timestamp: number;
 
@@ -26,7 +23,7 @@ export class Web3TokenEntity {
      * Address used to sign
      */
     @Column({
-        type: 'text'
+        type: 'text',
     })
     address: string;
 }

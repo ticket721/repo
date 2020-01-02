@@ -1,6 +1,6 @@
-import { ApiProperty }                   from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsString, ValidateIf } from 'class-validator';
-import { isAddress }                     from '@ticket721sources/global';
+import { isAddress } from '@ticket721sources/global';
 
 /**
  * Expected input when creating a web3 account

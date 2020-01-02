@@ -1,18 +1,20 @@
-import { Injectable }          from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PasswordlessUserDto } from './dto/PasswordlessUser.dto';
-import { compare, hash }   from 'bcrypt';
+import { compare, hash } from 'bcrypt';
 import {
     EncryptedWallet,
     isV3EncryptedWallet,
     toAcceptedAddressFormat,
     isKeccak256,
     Web3LoginSigner,
-    Web3RegisterSigner
-}                            from '@ticket721sources/global';
-import { ServiceResponse }   from '../utils/ServiceResponse';
-import { UsersService }      from '@lib/common/users/Users.service';
-import { ConfigService }     from '@lib/common/config/Config.service';
-import { UserDto }           from '@lib/common/users/dto/User.dto';
+    Web3RegisterSigner,
+    keccak256,
+} from '@ticket721sources/global';
+import { ServiceResponse } from '../utils/ServiceResponse';
+import { UsersService } from '@lib/common/users/Users.service';
+import { ConfigService } from '@lib/common/config/Config.service';
+import { UserDto } from '@lib/common/users/dto/User.dto';
+import { RefractFactoryV0Service } from '@lib/common/contracts/refract/RefractFactory.V0.service';
 
 /**
  * Authentication services and utilities
@@ -24,12 +26,13 @@ export class AuthenticationService {
      *
      * @param usersService
      * @param configService
+     * @param refractFactoryService
      */
-    constructor /* instanbul ignore next */ (
+    constructor /* instanbul ignore next */(
         private readonly usersService: UsersService,
-        private readonly configService: ConfigService
-    ) {
-    }
+        private readonly configService: ConfigService,
+        private readonly refractFactoryService: RefractFactoryV0Service,
+    ) {}
 
     /**
      * Utility to verify if provided signature is bound to an account and is valid
@@ -37,38 +40,48 @@ export class AuthenticationService {
      * @param timestamp
      * @param signature
      */
-    async validateWeb3User(timestamp: string, signature: string): Promise<ServiceResponse<PasswordlessUserDto>> {
-
+    async validateWeb3User(
+        timestamp: string,
+        signature: string,
+    ): Promise<ServiceResponse<PasswordlessUserDto>> {
         const web3LoginSigner: Web3LoginSigner = new Web3LoginSigner(1); // recover from web3 module
 
-        const verification: [boolean, string] = await web3LoginSigner.verifyAuthenticationProof(signature, parseInt(timestamp), parseInt(this.configService.get('AUTH_SIGNATURE_TIMEOUT')) * 1000);
+        const verification: [
+            boolean,
+            string,
+        ] = await web3LoginSigner.verifyAuthenticationProof(
+            signature,
+            parseInt(timestamp, 10),
+            parseInt(this.configService.get('AUTH_SIGNATURE_TIMEOUT'), 10) *
+                1000,
+        );
 
         if (verification[0] === false) {
             return {
                 error: verification[1],
-                response: null
-            }
+                response: null,
+            };
         }
 
-        const resp: ServiceResponse<UserDto> = await this.usersService.findByAddress(verification[1]);
+        const resp: ServiceResponse<UserDto> = await this.usersService.findByAddress(
+            verification[1],
+        );
 
         if (resp.error) {
             return resp;
         }
 
         if (resp.response !== null) {
-
-            const {password, ...ret} = resp.response;
+            const { password, ...ret } = resp.response;
             return {
                 response: ret as PasswordlessUserDto,
-                error: null
+                error: null,
             };
-
         }
 
         return {
             response: null,
-            error: 'invalid_signature'
+            error: 'invalid_signature',
         };
     }
 
@@ -79,8 +92,13 @@ export class AuthenticationService {
      * @param email
      * @param password
      */
-    async validateUser(email: string, password: string): Promise<ServiceResponse<PasswordlessUserDto>> {
-        const resp: ServiceResponse<UserDto> = await this.usersService.findByEmail(email);
+    async validateUser(
+        email: string,
+        password: string,
+    ): Promise<ServiceResponse<PasswordlessUserDto>> {
+        const resp: ServiceResponse<UserDto> = await this.usersService.findByEmail(
+            email,
+        );
 
         if (resp.error) {
             return resp;
@@ -90,20 +108,18 @@ export class AuthenticationService {
             const valid = await compare(password, resp.response.password);
 
             if (valid === true) {
-                const { password, ...ret } = resp.response;
+                delete resp.response.password;
                 return {
-                    response: ret as PasswordlessUserDto,
-                    error: null
+                    response: resp.response as PasswordlessUserDto,
+                    error: null,
                 };
             }
-
         }
 
         return {
             response: null,
-            error: 'invalid_credentials'
+            error: 'invalid_credentials',
         };
-
     }
 
     /**
@@ -115,80 +131,112 @@ export class AuthenticationService {
      * @param address Expected signing address
      * @param signature Signature of a Web3Register payload
      */
-    async createWeb3User(email: string, username: string, timestamp: string, address: string, signature: string): Promise<ServiceResponse<PasswordlessUserDto>> {
-
+    async createWeb3User(
+        email: string,
+        username: string,
+        timestamp: string,
+        address: string,
+        signature: string,
+    ): Promise<ServiceResponse<PasswordlessUserDto>> {
         address = toAcceptedAddressFormat(address);
 
-        const emailUserResp: ServiceResponse<UserDto> = await this.usersService.findByEmail(email);
-        if (emailUserResp.error) return emailUserResp;
+        const emailUserResp: ServiceResponse<UserDto> = await this.usersService.findByEmail(
+            email,
+        );
+        if (emailUserResp.error) {
+            return emailUserResp;
+        }
 
         const emailUser: UserDto = emailUserResp.response;
         if (emailUser !== null) {
             return {
                 response: null,
-                error: 'email_already_in_use'
+                error: 'email_already_in_use',
             };
         }
 
-        const usernameUserResp: ServiceResponse<UserDto> = await this.usersService.findByUsername(username);
-        if (usernameUserResp.error) return usernameUserResp;
+        const usernameUserResp: ServiceResponse<UserDto> = await this.usersService.findByUsername(
+            username,
+        );
+        if (usernameUserResp.error) {
+            return usernameUserResp;
+        }
 
         const usernameUser: UserDto = usernameUserResp.response;
         if (usernameUser !== null) {
             return {
                 response: null,
-                error: 'username_already_in_use'
+                error: 'username_already_in_use',
             };
         }
 
-        const addressUserResp: ServiceResponse<UserDto> = await this.usersService.findByAddress(address);
-        if (addressUserResp.error) return addressUserResp;
+        const addressUserResp: ServiceResponse<UserDto> = await this.usersService.findByAddress(
+            address,
+        );
+        if (addressUserResp.error) {
+            return addressUserResp;
+        }
 
         const addressUser: UserDto = addressUserResp.response;
         if (addressUser !== null) {
             return {
                 response: null,
-                error: 'address_already_in_use'
+                error: 'address_already_in_use',
             };
         }
 
-        const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(1);
+        const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(
+            1,
+        );
 
-        const verification: [boolean, string] = await web3RegisterSigner.verifyRegistrationProof(signature, parseInt(timestamp), email, username, parseInt(this.configService.get('AUTH_SIGNATURE_TIMEOUT')) * 1000);
+        const verification: [
+            boolean,
+            string,
+        ] = await web3RegisterSigner.verifyRegistrationProof(
+            signature,
+            parseInt(timestamp, 10),
+            email,
+            username,
+            parseInt(this.configService.get('AUTH_SIGNATURE_TIMEOUT'), 10) *
+                1000,
+        );
 
         if (verification[0] === false) {
             return {
                 response: null,
-                error: verification[1]
-            }
+                error: verification[1],
+            };
         }
 
         if (verification[1] !== address) {
             return {
                 response: null,
-                error: 'invalid_signature'
-            }
+                error: 'invalid_signature',
+            };
         }
 
-        const new_user: ServiceResponse<UserDto> = await this.usersService.create({
-            email,
-            password: null,
-            username,
-            wallet: null,
-            address,
-            type: 'web3',
-            role: 'authenticated'
-        });
+        const newUser: ServiceResponse<UserDto> = await this.usersService.create(
+            {
+                email,
+                password: null,
+                username,
+                wallet: null,
+                address,
+                type: 'web3',
+                role: 'authenticated',
+            },
+        );
 
-        if (new_user.error) return new_user;
+        if (newUser.error) {
+            return newUser;
+        }
 
-        delete new_user.response.password;
+        delete newUser.response.password;
 
         return {
-            response: new_user.response,
-            error: null
+            response: newUser.response,
+            error: null,
         };
-
     }
 
     /**
@@ -199,74 +247,103 @@ export class AuthenticationService {
      * @param username
      * @param wallet
      */
-    async createT721User(email: string, password: string, username: string, wallet: EncryptedWallet): Promise<ServiceResponse<PasswordlessUserDto>> {
-
-        const emailUserResp: ServiceResponse<UserDto> = await this.usersService.findByEmail(email);
-        if (emailUserResp.error) return emailUserResp;
+    async createT721User(
+        email: string,
+        password: string,
+        username: string,
+        wallet: EncryptedWallet,
+    ): Promise<ServiceResponse<PasswordlessUserDto>> {
+        const emailUserResp: ServiceResponse<UserDto> = await this.usersService.findByEmail(
+            email,
+        );
+        if (emailUserResp.error) {
+            return emailUserResp;
+        }
 
         const emailUser: UserDto = emailUserResp.response;
         if (emailUser !== null) {
             return {
                 response: null,
-                error: 'email_already_in_use'
+                error: 'email_already_in_use',
             };
         }
 
-        const usernameUserResp: ServiceResponse<UserDto> = await this.usersService.findByUsername(username);
-        if (usernameUserResp.error) return usernameUserResp;
+        const usernameUserResp: ServiceResponse<UserDto> = await this.usersService.findByUsername(
+            username,
+        );
+        if (usernameUserResp.error) {
+            return usernameUserResp;
+        }
 
         const usernameUser: UserDto = usernameUserResp.response;
         if (usernameUser !== null) {
             return {
                 response: null,
-                error: 'username_already_in_use'
+                error: 'username_already_in_use',
             };
         }
 
         if (!isV3EncryptedWallet(wallet)) {
             return {
                 response: null,
-                error: 'invalid_wallet_format'
+                error: 'invalid_wallet_format',
             };
         }
 
         const address = toAcceptedAddressFormat(wallet.address);
-        const addressUserResp: ServiceResponse<UserDto> = await this.usersService.findByAddress(address);
-        if (addressUserResp.error) return addressUserResp;
+
+        const refractFactoryV0 = await this.refractFactoryService.get();
+        const salt = keccak256(email);
+        const finalAddress: string = toAcceptedAddressFormat(
+            await refractFactoryV0.methods.predict(address, salt).call(),
+        );
+
+        const addressUserResp: ServiceResponse<UserDto> = await this.usersService.findByAddress(
+            finalAddress,
+        );
+        if (addressUserResp.error) {
+            return addressUserResp;
+        }
 
         const addressUser: UserDto = addressUserResp.response;
         if (addressUser !== null) {
             return {
                 response: null,
-                error: 'address_already_in_use'
+                error: 'address_already_in_use',
             };
         }
 
         if (!isKeccak256(password)) {
             return {
                 response: null,
-                error: 'password_should_be_keccak256'
+                error: 'password_should_be_keccak256',
             };
         }
 
-        const new_user: ServiceResponse<UserDto> = await this.usersService.create({
-            email,
-            password: await hash(password, parseInt(this.configService.get('BCRYPT_SALT_ROUNDS'))),
-            username,
-            wallet: JSON.stringify(wallet),
-            address,
-            type: 't721',
-            role: 'authenticated'
-        });
+        const newUser: ServiceResponse<UserDto> = await this.usersService.create(
+            {
+                email,
+                password: await hash(
+                    password,
+                    parseInt(this.configService.get('BCRYPT_SALT_ROUNDS'), 10),
+                ),
+                username,
+                wallet: JSON.stringify(wallet),
+                address: finalAddress,
+                type: 't721',
+                role: 'authenticated',
+            },
+        );
 
-        if (new_user.error) return new_user;
+        if (newUser.error) {
+            return newUser;
+        }
 
-        delete new_user.response.password;
+        delete newUser.response.password;
 
         return {
-            response: new_user.response,
-            error: null
+            response: newUser.response,
+            error: null,
         };
-
     }
 }

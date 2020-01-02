@@ -4,29 +4,29 @@ import { toAcceptedAddressFormat }                      from '../address';
 const Web3Login = [
     {
         type: 'uint256',
-        name: 'timestamp'
-    }
+        name: 'timestamp',
+    },
 ];
 
 export class Web3LoginSigner extends EIP712Signer {
 
-    constructor(chain_id: number) {
+    constructor(chainId: number) {
         super(
             {
                 name: 'Ticket721 Web3 Login',
                 version: '0',
-                chainId: chain_id,
-                verifyingContract: '0x0000000000000000000000000000000000000000'
+                chainId,
+                verifyingContract: '0x0000000000000000000000000000000000000000',
             },
-            ['Web3Login', Web3Login]
-        )
+            ['Web3Login', Web3Login],
+        );
     }
 
     public generateAuthenticationProofPayload(): [number, EIP712Payload] {
 
         const timestamp = Date.now();
         return [timestamp, this.generatePayload({
-            timestamp
+            timestamp,
         }, 'Web3Login')];
 
     }
@@ -34,7 +34,7 @@ export class Web3LoginSigner extends EIP712Signer {
     public async generateAuthenticationProof(privateKey: string): Promise<[number, EIP712Signature]> {
         const timestamp = Date.now();
         const payload = this.generatePayload({
-            timestamp
+            timestamp,
         }, 'Web3Login');
 
         const sig: EIP712Signature = await this.sign(privateKey, payload);

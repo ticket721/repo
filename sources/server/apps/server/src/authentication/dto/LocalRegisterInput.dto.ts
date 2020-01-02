@@ -1,6 +1,6 @@
-import { ApiProperty }                 from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsObject, IsString } from 'class-validator';
-import { EncryptedWallet }             from '@ticket721sources/global';
+import { EncryptedWallet } from '@ticket721sources/global';
 
 /**
  * Expected input when creating a local account

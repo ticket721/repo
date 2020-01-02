@@ -11,18 +11,18 @@ import {
     table_name: 'user',
     key: ['id'],
     es_index_mapping: {
-        discover: ".*",
+        discover: '.*',
         properties: {
             password: {
-                type: "keyword",
-                index: false
+                type: 'keyword',
+                index: false,
             },
             wallet: {
-                type: "keyword",
-                index: false
-            }
-        }
-    }
+                type: 'keyword',
+                index: false,
+            },
+        },
+    },
 } as any)
 export class UserEntity {
     /**
@@ -35,7 +35,7 @@ export class UserEntity {
      * Unique email
      */
     @Column({
-        type: 'text'
+        type: 'text',
     })
     email: string;
 
@@ -43,7 +43,7 @@ export class UserEntity {
      * Unique username
      */
     @Column({
-        type: 'text'
+        type: 'text',
     })
     username: string;
 
@@ -51,7 +51,7 @@ export class UserEntity {
      * Keccak256 hash of the pure password
      */
     @Column({
-        type: 'text'
+        type: 'text',
     })
     password: string;
 
@@ -59,7 +59,7 @@ export class UserEntity {
      * Account type
      */
     @Column({
-        type: 'text'
+        type: 'text',
     })
     type: 't721' | 'web3';
 
@@ -67,7 +67,7 @@ export class UserEntity {
      * Account wallet
      */
     @Column({
-        type: 'text'
+        type: 'text',
     })
     wallet: string;
 
@@ -75,7 +75,7 @@ export class UserEntity {
      * Account address
      */
     @Column({
-        type: 'text'
+        type: 'text',
     })
     address: string;
 
@@ -83,7 +83,7 @@ export class UserEntity {
      * Account role
      */
     @Column({
-        type: 'text'
+        type: 'text',
     })
     role: 'authenticated' | 'admin';
 }

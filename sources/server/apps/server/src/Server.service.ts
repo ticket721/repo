@@ -1,9 +1,9 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import * as pack                    from '../../../package.json';
-import * as branch                  from 'git-branch';
-import { APIInfos }                 from './Server.types';
-import { ConfigService }            from '@lib/common/config/Config.service';
-import { WinstonLoggerService }     from '@lib/common/logger/WinstonLogger.service';
+import pack from '../../../package.json';
+import branch from 'git-branch';
+import { APIInfos } from './Server.types';
+import { ConfigService } from '@lib/common/config/Config.service';
+import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
 
 /**
  * Stores current branch to prevent spam requests
@@ -15,13 +15,12 @@ const currentBranch = branch.sync();
  */
 @Injectable()
 export class ServerService implements OnModuleInit {
-
     /**
      * Recovers the ConfigService
      * @param configService
      * @param loggerService
      */
-    constructor /* instanbul ignore next */ (
+    constructor /* instanbul ignore next */(
         private readonly configService: ConfigService,
         private readonly loggerService: WinstonLoggerService,
     ) {}
@@ -41,8 +40,8 @@ export class ServerService implements OnModuleInit {
      * System boot
      */
     async onModuleInit(): Promise<void> {
-        const pod_infos: number = this.configService.getRole();
+        const podInfos: number = this.configService.getRole();
 
-        this.loggerService.log(`Started instance #${pod_infos}`);
+        this.loggerService.log(`Started instance #${podInfos}`);
     }
 }

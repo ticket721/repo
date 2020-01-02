@@ -1,4 +1,3 @@
-
 /**
  * Input format when checking if a token is already used
  */

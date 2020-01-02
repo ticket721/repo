@@ -1,9 +1,9 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { PassportStrategy }     from '@nestjs/passport';
-import { Injectable }           from '@nestjs/common';
-import { ConfigService }        from '@lib/common/config/Config.service';
-import { UsersService }         from '@lib/common/users/Users.service';
-import { UserDto }              from '@lib/common/users/dto/User.dto';
+import { PassportStrategy } from '@nestjs/passport';
+import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@lib/common/config/Config.service';
+import { UsersService } from '@lib/common/users/Users.service';
+import { UserDto } from '@lib/common/users/dto/User.dto';
 
 /**
  * JWT Strategy to handle the JWT token verification
@@ -16,7 +16,10 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
      * @param configService
      * @param usersService
      */
-    constructor /* instanbul ignore next */ (private readonly configService: ConfigService, private readonly usersService: UsersService) {
+    constructor /* instanbul ignore next */(
+        private readonly configService: ConfigService,
+        private readonly usersService: UsersService,
+    ) {
         super({
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
             ignoreExpiration: false,

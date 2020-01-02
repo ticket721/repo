@@ -1,12 +1,12 @@
-import { Strategy }                  from 'passport-local';
-import { PassportStrategy }          from '@nestjs/passport';
+import { Strategy } from 'passport-local';
+import { PassportStrategy } from '@nestjs/passport';
 import { HttpException, Injectable } from '@nestjs/common';
-import { AuthenticationService }     from './Authentication.service';
-import { PasswordlessUserDto }       from './dto/PasswordlessUser.dto';
-import { ServiceResponse }           from '../utils/ServiceResponse';
-import { StatusCodes }               from '../utils/codes';
-import { Web3TokenDto }              from '@app/server/web3token/dto/Web3Token.dto';
-import { Web3TokensService }         from '@app/server/web3token/Web3Tokens.service';
+import { AuthenticationService } from './Authentication.service';
+import { PasswordlessUserDto } from './dto/PasswordlessUser.dto';
+import { ServiceResponse } from '../utils/ServiceResponse';
+import { StatusCodes } from '../utils/codes';
+import { Web3TokenDto } from '@app/server/web3token/dto/Web3Token.dto';
+import { Web3TokensService } from '@app/server/web3token/Web3Tokens.service';
 
 /**
  * Web3 Strategy to verify that signatures are valid
@@ -19,13 +19,13 @@ export class Web3Strategy extends PassportStrategy(Strategy, 'web3') {
      * @param authenticationService
      * @param web3TokensService
      */
-    constructor /* instanbul ignore next */ (
+    constructor /* instanbul ignore next */(
         private readonly authenticationService: AuthenticationService,
-        private readonly web3TokensService: Web3TokensService
+        private readonly web3TokensService: Web3TokensService,
     ) {
         super({
             usernameField: 'timestamp',
-            passwordField: 'signature'
+            passwordField: 'signature',
         });
     }
 
@@ -35,76 +35,97 @@ export class Web3Strategy extends PassportStrategy(Strategy, 'web3') {
      * @param timestamp
      * @param signature
      */
-    async validate(timestamp: string, signature: string): Promise<PasswordlessUserDto> {
-        const resp: ServiceResponse<PasswordlessUserDto> = await this.authenticationService.validateWeb3User(timestamp, signature);
+    async validate(
+        timestamp: string,
+        signature: string,
+    ): Promise<PasswordlessUserDto> {
+        const resp: ServiceResponse<PasswordlessUserDto> = await this.authenticationService.validateWeb3User(
+            timestamp,
+            signature,
+        );
 
         if (resp.error) {
             switch (resp.error) {
                 case 'invalid_signature':
                 case 'signature_timed_out':
                 case 'signature_is_in_the_future':
-                    throw new HttpException({
-                        status: StatusCodes.Unauthorized,
-                        message: resp.error,
-                    }, StatusCodes.Unauthorized);
+                    throw new HttpException(
+                        {
+                            status: StatusCodes.Unauthorized,
+                            message: resp.error,
+                        },
+                        StatusCodes.Unauthorized,
+                    );
 
                 case 'signature_check_fail':
-                    throw new HttpException({
-                        status: StatusCodes.UnprocessableEntity,
-                        message: resp.error,
-                    }, StatusCodes.UnprocessableEntity);
+                    throw new HttpException(
+                        {
+                            status: StatusCodes.UnprocessableEntity,
+                            message: resp.error,
+                        },
+                        StatusCodes.UnprocessableEntity,
+                    );
 
                 default:
-                    throw new HttpException({
-                        status: StatusCodes.InternalServerError,
-                        message: resp.error,
-                    }, StatusCodes.InternalServerError);
+                    throw new HttpException(
+                        {
+                            status: StatusCodes.InternalServerError,
+                            message: resp.error,
+                        },
+                        StatusCodes.InternalServerError,
+                    );
             }
         } else {
-
             const web3Token: Web3TokenDto = {
-                timestamp: parseInt(timestamp),
-                address: resp.response.address
+                timestamp: parseInt(timestamp, 10),
+                address: resp.response.address,
             };
 
-            const token: ServiceResponse<Web3TokenDto> = await this.web3TokensService.check(web3Token);
+            const token: ServiceResponse<Web3TokenDto> = await this.web3TokensService.check(
+                web3Token,
+            );
 
             if (token.error) {
                 switch (token.error) {
                     case 'unexpected_error':
                     default:
-                        throw new HttpException({
-                            status: StatusCodes.InternalServerError,
-                            message: token.error,
-                        }, StatusCodes.InternalServerError);
+                        throw new HttpException(
+                            {
+                                status: StatusCodes.InternalServerError,
+                                message: token.error,
+                            },
+                            StatusCodes.InternalServerError,
+                        );
                 }
             }
 
             if (token.response !== null) {
-                throw new HttpException({
-                    status: StatusCodes.Unauthorized,
-                    message: 'duplicate_token_usage',
-                }, StatusCodes.Unauthorized);
+                throw new HttpException(
+                    {
+                        status: StatusCodes.Unauthorized,
+                        message: 'duplicate_token_usage',
+                    },
+                    StatusCodes.Unauthorized,
+                );
             }
 
-            const reg_res = await this.web3TokensService.register(web3Token);
+            const regRes = await this.web3TokensService.register(web3Token);
 
-            if (reg_res.error) {
-
-                switch (reg_res.error) {
+            if (regRes.error) {
+                switch (regRes.error) {
                     case 'unexpected_error':
                     default:
-                        throw new HttpException({
-                            status: StatusCodes.InternalServerError,
-                            message: reg_res.error,
-                        }, StatusCodes.InternalServerError);
+                        throw new HttpException(
+                            {
+                                status: StatusCodes.InternalServerError,
+                                message: regRes.error,
+                            },
+                            StatusCodes.InternalServerError,
+                        );
                 }
-
             }
 
             return resp.response;
-
         }
-
     }
 }

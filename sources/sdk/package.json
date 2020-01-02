@@ -7,7 +7,8 @@
     "types": "lib/sdk/sources/index.d.ts",
     "scripts": {
         "build": "tsc",
-        "watch": "watch 'npm run build' sources"
+        "watch": "watch 'npm run build' sources",
+        "lint": "tslint --project ."
     },
     "author": "Iulian Rotaru",
     "license": "MIT",
@@ -17,6 +18,8 @@
     "devDependencies": {
         "supertest": "^4.0.2",
         "typescript": "3.7.4",
-        "watch": "^1.0.2"
+        "watch": "^1.0.2",
+        "@types/node": "12.12.22",
+        "tslint": "^5.20.0"
     }
 }

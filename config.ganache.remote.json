@@ -58,6 +58,16 @@
                         "range": [1, 2]
                     }
                 ]
+            },
+            {
+                "name": "configuration",
+                "serie": [
+                    {
+                        "name": "ticketforge",
+                        "test": false,
+                        "range": [3, 3]
+                    }
+                ]
             }
         ],
         "modules": [

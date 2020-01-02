@@ -4,30 +4,30 @@ import { toAcceptedAddressFormat }                      from '../address';
 const Web3Register = [
     {
         type: 'uint256',
-        name: 'timestamp'
+        name: 'timestamp',
     },
     {
         type: 'string',
-        name: 'email'
+        name: 'email',
     },
     {
         type: 'string',
-        name: 'username'
-    }
+        name: 'username',
+    },
 ];
 
 export class Web3RegisterSigner extends EIP712Signer {
 
-    constructor(chain_id: number) {
+    constructor(chainId: number) {
         super(
             {
                 name: 'Ticket721 Web3 Register',
                 version: '0',
-                chainId: chain_id,
-                verifyingContract: '0x0000000000000000000000000000000000000000'
+                chainId,
+                verifyingContract: '0x0000000000000000000000000000000000000000',
             },
-            ['Web3Register', Web3Register]
-        )
+            ['Web3Register', Web3Register],
+        );
     }
 
     public generateRegistrationProofPayload(email: string, username: string): [number, EIP712Payload] {
@@ -35,8 +35,8 @@ export class Web3RegisterSigner extends EIP712Signer {
         return [timestamp, this.generatePayload({
             timestamp,
             email,
-            username
-        }, 'Web3Register')]
+            username,
+        }, 'Web3Register')];
     }
 
     public async generateRegistrationProof(email: string, username: string, privateKey: string): Promise<[number, EIP712Signature]> {
@@ -44,7 +44,7 @@ export class Web3RegisterSigner extends EIP712Signer {
         const payload = this.generatePayload({
             timestamp,
             email,
-            username
+            username,
         }, 'Web3Register');
 
         const sig: EIP712Signature = await this.sign(privateKey, payload);
@@ -52,7 +52,13 @@ export class Web3RegisterSigner extends EIP712Signer {
         return [timestamp, sig];
     }
 
-    public async verifyRegistrationProof(signature: string, timestamp: number, email: string, username: string, timeout: number): Promise<[boolean, string]> {
+    public async verifyRegistrationProof(
+        signature: string,
+        timestamp: number,
+        email: string,
+        username: string,
+        timeout: number,
+    ): Promise<[boolean, string]> {
 
         const now = Date.now();
         if (now - timeout > timestamp) {

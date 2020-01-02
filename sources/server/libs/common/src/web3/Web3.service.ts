@@ -1,4 +1,4 @@
-import { Inject, OnModuleInit } from '@nestjs/common';
+import { Inject } from '@nestjs/common';
 
 export interface Web3ServiceOptions {
     Web3: any;
@@ -11,7 +11,6 @@ export interface Web3ServiceOptions {
  * Utility to build and serve a Web3 instance
  */
 export class Web3Service {
-
     /**
      * Web3 instance
      */
@@ -20,26 +19,33 @@ export class Web3Service {
     /**
      * Pre-fetched network id
      */
-    private net_id: number;
+    private netId: number;
 
     /**
      * Dependency Injection
      *
      * @param options
      */
-    constructor (@Inject('WEB3_MODULE_OPTIONS') private readonly options: Web3ServiceOptions) {
-
+    constructor(
+        @Inject('WEB3_MODULE_OPTIONS')
+        private readonly options: Web3ServiceOptions,
+    ) {
         switch (this.options.protocol) {
             case 'http':
             case 'https': {
-                this.web3 = new this.options.Web3(new this.options.Web3.providers.HttpProvider(`${this.options.protocol}://${this.options.host}:${this.options.port}`));
+                this.web3 = new this.options.Web3(
+                    new this.options.Web3.providers.HttpProvider(
+                        `${this.options.protocol}://${this.options.host}:${this.options.port}`,
+                    ),
+                );
                 break;
             }
 
             default:
-                throw new Error(`Unknown protocol ${this.options.protocol} to build web3 instance`);
+                throw new Error(
+                    `Unknown protocol ${this.options.protocol} to build web3 instance`,
+                );
         }
-
     }
 
     /**
@@ -53,15 +59,14 @@ export class Web3Service {
      * First call should fetch with this helper
      */
     private async fetchNetwork(): Promise<number> {
-        this.net_id = await this.web3.eth.net.getId();
-        return this.net_id;
+        this.netId = await this.web3.eth.net.getId();
+        return this.netId;
     }
 
     /**
      * Recover the network id
      */
     public async net(): Promise<number> {
-        return this.net_id || this.fetchNetwork();
+        return this.netId || this.fetchNetwork();
     }
-
 }

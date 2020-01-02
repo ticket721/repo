@@ -1,8 +1,8 @@
 import { Controller, Get, Injectable, Param } from '@nestjs/common';
-import { ApiResponse }                        from '@nestjs/swagger';
-import { StatusCodes, StatusNames }           from './utils/codes';
-import { ServerService }                      from './Server.service';
-import { APIInfos }                           from './Server.types';
+import { ApiResponse } from '@nestjs/swagger';
+import { StatusCodes, StatusNames } from './utils/codes';
+import { ServerService } from './Server.service';
+import { APIInfos } from './Server.types';
 
 /**
  * [/ Controller]: Controller containing root routes of the API
@@ -10,21 +10,24 @@ import { APIInfos }                           from './Server.types';
 @Controller()
 @Injectable()
 export class ServerController {
-
     /**
      * Dependency Injection
      *
      * @param appService
      */
-    constructor /* istanbul ignore next */ (private readonly appService: ServerService) {}
+    constructor /* istanbul ignore next */(
+        private readonly appService: ServerService,
+    ) {}
 
     /**
      * [GET /] : Recover api infos
      */
     @Get()
-    @ApiResponse({ status: StatusCodes.OK, description: StatusNames[StatusCodes.OK]})
+    @ApiResponse({
+        status: StatusCodes.OK,
+        description: StatusNames[StatusCodes.OK],
+    })
     getAPIInfos(): APIInfos {
         return this.appService.getAPIInfos();
     }
-
 }

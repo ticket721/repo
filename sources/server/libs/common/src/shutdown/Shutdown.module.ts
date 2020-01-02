@@ -1,5 +1,5 @@
-import { Global, Module }       from '@nestjs/common';
-import { ShutdownService }      from '@lib/common/shutdown/Shutdown.service';
+import { Global, Module } from '@nestjs/common';
+import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
 
 /**
@@ -13,11 +13,9 @@ import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
         ShutdownService,
         {
             provide: WinstonLoggerService,
-            useValue: new WinstonLoggerService('shutdown')
-        }
+            useValue: new WinstonLoggerService('shutdown'),
+        },
     ],
-    exports: [
-        ShutdownService
-    ]
+    exports: [ShutdownService],
 })
 export class ShutdownModule {}
