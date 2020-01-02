@@ -3,6 +3,9 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { T721SDK } from '@ticket721sources/sdk';
 import { getApiInfo } from './App.case';
 import {
+    ganache_revert,
+    ganache_snapshot,
+    prepare,
     resetMigrations,
     runMigrations,
     startDocker,
@@ -25,6 +28,7 @@ const context: {
 };
 
 const getCtx = (): { app: INestApplication; sdk: T721SDK } => context;
+let snap_id = null;
 
 describe('AppController (e2e)', () => {
     let app: INestApplication;
@@ -41,6 +45,7 @@ describe('AppController (e2e)', () => {
             );
         }
         await runMigrations(cassandraPort, elasticSearchPort);
+        await prepare();
 
         const moduleFixture: TestingModule = await Test.createTestingModule({
             imports: [ServerModule],
@@ -66,6 +71,8 @@ describe('AppController (e2e)', () => {
     });
 
     beforeEach(async function() {
+        await ganache_revert(snap_id, ganachePort);
+        snap_id = await ganache_snapshot(ganachePort);
         if (first) {
             first = false;
         } else {

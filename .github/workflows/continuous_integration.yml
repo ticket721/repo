@@ -364,6 +364,9 @@ jobs:
               with:
                   ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
+            - name: Install required tools globally (npm install -g truffle)
+              run: npm install -g truffle@5.1.6
+
             - name: Setup submodules (npm run setup:submodules:clone)
               run: npm run setup:submodules:clone
 

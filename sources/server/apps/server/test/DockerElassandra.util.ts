@@ -1,6 +1,7 @@
 import Dockerode from 'dockerode';
 import { spawn } from 'child_process';
 import fs from 'fs-extra';
+import Web3 from 'web3';
 const Docker = new Dockerode();
 
 export async function pull_ganache_image(): Promise<void> {
@@ -51,6 +52,13 @@ export async function run_ganache(ganachePort: number): Promise<void> {
         ExposedPorts: {
             '8545': {},
         },
+        Cmd: [
+            'ganache-cli',
+            '-i',
+            '2702',
+            '-m',
+            '"cross uniform panic climb universe awful surprise list dutch ability label cat"',
+        ],
         HostConfig: {
             AutoRemove: true,
             PortBindings: {
@@ -183,11 +191,127 @@ export async function run_elassandra(
     });
 }
 
+export const ganache_snapshot = (ganachePort: number) => {
+    const web3 = new Web3(
+        new Web3.providers.HttpProvider(`http://127.0.0.1:${ganachePort}`),
+    );
+    console.log('Creating Ganache State Snapshot');
+    return new Promise((ok, ko) => {
+        (web3.currentProvider as any).send(
+            {
+                method: 'evm_snapshot',
+                params: [],
+                jsonrpc: '2.0',
+                id: new Date().getTime(),
+            },
+            (error, res) => {
+                if (error) {
+                    return ko(error);
+                } else {
+                    ok(res.result);
+                }
+            },
+        );
+    });
+};
+
+export const ganache_revert = (snap_id: number, ganachePort: number) => {
+    const web3 = new Web3(
+        new Web3.providers.HttpProvider(`http://127.0.0.1:${ganachePort}`),
+    );
+    console.log('Recovering Ganache State Snapshot');
+    return new Promise((ok, ko) => {
+        (web3.currentProvider as any).send(
+            {
+                method: 'evm_revert',
+                params: [snap_id],
+                jsonrpc: '2.0',
+                id: new Date().getTime(),
+            },
+            (error, res) => {
+                if (error) {
+                    return ko(error);
+                } else {
+                    ok(res.result);
+                }
+            },
+        );
+    });
+};
+
 export async function kill_container(container_name: string) {
     try {
         const container = await Docker.getContainer(container_name);
         await container.kill();
     } catch (e) {}
+}
+
+export async function clear_artifacts() {
+    if (fs.existsSync('../../artifacts/remote_ganache')) {
+        fs.removeSync('../../artifacts/remote_ganache');
+    }
+}
+
+export async function run_contracts_migrations() {
+    const current_dir = process.cwd();
+    process.chdir('../..');
+    const clean_proc = spawn(`env`, [
+        ...`T721_CONFIG=./config.ganache.remote.json gulp contracts::clean network::clean`.split(
+            ' ',
+        ),
+    ]);
+
+    await new Promise((ok, ko) => {
+        clean_proc.on('close', ok);
+    });
+
+    const network_proc = spawn(`env`, [
+        ...`T721_CONFIG=./config.ganache.remote.json gulp network::run`.split(
+            ' ',
+        ),
+    ]);
+
+    await new Promise((ok, ko) => {
+        let found = false;
+
+        network_proc.stderr.on('data', data => {
+            process.stderr.write(data);
+        });
+
+        network_proc.stdout.on('data', data => {
+            process.stdout.write(data);
+            if (data.indexOf('Completed task network::run') !== -1) {
+                found = true;
+            }
+        });
+
+        network_proc.on('close', () => (found ? ok() : ko()));
+    });
+
+    const contracts_proc = spawn(`env`, [
+        ...`T721_CONFIG=./config.ganache.remote.json gulp contracts::run`.split(
+            ' ',
+        ),
+    ]);
+
+    await new Promise((ok, ko) => {
+        let found = false;
+
+        contracts_proc.stderr.on('data', data => {
+            process.stderr.write(data);
+        });
+
+        contracts_proc.stdout.on('data', data => {
+            process.stdout.write(data);
+            if (data.indexOf('Completed task contracts::run') !== -1) {
+                found = true;
+            }
+        });
+
+        contracts_proc.on('close', () => (found ? ok() : ko()));
+    });
+
+    process.chdir(current_dir);
 }
 
 export const startDocker = async (
@@ -216,6 +340,13 @@ export const startDocker = async (
     console.log('Starting trufflesuite/ganache-cli:v6.7.0 container');
     await run_ganache(ganachePort);
     console.log('Started trufflesuite/ganache-cli:v6.7.0 container');
+};
+
+export const prepare = async () => {
+    console.log('Running Contracts Migrations');
+    await clear_artifacts();
+    await run_contracts_migrations();
+    console.log('Finished Contracts Migrations');
 };
 
 export const stopDocker = async () => {
