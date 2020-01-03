@@ -29,4 +29,6 @@ export const Config: Joi.ObjectSchema = Joi.object({
     BULL_BOARD: Joi.bool().default(false),
 
     AUTH_SIGNATURE_TIMEOUT: Joi.number().default(30),
+
+    EMAIL_BROWSER_PREVIEW: Joi.number().default(false),
 });
