@@ -41,4 +41,14 @@ export class UserDto {
      * Account role
      */
     role: 'authenticated' | 'admin';
+
+    /**
+     * True if email was verified
+     */
+    valid: boolean;
+
+    /**
+     * Locale provided when registered
+     */
+    locale: string;
 }

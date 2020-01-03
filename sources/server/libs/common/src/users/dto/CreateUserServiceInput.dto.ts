@@ -45,4 +45,10 @@ export class CreateUserServiceInputDto {
      */
     @IsString()
     role: 'authenticated' | 'admin';
+
+    /**
+     * Locale
+     */
+    @IsString()
+    locale: string;
 }

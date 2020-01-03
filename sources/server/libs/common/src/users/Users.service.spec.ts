@@ -100,6 +100,8 @@ describe('Users Service', function() {
                     id,
                     type: 't721',
                     role: 'authenticated',
+                    locale: 'en',
+                    valid: false,
                 };
             };
 
@@ -125,6 +127,8 @@ describe('Users Service', function() {
                 id,
                 type: 't721',
                 role: 'authenticated',
+                locale: 'en',
+                valid: false,
             });
         });
 
@@ -153,6 +157,8 @@ describe('Users Service', function() {
                     id,
                     type: 't721',
                     role: 'authenticated',
+                    locale: 'en',
+                    valid: false,
                 };
             };
 
@@ -829,6 +835,8 @@ describe('Users Service', function() {
                 address: toAcceptedAddressFormat(address),
                 wallet: encrypted_string,
                 type: 't721',
+                locale: 'en',
+                valid: false,
             } as Partial<UserEntity>;
 
             const entity = {
@@ -884,6 +892,8 @@ describe('Users Service', function() {
                 wallet: encrypted_string,
                 type: 't721',
                 role: 'authenticated',
+                locale: 'en',
+                valid: false,
             } as Partial<UserEntity>;
 
             const entity = {

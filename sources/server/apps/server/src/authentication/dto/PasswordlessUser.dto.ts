@@ -40,4 +40,14 @@ export class PasswordlessUserDto {
      * Role of the account
      */
     role: 'authenticated' | 'admin';
+
+    /**
+     * User locale
+     */
+    locale: string;
+
+    /**
+     *
+     */
+    valid: boolean;
 }

@@ -41,7 +41,12 @@ export class UsersService {
     ): Promise<ServiceResponse<UserDto>> {
         try {
             const createdUser = await this.usersRepository
-                .save(this.usersRepository.create(user))
+                .save(
+                    this.usersRepository.create({
+                        ...user,
+                        valid: false,
+                    }),
+                )
                 .toPromise();
 
             return {

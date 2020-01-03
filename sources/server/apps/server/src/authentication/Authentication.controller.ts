@@ -19,7 +19,6 @@ import { LocalRegisterInputDto } from './dto/LocalRegisterInput.dto';
 import { JwtService } from '@nestjs/jwt';
 import { AuthGuard } from '@nestjs/passport';
 import { LocalLoginResponseDto } from './dto/LocalLoginResponse.dto';
-import { Roles, RolesGuard } from './guards/RolesGuard.guard';
 import { StatusCodes, StatusNames } from '../utils/codes';
 import { HttpExceptionFilter } from '../utils/HttpException.filter';
 import { ServiceResponse } from '../utils/ServiceResponse';
@@ -133,6 +132,7 @@ export class AuthenticationController {
             body.password,
             body.username,
             body.wallet,
+            body.locale || 'en',
         );
         if (resp.error) {
             switch (resp.error) {
@@ -211,6 +211,7 @@ export class AuthenticationController {
             body.timestamp,
             body.address,
             body.signature,
+            body.locale || 'en',
         );
         if (resp.error) {
             switch (resp.error) {

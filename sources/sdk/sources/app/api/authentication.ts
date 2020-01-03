@@ -31,6 +31,7 @@ export async function localRegister(
     username: string,
     wallet: Wallet,
     progress: ProgressCallback,
+    locale?: string,
 ): Promise<AxiosResponse<LocalRegisterResponseDto> | FailedRegisterReport> {
 
     const self: T721SDK = this;
@@ -62,6 +63,7 @@ export async function localRegister(
         password: hashed,
         email,
         wallet: JSON.parse(encrypted),
+        locale,
     };
 
     return self.post<LocalRegisterInputDto>('/authentication/local/register', {}, createUser);
@@ -87,6 +89,7 @@ export async function web3Register(
     timestamp: number,
     address: string,
     signature: string,
+    locale?: string,
 ): Promise<AxiosResponse<Web3RegisterResponseDto>> {
 
     const self: T721SDK = this;
@@ -97,6 +100,7 @@ export async function web3Register(
         timestamp: timestamp.toString(),
         address,
         signature,
+        locale,
     };
 
     return self.post<Web3RegisterInputDto>('/authentication/web3/register', {}, createWeb3User);

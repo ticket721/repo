@@ -130,6 +130,7 @@ export class AuthenticationService {
      * @param timestamp
      * @param address Expected signing address
      * @param signature Signature of a Web3Register payload
+     * @param locale
      */
     async createWeb3User(
         email: string,
@@ -137,6 +138,7 @@ export class AuthenticationService {
         timestamp: string,
         address: string,
         signature: string,
+        locale: string,
     ): Promise<ServiceResponse<PasswordlessUserDto>> {
         address = toAcceptedAddressFormat(address);
 
@@ -224,6 +226,7 @@ export class AuthenticationService {
                 address,
                 type: 'web3',
                 role: 'authenticated',
+                locale,
             },
         );
 
@@ -246,12 +249,14 @@ export class AuthenticationService {
      * @param password
      * @param username
      * @param wallet
+     * @param locale
      */
     async createT721User(
         email: string,
         password: string,
         username: string,
         wallet: EncryptedWallet,
+        locale: string,
     ): Promise<ServiceResponse<PasswordlessUserDto>> {
         const emailUserResp: ServiceResponse<UserDto> = await this.usersService.findByEmail(
             email,
@@ -332,6 +337,7 @@ export class AuthenticationService {
                 address: finalAddress,
                 type: 't721',
                 role: 'authenticated',
+                locale,
             },
         );
 

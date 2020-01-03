@@ -1,5 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsObject, IsString } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsEmail, IsObject, IsString, ValidateIf } from 'class-validator';
 import { EncryptedWallet } from '@ticket721sources/global';
 
 /**
@@ -33,4 +33,11 @@ export class LocalRegisterInputDto {
     @ApiProperty()
     @IsObject()
     wallet: EncryptedWallet;
+
+    /**
+     * User Locale
+     */
+    @ApiPropertyOptional()
+    @ValidateIf((locale: string) => ['en', 'fr'].indexOf(locale) !== -1)
+    locale?: string;
 }
