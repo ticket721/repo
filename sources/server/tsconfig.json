@@ -24,6 +24,12 @@
             ],
             "@app/server/*": [
                 "apps/server/src/*"
+            ],
+            "@email-templates/": [
+                "../email-templates"
+            ],
+            "@email-templates/*": [
+                "../email-templates/*"
             ]
         }
     },

@@ -1,27 +1,68 @@
 import {
     EmailDriver,
-    EmailDriverOptions,
+    EmailDriverResponse,
+    EmailDriverResponseStatus,
+    EmailDriverSendOptions,
 } from '@app/server/email/drivers/Email.driver.base';
 import EmailTemplates from 'email-templates';
 import PreviewEmail from 'preview-email';
 import path from 'path';
+import { ConfigService } from '@lib/common/config/Config.service';
+import fs from 'fs';
 
+/**
+ * Development driver. If preview is enabled, emails are opened in the browser
+ */
 /* istanbul ignore next */
 export class DevDriver implements EmailDriver {
-    public async send(options: EmailDriverOptions): Promise<void> {
+    /**
+     * True if emails are opened in the browser
+     */
+    private preview: boolean = false;
+
+    /**
+     * Path where template sources can be found
+     */
+    private templatePath: string = null;
+
+    /**
+     * Configures the driver
+     *
+     * @param configService
+     */
+    public configure(configService: ConfigService): void {
+        if (configService.get('EMAIL_BROWSER_PREVIEW') === 'true') {
+            this.preview = true;
+        }
+
+        this.templatePath = configService.get('EMAIL_TEMPLATE_PATH');
+    }
+
+    /**
+     * Sends an email, according to the provided options
+     *
+     * @param options
+     */
+    public async send(
+        options: EmailDriverSendOptions,
+    ): Promise<EmailDriverResponse> {
         // Recover template path
-        const templatePath = path.join(
-            __dirname,
-            '../templates',
-            options.template,
+        const templatePath = path.resolve(
+            path.join(this.templatePath, options.template),
         );
 
         // Recover locale to extract mail_subject
-        const localeData = require(path.join(
-            templatePath,
-            'locales',
-            options.locale,
-        ));
+        const localeData = JSON.parse(
+            fs
+                .readFileSync(
+                    path.join(
+                        templatePath,
+                        'locales',
+                        `${options.locale}.json`,
+                    ),
+                )
+                .toString(),
+        );
 
         // Prepare email rendered
         const email = new EmailTemplates({
@@ -48,7 +89,7 @@ export class DevDriver implements EmailDriver {
             html: mail,
         };
 
-        if (options.preview) {
+        if (this.preview) {
             // Run preview
             await PreviewEmail(message, {
                 open: {
@@ -56,5 +97,10 @@ export class DevDriver implements EmailDriver {
                 },
             });
         }
+
+        return {
+            options,
+            status: EmailDriverResponseStatus.Sent,
+        };
     }
 }
