@@ -65,6 +65,8 @@ describe('Local Strategy', function() {
                         type: 't721',
                         id: '0',
                         role: 'authenticated',
+                        locale: 'en',
+                        valid: false,
                     },
                     error: null,
                 }),
@@ -80,6 +82,8 @@ describe('Local Strategy', function() {
                 type: 't721',
                 id: '0',
                 role: 'authenticated',
+                locale: 'en',
+                valid: false,
             });
 
             verify(

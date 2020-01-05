@@ -116,6 +116,8 @@ describe('Authentication Service', function() {
                     password: null,
                     id: '0',
                     role: 'authenticated',
+                    locale: 'en',
+                    valid: false,
                 },
                 error: null,
             };
@@ -139,6 +141,8 @@ describe('Authentication Service', function() {
                 type: 'web3',
                 id: '0',
                 role: 'authenticated',
+                locale: 'en',
+                valid: false,
             });
 
             verify(usersServiceMock.findByAddress(address)).called();
@@ -308,6 +312,8 @@ describe('Authentication Service', function() {
                     password: null,
                     id: '0',
                     role: 'authenticated',
+                    valid: false,
+                    locale: 'en',
                 },
                 error: null,
             };
@@ -329,6 +335,7 @@ describe('Authentication Service', function() {
                         type: 'web3',
                         password: null,
                         role: 'authenticated',
+                        locale: 'en',
                     }),
                 ),
             ).thenReturn(Promise.resolve(serviceResponse));
@@ -349,6 +356,7 @@ describe('Authentication Service', function() {
                 registerPayload[0].toString(),
                 address,
                 registerSignature.hex,
+                'en',
             );
 
             expect(res.response).toBeDefined();
@@ -361,6 +369,8 @@ describe('Authentication Service', function() {
                 type: 'web3',
                 id: '0',
                 role: 'authenticated',
+                locale: 'en',
+                valid: false,
             });
 
             verify(
@@ -373,6 +383,7 @@ describe('Authentication Service', function() {
                         type: 'web3',
                         password: null,
                         role: 'authenticated',
+                        locale: 'en',
                     }),
                 ),
             ).called();
@@ -414,6 +425,8 @@ describe('Authentication Service', function() {
                     password: null,
                     id: '0',
                     role: 'authenticated',
+                    locale: 'en',
+                    valid: false,
                 },
                 error: null,
             };
@@ -438,6 +451,7 @@ describe('Authentication Service', function() {
                 registerPayload[0].toString(),
                 address,
                 registerSignature.hex,
+                'en',
             );
 
             expect(res.error).toEqual('unexpected_error');
@@ -478,6 +492,8 @@ describe('Authentication Service', function() {
                     password: null,
                     id: '0',
                     role: 'authenticated',
+                    locale: 'en',
+                    valid: false,
                 },
                 error: null,
             };
@@ -506,6 +522,7 @@ describe('Authentication Service', function() {
                 registerPayload[0].toString(),
                 address,
                 registerSignature.hex,
+                'en',
             );
 
             expect(res.error).toEqual('unexpected_error');
@@ -547,6 +564,8 @@ describe('Authentication Service', function() {
                     password: null,
                     id: '0',
                     role: 'authenticated',
+                    locale: 'en',
+                    valid: false,
                 },
                 error: null,
             };
@@ -579,6 +598,7 @@ describe('Authentication Service', function() {
                 registerPayload[0].toString(),
                 address,
                 registerSignature.hex,
+                'en',
             );
 
             expect(res.error).toEqual('unexpected_error');
@@ -623,6 +643,8 @@ describe('Authentication Service', function() {
                     type: 'web3',
                     id: '0',
                     role: 'authenticated',
+                    locale: 'en',
+                    valid: false,
                 },
                 error: null,
             };
@@ -637,6 +659,7 @@ describe('Authentication Service', function() {
                 registerPayload[0].toString(),
                 address,
                 registerSignature.hex,
+                'en',
             );
 
             expect(res.response).toEqual(null);
@@ -679,6 +702,8 @@ describe('Authentication Service', function() {
                     type: 'web3',
                     id: '0',
                     role: 'authenticated',
+                    locale: 'en',
+                    valid: false,
                 },
                 error: null,
             };
@@ -703,6 +728,7 @@ describe('Authentication Service', function() {
                 registerPayload[0].toString(),
                 address,
                 registerSignature.hex,
+                'en',
             );
 
             expect(res.response).toEqual(null);
@@ -746,6 +772,8 @@ describe('Authentication Service', function() {
                     type: 'web3',
                     id: '0',
                     role: 'authenticated',
+                    locale: 'en',
+                    valid: false,
                 },
                 error: null,
             };
@@ -773,6 +801,7 @@ describe('Authentication Service', function() {
                 registerPayload[0].toString(),
                 address,
                 registerSignature.hex,
+                'en',
             );
 
             expect(res.response).toEqual(null);
@@ -823,6 +852,8 @@ describe('Authentication Service', function() {
                     password: null,
                     id: '0',
                     role: 'authenticated',
+                    locale: 'en',
+                    valid: false,
                 },
                 error: null,
             };
@@ -850,6 +881,7 @@ describe('Authentication Service', function() {
                 future.toString(),
                 address,
                 registerSignature.hex,
+                'en',
             );
 
             expect(res.response).toEqual(null);
@@ -894,6 +926,8 @@ describe('Authentication Service', function() {
                     password: null,
                     id: '0',
                     role: 'authenticated',
+                    locale: 'en',
+                    valid: false,
                 },
                 error: null,
             };
@@ -921,6 +955,7 @@ describe('Authentication Service', function() {
                 registerPayload[0].toString(),
                 address,
                 registerSignature.hex,
+                'en',
             );
 
             expect(res.response).toEqual(null);
@@ -958,6 +993,8 @@ describe('Authentication Service', function() {
                     password: hashedp,
                     id: '0',
                     role: 'authenticated',
+                    locale: 'en',
+                    valid: false,
                 },
                 error: null,
             };
@@ -979,6 +1016,7 @@ describe('Authentication Service', function() {
                         type: 't721',
                         password: anyString(),
                         role: 'authenticated',
+                        locale: 'en',
                     }),
                 ),
             ).thenReturn(Promise.resolve(serviceResponse));
@@ -998,6 +1036,7 @@ describe('Authentication Service', function() {
                 hashedp,
                 username,
                 encrypted,
+                'en',
             );
 
             expect(res.response).toBeDefined();
@@ -1010,6 +1049,8 @@ describe('Authentication Service', function() {
                 type: 't721',
                 id: '0',
                 role: 'authenticated',
+                valid: false,
+                locale: 'en',
             });
 
             verify(
@@ -1022,6 +1063,7 @@ describe('Authentication Service', function() {
                         type: 't721',
                         password: anyString(),
                         role: 'authenticated',
+                        locale: 'en',
                     }),
                 ),
             ).called();
@@ -1053,6 +1095,8 @@ describe('Authentication Service', function() {
                     password: hashedp,
                     id: '0',
                     role: 'authenticated',
+                    locale: 'en',
+                    valid: false,
                 },
                 error: null,
             };
@@ -1066,6 +1110,7 @@ describe('Authentication Service', function() {
                 hashedp,
                 username,
                 JSON.parse(encrypted),
+                'en',
             );
 
             expect(res.response).toEqual(null);
@@ -1096,6 +1141,8 @@ describe('Authentication Service', function() {
                     password: hashedp,
                     id: '0',
                     role: 'authenticated',
+                    locale: 'en',
+                    valid: false,
                 },
                 error: null,
             };
@@ -1119,6 +1166,7 @@ describe('Authentication Service', function() {
                 hashedp,
                 username,
                 JSON.parse(encrypted),
+                'en',
             );
 
             expect(res.response).toEqual(null);
@@ -1161,6 +1209,7 @@ describe('Authentication Service', function() {
                 hashedp,
                 username,
                 parsed_encrypted,
+                'en',
             );
 
             expect(res.response).toEqual(null);
@@ -1191,6 +1240,8 @@ describe('Authentication Service', function() {
                     password: hashedp,
                     id: '0',
                     role: 'authenticated',
+                    locale: 'en',
+                    valid: false,
                 },
                 error: null,
             };
@@ -1217,6 +1268,7 @@ describe('Authentication Service', function() {
                 hashedp,
                 username,
                 JSON.parse(encrypted),
+                'en',
             );
 
             expect(res.response).toEqual(null);
@@ -1260,6 +1312,7 @@ describe('Authentication Service', function() {
                 hashedp.slice(4),
                 username,
                 JSON.parse(encrypted),
+                'en',
             );
 
             expect(res.response).toEqual(null);
@@ -1292,6 +1345,7 @@ describe('Authentication Service', function() {
                 hashedp.slice(4),
                 username,
                 JSON.parse(encrypted),
+                'en',
             );
 
             expect(res.response).toEqual(null);
@@ -1332,6 +1386,7 @@ describe('Authentication Service', function() {
                 hashedp.slice(4),
                 username,
                 JSON.parse(encrypted),
+                'en',
             );
 
             expect(res.response).toEqual(null);
@@ -1377,6 +1432,7 @@ describe('Authentication Service', function() {
                 hashedp.slice(4),
                 username,
                 JSON.parse(encrypted),
+                'en',
             );
 
             expect(res.response).toEqual(null);
@@ -1416,6 +1472,7 @@ describe('Authentication Service', function() {
                         type: 't721',
                         password: anyString(),
                         role: 'authenticated',
+                        locale: 'en',
                     }),
                 ),
             ).thenReturn(
@@ -1440,6 +1497,7 @@ describe('Authentication Service', function() {
                 hashedp,
                 username,
                 encrypted,
+                'en',
             );
 
             expect(res.response).toEqual(null);
@@ -1457,6 +1515,7 @@ describe('Authentication Service', function() {
                         type: 't721',
                         password: anyString(),
                         role: 'authenticated',
+                        locale: 'en',
                     }),
                 ),
             ).called();
@@ -1487,6 +1546,8 @@ describe('Authentication Service', function() {
                     password: bcrypted,
                     id: '0',
                     role: 'authenticated',
+                    locale: 'en',
+                    valid: false,
                 },
                 error: null,
             };
@@ -1508,6 +1569,8 @@ describe('Authentication Service', function() {
                 type: 't721',
                 id: '0',
                 role: 'authenticated',
+                locale: 'en',
+                valid: false,
             });
             verify(usersServiceMock.findByEmail(email)).called();
         });

@@ -22,6 +22,7 @@ import { Web3ServiceOptions } from '@lib/common/web3/Web3.service';
 import { ContractsModule } from '@lib/common/contracts/Contracts.module';
 import { ContractsServiceOptions } from '@lib/common/contracts/Contracts.service';
 import { ShutdownModule } from '@lib/common/shutdown/Shutdown.module';
+import { EmailModule } from '@app/server/email/Email.module';
 
 @Module({
     imports: [
@@ -62,6 +63,7 @@ import { ShutdownModule } from '@lib/common/shutdown/Shutdown.module';
             inject: [ConfigService],
         }),
         ShutdownModule,
+        EmailModule,
     ],
     controllers: [ServerController],
     providers: [

@@ -29,4 +29,27 @@ export const Config: Joi.ObjectSchema = Joi.object({
     BULL_BOARD: Joi.bool().default(false),
 
     AUTH_SIGNATURE_TIMEOUT: Joi.number().default(30),
+
+    EMAIL_ENGINE: Joi.string()
+        .valid('development', 'mailjet')
+        .required(),
+    EMAIL_TEMPLATE_PATH: Joi.string().required(),
+
+    EMAIL_BROWSER_PREVIEW: Joi.boolean().when('EMAIL_ENGINE', {
+        is: 'development',
+        then: Joi.required(),
+        otherwise: Joi.optional(),
+    }),
+
+    MAILJET_API_KEY: Joi.string().when('EMAIL_ENGINE', {
+        is: 'mailjet',
+        then: Joi.required(),
+        otherwise: Joi.optional(),
+    }),
+
+    MAILJET_API_SECRET: Joi.string().when('EMAIL_ENGINE', {
+        is: 'mailjet',
+        then: Joi.required(),
+        otherwise: Joi.optional(),
+    }),
 });

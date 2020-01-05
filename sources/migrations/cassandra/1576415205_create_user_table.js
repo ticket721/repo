@@ -9,7 +9,9 @@ var migration1576415205 = {
         type text,
         wallet text,
         address text,
-        role text
+        role text,
+        valid boolean,
+        locale text
         );`;
         var params = [];
         db.execute(query, params, { prepare: true }, function (err) {

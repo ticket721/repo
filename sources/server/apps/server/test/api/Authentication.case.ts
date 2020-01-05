@@ -27,6 +27,7 @@ export async function register(
         username,
         wallet,
         () => {},
+        'fr',
     )) as any;
 
     expect(reg_res.report_status).toEqual(undefined);
@@ -37,6 +38,8 @@ export async function register(
     expect(resp.data).toBeDefined();
     expect(resp.data.user.email).toEqual(email);
     expect(resp.data.user.username).toEqual(username);
+    expect(resp.data.user.locale).toEqual('fr');
+    expect(resp.data.user.valid).toEqual(false);
     expect(resp.data.token).toBeDefined();
     expect(resp.status).toEqual(201);
     expect(resp.statusText).toEqual('Created');
@@ -120,10 +123,13 @@ export async function web3register(
         registerPayload[0],
         wallet.address,
         signedPayload.hex,
+        'fr',
     );
     expect(resp.data).toBeDefined();
     expect(resp.data.user.wallet).toEqual(null);
     expect(resp.data.user.email).toEqual(email);
+    expect(resp.data.user.locale).toEqual('fr');
+    expect(resp.data.user.valid).toEqual(false);
     expect(resp.data.user.username).toEqual(username);
     expect(resp.data.user.address).toEqual(
         toAcceptedAddressFormat(wallet.address),
@@ -132,10 +138,12 @@ export async function web3register(
     expect(resp.status).toEqual(201);
     expect(resp.statusText).toEqual('Created');
 
+    console.log('000-1');
     const login_resp = await sdk.web3Login(
         loginPayload[0],
         signedLoginPayload.hex,
     );
+    console.log('000-2');
     expect(login_resp.data).toEqual({
         user: {
             address: toAcceptedAddressFormat(wallet.address),
@@ -144,6 +152,8 @@ export async function web3register(
             email: 'test@test.com',
             username: 'mortimr',
             id: login_resp.data.user.id,
+            locale: 'fr',
+            valid: false,
         },
         token: login_resp.data.token,
     });

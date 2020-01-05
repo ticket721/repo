@@ -91,6 +91,7 @@ describe('Authentication Controller', function() {
                     register_payload[0].toString(),
                     address,
                     register_signature.hex,
+                    'en',
                 ),
             ).thenReturn(
                 Promise.resolve({
@@ -102,6 +103,8 @@ describe('Authentication Controller', function() {
                         address,
                         id: '0',
                         role: 'authenticated',
+                        locale: 'en',
+                        valid: false,
                     },
                     error: null,
                 }),
@@ -126,6 +129,8 @@ describe('Authentication Controller', function() {
                 address: toAcceptedAddressFormat(address),
                 id: '0',
                 role: 'authenticated',
+                locale: 'en',
+                valid: false,
             });
             expect(res.token).toBeDefined();
 
@@ -136,6 +141,7 @@ describe('Authentication Controller', function() {
                     register_payload[0].toString(),
                     address,
                     register_signature.hex,
+                    'en',
                 ),
             ).called();
         });
@@ -169,6 +175,7 @@ describe('Authentication Controller', function() {
                     register_payload[0].toString(),
                     address,
                     register_signature.hex,
+                    'en',
                 ),
             ).thenReturn(
                 Promise.resolve({
@@ -206,6 +213,7 @@ describe('Authentication Controller', function() {
                     register_payload[0].toString(),
                     address,
                     register_signature.hex,
+                    'en',
                 ),
             ).called();
         });
@@ -239,6 +247,7 @@ describe('Authentication Controller', function() {
                     register_payload[0].toString(),
                     address,
                     register_signature.hex,
+                    'en',
                 ),
             ).thenReturn(
                 Promise.resolve({
@@ -276,6 +285,7 @@ describe('Authentication Controller', function() {
                     register_payload[0].toString(),
                     address,
                     register_signature.hex,
+                    'en',
                 ),
             ).called();
         });
@@ -309,6 +319,7 @@ describe('Authentication Controller', function() {
                     register_payload[0].toString(),
                     address,
                     register_signature.hex,
+                    'en',
                 ),
             ).thenReturn(
                 Promise.resolve({
@@ -346,6 +357,7 @@ describe('Authentication Controller', function() {
                     register_payload[0].toString(),
                     address,
                     register_signature.hex,
+                    'en',
                 ),
             ).called();
         });
@@ -379,6 +391,7 @@ describe('Authentication Controller', function() {
                     register_payload[0].toString(),
                     address,
                     register_signature.hex,
+                    'en',
                 ),
             ).thenReturn(
                 Promise.resolve({
@@ -416,6 +429,7 @@ describe('Authentication Controller', function() {
                     register_payload[0].toString(),
                     address,
                     register_signature.hex,
+                    'en',
                 ),
             ).called();
         });
@@ -449,6 +463,7 @@ describe('Authentication Controller', function() {
                     register_payload[0].toString(),
                     address,
                     register_signature.hex,
+                    'en',
                 ),
             ).thenReturn(
                 Promise.resolve({
@@ -486,6 +501,7 @@ describe('Authentication Controller', function() {
                     register_payload[0].toString(),
                     address,
                     register_signature.hex,
+                    'en',
                 ),
             ).called();
         });
@@ -519,6 +535,7 @@ describe('Authentication Controller', function() {
                     register_payload[0].toString(),
                     address,
                     register_signature.hex,
+                    'en',
                 ),
             ).thenReturn(
                 Promise.resolve({
@@ -556,6 +573,7 @@ describe('Authentication Controller', function() {
                     register_payload[0].toString(),
                     address,
                     register_signature.hex,
+                    'en',
                 ),
             ).called();
         });
@@ -589,6 +607,7 @@ describe('Authentication Controller', function() {
                     register_payload[0].toString(),
                     address,
                     register_signature.hex,
+                    'en',
                 ),
             ).thenReturn(
                 Promise.resolve({
@@ -626,6 +645,7 @@ describe('Authentication Controller', function() {
                     register_payload[0].toString(),
                     address,
                     register_signature.hex,
+                    'en',
                 ),
             ).called();
         });
@@ -659,6 +679,7 @@ describe('Authentication Controller', function() {
                     register_payload[0].toString(),
                     address,
                     register_signature.hex,
+                    'en',
                 ),
             ).thenReturn(
                 Promise.resolve({
@@ -696,6 +717,7 @@ describe('Authentication Controller', function() {
                     register_payload[0].toString(),
                     address,
                     register_signature.hex,
+                    'en',
                 ),
             ).called();
         });
@@ -721,6 +743,7 @@ describe('Authentication Controller', function() {
                     hashedp,
                     username,
                     deepEqual(encrypted),
+                    'en',
                 ),
             ).thenReturn(
                 Promise.resolve({
@@ -732,6 +755,8 @@ describe('Authentication Controller', function() {
                         address,
                         id: '0',
                         role: 'authenticated',
+                        locale: 'en',
+                        valid: false,
                     },
                     error: null,
                 }),
@@ -755,6 +780,8 @@ describe('Authentication Controller', function() {
                 address: toAcceptedAddressFormat(address),
                 id: '0',
                 role: 'authenticated',
+                locale: 'en',
+                valid: false,
             });
             expect(res.token).toBeDefined();
 
@@ -764,6 +791,7 @@ describe('Authentication Controller', function() {
                     hashedp,
                     username,
                     deepEqual(encrypted),
+                    'en',
                 ),
             ).called();
         });
@@ -787,6 +815,7 @@ describe('Authentication Controller', function() {
                     hashedp,
                     username,
                     deepEqual(encrypted),
+                    'en',
                 ),
             ).thenReturn(
                 Promise.resolve({
@@ -822,6 +851,7 @@ describe('Authentication Controller', function() {
                     hashedp,
                     username,
                     deepEqual(encrypted),
+                    'en',
                 ),
             ).called();
         });
@@ -845,6 +875,7 @@ describe('Authentication Controller', function() {
                     hashedp,
                     username,
                     deepEqual(encrypted),
+                    'en',
                 ),
             ).thenReturn(
                 Promise.resolve({
@@ -880,6 +911,7 @@ describe('Authentication Controller', function() {
                     hashedp,
                     username,
                     deepEqual(encrypted),
+                    'en',
                 ),
             ).called();
         });
@@ -903,6 +935,7 @@ describe('Authentication Controller', function() {
                     hashedp,
                     username,
                     deepEqual(encrypted),
+                    'en',
                 ),
             ).thenReturn(
                 Promise.resolve({
@@ -938,6 +971,7 @@ describe('Authentication Controller', function() {
                     hashedp,
                     username,
                     deepEqual(encrypted),
+                    'en',
                 ),
             ).called();
         });
@@ -961,6 +995,7 @@ describe('Authentication Controller', function() {
                     hashedp,
                     username,
                     deepEqual(encrypted),
+                    'en',
                 ),
             ).thenReturn(
                 Promise.resolve({
@@ -996,6 +1031,7 @@ describe('Authentication Controller', function() {
                     hashedp,
                     username,
                     deepEqual(encrypted),
+                    'en',
                 ),
             ).called();
         });
@@ -1019,6 +1055,7 @@ describe('Authentication Controller', function() {
                     hashedp,
                     username,
                     deepEqual(encrypted),
+                    'en',
                 ),
             ).thenReturn(
                 Promise.resolve({
@@ -1054,6 +1091,7 @@ describe('Authentication Controller', function() {
                     hashedp,
                     username,
                     deepEqual(encrypted),
+                    'en',
                 ),
             ).called();
         });
@@ -1077,6 +1115,7 @@ describe('Authentication Controller', function() {
                     hashedp,
                     username,
                     deepEqual(encrypted),
+                    'en',
                 ),
             ).thenReturn(
                 Promise.resolve({
@@ -1112,6 +1151,7 @@ describe('Authentication Controller', function() {
                     hashedp,
                     username,
                     deepEqual(encrypted),
+                    'en',
                 ),
             ).called();
         });

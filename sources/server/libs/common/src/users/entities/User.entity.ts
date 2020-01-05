@@ -86,4 +86,20 @@ export class UserEntity {
         type: 'text',
     })
     role: 'authenticated' | 'admin';
+
+    /**
+     * True if email was validated
+     */
+    @Column({
+        type: 'boolean',
+    })
+    valid: boolean;
+
+    /**
+     * User Locale
+     */
+    @Column({
+        type: 'text',
+    })
+    locale: string;
 }

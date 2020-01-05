@@ -13,6 +13,7 @@ module.exports = {
         '<rootDir>/libs/common/src/logger',
         '<rootDir>/apps/server/src/utils/HttpEception.filter.ts',
         '<rootDir>/apps/server/src/authentication/Jwt.strategy.ts',
-        '<rootDir>/apps/server/test'
+        '<rootDir>/apps/server/test',
+        '<rootDir>(.*).module.ts'
     ]
 };

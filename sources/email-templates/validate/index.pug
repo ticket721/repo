@@ -1,0 +1,10 @@
+doctype html
+html(lang='en')
+    head
+        title=t('mail_head_title')
+    body
+        h1=t('mail_body_title')
+        div.container
+            p=t('mail_body_subtitle')
+            a(href=`${validationLink}`)
+                button=t('mail_body_button')

@@ -36,3 +36,5 @@ lerna-debug.log*
 
 # Documentation
 documentation
+
+testmain.ts
