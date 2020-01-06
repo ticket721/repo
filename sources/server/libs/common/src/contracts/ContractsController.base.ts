@@ -7,11 +7,33 @@ import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 import Web3 from 'web3';
 import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
 
+/**
+ * Base class for one contract instance service
+ */
 export class ContractsControllerBase {
+    /**
+     * Artifact of the instance
+     */
     private _contractData: ContractArtifact;
+
+    /**
+     * Web3 Contract instance
+     */
     private _contract: any;
+
+    /**
+     * Logger to use
+     */
     private readonly logger: WinstonLoggerService;
 
+    /**
+     * Dependency Injection
+     *
+     * @param _contractsService
+     * @param _web3Service
+     * @param _shutdownService
+     * @param contractName
+     */
     constructor(
         private readonly _contractsService: ContractsService,
         private readonly _web3Service: Web3Service,
@@ -21,6 +43,9 @@ export class ContractsControllerBase {
         this.logger = new WinstonLoggerService(contractName);
     }
 
+    /**
+     * Utility to load contract instance
+     */
     async loadContract(): Promise<void> {
         this.logger.log(`Initializing ${this.contractName} service`);
         this._contractData = (
@@ -53,6 +78,9 @@ export class ContractsControllerBase {
         this.logger.log(`Service ${this.contractName} initialized`);
     }
 
+    /**
+     * Utility to recover contract instance
+     */
     async get(): Promise<any> {
         if (!this._contractData || !this._contract) {
             await this.loadContract();

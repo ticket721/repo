@@ -47,7 +47,7 @@ export class PasswordlessUserDto {
     locale: string;
 
     /**
-     *
+     * True if email has been validated
      */
     valid: boolean;
 }

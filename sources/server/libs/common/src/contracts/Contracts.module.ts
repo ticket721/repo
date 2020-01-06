@@ -9,17 +9,36 @@ import { RefractFactoryV0Service } from '@lib/common/contracts/refract/RefractFa
 import { T721ControllerV0Service } from '@lib/common/contracts/t721controller/T721Controller.V0.service';
 import { MetaMarketplaceV0Service } from '@lib/common/contracts/metamarketplace/MetaMarketplace.V0.service';
 
+/**
+ * Build options for the Contracts Module
+ */
 export interface ContractsModuleAsyncOptions
     extends Pick<DynamicModule, 'imports'> {
+    /**
+     * Factory to inject Contracts Service options
+     * @param args
+     */
     useFactory: (
         ...args: any[]
     ) => Promise<ContractsServiceOptions> | ContractsServiceOptions;
+
+    /**
+     * Providers to inject into factory
+     */
     inject?: any[];
 }
 
+/**
+ * Module to load contracts instance and utilities
+ */
 @Global()
 @Module({})
 export class ContractsModule {
+    /**
+     * Static async module creation
+     *
+     * @param options
+     */
     static registerAsync(options: ContractsModuleAsyncOptions): DynamicModule {
         return {
             module: ContractsModule,

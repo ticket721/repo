@@ -393,6 +393,112 @@ describe('Authentication Service', function() {
             verify(usersServiceMock.findByUsername(username)).called();
         });
 
+        test('should report creation error', async function() {
+            const authenticationService: AuthenticationService =
+                context.authenticationService;
+            const usersServiceMock: UsersService = context.usersServiceMock;
+
+            const email = 'test@test.com';
+            const username = 'salut';
+            const wallet: Wallet = await createWallet();
+            const address = toAcceptedAddressFormat(wallet.address);
+
+            const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(
+                1,
+            );
+            const registerPayload = web3RegisterSigner.generateRegistrationProofPayload(
+                email,
+                username,
+            );
+            const registerSignature = await web3RegisterSigner.sign(
+                wallet.privateKey,
+                registerPayload[1],
+            );
+
+            const serviceResponse: ServiceResponse<UserDto> = {
+                response: {
+                    email,
+                    username,
+                    wallet: null,
+                    address,
+                    type: 'web3',
+                    password: null,
+                    id: '0',
+                    role: 'authenticated',
+                    valid: false,
+                    locale: 'en',
+                },
+                error: null,
+            };
+
+            const emptyServiceResponse: Promise<ServiceResponse<
+                UserDto
+            >> = Promise.resolve({
+                response: null,
+                error: null,
+            });
+
+            when(
+                usersServiceMock.create(
+                    deepEqual({
+                        email,
+                        username,
+                        wallet: null,
+                        address,
+                        type: 'web3',
+                        password: null,
+                        role: 'authenticated',
+                        locale: 'en',
+                    }),
+                ),
+            ).thenReturn(
+                Promise.resolve({
+                    error: 'unexpected_error',
+                    response: null,
+                }),
+            );
+
+            when(usersServiceMock.findByAddress(address)).thenReturn(
+                emptyServiceResponse,
+            );
+            when(usersServiceMock.findByEmail(email)).thenReturn(
+                emptyServiceResponse,
+            );
+            when(usersServiceMock.findByUsername(username)).thenReturn(
+                emptyServiceResponse,
+            );
+
+            const res = await authenticationService.createWeb3User(
+                email,
+                username,
+                registerPayload[0].toString(),
+                address,
+                registerSignature.hex,
+                'en',
+            );
+
+            expect(res.error).toEqual('unexpected_error');
+            expect(res.response).toEqual(null);
+
+            verify(
+                usersServiceMock.create(
+                    deepEqual({
+                        email,
+                        username,
+                        wallet: null,
+                        address,
+                        type: 'web3',
+                        password: null,
+                        role: 'authenticated',
+                        locale: 'en',
+                    }),
+                ),
+            ).called();
+            verify(usersServiceMock.findByEmail(email)).called();
+            verify(usersServiceMock.findByAddress(address)).called();
+            verify(usersServiceMock.findByUsername(username)).called();
+        });
+
         test('user by email error', async function() {
             const authenticationService: AuthenticationService =
                 context.authenticationService;
@@ -1627,6 +1733,86 @@ describe('Authentication Service', function() {
             expect(res.response).toEqual(null);
             expect(res.error).toEqual('invalid_credentials');
             verify(usersServiceMock.findByEmail(email)).called();
+        });
+    });
+
+    describe('validateUserEmail', function() {
+        it('should validate user email', async function() {
+            const authenticationService: AuthenticationService =
+                context.authenticationService;
+
+            const usersServiceMock: UsersService = context.usersServiceMock;
+
+            const id = '123';
+
+            when(
+                usersServiceMock.update(
+                    deepEqual({
+                        id,
+                        valid: true,
+                    }),
+                ),
+            ).thenReturn(
+                Promise.resolve({
+                    error: null,
+                    response: {
+                        id,
+                        username: 'hey',
+                        password: 'this is sensitive',
+                        wallet: null,
+                        type: 't721',
+                        role: 'authenticated',
+                        email: 'iulian@t721.com',
+                        address: '0x...',
+                        valid: true,
+                        locale: 'en',
+                    },
+                }),
+            );
+
+            const res = await authenticationService.validateUserEmail(id);
+
+            expect(res.error).toEqual(null);
+            expect((res.response as any).password).toBeUndefined();
+            expect(res.response).toEqual({
+                id,
+                username: 'hey',
+                wallet: null,
+                type: 't721',
+                role: 'authenticated',
+                email: 'iulian@t721.com',
+                address: '0x...',
+                valid: true,
+                locale: 'en',
+            });
+        });
+
+        it('should report update error', async function() {
+            const authenticationService: AuthenticationService =
+                context.authenticationService;
+
+            const usersServiceMock: UsersService = context.usersServiceMock;
+
+            const id = '123';
+
+            when(
+                usersServiceMock.update(
+                    deepEqual({
+                        id,
+                        valid: true,
+                    }),
+                ),
+            ).thenReturn(
+                Promise.resolve({
+                    error: 'unexpected_error',
+                    response: null,
+                }),
+            );
+
+            const res = await authenticationService.validateUserEmail(id);
+
+            expect(res.error).toEqual('unexpected_error');
+            expect(res.response).toEqual(null);
         });
     });
 });

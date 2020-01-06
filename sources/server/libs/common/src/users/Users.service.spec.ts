@@ -132,6 +132,41 @@ describe('Users Service', function() {
             });
         });
 
+        test('should return null on undefined query result', async function() {
+            const usersService: UsersService = context.usersService;
+            const userEntityModelMock: UserEntityModelMock =
+                context.userEntityModelMock;
+            const usersRepositoryMock: UsersRepository =
+                context.usersRepositoryMock;
+
+            const email = 'test@test.com';
+            const username = 'salut';
+            const wallet: Wallet = await createWallet();
+            const address = wallet.address;
+            const hashedp = toAcceptedKeccak256Format(keccak256('salut'));
+            const encrypted_string = await encryptWallet(wallet, hashedp);
+            const id = '00000000-0000-0000-0000-000000000000';
+
+            const generated_cb = async (): Promise<UserEntity> => {
+                return undefined;
+            };
+
+            const injected_cb = (): any => {
+                return {
+                    toPromise: generated_cb,
+                };
+            };
+
+            when(
+                usersRepositoryMock.findOne(deepEqual({ id: uuid(id) as any })),
+            ).thenCall(injected_cb);
+
+            const res = await usersService.findById(id);
+
+            expect(res.error).toEqual(null);
+            expect(res.response).toEqual(null);
+        });
+
         test('unexpected search error', async function() {
             const usersService: UsersService = context.usersService;
             const userEntityModelMock: UserEntityModelMock =
@@ -918,6 +953,108 @@ describe('Users Service', function() {
 
             verify(usersRepositoryMock.create(deepEqual(create_args))).called();
             verify(usersRepositoryMock.save(deepEqual(entity))).called();
+
+            expect(res.error).toEqual('unexpected_error');
+            expect(res.response).toEqual(null);
+        });
+    });
+
+    describe('update', function() {
+        it('should update user', async function() {
+            const usersService: UsersService = context.usersService;
+            const userEntityModelMock: UserEntityModelMock =
+                context.userEntityModelMock;
+            const usersRepositoryMock: UsersRepository =
+                context.usersRepositoryMock;
+
+            const email = 'test@test.com';
+            const username = 'salut';
+            const wallet: Wallet = await createWallet();
+            const address = wallet.address;
+            const hashedp = toAcceptedKeccak256Format(keccak256('salut'));
+            const encrypted_string = await encryptWallet(wallet, hashedp);
+            const id = '00000000-0000-0000-0000-000000000000';
+
+            const generated_cb = async (): Promise<UserEntity> => {
+                return {
+                    username,
+                    email,
+                    wallet: encrypted_string,
+                    address,
+                    password: hashedp,
+                    id,
+                    type: 't721',
+                    role: 'authenticated',
+                    locale: 'en',
+                    valid: false,
+                };
+            };
+
+            const injected_cb = (): any => {
+                return {
+                    toPromise: generated_cb,
+                };
+            };
+
+            const injected_update_cb = (): any => {
+                return {
+                    toPromise: () => {},
+                };
+            };
+
+            when(
+                usersRepositoryMock.findOne(deepEqual({ id: uuid(id) as any })),
+            ).thenCall(injected_cb);
+
+            when(
+                usersRepositoryMock.update(
+                    deepEqual({ id: uuid(id) as any }),
+                    deepEqual({
+                        valid: true,
+                    }),
+                ),
+            ).thenCall(injected_update_cb);
+
+            const res = await usersService.update({
+                id,
+                valid: true,
+            });
+
+            expect(res.error).toEqual(null);
+            expect(res.response).toEqual({
+                username,
+                email,
+                wallet: encrypted_string,
+                address,
+                password: hashedp,
+                id,
+                type: 't721',
+                role: 'authenticated',
+                locale: 'en',
+                valid: false,
+            });
+        });
+
+        it('should report update error', async function() {
+            const usersService: UsersService = context.usersService;
+            const usersRepositoryMock: UsersRepository =
+                context.usersRepositoryMock;
+
+            const id = '00000000-0000-0000-0000-000000000000';
+
+            when(
+                usersRepositoryMock.update(
+                    deepEqual({ id: uuid(id) as any }),
+                    deepEqual({
+                        valid: true,
+                    }),
+                ),
+            ).thenThrow(new Error('an error'));
+
+            const res = await usersService.update({
+                id,
+                valid: true,
+            });
 
             expect(res.error).toEqual('unexpected_error');
             expect(res.response).toEqual(null);

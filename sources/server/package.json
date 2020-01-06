@@ -13,7 +13,7 @@
         "start:server:dev": "nest start server --watch",
         "start:server:debug": "nest start server --debug --watch",
         "start:server:prod": "node dist/main",
-        "doc:serve": "compodoc -p compodoc-tsconfig.json --theme stripe --unitTestCoverage ./coverage/coverage-summary.json -s",
+        "doc:serve": "compodoc -p compodoc-tsconfig.json --theme stripe -s",
         "lint": "tslint -p tsconfig.json -c tslint.json",
         "test": "jest --expand --verbose",
         "test:cov": "npm run test -- --coverage",

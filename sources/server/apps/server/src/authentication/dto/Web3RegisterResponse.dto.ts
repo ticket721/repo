@@ -13,4 +13,9 @@ export class Web3RegisterResponseDto {
      * JWT Token for further authentication
      */
     token: string;
+
+    /**
+     * JWT Token for email validation. Only returned when NODE_ENV=development
+     */
+    validationToken?: string;
 }

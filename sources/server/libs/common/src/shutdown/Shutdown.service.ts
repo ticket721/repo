@@ -7,6 +7,9 @@ import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
  */
 @Injectable()
 export class ShutdownService {
+    /**
+     * Observable used to trigger shutdown
+     */
     private shutdownListener$: Subject<void> = new Subject();
 
     /**

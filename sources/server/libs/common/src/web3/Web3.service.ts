@@ -1,9 +1,27 @@
 import { Inject } from '@nestjs/common';
 
+/**
+ * Build options for the Web3 Service
+ */
 export interface Web3ServiceOptions {
+    /**
+     * Custom class to use to create the rpc client
+     */
     Web3: any;
+
+    /**
+     * Ethereum node hostname
+     */
     host: string;
+
+    /**
+     * Ethereum node port
+     */
     port: string;
+
+    /**
+     * Ethereum node communication protocol
+     */
     protocol: string;
 }
 

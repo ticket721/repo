@@ -8,17 +8,19 @@ import {
     Wallet,
     Web3RegisterSigner,
     Web3LoginSigner,
-}                                   from '@ticket721sources/global';
-import { T721SDK }                  from '../../index';
-import { AxiosResponse }            from 'axios';
-import { LocalRegisterInputDto }    from '@app/server/authentication/dto/LocalRegisterInput.dto';
-import { LocalRegisterResponseDto } from '@app/server/authentication/dto/LocalRegisterResponse.dto';
-import { LocalLoginResponseDto }    from '@app/server/authentication/dto/LocalLoginResponse.dto';
-import { LocalLoginInputDto }       from '@app/server/authentication/dto/LocalLoginInput.dto';
-import { EIP712Payload }            from '@ticket721/e712';
-import { Web3RegisterResponseDto }  from '@app/server/authentication/dto/Web3RegisterResponse.dto';
-import { Web3RegisterInputDto }     from '@app/server/authentication/dto/Web3RegisterInput.dto';
-import { Web3LoginInputDto }        from '@app/server/authentication/dto/Web3LoginInput.dto';
+}                                     from '@ticket721sources/global';
+import { T721SDK }                    from '../../index';
+import { AxiosResponse }              from 'axios';
+import { LocalRegisterInputDto }      from '@app/server/authentication/dto/LocalRegisterInput.dto';
+import { LocalRegisterResponseDto }   from '@app/server/authentication/dto/LocalRegisterResponse.dto';
+import { LocalLoginResponseDto }      from '@app/server/authentication/dto/LocalLoginResponse.dto';
+import { LocalLoginInputDto }         from '@app/server/authentication/dto/LocalLoginInput.dto';
+import { EIP712Payload }              from '@ticket721/e712';
+import { Web3RegisterResponseDto }    from '@app/server/authentication/dto/Web3RegisterResponse.dto';
+import { Web3RegisterInputDto }       from '@app/server/authentication/dto/Web3RegisterInput.dto';
+import { Web3LoginInputDto }          from '@app/server/authentication/dto/Web3LoginInput.dto';
+import { EmailValidationResponseDto } from '@app/server/authentication/dto/EmailValidationResponse.dto';
+import { EmailValidationInputDto }    from '@app/server/authentication/dto/EmailValidationInput.dto';
 
 export interface FailedRegisterReport {
     report_status: 'weak';
@@ -126,4 +128,14 @@ export function web3RegisterPayload(email: string, username: string, networkId: 
 export function web3LoginPayload(networkId: number): [number, EIP712Payload] {
     const web3LoginSigner: Web3LoginSigner = new Web3LoginSigner(networkId);
     return web3LoginSigner.generateAuthenticationProofPayload();
+}
+
+export async function validateEmail(token: string): Promise<AxiosResponse<EmailValidationResponseDto>> {
+    const self: T721SDK = this;
+
+    const validationPayload: EmailValidationInputDto = {
+        token,
+    };
+
+    return self.post<EmailValidationInputDto>('/authentication/validate', {}, validationPayload);
 }

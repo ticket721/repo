@@ -98,6 +98,9 @@ export class DevDriver implements EmailDriver {
             });
         }
 
+        console.log(`Written mail with following locals`);
+        console.log(options.locals);
+
         return {
             options,
             status: EmailDriverResponseStatus.Sent,

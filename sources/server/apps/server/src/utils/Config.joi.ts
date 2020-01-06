@@ -1,11 +1,15 @@
 import * as Joi from '@hapi/joi';
 
+/**
+ * Configuration for apps/server
+ */
 export const Config: Joi.ObjectSchema = Joi.object({
     NODE_ENV: Joi.string()
         .valid('development', 'production', 'test', 'test-e2e', 'provision')
         .default('development'),
 
     API_PORT: Joi.number().default(3000),
+    VALIDATION_URL: Joi.string().required(),
 
     CASSANDRA_CONTACT_POINTS: Joi.string().required(),
     CASSANDRA_PORT: Joi.number().required(),
