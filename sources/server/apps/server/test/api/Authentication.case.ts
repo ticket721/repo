@@ -9,6 +9,8 @@ import {
 import { LocalRegisterResponseDto } from '@app/server/authentication/dto/LocalRegisterResponse.dto';
 import { LocalLoginResponseDto } from '@app/server/authentication/dto/LocalLoginResponse.dto';
 import { INestApplication } from '@nestjs/common';
+import { EmailValidationResponseDto } from '@app/server/authentication/dto/EmailValidationResponse.dto';
+import { StatusCodes, StatusNames } from '@app/server/utils/codes';
 
 export async function register(
     getCtx: () => { app: INestApplication; sdk: T721SDK },
@@ -43,6 +45,26 @@ export async function register(
     expect(resp.data.token).toBeDefined();
     expect(resp.status).toEqual(201);
     expect(resp.statusText).toEqual('Created');
+    expect(resp.data.validationToken).toBeDefined();
+
+    const validation_req: AxiosResponse<EmailValidationResponseDto> = await sdk.validateEmail(
+        resp.data.validationToken,
+    );
+
+    expect(validation_req.data).toBeDefined();
+    expect(validation_req.data.user.valid).toEqual(true);
+
+    await expect(sdk.validateEmail('hi')).rejects.toMatchObject({
+        response: {
+            data: {
+                message: 'invalid_signature',
+                statusCode: StatusCodes.Unauthorized,
+                name: StatusNames[StatusCodes.Unauthorized],
+            },
+            statusText: StatusNames[StatusCodes.Unauthorized],
+            status: StatusCodes.Unauthorized,
+        },
+    });
 
     const auth_res: AxiosResponse<LocalLoginResponseDto> = await sdk.localLogin(
         'test@test.com',
@@ -137,13 +159,31 @@ export async function web3register(
     expect(resp.data.token).toBeDefined();
     expect(resp.status).toEqual(201);
     expect(resp.statusText).toEqual('Created');
+    expect(resp.data.validationToken).toBeDefined();
 
-    console.log('000-1');
+    const validation_req: AxiosResponse<EmailValidationResponseDto> = await sdk.validateEmail(
+        resp.data.validationToken,
+    );
+
+    expect(validation_req.data).toBeDefined();
+    expect(validation_req.data.user.valid).toEqual(true);
+
+    await expect(sdk.validateEmail('hi')).rejects.toMatchObject({
+        response: {
+            data: {
+                message: 'invalid_signature',
+                statusCode: StatusCodes.Unauthorized,
+                name: StatusNames[StatusCodes.Unauthorized],
+            },
+            statusText: StatusNames[StatusCodes.Unauthorized],
+            status: StatusCodes.Unauthorized,
+        },
+    });
+
     const login_resp = await sdk.web3Login(
         loginPayload[0],
         signedLoginPayload.hex,
     );
-    console.log('000-2');
     expect(login_resp.data).toEqual({
         user: {
             address: toAcceptedAddressFormat(wallet.address),
@@ -153,7 +193,7 @@ export async function web3register(
             username: 'mortimr',
             id: login_resp.data.user.id,
             locale: 'fr',
-            valid: false,
+            valid: true,
         },
         token: login_resp.data.token,
     });

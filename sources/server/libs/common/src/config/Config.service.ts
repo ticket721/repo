@@ -2,6 +2,9 @@ import * as dotenv from 'dotenv';
 import * as Joi from '@hapi/joi';
 import * as fs from 'fs';
 
+/**
+ * Environment type
+ */
 export type EnvConfig = Record<string, string>;
 
 /**
@@ -12,6 +15,10 @@ export class ConfigService {
      * Contains the environment variables exposed to the API
      */
     private readonly envConfig: EnvConfig;
+
+    /**
+     * Configuration object
+     */
     private readonly joiConfig: Joi.ObjectSchema;
 
     /**
@@ -59,8 +66,16 @@ export class ConfigService {
         return validatedEnvConfig;
     }
 
+    /**
+     * Decimal regular expression
+     */
     private numRegExp = /^[0123456789]+$/;
 
+    /**
+     * Node role getter
+     *
+     * @param hostname
+     */
     getRole(hostname?: string): number {
         if (this.get('NODE_ENV') === 'development') {
             return 0;

@@ -10,6 +10,7 @@ import { LocalStrategy } from '@app/server/authentication/Local.strategy';
 import { JwtStrategy } from '@app/server/authentication/Jwt.strategy';
 import { AuthenticationService } from '@app/server/authentication/Authentication.service';
 import { AuthenticationController } from '@app/server/authentication/Authentication.controller';
+import { AuthenticationTasks } from '@app/server/authentication/Authentication.tasks';
 
 /**
  * Authentication module. Handles users registrations and authentication
@@ -34,6 +35,7 @@ import { AuthenticationController } from '@app/server/authentication/Authenticat
     ],
     providers: [
         AuthenticationService,
+        AuthenticationTasks,
         LocalStrategy,
         JwtStrategy,
         Web3Strategy,

@@ -12,19 +12,32 @@ import {
     Web3RegisterSigner,
 } from '@ticket721sources/global';
 import { LocalRegisterInputDto } from './dto/LocalRegisterInput.dto';
-import { JwtModule } from '@nestjs/jwt';
+import { JwtModule, JwtService } from '@nestjs/jwt';
 import { StatusCodes } from '../utils/codes';
 import { ConfigService } from '@lib/common/config/Config.service';
 import { Web3RegisterInputDto } from '@app/server/authentication/dto/Web3RegisterInput.dto';
+import { getQueueToken } from '@nestjs/bull';
+import { Job, JobOptions, Queue } from 'bull';
+import { PasswordlessUserDto } from '@app/server/authentication/dto/PasswordlessUser.dto';
+
+class QueueMock<T = any> {
+    add(name: string, data: T, opts?: JobOptions): Promise<Job<T>> {
+        return null;
+    }
+}
 
 const context: {
     authenticationController: AuthenticationController;
     authenticationServiceMock: AuthenticationService;
     configServiceMock: ConfigService;
+    mailingQueueMock: QueueMock;
+    jwtServiceMock: JwtService;
 } = {
     authenticationController: null,
     authenticationServiceMock: null,
     configServiceMock: null,
+    mailingQueueMock: null,
+    jwtServiceMock: null,
 };
 
 describe('Authentication Controller', function() {
@@ -33,6 +46,10 @@ describe('Authentication Controller', function() {
             AuthenticationService,
         );
         const configServiceMock: ConfigService = mock(ConfigService);
+        const mailingQueueMock: QueueMock = mock(QueueMock);
+        const jwtServiceMock: JwtService = mock(JwtService);
+
+        when(configServiceMock.get('NODE_ENV')).thenReturn('production');
 
         const AuthenticationServiceProvider = {
             provide: AuthenticationService,
@@ -44,13 +61,28 @@ describe('Authentication Controller', function() {
             useValue: instance(configServiceMock),
         };
 
+        const BullMailingQueueProvider = {
+            provide: getQueueToken('mailing'),
+            useValue: instance(mailingQueueMock),
+        };
+
+        const JwtServiceProvider = {
+            provide: JwtService,
+            useValue: instance(jwtServiceMock),
+        };
+
         const module: TestingModule = await Test.createTestingModule({
             imports: [
                 JwtModule.register({
                     secret: 'secret',
                 }),
             ],
-            providers: [AuthenticationServiceProvider, ConfigServiceProvider],
+            providers: [
+                AuthenticationServiceProvider,
+                ConfigServiceProvider,
+                BullMailingQueueProvider,
+                JwtServiceProvider,
+            ],
             controllers: [AuthenticationController],
         }).compile();
 
@@ -59,6 +91,8 @@ describe('Authentication Controller', function() {
         );
         context.authenticationServiceMock = authenticationServiceMock;
         context.configServiceMock = configServiceMock;
+        context.mailingQueueMock = mailingQueueMock;
+        context.jwtServiceMock = jwtServiceMock;
     });
 
     describe('web3Register', function() {
@@ -121,6 +155,95 @@ describe('Authentication Controller', function() {
             const res = await authenticationController.web3Register(user);
             expect(res.user).toBeDefined();
             expect(res.token).toBeDefined();
+            expect(res.validationToken).toBeUndefined();
+            expect(res.user).toEqual({
+                username,
+                email,
+                wallet: null,
+                type: 'web3',
+                address: toAcceptedAddressFormat(address),
+                id: '0',
+                role: 'authenticated',
+                locale: 'en',
+                valid: false,
+            });
+            expect(res.token).toBeDefined();
+
+            verify(
+                authenticationServiceMock.createWeb3User(
+                    email,
+                    username,
+                    register_payload[0].toString(),
+                    address,
+                    register_signature.hex,
+                    'en',
+                ),
+            ).called();
+        });
+
+        test('should create a user & return validation token', async function() {
+            const authenticationController: AuthenticationController =
+                context.authenticationController;
+            const authenticationServiceMock: AuthenticationService =
+                context.authenticationServiceMock;
+            const configServiceMock: ConfigService = context.configServiceMock;
+
+            when(configServiceMock.get('NODE_ENV')).thenReturn('development');
+
+            const email = 'test@test.com';
+            const username = 'salut';
+            const wallet: Wallet = await createWallet();
+            const address = toAcceptedAddressFormat(wallet.address);
+            const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(
+                1,
+            );
+            const register_payload = web3RegisterSigner.generateRegistrationProofPayload(
+                email,
+                username,
+            );
+            const register_signature = await web3RegisterSigner.sign(
+                wallet.privateKey,
+                register_payload[1],
+            );
+
+            when(
+                authenticationServiceMock.createWeb3User(
+                    email,
+                    username,
+                    register_payload[0].toString(),
+                    address,
+                    register_signature.hex,
+                    'en',
+                ),
+            ).thenReturn(
+                Promise.resolve({
+                    response: {
+                        username,
+                        email,
+                        wallet: null,
+                        type: 'web3',
+                        address,
+                        id: '0',
+                        role: 'authenticated',
+                        locale: 'en',
+                        valid: false,
+                    },
+                    error: null,
+                }),
+            );
+
+            const user: Web3RegisterInputDto = {
+                username: 'salut',
+                email: 'test@test.com',
+                address,
+                timestamp: register_payload[0].toString(),
+                signature: register_signature.hex,
+            };
+
+            const res = await authenticationController.web3Register(user);
+            expect(res.user).toBeDefined();
+            expect(res.token).toBeDefined();
+            expect(res.validationToken).toBeDefined();
             expect(res.user).toEqual({
                 username,
                 email,
@@ -771,7 +894,84 @@ describe('Authentication Controller', function() {
 
             const res = await authenticationController.localRegister(user);
             expect(res.user).toBeDefined();
+            expect(res.validationToken).toBeUndefined();
             expect(res.token).toBeDefined();
+            expect(res.user).toEqual({
+                username,
+                email,
+                wallet: JSON.stringify(encrypted),
+                type: 't721',
+                address: toAcceptedAddressFormat(address),
+                id: '0',
+                role: 'authenticated',
+                locale: 'en',
+                valid: false,
+            });
+            expect(res.token).toBeDefined();
+
+            verify(
+                authenticationServiceMock.createT721User(
+                    email,
+                    hashedp,
+                    username,
+                    deepEqual(encrypted),
+                    'en',
+                ),
+            ).called();
+        });
+
+        test('should create a user & return validation token in development mode', async function() {
+            const authenticationController: AuthenticationController =
+                context.authenticationController;
+            const authenticationServiceMock: AuthenticationService =
+                context.authenticationServiceMock;
+            const configServiceMock: ConfigService = context.configServiceMock;
+
+            when(configServiceMock.get('NODE_ENV')).thenReturn('development');
+
+            const email = 'test@test.com';
+            const username = 'salut';
+            const wallet: Wallet = await createWallet();
+            const address = wallet.address;
+            const hashedp = toAcceptedKeccak256Format(keccak256('salut'));
+            const encrypted = JSON.parse(await encryptWallet(wallet, hashedp));
+
+            when(
+                authenticationServiceMock.createT721User(
+                    email,
+                    hashedp,
+                    username,
+                    deepEqual(encrypted),
+                    'en',
+                ),
+            ).thenReturn(
+                Promise.resolve({
+                    response: {
+                        username,
+                        email,
+                        wallet: JSON.stringify(encrypted),
+                        type: 't721',
+                        address,
+                        id: '0',
+                        role: 'authenticated',
+                        locale: 'en',
+                        valid: false,
+                    },
+                    error: null,
+                }),
+            );
+
+            const user: LocalRegisterInputDto = {
+                username: 'salut',
+                password: hashedp,
+                email: 'test@test.com',
+                wallet: encrypted,
+            };
+
+            const res = await authenticationController.localRegister(user);
+            expect(res.user).toBeDefined();
+            expect(res.token).toBeDefined();
+            expect(res.validationToken).toBeDefined();
             expect(res.user).toEqual({
                 username,
                 email,
@@ -1154,6 +1354,239 @@ describe('Authentication Controller', function() {
                     'en',
                 ),
             ).called();
+        });
+    });
+
+    describe('validateEmail', function() {
+        it('should return updated user', async function() {
+            const authenticationController: AuthenticationController =
+                context.authenticationController;
+            const jwtServiceMock: JwtService = context.jwtServiceMock;
+            const authenticationServiceMock: AuthenticationService =
+                context.authenticationServiceMock;
+
+            const username = 'mortimr';
+            const email = 'iulian@t721.com';
+            const id = '123';
+            const locale = 'en';
+
+            when(jwtServiceMock.verifyAsync('test_token')).thenReturn(
+                Promise.resolve({
+                    username,
+                    email,
+                    id,
+                    locale,
+                }),
+            );
+
+            const user: PasswordlessUserDto = {
+                username,
+                id,
+                email,
+                locale,
+                valid: true,
+                type: 't721',
+                address: '0x...',
+                role: 'authenticated',
+                wallet: null,
+            };
+
+            when(authenticationServiceMock.validateUserEmail('123')).thenReturn(
+                Promise.resolve({
+                    error: null,
+                    response: user,
+                }),
+            );
+
+            const res = await authenticationController.validateEmail({
+                token: 'test_token',
+            });
+
+            expect(res.user).toEqual(user);
+        });
+
+        it('should throw on expired token', async function() {
+            const authenticationController: AuthenticationController =
+                context.authenticationController;
+            const jwtServiceMock: JwtService = context.jwtServiceMock;
+            const authenticationServiceMock: AuthenticationService =
+                context.authenticationServiceMock;
+
+            const username = 'mortimr';
+            const email = 'iulian@t721.com';
+            const id = '123';
+            const locale = 'en';
+
+            const user: PasswordlessUserDto = {
+                username,
+                id,
+                email,
+                locale,
+                valid: true,
+                type: 't721',
+                address: '0x...',
+                role: 'authenticated',
+                wallet: null,
+            };
+
+            when(jwtServiceMock.verifyAsync('test_token')).thenThrow(
+                new Error('jwt expired'),
+            );
+
+            await expect(
+                authenticationController.validateEmail({ token: 'test_token' }),
+            ).rejects.toMatchObject({
+                response: {
+                    status: 401,
+                    message: 'jwt_expired',
+                },
+                status: 401,
+                message: {
+                    status: 401,
+                    message: 'jwt_expired',
+                },
+            });
+        });
+
+        it('should throw on invalid signature', async function() {
+            const authenticationController: AuthenticationController =
+                context.authenticationController;
+            const jwtServiceMock: JwtService = context.jwtServiceMock;
+            const authenticationServiceMock: AuthenticationService =
+                context.authenticationServiceMock;
+
+            const username = 'mortimr';
+            const email = 'iulian@t721.com';
+            const id = '123';
+            const locale = 'en';
+
+            const user: PasswordlessUserDto = {
+                username,
+                id,
+                email,
+                locale,
+                valid: true,
+                type: 't721',
+                address: '0x...',
+                role: 'authenticated',
+                wallet: null,
+            };
+
+            when(jwtServiceMock.verifyAsync('test_token')).thenThrow(
+                new Error('invalid signature'),
+            );
+
+            await expect(
+                authenticationController.validateEmail({ token: 'test_token' }),
+            ).rejects.toMatchObject({
+                response: {
+                    status: 401,
+                    message: 'invalid_signature',
+                },
+                status: 401,
+                message: {
+                    status: 401,
+                    message: 'invalid_signature',
+                },
+            });
+        });
+
+        it('should throw on unknown jwt error', async function() {
+            const authenticationController: AuthenticationController =
+                context.authenticationController;
+            const jwtServiceMock: JwtService = context.jwtServiceMock;
+            const authenticationServiceMock: AuthenticationService =
+                context.authenticationServiceMock;
+
+            const username = 'mortimr';
+            const email = 'iulian@t721.com';
+            const id = '123';
+            const locale = 'en';
+
+            const user: PasswordlessUserDto = {
+                username,
+                id,
+                email,
+                locale,
+                valid: true,
+                type: 't721',
+                address: '0x...',
+                role: 'authenticated',
+                wallet: null,
+            };
+
+            when(jwtServiceMock.verifyAsync('test_token')).thenThrow(
+                new Error('unknown error'),
+            );
+
+            await expect(
+                authenticationController.validateEmail({ token: 'test_token' }),
+            ).rejects.toMatchObject({
+                response: {
+                    status: 401,
+                    message: 'invalid_signature',
+                },
+                status: 401,
+                message: {
+                    status: 401,
+                    message: 'invalid_signature',
+                },
+            });
+        });
+
+        it('should throw on invalid auth service response', async function() {
+            const authenticationController: AuthenticationController =
+                context.authenticationController;
+            const jwtServiceMock: JwtService = context.jwtServiceMock;
+            const authenticationServiceMock: AuthenticationService =
+                context.authenticationServiceMock;
+
+            const username = 'mortimr';
+            const email = 'iulian@t721.com';
+            const id = '123';
+            const locale = 'en';
+
+            const user: PasswordlessUserDto = {
+                username,
+                id,
+                email,
+                locale,
+                valid: true,
+                type: 't721',
+                address: '0x...',
+                role: 'authenticated',
+                wallet: null,
+            };
+
+            when(jwtServiceMock.verifyAsync('test_token')).thenReturn(
+                Promise.resolve({
+                    username,
+                    email,
+                    id,
+                    locale,
+                }),
+            );
+
+            when(authenticationServiceMock.validateUserEmail('123')).thenReturn(
+                Promise.resolve({
+                    error: 'unexpected_error',
+                    response: null,
+                }),
+            );
+
+            await expect(
+                authenticationController.validateEmail({ token: 'test_token' }),
+            ).rejects.toMatchObject({
+                response: {
+                    status: 500,
+                    message: 'unexpected_error',
+                },
+                status: 500,
+                message: {
+                    status: 500,
+                    message: 'unexpected_error',
+                },
+            });
         });
     });
 });

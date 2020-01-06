@@ -243,6 +243,33 @@ export class AuthenticationService {
     }
 
     /**
+     * Validates an user account
+     *
+     * @param id
+     */
+    async validateUserEmail(
+        id: string,
+    ): Promise<ServiceResponse<PasswordlessUserDto>> {
+        const updatedUserResp: ServiceResponse<UserDto> = await this.usersService.update(
+            {
+                id,
+                valid: true,
+            },
+        );
+
+        if (updatedUserResp.error) {
+            return updatedUserResp;
+        }
+
+        delete updatedUserResp.response.password;
+
+        return {
+            error: null,
+            response: updatedUserResp.response,
+        };
+    }
+
+    /**
      * Create new local account
      *
      * @param email

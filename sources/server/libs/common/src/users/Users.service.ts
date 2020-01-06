@@ -32,6 +32,33 @@ export class UsersService {
     ) {}
 
     /**
+     * Update User infos
+     *
+     * @param user
+     */
+    async update(user: Partial<UserDto>): Promise<ServiceResponse<UserDto>> {
+        try {
+            const { id, ...complete_user } = user;
+
+            await this.usersRepository
+                .update(
+                    {
+                        id: uuid(id) as any,
+                    },
+                    complete_user,
+                )
+                .toPromise();
+
+            return this.findById(id);
+        } catch (e) {
+            return {
+                response: null,
+                error: 'unexpected_error',
+            };
+        }
+    }
+
+    /**
      * Create a new user
      *
      * @param user
