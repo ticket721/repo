@@ -23,11 +23,20 @@ import { ContractsModule } from '@lib/common/contracts/Contracts.module';
 import { ContractsServiceOptions } from '@lib/common/contracts/Contracts.service';
 import { ShutdownModule } from '@lib/common/shutdown/Shutdown.module';
 import { EmailModule } from '@app/server/email/Email.module';
+import { ActionSetEntity } from '@lib/common/actionsets/entity/ActionSet.entity';
+import { ActionSetsModule } from '@lib/common/actionsets/ActionSets.module';
+import { ActionSetsRepository } from '@lib/common/actionsets/ActionSets.repository';
+import { ActionsModule } from '@app/server/actions/Actions.module';
 
 @Module({
     imports: [
+        // Global configuration reading .env file
         ConfigModule.register(Config),
+
+        // Scheduler to run background tasks
         ScheduleModule.register(),
+
+        // Cassandra ORM setup
         ExpressCassandraModule.forRootAsync({
             imports: [ExpressCassandraConfigModule],
             useFactory: async (configService: ExpressCassandraConfigService) =>
@@ -39,10 +48,28 @@ import { EmailModule } from '@app/server/email/Email.module';
             UsersRepository,
             Web3TokenEntity,
             Web3TokensRepository,
+            ActionSetEntity,
+            ActionSetsRepository,
         ]),
+
+        // Cassandra Table Modules & Utils
         UsersModule,
         Web3TokensModule,
+        ActionSetsModule,
+
+        // User Management Modules
         AuthenticationModule,
+
+        // User Action Management Module
+        ActionsModule,
+
+        // Utility Modules
+        ShutdownModule,
+
+        // Notification Modules
+        EmailModule,
+
+        // Web3 & Ethereum Modules
         Web3Module.registerAsync({
             imports: [ConfigModule.register(Config)],
             useFactory: (configService: ConfigService): Web3ServiceOptions => ({
@@ -62,8 +89,6 @@ import { EmailModule } from '@app/server/email/Email.module';
             }),
             inject: [ConfigService],
         }),
-        ShutdownModule,
-        EmailModule,
     ],
     controllers: [ServerController],
     providers: [

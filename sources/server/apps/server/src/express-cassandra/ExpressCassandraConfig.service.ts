@@ -46,6 +46,15 @@ export class ExpressCassandraConfigService {
                 },
             },
             ormOptions: {
+                udts: {
+                    action: {
+                        status: 'text',
+                        name: 'text',
+                        data: 'text',
+                        type: 'text',
+                        error: 'text',
+                    },
+                },
                 createKeyspace: false,
                 defaultReplicationStrategy: {
                     class: 'NetworkTopologyStrategy',

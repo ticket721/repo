@@ -1,5 +1,5 @@
-import { ESSearchHit } from './ESSearchReturn';
 import { fromES } from './fromES';
+import { ESSearchHit } from '@lib/common/utils/ESSearchReturn';
 
 interface Test {
     name: string;
