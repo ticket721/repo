@@ -16,6 +16,9 @@ import { Type } from 'class-transformer';
 export class ActionsSearchInputDto extends SortablePagedSearch {
     @ApiPropertyOptional({
         description: 'Current status of the searched action sets',
+        example: {
+            $eq: 'test',
+        },
     })
     @IsOptional()
     // tslint:disable-next-line:variable-name
@@ -23,6 +26,9 @@ export class ActionsSearchInputDto extends SortablePagedSearch {
 
     @ApiPropertyOptional({
         description: 'Current action of the action sets',
+        example: {
+            $eq: 'test',
+        },
     })
     @IsOptional()
     // tslint:disable-next-line:variable-name
@@ -30,30 +36,36 @@ export class ActionsSearchInputDto extends SortablePagedSearch {
 
     @ApiPropertyOptional({
         description: 'Unique ID to search for',
+        example: {
+            $eq: 'test',
+        },
     })
     @IsOptional()
     id?: SearchableField<string>;
 
     @ApiPropertyOptional({
         description: 'Actions details to search for',
+        example: {
+            $eq: 'test',
+        },
     })
     @IsOptional()
     actions?: SearchableField<ActionEntity[]>;
 
     @ApiPropertyOptional({
-        description: 'Search by action set owner',
-    })
-    @IsOptional()
-    owner?: SearchableField<string>;
-
-    @ApiPropertyOptional({
         description: 'Search by action set name',
+        example: {
+            $eq: 'test',
+        },
     })
     @IsOptional()
     name?: SearchableField<string>;
 
     @ApiPropertyOptional({
         description: 'Search by creation date',
+        example: {
+            $eq: 'test',
+        },
     })
     @IsOptional()
     // tslint:disable-next-line:variable-name
@@ -61,6 +73,9 @@ export class ActionsSearchInputDto extends SortablePagedSearch {
 
     @ApiPropertyOptional({
         description: 'Search by update date',
+        example: {
+            $eq: 'test',
+        },
     })
     @IsOptional()
     // tslint:disable-next-line:variable-name

@@ -31,7 +31,6 @@ async function main() {
         .setTitle('T721 API')
         .setDescription('')
         .setVersion('1.0.0')
-        .addTag('t721')
         .addBearerAuth()
         .build();
 
