@@ -1,6 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsEmail, IsString, ValidateIf } from 'class-validator';
-import { isAddress } from '@ticket721sources/global';
+import { IsEmail, IsIn, IsOptional, IsString } from 'class-validator';
 
 /**
  * Expected input when creating a web3 account
@@ -17,7 +16,7 @@ export class Web3RegisterInputDto {
      * Expected address after signature verification
      */
     @ApiProperty()
-    @ValidateIf((addr: string): boolean => isAddress(addr))
+    @IsString()
     address: string;
 
     /**
@@ -45,6 +44,7 @@ export class Web3RegisterInputDto {
      * User Locale
      */
     @ApiPropertyOptional()
-    @ValidateIf((locale: string) => ['en', 'fr'].indexOf(locale) !== -1)
-    locale?: string;
+    @IsIn(['en', 'fr'])
+    @IsOptional()
+    locale?: string = 'en';
 }

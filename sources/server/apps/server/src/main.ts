@@ -20,13 +20,19 @@ async function main() {
 
     const configService: ConfigService = app.get<ConfigService>(ConfigService);
 
-    app.useGlobalPipes(new ValidationPipe());
+    app.useGlobalPipes(
+        new ValidationPipe({
+            transform: true,
+            forbidUnknownValues: true,
+        }),
+    );
 
     const options = new DocumentBuilder()
         .setTitle('T721 API')
         .setDescription('')
         .setVersion('1.0.0')
         .addTag('t721')
+        .addBearerAuth()
         .build();
 
     const document = SwaggerModule.createDocument(app, options);

@@ -1,5 +1,5 @@
 import { EntityRepository, Repository } from '@iaminfinity/express-cassandra';
-import { ActionSetEntity } from '@lib/common/actionsets/entity/ActionSet.entity';
+import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
 
 /**
  * ActionSet entity repository

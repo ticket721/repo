@@ -7,13 +7,11 @@ export class PasswordlessUserDto {
     /**
      * Unique identifier of the user
      */
-    @IsUUID()
     id: string;
 
     /**
      * Unique email
      */
-    @IsEmail()
     email: string;
 
     /**

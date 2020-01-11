@@ -11,7 +11,7 @@ export interface ActionEntity {
     status: string;
     name: string;
     data: string;
-    type: string;
+    type: 'input' | 'event';
     error: string;
 }
 
@@ -50,7 +50,7 @@ export class ActionSetEntity {
         type: 'text',
     })
     // tslint:disable-next-line:variable-name
-    current_status: string;
+    current_status: 'in progress' | 'complete' | 'error';
 
     @Column({
         type: 'text',

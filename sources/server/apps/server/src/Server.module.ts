@@ -23,7 +23,7 @@ import { ContractsModule } from '@lib/common/contracts/Contracts.module';
 import { ContractsServiceOptions } from '@lib/common/contracts/Contracts.service';
 import { ShutdownModule } from '@lib/common/shutdown/Shutdown.module';
 import { EmailModule } from '@app/server/email/Email.module';
-import { ActionSetEntity } from '@lib/common/actionsets/entity/ActionSet.entity';
+import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
 import { ActionSetsModule } from '@lib/common/actionsets/ActionSets.module';
 import { ActionSetsRepository } from '@lib/common/actionsets/ActionSets.repository';
 import { ActionsModule } from '@app/server/actions/Actions.module';
