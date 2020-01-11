@@ -8,6 +8,7 @@ import request         from 'supertest';
 
 // AUTHENTICATION
 import { localLogin, localRegister, web3Register, web3RegisterPayload, web3Login, web3LoginPayload, validateEmail } from './app/api/authentication';
+import { actionsSearch }                                                                                            from './app/api/actions';
 
 export { FailedRegisterReport } from './app/api/authentication';
 
@@ -29,6 +30,8 @@ export class T721SDK {
         this.web3Register = this.web3Register.bind(this);
         this.web3Login = this.web3Login.bind(this);
         this.validateEmail = this.validateEmail.bind(this);
+
+        this.actions.search = this.actions.search.bind(this);
     }
 
     connect(host: string, port: number, protocol: 'http' | 'https' = 'http') {
@@ -93,4 +96,7 @@ export class T721SDK {
     public web3Login = web3Login;
     public web3LoginPayload = web3LoginPayload;
     public validateEmail = validateEmail;
+    public actions = {
+        search: actionsSearch,
+    };
 }

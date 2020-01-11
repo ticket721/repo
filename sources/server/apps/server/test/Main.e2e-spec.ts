@@ -13,6 +13,7 @@ import {
 } from './DockerElassandra.util';
 import { register, web3register } from './api/Authentication.case';
 import { ServerModule } from '../src/Server.module';
+import { fetchActions } from './api/Actions.case';
 
 const cassandraPort = 32702;
 const elasticSearchPort = 32610;
@@ -97,5 +98,9 @@ describe('AppController (e2e)', () => {
             '/authentication/web3/register & /authentication/web3/login (POST)',
             web3register.bind(null, getCtx),
         );
+    });
+
+    describe('ActionsController', () => {
+        test('/actions/search', fetchActions.bind(null, getCtx));
     });
 });
