@@ -55,6 +55,22 @@ export async function fetchActions(
     expect(validation_req.data).toBeDefined();
     expect(validation_req.data.user.valid).toEqual(true);
 
+    await expect(
+        sdk.actions.search('', {
+            current_status: {
+                $eq: 'complete',
+            },
+        }),
+    ).rejects.toMatchObject({
+        response: {
+            data: {
+                statusCode: StatusCodes.Unauthorized,
+            },
+            status: StatusCodes.Unauthorized,
+            statusText: StatusNames[StatusCodes.Unauthorized],
+        },
+    });
+
     const fetchedActions: AxiosResponse<ActionsSearchResponseDto> = await sdk.actions.search(
         resp.data.token,
         {
