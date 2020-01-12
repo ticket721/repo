@@ -81,21 +81,28 @@ export class MailjetDriver implements EmailDriver {
         });
 
         // here should send
-        const res = await this.mailjet.post('send').request({
-            FromEmail: 'noreply@ticket721.com',
-            FromName: 'Ticket721',
-            Subject: localeData['mail_subject'],
-            'Html-part': mail,
-            Recipients: [
-                {
-                    Email: options.to,
-                },
-            ],
-        });
-
-        return {
-            options,
-            status: EmailDriverResponseStatus.Sent,
-        };
+        try {
+            await this.mailjet.post('send').request({
+                FromEmail: 'noreply@ticket721.com',
+                FromName: 'Ticket721',
+                Subject: localeData['mail_subject'],
+                'Html-part': mail,
+                Recipients: [
+                    {
+                        Email: options.to,
+                    },
+                ],
+            });
+            return {
+                options,
+                status: EmailDriverResponseStatus.Sent,
+            };
+        } catch (e) {
+            return {
+                options,
+                status: EmailDriverResponseStatus.Error,
+                reason: e,
+            };
+        }
     }
 }

@@ -1,4 +1,4 @@
-import { ESSearchHit } from './ESSearchReturn';
+import { ESSearchHit } from '@lib/common/utils/ESSearchReturn';
 
 /**
  * Utility to convert an ES Search hit to data (extract _source)

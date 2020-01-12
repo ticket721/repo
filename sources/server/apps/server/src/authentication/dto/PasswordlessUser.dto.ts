@@ -1,5 +1,3 @@
-import { IsEmail, IsUUID } from 'class-validator';
-
 /**
  * User information without the password hash
  */
@@ -7,13 +5,11 @@ export class PasswordlessUserDto {
     /**
      * Unique identifier of the user
      */
-    @IsUUID()
     id: string;
 
     /**
      * Unique email
      */
-    @IsEmail()
     email: string;
 
     /**

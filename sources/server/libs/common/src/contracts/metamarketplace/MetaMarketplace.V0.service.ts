@@ -17,9 +17,9 @@ export class MetaMarketplaceV0Service extends ContractsControllerBase {
      * @param shutdownService
      */
     constructor(
-        private readonly contractsService: ContractsService,
-        private readonly web3Service: Web3Service,
-        private readonly shutdownService: ShutdownService,
+        contractsService: ContractsService,
+        web3Service: Web3Service,
+        shutdownService: ShutdownService,
     ) {
         super(
             contractsService,

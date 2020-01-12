@@ -7,13 +7,10 @@ import {
     UseFilters,
     UseGuards,
     Request,
-    Get,
-    Response,
     HttpCode,
-    Param,
 } from '@nestjs/common';
 import { AuthenticationService } from './Authentication.service';
-import { ApiResponse } from '@nestjs/swagger';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PasswordlessUserDto } from './dto/PasswordlessUser.dto';
 import { LocalRegisterResponseDto } from './dto/LocalRegisterResponse.dto';
 import { LocalRegisterInputDto } from './dto/LocalRegisterInput.dto';
@@ -37,6 +34,7 @@ import { ConfigService } from '@lib/common/config/Config.service';
  * Controller exposing the authentication routes
  */
 @Injectable()
+@ApiTags('auth')
 @Controller('authentication')
 export class AuthenticationController {
     /**

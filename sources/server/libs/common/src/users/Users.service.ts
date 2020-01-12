@@ -11,7 +11,7 @@ import { UserDto } from './dto/User.dto';
 import { CreateUserServiceInputDto } from './dto/CreateUserServiceInput.dto';
 import { toAcceptedAddressFormat } from '@ticket721sources/global';
 import { ServiceResponse } from '@app/server/utils/ServiceResponse';
-import { ESSearchReturn } from '@app/server/utils/ESSearchReturn';
+import { ESSearchReturn } from '@lib/common/utils/ESSearchReturn';
 
 /**
  * Utilities and services around the user entity

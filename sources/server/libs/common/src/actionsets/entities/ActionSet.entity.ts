@@ -1,0 +1,112 @@
+import {
+    Column,
+    CreateDateColumn,
+    Entity,
+    GeneratedUUidColumn,
+    UpdateDateColumn,
+} from '@iaminfinity/express-cassandra';
+
+/**
+ * Specific Action model
+ */
+export interface ActionEntity {
+    /**
+     * Status of the action
+     */
+    status: string;
+
+    /**
+     * Name of the action
+     */
+    name: string;
+
+    /**
+     * Stored data of the action
+     */
+    data: string;
+
+    /**
+     * Type of action
+     */
+    type: 'input' | 'event';
+
+    /**
+     * Non-null if error happened
+     */
+    error: string;
+}
+
+/**
+ * Entity of an Action Set, containing multiple Actions
+ */
+@Entity<ActionSetEntity>({
+    table_name: 'actionset',
+    key: ['id'],
+    es_index_mapping: {
+        discover: '.*',
+    },
+} as any)
+export class ActionSetEntity {
+    /**
+     * Unique identifier
+     */
+    @GeneratedUUidColumn()
+    id: string;
+
+    /**
+     * Action container
+     */
+    @Column({
+        type: 'list',
+        typeDef: '<frozen<action>>',
+    })
+    actions: ActionEntity[];
+
+    /**
+     * Owner of the action set
+     */
+    @Column({
+        type: 'uuid',
+    })
+    owner: string;
+
+    /**
+     * Current action index
+     */
+    @Column({
+        type: 'int',
+    })
+    // tslint:disable-next-line:variable-name
+    current_action: number;
+
+    /**
+     * Current overall status
+     */
+    @Column({
+        type: 'text',
+    })
+    // tslint:disable-next-line:variable-name
+    current_status: 'in progress' | 'complete' | 'error';
+
+    /**
+     * Name of the action set
+     */
+    @Column({
+        type: 'text',
+    })
+    name: string;
+
+    /**
+     * Creation timestamp
+     */
+    @CreateDateColumn()
+    // tslint:disable-next-line:variable-name
+    created_at: Date;
+
+    /**
+     * Update timestamp
+     */
+    @UpdateDateColumn()
+    // tslint:disable-next-line:variable-name
+    updated_at: Date;
+}

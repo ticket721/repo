@@ -21,8 +21,8 @@ import { UserEntity } from './entities/User.entity';
 import { UsersRepository } from './Users.repository';
 import { EsSearchOptionsStatic } from '@iaminfinity/express-cassandra/dist/orm/interfaces/externals/express-cassandra.interface';
 import { CreateUserServiceInputDto } from './dto/CreateUserServiceInput.dto';
-import { ESSearchHit, ESSearchReturn } from '@app/server/utils/ESSearchReturn';
 import { uuid } from '@iaminfinity/express-cassandra';
+import { ESSearchHit, ESSearchReturn } from '@lib/common/utils/ESSearchReturn';
 
 class UserEntityModelMock {
     search(

@@ -33,9 +33,12 @@ export class RolesGuard implements CanActivate {
             'roles',
             context.getHandler(),
         );
+
+        /* istanbul ignore next */
         if (!roles) {
             return true;
         }
+
         const request = context.switchToHttp().getRequest();
         const user: PasswordlessUserDto = request.user;
 
