@@ -11,6 +11,8 @@
         "test": "jest --expand --verbose",
         "test:cov": "npm run test -- --coverage",
         "build": "tsc",
+        "postbuild": "npm run copy_cities",
+        "copy_cities": "cp sources/geoloc/cities.json lib/geoloc/",
         "watch": "watch 'npm run build' sources",
         "lint": "tslint --project ."
     },

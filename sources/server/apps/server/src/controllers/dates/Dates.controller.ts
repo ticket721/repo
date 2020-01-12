@@ -1,5 +1,4 @@
 import { Body, Controller, HttpCode, Post, UseGuards } from '@nestjs/common';
-import { ActionSetsService } from '@lib/common/actionsets/ActionSets.service';
 import {
     Roles,
     RolesGuard,
@@ -10,26 +9,27 @@ import { User } from '@app/server/authentication/decorators/User.decorator';
 import { UserDto } from '@lib/common/users/dto/User.dto';
 import { StatusCodes, StatusNames } from '@app/server/utils/codes';
 import { search } from '@lib/common/utils/ControllerBasics';
-import { SortablePagedSearch } from '@lib/common/utils/SortablePagedSearch';
-import { ActionsSearchInputDto } from '@app/server/controllers/actionsets/dto/ActionsSearchInput.dto';
-import { ActionsSearchResponseDto } from '@app/server/controllers/actionsets/dto/ActionsSearchResponse.dto';
-import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
+import { DatesService } from '@lib/common/dates/Dates.service';
+import { DatesSearchResponseDto } from '@app/server/controllers/dates/dto/DatesSearchResponse.dto';
+import { DateEntity } from '@lib/common/dates/entities/Date.entity';
+import { DatesSearchInputDto } from '@app/server/controllers/dates/dto/DatesSearchInput.dto';
 
 /**
- * Generic Actions controller. Recover / delete action sets generated across the app
+ * Generic Dates controller. Recover Dates linked to all types of events
  */
 @ApiBearerAuth()
-@ApiTags('actions')
-@Controller('actions')
-export class ActionSetsController {
+@ApiTags('dates')
+@Controller('dates')
+export class DatesController {
     /**
      * Dependency Injection
-     * @param actionSetsService
+     *
+     * @param datesService
      */
-    constructor(private readonly actionSetsService: ActionSetsService) {}
+    constructor(private readonly datesService: DatesService) {}
 
     /**
-     * Search for action sets
+     * Search for dates
      *
      * @param body
      * @param user
@@ -51,21 +51,16 @@ export class ActionSetsController {
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @Roles('authenticated')
     async search(
-        @Body() body: ActionsSearchInputDto,
+        @Body() body: DatesSearchInputDto,
         @User() user: UserDto,
-    ): Promise<ActionsSearchResponseDto> {
-        const actionsets = await search<ActionSetEntity, ActionSetsService>(
-            this.actionSetsService,
-            {
-                ...body,
-                owner: {
-                    $eq: user.id.toString(),
-                },
-            } as SortablePagedSearch,
+    ): Promise<DatesSearchResponseDto> {
+        const dates = await search<DateEntity, DatesService>(
+            this.datesService,
+            body,
         );
 
         return {
-            actionsets,
+            dates,
         };
     }
 }

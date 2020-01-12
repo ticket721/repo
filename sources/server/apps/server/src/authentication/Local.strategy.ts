@@ -60,6 +60,7 @@ export class LocalStrategy extends PassportStrategy(Strategy, 'local') {
                     );
             }
         } else {
+            resp.response.id = resp.response.id.toString();
             return resp.response;
         }
     }

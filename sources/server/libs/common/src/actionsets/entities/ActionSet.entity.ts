@@ -6,6 +6,9 @@ import {
     UpdateDateColumn,
 } from '@iaminfinity/express-cassandra';
 
+export type ActionStatus = 'waiting' | 'in progress' | 'complete' | 'error';
+export type ActionType = 'input' | 'event';
+
 /**
  * Specific Action model
  */
@@ -13,7 +16,7 @@ export interface ActionEntity {
     /**
      * Status of the action
      */
-    status: string;
+    status: ActionStatus;
 
     /**
      * Name of the action
@@ -28,7 +31,7 @@ export interface ActionEntity {
     /**
      * Type of action
      */
-    type: 'input' | 'event';
+    type: ActionType;
 
     /**
      * Non-null if error happened
@@ -47,6 +50,63 @@ export interface ActionEntity {
     },
 } as any)
 export class ActionSetEntity {
+    // static create(name: string, owner: UserEntity): ActionSetEntity {
+    //     const ase: ActionSetEntity = new ActionSetEntity();
+    //     ase.name = name;
+    //     ase.owner = owner.id;
+    //     ase.current_action = 0;
+    //     ase.actions = [];
+
+    //     return ase;
+    // }
+
+    // addAction(name: string, type: ActionType, data: any = {}): ActionSetEntity {
+    //     this.actions.push({
+    //         status: 'waiting',
+    //         name,
+    //         type,
+    //         data: JSON.stringify(data),
+    //         error: null,
+    //     });
+
+    //     if (this.actions.length === 1) {
+    //         this.current_status = `waiting ${this.actions[0].type}` as any;
+    //     }
+
+    //     return this;
+    // }
+
+    // setActionData(data: any): ActionSetEntity {
+    //     this.actions[this.current_action].data = JSON.stringify(data);
+
+    //     return this;
+    // }
+
+    // getActionData(): any {
+    //     return this.actions[this.current_action].data;
+    // }
+
+    // next(): ActionSetEntity {
+    //     this.actions[this.current_action].status = 'complete';
+
+    //     if (this.current_action === this.actions.length - 1) {
+    //         this.current_status = 'complete';
+    //     } else {
+    //         this.current_action += 1;
+    //         this.actions[this.current_action].status = 'in progress';
+    //     }
+
+    //     return this;
+    // }
+
+    // setActionError(index: number, error: string): ActionSetEntity {
+    //     this.actions[index].status = 'error';
+    //     this.actions[index].error = error;
+    //     this.current_status = 'error';
+
+    //     return this;
+    // };
+
     /**
      * Unique identifier
      */
@@ -86,7 +146,7 @@ export class ActionSetEntity {
         type: 'text',
     })
     // tslint:disable-next-line:variable-name
-    current_status: 'in progress' | 'complete' | 'error';
+    current_status: 'waiting input' | 'waiting event' | 'complete' | 'error';
 
     /**
      * Name of the action set

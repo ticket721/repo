@@ -26,7 +26,9 @@ import { EmailModule } from '@app/server/email/Email.module';
 import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
 import { ActionSetsModule } from '@lib/common/actionsets/ActionSets.module';
 import { ActionSetsRepository } from '@lib/common/actionsets/ActionSets.repository';
-import { ActionsModule } from '@app/server/actions/Actions.module';
+import { ActionSetsController } from '@app/server/controllers/actionsets/ActionSets.controller';
+import { DatesModule } from '@lib/common/dates/Dates.module';
+import { DatesController } from '@app/server/controllers/dates/Dates.controller';
 
 @Module({
     imports: [
@@ -56,12 +58,10 @@ import { ActionsModule } from '@app/server/actions/Actions.module';
         UsersModule,
         Web3TokensModule,
         ActionSetsModule,
+        DatesModule,
 
         // User Management Modules
         AuthenticationModule,
-
-        // User Action Management Module
-        ActionsModule,
 
         // Utility Modules
         ShutdownModule,
@@ -90,7 +90,7 @@ import { ActionsModule } from '@app/server/actions/Actions.module';
             inject: [ConfigService],
         }),
     ],
-    controllers: [ServerController],
+    controllers: [ServerController, ActionSetsController, DatesController],
     providers: [
         ServerService,
         {

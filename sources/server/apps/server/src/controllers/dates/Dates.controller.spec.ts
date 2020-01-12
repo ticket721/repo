@@ -1,13 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { deepEqual, instance, mock, when } from 'ts-mockito';
 import { Job, JobOptions } from 'bull';
-import { ActionSetsService } from '@lib/common/actionsets/ActionSets.service';
 import { uuid } from '@iaminfinity/express-cassandra';
 import { UserDto } from '@lib/common/users/dto/User.dto';
 import { ESSearchReturn } from '@lib/common/utils/ESSearchReturn';
-import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
-import { ActionSetsController } from '@app/server/controllers/actionsets/ActionSets.controller';
-import { StatusCodes } from '@app/server/utils/codes';
+import { DatesController } from '@app/server/controllers/dates/Dates.controller';
+import { DatesService } from '@lib/common/dates/Dates.service';
+import { DateEntity } from '@lib/common/dates/entities/Date.entity';
 
 class QueueMock<T = any> {
     add(name: string, data: T, opts?: JobOptions): Promise<Job<T>> {
@@ -16,40 +15,36 @@ class QueueMock<T = any> {
 }
 
 const context: {
-    actionsController: ActionSetsController;
-    actionSetsServiceMock: ActionSetsService;
+    datesController: DatesController;
+    datesServiceMock: DatesService;
 } = {
-    actionsController: null,
-    actionSetsServiceMock: null,
+    datesController: null,
+    datesServiceMock: null,
 };
 
-describe('ActionSets Controller', function() {
+describe('Dates Controller', function() {
     beforeEach(async function() {
-        const actionsSetsServiceMock: ActionSetsService = mock(
-            ActionSetsService,
-        );
+        const actionsSetsServiceMock: DatesService = mock(DatesService);
 
-        const ActionSetsServiceProvider = {
-            provide: ActionSetsService,
+        const DatesServiceProvider = {
+            provide: DatesService,
             useValue: instance(actionsSetsServiceMock),
         };
 
         const module: TestingModule = await Test.createTestingModule({
-            providers: [ActionSetsServiceProvider],
-            controllers: [ActionSetsController],
+            providers: [DatesServiceProvider],
+            controllers: [DatesController],
         }).compile();
 
-        context.actionsController = module.get<ActionSetsController>(
-            ActionSetsController,
-        );
-        context.actionSetsServiceMock = actionsSetsServiceMock;
+        context.datesController = module.get<DatesController>(DatesController);
+        context.datesServiceMock = actionsSetsServiceMock;
     });
 
     describe('search', function() {
         test('should search for action sets', async function() {
             const query = {
-                current_status: {
-                    $eq: 'complete',
+                location_label: {
+                    $eq: '3 rue des boulevards',
                 },
             };
 
@@ -57,38 +52,36 @@ describe('ActionSets Controller', function() {
                 body: {
                     query: {
                         bool: {
-                            must: [
-                                {
-                                    term: {
-                                        current_status: 'complete',
-                                    },
+                            must: {
+                                term: {
+                                    location_label: '3 rue des boulevards',
                                 },
-                                {
-                                    term: {
-                                        owner:
-                                            'ec677b12-d420-43a6-a597-ef84bf09f845',
-                                    },
-                                },
-                            ],
+                            },
                         },
                     },
                 },
             };
 
-            const entities: ActionSetEntity[] = [
+            const entities: DateEntity[] = [
                 {
                     id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
-                    owner: 'ec677b12-d420-43a6-a597-ef84bf09f845',
-                    actions: [],
-                    current_action: 0,
-                    current_status: 'complete',
-                    name: 'test',
+                    location_label: '3 rue des boulevards',
+                    location: {
+                        lon: 1,
+                        lat: 2,
+                    },
+                    assigned_city: 123,
+                    categories: [],
+                    metadata: {
+                        name: 'hi',
+                        image: 'http://image.com',
+                    },
                     created_at: new Date(Date.now()),
                     updated_at: new Date(Date.now()),
                 },
             ];
 
-            const esReturn: ESSearchReturn<ActionSetEntity> = {
+            const esReturn: ESSearchReturn<DateEntity> = {
                 took: 1,
                 timed_out: false,
                 _shards: {
@@ -113,7 +106,7 @@ describe('ActionSets Controller', function() {
             };
 
             when(
-                context.actionSetsServiceMock.searchElastic(
+                context.datesServiceMock.searchElastic(
                     deepEqual(internalEsQuery),
                 ),
             ).thenResolve({
@@ -121,11 +114,11 @@ describe('ActionSets Controller', function() {
                 response: esReturn,
             });
 
-            const res = await context.actionsController.search(query, {
+            const res = await context.datesController.search(query, {
                 id: uuid('ec677b12-d420-43a6-a597-ef84bf09f845') as any,
             } as UserDto);
 
-            expect(res.actionsets).toEqual(entities);
+            expect(res.dates).toEqual(entities);
         });
     });
 });

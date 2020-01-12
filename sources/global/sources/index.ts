@@ -6,3 +6,4 @@ export { isKeccak256, toAcceptedKeccak256Format, keccak256 }                 fro
 export { Wallet }                                                            from 'ethers';
 export { Web3LoginSigner }                                                   from './signers/Web3Login';
 export { Web3RegisterSigner }                                                from './signers/Web3Register';
+export { Coordinates, closestCity, City }                                    from './geoloc';

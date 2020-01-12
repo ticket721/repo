@@ -132,6 +132,58 @@ export class CRUDExtension<RepositoryType extends Repository, EntityType> {
     }
 
     /**
+     * Regular Expression to be 100% we're working with an annoying uuid object
+     */
+    private readonly uuidRegExp = /[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}/;
+
+    /**
+     * Utility to check if field is Uuid
+     */
+    private isUuid(val: any) {
+        return (
+            typeof val === 'object' &&
+            typeof val.buffer === 'object' &&
+            typeof val.getBuffer === 'function' &&
+            typeof val.equals === 'function' &&
+            typeof val.toString === 'function' &&
+            typeof val.inspect === 'function' &&
+            this.uuidRegExp.test(val.toString())
+        );
+    }
+
+    /**
+     * Utility to recursively track and adapt uuids objects to string
+     *
+     * @param entity
+     */
+    private adaptResponseTypeFilter(entity: any): any {
+        switch (typeof entity) {
+            case 'object': {
+                if (Array.isArray(entity)) {
+                    return entity.map((elem: any) =>
+                        this.adaptResponseTypeFilter(elem),
+                    );
+                } else {
+                    if (this.isUuid(entity)) {
+                        return entity.toString();
+                    } else {
+                        for (const key of Object.keys(entity)) {
+                            entity[key] = this.adaptResponseTypeFilter(
+                                entity[key],
+                            );
+                        }
+                        return entity;
+                    }
+                }
+            }
+
+            default: {
+                return entity;
+            }
+        }
+    }
+
+    /**
      * Utility to adapt any uuid argument from the provided search query
      *
      * @param query
@@ -360,7 +412,7 @@ export class CRUDExtension<RepositoryType extends Repository, EntityType> {
             );
 
             return {
-                response: queryResult,
+                response: this.adaptResponseTypeFilter(queryResult),
                 error: null,
             };
         } catch (e) {

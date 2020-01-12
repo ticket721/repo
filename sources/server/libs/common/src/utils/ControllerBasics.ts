@@ -7,6 +7,12 @@ import { StatusCodes } from '@app/server/utils/codes';
 import { fromES } from '@app/server/utils/fromES';
 import { CRUDExtension } from '@lib/common/crud/CRUD.extension';
 
+/**
+ * Generic search query, able to throw HttpExceptions
+ *
+ * @param service
+ * @param query
+ */
 export async function search<
     DataType,
     ServiceType extends CRUDExtension<any, any>

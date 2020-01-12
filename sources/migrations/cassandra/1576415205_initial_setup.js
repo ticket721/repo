@@ -52,11 +52,72 @@ var migration1576415205 = {
             params: []
         };
 
+        const geo_point_type_creation = {
+            query: `CREATE TYPE ticket721.geo_point (
+                    lat double,
+                    lon double
+                    );`,
+            params: []
+        };
+
+        const price_type_creation = {
+            query: `CREATE TYPE ticket721.price (
+                        currency text,
+                        value text,
+                        log_value double
+                    );`,
+            params: []
+        };
+
+        const category_type_creation = {
+            query: `CREATE TYPE ticket721.category (
+                        group_id text,
+                        category_name text,
+                        category_index int,
+                        prices list<frozen<ticket721.price>>
+                    );`,
+            params: []
+        };
+
+        const date_metadata_type_creation = {
+            query: `CREATE TYPE ticket721.date_metadata (
+                        name text,
+                        image text,
+                    );`,
+            params: []
+        };
+
+        const date_table_creation = {
+            query: `CREATE TABLE ticket721.date (
+                        id UUID PRIMARY KEY,
+                        location_label text,
+                        location frozen<ticket721.geo_point>,
+                        assigned_city int,
+                        categories list<frozen<ticket721.category>>,
+                        metadata frozen<ticket721.date_metadata>,
+                        created_at timestamp,
+                        updated_at timestamp
+                    );`,
+            params: []
+        };
+
         try {
 
             // Types first
             console.log('Action Type Creation');
             await db.execute(action_type_creation.query, action_type_creation.params, { prepare: true });
+
+            console.log('GeoPoint Type Creation');
+            await db.execute(geo_point_type_creation.query, geo_point_type_creation.params, { prepare: true });
+
+            console.log('Price Type Creation');
+            await db.execute(price_type_creation.query, price_type_creation.params, { prepare: true });
+
+            console.log('Category Type Creation');
+            await db.execute(category_type_creation.query, category_type_creation.params, { prepare: true });
+
+            console.log('Date Metadata Type Creation');
+            await db.execute(date_metadata_type_creation.query, date_metadata_type_creation.params, { prepare: true });
 
             // Then tables
             console.log('User Table Creation');
@@ -67,6 +128,9 @@ var migration1576415205 = {
 
             console.log('ActionSet Table Creation');
             await db.execute(actionset_table_creation.query, actionset_table_creation.params, { prepare: true });
+
+            console.log('Date Table Creation');
+            await db.execute(date_table_creation.query, date_table_creation.params, { prepare: true });
 
         } catch (e) {
             return handler(e, false);
@@ -96,6 +160,31 @@ var migration1576415205 = {
             params: []
         };
 
+        const geo_point_type_creation = {
+            query: 'DROP TYPE ticket721.geo_point;',
+            params: []
+        };
+
+        const price_type_creation = {
+            query: 'DROP TYPE ticket721.price;',
+            params: []
+        };
+
+        const category_type_creation = {
+            query: 'DROP TYPE ticket721.category;',
+            params: []
+        };
+
+        const date_metadata_type_creation = {
+            query: 'DROP TYPE ticket721.date_metadata;',
+            params: []
+        };
+
+        const date_table_creation = {
+            query: 'DROP TYPE ticket721.date;',
+            params: []
+        };
+
         try {
 
             // Tables first
@@ -108,9 +197,26 @@ var migration1576415205 = {
             console.log('ActionSet Table Deletion');
             await db.execute(actionset_table_creation.query, actionset_table_creation.params, { prepare: true });
 
+            console.log('Date Table Deletion');
+            await db.execute(date_table_creation.query, date_table_creation.params, { prepare: true });
+
             // Then Types
             console.log('Action Type Deletion');
             await db.execute(action_type_creation.query, action_type_creation.params, { prepare: true });
+
+            console.log('GeoPoint Type Deletion');
+            await db.execute(geo_point_type_creation.query, geo_point_type_creation.params, { prepare: true });
+
+            console.log('Category Type Deletion');
+            await db.execute(category_type_creation.query, category_type_creation.params, { prepare: true });
+
+            console.log('Price Type Deletion');
+            await db.execute(price_type_creation.query, price_type_creation.params, { prepare: true });
+
+            console.log('Date Metadata Type Deletion');
+            await db.execute(date_metadata_type_creation.query, date_metadata_type_creation.params, { prepare: true });
+
+
         } catch (e) {
             return handler(e, false);
         }
