@@ -1,13 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { deepEqual, instance, mock, when } from 'ts-mockito';
-import { StatusCodes } from '../utils/codes';
 import { Job, JobOptions } from 'bull';
-import { ActionsController } from '@app/server/actions/Actions.controller';
 import { ActionSetsService } from '@lib/common/actionsets/ActionSets.service';
 import { uuid } from '@iaminfinity/express-cassandra';
 import { UserDto } from '@lib/common/users/dto/User.dto';
 import { ESSearchReturn } from '@lib/common/utils/ESSearchReturn';
 import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
+import { ActionSetsController } from '@app/server/controllers/actionsets/ActionSets.controller';
+import { StatusCodes } from '@app/server/utils/codes';
 
 class QueueMock<T = any> {
     add(name: string, data: T, opts?: JobOptions): Promise<Job<T>> {
@@ -16,14 +16,14 @@ class QueueMock<T = any> {
 }
 
 const context: {
-    actionsController: ActionsController;
+    actionsController: ActionSetsController;
     actionSetsServiceMock: ActionSetsService;
 } = {
     actionsController: null,
     actionSetsServiceMock: null,
 };
 
-describe('Authentication Controller', function() {
+describe('ActionSets Controller', function() {
     beforeEach(async function() {
         const actionsSetsServiceMock: ActionSetsService = mock(
             ActionSetsService,
@@ -36,11 +36,11 @@ describe('Authentication Controller', function() {
 
         const module: TestingModule = await Test.createTestingModule({
             providers: [ActionSetsServiceProvider],
-            controllers: [ActionsController],
+            controllers: [ActionSetsController],
         }).compile();
 
-        context.actionsController = module.get<ActionsController>(
-            ActionsController,
+        context.actionsController = module.get<ActionSetsController>(
+            ActionSetsController,
         );
         context.actionSetsServiceMock = actionsSetsServiceMock;
     });
@@ -65,9 +65,7 @@ describe('Authentication Controller', function() {
                                 },
                                 {
                                     term: {
-                                        owner: uuid(
-                                            'ec677b12-d420-43a6-a597-ef84bf09f845',
-                                        ),
+                                        owner: 'ec677b12-d420-43a6-a597-ef84bf09f845',
                                     },
                                 },
                             ],
@@ -174,9 +172,7 @@ describe('Authentication Controller', function() {
                                 },
                                 {
                                     term: {
-                                        owner: uuid(
-                                            'ec677b12-d420-43a6-a597-ef84bf09f845',
-                                        ),
+                                        owner: 'ec677b12-d420-43a6-a597-ef84bf09f845',
                                     },
                                 },
                             ],
@@ -196,7 +192,7 @@ describe('Authentication Controller', function() {
 
             await expect(
                 context.actionsController.search(query, {
-                    id: uuid('ec677b12-d420-43a6-a597-ef84bf09f845') as any,
+                    id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
                 } as UserDto),
             ).rejects.toMatchObject({
                 response: {
@@ -230,9 +226,7 @@ describe('Authentication Controller', function() {
                                 },
                                 {
                                     term: {
-                                        owner: uuid(
-                                            'ec677b12-d420-43a6-a597-ef84bf09f845',
-                                        ),
+                                        owner: 'ec677b12-d420-43a6-a597-ef84bf09f845',
                                     },
                                 },
                             ],
