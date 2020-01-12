@@ -1,5 +1,5 @@
-import { InjectQueue, Process, Processor } from '@nestjs/bull';
-import { Job, Queue } from 'bull';
+import { Process, Processor } from '@nestjs/bull';
+import { Job } from 'bull';
 import { EmailValidationTaskDto } from '@app/server/authentication/dto/EmailValidationTask.dto';
 import { EmailService } from '@app/server/email/Email.service';
 import { Injectable } from '@nestjs/common';
@@ -18,13 +18,11 @@ export class AuthenticationTasks {
      * @param emailService
      * @param jwtService
      * @param configService
-     * @param mailingQueue
      */
     constructor(
         private readonly emailService: EmailService,
         private readonly jwtService: JwtService,
         private readonly configService: ConfigService,
-        @InjectQueue('mailing') private readonly mailingQueue: Queue,
     ) {}
 
     /**

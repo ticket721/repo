@@ -4,6 +4,12 @@ import { ServiceResponse } from '@app/server/utils/ServiceResponse';
 import { SortablePagedSearch } from '@lib/common/utils/SortablePagedSearch';
 import { Sort } from '@lib/common/utils/Sort';
 
+/**
+ * Digs an object based on provided arguments
+ *
+ * @param body
+ * @param args
+ */
 function digger(
     body: Partial<EsSearchOptionsStatic>,
     ...args: string[]
@@ -22,6 +28,14 @@ function digger(
     };
 }
 
+/**
+ * must and must_not endpoints should be arrays when multiple values are given.
+ * This utility ensures that the array is created the first time they become
+ * two.
+ *
+ * @param point
+ * @param data
+ */
 function append(point: any, data: any): any {
     if (point) {
         if (Array.isArray(point)) {
@@ -36,6 +50,14 @@ function append(point: any, data: any): any {
     }
 }
 
+/**
+ * Utility to add $eq to ES query
+ *
+ * @param fieldName
+ * @param $eq
+ * @param body
+ * @constructor
+ */
 function SearchableFieldEqualStatement<T>(
     fieldName: string,
     $eq: T,
@@ -52,6 +74,14 @@ function SearchableFieldEqualStatement<T>(
     return body;
 }
 
+/**
+ * Utility to add $in to ES query
+ *
+ * @param fieldName
+ * @param $in
+ * @param body
+ * @constructor
+ */
 function SearchableFieldInStatement<T>(
     fieldName: string,
     $in: T[],
@@ -68,6 +98,14 @@ function SearchableFieldInStatement<T>(
     return body;
 }
 
+/**
+ * Utility to add $ne to ES query
+ *
+ * @param fieldName
+ * @param $ne
+ * @param body
+ * @constructor
+ */
 function SearchableFieldNotEqualStatement<T>(
     fieldName: string,
     $ne: T,
@@ -84,6 +122,14 @@ function SearchableFieldNotEqualStatement<T>(
     return body;
 }
 
+/**
+ * Utility to add $nin to ES query
+ *
+ * @param fieldName
+ * @param $nin
+ * @param body
+ * @constructor
+ */
 function SearchableFieldNotInStatement<T>(
     fieldName: string,
     $nin: T[],
@@ -100,6 +146,14 @@ function SearchableFieldNotInStatement<T>(
     return body;
 }
 
+/**
+ * Utility to add $contains to ES query
+ *
+ * @param fieldName
+ * @param $contains
+ * @param body
+ * @constructor
+ */
 function SearchableFieldContainsStatement<T>(
     fieldName: string,
     $contains: T,
@@ -118,6 +172,14 @@ function SearchableFieldContainsStatement<T>(
     return body;
 }
 
+/**
+ * Utility to add $ncontains to ES query
+ *
+ * @param fieldName
+ * @param $ncontains
+ * @param body
+ * @constructor
+ */
 function SearchableFieldNotContainsStatement<T>(
     fieldName: string,
     $ncontains: T,
@@ -136,6 +198,14 @@ function SearchableFieldNotContainsStatement<T>(
     return body;
 }
 
+/**
+ * Utility to add $lt to ES query
+ *
+ * @param fieldName
+ * @param $lt
+ * @param body
+ * @constructor
+ */
 function SearchableFieldLowerThanStatement<T>(
     fieldName: string,
     $lt: T,
@@ -154,6 +224,14 @@ function SearchableFieldLowerThanStatement<T>(
     return body;
 }
 
+/**
+ * Utility to add $gt to ES query
+ *
+ * @param fieldName
+ * @param $gt
+ * @param body
+ * @constructor
+ */
 function SearchableFieldGreaterThanStatement<T>(
     fieldName: string,
     $gt: T,
@@ -172,6 +250,14 @@ function SearchableFieldGreaterThanStatement<T>(
     return body;
 }
 
+/**
+ * Utility to add $lte to ES query
+ *
+ * @param fieldName
+ * @param $lte
+ * @param body
+ * @constructor
+ */
 function SearchableFieldLowerThanEqualStatement<T>(
     fieldName: string,
     $lte: T,
@@ -190,6 +276,14 @@ function SearchableFieldLowerThanEqualStatement<T>(
     return body;
 }
 
+/**
+ * Utility to add $gte to ES query
+ *
+ * @param fieldName
+ * @param $gte
+ * @param body
+ * @constructor
+ */
 function SearchableFieldGreaterThanEqualStatement<T>(
     fieldName: string,
     $gte: T,
@@ -208,10 +302,23 @@ function SearchableFieldGreaterThanEqualStatement<T>(
     return body;
 }
 
+/**
+ * Utility to prevent 0 values from being considered undefined
+ *
+ * @param val
+ */
 function defined(val: any): boolean {
     return val !== null && val !== undefined;
 }
 
+/**
+ * Utility to inject a field's query arguments inside the ES query
+ *
+ * @param fieldName
+ * @param field
+ * @param body
+ * @constructor
+ */
 export function SearchableFieldConverter<T = any>(
     fieldName: string,
     field: SearchableField<T>,
@@ -280,6 +387,13 @@ export function SearchableFieldConverter<T = any>(
     return body;
 }
 
+/**
+ * Utility to inject all fields inside the ES query, and handle possible
+ * paging and sorting arguments
+ *
+ * @param req
+ * @constructor
+ */
 export function ESSearchBodyBuilder(
     req: Partial<SortablePagedSearch>,
 ): ServiceResponse<EsSearchOptionsStatic> {

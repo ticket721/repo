@@ -1,11 +1,9 @@
 import {
     Body,
     Controller,
-    Get,
     HttpCode,
     HttpException,
     Post,
-    Query,
     UseGuards,
 } from '@nestjs/common';
 import { ActionSetsService } from '@lib/common/actionsets/ActionSets.service';
@@ -18,7 +16,6 @@ import {
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { User } from '@app/server/authentication/decorators/User.decorator';
-import { UserEntity } from '@lib/common/users/entities/User.entity';
 import { UserDto } from '@lib/common/users/dto/User.dto';
 import { EsSearchOptionsStatic } from '@iaminfinity/express-cassandra';
 import { ESSearchBodyBuilder } from '@lib/common/utils/ESSearchBodyBuilder';
@@ -27,12 +24,21 @@ import { StatusCodes, StatusNames } from '@app/server/utils/codes';
 import { fromES } from '@app/server/utils/fromES';
 import { SortablePagedSearch } from '@lib/common/utils/SortablePagedSearch';
 
+/**
+ * Generic Actions controller. Recover / delete action sets generated across the app
+ */
 @ApiBearerAuth()
 @ApiTags('actions')
 @Controller('actions')
 export class ActionsController {
     constructor(private readonly actionSetsService: ActionSetsService) {}
 
+    /**
+     * Search for action sets
+     *
+     * @param body
+     * @param user
+     */
     @Post('/search')
     @ApiResponse({
         status: StatusCodes.InternalServerError,

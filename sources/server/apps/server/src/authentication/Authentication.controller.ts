@@ -7,10 +7,7 @@ import {
     UseFilters,
     UseGuards,
     Request,
-    Get,
-    Response,
     HttpCode,
-    Param,
 } from '@nestjs/common';
 import { AuthenticationService } from './Authentication.service';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';

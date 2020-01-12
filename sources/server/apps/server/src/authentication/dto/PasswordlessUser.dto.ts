@@ -1,5 +1,3 @@
-import { IsEmail, IsUUID } from 'class-validator';
-
 /**
  * User information without the password hash
  */

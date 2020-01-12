@@ -1,12 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import {
-    InjectRepository,
-    InjectModel,
-    BaseModel,
-} from '@iaminfinity/express-cassandra';
+import { InjectRepository } from '@iaminfinity/express-cassandra';
 import { types } from 'cassandra-driver';
 import { Web3TokensRepository } from './Web3Tokens.repository';
-import { Web3TokenEntity } from './entities/Web3Token.entity';
 import { ServiceResponse } from '@app/server/utils/ServiceResponse';
 import { RegisterWeb3TokenServiceInputDto } from '@app/server/web3token/dto/RegisterWeb3TokenServiceInput.dto';
 import { Web3TokenDto } from '@app/server/web3token/dto/Web3Token.dto';
@@ -22,14 +17,11 @@ export class Web3TokensService extends NestSchedule {
      * Dependency Injection
      *
      * @param web3TokensRepository
-     * @param web3TokensEntity
      * @param configService
      */
     constructor(
         @InjectRepository(Web3TokensRepository)
         private readonly web3TokensRepository: Web3TokensRepository,
-        @InjectModel(Web3TokenEntity)
-        private readonly web3TokensEntity: BaseModel<Web3TokenEntity>,
         private readonly configService: ConfigService,
     ) {
         super();

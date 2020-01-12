@@ -29,15 +29,15 @@ export class ContractsControllerBase {
     /**
      * Dependency Injection
      *
-     * @param _contractsService
-     * @param _web3Service
-     * @param _shutdownService
+     * @param contractsService
+     * @param web3Service
+     * @param shutdownService
      * @param contractName
      */
     constructor(
-        private readonly _contractsService: ContractsService,
-        private readonly _web3Service: Web3Service,
-        private readonly _shutdownService: ShutdownService,
+        private readonly contractsService: ContractsService,
+        private readonly web3Service: Web3Service,
+        private readonly shutdownService: ShutdownService,
         private readonly contractName: string,
     ) {
         this.logger = new WinstonLoggerService(contractName);
@@ -49,25 +49,25 @@ export class ContractsControllerBase {
     async loadContract(): Promise<void> {
         this.logger.log(`Initializing ${this.contractName} service`);
         this._contractData = (
-            await this._contractsService.getContractArtifacts()
+            await this.contractsService.getContractArtifacts()
         )[this.contractName];
 
         if (!this._contractData) {
             const error: Error = new Error(
                 `Cannot recover artifact for instance called ${this.contractName}`,
             );
-            this._shutdownService.shutdownWithError(error);
+            this.shutdownService.shutdownWithError(error);
             throw error;
         }
 
-        const web3: Web3 = await this._web3Service.get<Web3>();
-        const networkId: number = await this._web3Service.net();
+        const web3: Web3 = await this.web3Service.get<Web3>();
+        const networkId: number = await this.web3Service.net();
 
         if (!web3 || (!networkId && networkId !== 0)) {
             const error: Error = new Error(
                 `Unable to recover web3 instance or data for contract ${this.contractName}`,
             );
-            this._shutdownService.shutdownWithError(error);
+            this.shutdownService.shutdownWithError(error);
             throw error;
         }
 

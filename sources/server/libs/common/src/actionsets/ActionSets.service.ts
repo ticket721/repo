@@ -8,16 +8,25 @@ import {
 } from '@iaminfinity/express-cassandra';
 import { ActionSetsRepository } from '@lib/common/actionsets/ActionSets.repository';
 
+/**
+ * ActionSets Service, implements CRUD
+ */
 @Injectable()
 export class ActionSetsService extends CRUDExtension<
     ActionSetsRepository,
     ActionSetEntity
 > {
+    /**
+     * Dependency Injection
+     *
+     * @param actionSetsRepository
+     * @param actionSetEntity
+     */
     constructor(
         @InjectRepository(ActionSetsRepository)
-        private readonly actionSetsRepository: ActionSetsRepository,
+        actionSetsRepository: ActionSetsRepository,
         @InjectModel(ActionSetEntity)
-        private readonly actionSetEntity: BaseModel<ActionSetEntity>,
+        actionSetEntity: BaseModel<ActionSetEntity>,
     ) {
         super(actionSetEntity, actionSetsRepository);
     }

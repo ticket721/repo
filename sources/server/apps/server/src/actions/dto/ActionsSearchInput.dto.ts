@@ -1,81 +1,75 @@
-import {
-    IsString,
-    ValidateIf,
-    IsOptional,
-    IsNumber,
-    IsIn,
-    IsObject,
-    ValidateNested,
-} from 'class-validator';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsOptional } from 'class-validator';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 import { SearchableField } from '@lib/common/utils/SearchableField.type';
 import { SortablePagedSearch } from '@lib/common/utils/SortablePagedSearch';
 import { ActionEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
-import { Type } from 'class-transformer';
 
+/**
+ * Input required by the Actions Search
+ */
 export class ActionsSearchInputDto extends SortablePagedSearch {
+    /**
+     * Searchable field to search on the current_status
+     */
     @ApiPropertyOptional({
         description: 'Current status of the searched action sets',
-        example: {
-            $eq: 'test',
-        },
     })
     @IsOptional()
     // tslint:disable-next-line:variable-name
     current_status?: SearchableField<string>;
 
+    /**
+     * Searchable field to search on the current_action
+     */
     @ApiPropertyOptional({
         description: 'Current action of the action sets',
-        example: {
-            $eq: 'test',
-        },
     })
     @IsOptional()
     // tslint:disable-next-line:variable-name
     current_action?: SearchableField<number>;
 
+    /**
+     * Searchable field to search on the id
+     */
     @ApiPropertyOptional({
         description: 'Unique ID to search for',
-        example: {
-            $eq: 'test',
-        },
     })
     @IsOptional()
     id?: SearchableField<string>;
 
+    /**
+     * Searchable field to search in the actions
+     */
     @ApiPropertyOptional({
         description: 'Actions details to search for',
-        example: {
-            $eq: 'test',
-        },
     })
     @IsOptional()
     actions?: SearchableField<ActionEntity[]>;
 
+    /**
+     * Searchable field to search on the name
+     */
     @ApiPropertyOptional({
         description: 'Search by action set name',
-        example: {
-            $eq: 'test',
-        },
     })
     @IsOptional()
     name?: SearchableField<string>;
 
+    /**
+     * Searchable field to search on the creation timestamp
+     */
     @ApiPropertyOptional({
         description: 'Search by creation date',
-        example: {
-            $eq: 'test',
-        },
     })
     @IsOptional()
     // tslint:disable-next-line:variable-name
     created_at?: SearchableField<Date>;
 
+    /**
+     * Searchable field to search on the update timestamp
+     */
     @ApiPropertyOptional({
         description: 'Search by update date',
-        example: {
-            $eq: 'test',
-        },
     })
     @IsOptional()
     // tslint:disable-next-line:variable-name

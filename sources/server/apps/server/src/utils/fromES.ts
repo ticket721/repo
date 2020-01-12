@@ -1,10 +1,10 @@
+import { ESSearchHit } from '@lib/common/utils/ESSearchReturn';
+
 /**
  * Utility to convert an ES Search hit to data (extract _source)
  *
  * @param esResult
  */
-import { ESSearchHit } from '@lib/common/utils/ESSearchReturn';
-
 export function fromES<EntityType>(
     esResult: ESSearchHit<EntityType>,
 ): EntityType {

@@ -15,7 +15,14 @@ import { ESSearchReturn } from '@lib/common/utils/ESSearchReturn';
  * Response format of all methods
  */
 export interface CRUDResponse<EntityType> {
+    /**
+     * Resulting entity response
+     */
     response: EntityType;
+
+    /**
+     * Generated error response. Null if none
+     */
     error?: string;
 }
 
@@ -54,20 +61,20 @@ export type DeleteOptions = DeleteOptionsStatic;
  * CRUD functionalities.
  */
 export class CRUDExtension<RepositoryType extends Repository, EntityType> {
-    /**
-     * Name of the entity
-     */
-    private readonly _name: string;
+    // /**
+    //  * Name of the entity
+    //  */
+    // private readonly _name: string;
 
-    /**
-     * Current keyspace of the entity
-     */
-    private readonly _keyspace: string;
+    // /**
+    //  * Current keyspace of the entity
+    //  */
+    // private readonly _keyspace: string;
 
-    /**
-     * Primary key field names of the entity
-     */
-    private readonly _keys: string[];
+    // /**
+    //  * Primary key field names of the entity
+    //  */
+    // private readonly _keys: string[];
 
     /**
      * Fields of the entity
@@ -86,9 +93,9 @@ export class CRUDExtension<RepositoryType extends Repository, EntityType> {
     ) {
         const properties = (this._model as any)._properties;
 
-        this._name = properties.schema.table_name;
-        this._keyspace = properties.keyspace;
-        this._keys = properties.schema.key;
+        // this._name = properties.schema.table_name;
+        // this._keyspace = properties.keyspace;
+        // this._keys = properties.schema.key;
         this._fields = properties.schema.fields;
     }
 

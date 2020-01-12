@@ -1,4 +1,4 @@
-import { Controller, Get, Injectable, Param } from '@nestjs/common';
+import { Controller, Get, Injectable } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
 import { StatusCodes, StatusNames } from './utils/codes';
 import { ServerService } from './Server.service';

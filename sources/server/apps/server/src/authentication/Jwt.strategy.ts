@@ -17,7 +17,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
      * @param usersService
      */
     constructor /* instanbul ignore next */(
-        private readonly configService: ConfigService,
+        configService: ConfigService,
         private readonly usersService: UsersService,
     ) {
         super({
