@@ -4,7 +4,7 @@
     "private": true,
     "scripts": {},
     "dependencies": {
-        "@hapi/joi": "16.1.8",
+        "@hapi/joi": "17.0.2",
         "axios": "0.19.1",
         "ethereum-address": "0.0.4",
         "ethers": "4.0.43",
