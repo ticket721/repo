@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsIn, IsString } from 'class-validator';
+import { IsBoolean, IsIn, IsString } from 'class-validator';
 
 /**
  * Field and order to sort with
@@ -27,4 +27,14 @@ export class Sort {
     @IsIn(['asc', 'desc'])
     // tslint:disable-next-line:variable-name
     $order: string;
+
+    /**
+     * Order to use for sorting
+     */
+    @ApiProperty({
+        example: null,
+        description: 'True if ordering on nested field',
+    })
+    @IsBoolean()
+    $nested?: boolean;
 }

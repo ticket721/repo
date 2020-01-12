@@ -6,6 +6,7 @@ import { ServiceResponse } from '@app/server/utils/ServiceResponse';
 
 class ExampleInputDto extends SortablePagedSearch {
     name?: SearchableField<string>;
+    obj?: SearchableField<any>;
     age?: SearchableField<number>;
 }
 
@@ -43,6 +44,96 @@ describe('ESSearch Body Builder', function() {
                         ],
                     },
                 },
+            },
+        });
+    });
+
+    it('uses $eq with nested fields and nested sort', function() {
+        const input: ExampleInputDto = {
+            obj: {
+                $eq: {
+                    nested: {
+                        fields: {
+                            should: {
+                                work: '!',
+                            },
+                        },
+                    },
+                },
+            },
+            $sort: [
+                {
+                    $field_name: 'obj.nested',
+                    $order: 'asc',
+                    $nested: true,
+                },
+            ],
+        };
+
+        const esb: ServiceResponse<EsSearchOptionsStatic> = ESSearchBodyBuilder(
+            input,
+        );
+
+        expect(esb.error).toEqual(null);
+        // Yes the end query is pretty unreadable :/
+        expect(esb.response).toEqual({
+            body: {
+                query: {
+                    bool: {
+                        must: {
+                            nested: {
+                                path: 'obj',
+                                query: {
+                                    bool: {
+                                        must: {
+                                            nested: {
+                                                path: 'obj.nested',
+                                                query: {
+                                                    bool: {
+                                                        must: {
+                                                            nested: {
+                                                                path:
+                                                                    'obj.nested.fields',
+                                                                query: {
+                                                                    bool: {
+                                                                        must: {
+                                                                            nested: {
+                                                                                path:
+                                                                                    'obj.nested.fields.should',
+                                                                                query: {
+                                                                                    bool: {
+                                                                                        must: {
+                                                                                            term: {
+                                                                                                'obj.nested.fields.should.work':
+                                                                                                    '!',
+                                                                                            },
+                                                                                        },
+                                                                                    },
+                                                                                },
+                                                                            },
+                                                                        },
+                                                                    },
+                                                                },
+                                                            },
+                                                        },
+                                                    },
+                                                },
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+                sort: [
+                    {
+                        'obj.nested': {
+                            order: 'asc',
+                            nested_path: 'obj',
+                        },
+                    },
+                ],
             },
         });
     });
