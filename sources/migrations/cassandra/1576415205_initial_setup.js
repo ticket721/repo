@@ -181,7 +181,7 @@ var migration1576415205 = {
         };
 
         const date_table_creation = {
-            query: 'DROP TYPE ticket721.date;',
+            query: 'DROP TABLE ticket721.date;',
             params: []
         };
 

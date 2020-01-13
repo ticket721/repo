@@ -4,9 +4,9 @@ import { LocalRegisterResponseDto } from '@app/server/authentication/dto/LocalRe
 import { INestApplication } from '@nestjs/common';
 import { EmailValidationResponseDto } from '@app/server/authentication/dto/EmailValidationResponse.dto';
 import { StatusCodes, StatusNames } from '@app/server/utils/codes';
-import { ActionsSearchResponseDto } from '@app/server/controllers/actionsets/dto/ActionsSearchResponse.dto';
+import { DatesSearchResponseDto } from '@app/server/controllers/dates/dto/DatesSearchResponse.dto';
 
-export async function fetchActions(
+export async function fetchDates(
     getCtx: () => { app: INestApplication; sdk: T721SDK },
 ): Promise<void> {
     jest.setTimeout(60000);
@@ -49,9 +49,9 @@ export async function fetchActions(
     expect(validation_req.data.user.valid).toEqual(true);
 
     await expect(
-        sdk.actions.search('', {
-            current_status: {
-                $eq: 'complete',
+        sdk.dates.search('', {
+            location_label: {
+                $eq: '3 rue des boulevards',
             },
         }),
     ).rejects.toMatchObject({
@@ -64,16 +64,16 @@ export async function fetchActions(
         },
     });
 
-    const fetchedActions: AxiosResponse<ActionsSearchResponseDto> = await sdk.actions.search(
+    const fetchedActions: AxiosResponse<DatesSearchResponseDto> = await sdk.dates.search(
         resp.data.token,
         {
-            current_status: {
-                $eq: 'complete',
+            location_label: {
+                $eq: '3 rue des boulevards',
             },
         },
     );
 
     expect(fetchedActions.data).toEqual({
-        actionsets: [],
+        dates: [],
     });
 }

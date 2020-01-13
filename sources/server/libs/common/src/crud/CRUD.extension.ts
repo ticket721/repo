@@ -10,6 +10,7 @@ import {
     uuid,
 } from '@iaminfinity/express-cassandra';
 import { ESSearchReturn } from '@lib/common/utils/ESSearchReturn';
+import { defined } from '@lib/common/utils/defined';
 
 /**
  * Response format of all methods
@@ -157,6 +158,10 @@ export class CRUDExtension<RepositoryType extends Repository, EntityType> {
      * @param entity
      */
     private adaptResponseTypeFilter(entity: any): any {
+        if (!defined(entity)) {
+            return entity;
+        }
+
         switch (typeof entity) {
             case 'object': {
                 if (Array.isArray(entity)) {
@@ -164,7 +169,7 @@ export class CRUDExtension<RepositoryType extends Repository, EntityType> {
                         this.adaptResponseTypeFilter(elem),
                     );
                 } else {
-                    if (this.isUuid(entity)) {
+                    if (entity && this.isUuid(entity)) {
                         return entity.toString();
                     } else {
                         for (const key of Object.keys(entity)) {

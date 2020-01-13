@@ -3,6 +3,7 @@ import { SearchableField } from '@lib/common/utils/SearchableField.type';
 import { ServiceResponse } from '@app/server/utils/ServiceResponse';
 import { SortablePagedSearch } from '@lib/common/utils/SortablePagedSearch';
 import { Sort } from '@lib/common/utils/Sort';
+import { defined } from '@lib/common/utils/defined';
 
 /**
  * Digs an object based on provided arguments
@@ -300,15 +301,6 @@ function SearchableFieldGreaterThanEqualStatement<T>(
     });
 
     return body;
-}
-
-/**
- * Utility to prevent 0 values from being considered undefined
- *
- * @param val
- */
-function defined(val: any): boolean {
-    return val !== null && val !== undefined;
 }
 
 /**
