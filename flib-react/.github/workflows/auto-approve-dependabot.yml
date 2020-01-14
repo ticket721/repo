@@ -6,10 +6,17 @@ jobs:
         runs-on: ubuntu-latest
 
         steps:
+            -
+            - name: Approve PR if coming from dependabot
+              uses: hmarr/auto-approve-action@v2.0.0
+              if: github.actor == 'dependabot[bot]' || github.actor == 'dependabot-preview[bot]'
+              with:
+                  github-token: "${{ secrets.APPROVE_TOKEN }}"
+
             - name: Comment "@dependabot squash and merge"
               uses: unsplash/comment-on-pr@master
               if: github.actor == 'dependabot[bot]' || github.actor == 'dependabot-preview[bot]'
               env:
-                  GITHUB_TOKEN: ${{ secrets.COMMENT_TOKEN }}
+                  GITHUB_TOKEN: ${{ secrets.APPROVE_TOKEN }}
               with:
                   msg: "@dependabot squash and merge"
