@@ -10,6 +10,6 @@ jobs:
               uses: unsplash/comment-on-pr@master
               if: github.actor == 'dependabot[bot]' || github.actor == 'dependabot-preview[bot]'
               env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  GITHUB_TOKEN: ${{ secrets.COMMENT_TOKEN }}
               with:
                   msg: "@dependabot squash and merge"
