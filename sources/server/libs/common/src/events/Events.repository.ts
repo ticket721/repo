@@ -1,5 +1,5 @@
 import { EntityRepository, Repository } from '@iaminfinity/express-cassandra';
-import { EventEntity }                  from '@lib/common/events/entities/Event.entity';
+import { EventEntity } from '@lib/common/events/entities/Event.entity';
 
 /**
  * Repository of the DateEntity

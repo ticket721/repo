@@ -1,4 +1,4 @@
-import { ApiProperty }                           from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsIn, IsOptional, IsString } from 'class-validator';
 
 /**

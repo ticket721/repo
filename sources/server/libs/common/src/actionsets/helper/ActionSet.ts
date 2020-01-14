@@ -1,10 +1,14 @@
-import { ActionEntity, ActionSetEntity, ActionSetStatus, ActionStatus } from '@lib/common/actionsets/entities/ActionSet.entity';
-import { Action }                                                       from '@lib/common/actionsets/helper/Action';
-import { UserDto }                                        from '@lib/common/users/dto/User.dto';
-import { uuidEq }                                         from '@ticket721sources/global';
+import {
+    ActionEntity,
+    ActionSetEntity,
+    ActionSetStatus,
+    ActionStatus,
+} from '@lib/common/actionsets/entities/ActionSet.entity';
+import { Action } from '@lib/common/actionsets/helper/Action';
+import { UserDto } from '@lib/common/users/dto/User.dto';
+import { uuidEq } from '@ticket721sources/global';
 
 export class ActionSet {
-
     public entity: Partial<ActionSetEntity> = {};
 
     load(entity: Partial<ActionSetEntity>): ActionSet {
@@ -23,15 +27,18 @@ export class ActionSet {
     }
 
     get actions(): Action[] {
-        return this.entity.actions.map((a: ActionEntity): Action => (new Action()).load(a));
+        return this.entity.actions.map(
+            (a: ActionEntity): Action => new Action().load(a),
+        );
     }
 
     get action(): Action {
-        return (new Action()).load(this.entity.actions[this.entity.current_action]);
+        return new Action().load(
+            this.entity.actions[this.entity.current_action],
+        );
     }
 
     setActions(actions: Action[]): ActionSet {
-
         this.entity.actions = actions.map((a: Action): ActionEntity => a.raw);
 
         this.entity.current_action = 0;
@@ -79,7 +86,7 @@ export class ActionSet {
     }
 
     withoutQuery(): Partial<ActionSetEntity> {
-        const {id, ...filtered}: any = this.entity;
+        const { id, ...filtered }: any = this.entity;
 
         return filtered;
     }
@@ -92,17 +99,15 @@ export class ActionSet {
         this.entity.actions[this.entity.current_action].status = 'complete';
 
         if (this.entity.current_action === this.entity.actions.length - 1) {
-
             this.setStatus('complete');
-
         } else {
             this.entity.current_action += 1;
-            this.entity.actions[this.entity.current_action].status = 'in progress';
+            this.entity.actions[this.entity.current_action].status =
+                'in progress';
 
             this.setStatus('in progress');
         }
 
         return this;
     }
-
 }

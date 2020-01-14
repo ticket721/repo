@@ -1,12 +1,12 @@
-import { Module }                        from '@nestjs/common';
-import { ExpressCassandraModule }        from '@iaminfinity/express-cassandra';
-import { ActionSetEntity }               from '@lib/common/actionsets/entities/ActionSet.entity';
-import { ActionSetsService }             from '@lib/common/actionsets/ActionSets.service';
-import { ActionSetsRepository }          from '@lib/common/actionsets/ActionSets.repository';
+import { Module } from '@nestjs/common';
+import { ExpressCassandraModule } from '@iaminfinity/express-cassandra';
+import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
+import { ActionSetsService } from '@lib/common/actionsets/ActionSets.service';
+import { ActionSetsRepository } from '@lib/common/actionsets/ActionSets.repository';
 import { BullModule, BullModuleOptions } from '@nestjs/bull';
-import { ConfigModule }                  from '@lib/common/config/Config.module';
-import { Config }                        from '@app/server/utils/Config.joi';
-import { ConfigService }                 from '@lib/common/config/Config.service';
+import { ConfigModule } from '@lib/common/config/Config.module';
+import { Config } from '@app/server/utils/Config.joi';
+import { ConfigService } from '@lib/common/config/Config.service';
 
 @Module({
     imports: [
@@ -26,7 +26,6 @@ import { ConfigService }                 from '@lib/common/config/Config.service
                 },
             }),
         }),
-
     ],
     providers: [ActionSetsService],
     exports: [ActionSetsService],

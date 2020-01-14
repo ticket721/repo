@@ -1,25 +1,32 @@
-import { Body, Controller, HttpCode, HttpException, Post, UseGuards } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    HttpCode,
+    HttpException,
+    Post,
+    UseGuards,
+} from '@nestjs/common';
 import {
     Roles,
     RolesGuard,
-}                                                                     from '@app/server/authentication/guards/RolesGuard.guard';
+} from '@app/server/authentication/guards/RolesGuard.guard';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { AuthGuard }                from '@nestjs/passport';
-import { User }                     from '@app/server/authentication/decorators/User.decorator';
-import { UserDto }                  from '@lib/common/users/dto/User.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { User } from '@app/server/authentication/decorators/User.decorator';
+import { UserDto } from '@lib/common/users/dto/User.dto';
 import { StatusCodes, StatusNames } from '@app/server/utils/codes';
-import { search }                  from '@lib/common/utils/ControllerBasics';
-import { ActionSetsService }       from '@lib/common/actionsets/ActionSets.service';
-import { EventsCreateInputDto }    from '@app/server/controllers/events/dto/EventsCreateInput.dto';
+import { search } from '@lib/common/utils/ControllerBasics';
+import { ActionSetsService } from '@lib/common/actionsets/ActionSets.service';
+import { EventsCreateInputDto } from '@app/server/controllers/events/dto/EventsCreateInput.dto';
 import { EventsCreateResponseDto } from '@app/server/controllers/events/dto/EventsCreateResponse.dto';
-import { CRUDResponse }            from '@lib/common/crud/CRUD.extension';
-import { ActionSetEntity }         from '@lib/common/actionsets/entities/ActionSet.entity';
-import { EventsService }           from '@lib/common/events/Events.service';
-import { EventsSearchInputDto }    from '@app/server/controllers/events/dto/EventsSearchInput.dto';
+import { CRUDResponse } from '@lib/common/crud/CRUD.extension';
+import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
+import { EventsService } from '@lib/common/events/Events.service';
+import { EventsSearchInputDto } from '@app/server/controllers/events/dto/EventsSearchInput.dto';
 import { EventsSearchResponseDto } from '@app/server/controllers/events/dto/EventsSearchResponse.dto';
-import { EventEntity }             from '@lib/common/events/entities/Event.entity';
-import { ActionSet }               from '@lib/common/actionsets/helper/ActionSet';
-import { Action }                  from '@lib/common/actionsets/helper/Action';
+import { EventEntity } from '@lib/common/events/entities/Event.entity';
+import { ActionSet } from '@lib/common/actionsets/helper/ActionSet';
+import { Action } from '@lib/common/actionsets/helper/Action';
 
 /**
  * Generic Dates controller. Recover Dates linked to all types of events
@@ -93,24 +100,24 @@ export class EventsController {
         @Body() body: EventsCreateInputDto,
         @User() user: UserDto,
     ): Promise<EventsCreateResponseDto> {
-
         const actions: Action[] = [
-            (new Action())
+            new Action()
                 .setName('eventTextMetadata')
                 .setData<EventsCreateInputDto>(body)
                 .setType('input')
                 .setStatus('in progress'),
         ];
-        const actionSet: ActionSet = (new ActionSet())
+        const actionSet: ActionSet = new ActionSet()
             .setName('eventCreation')
             .setActions(actions)
             .setOwner(user)
             .setStatus('in progress');
 
-        const response: CRUDResponse<ActionSetEntity> = await this.actionSetsService.create(actionSet.raw);
+        const response: CRUDResponse<ActionSetEntity> = await this.actionSetsService.create(
+            actionSet.raw,
+        );
 
         if (response.error) {
-
             throw new HttpException(
                 {
                     status: StatusCodes.BadRequest,
@@ -118,13 +125,10 @@ export class EventsController {
                 },
                 StatusCodes.BadRequest,
             );
-
         }
 
         return {
             actionset: response.response,
         };
-
     }
-
 }

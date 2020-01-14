@@ -95,7 +95,7 @@ export class DateEntity {
     @Column({
         type: 'text',
     })
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     location_label: string;
 
     /**
@@ -113,7 +113,7 @@ export class DateEntity {
     @Column({
         type: 'int',
     })
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     assigned_city: number;
 
     /**
@@ -140,7 +140,7 @@ export class DateEntity {
     @Column({
         type: 'uuid',
     })
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     parent_id: string;
 
     /**
@@ -149,20 +149,20 @@ export class DateEntity {
     @Column({
         type: 'text',
     })
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     parent_type: string;
 
     /**
      * Creation timestamp
      */
     @CreateDateColumn()
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     created_at: Date;
 
     /**
      * Update timestamp
      */
     @UpdateDateColumn()
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     updated_at: Date;
 }

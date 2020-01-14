@@ -1,7 +1,10 @@
-import { ActionEntity, ActionStatus, ActionType } from '@lib/common/actionsets/entities/ActionSet.entity';
+import {
+    ActionEntity,
+    ActionStatus,
+    ActionType,
+} from '@lib/common/actionsets/entities/ActionSet.entity';
 
 export class Action {
-
     public entity: Partial<ActionEntity> = {
         error: null,
     };
@@ -65,5 +68,4 @@ export class Action {
 
         return this;
     }
-
 }

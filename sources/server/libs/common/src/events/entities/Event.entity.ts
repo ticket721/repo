@@ -4,8 +4,8 @@ import {
     Entity,
     GeneratedUUidColumn,
     UpdateDateColumn,
-}                      from '@iaminfinity/express-cassandra';
-import { Category }    from '@lib/common/dates/entities/Date.entity';
+} from '@iaminfinity/express-cassandra';
+import { Category } from '@lib/common/dates/entities/Date.entity';
 
 /**
  * A Date is linked to a location and a point in time, and has linked ticket categories
@@ -79,13 +79,13 @@ export class EventEntity {
      * Creation timestamp
      */
     @CreateDateColumn()
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     created_at: Date;
 
     /**
      * Update timestamp
      */
     @UpdateDateColumn()
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     updated_at: Date;
 }

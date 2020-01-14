@@ -1,6 +1,6 @@
 import { SortablePagedSearch } from '@lib/common/utils/SortablePagedSearch';
 import { SearchableField } from '@lib/common/utils/SearchableField.type';
-import { ApiPropertyOptional }  from '@nestjs/swagger';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsObject, IsOptional } from 'class-validator';
 
 export class EventsSearchInputDto extends SortablePagedSearch {
@@ -16,6 +16,5 @@ export class EventsSearchInputDto extends SortablePagedSearch {
     })
     @IsOptional()
     @IsObject()
-    name?: SearchableField<string> ;
-
+    name?: SearchableField<string>;
 }

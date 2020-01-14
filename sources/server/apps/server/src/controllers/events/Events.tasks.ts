@@ -12,7 +12,6 @@ import { ConfigService } from '@lib/common/config/Config.service';
 @Injectable()
 @Processor('mailing')
 export class AuthenticationTasks {
-
     constructor(
         private readonly emailService: EmailService,
         private readonly jwtService: JwtService,

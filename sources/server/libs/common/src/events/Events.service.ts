@@ -1,16 +1,19 @@
-import { CRUDExtension }    from '@lib/common/crud/CRUD.extension';
+import { CRUDExtension } from '@lib/common/crud/CRUD.extension';
 import {
     BaseModel,
     InjectModel,
     InjectRepository,
-}                           from '@iaminfinity/express-cassandra';
+} from '@iaminfinity/express-cassandra';
 import { EventsRepository } from '@lib/common/events/Events.repository';
-import { EventEntity }      from '@lib/common/events/entities/Event.entity';
+import { EventEntity } from '@lib/common/events/entities/Event.entity';
 
 /**
  * Service to CRUD EventEntities
  */
-export class EventsService extends CRUDExtension<EventsRepository, EventEntity> {
+export class EventsService extends CRUDExtension<
+    EventsRepository,
+    EventEntity
+> {
     /**
      * Dependency injection
      *
