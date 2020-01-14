@@ -74,6 +74,7 @@ var migration1576415205 = {
                         group_id text,
                         category_name text,
                         category_index int,
+                        scope text,
                         prices list<frozen<ticket721.price>>
                     );`,
             params: []
@@ -95,6 +96,23 @@ var migration1576415205 = {
                         assigned_city int,
                         categories list<frozen<ticket721.category>>,
                         metadata frozen<ticket721.date_metadata>,
+                        parent_id uuid,
+                        parent_type text,
+                        created_at timestamp,
+                        updated_at timestamp
+                    );`,
+            params: []
+        };
+
+        const event_table_creation = {
+            query: `CREATE TABLE ticket721.event (
+                        id UUID PRIMARY KEY,
+                        dates list<uuid>,
+                        name text,
+                        description text,
+                        avatar text,
+                        banners list<text>,
+                        categories list<frozen<ticket721.category>>,
                         created_at timestamp,
                         updated_at timestamp
                     );`,
@@ -131,6 +149,9 @@ var migration1576415205 = {
 
             console.log('Date Table Creation');
             await db.execute(date_table_creation.query, date_table_creation.params, { prepare: true });
+
+            console.log('Event Table Creation');
+            await db.execute(event_table_creation.query, event_table_creation.params, { prepare: true });
 
         } catch (e) {
             return handler(e, false);
@@ -185,6 +206,11 @@ var migration1576415205 = {
             params: []
         };
 
+        const event_table_creation = {
+            query: 'DROP TABLE ticket721.event;',
+            params: []
+        };
+
         try {
 
             // Tables first
@@ -199,6 +225,9 @@ var migration1576415205 = {
 
             console.log('Date Table Deletion');
             await db.execute(date_table_creation.query, date_table_creation.params, { prepare: true });
+
+            console.log('Event Table Deletion');
+            await db.execute(event_table_creation.query, event_table_creation.params, { prepare: true });
 
             // Then Types
             console.log('Action Type Deletion');

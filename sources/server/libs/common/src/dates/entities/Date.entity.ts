@@ -47,6 +47,11 @@ export interface Category {
     category_index: number;
 
     /**
+     * Ticket scope
+     */
+    scope: string;
+
+    /**
      * Prices of the category
      */
     prices: Price[];
@@ -90,7 +95,7 @@ export class DateEntity {
     @Column({
         type: 'text',
     })
-    // tslint:disable-next-line:variable-name
+        // tslint:disable-next-line:variable-name
     location_label: string;
 
     /**
@@ -108,7 +113,7 @@ export class DateEntity {
     @Column({
         type: 'int',
     })
-    // tslint:disable-next-line:variable-name
+        // tslint:disable-next-line:variable-name
     assigned_city: number;
 
     /**
@@ -130,16 +135,34 @@ export class DateEntity {
     metadata: DateMetadata;
 
     /**
+     * Id of parent entity
+     */
+    @Column({
+        type: 'uuid',
+    })
+        // tslint:disable-next-line:variable-name
+    parent_id: string;
+
+    /**
+     * Type of parent entity
+     */
+    @Column({
+        type: 'text',
+    })
+        // tslint:disable-next-line:variable-name
+    parent_type: string;
+
+    /**
      * Creation timestamp
      */
     @CreateDateColumn()
-    // tslint:disable-next-line:variable-name
+        // tslint:disable-next-line:variable-name
     created_at: Date;
 
     /**
      * Update timestamp
      */
     @UpdateDateColumn()
-    // tslint:disable-next-line:variable-name
+        // tslint:disable-next-line:variable-name
     updated_at: Date;
 }

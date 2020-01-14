@@ -18,17 +18,19 @@ import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
 import Web3 from 'web3';
 import { ConfigService } from '@lib/common/config/Config.service';
 import { Web3Module } from '@lib/common/web3/Web3.module';
-import { Web3ServiceOptions } from '@lib/common/web3/Web3.service';
-import { ContractsModule } from '@lib/common/contracts/Contracts.module';
+import { Web3ServiceOptions }      from '@lib/common/web3/Web3.service';
+import { ContractsModule }         from '@lib/common/contracts/Contracts.module';
 import { ContractsServiceOptions } from '@lib/common/contracts/Contracts.service';
-import { ShutdownModule } from '@lib/common/shutdown/Shutdown.module';
-import { EmailModule } from '@app/server/email/Email.module';
-import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
-import { ActionSetsModule } from '@lib/common/actionsets/ActionSets.module';
-import { ActionSetsRepository } from '@lib/common/actionsets/ActionSets.repository';
-import { ActionSetsController } from '@app/server/controllers/actionsets/ActionSets.controller';
-import { DatesModule } from '@lib/common/dates/Dates.module';
-import { DatesController } from '@app/server/controllers/dates/Dates.controller';
+import { ShutdownModule }          from '@lib/common/shutdown/Shutdown.module';
+import { EmailModule }             from '@app/server/email/Email.module';
+import { ActionSetEntity }         from '@lib/common/actionsets/entities/ActionSet.entity';
+import { ActionSetsModule }        from '@lib/common/actionsets/ActionSets.module';
+import { ActionSetsRepository }    from '@lib/common/actionsets/ActionSets.repository';
+import { ActionSetsController }    from '@app/server/controllers/actionsets/ActionSets.controller';
+import { DatesModule }             from '@lib/common/dates/Dates.module';
+import { DatesController }         from '@app/server/controllers/dates/Dates.controller';
+import { EventsModule }            from '@lib/common/events/Events.module';
+import { EventsController }        from '@app/server/controllers/events/Events.controller';
 
 @Module({
     imports: [
@@ -59,6 +61,7 @@ import { DatesController } from '@app/server/controllers/dates/Dates.controller'
         Web3TokensModule,
         ActionSetsModule,
         DatesModule,
+        EventsModule,
 
         // User Management Modules
         AuthenticationModule,
@@ -90,7 +93,12 @@ import { DatesController } from '@app/server/controllers/dates/Dates.controller'
             inject: [ConfigService],
         }),
     ],
-    controllers: [ServerController, ActionSetsController, DatesController],
+    controllers: [
+        ServerController,
+        ActionSetsController,
+        DatesController,
+        EventsController,
+    ],
     providers: [
         ServerService,
         {

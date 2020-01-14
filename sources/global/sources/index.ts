@@ -7,3 +7,4 @@ export { Wallet }                                                            fro
 export { Web3LoginSigner }                                                   from './signers/Web3Login';
 export { Web3RegisterSigner }                                                from './signers/Web3Register';
 export { Coordinates, closestCity, City }                                    from './geoloc';
+export { uuidEq }                                                            from './utils';

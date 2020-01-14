@@ -1,5 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsIn, IsString } from 'class-validator';
+import { ApiProperty }                           from '@nestjs/swagger';
+import { IsBoolean, IsIn, IsOptional, IsString } from 'class-validator';
 
 /**
  * Field and order to sort with
@@ -36,5 +36,6 @@ export class Sort {
         description: 'True if ordering on nested field',
     })
     @IsBoolean()
+    @IsOptional()
     $nested?: boolean;
 }

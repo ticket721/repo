@@ -303,7 +303,7 @@ export class CRUDExtension<RepositoryType extends Repository, EntityType> {
                 .toPromise();
 
             return {
-                response: results,
+                response: this.adaptResponseTypeFilter(results),
                 error: null,
             };
         } catch (e) {
