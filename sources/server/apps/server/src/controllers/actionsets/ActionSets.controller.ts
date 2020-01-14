@@ -74,6 +74,18 @@ export class ActionSetsController {
     }
 
     @Put('/')
+    @ApiResponse({
+        status: StatusCodes.InternalServerError,
+        description: StatusNames[StatusCodes.InternalServerError],
+    })
+    @ApiResponse({
+        status: StatusCodes.NotFound,
+        description: StatusNames[StatusCodes.NotFound],
+    })
+    @ApiResponse({
+        status: StatusCodes.OK,
+        description: StatusNames[StatusCodes.OK],
+    })
     @HttpCode(200)
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @Roles('authenticated')
