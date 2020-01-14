@@ -6,7 +6,6 @@ jobs:
         runs-on: ubuntu-latest
 
         steps:
-            -
             - name: Approve PR if coming from dependabot
               uses: hmarr/auto-approve-action@v2.0.0
               if: github.actor == 'dependabot[bot]' || github.actor == 'dependabot-preview[bot]'
