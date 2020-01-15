@@ -1,11 +1,12 @@
-import { ServiceResponse } from '@app/server/utils/ServiceResponse';
 import { EsSearchOptionsStatic } from '@iaminfinity/express-cassandra';
 import { ESSearchBodyBuilder } from '@lib/common/utils/ESSearchBodyBuilder';
 import { SortablePagedSearch } from '@lib/common/utils/SortablePagedSearch';
 import { HttpException } from '@nestjs/common';
-import { StatusCodes } from '@app/server/utils/codes';
-import { fromES } from '@app/server/utils/fromES';
 import { CRUDExtension } from '@lib/common/crud/CRUD.extension';
+import { keccak256 } from '@ticket721sources/global';
+import { ServiceResponse } from '@lib/common/utils/ServiceResponse';
+import { StatusCodes } from '@lib/common/utils/codes';
+import { fromES } from '@lib/common/utils/fromES';
 
 /**
  * Generic search query, able to throw HttpExceptions
@@ -62,4 +63,34 @@ export async function search<
     }
 
     return [];
+}
+
+/**
+ * Generic hash query, able to throw HttpExceptions
+ *
+ * @param service
+ * @param query
+ * @param hashed
+ */
+export async function hash<
+    DataType,
+    ServiceType extends CRUDExtension<any, any>
+>(
+    service: ServiceType,
+    query: SortablePagedSearch,
+    hashed: string[],
+): Promise<[number, string]> {
+    const sortedFieldNames = hashed.sort();
+
+    const res = await search<DataType, ServiceType>(service, query);
+
+    let data = '';
+
+    for (const field of sortedFieldNames) {
+        for (const entity of res) {
+            data = `${data}:${entity[field]}`;
+        }
+    }
+
+    return [res.length, keccak256(data)];
 }

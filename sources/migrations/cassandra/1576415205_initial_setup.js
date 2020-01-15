@@ -47,7 +47,8 @@ var migration1576415205 = {
                     name text,
                     actions list<frozen<ticket721.action>>,
                     created_at timestamp,
-                    updated_at timestamp
+                    updated_at timestamp,
+                    dispatched_at timestamp,
                     );`,
             params: []
         };

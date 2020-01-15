@@ -14,7 +14,6 @@ import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { User } from '@app/server/authentication/decorators/User.decorator';
 import { UserDto } from '@lib/common/users/dto/User.dto';
-import { StatusCodes, StatusNames } from '@app/server/utils/codes';
 import { search } from '@lib/common/utils/ControllerBasics';
 import { ActionSetsService } from '@lib/common/actionsets/ActionSets.service';
 import { EventsCreateInputDto } from '@app/server/controllers/events/dto/EventsCreateInput.dto';
@@ -27,6 +26,7 @@ import { EventsSearchResponseDto } from '@app/server/controllers/events/dto/Even
 import { EventEntity } from '@lib/common/events/entities/Event.entity';
 import { ActionSet } from '@lib/common/actionsets/helper/ActionSet';
 import { Action } from '@lib/common/actionsets/helper/Action';
+import { StatusCodes, StatusNames } from '@lib/common/utils/codes';
 
 /**
  * Generic Dates controller. Recover Dates linked to all types of events
@@ -106,12 +106,32 @@ export class EventsController {
                 .setData<EventsCreateInputDto>(body)
                 .setType('input')
                 .setStatus('in progress'),
+            new Action()
+                .setName('eventModulesConfiguration')
+                .setType('input')
+                .setStatus('in progress'),
+            new Action()
+                .setName('eventDatesConfiguration')
+                .setType('input')
+                .setStatus('in progress'),
+            new Action()
+                .setName('eventCategoriesConfiguration')
+                .setType('input')
+                .setStatus('in progress'),
+            new Action()
+                .setName('eventImagesMetadata')
+                .setType('input')
+                .setStatus('in progress'),
+            new Action()
+                .setName('eventAdminsConfiguration')
+                .setType('input')
+                .setStatus('in progress'),
         ];
         const actionSet: ActionSet = new ActionSet()
             .setName('eventCreation')
             .setActions(actions)
             .setOwner(user)
-            .setStatus('in progress');
+            .setStatus('input:in progress');
 
         const response: CRUDResponse<ActionSetEntity> = await this.actionSetsService.create(
             actionSet.raw,

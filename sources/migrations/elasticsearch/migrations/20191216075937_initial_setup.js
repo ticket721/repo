@@ -44,48 +44,33 @@ class M20191216075937_initial_setup extends ElasticMigration {
                 }
             }
         );
-        
+
         await this.createIndex('ticket721_actionset', 'ticket721');
         await this.putMapping('ticket721_actionset', 'actionset', {
             "actionset": {
                 "discover": ".*"
             }
         });
-        await this.putSettings('ticket721_actionset',
-            {
-                index: {
-                    synchronous_refresh: true
-                }
-            }
-        );
-        
+
         await this.createIndex('ticket721_date', 'ticket721');
         await this.putMapping('ticket721_date', 'date', {
             "date": {
-                "discover": ".*"
-            }
-        });
-        await this.putSettings('ticket721_date',
-            {
-                index: {
-                    synchronous_refresh: true
+                "discover": "^((?!location).*)",
+                "properties": {
+                    "location": {
+                        "type": "geo_point",
+                        "cql_collection": "singleton"
+                    }
                 }
             }
-        );
-        
+        });
+
         await this.createIndex('ticket721_event', 'ticket721');
         await this.putMapping('ticket721_event', 'event', {
             "event": {
                 "discover": ".*"
             }
         });
-        await this.putSettings('ticket721_event',
-            {
-                index: {
-                    synchronous_refresh: true
-                }
-            }
-        );
     }
 
     async down() {

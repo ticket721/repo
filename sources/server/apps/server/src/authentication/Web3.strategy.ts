@@ -3,10 +3,10 @@ import { PassportStrategy } from '@nestjs/passport';
 import { HttpException, Injectable } from '@nestjs/common';
 import { AuthenticationService } from './Authentication.service';
 import { PasswordlessUserDto } from './dto/PasswordlessUser.dto';
-import { ServiceResponse } from '../utils/ServiceResponse';
-import { StatusCodes } from '../utils/codes';
 import { Web3TokenDto } from '@app/server/web3token/dto/Web3Token.dto';
 import { Web3TokensService } from '@app/server/web3token/Web3Tokens.service';
+import { ServiceResponse } from '@lib/common/utils/ServiceResponse';
+import { StatusCodes } from '@lib/common/utils/codes';
 
 /**
  * Web3 Strategy to verify that signatures are valid

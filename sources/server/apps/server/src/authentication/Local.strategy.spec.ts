@@ -10,7 +10,7 @@ import {
     Wallet,
 } from '@ticket721sources/global';
 import { LocalStrategy } from './Local.strategy';
-import { StatusCodes } from '../utils/codes';
+import { StatusCodes } from '@lib/common/utils/codes';
 
 const context: {
     localStrategy: LocalStrategy;

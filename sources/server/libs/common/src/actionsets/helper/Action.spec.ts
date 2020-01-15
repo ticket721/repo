@@ -12,6 +12,13 @@ describe('Action Helper', function() {
         };
 
         const action: Action = new Action();
+        expect(action.raw).toEqual({
+            type: null,
+            name: null,
+            data: null,
+            error: null,
+            status: null,
+        });
         action.load(actionEntity);
 
         expect(action.raw).toEqual(actionEntity);

@@ -2,7 +2,7 @@ import { SearchableField } from '@lib/common/utils/SearchableField.type';
 import { SortablePagedSearch } from '@lib/common/utils/SortablePagedSearch';
 import { EsSearchOptionsStatic } from '@iaminfinity/express-cassandra';
 import { ESSearchBodyBuilder } from '@lib/common/utils/ESSearchBodyBuilder';
-import { ServiceResponse } from '@app/server/utils/ServiceResponse';
+import { ServiceResponse } from '@lib/common/utils/ServiceResponse';
 
 class ExampleInputDto extends SortablePagedSearch {
     name?: SearchableField<string>;

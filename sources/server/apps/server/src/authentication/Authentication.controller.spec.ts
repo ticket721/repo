@@ -13,12 +13,12 @@ import {
 } from '@ticket721sources/global';
 import { LocalRegisterInputDto } from './dto/LocalRegisterInput.dto';
 import { JwtModule, JwtService } from '@nestjs/jwt';
-import { StatusCodes } from '../utils/codes';
 import { ConfigService } from '@lib/common/config/Config.service';
 import { Web3RegisterInputDto } from '@app/server/authentication/dto/Web3RegisterInput.dto';
 import { getQueueToken } from '@nestjs/bull';
 import { Job, JobOptions, Queue } from 'bull';
 import { PasswordlessUserDto } from '@app/server/authentication/dto/PasswordlessUser.dto';
+import { StatusCodes } from '@lib/common/utils/codes';
 
 class QueueMock<T = any> {
     add(name: string, data: T, opts?: JobOptions): Promise<Job<T>> {

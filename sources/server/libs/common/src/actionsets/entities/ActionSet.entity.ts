@@ -7,7 +7,13 @@ import {
 } from '@iaminfinity/express-cassandra';
 
 export type ActionStatus = 'waiting' | 'in progress' | 'complete' | 'error';
-export type ActionSetStatus = ActionStatus;
+export type ActionSetStatus =
+    | 'input:waiting'
+    | 'input:in progress'
+    | 'event:waiting'
+    | 'event:in progress'
+    | 'complete'
+    | 'error';
 export type ActionType = 'input' | 'event';
 
 /**
@@ -113,4 +119,13 @@ export class ActionSetEntity {
     @UpdateDateColumn()
     // tslint:disable-next-line:variable-name
     updated_at: Date;
+
+    /**
+     * Dispatch timestamp
+     */
+    @Column({
+        type: 'timestamp',
+    })
+    // tslint:disable-next-line:variable-name
+    dispatched_at: Date;
 }

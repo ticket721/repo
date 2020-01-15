@@ -1,18 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { deepEqual, instance, mock, when } from 'ts-mockito';
-import { Job, JobOptions } from 'bull';
 import { uuid } from '@iaminfinity/express-cassandra';
 import { UserDto } from '@lib/common/users/dto/User.dto';
 import { ESSearchReturn } from '@lib/common/utils/ESSearchReturn';
 import { DatesController } from '@app/server/controllers/dates/Dates.controller';
 import { DatesService } from '@lib/common/dates/Dates.service';
 import { DateEntity } from '@lib/common/dates/entities/Date.entity';
-
-class QueueMock<T = any> {
-    add(name: string, data: T, opts?: JobOptions): Promise<Job<T>> {
-        return null;
-    }
-}
 
 const context: {
     datesController: DatesController;

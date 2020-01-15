@@ -334,6 +334,7 @@ export class CRUDExtension<RepositoryType extends Repository, EntityType> {
             const processedQuery: SearchQuery<EntityType> = this.adaptQueryFieldTypesFilter(
                 find,
             );
+            (processedEntity as any).updated_at = new Date(Date.now());
 
             const res = await this._repository
                 .update(processedQuery, processedEntity, options)

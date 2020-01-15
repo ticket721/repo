@@ -1,9 +1,9 @@
 import { EsSearchOptionsStatic } from '@iaminfinity/express-cassandra';
 import { SearchableField } from '@lib/common/utils/SearchableField.type';
-import { ServiceResponse } from '@app/server/utils/ServiceResponse';
 import { SortablePagedSearch } from '@lib/common/utils/SortablePagedSearch';
 import { Sort } from '@lib/common/utils/Sort';
 import { defined } from '@lib/common/utils/defined';
+import { ServiceResponse } from '@lib/common/utils/ServiceResponse';
 
 /**
  * Digs an object based on provided arguments

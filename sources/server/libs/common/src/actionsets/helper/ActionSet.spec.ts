@@ -20,7 +20,7 @@ describe('ActionSet', function() {
 
         const actionSet: ActionSet = new ActionSet()
             .setName('test')
-            .setStatus('in progress')
+            .setStatus('input:in progress')
             .setId('ccf2ef65-3632-4277-a061-dddfefac48da')
             .setOwner({
                 id: 'ccf2ef65-3632-4277-a061-dddfefac48da',
@@ -29,7 +29,7 @@ describe('ActionSet', function() {
 
         expect(actionSet.raw).toEqual({
             name: 'test',
-            current_status: 'in progress',
+            current_status: 'input:in progress',
             id: 'ccf2ef65-3632-4277-a061-dddfefac48da',
             owner: 'ccf2ef65-3632-4277-a061-dddfefac48da',
             actions: [
@@ -49,13 +49,14 @@ describe('ActionSet', function() {
                 },
             ],
             current_action: 0,
+            dispatched_at: actionSet.raw.dispatched_at,
         });
 
         const otherActionSet: ActionSet = new ActionSet().load(actionSet.raw);
 
         expect(otherActionSet.raw).toEqual({
             name: 'test',
-            current_status: 'in progress',
+            current_status: 'input:in progress',
             id: 'ccf2ef65-3632-4277-a061-dddfefac48da',
             owner: 'ccf2ef65-3632-4277-a061-dddfefac48da',
             actions: [
@@ -75,6 +76,7 @@ describe('ActionSet', function() {
                 },
             ],
             current_action: 0,
+            dispatched_at: actionSet.raw.dispatched_at,
         });
     });
 
@@ -95,16 +97,45 @@ describe('ActionSet', function() {
 
         const actionSet: ActionSet = new ActionSet()
             .setName('test')
-            .setStatus('in progress')
+            .setStatus('input:in progress')
             .setId('ccf2ef65-3632-4277-a061-dddfefac48da')
             .setOwner({
                 id: 'ccf2ef65-3632-4277-a061-dddfefac48da',
             } as UserDto)
             .setActions(actions);
 
-        expect(actionSet.status).toEqual('in progress');
-        actionSet.setStatus('waiting');
-        expect(actionSet.status).toEqual('waiting');
+        expect(actionSet.status).toEqual('input:in progress');
+        actionSet.setStatus('input:waiting');
+        expect(actionSet.status).toEqual('input:waiting');
+    });
+
+    it('should get and set current_action field', function() {
+        const actions: Action[] = [
+            new Action()
+                .setType('input')
+                .setName('first')
+                .setData({ name: 'hello' })
+                .setStatus('in progress'),
+
+            new Action()
+                .setType('event')
+                .setName('second')
+                .setData({ name: 'hello' })
+                .setStatus('in progress'),
+        ];
+
+        const actionSet: ActionSet = new ActionSet()
+            .setName('test')
+            .setStatus('input:in progress')
+            .setId('ccf2ef65-3632-4277-a061-dddfefac48da')
+            .setOwner({
+                id: 'ccf2ef65-3632-4277-a061-dddfefac48da',
+            } as UserDto)
+            .setActions(actions);
+
+        expect(actionSet.current_action).toEqual(0);
+        actionSet.setCurrentAction(1);
+        expect(actionSet.current_action).toEqual(1);
     });
 
     it('next should complete action then actionset', function() {
@@ -124,7 +155,7 @@ describe('ActionSet', function() {
 
         const actionSet: ActionSet = new ActionSet()
             .setName('test')
-            .setStatus('in progress')
+            .setStatus('input:in progress')
             .setId('ccf2ef65-3632-4277-a061-dddfefac48da')
             .setOwner({
                 id: 'ccf2ef65-3632-4277-a061-dddfefac48da',
@@ -149,7 +180,7 @@ describe('ActionSet', function() {
             status: 'in progress',
         });
 
-        expect(actionSet.status).toEqual('in progress');
+        expect(actionSet.status).toEqual('input:in progress');
 
         actionSet.next();
 
@@ -189,7 +220,7 @@ describe('ActionSet', function() {
 
         const actionSet: ActionSet = new ActionSet()
             .setName('test')
-            .setStatus('in progress')
+            .setStatus('input:in progress')
             .setId('ccf2ef65-3632-4277-a061-dddfefac48da')
             .setOwner({
                 id: 'ccf2ef65-3632-4277-a061-dddfefac48da',
@@ -266,7 +297,7 @@ describe('ActionSet', function() {
 
         const actionSet: ActionSet = new ActionSet()
             .setName('test')
-            .setStatus('in progress')
+            .setStatus('input:in progress')
             .setId('ccf2ef65-3632-4277-a061-dddfefac48da')
             .setOwner({
                 id: 'ccf2ef65-3632-4277-a061-dddfefac48da',
@@ -302,7 +333,7 @@ describe('ActionSet', function() {
 
         const actionSet: ActionSet = new ActionSet()
             .setName('test')
-            .setStatus('in progress')
+            .setStatus('input:in progress')
             .setId('ccf2ef65-3632-4277-a061-dddfefac48da')
             .setOwner({
                 id: 'ccf2ef65-3632-4277-a061-dddfefac48da',
@@ -331,7 +362,7 @@ describe('ActionSet', function() {
 
         const actionSet: ActionSet = new ActionSet()
             .setName('test')
-            .setStatus('in progress')
+            .setStatus('input:in progress')
             .setId('ccf2ef65-3632-4277-a061-dddfefac48da')
             .setOwner({
                 id: 'ccf2ef65-3632-4277-a061-dddfefac48da',
@@ -360,7 +391,7 @@ describe('ActionSet', function() {
 
         const actionSet: ActionSet = new ActionSet()
             .setName('test')
-            .setStatus('in progress')
+            .setStatus('input:in progress')
             .setId('ccf2ef65-3632-4277-a061-dddfefac48da')
             .setOwner({
                 id: 'ccf2ef65-3632-4277-a061-dddfefac48da',
@@ -372,7 +403,7 @@ describe('ActionSet', function() {
         });
         expect(actionSet.withoutQuery()).toEqual({
             name: 'test',
-            current_status: 'in progress',
+            current_status: 'input:in progress',
             owner: 'ccf2ef65-3632-4277-a061-dddfefac48da',
             actions: [
                 {
@@ -391,6 +422,7 @@ describe('ActionSet', function() {
                 },
             ],
             current_action: 0,
+            dispatched_at: actionSet.raw.dispatched_at,
         });
     });
 });

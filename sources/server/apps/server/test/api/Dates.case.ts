@@ -3,8 +3,8 @@ import { Wallet, createWallet } from '@ticket721sources/global';
 import { LocalRegisterResponseDto } from '@app/server/authentication/dto/LocalRegisterResponse.dto';
 import { INestApplication } from '@nestjs/common';
 import { EmailValidationResponseDto } from '@app/server/authentication/dto/EmailValidationResponse.dto';
-import { StatusCodes, StatusNames } from '@app/server/utils/codes';
 import { DatesSearchResponseDto } from '@app/server/controllers/dates/dto/DatesSearchResponse.dto';
+import { StatusCodes, StatusNames } from '@lib/common/utils/codes';
 
 export async function fetchDates(
     getCtx: () => { app: INestApplication; sdk: T721SDK },

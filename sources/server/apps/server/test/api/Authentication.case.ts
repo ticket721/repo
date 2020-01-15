@@ -10,7 +10,7 @@ import { LocalRegisterResponseDto } from '@app/server/authentication/dto/LocalRe
 import { LocalLoginResponseDto } from '@app/server/authentication/dto/LocalLoginResponse.dto';
 import { INestApplication } from '@nestjs/common';
 import { EmailValidationResponseDto } from '@app/server/authentication/dto/EmailValidationResponse.dto';
-import { StatusCodes, StatusNames } from '@app/server/utils/codes';
+import { StatusCodes, StatusNames } from '@lib/common/utils/codes';
 
 export async function register(
     getCtx: () => { app: INestApplication; sdk: T721SDK },

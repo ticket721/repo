@@ -31,6 +31,7 @@ import { DatesModule } from '@lib/common/dates/Dates.module';
 import { DatesController } from '@app/server/controllers/dates/Dates.controller';
 import { EventsModule } from '@lib/common/events/Events.module';
 import { EventsController } from '@app/server/controllers/events/Events.controller';
+import EventsInputActions from '@app/server/controllers/events/actionhandlers/Events.input.handlers';
 
 @Module({
     imports: [
@@ -59,7 +60,7 @@ import { EventsController } from '@app/server/controllers/events/Events.controll
         // Cassandra Table Modules & Utils
         UsersModule,
         Web3TokensModule,
-        ActionSetsModule,
+        ActionSetsModule.registerAsync([...EventsInputActions()]),
         DatesModule,
         EventsModule,
 

@@ -1,13 +1,9 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { deepEqual, instance, mock, when } from 'ts-mockito';
-import { Job, JobOptions } from 'bull';
 import { ActionSetsService } from '@lib/common/actionsets/ActionSets.service';
-import { uuid } from '@iaminfinity/express-cassandra';
-import { UserDto } from '@lib/common/users/dto/User.dto';
 import { ESSearchReturn } from '@lib/common/utils/ESSearchReturn';
 import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
-import { StatusCodes } from '@app/server/utils/codes';
 import { search } from '@lib/common/utils/ControllerBasics';
+import { StatusCodes } from '@lib/common/utils/codes';
 
 const context: {
     actionSetsServiceMock: ActionSetsService;
@@ -56,6 +52,7 @@ describe('Controller Basics', function() {
                     name: 'test',
                     created_at: new Date(Date.now()),
                     updated_at: new Date(Date.now()),
+                    dispatched_at: new Date(Date.now()),
                 },
             ];
 

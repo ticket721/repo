@@ -22,6 +22,7 @@ import {
 class FakeEntity {
     id: string;
     name: string;
+    updated_at?: Date;
 }
 
 const context: {
@@ -543,6 +544,7 @@ describe('CRUD Extension', function() {
             const newEntityProcessed = {
                 id: uuid(searchEntity.id),
                 name: 'test',
+                updated_at: anything(),
             };
 
             when(
@@ -615,6 +617,7 @@ describe('CRUD Extension', function() {
             const newEntityProcessed = {
                 id: uuid(searchEntity.id),
                 name: 'test',
+                updated_at: anything(),
             };
 
             when(
@@ -691,6 +694,7 @@ describe('CRUD Extension', function() {
             const newEntityProcessed = {
                 id: uuid(searchEntity.id),
                 name: 'test',
+                updated_at: anything(),
             };
 
             when(

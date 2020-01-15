@@ -39,7 +39,8 @@ async function main() {
 
     if (configService.get('BULL_BOARD') === 'true') {
         const mailing = app.get<Queue>(getQueueToken('mailing'));
-        setQueues([mailing]);
+        const action = app.get<Queue>(getQueueToken('action'));
+        setQueues([mailing, action]);
         app.use('/admin/queues', UI);
     }
 

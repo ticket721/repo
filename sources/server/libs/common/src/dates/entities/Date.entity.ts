@@ -79,7 +79,13 @@ export interface DateMetadata {
     table_name: 'date',
     key: ['id'],
     es_index_mapping: {
-        discover: '.*',
+        discover: '^((?!location).*)',
+        properties: {
+            location: {
+                type: 'geo_point',
+                cql_collection: 'singleton',
+            },
+        },
     },
 } as any)
 export class DateEntity {

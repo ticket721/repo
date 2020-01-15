@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { deepEqual, instance, mock, when } from 'ts-mockito';
-import { Job, JobOptions } from 'bull';
+import { anything, deepEqual, instance, mock, when } from 'ts-mockito';
 import { uuid } from '@iaminfinity/express-cassandra';
 import { UserDto } from '@lib/common/users/dto/User.dto';
 import { ESSearchReturn } from '@lib/common/utils/ESSearchReturn';
@@ -10,14 +9,7 @@ import { EventEntity } from '@lib/common/events/entities/Event.entity';
 import { ActionSetsService } from '@lib/common/actionsets/ActionSets.service';
 import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
 import { EventsCreateResponseDto } from '@app/server/controllers/events/dto/EventsCreateResponse.dto';
-import { search } from '@lib/common/utils/ControllerBasics';
-import { StatusCodes } from '@app/server/utils/codes';
-
-class QueueMock<T = any> {
-    add(name: string, data: T, opts?: JobOptions): Promise<Job<T>> {
-        return null;
-    }
-}
+import { StatusCodes } from '@lib/common/utils/codes';
 
 const context: {
     eventsController: EventsController;
@@ -146,7 +138,7 @@ describe('Events Controller', function() {
 
             const entity: Partial<ActionSetEntity> = {
                 name: 'eventCreation',
-                current_status: 'in progress',
+                current_status: 'input:in progress',
                 current_action: 0,
                 owner: 'cb70b84f-2746-4afb-b789-01f4917f3b28',
                 actions: [
@@ -157,7 +149,43 @@ describe('Events Controller', function() {
                         error: null,
                         type: 'input',
                     },
+                    {
+                        name: 'eventModulesConfiguration',
+                        data: null,
+                        status: 'in progress',
+                        error: null,
+                        type: 'input',
+                    },
+                    {
+                        name: 'eventDatesConfiguration',
+                        data: null,
+                        status: 'in progress',
+                        error: null,
+                        type: 'input',
+                    },
+                    {
+                        name: 'eventCategoriesConfiguration',
+                        data: null,
+                        status: 'in progress',
+                        error: null,
+                        type: 'input',
+                    },
+                    {
+                        name: 'eventImagesMetadata',
+                        data: null,
+                        status: 'in progress',
+                        error: null,
+                        type: 'input',
+                    },
+                    {
+                        name: 'eventAdminsConfiguration',
+                        data: null,
+                        status: 'in progress',
+                        error: null,
+                        type: 'input',
+                    },
                 ],
+                dispatched_at: anything(),
             };
 
             const extra_fields = {
@@ -196,7 +224,7 @@ describe('Events Controller', function() {
 
             const entity: Partial<ActionSetEntity> = {
                 name: 'eventCreation',
-                current_status: 'in progress',
+                current_status: 'input:in progress',
                 current_action: 0,
                 owner: 'cb70b84f-2746-4afb-b789-01f4917f3b28',
                 actions: [
@@ -207,13 +235,43 @@ describe('Events Controller', function() {
                         error: null,
                         type: 'input',
                     },
+                    {
+                        name: 'eventModulesConfiguration',
+                        data: null,
+                        status: 'in progress',
+                        error: null,
+                        type: 'input',
+                    },
+                    {
+                        name: 'eventDatesConfiguration',
+                        data: null,
+                        status: 'in progress',
+                        error: null,
+                        type: 'input',
+                    },
+                    {
+                        name: 'eventCategoriesConfiguration',
+                        data: null,
+                        status: 'in progress',
+                        error: null,
+                        type: 'input',
+                    },
+                    {
+                        name: 'eventImagesMetadata',
+                        data: null,
+                        status: 'in progress',
+                        error: null,
+                        type: 'input',
+                    },
+                    {
+                        name: 'eventAdminsConfiguration',
+                        data: null,
+                        status: 'in progress',
+                        error: null,
+                        type: 'input',
+                    },
                 ],
-            };
-
-            const extra_fields = {
-                id: 'cb70b84f-2746-4afb-b789-01f4917f3b28',
-                created_at: new Date(Date.now()),
-                updated_at: new Date(Date.now()),
+                dispatched_at: anything(),
             };
 
             when(
