@@ -40,7 +40,7 @@
     "@storybook/addon-centered": "5.3.4",
     "@storybook/addon-docs": "5.3.4",
     "@storybook/addon-info": "5.3.4",
-    "@storybook/addon-knobs": "5.3.3",
+    "@storybook/addon-knobs": "5.3.4",
     "@storybook/addon-links": "5.3.4",
     "@storybook/addon-options": "5.3.3",
     "@storybook/addons": "5.3.4",
