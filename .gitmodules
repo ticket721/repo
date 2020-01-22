@@ -29,3 +29,9 @@
 [submodule "contracts/contracts_modules/refract"]
 	path = contracts/contracts_modules/refract
 	url = git@github.com:ticket721/refract
+[submodule "contracts/contracts_modules/t721token"]
+	path = contracts/contracts_modules/t721token
+	url = git@github.com:ticket721/t721token
+[submodule "contracts/contracts_modules/t721admin"]
+	path = contracts/contracts_modules/t721admin
+	url = git@github.com:ticket721/t721admin
