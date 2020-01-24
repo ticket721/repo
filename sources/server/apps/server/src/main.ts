@@ -9,6 +9,7 @@ import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 import { Queue } from 'bull';
 import { getQueueToken } from '@nestjs/bull';
 import { setQueues, UI } from 'bull-board';
+import * as express from 'express';
 
 /**
  * Main application, starting the T721 Server API
@@ -24,6 +25,13 @@ async function main() {
         new ValidationPipe({
             transform: true,
             forbidUnknownValues: true,
+        }),
+    );
+
+    app.use(
+        '/static',
+        express.static(configService.get('IMAGE_SERVE_DIRECTORY'), {
+            extensions: ['png', 'jpg', 'gif', 'svg', 'bmp'],
         }),
     );
 

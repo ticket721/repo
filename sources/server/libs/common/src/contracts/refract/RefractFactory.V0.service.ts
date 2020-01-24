@@ -25,7 +25,8 @@ export class RefractFactoryV0Service extends ContractsControllerBase {
             contractsService,
             web3Service,
             shutdownService,
-            'refract::RefractFactory_v0',
+            'refract',
+            'RefractFactory_v0',
         );
     }
 }

@@ -9,6 +9,7 @@ import { anything, instance, mock, verify, when } from 'ts-mockito';
 import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 import * as fs from 'fs';
+import { FSService } from '@lib/common/fs/FS.service';
 
 const configureWeb3Service = (
     web3Service: Web3Service,
@@ -107,6 +108,7 @@ describe('Contracts Service', function() {
             instance(web3ServiceMock),
             winstonLoggerService,
             instance(shutdownServiceMock),
+            new FSService(),
         );
 
         const contracts = await contractsService.getContractArtifacts();
@@ -137,6 +139,7 @@ describe('Contracts Service', function() {
             instance(web3ServiceMock),
             winstonLoggerService,
             instance(shutdownServiceMock),
+            new FSService(),
         );
 
         await expect(
@@ -170,6 +173,7 @@ describe('Contracts Service', function() {
             instance(web3ServiceMock),
             winstonLoggerService,
             instance(shutdownServiceMock),
+            new FSService(),
         );
 
         await expect(

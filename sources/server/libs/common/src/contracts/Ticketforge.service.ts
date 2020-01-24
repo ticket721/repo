@@ -25,7 +25,8 @@ export class TicketforgeService extends ContractsControllerBase {
             contractsService,
             web3Service,
             shutdownService,
-            'ticketforge::TicketForge',
+            'ticketforge',
+            'TicketForge',
         );
     }
 }

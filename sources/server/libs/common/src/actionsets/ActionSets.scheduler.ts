@@ -10,6 +10,7 @@ import { InjectQueue } from '@nestjs/bull';
 import { ActionSet } from '@lib/common/actionsets/helper/ActionSet';
 import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
 import { uuidEq } from '@ticket721sources/global';
+import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
 
 /**
  * Collection of scheduled tasks
@@ -23,12 +24,14 @@ export class ActionSetsScheduler implements OnModuleInit {
      * @param shutdownService
      * @param actionQueue
      * @param schedule
+     * @param loggerService
      */
     constructor(
         private readonly actionSetsService: ActionSetsService,
         private readonly shutdownService: ShutdownService,
         @InjectQueue('action') private readonly actionQueue: Queue,
         @InjectSchedule() private readonly schedule: Schedule,
+        private readonly loggerService: WinstonLoggerService,
     ) {}
 
     /**
@@ -75,6 +78,7 @@ export class ActionSetsScheduler implements OnModuleInit {
             'waiting',
         ]);
 
+        let count = 0;
         if (res.response.hits.total !== 0) {
             for (const hit of res.response.hits.hits) {
                 const entity = fromES(hit);
@@ -88,12 +92,19 @@ export class ActionSetsScheduler implements OnModuleInit {
                     continue;
                 }
 
+                ++count;
                 await this.actionQueue.add('input', entity);
                 const actionSet = new ActionSet().load(entity);
                 await this.actionSetsService.update(actionSet.getQuery(), {
                     dispatched_at: dispatched,
                 });
             }
+        }
+
+        if (count) {
+            this.loggerService.log(
+                `Dispatched ${count} ActionSets on the input queue`,
+            );
         }
     }
 }

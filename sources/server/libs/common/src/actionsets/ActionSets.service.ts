@@ -9,9 +9,11 @@ import {
 import { ActionSetsRepository } from '@lib/common/actionsets/ActionSets.repository';
 import { ActionSet } from '@lib/common/actionsets/helper/ActionSet';
 
+export type Progress = (p: number) => Promise<void>;
+
 export type InputActionHandler = (
     actionSet: ActionSet,
-    progress: (p: number) => Promise<void>,
+    progress: Progress,
 ) => Promise<[ActionSet, boolean]>;
 
 /**
@@ -27,20 +29,14 @@ export class ActionSetsService extends CRUDExtension<
      *
      * @param actionSetsRepository
      * @param actionSetEntity
-     * @param inputHandlers
      */
     constructor(
         @InjectRepository(ActionSetsRepository)
         actionSetsRepository: ActionSetsRepository,
         @InjectModel(ActionSetEntity)
         actionSetEntity: BaseModel<ActionSetEntity>,
-        @Inject('ACTIONSETS_INPUT_HANDLERS')
-        inputHandlers: { name: string; handler: InputActionHandler }[],
     ) {
         super(actionSetEntity, actionSetsRepository);
-        for (const handler of inputHandlers) {
-            this.setInputHandler(handler.name, handler.handler);
-        }
     }
 
     /**

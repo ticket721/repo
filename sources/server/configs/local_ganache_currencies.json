@@ -1,0 +1,27 @@
+[
+    {
+        "name": "T721Token",
+        "type": "erc20",
+        "loadType": "module",
+        "dollarPeg": 1,
+        "moduleName": "t721token",
+        "contractName": "T721Token"
+    },
+    {
+        "name": "Dai",
+        "type": "erc20",
+        "loadType": "address",
+        "dollarPeg": 1,
+        "moduleName": "t721token",
+        "contractName": "IERC20",
+        "contractAddress": "0x906e93fc23AEaCA87B6a85ac29030f7671166002"
+    },
+    {
+        "name": "Fiat",
+        "type": "set",
+        "contains": [
+            "Dai",
+            "T721Token"
+        ]
+    }
+]

@@ -264,7 +264,9 @@ export class CRUDExtension<RepositoryType extends Repository, EntityType> {
     ): Promise<CRUDResponse<EntityType>> {
         try {
             const processedEntity: Partial<EntityType> = this.adaptFieldTypesFilter(
-                entity,
+                {
+                    ...entity,
+                },
             );
 
             const createdEntity: EntityType = await this._repository
@@ -272,7 +274,7 @@ export class CRUDExtension<RepositoryType extends Repository, EntityType> {
                 .toPromise();
 
             return {
-                response: createdEntity,
+                response: this.adaptResponseTypeFilter(createdEntity),
                 error: null,
             };
         } catch (e) {

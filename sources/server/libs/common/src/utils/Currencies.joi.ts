@@ -1,41 +1,39 @@
 import * as Joi from '@hapi/joi';
 
-const AddressLoadConfig: Joi.ObjectSchema = Joi.object({
-    address: Joi.string().required(),
-    contractName: Joi.string().required(),
-});
-
-const ModuleLoadConfig: Joi.ObjectSchema = Joi.object({
-    module: Joi.string().required(),
-});
-
-const ERC20Currency: Joi.ObjectSchema = Joi.object({
-    loadConfig: Joi.object()
-        .valid(AddressLoadConfig, ModuleLoadConfig)
-        .required(),
-});
-
-const NativeCurrency: Joi.ObjectSchema = Joi.object({
-    loadConfig: Joi.object()
-        .valid(AddressLoadConfig, ModuleLoadConfig)
-        .required(),
-});
-
-const SetCurrency: Joi.ObjectSchema = Joi.object({
-    contains: Joi.array()
-        .items(Joi.string())
-        .min(1),
-});
-
 const Currency: Joi.ObjectSchema = Joi.object({
     name: Joi.string().required(),
-    type: Joi.string()
-        .valid('erc20', 'native', 'set')
-        .required(),
     dollarPeg: Joi.number().optional(),
-    infos: Joi.object()
-        .valid(ERC20Currency, NativeCurrency, SetCurrency)
+    type: Joi.string()
+        .valid('erc20', 'set')
         .required(),
+    loadType: Joi.string().valid('module', 'address'),
+    contains: Joi.array()
+        .items(Joi.string())
+        .min(1)
+        .when('type', {
+            is: 'set',
+            then: Joi.required(),
+            otherwise: Joi.optional(),
+        }),
+    moduleName: Joi.string().when('type', {
+        is: Joi.string().valid('erc20'),
+        then: Joi.required(),
+        otherwise: Joi.optional(),
+    }),
+    contractName: Joi.string().when('type', {
+        is: Joi.string().valid('erc20'),
+        then: Joi.required(),
+        otherwise: Joi.optional(),
+    }),
+    contractAddress: Joi.string().when('type', {
+        is: Joi.string().valid('erc20'),
+        then: Joi.when('loadType', {
+            is: 'address',
+            then: Joi.required(),
+            otherwise: Joi.optional(),
+        }),
+        otherwise: Joi.optional(),
+    }),
 });
 
 /**

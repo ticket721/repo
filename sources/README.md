@@ -8,6 +8,7 @@ Contains all the code of the T721 platform: server, webapp, mobile apps ...
 | [`migrations`](./migrations/README.md) | `sources/migrations` | Migration scripts for Cassandra & ElasticSearch |
 | [`sdk`](./sdk/README.md) | `sources/sdk` | Client for the T721 API Server |
 | [`global`](./global/README.md) | `sources/global` | Global Utilities used across all sub-projects |
+| [`simulation`](./simulation/README.md) | `sources/simulation` | Script to populate the server with events |
 
 ## Development Setups
 

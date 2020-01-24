@@ -4,8 +4,7 @@ import { deepEqual, instance, mock, verify, when } from 'ts-mockito';
 import { Job } from 'bull';
 import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
 import { ActionSet } from '@lib/common/actionsets/helper/ActionSet';
-import { UserDto } from '@lib/common/users/dto/User.dto';
-import { StatusCodes } from '@lib/common/utils/codes';
+import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
 
 const context: {
     actionSetsTasks: ActionSetsTasks;
@@ -25,6 +24,7 @@ describe('ActionSets Tasks', function() {
         context.actionSetsServiceMock = mock(ActionSetsService);
         context.actionSetsTasks = new ActionSetsTasks(
             instance(context.actionSetsServiceMock),
+            new WinstonLoggerService('actionset'),
         );
     });
 

@@ -55,26 +55,10 @@ describe('ActionSets Service', function() {
             useValue: instance(context.actionSetsRepository),
         };
 
-        const ActionSetsInputHandlersProvider = {
-            provide: 'ACTIONSETS_INPUT_HANDLERS',
-            useValue: [
-                {
-                    name: 'first',
-                    handler: async (
-                        actionSet: ActionSet,
-                        progress: (n: number) => Promise<void>,
-                    ): Promise<[ActionSet, boolean]> => {
-                        return [actionSet, true];
-                    },
-                },
-            ],
-        };
-
         const app: TestingModule = await Test.createTestingModule({
             providers: [
                 ActionSetEntityModelProvider,
                 ActionSetsRepositoryProvider,
-                ActionSetsInputHandlersProvider,
                 ActionSetsService,
             ],
         }).compile();
@@ -88,30 +72,17 @@ describe('ActionSets Service', function() {
         it('should recover the input handler', async function() {
             expect(
                 context.actionSetsService.getInputHandler('first'),
+            ).toBeUndefined();
+            context.actionSetsService.setInputHandler('first', {} as any);
+            expect(
+                context.actionSetsService.getInputHandler('first'),
             ).toBeDefined();
         });
 
         it('should recover undefined if no handler exists', async function() {
             expect(
-                context.actionSetsService.getInputHandler('second'),
+                context.actionSetsService.getInputHandler('first'),
             ).toBeUndefined();
-        });
-    });
-
-    describe('setInputHandler', function() {
-        it('should set net input handler', async function() {
-            expect(
-                context.actionSetsService.getInputHandler('second'),
-            ).toBeUndefined();
-            context.actionSetsService.setInputHandler(
-                'second',
-                async (...args: any[]): Promise<[any, any]> => {
-                    return [1, 2];
-                },
-            );
-            expect(
-                context.actionSetsService.getInputHandler('second'),
-            ).toBeDefined();
         });
     });
 });

@@ -31,7 +31,12 @@ import { DatesModule } from '@lib/common/dates/Dates.module';
 import { DatesController } from '@app/server/controllers/dates/Dates.controller';
 import { EventsModule } from '@lib/common/events/Events.module';
 import { EventsController } from '@app/server/controllers/events/Events.controller';
-import EventsInputActions from '@app/server/controllers/events/actionhandlers/Events.input.handlers';
+import { EventsInputHandlers } from '@app/server/controllers/events/actionhandlers/Events.input.handlers';
+import { ImagesController } from '@app/server/controllers/images/Images.controller';
+import { ImagesModule } from '@lib/common/images/Images.module';
+import { FSModule } from '@lib/common/fs/FS.module';
+import { CurrenciesService } from '@lib/common/currencies/Currencies.service';
+import { CurrenciesModule } from '@lib/common/currencies/Currencies.module';
 
 @Module({
     imports: [
@@ -59,15 +64,23 @@ import EventsInputActions from '@app/server/controllers/events/actionhandlers/Ev
 
         // Cassandra Table Modules & Utils
         UsersModule,
+        ImagesModule,
         Web3TokensModule,
-        ActionSetsModule.registerAsync([...EventsInputActions()]),
+        ActionSetsModule,
         DatesModule,
         EventsModule,
+        CurrenciesModule.registerAsync({
+            imports: [ConfigModule.register(Config)],
+            useFactory: (configService: ConfigService): string =>
+                configService.get('CURRENCIES_CONFIG_PATH'),
+            inject: [ConfigService],
+        }),
 
         // User Management Modules
         AuthenticationModule,
 
         // Utility Modules
+        FSModule,
         ShutdownModule,
 
         // Notification Modules
@@ -96,12 +109,18 @@ import EventsInputActions from '@app/server/controllers/events/actionhandlers/Ev
     ],
     controllers: [
         ServerController,
+        ImagesController,
         ActionSetsController,
         DatesController,
         EventsController,
     ],
     providers: [
         ServerService,
+
+        // Input Action Handler injecters
+        EventsInputHandlers,
+
+        // Global logger
         {
             provide: WinstonLoggerService,
             useValue: new WinstonLoggerService('server'),

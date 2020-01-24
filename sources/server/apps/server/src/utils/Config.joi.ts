@@ -56,4 +56,9 @@ export const Config: Joi.ObjectSchema = Joi.object({
         then: Joi.required(),
         otherwise: Joi.optional(),
     }),
+
+    IMAGE_MAX_SIZE: Joi.number().required(),
+    IMAGE_SERVE_DIRECTORY: Joi.string().required(),
+
+    CURRENCIES_CONFIG_PATH: Joi.string().required(),
 });

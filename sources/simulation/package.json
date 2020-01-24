@@ -1,0 +1,15 @@
+{
+    "name": "@ticket721sources/simulation",
+    "version": "1.0.0",
+    "description": "",
+    "author": "",
+    "license": "MIT",
+    "scripts": {
+        "simulate": "ts-node index.ts"
+    },
+    "dependencies": {
+        "@ticket721sources/global": "file:../global",
+        "@ticket721sources/sdk": "file:../sdk",
+        "ts-node": "8.4.1"
+    }
+}

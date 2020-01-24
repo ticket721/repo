@@ -10,8 +10,10 @@ export type ActionStatus = 'waiting' | 'in progress' | 'complete' | 'error';
 export type ActionSetStatus =
     | 'input:waiting'
     | 'input:in progress'
+    | 'input:error'
     | 'event:waiting'
     | 'event:in progress'
+    | 'event:error'
     | 'complete'
     | 'error';
 export type ActionType = 'input' | 'event';

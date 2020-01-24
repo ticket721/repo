@@ -31,6 +31,20 @@ class M20191216075937_initial_setup extends ElasticMigration {
             }
         );
 
+        await this.createIndex('ticket721_image', 'ticket721');
+        await this.putMapping('ticket721_image', 'image', {
+            "image": {
+                "discover": ".*",
+            }
+        });
+        await this.putSettings('ticket721_image',
+            {
+                index: {
+                    synchronous_refresh: true
+                }
+            }
+        );
+
         await this.createIndex('ticket721_web3token', 'ticket721');
         await this.putMapping('ticket721_web3token', 'web3token', {
             "web3token": {
@@ -51,6 +65,13 @@ class M20191216075937_initial_setup extends ElasticMigration {
                 "discover": ".*"
             }
         });
+        await this.putSettings('ticket721_actionset',
+            {
+                index: {
+                    synchronous_refresh: true
+                }
+            }
+        );
 
         await this.createIndex('ticket721_date', 'ticket721');
         await this.putMapping('ticket721_date', 'date', {

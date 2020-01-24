@@ -10,10 +10,11 @@ import request         from 'supertest';
 import { localLogin, localRegister, web3Register, web3RegisterPayload, web3Login, web3LoginPayload, validateEmail } from './app/api/authentication';
 
 // ACTIONS
-import { actionsSearch } from './app/api/actions';
+import { actionsSearch, actionsUpdate } from './app/api/actions';
 
 // DATES
-import { datesSearch }   from './app/api/dates';
+import { datesSearch }                from './app/api/dates';
+import { eventsCreate, eventsSearch } from './app/api/events';
 
 export { FailedRegisterReport } from './app/api/authentication';
 
@@ -37,8 +38,12 @@ export class T721SDK {
         this.validateEmail = this.validateEmail.bind(this);
 
         this.actions.search = this.actions.search.bind(this);
+        this.actions.update = this.actions.update.bind(this);
 
         this.dates.search = this.dates.search.bind(this);
+
+        this.events.create = this.events.create.bind(this);
+        this.events.search = this.events.search.bind(this);
     }
 
     connect(host: string, port: number, protocol: 'http' | 'https' = 'http') {
@@ -94,6 +99,21 @@ export class T721SDK {
 
     }
 
+    async put<Body>(route: string, headers: HTTPHeader, body: Body): Promise<AxiosResponse> {
+
+        if (this.axios) {
+            return this.axios({
+                method: 'put',
+                headers,
+                data: body,
+                url: route,
+            });
+        } else {
+            throw new Error(`Client not connected`);
+        }
+
+    }
+
     public getApiInfos = getAPIInfos;
 
     public localRegister = localRegister;
@@ -106,9 +126,15 @@ export class T721SDK {
 
     public actions = {
         search: actionsSearch,
+        update: actionsUpdate,
     };
 
     public dates = {
         search: datesSearch,
+    };
+
+    public events = {
+        search: eventsSearch,
+        create: eventsCreate,
     };
 }

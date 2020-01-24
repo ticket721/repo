@@ -137,48 +137,48 @@ describe('Events Controller', function() {
             };
 
             const entity: Partial<ActionSetEntity> = {
-                name: 'eventCreation',
+                name: '@events/creation',
                 current_status: 'input:in progress',
                 current_action: 0,
                 owner: 'cb70b84f-2746-4afb-b789-01f4917f3b28',
                 actions: [
                     {
-                        name: 'eventTextMetadata',
+                        name: '@events/textMetadata',
                         data: JSON.stringify(body),
                         status: 'in progress',
                         error: null,
                         type: 'input',
                     },
                     {
-                        name: 'eventModulesConfiguration',
+                        name: '@events/modulesConfiguration',
                         data: null,
                         status: 'in progress',
                         error: null,
                         type: 'input',
                     },
                     {
-                        name: 'eventDatesConfiguration',
+                        name: '@events/datesConfiguration',
                         data: null,
                         status: 'in progress',
                         error: null,
                         type: 'input',
                     },
                     {
-                        name: 'eventCategoriesConfiguration',
+                        name: '@events/categoriesConfiguration',
                         data: null,
                         status: 'in progress',
                         error: null,
                         type: 'input',
                     },
                     {
-                        name: 'eventImagesMetadata',
+                        name: '@events/imagesMetadata',
                         data: null,
                         status: 'in progress',
                         error: null,
                         type: 'input',
                     },
                     {
-                        name: 'eventAdminsConfiguration',
+                        name: '@events/adminsConfiguration',
                         data: null,
                         status: 'in progress',
                         error: null,
@@ -223,48 +223,48 @@ describe('Events Controller', function() {
             };
 
             const entity: Partial<ActionSetEntity> = {
-                name: 'eventCreation',
+                name: '@events/creation',
                 current_status: 'input:in progress',
                 current_action: 0,
                 owner: 'cb70b84f-2746-4afb-b789-01f4917f3b28',
                 actions: [
                     {
-                        name: 'eventTextMetadata',
+                        name: '@events/textMetadata',
                         data: JSON.stringify(body),
                         status: 'in progress',
                         error: null,
                         type: 'input',
                     },
                     {
-                        name: 'eventModulesConfiguration',
+                        name: '@events/modulesConfiguration',
                         data: null,
                         status: 'in progress',
                         error: null,
                         type: 'input',
                     },
                     {
-                        name: 'eventDatesConfiguration',
+                        name: '@events/datesConfiguration',
                         data: null,
                         status: 'in progress',
                         error: null,
                         type: 'input',
                     },
                     {
-                        name: 'eventCategoriesConfiguration',
+                        name: '@events/categoriesConfiguration',
                         data: null,
                         status: 'in progress',
                         error: null,
                         type: 'input',
                     },
                     {
-                        name: 'eventImagesMetadata',
+                        name: '@events/imagesMetadata',
                         data: null,
                         status: 'in progress',
                         error: null,
                         type: 'input',
                     },
                     {
-                        name: 'eventAdminsConfiguration',
+                        name: '@events/adminsConfiguration',
                         data: null,
                         status: 'in progress',
                         error: null,

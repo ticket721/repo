@@ -17,12 +17,7 @@ import {
     ActionStatus,
     ActionType,
 } from '@lib/common/actionsets/entities/ActionSet.entity';
-
-class QueueMock<T = any> {
-    add(name: string, data: T, opts?: JobOptions): Promise<Job<T>> {
-        return null;
-    }
-}
+import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
 
 describe('ActionSets Scheduler', function() {
     const context: {
@@ -49,6 +44,7 @@ describe('ActionSets Scheduler', function() {
             instance(context.shutdownServiceMock),
             instance(context.actionQueueMock),
             instance(context.scheduleMock),
+            new WinstonLoggerService('actionset'),
         );
     });
 

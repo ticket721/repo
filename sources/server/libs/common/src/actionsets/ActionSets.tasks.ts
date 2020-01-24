@@ -4,6 +4,7 @@ import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entit
 import { Injectable } from '@nestjs/common';
 import { ActionSetsService } from '@lib/common/actionsets/ActionSets.service';
 import { ActionSet } from '@lib/common/actionsets/helper/ActionSet';
+import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
 
 /**
  * Collection of Bull Tasks for the ActionSets
@@ -15,8 +16,12 @@ export class ActionSetsTasks {
      * Dependency Injection
      *
      * @param actionSetsService
+     * @param loggerService
      */
-    constructor(private readonly actionSetsService: ActionSetsService) {}
+    constructor(
+        private readonly actionSetsService: ActionSetsService,
+        private readonly loggerService: WinstonLoggerService,
+    ) {}
 
     /**
      * Process to handle the input actions
@@ -32,11 +37,16 @@ export class ActionSetsTasks {
             this.actionSetsService.getInputHandler(actionSet.action.name) ===
             undefined
         ) {
-            throw new Error(
+            const error = Error(
                 `Cannot find input handler for action ${actionSet.action.name} in actionset ${actionSet.id}`,
             );
+            this.loggerService.error(error.message, error.stack);
+            throw error;
         }
 
+        this.loggerService.log(
+            `Calling ${actionSet.action.name} on ActionSet@${actionSet.id}`,
+        );
         const [
             updatedActionSet,
             update,

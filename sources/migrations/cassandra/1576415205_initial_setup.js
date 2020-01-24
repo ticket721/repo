@@ -27,6 +27,20 @@ var migration1576415205 = {
             params: []
         };
 
+        const image_table_creation = {
+            query: `CREATE TABLE ticket721.image (
+                    id UUID PRIMARY KEY,
+                    mimetype text,
+                    size int,
+                    encoding text,
+                    hash text,
+                    links int,
+                    created_at timestamp,
+                    updated_at timestamp,
+                    );`,
+            params: []
+        };
+
         const action_type_creation = {
             query: `CREATE TYPE ticket721.action (
                     status text,
@@ -142,6 +156,9 @@ var migration1576415205 = {
             console.log('User Table Creation');
             await db.execute(user_table_creation.query, user_table_creation.params, { prepare: true });
 
+            console.log('Image Table Creation');
+            await db.execute(image_table_creation.query, image_table_creation.params, { prepare: true });
+
             console.log('Web3Token Table Creation');
             await db.execute(web3token_table_creation.query, web3token_table_creation.params, { prepare: true });
 
@@ -169,6 +186,11 @@ var migration1576415205 = {
 
         const web3token_table_creation = {
             query: 'DROP TABLE ticket721.web3token;',
+            params: []
+        };
+
+        const image_table_creation = {
+            query: 'DROP TABLE ticket721.image;',
             params: []
         };
 
@@ -217,6 +239,9 @@ var migration1576415205 = {
             // Tables first
             console.log('User Table Deletion');
             await db.execute(user_table_creation.query, user_table_creation.params, { prepare: true });
+
+            console.log('Image Table Deletion');
+            await db.execute(image_table_creation.query, image_table_creation.params, { prepare: true });
 
             console.log('Web3Token Table Deletion');
             await db.execute(web3token_table_creation.query, web3token_table_creation.params, { prepare: true });

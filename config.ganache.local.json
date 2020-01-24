@@ -61,6 +61,11 @@
                         "name": "refract",
                         "test": false,
                         "range": [1, 2]
+                    },
+                    {
+                        "name": "t721token",
+                        "test": false,
+                        "range": [1, 1]
                     }
                 ]
             }
@@ -84,6 +89,10 @@
             },
             {
                 "name": "refract",
+                "upgradeable": false
+            },
+            {
+                "name": "t721token",
                 "upgradeable": false
             }
         ],

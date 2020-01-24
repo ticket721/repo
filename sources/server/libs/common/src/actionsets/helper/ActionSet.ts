@@ -201,6 +201,7 @@ export class ActionSet {
      */
     next(): ActionSet {
         this.entity.actions[this.entity.current_action].status = 'complete';
+        this.entity.actions[this.entity.current_action].error = null;
 
         let newIdx = this.entity.current_action;
 
@@ -217,6 +218,9 @@ export class ActionSet {
             this.entity.current_action = newIdx;
             this.entity.actions[this.entity.current_action].status =
                 'in progress';
+            this.setStatus(
+                `${this.action.type}:in progress` as ActionSetStatus,
+            );
         }
 
         return this;

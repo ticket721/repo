@@ -25,7 +25,8 @@ export class T721ControllerV0Service extends ContractsControllerBase {
             contractsService,
             web3Service,
             shutdownService,
-            't721controller::T721Controller_v0',
+            't721controller',
+            'T721Controller_v0',
         );
     }
 }

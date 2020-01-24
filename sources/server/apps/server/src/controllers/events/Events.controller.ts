@@ -102,33 +102,33 @@ export class EventsController {
     ): Promise<EventsCreateResponseDto> {
         const actions: Action[] = [
             new Action()
-                .setName('eventTextMetadata')
+                .setName('@events/textMetadata')
                 .setData<EventsCreateInputDto>(body)
                 .setType('input')
                 .setStatus('in progress'),
             new Action()
-                .setName('eventModulesConfiguration')
+                .setName('@events/modulesConfiguration')
                 .setType('input')
                 .setStatus('in progress'),
             new Action()
-                .setName('eventDatesConfiguration')
+                .setName('@events/datesConfiguration')
                 .setType('input')
                 .setStatus('in progress'),
             new Action()
-                .setName('eventCategoriesConfiguration')
+                .setName('@events/categoriesConfiguration')
                 .setType('input')
                 .setStatus('in progress'),
             new Action()
-                .setName('eventImagesMetadata')
+                .setName('@events/imagesMetadata')
                 .setType('input')
                 .setStatus('in progress'),
             new Action()
-                .setName('eventAdminsConfiguration')
+                .setName('@events/adminsConfiguration')
                 .setType('input')
                 .setStatus('in progress'),
         ];
         const actionSet: ActionSet = new ActionSet()
-            .setName('eventCreation')
+            .setName('@events/creation')
             .setActions(actions)
             .setOwner(user)
             .setStatus('input:in progress');
