@@ -38,7 +38,7 @@
     "@htmlacademy/editorconfig-cli": "^1.0.0",
     "@storybook/client-api": "5.3.8",
     "@storybook/addon-actions": "5.3.8",
-    "@storybook/addon-centered": "5.3.8",
+    "@storybook/addon-centered": "5.3.9",
     "@storybook/addon-docs": "5.3.8",
     "@storybook/addon-info": "5.3.8",
     "@storybook/addon-knobs": "5.3.8",
