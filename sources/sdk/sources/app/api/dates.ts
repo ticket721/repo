@@ -12,5 +12,6 @@ export async function datesSearch(
 
     return self.post<DatesSearchInputDto>('/dates/search', {
         Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
     }, query);
 }

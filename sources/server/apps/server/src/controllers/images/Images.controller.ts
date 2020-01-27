@@ -97,8 +97,6 @@ export class ImagesController {
 
             file.hash = keccak256(file.buffer.toString('hex')).toLowerCase();
 
-            console.log(file);
-
             if (mimetypeMapping[file.mimetype] === undefined) {
                 throw new HttpException(
                     {

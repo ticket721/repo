@@ -68,7 +68,9 @@ export async function localRegister(
         locale,
     };
 
-    return self.post<LocalRegisterInputDto>('/authentication/local/register', {}, createUser);
+    return self.post<LocalRegisterInputDto>('/authentication/local/register', {
+        'Content-Type': 'application/json',
+    }, createUser);
 }
 
 export async function localLogin(email: string, password: string): Promise<AxiosResponse<LocalLoginResponseDto>> {
@@ -82,7 +84,9 @@ export async function localLogin(email: string, password: string): Promise<Axios
         email,
     };
 
-    return self.post<LocalLoginInputDto>('/authentication/local/login', {}, loginUser);
+    return self.post<LocalLoginInputDto>('/authentication/local/login', {
+        'Content-Type': 'application/json',
+    }, loginUser);
 }
 
 export async function web3Register(
@@ -105,7 +109,9 @@ export async function web3Register(
         locale,
     };
 
-    return self.post<Web3RegisterInputDto>('/authentication/web3/register', {}, createWeb3User);
+    return self.post<Web3RegisterInputDto>('/authentication/web3/register', {
+        'Content-Type': 'application/json',
+    }, createWeb3User);
 }
 
 export async function web3Login(timestamp: number, signature: string): Promise<AxiosResponse<Web3RegisterResponseDto>> {
@@ -117,7 +123,9 @@ export async function web3Login(timestamp: number, signature: string): Promise<A
         signature,
     };
 
-    return self.post<Web3LoginInputDto>('/authentication/web3/login', {}, loginWeb3User);
+    return self.post<Web3LoginInputDto>('/authentication/web3/login', {
+        'Content-Type': 'application/json',
+    }, loginWeb3User);
 }
 
 export function web3RegisterPayload(email: string, username: string, networkId: number): [number, EIP712Payload] {
@@ -137,5 +145,7 @@ export async function validateEmail(token: string): Promise<AxiosResponse<EmailV
         token,
     };
 
-    return self.post<EmailValidationInputDto>('/authentication/validate', {}, validationPayload);
+    return self.post<EmailValidationInputDto>('/authentication/validate', {
+        'Content-Type': 'application/json',
+    }, validationPayload);
 }

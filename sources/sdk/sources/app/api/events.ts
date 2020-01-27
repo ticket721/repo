@@ -14,6 +14,7 @@ export async function eventsSearch(
 
     return self.post<EventsSearchInputDto>('/events/search', {
         Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
     }, query);
 }
 
@@ -25,5 +26,6 @@ export async function eventsCreate(
 
     return self.post<EventsCreateInputDto>('/events', {
         Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
     }, query);
 }

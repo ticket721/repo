@@ -32,6 +32,8 @@ import { ActionsHashInputDto } from '@app/server/controllers/actionsets/dto/Acti
 import { ActionsHashResponseDto } from '@app/server/controllers/actionsets/dto/ActionsHashResponse.dto';
 import { StatusCodes, StatusNames } from '@lib/common/utils/codes';
 import { defined } from '@lib/common/utils/defined';
+import { Queue } from 'bull';
+import { InjectQueue } from '@nestjs/bull';
 
 /**
  * Generic Actions controller. Recover / delete action sets generated across the app
@@ -43,8 +45,12 @@ export class ActionSetsController {
     /**
      * Dependency Injection
      * @param actionSetsService
+     * @param actionQueue
      */
-    constructor(private readonly actionSetsService: ActionSetsService) {}
+    constructor(
+        private readonly actionSetsService: ActionSetsService,
+        @InjectQueue('action') private readonly actionQueue: Queue,
+    ) {}
 
     /**
      * Search for action sets
@@ -227,7 +233,10 @@ export class ActionSetsController {
 
         const res = await this.actionSetsService.update(updateQuery, {
             ...updateBody,
+            dispatched_at: new Date(Date.now()),
         });
+
+        await this.actionQueue.add('input', actionSet.raw);
 
         if (res.error) {
             throw new HttpException(

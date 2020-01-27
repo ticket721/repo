@@ -10,6 +10,7 @@
     "dependencies": {
         "@ticket721sources/global": "file:../global",
         "@ticket721sources/sdk": "file:../sdk",
+        "form-data": "^3.0.0",
         "ts-node": "8.4.1"
     }
 }

@@ -23,5 +23,58 @@ export default {
                 lon: 2.370870
             }
         }
-    ]
+    ],
+    categories: {
+        global: [
+            {
+                name: 'vip',
+                resaleBegin: new Date(Date.now()),
+                resaleEnd: new Date(Date.now() + 23 * 60 * 60 * 1000),
+                seats: 100,
+                currencies: [
+                    {
+                        currency: 'Fiat',
+                        price: '100'
+                    }
+                ]
+            }
+        ],
+        dates: [
+            [
+                {
+                    name: 'regular',
+                    resaleBegin: new Date(Date.now()),
+                    resaleEnd: new Date(Date.now() + 23 * 60 * 60 * 1000),
+                    seats: 200,
+                    currencies: [
+                        {
+                            currency: 'Fiat',
+                            price: '100'
+                        }
+                    ]
+                }
+            ],
+            [
+                {
+                    name: 'regular',
+                    resaleBegin: new Date(Date.now()),
+                    resaleEnd: new Date(Date.now() + 23 * 60 * 60 * 1000),
+                    seats: 200,
+                    currencies: [
+                        {
+                            currency: 'Fiat',
+                            price: '100'
+                        }
+                    ]
+                }
+            ]
+        ]
+    },
+    images: {
+        avatar: 'avatar.jpg',
+        banners: [
+            'banner_one.jpg',
+            'banner_two.jpg'
+        ]
+    }
 }

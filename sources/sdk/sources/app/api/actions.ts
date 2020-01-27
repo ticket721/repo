@@ -14,6 +14,7 @@ export async function actionsSearch(
 
     return self.post<ActionsSearchInputDto>('/actions/search', {
         Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
     }, query);
 }
 
@@ -26,5 +27,6 @@ export async function actionsUpdate(
 
     return self.put<ActionsUpdateInputDto>('/actions', {
         Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
     }, query);
 }

@@ -49,6 +49,7 @@ npm run bootstrap
 | Name | Status |
 | :---: | :---: |
 | Codecov | [![codecov](https://codecov.io/gh/ticket721/repo/branch/develop/graph/badge.svg)](https://codecov.io/gh/ticket721/repo) |
+| Github Actions | ![T721 Monorepo CI](https://github.com/ticket721/repo/workflows/T721%20Monorepo%20CI/badge.svg) |
 
 
 

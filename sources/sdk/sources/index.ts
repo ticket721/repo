@@ -12,6 +12,9 @@ import { localLogin, localRegister, web3Register, web3RegisterPayload, web3Login
 // ACTIONS
 import { actionsSearch, actionsUpdate } from './app/api/actions';
 
+// IMAGES
+import { uploadImage } from './app/api/images';
+
 // DATES
 import { datesSearch }                from './app/api/dates';
 import { eventsCreate, eventsSearch } from './app/api/events';
@@ -44,6 +47,8 @@ export class T721SDK {
 
         this.events.create = this.events.create.bind(this);
         this.events.search = this.events.search.bind(this);
+
+        this.images.upload = this.images.upload.bind(this);
     }
 
     connect(host: string, port: number, protocol: 'http' | 'https' = 'http') {
@@ -54,7 +59,7 @@ export class T721SDK {
             baseURL: `${this.protocol}://${this.host}:${this.port.toString()}`,
             timeout: 30000,
             headers: {
-                'Content-Type': 'application/json',
+                Accept: 'application/json, multipart/form-data, text/plain, */*',
             },
         });
     }
@@ -65,7 +70,7 @@ export class T721SDK {
             baseURL: res.url,
             timeout: 30000,
             headers: {
-                'Content-Type': 'application/json',
+                Accept: 'application/json, multipart/form-data, text/plain, */*',
             },
         });
     }
@@ -136,5 +141,9 @@ export class T721SDK {
     public events = {
         search: eventsSearch,
         create: eventsCreate,
+    };
+
+    public images = {
+        upload: uploadImage,
     };
 }
