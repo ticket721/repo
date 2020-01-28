@@ -9,6 +9,6 @@
     "dependencies": {
         "cassandra-driver": "3.6.0",
         "cassandra-migrate": "1.2.333",
-        "elastic-migrate": "github:ticket721/elastic-migrate#master"
+        "elastic-migrate": "^1.0.1"
     }
 }
