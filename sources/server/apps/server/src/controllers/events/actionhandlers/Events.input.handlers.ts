@@ -52,6 +52,7 @@ export class EventsInputHandlers implements OnModuleInit {
             actionset.next();
         }
 
+        await progress(100);
         return [actionset, true];
     }
 
@@ -79,24 +80,29 @@ export class EventsInputHandlers implements OnModuleInit {
             actionset.next();
         }
 
+        await progress(100);
         return [actionset, true];
     }
 
     // 3. datesConfiguration
 
     datesConfigurationValidator = Joi.object({
-        dates: Joi.array().items(
-            Joi.object({
-                name: Joi.string().required(),
-                eventBegin: Joi.date().required(),
-                eventEnd: Joi.date().required(),
-                location: Joi.object({
-                    lat: Joi.number().required(),
-                    lon: Joi.number().required(),
-                    label: Joi.string().required(),
-                }).required(),
-            }),
-        ),
+        dates: Joi.array()
+            .items(
+                Joi.object({
+                    name: Joi.string().required(),
+                    eventBegin: Joi.date().required(),
+                    eventEnd: Joi.date().required(),
+                    location: Joi.object({
+                        lat: Joi.number().required(),
+                        lon: Joi.number().required(),
+                        label: Joi.string().required(),
+                    })
+                        .min(1)
+                        .required(),
+                }),
+            )
+            .required(),
     });
 
     checkEventDates(date: any): string {
@@ -125,39 +131,32 @@ export class EventsInputHandlers implements OnModuleInit {
             actionset.action.setStatus('error');
             actionset.setStatus('input:error');
         } else {
-            if (data.dates.length === 0) {
-                actionset.action.setError({
-                    details: null,
-                    error: 'empty_dates_array',
-                });
-                actionset.action.setStatus('error');
-                actionset.setStatus('input:error');
-            } else {
-                for (const date of data.dates) {
-                    date.eventBegin = new Date(date.eventBegin);
-                    date.eventEnd = new Date(date.eventEnd);
+            for (const date of data.dates) {
+                date.eventBegin = new Date(date.eventBegin);
+                date.eventEnd = new Date(date.eventEnd);
 
-                    if (this.checkEventDates(date) !== null) {
-                        actionset.action.setError({
-                            details: null,
-                            error: this.checkEventDates(date),
-                        });
-                        actionset.action.setStatus('error');
-                        actionset.setStatus('input:error');
-                        return [actionset, true];
-                    }
-
-                    const city = closestCity(date.location);
-
-                    date.city = city;
+                if (this.checkEventDates(date) !== null) {
+                    actionset.action.setError({
+                        details: null,
+                        error: this.checkEventDates(date),
+                    });
+                    actionset.action.setStatus('error');
+                    actionset.setStatus('input:error');
+                    await progress(100);
+                    return [actionset, true];
                 }
 
-                actionset.action.setData(data);
+                const city = closestCity(date.location);
 
-                actionset.next();
+                date.city = city;
             }
+
+            actionset.action.setData(data);
+
+            actionset.next();
         }
 
+        await progress(100);
         return [actionset, true];
     }
 
@@ -168,12 +167,14 @@ export class EventsInputHandlers implements OnModuleInit {
         resaleBegin: Joi.date(),
         resaleEnd: Joi.date(),
         seats: Joi.number().required(),
-        currencies: Joi.array().items(
-            Joi.object({
-                currency: Joi.string().required(),
-                price: Joi.number().required(),
-            }),
-        ),
+        currencies: Joi.array()
+            .items(
+                Joi.object({
+                    currency: Joi.string().required(),
+                    price: Joi.number().required(),
+                }),
+            )
+            .required(),
     });
 
     categoriesConfigurationValidator = Joi.object({
@@ -230,8 +231,12 @@ export class EventsInputHandlers implements OnModuleInit {
 
     checkResaleDates(data: any): string {
         for (const global of data.global) {
-            global.resaleBegin = new Date(global.resaleBegin);
-            global.resaleEnd = new Date(global.resaleEnd);
+            global.resaleBegin = global.resaleBegin
+                ? new Date(global.resaleBegin)
+                : null;
+            global.resaleEnd = global.resaleEnd
+                ? new Date(global.resaleEnd)
+                : null;
 
             const check = this.checkCategoryDates(global);
 
@@ -242,8 +247,10 @@ export class EventsInputHandlers implements OnModuleInit {
 
         for (const date of data.dates) {
             for (const cat of date) {
-                cat.resaleBegin = new Date(cat.resaleBegin);
-                cat.resaleEnd = new Date(cat.resaleEnd);
+                cat.resaleBegin = cat.resaleBegin
+                    ? new Date(cat.resaleBegin)
+                    : null;
+                cat.resaleEnd = cat.resaleEnd ? new Date(cat.resaleEnd) : null;
 
                 const check = this.checkCategoryDates(cat);
 
@@ -283,6 +290,7 @@ export class EventsInputHandlers implements OnModuleInit {
                 });
                 actionset.action.setStatus('error');
                 actionset.setStatus('input:error');
+                await progress(100);
                 return [actionset, true];
             }
 
@@ -295,6 +303,7 @@ export class EventsInputHandlers implements OnModuleInit {
                 });
                 actionset.action.setStatus('error');
                 actionset.setStatus('input:error');
+                await progress(100);
                 return [actionset, true];
             }
 
@@ -307,18 +316,22 @@ export class EventsInputHandlers implements OnModuleInit {
                 });
                 actionset.action.setStatus('error');
                 actionset.setStatus('input:error');
+                await progress(100);
                 return [actionset, true];
             }
 
             actionset.next();
         }
 
+        await progress(100);
         return [actionset, true];
     }
 
     imagesMetadataValidator = Joi.object({
-        avatar: Joi.string(),
-        banners: Joi.array().items(Joi.string()),
+        avatar: Joi.string().required(),
+        banners: Joi.array()
+            .items(Joi.string())
+            .required(),
     });
 
     async imagesMetadataHandler(
@@ -348,6 +361,7 @@ export class EventsInputHandlers implements OnModuleInit {
                 });
                 actionset.action.setStatus('error');
                 actionset.setStatus('input:error');
+                await progress(100);
                 return [actionset, true];
             }
 
@@ -363,6 +377,7 @@ export class EventsInputHandlers implements OnModuleInit {
                     });
                     actionset.action.setStatus('error');
                     actionset.setStatus('input:error');
+                    await progress(100);
                     return [actionset, true];
                 }
             }
@@ -370,6 +385,7 @@ export class EventsInputHandlers implements OnModuleInit {
             actionset.next();
         }
 
+        await progress(100);
         return [actionset, true];
     }
 
@@ -398,9 +414,11 @@ export class EventsInputHandlers implements OnModuleInit {
             actionset.next();
         }
 
+        await progress(100);
         return [actionset, true];
     }
 
+    /* istanbul ignore next */
     onModuleInit(): void {
         this.actionSetsService.setInputHandler(
             '@events/textMetadata',

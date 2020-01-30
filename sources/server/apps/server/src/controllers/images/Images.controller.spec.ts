@@ -1,23 +1,43 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { capture, deepEqual, instance, mock, when } from 'ts-mockito';
-import { ActionSetsService } from '@lib/common/actionsets/ActionSets.service';
-import { uuid } from '@iaminfinity/express-cassandra';
-import { UserDto } from '@lib/common/users/dto/User.dto';
-import { ESSearchReturn } from '@lib/common/utils/ESSearchReturn';
-import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
-import { ActionsUpdateInputDto } from '@app/server/controllers/actionsets/dto/ActionsUpdateInput.dto';
-import { StatusCodes } from '@lib/common/utils/codes';
 import { ImagesController } from '@app/server/controllers/images/Images.controller';
+import { ImagesService } from '@lib/common/images/Images.service';
+import { ConfigService } from '@lib/common/config/Config.service';
+import { FSService } from '@lib/common/fs/FS.service';
+import { instance, mock } from 'ts-mockito';
 
 const context: {
     imagesController: ImagesController;
+    imagesServiceMock: ImagesService;
+    configServiceMock: ConfigService;
+    fsService: FSService;
 } = {
     imagesController: null,
+    imagesServiceMock: null,
+    configServiceMock: null,
+    fsService: null,
 };
 
 describe('Images Controller', function() {
     beforeEach(async function() {
+        context.imagesServiceMock = mock(ImagesService);
+        context.configServiceMock = mock(ConfigService);
+        context.fsService = mock(FSService);
+
         const module: TestingModule = await Test.createTestingModule({
+            providers: [
+                {
+                    provide: ImagesService,
+                    useValue: instance(context.imagesServiceMock),
+                },
+                {
+                    provide: ConfigService,
+                    useValue: instance(context.configServiceMock),
+                },
+                {
+                    provide: FSService,
+                    useValue: instance(context.fsService),
+                },
+            ],
             controllers: [ImagesController],
         }).compile();
 

@@ -180,7 +180,7 @@ describe('ActionSet', function() {
             status: 'in progress',
         });
 
-        expect(actionSet.status).toEqual('input:in progress');
+        expect(actionSet.status).toEqual('event:in progress');
 
         actionSet.next();
 

@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { capture, deepEqual, instance, mock, when } from 'ts-mockito';
+import { anything, capture, deepEqual, instance, mock, when } from 'ts-mockito';
 import { ActionSetsService } from '@lib/common/actionsets/ActionSets.service';
 import { uuid } from '@iaminfinity/express-cassandra';
 import { UserDto } from '@lib/common/users/dto/User.dto';
@@ -8,28 +8,42 @@ import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entit
 import { ActionSetsController } from '@app/server/controllers/actionsets/ActionSets.controller';
 import { ActionsUpdateInputDto } from '@app/server/controllers/actionsets/dto/ActionsUpdateInput.dto';
 import { StatusCodes } from '@lib/common/utils/codes';
+import { Queue } from 'bull';
+import { getQueueToken } from '@nestjs/bull';
 
 const context: {
     actionsController: ActionSetsController;
     actionSetsServiceMock: ActionSetsService;
+    queueMock: Queue;
 } = {
     actionsController: null,
     actionSetsServiceMock: null,
+    queueMock: null,
 };
+
+class QueueMock {
+    async add(...args: any[]): Promise<void> {}
+}
 
 describe('ActionSets Controller', function() {
     beforeEach(async function() {
         const actionsSetsServiceMock: ActionSetsService = mock(
             ActionSetsService,
         );
+        const queueMock = mock(QueueMock);
 
         const ActionSetsServiceProvider = {
             provide: ActionSetsService,
             useValue: instance(actionsSetsServiceMock),
         };
 
+        const QueueProvider = {
+            provide: getQueueToken('action'),
+            useValue: instance(queueMock),
+        };
+
         const module: TestingModule = await Test.createTestingModule({
-            providers: [ActionSetsServiceProvider],
+            providers: [ActionSetsServiceProvider, QueueProvider],
             controllers: [ActionSetsController],
         }).compile();
 
@@ -37,6 +51,7 @@ describe('ActionSets Controller', function() {
             ActionSetsController,
         );
         context.actionSetsServiceMock = actionsSetsServiceMock;
+        context.queueMock = queueMock as any;
     });
 
     describe('search', function() {
@@ -288,7 +303,7 @@ describe('ActionSets Controller', function() {
                         name: 'test',
                         created_at: creation,
                         updated_at: update,
-                        dispatched_at: dispatch,
+                        dispatched_at: anything(),
                     }),
                 ),
             ).thenResolve({
@@ -427,7 +442,7 @@ describe('ActionSets Controller', function() {
                         name: 'test',
                         created_at: creation,
                         updated_at: update,
-                        dispatched_at: dispatch,
+                        dispatched_at: anything(),
                     }),
                 ),
             ).thenResolve({

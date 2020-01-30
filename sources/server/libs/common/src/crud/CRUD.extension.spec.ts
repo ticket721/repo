@@ -92,7 +92,12 @@ describe('CRUD Extension', function() {
             const res = await crudext.create(newEntity);
 
             verify(
-                context.repositoryMock.create(deepEqual(newEntityProcessed)),
+                context.repositoryMock.create(
+                    deepEqual({
+                        id: uuid('016d3680-c2ac-4c6a-98f8-c63b22b3542f'),
+                        name: 'test',
+                    }),
+                ),
             ).called();
             verify(
                 context.repositoryMock.save(
@@ -161,7 +166,12 @@ describe('CRUD Extension', function() {
             const res = await crudext.create(newEntity, createOptions);
 
             verify(
-                context.repositoryMock.create(deepEqual(newEntityProcessed)),
+                context.repositoryMock.create(
+                    deepEqual({
+                        id: uuid('016d3680-c2ac-4c6a-98f8-c63b22b3542f'),
+                        name: 'test',
+                    }),
+                ),
             ).called();
             verify(
                 context.repositoryMock.save(
