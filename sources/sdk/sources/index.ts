@@ -16,8 +16,14 @@ import { actionsSearch, actionsUpdate } from './app/api/actions';
 import { uploadImage } from './app/api/images';
 
 // DATES
-import { datesSearch }                from './app/api/dates';
-import { eventsCreate, eventsSearch } from './app/api/events';
+import { datesSearch }                                                                            from './app/api/dates';
+import {
+    eventsCreate, eventsCreateAdminsConfiguration, eventsCreateCategoriesConfiguration,
+    eventsCreateDatesConfiguration, eventsCreateImagesMetadata,
+    eventsCreateModulesConfiguration,
+    eventsCreateTextMetadata,
+    eventsSearch,
+} from './app/api/events';
 
 export { FailedRegisterReport } from './app/api/authentication';
 
@@ -39,15 +45,17 @@ export class T721SDK {
         this.web3Register = this.web3Register.bind(this);
         this.web3Login = this.web3Login.bind(this);
         this.validateEmail = this.validateEmail.bind(this);
-
         this.actions.search = this.actions.search.bind(this);
         this.actions.update = this.actions.update.bind(this);
-
         this.dates.search = this.dates.search.bind(this);
-
-        this.events.create = this.events.create.bind(this);
+        this.events.create.init = this.events.create.init.bind(this);
+        this.events.create.textMetadata = this.events.create.textMetadata.bind(this);
+        this.events.create.modulesConfiguration = this.events.create.modulesConfiguration.bind(this);
+        this.events.create.datesConfiguration = this.events.create.datesConfiguration.bind(this);
+        this.events.create.categoriesConfiguration = this.events.create.categoriesConfiguration.bind(this);
+        this.events.create.imagesMetadata = this.events.create.imagesMetadata.bind(this);
+        this.events.create.adminsConfiguration = this.events.create.adminsConfiguration.bind(this);
         this.events.search = this.events.search.bind(this);
-
         this.images.upload = this.images.upload.bind(this);
     }
 
@@ -140,7 +148,15 @@ export class T721SDK {
 
     public events = {
         search: eventsSearch,
-        create: eventsCreate,
+        create: {
+            init: eventsCreate,
+            textMetadata: eventsCreateTextMetadata,
+            modulesConfiguration: eventsCreateModulesConfiguration,
+            datesConfiguration: eventsCreateDatesConfiguration,
+            categoriesConfiguration: eventsCreateCategoriesConfiguration,
+            imagesMetadata: eventsCreateImagesMetadata,
+            adminsConfiguration: eventsCreateAdminsConfiguration,
+        },
     };
 
     public images = {

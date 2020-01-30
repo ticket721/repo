@@ -64,7 +64,7 @@ const createEvent = async (sdk: T721SDK, token: string, event: string): Promise<
 
     const infos = require(`./events/${event}/info`).default;
 
-    const res = await sdk.events.create(
+    const res = await sdk.events.create.init(
         token,
         {
             name: infos.name,
@@ -73,48 +73,40 @@ const createEvent = async (sdk: T721SDK, token: string, event: string): Promise<
 
     const id = res.data.actionset.id;
 
-    await sdk.actions.update(
+    await sdk.events.create.textMetadata(
         token,
+        id,
         {
-            actionset_id: id,
-            data: {
-                name: infos.name,
-                description: infos.description,
-                tags: infos.tags,
-            },
+            name: infos.name,
+            description: infos.description,
+            tags: infos.tags,
         },
     );
 
     await waitForAction(sdk, token, id);
 
-    await sdk.actions.update(
+    await sdk.events.create.modulesConfiguration(
         token,
+        id,
+        {},
+    );
+
+    await waitForAction(sdk, token, id);
+
+    await sdk.events.create.datesConfiguration(
+        token,
+        id,
         {
-            actionset_id: id,
-            data: {},
+            dates: infos.dates,
         },
     );
 
     await waitForAction(sdk, token, id);
 
-    await sdk.actions.update(
+    await sdk.events.create.categoriesConfiguration(
         token,
-        {
-            actionset_id: id,
-            data: {
-                dates: infos.dates,
-            },
-        },
-    );
-
-    await waitForAction(sdk, token, id);
-
-    await sdk.actions.update(
-        token,
-        {
-            actionset_id: id,
-            data: infos.categories,
-        },
+        id,
+        infos.categories,
     );
 
     await waitForAction(sdk, token, id);
@@ -158,28 +150,23 @@ const createEvent = async (sdk: T721SDK, token: string, event: string): Promise<
         banners_ids = res.data.ids.map(img => img.id);
 
     }
-
-    await sdk.actions.update(
+    await sdk.events.create.imagesMetadata(
         token,
+        id,
         {
-            actionset_id: id,
-            data: {
-                avatar: avatar_id,
-                banners: banners_ids,
-            }
-        },
+            avatar: avatar_id,
+            banners: banners_ids,
+        }
     );
 
     await waitForAction(sdk, token, id);
 
-    await sdk.actions.update(
+    await sdk.events.create.adminsConfiguration(
         token,
+        id,
         {
-            actionset_id: id,
-            data: {
-                admins: []
-            }
-        },
+            admins: [],
+        }
     );
 
     await waitForAction(sdk, token, id);

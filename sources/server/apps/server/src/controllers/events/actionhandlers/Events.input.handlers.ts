@@ -8,6 +8,60 @@ import Joi from '@hapi/joi';
 import { closestCity } from '@ticket721sources/global';
 import { ImagesService } from '@lib/common/images/Images.service';
 
+export interface EventsCreateTextMetadata {
+    name: string;
+    description: string;
+    tags: string[];
+}
+
+// tslint:disable-next-line:no-empty-interface
+export interface EventsCreateModulesConfiguration {}
+
+export interface EventsCreateDatesConfiguration {
+    dates: {
+        name: string;
+        eventBegin: Date;
+        eventEnd: Date;
+        location: {
+            lat: number;
+            lon: number;
+            label: string;
+        };
+    }[];
+}
+
+export interface EventsCreateCategoriesConfiguration {
+    global: {
+        name: string;
+        resaleBegin?: Date;
+        resaleEnd?: Date;
+        seats: number;
+        currencies: {
+            currency: string;
+            price: string;
+        };
+    }[];
+    dates: {
+        name: string;
+        resaleBegin?: Date;
+        resaleEnd?: Date;
+        seats: number;
+        currencies: {
+            currency: string;
+            price: string;
+        };
+    }[][];
+}
+
+export interface EventsCreateImagesMetadata {
+    avatar: string;
+    banners: string[];
+}
+
+export interface EventsCreateAdminsConfiguration {
+    admins: string[];
+}
+
 @Injectable()
 export class EventsInputHandlers implements OnModuleInit {
     constructor(

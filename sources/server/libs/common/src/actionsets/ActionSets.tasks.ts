@@ -52,7 +52,7 @@ export class ActionSetsTasks {
             update,
         ] = await this.actionSetsService.getInputHandler(actionSet.action.name)(
             actionSet,
-            job.progress,
+            job.progress.bind(job),
         );
 
         if (update) {
