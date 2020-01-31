@@ -50,7 +50,7 @@ export class ImagesService extends CRUDExtension<
 
         return {
             error: null,
-            response: image,
+            response: updateRes.response,
         };
     }
 
@@ -76,14 +76,14 @@ export class ImagesService extends CRUDExtension<
 
         if (updateRes.error) {
             return {
-                error: 'image_link_update_error',
+                error: 'image_unlink_update_error',
                 response: null,
             };
         }
 
         return {
             error: null,
-            response: image,
+            response: updateRes.response,
         };
     }
 }

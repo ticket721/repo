@@ -6,7 +6,6 @@ import {
     getRepositoryToken,
 } from '@iaminfinity/express-cassandra/dist/utils/cassandra-orm.utils';
 import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
-import { ActionSet } from '@lib/common/actionsets/helper/ActionSet';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EsSearchOptionsStatic } from '@iaminfinity/express-cassandra/dist/orm/interfaces/externals/express-cassandra.interface';
 
