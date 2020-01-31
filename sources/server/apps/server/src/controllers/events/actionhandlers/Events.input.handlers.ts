@@ -93,7 +93,7 @@ export class EventsInputHandlers implements OnModuleInit {
     ): Promise<[ActionSet, boolean]> {
         const data = actionset.action.data;
 
-        const { error, value } = this.textMetadataValidator.validate(data);
+        const { error } = this.textMetadataValidator.validate(data);
 
         if (error) {
             actionset.action.setError({
@@ -119,9 +119,7 @@ export class EventsInputHandlers implements OnModuleInit {
     ): Promise<[ActionSet, boolean]> {
         const data = actionset.action.data;
 
-        const { error, value } = this.modulesConfigurationValidator.validate(
-            data,
-        );
+        const { error } = this.modulesConfigurationValidator.validate(data);
 
         if (error) {
             actionset.action.setError({
@@ -173,9 +171,7 @@ export class EventsInputHandlers implements OnModuleInit {
     ): Promise<[ActionSet, boolean]> {
         const data = actionset.action.data;
 
-        const { error, value } = this.datesConfigurationValidator.validate(
-            data,
-        );
+        const { error } = this.datesConfigurationValidator.validate(data);
 
         if (error) {
             actionset.action.setError({
@@ -323,9 +319,7 @@ export class EventsInputHandlers implements OnModuleInit {
     ): Promise<[ActionSet, boolean]> {
         const data = actionset.action.data;
 
-        const { error, value } = this.categoriesConfigurationValidator.validate(
-            data,
-        );
+        const { error } = this.categoriesConfigurationValidator.validate(data);
 
         if (error) {
             actionset.action.setError({
@@ -394,7 +388,7 @@ export class EventsInputHandlers implements OnModuleInit {
     ): Promise<[ActionSet, boolean]> {
         const data = actionset.action.data;
 
-        const { error, value } = this.imagesMetadataValidator.validate(data);
+        const { error } = this.imagesMetadataValidator.validate(data);
 
         if (error) {
             actionset.action.setError({
@@ -453,9 +447,7 @@ export class EventsInputHandlers implements OnModuleInit {
     ): Promise<[ActionSet, boolean]> {
         const data = actionset.action.data;
 
-        const { error, value } = this.adminsConfigurationValidator.validate(
-            data,
-        );
+        const { error } = this.adminsConfigurationValidator.validate(data);
 
         if (error) {
             actionset.action.setError({

@@ -1,5 +1,5 @@
 import { CRUDExtension } from '@lib/common/crud/CRUD.extension';
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
 import {
     BaseModel,

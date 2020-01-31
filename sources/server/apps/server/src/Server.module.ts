@@ -35,7 +35,6 @@ import { EventsInputHandlers } from '@app/server/controllers/events/actionhandle
 import { ImagesController } from '@app/server/controllers/images/Images.controller';
 import { ImagesModule } from '@lib/common/images/Images.module';
 import { FSModule } from '@lib/common/fs/FS.module';
-import { CurrenciesService } from '@lib/common/currencies/Currencies.service';
 import { CurrenciesModule } from '@lib/common/currencies/Currencies.module';
 
 @Module({

@@ -50,8 +50,8 @@ export class CurrenciesService {
 
     constructor(
         @Inject('CURRENCIES_MODULE_OPTIONS')
-        private readonly configPath: string,
-        private readonly fsService: FSService,
+        configPath: string,
+        fsService: FSService,
         private readonly contractsService: ContractsService,
         private readonly web3Service: Web3Service,
         private readonly shutdownService: ShutdownService,
