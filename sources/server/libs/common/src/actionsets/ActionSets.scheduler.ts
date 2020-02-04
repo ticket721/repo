@@ -1,4 +1,4 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { InjectSchedule, Schedule } from 'nest-schedule';
 import { ActionSetsService } from '@lib/common/actionsets/ActionSets.service';
 import { ESSearchBodyBuilder } from '@lib/common/utils/ESSearchBodyBuilder';
@@ -16,7 +16,7 @@ import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
  * Collection of scheduled tasks
  */
 @Injectable()
-export class ActionSetsScheduler implements OnModuleInit {
+export class ActionSetsScheduler implements OnModuleInit, OnModuleDestroy {
     /**
      * Dependency injection
      *
@@ -45,6 +45,14 @@ export class ActionSetsScheduler implements OnModuleInit {
             1000,
             this.inputDispatcher.bind(this),
         );
+    }
+
+    /**
+     * Mandatory shutdown call to remove all scheduled jobs
+     */
+    /* istanbul ignore next */
+    onModuleDestroy(): void {
+        this.schedule.cancelJobs();
     }
 
     /**

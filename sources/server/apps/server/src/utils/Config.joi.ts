@@ -61,4 +61,14 @@ export const Config: Joi.ObjectSchema = Joi.object({
     IMAGE_SERVE_DIRECTORY: Joi.string().required(),
 
     CURRENCIES_CONFIG_PATH: Joi.string().required(),
+
+    VAULT_HOST: Joi.string().required(),
+    VAULT_PORT: Joi.number().required(),
+    VAULT_PROTOCOL: Joi.string().default('http'),
+    VAULT_TOKEN: Joi.string().required(),
+
+    VAULT_ETHEREUM_NODE_HOST: Joi.string().required(),
+    VAULT_ETHEREUM_NODE_PORT: Joi.number().required(),
+    VAULT_ETHEREUM_NODE_PROTOCOL: Joi.string().default('http'),
+    VAULT_ETHEREUM_NODE_NETWORK_ID: Joi.number().required(),
 });
