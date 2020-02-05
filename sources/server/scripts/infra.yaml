@@ -23,7 +23,7 @@ services:
             - "8201:8201"
         volumes:
             - ${PWD}/devconfig.hcl:/vault/config/devconfig.hcl
-        command: server -dev -config /vault/config/devconfig.hcl
+        command: server -dev -config /vault/config/devconfig.hcl -dev-root-token-id "dev_root_token"
     consul:
         image: "consul:1.6.3"
         ports:
