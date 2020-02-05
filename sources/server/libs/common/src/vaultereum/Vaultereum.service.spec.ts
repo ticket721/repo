@@ -204,59 +204,6 @@ describe('Vaultereum Service', function() {
             verify(clientMock.read('ethereum/config')).called();
         });
 
-        it('throws on read because not configured', async function() {
-            const configureSpy = spy(context.vaultereumService);
-            const clientMock = mock(VaultClientMock);
-
-            when(
-                configureSpy.build(
-                    deepEqual({
-                        apiVersion: 'v1',
-                        endpoint: `${config.VAULT_PROTOCOL}://${config.VAULT_HOST}:${config.VAULT_PORT}`,
-                        token: config.VAULT_TOKEN,
-                    }),
-                ),
-            ).thenReturn(instance(clientMock));
-
-            when(clientMock.read('ethereum/config')).thenReject(
-                new Error('the ethereum backend is not configured properly'),
-            );
-            when(
-                clientMock.write(
-                    'ethereum/config',
-                    deepEqual({
-                        rpc_url: `${config.VAULT_ETHEREUM_NODE_PROTOCOL}://${config.VAULT_ETHEREUM_NODE_HOST}:${config.VAULT_ETHEREUM_NODE_PORT}`,
-                        chain_id: config.VAULT_ETHEREUM_NODE_NETWORK_ID,
-                    }),
-                ),
-            ).thenResolve({
-                data: 'value',
-            });
-
-            await context.vaultereumService.configure();
-
-            verify(
-                configureSpy.build(
-                    deepEqual({
-                        apiVersion: 'v1',
-                        endpoint: `${config.VAULT_PROTOCOL}://${config.VAULT_HOST}:${config.VAULT_PORT}`,
-                        token: config.VAULT_TOKEN,
-                    }),
-                ),
-            ).called();
-
-            verify(clientMock.read('ethereum/config')).called();
-            verify(
-                clientMock.write(
-                    'ethereum/config',
-                    deepEqual({
-                        rpc_url: `${config.VAULT_ETHEREUM_NODE_PROTOCOL}://${config.VAULT_ETHEREUM_NODE_HOST}:${config.VAULT_ETHEREUM_NODE_PORT}`,
-                        chain_id: config.VAULT_ETHEREUM_NODE_NETWORK_ID,
-                    }),
-                ),
-            ).called();
-        });
-
         it('throws on read for unexpected reasons', async function() {
             const configureSpy = spy(context.vaultereumService);
             const clientMock = mock(VaultClientMock);

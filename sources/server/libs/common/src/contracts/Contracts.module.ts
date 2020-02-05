@@ -9,6 +9,7 @@ import { RefractFactoryV0Service } from '@lib/common/contracts/refract/RefractFa
 import { T721ControllerV0Service } from '@lib/common/contracts/t721controller/T721Controller.V0.service';
 import { MetaMarketplaceV0Service } from '@lib/common/contracts/metamarketplace/MetaMarketplace.V0.service';
 import { FSModule } from '@lib/common/fs/FS.module';
+import { T721AdminService } from '@lib/common/contracts/T721Admin.service';
 
 /**
  * Build options for the Contracts Module
@@ -59,6 +60,7 @@ export class ContractsModule {
                 RefractFactoryV0Service,
                 T721ControllerV0Service,
                 MetaMarketplaceV0Service,
+                T721AdminService,
             ],
             exports: [
                 ContractsService,
@@ -66,6 +68,7 @@ export class ContractsModule {
                 RefractFactoryV0Service,
                 T721ControllerV0Service,
                 MetaMarketplaceV0Service,
+                T721AdminService,
             ],
         };
     }

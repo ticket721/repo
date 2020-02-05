@@ -564,12 +564,18 @@ describe('Event Input Handlers', function() {
                 created_at.getTime() - 1000 * 60 * 60 * 24,
             );
 
+            const saleBegin = new Date(
+                created_at.getTime() - 1000 * 60 * 60 * 24,
+            );
+
             const categoriesConfiguration = {
                 global: [
                     {
                         name: 'vip',
                         resaleBegin,
                         resaleEnd: created_at,
+                        saleBegin,
+                        saleEnd: created_at,
                         seats: 100,
                         currencies: [
                             {
@@ -585,6 +591,45 @@ describe('Event Input Handlers', function() {
                             name: 'regular',
                             resaleBegin,
                             resaleEnd: created_at,
+                            saleBegin,
+                            saleEnd: created_at,
+                            seats: 1000,
+                            currencies: [
+                                {
+                                    currency: 'Fiat',
+                                    price: '10',
+                                },
+                            ],
+                        },
+                    ],
+                ],
+            };
+
+            const resultingCategoriesConfiguration = {
+                global: [
+                    {
+                        name: 'vip_0',
+                        resaleBegin,
+                        resaleEnd: created_at,
+                        saleBegin,
+                        saleEnd: created_at,
+                        seats: 100,
+                        currencies: [
+                            {
+                                currency: 'Fiat',
+                                price: '100',
+                            },
+                        ],
+                    },
+                ],
+                dates: [
+                    [
+                        {
+                            name: 'regular_0_0',
+                            resaleBegin,
+                            resaleEnd: created_at,
+                            saleBegin,
+                            saleEnd: created_at,
                             seats: 1000,
                             currencies: [
                                 {
@@ -649,7 +694,7 @@ describe('Event Input Handlers', function() {
                     {
                         status: 'complete',
                         name: '@events/categoriesConfiguration',
-                        data: JSON.stringify(categoriesConfiguration),
+                        data: JSON.stringify(resultingCategoriesConfiguration),
                         type: 'input',
                         error: null,
                     },
@@ -686,7 +731,7 @@ describe('Event Input Handlers', function() {
                 ],
             };
 
-            const resaleBegin = new Date(
+            const saleBegin = new Date(
                 created_at.getTime() - 1000 * 60 * 60 * 24,
             );
 
@@ -695,6 +740,8 @@ describe('Event Input Handlers', function() {
                     {
                         name: 'vip',
                         seats: 100,
+                        saleBegin,
+                        saleEnd: created_at,
                         currencies: [
                             {
                                 currency: 'Fiat',
@@ -708,12 +755,51 @@ describe('Event Input Handlers', function() {
                         {
                             name: 'regular',
                             seats: 1000,
+                            saleBegin,
+                            saleEnd: created_at,
                             currencies: [
                                 {
                                     currency: 'Fiat',
                                     price: '10',
                                 },
                             ],
+                        },
+                    ],
+                ],
+            };
+
+            const resultingCategoriesConfiguration = {
+                global: [
+                    {
+                        name: 'vip_0',
+                        seats: 100,
+                        saleBegin,
+                        saleEnd: created_at,
+                        currencies: [
+                            {
+                                currency: 'Fiat',
+                                price: '100',
+                            },
+                        ],
+                        resaleBegin: null,
+                        resaleEnd: null,
+                    },
+                ],
+                dates: [
+                    [
+                        {
+                            name: 'regular_0_0',
+                            seats: 1000,
+                            saleBegin,
+                            saleEnd: created_at,
+                            currencies: [
+                                {
+                                    currency: 'Fiat',
+                                    price: '10',
+                                },
+                            ],
+                            resaleBegin: null,
+                            resaleEnd: null,
                         },
                     ],
                 ],
@@ -771,7 +857,7 @@ describe('Event Input Handlers', function() {
                     {
                         status: 'complete',
                         name: '@events/categoriesConfiguration',
-                        data: JSON.stringify(categoriesConfiguration),
+                        data: JSON.stringify(resultingCategoriesConfiguration),
                         type: 'input',
                         error: null,
                     },
@@ -808,7 +894,7 @@ describe('Event Input Handlers', function() {
                 ],
             };
 
-            const resaleBegin = new Date(
+            const saleBegin = new Date(
                 created_at.getTime() - 1000 * 60 * 60 * 24,
             );
 
@@ -817,6 +903,8 @@ describe('Event Input Handlers', function() {
                     {
                         name: 'vip',
                         seats: 100,
+                        saleBegin,
+                        saleEnd: created_at,
                     },
                 ],
                 dates: [
@@ -824,6 +912,8 @@ describe('Event Input Handlers', function() {
                         {
                             name: 'regular',
                             seats: 1000,
+                            saleBegin,
+                            saleEnd: created_at,
                             currencies: [
                                 {
                                     currency: 'Fiat',
@@ -889,8 +979,7 @@ describe('Event Input Handlers', function() {
                         name: '@events/categoriesConfiguration',
                         data: JSON.stringify(categoriesConfiguration),
                         type: 'input',
-                        error:
-                            '{"details":{"_original":{"global":[{"name":"vip","seats":100}],"dates":[[{"name":"regular","seats":1000,"currencies":[{"currency":"Fiat","price":"10"}]}]]},"details":[{"message":"\\"global[0].currencies\\" is required","path":["global",0,"currencies"],"type":"any.required","context":{"label":"global[0].currencies","key":"currencies"}}]},"error":"validation_error"}',
+                        error: `{"details":{"_original":{"global":[{"name":"vip","seats":100,"saleBegin":"${saleBegin.toISOString()}","saleEnd":"${created_at.toISOString()}"}],"dates":[[{"name":"regular","seats":1000,"saleBegin":"${saleBegin.toISOString()}","saleEnd":"${created_at.toISOString()}","currencies":[{"currency":"Fiat","price":"10"}]}]]},"details":[{"message":"\\"global[0].currencies\\" is required","path":["global",0,"currencies"],"type":"any.required","context":{"label":"global[0].currencies","key":"currencies"}}]},"error":"validation_error"}`,
                     },
                 ],
                 owner: 'ec677b12-d420-43a6-a597-ef84bf09f845',
@@ -929,11 +1018,17 @@ describe('Event Input Handlers', function() {
                 created_at.getTime() - 1000 * 60 * 60 * 24,
             );
 
+            const saleBegin = new Date(
+                created_at.getTime() - 1000 * 60 * 60 * 24,
+            );
+
             const categoriesConfiguration = {
                 global: [
                     {
                         name: 'vip',
                         resaleEnd: created_at,
+                        saleBegin,
+                        saleEnd: created_at,
                         seats: 100,
                         currencies: [
                             {
@@ -949,6 +1044,8 @@ describe('Event Input Handlers', function() {
                             name: 'regular',
                             resaleBegin,
                             resaleEnd: created_at,
+                            saleBegin,
+                            saleEnd: created_at,
                             seats: 1000,
                             currencies: [
                                 {
@@ -1055,11 +1152,17 @@ describe('Event Input Handlers', function() {
                 created_at.getTime() - 1000 * 60 * 60 * 24,
             );
 
+            const saleBegin = new Date(
+                created_at.getTime() - 1000 * 60 * 60 * 24,
+            );
+
             const categoriesConfiguration = {
                 global: [
                     {
                         name: 'vip',
                         resaleBegin: created_at,
+                        saleBegin,
+                        saleEnd: created_at,
                         seats: 100,
                         currencies: [
                             {
@@ -1075,6 +1178,8 @@ describe('Event Input Handlers', function() {
                             name: 'regular',
                             resaleBegin,
                             resaleEnd: created_at,
+                            saleBegin,
+                            saleEnd: created_at,
                             seats: 1000,
                             currencies: [
                                 {
@@ -1181,12 +1286,18 @@ describe('Event Input Handlers', function() {
                 created_at.getTime() - 1000 * 60 * 60 * 24,
             );
 
+            const saleBegin = new Date(
+                created_at.getTime() - 1000 * 60 * 60 * 24,
+            );
+
             const categoriesConfiguration = {
                 global: [
                     {
                         name: 'vip',
                         resaleBegin,
                         resaleEnd: created_at,
+                        saleBegin,
+                        saleEnd: created_at,
                         seats: 100,
                         currencies: [
                             {
@@ -1201,6 +1312,8 @@ describe('Event Input Handlers', function() {
                         {
                             name: 'regular',
                             resaleEnd: created_at,
+                            saleBegin,
+                            saleEnd: created_at,
                             seats: 1000,
                             currencies: [
                                 {
@@ -1307,12 +1420,18 @@ describe('Event Input Handlers', function() {
                 created_at.getTime() - 1000 * 60 * 60 * 24,
             );
 
+            const saleBegin = new Date(
+                created_at.getTime() - 1000 * 60 * 60 * 24,
+            );
+
             const categoriesConfiguration = {
                 global: [
                     {
                         name: 'vip',
                         resaleBegin,
                         resaleEnd: created_at,
+                        saleBegin,
+                        saleEnd: created_at,
                         seats: 100,
                         currencies: [
                             {
@@ -1327,6 +1446,8 @@ describe('Event Input Handlers', function() {
                         {
                             name: 'regular',
                             resaleBegin,
+                            saleBegin,
+                            saleEnd: created_at,
                             seats: 1000,
                             currencies: [
                                 {
@@ -1433,12 +1554,18 @@ describe('Event Input Handlers', function() {
                 created_at.getTime() - 1000 * 60 * 60 * 24,
             );
 
+            const saleBegin = new Date(
+                created_at.getTime() - 1000 * 60 * 60 * 24,
+            );
+
             const categoriesConfiguration = {
                 global: [
                     {
                         name: 'vip',
                         resaleBegin: created_at,
                         resaleEnd: resaleBegin,
+                        saleBegin,
+                        saleEnd: created_at,
                         seats: 100,
                         currencies: [
                             {
@@ -1453,6 +1580,8 @@ describe('Event Input Handlers', function() {
                         {
                             name: 'regular',
                             resaleBegin,
+                            saleBegin,
+                            saleEnd: created_at,
                             seats: 1000,
                             currencies: [
                                 {
@@ -1533,6 +1662,139 @@ describe('Event Input Handlers', function() {
             });
         });
 
+        it('should fail on saleEnd before saleBegin', async function() {
+            const created_at = new Date(Date.now());
+            const updated_at = created_at;
+            const dispatched_at = created_at;
+
+            const datesConfiguration = {
+                dates: [
+                    {
+                        name: 'Bataclan',
+                        eventBegin: created_at,
+                        eventEnd: new Date(
+                            created_at.getTime() + 1000 * 60 * 60 * 24,
+                        ),
+                        location: {
+                            label: '50 Boulevard Voltaire, 75011 Paris',
+                            lat: 48.86311,
+                            lon: 2.37087,
+                        },
+                    },
+                ],
+            };
+
+            const resaleBegin = new Date(
+                created_at.getTime() - 1000 * 60 * 60 * 24,
+            );
+
+            const saleBegin = new Date(
+                created_at.getTime() - 1000 * 60 * 60 * 24,
+            );
+
+            const categoriesConfiguration = {
+                global: [
+                    {
+                        name: 'vip',
+                        resaleBegin,
+                        resaleEnd: created_at,
+                        saleBegin: created_at,
+                        saleEnd: saleBegin,
+                        seats: 100,
+                        currencies: [
+                            {
+                                currency: 'Fiat',
+                                price: '100',
+                            },
+                        ],
+                    },
+                ],
+                dates: [
+                    [
+                        {
+                            name: 'regular',
+                            saleBegin,
+                            saleEnd: created_at,
+                            seats: 1000,
+                            currencies: [
+                                {
+                                    currency: 'Fiat',
+                                    price: '10',
+                                },
+                            ],
+                        },
+                    ],
+                ],
+            };
+
+            const actionSetEntity: ActionSetEntity = {
+                id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                actions: [
+                    {
+                        status: 'complete',
+                        name: '@events/datesConfiguration',
+                        data: JSON.stringify(datesConfiguration),
+                        type: 'input',
+                        error: null,
+                    },
+                    {
+                        status: 'waiting',
+                        name: '@events/categoriesConfiguration',
+                        data: JSON.stringify(categoriesConfiguration),
+                        type: 'input',
+                        error: null,
+                    },
+                ],
+                owner: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                current_action: 1,
+                current_status: 'input:waiting',
+                name: '@event/creation',
+                created_at,
+                updated_at,
+                dispatched_at,
+            };
+
+            const actionSet: ActionSet = new ActionSet().load(actionSetEntity);
+            const progress = async (p: number) => {};
+
+            const [
+                resActionSet,
+                update,
+            ] = await context.eventsInputHandler.categoriesConfigurationHandler(
+                actionSet,
+                progress,
+            );
+
+            expect(update).toEqual(true);
+            expect(resActionSet.raw).toEqual({
+                id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                actions: [
+                    {
+                        status: 'complete',
+                        name: '@events/datesConfiguration',
+                        data: JSON.stringify(datesConfiguration),
+                        type: 'input',
+                        error: null,
+                    },
+                    {
+                        status: 'error',
+                        name: '@events/categoriesConfiguration',
+                        data: JSON.stringify(categoriesConfiguration),
+                        type: 'input',
+                        error:
+                            '{"details":null,"error":"sale_end_before_sale_begin"}',
+                    },
+                ],
+                owner: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                current_action: 1,
+                current_status: 'input:error',
+                name: '@event/creation',
+                created_at,
+                updated_at,
+                dispatched_at,
+            });
+        });
+
         it('invalid dates length', async function() {
             const created_at = new Date(Date.now());
             const updated_at = created_at;
@@ -1559,12 +1821,18 @@ describe('Event Input Handlers', function() {
                 created_at.getTime() - 1000 * 60 * 60 * 24,
             );
 
+            const saleBegin = new Date(
+                created_at.getTime() - 1000 * 60 * 60 * 24,
+            );
+
             const categoriesConfiguration = {
                 global: [
                     {
                         name: 'vip',
                         resaleBegin,
                         resaleEnd: created_at,
+                        saleBegin,
+                        saleEnd: created_at,
                         seats: 100,
                         currencies: [
                             {
@@ -1580,6 +1848,8 @@ describe('Event Input Handlers', function() {
                             name: 'regular',
                             resaleBegin,
                             resaleEnd: created_at,
+                            saleBegin,
+                            saleEnd: created_at,
                             seats: 1000,
                             currencies: [
                                 {
@@ -1594,6 +1864,8 @@ describe('Event Input Handlers', function() {
                             name: 'regular',
                             resaleBegin,
                             resaleEnd: created_at,
+                            saleBegin,
+                            saleEnd: created_at,
                             seats: 1000,
                             currencies: [
                                 {
@@ -1700,12 +1972,18 @@ describe('Event Input Handlers', function() {
                 created_at.getTime() - 1000 * 60 * 60 * 24,
             );
 
+            const saleBegin = new Date(
+                created_at.getTime() - 1000 * 60 * 60 * 24,
+            );
+
             const categoriesConfiguration = {
                 global: [
                     {
                         name: 'vip',
                         resaleBegin,
                         resaleEnd: created_at,
+                        saleBegin,
+                        saleEnd: created_at,
                         seats: 100,
                         currencies: [
                             {
@@ -1718,6 +1996,8 @@ describe('Event Input Handlers', function() {
                         name: 'vip',
                         resaleBegin,
                         resaleEnd: created_at,
+                        saleBegin,
+                        saleEnd: created_at,
                         seats: 100,
                         currencies: [
                             {
@@ -1733,6 +2013,8 @@ describe('Event Input Handlers', function() {
                             name: 'regular',
                             resaleBegin,
                             resaleEnd: created_at,
+                            saleBegin,
+                            saleEnd: created_at,
                             seats: 1000,
                             currencies: [
                                 {
@@ -1839,12 +2121,18 @@ describe('Event Input Handlers', function() {
                 created_at.getTime() - 1000 * 60 * 60 * 24,
             );
 
+            const saleBegin = new Date(
+                created_at.getTime() - 1000 * 60 * 60 * 24,
+            );
+
             const categoriesConfiguration = {
                 global: [
                     {
                         name: 'vip',
                         resaleBegin,
                         resaleEnd: created_at,
+                        saleBegin,
+                        saleEnd: created_at,
                         seats: 100,
                         currencies: [
                             {
@@ -1860,6 +2148,8 @@ describe('Event Input Handlers', function() {
                             name: 'regular',
                             resaleBegin,
                             resaleEnd: created_at,
+                            saleBegin,
+                            saleEnd: created_at,
                             seats: 1000,
                             currencies: [
                                 {
@@ -1872,6 +2162,8 @@ describe('Event Input Handlers', function() {
                             name: 'regular',
                             resaleBegin,
                             resaleEnd: created_at,
+                            saleBegin,
+                            saleEnd: created_at,
                             seats: 1000,
                             currencies: [
                                 {

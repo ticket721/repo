@@ -1,3 +1,5 @@
+const get_config_sync = require('../gulp/utils/get_config_sync');
+
 const { from_root } = require('../gulp/utils/from_root');
 const { Portalize } = require('portalize');
 const path = require('path');
@@ -67,7 +69,8 @@ try {
                 host: config.host,
                 port: config.port,
                 network_id: config.network_id,
-                provider
+                provider,
+                t721config: get_config_sync(),
             }
         },
         artifacts,

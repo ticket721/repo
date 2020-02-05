@@ -66,12 +66,11 @@ export class ImagesController {
         status: StatusCodes.OK,
         description: StatusNames[StatusCodes.OK],
     })
+    @HttpCode(200)
     @ApiBody({
-        description: 'List of cats',
         type: ImagesUploadInputDto,
     })
     @ApiConsumes('multipart/form-data')
-    @HttpCode(200)
     @UseInterceptors(FilesInterceptor('images'))
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @Roles('authenticated')

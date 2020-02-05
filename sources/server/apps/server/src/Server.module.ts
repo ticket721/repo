@@ -38,6 +38,16 @@ import { FSModule } from '@lib/common/fs/FS.module';
 import { CurrenciesModule } from '@lib/common/currencies/Currencies.module';
 import { VaultereumModule } from '@lib/common/vaultereum/Vaultereum.module';
 import { VaultereumOptions } from '@lib/common/vaultereum/Vaultereum.service';
+import { TxsModule } from '@lib/common/txs/Txs.module';
+import { TxsServiceOptions } from '@lib/common/txs/Txs.service';
+import { GlobalConfigModule } from '@lib/common/globalconfig/GlobalConfig.module';
+import { GlobalConfigOptions } from '@lib/common/globalconfig/GlobalConfig.service';
+import { TxsController } from '@app/server/controllers/txs/Txs.controller';
+import { ContractsController } from '@app/server/controllers/contracts/Contracts.controller';
+import {
+    BinanceModule,
+    BinanceModuleBuildOptions,
+} from '@lib/common/binance/Binance.module';
 
 @Module({
     imports: [
@@ -131,6 +141,65 @@ import { VaultereumOptions } from '@lib/common/vaultereum/Vaultereum.service';
             }),
             inject: [ConfigService],
         }),
+        TxsModule.registerAsync({
+            imports: [ConfigModule.register(Config)],
+            useFactory: (configService: ConfigService): TxsServiceOptions => ({
+                blockThreshold: parseInt(
+                    configService.get('TXS_BLOCK_THRESHOLD'),
+                    10,
+                ),
+                blockPollingRefreshRate: parseInt(
+                    configService.get('TXS_BLOCK_POLLING_REFRESH_RATE'),
+                    10,
+                ),
+                ethereumNetworkId: parseInt(
+                    configService.get('ETHEREUM_NODE_NETWORK_ID'),
+                    10,
+                ),
+                ethereumMtxDomainName: configService.get(
+                    'ETHEREUM_MTX_DOMAIN_NAME',
+                ),
+                ethereumMtxVersion: configService.get('ETHEREUM_MTX_VERSION'),
+                ethereumMtxRelayAdmin: configService.get(
+                    'VAULT_ETHEREUM_ASSIGNED_ADMIN',
+                ),
+                targetGasPrice: parseInt(
+                    configService.get('TXS_TARGET_GAS_PRICE'),
+                    10,
+                ),
+            }),
+            inject: [ConfigService],
+        }),
+        BinanceModule.registerAsync({
+            imports: [ConfigModule.register(Config)],
+            useFactory: (
+                configService: ConfigService,
+            ): BinanceModuleBuildOptions => ({
+                mock:
+                    configService.get('GLOBAL_CONFIG_BINANCE_MOCK') !== 'false',
+            }),
+            inject: [ConfigService],
+        }),
+        GlobalConfigModule.registerAsync({
+            imports: [ConfigModule.register(Config)],
+            useFactory: (
+                configService: ConfigService,
+            ): GlobalConfigOptions => ({
+                blockNumberFetchingRate: parseInt(
+                    configService.get(
+                        'GLOBAL_CONFIG_BLOCK_NUMBER_FETCHING_RATE',
+                    ),
+                    10,
+                ),
+                ethereumPriceFetchingRate: parseInt(
+                    configService.get(
+                        'GLOBAL_CONFIG_ETHEREUM_PRICE_FETCHING_RATE',
+                    ),
+                    10,
+                ),
+            }),
+            inject: [ConfigService],
+        }),
     ],
     controllers: [
         ServerController,
@@ -138,6 +207,8 @@ import { VaultereumOptions } from '@lib/common/vaultereum/Vaultereum.service';
         ActionSetsController,
         DatesController,
         EventsController,
+        TxsController,
+        ContractsController,
     ],
     providers: [
         ServerService,

@@ -19,17 +19,17 @@ export class ContractsControllerBase {
     /**
      * Artifact of the instance
      */
-    private _contractData: ContractArtifact;
+    protected _contractData: ContractArtifact;
 
     /**
      * Web3 Contract instance
      */
-    private _contract: any;
+    protected _contract: any;
 
     /**
      * Logger to use
      */
-    private readonly logger: WinstonLoggerService;
+    protected readonly logger: WinstonLoggerService;
 
     /**
      * Dependency Injection
@@ -42,12 +42,12 @@ export class ContractsControllerBase {
      * @param options
      */
     constructor(
-        private readonly contractsService: ContractsService,
-        private readonly web3Service: Web3Service,
-        private readonly shutdownService: ShutdownService,
-        private readonly moduleName: string,
-        private readonly contractName: string,
-        private readonly options?: ContractsControllerBaseConfig,
+        protected readonly contractsService: ContractsService,
+        protected readonly web3Service: Web3Service,
+        protected readonly shutdownService: ShutdownService,
+        protected readonly moduleName: string,
+        protected readonly contractName: string,
+        protected readonly options?: ContractsControllerBaseConfig,
     ) {
         this.logger = new WinstonLoggerService(
             options && options.name ? options.name : contractName,

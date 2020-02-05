@@ -16,14 +16,17 @@ import { actionsSearch, actionsUpdate } from './app/api/actions';
 import { uploadImage } from './app/api/images';
 
 // DATES
-import { datesSearch }                                                                            from './app/api/dates';
+import { datesSearch }             from './app/api/dates';
 import {
+    eventsBuild,
     eventsCreate, eventsCreateAdminsConfiguration, eventsCreateCategoriesConfiguration,
     eventsCreateDatesConfiguration, eventsCreateImagesMetadata,
     eventsCreateModulesConfiguration,
-    eventsCreateTextMetadata,
+    eventsCreateTextMetadata, eventsDeploy, eventsDeployGeneratePayload,
     eventsSearch,
 } from './app/api/events';
+import { metaTx, txsInfos, txsSearch, txsSubscribe } from './app/api/txs';
+import { contractsFetch }                            from './app/api/contracts';
 
 export { FailedRegisterReport } from './app/api/authentication';
 
@@ -49,14 +52,22 @@ export class T721SDK {
         this.actions.update = this.actions.update.bind(this);
         this.dates.search = this.dates.search.bind(this);
         this.events.create.init = this.events.create.init.bind(this);
+        this.events.create.build = this.events.create.build.bind(this);
         this.events.create.textMetadata = this.events.create.textMetadata.bind(this);
         this.events.create.modulesConfiguration = this.events.create.modulesConfiguration.bind(this);
         this.events.create.datesConfiguration = this.events.create.datesConfiguration.bind(this);
         this.events.create.categoriesConfiguration = this.events.create.categoriesConfiguration.bind(this);
         this.events.create.imagesMetadata = this.events.create.imagesMetadata.bind(this);
         this.events.create.adminsConfiguration = this.events.create.adminsConfiguration.bind(this);
+        this.events.deploy.generatePayload = this.events.deploy.generatePayload.bind(this);
+        this.events.deploy.run = this.events.deploy.run.bind(this);
         this.events.search = this.events.search.bind(this);
         this.images.upload = this.images.upload.bind(this);
+        this.txs.search = this.txs.search.bind(this);
+        this.txs.subscribe = this.txs.subscribe.bind(this);
+        this.txs.infos = this.txs.infos.bind(this);
+        this.txs.metaTx = this.txs.metaTx.bind(this);
+        this.contracts.fetch = this.contracts.fetch.bind(this);
     }
 
     connect(host: string, port: number, protocol: 'http' | 'https' = 'http') {
@@ -150,6 +161,7 @@ export class T721SDK {
         search: eventsSearch,
         create: {
             init: eventsCreate,
+            build: eventsBuild,
             textMetadata: eventsCreateTextMetadata,
             modulesConfiguration: eventsCreateModulesConfiguration,
             datesConfiguration: eventsCreateDatesConfiguration,
@@ -157,9 +169,24 @@ export class T721SDK {
             imagesMetadata: eventsCreateImagesMetadata,
             adminsConfiguration: eventsCreateAdminsConfiguration,
         },
+        deploy: {
+            generatePayload: eventsDeployGeneratePayload,
+            run: eventsDeploy,
+        },
     };
 
     public images = {
         upload: uploadImage,
+    };
+
+    public txs = {
+        search: txsSearch,
+        subscribe: txsSubscribe,
+        infos: txsInfos,
+        metaTx,
+    };
+
+    public contracts = {
+        fetch: contractsFetch,
     };
 }

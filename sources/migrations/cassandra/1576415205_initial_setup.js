@@ -89,16 +89,21 @@ var migration1576415205 = {
                         group_id text,
                         category_name text,
                         category_index int,
+                        sale_begin timestamp,
+                        sale_end timestamp,
+                        resale_begin timestamp,
+                        resale_end timestamp,
                         scope text,
-                        prices list<frozen<ticket721.price>>
+                        prices list<frozen<ticket721.price>>,
+                        status text,
+                        seats int
                     );`,
             params: []
         };
 
         const date_metadata_type_creation = {
             query: `CREATE TYPE ticket721.date_metadata (
-                        name text,
-                        image text,
+                        name text
                     );`,
             params: []
         };
@@ -106,8 +111,10 @@ var migration1576415205 = {
         const date_table_creation = {
             query: `CREATE TABLE ticket721.date (
                         id UUID PRIMARY KEY,
-                        location_label text,
+                        event_begin timestamp,
+                        event_end timestamp,
                         location frozen<ticket721.geo_point>,
+                        location_label text,
                         assigned_city int,
                         categories list<frozen<ticket721.category>>,
                         metadata frozen<ticket721.date_metadata>,
@@ -122,14 +129,88 @@ var migration1576415205 = {
         const event_table_creation = {
             query: `CREATE TABLE ticket721.event (
                         id UUID PRIMARY KEY,
+                        status text,
+                        address text,
+                        owner uuid,
+                        admins list<uuid>,
                         dates list<uuid>,
+                        categories list<frozen<ticket721.category>>,
                         name text,
                         description text,
-                        avatar text,
-                        banners list<text>,
-                        categories list<frozen<ticket721.category>>,
+                        avatar uuid,
+                        banners list<uuid>,
+                        group_id text,
                         created_at timestamp,
                         updated_at timestamp
+                    );`,
+            params: []
+        };
+
+        const tx_log_type_creation = {
+            query: `CREATE TYPE ticket721.tx_log (
+                        address text,
+                        block_hash text,
+                        block_number int,
+                        data text,
+                        log_index int,
+                        removed boolean,
+                        topics list<text>,
+                        transaction_hash text,
+                        transaction_index int,
+                        id text
+                    );`,
+            params: []
+        };
+
+        const tx_table_creation = {
+            query: `CREATE TABLE ticket721.tx (
+                        transaction_hash text PRIMARY KEY,
+                        confirmed boolean,
+                        status boolean,
+                        block_hash text,
+                        block_number int,
+                        transaction_index int,
+                        from_ text,
+                        to_ text,
+                        contract_address text,
+                        cumulative_gas_used text,
+                        cumulative_gas_used_ln double,
+                        gas_used text,
+                        gas_used_ln double,
+                        gas_price text,
+                        gas_price_ln double,
+                        logs list<frozen<ticket721.tx_log>>,
+                        logs_bloom text,
+                        created_at timestamp,
+                        updated_at timestamp
+                    );`,
+            params: []
+        };
+
+        const global_table_creation = {
+            query: `CREATE TABLE ticket721.global (
+                        id text PRIMARY KEY,
+                        block_number int,
+                        eth_eur_price int,
+                        created_at timestamp,
+                        updated_at timestamp
+                    );`,
+            params: []
+        };
+
+        const global_table_initial_document = {
+            query: `INSERT INTO ticket721.global (
+                        id, 
+                        block_number, 
+                        eth_eur_price, 
+                        created_at, 
+                        updated_at
+                    ) values (
+                        'global',
+                        0,
+                        100000,
+                        toTimeStamp(toDate(now())),
+                        toTimeStamp(toDate(now()))
                     );`,
             params: []
         };
@@ -152,6 +233,9 @@ var migration1576415205 = {
             console.log('Date Metadata Type Creation');
             await db.execute(date_metadata_type_creation.query, date_metadata_type_creation.params, { prepare: true });
 
+            console.log('Tx Log Type Creation');
+            await db.execute(tx_log_type_creation.query, tx_log_type_creation.params, {prepare: true});
+
             // Then tables
             console.log('User Table Creation');
             await db.execute(user_table_creation.query, user_table_creation.params, { prepare: true });
@@ -170,6 +254,15 @@ var migration1576415205 = {
 
             console.log('Event Table Creation');
             await db.execute(event_table_creation.query, event_table_creation.params, { prepare: true });
+
+            console.log('Tx Table Creation');
+            await db.execute(tx_table_creation.query, tx_table_creation.params, { prepare: true });
+
+            console.log('Global Table Creation');
+            await db.execute(global_table_creation.query, global_table_creation.params, { prepare: true });
+
+            console.log('Global Table Initial Document');
+            await db.execute(global_table_initial_document.query, global_table_initial_document.params, { prepare: true });
 
         } catch (e) {
             return handler(e, false);
@@ -234,6 +327,21 @@ var migration1576415205 = {
             params: []
         };
 
+        const tx_log_type_creation = {
+            query: `DROP TYPE ticket721.tx_log`,
+            params: []
+        };
+
+        const tx_table_creation = {
+            query: `DROP TABLE ticket721.tx`,
+            params: []
+        };
+
+        const global_table_creation = {
+            query: `DROP TABLE ticket721.global`,
+            params: []
+        };
+
         try {
 
             // Tables first
@@ -255,6 +363,12 @@ var migration1576415205 = {
             console.log('Event Table Deletion');
             await db.execute(event_table_creation.query, event_table_creation.params, { prepare: true });
 
+            console.log('Tx Table Deletion');
+            await db.execute(tx_table_creation.query, tx_table_creation.params, { prepare: true });
+
+            console.log('Global Table Deletion');
+            await db.execute(global_table_creation.query, global_table_creation.params, { prepare: true });
+
             // Then Types
             console.log('Action Type Deletion');
             await db.execute(action_type_creation.query, action_type_creation.params, { prepare: true });
@@ -270,6 +384,9 @@ var migration1576415205 = {
 
             console.log('Date Metadata Type Deletion');
             await db.execute(date_metadata_type_creation.query, date_metadata_type_creation.params, { prepare: true });
+
+            console.log('Tx Log Type Deletion');
+            await db.execute(tx_log_type_creation.query, tx_log_type_creation.params, { prepare: true });
 
 
         } catch (e) {

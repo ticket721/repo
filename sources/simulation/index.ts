@@ -1,10 +1,11 @@
-import config                          from './config';
-import { Wallet }                      from 'ethers';
-import { createWallet, encryptWallet } from '@ticket721sources/global';
-import * as fs                         from 'fs';
-import { T721SDK }                     from '@ticket721sources/sdk';
-import { AxiosResponse }               from 'axios';
-import * as FormData                   from 'form-data';
+import config                                      from './config';
+import { Wallet }                                  from 'ethers';
+import { createWallet, encryptWallet, RefractMtx } from '@ticket721sources/global';
+import * as fs                                     from 'fs';
+import { T721SDK }                                 from '@ticket721sources/sdk';
+import { AxiosResponse }                           from 'axios';
+import * as FormData                               from 'form-data';
+import { UserDto }                                 from '../server/libs/common/src/users/dto/User.dto';
 
 const loadWallet = async (path: string): Promise<Wallet> => {
     if (fs.existsSync(path)) {
@@ -59,7 +60,7 @@ const waitForAction = async (sdk: T721SDK, token: string, actionset: string): Pr
     });
 };
 
-const createEvent = async (sdk: T721SDK, token: string, event: string): Promise<void> => {
+const createEvent = async (user: UserDto, wallet: Wallet, sdk: T721SDK, token: string, event: string): Promise<void> => {
     console.log(`Deploying Test Event with ID: ${event}`);
 
     const infos = require(`./events/${event}/info`).default;
@@ -165,18 +166,38 @@ const createEvent = async (sdk: T721SDK, token: string, event: string): Promise<
         token,
         id,
         {
-            admins: [],
+            admins: infos.admins,
         }
     );
 
     await waitForAction(sdk, token, id);
 
-    console.log(`Deployed Event ${event} with action set id ${id}`);
+    console.log(`Created Event ${event} with action set id ${id}`);
+
+    const resultingEvent = await sdk.events.create.build(token, {
+        completedActionSet: id,
+    });
+
+    const eventDeployPayload = await sdk.events.deploy.generatePayload(token, resultingEvent.data.event.id);
+    const payload = eventDeployPayload.data.payload;
+    const refractSigner = new RefractMtx(2702, 'Refract Wallet', '0', user.address);
+    const signature = await refractSigner.sign(wallet.privateKey, payload);
+
+    const eventDeployment = await sdk.events.deploy.run(
+        token,
+        {
+            payload,
+            signature: signature.hex,
+            event: resultingEvent.data.event.id,
+        }
+    );
+
+    console.log(eventDeployment.data.event);
 
 };
 
-const eventCreator = async (sdk: T721SDK, token: string): Promise<void> => {
-    await createEvent(sdk, token, 'justice');
+const eventCreator = async (sdk: T721SDK, token: string, user: UserDto, wallet: Wallet): Promise<void> => {
+    await createEvent(user, wallet, sdk, token, 'justice');
 };
 
 const main = async (): Promise<void> => {
@@ -186,12 +207,14 @@ const main = async (): Promise<void> => {
     sdk.connect(config.host, config.port, config.protocol as 'http' | 'https');
 
     let token;
+    let user;
 
     try {
         const res = await sdk.localLogin(config.email, config.password);
         console.log('Logged In');
         console.log('Token', res.data.token);
         token = res.data.token;
+        user = res.data.user;
     } catch (e) {
         console.log('Cannot Login: Creating Account');
         if (e.response.status === 401) {
@@ -199,10 +222,13 @@ const main = async (): Promise<void> => {
             }, 'en') as AxiosResponse;
             await sdk.validateEmail(res.data.validationToken);
             token = res.data.token;
+            user = res.data.user;
         }
     }
 
-    await eventCreator(sdk, token);
+    console.log('Controller ', wallet.address);
+
+    await eventCreator(sdk, token, user, wallet);
 
 };
 
@@ -210,7 +236,6 @@ main().catch((e: any): void => {
     console.error(e);
     console.log(e.config.data);
     if (e.response && e.response.data) {
-        console.log('hi');
         console.error(JSON.stringify(e.response.data));
     }
 });

@@ -1,4 +1,4 @@
-import { uuidEq } from './index';
+import { toB32, uuidEq } from './index';
 
 describe('Utils', function () {
 
@@ -21,6 +21,18 @@ describe('Utils', function () {
             expect(uuidEq(uuid1, uuid2)).toBeFalsy();
 
         });
+
+    });
+
+    describe('toB32', function() {
+
+        it('should convert Ticket721 to B32 hex', function() {
+
+            const b32t721 = toB32('Ticket721');
+
+            expect(b32t721).toEqual('0x5469636b65743732310000000000000000000000000000000000000000000000');
+
+        })
 
     });
 

@@ -92,14 +92,31 @@ class M20191216075937_initial_setup extends ElasticMigration {
                 "discover": ".*"
             }
         });
+
+        await this.createIndex('ticket721_tx', 'ticket721');
+        await this.putMapping('ticket721_tx', 'tx', {
+            "tx": {
+                "discover": ".*"
+            }
+        });
+        
+        await this.createIndex('ticket721_global', 'ticket721');
+        await this.putMapping('ticket721_global', 'global', {
+            "global": {
+                "discover": ".*"
+            }
+        });
     }
 
     async down() {
         await this.removeIndex('ticket721_user');
+        await this.removeIndex('ticket721_image');
         await this.removeIndex('ticket721_web3token');
         await this.removeIndex('ticket721_actionset');
         await this.removeIndex('ticket721_date');
         await this.removeIndex('ticket721_event');
+        await this.removeIndex('ticket721_tx');
+        await this.removeIndex('ticket721_global');
     }
 }
 

@@ -155,6 +155,10 @@ export class ActionSetsController {
         description: StatusNames[StatusCodes.NotFound],
     })
     @ApiResponse({
+        status: StatusCodes.BadRequest,
+        description: StatusNames[StatusCodes.BadRequest],
+    })
+    @ApiResponse({
         status: StatusCodes.OK,
         description: StatusNames[StatusCodes.OK],
     })
@@ -170,6 +174,8 @@ export class ActionSetsController {
                 id: body.actionset_id,
             },
         );
+
+        console.log('1');
 
         if (searchResult.error) {
             throw new HttpException(
@@ -237,6 +243,8 @@ export class ActionSetsController {
         });
 
         await this.actionQueue.add('input', actionSet.raw);
+
+        console.log('2');
 
         if (res.error) {
             throw new HttpException(

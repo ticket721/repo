@@ -67,8 +67,9 @@ describe('Dates Controller', function() {
                     categories: [],
                     metadata: {
                         name: 'hi',
-                        image: 'http://image.com',
                     },
+                    event_begin: new Date(Date.now()),
+                    event_end: new Date(Date.now() + 10000),
                     created_at: new Date(Date.now()),
                     updated_at: new Date(Date.now()),
                     parent_id: 'ec677b12-d420-43a6-a597-ef84bf09f845',

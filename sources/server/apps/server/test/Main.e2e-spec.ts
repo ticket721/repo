@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { T721SDK } from '@ticket721sources/sdk';
-import { getApiInfo } from './App.case';
 import {
     ganache_revert,
     ganache_snapshot,
@@ -10,9 +9,12 @@ import {
     runMigrations,
     startDocker,
     stopDocker,
-} from './DockerElassandra.util';
-import { register, web3register } from './api/Authentication.case';
+} from './utils';
 import { ServerModule } from '../src/Server.module';
+import ascii from './ascii';
+
+import { getApiInfo } from './App.case';
+import { register, web3register } from './api/Authentication.case';
 import { fetchActions } from './api/Actions.case';
 import { fetchDates } from './api/Dates.case';
 
@@ -20,6 +22,8 @@ const cassandraPort = 32702;
 const elasticSearchPort = 32610;
 const redisPort = 32412;
 const ganachePort = 38545;
+const vaultereumPorts = [8200, 8201];
+const consulPort = 8500;
 
 const context: {
     app: INestApplication;
@@ -38,16 +42,38 @@ describe('AppController (e2e)', () => {
     let first: boolean = true;
 
     beforeAll(async function() {
+        process.stdout.write(ascii.beforeAll);
+        console.log('STARTED');
+
         if (process.env.NO_DEPLOY !== 'true') {
-            await startDocker(
-                cassandraPort,
-                elasticSearchPort,
-                redisPort,
-                ganachePort,
-            );
+            await startDocker();
         }
-        await runMigrations(cassandraPort, elasticSearchPort);
+
         await prepare();
+
+        process.stdout.write(ascii.beforeAll);
+        console.log('FINISHED');
+    }, 60000 * 30);
+
+    afterAll(async function() {
+        process.stdout.write(ascii.afterAll);
+        console.log('STARTED');
+
+        if (process.env.NO_DEPLOY !== 'true') {
+            await stopDocker();
+        }
+
+        process.stdout.write(ascii.afterAll);
+        console.log('FINISHED');
+    }, 60000);
+
+    beforeEach(async function() {
+        process.stdout.write(ascii.beforeEach);
+        console.log('STARTED');
+
+        await ganache_revert(snap_id, ganachePort);
+        snap_id = await ganache_snapshot(ganachePort);
+        await runMigrations(cassandraPort, elasticSearchPort);
 
         const moduleFixture: TestingModule = await Test.createTestingModule({
             imports: [ServerModule],
@@ -63,28 +89,27 @@ describe('AppController (e2e)', () => {
 
         context.app = app;
         context.sdk = sdk;
-    }, 60000 * 30);
 
-    afterAll(async function() {
-        await context.app.close();
-        if (process.env.NO_DEPLOY !== 'true') {
-            await stopDocker();
-        }
-    });
-
-    beforeEach(async function() {
-        await ganache_revert(snap_id, ganachePort);
-        snap_id = await ganache_snapshot(ganachePort);
         if (first) {
             first = false;
         } else {
             await runMigrations(cassandraPort, elasticSearchPort);
         }
-    });
+
+        process.stdout.write(ascii.beforeEach);
+        console.log('FINISHED');
+    }, 60000);
 
     afterEach(async function() {
+        process.stdout.write(ascii.afterEach);
+        console.log('STARTED');
+
+        await context.app.close();
         await resetMigrations(cassandraPort, elasticSearchPort);
-    });
+
+        process.stdout.write(ascii.afterEach);
+        console.log('FINISHED');
+    }, 60000);
 
     describe('AppController', () => {
         test('/ (GET)', getApiInfo.bind(null, getCtx));

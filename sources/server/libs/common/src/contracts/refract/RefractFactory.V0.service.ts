@@ -3,6 +3,7 @@ import { ContractsService } from '@lib/common/contracts/Contracts.service';
 import { Injectable } from '@nestjs/common';
 import { Web3Service } from '@lib/common/web3/Web3.service';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
+import { toAcceptedAddressFormat } from '@ticket721sources/global';
 
 /**
  * Smart Contract Controller for the RefractFactory_v0 contract
@@ -28,5 +29,98 @@ export class RefractFactoryV0Service extends ContractsControllerBase {
             'refract',
             'RefractFactory_v0',
         );
+    }
+
+    public async getNonce(refract: string): Promise<number> {
+        const code = await (await this.web3Service.get()).eth.getCode(refract);
+
+        if (code === '0x') {
+            return 0;
+        }
+
+        const refractInstance = new ContractsControllerBase(
+            this.contractsService,
+            this.web3Service,
+            this.shutdownService,
+            'refract',
+            'RefractWallet_v0',
+            {
+                address: refract,
+            },
+        );
+
+        return (await refractInstance.get()).methods.nonce().call();
+    }
+
+    public async isController(
+        refract: string,
+        controller: string,
+        salt: string,
+    ): Promise<boolean> {
+        const code = await (await this.web3Service.get()).eth.getCode(refract);
+
+        if (code === '0x') {
+            const finalAddress: string = toAcceptedAddressFormat(
+                await (await this.get()).methods
+                    .predict(controller, salt)
+                    .call(),
+            );
+
+            return toAcceptedAddressFormat(refract) === finalAddress;
+        } else {
+            const refractInstance = new ContractsControllerBase(
+                this.contractsService,
+                this.web3Service,
+                this.shutdownService,
+                'refract',
+                'RefractWallet_v0',
+                {
+                    address: refract,
+                },
+            );
+
+            return await (await refractInstance.get()).methods.isController(
+                controller,
+            );
+        }
+    }
+
+    public async encodeCall(
+        refract: string,
+        controller: string,
+        salt: string,
+        nonce: number,
+        addr: string[],
+        nums: string[],
+        bdata: string,
+    ): Promise<[string, string]> {
+        const code = await (await this.web3Service.get()).eth.getCode(refract);
+
+        if (code === '0x') {
+            const factory = await this.get();
+            const factoryCall = factory.methods
+                .mtxAndDeploy(controller, salt, addr, nums, bdata)
+                .encodeABI();
+
+            return [factory._address, factoryCall];
+        } else {
+            const refractInstance = new ContractsControllerBase(
+                this.contractsService,
+                this.web3Service,
+                this.shutdownService,
+                'refract',
+                'RefractWallet_v0',
+                {
+                    address: refract,
+                },
+            );
+
+            return [
+                refract,
+                (await refractInstance.get()).methods
+                    .mtx(nonce, addr, nums, bdata)
+                    .encodeABI(),
+            ];
+        }
     }
 }

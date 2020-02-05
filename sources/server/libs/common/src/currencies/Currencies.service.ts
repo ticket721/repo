@@ -22,15 +22,6 @@ export interface SetCurrency {
     contains: string[];
 }
 
-export interface NativeCurrency {
-    type: string;
-    name: string;
-    module: string;
-    address: string;
-    dollarPeg?: number;
-    controller: ContractsControllerBase;
-}
-
 export interface ERC20Currency {
     type: string;
     name: string;
@@ -44,7 +35,7 @@ export interface ERC20Currency {
 export class CurrenciesService {
     private readonly currencyConfigs: CurrencyConfig[];
     private readonly currencies: {
-        [key: string]: ERC20Currency | NativeCurrency | SetCurrency;
+        [key: string]: ERC20Currency | SetCurrency;
     } = {};
     private loaded: boolean = false;
 
@@ -86,7 +77,7 @@ export class CurrenciesService {
 
         this.currencies[currencyConfig.name] = {
             type: currencyConfig.type,
-            name: currencyConfig.contractName,
+            name: currencyConfig.name,
             module: currencyConfig.moduleName,
             address: currencyConfig.contractAddress,
             dollarPeg: currencyConfig.dollarPeg,
@@ -110,11 +101,11 @@ export class CurrenciesService {
 
         await controller.loadContract();
 
-        const address = (await controller.get()).address;
+        const address = (await controller.get())._address;
 
         this.currencies[currencyConfig.name] = {
             type: currencyConfig.type,
-            name: currencyConfig.contractName,
+            name: currencyConfig.name,
             module: currencyConfig.moduleName,
             address,
             dollarPeg: currencyConfig.dollarPeg,
@@ -139,7 +130,7 @@ export class CurrenciesService {
     }
 
     private async load(): Promise<{
-        [key: string]: ERC20Currency | NativeCurrency | SetCurrency;
+        [key: string]: ERC20Currency | SetCurrency;
     }> {
         for (const currencyConfig of this.currencyConfigs) {
             switch (currencyConfig.type) {
@@ -157,9 +148,7 @@ export class CurrenciesService {
         return this.currencies;
     }
 
-    public async get(
-        currency: string,
-    ): Promise<ERC20Currency | NativeCurrency | SetCurrency> {
+    public async get(currency: string): Promise<ERC20Currency | SetCurrency> {
         return this.loaded
             ? this.currencies[currency]
             : (await this.load())[currency];

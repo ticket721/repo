@@ -47,6 +47,26 @@ export interface Category {
     category_index: number;
 
     /**
+     * Date at which the ticket sale is enabled. Both resale_begin and resale_end are either defined or undefined
+     */
+    sale_begin: Date;
+
+    /**
+     * Date at which the ticket is disabled
+     */
+    sale_end: Date;
+
+    /**
+     * Date at which the ticket sale is enabled. Both resale_begin and resale_end are either defined or undefined
+     */
+    resale_begin: Date;
+
+    /**
+     * Date at which the ticket is disabled
+     */
+    resale_end: Date;
+
+    /**
      * Ticket scope
      */
     scope: string;
@@ -55,6 +75,16 @@ export interface Category {
      * Prices of the category
      */
     prices: Price[];
+
+    /**
+     * Total number of available tickets
+     */
+    seats: number;
+
+    /**
+     * Current status of the category
+     */
+    status: 'preview' | 'deployed';
 }
 
 /**
@@ -65,11 +95,6 @@ export interface DateMetadata {
      * Name to display along the date
      */
     name: string;
-
-    /**
-     * Image to use with this date
-     */
-    image: string;
 }
 
 /**
@@ -95,14 +120,17 @@ export class DateEntity {
     @GeneratedUUidColumn()
     id: string;
 
-    /**
-     * Location label of the date
-     */
     @Column({
-        type: 'text',
+        type: 'timestamp',
     })
     // tslint:disable-next-line:variable-name
-    location_label: string;
+    event_begin: Date;
+
+    @Column({
+        type: 'timestamp',
+    })
+    // tslint:disable-next-line:variable-name
+    event_end: Date;
 
     /**
      * Coordinates of the Date
@@ -112,6 +140,15 @@ export class DateEntity {
         typeDef: '<geo_point>',
     })
     location: Coordinates;
+
+    /**
+     * Location label of the date
+     */
+    @Column({
+        type: 'text',
+    })
+    // tslint:disable-next-line:variable-name
+    location_label: string;
 
     /**
      * Assigned city of the Date

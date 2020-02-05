@@ -33,6 +33,8 @@ export interface EventsCreateDatesConfiguration {
 export interface EventsCreateCategoriesConfiguration {
     global: {
         name: string;
+        saleBegin: Date;
+        saleEnd: Date;
         resaleBegin?: Date;
         resaleEnd?: Date;
         seats: number;
@@ -43,6 +45,8 @@ export interface EventsCreateCategoriesConfiguration {
     }[];
     dates: {
         name: string;
+        saleBegin: Date;
+        saleEnd: Date;
         resaleBegin?: Date;
         resaleEnd?: Date;
         seats: number;
@@ -214,6 +218,8 @@ export class EventsInputHandlers implements OnModuleInit {
 
     categoryConfigurationValidator = Joi.object({
         name: Joi.string().required(),
+        saleBegin: Joi.date().required(),
+        saleEnd: Joi.date().required(),
         resaleBegin: Joi.date(),
         resaleEnd: Joi.date(),
         seats: Joi.number().required(),
@@ -276,6 +282,10 @@ export class EventsInputHandlers implements OnModuleInit {
             return 'resale_end_before_resale_begin';
         }
 
+        if (cat.saleEnd < cat.saleBegin) {
+            return 'sale_end_before_sale_begin';
+        }
+
         return null;
     }
 
@@ -287,6 +297,8 @@ export class EventsInputHandlers implements OnModuleInit {
             global.resaleEnd = global.resaleEnd
                 ? new Date(global.resaleEnd)
                 : null;
+            global.saleBegin = new Date(global.saleBegin);
+            global.saleEnd = new Date(global.saleEnd);
 
             const check = this.checkCategoryDates(global);
 
@@ -301,6 +313,8 @@ export class EventsInputHandlers implements OnModuleInit {
                     ? new Date(cat.resaleBegin)
                     : null;
                 cat.resaleEnd = cat.resaleEnd ? new Date(cat.resaleEnd) : null;
+                cat.saleBegin = new Date(cat.saleBegin);
+                cat.saleEnd = new Date(cat.saleEnd);
 
                 const check = this.checkCategoryDates(cat);
 
@@ -368,6 +382,7 @@ export class EventsInputHandlers implements OnModuleInit {
                 return [actionset, true];
             }
 
+            actionset.action.setData(data);
             actionset.next();
         }
 

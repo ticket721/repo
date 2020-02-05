@@ -8,6 +8,7 @@ import {
 import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EsSearchOptionsStatic } from '@iaminfinity/express-cassandra/dist/orm/interfaces/externals/express-cassandra.interface';
+import { ConfigService } from '@lib/common/config/Config.service';
 
 class EntityModelMock {
     search(
@@ -25,15 +26,18 @@ describe('ActionSets Service', function() {
         actionSetsService: ActionSetsService;
         actionSetsRepository: ActionSetsRepository;
         actionSetModel: EntityModelMock;
+        configServiceMock: ConfigService;
     } = {
         actionSetsService: null,
         actionSetsRepository: null,
         actionSetModel: null,
+        configServiceMock: null,
     };
 
     beforeEach(async function() {
         context.actionSetModel = mock(EntityModelMock);
         context.actionSetsRepository = mock(ActionSetsRepository);
+        context.configServiceMock = mock(ConfigService);
         when(context.actionSetModel._properties).thenReturn({
             schema: {
                 fields: {
@@ -43,6 +47,11 @@ describe('ActionSets Service', function() {
                 },
             },
         });
+
+        const ConfigServiceProvider = {
+            provide: ConfigService,
+            useValue: instance(context.configServiceMock),
+        };
 
         const ActionSetEntityModelProvider = {
             provide: getModelToken(ActionSetEntity),
@@ -58,6 +67,7 @@ describe('ActionSets Service', function() {
             providers: [
                 ActionSetEntityModelProvider,
                 ActionSetsRepositoryProvider,
+                ConfigServiceProvider,
                 ActionSetsService,
             ],
         }).compile();

@@ -665,7 +665,7 @@ describe('ActionSets Controller', function() {
                 name: 'test',
                 created_at: creation,
                 updated_at: update,
-                dispatched_at: new Date(Date.now()),
+                dispatched_at: dispatch,
             };
 
             when(
@@ -707,7 +707,7 @@ describe('ActionSets Controller', function() {
                         name: 'test',
                         created_at: creation,
                         updated_at: update,
-                        dispatched_at: dispatch,
+                        dispatched_at: anything(),
                     }),
                 ),
             ).thenResolve({

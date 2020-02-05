@@ -25,6 +25,39 @@ export class EventEntity {
     id: string;
 
     /**
+     * Unique ID of the Date
+     */
+    @Column({
+        type: 'text',
+    })
+    status: 'preview' | 'deployed';
+
+    /**
+     * Validating address
+     */
+    @Column({
+        type: 'text',
+    })
+    address: string;
+
+    /**
+     * Unique ID of the Owner
+     */
+    @Column({
+        type: 'uuid',
+    })
+    owner: string;
+
+    /**
+     * Unique ID of the Admins
+     */
+    @Column({
+        type: 'list',
+        typeDef: '<uuid>',
+    })
+    admins: string[];
+
+    /**
      * Unique ID of the Dates
      */
     @Column({
@@ -32,6 +65,15 @@ export class EventEntity {
         typeDef: '<uuid>',
     })
     dates: string[];
+
+    /**
+     * Ticket categories that are cross-dates
+     */
+    @Column({
+        type: 'list',
+        typeDef: '<frozen<category>>',
+    })
+    categories: Category[];
 
     /**
      * Name of the event
@@ -53,7 +95,7 @@ export class EventEntity {
      * Avatar image of the event
      */
     @Column({
-        type: 'text',
+        type: 'uuid',
     })
     avatar: string;
 
@@ -62,18 +104,18 @@ export class EventEntity {
      */
     @Column({
         type: 'list',
-        typeDef: '<text>',
+        typeDef: '<uuid>',
     })
     banners: string[];
 
     /**
-     * Ticket categories that are cross-dates
+     * Description of the event
      */
     @Column({
-        type: 'list',
-        typeDef: '<frozen<category>>',
+        type: 'text',
     })
-    categories: Category[];
+    // tslint:disable-next-line:variable-name
+    group_id: string;
 
     /**
      * Creation timestamp

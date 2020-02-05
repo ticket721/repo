@@ -44,20 +44,8 @@ export class VaultereumService implements OnModuleInit {
         try {
             await client.read('ethereum/config');
         } catch (e) {
-            if (
-                e.message.indexOf(
-                    'the ethereum backend is not configured properly',
-                ) !== -1
-            ) {
-                await client.write('ethereum/config', {
-                    rpc_url: `${this.vaultereumModuleOptions.VAULT_ETHEREUM_NODE_PROTOCOL}://${this.vaultereumModuleOptions.VAULT_ETHEREUM_NODE_HOST}:${this.vaultereumModuleOptions.VAULT_ETHEREUM_NODE_PORT}`,
-                    chain_id: this.vaultereumModuleOptions
-                        .VAULT_ETHEREUM_NODE_NETWORK_ID,
-                });
-            } else {
-                this.shutdownService.shutdownWithError(e);
-                throw e;
-            }
+            this.shutdownService.shutdownWithError(e);
+            throw e;
         }
         return client;
     }
