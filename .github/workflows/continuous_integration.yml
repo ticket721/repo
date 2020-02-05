@@ -29,12 +29,6 @@ jobs:
                   path: ./node_modules
                   key: ${{ runner.os }}-${{ hashFiles('package-lock.json') }}-root
 
-            - name: CACHE /contracts/contracts_modules/daiplus/node_modules
-              uses: actions/cache@v1
-              with:
-                  path: ./contracts/contracts_modules/daiplus/node_modules
-                  key: ${{ runner.os }}-${{ hashFiles('contracts/contracts_modules/daiplus/package-lock.json') }}-daiplus
-
             - name: CACHE /contracts/contracts_modules/metamarketplace/node_modules
               uses: actions/cache@v1
               with:
@@ -256,12 +250,6 @@ jobs:
                   path: ./node_modules
                   key: ${{ runner.os }}-${{ hashFiles('package-lock.json') }}-root
 
-            - name: CACHE /contracts/contracts_modules/daiplus/node_modules
-              uses: actions/cache@v1
-              with:
-                  path: ./contracts/contracts_modules/daiplus/node_modules
-                  key: ${{ runner.os }}-${{ hashFiles('contracts/contracts_modules/daiplus/package-lock.json') }}-daiplus
-
             - name: CACHE /contracts/contracts_modules/metamarketplace/node_modules
               uses: actions/cache@v1
               with:
@@ -379,12 +367,6 @@ jobs:
               with:
                   path: ./node_modules
                   key: ${{ runner.os }}-${{ hashFiles('package-lock.json') }}-root
-
-            - name: CACHE /contracts/contracts_modules/daiplus/node_modules
-              uses: actions/cache@v1
-              with:
-                  path: ./contracts/contracts_modules/daiplus/node_modules
-                  key: ${{ runner.os }}-${{ hashFiles('contracts/contracts_modules/daiplus/package-lock.json') }}-daiplus
 
             - name: CACHE /contracts/contracts_modules/metamarketplace/node_modules
               uses: actions/cache@v1

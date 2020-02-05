@@ -20,18 +20,6 @@
                 "name": "initial_deployment",
                 "serie": [
                     {
-                        "name": "daiplus",
-                        "test": false,
-                        "range": [1, 2],
-                        "args": {
-                            "ERC20": {
-                                "name": "DaiPlus Local Meta-Stablecoin v1.0",
-                                "symbol": "Dai+",
-                                "decimals": 18
-                            }
-                        }
-                    },
-                    {
                         "name": "ticketforge",
                         "test": false,
                         "range": [1, 2],
@@ -76,10 +64,6 @@
             }
         ],
         "modules": [
-            {
-                "name": "daiplus",
-                "upgradeable": false
-            },
             {
                 "name": "ticketforge",
                 "upgradeable": false
