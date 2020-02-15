@@ -9,7 +9,20 @@ import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 import { GlobalEntity } from '@lib/common/globalconfig/entities/Global.entity';
 import { BinanceService } from '@lib/common/binance/Binance.service';
 
+/**
+ * Global Config task scheduler
+ */
 export class GlobalConfigScheduler implements OnModuleInit, OnModuleDestroy {
+    /**
+     * Dependency Injection
+     *
+     * @param web3Service
+     * @param globalConfigService
+     * @param shutdownService
+     * @param schedule
+     * @param globalConfigOptions
+     * @param binanceService
+     */
     constructor(
         private readonly web3Service: Web3Service,
         private readonly globalConfigService: GlobalConfigService,
@@ -20,6 +33,9 @@ export class GlobalConfigScheduler implements OnModuleInit, OnModuleDestroy {
         private readonly binanceService: BinanceService,
     ) {}
 
+    /**
+     * Task to fetch ETH/EUR price
+     */
     async fetchETHEURPrice(): Promise<void> {
         const price = await this.binanceService.getETHEURPrice();
 
@@ -37,6 +53,9 @@ export class GlobalConfigScheduler implements OnModuleInit, OnModuleDestroy {
         );
     }
 
+    /**
+     * Task to fetch latest block number
+     */
     async fetchBlockNumber(): Promise<void> {
         const currentGlobalConfig = await this.globalConfigService.search({
             id: 'global',
@@ -70,6 +89,9 @@ export class GlobalConfigScheduler implements OnModuleInit, OnModuleDestroy {
         }
     }
 
+    /**
+     * Interval Creator
+     */
     onModuleInit(): void {
         this.schedule.scheduleIntervalJob(
             'fetchBlockNumber',
@@ -83,6 +105,9 @@ export class GlobalConfigScheduler implements OnModuleInit, OnModuleDestroy {
         );
     }
 
+    /**
+     * Interval Stopper
+     */
     onModuleDestroy(): void {
         this.schedule.cancelJobs();
     }

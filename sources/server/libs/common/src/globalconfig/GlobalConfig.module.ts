@@ -10,7 +10,7 @@ import { GlobalConfigRepository } from '@lib/common/globalconfig/GlobalConfig.re
 import { GlobalConfigScheduler } from '@lib/common/globalconfig/GlobalConfig.scheduler';
 
 /**
- * Build options for the Contracts Module
+ * Build options for the GlobalConfig Module
  */
 export interface GlobalConfigModuleAsyncOptions
     extends Pick<DynamicModule, 'imports'> {
@@ -28,9 +28,17 @@ export interface GlobalConfigModuleAsyncOptions
     inject?: any[];
 }
 
+/**
+ * GlobalConfig Module
+ */
 @Global()
 @Module({})
 export class GlobalConfigModule {
+    /**
+     * Async Builder
+     *
+     * @param options
+     */
     static registerAsync(
         options: GlobalConfigModuleAsyncOptions,
     ): DynamicModule {

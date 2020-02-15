@@ -12,10 +12,19 @@ export interface GlobalConfigOptions {
     ethereumPriceFetchingRate: number;
 }
 
+/**
+ * Service to CRUD GlobalEntities
+ */
 export class GlobalConfigService extends CRUDExtension<
     GlobalConfigRepository,
     GlobalEntity
 > {
+    /**
+     * Dependency Injection
+     *
+     * @param globalConfigRepository
+     * @param globalEntity
+     */
     constructor(
         @InjectRepository(GlobalConfigRepository)
         globalConfigRepository: GlobalConfigRepository,

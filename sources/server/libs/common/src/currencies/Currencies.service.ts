@@ -6,39 +6,137 @@ import { ContractsControllerBase } from '@lib/common/contracts/ContractsControll
 import { Web3Service } from '@lib/common/web3/Web3.service';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 
+/**
+ * Configuration for a currency type
+ */
 export interface CurrencyConfig {
+    /**
+     * Name of the currency
+     */
     name: string;
+
+    /**
+     * Type of the currency
+     */
     type: 'erc20' | 'set';
+
+    /**
+     * Load type to use to recover details
+     */
     loadType: 'module' | 'address';
+
+    /**
+     * If defined, used in frontend to display fiat balance
+     */
     dollarPeg?: number;
+
+    /**
+     * List of sub-currencies for Set type
+     */
     contains?: string[];
+
+    /**
+     * Module name to recover artifacts
+     */
     moduleName?: string;
+
+    /**
+     * Name of the Contract
+     */
     contractName?: string;
+
+    /**
+     * Address of the Contract
+     */
     contractAddress?: string;
 }
 
+/**
+ * Set Type Data Type
+ */
 export interface SetCurrency {
+    /**
+     * Type Name === 'set'
+     */
     type: string;
+
+    /**
+     * Name of the currency
+     */
+    name: string;
+
+    /**
+     * Sub Currencies
+     */
     contains: string[];
 }
 
+/**
+ * ERC20 Type Data Type
+ */
 export interface ERC20Currency {
+    /**
+     * Type Name === 'erc20'
+     */
     type: string;
+
+    /**
+     * Name of the currency
+     */
     name: string;
+
+    /**
+     * Module name to recover artifacts
+     */
     module: string;
+
+    /**
+     * Address of the currency
+     */
     address: string;
+
+    /**
+     * If defined, used in frontend to display fiat balance
+     */
     dollarPeg?: number;
+
+    /**
+     * Smart Contract Controller Instance
+     */
     controller: ContractsControllerBase;
 }
 
+/**
+ * Service to load and serve currency configs
+ */
 @Injectable()
 export class CurrenciesService {
+    /**
+     * Loaded Currency Configs
+     */
     private readonly currencyConfigs: CurrencyConfig[];
+
+    /**
+     * Transformed Currencies Configs
+     */
     private readonly currencies: {
         [key: string]: ERC20Currency | SetCurrency;
     } = {};
+
+    /**
+     * Flag to detect if already loaded
+     */
     private loaded: boolean = false;
 
+    /**
+     * Dependency Injection
+     *
+     * @param configPath
+     * @param fsService
+     * @param contractsService
+     * @param web3Service
+     * @param shutdownService
+     */
     constructor(
         @Inject('CURRENCIES_MODULE_OPTIONS')
         configPath: string,
@@ -58,6 +156,11 @@ export class CurrenciesService {
         this.currencyConfigs = validatedEnvConfig;
     }
 
+    /**
+     * Load Currency in contract mode
+     *
+     * @param currencyConfig
+     */
     private async loadContractMode(
         currencyConfig: CurrencyConfig,
     ): Promise<void> {
@@ -85,6 +188,11 @@ export class CurrenciesService {
         };
     }
 
+    /**
+     * Load Currency in module mode
+     *
+     * @param currencyConfig
+     */
     private async loadModuleMode(
         currencyConfig: CurrencyConfig,
     ): Promise<void> {
@@ -113,6 +221,11 @@ export class CurrenciesService {
         };
     }
 
+    /**
+     * Load ERC20 currency type
+     *
+     * @param currencyConfig
+     */
     private async loadERC20(currencyConfig: CurrencyConfig): Promise<void> {
         switch (currencyConfig.loadType) {
             case 'address':
@@ -122,13 +235,22 @@ export class CurrenciesService {
         }
     }
 
+    /**
+     * Load Set currency type
+     *
+     * @param currencyConfig
+     */
     private async loadSet(currencyConfig: CurrencyConfig): Promise<void> {
         this.currencies[currencyConfig.name] = {
             type: 'set',
+            name: currencyConfig.name,
             contains: currencyConfig.contains,
         };
     }
 
+    /**
+     * Load Currencies
+     */
     private async load(): Promise<{
         [key: string]: ERC20Currency | SetCurrency;
     }> {
@@ -148,6 +270,11 @@ export class CurrenciesService {
         return this.currencies;
     }
 
+    /**
+     * Recover (and load if required) currency configs
+     *
+     * @param currency
+     */
     public async get(currency: string): Promise<ERC20Currency | SetCurrency> {
         return this.loaded
             ? this.currencies[currency]

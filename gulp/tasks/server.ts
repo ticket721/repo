@@ -3,6 +3,9 @@ import { adminRegistration, configureVaultereum } from '../../sources/tasks/Admi
 import { get_config }                             from '../utils/get_config';
 import { DevConfigGuard }    from '../config';
 
+/**
+ * Gulp task that calls the development preparation steps for the server
+ */
 export async function server_dev_prepare(): Promise<void> {
     repo_log.info(`Starting task server::dev::prepare`);
 

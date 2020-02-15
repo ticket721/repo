@@ -25,6 +25,9 @@ export interface VaultereumModuleAsyncOptions
     inject?: any[];
 }
 
+/**
+ * Vaultereum Module
+ */
 @Global()
 @Module({})
 export class VaultereumModule {

@@ -14,6 +14,7 @@
         "start:server:debug": "nest start server --debug --watch",
         "start:server:prod": "node dist/main",
         "doc:serve": "compodoc -p compodoc-tsconfig.json --theme stripe -s",
+        "doc:coverage": "compodoc -p compodoc-tsconfig.json --coverageTest --coverageMinimumPerFile 100 --coverageTestShowOnlyFailed",
         "lint": "tslint -p tsconfig.json -c tslint.json",
         "test": "jest --expand --verbose",
         "test:cov": "npm run test -- --coverage",

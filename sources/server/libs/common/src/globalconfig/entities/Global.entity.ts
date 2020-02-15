@@ -5,6 +5,9 @@ import {
     UpdateDateColumn,
 } from '@iaminfinity/express-cassandra';
 
+/**
+ * Global Configuration entity. Used to synchronize dynamic data accross all nodes
+ */
 @Entity<GlobalEntity>({
     table_name: 'global',
     key: ['id'],
@@ -13,17 +16,26 @@ import {
     },
 } as any)
 export class GlobalEntity {
+    /**
+     * Unique identifier of the global config (always 'global')
+     */
     @Column({
         type: 'text',
     })
-    id: string;
+    id: 'global';
 
+    /**
+     * Current Block Number
+     */
     @Column({
         type: 'int',
     })
     // tslint:disable-next-line:variable-name
     block_number: number;
 
+    /**
+     * Current Ether Price in Euro
+     */
     @Column({
         type: 'int',
     })

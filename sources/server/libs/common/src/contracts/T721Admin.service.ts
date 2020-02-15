@@ -4,6 +4,9 @@ import { Injectable } from '@nestjs/common';
 import { Web3Service } from '@lib/common/web3/Web3.service';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 
+/**
+ * Smart Contract Controller for the T721Admin contract
+ */
 @Injectable()
 export class T721AdminService extends ContractsControllerBase {
     constructor(

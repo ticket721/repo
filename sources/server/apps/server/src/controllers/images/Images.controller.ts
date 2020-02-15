@@ -43,16 +43,32 @@ const mimetypeMapping = {
     'image/svg+xml': '.svg',
 };
 
+/**
+ * Image controller to upload images
+ */
 @ApiBearerAuth()
 @ApiTags('images')
 @Controller('images')
 export class ImagesController {
+    /**
+     * Dependency Injection
+     *
+     * @param imagesService
+     * @param configService
+     * @param fsService
+     */
     constructor(
         private readonly imagesService: ImagesService,
         private readonly configService: ConfigService,
         private readonly fsService: FSService,
     ) {}
 
+    /**
+     * Upload Image(s)
+     *
+     * @param files
+     * @param user
+     */
     @Post('/')
     @ApiResponse({
         status: StatusCodes.InternalServerError,

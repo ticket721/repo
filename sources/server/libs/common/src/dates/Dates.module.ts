@@ -4,6 +4,9 @@ import { DateEntity } from '@lib/common/dates/entities/Date.entity';
 import { DatesRepository } from '@lib/common/dates/Dates.repository';
 import { DatesService } from '@lib/common/dates/Dates.service';
 
+/**
+ * Dates Modules. Lowest level of the event
+ */
 @Module({
     imports: [ExpressCassandraModule.forFeature([DateEntity, DatesRepository])],
     providers: [DatesService],

@@ -3,10 +3,21 @@ import { ServiceResponse } from '@lib/common/utils/ServiceResponse';
 import { BinanceModuleBuildOptions } from '@lib/common/binance/Binance.module';
 import Binance from 'binance-api-node';
 
+/**
+ * Service to use the Binance API to recover the Ethereum Price
+ */
 @Injectable()
 export class BinanceService {
+    /**
+     * Binance API Client instance
+     */
     private readonly binanceInstance = null;
 
+    /**
+     * Dependency Injection
+     *
+     * @param binanceOptions
+     */
     constructor(
         @Inject('BINANCE_MODULE_OPTIONS')
         private readonly binanceOptions: BinanceModuleBuildOptions,
@@ -16,6 +27,9 @@ export class BinanceService {
         }
     }
 
+    /**
+     * Method to fetch the latest ETH/EUR price
+     */
     async getETHEURPrice(): Promise<ServiceResponse<number>> {
         if (this.binanceOptions.mock) {
             return {

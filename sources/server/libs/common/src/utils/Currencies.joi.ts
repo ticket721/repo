@@ -1,5 +1,8 @@
 import * as Joi from '@hapi/joi';
 
+/**
+ * Dynamic data checker for the currencies
+ */
 const Currency: Joi.ObjectSchema = Joi.object({
     name: Joi.string().required(),
     dollarPeg: Joi.number().optional(),

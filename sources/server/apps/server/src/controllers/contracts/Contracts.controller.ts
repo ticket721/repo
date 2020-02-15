@@ -7,17 +7,22 @@ import {
 import { StatusCodes, StatusNames } from '@lib/common/utils/codes';
 import { ContractsFetchResponseDto } from '@app/server/controllers/contracts/dto/ContractsFetchResponse.dto';
 
+/**
+ * Contracts information controller. Mainly used to recover contract artifacts on frontend
+ */
 @ApiBearerAuth()
 @ApiTags('contracts')
 @Controller('contracts')
 export class ContractsController {
+    /**
+     * Dependency Injection
+     *
+     * @param contractsService
+     */
     constructor(private readonly contractsService: ContractsService) {}
 
     /**
-     * Search for dates
-     *
-     * @param body
-     * @param user
+     * Recover Contract Artifacts
      */
     @Get('/')
     @ApiResponse({

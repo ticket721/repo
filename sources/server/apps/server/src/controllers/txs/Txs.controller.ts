@@ -29,16 +29,31 @@ import { TxsInfosResponseDto } from '@app/server/controllers/txs/dto/TxsInfosRes
 import { TxsMtxInputDto } from '@app/server/controllers/txs/dto/TxsMtxInput.dto';
 import { TxsMtxResponseDto } from '@app/server/controllers/txs/dto/TxsMtxResponse.dto';
 
+/**
+ * Transaction Controller. Fetch and recover transactions
+ */
 @ApiBearerAuth()
 @ApiTags('txs')
 @Controller('txs')
 export class TxsController {
+    /**
+     * Dependency Injection
+     *
+     * @param txsService
+     * @param configService
+     * @param contractsService
+     */
     constructor(
         private readonly txsService: TxsService,
         private readonly configService: ConfigService,
         private readonly contractsService: ContractsService,
     ) {}
 
+    /**
+     * Broadcasts a meta transaction
+     * @param body
+     * @param user
+     */
     @Post('mtx')
     @ApiResponse({
         status: StatusCodes.InternalServerError,
@@ -76,6 +91,9 @@ export class TxsController {
         };
     }
 
+    /**
+     * Recover Relayer address to use in meta transactions
+     */
     @Get('infos')
     @ApiResponse({
         status: StatusCodes.OK,
@@ -97,7 +115,7 @@ export class TxsController {
     }
 
     /**
-     * Search for dates
+     * Search for transactions
      *
      * @param body
      * @param user
@@ -116,8 +134,6 @@ export class TxsController {
         description: StatusNames[StatusCodes.OK],
     })
     @HttpCode(200)
-    @UseGuards(AuthGuard('jwt'), RolesGuard)
-    @Roles('authenticated')
     async search(
         @Body() body: TxsSearchInputDto,
         @User() user: UserDto,

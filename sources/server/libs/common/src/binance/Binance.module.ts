@@ -1,17 +1,20 @@
 import { DynamicModule, Global, Module } from '@nestjs/common';
 import { BinanceService } from '@lib/common/binance/Binance.service';
 
+/**
+ * Build Options to configure the Binance Module
+ */
 export interface BinanceModuleBuildOptions {
     mock: boolean;
 }
 
 /**
- * Build options for the Currencies Module
+ * Build options for the Binance Module
  */
 export interface BinanceModuleAsyncOptions
     extends Pick<DynamicModule, 'imports'> {
     /**
-     * Factory to inject Currencies Service options
+     * Factory to inject Binance Service options
      * @param args
      */
     useFactory: (
@@ -24,9 +27,16 @@ export interface BinanceModuleAsyncOptions
     inject?: any[];
 }
 
+/**
+ * Binance Service to fetch Ethereum Price
+ */
 @Global()
 @Module({})
 export class BinanceModule {
+    /**
+     * Async Builder
+     * @param options
+     */
     static registerAsync(options: BinanceModuleAsyncOptions): DynamicModule {
         return {
             module: BinanceModule,

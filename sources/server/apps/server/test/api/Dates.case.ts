@@ -48,32 +48,33 @@ export async function fetchDates(
     expect(validation_req.data).toBeDefined();
     expect(validation_req.data.user.valid).toEqual(true);
 
-    await expect(
-        sdk.dates.search('', {
-            location_label: {
-                $eq: '3 rue des boulevards',
+    {
+        const fetchedActions: AxiosResponse<DatesSearchResponseDto> = await sdk.dates.search(
+            resp.data.token,
+            {
+                location_label: {
+                    $eq: '3 rue des boulevards',
+                },
             },
-        }),
-    ).rejects.toMatchObject({
-        response: {
-            data: {
-                statusCode: StatusCodes.Unauthorized,
-            },
-            status: StatusCodes.Unauthorized,
-            statusText: StatusNames[StatusCodes.Unauthorized],
-        },
-    });
+        );
 
-    const fetchedActions: AxiosResponse<DatesSearchResponseDto> = await sdk.dates.search(
-        resp.data.token,
-        {
-            location_label: {
-                $eq: '3 rue des boulevards',
-            },
-        },
-    );
+        expect(fetchedActions.data).toEqual({
+            dates: [],
+        });
+    }
 
-    expect(fetchedActions.data).toEqual({
-        dates: [],
-    });
+    {
+        const fetchedActions: AxiosResponse<DatesSearchResponseDto> = await sdk.dates.search(
+            '',
+            {
+                location_label: {
+                    $eq: '3 rue des boulevards',
+                },
+            },
+        );
+
+        expect(fetchedActions.data).toEqual({
+            dates: [],
+        });
+    }
 }

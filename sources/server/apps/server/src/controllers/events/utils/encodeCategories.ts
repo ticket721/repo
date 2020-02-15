@@ -7,6 +7,13 @@ import { toB32 } from '@ticket721sources/global';
 
 const CATEGORIES_PACK_SIZE = 10;
 
+/**
+ * Encode categories as arguments for the T721Controller
+ *
+ * @param validationAddress
+ * @param currenciesService
+ * @param categories
+ */
 export async function encodeCategories(
     validationAddress: string,
     currenciesService: CurrenciesService,

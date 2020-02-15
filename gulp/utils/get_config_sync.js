@@ -1,6 +1,10 @@
 const path = require('path');
 const fs = require('fs');
 
+/**
+ * Utility to recover the config in a synchronous manner
+ * @returns {any}
+ */
 function get_config_sync() {
 
     try {

@@ -12,7 +12,7 @@ import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
  */
 export interface TxsModuleAsyncOptions extends Pick<DynamicModule, 'imports'> {
     /**
-     * Factory to inject Contracts Service options
+     * Factory to inject Txs Service options
      * @param args
      */
     useFactory: (
@@ -25,6 +25,9 @@ export interface TxsModuleAsyncOptions extends Pick<DynamicModule, 'imports'> {
     inject?: any[];
 }
 
+/**
+ * Txs Module
+ */
 @Module({})
 export class TxsModule {
     /**

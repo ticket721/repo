@@ -8,72 +8,208 @@ import Joi from '@hapi/joi';
 import { closestCity } from '@ticket721sources/global';
 import { ImagesService } from '@lib/common/images/Images.service';
 
+/**
+ * @events/textMetadata arguments
+ */
 export interface EventsCreateTextMetadata {
+    /**
+     * Name of the Event
+     */
     name: string;
+
+    /**
+     * Description of the event
+     */
     description: string;
+
+    /**
+     * Tags of the event
+     */
     tags: string[];
 }
 
+/**
+ * @events/modulesConfiguration arguments
+ */
 // tslint:disable-next-line:no-empty-interface
 export interface EventsCreateModulesConfiguration {}
 
+/**
+ * @events/datesConfiguration arguments
+ */
 export interface EventsCreateDatesConfiguration {
+    /**
+     * Dates of the Event
+     */
     dates: {
+        /**
+         * Name of the Date
+         */
         name: string;
+
+        /**
+         * Event start
+         */
         eventBegin: Date;
+
+        /**
+         * Event end
+         */
         eventEnd: Date;
+
+        /**
+         * Event location
+         */
         location: {
+            /**
+             * Event location latitude
+             */
             lat: number;
+
+            /**
+             * Event location longitude
+             */
             lon: number;
+
+            /**
+             * Event location label
+             */
             label: string;
         };
     }[];
 }
 
+/**
+ * @events/categoriesConfiguration arguments
+ */
 export interface EventsCreateCategoriesConfiguration {
+    /**
+     * Global categories have no dates (available for multiple dates)
+     */
     global: {
+        /**
+         * Name of the category
+         */
         name: string;
+
+        /**
+         * Ticket sale begin
+         */
         saleBegin: Date;
+
+        /**
+         * Ticket sale end
+         */
         saleEnd: Date;
+
+        /**
+         * Optional resale begin
+         */
         resaleBegin?: Date;
+
+        /**
+         * Options resale end
+         */
         resaleEnd?: Date;
+
+        /**
+         * Number of tickets to sell
+         */
         seats: number;
+
+        /**
+         * Allowed currencies for category
+         */
         currencies: {
             currency: string;
             price: string;
-        };
+        }[];
     }[];
     dates: {
+        /**
+         * Name of the category
+         */
         name: string;
+
+        /**
+         * Ticket sale begin
+         */
         saleBegin: Date;
+
+        /**
+         * Ticket sale end
+         */
         saleEnd: Date;
+
+        /**
+         * Optional resale begin
+         */
         resaleBegin?: Date;
+
+        /**
+         * Options resale end
+         */
         resaleEnd?: Date;
+
+        /**
+         * Number of tickets to sell
+         */
         seats: number;
+
+        /**
+         * Allowed currencies for category
+         */
         currencies: {
             currency: string;
             price: string;
-        };
+        }[];
     }[][];
 }
 
+/**
+ * @events/imagesMetadata arguments
+ */
 export interface EventsCreateImagesMetadata {
+    /**
+     * Image ID to use as avatar
+     */
     avatar: string;
+
+    /**
+     * Images IDs to use as banners
+     */
     banners: string[];
 }
 
+/**
+ * @events/adminsConfiguration arguments
+ */
 export interface EventsCreateAdminsConfiguration {
+    /**
+     * Admin user ids
+     */
     admins: string[];
 }
 
+/**
+ * Input Handlers container and injecter
+ */
 @Injectable()
 export class EventsInputHandlers implements OnModuleInit {
+    /**
+     * Dependency Injection
+     *
+     * @param actionSetsService
+     * @param imagesService
+     */
     constructor(
         private readonly actionSetsService: ActionSetsService,
         private readonly imagesService: ImagesService,
     ) {}
 
-    // 1. textMetadata
+    /**
+     * @events/textMetadata dynamic argument checker
+     */
     textMetadataValidator = Joi.object({
         name: Joi.string()
             .max(50)
@@ -91,6 +227,9 @@ export class EventsInputHandlers implements OnModuleInit {
             .required(),
     });
 
+    /**
+     * @events/textMetadata handler
+     */
     async textMetadataHandler(
         actionset: ActionSet,
         progress: Progress,
@@ -114,9 +253,14 @@ export class EventsInputHandlers implements OnModuleInit {
         return [actionset, true];
     }
 
-    // 2. modulesConfiguration
+    /**
+     * @events/modulesConfiguration dynamic argument checker
+     */
     modulesConfigurationValidator = Joi.object({});
 
+    /**
+     * @events/modulesConfiguration handler
+     */
     async modulesConfigurationHandler(
         actionset: ActionSet,
         progress: Progress,
@@ -140,8 +284,9 @@ export class EventsInputHandlers implements OnModuleInit {
         return [actionset, true];
     }
 
-    // 3. datesConfiguration
-
+    /**
+     * @events/datesConfiguration dynamic argument checker
+     */
     datesConfigurationValidator = Joi.object({
         dates: Joi.array()
             .items(
@@ -161,6 +306,9 @@ export class EventsInputHandlers implements OnModuleInit {
             .required(),
     });
 
+    /**
+     * @events/datesConfiguration dates checker
+     */
     checkEventDates(date: any): string {
         if (date.eventEnd < date.eventBegin) {
             return 'event_end_before_event_begin';
@@ -169,6 +317,9 @@ export class EventsInputHandlers implements OnModuleInit {
         return null;
     }
 
+    /**
+     * @events/datesConfiguration handler
+     */
     async datesConfigurationHandler(
         actionset: ActionSet,
         progress: Progress,
@@ -214,8 +365,9 @@ export class EventsInputHandlers implements OnModuleInit {
         return [actionset, true];
     }
 
-    // 4. categoriesConfiguration
-
+    /**
+     * @events/categoriesConfiguration dynamic argument checker
+     */
     categoryConfigurationValidator = Joi.object({
         name: Joi.string().required(),
         saleBegin: Joi.date().required(),
@@ -233,6 +385,9 @@ export class EventsInputHandlers implements OnModuleInit {
             .required(),
     });
 
+    /**
+     * @events/categoriesConfiguration dynamic argument checker
+     */
     categoriesConfigurationValidator = Joi.object({
         global: Joi.array().items(this.categoryConfigurationValidator),
         dates: Joi.array().items(
@@ -240,6 +395,9 @@ export class EventsInputHandlers implements OnModuleInit {
         ),
     });
 
+    /**
+     * @events/categoriesConfiguration check name conflicts
+     */
     async checkCategoriesConflicts(data: any): Promise<string> {
         const registry: { [key: string]: boolean } = {};
 
@@ -266,6 +424,9 @@ export class EventsInputHandlers implements OnModuleInit {
         }
     }
 
+    /**
+     * @events/categoriesConfiguration check categories dates
+     */
     checkCategoryDates(cat: any): string {
         if (!cat.resaleEnd && !cat.resaleBegin) {
             return null;
@@ -289,6 +450,9 @@ export class EventsInputHandlers implements OnModuleInit {
         return null;
     }
 
+    /**
+     * @events/categoriesConfiguration check dates of resale configs
+     */
     checkResaleDates(data: any): string {
         for (const global of data.global) {
             global.resaleBegin = global.resaleBegin
@@ -327,6 +491,9 @@ export class EventsInputHandlers implements OnModuleInit {
         return null;
     }
 
+    /**
+     * @events/categoriesConfiguration handler
+     */
     async categoriesConfigurationHandler(
         actionset: ActionSet,
         progress: Progress,
@@ -390,6 +557,9 @@ export class EventsInputHandlers implements OnModuleInit {
         return [actionset, true];
     }
 
+    /**
+     * @events/imagesMetadata dynamic argument checker
+     */
     imagesMetadataValidator = Joi.object({
         avatar: Joi.string().required(),
         banners: Joi.array()
@@ -397,6 +567,9 @@ export class EventsInputHandlers implements OnModuleInit {
             .required(),
     });
 
+    /**
+     * @events/imagesMetadata handler
+     */
     async imagesMetadataHandler(
         actionset: ActionSet,
         progress: Progress,
@@ -452,10 +625,16 @@ export class EventsInputHandlers implements OnModuleInit {
         return [actionset, true];
     }
 
+    /**
+     * @events/adminsConfiguration dynamic argument checker
+     */
     adminsConfigurationValidator = Joi.object({
         admins: Joi.array().items(Joi.string()),
     });
 
+    /**
+     * @events/adminsConfiguration handler
+     */
     async adminsConfigurationHandler(
         actionset: ActionSet,
         progress: Progress,

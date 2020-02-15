@@ -334,6 +334,10 @@ jobs:
               working-directory: sources/server
               run: npm run build:server
 
+            - name: Run @ticket721sources/server @app/server, @lib/common unitary tests (npm run test:cov in sources/server)
+              working-directory: sources/server
+              run: npm run test:cov
+
             - name: Format check on @ticket721sources/server
               working-directory: sources/server
               run: npm run format:check
@@ -342,9 +346,9 @@ jobs:
               working-directory: sources/server
               run: npm run lint
 
-            - name: Run @ticket721sources/server @app/server, @lib/common unitary tests (npm run test:cov in sources/server)
+            - name: Compodoc Coverage check on @ticket721sources/server
               working-directory: sources/server
-              run: npm run test:cov
+              run: npm run doc:coverage
 
 
     server-e2e:

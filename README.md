@@ -43,6 +43,7 @@ npm run bootstrap
 | `network::clean` | Reads the provided configuration and cleans everything that is network engine related. | `T721_CONFIG` | |
 | `contracts::run` | Reads the provided configuration and runs contracts tests, migrations and post-migrations. Everything is saved to the portal. | `T721_CONFIG` | `network::run` |
 | `contracts::clean` | Reads the provided configuration and cleans everything that is network engine related. | `T721_CONFIG` | |
+| `server::dev::prepare` | Automatically performs manual configuration steps when running the server locally |
 
 ## Status
 

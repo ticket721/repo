@@ -11,7 +11,20 @@ import { toAcceptedAddressFormat } from '@ticket721sources/global';
 import { Decimal } from 'decimal.js';
 import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
 
+/**
+ * Txs task scheduler
+ */
 export class TxsScheduler implements OnModuleInit, OnModuleDestroy {
+    /**
+     * Dependency Injection
+     *
+     * @param globalConfigService
+     * @param web3Service
+     * @param txsService
+     * @param loggerService
+     * @param schedule
+     * @param txsOptions
+     */
     constructor(
         private readonly globalConfigService: GlobalConfigService,
         private readonly web3Service: Web3Service,
@@ -22,8 +35,14 @@ export class TxsScheduler implements OnModuleInit, OnModuleDestroy {
         private readonly txsOptions: TxsServiceOptions,
     ) {}
 
+    /**
+     * Last fetched block number
+     */
     private lastBlock: number = null;
 
+    /**
+     * Check if new block exists to validate transactions
+     */
     async blockPolling(): Promise<void> {
         const currentGlobalConfig = await this.globalConfigService.search({
             id: 'global',
@@ -101,6 +120,9 @@ export class TxsScheduler implements OnModuleInit, OnModuleDestroy {
         }
     }
 
+    /**
+     * Task to initialize transaction
+     */
     async transactionInitialization(): Promise<void> {
         const currentGlobalConfig = await this.globalConfigService.search({
             id: 'global',
@@ -230,6 +252,9 @@ export class TxsScheduler implements OnModuleInit, OnModuleDestroy {
         }
     }
 
+    /**
+     * Interval Starter
+     */
     onModuleInit(): void {
         this.schedule.scheduleIntervalJob(
             'blockPolling',
@@ -243,6 +268,9 @@ export class TxsScheduler implements OnModuleInit, OnModuleDestroy {
         );
     }
 
+    /**
+     * Interval Stopper
+     */
     onModuleDestroy(): void {
         this.schedule.cancelJobs();
     }

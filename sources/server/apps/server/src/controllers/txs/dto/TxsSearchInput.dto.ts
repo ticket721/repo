@@ -4,11 +4,11 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsObject, IsOptional } from 'class-validator';
 
 /**
- * Data model for the event search query
+ * Data Model when searching for transactions
  */
 export class TxsSearchInputDto extends SortablePagedSearch {
     /**
-     * Query by events id
+     * Search by transaction_hash field
      */
     @ApiPropertyOptional({
         description: 'Unique ID of the Tx',
@@ -19,7 +19,7 @@ export class TxsSearchInputDto extends SortablePagedSearch {
     transaction_hash?: SearchableField<string>;
 
     /**
-     * Query by events id
+     * Search by from field
      */
     @ApiPropertyOptional({
         description: 'Sender of the Tx',
@@ -30,7 +30,7 @@ export class TxsSearchInputDto extends SortablePagedSearch {
     from?: SearchableField<string>;
 
     /**
-     * Query by events id
+     * Search by to field
      */
     @ApiPropertyOptional({
         description: 'Destination of the Tx',

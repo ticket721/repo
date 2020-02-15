@@ -21,6 +21,13 @@ enum EventCreationActions {
     AdminsConfiguration,
 }
 
+/**
+ * Utility to recover all used currencies and convert Sets into ERC20
+ *
+ * @param currenciesService
+ * @param name
+ * @param met
+ */
 async function resolveCurrencies(
     currenciesService: CurrenciesService,
     name: string,
@@ -70,6 +77,13 @@ async function resolveCurrencies(
     return currencies;
 }
 
+/**
+ * Convert prices to savable entities
+ *
+ * @param tscope
+ * @param currenciesService
+ * @param prices
+ */
 async function convertPrices(
     tscope: string,
     currenciesService: CurrenciesService,
@@ -113,6 +127,13 @@ async function convertPrices(
     return ret;
 }
 
+/**
+ * Convert categories to saveable format
+ *
+ * @param tscope
+ * @param currenciesService
+ * @param categories
+ */
 async function convertCategories(
     tscope: string,
     currenciesService: CurrenciesService,
@@ -143,6 +164,13 @@ async function convertCategories(
     return ret;
 }
 
+/**
+ * Convert Dates to saveable format
+ *
+ * @param tscope
+ * @param actionset
+ * @param currenciesService
+ */
 async function convertDates(
     tscope: string,
     actionset: ActionSet,
@@ -189,6 +217,14 @@ async function convertDates(
     return dateEntities;
 }
 
+/**
+ * Convert Event to saveable format
+ *
+ * @param tscope
+ * @param actionset
+ * @param currenciesService
+ * @param owner
+ */
 async function convertEvent(
     tscope: string,
     actionset: ActionSet,
@@ -221,6 +257,15 @@ async function convertEvent(
     return eventEntity;
 }
 
+/**
+ * Convert event creation ActionSet into "preview" Event
+ *
+ * @param tscope
+ * @param actionset
+ * @param currenciesService
+ * @param owner
+ * @constructor
+ */
 export async function ActionSetToEventEntityConverter(
     tscope: string,
     actionset: ActionSet,

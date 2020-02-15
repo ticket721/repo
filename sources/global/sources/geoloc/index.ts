@@ -1,21 +1,67 @@
 // tslint:disable-next-line:no-var-requires
 const cities = require('./cities.json');
 
+/**
+ * Longitude / Latitude Coordinates
+ */
 export interface Coordinates {
+    /**
+     * Longitude
+     */
     lon: number;
+
+    /**
+     * Latitude
+     */
     lat: number;
 }
 
+/**
+ * Information about a city
+ */
 export interface City {
+    /**
+     * Name of the city
+     */
     name: string;
+
+    /**
+     * Name with extended ascii support
+     */
     nameAscii: string;
+
+    /**
+     * Name of the region
+     */
     nameAdmin: string;
+
+    /**
+     * Name of the country
+     */
     country: string;
+
+    /**
+     * Coordinates of the city
+     */
     coord: Coordinates;
+
+    /**
+     * Population count of the city
+     */
     population: number;
+
+    /**
+     * Unique identifier of the city
+     */
     id: number;
 }
 
+/**
+ * Compute distance between two coordinates
+ *
+ * @param pos1
+ * @param pos2
+ */
 function computeDistance(pos1: Coordinates, pos2: Coordinates): number {
 
     if ((pos1.lat === pos2.lat) && (pos1.lon === pos2.lon)) {
@@ -38,6 +84,11 @@ function computeDistance(pos1: Coordinates, pos2: Coordinates): number {
 
 }
 
+/**
+ * Converts raw city data to City
+ *
+ * @param data
+ */
 function rawToStruct(data: any[]): City {
     return {
         name: data[0],
@@ -53,6 +104,11 @@ function rawToStruct(data: any[]): City {
     } as City;
 }
 
+/**
+ * Recover closest city to given Coordinates
+ *
+ * @param pos
+ */
 export function closestCity(pos: Coordinates): City {
     let distance: number = -1;
     let result: any[] = null;

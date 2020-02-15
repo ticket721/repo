@@ -58,7 +58,7 @@ import { RefractFactoryV0Service } from '@lib/common/contracts/refract/RefractFa
 import { TxsService } from '@lib/common/txs/Txs.service';
 
 /**
- * Generic Dates controller. Recover Dates linked to all types of events
+ * Events controller to create and fetch events
  */
 @ApiBearerAuth()
 @ApiTags('events')
@@ -92,7 +92,7 @@ export class EventsController {
     ) {}
 
     /**
-     * Search for dates
+     * Search for events
      *
      * @param body
      * @param user
@@ -111,8 +111,6 @@ export class EventsController {
         description: StatusNames[StatusCodes.OK],
     })
     @HttpCode(200)
-    @UseGuards(AuthGuard('jwt'), RolesGuard)
-    @Roles('authenticated')
     async search(
         @Body() body: EventsSearchInputDto,
         @User() user: UserDto,
@@ -127,6 +125,12 @@ export class EventsController {
         };
     }
 
+    /**
+     * Deploys an event on the ethereum blockchain
+     *
+     * @param body
+     * @param user
+     */
     @Post('/deploy')
     @ApiResponse({
         status: StatusCodes.InternalServerError,
@@ -227,6 +231,12 @@ export class EventsController {
         };
     }
 
+    /**
+     * Recover MetaTransaction EIP712 payload to sign
+     *
+     * @param params
+     * @param user
+     */
     @Get('/genp/deploy/:event')
     @ApiResponse({
         status: StatusCodes.NotFound,

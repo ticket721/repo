@@ -1,5 +1,8 @@
 import { EIP712Signer } from '@ticket721/e712';
 
+/**
+ * Parameters of a single transaction
+ */
 export interface TransactionParameters {
     from: string;
     to: string;
@@ -8,11 +11,17 @@ export interface TransactionParameters {
     data: string;
 }
 
+/**
+ * MetaTransaction data structure. Can hold several transactions for a signle call
+ */
 export interface MetaTransaction {
     parameters: TransactionParameters[];
     nonce: number;
 }
 
+/**
+ * TransactionParameter E712 Type
+ */
 const TransactionParametersType = [
     {
         type: 'address',
@@ -36,6 +45,9 @@ const TransactionParametersType = [
     },
 ];
 
+/**
+ * MetaTransaction E712 Type
+ */
 const MetaTransactionType = [
     {
         name: 'parameters',
@@ -47,7 +59,19 @@ const MetaTransactionType = [
     },
 ];
 
+/**
+ * Meta Transaction signer class
+ */
 export class RefractMtx extends EIP712Signer {
+
+    /**
+     * EIP712Signer builder
+     *
+     * @param chainId
+     * @param name
+     * @param version
+     * @param refract
+     */
     constructor(chainId: number, name: string, version: string, refract: string) {
         super(
             {

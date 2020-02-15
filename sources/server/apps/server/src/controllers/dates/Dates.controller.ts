@@ -1,10 +1,5 @@
-import { Body, Controller, HttpCode, Post, UseGuards } from '@nestjs/common';
-import {
-    Roles,
-    RolesGuard,
-} from '@app/server/authentication/guards/RolesGuard.guard';
+import { Body, Controller, HttpCode, Post } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { AuthGuard } from '@nestjs/passport';
 import { User } from '@app/server/authentication/decorators/User.decorator';
 import { UserDto } from '@lib/common/users/dto/User.dto';
 import { search } from '@lib/common/utils/ControllerBasics';
@@ -48,8 +43,6 @@ export class DatesController {
         description: StatusNames[StatusCodes.OK],
     })
     @HttpCode(200)
-    @UseGuards(AuthGuard('jwt'), RolesGuard)
-    @Roles('authenticated')
     async search(
         @Body() body: DatesSearchInputDto,
         @User() user: UserDto,

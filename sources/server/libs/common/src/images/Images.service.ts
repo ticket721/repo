@@ -8,10 +8,19 @@ import { ImagesRepository } from '@lib/common/images/Images.repository';
 import { ImageEntity } from '@lib/common/images/entities/Image.entity';
 import { ServiceResponse } from '@lib/common/utils/ServiceResponse';
 
+/**
+ * Service to CRUD ImageEntities
+ */
 export class ImagesService extends CRUDExtension<
     ImagesRepository,
     ImageEntity
 > {
+    /**
+     * Dependency Injection
+     *
+     * @param imagesRepository
+     * @param imageEntity
+     */
     constructor(
         @InjectRepository(ImagesRepository)
         imagesRepository: ImagesRepository,
@@ -21,6 +30,11 @@ export class ImagesService extends CRUDExtension<
         super(imageEntity, imagesRepository);
     }
 
+    /**
+     * Increments the link counter
+     *
+     * @param id
+     */
     async link(id: string): Promise<ServiceResponse<ImageEntity>> {
         const res = await this.search({ id });
 
@@ -54,6 +68,11 @@ export class ImagesService extends CRUDExtension<
         };
     }
 
+    /**
+     * Decrements the links counter
+     *
+     * @param id
+     */
     async unlink(id: string): Promise<ServiceResponse<ImageEntity>> {
         const res = await this.search({ id });
 

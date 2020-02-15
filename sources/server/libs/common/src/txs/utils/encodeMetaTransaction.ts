@@ -7,6 +7,12 @@ enum MTXArguments {
     BDATA,
 }
 
+/**
+ * Utility to encode a metatransaction for a broadcast
+ *
+ * @param mtx
+ * @param signature
+ */
 export async function encodeMetaTransaction(
     mtx: MetaTransaction,
     signature: string,

@@ -29,8 +29,23 @@ export interface TxsServiceOptions {
     targetGasPrice: number;
 }
 
+/**
+ * Service to CRUD TxEntities
+ */
 @Injectable()
 export class TxsService extends CRUDExtension<TxsRepository, TxEntity> {
+    /**
+     * Dependency Injection
+     *
+     * @param txsRepository
+     * @param txEntity
+     * @param txOptions
+     * @param globalConfigService
+     * @param vaultereumService
+     * @param web3Service
+     * @param refractFactoryService
+     * @param t721AdminService
+     */
     constructor(
         @InjectRepository(TxsRepository)
         txsRepository: TxsRepository,
@@ -47,8 +62,16 @@ export class TxsService extends CRUDExtension<TxsRepository, TxEntity> {
         super(txEntity, txsRepository);
     }
 
+    /**
+     * Transaction Hash Reguar Expression
+     */
     public readonly txHashRegExp = /^0x[abcdef0123456789]{64}$/;
 
+    /**
+     * Method to subscribe to a transaction hash
+     *
+     * @param txhash
+     */
     async subscribe(txhash: string): Promise<ServiceResponse<TxEntity>> {
         txhash = txhash.toLowerCase();
 
@@ -96,6 +119,11 @@ export class TxsService extends CRUDExtension<TxsRepository, TxEntity> {
         };
     }
 
+    /**
+     * Method to estimate Gas Price
+     *
+     * @param gasLimit
+     */
     async estimateGasPrice(gasLimit: string): Promise<ServiceResponse<string>> {
         const globalConfig = await this.globalConfigService.search({
             id: 'global',
@@ -135,6 +163,13 @@ export class TxsService extends CRUDExtension<TxsRepository, TxEntity> {
         };
     }
 
+    /**
+     * Method to estimate Gas Limit
+     *
+     * @param from
+     * @param to
+     * @param data
+     */
     async estimateGasLimit(
         from: string,
         to: string,
@@ -176,6 +211,13 @@ export class TxsService extends CRUDExtension<TxsRepository, TxEntity> {
         };
     }
 
+    /**
+     * Method to broadcast Meta Transaction
+     *
+     * @param payload
+     * @param signature
+     * @param user
+     */
     async mtx(
         payload: EIP712Payload,
         signature: string,
@@ -267,6 +309,16 @@ export class TxsService extends CRUDExtension<TxsRepository, TxEntity> {
         };
     }
 
+    /**
+     * Method to broadcast Raw Transaction
+     *
+     * @param from
+     * @param to
+     * @param value
+     * @param data
+     * @param gasPrice
+     * @param gasLimit
+     */
     async sendRawTransaction(
         from: string,
         to: string,

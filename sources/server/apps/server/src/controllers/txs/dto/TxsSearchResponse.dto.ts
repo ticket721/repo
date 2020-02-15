@@ -1,11 +1,11 @@
 import { TxEntity } from '@lib/common/txs/entities/Tx.entity';
 
 /**
- * Data Model returns by the Events search
+ * Data Model returned by the Transaction search
  */
 export class TxsSearchResponseDto {
     /**
-     * Events matching the query
+     * Transactions matching the query
      */
     txs: TxEntity[];
 }
