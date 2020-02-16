@@ -5,6 +5,9 @@ import {
 } from '@lib/common/currencies/Currencies.service';
 import { toB32 } from '@ticket721sources/global';
 
+/**
+ * Amount of categories per transaction
+ */
 const CATEGORIES_PACK_SIZE = 10;
 
 /**

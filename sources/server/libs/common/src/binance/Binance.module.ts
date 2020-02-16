@@ -5,6 +5,9 @@ import { BinanceService } from '@lib/common/binance/Binance.service';
  * Build Options to configure the Binance Module
  */
 export interface BinanceModuleBuildOptions {
+    /**
+     * Flag that is valid if not real queries should be performed
+     */
     mock: boolean;
 }
 

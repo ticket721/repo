@@ -19,13 +19,43 @@ import { Web3Service } from '@lib/common/web3/Web3.service';
 import { GlobalConfigService } from '@lib/common/globalconfig/GlobalConfig.service';
 import Decimal from 'decimal.js';
 
+/**
+ * Configuration Options
+ */
 export interface TxsServiceOptions {
+    /**
+     * Number of block before a transaction is considered confirmed
+     */
     blockThreshold: number;
+
+    /**
+     * Rate at which we check if transactions are confirmed
+     */
     blockPollingRefreshRate: number;
+
+    /**
+     * Current Network ID
+     */
     ethereumNetworkId: number;
+
+    /**
+     * Domain Name for the Meta Transactions
+     */
     ethereumMtxDomainName: string;
+
+    /**
+     * Version for the Meta Transactions
+     */
     ethereumMtxVersion: string;
+
+    /**
+     * Admin to use to relay the MetaTransactions
+     */
     ethereumMtxRelayAdmin: string;
+
+    /**
+     * Amount of euros to spend at most for a transaction
+     */
     targetGasPrice: number;
 }
 

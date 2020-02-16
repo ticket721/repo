@@ -4,7 +4,7 @@
     "scripts": {
         "setup:submodules:clone": "git submodule update --init --recursive",
         "setup:submodules:checkout_modules": "cd modules/e712 && git checkout master && cd ../ethvtx && git checkout develop && cd ../erc2280 && git checkout master && cd ../test-geth && git checkout master",
-        "setup:submodules:checkout_contracts": "cd contracts/metamarketplace && git checkout develop && cd ../refract && git checkout develop && cd ../t721controller && git checkout develop && cd ../ticketforge && git checkout develop",
+        "setup:submodules:checkout_contracts": "cd contracts/contracts_modules/metamarketplace && git checkout develop && cd ../refract && git checkout develop && cd ../t721controller && git checkout develop && cd ../ticketforge && git checkout develop && cd ../t721admin && git checkout develop && cd ../t721token && git checkout develop",
         "setup:submodules": "npm run setup:submodules:clone && npm run setup:submodules:checkout_modules && npm run setup:submodules:checkout_contracts",
         "setup:portals": "portalize init ./portalize.config.json",
         "setup": "npm run setup:submodules && npm run setup:portals",

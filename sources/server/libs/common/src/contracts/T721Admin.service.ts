@@ -9,6 +9,13 @@ import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
  */
 @Injectable()
 export class T721AdminService extends ContractsControllerBase {
+    /**
+     * Dependency Injection
+     *
+     * @param contractsService
+     * @param web3Service
+     * @param shutdownService
+     */
     constructor(
         contractsService: ContractsService,
         web3Service: Web3Service,

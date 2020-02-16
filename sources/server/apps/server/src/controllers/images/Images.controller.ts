@@ -35,6 +35,9 @@ import { fromES } from '@lib/common/utils/fromES';
 import * as path from 'path';
 import { FSService } from '@lib/common/fs/FS.service';
 
+/**
+ * Accepted Mimetypes
+ */
 const mimetypeMapping = {
     'image/bmp': '.bmp',
     'image/gif': '.gif',

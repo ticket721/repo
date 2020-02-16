@@ -1,5 +1,8 @@
 import { Category } from '@lib/common/dates/entities/Date.entity';
 
+/**
+ * Date Model for most of event related calls
+ */
 export class EventDto {
     /**
      * Unique ID of the Date

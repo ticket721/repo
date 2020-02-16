@@ -7,8 +7,18 @@ import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 import Web3 from 'web3';
 import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
 
+/**
+ * Extra Configuration
+ */
 export interface ContractsControllerBaseConfig {
+    /**
+     * Specific address of the contract
+     */
     address?: string;
+
+    /**
+     * Name of the contract
+     */
     name?: string;
 }
 
@@ -54,6 +64,12 @@ export class ContractsControllerBase {
         );
     }
 
+    /**
+     * Verifies if contract matches code on-chain
+     *
+     * @param contractCode
+     * @param contractAddress
+     */
     private async verifyContract(
         contractCode: string,
         contractAddress: string,

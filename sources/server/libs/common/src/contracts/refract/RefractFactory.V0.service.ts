@@ -31,6 +31,11 @@ export class RefractFactoryV0Service extends ContractsControllerBase {
         );
     }
 
+    /**
+     * Recover current nonce for given Refract Wallet
+     *
+     * @param refract
+     */
     public async getNonce(refract: string): Promise<number> {
         const code = await (await this.web3Service.get()).eth.getCode(refract);
 
@@ -52,6 +57,13 @@ export class RefractFactoryV0Service extends ContractsControllerBase {
         return (await refractInstance.get()).methods.nonce().call();
     }
 
+    /**
+     * Checks if given address is a controller of given Refract Wallet
+     *
+     * @param refract
+     * @param controller
+     * @param salt
+     */
     public async isController(
         refract: string,
         controller: string,
@@ -85,6 +97,17 @@ export class RefractFactoryV0Service extends ContractsControllerBase {
         }
     }
 
+    /**
+     * Encodes a Refract Wallet MetaTransaction
+     *
+     * @param refract
+     * @param controller
+     * @param salt
+     * @param nonce
+     * @param addr
+     * @param nums
+     * @param bdata
+     */
     public async encodeCall(
         refract: string,
         controller: string,

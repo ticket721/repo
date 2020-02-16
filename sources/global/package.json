@@ -13,7 +13,7 @@
         "build": "tsc",
         "postbuild": "npm run copy_cities",
         "copy_cities": "mkdir -p lib/geoloc && cp sources/geoloc/cities.json lib/geoloc/",
-        "watch": "watch 'npm run build' sources",
+        "watch": "watch 'npm run build && echo \"Done !\"' sources",
         "lint": "tslint --project ."
     },
     "dependencies": {

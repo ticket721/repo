@@ -6,11 +6,24 @@ import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 import { T721ControllerV0Service } from '@lib/common/contracts/t721controller/T721Controller.V0.service';
 import { MetaMarketplaceV0Service } from '@lib/common/contracts/metamarketplace/MetaMarketplace.V0.service';
 
+/**
+ * A Set of MetaMarketplace + T721Controller
+ */
 export interface ScopeBinding {
+    /**
+     * MetaMarketplace
+     */
     mm: ContractsControllerBase;
+
+    /**
+     * T721Controller
+     */
     t721c: ContractsControllerBase;
 }
 
+/**
+ * All scopes storage
+ */
 export interface ScopeBindings {
     [key: string]: ScopeBinding;
 }
@@ -20,6 +33,9 @@ export interface ScopeBindings {
  */
 @Injectable()
 export class TicketforgeService extends ContractsControllerBase {
+    /**
+     * Stored bindings
+     */
     private scopeBindings: ScopeBindings = {};
 
     /**
@@ -52,6 +68,13 @@ export class TicketforgeService extends ContractsControllerBase {
         );
     }
 
+    /**
+     * Add a new scope to registered bindings
+     *
+     * @param name
+     * @param mm
+     * @param t721c
+     */
     private registerScopeBindings(
         name: string,
         mm: ContractsControllerBase,
@@ -63,6 +86,11 @@ export class TicketforgeService extends ContractsControllerBase {
         };
     }
 
+    /**
+     * Recover a MetaMarketplace and T721Controller instance for given scope
+     *
+     * @param scope
+     */
     public getScopeContracts(scope: string): ScopeBinding {
         return this.scopeBindings[scope];
     }

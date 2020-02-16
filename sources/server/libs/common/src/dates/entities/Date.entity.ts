@@ -120,12 +120,18 @@ export class DateEntity {
     @GeneratedUUidColumn()
     id: string;
 
+    /**
+     * Timestamp of the beginning of the event
+     */
     @Column({
         type: 'timestamp',
     })
     // tslint:disable-next-line:variable-name
     event_begin: Date;
 
+    /**
+     * Timestamp of the end of the event
+     */
     @Column({
         type: 'timestamp',
     })

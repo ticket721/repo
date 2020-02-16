@@ -7,8 +7,18 @@ import {
     InjectRepository,
 } from '@iaminfinity/express-cassandra';
 
+/**
+ * Config Options
+ */
 export interface GlobalConfigOptions {
+    /**
+     * Rate at which the ethereum block number is fetched
+     */
     blockNumberFetchingRate: number;
+
+    /**
+     * Rate at which the ether price is fetched
+     */
     ethereumPriceFetchingRate: number;
 }
 

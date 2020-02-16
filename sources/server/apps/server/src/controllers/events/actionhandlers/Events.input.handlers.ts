@@ -9,7 +9,7 @@ import { closestCity } from '@ticket721sources/global';
 import { ImagesService } from '@lib/common/images/Images.service';
 
 /**
- * @events/textMetadata arguments
+ * events/textMetadata arguments
  */
 export interface EventsCreateTextMetadata {
     /**
@@ -29,13 +29,13 @@ export interface EventsCreateTextMetadata {
 }
 
 /**
- * @events/modulesConfiguration arguments
+ * events/modulesConfiguration arguments
  */
 // tslint:disable-next-line:no-empty-interface
 export interface EventsCreateModulesConfiguration {}
 
 /**
- * @events/datesConfiguration arguments
+ * events/datesConfiguration arguments
  */
 export interface EventsCreateDatesConfiguration {
     /**
@@ -80,7 +80,7 @@ export interface EventsCreateDatesConfiguration {
 }
 
 /**
- * @events/categoriesConfiguration arguments
+ * events/categoriesConfiguration arguments
  */
 export interface EventsCreateCategoriesConfiguration {
     /**
@@ -121,10 +121,20 @@ export interface EventsCreateCategoriesConfiguration {
          * Allowed currencies for category
          */
         currencies: {
+            /**
+             * Currency Name
+             */
             currency: string;
+
+            /**
+             * Price for specific currency
+             */
             price: string;
         }[];
     }[];
+    /**
+     * Configuration for categories that are date specific
+     */
     dates: {
         /**
          * Name of the category
@@ -160,14 +170,21 @@ export interface EventsCreateCategoriesConfiguration {
          * Allowed currencies for category
          */
         currencies: {
+            /**
+             * Currency Name
+             */
             currency: string;
+
+            /**
+             * Price for specific currency
+             */
             price: string;
         }[];
     }[][];
 }
 
 /**
- * @events/imagesMetadata arguments
+ * events/imagesMetadata arguments
  */
 export interface EventsCreateImagesMetadata {
     /**
@@ -182,7 +199,7 @@ export interface EventsCreateImagesMetadata {
 }
 
 /**
- * @events/adminsConfiguration arguments
+ * events/adminsConfiguration arguments
  */
 export interface EventsCreateAdminsConfiguration {
     /**
@@ -208,7 +225,7 @@ export class EventsInputHandlers implements OnModuleInit {
     ) {}
 
     /**
-     * @events/textMetadata dynamic argument checker
+     * events/textMetadata dynamic argument checker
      */
     textMetadataValidator = Joi.object({
         name: Joi.string()
@@ -228,7 +245,7 @@ export class EventsInputHandlers implements OnModuleInit {
     });
 
     /**
-     * @events/textMetadata handler
+     * events/textMetadata handler
      */
     async textMetadataHandler(
         actionset: ActionSet,
@@ -254,12 +271,12 @@ export class EventsInputHandlers implements OnModuleInit {
     }
 
     /**
-     * @events/modulesConfiguration dynamic argument checker
+     * events/modulesConfiguration dynamic argument checker
      */
     modulesConfigurationValidator = Joi.object({});
 
     /**
-     * @events/modulesConfiguration handler
+     * events/modulesConfiguration handler
      */
     async modulesConfigurationHandler(
         actionset: ActionSet,
@@ -285,7 +302,7 @@ export class EventsInputHandlers implements OnModuleInit {
     }
 
     /**
-     * @events/datesConfiguration dynamic argument checker
+     * events/datesConfiguration dynamic argument checker
      */
     datesConfigurationValidator = Joi.object({
         dates: Joi.array()
@@ -307,7 +324,7 @@ export class EventsInputHandlers implements OnModuleInit {
     });
 
     /**
-     * @events/datesConfiguration dates checker
+     * events/datesConfiguration dates checker
      */
     checkEventDates(date: any): string {
         if (date.eventEnd < date.eventBegin) {
@@ -318,7 +335,7 @@ export class EventsInputHandlers implements OnModuleInit {
     }
 
     /**
-     * @events/datesConfiguration handler
+     * events/datesConfiguration handler
      */
     async datesConfigurationHandler(
         actionset: ActionSet,
@@ -366,7 +383,7 @@ export class EventsInputHandlers implements OnModuleInit {
     }
 
     /**
-     * @events/categoriesConfiguration dynamic argument checker
+     * events/categoriesConfiguration dynamic argument checker
      */
     categoryConfigurationValidator = Joi.object({
         name: Joi.string().required(),
@@ -386,7 +403,7 @@ export class EventsInputHandlers implements OnModuleInit {
     });
 
     /**
-     * @events/categoriesConfiguration dynamic argument checker
+     * events/categoriesConfiguration dynamic argument checker
      */
     categoriesConfigurationValidator = Joi.object({
         global: Joi.array().items(this.categoryConfigurationValidator),
@@ -396,7 +413,7 @@ export class EventsInputHandlers implements OnModuleInit {
     });
 
     /**
-     * @events/categoriesConfiguration check name conflicts
+     * events/categoriesConfiguration check name conflicts
      */
     async checkCategoriesConflicts(data: any): Promise<string> {
         const registry: { [key: string]: boolean } = {};
@@ -425,7 +442,7 @@ export class EventsInputHandlers implements OnModuleInit {
     }
 
     /**
-     * @events/categoriesConfiguration check categories dates
+     * events/categoriesConfiguration check categories dates
      */
     checkCategoryDates(cat: any): string {
         if (!cat.resaleEnd && !cat.resaleBegin) {
@@ -451,7 +468,7 @@ export class EventsInputHandlers implements OnModuleInit {
     }
 
     /**
-     * @events/categoriesConfiguration check dates of resale configs
+     * events/categoriesConfiguration check dates of resale configs
      */
     checkResaleDates(data: any): string {
         for (const global of data.global) {
@@ -492,7 +509,7 @@ export class EventsInputHandlers implements OnModuleInit {
     }
 
     /**
-     * @events/categoriesConfiguration handler
+     * events/categoriesConfiguration handler
      */
     async categoriesConfigurationHandler(
         actionset: ActionSet,
@@ -558,7 +575,7 @@ export class EventsInputHandlers implements OnModuleInit {
     }
 
     /**
-     * @events/imagesMetadata dynamic argument checker
+     * events/imagesMetadata dynamic argument checker
      */
     imagesMetadataValidator = Joi.object({
         avatar: Joi.string().required(),
@@ -568,7 +585,7 @@ export class EventsInputHandlers implements OnModuleInit {
     });
 
     /**
-     * @events/imagesMetadata handler
+     * events/imagesMetadata handler
      */
     async imagesMetadataHandler(
         actionset: ActionSet,
@@ -626,14 +643,14 @@ export class EventsInputHandlers implements OnModuleInit {
     }
 
     /**
-     * @events/adminsConfiguration dynamic argument checker
+     * events/adminsConfiguration dynamic argument checker
      */
     adminsConfigurationValidator = Joi.object({
         admins: Joi.array().items(Joi.string()),
     });
 
     /**
-     * @events/adminsConfiguration handler
+     * events/adminsConfiguration handler
      */
     async adminsConfigurationHandler(
         actionset: ActionSet,
@@ -658,6 +675,9 @@ export class EventsInputHandlers implements OnModuleInit {
         return [actionset, true];
     }
 
+    /**
+     * Handlers injection
+     */
     /* istanbul ignore next */
     onModuleInit(): void {
         this.actionSetsService.setInputHandler(
