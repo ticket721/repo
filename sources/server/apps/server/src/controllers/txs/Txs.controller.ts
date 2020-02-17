@@ -28,6 +28,7 @@ import { ContractsService } from '@lib/common/contracts/Contracts.service';
 import { TxsInfosResponseDto } from '@app/server/controllers/txs/dto/TxsInfosResponse.dto';
 import { TxsMtxInputDto } from '@app/server/controllers/txs/dto/TxsMtxInput.dto';
 import { TxsMtxResponseDto } from '@app/server/controllers/txs/dto/TxsMtxResponse.dto';
+import { isTransactionHash } from '@ticket721sources/global';
 
 /**
  * Transaction Controller. Fetch and recover transactions
@@ -134,15 +135,13 @@ export class TxsController {
         description: StatusNames[StatusCodes.OK],
     })
     @HttpCode(200)
+    /* istanbul ignore next */
     async search(
         @Body() body: TxsSearchInputDto,
         @User() user: UserDto,
     ): Promise<TxsSearchResponseDto> {
         const txs = await search<TxEntity, TxsService>(this.txsService, body);
-
-        return {
-            txs,
-        };
+        return { txs };
     }
 
     /**
@@ -173,7 +172,7 @@ export class TxsController {
     ): Promise<TxsSubscribeResponseDto> {
         const txHash: string = body.transaction_hash.toLowerCase();
 
-        if (!this.txsService.txHashRegExp.test(txHash)) {
+        if (!isTransactionHash(txHash)) {
             throw new HttpException(
                 {
                     status: StatusCodes.BadRequest,

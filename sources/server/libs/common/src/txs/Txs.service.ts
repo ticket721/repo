@@ -7,17 +7,22 @@ import {
     InjectModel,
     InjectRepository,
 } from '@iaminfinity/express-cassandra';
-import { ServiceResponse }                  from '@lib/common/utils/ServiceResponse';
-import { isAddress, keccak256, RefractMtx, isTransactionHash } from '@ticket721sources/global';
-import { EIP712Payload }                    from '@ticket721/e712/lib';
-import { RefractFactoryV0Service }          from '@lib/common/contracts/refract/RefractFactory.V0.service';
-import { UserDto }                          from '@lib/common/users/dto/User.dto';
-import { encodeMetaTransaction }            from '@lib/common/txs/utils/encodeMetaTransaction';
-import { T721AdminService }                 from '@lib/common/contracts/T721Admin.service';
-import { VaultereumService }                from '@lib/common/vaultereum/Vaultereum.service';
-import { Web3Service }                      from '@lib/common/web3/Web3.service';
-import { GlobalConfigService }              from '@lib/common/globalconfig/GlobalConfig.service';
-import Decimal                              from 'decimal.js';
+import { ServiceResponse } from '@lib/common/utils/ServiceResponse';
+import {
+    isAddress,
+    keccak256,
+    RefractMtx,
+    isTransactionHash,
+} from '@ticket721sources/global';
+import { EIP712Payload } from '@ticket721/e712/lib';
+import { RefractFactoryV0Service } from '@lib/common/contracts/refract/RefractFactory.V0.service';
+import { UserDto } from '@lib/common/users/dto/User.dto';
+import { encodeMetaTransaction } from '@lib/common/txs/utils/encodeMetaTransaction';
+import { T721AdminService } from '@lib/common/contracts/T721Admin.service';
+import { VaultereumService } from '@lib/common/vaultereum/Vaultereum.service';
+import { Web3Service } from '@lib/common/web3/Web3.service';
+import { GlobalConfigService } from '@lib/common/globalconfig/GlobalConfig.service';
+import Decimal from 'decimal.js';
 
 /**
  * Configuration Options
@@ -91,7 +96,6 @@ export class TxsService extends CRUDExtension<TxsRepository, TxEntity> {
     ) {
         super(txEntity, txsRepository);
     }
-
 
     /**
      * Method to subscribe to a transaction hash
