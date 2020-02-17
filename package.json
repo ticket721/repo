@@ -43,7 +43,7 @@
         "typedoc": "0.16.10",
         "typedoc-plugin-markdown": "2.2.16",
         "typescript": "3.7.4",
-        "web3": "1.2.4",
+        "web3": "1.2.6",
         "merge": ">=1.2.1",
         "deep-extend": ">=0.5.1"
     },
