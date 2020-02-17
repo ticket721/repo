@@ -17,7 +17,7 @@
     },
     "devDependencies": {
         "supertest": "^4.0.2",
-        "typescript": "3.7.4",
+        "typescript": "3.7.5",
         "watch": "^1.0.2",
         "@types/node": "12.12.22",
         "tslint": "^6.0.0"
