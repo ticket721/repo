@@ -34,7 +34,7 @@
         "@ticket721sources/sdk": "file:../sdk",
         "bcrypt": "3.0.8",
         "binance-api-node": "^0.9.15",
-        "bull": "3.12.1",
+        "bull": "3.13.0",
         "bull-board": "0.6.0",
         "class-transformer": "0.2.3",
         "class-validator": "0.11.0",
