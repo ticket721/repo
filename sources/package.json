@@ -5,13 +5,14 @@
     "scripts": {},
     "dependencies": {
         "@hapi/joi": "16.1.8",
-        "axios": "0.19.2",
+        "@ticket721/e712": "0.3.0",
+        "axios": "0.19.1",
+        "bignumber.js": "9.0.0",
         "ethereum-address": "0.0.4",
         "ethers": "4.0.45",
         "lodash": "4.17.15",
-        "@ticket721/e712": "0.3.0",
-        "web3": "1.2.6",
-        "node-vault": "0.9.12"
+        "node-vault": "0.9.12",
+        "web3": "1.2.6"
     },
     "devDependencies": {
         "@types/hapi__joi": "16.0.10",
