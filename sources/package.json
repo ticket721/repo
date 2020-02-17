@@ -10,7 +10,7 @@
         "ethers": "4.0.45",
         "lodash": "4.17.15",
         "@ticket721/e712": "0.3.0",
-        "web3": "1.2.4",
+        "web3": "1.2.6",
         "node-vault": "0.9.12"
     },
     "devDependencies": {
