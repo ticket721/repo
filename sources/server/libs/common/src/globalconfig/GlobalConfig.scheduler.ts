@@ -92,6 +92,7 @@ export class GlobalConfigScheduler implements OnModuleInit, OnModuleDestroy {
     /**
      * Interval Creator
      */
+    /* istanbul ignore next */
     onModuleInit(): void {
         this.schedule.scheduleIntervalJob(
             'fetchBlockNumber',
@@ -108,6 +109,7 @@ export class GlobalConfigScheduler implements OnModuleInit, OnModuleDestroy {
     /**
      * Interval Stopper
      */
+    /* istanbul ignore next */
     onModuleDestroy(): void {
         this.schedule.cancelJobs();
     }
