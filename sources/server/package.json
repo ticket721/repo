@@ -41,7 +41,7 @@
         "decimal.js": "^10.2.0",
         "dotenv": "8.2.0",
         "elasticsearch": "16.6.0",
-        "email-templates": "6.1.1",
+        "email-templates": "7.0.2",
         "git-branch": "2.0.1",
         "nest-schedule": "0.6.4",
         "node-mailjet": "3.3.1",
