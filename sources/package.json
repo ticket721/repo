@@ -14,7 +14,7 @@
         "node-vault": "0.9.12"
     },
     "devDependencies": {
-        "@types/hapi__joi": "16.0.6",
+        "@types/hapi__joi": "16.0.10",
         "@types/node": "12.12.22"
     }
 }
