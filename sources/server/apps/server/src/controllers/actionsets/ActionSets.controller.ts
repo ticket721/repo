@@ -175,8 +175,6 @@ export class ActionSetsController {
             },
         );
 
-        console.log('1');
-
         if (searchResult.error) {
             throw new HttpException(
                 {
@@ -243,8 +241,6 @@ export class ActionSetsController {
         });
 
         await this.actionQueue.add('input', actionSet.raw);
-
-        console.log('2');
 
         if (res.error) {
             throw new HttpException(
