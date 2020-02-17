@@ -28,6 +28,6 @@
         "typescript": "3.7.4",
         "watch": "^1.0.2",
         "@types/node": "12.12.22",
-        "tslint": "^5.20.0"
+        "tslint": "^6.0.0"
     }
 }
