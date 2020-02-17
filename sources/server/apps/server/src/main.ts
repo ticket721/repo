@@ -9,6 +9,7 @@ import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 import { Queue } from 'bull';
 import { getQueueToken } from '@nestjs/bull';
 import { setQueues, UI } from 'bull-board';
+import * as express from 'express';
 
 /**
  * Main application, starting the T721 Server API
@@ -27,6 +28,13 @@ async function main() {
         }),
     );
 
+    app.use(
+        '/static',
+        express.static(configService.get('IMAGE_SERVE_DIRECTORY'), {
+            extensions: ['png', 'jpg', 'gif', 'svg', 'bmp'],
+        }),
+    );
+
     const options = new DocumentBuilder()
         .setTitle('T721 API')
         .setDescription('')
@@ -39,7 +47,8 @@ async function main() {
 
     if (configService.get('BULL_BOARD') === 'true') {
         const mailing = app.get<Queue>(getQueueToken('mailing'));
-        setQueues([mailing]);
+        const action = app.get<Queue>(getQueueToken('action'));
+        setQueues([mailing, action]);
         app.use('/admin/queues', UI);
     }
 

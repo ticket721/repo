@@ -10,8 +10,8 @@ import { UserEntity } from './entities/User.entity';
 import { UserDto } from './dto/User.dto';
 import { CreateUserServiceInputDto } from './dto/CreateUserServiceInput.dto';
 import { toAcceptedAddressFormat } from '@ticket721sources/global';
-import { ServiceResponse } from '@app/server/utils/ServiceResponse';
 import { ESSearchReturn } from '@lib/common/utils/ESSearchReturn';
+import { ServiceResponse } from '@lib/common/utils/ServiceResponse';
 
 /**
  * Utilities and services around the user entity

@@ -14,23 +14,27 @@
 
     },
 
+    "dev": {
+        "vaultereumHost": "127.0.0.1",
+        "vaultereumPort": 8200,
+        "vaultereumProtocol": "http",
+        "vaultereumEthHost": "ganache",
+        "vaultereumEthPort": 8545,
+        "vaultereumEthProtocol": "http",
+        "vaultereumEthNetId": 2702,
+        "vaultereumToken": "dev_root_token",
+        "extraAdmins": [
+            "0xea51bf51cdd20b0b7a65623992ecf516bb03a082"
+        ],
+        "extraAdminsEth": "1",
+        "t721adminFunds": "10"
+    },
+
     "contracts": {
         "migrations": [
             {
                 "name": "initial_deployment",
                 "serie": [
-                    {
-                        "name": "daiplus",
-                        "test": false,
-                        "range": [1, 2],
-                        "args": {
-                            "ERC20": {
-                                "name": "DaiPlus Local Meta-Stablecoin v1.0",
-                                "symbol": "Dai+",
-                                "decimals": 18
-                            }
-                        }
-                    },
                     {
                         "name": "ticketforge",
                         "test": false,
@@ -48,12 +52,22 @@
                         "range": [1, 2]
                     },
                     {
+                        "name": "t721admin",
+                        "test": false,
+                        "range": [1, 2]
+                    },
+                    {
                         "name": "t721controller",
                         "test": false,
                         "range": [1, 2]
                     },
                     {
                         "name": "refract",
+                        "test": false,
+                        "range": [1, 2]
+                    },
+                    {
+                        "name": "t721token",
                         "test": false,
                         "range": [1, 2]
                     }
@@ -66,15 +80,16 @@
                         "name": "ticketforge",
                         "test": false,
                         "range": [3, 3]
+                    },
+                    {
+                        "name": "t721controller",
+                        "test": false,
+                        "range": [3, 3]
                     }
                 ]
             }
         ],
         "modules": [
-            {
-                "name": "daiplus",
-                "upgradeable": false
-            },
             {
                 "name": "ticketforge",
                 "upgradeable": false
@@ -84,11 +99,19 @@
                 "upgradeable": false
             },
             {
+                "name": "refract",
+                "upgradeable": false
+            },
+            {
                 "name": "t721controller",
                 "upgradeable": false
             },
             {
-                "name": "refract",
+                "name": "t721token",
+                "upgradeable": false
+            },
+            {
+                "name": "t721admin",
                 "upgradeable": false
             }
         ],

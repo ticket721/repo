@@ -7,6 +7,14 @@ import {
     InjectRepository,
 } from '@iaminfinity/express-cassandra';
 import { ActionSetsRepository } from '@lib/common/actionsets/ActionSets.repository';
+import { ActionSet } from '@lib/common/actionsets/helper/ActionSet';
+
+export type Progress = (p: number) => Promise<void>;
+
+export type InputActionHandler = (
+    actionSet: ActionSet,
+    progress: Progress,
+) => Promise<[ActionSet, boolean]>;
 
 /**
  * ActionSets Service, implements CRUD
@@ -29,5 +37,31 @@ export class ActionSetsService extends CRUDExtension<
         actionSetEntity: BaseModel<ActionSetEntity>,
     ) {
         super(actionSetEntity, actionSetsRepository);
+    }
+
+    /**
+     * Input handlers that are called by the input bull tasks
+     */
+    private inputHandlers: {
+        [key: string]: InputActionHandler;
+    } = {};
+
+    /**
+     * Sets a new input handler mapping
+     *
+     * @param name
+     * @param handler
+     */
+    setInputHandler(name: string, handler: InputActionHandler): void {
+        this.inputHandlers[name] = handler;
+    }
+
+    /**
+     * Recover an input handler
+     *
+     * @param name
+     */
+    getInputHandler(name: string): InputActionHandler {
+        return this.inputHandlers[name];
     }
 }

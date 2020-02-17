@@ -3,16 +3,18 @@
         "modules/e712",
         "modules/erc2280",
         "modules/ethvtx",
-        "contracts/contracts_modules/daiplus",
         "contracts/contracts_modules/metamarketplace",
         "contracts/contracts_modules/t721controller",
+        "contracts/contracts_modules/t721admin",
+        "contracts/contracts_modules/t721token",
         "contracts/contracts_modules/ticketforge",
         "contracts/contracts_modules/refract",
         "sources",
         "sources/server",
         "sources/migrations",
         "sources/global",
-        "sources/sdk"
+        "sources/sdk",
+        "sources/simulation"
     ],
     "version": "1.0.0"
 }

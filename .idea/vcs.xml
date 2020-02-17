@@ -2,10 +2,11 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/contracts/contracts_modules/daiplus" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/contracts/contracts_modules/metamarketplace" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/contracts/contracts_modules/refract" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/contracts/contracts_modules/t721admin" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/contracts/contracts_modules/t721controller" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/contracts/contracts_modules/t721token" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/contracts/contracts_modules/ticketforge" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/modules/e712" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/modules/erc2280" vcs="Git" />

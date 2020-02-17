@@ -25,7 +25,8 @@ export class MetaMarketplaceV0Service extends ContractsControllerBase {
             contractsService,
             web3Service,
             shutdownService,
-            'metamarketplace::MetaMarketplace_v0',
+            'metamarketplace',
+            'MetaMarketplace_v0',
         );
     }
 }

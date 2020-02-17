@@ -8,23 +8,38 @@ import Web3 from 'web3';
 import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
 
 /**
+ * Extra Configuration
+ */
+export interface ContractsControllerBaseConfig {
+    /**
+     * Specific address of the contract
+     */
+    address?: string;
+
+    /**
+     * Name of the contract
+     */
+    name?: string;
+}
+
+/**
  * Base class for one contract instance service
  */
 export class ContractsControllerBase {
     /**
      * Artifact of the instance
      */
-    private _contractData: ContractArtifact;
+    protected _contractData: ContractArtifact;
 
     /**
      * Web3 Contract instance
      */
-    private _contract: any;
+    protected _contract: any;
 
     /**
      * Logger to use
      */
-    private readonly logger: WinstonLoggerService;
+    protected readonly logger: WinstonLoggerService;
 
     /**
      * Dependency Injection
@@ -32,25 +47,54 @@ export class ContractsControllerBase {
      * @param contractsService
      * @param web3Service
      * @param shutdownService
+     * @param moduleName
      * @param contractName
+     * @param options
      */
     constructor(
-        private readonly contractsService: ContractsService,
-        private readonly web3Service: Web3Service,
-        private readonly shutdownService: ShutdownService,
-        private readonly contractName: string,
+        protected readonly contractsService: ContractsService,
+        protected readonly web3Service: Web3Service,
+        protected readonly shutdownService: ShutdownService,
+        protected readonly moduleName: string,
+        protected readonly contractName: string,
+        protected readonly options?: ContractsControllerBaseConfig,
     ) {
-        this.logger = new WinstonLoggerService(contractName);
+        this.logger = new WinstonLoggerService(
+            options && options.name ? options.name : contractName,
+        );
+    }
+
+    /**
+     * Verifies if contract matches code on-chain
+     *
+     * @param contractCode
+     * @param contractAddress
+     */
+    private async verifyContract(
+        contractCode: string,
+        contractAddress: string,
+    ): Promise<boolean> {
+        const code = await (await this.web3Service.get()).eth.getCode(
+            contractAddress,
+        );
+
+        return code.toLowerCase() === contractCode.toLowerCase();
     }
 
     /**
      * Utility to load contract instance
      */
     async loadContract(): Promise<void> {
-        this.logger.log(`Initializing ${this.contractName} service`);
+        this.logger.log(
+            `Initializing ${
+                this.options && this.options.name
+                    ? this.options.name
+                    : this.contractName
+            } service`,
+        );
         this._contractData = (
             await this.contractsService.getContractArtifacts()
-        )[this.contractName];
+        )[`${this.moduleName}::${this.contractName}`];
 
         if (!this._contractData) {
             const error: Error = new Error(
@@ -71,11 +115,37 @@ export class ContractsControllerBase {
             throw error;
         }
 
-        this._contract = new web3.eth.Contract(
-            this._contractData.abi,
-            this._contractData.networks[networkId].address,
+        if (this.options && this.options.address) {
+            if (
+                this._contractData.deployedBytecode &&
+                !(await this.verifyContract(
+                    this._contractData.deployedBytecode,
+                    this.options.address,
+                ))
+            ) {
+                throw new Error(
+                    `On-Chain code does not match for dynamically loaded contract address (${this.moduleName}::${this.contractName}@${this.options.address})`,
+                );
+            }
+
+            this._contract = new web3.eth.Contract(
+                this._contractData.abi,
+                this.options.address,
+            );
+        } else {
+            this._contract = new web3.eth.Contract(
+                this._contractData.abi,
+                this._contractData.networks[networkId].address,
+            );
+        }
+
+        this.logger.log(
+            `Service ${
+                this.options && this.options.name
+                    ? this.options.name
+                    : this.contractName
+            } initialized`,
         );
-        this.logger.log(`Service ${this.contractName} initialized`);
     }
 
     /**

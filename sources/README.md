@@ -8,6 +8,7 @@ Contains all the code of the T721 platform: server, webapp, mobile apps ...
 | [`migrations`](./migrations/README.md) | `sources/migrations` | Migration scripts for Cassandra & ElasticSearch |
 | [`sdk`](./sdk/README.md) | `sources/sdk` | Client for the T721 API Server |
 | [`global`](./global/README.md) | `sources/global` | Global Utilities used across all sub-projects |
+| [`simulation`](./simulation/README.md) | `sources/simulation` | Script to populate the server with events |
 
 ## Development Setups
 
@@ -19,17 +20,17 @@ You need 4 terminals in order to have the perfect server development setup. We'l
 
 Run this command
 ```bash
-./sources/scripts/docker_run_elassandra.sh
+./sources/scripts/run_dev_infra.sh
 ```
 And keep the terminal open
 
-As soon as you see `Elassandra started` in the terminal, you can procees with the migration
+As soon as you see `Elassandra started` in the terminal, you can proceed with the migration
 
 ### 2. Running the migration script
 
 Run this command
 ```bash
-cd migrations && env CASSANDRA_CONTACT_POINTS=127.0.0.1 CASSANDRA_PORT=9042 ELASTICSEARCH_HOST=127.0.0.1:9200 ./migrate.sh
+cd migrations && env CASSANDRA_HOSTS=127.0.0.1 CASSANDRA_PORT=32702 ELASTICSEARCH_HOST=127.0.0.1:32610 ./migrate.sh
 ```
 
 ### 3. Running @ticket721source/global watch and build in `T2`

@@ -9,7 +9,7 @@ import {
 } from '@ticket721sources/global';
 import { Web3Strategy } from '@app/server/authentication/Web3.strategy';
 import { Web3TokensService } from '@app/server/web3token/Web3Tokens.service';
-import { StatusCodes } from '@app/server/utils/codes';
+import { StatusCodes } from '@lib/common/utils/codes';
 
 const context: {
     localStrategy: Web3Strategy;

@@ -1,4 +1,4 @@
-import { NetworkEngine } from '../../network/NetworkEngine';
+import { NetworkEngine } from '../../network';
 import { get_config }    from '../utils/get_config';
 import { repo_log }      from '../utils/log';
 
@@ -6,7 +6,6 @@ import { repo_log }      from '../utils/log';
  * Gulp task that calls the `run` method on the NetworkEngine
  */
 export async function network_run(): Promise<void> {
-
     repo_log.info(`Starting task network::run`);
     console.log();
 

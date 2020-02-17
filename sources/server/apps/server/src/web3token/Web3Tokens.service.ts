@@ -2,11 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@iaminfinity/express-cassandra';
 import { types } from 'cassandra-driver';
 import { Web3TokensRepository } from './Web3Tokens.repository';
-import { ServiceResponse } from '@app/server/utils/ServiceResponse';
 import { RegisterWeb3TokenServiceInputDto } from '@app/server/web3token/dto/RegisterWeb3TokenServiceInput.dto';
 import { Web3TokenDto } from '@app/server/web3token/dto/Web3Token.dto';
 import { NestSchedule } from 'nest-schedule';
 import { ConfigService } from '@lib/common/config/Config.service';
+import { ServiceResponse } from '@lib/common/utils/ServiceResponse';
 
 /**
  * Utilities and services around the user entity

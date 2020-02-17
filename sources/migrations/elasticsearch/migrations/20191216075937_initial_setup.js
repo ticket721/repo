@@ -31,6 +31,20 @@ class M20191216075937_initial_setup extends ElasticMigration {
             }
         );
 
+        await this.createIndex('ticket721_image', 'ticket721');
+        await this.putMapping('ticket721_image', 'image', {
+            "image": {
+                "discover": ".*",
+            }
+        });
+        await this.putSettings('ticket721_image',
+            {
+                index: {
+                    synchronous_refresh: true
+                }
+            }
+        );
+
         await this.createIndex('ticket721_web3token', 'ticket721');
         await this.putMapping('ticket721_web3token', 'web3token', {
             "web3token": {
@@ -44,7 +58,7 @@ class M20191216075937_initial_setup extends ElasticMigration {
                 }
             }
         );
-        
+
         await this.createIndex('ticket721_actionset', 'ticket721');
         await this.putMapping('ticket721_actionset', 'actionset', {
             "actionset": {
@@ -58,12 +72,51 @@ class M20191216075937_initial_setup extends ElasticMigration {
                 }
             }
         );
+
+        await this.createIndex('ticket721_date', 'ticket721');
+        await this.putMapping('ticket721_date', 'date', {
+            "date": {
+                "discover": "^((?!location).*)",
+                "properties": {
+                    "location": {
+                        "type": "geo_point",
+                        "cql_collection": "singleton"
+                    }
+                }
+            }
+        });
+
+        await this.createIndex('ticket721_event', 'ticket721');
+        await this.putMapping('ticket721_event', 'event', {
+            "event": {
+                "discover": ".*"
+            }
+        });
+
+        await this.createIndex('ticket721_tx', 'ticket721');
+        await this.putMapping('ticket721_tx', 'tx', {
+            "tx": {
+                "discover": ".*"
+            }
+        });
+        
+        await this.createIndex('ticket721_global', 'ticket721');
+        await this.putMapping('ticket721_global', 'global', {
+            "global": {
+                "discover": ".*"
+            }
+        });
     }
 
     async down() {
         await this.removeIndex('ticket721_user');
+        await this.removeIndex('ticket721_image');
         await this.removeIndex('ticket721_web3token');
         await this.removeIndex('ticket721_actionset');
+        await this.removeIndex('ticket721_date');
+        await this.removeIndex('ticket721_event');
+        await this.removeIndex('ticket721_tx');
+        await this.removeIndex('ticket721_global');
     }
 }
 

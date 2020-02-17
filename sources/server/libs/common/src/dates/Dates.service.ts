@@ -1,0 +1,28 @@
+import { CRUDExtension } from '@lib/common/crud/CRUD.extension';
+import {
+    BaseModel,
+    InjectModel,
+    InjectRepository,
+} from '@iaminfinity/express-cassandra';
+import { DatesRepository } from '@lib/common/dates/Dates.repository';
+import { DateEntity } from '@lib/common/dates/entities/Date.entity';
+
+/**
+ * Service to CRUD DateEntities
+ */
+export class DatesService extends CRUDExtension<DatesRepository, DateEntity> {
+    /**
+     * Dependency injection
+     *
+     * @param datesRepository
+     * @param dateEntity
+     */
+    constructor(
+        @InjectRepository(DatesRepository)
+        datesRepository: DatesRepository,
+        @InjectModel(DateEntity)
+        dateEntity: BaseModel<DateEntity>,
+    ) {
+        super(dateEntity, datesRepository);
+    }
+}

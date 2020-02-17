@@ -2,6 +2,7 @@ import { createWallet }       from '../wallet';
 import { Web3LoginSigner }    from './Web3Login';
 import { EIP712DomainType }   from '@ticket721/e712';
 import { Web3RegisterSigner } from './Web3Register';
+import { RefractMtx }         from './RefractMtx';
 
 describe('Signers', function () {
 
@@ -394,6 +395,27 @@ describe('Signers', function () {
             ]);
 
         });
+
+    });
+
+    describe('RefractMtx', function() {
+
+        it('builds instance and generated payload', async function() {
+
+            const refractMtxSigner = new RefractMtx(2702, 'Refract Wallet', '0', '0x0000000000000000000000000000000000000000');
+
+            const payload = refractMtxSigner.generatePayload({
+                nonce: 0,
+                parameters: [{
+                    from: '0x0000000000000000000000000000000000000000',
+                    to: '0x0000000000000000000000000000000000000000',
+                    relayer: '0x0000000000000000000000000000000000000000',
+                    value: 0,
+                    data: '0xabcdef'
+                }]
+            }, 'MetaTransaction');
+
+        })
 
     });
 

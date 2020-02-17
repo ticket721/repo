@@ -10,11 +10,11 @@ import {
     Web3RegisterSigner,
     keccak256,
 } from '@ticket721sources/global';
-import { ServiceResponse } from '../utils/ServiceResponse';
 import { UsersService } from '@lib/common/users/Users.service';
 import { ConfigService } from '@lib/common/config/Config.service';
 import { UserDto } from '@lib/common/users/dto/User.dto';
 import { RefractFactoryV0Service } from '@lib/common/contracts/refract/RefractFactory.V0.service';
+import { ServiceResponse } from '@lib/common/utils/ServiceResponse';
 
 /**
  * Authentication services and utilities

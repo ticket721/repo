@@ -1,9 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Web3Service } from '@lib/common/web3/Web3.service';
-import * as fs from 'fs';
 import * as path from 'path';
 import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
+import { FSService } from '@lib/common/fs/FS.service';
 
 /**
  * Build option for the Contracts Service
@@ -292,6 +292,7 @@ export class ContractsService {
      * @param web3Service
      * @param winstonLoggerService
      * @param shutdownService
+     * @param fsService
      */
     constructor(
         @Inject('CONTRACTS_MODULE_OPTIONS')
@@ -299,6 +300,7 @@ export class ContractsService {
         private readonly web3Service: Web3Service,
         private readonly winstonLoggerService: WinstonLoggerService,
         private readonly shutdownService: ShutdownService,
+        private readonly fsService: FSService,
     ) {}
 
     /**
@@ -314,6 +316,9 @@ export class ContractsService {
     private async verifyContracts(networkId: number): Promise<void> {
         const web3 = this.web3Service.get();
         for (const contract of Object.keys(this.contracts)) {
+            if (!this.contracts[contract].networks[networkId]) {
+                continue;
+            }
             const address = this.contracts[contract].networks[networkId]
                 .address;
             const code = (await web3.eth.getCode(address)).toLowerCase();
@@ -341,16 +346,14 @@ export class ContractsService {
     private async loadContracts(networkId: number): Promise<void> {
         try {
             this.contracts = {};
-            const artifactContent: string[] = fs.readdirSync(
+            const artifactContent: string[] = this.fsService.readDir(
                 this.options.artifact_path,
             );
             for (const artifact of artifactContent) {
                 if (
-                    !fs
-                        .statSync(
-                            path.join(this.options.artifact_path, artifact),
-                        )
-                        .isDirectory()
+                    !this.fsService.isDir(
+                        path.join(this.options.artifact_path, artifact),
+                    )
                 ) {
                     continue;
                 }
@@ -361,31 +364,27 @@ export class ContractsService {
                     'build',
                     'contracts',
                 );
-                const contractsModuleContent = fs.readdirSync(
+                const contractsModuleContent = this.fsService.readDir(
                     contractsModuleDir,
                 );
 
                 for (const contract of contractsModuleContent) {
                     const contractData: ContractArtifact = JSON.parse(
-                        fs
-                            .readFileSync(
-                                path.join(contractsModuleDir, contract),
-                            )
-                            .toString(),
+                        this.fsService.readFile(
+                            path.join(contractsModuleDir, contract),
+                        ),
                     );
-                    if (contractData.networks[networkId] !== undefined) {
-                        contractData.moduleName = artifact;
-                        const contractName = contract
-                            .split('.')
-                            .slice(0, -1)
-                            .join('.');
-                        this.winstonLoggerService.log(
-                            `Imported contract instance ${artifact}::${contractName}`,
-                        );
-                        this.contracts[
-                            `${artifact}::${contractName}`
-                        ] = contractData;
-                    }
+                    contractData.moduleName = artifact;
+                    const contractName = contract
+                        .split('.')
+                        .slice(0, -1)
+                        .join('.');
+                    this.winstonLoggerService.log(
+                        `Imported contract instance ${artifact}::${contractName}`,
+                    );
+                    this.contracts[
+                        `${artifact}::${contractName}`
+                    ] = contractData;
                 }
             }
         } catch (e) {

@@ -7,7 +7,7 @@
     "types": "lib/sdk/sources/index.d.ts",
     "scripts": {
         "build": "tsc",
-        "watch": "watch 'npm run build' sources",
+        "watch": "watch 'npm run build && echo \"Done !\"' sources",
         "lint": "tslint --project ."
     },
     "author": "Iulian Rotaru",

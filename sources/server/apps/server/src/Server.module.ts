@@ -26,7 +26,28 @@ import { EmailModule } from '@app/server/email/Email.module';
 import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
 import { ActionSetsModule } from '@lib/common/actionsets/ActionSets.module';
 import { ActionSetsRepository } from '@lib/common/actionsets/ActionSets.repository';
-import { ActionsModule } from '@app/server/actions/Actions.module';
+import { ActionSetsController } from '@app/server/controllers/actionsets/ActionSets.controller';
+import { DatesModule } from '@lib/common/dates/Dates.module';
+import { DatesController } from '@app/server/controllers/dates/Dates.controller';
+import { EventsModule } from '@lib/common/events/Events.module';
+import { EventsController } from '@app/server/controllers/events/Events.controller';
+import { EventsInputHandlers } from '@app/server/controllers/events/actionhandlers/Events.input.handlers';
+import { ImagesController } from '@app/server/controllers/images/Images.controller';
+import { ImagesModule } from '@lib/common/images/Images.module';
+import { FSModule } from '@lib/common/fs/FS.module';
+import { CurrenciesModule } from '@lib/common/currencies/Currencies.module';
+import { VaultereumModule } from '@lib/common/vaultereum/Vaultereum.module';
+import { VaultereumOptions } from '@lib/common/vaultereum/Vaultereum.service';
+import { TxsModule } from '@lib/common/txs/Txs.module';
+import { TxsServiceOptions } from '@lib/common/txs/Txs.service';
+import { GlobalConfigModule } from '@lib/common/globalconfig/GlobalConfig.module';
+import { GlobalConfigOptions } from '@lib/common/globalconfig/GlobalConfig.service';
+import { TxsController } from '@app/server/controllers/txs/Txs.controller';
+import { ContractsController } from '@app/server/controllers/contracts/Contracts.controller';
+import {
+    BinanceModule,
+    BinanceModuleBuildOptions,
+} from '@lib/common/binance/Binance.module';
 
 @Module({
     imports: [
@@ -54,16 +75,23 @@ import { ActionsModule } from '@app/server/actions/Actions.module';
 
         // Cassandra Table Modules & Utils
         UsersModule,
+        ImagesModule,
         Web3TokensModule,
         ActionSetsModule,
+        DatesModule,
+        EventsModule,
+        CurrenciesModule.registerAsync({
+            imports: [ConfigModule.register(Config)],
+            useFactory: (configService: ConfigService): string =>
+                configService.get('CURRENCIES_CONFIG_PATH'),
+            inject: [ConfigService],
+        }),
 
         // User Management Modules
         AuthenticationModule,
 
-        // User Action Management Module
-        ActionsModule,
-
         // Utility Modules
+        FSModule,
         ShutdownModule,
 
         // Notification Modules
@@ -89,10 +117,106 @@ import { ActionsModule } from '@app/server/actions/Actions.module';
             }),
             inject: [ConfigService],
         }),
+        VaultereumModule.registerAsync({
+            imports: [ConfigModule.register(Config)],
+            useFactory: (configService: ConfigService): VaultereumOptions => ({
+                VAULT_HOST: configService.get('VAULT_HOST'),
+                VAULT_PORT: parseInt(configService.get('VAULT_PORT'), 10),
+                VAULT_PROTOCOL: configService.get('VAULT_PROTOCOL'),
+                VAULT_ETHEREUM_NODE_HOST: configService.get(
+                    'VAULT_ETHEREUM_NODE_HOST',
+                ),
+                VAULT_ETHEREUM_NODE_PORT: parseInt(
+                    configService.get('VAULT_ETHEREUM_NODE_PORT'),
+                    10,
+                ),
+                VAULT_ETHEREUM_NODE_PROTOCOL: configService.get(
+                    'VAULT_ETHEREUM_NODE_PROTOCOL',
+                ),
+                VAULT_ETHEREUM_NODE_NETWORK_ID: parseInt(
+                    configService.get('VAULT_ETHEREUM_NODE_NETWORK_ID'),
+                    10,
+                ),
+                VAULT_TOKEN: configService.get('VAULT_TOKEN'),
+            }),
+            inject: [ConfigService],
+        }),
+        TxsModule.registerAsync({
+            imports: [ConfigModule.register(Config)],
+            useFactory: (configService: ConfigService): TxsServiceOptions => ({
+                blockThreshold: parseInt(
+                    configService.get('TXS_BLOCK_THRESHOLD'),
+                    10,
+                ),
+                blockPollingRefreshRate: parseInt(
+                    configService.get('TXS_BLOCK_POLLING_REFRESH_RATE'),
+                    10,
+                ),
+                ethereumNetworkId: parseInt(
+                    configService.get('ETHEREUM_NODE_NETWORK_ID'),
+                    10,
+                ),
+                ethereumMtxDomainName: configService.get(
+                    'ETHEREUM_MTX_DOMAIN_NAME',
+                ),
+                ethereumMtxVersion: configService.get('ETHEREUM_MTX_VERSION'),
+                ethereumMtxRelayAdmin: configService.get(
+                    'VAULT_ETHEREUM_ASSIGNED_ADMIN',
+                ),
+                targetGasPrice: parseInt(
+                    configService.get('TXS_TARGET_GAS_PRICE'),
+                    10,
+                ),
+            }),
+            inject: [ConfigService],
+        }),
+        BinanceModule.registerAsync({
+            imports: [ConfigModule.register(Config)],
+            useFactory: (
+                configService: ConfigService,
+            ): BinanceModuleBuildOptions => ({
+                mock:
+                    configService.get('GLOBAL_CONFIG_BINANCE_MOCK') !== 'false',
+            }),
+            inject: [ConfigService],
+        }),
+        GlobalConfigModule.registerAsync({
+            imports: [ConfigModule.register(Config)],
+            useFactory: (
+                configService: ConfigService,
+            ): GlobalConfigOptions => ({
+                blockNumberFetchingRate: parseInt(
+                    configService.get(
+                        'GLOBAL_CONFIG_BLOCK_NUMBER_FETCHING_RATE',
+                    ),
+                    10,
+                ),
+                ethereumPriceFetchingRate: parseInt(
+                    configService.get(
+                        'GLOBAL_CONFIG_ETHEREUM_PRICE_FETCHING_RATE',
+                    ),
+                    10,
+                ),
+            }),
+            inject: [ConfigService],
+        }),
     ],
-    controllers: [ServerController],
+    controllers: [
+        ServerController,
+        ImagesController,
+        ActionSetsController,
+        DatesController,
+        EventsController,
+        TxsController,
+        ContractsController,
+    ],
     providers: [
         ServerService,
+
+        // Input Action Handler injecters
+        EventsInputHandlers,
+
+        // Global logger
         {
             provide: WinstonLoggerService,
             useValue: new WinstonLoggerService('server'),

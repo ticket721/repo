@@ -22,6 +22,7 @@ import {
 class FakeEntity {
     id: string;
     name: string;
+    updated_at?: Date;
 }
 
 const context: {
@@ -91,7 +92,12 @@ describe('CRUD Extension', function() {
             const res = await crudext.create(newEntity);
 
             verify(
-                context.repositoryMock.create(deepEqual(newEntityProcessed)),
+                context.repositoryMock.create(
+                    deepEqual({
+                        id: uuid('016d3680-c2ac-4c6a-98f8-c63b22b3542f'),
+                        name: 'test',
+                    }),
+                ),
             ).called();
             verify(
                 context.repositoryMock.save(
@@ -160,7 +166,12 @@ describe('CRUD Extension', function() {
             const res = await crudext.create(newEntity, createOptions);
 
             verify(
-                context.repositoryMock.create(deepEqual(newEntityProcessed)),
+                context.repositoryMock.create(
+                    deepEqual({
+                        id: uuid('016d3680-c2ac-4c6a-98f8-c63b22b3542f'),
+                        name: 'test',
+                    }),
+                ),
             ).called();
             verify(
                 context.repositoryMock.save(
@@ -543,6 +554,7 @@ describe('CRUD Extension', function() {
             const newEntityProcessed = {
                 id: uuid(searchEntity.id),
                 name: 'test',
+                updated_at: anything(),
             };
 
             when(
@@ -615,6 +627,7 @@ describe('CRUD Extension', function() {
             const newEntityProcessed = {
                 id: uuid(searchEntity.id),
                 name: 'test',
+                updated_at: anything(),
             };
 
             when(
@@ -691,6 +704,7 @@ describe('CRUD Extension', function() {
             const newEntityProcessed = {
                 id: uuid(searchEntity.id),
                 name: 'test',
+                updated_at: anything(),
             };
 
             when(
@@ -955,6 +969,80 @@ describe('CRUD Extension', function() {
             ).called();
 
             expect(res.error).toEqual(null);
+            expect(res.response).toEqual(newEntity);
+        });
+
+        it('search for very complex entities entities', async function() {
+            when(context.modelMock._properties).thenReturn({
+                schema: {
+                    table_name: 'fake',
+                    keyspace: 't721',
+                    key: ['id'],
+                    fields: {
+                        id: {
+                            type: 'uuid',
+                        },
+                        name: {
+                            type: 'text',
+                        },
+                    },
+                },
+            });
+
+            const crudext: CRUDExtension<
+                Repository<FakeEntity>,
+                FakeEntity
+            > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
+                instance(context.modelMock),
+                instance(context.repositoryMock),
+            );
+
+            const elasticSearchOptions: ESSearchQuery<FakeEntity> = {
+                body: {},
+            };
+
+            const newEntity = {
+                ids: [
+                    {
+                        name: 'hi',
+                        current_id: uuid(
+                            '86573c78-acd5-44d1-bf68-2c833aa9d65f',
+                        ),
+                    },
+                    {
+                        name: 'hi',
+                        current_id: uuid(
+                            '86573c78-acd5-44d1-bf68-2c833aa9d65f',
+                        ),
+                    },
+                ],
+                hmm: uuid('86573c78-acd5-44d1-bf68-2c833aa9d65f'),
+            };
+
+            when(
+                context.modelMock.search(elasticSearchOptions, anything()),
+            ).thenCall(() => {
+                const [osef, cb] = capture<
+                    ESSearchQuery<FakeEntity>,
+                    (...args: any[]) => void
+                >(context.modelMock.search).last();
+                cb(null, newEntity);
+            });
+
+            const res = await crudext.searchElastic(elasticSearchOptions);
+
+            verify(
+                context.modelMock.search(elasticSearchOptions, anything()),
+            ).called();
+
+            expect(res.error).toEqual(null);
+            expect(typeof (res.response as any).ids[0].current_id).toEqual(
+                'string',
+            );
+            expect(typeof (res.response as any).ids[1].current_id).toEqual(
+                'string',
+            );
+            expect(typeof (res.response as any).hmm).toEqual('string');
             expect(res.response).toEqual(newEntity);
         });
 

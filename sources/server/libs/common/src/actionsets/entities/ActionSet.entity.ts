@@ -6,6 +6,18 @@ import {
     UpdateDateColumn,
 } from '@iaminfinity/express-cassandra';
 
+export type ActionStatus = 'waiting' | 'in progress' | 'complete' | 'error';
+export type ActionSetStatus =
+    | 'input:waiting'
+    | 'input:in progress'
+    | 'input:error'
+    | 'event:waiting'
+    | 'event:in progress'
+    | 'event:error'
+    | 'complete'
+    | 'error';
+export type ActionType = 'input' | 'event';
+
 /**
  * Specific Action model
  */
@@ -13,7 +25,7 @@ export interface ActionEntity {
     /**
      * Status of the action
      */
-    status: string;
+    status: ActionStatus;
 
     /**
      * Name of the action
@@ -28,7 +40,7 @@ export interface ActionEntity {
     /**
      * Type of action
      */
-    type: 'input' | 'event';
+    type: ActionType;
 
     /**
      * Non-null if error happened
@@ -86,7 +98,7 @@ export class ActionSetEntity {
         type: 'text',
     })
     // tslint:disable-next-line:variable-name
-    current_status: 'in progress' | 'complete' | 'error';
+    current_status: ActionSetStatus;
 
     /**
      * Name of the action set
@@ -109,4 +121,13 @@ export class ActionSetEntity {
     @UpdateDateColumn()
     // tslint:disable-next-line:variable-name
     updated_at: Date;
+
+    /**
+     * Dispatch timestamp
+     */
+    @Column({
+        type: 'timestamp',
+    })
+    // tslint:disable-next-line:variable-name
+    dispatched_at: Date;
 }

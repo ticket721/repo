@@ -1,8 +1,9 @@
 import { EsSearchOptionsStatic } from '@iaminfinity/express-cassandra';
 import { SearchableField } from '@lib/common/utils/SearchableField.type';
-import { ServiceResponse } from '@app/server/utils/ServiceResponse';
 import { SortablePagedSearch } from '@lib/common/utils/SortablePagedSearch';
 import { Sort } from '@lib/common/utils/Sort';
+import { defined } from '@lib/common/utils/defined';
+import { ServiceResponse } from '@lib/common/utils/ServiceResponse';
 
 /**
  * Digs an object based on provided arguments
@@ -63,9 +64,9 @@ function SearchableFieldEqualStatement<T>(
     $eq: T,
     body: Partial<EsSearchOptionsStatic>,
 ): Partial<EsSearchOptionsStatic> {
-    body = digger(body, 'body', 'query', 'bool');
+    body = digger(body, 'query', 'bool');
 
-    body.body.query.bool.must = append(body.body.query.bool.must, {
+    body.query.bool.must = append(body.query.bool.must, {
         term: {
             [fieldName]: $eq,
         },
@@ -87,9 +88,9 @@ function SearchableFieldInStatement<T>(
     $in: T[],
     body: Partial<EsSearchOptionsStatic>,
 ): Partial<EsSearchOptionsStatic> {
-    body = digger(body, 'body', 'query', 'bool');
+    body = digger(body, 'query', 'bool');
 
-    body.body.query.bool.must = append(body.body.query.bool.must, {
+    body.query.bool.must = append(body.query.bool.must, {
         terms: {
             [fieldName]: $in,
         },
@@ -111,9 +112,9 @@ function SearchableFieldNotEqualStatement<T>(
     $ne: T,
     body: Partial<EsSearchOptionsStatic>,
 ): Partial<EsSearchOptionsStatic> {
-    body = digger(body, 'body', 'query', 'bool');
+    body = digger(body, 'query', 'bool');
 
-    body.body.query.bool.must_not = append(body.body.query.bool.must_not, {
+    body.query.bool.must_not = append(body.query.bool.must_not, {
         term: {
             [fieldName]: $ne,
         },
@@ -135,9 +136,9 @@ function SearchableFieldNotInStatement<T>(
     $nin: T[],
     body: Partial<EsSearchOptionsStatic>,
 ): Partial<EsSearchOptionsStatic> {
-    body = digger(body, 'body', 'query', 'bool');
+    body = digger(body, 'query', 'bool');
 
-    body.body.query.bool.must_not = append(body.body.query.bool.must_not, {
+    body.query.bool.must_not = append(body.query.bool.must_not, {
         terms: {
             [fieldName]: $nin,
         },
@@ -159,9 +160,9 @@ function SearchableFieldContainsStatement<T>(
     $contains: T,
     body: Partial<EsSearchOptionsStatic>,
 ): Partial<EsSearchOptionsStatic> {
-    body = digger(body, 'body', 'query', 'bool');
+    body = digger(body, 'query', 'bool');
 
-    body.body.query.bool.must = append(body.body.query.bool.must, {
+    body.query.bool.must = append(body.query.bool.must, {
         wildcard: {
             [fieldName]: {
                 value: $contains,
@@ -185,9 +186,9 @@ function SearchableFieldNotContainsStatement<T>(
     $ncontains: T,
     body: Partial<EsSearchOptionsStatic>,
 ): Partial<EsSearchOptionsStatic> {
-    body = digger(body, 'body', 'query', 'bool');
+    body = digger(body, 'query', 'bool');
 
-    body.body.query.bool.must_not = append(body.body.query.bool.must_not, {
+    body.query.bool.must_not = append(body.query.bool.must_not, {
         wildcard: {
             [fieldName]: {
                 value: $ncontains,
@@ -211,9 +212,9 @@ function SearchableFieldLowerThanStatement<T>(
     $lt: T,
     body: Partial<EsSearchOptionsStatic>,
 ): Partial<EsSearchOptionsStatic> {
-    body = digger(body, 'body', 'query', 'bool');
+    body = digger(body, 'query', 'bool');
 
-    body.body.query.bool.must = append(body.body.query.bool.must, {
+    body.query.bool.must = append(body.query.bool.must, {
         range: {
             [fieldName]: {
                 lt: $lt,
@@ -237,9 +238,9 @@ function SearchableFieldGreaterThanStatement<T>(
     $gt: T,
     body: Partial<EsSearchOptionsStatic>,
 ): Partial<EsSearchOptionsStatic> {
-    body = digger(body, 'body', 'query', 'bool');
+    body = digger(body, 'query', 'bool');
 
-    body.body.query.bool.must = append(body.body.query.bool.must, {
+    body.query.bool.must = append(body.query.bool.must, {
         range: {
             [fieldName]: {
                 gt: $gt,
@@ -263,9 +264,9 @@ function SearchableFieldLowerThanEqualStatement<T>(
     $lte: T,
     body: Partial<EsSearchOptionsStatic>,
 ): Partial<EsSearchOptionsStatic> {
-    body = digger(body, 'body', 'query', 'bool');
+    body = digger(body, 'query', 'bool');
 
-    body.body.query.bool.must = append(body.body.query.bool.must, {
+    body.query.bool.must = append(body.query.bool.must, {
         range: {
             [fieldName]: {
                 lte: $lte,
@@ -289,9 +290,9 @@ function SearchableFieldGreaterThanEqualStatement<T>(
     $gte: T,
     body: Partial<EsSearchOptionsStatic>,
 ): Partial<EsSearchOptionsStatic> {
-    body = digger(body, 'body', 'query', 'bool');
+    body = digger(body, 'query', 'bool');
 
-    body.body.query.bool.must = append(body.body.query.bool.must, {
+    body.query.bool.must = append(body.query.bool.must, {
         range: {
             [fieldName]: {
                 gte: $gte,
@@ -303,12 +304,53 @@ function SearchableFieldGreaterThanEqualStatement<T>(
 }
 
 /**
- * Utility to prevent 0 values from being considered undefined
+ * Utility to go down into objects and create a nested query pattern
  *
- * @param val
+ * @param fieldName
+ * @param field
+ * @param body
+ * @param must
+ * @param conditionField
+ * @param conditionResolver
  */
-function defined(val: any): boolean {
-    return val !== null && val !== undefined;
+function nestedManager<T>(
+    fieldName: string,
+    field: SearchableField<T>,
+    body: Partial<EsSearchOptionsStatic>,
+    must: string,
+    conditionField: string,
+    conditionResolver: (
+        fieldName: string,
+        condition: T | T[],
+        body: Partial<EsSearchOptionsStatic>,
+    ) => Partial<EsSearchOptionsStatic>,
+): Partial<EsSearchOptionsStatic> {
+    if (
+        typeof field[conditionField] === 'object' &&
+        !Array.isArray(field[conditionField])
+    ) {
+        for (const key of Object.keys(field[conditionField])) {
+            const nestedBody: Partial<EsSearchOptionsStatic> = SearchableFieldConverter(
+                `${fieldName}.${key}`,
+                {
+                    [conditionField]: field[conditionField][key],
+                },
+                {},
+            );
+
+            body = digger(body, 'query', 'bool');
+            body.query.bool[must] = append(body.query.bool[must], {
+                nested: {
+                    path: fieldName,
+                    query: nestedBody.query,
+                },
+            });
+        }
+
+        return body;
+    } else {
+        return conditionResolver(fieldName, field[conditionField], body);
+    }
 }
 
 /**
@@ -325,66 +367,147 @@ export function SearchableFieldConverter<T = any>(
     body: Partial<EsSearchOptionsStatic>,
 ): Partial<EsSearchOptionsStatic> {
     if (defined(field.$eq)) {
-        body = SearchableFieldEqualStatement<T>(fieldName, field.$eq, body);
+        body = nestedManager(
+            fieldName,
+            field,
+            body,
+            'must',
+            '$eq',
+            SearchableFieldEqualStatement,
+        );
     }
 
     if (defined(field.$ne)) {
-        body = SearchableFieldNotEqualStatement<T>(fieldName, field.$ne, body);
+        body = nestedManager(
+            fieldName,
+            field,
+            body,
+            'must',
+            '$ne',
+            SearchableFieldNotEqualStatement,
+        );
     }
 
     if (defined(field.$in)) {
-        body = SearchableFieldInStatement<T>(fieldName, field.$in, body);
+        body = nestedManager(
+            fieldName,
+            field,
+            body,
+            'must',
+            '$in',
+            SearchableFieldInStatement,
+        );
     }
 
     if (defined(field.$nin)) {
-        body = SearchableFieldNotInStatement<T>(fieldName, field.$nin, body);
+        body = nestedManager(
+            fieldName,
+            field,
+            body,
+            'must',
+            '$nin',
+            SearchableFieldNotInStatement,
+        );
     }
 
     if (defined(field.$contains)) {
-        body = SearchableFieldContainsStatement<T>(
+        body = nestedManager(
             fieldName,
-            field.$contains,
+            field,
             body,
+            'must',
+            '$contains',
+            SearchableFieldContainsStatement,
         );
     }
 
     if (defined(field.$ncontains)) {
-        body = SearchableFieldNotContainsStatement<T>(
+        body = nestedManager(
             fieldName,
-            field.$ncontains,
+            field,
             body,
+            'must',
+            '$ncontains',
+            SearchableFieldNotContainsStatement,
         );
     }
 
     if (defined(field.$lt)) {
-        body = SearchableFieldLowerThanStatement<T>(fieldName, field.$lt, body);
+        body = nestedManager(
+            fieldName,
+            field,
+            body,
+            'must',
+            '$lt',
+            SearchableFieldLowerThanStatement,
+        );
     }
 
     if (defined(field.$gt)) {
-        body = SearchableFieldGreaterThanStatement<T>(
+        body = nestedManager(
             fieldName,
-            field.$gt,
+            field,
             body,
+            'must',
+            '$gt',
+            SearchableFieldGreaterThanStatement,
         );
     }
 
     if (defined(field.$lte)) {
-        body = SearchableFieldLowerThanEqualStatement<T>(
+        body = nestedManager(
             fieldName,
-            field.$lte,
+            field,
             body,
+            'must',
+            '$lte',
+            SearchableFieldLowerThanEqualStatement,
         );
     }
 
     if (defined(field.$gte)) {
-        body = SearchableFieldGreaterThanEqualStatement<T>(
+        body = nestedManager(
             fieldName,
-            field.$gte,
+            field,
             body,
+            'must',
+            '$gte',
+            SearchableFieldGreaterThanEqualStatement,
         );
     }
 
     return body;
+}
+
+/**
+ * Utility to handle possible nested sort requests
+ *
+ * @param field
+ * @param body
+ */
+function sortNestedManager(
+    field: Sort[],
+    body: Partial<EsSearchOptionsStatic>,
+): void {
+    body.sort = [];
+
+    for (const sortItem of field) {
+        if (sortItem.$nested) {
+            body.sort.push({
+                [sortItem.$field_name]: {
+                    order: sortItem.$order,
+                    nested_path: sortItem.$field_name
+                        .split('.')
+                        .slice(0, -1)
+                        .join('.'),
+                },
+            } as any);
+        } else {
+            body.sort.push({
+                [sortItem.$field_name]: sortItem.$order,
+            } as any);
+        }
+    }
 }
 
 /**
@@ -405,15 +528,12 @@ export function ESSearchBodyBuilder(
         } else {
             switch (field) {
                 case '$sort': {
-                    body = digger(body, 'body', 'sort');
-                    body.body.sort = req[field].map((e: Sort) => ({
-                        [e.$field_name]: e.$order,
-                    }));
+                    sortNestedManager(req.$sort, body);
                     break;
                 }
                 case '$page_size': {
-                    body = digger(body, 'body', 'size');
-                    body.body.size = req[field];
+                    body = digger(body, 'size');
+                    body.size = req[field];
                     break;
                 }
                 case '$page_index': {
@@ -423,8 +543,8 @@ export function ESSearchBodyBuilder(
                             response: null,
                         };
                     }
-                    body = digger(body, 'body', 'from');
-                    body.body.from = req[field] * req.$page_size;
+                    body = digger(body, 'from');
+                    body.from = req[field] * req.$page_size;
                     break;
                 }
             }
@@ -433,6 +553,8 @@ export function ESSearchBodyBuilder(
 
     return {
         error: null,
-        response: body,
+        response: {
+            body,
+        },
     };
 }

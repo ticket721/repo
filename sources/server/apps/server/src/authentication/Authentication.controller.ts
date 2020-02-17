@@ -17,9 +17,7 @@ import { LocalRegisterInputDto } from './dto/LocalRegisterInput.dto';
 import { JwtService } from '@nestjs/jwt';
 import { AuthGuard } from '@nestjs/passport';
 import { LocalLoginResponseDto } from './dto/LocalLoginResponse.dto';
-import { StatusCodes, StatusNames } from '../utils/codes';
 import { HttpExceptionFilter } from '../utils/HttpException.filter';
-import { ServiceResponse } from '../utils/ServiceResponse';
 import { Web3RegisterInputDto } from '@app/server/authentication/dto/Web3RegisterInput.dto';
 import { Web3RegisterResponseDto } from '@app/server/authentication/dto/Web3RegisterResponse.dto';
 import { Web3LoginResponseDto } from '@app/server/authentication/dto/Web3LoginResponse.dto';
@@ -29,6 +27,8 @@ import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
 import { EmailValidationTaskDto } from '@app/server/authentication/dto/EmailValidationTask.dto';
 import { ConfigService } from '@lib/common/config/Config.service';
+import { StatusCodes, StatusNames } from '@lib/common/utils/codes';
+import { ServiceResponse } from '@lib/common/utils/ServiceResponse';
 
 /**
  * Controller exposing the authentication routes

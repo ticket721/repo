@@ -3,8 +3,8 @@ import { PassportStrategy } from '@nestjs/passport';
 import { HttpException, Injectable } from '@nestjs/common';
 import { AuthenticationService } from './Authentication.service';
 import { PasswordlessUserDto } from './dto/PasswordlessUser.dto';
-import { ServiceResponse } from '../utils/ServiceResponse';
-import { StatusCodes } from '../utils/codes';
+import { ServiceResponse } from '@lib/common/utils/ServiceResponse';
+import { StatusCodes } from '@lib/common/utils/codes';
 
 /**
  * Local Strategy to verify that passwords are matching
@@ -60,6 +60,7 @@ export class LocalStrategy extends PassportStrategy(Strategy, 'local') {
                     );
             }
         } else {
+            resp.response.id = resp.response.id.toString();
             return resp.response;
         }
     }

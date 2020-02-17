@@ -1,47 +1,22 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { deepEqual, instance, mock, when } from 'ts-mockito';
-import { StatusCodes } from '../utils/codes';
-import { Job, JobOptions } from 'bull';
-import { ActionsController } from '@app/server/actions/Actions.controller';
 import { ActionSetsService } from '@lib/common/actionsets/ActionSets.service';
-import { uuid } from '@iaminfinity/express-cassandra';
-import { UserDto } from '@lib/common/users/dto/User.dto';
 import { ESSearchReturn } from '@lib/common/utils/ESSearchReturn';
 import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
-
-class QueueMock<T = any> {
-    add(name: string, data: T, opts?: JobOptions): Promise<Job<T>> {
-        return null;
-    }
-}
+import { search } from '@lib/common/utils/ControllerBasics';
+import { StatusCodes } from '@lib/common/utils/codes';
 
 const context: {
-    actionsController: ActionsController;
     actionSetsServiceMock: ActionSetsService;
 } = {
-    actionsController: null,
     actionSetsServiceMock: null,
 };
 
-describe('Authentication Controller', function() {
+describe('Controller Basics', function() {
     beforeEach(async function() {
         const actionsSetsServiceMock: ActionSetsService = mock(
             ActionSetsService,
         );
 
-        const ActionSetsServiceProvider = {
-            provide: ActionSetsService,
-            useValue: instance(actionsSetsServiceMock),
-        };
-
-        const module: TestingModule = await Test.createTestingModule({
-            providers: [ActionSetsServiceProvider],
-            controllers: [ActionsController],
-        }).compile();
-
-        context.actionsController = module.get<ActionsController>(
-            ActionsController,
-        );
         context.actionSetsServiceMock = actionsSetsServiceMock;
     });
 
@@ -57,20 +32,11 @@ describe('Authentication Controller', function() {
                 body: {
                     query: {
                         bool: {
-                            must: [
-                                {
-                                    term: {
-                                        current_status: 'complete',
-                                    },
+                            must: {
+                                term: {
+                                    current_status: 'complete',
                                 },
-                                {
-                                    term: {
-                                        owner: uuid(
-                                            'ec677b12-d420-43a6-a597-ef84bf09f845',
-                                        ),
-                                    },
-                                },
-                            ],
+                            },
                         },
                     },
                 },
@@ -86,6 +52,7 @@ describe('Authentication Controller', function() {
                     name: 'test',
                     created_at: new Date(Date.now()),
                     updated_at: new Date(Date.now()),
+                    dispatched_at: new Date(Date.now()),
                 },
             ];
 
@@ -122,11 +89,12 @@ describe('Authentication Controller', function() {
                 response: esReturn,
             });
 
-            const res = await context.actionsController.search(query, {
-                id: uuid('ec677b12-d420-43a6-a597-ef84bf09f845') as any,
-            } as UserDto);
+            const res = await search<ActionSetEntity, ActionSetsService>(
+                instance(context.actionSetsServiceMock),
+                query as any,
+            );
 
-            expect(res.actionsets).toEqual(entities);
+            expect(res).toEqual(entities);
         });
 
         test('page_index without page_size', async function() {
@@ -139,9 +107,10 @@ describe('Authentication Controller', function() {
             };
 
             await expect(
-                context.actionsController.search(query, {
-                    id: uuid('ec677b12-d420-43a6-a597-ef84bf09f845') as any,
-                } as UserDto),
+                search<ActionSetEntity, ActionSetsService>(
+                    instance(context.actionSetsServiceMock),
+                    query,
+                ),
             ).rejects.toMatchObject({
                 response: {
                     status: StatusCodes.BadRequest,
@@ -166,20 +135,11 @@ describe('Authentication Controller', function() {
                 body: {
                     query: {
                         bool: {
-                            must: [
-                                {
-                                    term: {
-                                        current_status: 'complete',
-                                    },
+                            must: {
+                                term: {
+                                    current_status: 'complete',
                                 },
-                                {
-                                    term: {
-                                        owner: uuid(
-                                            'ec677b12-d420-43a6-a597-ef84bf09f845',
-                                        ),
-                                    },
-                                },
-                            ],
+                            },
                         },
                     },
                 },
@@ -195,9 +155,10 @@ describe('Authentication Controller', function() {
             });
 
             await expect(
-                context.actionsController.search(query, {
-                    id: uuid('ec677b12-d420-43a6-a597-ef84bf09f845') as any,
-                } as UserDto),
+                search<ActionSetEntity, ActionSetsService>(
+                    instance(context.actionSetsServiceMock),
+                    query as any,
+                ),
             ).rejects.toMatchObject({
                 response: {
                     status: StatusCodes.InternalServerError,
@@ -222,20 +183,11 @@ describe('Authentication Controller', function() {
                 body: {
                     query: {
                         bool: {
-                            must: [
-                                {
-                                    term: {
-                                        current_status: 'complete',
-                                    },
+                            must: {
+                                term: {
+                                    current_status: 'complete',
                                 },
-                                {
-                                    term: {
-                                        owner: uuid(
-                                            'ec677b12-d420-43a6-a597-ef84bf09f845',
-                                        ),
-                                    },
-                                },
-                            ],
+                            },
                         },
                     },
                 },
@@ -268,11 +220,12 @@ describe('Authentication Controller', function() {
                 response: esReturn,
             });
 
-            const res = await context.actionsController.search(query, {
-                id: uuid('ec677b12-d420-43a6-a597-ef84bf09f845') as any,
-            } as UserDto);
+            const res = await search<ActionSetEntity, ActionSetsService>(
+                instance(context.actionSetsServiceMock),
+                query as any,
+            );
 
-            expect(res.actionsets).toEqual(entities);
+            expect(res).toEqual(entities);
         });
     });
 });

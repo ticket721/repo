@@ -19,6 +19,22 @@
 
     },
 
+    "dev": {
+        "vaultereumHost": "127.0.0.1",
+        "vaultereumPort": 8200,
+        "vaultereumProtocol": "http",
+        "vaultereumEthHost": "ganache",
+        "vaultereumEthPort": 8545,
+        "vaultereumEthProtocol": "http",
+        "vaultereumEthNetId": 2702,
+        "vaultereumToken": "dev_root_token",
+        "extraAdmins": [
+            "0xea51bf51cdd20b0b7a65623992ecf516bb03a082"
+        ],
+        "extraAdminsEth": "1",
+        "t721adminFunds": "10"
+    },
+
     "contracts": {
         "migrations": [
             {
@@ -61,6 +77,11 @@
                         "name": "refract",
                         "test": false,
                         "range": [1, 2]
+                    },
+                    {
+                        "name": "t721token",
+                        "test": false,
+                        "range": [1, 1]
                     }
                 ]
             }
@@ -84,6 +105,10 @@
             },
             {
                 "name": "refract",
+                "upgradeable": false
+            },
+            {
+                "name": "t721token",
                 "upgradeable": false
             }
         ],

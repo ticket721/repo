@@ -21,6 +21,15 @@ export const Config: Joi.ObjectSchema = Joi.object({
     ETHEREUM_NODE_HOST: Joi.string().required(),
     ETHEREUM_NODE_PORT: Joi.number().required(),
     ETHEREUM_NODE_PROTOCOL: Joi.string().default('http'),
+    ETHEREUM_NODE_NETWORK_ID: Joi.number().required(),
+    ETHEREUM_MTX_DOMAIN_NAME: Joi.string().required(),
+    ETHEREUM_MTX_VERSION: Joi.string().required(),
+
+    TXS_BLOCK_THRESHOLD: Joi.number().required(),
+    TXS_BLOCK_POLLING_REFRESH_RATE: Joi.number().required(),
+    TXS_TARGET_GAS_PRICE: Joi.number().required(),
+
+    TICKETFORGE_SCOPE: Joi.string().required(),
 
     CONTRACTS_ARTIFACTS_PATH: Joi.string().required(),
 
@@ -56,4 +65,24 @@ export const Config: Joi.ObjectSchema = Joi.object({
         then: Joi.required(),
         otherwise: Joi.optional(),
     }),
+
+    IMAGE_MAX_SIZE: Joi.number().required(),
+    IMAGE_SERVE_DIRECTORY: Joi.string().required(),
+
+    CURRENCIES_CONFIG_PATH: Joi.string().required(),
+
+    VAULT_HOST: Joi.string().required(),
+    VAULT_PORT: Joi.number().required(),
+    VAULT_PROTOCOL: Joi.string().default('http'),
+    VAULT_TOKEN: Joi.string().required(),
+
+    VAULT_ETHEREUM_NODE_HOST: Joi.string().required(),
+    VAULT_ETHEREUM_NODE_PORT: Joi.number().required(),
+    VAULT_ETHEREUM_NODE_PROTOCOL: Joi.string().default('http'),
+    VAULT_ETHEREUM_NODE_NETWORK_ID: Joi.number().required(),
+    VAULT_ETHEREUM_ASSIGNED_ADMIN: Joi.string().required(),
+
+    GLOBAL_CONFIG_BLOCK_NUMBER_FETCHING_RATE: Joi.number().required(),
+    GLOBAL_CONFIG_ETHEREUM_PRICE_FETCHING_RATE: Joi.number().required(),
+    GLOBAL_CONFIG_BINANCE_MOCK: Joi.boolean().default('true'),
 });
