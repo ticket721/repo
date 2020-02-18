@@ -29,7 +29,7 @@
         "@nestjs/jwt": "6.1.1",
         "@nestjs/passport": "6.1.1",
         "@nestjs/platform-express": "6.11.7",
-        "@nestjs/swagger": "4.2.8",
+        "@nestjs/swagger": "4.2.9",
         "@ticket721sources/global": "file:../global",
         "@ticket721sources/sdk": "file:../sdk",
         "bcrypt": "3.0.8",
