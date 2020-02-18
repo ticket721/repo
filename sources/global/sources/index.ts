@@ -9,3 +9,4 @@ export { Web3RegisterSigner }                                                fro
 export { RefractMtx, MetaTransaction, TransactionParameters }                from './signers/RefractMtx';
 export { Coordinates, closestCity, City }                                    from './geoloc';
 export { uuidEq, toB32 }                                                     from './utils';
+export { isTransactionHash, toAcceptedTransactionHashFormat }                from './transactions';
