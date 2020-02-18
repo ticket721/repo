@@ -27,7 +27,7 @@
         "ts-jest": "25.2.0",
         "typescript": "3.7.5",
         "watch": "^1.0.2",
-        "@types/node": "12.12.22",
+        "@types/node": "13.7.2",
         "tslint": "^6.0.0"
     }
 }
