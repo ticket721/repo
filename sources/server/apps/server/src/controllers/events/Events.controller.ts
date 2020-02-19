@@ -6,6 +6,7 @@ import {
     HttpException,
     Param,
     Post,
+    UseFilters,
     UseGuards,
 } from '@nestjs/common';
 import * as _ from 'lodash';
@@ -56,6 +57,7 @@ import { T721AdminService } from '@lib/common/contracts/T721Admin.service';
 import { encodeCategories } from '@app/server/controllers/events/utils/encodeCategories';
 import { RefractFactoryV0Service } from '@lib/common/contracts/refract/RefractFactory.V0.service';
 import { TxsService } from '@lib/common/txs/Txs.service';
+import { HttpExceptionFilter } from '@app/server/utils/HttpException.filter';
 
 /**
  * Events controller to create and fetch events
@@ -111,6 +113,7 @@ export class EventsController {
         description: StatusNames[StatusCodes.OK],
     })
     @HttpCode(200)
+    @UseFilters(new HttpExceptionFilter())
     async search(
         @Body() body: EventsSearchInputDto,
         @User() user: UserDto,
@@ -151,6 +154,7 @@ export class EventsController {
     @HttpCode(200)
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @Roles('authenticated')
+    @UseFilters(new HttpExceptionFilter())
     async deploy(
         @Body() body: EventsDeployInputDto,
         @User() user: UserDto,
@@ -160,6 +164,16 @@ export class EventsController {
         });
 
         if (event.error) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.InternalServerError,
+                    message: event.error,
+                },
+                StatusCodes.InternalServerError,
+            );
+        }
+
+        if (event.response.length === 0) {
             throw new HttpException(
                 {
                     status: StatusCodes.NotFound,
@@ -253,6 +267,7 @@ export class EventsController {
     @HttpCode(200)
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @Roles('authenticated')
+    @UseFilters(new HttpExceptionFilter())
     async getPayload(
         @Param() params: EventsDeployGeneratePayloadParamsDto,
         @User() user: UserDto,
@@ -261,7 +276,17 @@ export class EventsController {
             id: params.event,
         });
 
-        if (event.error || event.response.length === 0) {
+        if (event.error) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.InternalServerError,
+                    message: event.error,
+                },
+                StatusCodes.InternalServerError,
+            );
+        }
+
+        if (event.response.length === 0) {
             throw new HttpException(
                 {
                     status: StatusCodes.NotFound,
@@ -322,7 +347,17 @@ export class EventsController {
                 id: date,
             });
 
-            if (dateEntityRes.error || dateEntityRes.response.length === 0) {
+            if (dateEntityRes.error) {
+                throw new HttpException(
+                    {
+                        status: StatusCodes.InternalServerError,
+                        message: dateEntityRes.error,
+                    },
+                    StatusCodes.InternalServerError,
+                );
+            }
+
+            if (dateEntityRes.response.length === 0) {
                 throw new HttpException(
                     {
                         status: StatusCodes.NotFound,
@@ -408,6 +443,7 @@ export class EventsController {
     })
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @Roles('authenticated')
+    @UseFilters(new HttpExceptionFilter())
     async build(
         @Body() body: EventsBuildInputDto,
         @User() user: UserDto,
@@ -448,112 +484,114 @@ export class EventsController {
             );
         }
 
+        let dates;
+        let event;
+
         try {
-            const [dates, event] = await ActionSetToEventEntityConverter(
+            [dates, event] = await ActionSetToEventEntityConverter(
                 this.configService.get('TICKETFORGE_SCOPE'),
                 new ActionSet().load(actionSetEntity),
                 this.currenciesService,
                 user.id,
             );
-
-            const datesSavedEntities: DateEntity[] = [];
-
-            for (const date of dates) {
-                const dateCreationRes = await this.datesService.create(date);
-                if (dateCreationRes.error) {
-                    throw new HttpException(
-                        {
-                            status: StatusCodes.InternalServerError,
-                            message: dateCreationRes.error,
-                        },
-                        StatusCodes.InternalServerError,
-                    );
-                }
-                datesSavedEntities.push(dateCreationRes.response);
-            }
-
-            event.dates = datesSavedEntities.map(
-                (date: DateEntity): string => date.id,
-            );
-
-            const eventCreationRes = await this.eventsService.create(event);
-
-            if (eventCreationRes.error) {
-                throw new HttpException(
-                    {
-                        status: StatusCodes.InternalServerError,
-                        message: eventCreationRes.error,
-                    },
-                    StatusCodes.InternalServerError,
-                );
-            }
-
-            const validatingAddressName = `event-${eventCreationRes.response.id.toLowerCase()}`;
-            const validatingAddressRes = await this.vaultereumService.write(
-                `ethereum/accounts/${validatingAddressName}`,
-            );
-
-            if (validatingAddressRes.error) {
-                throw new HttpException(
-                    {
-                        status: StatusCodes.InternalServerError,
-                        message: validatingAddressRes.error,
-                    },
-                    StatusCodes.InternalServerError,
-                );
-            }
-
-            const eventAddress = toAcceptedAddressFormat(
-                validatingAddressRes.response.data.address,
-            );
-
-            const eventAddressUpdateRes = await this.eventsService.update(
-                {
-                    id: eventCreationRes.response.id,
-                },
-                {
-                    address: eventAddress,
-                },
-            );
-
-            if (eventAddressUpdateRes.error) {
-                throw new HttpException(
-                    {
-                        status: StatusCodes.InternalServerError,
-                        message: eventAddressUpdateRes.error,
-                    },
-                    StatusCodes.InternalServerError,
-                );
-            }
-
-            const fullEvent = await this.eventsService.search({
-                id: eventCreationRes.response.id,
-            });
-
-            if (fullEvent.error) {
-                throw new HttpException(
-                    {
-                        status: StatusCodes.InternalServerError,
-                        message: fullEvent.error,
-                    },
-                    StatusCodes.InternalServerError,
-                );
-            }
-
-            return {
-                event: fullEvent.response[0],
-            };
         } catch (e) {
-            if (actionSet.error) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.InternalServerError,
+                    message: 'entity_conversion_fail',
+                },
+                StatusCodes.InternalServerError,
+            );
+        }
+
+        const datesSavedEntities: DateEntity[] = [];
+
+        for (const date of dates) {
+            const dateCreationRes = await this.datesService.create(date);
+
+            if (dateCreationRes.error) {
                 throw new HttpException(
                     {
-                        status: StatusCodes.BadRequest,
-                        message: e.message,
+                        status: StatusCodes.InternalServerError,
+                        message: dateCreationRes.error,
                     },
-                    StatusCodes.BadRequest,
+                    StatusCodes.InternalServerError,
                 );
             }
+            datesSavedEntities.push(dateCreationRes.response);
         }
+
+        event.dates = datesSavedEntities.map(
+            (date: DateEntity): string => date.id,
+        );
+
+        const eventCreationRes = await this.eventsService.create(event);
+
+        if (eventCreationRes.error) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.InternalServerError,
+                    message: eventCreationRes.error,
+                },
+                StatusCodes.InternalServerError,
+            );
+        }
+
+        const validatingAddressName = `event-${eventCreationRes.response.id.toLowerCase()}`;
+        const validatingAddressRes = await this.vaultereumService.write(
+            `ethereum/accounts/${validatingAddressName}`,
+        );
+
+        if (validatingAddressRes.error) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.InternalServerError,
+                    message: validatingAddressRes.error,
+                },
+                StatusCodes.InternalServerError,
+            );
+        }
+
+        const eventAddress = toAcceptedAddressFormat(
+            validatingAddressRes.response.data.address,
+        );
+
+        const eventAddressUpdateRes = await this.eventsService.update(
+            {
+                id: eventCreationRes.response.id,
+            },
+            {
+                address: eventAddress,
+            },
+        );
+
+        if (eventAddressUpdateRes.error) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.InternalServerError,
+                    message: eventAddressUpdateRes.error,
+                },
+                StatusCodes.InternalServerError,
+            );
+        }
+
+        const fullEvent = await this.eventsService.search({
+            id: eventCreationRes.response.id,
+        });
+
+        if (fullEvent.error) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.InternalServerError,
+                    message: fullEvent.error,
+                },
+                StatusCodes.InternalServerError,
+            );
+        }
+
+        return {
+            event: fullEvent.response[0],
+        };
     }
 
     /**
@@ -570,6 +608,7 @@ export class EventsController {
     })
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @Roles('authenticated')
+    @UseFilters(new HttpExceptionFilter())
     async create(
         @Body() body: EventsCreateInputDto,
         @User() user: UserDto,
