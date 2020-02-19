@@ -6,6 +6,7 @@ import {
     HttpCode,
     HttpException,
     Post,
+    UseFilters,
     UseGuards,
 } from '@nestjs/common';
 import { TxsService } from '@lib/common/txs/Txs.service';
@@ -29,6 +30,7 @@ import { TxsInfosResponseDto } from '@app/server/controllers/txs/dto/TxsInfosRes
 import { TxsMtxInputDto } from '@app/server/controllers/txs/dto/TxsMtxInput.dto';
 import { TxsMtxResponseDto } from '@app/server/controllers/txs/dto/TxsMtxResponse.dto';
 import { isTransactionHash } from '@ticket721sources/global';
+import { HttpExceptionFilter } from '@app/server/utils/HttpException.filter';
 
 /**
  * Transaction Controller. Fetch and recover transactions
@@ -67,6 +69,7 @@ export class TxsController {
     @HttpCode(200)
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @Roles('authenticated')
+    @UseFilters(new HttpExceptionFilter())
     async mtx(
         @Body() body: TxsMtxInputDto,
         @User() user: UserDto,
@@ -101,6 +104,7 @@ export class TxsController {
         description: StatusNames[StatusCodes.OK],
     })
     @HttpCode(200)
+    @UseFilters(new HttpExceptionFilter())
     async infos(): Promise<TxsInfosResponseDto> {
         const artifacts = await this.contractsService.getContractArtifacts();
         const networkId = parseInt(
@@ -135,6 +139,7 @@ export class TxsController {
         description: StatusNames[StatusCodes.OK],
     })
     @HttpCode(200)
+    @UseFilters(new HttpExceptionFilter())
     /* istanbul ignore next */
     async search(
         @Body() body: TxsSearchInputDto,
@@ -166,6 +171,7 @@ export class TxsController {
     @HttpCode(200)
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @Roles('authenticated')
+    @UseFilters(new HttpExceptionFilter())
     async subscribe(
         @Body() body: TxsSubscribeInputDto,
         @User() user: UserDto,
