@@ -15,7 +15,7 @@ describe('Contracts Controller', function() {
         contractsServiceMock: null,
     };
 
-    beforeAll(async function() {
+    beforeEach(async function() {
         context.contractsServiceMock = mock(ContractsService);
 
         const app: TestingModule = await Test.createTestingModule({
