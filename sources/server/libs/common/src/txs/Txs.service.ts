@@ -267,6 +267,7 @@ export class TxsService extends CRUDExtension<TxsRepository, TxEntity> {
             signer,
             keccak256(user.email),
         );
+
         if (verification === false) {
             return {
                 error: 'payload_not_signed_by_controller',
@@ -280,6 +281,7 @@ export class TxsService extends CRUDExtension<TxsRepository, TxEntity> {
             string[],
             string,
         ] = await encodeMetaTransaction(payload.message, signature);
+
         const [
             target,
             encodedMtx,
@@ -360,6 +362,7 @@ export class TxsService extends CRUDExtension<TxsRepository, TxEntity> {
         const accountCheck = await this.vaultereumService.read(
             `ethereum/accounts/${from}`,
         );
+
         if (accountCheck.error) {
             return {
                 error: accountCheck.error,
