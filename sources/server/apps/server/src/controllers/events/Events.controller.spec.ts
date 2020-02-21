@@ -1236,6 +1236,247 @@ describe('Events Controller', function() {
             ).called();
         });
 
+        it('actionset not complete', async function() {
+            const user = ({
+                id: 'c97ea2b4-174b-4d46-b307-9c010a03a385',
+            } as any) as UserDto;
+            const actionSetId = '64f35afc-8e13-4f80-b9e6-00a6ef52a75d';
+            const actionSet: ActionSetEntity = {
+                id: actionSetId,
+                actions: [
+                    {
+                        status: 'complete',
+                        name: '@events/textMetadata',
+                        data:
+                            '{"name":"Justice Woman WorldWide 2020","description":"Justice Concert","tags":["french","electro","disco"]}',
+                        type: 'input',
+                        error: null,
+                    },
+                    {
+                        status: 'complete',
+                        name: '@events/modulesConfiguration',
+                        data: '{}',
+                        type: 'input',
+                        error: null,
+                    },
+                    {
+                        status: 'complete',
+                        name: '@events/datesConfiguration',
+                        data:
+                            '{"dates":[{"name":"La Cigale","eventBegin":"2020-02-20T09:02:57.492Z","eventEnd":"2020-02-21T09:02:57.492Z","location":{"label":"120 Boulevard de Rochechouart, 75018 Paris","lat":48.882301,"lon":2.34015},"city":{"name":"Paris","nameAscii":"Paris","nameAdmin":"Île-de-France","country":"France","coord":{"lat":48.8667,"lon":2.3333},"population":9904000,"id":1250015082}},{"name":"Bataclan","eventBegin":"2020-02-23T09:02:57.492Z","eventEnd":"2020-02-24T09:02:57.492Z","location":{"label":"50 Boulevard Voltaire, 75011 Paris","lat":48.86311,"lon":2.37087},"city":{"name":"Paris","nameAscii":"Paris","nameAdmin":"Île-de-France","country":"France","coord":{"lat":48.8667,"lon":2.3333},"population":9904000,"id":1250015082}}]}',
+                        type: 'input',
+                        error: null,
+                    },
+                    {
+                        status: 'complete',
+                        name: '@events/categoriesConfiguration',
+                        data:
+                            '{"global":[{"name":"vip_0","saleBegin":"2020-02-19T10:02:57.492Z","saleEnd":"2020-02-20T08:02:57.492Z","resaleBegin":"2020-02-19T10:02:57.492Z","resaleEnd":"2020-02-20T08:02:57.492Z","seats":100,"currencies":[{"currency":"Fiat","price":"100"}]}],"dates":[[{"name":"regular_0_0","saleBegin":"2020-02-19T10:02:57.492Z","saleEnd":"2020-02-20T08:02:57.492Z","resaleBegin":"2020-02-19T10:02:57.492Z","resaleEnd":"2020-02-20T08:02:57.492Z","seats":200,"currencies":[{"currency":"Fiat","price":"100"}]}],[{"name":"regular_1_0","saleBegin":"2020-02-19T10:02:57.492Z","saleEnd":"2020-02-20T08:02:57.492Z","resaleBegin":"2020-02-19T10:02:57.492Z","resaleEnd":"2020-02-20T08:02:57.492Z","seats":200,"currencies":[{"currency":"Fiat","price":"100"}]}]]}',
+                        type: 'input',
+                        error: null,
+                    },
+                    {
+                        status: 'complete',
+                        name: '@events/imagesMetadata',
+                        data:
+                            '{"avatar":"e9b7af81-2c57-47d6-ba9a-1cdb2f33c1cb","banners":["decdea0b-2d00-4d57-b100-955f7ba41412","531d71c9-ee88-4989-8925-ed8be8a7f918"]}',
+                        type: 'input',
+                        error: null,
+                    },
+                    {
+                        status: 'complete',
+                        name: '@events/adminsConfiguration',
+                        data: '{"admins":[]}',
+                        type: 'input',
+                        error: null,
+                    },
+                ],
+                created_at: new Date('2020-02-19T09:02:57.553Z'),
+                current_action: 5,
+                current_status: 'error',
+                dispatched_at: new Date('2020-02-19T09:02:57.547Z'),
+                name: '@events/creation',
+                owner: 'c97ea2b4-174b-4d46-b307-9c010a03a385',
+                updated_at: new Date('2020-02-19T09:03:02.999Z'),
+            };
+            const dateIds = [
+                '64f35afc-8e13-4f80-b9e6-00a6ef52a76d',
+                '64f35afc-8e13-4f80-b9e6-00a6ef52a77d',
+            ];
+            const dates: Partial<DateEntity>[] = [
+                {
+                    event_begin: ('2020-02-20T09:02:57.492Z' as any) as Date,
+                    event_end: ('2020-02-21T09:02:57.492Z' as any) as Date,
+                    assigned_city: 1250015082,
+                    location: {
+                        lon: 2.34015,
+                        lat: 48.882301,
+                    },
+                    location_label:
+                        '120 Boulevard de Rochechouart, 75018 Paris',
+                    metadata: {
+                        name: 'La Cigale',
+                    },
+                    parent_id: null,
+                    parent_type: null,
+                    categories: [
+                        {
+                            group_id: null,
+                            category_name: 'regular_0_0',
+                            category_index: 0,
+                            sale_begin: ('2020-02-19T10:02:57.492Z' as any) as Date,
+                            sale_end: ('2020-02-20T08:02:57.492Z' as any) as Date,
+                            resale_begin: ('2020-02-19T10:02:57.492Z' as any) as Date,
+                            resale_end: ('2020-02-20T08:02:57.492Z' as any) as Date,
+                            scope: 'ticket721_0',
+                            status: 'preview',
+                            prices: [
+                                {
+                                    currency: 'T721Token',
+                                    value: '100',
+                                    log_value: 6.643856189774724,
+                                },
+                            ],
+                            seats: 200,
+                        },
+                    ],
+                },
+                {
+                    event_begin: ('2020-02-23T09:02:57.492Z' as any) as Date,
+                    event_end: ('2020-02-24T09:02:57.492Z' as any) as Date,
+                    assigned_city: 1250015082,
+                    location: {
+                        lon: 2.37087,
+                        lat: 48.86311,
+                    },
+                    location_label: '50 Boulevard Voltaire, 75011 Paris',
+                    metadata: {
+                        name: 'Bataclan',
+                    },
+                    parent_id: null,
+                    parent_type: null,
+                    categories: [
+                        {
+                            group_id: null,
+                            category_name: 'regular_1_0',
+                            category_index: 0,
+                            sale_begin: ('2020-02-19T10:02:57.492Z' as any) as Date,
+                            sale_end: ('2020-02-20T08:02:57.492Z' as any) as Date,
+                            resale_begin: ('2020-02-19T10:02:57.492Z' as any) as Date,
+                            resale_end: ('2020-02-20T08:02:57.492Z' as any) as Date,
+                            scope: 'ticket721_0',
+                            status: 'preview',
+                            prices: [
+                                {
+                                    currency: 'T721Token',
+                                    value: '100',
+                                    log_value: 6.643856189774724,
+                                },
+                            ],
+                            seats: 200,
+                        },
+                    ],
+                },
+            ];
+            const eventId = '64f35afc-8e13-4f80-b9e6-00a6ef52a78d';
+            const event: Partial<EventEntity> = {
+                name: 'Justice Woman WorldWide 2020',
+                description: 'Justice Concert',
+                status: 'preview',
+                address: null,
+                owner: 'c97ea2b4-174b-4d46-b307-9c010a03a385',
+                admins: [],
+                dates: [
+                    '64f35afc-8e13-4f80-b9e6-00a6ef52a76d',
+                    '64f35afc-8e13-4f80-b9e6-00a6ef52a77d',
+                ],
+                categories: [
+                    {
+                        group_id: null,
+                        category_name: 'vip_0',
+                        category_index: 0,
+                        sale_begin: ('2020-02-19T10:02:57.492Z' as any) as Date,
+                        sale_end: ('2020-02-20T08:02:57.492Z' as any) as Date,
+                        resale_begin: ('2020-02-19T10:02:57.492Z' as any) as Date,
+                        resale_end: ('2020-02-20T08:02:57.492Z' as any) as Date,
+                        scope: 'ticket721_0',
+                        status: 'preview',
+                        prices: [
+                            {
+                                currency: 'T721Token',
+                                value: '100',
+                                log_value: 6.643856189774724,
+                            },
+                        ],
+                        seats: 100,
+                    },
+                ],
+                avatar: 'e9b7af81-2c57-47d6-ba9a-1cdb2f33c1cb',
+                banners: [
+                    'decdea0b-2d00-4d57-b100-955f7ba41412',
+                    '531d71c9-ee88-4989-8925-ed8be8a7f918',
+                ],
+            };
+
+            const eventAddress = '0x30199ec7ad0622c159cda3409a1f22a6dfe61de9';
+
+            const vaultereumAddressResponse = {
+                request_id: '30996fb5-3e85-0964-3c84-47f633396fb3',
+                lease_id: '',
+                renewable: false,
+                lease_duration: 0,
+                data: {
+                    address: eventAddress,
+                    blacklist: null,
+                    spending_limit_total: '0',
+                    spending_limit_tx: '0',
+                    total_spend: '0',
+                    whitelist: null,
+                },
+                wrap_info: null,
+                warnings: null,
+                auth: null,
+            };
+
+            when(
+                context.actionSetsServiceMock.search(
+                    deepEqual({
+                        id: actionSetId,
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: [actionSet],
+            });
+
+            await expect(
+                context.eventsController.build(
+                    {
+                        completedActionSet: actionSetId,
+                    },
+                    user,
+                ),
+            ).rejects.toMatchObject({
+                response: {
+                    status: StatusCodes.BadRequest,
+                    message: 'incomplete_action_set',
+                },
+                status: StatusCodes.BadRequest,
+                message: {
+                    status: StatusCodes.BadRequest,
+                    message: 'incomplete_action_set',
+                },
+            });
+
+            verify(
+                context.actionSetsServiceMock.search(
+                    deepEqual({
+                        id: actionSetId,
+                    }),
+                ),
+            ).called();
+        });
+
         it('unauthorized user', async function() {
             const user = ({
                 id: 'c97ea2b4-174b-4d46-b307-9c010a03a386',

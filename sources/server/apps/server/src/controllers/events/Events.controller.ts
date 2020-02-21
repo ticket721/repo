@@ -474,6 +474,16 @@ export class EventsController {
 
         const actionSetEntity = actionSet.response[0];
 
+        if (actionSetEntity.current_status !== 'complete') {
+            throw new HttpException(
+                {
+                    status: StatusCodes.BadRequest,
+                    message: 'incomplete_action_set',
+                },
+                StatusCodes.BadRequest,
+            );
+        }
+
         if (!uuidEq(actionSetEntity.owner, user.id)) {
             throw new HttpException(
                 {
