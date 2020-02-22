@@ -10,13 +10,14 @@ import {
     EventsCreateDatesConfiguration, EventsCreateImagesMetadata,
     EventsCreateModulesConfiguration,
     EventsCreateTextMetadata,
-}                                   from '@app/server/controllers/events/actionhandlers/Events.input.handlers';
-import { ActionsUpdateResponseDto } from '@app/server/controllers/actionsets/dto/ActionsUpdateResponse.dto';
-import { actionsUpdate}             from './actions';
-import { EventsBuildResponseDto }   from '@app/server/controllers/events/dto/EventsBuildResponse.dto';
-import { EventsBuildInputDto }      from '@app/server/controllers/events/dto/EventsBuildInput.dto';
-import { EventsDeployInputDto }     from '@app/server/controllers/events/dto/EventsDeployInput.dto';
-import { EventsDeployResponseDto }  from '@app/server/controllers/events/dto/EventsDeployResponse.dto';
+}                                                 from '@app/server/controllers/events/actionhandlers/Events.input.handlers';
+import { ActionsUpdateResponseDto }               from '@app/server/controllers/actionsets/dto/ActionsUpdateResponse.dto';
+import { actionsUpdate}                           from './actions';
+import { EventsBuildResponseDto }                 from '@app/server/controllers/events/dto/EventsBuildResponse.dto';
+import { EventsBuildInputDto }                    from '@app/server/controllers/events/dto/EventsBuildInput.dto';
+import { EventsDeployInputDto }                   from '@app/server/controllers/events/dto/EventsDeployInput.dto';
+import { EventsDeployResponseDto }                from '@app/server/controllers/events/dto/EventsDeployResponse.dto';
+import { EventsDeployGeneratePayloadResponseDto } from '@app/server/controllers/events/dto/EventsDeployGeneratePayloadResponse.dto';
 
 export async function eventsSearch(
     token: string,
@@ -154,7 +155,7 @@ export async function eventsCreateAdminsConfiguration(
 export async function eventsDeployGeneratePayload(
     token: string,
     event: string,
-): Promise<AxiosResponse<ActionsUpdateResponseDto>> {
+): Promise<AxiosResponse<EventsDeployGeneratePayloadResponseDto>> {
 
     const self: T721SDK = this;
 

@@ -10,6 +10,7 @@ import { T721ControllerV0Service } from '@lib/common/contracts/t721controller/T7
 import { MetaMarketplaceV0Service } from '@lib/common/contracts/metamarketplace/MetaMarketplace.V0.service';
 import { FSModule } from '@lib/common/fs/FS.module';
 import { T721AdminService } from '@lib/common/contracts/T721Admin.service';
+import { ContractsControllerBase } from '@lib/common/contracts/ContractsController.base';
 
 /**
  * Build options for the Contracts Module
@@ -61,6 +62,10 @@ export class ContractsModule {
                 T721ControllerV0Service,
                 MetaMarketplaceV0Service,
                 T721AdminService,
+                {
+                    provide: 'CONTRACTS_CONTROLLER_BASE_CLASS',
+                    useValue: ContractsControllerBase,
+                },
             ],
             exports: [
                 ContractsService,

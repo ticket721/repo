@@ -1,9 +1,10 @@
 import { ContractsControllerBase } from '@lib/common/contracts/ContractsController.base';
 import { ContractsService } from '@lib/common/contracts/Contracts.service';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { Web3Service } from '@lib/common/web3/Web3.service';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 import { toAcceptedAddressFormat } from '@ticket721sources/global';
+import { ClassType } from 'class-transformer/ClassTransformer';
 
 /**
  * Smart Contract Controller for the RefractFactory_v0 contract
@@ -16,11 +17,16 @@ export class RefractFactoryV0Service extends ContractsControllerBase {
      * @param contractsService
      * @param web3Service
      * @param shutdownService
+     * @param contractsControllerBase
      */
     constructor(
         contractsService: ContractsService,
         web3Service: Web3Service,
         shutdownService: ShutdownService,
+        @Inject('CONTRACTS_CONTROLLER_BASE_CLASS')
+        private readonly contractsControllerBase: ClassType<
+            ContractsControllerBase
+        >,
     ) {
         super(
             contractsService,
@@ -43,7 +49,7 @@ export class RefractFactoryV0Service extends ContractsControllerBase {
             return 0;
         }
 
-        const refractInstance = new ContractsControllerBase(
+        const refractInstance = new this.contractsControllerBase(
             this.contractsService,
             this.web3Service,
             this.shutdownService,
@@ -80,7 +86,7 @@ export class RefractFactoryV0Service extends ContractsControllerBase {
 
             return toAcceptedAddressFormat(refract) === finalAddress;
         } else {
-            const refractInstance = new ContractsControllerBase(
+            const refractInstance = new this.contractsControllerBase(
                 this.contractsService,
                 this.web3Service,
                 this.shutdownService,
@@ -91,9 +97,9 @@ export class RefractFactoryV0Service extends ContractsControllerBase {
                 },
             );
 
-            return await (await refractInstance.get()).methods.isController(
-                controller,
-            );
+            return await (await refractInstance.get()).methods
+                .isController(controller)
+                .call();
         }
     }
 
@@ -127,7 +133,7 @@ export class RefractFactoryV0Service extends ContractsControllerBase {
 
             return [factory._address, factoryCall];
         } else {
-            const refractInstance = new ContractsControllerBase(
+            const refractInstance = new this.contractsControllerBase(
                 this.contractsService,
                 this.web3Service,
                 this.shutdownService,

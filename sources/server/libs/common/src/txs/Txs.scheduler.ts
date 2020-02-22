@@ -10,6 +10,7 @@ import { Web3Service } from '@lib/common/web3/Web3.service';
 import { toAcceptedAddressFormat } from '@ticket721sources/global';
 import { Decimal } from 'decimal.js';
 import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
+import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 
 /**
  * Txs task scheduler
@@ -22,6 +23,7 @@ export class TxsScheduler implements OnModuleInit, OnModuleDestroy {
      * @param web3Service
      * @param txsService
      * @param loggerService
+     * @param shutdownService
      * @param schedule
      * @param txsOptions
      */
@@ -30,6 +32,7 @@ export class TxsScheduler implements OnModuleInit, OnModuleDestroy {
         private readonly web3Service: Web3Service,
         private readonly txsService: TxsService,
         private readonly loggerService: WinstonLoggerService,
+        private readonly shutdownService: ShutdownService,
         @InjectSchedule() private readonly schedule: Schedule,
         @Inject('TXS_MODULE_OPTIONS')
         private readonly txsOptions: TxsServiceOptions,
@@ -52,8 +55,10 @@ export class TxsScheduler implements OnModuleInit, OnModuleDestroy {
             currentGlobalConfig.error ||
             currentGlobalConfig.response.length === 0
         ) {
-            throw new Error(
-                'TxsScheduler::blockPolling unable to recover global config',
+            return this.shutdownService.shutdownWithError(
+                new Error(
+                    'TxsScheduler::blockPolling unable to recover global config',
+                ),
             );
         }
 
@@ -69,22 +74,21 @@ export class TxsScheduler implements OnModuleInit, OnModuleDestroy {
                 },
                 block_number: {
                     $gt: 0,
+                    $lte:
+                        globalConfig.block_number -
+                        this.txsOptions.blockThreshold,
                 },
             } as SortablePagedSearch);
-
-            if (bodyBuilder.error) {
-                throw new Error(
-                    'TxsScheduler::blockPolling error while building elasticsearch query',
-                );
-            }
 
             const pendingTransactions = await this.txsService.searchElastic(
                 bodyBuilder.response,
             );
 
             if (pendingTransactions.error) {
-                throw new Error(
-                    'TxsScheduler::blockPolling error while fetching txs',
+                return this.shutdownService.shutdownWithError(
+                    new Error(
+                        'TxsScheduler::blockPolling error while fetching txs',
+                    ),
                 );
             }
 
@@ -92,29 +96,26 @@ export class TxsScheduler implements OnModuleInit, OnModuleDestroy {
                 for (const hit of pendingTransactions.response.hits.hits) {
                     const parsed = fromES<TxEntity>(hit);
 
-                    if (
-                        globalConfig.block_number - parsed.block_number >=
-                        this.txsOptions.blockThreshold
-                    ) {
-                        const updateStatus = await this.txsService.update(
-                            {
-                                transaction_hash: parsed.transaction_hash,
-                            },
-                            {
-                                confirmed: true,
-                            },
-                        );
+                    const updateStatus = await this.txsService.update(
+                        {
+                            transaction_hash: parsed.transaction_hash,
+                        },
+                        {
+                            confirmed: true,
+                        },
+                    );
 
-                        if (updateStatus.error) {
-                            throw new Error(
+                    if (updateStatus.error) {
+                        return this.shutdownService.shutdownWithError(
+                            new Error(
                                 `TxsScheduler::blockPolling error while updating tx: ${updateStatus.error}`,
-                            );
-                        }
-
-                        this.loggerService.log(
-                            `Confirmed Transaction ${parsed.transaction_hash}`,
+                            ),
                         );
                     }
+
+                    this.loggerService.log(
+                        `Confirmed Transaction ${parsed.transaction_hash}`,
+                    );
                 }
             }
         }
@@ -132,8 +133,10 @@ export class TxsScheduler implements OnModuleInit, OnModuleDestroy {
             currentGlobalConfig.error ||
             currentGlobalConfig.response.length === 0
         ) {
-            throw new Error(
-                'TxsScheduler::transactionInitialization unable to recover global config',
+            return this.shutdownService.shutdownWithError(
+                new Error(
+                    'TxsScheduler::transactionInitialization unable to recover global config',
+                ),
             );
         }
 
@@ -148,19 +151,15 @@ export class TxsScheduler implements OnModuleInit, OnModuleDestroy {
             },
         } as SortablePagedSearch);
 
-        if (bodyBuilder.error) {
-            throw new Error(
-                'TxsScheduler::transactionInitialization error while building elasticsearch query',
-            );
-        }
-
         const pendingTransactions = await this.txsService.searchElastic(
             bodyBuilder.response,
         );
 
         if (pendingTransactions.error) {
-            throw new Error(
-                `TxsScheduler::transactionInitialization error while fetching txs: ${pendingTransactions.error}`,
+            return this.shutdownService.shutdownWithError(
+                new Error(
+                    `TxsScheduler::transactionInitialization error while fetching txs: ${pendingTransactions.error}`,
+                ),
             );
         }
 
@@ -236,8 +235,10 @@ export class TxsScheduler implements OnModuleInit, OnModuleDestroy {
                 );
 
                 if (updateStatus.error) {
-                    throw new Error(
-                        `TxsScheduler::transactionInitialization error while updating tx: ${updateStatus.error}`,
+                    return this.shutdownService.shutdownWithError(
+                        new Error(
+                            `TxsScheduler::transactionInitialization error while updating tx: ${updateStatus.error}`,
+                        ),
                     );
                 }
 
@@ -255,6 +256,7 @@ export class TxsScheduler implements OnModuleInit, OnModuleDestroy {
     /**
      * Interval Starter
      */
+    /* istanbul ignore next */
     onModuleInit(): void {
         this.schedule.scheduleIntervalJob(
             'blockPolling',
@@ -271,6 +273,7 @@ export class TxsScheduler implements OnModuleInit, OnModuleDestroy {
     /**
      * Interval Stopper
      */
+    /* istanbul ignore next */
     onModuleDestroy(): void {
         this.schedule.cancelJobs();
     }
