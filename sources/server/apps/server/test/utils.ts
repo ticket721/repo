@@ -1,6 +1,7 @@
 import { spawn } from 'child_process';
 import fs from 'fs-extra';
 import Web3 from 'web3';
+import readline from 'readline';
 
 let docker_compose_up_proc = null;
 
@@ -192,20 +193,30 @@ export const startDocker = async () => {
     await new Promise((ok, ko) => {
         let ready = false;
 
-        docker_compose_up_proc.stderr.on('data', data => {
-            process.stderr.write(data);
+        const err_stream = readline.createInterface({
+            input: docker_compose_up_proc.stderr,
+        });
+        const out_stream = readline.createInterface({
+            input: docker_compose_up_proc.stdout,
         });
 
-        docker_compose_up_proc.stdout.on('data', data => {
+        err_stream.on('line', (line: string): void => {
+            process.stderr.write(line);
+            process.stderr.write('\n');
+        });
+
+        out_stream.on('line', (line: string): void => {
             if (!ready) {
-                process.stdout.write(data);
+                process.stdout.write(line);
+                process.stdout.write('\n');
             }
 
             const found = readyLogs.findIndex(ent => {
-                if (data.indexOf(ent.line) !== -1) {
+                if (line.indexOf(ent.line) !== -1) {
                     return true;
                 }
             });
+
             if (found !== -1) {
                 console.log(`Entity ${readyLogs[found].image} is READY`);
                 readyLogs.splice(found, 1);
