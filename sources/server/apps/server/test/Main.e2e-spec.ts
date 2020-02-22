@@ -17,6 +17,7 @@ import { getApiInfo } from './App.case';
 import { register, web3register } from './api/Authentication.case';
 import { fetchActions } from './api/Actions.case';
 import { fetchDates } from './api/Dates.case';
+import { deployJustice } from './api/Events.case';
 
 const cassandraPort = 32702;
 const elasticSearchPort = 32610;
@@ -90,12 +91,6 @@ describe('AppController (e2e)', () => {
         context.app = app;
         context.sdk = sdk;
 
-        if (first) {
-            first = false;
-        } else {
-            await runMigrations(cassandraPort, elasticSearchPort);
-        }
-
         process.stdout.write(ascii.beforeEach);
         console.log('FINISHED');
     }, 60000);
@@ -105,6 +100,7 @@ describe('AppController (e2e)', () => {
         console.log('STARTED');
 
         await context.app.close();
+        await new Promise((ok, ko) => setTimeout(ok, 5000));
         await resetMigrations(cassandraPort, elasticSearchPort);
 
         process.stdout.write(ascii.afterEach);
@@ -132,5 +128,12 @@ describe('AppController (e2e)', () => {
 
     describe('DatesController', () => {
         test('/dates/search', fetchDates.bind(null, getCtx));
+    });
+
+    describe('EventsController', () => {
+        test(
+            'Deploy Event justice (1 event, 2 dates, resale on)',
+            deployJustice.bind(null, getCtx),
+        );
     });
 });

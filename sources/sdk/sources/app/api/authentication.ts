@@ -32,11 +32,17 @@ export async function localRegister(
     password: string,
     username: string,
     wallet: Wallet,
-    progress: ProgressCallback,
+    _progress: ProgressCallback,
     locale?: string,
 ): Promise<AxiosResponse<LocalRegisterResponseDto> | FailedRegisterReport> {
 
     const self: T721SDK = this;
+
+    const progress: ProgressCallback = (p: number): void => {
+        if (_progress) {
+            return _progress(p);
+        }
+    };
 
     progress(0);
 
