@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="../.assets/logo_sources.png">
+</p>
+
 # sources
 
 Contains all the code of the T721 platform: server, webapp, mobile apps ...
