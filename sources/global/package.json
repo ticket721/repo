@@ -24,7 +24,7 @@
     "devDependencies": {
         "@types/jest": "25.1.2",
         "jest": "25.1.0",
-        "ts-jest": "25.2.0",
+        "ts-jest": "25.2.1",
         "typescript": "3.7.5",
         "watch": "^1.0.2",
         "@types/node": "12.12.22",
