@@ -10,7 +10,7 @@ import {
     EventsCreateDatesConfiguration, EventsCreateImagesMetadata,
     EventsCreateModulesConfiguration,
     EventsCreateTextMetadata,
-}                                                 from '@app/server/controllers/events/actionhandlers/Events.input.handlers';
+}                                                 from '@app/worker/actionhandlers/events/Events.input.handlers';
 import { ActionsUpdateResponseDto }               from '@app/server/controllers/actionsets/dto/ActionsUpdateResponse.dto';
 import { actionsUpdate}                           from './actions';
 import { EventsBuildResponseDto }                 from '@app/server/controllers/events/dto/EventsBuildResponse.dto';

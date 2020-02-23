@@ -39,7 +39,7 @@ export class VaultereumModule {
     static registerAsync(options: VaultereumModuleAsyncOptions): DynamicModule {
         return {
             module: VaultereumModule,
-            imports: [...options.imports],
+            imports: [...(options.imports ? options.imports : [])],
             providers: [
                 {
                     provide: 'VAULTEREUM_MODULE_OPTIONS',

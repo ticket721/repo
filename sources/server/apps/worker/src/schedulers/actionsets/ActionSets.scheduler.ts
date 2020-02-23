@@ -11,6 +11,7 @@ import { ActionSet } from '@lib/common/actionsets/helper/ActionSet';
 import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
 import { uuidEq } from '@ticket721sources/global';
 import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
+import { OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
 
 /**
  * Collection of scheduled tasks
@@ -25,6 +26,7 @@ export class ActionSetsScheduler implements OnModuleInit, OnModuleDestroy {
      * @param actionQueue
      * @param schedule
      * @param loggerService
+     * @param outrospectionService
      */
     constructor(
         private readonly actionSetsService: ActionSetsService,
@@ -32,6 +34,7 @@ export class ActionSetsScheduler implements OnModuleInit, OnModuleDestroy {
         @InjectQueue('action') private readonly actionQueue: Queue,
         @InjectSchedule() private readonly schedule: Schedule,
         private readonly loggerService: WinstonLoggerService,
+        private readonly outrospectionService: OutrospectionService,
     ) {}
 
     /**
@@ -39,12 +42,16 @@ export class ActionSetsScheduler implements OnModuleInit, OnModuleDestroy {
      * without starting any background loop
      */
     /* istanbul ignore next */
-    onModuleInit(): void {
-        this.schedule.scheduleIntervalJob(
-            'inputDispatcher',
-            1000,
-            this.inputDispatcher.bind(this),
-        );
+    async onModuleInit(): Promise<void> {
+        const signature = await this.outrospectionService.getInstanceSignature();
+
+        if (signature.master === true && signature.name === 'worker') {
+            this.schedule.scheduleIntervalJob(
+                'inputDispatcher',
+                1000,
+                this.inputDispatcher.bind(this),
+            );
+        }
     }
 
     /**

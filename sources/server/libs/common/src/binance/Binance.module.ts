@@ -44,7 +44,7 @@ export class BinanceModule {
     static registerAsync(options: BinanceModuleAsyncOptions): DynamicModule {
         return {
             module: BinanceModule,
-            imports: [...options.imports],
+            imports: [...(options.imports ? options.imports : [])],
             providers: [
                 {
                     provide: 'BINANCE_MODULE_OPTIONS',

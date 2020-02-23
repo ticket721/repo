@@ -1,30 +1,47 @@
-import { ActionSetsTasks } from '@lib/common/actionsets/ActionSets.tasks';
+import { ActionSetsTasks } from '@app/worker/tasks/actionsets/ActionSets.tasks';
 import { ActionSetsService } from '@lib/common/actionsets/ActionSets.service';
 import { deepEqual, instance, mock, verify, when } from 'ts-mockito';
-import { Job } from 'bull';
+import { Job, Queue } from 'bull';
 import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
 import { ActionSet } from '@lib/common/actionsets/helper/ActionSet';
 import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
+import { OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
+import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
+
+class QueueMock {}
 
 const context: {
     actionSetsTasks: ActionSetsTasks;
     actionSetsServiceMock: ActionSetsService;
+    actionQueueMock: QueueMock;
+    outrospectionServiceMock: OutrospectionService;
+    shutdownServiceMock: ShutdownService;
 } = {
     actionSetsTasks: null,
     actionSetsServiceMock: null,
+    actionQueueMock: null,
+    outrospectionServiceMock: null,
+    shutdownServiceMock: null,
 };
 
 class JobMock {
     constructor(public readonly data: any) {}
+
     async progress(p: number): Promise<void> {}
 }
 
 describe('ActionSets Tasks', function() {
     beforeEach(async function() {
         context.actionSetsServiceMock = mock(ActionSetsService);
+        context.actionQueueMock = mock(QueueMock);
+        context.outrospectionServiceMock = mock(OutrospectionService);
+        context.shutdownServiceMock = mock(ShutdownService);
         context.actionSetsTasks = new ActionSetsTasks(
             instance(context.actionSetsServiceMock),
             new WinstonLoggerService('actionset'),
+            (instance(QueueMock) as any) as Queue,
+            instance(context.outrospectionServiceMock),
+            instance(context.shutdownServiceMock),
         );
     });
 

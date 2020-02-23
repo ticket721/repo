@@ -1,13 +1,11 @@
 import { Global, Module } from '@nestjs/common';
-import { ConfigModule } from '@lib/common/config/Config.module';
-import { Config } from '@app/server/utils/Config.joi';
-import { EmailDriver } from '@app/server/email/drivers/Email.driver.base';
+import { EmailDriver } from '@lib/common/email/drivers/Email.driver.base';
 import { ConfigService } from '@lib/common/config/Config.service';
-import { DevDriver } from '@app/server/email/drivers/Dev.driver';
-import { MailjetDriver } from '@app/server/email/drivers/Mailjet.driver';
+import { DevDriver } from '@lib/common/email/drivers/Dev.driver';
+import { MailjetDriver } from '@lib/common/email/drivers/Mailjet.driver';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 import { ShutdownModule } from '@lib/common/shutdown/Shutdown.module';
-import { EmailService } from '@app/server/email/Email.service';
+import { EmailService } from '@lib/common/email/Email.service';
 import { BullModule, BullModuleOptions } from '@nestjs/bull';
 
 /**
@@ -16,10 +14,8 @@ import { BullModule, BullModuleOptions } from '@nestjs/bull';
 @Global()
 @Module({
     imports: [
-        ConfigModule.register(Config),
         ShutdownModule,
         BullModule.registerQueueAsync({
-            imports: [ConfigModule.register(Config)],
             inject: [ConfigService],
             name: 'mailing',
             useFactory: (configService: ConfigService): BullModuleOptions => ({

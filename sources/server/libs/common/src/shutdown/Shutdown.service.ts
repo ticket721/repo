@@ -44,7 +44,7 @@ export class ShutdownService {
      * @param error
      */
     shutdownWithError(error: Error) {
-        this.winstonLoggerService.error(error.message, error.stack);
+        this.winstonLoggerService.error(error);
         this.shutdown();
     }
 

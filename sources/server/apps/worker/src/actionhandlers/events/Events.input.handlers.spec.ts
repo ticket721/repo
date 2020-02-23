@@ -2,7 +2,7 @@ import { deepEqual, instance, mock, when } from 'ts-mockito';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ActionSetsService } from '@lib/common/actionsets/ActionSets.service';
 import { ImagesService } from '@lib/common/images/Images.service';
-import { EventsInputHandlers } from '@app/server/controllers/events/actionhandlers/Events.input.handlers';
+import { EventsInputHandlers } from '@app/worker/actionhandlers/events/Events.input.handlers';
 import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
 import { ActionSet } from '@lib/common/actionsets/helper/ActionSet';
 

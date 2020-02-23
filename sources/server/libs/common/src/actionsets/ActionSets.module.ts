@@ -4,11 +4,7 @@ import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entit
 import { ActionSetsService } from '@lib/common/actionsets/ActionSets.service';
 import { ActionSetsRepository } from '@lib/common/actionsets/ActionSets.repository';
 import { BullModule, BullModuleOptions } from '@nestjs/bull';
-import { ConfigModule } from '@lib/common/config/Config.module';
-import { Config } from '@app/server/utils/Config.joi';
 import { ConfigService } from '@lib/common/config/Config.service';
-import { ActionSetsTasks } from '@lib/common/actionsets/ActionSets.tasks';
-import { ActionSetsScheduler } from '@lib/common/actionsets/ActionSets.scheduler';
 import { ScheduleModule } from 'nest-schedule';
 import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
 
@@ -19,7 +15,6 @@ import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
             ActionSetsRepository,
         ]),
         BullModule.registerQueueAsync({
-            imports: [ConfigModule.register(Config)],
             inject: [ConfigService],
             name: 'action',
             useFactory: (configService: ConfigService): BullModuleOptions => ({
@@ -34,8 +29,6 @@ import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
     ],
     providers: [
         ActionSetsService,
-        ActionSetsTasks,
-        ActionSetsScheduler,
         {
             provide: WinstonLoggerService,
             useValue: new WinstonLoggerService('actionset'),

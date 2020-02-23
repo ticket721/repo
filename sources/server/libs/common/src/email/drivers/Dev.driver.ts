@@ -3,22 +3,23 @@ import {
     EmailDriverResponse,
     EmailDriverResponseStatus,
     EmailDriverSendOptions,
-} from '@app/server/email/drivers/Email.driver.base';
+} from '@lib/common/email/drivers/Email.driver.base';
 import EmailTemplates from 'email-templates';
+import PreviewEmail from 'preview-email';
 import path from 'path';
-import fs from 'fs';
 import { ConfigService } from '@lib/common/config/Config.service';
-import Mailjet from 'node-mailjet';
+import fs from 'fs';
 
 /**
- * Mailjet driver to send emails in production
+ * Development driver. If preview is enabled, emails are opened in the browser
  */
 /* istanbul ignore next */
-export class MailjetDriver implements EmailDriver {
+export class DevDriver implements EmailDriver {
     /**
-     * Mailjet instance to use to dispatch request
+     * True if emails are opened in the browser
      */
-    private mailjet: any;
+    private preview: boolean = false;
+
     /**
      * Path where template sources can be found
      */
@@ -30,10 +31,10 @@ export class MailjetDriver implements EmailDriver {
      * @param configService
      */
     public configure(configService: ConfigService): void {
-        const apiKey: string = configService.get('MAILJET_API_KEY');
-        const apiSecret: string = configService.get('MAILJET_API_SECRET');
+        if (configService.get('EMAIL_BROWSER_PREVIEW') === 'true') {
+            this.preview = true;
+        }
 
-        this.mailjet = Mailjet.connect(apiKey, apiSecret);
         this.templatePath = configService.get('EMAIL_TEMPLATE_PATH');
     }
 
@@ -80,29 +81,29 @@ export class MailjetDriver implements EmailDriver {
             locale: options.locale,
         });
 
-        // here should send
-        try {
-            await this.mailjet.post('send').request({
-                FromEmail: 'noreply@ticket721.com',
-                FromName: 'Ticket721',
-                Subject: localeData['mail_subject'],
-                'Html-part': mail,
-                Recipients: [
-                    {
-                        Email: options.to,
-                    },
-                ],
+        // Preview config
+        const message = {
+            from: 'noreply@ticket721.com',
+            to: options.to,
+            subject: localeData['mail_subject'],
+            html: mail,
+        };
+
+        if (this.preview) {
+            // Run preview
+            await PreviewEmail(message, {
+                open: {
+                    wait: false,
+                },
             });
-            return {
-                options,
-                status: EmailDriverResponseStatus.Sent,
-            };
-        } catch (e) {
-            return {
-                options,
-                status: EmailDriverResponseStatus.Error,
-                reason: e,
-            };
         }
+
+        console.log(`Written mail with following locals`);
+        console.log(options.locals);
+
+        return {
+            options,
+            status: EmailDriverResponseStatus.Sent,
+        };
     }
 }

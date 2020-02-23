@@ -3,7 +3,7 @@ import {
     EmailDriverResponse,
     EmailDriverResponseStatus,
     EmailDriverSendOptions,
-} from '@app/server/email/drivers/Email.driver.base';
+} from '@lib/common/email/drivers/Email.driver.base';
 import { Injectable } from '@nestjs/common';
 import { ServiceResponse } from '@lib/common/utils/ServiceResponse';
 

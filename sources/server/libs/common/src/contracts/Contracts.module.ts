@@ -45,7 +45,7 @@ export class ContractsModule {
     static registerAsync(options: ContractsModuleAsyncOptions): DynamicModule {
         return {
             module: ContractsModule,
-            imports: [...options.imports, FSModule],
+            imports: [...(options.imports ? options.imports : []), FSModule],
             providers: [
                 {
                     provide: 'CONTRACTS_MODULE_OPTIONS',

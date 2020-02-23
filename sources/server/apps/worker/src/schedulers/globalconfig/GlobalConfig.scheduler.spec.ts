@@ -1,4 +1,4 @@
-import { GlobalConfigScheduler } from '@lib/common/globalconfig/GlobalConfig.scheduler';
+import { GlobalConfigScheduler } from '@app/worker/schedulers/globalconfig/GlobalConfig.scheduler';
 import { Web3Service } from '@lib/common/web3/Web3.service';
 import {
     GlobalConfigOptions,
@@ -9,6 +9,7 @@ import { BinanceService } from '@lib/common/binance/Binance.service';
 import { deepEqual, instance, mock, verify, when } from 'ts-mockito';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
+import { OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
 
 describe('GlobalConfig Scheduler', function() {
     const context: {
@@ -19,6 +20,7 @@ describe('GlobalConfig Scheduler', function() {
         globalConfigScheduleMock: Schedule;
         globalConfigOptionsMock: GlobalConfigOptions;
         binanceServiceMock: BinanceService;
+        outrospectionServiceMock: OutrospectionService;
     } = {
         globalConfigScheduler: null,
         web3ServiceMock: null,
@@ -27,6 +29,7 @@ describe('GlobalConfig Scheduler', function() {
         globalConfigScheduleMock: null,
         globalConfigOptionsMock: null,
         binanceServiceMock: null,
+        outrospectionServiceMock: null,
     };
 
     beforeAll(async function() {
@@ -39,6 +42,7 @@ describe('GlobalConfig Scheduler', function() {
             ethereumPriceFetchingRate: 1000,
         };
         context.binanceServiceMock = mock(BinanceService);
+        context.outrospectionServiceMock = mock(OutrospectionService);
 
         const app: TestingModule = await Test.createTestingModule({
             providers: [
@@ -69,6 +73,10 @@ describe('GlobalConfig Scheduler', function() {
                 {
                     provide: BinanceService,
                     useValue: instance(context.binanceServiceMock),
+                },
+                {
+                    provide: OutrospectionService,
+                    useValue: instance(context.outrospectionServiceMock),
                 },
                 GlobalConfigScheduler,
             ],

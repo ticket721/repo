@@ -28,7 +28,7 @@ export class Web3Module {
     static registerAsync(options: Web3ModuleAsyncOptions): DynamicModule {
         return {
             module: Web3Module,
-            imports: options.imports,
+            imports: [...(options.imports ? options.imports : [])],
             providers: [
                 {
                     provide: 'WEB3_MODULE_OPTIONS',
