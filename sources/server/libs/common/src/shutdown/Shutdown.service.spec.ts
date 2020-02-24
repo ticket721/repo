@@ -89,6 +89,6 @@ describe('Shutdown Service', function() {
         await new Promise((ok, ko) => setTimeout(ok, 1000));
 
         expect(value).toEqual(2);
-        verify(winstonLogger.error(error.message, error.stack)).called();
+        verify(winstonLogger.error(error)).called();
     });
 });

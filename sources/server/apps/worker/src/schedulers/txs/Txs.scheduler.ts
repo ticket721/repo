@@ -11,6 +11,7 @@ import { toAcceptedAddressFormat } from '@ticket721sources/global';
 import { Decimal } from 'decimal.js';
 import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
+import { OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
 
 /**
  * Txs task scheduler
@@ -26,6 +27,7 @@ export class TxsScheduler implements OnModuleInit, OnModuleDestroy {
      * @param shutdownService
      * @param schedule
      * @param txsOptions
+     * @param outrospectionService
      */
     constructor(
         private readonly globalConfigService: GlobalConfigService,
@@ -36,6 +38,7 @@ export class TxsScheduler implements OnModuleInit, OnModuleDestroy {
         @InjectSchedule() private readonly schedule: Schedule,
         @Inject('TXS_MODULE_OPTIONS')
         private readonly txsOptions: TxsServiceOptions,
+        private readonly outrospectionService: OutrospectionService,
     ) {}
 
     /**
@@ -257,24 +260,32 @@ export class TxsScheduler implements OnModuleInit, OnModuleDestroy {
      * Interval Starter
      */
     /* istanbul ignore next */
-    onModuleInit(): void {
-        this.schedule.scheduleIntervalJob(
-            'blockPolling',
-            this.txsOptions.blockPollingRefreshRate,
-            this.blockPolling.bind(this),
-        );
-        this.schedule.scheduleIntervalJob(
-            'transactionInitialization',
-            this.txsOptions.blockPollingRefreshRate,
-            this.transactionInitialization.bind(this),
-        );
+    async onModuleInit(): Promise<void> {
+        const signature = await this.outrospectionService.getInstanceSignature();
+
+        if (signature.master === true && signature.name === 'worker') {
+            this.schedule.scheduleIntervalJob(
+                'blockPolling',
+                this.txsOptions.blockPollingRefreshRate,
+                this.blockPolling.bind(this),
+            );
+            this.schedule.scheduleIntervalJob(
+                'transactionInitialization',
+                this.txsOptions.blockPollingRefreshRate,
+                this.transactionInitialization.bind(this),
+            );
+        }
     }
 
     /**
      * Interval Stopper
      */
     /* istanbul ignore next */
-    onModuleDestroy(): void {
-        this.schedule.cancelJobs();
+    async onModuleDestroy(): Promise<void> {
+        const signature = await this.outrospectionService.getInstanceSignature();
+
+        if (signature.master === true && signature.name === 'worker') {
+            this.schedule.cancelJobs();
+        }
     }
 }

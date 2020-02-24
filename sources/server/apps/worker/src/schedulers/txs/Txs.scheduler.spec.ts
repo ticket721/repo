@@ -1,4 +1,4 @@
-import { TxsScheduler } from '@lib/common/txs/Txs.scheduler';
+import { TxsScheduler } from '@app/worker/schedulers/txs/Txs.scheduler';
 import { Web3Service } from '@lib/common/web3/Web3.service';
 import { TxsService, TxsServiceOptions } from '@lib/common/txs/Txs.service';
 import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
@@ -11,6 +11,7 @@ import { ESSearchReturn } from '@lib/common/utils/ESSearchReturn';
 import { TxEntity } from '@lib/common/txs/entities/Tx.entity';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 import { toAcceptedAddressFormat } from '@ticket721sources/global';
+import { OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
 
 describe('Txs Scheduler', function() {
     const context: {
@@ -22,6 +23,7 @@ describe('Txs Scheduler', function() {
         loggerServiceMock: WinstonLoggerService;
         scheduleMock: Schedule;
         txsServiceOptions: TxsServiceOptions;
+        outrospectionService: OutrospectionService;
     } = {
         txsScheduler: null,
         globalConfigServiceMock: null,
@@ -31,6 +33,7 @@ describe('Txs Scheduler', function() {
         loggerServiceMock: null,
         scheduleMock: null,
         txsServiceOptions: null,
+        outrospectionService: null,
     };
 
     beforeEach(async function() {
@@ -49,6 +52,7 @@ describe('Txs Scheduler', function() {
             ethereumMtxRelayAdmin: 'admin_0',
             targetGasPrice: 150,
         };
+        context.outrospectionService = mock(OutrospectionService);
 
         const app: TestingModule = await Test.createTestingModule({
             providers: [
@@ -79,6 +83,10 @@ describe('Txs Scheduler', function() {
                 {
                     provide: 'TXS_MODULE_OPTIONS',
                     useValue: context.txsServiceOptions,
+                },
+                {
+                    provide: OutrospectionService,
+                    useValue: instance(context.outrospectionService),
                 },
                 TxsScheduler,
             ],

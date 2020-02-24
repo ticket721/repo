@@ -1,57 +1,53 @@
 import { Module } from '@nestjs/common';
-import { ExpressCassandraModule } from '@iaminfinity/express-cassandra';
-import { AuthenticationModule } from './authentication/Authentication.module';
-import { ServerController } from './Server.controller';
-import { ServerService } from './Server.service';
-import { UsersRepository } from '@lib/common/users/Users.repository';
-import { UserEntity } from '@lib/common/users/entities/User.entity';
-import { UsersModule } from '@lib/common/users/Users.module';
 import { ConfigModule } from '@lib/common/config/Config.module';
-import { Config } from './utils/Config.joi';
-import { ExpressCassandraConfigModule } from '@app/server/express-cassandra/ExpressCassandraConfig.module';
-import { ExpressCassandraConfigService } from '@app/server/express-cassandra/ExpressCassandraConfig.service';
-import { Web3TokenEntity } from '@app/server/web3token/entities/Web3Token.entity';
-import { Web3TokensRepository } from '@app/server/web3token/Web3Tokens.repository';
-import { Web3TokensModule } from '@app/server/web3token/Web3Tokens.module';
-import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
-import Web3 from 'web3';
+import { Config } from '@app/worker/utils/Config.joi';
+import { ScheduleModule } from 'nest-schedule';
+import { ExpressCassandraModule } from '@iaminfinity/express-cassandra';
+import { ExpressCassandraConfigModule } from '@app/worker/express-cassandra/ExpressCassandraConfig.module';
+import { ExpressCassandraConfigService } from '@app/worker/express-cassandra/ExpressCassandraConfig.service';
+import { UserEntity } from '@lib/common/users/entities/User.entity';
+import { UsersRepository } from '@lib/common/users/Users.repository';
+import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
+import { ActionSetsRepository } from '@lib/common/actionsets/ActionSets.repository';
+import { UsersModule } from '@lib/common/users/Users.module';
+import { ImagesModule } from '@lib/common/images/Images.module';
+import { ActionSetsModule } from '@lib/common/actionsets/ActionSets.module';
+import { DatesModule } from '@lib/common/dates/Dates.module';
+import { EventsModule } from '@lib/common/events/Events.module';
+import { CurrenciesModule } from '@lib/common/currencies/Currencies.module';
 import { ConfigService } from '@lib/common/config/Config.service';
+import { FSModule } from '@lib/common/fs/FS.module';
+import { ShutdownModule } from '@lib/common/shutdown/Shutdown.module';
 import { Web3Module } from '@lib/common/web3/Web3.module';
 import { Web3ServiceOptions } from '@lib/common/web3/Web3.service';
+import Web3 from 'web3';
 import { ContractsModule } from '@lib/common/contracts/Contracts.module';
 import { ContractsServiceOptions } from '@lib/common/contracts/Contracts.service';
-import { ShutdownModule } from '@lib/common/shutdown/Shutdown.module';
-import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
-import { ActionSetsModule } from '@lib/common/actionsets/ActionSets.module';
-import { ActionSetsRepository } from '@lib/common/actionsets/ActionSets.repository';
-import { ActionSetsController } from '@app/server/controllers/actionsets/ActionSets.controller';
-import { DatesModule } from '@lib/common/dates/Dates.module';
-import { DatesController } from '@app/server/controllers/dates/Dates.controller';
-import { EventsModule } from '@lib/common/events/Events.module';
-import { EventsController } from '@app/server/controllers/events/Events.controller';
-import { ImagesController } from '@app/server/controllers/images/Images.controller';
-import { ImagesModule } from '@lib/common/images/Images.module';
-import { FSModule } from '@lib/common/fs/FS.module';
-import { CurrenciesModule } from '@lib/common/currencies/Currencies.module';
 import { VaultereumModule } from '@lib/common/vaultereum/Vaultereum.module';
 import { VaultereumOptions } from '@lib/common/vaultereum/Vaultereum.service';
 import { TxsModule } from '@lib/common/txs/Txs.module';
 import { TxsServiceOptions } from '@lib/common/txs/Txs.service';
-import { GlobalConfigModule } from '@lib/common/globalconfig/GlobalConfig.module';
-import { GlobalConfigOptions } from '@lib/common/globalconfig/GlobalConfig.service';
-import { TxsController } from '@app/server/controllers/txs/Txs.controller';
-import { ContractsController } from '@app/server/controllers/contracts/Contracts.controller';
 import {
     BinanceModule,
     BinanceModuleBuildOptions,
 } from '@lib/common/binance/Binance.module';
+import { GlobalConfigModule } from '@lib/common/globalconfig/GlobalConfig.module';
+import { GlobalConfigOptions } from '@lib/common/globalconfig/GlobalConfig.service';
+import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
 import { OutrospectionModule } from '@lib/common/outrospection/Outrospection.module';
 import { EmailModule } from '@lib/common/email/Email.module';
+import { EventsInputHandlers } from '@app/worker/actionhandlers/events/Events.input.handlers';
+import { ActionSetsTasks } from '@app/worker/tasks/actionsets/ActionSets.tasks';
+import { ActionSetsScheduler } from '@app/worker/schedulers/actionsets/ActionSets.scheduler';
+import { TxsScheduler } from '@app/worker/schedulers/txs/Txs.scheduler';
 
 @Module({
     imports: [
         // Global configuration reading .env file
-        ConfigModule.register(Config, './apps/server/env/'),
+        ConfigModule.register(Config, './apps/worker/env/'),
+
+        // Scheduler to run background tasks
+        ScheduleModule.register(),
 
         // Cassandra ORM setup
         ExpressCassandraModule.forRootAsync({
@@ -63,8 +59,6 @@ import { EmailModule } from '@lib/common/email/Email.module';
         ExpressCassandraModule.forFeature([
             UserEntity,
             UsersRepository,
-            Web3TokenEntity,
-            Web3TokensRepository,
             ActionSetEntity,
             ActionSetsRepository,
         ]),
@@ -72,7 +66,6 @@ import { EmailModule } from '@lib/common/email/Email.module';
         // Cassandra Table Modules & Utils
         UsersModule,
         ImagesModule,
-        Web3TokensModule,
         ActionSetsModule,
         DatesModule,
         EventsModule,
@@ -81,9 +74,6 @@ import { EmailModule } from '@lib/common/email/Email.module';
                 configService.get('CURRENCIES_CONFIG_PATH'),
             inject: [ConfigService],
         }),
-
-        // User Management Modules
-        AuthenticationModule,
 
         // Utility Modules
         FSModule,
@@ -190,26 +180,25 @@ import { EmailModule } from '@lib/common/email/Email.module';
             inject: [ConfigService],
         }),
         OutrospectionModule.register({
-            name: 'server',
+            name: 'worker',
         }),
     ],
-    controllers: [
-        ServerController,
-        ImagesController,
-        ActionSetsController,
-        DatesController,
-        EventsController,
-        TxsController,
-        ContractsController,
-    ],
     providers: [
-        ServerService,
+        // ActionSet Input Handlers
+        EventsInputHandlers,
+
+        // Bull Tasks
+        ActionSetsTasks,
+
+        // Schedulers
+        ActionSetsScheduler,
+        TxsScheduler,
 
         // Global logger
         {
             provide: WinstonLoggerService,
-            useValue: new WinstonLoggerService('server'),
+            useValue: new WinstonLoggerService('worker'),
         },
     ],
 })
-export class ServerModule {}
+export class WorkerModule {}

@@ -82,20 +82,4 @@ describe('Server Service', () => {
 
         verify(configServiceMock.get('NODE_ENV')).called();
     });
-
-    it('onModuleInit should recover the role', async function() {
-        const {
-            serverService,
-            configServiceMock,
-        }: {
-            serverService: ServerService;
-            configServiceMock: ConfigService;
-        } = context;
-
-        when(configServiceMock.getRole()).thenReturn(0);
-
-        await serverService.onModuleInit();
-
-        verify(configServiceMock.getRole()).called();
-    });
 });

@@ -4,7 +4,6 @@ import { ExpressCassandraModule } from '@iaminfinity/express-cassandra';
 import { TxEntity } from '@lib/common/txs/entities/Tx.entity';
 import { TxsRepository } from '@lib/common/txs/Txs.repository';
 import { ScheduleModule } from 'nest-schedule';
-import { TxsScheduler } from '@lib/common/txs/Txs.scheduler';
 import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
 
 /**
@@ -39,7 +38,7 @@ export class TxsModule {
         return {
             module: TxsModule,
             imports: [
-                ...options.imports,
+                ...(options.imports ? options.imports : []),
                 ExpressCassandraModule.forFeature([TxEntity, TxsRepository]),
                 ScheduleModule.register(),
             ],
@@ -50,13 +49,12 @@ export class TxsModule {
                     inject: options.inject,
                 },
                 TxsService,
-                TxsScheduler,
                 {
                     provide: WinstonLoggerService,
                     useValue: new WinstonLoggerService('txs'),
                 },
             ],
-            exports: [TxsService],
+            exports: [TxsService, 'TXS_MODULE_OPTIONS'],
         };
     }
 }

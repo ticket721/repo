@@ -1,15 +1,12 @@
-import { NestFactory } from '@nestjs/core';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { NestExpressApplication } from '@nestjs/platform-express';
-import { ValidationPipe } from '@nestjs/common';
-import { ServerModule } from './Server.module';
 import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
+import { WorkerModule } from '@app/worker/Worker.module';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@lib/common/config/Config.service';
-import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 import { Queue } from 'bull';
 import { getQueueToken } from '@nestjs/bull';
+import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 import { setQueues, UI } from 'bull-board';
-import * as express from 'express';
 import {
     InstanceSignature,
     OutrospectionService,
@@ -18,41 +15,17 @@ import {
 /**
  * Core Logger
  */
-const logger = new WinstonLoggerService('server');
+const logger = new WinstonLoggerService('worker');
 
 /**
  * Main application, starting the T721 Server API
  */
 async function main() {
-    const app = await NestFactory.create<NestExpressApplication>(ServerModule, {
+    const app = await NestFactory.create<NestExpressApplication>(WorkerModule, {
         logger,
     });
 
     const configService: ConfigService = app.get<ConfigService>(ConfigService);
-
-    app.useGlobalPipes(
-        new ValidationPipe({
-            transform: true,
-            forbidUnknownValues: true,
-        }),
-    );
-
-    app.use(
-        '/static',
-        express.static(configService.get('IMAGE_SERVE_DIRECTORY'), {
-            extensions: ['png', 'jpg', 'gif', 'svg', 'bmp'],
-        }),
-    );
-
-    const options = new DocumentBuilder()
-        .setTitle('T721 API')
-        .setDescription('')
-        .setVersion('1.0.0')
-        .addBearerAuth()
-        .build();
-
-    const document = SwaggerModule.createDocument(app, options);
-    SwaggerModule.setup('api', app, document);
 
     if (configService.get('BULL_BOARD') === 'true') {
         const mailing = app.get<Queue>(getQueueToken('mailing'));
@@ -62,6 +35,7 @@ async function main() {
     }
 
     app.get(ShutdownService).subscribeToShutdown(() => app.close());
+
     const instanceSignature: InstanceSignature = await app
         .get(OutrospectionService)
         .getInstanceSignature();
@@ -70,7 +44,7 @@ async function main() {
         `Started instance with signature ${instanceSignature.signature}`,
     );
 
-    await app.listen(configService.get('API_PORT'));
+    await app.listen(configService.get('WORKER_PORT'));
 }
 
 main().catch((e: Error) => {

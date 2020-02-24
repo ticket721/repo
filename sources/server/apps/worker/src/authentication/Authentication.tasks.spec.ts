@@ -1,11 +1,12 @@
 import { deepEqual, instance, mock, verify, when } from 'ts-mockito';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Job, JobOptions } from 'bull';
-import { AuthenticationTasks } from '@app/server/authentication/Authentication.tasks';
-import { EmailService } from '@app/server/email/Email.service';
+import { AuthenticationTasks } from '@app/worker/authentication/Authentication.tasks';
+import { EmailService } from '@lib/common/email/Email.service';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@lib/common/config/Config.service';
 import { getQueueToken } from '@nestjs/bull';
+import { OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
 
 class QueueMock<T = any> {
     add(name: string, data: T, opts?: JobOptions): Promise<Job<T>> {
@@ -24,47 +25,46 @@ const context: {
     jwtServiceMock: JwtService;
     configServiceMock: ConfigService;
     mailingQueueMock: QueueMock;
+    outrospectionServiceMock: OutrospectionService;
 } = {
     authenticationTasks: null,
     emailServiceMock: null,
     jwtServiceMock: null,
     configServiceMock: null,
     mailingQueueMock: null,
+    outrospectionServiceMock: null,
 };
 
 describe('Authentication Tasks', function() {
     beforeEach(async function() {
-        const emailServiceMock: EmailService = mock(EmailService);
-        const jwtServiceMock: JwtService = mock(JwtService);
-        const configServiceMock: ConfigService = mock(ConfigService);
-        const mailingQueueMock: QueueMock = mock(QueueMock);
-
-        const EmailServiceProvider = {
-            provide: EmailService,
-            useValue: instance(emailServiceMock),
-        };
-
-        const JwtServiceProvider = {
-            provide: JwtService,
-            useValue: instance(jwtServiceMock),
-        };
-
-        const ConfigServiceProvider = {
-            provide: ConfigService,
-            useValue: instance(configServiceMock),
-        };
-
-        const MailingQueueProvider = {
-            provide: getQueueToken('mailing'),
-            useValue: instance(mailingQueueMock),
-        };
+        context.emailServiceMock = mock(EmailService);
+        context.jwtServiceMock = mock(JwtService);
+        context.configServiceMock = mock(ConfigService);
+        context.mailingQueueMock = mock(QueueMock);
+        context.outrospectionServiceMock = mock(OutrospectionService);
 
         const module: TestingModule = await Test.createTestingModule({
             providers: [
-                EmailServiceProvider,
-                JwtServiceProvider,
-                ConfigServiceProvider,
-                MailingQueueProvider,
+                {
+                    provide: EmailService,
+                    useValue: instance(context.emailServiceMock),
+                },
+                {
+                    provide: JwtService,
+                    useValue: instance(context.jwtServiceMock),
+                },
+                {
+                    provide: ConfigService,
+                    useValue: instance(context.configServiceMock),
+                },
+                {
+                    provide: getQueueToken('mailing'),
+                    useValue: instance(context.mailingQueueMock),
+                },
+                {
+                    provide: OutrospectionService,
+                    useValue: instance(context.outrospectionServiceMock),
+                },
                 AuthenticationTasks,
             ],
         }).compile();
@@ -72,10 +72,6 @@ describe('Authentication Tasks', function() {
         context.authenticationTasks = module.get<AuthenticationTasks>(
             AuthenticationTasks,
         );
-        context.emailServiceMock = emailServiceMock;
-        context.jwtServiceMock = jwtServiceMock;
-        context.mailingQueueMock = mailingQueueMock;
-        context.configServiceMock = configServiceMock;
     });
 
     describe('validationEmail', function() {

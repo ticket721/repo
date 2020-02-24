@@ -8,6 +8,7 @@ import { Web3Service } from '@lib/common/web3/Web3.service';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 import { GlobalEntity } from '@lib/common/globalconfig/entities/Global.entity';
 import { BinanceService } from '@lib/common/binance/Binance.service';
+import { OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
 
 /**
  * Global Config task scheduler
@@ -22,6 +23,7 @@ export class GlobalConfigScheduler implements OnModuleInit, OnModuleDestroy {
      * @param schedule
      * @param globalConfigOptions
      * @param binanceService
+     * @param outrospectionService
      */
     constructor(
         private readonly web3Service: Web3Service,
@@ -31,6 +33,7 @@ export class GlobalConfigScheduler implements OnModuleInit, OnModuleDestroy {
         @Inject('GLOBAL_CONFIG_MODULE_OPTIONS')
         private readonly globalConfigOptions: GlobalConfigOptions,
         private readonly binanceService: BinanceService,
+        private readonly outrospectionService: OutrospectionService,
     ) {}
 
     /**
@@ -93,24 +96,32 @@ export class GlobalConfigScheduler implements OnModuleInit, OnModuleDestroy {
      * Interval Creator
      */
     /* istanbul ignore next */
-    onModuleInit(): void {
-        this.schedule.scheduleIntervalJob(
-            'fetchBlockNumber',
-            this.globalConfigOptions.blockNumberFetchingRate,
-            this.fetchBlockNumber.bind(this),
-        );
-        this.schedule.scheduleIntervalJob(
-            'fetchEthereumPrice',
-            this.globalConfigOptions.ethereumPriceFetchingRate,
-            this.fetchETHEURPrice.bind(this),
-        );
+    async onModuleInit(): Promise<void> {
+        const signature = await this.outrospectionService.getInstanceSignature();
+
+        if (signature.master === true && signature.name === 'worker') {
+            this.schedule.scheduleIntervalJob(
+                'fetchBlockNumber',
+                this.globalConfigOptions.blockNumberFetchingRate,
+                this.fetchBlockNumber.bind(this),
+            );
+            this.schedule.scheduleIntervalJob(
+                'fetchEthereumPrice',
+                this.globalConfigOptions.ethereumPriceFetchingRate,
+                this.fetchETHEURPrice.bind(this),
+            );
+        }
     }
 
     /**
      * Interval Stopper
      */
     /* istanbul ignore next */
-    onModuleDestroy(): void {
-        this.schedule.cancelJobs();
+    async onModuleDestroy(): Promise<void> {
+        const signature = await this.outrospectionService.getInstanceSignature();
+
+        if (signature.master === true && signature.name === 'worker') {
+            this.schedule.cancelJobs();
+        }
     }
 }

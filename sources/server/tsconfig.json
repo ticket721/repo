@@ -25,6 +25,12 @@
             "@app/server/*": [
                 "apps/server/src/*"
             ],
+            "@app/worker/": [
+                "apps/worker/src"
+            ],
+            "@app/worker/*": [
+                "apps/worker/src/*"
+            ],
             "@email-templates/": [
                 "../email-templates"
             ],

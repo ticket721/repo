@@ -5,8 +5,8 @@ import {
     EmailDriverResponse,
     EmailDriverResponseStatus,
     EmailDriverSendOptions,
-} from '@app/server/email/drivers/Email.driver.base';
-import { EmailService } from '@app/server/email/Email.service';
+} from '@lib/common/email/drivers/Email.driver.base';
+import { EmailService } from '@lib/common/email/Email.service';
 import { ConfigService } from '@lib/common/config/Config.service';
 
 const context: {
