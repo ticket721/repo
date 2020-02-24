@@ -3,11 +3,7 @@
     "version": "0.1.0",
     "private": true,
     "dependencies": {
-        "react-qr-reader": "2.2.1",
         "react-scripts": "3.4.0"
-    },
-    "devDependencies": {
-        "@types/react-qr-reader": "2.1.2"
     },
     "scripts": {
         "start": "react-scripts start",
