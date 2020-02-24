@@ -1,8 +1,10 @@
 {
     "extends": "../../tsconfig.json",
-  "include": [
-    "components",
-      "index.tsx",
-      "App.tsx"
-  ]
+    "include": [
+        "src"
+    ],
+    "compilerOptions": {
+        "forceConsistentCasingInFileNames": true,
+        "isolatedModules": true
+    }
 }

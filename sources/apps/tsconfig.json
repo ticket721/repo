@@ -1,23 +1,23 @@
 {
-  "compilerOptions": {
-    "target": "es5",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
-    "allowJs": true,
-    "skipLibCheck": true,
-      "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "strict": true,
-    "module": "esnext",
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "noEmit": true,
-    "jsx": "react",
-      "outDir": "./dist"
-  },
+    "compilerOptions": {
+        "target": "es5",
+        "lib": [
+            "dom",
+            "dom.iterable",
+            "esnext"
+        ],
+        "allowJs": true,
+        "skipLibCheck": true,
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "strict": true,
+        "module": "esnext",
+        "moduleResolution": "node",
+        "resolveJsonModule": true,
+        "noEmit": true,
+        "jsx": "react",
+        "outDir": "./dist"
+    },
     "baseUrl": "./",
     "paths": {
         "@libs/": [
@@ -33,7 +33,12 @@
             "apps/*"
         ]
     },
-  "include": [
-    "src"
-  ]
+    "include": [
+        "apps",
+        "libs"
+    ],
+    "exclude": [
+        "node_modules",
+        "**/build"
+    ]
 }
