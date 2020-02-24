@@ -1,5 +1,5 @@
 storage "consul" {
-  address = "consul-e2e-instance:8500"
+  address = "consul:8500"
   path    = "vault"
 }
 

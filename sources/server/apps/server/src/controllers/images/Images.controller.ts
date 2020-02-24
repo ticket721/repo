@@ -4,6 +4,7 @@ import {
     HttpException,
     Post,
     UploadedFiles,
+    UseFilters,
     UseGuards,
     UseInterceptors,
 } from '@nestjs/common';
@@ -34,6 +35,7 @@ import { ImageEntity } from '@lib/common/images/entities/Image.entity';
 import { fromES } from '@lib/common/utils/fromES';
 import * as path from 'path';
 import { FSService } from '@lib/common/fs/FS.service';
+import { HttpExceptionFilter } from '@app/server/utils/HttpException.filter';
 
 /**
  * Accepted Mimetypes
@@ -93,6 +95,7 @@ export class ImagesController {
     @UseInterceptors(FilesInterceptor('images'))
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @Roles('authenticated')
+    @UseFilters(new HttpExceptionFilter())
     async upload(
         @UploadedFiles() files,
         @User() user: UserDto,

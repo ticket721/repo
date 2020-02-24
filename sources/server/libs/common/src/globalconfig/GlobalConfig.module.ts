@@ -7,7 +7,6 @@ import { ExpressCassandraModule } from '@iaminfinity/express-cassandra';
 import { ScheduleModule } from 'nest-schedule';
 import { GlobalEntity } from '@lib/common/globalconfig/entities/Global.entity';
 import { GlobalConfigRepository } from '@lib/common/globalconfig/GlobalConfig.repository';
-import { GlobalConfigScheduler } from '@lib/common/globalconfig/GlobalConfig.scheduler';
 
 /**
  * Build options for the GlobalConfig Module
@@ -45,7 +44,7 @@ export class GlobalConfigModule {
         return {
             module: GlobalConfigModule,
             imports: [
-                ...options.imports,
+                ...(options.imports ? options.imports : []),
                 ExpressCassandraModule.forFeature([
                     GlobalEntity,
                     GlobalConfigRepository,
@@ -59,9 +58,8 @@ export class GlobalConfigModule {
                     inject: options.inject,
                 },
                 GlobalConfigService,
-                GlobalConfigScheduler,
             ],
-            exports: [GlobalConfigService],
+            exports: [GlobalConfigService, 'GLOBAL_CONFIG_MODULE_OPTIONS'],
         };
     }
 }

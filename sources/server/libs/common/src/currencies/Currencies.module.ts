@@ -29,7 +29,7 @@ export class CurrenciesModule {
     static registerAsync(options: CurrenciesModuleAsyncOptions): DynamicModule {
         return {
             module: CurrenciesModule,
-            imports: [...options.imports, FSModule],
+            imports: [...(options.imports ? options.imports : []), FSModule],
             providers: [
                 {
                     provide: 'CURRENCIES_MODULE_OPTIONS',

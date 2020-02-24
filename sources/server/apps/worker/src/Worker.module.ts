@@ -1,0 +1,204 @@
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@lib/common/config/Config.module';
+import { Config } from '@app/worker/utils/Config.joi';
+import { ScheduleModule } from 'nest-schedule';
+import { ExpressCassandraModule } from '@iaminfinity/express-cassandra';
+import { ExpressCassandraConfigModule } from '@app/worker/express-cassandra/ExpressCassandraConfig.module';
+import { ExpressCassandraConfigService } from '@app/worker/express-cassandra/ExpressCassandraConfig.service';
+import { UserEntity } from '@lib/common/users/entities/User.entity';
+import { UsersRepository } from '@lib/common/users/Users.repository';
+import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
+import { ActionSetsRepository } from '@lib/common/actionsets/ActionSets.repository';
+import { UsersModule } from '@lib/common/users/Users.module';
+import { ImagesModule } from '@lib/common/images/Images.module';
+import { ActionSetsModule } from '@lib/common/actionsets/ActionSets.module';
+import { DatesModule } from '@lib/common/dates/Dates.module';
+import { EventsModule } from '@lib/common/events/Events.module';
+import { CurrenciesModule } from '@lib/common/currencies/Currencies.module';
+import { ConfigService } from '@lib/common/config/Config.service';
+import { FSModule } from '@lib/common/fs/FS.module';
+import { ShutdownModule } from '@lib/common/shutdown/Shutdown.module';
+import { Web3Module } from '@lib/common/web3/Web3.module';
+import { Web3ServiceOptions } from '@lib/common/web3/Web3.service';
+import Web3 from 'web3';
+import { ContractsModule } from '@lib/common/contracts/Contracts.module';
+import { ContractsServiceOptions } from '@lib/common/contracts/Contracts.service';
+import { VaultereumModule } from '@lib/common/vaultereum/Vaultereum.module';
+import { VaultereumOptions } from '@lib/common/vaultereum/Vaultereum.service';
+import { TxsModule } from '@lib/common/txs/Txs.module';
+import { TxsServiceOptions } from '@lib/common/txs/Txs.service';
+import {
+    BinanceModule,
+    BinanceModuleBuildOptions,
+} from '@lib/common/binance/Binance.module';
+import { GlobalConfigModule } from '@lib/common/globalconfig/GlobalConfig.module';
+import { GlobalConfigOptions } from '@lib/common/globalconfig/GlobalConfig.service';
+import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
+import { OutrospectionModule } from '@lib/common/outrospection/Outrospection.module';
+import { EmailModule } from '@lib/common/email/Email.module';
+import { EventsInputHandlers } from '@app/worker/actionhandlers/events/Events.input.handlers';
+import { ActionSetsTasks } from '@app/worker/tasks/actionsets/ActionSets.tasks';
+import { ActionSetsScheduler } from '@app/worker/schedulers/actionsets/ActionSets.scheduler';
+import { TxsScheduler } from '@app/worker/schedulers/txs/Txs.scheduler';
+
+@Module({
+    imports: [
+        // Global configuration reading .env file
+        ConfigModule.register(Config, './apps/worker/env/'),
+
+        // Scheduler to run background tasks
+        ScheduleModule.register(),
+
+        // Cassandra ORM setup
+        ExpressCassandraModule.forRootAsync({
+            imports: [ExpressCassandraConfigModule],
+            useFactory: async (configService: ExpressCassandraConfigService) =>
+                await configService.createUserKeyspaceOptions(),
+            inject: [ExpressCassandraConfigService],
+        }),
+        ExpressCassandraModule.forFeature([
+            UserEntity,
+            UsersRepository,
+            ActionSetEntity,
+            ActionSetsRepository,
+        ]),
+
+        // Cassandra Table Modules & Utils
+        UsersModule,
+        ImagesModule,
+        ActionSetsModule,
+        DatesModule,
+        EventsModule,
+        CurrenciesModule.registerAsync({
+            useFactory: (configService: ConfigService): string =>
+                configService.get('CURRENCIES_CONFIG_PATH'),
+            inject: [ConfigService],
+        }),
+
+        // Utility Modules
+        FSModule,
+        ShutdownModule,
+
+        // Notification Modules
+        EmailModule,
+
+        // Web3 & Ethereum Modules
+        Web3Module.registerAsync({
+            useFactory: (configService: ConfigService): Web3ServiceOptions => ({
+                Web3,
+                host: configService.get('ETHEREUM_NODE_HOST'),
+                port: configService.get('ETHEREUM_NODE_PORT'),
+                protocol: configService.get('ETHEREUM_NODE_PROTOCOL'),
+            }),
+            inject: [ConfigService],
+        }),
+        ContractsModule.registerAsync({
+            useFactory: (
+                configService: ConfigService,
+            ): ContractsServiceOptions => ({
+                artifact_path: configService.get('CONTRACTS_ARTIFACTS_PATH'),
+            }),
+            inject: [ConfigService],
+        }),
+        VaultereumModule.registerAsync({
+            useFactory: (configService: ConfigService): VaultereumOptions => ({
+                VAULT_HOST: configService.get('VAULT_HOST'),
+                VAULT_PORT: parseInt(configService.get('VAULT_PORT'), 10),
+                VAULT_PROTOCOL: configService.get('VAULT_PROTOCOL'),
+                VAULT_ETHEREUM_NODE_HOST: configService.get(
+                    'VAULT_ETHEREUM_NODE_HOST',
+                ),
+                VAULT_ETHEREUM_NODE_PORT: parseInt(
+                    configService.get('VAULT_ETHEREUM_NODE_PORT'),
+                    10,
+                ),
+                VAULT_ETHEREUM_NODE_PROTOCOL: configService.get(
+                    'VAULT_ETHEREUM_NODE_PROTOCOL',
+                ),
+                VAULT_ETHEREUM_NODE_NETWORK_ID: parseInt(
+                    configService.get('VAULT_ETHEREUM_NODE_NETWORK_ID'),
+                    10,
+                ),
+                VAULT_TOKEN: configService.get('VAULT_TOKEN'),
+            }),
+            inject: [ConfigService],
+        }),
+        TxsModule.registerAsync({
+            useFactory: (configService: ConfigService): TxsServiceOptions => ({
+                blockThreshold: parseInt(
+                    configService.get('TXS_BLOCK_THRESHOLD'),
+                    10,
+                ),
+                blockPollingRefreshRate: parseInt(
+                    configService.get('TXS_BLOCK_POLLING_REFRESH_RATE'),
+                    10,
+                ),
+                ethereumNetworkId: parseInt(
+                    configService.get('ETHEREUM_NODE_NETWORK_ID'),
+                    10,
+                ),
+                ethereumMtxDomainName: configService.get(
+                    'ETHEREUM_MTX_DOMAIN_NAME',
+                ),
+                ethereumMtxVersion: configService.get('ETHEREUM_MTX_VERSION'),
+                ethereumMtxRelayAdmin: configService.get(
+                    'VAULT_ETHEREUM_ASSIGNED_ADMIN',
+                ),
+                targetGasPrice: parseInt(
+                    configService.get('TXS_TARGET_GAS_PRICE'),
+                    10,
+                ),
+            }),
+            inject: [ConfigService],
+        }),
+        BinanceModule.registerAsync({
+            useFactory: (
+                configService: ConfigService,
+            ): BinanceModuleBuildOptions => ({
+                mock:
+                    configService.get('GLOBAL_CONFIG_BINANCE_MOCK') !== 'false',
+            }),
+            inject: [ConfigService],
+        }),
+        GlobalConfigModule.registerAsync({
+            useFactory: (
+                configService: ConfigService,
+            ): GlobalConfigOptions => ({
+                blockNumberFetchingRate: parseInt(
+                    configService.get(
+                        'GLOBAL_CONFIG_BLOCK_NUMBER_FETCHING_RATE',
+                    ),
+                    10,
+                ),
+                ethereumPriceFetchingRate: parseInt(
+                    configService.get(
+                        'GLOBAL_CONFIG_ETHEREUM_PRICE_FETCHING_RATE',
+                    ),
+                    10,
+                ),
+            }),
+            inject: [ConfigService],
+        }),
+        OutrospectionModule.register({
+            name: 'worker',
+        }),
+    ],
+    providers: [
+        // ActionSet Input Handlers
+        EventsInputHandlers,
+
+        // Bull Tasks
+        ActionSetsTasks,
+
+        // Schedulers
+        ActionSetsScheduler,
+        TxsScheduler,
+
+        // Global logger
+        {
+            provide: WinstonLoggerService,
+            useValue: new WinstonLoggerService('worker'),
+        },
+    ],
+})
+export class WorkerModule {}

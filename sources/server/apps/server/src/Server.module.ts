@@ -3,7 +3,6 @@ import { ExpressCassandraModule } from '@iaminfinity/express-cassandra';
 import { AuthenticationModule } from './authentication/Authentication.module';
 import { ServerController } from './Server.controller';
 import { ServerService } from './Server.service';
-import { ScheduleModule } from 'nest-schedule';
 import { UsersRepository } from '@lib/common/users/Users.repository';
 import { UserEntity } from '@lib/common/users/entities/User.entity';
 import { UsersModule } from '@lib/common/users/Users.module';
@@ -22,7 +21,6 @@ import { Web3ServiceOptions } from '@lib/common/web3/Web3.service';
 import { ContractsModule } from '@lib/common/contracts/Contracts.module';
 import { ContractsServiceOptions } from '@lib/common/contracts/Contracts.service';
 import { ShutdownModule } from '@lib/common/shutdown/Shutdown.module';
-import { EmailModule } from '@app/server/email/Email.module';
 import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
 import { ActionSetsModule } from '@lib/common/actionsets/ActionSets.module';
 import { ActionSetsRepository } from '@lib/common/actionsets/ActionSets.repository';
@@ -31,7 +29,6 @@ import { DatesModule } from '@lib/common/dates/Dates.module';
 import { DatesController } from '@app/server/controllers/dates/Dates.controller';
 import { EventsModule } from '@lib/common/events/Events.module';
 import { EventsController } from '@app/server/controllers/events/Events.controller';
-import { EventsInputHandlers } from '@app/server/controllers/events/actionhandlers/Events.input.handlers';
 import { ImagesController } from '@app/server/controllers/images/Images.controller';
 import { ImagesModule } from '@lib/common/images/Images.module';
 import { FSModule } from '@lib/common/fs/FS.module';
@@ -48,14 +45,13 @@ import {
     BinanceModule,
     BinanceModuleBuildOptions,
 } from '@lib/common/binance/Binance.module';
+import { OutrospectionModule } from '@lib/common/outrospection/Outrospection.module';
+import { EmailModule } from '@lib/common/email/Email.module';
 
 @Module({
     imports: [
         // Global configuration reading .env file
-        ConfigModule.register(Config),
-
-        // Scheduler to run background tasks
-        ScheduleModule.register(),
+        ConfigModule.register(Config, './apps/server/env/'),
 
         // Cassandra ORM setup
         ExpressCassandraModule.forRootAsync({
@@ -81,7 +77,6 @@ import {
         DatesModule,
         EventsModule,
         CurrenciesModule.registerAsync({
-            imports: [ConfigModule.register(Config)],
             useFactory: (configService: ConfigService): string =>
                 configService.get('CURRENCIES_CONFIG_PATH'),
             inject: [ConfigService],
@@ -99,7 +94,6 @@ import {
 
         // Web3 & Ethereum Modules
         Web3Module.registerAsync({
-            imports: [ConfigModule.register(Config)],
             useFactory: (configService: ConfigService): Web3ServiceOptions => ({
                 Web3,
                 host: configService.get('ETHEREUM_NODE_HOST'),
@@ -109,7 +103,6 @@ import {
             inject: [ConfigService],
         }),
         ContractsModule.registerAsync({
-            imports: [ConfigModule.register(Config)],
             useFactory: (
                 configService: ConfigService,
             ): ContractsServiceOptions => ({
@@ -118,7 +111,6 @@ import {
             inject: [ConfigService],
         }),
         VaultereumModule.registerAsync({
-            imports: [ConfigModule.register(Config)],
             useFactory: (configService: ConfigService): VaultereumOptions => ({
                 VAULT_HOST: configService.get('VAULT_HOST'),
                 VAULT_PORT: parseInt(configService.get('VAULT_PORT'), 10),
@@ -142,7 +134,6 @@ import {
             inject: [ConfigService],
         }),
         TxsModule.registerAsync({
-            imports: [ConfigModule.register(Config)],
             useFactory: (configService: ConfigService): TxsServiceOptions => ({
                 blockThreshold: parseInt(
                     configService.get('TXS_BLOCK_THRESHOLD'),
@@ -171,7 +162,6 @@ import {
             inject: [ConfigService],
         }),
         BinanceModule.registerAsync({
-            imports: [ConfigModule.register(Config)],
             useFactory: (
                 configService: ConfigService,
             ): BinanceModuleBuildOptions => ({
@@ -181,7 +171,6 @@ import {
             inject: [ConfigService],
         }),
         GlobalConfigModule.registerAsync({
-            imports: [ConfigModule.register(Config)],
             useFactory: (
                 configService: ConfigService,
             ): GlobalConfigOptions => ({
@@ -200,6 +189,9 @@ import {
             }),
             inject: [ConfigService],
         }),
+        OutrospectionModule.register({
+            name: 'server',
+        }),
     ],
     controllers: [
         ServerController,
@@ -212,9 +204,6 @@ import {
     ],
     providers: [
         ServerService,
-
-        // Input Action Handler injecters
-        EventsInputHandlers,
 
         // Global logger
         {

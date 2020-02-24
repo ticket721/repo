@@ -1,7 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ServiceResponse } from '@lib/common/utils/ServiceResponse';
 import { BinanceModuleBuildOptions } from '@lib/common/binance/Binance.module';
-import Binance from 'binance-api-node';
 
 /**
  * Service to use the Binance API to recover the Ethereum Price
@@ -9,23 +8,17 @@ import Binance from 'binance-api-node';
 @Injectable()
 export class BinanceService {
     /**
-     * Binance API Client instance
-     */
-    private readonly binanceInstance = null;
-
-    /**
      * Dependency Injection
      *
      * @param binanceOptions
+     * @param binanceInstance
      */
     constructor(
         @Inject('BINANCE_MODULE_OPTIONS')
         private readonly binanceOptions: BinanceModuleBuildOptions,
-    ) {
-        if (!binanceOptions.mock) {
-            this.binanceInstance = Binance();
-        }
-    }
+        @Inject('BINANCE_INSTANCE')
+        private readonly binanceInstance: any,
+    ) {}
 
     /**
      * Method to fetch the latest ETH/EUR price
@@ -37,16 +30,23 @@ export class BinanceService {
                 response: 20000,
             };
         } else {
-            const bprice = await this.binanceInstance.avgPrice({
-                symbol: 'ETHEUR',
-            });
-            const decimal = parseFloat(bprice.price);
-            const final = Math.floor(decimal * 100);
+            try {
+                const bprice = await this.binanceInstance.avgPrice({
+                    symbol: 'ETHEUR',
+                });
+                const decimal = parseFloat(bprice.price);
+                const final = Math.floor(decimal * 100);
 
-            return {
-                error: null,
-                response: final,
-            };
+                return {
+                    error: null,
+                    response: final,
+                };
+            } catch (e) {
+                return {
+                    error: 'fetch_error',
+                    response: null,
+                };
+            }
         }
     }
 }

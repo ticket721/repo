@@ -18,7 +18,7 @@
         "vaultereumHost": "127.0.0.1",
         "vaultereumPort": 8200,
         "vaultereumProtocol": "http",
-        "vaultereumEthHost": "ganache-e2e-instance",
+        "vaultereumEthHost": "ganache",
         "vaultereumEthPort": 8545,
         "vaultereumEthProtocol": "http",
         "vaultereumEthNetId": 2702,

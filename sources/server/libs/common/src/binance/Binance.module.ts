@@ -1,5 +1,6 @@
 import { DynamicModule, Global, Module } from '@nestjs/common';
 import { BinanceService } from '@lib/common/binance/Binance.service';
+import Binance from 'binance-api-node';
 
 /**
  * Build Options to configure the Binance Module
@@ -43,12 +44,16 @@ export class BinanceModule {
     static registerAsync(options: BinanceModuleAsyncOptions): DynamicModule {
         return {
             module: BinanceModule,
-            imports: [...options.imports],
+            imports: [...(options.imports ? options.imports : [])],
             providers: [
                 {
                     provide: 'BINANCE_MODULE_OPTIONS',
                     useFactory: options.useFactory,
                     inject: options.inject,
+                },
+                {
+                    provide: 'BINANCE_INSTANCE',
+                    useValue: Binance(),
                 },
                 BinanceService,
             ],

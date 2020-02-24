@@ -17,6 +17,10 @@ import { getApiInfo } from './App.case';
 import { register, web3register } from './api/Authentication.case';
 import { fetchActions } from './api/Actions.case';
 import { fetchDates } from './api/Dates.case';
+import { deployJustice } from './api/Events.case';
+import { WorkerModule } from '@app/worker/Worker.module';
+import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
+import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
 
 const cassandraPort = 32702;
 const elasticSearchPort = 32610;
@@ -27,9 +31,11 @@ const consulPort = 8500;
 
 const context: {
     app: INestApplication;
+    worker: INestApplication;
     sdk: T721SDK;
 } = {
     app: null,
+    worker: null,
     sdk: null,
 };
 
@@ -38,8 +44,8 @@ let snap_id = null;
 
 describe('AppController (e2e)', () => {
     let app: INestApplication;
+    let worker: INestApplication;
     let sdk: T721SDK;
-    let first: boolean = true;
 
     beforeAll(async function() {
         process.stdout.write(ascii.beforeAll);
@@ -75,26 +81,35 @@ describe('AppController (e2e)', () => {
         snap_id = await ganache_snapshot(ganachePort);
         await runMigrations(cassandraPort, elasticSearchPort);
 
-        const moduleFixture: TestingModule = await Test.createTestingModule({
+        const appFixture: TestingModule = await Test.createTestingModule({
             imports: [ServerModule],
         }).compile();
-
-        app = moduleFixture.createNestApplication();
-
+        appFixture.useLogger(new WinstonLoggerService('e2e-server'));
+        app = appFixture.createNestApplication();
         app.enableShutdownHooks();
         app.useGlobalPipes(new ValidationPipe());
+        app.get(ShutdownService).subscribeToShutdown(() => {
+            console.log('Server & Worker Shut Down');
+        });
         await app.init();
+
+        const workerFixture: TestingModule = await Test.createTestingModule({
+            imports: [WorkerModule],
+        }).compile();
+        workerFixture.useLogger(new WinstonLoggerService('e2e-server'));
+        worker = workerFixture.createNestApplication();
+        worker.enableShutdownHooks();
+        worker.get(ShutdownService).subscribeToShutdown(() => {
+            console.log('Server & Worker Shut Down');
+        });
+        await worker.init();
+
         sdk = new T721SDK();
         sdk.local(app.getHttpServer());
 
         context.app = app;
+        context.worker = worker;
         context.sdk = sdk;
-
-        if (first) {
-            first = false;
-        } else {
-            await runMigrations(cassandraPort, elasticSearchPort);
-        }
 
         process.stdout.write(ascii.beforeEach);
         console.log('FINISHED');
@@ -105,6 +120,8 @@ describe('AppController (e2e)', () => {
         console.log('STARTED');
 
         await context.app.close();
+        await context.worker.close();
+        await new Promise((ok, ko) => setTimeout(ok, 5000));
         await resetMigrations(cassandraPort, elasticSearchPort);
 
         process.stdout.write(ascii.afterEach);
@@ -132,5 +149,12 @@ describe('AppController (e2e)', () => {
 
     describe('DatesController', () => {
         test('/dates/search', fetchDates.bind(null, getCtx));
+    });
+
+    describe('EventsController', () => {
+        test(
+            'Deploy Event justice (1 event, 2 dates, resale on)',
+            deployJustice.bind(null, getCtx),
+        );
     });
 });

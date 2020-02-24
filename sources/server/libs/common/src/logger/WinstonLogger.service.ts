@@ -63,12 +63,10 @@ export class WinstonLoggerService implements LoggerService {
     /**
      * `error` level log
      *
-     * @param message
-     * @param trace
+     * @param e
      */
-    error(message: string, trace: string) {
-        this.logger.error(message);
-        this.logger.error(trace);
+    error(e: Error | string) {
+        this.logger.error(typeof e === 'object' ? e.stack : e);
     }
 
     /**

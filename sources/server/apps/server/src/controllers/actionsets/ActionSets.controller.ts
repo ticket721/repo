@@ -5,6 +5,7 @@ import {
     HttpException,
     Post,
     Put,
+    UseFilters,
     UseGuards,
 } from '@nestjs/common';
 import { ActionSetsService } from '@lib/common/actionsets/ActionSets.service';
@@ -34,6 +35,7 @@ import { StatusCodes, StatusNames } from '@lib/common/utils/codes';
 import { defined } from '@lib/common/utils/defined';
 import { Queue } from 'bull';
 import { InjectQueue } from '@nestjs/bull';
+import { HttpExceptionFilter } from '@app/server/utils/HttpException.filter';
 
 /**
  * Generic Actions controller. Recover / delete action sets generated across the app
@@ -74,6 +76,7 @@ export class ActionSetsController {
     @HttpCode(200)
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @Roles('authenticated')
+    @UseFilters(new HttpExceptionFilter())
     async search(
         @Body() body: ActionsSearchInputDto,
         @User() user: UserDto,
@@ -115,6 +118,7 @@ export class ActionSetsController {
     @HttpCode(200)
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @Roles('authenticated')
+    @UseFilters(new HttpExceptionFilter())
     async hash(
         @Body() body: ActionsHashInputDto,
         @User() user: UserDto,
@@ -174,8 +178,6 @@ export class ActionSetsController {
                 id: body.actionset_id,
             },
         );
-
-        console.log('1');
 
         if (searchResult.error) {
             throw new HttpException(
@@ -243,8 +245,6 @@ export class ActionSetsController {
         });
 
         await this.actionQueue.add('input', actionSet.raw);
-
-        console.log('2');
 
         if (res.error) {
             throw new HttpException(

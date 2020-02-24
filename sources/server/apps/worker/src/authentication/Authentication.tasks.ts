@@ -1,0 +1,81 @@
+import { InjectQueue } from '@nestjs/bull';
+import { Job, Queue } from 'bull';
+import { EmailValidationTaskDto } from '@app/server/authentication/dto/EmailValidationTask.dto';
+import { EmailService } from '@lib/common/email/Email.service';
+import { Injectable, OnModuleInit } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@lib/common/config/Config.service';
+import {
+    InstanceSignature,
+    OutrospectionService,
+} from '@lib/common/outrospection/Outrospection.service';
+
+/**
+ * Task collection for the Authentication module
+ */
+@Injectable()
+export class AuthenticationTasks implements OnModuleInit {
+    /**
+     * Dependency Injection
+     *
+     * @param emailService
+     * @param jwtService
+     * @param configService
+     * @param mailingQueue
+     * @param outrospectionService
+     */
+    constructor(
+        private readonly emailService: EmailService,
+        private readonly jwtService: JwtService,
+        private readonly configService: ConfigService,
+        @InjectQueue('mailing') private readonly mailingQueue: Queue,
+        private readonly outrospectionService: OutrospectionService,
+    ) {}
+
+    /**
+     * Subscribe worker instances only
+     */
+    /* istanbul ignore next */
+    async onModuleInit(): Promise<void> {
+        const signature: InstanceSignature = await this.outrospectionService.getInstanceSignature();
+
+        if (signature.name === 'worker') {
+            await this.mailingQueue.process(
+                '@@mailing/validationEmail',
+                1,
+                this.validationEmail.bind(this),
+            );
+        }
+    }
+
+    /**
+     * Task called by bull when a validation email should be sent
+     * @param job
+     */
+    async validationEmail(job: Job<EmailValidationTaskDto>): Promise<void> {
+        await job.progress(10);
+        const signature = await this.jwtService.signAsync(job.data, {
+            expiresIn: '1 day',
+        });
+
+        await job.progress(50);
+        const validationLink = `${this.configService.get(
+            'VALIDATION_URL',
+        )}?token=${encodeURIComponent(signature)}`;
+        const res = await this.emailService.send({
+            template: 'validate',
+            to: job.data.email,
+            locale: job.data.locale,
+            locals: {
+                validationLink,
+                token: signature,
+            },
+        });
+
+        if (res.error) {
+            throw new Error(res.error);
+        }
+
+        await job.progress(100);
+    }
+}

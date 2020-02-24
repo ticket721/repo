@@ -65,49 +65,4 @@ export class ConfigService {
 
         return validatedEnvConfig;
     }
-
-    /**
-     * Decimal regular expression
-     */
-    private numRegExp = /^[0123456789]+$/;
-
-    /**
-     * Node role getter
-     *
-     * @param hostname
-     */
-    getRole(hostname?: string): number {
-        if (this.get('NODE_ENV') === 'development') {
-            return 0;
-        } else {
-            if (!hostname) {
-                throw new Error(`Hostname is required to get current role`);
-            }
-
-            if (!this.get('HOSTNAME_PREFIX')) {
-                throw new Error(
-                    `Config validation error: in NODE_ENV=${this.get(
-                        'NODE_ENV',
-                    )}, HOSTNAME_PREFIX is required`,
-                );
-            }
-
-            const prefix: string = this.get('HOSTNAME_PREFIX');
-            if (hostname.indexOf(prefix) !== 0) {
-                throw new Error(
-                    `Invalid HOSTNAME_PREFIX value, cannot be found in real hostname: prefix ${this.get(
-                        'HOSTNAME_PREFIX',
-                    )} hostname ${hostname}`,
-                );
-            }
-
-            if (!this.numRegExp.test(hostname.slice(prefix.length + 1))) {
-                throw new Error(
-                    `Invalid hostname configuration: got hostname ${hostname}, while expecting something like ${prefix}-ID`,
-                );
-            }
-
-            return parseInt(hostname.slice(prefix.length + 1), 10);
-        }
-    }
 }

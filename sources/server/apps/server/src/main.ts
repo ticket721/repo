@@ -10,13 +10,22 @@ import { Queue } from 'bull';
 import { getQueueToken } from '@nestjs/bull';
 import { setQueues, UI } from 'bull-board';
 import * as express from 'express';
+import {
+    InstanceSignature,
+    OutrospectionService,
+} from '@lib/common/outrospection/Outrospection.service';
+
+/**
+ * Core Logger
+ */
+const logger = new WinstonLoggerService('server');
 
 /**
  * Main application, starting the T721 Server API
  */
 async function main() {
     const app = await NestFactory.create<NestExpressApplication>(ServerModule, {
-        logger: new WinstonLoggerService('core'),
+        logger,
     });
 
     const configService: ConfigService = app.get<ConfigService>(ConfigService);
@@ -53,8 +62,18 @@ async function main() {
     }
 
     app.get(ShutdownService).subscribeToShutdown(() => app.close());
+    const instanceSignature: InstanceSignature = await app
+        .get(OutrospectionService)
+        .getInstanceSignature();
+
+    logger.log(
+        `Started instance with signature ${instanceSignature.signature}`,
+    );
 
     await app.listen(configService.get('API_PORT'));
 }
 
-main();
+main().catch((e: Error) => {
+    logger.error(e);
+    process.exit(1);
+});

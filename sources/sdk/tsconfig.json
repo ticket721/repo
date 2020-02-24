@@ -26,11 +26,11 @@
             "@app/server/*": [
                 "../../server/apps/server/src/*"
             ],
-            "@app/antenna/": [
-                "../../server/apps/antenna/src"
+            "@app/worker/": [
+                "../../server/apps/worker/src"
             ],
-            "@app/antenna/*": [
-                "../../server/apps/antenna/src/*"
+            "@app/worker/*": [
+                "../../server/apps/worker/src/*"
             ]
         }
     },
