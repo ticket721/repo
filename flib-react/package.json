@@ -45,6 +45,7 @@
     "@storybook/addon-links": "5.3.13",
     "@storybook/addon-options": "5.3.13",
     "@storybook/addons": "5.3.13",
+    "@storybook/theming": "5.3.13",
     "@storybook/react": "5.3.13",
     "@types/enzyme": "3.10.5",
     "@types/enzyme-adapter-react-16": "1.0.6",
