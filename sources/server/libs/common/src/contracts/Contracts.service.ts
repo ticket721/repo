@@ -473,6 +473,7 @@ export class ContractsService implements OnModuleInit {
             this.winstonLoggerService.log(
                 `The new processed_block_number value is ${currentLowestBN}`,
             );
+
             const res = await this.globalConfigService.update(
                 {
                     id: 'global',

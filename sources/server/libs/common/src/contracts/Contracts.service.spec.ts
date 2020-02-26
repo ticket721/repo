@@ -5,12 +5,13 @@ import {
 } from '@lib/common/contracts/Contracts.service';
 import * as path from 'path';
 import { Web3Service } from '@lib/common/web3/Web3.service';
-import { anything, instance, mock, verify, when } from 'ts-mockito';
+import { anything, deepEqual, instance, mock, verify, when } from 'ts-mockito';
 import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 import * as fs from 'fs';
 import { FSService } from '@lib/common/fs/FS.service';
 import { GlobalConfigService } from '@lib/common/globalconfig/GlobalConfig.service';
+import { GlobalEntity } from '@lib/common/globalconfig/entities/Global.entity';
 
 const configureWeb3Service = (
     web3Service: Web3Service,
@@ -27,6 +28,12 @@ const configureWeb3Service = (
                 if (!codes[address]) return '0x';
                 return codes[address];
             },
+            getBlockNumber: async (): Promise<number> => {
+                return 100;
+            },
+            getTransaction: async (): Promise<any> => ({
+                blockNumber: 80,
+            }),
         },
     };
 
@@ -197,5 +204,347 @@ describe('Contracts Service', function() {
         });
 
         verify(shutdownServiceMock.shutdownWithError(anything())).called();
+    });
+
+    test('should not initialize processed_block_number', async function() {
+        const contractsServiceOptions: ContractsServiceOptions = {
+            artifact_path,
+        };
+        const web3ServiceMock: Web3Service = mock(Web3Service);
+        const winstonLoggerService: WinstonLoggerService = new WinstonLoggerService(
+            'contracts',
+        );
+        const shutdownServiceMock: ShutdownService = mock(ShutdownService);
+        const globalConfigServiceMock: GlobalConfigService = mock(
+            GlobalConfigService,
+        );
+
+        when(shutdownServiceMock.shutdownWithError(anything())).thenReturn(
+            undefined,
+        );
+
+        configureWeb3Service(web3ServiceMock, artifact_path, network_id, 1);
+
+        const contractsService: ContractsService = new ContractsService(
+            contractsServiceOptions,
+            instance(web3ServiceMock),
+            winstonLoggerService,
+            instance(shutdownServiceMock),
+            new FSService(),
+            instance(globalConfigServiceMock),
+        );
+
+        const globalConfig: Partial<GlobalEntity> = {
+            eth_eur_price: 10000,
+            block_number: 100,
+            processed_block_number: 100,
+        };
+
+        when(
+            globalConfigServiceMock.search(
+                deepEqual({
+                    id: 'global',
+                }),
+            ),
+        ).thenResolve({
+            response: [globalConfig as GlobalEntity],
+            error: null,
+        });
+
+        await contractsService.onModuleInit();
+
+        verify(
+            globalConfigServiceMock.search(
+                deepEqual({
+                    id: 'global',
+                }),
+            ),
+        ).called();
+    });
+
+    test('should initialize processed_block_number', async function() {
+        const contractsServiceOptions: ContractsServiceOptions = {
+            artifact_path,
+        };
+        const web3ServiceMock: Web3Service = mock(Web3Service);
+        const winstonLoggerService: WinstonLoggerService = new WinstonLoggerService(
+            'contracts',
+        );
+        const shutdownServiceMock: ShutdownService = mock(ShutdownService);
+        const globalConfigServiceMock: GlobalConfigService = mock(
+            GlobalConfigService,
+        );
+
+        when(shutdownServiceMock.shutdownWithError(anything())).thenReturn(
+            undefined,
+        );
+
+        configureWeb3Service(web3ServiceMock, artifact_path, network_id);
+
+        const contractsService: ContractsService = new ContractsService(
+            contractsServiceOptions,
+            instance(web3ServiceMock),
+            winstonLoggerService,
+            instance(shutdownServiceMock),
+            new FSService(),
+            instance(globalConfigServiceMock),
+        );
+
+        const globalConfig: Partial<GlobalEntity> = {
+            eth_eur_price: 10000,
+            block_number: 100,
+            processed_block_number: 0,
+        };
+
+        when(
+            globalConfigServiceMock.search(
+                deepEqual({
+                    id: 'global',
+                }),
+            ),
+        ).thenResolve({
+            response: [globalConfig as GlobalEntity],
+            error: null,
+        });
+
+        when(
+            globalConfigServiceMock.update(
+                deepEqual({
+                    id: 'global',
+                }),
+                deepEqual({
+                    processed_block_number: 80,
+                }),
+            ),
+        ).thenResolve({
+            response: null,
+            error: null,
+        });
+
+        await contractsService.onModuleInit();
+
+        verify(
+            globalConfigServiceMock.search(
+                deepEqual({
+                    id: 'global',
+                }),
+            ),
+        ).called();
+
+        verify(
+            globalConfigServiceMock.update(
+                deepEqual({
+                    id: 'global',
+                }),
+                deepEqual({
+                    processed_block_number: 80,
+                }),
+            ),
+        ).called();
+    });
+
+    test('should fail initialization on global config fetch error', async function() {
+        const contractsServiceOptions: ContractsServiceOptions = {
+            artifact_path,
+        };
+        const web3ServiceMock: Web3Service = mock(Web3Service);
+        const winstonLoggerService: WinstonLoggerService = new WinstonLoggerService(
+            'contracts',
+        );
+        const shutdownServiceMock: ShutdownService = mock(ShutdownService);
+        const globalConfigServiceMock: GlobalConfigService = mock(
+            GlobalConfigService,
+        );
+
+        when(shutdownServiceMock.shutdownWithError(anything())).thenReturn(
+            undefined,
+        );
+
+        configureWeb3Service(web3ServiceMock, artifact_path, network_id);
+
+        const contractsService: ContractsService = new ContractsService(
+            contractsServiceOptions,
+            instance(web3ServiceMock),
+            winstonLoggerService,
+            instance(shutdownServiceMock),
+            new FSService(),
+            instance(globalConfigServiceMock),
+        );
+
+        const globalConfig: Partial<GlobalEntity> = {
+            eth_eur_price: 10000,
+            block_number: 100,
+            processed_block_number: 0,
+        };
+
+        when(
+            globalConfigServiceMock.search(
+                deepEqual({
+                    id: 'global',
+                }),
+            ),
+        ).thenResolve({
+            response: null,
+            error: 'unexpected_error',
+        });
+
+        await expect(contractsService.onModuleInit()).rejects.toMatchObject(
+            new Error(
+                `ContractsService::onModuleInit | error while fetching global config: unexpected_error`,
+            ),
+        );
+
+        verify(
+            globalConfigServiceMock.search(
+                deepEqual({
+                    id: 'global',
+                }),
+            ),
+        ).called();
+    });
+
+    test('should fail initialization on global config empty fetch', async function() {
+        const contractsServiceOptions: ContractsServiceOptions = {
+            artifact_path,
+        };
+        const web3ServiceMock: Web3Service = mock(Web3Service);
+        const winstonLoggerService: WinstonLoggerService = new WinstonLoggerService(
+            'contracts',
+        );
+        const shutdownServiceMock: ShutdownService = mock(ShutdownService);
+        const globalConfigServiceMock: GlobalConfigService = mock(
+            GlobalConfigService,
+        );
+
+        when(shutdownServiceMock.shutdownWithError(anything())).thenReturn(
+            undefined,
+        );
+
+        configureWeb3Service(web3ServiceMock, artifact_path, network_id);
+
+        const contractsService: ContractsService = new ContractsService(
+            contractsServiceOptions,
+            instance(web3ServiceMock),
+            winstonLoggerService,
+            instance(shutdownServiceMock),
+            new FSService(),
+            instance(globalConfigServiceMock),
+        );
+
+        const globalConfig: Partial<GlobalEntity> = {
+            eth_eur_price: 10000,
+            block_number: 100,
+            processed_block_number: 0,
+        };
+
+        when(
+            globalConfigServiceMock.search(
+                deepEqual({
+                    id: 'global',
+                }),
+            ),
+        ).thenResolve({
+            response: [],
+            error: null,
+        });
+
+        await expect(contractsService.onModuleInit()).rejects.toMatchObject(
+            new Error(
+                `ContractsService::onModuleInit | error while fetching global config: no initial config`,
+            ),
+        );
+
+        verify(
+            globalConfigServiceMock.search(
+                deepEqual({
+                    id: 'global',
+                }),
+            ),
+        ).called();
+    });
+
+    test('should fail on global config fetch error', async function() {
+        const contractsServiceOptions: ContractsServiceOptions = {
+            artifact_path,
+        };
+        const web3ServiceMock: Web3Service = mock(Web3Service);
+        const winstonLoggerService: WinstonLoggerService = new WinstonLoggerService(
+            'contracts',
+        );
+        const shutdownServiceMock: ShutdownService = mock(ShutdownService);
+        const globalConfigServiceMock: GlobalConfigService = mock(
+            GlobalConfigService,
+        );
+
+        when(shutdownServiceMock.shutdownWithError(anything())).thenReturn(
+            undefined,
+        );
+
+        configureWeb3Service(web3ServiceMock, artifact_path, network_id);
+
+        const contractsService: ContractsService = new ContractsService(
+            contractsServiceOptions,
+            instance(web3ServiceMock),
+            winstonLoggerService,
+            instance(shutdownServiceMock),
+            new FSService(),
+            instance(globalConfigServiceMock),
+        );
+
+        const globalConfig: Partial<GlobalEntity> = {
+            eth_eur_price: 10000,
+            block_number: 100,
+            processed_block_number: 0,
+        };
+
+        when(
+            globalConfigServiceMock.search(
+                deepEqual({
+                    id: 'global',
+                }),
+            ),
+        ).thenResolve({
+            response: [globalConfig as GlobalEntity],
+            error: null,
+        });
+
+        when(
+            globalConfigServiceMock.update(
+                deepEqual({
+                    id: 'global',
+                }),
+                deepEqual({
+                    processed_block_number: 80,
+                }),
+            ),
+        ).thenResolve({
+            response: null,
+            error: 'unexpected_error',
+        });
+
+        await expect(contractsService.onModuleInit()).rejects.toMatchObject(
+            new Error(
+                `ContractsService::onModuleInit | error while updating global config: unexpected_error`,
+            ),
+        );
+
+        verify(
+            globalConfigServiceMock.search(
+                deepEqual({
+                    id: 'global',
+                }),
+            ),
+        ).called();
+
+        verify(
+            globalConfigServiceMock.update(
+                deepEqual({
+                    id: 'global',
+                }),
+                deepEqual({
+                    processed_block_number: 80,
+                }),
+            ),
+        ).called();
     });
 });
