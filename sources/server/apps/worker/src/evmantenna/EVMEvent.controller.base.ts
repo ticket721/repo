@@ -17,7 +17,6 @@ import {
 } from '@app/worker/evmantenna/EVMAntennaMerger.scheduler';
 import { DryResponse } from '@lib/common/crud/CRUD.extension';
 import { OnModuleInit } from '@nestjs/common';
-import { InjectQueue } from '@nestjs/bull';
 
 /**
  * Configuration for an EVM Event fetching function

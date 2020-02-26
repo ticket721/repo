@@ -14,7 +14,9 @@ import {
 } from '@lib/common/outrospection/Outrospection.service';
 import { EVMEventSetsService } from '@lib/common/evmeventsets/EVMEventSets.service';
 import {
+    anyFunction,
     anything,
+    capture,
     deepEqual,
     instance,
     mock,
@@ -1638,18 +1640,20 @@ describe('EVMEvent Controller Base', function() {
                 ),
             ).thenReturn();
             when(
-                context.queueMock.process(fetchJobName, 1, anything()),
+                context.queueMock.process(fetchJobName, 1, anyFunction()),
             ).thenReject(new Error('unexpected error'));
 
             await context.evmEventControllerBase.onModuleInit();
+            await new Promise(ok => setTimeout(ok, 5000));
 
             verify(
                 context.outrospectionServiceMock.getInstanceSignature(),
             ).called();
             verify(
-                context.shutdownServiceMock.shutdownWithError(
-                    deepEqual(new Error('unexpected error')),
-                ),
+                context.queueMock.process(fetchJobName, 1, anyFunction()),
+            ).called();
+            verify(
+                context.shutdownServiceMock.shutdownWithError(anything()),
             ).called();
             verify(
                 context.scheduleMock.scheduleIntervalJob(
@@ -1658,10 +1662,7 @@ describe('EVMEvent Controller Base', function() {
                     anything(),
                 ),
             ).called();
-            verify(
-                context.queueMock.process(fetchJobName, 1, anything()),
-            ).called();
-        });
+        }, 10000);
 
         it('should register for worker non master', async function() {
             const signature: Partial<InstanceSignature> = {
