@@ -17,6 +17,7 @@ import {
 } from '@app/worker/evmantenna/EVMAntennaMerger.scheduler';
 import { DryResponse } from '@lib/common/crud/CRUD.extension';
 import { OnModuleInit } from '@nestjs/common';
+import { InjectQueue } from '@nestjs/bull';
 
 /**
  * Configuration for an EVM Event fetching function
@@ -239,10 +240,11 @@ export class EVMEventControllerBase implements OnModuleInit {
             id: 'global',
         });
 
-        if (globalConfigRes.error) {
+        if (globalConfigRes.error || globalConfigRes.response.length === 0) {
             return this.shutdownService.shutdownWithError(
                 new Error(
-                    `Unable to recover global config: ${globalConfigRes.error}`,
+                    `Unable to recover global config: ${globalConfigRes.error ||
+                        'no global config'}`,
                 ),
             );
         }
@@ -324,8 +326,7 @@ export class EVMEventControllerBase implements OnModuleInit {
                     const error = new Error(
                         `EVMEventControllerBase::eventsBackgroundFetcher | error while fetching EVMEvent Sets`,
                     );
-                    this.shutdownService.shutdownWithError(error);
-                    throw error;
+                    return this.shutdownService.shutdownWithError(error);
                 }
 
                 if (res.response.hits.total === 0) {
