@@ -7,6 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@lib/common/config/Config.service';
 import { getQueueToken } from '@nestjs/bull';
 import { OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
+import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 
 class QueueMock<T = any> {
     add(name: string, data: T, opts?: JobOptions): Promise<Job<T>> {
@@ -26,6 +27,7 @@ const context: {
     configServiceMock: ConfigService;
     mailingQueueMock: QueueMock;
     outrospectionServiceMock: OutrospectionService;
+    shutdownServiceMock: ShutdownService;
 } = {
     authenticationTasks: null,
     emailServiceMock: null,
@@ -33,6 +35,7 @@ const context: {
     configServiceMock: null,
     mailingQueueMock: null,
     outrospectionServiceMock: null,
+    shutdownServiceMock: null,
 };
 
 describe('Authentication Tasks', function() {
@@ -42,6 +45,7 @@ describe('Authentication Tasks', function() {
         context.configServiceMock = mock(ConfigService);
         context.mailingQueueMock = mock(QueueMock);
         context.outrospectionServiceMock = mock(OutrospectionService);
+        context.shutdownServiceMock = mock(ShutdownService);
 
         const module: TestingModule = await Test.createTestingModule({
             providers: [
@@ -64,6 +68,10 @@ describe('Authentication Tasks', function() {
                 {
                     provide: OutrospectionService,
                     useValue: instance(context.outrospectionServiceMock),
+                },
+                {
+                    provide: ShutdownService,
+                    useValue: instance(context.shutdownServiceMock),
                 },
                 AuthenticationTasks,
             ],

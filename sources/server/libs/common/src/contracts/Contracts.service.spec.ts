@@ -10,6 +10,7 @@ import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 import * as fs from 'fs';
 import { FSService } from '@lib/common/fs/FS.service';
+import { GlobalConfigService } from '@lib/common/globalconfig/GlobalConfig.service';
 
 const configureWeb3Service = (
     web3Service: Web3Service,
@@ -96,6 +97,9 @@ describe('Contracts Service', function() {
             'contracts',
         );
         const shutdownServiceMock: ShutdownService = mock(ShutdownService);
+        const globalConfigServiceMock: GlobalConfigService = mock(
+            GlobalConfigService,
+        );
 
         const contracts_data = configureWeb3Service(
             web3ServiceMock,
@@ -109,6 +113,7 @@ describe('Contracts Service', function() {
             winstonLoggerService,
             instance(shutdownServiceMock),
             new FSService(),
+            instance(globalConfigServiceMock),
         );
 
         const contracts = await contractsService.getContractArtifacts();
@@ -130,6 +135,9 @@ describe('Contracts Service', function() {
             'contracts',
         );
         const shutdownServiceMock: ShutdownService = mock(ShutdownService);
+        const globalConfigServiceMock: GlobalConfigService = mock(
+            GlobalConfigService,
+        );
 
         when(shutdownServiceMock.shutdownWithError(anything())).thenReturn(
             undefined,
@@ -140,6 +148,7 @@ describe('Contracts Service', function() {
             winstonLoggerService,
             instance(shutdownServiceMock),
             new FSService(),
+            instance(globalConfigServiceMock),
         );
 
         await expect(
@@ -161,6 +170,9 @@ describe('Contracts Service', function() {
             'contracts',
         );
         const shutdownServiceMock: ShutdownService = mock(ShutdownService);
+        const globalConfigServiceMock: GlobalConfigService = mock(
+            GlobalConfigService,
+        );
 
         when(shutdownServiceMock.shutdownWithError(anything())).thenReturn(
             undefined,
@@ -174,6 +186,7 @@ describe('Contracts Service', function() {
             winstonLoggerService,
             instance(shutdownServiceMock),
             new FSService(),
+            instance(globalConfigServiceMock),
         );
 
         await expect(

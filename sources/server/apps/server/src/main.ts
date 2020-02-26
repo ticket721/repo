@@ -61,6 +61,7 @@ async function main() {
         app.use('/admin/queues', UI);
     }
 
+    app.enableShutdownHooks();
     app.get(ShutdownService).subscribeToShutdown(() => app.close());
     const instanceSignature: InstanceSignature = await app
         .get(OutrospectionService)

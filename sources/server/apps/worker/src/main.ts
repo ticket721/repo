@@ -30,11 +30,14 @@ async function main() {
     if (configService.get('BULL_BOARD') === 'true') {
         const mailing = app.get<Queue>(getQueueToken('mailing'));
         const action = app.get<Queue>(getQueueToken('action'));
-        setQueues([mailing, action]);
+        const evmantenna = app.get<Queue>(getQueueToken('evmantenna'));
+        setQueues([mailing, action, evmantenna]);
         app.use('/admin/queues', UI);
     }
 
-    app.get(ShutdownService).subscribeToShutdown(() => app.close());
+    app.get(ShutdownService).subscribeToShutdown(() => {
+        app.close();
+    });
 
     const instanceSignature: InstanceSignature = await app
         .get(OutrospectionService)

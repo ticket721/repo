@@ -142,6 +142,7 @@ describe('GlobalConfig Scheduler', function() {
             const updated_at = new Date(Date.now());
             const eth_eur_price = 1000;
             const block_number = 999;
+            const processed_block_number = 999;
             const id = 'global';
 
             const web3 = {
@@ -164,6 +165,7 @@ describe('GlobalConfig Scheduler', function() {
                         updated_at,
                         eth_eur_price,
                         block_number,
+                        processed_block_number,
                         id,
                     },
                 ],
@@ -214,6 +216,7 @@ describe('GlobalConfig Scheduler', function() {
             const updated_at = new Date(Date.now());
             const eth_eur_price = 1000;
             const block_number = 999;
+            const processed_block_number = 999;
             const id = 'global';
 
             const web3 = {
@@ -236,6 +239,7 @@ describe('GlobalConfig Scheduler', function() {
                         updated_at,
                         eth_eur_price,
                         block_number,
+                        processed_block_number,
                         id,
                     },
                 ],

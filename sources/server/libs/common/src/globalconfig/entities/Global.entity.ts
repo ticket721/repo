@@ -34,6 +34,15 @@ export class GlobalEntity {
     block_number: number;
 
     /**
+     * Last processed block number
+     */
+    @Column({
+        type: 'int',
+    })
+    // tslint:disable-next-line:variable-name
+    processed_block_number: number;
+
+    /**
      * Current Ether Price in Euro
      */
     @Column({

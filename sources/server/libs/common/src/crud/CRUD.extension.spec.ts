@@ -333,7 +333,7 @@ describe('CRUD Extension', function() {
                 },
             });
 
-            const searchOptions: SearchOptions = {
+            const searchOptions: SearchOptions<FakeEntity> = {
                 allow_filtering: true,
             };
 
