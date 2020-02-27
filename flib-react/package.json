@@ -29,7 +29,7 @@
   "homepage": "https://github.com/ticket721/flib#readme",
   "dependencies": {
     "react": "16.13.0",
-    "react-dom": "16.12.0"
+    "react-dom": "16.13.0"
   },
   "devDependencies": {
     "@babel/core": "7.8.4",
