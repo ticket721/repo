@@ -4,11 +4,13 @@ import {
     deepEqual,
     instance,
     mock,
+    spy,
     verify,
     when,
 } from 'ts-mockito';
 import {
     BaseModel,
+    BaseModelStatic,
     FindQuery,
 } from '@iaminfinity/express-cassandra/dist/orm/interfaces/externals/express-cassandra.interface';
 import { Repository, uuid } from '@iaminfinity/express-cassandra';
@@ -67,6 +69,7 @@ describe('CRUD Extension', function() {
             > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
                 instance(context.modelMock),
                 instance(context.repositoryMock),
+                null,
             );
 
             const newEntity: FakeEntity = {
@@ -141,6 +144,7 @@ describe('CRUD Extension', function() {
             > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
                 instance(context.modelMock),
                 instance(context.repositoryMock),
+                null,
             );
 
             const newEntity: FakeEntity = {
@@ -211,6 +215,7 @@ describe('CRUD Extension', function() {
             > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
                 instance(context.modelMock),
                 instance(context.repositoryMock),
+                null,
             );
 
             const newEntity: FakeEntity = {
@@ -273,12 +278,20 @@ describe('CRUD Extension', function() {
                 },
             });
 
+            const modelBuilderMock = mock<any>();
+            const newModelMock = mock<BaseModelStatic<FakeEntity>>();
+
+            when(modelBuilderMock.build(anything())).thenReturn(
+                instance(newModelMock),
+            );
+
             const crudext: CRUDExtension<
                 Repository<FakeEntity>,
                 FakeEntity
             > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
                 instance(context.modelMock),
                 instance(context.repositoryMock),
+                instance(modelBuilderMock).build,
             );
 
             const newEntity: FakeEntity = {
@@ -301,13 +314,12 @@ describe('CRUD Extension', function() {
             ).thenReturn(newEntityProcessed);
 
             when(
-                context.modelMock.save(
-                    deepEqual(newEntityProcessed),
+                newModelMock.save(
                     deepEqual({
                         return_query: true,
                     }),
                 ),
-            ).thenReturn(dryResponse);
+            ).thenResolve(dryResponse as any);
 
             const res = await crudext.dryCreate(newEntity);
 
@@ -316,8 +328,7 @@ describe('CRUD Extension', function() {
             ).called();
 
             verify(
-                context.modelMock.save(
-                    deepEqual(newEntityProcessed),
+                newModelMock.save(
                     deepEqual({
                         return_query: true,
                     }),
@@ -345,12 +356,20 @@ describe('CRUD Extension', function() {
                 },
             });
 
+            const modelBuilderMock = mock<any>();
+            const newModelMock = mock<BaseModelStatic<FakeEntity>>();
+
+            when(modelBuilderMock.build(anything())).thenReturn(
+                instance(newModelMock),
+            );
+
             const crudext: CRUDExtension<
                 Repository<FakeEntity>,
                 FakeEntity
             > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
                 instance(context.modelMock),
                 instance(context.repositoryMock),
+                instance(modelBuilderMock).build,
             );
 
             const createOptions: CreateOptions = {
@@ -377,14 +396,13 @@ describe('CRUD Extension', function() {
             ).thenReturn(newEntityProcessed);
 
             when(
-                context.modelMock.save(
-                    deepEqual(newEntityProcessed),
+                newModelMock.save(
                     deepEqual({
                         ...createOptions,
                         return_query: true,
                     }),
                 ),
-            ).thenReturn(dryResponse);
+            ).thenResolve(dryResponse as any);
 
             const res = await crudext.dryCreate(newEntity, createOptions);
 
@@ -393,8 +411,7 @@ describe('CRUD Extension', function() {
             ).called();
 
             verify(
-                context.modelMock.save(
-                    deepEqual(newEntityProcessed),
+                newModelMock.save(
                     deepEqual({
                         ...createOptions,
                         return_query: true,
@@ -423,12 +440,20 @@ describe('CRUD Extension', function() {
                 },
             });
 
+            const modelBuilderMock = mock<any>();
+            const newModelMock = mock<BaseModelStatic<FakeEntity>>();
+
+            when(modelBuilderMock.build(anything())).thenThrow(
+                new Error('query creation error'),
+            );
+
             const crudext: CRUDExtension<
                 Repository<FakeEntity>,
                 FakeEntity
             > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
                 instance(context.modelMock),
                 instance(context.repositoryMock),
+                instance(modelBuilderMock).build,
             );
 
             const createOptions: CreateOptions = {
@@ -445,39 +470,14 @@ describe('CRUD Extension', function() {
                 name: 'test',
             };
 
-            const dryResponse = {
-                query: 'this is a cassandra query',
-                params: [],
-            } as DryResponse;
-
             when(
                 context.repositoryMock.create(deepEqual(newEntityProcessed)),
             ).thenReturn(newEntityProcessed);
-
-            when(
-                context.modelMock.save(
-                    deepEqual(newEntityProcessed),
-                    deepEqual({
-                        ...createOptions,
-                        return_query: true,
-                    }),
-                ),
-            ).thenThrow(new Error('query creation error'));
 
             const res = await crudext.dryCreate(newEntity, createOptions);
 
             verify(
                 context.repositoryMock.create(deepEqual(newEntityProcessed)),
-            ).called();
-
-            verify(
-                context.modelMock.save(
-                    deepEqual(newEntityProcessed),
-                    deepEqual({
-                        ...createOptions,
-                        return_query: true,
-                    }),
-                ),
             ).called();
 
             expect(res.response).toEqual(null);
@@ -509,6 +509,7 @@ describe('CRUD Extension', function() {
             > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
                 instance(context.modelMock),
                 instance(context.repositoryMock),
+                null,
             );
 
             const searchEntity: SearchQuery<FakeEntity> = {
@@ -573,6 +574,7 @@ describe('CRUD Extension', function() {
             > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
                 instance(context.modelMock),
                 instance(context.repositoryMock),
+                null,
             );
 
             const searchEntity: SearchQuery<FakeEntity> = {
@@ -641,6 +643,7 @@ describe('CRUD Extension', function() {
             > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
                 instance(context.modelMock),
                 instance(context.repositoryMock),
+                null,
             );
 
             const searchEntity: Partial<FakeEntity> = {
@@ -703,6 +706,7 @@ describe('CRUD Extension', function() {
             > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
                 instance(context.modelMock),
                 instance(context.repositoryMock),
+                null,
             );
 
             const searchEntity: SearchQuery<FakeEntity> = {
@@ -775,6 +779,7 @@ describe('CRUD Extension', function() {
             > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
                 instance(context.modelMock),
                 instance(context.repositoryMock),
+                null,
             );
 
             const searchEntity: Partial<FakeEntity> = {
@@ -835,6 +840,7 @@ describe('CRUD Extension', function() {
             > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
                 instance(context.modelMock),
                 instance(context.repositoryMock),
+                null,
             );
 
             const searchEntity: SearchQuery<FakeEntity> = {
@@ -904,6 +910,7 @@ describe('CRUD Extension', function() {
             > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
                 instance(context.modelMock),
                 instance(context.repositoryMock),
+                null,
             );
 
             const searchOptions: SearchOptions<FakeEntity> = {
@@ -979,6 +986,7 @@ describe('CRUD Extension', function() {
             > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
                 instance(context.modelMock),
                 instance(context.repositoryMock),
+                null,
             );
 
             const searchOptions: SearchOptions<FakeEntity> = {
@@ -1056,6 +1064,7 @@ describe('CRUD Extension', function() {
             > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
                 instance(context.modelMock),
                 instance(context.repositoryMock),
+                null,
             );
 
             const searchEntity: Partial<FakeEntity> = {
@@ -1129,6 +1138,7 @@ describe('CRUD Extension', function() {
             > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
                 instance(context.modelMock),
                 instance(context.repositoryMock),
+                null,
             );
 
             const searchEntity: Partial<FakeEntity> = {
@@ -1206,6 +1216,7 @@ describe('CRUD Extension', function() {
             > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
                 instance(context.modelMock),
                 instance(context.repositoryMock),
+                null,
             );
 
             const searchEntity: Partial<FakeEntity> = {
@@ -1282,6 +1293,7 @@ describe('CRUD Extension', function() {
             > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
                 instance(context.modelMock),
                 instance(context.repositoryMock),
+                null,
             );
 
             const searchEntity: Partial<FakeEntity> = {
@@ -1356,6 +1368,7 @@ describe('CRUD Extension', function() {
             > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
                 instance(context.modelMock),
                 instance(context.repositoryMock),
+                null,
             );
 
             const updateOptions: UpdateOptions<FakeEntity> = {
@@ -1440,6 +1453,7 @@ describe('CRUD Extension', function() {
             > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
                 instance(context.modelMock),
                 instance(context.repositoryMock),
+                null,
             );
 
             const updateOptions: UpdateOptions<FakeEntity> = {
@@ -1526,6 +1540,7 @@ describe('CRUD Extension', function() {
             > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
                 instance(context.modelMock),
                 instance(context.repositoryMock),
+                null,
             );
 
             const searchEntity: Partial<FakeEntity> = {
@@ -1582,6 +1597,7 @@ describe('CRUD Extension', function() {
             > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
                 instance(context.modelMock),
                 instance(context.repositoryMock),
+                null,
             );
 
             const searchEntity: Partial<FakeEntity> = {
@@ -1642,6 +1658,7 @@ describe('CRUD Extension', function() {
             > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
                 instance(context.modelMock),
                 instance(context.repositoryMock),
+                null,
             );
 
             const searchEntity: Partial<FakeEntity> = {
@@ -1705,6 +1722,7 @@ describe('CRUD Extension', function() {
             > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
                 instance(context.modelMock),
                 instance(context.repositoryMock),
+                null,
             );
 
             const dryResponse = {
@@ -1766,6 +1784,7 @@ describe('CRUD Extension', function() {
             > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
                 instance(context.modelMock),
                 instance(context.repositoryMock),
+                null,
             );
 
             const deleteOptions: DeleteOptions = {
@@ -1833,6 +1852,7 @@ describe('CRUD Extension', function() {
             > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
                 instance(context.modelMock),
                 instance(context.repositoryMock),
+                null,
             );
 
             const deleteOptions: DeleteOptions = {
@@ -1902,6 +1922,7 @@ describe('CRUD Extension', function() {
             > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
                 instance(context.modelMock),
                 instance(context.repositoryMock),
+                null,
             );
 
             const elasticSearchOptions: ESSearchQuery<FakeEntity> = {
@@ -1955,6 +1976,7 @@ describe('CRUD Extension', function() {
             > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
                 instance(context.modelMock),
                 instance(context.repositoryMock),
+                null,
             );
 
             const elasticSearchOptions: ESSearchQuery<FakeEntity> = {
@@ -2029,6 +2051,7 @@ describe('CRUD Extension', function() {
             > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
                 instance(context.modelMock),
                 instance(context.repositoryMock),
+                null,
             );
 
             const elasticSearchOptions: ESSearchQuery<FakeEntity> = {

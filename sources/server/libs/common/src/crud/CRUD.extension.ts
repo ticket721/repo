@@ -1,5 +1,6 @@
 import {
     BaseModel,
+    BaseModelStatic,
     DeleteOptionsStatic,
     EsSearchOptionsStatic,
     FindQuery,
@@ -103,10 +104,14 @@ export class CRUDExtension<RepositoryType extends Repository, EntityType> {
      *
      * @param _model
      * @param _repository
+     * @param _modelBuilder
      */
     constructor(
         private readonly _model: BaseModel<EntityType>,
         private readonly _repository: RepositoryType,
+        private readonly _modelBuilder: (
+            EntityType,
+        ) => BaseModelStatic<EntityType>,
     ) {
         const properties = (this._model as any)._properties;
 
@@ -285,16 +290,14 @@ export class CRUDExtension<RepositoryType extends Repository, EntityType> {
                 },
             );
 
-            const createdEntity = ((await this._model.save(
-                this._repository.create(processedEntity),
-                {
-                    ...(options || {}),
-                    return_query: true,
-                },
-            )) as any) as DryResponse;
+            const offlineEntity = this._repository.create(processedEntity);
+            const createdEntity = await this._modelBuilder(offlineEntity).save({
+                ...options,
+                return_query: true,
+            });
 
             return {
-                response: createdEntity,
+                response: createdEntity as any,
                 error: null,
             };
         } catch (e) {

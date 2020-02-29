@@ -248,6 +248,24 @@ var migration1576415205 = {
             params: []
         };
 
+        const dry_response_type_creation = {
+            query: `CREATE TYPE ticket721.dryresponse (
+                        query text,
+                        params list<text>
+                    );`,
+            params: []
+        };
+
+        const evm_block_rollback_table_creation = {
+            query: `CREATE TABLE ticket721.evmblockrollback (
+                        block_number int PRIMARY KEY,
+                         rollback_queries list<frozen<ticket721.dryresponse>>,
+                        created_at timestamp,
+                        updated_at timestamp
+                    );`,
+            params: []
+        };
+
         try {
 
             // Types first
@@ -271,6 +289,9 @@ var migration1576415205 = {
 
             console.log('EVM Evemt Type Creation');
             await db.execute(evm_event_type_creation.query, evm_event_type_creation.params, {prepare: true});
+
+            console.log('EVM Evemt Type Creation');
+            await db.execute(dry_response_type_creation.query, dry_response_type_creation.params, {prepare: true});
 
             // Then tables
             console.log('User Table Creation');
@@ -302,6 +323,9 @@ var migration1576415205 = {
 
             console.log('EVM Event Set Table Creation');
             await db.execute(evm_eventset_table_creation.query, evm_eventset_table_creation.params, { prepare: true });
+
+            console.log('EVM Block Rollback Table Creation');
+            await db.execute(evm_block_rollback_table_creation.query, evm_block_rollback_table_creation.params, { prepare: true });
 
         } catch (e) {
             return handler(e, false);
@@ -391,6 +415,16 @@ var migration1576415205 = {
             params: []
         };
 
+        const dry_response_type_creation = {
+            query: `DROP TYPE ticket721.dryresponse`,
+            params: []
+        };
+
+        const evm_block_rollback_table_creation = {
+            query: `DROP TABLE ticket721.evmblockrollback`,
+            params: []
+        };
+
         try {
 
             // Tables first
@@ -421,6 +455,9 @@ var migration1576415205 = {
             console.log('EVM Event Set Table Deletion');
             await db.execute(evm_eventset_table_creation.query, evm_eventset_table_creation.params, { prepare: true });
 
+            console.log('EVM Block Rollback Table Deletion');
+            await db.execute(evm_block_rollback_table_creation.query, evm_block_rollback_table_creation.params, { prepare: true });
+
             // Then Types
             console.log('Action Type Deletion');
             await db.execute(action_type_creation.query, action_type_creation.params, { prepare: true });
@@ -443,6 +480,8 @@ var migration1576415205 = {
             console.log('EVM Event Type Deletion');
             await db.execute(evm_event_type_creation.query, evm_event_type_creation.params, { prepare: true });
 
+            console.log('Dry Response Type Deletion');
+            await db.execute(dry_response_type_creation.query, dry_response_type_creation.params, { prepare: true });
 
         } catch (e) {
             return handler(e, false);

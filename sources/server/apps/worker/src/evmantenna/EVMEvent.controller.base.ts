@@ -8,15 +8,16 @@ import {
 } from '@lib/common/outrospection/Outrospection.service';
 import { Job, Queue } from 'bull';
 import { EVMEventSetsService } from '@lib/common/evmeventsets/EVMEventSets.service';
-import { EsSearchOptionsStatic } from '@iaminfinity/express-cassandra';
+import { Repository } from '@iaminfinity/express-cassandra';
 import { EVMEvent } from '@lib/common/evmeventsets/entities/EVMEventSet.entity';
 import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
 import {
     EVMAntennaMergerScheduler,
     EVMProcessableEvent,
 } from '@app/worker/evmantenna/EVMAntennaMerger.scheduler';
-import { DryResponse } from '@lib/common/crud/CRUD.extension';
+import { CRUDExtension, DryResponse } from '@lib/common/crud/CRUD.extension';
 import { OnModuleInit } from '@nestjs/common';
+import { ServiceResponse } from '@lib/common/utils/ServiceResponse';
 
 /**
  * Configuration for an EVM Event fetching function
@@ -114,6 +115,41 @@ export interface EVMEventFetcherJob {
 }
 
 /**
+ * Rollbackable update input
+ */
+export interface RollbackableField<Type> {
+    /**
+     * Old value
+     */
+    old: Type;
+
+    /**
+     * New Value
+     */
+    new: Type;
+}
+
+/**
+ * Rollbackable Query Result
+ */
+export interface RollbackableQuery {
+    /**
+     * Forward Query
+     */
+    query: DryResponse;
+
+    /**
+     * Rollback of the Forward Query
+     */
+    rollback: DryResponse;
+}
+
+/**
+ * Method used to build both the query and rollback batched queries
+ */
+export type Appender = (query: DryResponse, rollback: DryResponse) => void;
+
+/**
  * Class to extend for each event type / Contract
  */
 export class EVMEventControllerBase implements OnModuleInit {
@@ -166,6 +202,82 @@ export class EVMEventControllerBase implements OnModuleInit {
     }
 
     /**
+     * Static utility to generate both forward and rollback queries on delete
+     *
+     * @param service
+     * @param entity
+     * @param append
+     */
+    static async rollbackableDelete<Entity>(
+        service: CRUDExtension<Repository<Entity>, Entity>,
+        entity: Entity,
+        append: Appender,
+    ): Promise<ServiceResponse<RollbackableQuery>> {
+        throw new Error('implement rollbackableDelete');
+    }
+
+    /**
+     * Static utility to generate both forward and rollback queries on create
+     *
+     * @param service
+     * @param entity
+     * @param append
+     */
+    static async rollbackableCreate<Entity>(
+        service: CRUDExtension<Repository<Entity>, Entity>,
+        entity: Entity,
+        append: Appender,
+    ): Promise<ServiceResponse<RollbackableQuery>> {
+        throw new Error('implement rollbackableCreate');
+    }
+
+    /**
+     * Static utility to generate both forward and rollback queries on update
+     *
+     * @param service
+     * @param selector
+     * @param fields
+     * @param append
+     */
+    static async rollbackableUpdate<Entity>(
+        service: CRUDExtension<Repository<Entity>, Entity>,
+        selector: Partial<Entity>,
+        fields: { [key: string]: RollbackableField<any> },
+        append: Appender,
+    ): Promise<ServiceResponse<void>> {
+        for (const field of Object.keys(fields)) {
+            const forwardUpdateRes = await service.dryUpdate(selector, {
+                [field]: fields[field].new,
+            } as Partial<Entity>);
+
+            if (forwardUpdateRes.error) {
+                return {
+                    error: 'forward_update_query_building_error',
+                    response: null,
+                };
+            }
+
+            const rollbackUpdateRes = await service.dryUpdate(selector, {
+                [field]: fields[field].old,
+            } as Partial<Entity>);
+
+            if (rollbackUpdateRes.error) {
+                return {
+                    error: 'rollback_update_query_building_error',
+                    response: null,
+                };
+            }
+
+            append(forwardUpdateRes.response, rollbackUpdateRes.response);
+        }
+
+        return {
+            error: null,
+            response: null,
+        };
+    }
+
+    /**
      * Artifact Name Getter
      */
     public get artifactName(): string {
@@ -179,10 +291,7 @@ export class EVMEventControllerBase implements OnModuleInit {
      * @param event
      * @param append
      */
-    async convert(
-        event: EVMProcessableEvent,
-        append: (res: DryResponse) => void,
-    ): Promise<any> {
+    async convert(event: EVMProcessableEvent, append: Appender): Promise<any> {
         const error = new Error(
             `Error in ${this.contractsController.getArtifactName()}/${
                 this.eventName
@@ -257,11 +366,17 @@ export class EVMEventControllerBase implements OnModuleInit {
             return;
         }
 
-        if (this.currentFetchHeight === null) {
+        if (
+            this.currentFetchHeight === null ||
+            this.currentFetchHeight < globalConfig.processed_block_number
+        ) {
             this.currentFetchHeight = globalConfig.processed_block_number;
         }
 
-        if (this.currentDispatchHeight === null) {
+        if (
+            this.currentDispatchHeight === null ||
+            this.currentDispatchHeight < globalConfig.processed_block_number
+        ) {
             this.currentDispatchHeight = globalConfig.processed_block_number;
         }
 
@@ -276,6 +391,7 @@ export class EVMEventControllerBase implements OnModuleInit {
                 });
                 this.currentDispatchHeight = idx;
             }
+            return;
         }
 
         const currentJobs = (
@@ -291,35 +407,11 @@ export class EVMEventControllerBase implements OnModuleInit {
                 idx <= globalConfig.block_number;
                 ++idx
             ) {
-                const esquery: EsSearchOptionsStatic = {
-                    body: {
-                        query: {
-                            bool: {
-                                must: [
-                                    {
-                                        term: {
-                                            block_number: idx,
-                                        },
-                                    },
-                                    {
-                                        term: {
-                                            event_name: this.eventName,
-                                        },
-                                    },
-                                    {
-                                        term: {
-                                            artifact_name: this.contractsController.getArtifactName(),
-                                        },
-                                    },
-                                ],
-                            },
-                        },
-                    },
-                };
-
-                const res = await this.evmEventSetsService.searchElastic(
-                    esquery,
-                );
+                const res = await this.evmEventSetsService.search({
+                    block_number: idx,
+                    event_name: this.eventName,
+                    artifact_name: this.contractsController.getArtifactName(),
+                });
 
                 if (res.error) {
                     const error = new Error(
@@ -328,7 +420,7 @@ export class EVMEventControllerBase implements OnModuleInit {
                     return this.shutdownService.shutdownWithError(error);
                 }
 
-                if (res.response.hits.total === 0) {
+                if (res.response.length === 0) {
                     if (
                         currentJobs.findIndex(
                             (job: Job<EVMEventFetcherJob>): boolean =>
@@ -384,8 +476,6 @@ export class EVMEventControllerBase implements OnModuleInit {
             );
         }
 
-        await job.progress(100);
-
         if (events.length) {
             this.logger.log(
                 `Caught ${events.length} ${
@@ -395,6 +485,8 @@ export class EVMEventControllerBase implements OnModuleInit {
                 }`,
             );
         }
+
+        await job.progress(100);
     }
 
     /**

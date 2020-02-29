@@ -26,6 +26,13 @@ export class EVMEventSetsService extends CRUDExtension<
         @InjectModel(EVMEventSetEntity)
         evmEventSetEntity: BaseModel<EVMEventSetEntity>,
     ) {
-        super(evmEventSetEntity, evmEventSetsRepository);
+        super(
+            evmEventSetEntity,
+            evmEventSetsRepository,
+            /* istanbul ignore next */
+            (e: EVMEventSetEntity) => {
+                return new evmEventSetEntity(e);
+            },
+        );
     }
 }

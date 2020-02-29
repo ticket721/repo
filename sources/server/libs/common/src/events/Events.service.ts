@@ -26,6 +26,13 @@ export class EventsService extends CRUDExtension<
         @InjectModel(EventEntity)
         eventEntity: BaseModel<EventEntity>,
     ) {
-        super(eventEntity, eventsRepository);
+        super(
+            eventEntity,
+            eventsRepository,
+            /* istanbul ignore next */
+            (e: EventEntity) => {
+                return new eventEntity(e);
+            },
+        );
     }
 }

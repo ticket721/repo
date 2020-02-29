@@ -31,6 +31,7 @@ import {
     EVMEvent,
     EVMEventSetEntity,
 } from '@lib/common/evmeventsets/entities/EVMEventSet.entity';
+import { CRUDExtension } from '@lib/common/crud/CRUD.extension';
 
 describe('EVMEvent Controller Base', function() {
     const context: {
@@ -78,6 +79,227 @@ describe('EVMEvent Controller Base', function() {
             instance(context.evmEventSetsServiceMock),
             'NewGroup',
         );
+    });
+
+    describe('rollbackableDelete', function() {
+        it('should throw on unimplemented call', async function() {
+            await expect(
+                EVMEventControllerBase.rollbackableDelete(null, null, null),
+            ).rejects.toMatchObject(new Error(`implement rollbackableDelete`));
+        });
+    });
+
+    describe('rollbackableCreate', function() {
+        it('should throw on unimplemented call', async function() {
+            await expect(
+                EVMEventControllerBase.rollbackableCreate(null, null, null),
+            ).rejects.toMatchObject(new Error(`implement rollbackableCreate`));
+        });
+    });
+
+    describe('rollbackableUpdate', function() {
+        it('should create update query and its rollback query', async function() {
+            const fields = {
+                name: {
+                    old: 'hi',
+                    new: 'bye',
+                },
+            };
+
+            const selector = {
+                id: 'example',
+            };
+
+            const crudextension = mock(CRUDExtension);
+
+            when(
+                crudextension.dryUpdate(
+                    deepEqual(selector),
+                    deepEqual({
+                        name: fields.name.new,
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: {
+                    query: 'this is the new query',
+                    params: [1, 2, 3],
+                },
+            });
+
+            when(
+                crudextension.dryUpdate(
+                    deepEqual(selector),
+                    deepEqual({
+                        name: fields.name.old,
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: {
+                    query: 'this is the old query',
+                    params: [3, 2, 1],
+                },
+            });
+
+            const appender = mock<any>();
+
+            await EVMEventControllerBase.rollbackableUpdate(
+                instance(crudextension),
+                selector,
+                fields,
+                instance(appender).appender,
+            );
+
+            verify(
+                crudextension.dryUpdate(
+                    deepEqual(selector),
+                    deepEqual({
+                        name: fields.name.new,
+                    }),
+                ),
+            ).called();
+
+            verify(
+                crudextension.dryUpdate(
+                    deepEqual(selector),
+                    deepEqual({
+                        name: fields.name.old,
+                    }),
+                ),
+            ).called();
+
+            verify(
+                appender.appender(
+                    deepEqual({
+                        query: 'this is the new query',
+                        params: [1, 2, 3],
+                    }),
+                    deepEqual({
+                        query: 'this is the old query',
+                        params: [3, 2, 1],
+                    }),
+                ),
+            ).called();
+        });
+
+        it('should fail on dry query creation fail (new)', async function() {
+            const fields = {
+                name: {
+                    old: 'hi',
+                    new: 'bye',
+                },
+            };
+
+            const selector = {
+                id: 'example',
+            };
+
+            const crudextension = mock(CRUDExtension);
+
+            when(
+                crudextension.dryUpdate(
+                    deepEqual(selector),
+                    deepEqual({
+                        name: fields.name.new,
+                    }),
+                ),
+            ).thenResolve({
+                error: 'unexpected_error',
+                response: null,
+            });
+
+            const appender = mock<any>();
+
+            const res = await EVMEventControllerBase.rollbackableUpdate(
+                instance(crudextension),
+                selector,
+                fields,
+                instance(appender).appender,
+            );
+
+            expect(res.error).toEqual('forward_update_query_building_error');
+
+            verify(
+                crudextension.dryUpdate(
+                    deepEqual(selector),
+                    deepEqual({
+                        name: fields.name.new,
+                    }),
+                ),
+            ).called();
+        });
+
+        it('should fail on dry query creation fail (old)', async function() {
+            const fields = {
+                name: {
+                    old: 'hi',
+                    new: 'bye',
+                },
+            };
+
+            const selector = {
+                id: 'example',
+            };
+
+            const crudextension = mock(CRUDExtension);
+
+            when(
+                crudextension.dryUpdate(
+                    deepEqual(selector),
+                    deepEqual({
+                        name: fields.name.new,
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: {
+                    query: 'this is the new query',
+                    params: [1, 2, 3],
+                },
+            });
+
+            when(
+                crudextension.dryUpdate(
+                    deepEqual(selector),
+                    deepEqual({
+                        name: fields.name.old,
+                    }),
+                ),
+            ).thenResolve({
+                error: 'unexpected_error',
+                response: null,
+            });
+
+            const appender = mock<any>();
+
+            const res = await EVMEventControllerBase.rollbackableUpdate(
+                instance(crudextension),
+                selector,
+                fields,
+                instance(appender).appender,
+            );
+
+            expect(res.error).toEqual(`rollback_update_query_building_error`);
+
+            verify(
+                crudextension.dryUpdate(
+                    deepEqual(selector),
+                    deepEqual({
+                        name: fields.name.new,
+                    }),
+                ),
+            ).called();
+
+            verify(
+                crudextension.dryUpdate(
+                    deepEqual(selector),
+                    deepEqual({
+                        name: fields.name.old,
+                    }),
+                ),
+            ).called();
+        });
     });
 
     describe('artifactName', function() {
@@ -197,56 +419,6 @@ describe('EVMEvent Controller Base', function() {
 
             const fetchJobName = `@@evmantenna/fetchEVMEventsForBlock/${artifactName}/NewGroup`;
 
-            const esquery: EsSearchOptionsStatic = {
-                body: {
-                    query: {
-                        bool: {
-                            must: [
-                                {
-                                    term: {
-                                        block_number: 100,
-                                    },
-                                },
-                                {
-                                    term: {
-                                        event_name: 'NewGroup',
-                                    },
-                                },
-                                {
-                                    term: {
-                                        artifact_name: artifactName,
-                                    },
-                                },
-                            ],
-                        },
-                    },
-                },
-            };
-
-            const esReturn: ESSearchReturn<any> = {
-                took: 1,
-                timed_out: false,
-                _shards: {
-                    total: 1,
-                    successful: 1,
-                    skipped: 0,
-                    failed: 0,
-                },
-                hits: {
-                    total: 1,
-                    max_score: 1,
-                    hits: [
-                        {
-                            _index: 'yes',
-                            _type: 'actionset',
-                            _id: 'yes',
-                            _score: 1,
-                            _source: {} as any,
-                        },
-                    ],
-                },
-            };
-
             when(
                 context.globalConfigServiceMock.search(
                     deepEqual({
@@ -258,27 +430,14 @@ describe('EVMEvent Controller Base', function() {
                 response: [globalEntity as GlobalEntity],
             });
 
-            when(
-                context.queueMock.getJobs(deepEqual(['active', 'waiting'])),
-            ).thenResolve([]);
-
-            when(context.contractsControllerMock.getArtifactName()).thenReturn(
-                artifactName,
-            );
-
-            when(
-                context.evmEventSetsServiceMock.searchElastic(
-                    deepEqual(esquery),
-                ),
-            ).thenResolve({
-                error: null,
-                response: esReturn,
-            });
-
             await context.evmEventControllerBase.eventBackgroundFetcher();
 
             verify(
-                context.queueMock.getJobs(deepEqual(['active', 'waiting'])),
+                context.globalConfigServiceMock.search(
+                    deepEqual({
+                        id: 'global',
+                    }),
+                ),
             ).called();
 
             verify(
@@ -289,14 +448,6 @@ describe('EVMEvent Controller Base', function() {
                     }),
                 ),
             ).called();
-
-            verify(context.contractsControllerMock.getArtifactName()).called();
-
-            verify(
-                context.evmEventSetsServiceMock.searchElastic(
-                    deepEqual(esquery),
-                ),
-            ).called();
         });
 
         it('should dispatch no new fetch', async function() {
@@ -305,58 +456,6 @@ describe('EVMEvent Controller Base', function() {
                 processed_block_number: 100,
             };
             const artifactName = 't721c::T721Controller_v0';
-
-            const fetchJobName = `@@evmantenna/fetchEVMEventsForBlock/${artifactName}/NewGroup`;
-
-            const esquery: EsSearchOptionsStatic = {
-                body: {
-                    query: {
-                        bool: {
-                            must: [
-                                {
-                                    term: {
-                                        block_number: 100,
-                                    },
-                                },
-                                {
-                                    term: {
-                                        event_name: 'NewGroup',
-                                    },
-                                },
-                                {
-                                    term: {
-                                        artifact_name: artifactName,
-                                    },
-                                },
-                            ],
-                        },
-                    },
-                },
-            };
-
-            const esReturn: ESSearchReturn<any> = {
-                took: 1,
-                timed_out: false,
-                _shards: {
-                    total: 1,
-                    successful: 1,
-                    skipped: 0,
-                    failed: 0,
-                },
-                hits: {
-                    total: 1,
-                    max_score: 1,
-                    hits: [
-                        {
-                            _index: 'yes',
-                            _type: 'actionset',
-                            _id: 'yes',
-                            _score: 1,
-                            _source: {} as any,
-                        },
-                    ],
-                },
-            };
 
             when(
                 context.globalConfigServiceMock.search(
@@ -395,56 +494,6 @@ describe('EVMEvent Controller Base', function() {
 
             const fetchJobName = `@@evmantenna/fetchEVMEventsForBlock/${artifactName}/NewGroup`;
 
-            const esquery: EsSearchOptionsStatic = {
-                body: {
-                    query: {
-                        bool: {
-                            must: [
-                                {
-                                    term: {
-                                        block_number: 100,
-                                    },
-                                },
-                                {
-                                    term: {
-                                        event_name: 'NewGroup',
-                                    },
-                                },
-                                {
-                                    term: {
-                                        artifact_name: artifactName,
-                                    },
-                                },
-                            ],
-                        },
-                    },
-                },
-            };
-
-            const esReturn: ESSearchReturn<any> = {
-                took: 1,
-                timed_out: false,
-                _shards: {
-                    total: 1,
-                    successful: 1,
-                    skipped: 0,
-                    failed: 0,
-                },
-                hits: {
-                    total: 1,
-                    max_score: 1,
-                    hits: [
-                        {
-                            _index: 'yes',
-                            _type: 'actionset',
-                            _id: 'yes',
-                            _score: 1,
-                            _source: {} as any,
-                        },
-                    ],
-                },
-            };
-
             when(
                 context.globalConfigServiceMock.search(
                     deepEqual({
@@ -456,30 +505,17 @@ describe('EVMEvent Controller Base', function() {
                 response: [globalEntity as GlobalEntity],
             });
 
-            when(
-                context.queueMock.getJobs(deepEqual(['active', 'waiting'])),
-            ).thenResolve([]);
-
-            when(context.contractsControllerMock.getArtifactName()).thenReturn(
-                artifactName,
-            );
-
-            when(
-                context.evmEventSetsServiceMock.searchElastic(
-                    deepEqual(esquery),
-                ),
-            ).thenResolve({
-                error: null,
-                response: esReturn,
-            });
-
             (context.evmEventControllerBase as any).currentFetchHeight = 99;
             (context.evmEventControllerBase as any).currentDispatchHeight = 99;
 
             await context.evmEventControllerBase.eventBackgroundFetcher();
 
             verify(
-                context.queueMock.getJobs(deepEqual(['active', 'waiting'])),
+                context.globalConfigServiceMock.search(
+                    deepEqual({
+                        id: 'global',
+                    }),
+                ),
             ).called();
 
             verify(
@@ -490,73 +526,12 @@ describe('EVMEvent Controller Base', function() {
                     }),
                 ),
             ).called();
-
-            verify(context.contractsControllerMock.getArtifactName()).called();
-
-            verify(
-                context.evmEventSetsServiceMock.searchElastic(
-                    deepEqual(esquery),
-                ),
-            ).called();
         });
 
         it('should dispatch nothing if globalconfig block_number not set', async function() {
             const globalEntity: Partial<GlobalEntity> = {
                 block_number: 0,
                 processed_block_number: 0,
-            };
-            const artifactName = 't721c::T721Controller_v0';
-
-            const fetchJobName = `@@evmantenna/fetchEVMEventsForBlock/${artifactName}/NewGroup`;
-
-            const esquery: EsSearchOptionsStatic = {
-                body: {
-                    query: {
-                        bool: {
-                            must: [
-                                {
-                                    term: {
-                                        block_number: 100,
-                                    },
-                                },
-                                {
-                                    term: {
-                                        event_name: 'NewGroup',
-                                    },
-                                },
-                                {
-                                    term: {
-                                        artifact_name: artifactName,
-                                    },
-                                },
-                            ],
-                        },
-                    },
-                },
-            };
-
-            const esReturn: ESSearchReturn<any> = {
-                took: 1,
-                timed_out: false,
-                _shards: {
-                    total: 1,
-                    successful: 1,
-                    skipped: 0,
-                    failed: 0,
-                },
-                hits: {
-                    total: 1,
-                    max_score: 1,
-                    hits: [
-                        {
-                            _index: 'yes',
-                            _type: 'actionset',
-                            _id: 'yes',
-                            _score: 1,
-                            _source: {} as any,
-                        },
-                    ],
-                },
             };
 
             when(
@@ -586,59 +561,6 @@ describe('EVMEvent Controller Base', function() {
                 block_number: 100,
                 processed_block_number: 0,
             };
-            const artifactName = 't721c::T721Controller_v0';
-
-            const fetchJobName = `@@evmantenna/fetchEVMEventsForBlock/${artifactName}/NewGroup`;
-
-            const esquery: EsSearchOptionsStatic = {
-                body: {
-                    query: {
-                        bool: {
-                            must: [
-                                {
-                                    term: {
-                                        block_number: 100,
-                                    },
-                                },
-                                {
-                                    term: {
-                                        event_name: 'NewGroup',
-                                    },
-                                },
-                                {
-                                    term: {
-                                        artifact_name: artifactName,
-                                    },
-                                },
-                            ],
-                        },
-                    },
-                },
-            };
-
-            const esReturn: ESSearchReturn<any> = {
-                took: 1,
-                timed_out: false,
-                _shards: {
-                    total: 1,
-                    successful: 1,
-                    skipped: 0,
-                    failed: 0,
-                },
-                hits: {
-                    total: 1,
-                    max_score: 1,
-                    hits: [
-                        {
-                            _index: 'yes',
-                            _type: 'actionset',
-                            _id: 'yes',
-                            _score: 1,
-                            _source: {} as any,
-                        },
-                    ],
-                },
-            };
 
             when(
                 context.globalConfigServiceMock.search(
@@ -663,64 +585,6 @@ describe('EVMEvent Controller Base', function() {
         });
 
         it('should fail on global config error', async function() {
-            const globalEntity: Partial<GlobalEntity> = {
-                block_number: 100,
-                processed_block_number: 99,
-            };
-            const artifactName = 't721c::T721Controller_v0';
-
-            const fetchJobName = `@@evmantenna/fetchEVMEventsForBlock/${artifactName}/NewGroup`;
-
-            const esquery: EsSearchOptionsStatic = {
-                body: {
-                    query: {
-                        bool: {
-                            must: [
-                                {
-                                    term: {
-                                        block_number: 100,
-                                    },
-                                },
-                                {
-                                    term: {
-                                        event_name: 'NewGroup',
-                                    },
-                                },
-                                {
-                                    term: {
-                                        artifact_name: artifactName,
-                                    },
-                                },
-                            ],
-                        },
-                    },
-                },
-            };
-
-            const esReturn: ESSearchReturn<any> = {
-                took: 1,
-                timed_out: false,
-                _shards: {
-                    total: 1,
-                    successful: 1,
-                    skipped: 0,
-                    failed: 0,
-                },
-                hits: {
-                    total: 1,
-                    max_score: 1,
-                    hits: [
-                        {
-                            _index: 'yes',
-                            _type: 'actionset',
-                            _id: 'yes',
-                            _score: 1,
-                            _source: {} as any,
-                        },
-                    ],
-                },
-            };
-
             when(
                 context.globalConfigServiceMock.search(
                     deepEqual({
@@ -754,64 +618,6 @@ describe('EVMEvent Controller Base', function() {
         });
 
         it('should fail on global config empty fetch', async function() {
-            const globalEntity: Partial<GlobalEntity> = {
-                block_number: 100,
-                processed_block_number: 99,
-            };
-            const artifactName = 't721c::T721Controller_v0';
-
-            const fetchJobName = `@@evmantenna/fetchEVMEventsForBlock/${artifactName}/NewGroup`;
-
-            const esquery: EsSearchOptionsStatic = {
-                body: {
-                    query: {
-                        bool: {
-                            must: [
-                                {
-                                    term: {
-                                        block_number: 100,
-                                    },
-                                },
-                                {
-                                    term: {
-                                        event_name: 'NewGroup',
-                                    },
-                                },
-                                {
-                                    term: {
-                                        artifact_name: artifactName,
-                                    },
-                                },
-                            ],
-                        },
-                    },
-                },
-            };
-
-            const esReturn: ESSearchReturn<any> = {
-                took: 1,
-                timed_out: false,
-                _shards: {
-                    total: 1,
-                    successful: 1,
-                    skipped: 0,
-                    failed: 0,
-                },
-                hits: {
-                    total: 1,
-                    max_score: 1,
-                    hits: [
-                        {
-                            _index: 'yes',
-                            _type: 'actionset',
-                            _id: 'yes',
-                            _score: 1,
-                            _source: {} as any,
-                        },
-                    ],
-                },
-            };
-
             when(
                 context.globalConfigServiceMock.search(
                     deepEqual({
@@ -844,64 +650,21 @@ describe('EVMEvent Controller Base', function() {
             );
         });
 
-        it('should dispatch one fetch request', async function() {
+        it('should fail on duplicate fetch error', async function() {
             const globalEntity: Partial<GlobalEntity> = {
                 block_number: 100,
                 processed_block_number: 99,
             };
             const artifactName = 't721c::T721Controller_v0';
 
-            const fetchJobName = `@@evmantenna/fetchEVMEventsForBlock/${artifactName}/NewGroup`;
-
-            const esquery: EsSearchOptionsStatic = {
-                body: {
-                    query: {
-                        bool: {
-                            must: [
-                                {
-                                    term: {
-                                        block_number: 100,
-                                    },
-                                },
-                                {
-                                    term: {
-                                        event_name: 'NewGroup',
-                                    },
-                                },
-                                {
-                                    term: {
-                                        artifact_name: artifactName,
-                                    },
-                                },
-                            ],
-                        },
-                    },
-                },
+            const query = {
+                block_number: 100,
+                event_name: 'NewGroup',
+                artifact_name: artifactName,
             };
 
-            const esReturn: ESSearchReturn<any> = {
-                took: 1,
-                timed_out: false,
-                _shards: {
-                    total: 1,
-                    successful: 1,
-                    skipped: 0,
-                    failed: 0,
-                },
-                hits: {
-                    total: 1,
-                    max_score: 1,
-                    hits: [
-                        {
-                            _index: 'yes',
-                            _type: 'actionset',
-                            _id: 'yes',
-                            _score: 1,
-                            _source: {} as any,
-                        },
-                    ],
-                },
-            };
+            (context.evmEventControllerBase as any).currentFetchHeight = 99;
+            (context.evmEventControllerBase as any).currentDispatchHeight = 100;
 
             when(
                 context.globalConfigServiceMock.search(
@@ -923,9 +686,7 @@ describe('EVMEvent Controller Base', function() {
             );
 
             when(
-                context.evmEventSetsServiceMock.searchElastic(
-                    deepEqual(esquery),
-                ),
+                context.evmEventSetsServiceMock.search(deepEqual(query)),
             ).thenResolve({
                 error: 'unexpected_error',
                 response: null,
@@ -937,21 +698,10 @@ describe('EVMEvent Controller Base', function() {
                 context.queueMock.getJobs(deepEqual(['active', 'waiting'])),
             ).called();
 
-            verify(
-                context.queueMock.add(
-                    fetchJobName,
-                    deepEqual({
-                        blockNumber: 100,
-                    }),
-                ),
-            ).called();
-
             verify(context.contractsControllerMock.getArtifactName()).called();
 
             verify(
-                context.evmEventSetsServiceMock.searchElastic(
-                    deepEqual(esquery),
-                ),
+                context.evmEventSetsServiceMock.search(deepEqual(query)),
             ).called();
 
             verify(
@@ -974,47 +724,16 @@ describe('EVMEvent Controller Base', function() {
 
             const fetchJobName = `@@evmantenna/fetchEVMEventsForBlock/${artifactName}/NewGroup`;
 
-            const esquery: EsSearchOptionsStatic = {
-                body: {
-                    query: {
-                        bool: {
-                            must: [
-                                {
-                                    term: {
-                                        block_number: 100,
-                                    },
-                                },
-                                {
-                                    term: {
-                                        event_name: 'NewGroup',
-                                    },
-                                },
-                                {
-                                    term: {
-                                        artifact_name: artifactName,
-                                    },
-                                },
-                            ],
-                        },
-                    },
-                },
+            (context.evmEventControllerBase as any).currentFetchHeight = 99;
+            (context.evmEventControllerBase as any).currentDispatchHeight = 100;
+
+            const query = {
+                block_number: 100,
+                event_name: 'NewGroup',
+                artifact_name: artifactName,
             };
 
-            const esReturn: ESSearchReturn<any> = {
-                took: 1,
-                timed_out: false,
-                _shards: {
-                    total: 1,
-                    successful: 1,
-                    skipped: 0,
-                    failed: 0,
-                },
-                hits: {
-                    total: 0,
-                    max_score: 1,
-                    hits: [],
-                },
-            };
+            const response = [];
 
             when(
                 context.globalConfigServiceMock.search(
@@ -1043,22 +762,11 @@ describe('EVMEvent Controller Base', function() {
             );
 
             when(
-                context.evmEventSetsServiceMock.searchElastic(
-                    deepEqual(esquery),
-                ),
+                context.evmEventSetsServiceMock.search(deepEqual(query)),
             ).thenResolve({
                 error: null,
-                response: esReturn,
+                response,
             });
-
-            when(
-                context.queueMock.add(
-                    fetchJobName,
-                    deepEqual({
-                        blockNumber: 100,
-                    }),
-                ),
-            ).thenResolve();
 
             await context.evmEventControllerBase.eventBackgroundFetcher();
 
@@ -1069,9 +777,7 @@ describe('EVMEvent Controller Base', function() {
             verify(context.contractsControllerMock.getArtifactName()).called();
 
             verify(
-                context.evmEventSetsServiceMock.searchElastic(
-                    deepEqual(esquery),
-                ),
+                context.evmEventSetsServiceMock.search(deepEqual(query)),
             ).called();
         });
 
@@ -1084,47 +790,16 @@ describe('EVMEvent Controller Base', function() {
 
             const fetchJobName = `@@evmantenna/fetchEVMEventsForBlock/${artifactName}/NewGroup`;
 
-            const esquery: EsSearchOptionsStatic = {
-                body: {
-                    query: {
-                        bool: {
-                            must: [
-                                {
-                                    term: {
-                                        block_number: 100,
-                                    },
-                                },
-                                {
-                                    term: {
-                                        event_name: 'NewGroup',
-                                    },
-                                },
-                                {
-                                    term: {
-                                        artifact_name: artifactName,
-                                    },
-                                },
-                            ],
-                        },
-                    },
-                },
+            (context.evmEventControllerBase as any).currentFetchHeight = 99;
+            (context.evmEventControllerBase as any).currentDispatchHeight = 100;
+
+            const query = {
+                block_number: 100,
+                event_name: 'NewGroup',
+                artifact_name: artifactName,
             };
 
-            const esReturn: ESSearchReturn<any> = {
-                took: 1,
-                timed_out: false,
-                _shards: {
-                    total: 1,
-                    successful: 1,
-                    skipped: 0,
-                    failed: 0,
-                },
-                hits: {
-                    total: 0,
-                    max_score: 1,
-                    hits: [],
-                },
-            };
+            const response = [] as any[];
 
             when(
                 context.globalConfigServiceMock.search(
@@ -1146,22 +821,11 @@ describe('EVMEvent Controller Base', function() {
             );
 
             when(
-                context.evmEventSetsServiceMock.searchElastic(
-                    deepEqual(esquery),
-                ),
+                context.evmEventSetsServiceMock.search(deepEqual(query)),
             ).thenResolve({
                 error: null,
-                response: esReturn,
+                response,
             });
-
-            when(
-                context.queueMock.add(
-                    fetchJobName,
-                    deepEqual({
-                        blockNumber: 100,
-                    }),
-                ),
-            ).thenResolve();
 
             await context.evmEventControllerBase.eventBackgroundFetcher();
 
@@ -1169,6 +833,12 @@ describe('EVMEvent Controller Base', function() {
                 context.queueMock.getJobs(deepEqual(['active', 'waiting'])),
             ).called();
 
+            verify(context.contractsControllerMock.getArtifactName()).called();
+
+            verify(
+                context.evmEventSetsServiceMock.search(deepEqual(query)),
+            ).called();
+
             verify(
                 context.queueMock.add(
                     fetchJobName,
@@ -1177,14 +847,78 @@ describe('EVMEvent Controller Base', function() {
                     }),
                 ),
             ).called();
+        });
+
+        it('should not dispatch because job not running but response found', async function() {
+            const globalEntity: Partial<GlobalEntity> = {
+                block_number: 100,
+                processed_block_number: 99,
+            };
+            const artifactName = 't721c::T721Controller_v0';
+
+            const fetchJobName = `@@evmantenna/fetchEVMEventsForBlock/${artifactName}/NewGroup`;
+
+            (context.evmEventControllerBase as any).currentFetchHeight = 99;
+            (context.evmEventControllerBase as any).currentDispatchHeight = 100;
+
+            const query = {
+                block_number: 100,
+                event_name: 'NewGroup',
+                artifact_name: artifactName,
+            };
+
+            const response = [{}] as any[];
+
+            when(
+                context.globalConfigServiceMock.search(
+                    deepEqual({
+                        id: 'global',
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: [globalEntity as GlobalEntity],
+            });
+
+            when(
+                context.queueMock.getJobs(deepEqual(['active', 'waiting'])),
+            ).thenResolve([]);
+
+            when(context.contractsControllerMock.getArtifactName()).thenReturn(
+                artifactName,
+            );
+
+            when(
+                context.evmEventSetsServiceMock.search(deepEqual(query)),
+            ).thenResolve({
+                error: null,
+                response,
+            });
+
+            await context.evmEventControllerBase.eventBackgroundFetcher();
+
+            verify(
+                context.queueMock.getJobs(deepEqual(['active', 'waiting'])),
+            ).called();
 
             verify(context.contractsControllerMock.getArtifactName()).called();
 
             verify(
-                context.evmEventSetsServiceMock.searchElastic(
-                    deepEqual(esquery),
-                ),
+                context.evmEventSetsServiceMock.search(deepEqual(query)),
             ).called();
+
+            verify(
+                context.queueMock.add(
+                    fetchJobName,
+                    deepEqual({
+                        blockNumber: 100,
+                    }),
+                ),
+            ).never();
+
+            expect(
+                (context.evmEventControllerBase as any).currentFetchHeight,
+            ).toEqual(100);
         });
     });
 

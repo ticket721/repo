@@ -1,4 +1,7 @@
-import { EVMEventControllerBase } from '@app/worker/evmantenna/EVMEvent.controller.base';
+import {
+    Appender,
+    EVMEventControllerBase,
+} from '@app/worker/evmantenna/EVMEvent.controller.base';
 import { GlobalConfigService } from '@lib/common/globalconfig/GlobalConfig.service';
 import { InjectSchedule, Schedule } from 'nest-schedule';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
@@ -10,7 +13,6 @@ import { EVMEventSetsService } from '@lib/common/evmeventsets/EVMEventSets.servi
 import { EventsService } from '@lib/common/events/Events.service';
 import { EVMProcessableEvent } from '@app/worker/evmantenna/EVMAntennaMerger.scheduler';
 import { EventEntity } from '@lib/common/events/entities/Event.entity';
-import { DryResponse } from '@lib/common/crud/CRUD.extension';
 
 /**
  * EVM Antenna to intercept NewCategory events emitted by the T721Controller
@@ -56,10 +58,7 @@ export class NewGroupT721CEVMAntenna extends EVMEventControllerBase {
      * @param event
      * @param append
      */
-    async convert(
-        event: EVMProcessableEvent,
-        append: (res: DryResponse) => void,
-    ): Promise<any> {
+    async convert(event: EVMProcessableEvent, append: Appender): Promise<any> {
         const data = JSON.parse(event.return_values);
 
         const esQuery = {
@@ -68,7 +67,7 @@ export class NewGroupT721CEVMAntenna extends EVMEventControllerBase {
                     bool: {
                         must: {
                             term: {
-                                group_id: data.id,
+                                group_id: data.id.toLowerCase(),
                             },
                         },
                     },
@@ -78,30 +77,37 @@ export class NewGroupT721CEVMAntenna extends EVMEventControllerBase {
 
         const eventSearchRes = await this.eventsService.searchElastic(esQuery);
 
-        if (eventSearchRes.error || eventSearchRes.response.hits.total === 0) {
+        if (eventSearchRes.error) {
             throw new Error(
                 `NewGroupT721CEVMAntenna::convert | unable to recover appropriate event linked to id ${data.id}`,
             );
         }
 
+        if (eventSearchRes.response.hits.total === 0) {
+            return;
+        }
+
         const eventEntity: EventEntity =
             eventSearchRes.response.hits.hits[0]._source;
 
-        const eventUpdateRes = await this.eventsService.dryUpdate(
+        const eventUpdateRes = await NewGroupT721CEVMAntenna.rollbackableUpdate(
+            this.eventsService,
             {
                 id: eventEntity.id,
             },
             {
-                status: 'deployed',
+                status: {
+                    old: 'preview',
+                    new: 'deployed',
+                },
             },
+            append,
         );
 
         if (eventUpdateRes.error) {
             throw new Error(
-                `NewGroupT721CEVMAntenna::convert | error while creating event update query`,
+                `NewGroupT721CEVMAntenna::convert | error while creating event update query: ${eventUpdateRes.error}`,
             );
         }
-
-        append(eventUpdateRes.response);
     }
 }

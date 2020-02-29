@@ -41,6 +41,13 @@ export class GlobalConfigService extends CRUDExtension<
         @InjectModel(GlobalEntity)
         globalEntity: BaseModel<GlobalEntity>,
     ) {
-        super(globalEntity, globalConfigRepository);
+        super(
+            globalEntity,
+            globalConfigRepository,
+            /* istanbul ignore next */
+            (e: GlobalEntity) => {
+                return new globalEntity(e);
+            },
+        );
     }
 }

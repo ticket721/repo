@@ -94,7 +94,14 @@ export class TxsService extends CRUDExtension<TxsRepository, TxEntity> {
         private readonly refractFactoryService: RefractFactoryV0Service,
         private readonly t721AdminService: T721AdminService,
     ) {
-        super(txEntity, txsRepository);
+        super(
+            txEntity,
+            txsRepository,
+            /* istanbul ignore next */
+            (e: TxEntity) => {
+                return new txEntity(e);
+            },
+        );
     }
 
     /**

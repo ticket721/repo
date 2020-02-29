@@ -19,6 +19,7 @@ import {
 import { DryResponse } from '@lib/common/crud/CRUD.extension';
 import { Connection, InjectConnection } from '@iaminfinity/express-cassandra';
 import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
+import { EVMBlockRollbacksService } from '@lib/common/evmblockrollbacks/EVMBlockRollbacks.service';
 
 /**
  * Data Model contained inside the merge jobs
@@ -59,6 +60,7 @@ export class EVMAntennaMergerScheduler implements OnApplicationBootstrap {
      * @param schedule
      * @param globalConfigService
      * @param evmEventSetsService
+     * @param evmBlockRollbacksService
      * @param shutdownService
      * @param queue
      * @param connection
@@ -68,6 +70,7 @@ export class EVMAntennaMergerScheduler implements OnApplicationBootstrap {
         @InjectSchedule() private readonly schedule: Schedule,
         private readonly globalConfigService: GlobalConfigService,
         private readonly evmEventSetsService: EVMEventSetsService,
+        private readonly evmBlockRollbacksService: EVMBlockRollbacksService,
         private readonly shutdownService: ShutdownService,
         @InjectQueue('evmantenna')
         private readonly queue: Queue<EVMAntennaMergerJob>,
@@ -128,6 +131,30 @@ export class EVMAntennaMergerScheduler implements OnApplicationBootstrap {
                 blockNumber: toProcess,
             });
         }
+    }
+
+    /**
+     * Utility to bind and use to build the forward and rollback batched queries
+     *
+     * @param querries
+     * @param rollbacks
+     * @param query
+     * @param rollback
+     */
+    appender(
+        querries: DryResponse[],
+        rollbacks: DryResponse[],
+        query: DryResponse,
+        rollback: DryResponse,
+    ): void {
+        if (!query || !rollback) {
+            throw new Error(
+                `Cannot have asymmetric updates: each query must have its rollback !`,
+            );
+        }
+
+        querries.push(query);
+        rollbacks.unshift(rollback);
     }
 
     /**
@@ -214,6 +241,7 @@ export class EVMAntennaMergerScheduler implements OnApplicationBootstrap {
             );
 
         const queryBatch: DryResponse[] = [];
+        const rollbackBatch: DryResponse[] = [];
 
         for (const event of rawEvents) {
             const controllerIdx = EVMAntennaMergerScheduler.controllers.findIndex(
@@ -229,9 +257,7 @@ export class EVMAntennaMergerScheduler implements OnApplicationBootstrap {
 
             await EVMAntennaMergerScheduler.controllers[controllerIdx].convert(
                 event,
-                (query: DryResponse): void => {
-                    queryBatch.push(query);
-                },
+                this.appender.bind(null, queryBatch, rollbackBatch),
             );
         }
 
@@ -270,16 +296,50 @@ export class EVMAntennaMergerScheduler implements OnApplicationBootstrap {
 
         queryBatch.push(globalConfigRes.response);
 
+        const rollbackRes = await this.evmBlockRollbacksService.dryCreate({
+            block_number: job.data.blockNumber,
+            rollback_queries: rollbackBatch,
+        });
+
+        if (rollbackRes.error) {
+            throw new Error(
+                `EVMAntennaMergerScheduler::evmEventMerger | error while creating block rollback query: ${rollbackRes.error}`,
+            );
+        }
+
+        rollbackRes.response.params[1] = rollbackRes.response.params[1].map(
+            (elem: DryResponse): DryResponse => {
+                return {
+                    query: elem.query,
+                    params: elem.params.map((param: any): string => {
+                        switch (typeof param) {
+                            case 'string':
+                                return param;
+                            case 'number':
+                                return param.toString();
+                            default:
+                                return JSON.stringify(param);
+                        }
+                    }),
+                };
+            },
+        );
+
+        queryBatch.push(rollbackRes.response);
+
         try {
             await this.connection.doBatchAsync((queryBatch as any) as string[]);
         } catch (e) {
             this.logger.error(
                 `Error when broadcasting event fusion batched transaction for block ${job.data.blockNumber}`,
             );
+            this.logger.error(e);
             throw e;
         }
 
-        this.logger.log(`Succesful block ${job.data.blockNumber} event fusion`);
+        this.logger.log(
+            `Successful block ${job.data.blockNumber} event fusion`,
+        );
     }
 
     /**
@@ -291,7 +351,7 @@ export class EVMAntennaMergerScheduler implements OnApplicationBootstrap {
         if (signature.master === true && signature.name === 'worker') {
             this.schedule.scheduleIntervalJob(
                 'evmEventMerger',
-                1000,
+                100,
                 this.evmEventMergerPoller.bind(this),
             );
         }

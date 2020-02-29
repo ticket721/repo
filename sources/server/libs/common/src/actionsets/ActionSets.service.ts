@@ -36,7 +36,14 @@ export class ActionSetsService extends CRUDExtension<
         @InjectModel(ActionSetEntity)
         actionSetEntity: BaseModel<ActionSetEntity>,
     ) {
-        super(actionSetEntity, actionSetsRepository);
+        super(
+            actionSetEntity,
+            actionSetsRepository,
+            /* istanbul ignore next */
+            (e: ActionSetEntity) => {
+                return new actionSetEntity(e);
+            },
+        );
     }
 
     /**

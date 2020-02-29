@@ -6,11 +6,15 @@ import { EVMEventSetsModule } from '@lib/common/evmeventsets/EVMEventSets.module
 import { EVMAntennaMergerScheduler } from '@app/worker/evmantenna/EVMAntennaMerger.scheduler';
 import { NewCategoryT721CEVMAntenna } from '@app/worker/evmantenna/events/t721c/NewCategory.evmantenna';
 import { EventsModule } from '@lib/common/events/Events.module';
+import { DatesModule } from '@lib/common/dates/Dates.module';
+import { EVMBlockRollbacksModule } from '@lib/common/evmblockrollbacks/EVMBlockRollbacks.module';
 
 @Module({
     imports: [
         EVMEventSetsModule,
+        EVMBlockRollbacksModule,
         EventsModule,
+        DatesModule,
         BullModule.registerQueueAsync({
             inject: [ConfigService],
             name: 'evmantenna',
