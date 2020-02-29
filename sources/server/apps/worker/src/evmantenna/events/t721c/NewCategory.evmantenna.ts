@@ -83,7 +83,7 @@ export class NewCategoryT721CEVMAntenna extends EVMEventControllerBase {
 
         if (eventSearchRes.error) {
             throw new Error(
-                `NewCategoryT721CEVMAntenna::convert | error while fetching events`,
+                `NewCategoryT721CEVMAntenna::convert | error while fetching events: ${eventSearchRes.error}`,
             );
         }
 
@@ -127,6 +127,7 @@ export class NewCategoryT721CEVMAntenna extends EVMEventControllerBase {
                         const oldCategories = cloneDeep(eventCategories);
 
                         category.status = 'deployed';
+                        category.group_id = data.group_id;
 
                         const updateQueryRes = await NewCategoryT721CEVMAntenna.rollbackableUpdate(
                             this.eventsService,
@@ -144,7 +145,7 @@ export class NewCategoryT721CEVMAntenna extends EVMEventControllerBase {
 
                         if (updateQueryRes.error) {
                             throw new Error(
-                                `NewCategoryT721CEVMAntenna::convert | error while generating dry event category update`,
+                                `NewCategoryT721CEVMAntenna::convert | error while generating dry event category update: ${updateQueryRes.error}`,
                             );
                         }
 
@@ -161,7 +162,7 @@ export class NewCategoryT721CEVMAntenna extends EVMEventControllerBase {
 
                     if (dateFetchRes.error) {
                         throw new Error(
-                            `NewCategoryT721CEVMAntenna::convert | error while fetching dates`,
+                            `NewCategoryT721CEVMAntenna::convert | error while fetching dates: ${dateFetchRes.error}`,
                         );
                     }
 
@@ -181,6 +182,7 @@ export class NewCategoryT721CEVMAntenna extends EVMEventControllerBase {
                             const oldCategories = cloneDeep(dateCategories);
 
                             category.status = 'deployed';
+                            category.group_id = data.group_id;
 
                             const updateQueryRes = await NewCategoryT721CEVMAntenna.rollbackableUpdate(
                                 this.datesService,
@@ -198,7 +200,7 @@ export class NewCategoryT721CEVMAntenna extends EVMEventControllerBase {
 
                             if (updateQueryRes.error) {
                                 throw new Error(
-                                    `NewCategoryT721CEVMAntenna::convert | error while generating dry date category update`,
+                                    `NewCategoryT721CEVMAntenna::convert | error while generating dry date category update: ${updateQueryRes.error}`,
                                 );
                             }
 
