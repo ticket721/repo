@@ -55,7 +55,13 @@ export interface ActionEntity {
     table_name: 'actionset',
     key: ['id'],
     es_index_mapping: {
-        discover: '.*',
+        discover: '^((?!actions).*)',
+        properties: {
+            actions: {
+                type: 'nested',
+                cql_collection: 'set',
+            },
+        },
     },
 } as any)
 export class ActionSetEntity {

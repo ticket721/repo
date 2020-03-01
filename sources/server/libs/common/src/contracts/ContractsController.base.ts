@@ -65,6 +65,13 @@ export class ContractsControllerBase {
     }
 
     /**
+     * Return current Artifact Name
+     */
+    public getArtifactName(): string {
+        return `${this.moduleName}::${this.contractName}`;
+    }
+
+    /**
      * Verifies if contract matches code on-chain
      *
      * @param contractCode

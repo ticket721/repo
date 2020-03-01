@@ -1,4 +1,3 @@
-import { Subject } from 'rxjs';
 import { Injectable } from '@nestjs/common';
 import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
 
@@ -10,7 +9,7 @@ export class ShutdownService {
     /**
      * Observable used to trigger shutdown
      */
-    private shutdownListener$: Subject<void> = new Subject();
+    private static shutdownFunction: () => void;
 
     /**
      * Dependency Injection
@@ -25,7 +24,7 @@ export class ShutdownService {
      * @param shutdownFn
      */
     subscribeToShutdown(shutdownFn: () => void): void {
-        this.shutdownListener$.subscribe(() => shutdownFn());
+        ShutdownService.shutdownFunction = shutdownFn;
     }
 
     /**
@@ -52,6 +51,6 @@ export class ShutdownService {
      * Simply trigegrs the shutdown
      */
     shutdown() {
-        this.shutdownListener$.next();
+        ShutdownService.shutdownFunction();
     }
 }

@@ -106,6 +106,34 @@ class M20191216075937_initial_setup extends ElasticMigration {
                 "discover": ".*"
             }
         });
+
+        await this.createIndex('ticket721_evmeventset', 'ticket721');
+        await this.putMapping('ticket721_evmeventset', 'evmeventset', {
+            "evmeventset": {
+                "discover": ".*"
+            }
+        });
+        await this.putSettings('ticket721_evmeventset',
+            {
+                index: {
+                    synchronous_refresh: true
+                }
+            }
+        );
+        
+        await this.createIndex('ticket721_evmblockrollback', 'ticket721');
+        await this.putMapping('ticket721_evmblockrollback', 'evmblockrollback', {
+            "evmblockrollback": {
+                "discover": ".*"
+            }
+        });
+        await this.putSettings('ticket721_evmblockrollback',
+            {
+                index: {
+                    synchronous_refresh: true
+                }
+            }
+        );
     }
 
     async down() {
@@ -117,6 +145,8 @@ class M20191216075937_initial_setup extends ElasticMigration {
         await this.removeIndex('ticket721_event');
         await this.removeIndex('ticket721_tx');
         await this.removeIndex('ticket721_global');
+        await this.removeIndex('ticket721_evmeventset');
+        await this.removeIndex('ticket721_evmblockrollback');
     }
 }
 

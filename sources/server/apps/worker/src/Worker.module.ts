@@ -40,6 +40,9 @@ import { EventsInputHandlers } from '@app/worker/actionhandlers/events/Events.in
 import { ActionSetsTasks } from '@app/worker/tasks/actionsets/ActionSets.tasks';
 import { ActionSetsScheduler } from '@app/worker/schedulers/actionsets/ActionSets.scheduler';
 import { TxsScheduler } from '@app/worker/schedulers/txs/Txs.scheduler';
+import { EVMAntennaModule } from '@app/worker/evmantenna/EVMAntenna.module';
+import { GlobalConfigScheduler } from '@app/worker/schedulers/globalconfig/GlobalConfig.scheduler';
+import { EVMEventSetsModule } from '@lib/common/evmeventsets/EVMEventSets.module';
 
 @Module({
     imports: [
@@ -69,11 +72,15 @@ import { TxsScheduler } from '@app/worker/schedulers/txs/Txs.scheduler';
         ActionSetsModule,
         DatesModule,
         EventsModule,
+        EVMEventSetsModule,
         CurrenciesModule.registerAsync({
             useFactory: (configService: ConfigService): string =>
                 configService.get('CURRENCIES_CONFIG_PATH'),
             inject: [ConfigService],
         }),
+
+        // Ethereum Listeners
+        EVMAntennaModule,
 
         // Utility Modules
         FSModule,
@@ -192,6 +199,7 @@ import { TxsScheduler } from '@app/worker/schedulers/txs/Txs.scheduler';
 
         // Schedulers
         ActionSetsScheduler,
+        GlobalConfigScheduler,
         TxsScheduler,
 
         // Global logger

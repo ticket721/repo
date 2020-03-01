@@ -79,6 +79,7 @@ export class ActionSetsTasks implements OnModuleInit {
         if (signature.name === 'worker') {
             this.actionQueue
                 .process('input', 1, this.input.bind(this))
+                .then(() => console.log(`Closing Bull Queue @@action`))
                 .catch(this.shutdownService.shutdownWithError);
         }
     }

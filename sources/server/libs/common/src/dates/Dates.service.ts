@@ -23,6 +23,13 @@ export class DatesService extends CRUDExtension<DatesRepository, DateEntity> {
         @InjectModel(DateEntity)
         dateEntity: BaseModel<DateEntity>,
     ) {
-        super(dateEntity, datesRepository);
+        super(
+            dateEntity,
+            datesRepository,
+            /* istanbul ignore next */
+            (e: DateEntity) => {
+                return new dateEntity(e);
+            },
+        );
     }
 }

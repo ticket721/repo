@@ -4,15 +4,21 @@ import {
     deepEqual,
     instance,
     mock,
+    spy,
     verify,
     when,
 } from 'ts-mockito';
-import { BaseModel } from '@iaminfinity/express-cassandra/dist/orm/interfaces/externals/express-cassandra.interface';
+import {
+    BaseModel,
+    BaseModelStatic,
+    FindQuery,
+} from '@iaminfinity/express-cassandra/dist/orm/interfaces/externals/express-cassandra.interface';
 import { Repository, uuid } from '@iaminfinity/express-cassandra';
 import {
     CreateOptions,
     CRUDExtension,
     DeleteOptions,
+    DryResponse,
     ESSearchQuery,
     SearchOptions,
     SearchQuery,
@@ -63,6 +69,7 @@ describe('CRUD Extension', function() {
             > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
                 instance(context.modelMock),
                 instance(context.repositoryMock),
+                null,
             );
 
             const newEntity: FakeEntity = {
@@ -137,6 +144,7 @@ describe('CRUD Extension', function() {
             > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
                 instance(context.modelMock),
                 instance(context.repositoryMock),
+                null,
             );
 
             const newEntity: FakeEntity = {
@@ -207,6 +215,7 @@ describe('CRUD Extension', function() {
             > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
                 instance(context.modelMock),
                 instance(context.repositoryMock),
+                null,
             );
 
             const newEntity: FakeEntity = {
@@ -251,6 +260,231 @@ describe('CRUD Extension', function() {
         });
     });
 
+    describe('dryCreate', function() {
+        it('creates an entity', async function() {
+            when(context.modelMock._properties).thenReturn({
+                schema: {
+                    table_name: 'fake',
+                    keyspace: 't721',
+                    key: ['id'],
+                    fields: {
+                        id: {
+                            type: 'uuid',
+                        },
+                        name: {
+                            type: 'text',
+                        },
+                    },
+                },
+            });
+
+            const modelBuilderMock = mock<any>();
+            const newModelMock = mock<BaseModelStatic<FakeEntity>>();
+
+            when(modelBuilderMock.build(anything())).thenReturn(
+                instance(newModelMock),
+            );
+
+            const crudext: CRUDExtension<
+                Repository<FakeEntity>,
+                FakeEntity
+            > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
+                instance(context.modelMock),
+                instance(context.repositoryMock),
+                instance(modelBuilderMock).build,
+            );
+
+            const newEntity: FakeEntity = {
+                id: '016d3680-c2ac-4c6a-98f8-c63b22b3542f',
+                name: 'test',
+            };
+
+            const newEntityProcessed = {
+                id: uuid(newEntity.id),
+                name: 'test',
+            };
+
+            const dryResponse = {
+                query: 'this is a cassandra query',
+                params: [],
+            } as DryResponse;
+
+            when(
+                context.repositoryMock.create(deepEqual(newEntityProcessed)),
+            ).thenReturn(newEntityProcessed);
+
+            when(
+                newModelMock.save(
+                    deepEqual({
+                        return_query: true,
+                    }),
+                ),
+            ).thenResolve(dryResponse as any);
+
+            const res = await crudext.dryCreate(newEntity);
+
+            verify(
+                context.repositoryMock.create(deepEqual(newEntityProcessed)),
+            ).called();
+
+            verify(
+                newModelMock.save(
+                    deepEqual({
+                        return_query: true,
+                    }),
+                ),
+            ).called();
+
+            expect(res.response).toEqual(dryResponse);
+            expect(res.error).toEqual(null);
+        });
+
+        it('creates an entity with options', async function() {
+            when(context.modelMock._properties).thenReturn({
+                schema: {
+                    table_name: 'fake',
+                    keyspace: 't721',
+                    key: ['id'],
+                    fields: {
+                        id: {
+                            type: 'uuid',
+                        },
+                        name: {
+                            type: 'text',
+                        },
+                    },
+                },
+            });
+
+            const modelBuilderMock = mock<any>();
+            const newModelMock = mock<BaseModelStatic<FakeEntity>>();
+
+            when(modelBuilderMock.build(anything())).thenReturn(
+                instance(newModelMock),
+            );
+
+            const crudext: CRUDExtension<
+                Repository<FakeEntity>,
+                FakeEntity
+            > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
+                instance(context.modelMock),
+                instance(context.repositoryMock),
+                instance(modelBuilderMock).build,
+            );
+
+            const createOptions: CreateOptions = {
+                ttl: 3,
+            };
+
+            const newEntity: FakeEntity = {
+                id: '016d3680-c2ac-4c6a-98f8-c63b22b3542f',
+                name: 'test',
+            };
+
+            const newEntityProcessed = {
+                id: uuid(newEntity.id),
+                name: 'test',
+            };
+
+            const dryResponse = {
+                query: 'this is a cassandra query',
+                params: [],
+            } as DryResponse;
+
+            when(
+                context.repositoryMock.create(deepEqual(newEntityProcessed)),
+            ).thenReturn(newEntityProcessed);
+
+            when(
+                newModelMock.save(
+                    deepEqual({
+                        ...createOptions,
+                        return_query: true,
+                    }),
+                ),
+            ).thenResolve(dryResponse as any);
+
+            const res = await crudext.dryCreate(newEntity, createOptions);
+
+            verify(
+                context.repositoryMock.create(deepEqual(newEntityProcessed)),
+            ).called();
+
+            verify(
+                newModelMock.save(
+                    deepEqual({
+                        ...createOptions,
+                        return_query: true,
+                    }),
+                ),
+            ).called();
+
+            expect(res.response).toEqual(dryResponse);
+            expect(res.error).toEqual(null);
+        });
+
+        it('reports errors', async function() {
+            when(context.modelMock._properties).thenReturn({
+                schema: {
+                    table_name: 'fake',
+                    keyspace: 't721',
+                    key: ['id'],
+                    fields: {
+                        id: {
+                            type: 'uuid',
+                        },
+                        name: {
+                            type: 'text',
+                        },
+                    },
+                },
+            });
+
+            const modelBuilderMock = mock<any>();
+            const newModelMock = mock<BaseModelStatic<FakeEntity>>();
+
+            when(modelBuilderMock.build(anything())).thenThrow(
+                new Error('query creation error'),
+            );
+
+            const crudext: CRUDExtension<
+                Repository<FakeEntity>,
+                FakeEntity
+            > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
+                instance(context.modelMock),
+                instance(context.repositoryMock),
+                instance(modelBuilderMock).build,
+            );
+
+            const createOptions: CreateOptions = {
+                ttl: 3,
+            };
+
+            const newEntity: FakeEntity = {
+                id: '016d3680-c2ac-4c6a-98f8-c63b22b3542f',
+                name: 'test',
+            };
+
+            const newEntityProcessed = {
+                id: uuid(newEntity.id),
+                name: 'test',
+            };
+
+            when(
+                context.repositoryMock.create(deepEqual(newEntityProcessed)),
+            ).thenReturn(newEntityProcessed);
+
+            const res = await crudext.dryCreate(newEntity, createOptions);
+
+            verify(
+                context.repositoryMock.create(deepEqual(newEntityProcessed)),
+            ).called();
+
+            expect(res.response).toEqual(null);
+            expect(res.error).toEqual('query creation error');
+        });
+    });
+
     describe('read', function() {
         it('search for entities', async function() {
             when(context.modelMock._properties).thenReturn({
@@ -275,6 +509,7 @@ describe('CRUD Extension', function() {
             > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
                 instance(context.modelMock),
                 instance(context.repositoryMock),
+                null,
             );
 
             const searchEntity: SearchQuery<FakeEntity> = {
@@ -316,6 +551,71 @@ describe('CRUD Extension', function() {
             expect(res.error).toEqual(null);
         });
 
+        it('search for with no results', async function() {
+            when(context.modelMock._properties).thenReturn({
+                schema: {
+                    table_name: 'fake',
+                    keyspace: 't721',
+                    key: ['id'],
+                    fields: {
+                        id: {
+                            type: 'uuid',
+                        },
+                        name: {
+                            type: 'text',
+                        },
+                    },
+                },
+            });
+
+            const crudext: CRUDExtension<
+                Repository<FakeEntity>,
+                FakeEntity
+            > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
+                instance(context.modelMock),
+                instance(context.repositoryMock),
+                null,
+            );
+
+            const searchEntity: SearchQuery<FakeEntity> = {
+                id: '016d3680-c2ac-4c6a-98f8-c63b22b3542f',
+                name: 'salut',
+            };
+
+            const searchEntityProcessed = {
+                id: uuid(searchEntity.id),
+                name: 'salut',
+            };
+
+            const newEntityProcessed = {
+                id: searchEntity.id,
+                name: 'salut',
+            };
+
+            when(
+                context.repositoryMock.find(
+                    deepEqual(searchEntityProcessed),
+                    undefined,
+                ),
+            ).thenCall(() => {
+                return {
+                    toPromise: () => Promise.resolve(null),
+                };
+            });
+
+            const res = await crudext.search(searchEntity);
+
+            verify(
+                context.repositoryMock.find(
+                    deepEqual(searchEntityProcessed),
+                    undefined,
+                ),
+            ).called();
+
+            expect(res.response).toEqual(null);
+            expect(res.error).toEqual(null);
+        });
+
         it('search for entities with options', async function() {
             when(context.modelMock._properties).thenReturn({
                 schema: {
@@ -333,7 +633,7 @@ describe('CRUD Extension', function() {
                 },
             });
 
-            const searchOptions: SearchOptions = {
+            const searchOptions: SearchOptions<FakeEntity> = {
                 allow_filtering: true,
             };
 
@@ -343,6 +643,7 @@ describe('CRUD Extension', function() {
             > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
                 instance(context.modelMock),
                 instance(context.repositoryMock),
+                null,
             );
 
             const searchEntity: Partial<FakeEntity> = {
@@ -405,6 +706,7 @@ describe('CRUD Extension', function() {
             > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
                 instance(context.modelMock),
                 instance(context.repositoryMock),
+                null,
             );
 
             const searchEntity: SearchQuery<FakeEntity> = {
@@ -477,6 +779,7 @@ describe('CRUD Extension', function() {
             > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
                 instance(context.modelMock),
                 instance(context.repositoryMock),
+                null,
             );
 
             const searchEntity: Partial<FakeEntity> = {
@@ -513,6 +816,230 @@ describe('CRUD Extension', function() {
         });
     });
 
+    describe('dryRead', function() {
+        it('search for entities', async function() {
+            when(context.modelMock._properties).thenReturn({
+                schema: {
+                    table_name: 'fake',
+                    keyspace: 't721',
+                    key: ['id'],
+                    fields: {
+                        id: {
+                            type: 'uuid',
+                        },
+                        name: {
+                            type: 'text',
+                        },
+                    },
+                },
+            });
+
+            const crudext: CRUDExtension<
+                Repository<FakeEntity>,
+                FakeEntity
+            > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
+                instance(context.modelMock),
+                instance(context.repositoryMock),
+                null,
+            );
+
+            const searchEntity: SearchQuery<FakeEntity> = {
+                id: '016d3680-c2ac-4c6a-98f8-c63b22b3542f',
+                name: 'salut',
+            };
+
+            const searchEntityProcessed = {
+                id: uuid(searchEntity.id),
+                name: 'salut',
+            };
+
+            const newEntityProcessed = {
+                id: searchEntity.id,
+                name: 'salut',
+            };
+
+            const dryResponse = {
+                query: 'this is a cassandra query',
+                params: [],
+            } as DryResponse;
+
+            when(
+                context.modelMock.find(
+                    deepEqual(searchEntityProcessed as FindQuery<FakeEntity>),
+                    deepEqual({
+                        return_query: true,
+                    }),
+                ),
+            ).thenResolve(dryResponse as any);
+
+            const res = await crudext.drySearch(searchEntity);
+
+            verify(
+                context.modelMock.find(
+                    deepEqual(searchEntityProcessed as FindQuery<FakeEntity>),
+                    deepEqual({
+                        return_query: true,
+                    }),
+                ),
+            ).called();
+
+            expect(res.response).toEqual(dryResponse);
+            expect(res.error).toEqual(null);
+        });
+
+        it('search for entities with options', async function() {
+            when(context.modelMock._properties).thenReturn({
+                schema: {
+                    table_name: 'fake',
+                    keyspace: 't721',
+                    key: ['id'],
+                    fields: {
+                        id: {
+                            type: 'uuid',
+                        },
+                        name: {
+                            type: 'text',
+                        },
+                    },
+                },
+            });
+
+            const crudext: CRUDExtension<
+                Repository<FakeEntity>,
+                FakeEntity
+            > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
+                instance(context.modelMock),
+                instance(context.repositoryMock),
+                null,
+            );
+
+            const searchOptions: SearchOptions<FakeEntity> = {
+                allow_filtering: true,
+            };
+
+            const searchEntity: SearchQuery<FakeEntity> = {
+                id: '016d3680-c2ac-4c6a-98f8-c63b22b3542f',
+                name: 'salut',
+            };
+
+            const searchEntityProcessed = {
+                id: uuid(searchEntity.id),
+                name: 'salut',
+            };
+
+            const newEntityProcessed = {
+                id: searchEntity.id,
+                name: 'salut',
+            };
+
+            const dryResponse = {
+                query: 'this is a cassandra query',
+                params: [],
+            } as DryResponse;
+
+            when(
+                context.modelMock.find(
+                    deepEqual(searchEntityProcessed as FindQuery<FakeEntity>),
+                    deepEqual({
+                        ...searchOptions,
+                        return_query: true,
+                    }),
+                ),
+            ).thenResolve(dryResponse as any);
+
+            const res = await crudext.drySearch(searchEntity, searchOptions);
+
+            verify(
+                context.modelMock.find(
+                    deepEqual(searchEntityProcessed as FindQuery<FakeEntity>),
+                    deepEqual({
+                        ...searchOptions,
+                        return_query: true,
+                    }),
+                ),
+            ).called();
+
+            expect(res.response).toEqual(dryResponse);
+            expect(res.error).toEqual(null);
+        });
+
+        it('reports errors', async function() {
+            when(context.modelMock._properties).thenReturn({
+                schema: {
+                    table_name: 'fake',
+                    keyspace: 't721',
+                    key: ['id'],
+                    fields: {
+                        id: {
+                            type: 'uuid',
+                        },
+                        name: {
+                            type: 'text',
+                        },
+                    },
+                },
+            });
+
+            const crudext: CRUDExtension<
+                Repository<FakeEntity>,
+                FakeEntity
+            > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
+                instance(context.modelMock),
+                instance(context.repositoryMock),
+                null,
+            );
+
+            const searchOptions: SearchOptions<FakeEntity> = {
+                allow_filtering: true,
+            };
+
+            const searchEntity: SearchQuery<FakeEntity> = {
+                id: '016d3680-c2ac-4c6a-98f8-c63b22b3542f',
+                name: 'salut',
+            };
+
+            const searchEntityProcessed = {
+                id: uuid(searchEntity.id),
+                name: 'salut',
+            };
+
+            const newEntityProcessed = {
+                id: searchEntity.id,
+                name: 'salut',
+            };
+
+            const dryResponse = {
+                query: 'this is a cassandra query',
+                params: [],
+            } as DryResponse;
+
+            when(
+                context.modelMock.find(
+                    deepEqual(searchEntityProcessed as FindQuery<FakeEntity>),
+                    deepEqual({
+                        ...searchOptions,
+                        return_query: true,
+                    }),
+                ),
+            ).thenThrow(new Error(`query creation error`));
+
+            const res = await crudext.drySearch(searchEntity, searchOptions);
+
+            verify(
+                context.modelMock.find(
+                    deepEqual(searchEntityProcessed as FindQuery<FakeEntity>),
+                    deepEqual({
+                        ...searchOptions,
+                        return_query: true,
+                    }),
+                ),
+            ).called();
+
+            expect(res.response).toEqual(null);
+            expect(res.error).toEqual('query creation error');
+        });
+    });
+
     describe('update', function() {
         it('updates an entity', async function() {
             when(context.modelMock._properties).thenReturn({
@@ -537,6 +1064,7 @@ describe('CRUD Extension', function() {
             > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
                 instance(context.modelMock),
                 instance(context.repositoryMock),
+                null,
             );
 
             const searchEntity: Partial<FakeEntity> = {
@@ -610,6 +1138,7 @@ describe('CRUD Extension', function() {
             > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
                 instance(context.modelMock),
                 instance(context.repositoryMock),
+                null,
             );
 
             const searchEntity: Partial<FakeEntity> = {
@@ -687,6 +1216,7 @@ describe('CRUD Extension', function() {
             > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
                 instance(context.modelMock),
                 instance(context.repositoryMock),
+                null,
             );
 
             const searchEntity: Partial<FakeEntity> = {
@@ -739,6 +1269,253 @@ describe('CRUD Extension', function() {
         });
     });
 
+    describe('dryUpdate', function() {
+        it('updates an entity', async function() {
+            when(context.modelMock._properties).thenReturn({
+                schema: {
+                    table_name: 'fake',
+                    keyspace: 't721',
+                    key: ['id'],
+                    fields: {
+                        id: {
+                            type: 'uuid',
+                        },
+                        name: {
+                            type: 'text',
+                        },
+                    },
+                },
+            });
+
+            const crudext: CRUDExtension<
+                Repository<FakeEntity>,
+                FakeEntity
+            > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
+                instance(context.modelMock),
+                instance(context.repositoryMock),
+                null,
+            );
+
+            const searchEntity: Partial<FakeEntity> = {
+                id: '016d3680-c2ac-4c6a-98f8-c63b22b3542f',
+            };
+
+            const searchEntityProcessed = {
+                id: uuid(searchEntity.id),
+            };
+
+            const newEntity = {
+                id: searchEntity.id,
+                name: 'test',
+            };
+            const newEntityProcessed = {
+                id: uuid(searchEntity.id),
+                name: 'test',
+                updated_at: anything(),
+            };
+
+            const dryResponse = {
+                query: 'this is a cassandra query',
+                params: [],
+            } as DryResponse;
+
+            when(
+                context.modelMock.update(
+                    deepEqual(searchEntityProcessed as FindQuery<FakeEntity>),
+                    deepEqual(newEntityProcessed as any),
+                    deepEqual({
+                        return_query: true,
+                    }),
+                ),
+            ).thenReturn(dryResponse as any);
+
+            const res = await crudext.dryUpdate(searchEntity, newEntity);
+
+            verify(
+                context.modelMock.update(
+                    deepEqual(searchEntityProcessed as FindQuery<FakeEntity>),
+                    deepEqual(newEntityProcessed as any),
+                    deepEqual({
+                        return_query: true,
+                    }),
+                ),
+            ).called();
+
+            expect(res.response).toEqual(dryResponse);
+            expect(res.error).toEqual(null);
+        });
+
+        it('updates an entity with options', async function() {
+            when(context.modelMock._properties).thenReturn({
+                schema: {
+                    table_name: 'fake',
+                    keyspace: 't721',
+                    key: ['id'],
+                    fields: {
+                        id: {
+                            type: 'uuid',
+                        },
+                        name: {
+                            type: 'text',
+                        },
+                    },
+                },
+            });
+
+            const crudext: CRUDExtension<
+                Repository<FakeEntity>,
+                FakeEntity
+            > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
+                instance(context.modelMock),
+                instance(context.repositoryMock),
+                null,
+            );
+
+            const updateOptions: UpdateOptions<FakeEntity> = {
+                ttl: 3,
+            };
+
+            const searchEntity: Partial<FakeEntity> = {
+                id: '016d3680-c2ac-4c6a-98f8-c63b22b3542f',
+            };
+
+            const searchEntityProcessed = {
+                id: uuid(searchEntity.id),
+            };
+
+            const newEntity = {
+                id: searchEntity.id,
+                name: 'test',
+            };
+            const newEntityProcessed = {
+                id: uuid(searchEntity.id),
+                name: 'test',
+                updated_at: anything(),
+            };
+
+            const dryResponse = {
+                query: 'this is a cassandra query',
+                params: [],
+            } as DryResponse;
+
+            when(
+                context.modelMock.update(
+                    deepEqual(searchEntityProcessed as FindQuery<FakeEntity>),
+                    deepEqual(newEntityProcessed as any),
+                    deepEqual({
+                        ...updateOptions,
+                        return_query: true,
+                    }),
+                ),
+            ).thenReturn(dryResponse as any);
+
+            const res = await crudext.dryUpdate(
+                searchEntity,
+                newEntity,
+                updateOptions,
+            );
+
+            verify(
+                context.modelMock.update(
+                    deepEqual(searchEntityProcessed as FindQuery<FakeEntity>),
+                    deepEqual(newEntityProcessed as any),
+                    deepEqual({
+                        ...updateOptions,
+                        return_query: true,
+                    }),
+                ),
+            ).called();
+
+            expect(res.response).toEqual(dryResponse);
+            expect(res.error).toEqual(null);
+        });
+
+        it('reports errors', async function() {
+            when(context.modelMock._properties).thenReturn({
+                schema: {
+                    table_name: 'fake',
+                    keyspace: 't721',
+                    key: ['id'],
+                    fields: {
+                        id: {
+                            type: 'uuid',
+                        },
+                        name: {
+                            type: 'text',
+                        },
+                    },
+                },
+            });
+
+            const crudext: CRUDExtension<
+                Repository<FakeEntity>,
+                FakeEntity
+            > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
+                instance(context.modelMock),
+                instance(context.repositoryMock),
+                null,
+            );
+
+            const updateOptions: UpdateOptions<FakeEntity> = {
+                ttl: 3,
+            };
+
+            const searchEntity: Partial<FakeEntity> = {
+                id: '016d3680-c2ac-4c6a-98f8-c63b22b3542f',
+            };
+
+            const searchEntityProcessed = {
+                id: uuid(searchEntity.id),
+            };
+
+            const newEntity = {
+                id: searchEntity.id,
+                name: 'test',
+            };
+            const newEntityProcessed = {
+                id: uuid(searchEntity.id),
+                name: 'test',
+                updated_at: anything(),
+            };
+
+            const dryResponse = {
+                query: 'this is a cassandra query',
+                params: [],
+            } as DryResponse;
+
+            when(
+                context.modelMock.update(
+                    deepEqual(searchEntityProcessed as FindQuery<FakeEntity>),
+                    deepEqual(newEntityProcessed as any),
+                    deepEqual({
+                        ...updateOptions,
+                        return_query: true,
+                    }),
+                ),
+            ).thenThrow(new Error('error while creating query'));
+
+            const res = await crudext.dryUpdate(
+                searchEntity,
+                newEntity,
+                updateOptions,
+            );
+
+            verify(
+                context.modelMock.update(
+                    deepEqual(searchEntityProcessed as FindQuery<FakeEntity>),
+                    deepEqual(newEntityProcessed as any),
+                    deepEqual({
+                        ...updateOptions,
+                        return_query: true,
+                    }),
+                ),
+            ).called();
+
+            expect(res.response).toEqual(null);
+            expect(res.error).toEqual('error while creating query');
+        });
+    });
+
     describe('delete', function() {
         it('deletes an entity', async function() {
             when(context.modelMock._properties).thenReturn({
@@ -763,6 +1540,7 @@ describe('CRUD Extension', function() {
             > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
                 instance(context.modelMock),
                 instance(context.repositoryMock),
+                null,
             );
 
             const searchEntity: Partial<FakeEntity> = {
@@ -819,6 +1597,7 @@ describe('CRUD Extension', function() {
             > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
                 instance(context.modelMock),
                 instance(context.repositoryMock),
+                null,
             );
 
             const searchEntity: Partial<FakeEntity> = {
@@ -879,6 +1658,7 @@ describe('CRUD Extension', function() {
             > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
                 instance(context.modelMock),
                 instance(context.repositoryMock),
+                null,
             );
 
             const searchEntity: Partial<FakeEntity> = {
@@ -918,6 +1698,206 @@ describe('CRUD Extension', function() {
         });
     });
 
+    describe('dryDelete', function() {
+        it('deletes an entity', async function() {
+            when(context.modelMock._properties).thenReturn({
+                schema: {
+                    table_name: 'fake',
+                    keyspace: 't721',
+                    key: ['id'],
+                    fields: {
+                        id: {
+                            type: 'uuid',
+                        },
+                        name: {
+                            type: 'text',
+                        },
+                    },
+                },
+            });
+
+            const crudext: CRUDExtension<
+                Repository<FakeEntity>,
+                FakeEntity
+            > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
+                instance(context.modelMock),
+                instance(context.repositoryMock),
+                null,
+            );
+
+            const dryResponse = {
+                query: 'this is a cassandra query',
+                params: [],
+            } as DryResponse;
+
+            const searchEntity: Partial<FakeEntity> = {
+                id: '016d3680-c2ac-4c6a-98f8-c63b22b3542f',
+            };
+
+            const searchEntityProcessed = {
+                id: uuid(searchEntity.id),
+            };
+
+            when(
+                context.modelMock.delete(
+                    deepEqual(searchEntityProcessed as any),
+                    deepEqual({
+                        return_query: true,
+                    }),
+                ),
+            ).thenReturn(dryResponse as any);
+
+            const res = await crudext.dryDelete(searchEntity);
+
+            verify(
+                context.modelMock.delete(
+                    deepEqual(searchEntityProcessed as any),
+                    deepEqual({
+                        return_query: true,
+                    }),
+                ),
+            ).called();
+
+            expect(res.error).toEqual(null);
+        });
+
+        it('deletes an entity with options', async function() {
+            when(context.modelMock._properties).thenReturn({
+                schema: {
+                    table_name: 'fake',
+                    keyspace: 't721',
+                    key: ['id'],
+                    fields: {
+                        id: {
+                            type: 'uuid',
+                        },
+                        name: {
+                            type: 'text',
+                        },
+                    },
+                },
+            });
+
+            const crudext: CRUDExtension<
+                Repository<FakeEntity>,
+                FakeEntity
+            > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
+                instance(context.modelMock),
+                instance(context.repositoryMock),
+                null,
+            );
+
+            const deleteOptions: DeleteOptions = {
+                if_exists: true,
+            };
+
+            const dryResponse = {
+                query: 'this is a cassandra query',
+                params: [],
+            } as DryResponse;
+
+            const searchEntity: Partial<FakeEntity> = {
+                id: '016d3680-c2ac-4c6a-98f8-c63b22b3542f',
+            };
+
+            const searchEntityProcessed = {
+                id: uuid(searchEntity.id),
+            };
+
+            when(
+                context.modelMock.delete(
+                    deepEqual(searchEntityProcessed as any),
+                    deepEqual({
+                        ...deleteOptions,
+                        return_query: true,
+                    }),
+                ),
+            ).thenReturn(dryResponse as any);
+
+            const res = await crudext.dryDelete(searchEntity, deleteOptions);
+
+            verify(
+                context.modelMock.delete(
+                    deepEqual(searchEntityProcessed as any),
+                    deepEqual({
+                        ...deleteOptions,
+                        return_query: true,
+                    }),
+                ),
+            ).called();
+
+            expect(res.error).toEqual(null);
+        });
+
+        it('reports errors', async function() {
+            when(context.modelMock._properties).thenReturn({
+                schema: {
+                    table_name: 'fake',
+                    keyspace: 't721',
+                    key: ['id'],
+                    fields: {
+                        id: {
+                            type: 'uuid',
+                        },
+                        name: {
+                            type: 'text',
+                        },
+                    },
+                },
+            });
+
+            const crudext: CRUDExtension<
+                Repository<FakeEntity>,
+                FakeEntity
+            > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
+                instance(context.modelMock),
+                instance(context.repositoryMock),
+                null,
+            );
+
+            const deleteOptions: DeleteOptions = {
+                if_exists: true,
+            };
+
+            const dryResponse = {
+                query: 'this is a cassandra query',
+                params: [],
+            } as DryResponse;
+
+            const searchEntity: Partial<FakeEntity> = {
+                id: '016d3680-c2ac-4c6a-98f8-c63b22b3542f',
+            };
+
+            const searchEntityProcessed = {
+                id: uuid(searchEntity.id),
+            };
+
+            when(
+                context.modelMock.delete(
+                    deepEqual(searchEntityProcessed as any),
+                    deepEqual({
+                        ...deleteOptions,
+                        return_query: true,
+                    }),
+                ),
+            ).thenThrow(new Error('unable to build query'));
+
+            const res = await crudext.dryDelete(searchEntity, deleteOptions);
+
+            verify(
+                context.modelMock.delete(
+                    deepEqual(searchEntityProcessed as any),
+                    deepEqual({
+                        ...deleteOptions,
+                        return_query: true,
+                    }),
+                ),
+            ).called();
+
+            expect(res.error).toEqual('unable to build query');
+        });
+    });
+
     describe('searchElastic', function() {
         it('search for entities', async function() {
             when(context.modelMock._properties).thenReturn({
@@ -942,6 +1922,7 @@ describe('CRUD Extension', function() {
             > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
                 instance(context.modelMock),
                 instance(context.repositoryMock),
+                null,
             );
 
             const elasticSearchOptions: ESSearchQuery<FakeEntity> = {
@@ -995,6 +1976,7 @@ describe('CRUD Extension', function() {
             > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
                 instance(context.modelMock),
                 instance(context.repositoryMock),
+                null,
             );
 
             const elasticSearchOptions: ESSearchQuery<FakeEntity> = {
@@ -1069,6 +2051,7 @@ describe('CRUD Extension', function() {
             > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
                 instance(context.modelMock),
                 instance(context.repositoryMock),
+                null,
             );
 
             const elasticSearchOptions: ESSearchQuery<FakeEntity> = {

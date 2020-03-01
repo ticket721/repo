@@ -9,6 +9,7 @@ import {
     InstanceSignature,
     OutrospectionService,
 } from '@lib/common/outrospection/Outrospection.service';
+import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 
 /**
  * Task collection for the Authentication module
@@ -23,6 +24,7 @@ export class AuthenticationTasks implements OnModuleInit {
      * @param configService
      * @param mailingQueue
      * @param outrospectionService
+     * @param shutdownService
      */
     constructor(
         private readonly emailService: EmailService,
@@ -30,6 +32,7 @@ export class AuthenticationTasks implements OnModuleInit {
         private readonly configService: ConfigService,
         @InjectQueue('mailing') private readonly mailingQueue: Queue,
         private readonly outrospectionService: OutrospectionService,
+        private readonly shutdownService: ShutdownService,
     ) {}
 
     /**
@@ -40,11 +43,14 @@ export class AuthenticationTasks implements OnModuleInit {
         const signature: InstanceSignature = await this.outrospectionService.getInstanceSignature();
 
         if (signature.name === 'worker') {
-            await this.mailingQueue.process(
-                '@@mailing/validationEmail',
-                1,
-                this.validationEmail.bind(this),
-            );
+            this.mailingQueue
+                .process(
+                    '@@mailing/validationEmail',
+                    1,
+                    this.validationEmail.bind(this),
+                )
+                .then(() => console.log(`Closing Bull Queue @@mailing`))
+                .catch(this.shutdownService.shutdownWithError);
         }
     }
 

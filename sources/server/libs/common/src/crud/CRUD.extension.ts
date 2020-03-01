@@ -1,5 +1,6 @@
 import {
     BaseModel,
+    BaseModelStatic,
     DeleteOptionsStatic,
     EsSearchOptionsStatic,
     FindQuery,
@@ -11,6 +12,7 @@ import {
 } from '@iaminfinity/express-cassandra';
 import { ESSearchReturn } from '@lib/common/utils/ESSearchReturn';
 import { defined } from '@lib/common/utils/defined';
+import { ServiceResponse } from '@lib/common/utils/ServiceResponse';
 
 /**
  * Response format of all methods
@@ -45,7 +47,7 @@ export type CreateOptions = SaveOptionsStatic;
 /**
  * Extra Options when search for entities
  */
-export type SearchOptions = FindQueryOptionsStatic;
+export type SearchOptions<EntityType> = FindQueryOptionsStatic<EntityType>;
 
 /**
  * Extra Options when updating an entity
@@ -56,6 +58,21 @@ export type UpdateOptions<EntityType> = UpdateOptionsStatic<EntityType>;
  * Extra Options when deleting an entity
  */
 export type DeleteOptions = DeleteOptionsStatic;
+
+/**
+ * Response when performing a dry method
+ */
+export interface DryResponse {
+    /**
+     * Query
+     */
+    query: string;
+
+    /**
+     * Arguments to insert into the query
+     */
+    params: any[];
+}
 
 /**
  * CRUD Extension for services. Adds primitive functions to properly implement
@@ -87,10 +104,14 @@ export class CRUDExtension<RepositoryType extends Repository, EntityType> {
      *
      * @param _model
      * @param _repository
+     * @param _modelBuilder
      */
     constructor(
         private readonly _model: BaseModel<EntityType>,
         private readonly _repository: RepositoryType,
+        private readonly _modelBuilder: (
+            EntityType,
+        ) => BaseModelStatic<EntityType>,
     ) {
         const properties = (this._model as any)._properties;
 
@@ -253,6 +274,41 @@ export class CRUDExtension<RepositoryType extends Repository, EntityType> {
     // ╚═════╝╚═╝  ╚═╝╚══════╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝
 
     /**
+     * Uses the Cassandra Driver to build and return an insert query
+     *
+     * @param entity
+     * @param options
+     */
+    async dryCreate(
+        entity: Partial<EntityType>,
+        options?: CreateOptions,
+    ): Promise<CRUDResponse<DryResponse>> {
+        try {
+            const processedEntity: Partial<EntityType> = this.adaptFieldTypesFilter(
+                {
+                    ...entity,
+                },
+            );
+
+            const offlineEntity = this._repository.create(processedEntity);
+            const createdEntity = await this._modelBuilder(offlineEntity).save({
+                ...options,
+                return_query: true,
+            });
+
+            return {
+                response: createdEntity as any,
+                error: null,
+            };
+        } catch (e) {
+            return {
+                response: null,
+                error: e.message,
+            };
+        }
+    }
+
+    /**
      * Uses the Cassandra Driver to run an insert query
      *
      * @param entity
@@ -286,6 +342,38 @@ export class CRUDExtension<RepositoryType extends Repository, EntityType> {
     }
 
     /**
+     * Uses the Cassandra Driver to build and return a search query
+     *
+     * @param find
+     * @param options
+     */
+    async drySearch(
+        find: SearchQuery<EntityType>,
+        options?: SearchOptions<EntityType>,
+    ): Promise<CRUDResponse<DryResponse>> {
+        try {
+            const processedQuery: SearchQuery<EntityType> = this.adaptQueryFieldTypesFilter(
+                find,
+            );
+
+            const results = ((await this._model.find(processedQuery, {
+                ...(options || {}),
+                return_query: true,
+            })) as any) as DryResponse;
+
+            return {
+                response: results,
+                error: null,
+            };
+        } catch (e) {
+            return {
+                response: null,
+                error: e.message,
+            };
+        }
+    }
+
+    /**
      * Uses the Cassandra Driver to run an search query
      *
      * @param find
@@ -293,7 +381,7 @@ export class CRUDExtension<RepositoryType extends Repository, EntityType> {
      */
     async search(
         find: SearchQuery<EntityType>,
-        options?: SearchOptions,
+        options?: SearchOptions<EntityType>,
     ): Promise<CRUDResponse<EntityType[]>> {
         try {
             const processedQuery: SearchQuery<EntityType> = this.adaptQueryFieldTypesFilter(
@@ -306,6 +394,48 @@ export class CRUDExtension<RepositoryType extends Repository, EntityType> {
 
             return {
                 response: this.adaptResponseTypeFilter(results),
+                error: null,
+            };
+        } catch (e) {
+            return {
+                response: null,
+                error: e.message,
+            };
+        }
+    }
+
+    /**
+     * Uses the Cassandra Driver to build and return an update query
+     *
+     * @param find
+     * @param entity
+     * @param options
+     */
+    async dryUpdate(
+        find: SearchQuery<EntityType>,
+        entity: Partial<EntityType>,
+        options?: UpdateOptions<EntityType>,
+    ): Promise<ServiceResponse<DryResponse>> {
+        try {
+            const processedEntity: Partial<EntityType> = this.adaptFieldTypesFilter(
+                entity,
+            );
+            const processedQuery: SearchQuery<EntityType> = this.adaptQueryFieldTypesFilter(
+                find,
+            );
+            (processedEntity as any).updated_at = new Date(Date.now());
+
+            const res = ((await this._model.update(
+                processedQuery,
+                processedEntity,
+                {
+                    ...(options || {}),
+                    return_query: true,
+                },
+            )) as any) as DryResponse;
+
+            return {
+                response: res,
                 error: null,
             };
         } catch (e) {
@@ -341,6 +471,41 @@ export class CRUDExtension<RepositoryType extends Repository, EntityType> {
             const res = await this._repository
                 .update(processedQuery, processedEntity, options)
                 .toPromise();
+
+            return {
+                response: res,
+                error: null,
+            };
+        } catch (e) {
+            return {
+                response: null,
+                error: e.message,
+            };
+        }
+    }
+
+    /**
+     * Uses Cassandra Driver to build and return a delete query
+     *
+     * @param find
+     * @param options
+     */
+    async dryDelete(
+        find: SearchQuery<EntityType>,
+        options?: DeleteOptions,
+    ): Promise<CRUDResponse<DryResponse>> {
+        try {
+            const processedQuery: SearchQuery<EntityType> = this.adaptQueryFieldTypesFilter(
+                find,
+            );
+
+            const res: DryResponse = ((await this._model.delete(
+                processedQuery,
+                {
+                    ...(options || {}),
+                    return_query: true,
+                },
+            )) as any) as DryResponse;
 
             return {
                 response: res,

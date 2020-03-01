@@ -4,28 +4,21 @@ import {
     Entity,
     UpdateDateColumn,
 } from '@iaminfinity/express-cassandra';
+import { DryResponse } from '@lib/common/crud/CRUD.extension';
 
 /**
- * Global Configuration entity. Used to synchronize dynamic data accross all nodes
+ * Each processed block produces one Block Rollback
  */
-@Entity<GlobalEntity>({
-    table_name: 'global',
-    key: ['id'],
+@Entity<EVMBlockRollbackEntity>({
+    table_name: 'evmblockrollback',
+    key: ['block_number'],
     es_index_mapping: {
         discover: '.*',
     },
 } as any)
-export class GlobalEntity {
+export class EVMBlockRollbackEntity {
     /**
-     * Unique identifier of the global config (always 'global')
-     */
-    @Column({
-        type: 'text',
-    })
-    id: 'global';
-
-    /**
-     * Current Block Number
+     * Block Number
      */
     @Column({
         type: 'int',
@@ -34,22 +27,14 @@ export class GlobalEntity {
     block_number: number;
 
     /**
-     * Last processed block number
+     * Queries to run in order to rollback block
      */
     @Column({
-        type: 'int',
+        type: 'list',
+        typeDef: '<frozen<dryresponse>>',
     })
     // tslint:disable-next-line:variable-name
-    processed_block_number: number;
-
-    /**
-     * Current Ether Price in Euro
-     */
-    @Column({
-        type: 'int',
-    })
-    // tslint:disable-next-line:variable-name
-    eth_eur_price: number;
+    rollback_queries: DryResponse[];
 
     /**
      * Creation timestamp

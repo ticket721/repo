@@ -1,9 +1,10 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { Web3Service } from '@lib/common/web3/Web3.service';
 import * as path from 'path';
 import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 import { FSService } from '@lib/common/fs/FS.service';
+import { GlobalConfigService } from '@lib/common/globalconfig/GlobalConfig.service';
 
 /**
  * Build option for the Contracts Service
@@ -284,7 +285,7 @@ export interface Contracts {
  * Service to load all contract artifacts from specific path
  */
 @Injectable()
-export class ContractsService {
+export class ContractsService implements OnModuleInit {
     /**
      * Dependency Injection
      *
@@ -293,6 +294,7 @@ export class ContractsService {
      * @param winstonLoggerService
      * @param shutdownService
      * @param fsService
+     * @param globalConfigService
      */
     constructor(
         @Inject('CONTRACTS_MODULE_OPTIONS')
@@ -301,6 +303,7 @@ export class ContractsService {
         private readonly winstonLoggerService: WinstonLoggerService,
         private readonly shutdownService: ShutdownService,
         private readonly fsService: FSService,
+        private readonly globalConfigService: GlobalConfigService,
     ) {}
 
     /**
@@ -417,5 +420,76 @@ export class ContractsService {
      */
     public async getContractArtifacts(): Promise<Contracts> {
         return this.contracts || this.loadArtifacts();
+    }
+
+    /**
+     * Checks if processed_block_number is set, if not it
+     */
+    public async onModuleInit(): Promise<void> {
+        const globalConfigRes = await this.globalConfigService.search({
+            id: 'global',
+        });
+
+        if (globalConfigRes.error || globalConfigRes.response.length === 0) {
+            const error = new Error(
+                `ContractsService::onModuleInit | error while fetching global config: ${globalConfigRes.error ||
+                    'no initial config'}`,
+            );
+            this.shutdownService.shutdownWithError(error);
+            throw error;
+        }
+
+        const globalConfig = globalConfigRes.response[0];
+
+        if (globalConfig.processed_block_number === 0) {
+            this.winstonLoggerService.log(
+                `Running artifacts analysis to find the first block from which EVM Events should be fetched`,
+            );
+
+            const artifacts = await this.getContractArtifacts();
+            const networkId: number = await this.web3Service.net();
+            const web3: any = await this.web3Service.get();
+            let currentLowestBN: number = await web3.eth.getBlockNumber();
+
+            for (const artifact of Object.keys(artifacts)) {
+                if (artifacts[artifact].networks[networkId]) {
+                    const txHash =
+                        artifacts[artifact].networks[networkId].transactionHash;
+                    const deploymentBN = (await web3.eth.getTransaction(txHash))
+                        .blockNumber;
+
+                    this.winstonLoggerService.log(
+                        `${artifact} was deployed at block number #${deploymentBN}`,
+                    );
+                    if (deploymentBN < currentLowestBN) {
+                        this.winstonLoggerService.log(
+                            `${artifact} is currently the lowest fetchable entity`,
+                        );
+                        currentLowestBN = deploymentBN;
+                    }
+                }
+            }
+
+            this.winstonLoggerService.log(
+                `The new processed_block_number value is ${currentLowestBN}`,
+            );
+
+            const res = await this.globalConfigService.update(
+                {
+                    id: 'global',
+                },
+                {
+                    processed_block_number: currentLowestBN,
+                },
+            );
+
+            if (res.error) {
+                const error = new Error(
+                    `ContractsService::onModuleInit | error while updating global config: ${res.error}`,
+                );
+                this.shutdownService.shutdownWithError(error);
+                throw error;
+            }
+        }
     }
 }

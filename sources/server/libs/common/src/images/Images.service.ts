@@ -27,7 +27,14 @@ export class ImagesService extends CRUDExtension<
         @InjectModel(ImageEntity)
         imageEntity: BaseModel<ImageEntity>,
     ) {
-        super(imageEntity, imagesRepository);
+        super(
+            imageEntity,
+            imagesRepository,
+            /* istanbul ignore next */
+            (e: ImageEntity) => {
+                return new imageEntity(e);
+            },
+        );
     }
 
     /**

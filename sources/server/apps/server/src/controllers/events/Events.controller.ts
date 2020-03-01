@@ -315,9 +315,9 @@ export class EventsController {
         let nextId;
 
         try {
-            nextId = await t721controller.methods
-                .getNextGroupId(user.address)
-                .call();
+            nextId = (
+                await t721controller.methods.getNextGroupId(user.address).call()
+            ).toLowerCase();
         } catch (e) {
             throw new HttpException(
                 {
