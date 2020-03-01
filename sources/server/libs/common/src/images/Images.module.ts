@@ -8,9 +8,7 @@ import { ImagesRepository } from '@lib/common/images/Images.repository';
  * Images Module
  */
 @Module({
-    imports: [
-        ExpressCassandraModule.forFeature([ImageEntity, ImagesRepository]),
-    ],
+    imports: [ExpressCassandraModule.forFeature([ImageEntity, ImagesRepository])],
     providers: [ImagesService],
     exports: [ImagesService],
 })

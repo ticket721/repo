@@ -322,12 +322,9 @@ export class ContractsService implements OnModuleInit {
             if (!this.contracts[contract].networks[networkId]) {
                 continue;
             }
-            const address = this.contracts[contract].networks[networkId]
-                .address;
+            const address = this.contracts[contract].networks[networkId].address;
             const code = (await web3.eth.getCode(address)).toLowerCase();
-            const registeredCode = this.contracts[
-                contract
-            ].deployedBytecode.toLowerCase();
+            const registeredCode = this.contracts[contract].deployedBytecode.toLowerCase();
             if (code !== registeredCode) {
                 const error = new Error(
                     `Failed contract instance verification for ${contract}: network and artifact code do not match !`,
@@ -335,9 +332,7 @@ export class ContractsService implements OnModuleInit {
                 this.shutdownService.shutdownWithError(error);
                 throw error;
             }
-            this.winstonLoggerService.log(
-                `Contract instance ${contract} matches on-chain code`,
-            );
+            this.winstonLoggerService.log(`Contract instance ${contract} matches on-chain code`);
         }
     }
 
@@ -349,45 +344,26 @@ export class ContractsService implements OnModuleInit {
     private async loadContracts(networkId: number): Promise<void> {
         try {
             this.contracts = {};
-            const artifactContent: string[] = this.fsService.readDir(
-                this.options.artifact_path,
-            );
+            const artifactContent: string[] = this.fsService.readDir(this.options.artifact_path);
             for (const artifact of artifactContent) {
-                if (
-                    !this.fsService.isDir(
-                        path.join(this.options.artifact_path, artifact),
-                    )
-                ) {
+                if (!this.fsService.isDir(path.join(this.options.artifact_path, artifact))) {
                     continue;
                 }
 
-                const contractsModuleDir = path.join(
-                    this.options.artifact_path,
-                    artifact,
-                    'build',
-                    'contracts',
-                );
-                const contractsModuleContent = this.fsService.readDir(
-                    contractsModuleDir,
-                );
+                const contractsModuleDir = path.join(this.options.artifact_path, artifact, 'build', 'contracts');
+                const contractsModuleContent = this.fsService.readDir(contractsModuleDir);
 
                 for (const contract of contractsModuleContent) {
                     const contractData: ContractArtifact = JSON.parse(
-                        this.fsService.readFile(
-                            path.join(contractsModuleDir, contract),
-                        ),
+                        this.fsService.readFile(path.join(contractsModuleDir, contract)),
                     );
                     contractData.moduleName = artifact;
                     const contractName = contract
                         .split('.')
                         .slice(0, -1)
                         .join('.');
-                    this.winstonLoggerService.log(
-                        `Imported contract instance ${artifact}::${contractName}`,
-                    );
-                    this.contracts[
-                        `${artifact}::${contractName}`
-                    ] = contractData;
+                    this.winstonLoggerService.log(`Imported contract instance ${artifact}::${contractName}`);
+                    this.contracts[`${artifact}::${contractName}`] = contractData;
                 }
             }
         } catch (e) {
@@ -404,13 +380,9 @@ export class ContractsService implements OnModuleInit {
         this.winstonLoggerService.log(`Starting contract instances import`);
         await this.loadContracts(networkId);
         this.winstonLoggerService.log(`Finished contract instances import`);
-        this.winstonLoggerService.log(
-            `Starting contract instances verification`,
-        );
+        this.winstonLoggerService.log(`Starting contract instances verification`);
         await this.verifyContracts(networkId);
-        this.winstonLoggerService.log(
-            `Finished contract instances verification`,
-        );
+        this.winstonLoggerService.log(`Finished contract instances verification`);
 
         return this.contracts;
     }
@@ -453,26 +425,18 @@ export class ContractsService implements OnModuleInit {
 
             for (const artifact of Object.keys(artifacts)) {
                 if (artifacts[artifact].networks[networkId]) {
-                    const txHash =
-                        artifacts[artifact].networks[networkId].transactionHash;
-                    const deploymentBN = (await web3.eth.getTransaction(txHash))
-                        .blockNumber;
+                    const txHash = artifacts[artifact].networks[networkId].transactionHash;
+                    const deploymentBN = (await web3.eth.getTransaction(txHash)).blockNumber;
 
-                    this.winstonLoggerService.log(
-                        `${artifact} was deployed at block number #${deploymentBN}`,
-                    );
+                    this.winstonLoggerService.log(`${artifact} was deployed at block number #${deploymentBN}`);
                     if (deploymentBN < currentLowestBN) {
-                        this.winstonLoggerService.log(
-                            `${artifact} is currently the lowest fetchable entity`,
-                        );
+                        this.winstonLoggerService.log(`${artifact} is currently the lowest fetchable entity`);
                         currentLowestBN = deploymentBN;
                     }
                 }
             }
 
-            this.winstonLoggerService.log(
-                `The new processed_block_number value is ${currentLowestBN}`,
-            );
+            this.winstonLoggerService.log(`The new processed_block_number value is ${currentLowestBN}`);
 
             const res = await this.globalConfigService.update(
                 {

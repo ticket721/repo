@@ -1,25 +1,14 @@
 import { EsSearchOptionsStatic } from '@iaminfinity/express-cassandra/dist/orm/interfaces/externals/express-cassandra.interface';
 import { ImagesRepository } from '@lib/common/images/Images.repository';
 import { ImagesService } from '@lib/common/images/Images.service';
-import {
-    capture,
-    deepEqual,
-    instance,
-    mock,
-    spy,
-    verify,
-    when,
-} from 'ts-mockito';
+import { capture, deepEqual, instance, mock, spy, verify, when } from 'ts-mockito';
 import { getModelToken } from '@iaminfinity/express-cassandra/dist/utils/cassandra-orm.utils';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ImageEntity } from '@lib/common/images/entities/Image.entity';
 import { uuid } from '@iaminfinity/express-cassandra';
 
 class EntityModelMock {
-    search(
-        options: EsSearchOptionsStatic,
-        callback?: (err: any, ret: any) => void,
-    ): void {
+    search(options: EsSearchOptionsStatic, callback?: (err: any, ret: any) => void): void {
         return;
     }
 

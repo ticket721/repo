@@ -24,17 +24,9 @@ export class RefractFactoryV0Service extends ContractsControllerBase {
         web3Service: Web3Service,
         shutdownService: ShutdownService,
         @Inject('CONTRACTS_CONTROLLER_BASE_CLASS')
-        private readonly contractsControllerBase: ClassType<
-            ContractsControllerBase
-        >,
+        private readonly contractsControllerBase: ClassType<ContractsControllerBase>,
     ) {
-        super(
-            contractsService,
-            web3Service,
-            shutdownService,
-            'refract',
-            'RefractFactory_v0',
-        );
+        super(contractsService, web3Service, shutdownService, 'refract', 'RefractFactory_v0');
     }
 
     /**
@@ -70,18 +62,12 @@ export class RefractFactoryV0Service extends ContractsControllerBase {
      * @param controller
      * @param salt
      */
-    public async isController(
-        refract: string,
-        controller: string,
-        salt: string,
-    ): Promise<boolean> {
+    public async isController(refract: string, controller: string, salt: string): Promise<boolean> {
         const code = await (await this.web3Service.get()).eth.getCode(refract);
 
         if (code === '0x') {
             const finalAddress: string = toAcceptedAddressFormat(
-                await (await this.get()).methods
-                    .predict(controller, salt)
-                    .call(),
+                await (await this.get()).methods.predict(controller, salt).call(),
             );
 
             return toAcceptedAddressFormat(refract) === finalAddress;
@@ -97,9 +83,7 @@ export class RefractFactoryV0Service extends ContractsControllerBase {
                 },
             );
 
-            return await (await refractInstance.get()).methods
-                .isController(controller)
-                .call();
+            return await (await refractInstance.get()).methods.isController(controller).call();
         }
     }
 
@@ -127,9 +111,7 @@ export class RefractFactoryV0Service extends ContractsControllerBase {
 
         if (code === '0x') {
             const factory = await this.get();
-            const factoryCall = factory.methods
-                .mtxAndDeploy(controller, salt, addr, nums, bdata)
-                .encodeABI();
+            const factoryCall = factory.methods.mtxAndDeploy(controller, salt, addr, nums, bdata).encodeABI();
 
             return [factory._address, factoryCall];
         } else {
@@ -144,12 +126,7 @@ export class RefractFactoryV0Service extends ContractsControllerBase {
                 },
             );
 
-            return [
-                refract,
-                (await refractInstance.get()).methods
-                    .mtx(nonce, addr, nums, bdata)
-                    .encodeABI(),
-            ];
+            return [refract, (await refractInstance.get()).methods.mtx(nonce, addr, nums, bdata).encodeABI()];
         }
     }
 }

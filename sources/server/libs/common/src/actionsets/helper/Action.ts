@@ -1,8 +1,4 @@
-import {
-    ActionEntity,
-    ActionStatus,
-    ActionType,
-} from '@lib/common/actionsets/entities/ActionSet.entity';
+import { ActionEntity, ActionStatus, ActionType } from '@lib/common/actionsets/entities/ActionSet.entity';
 
 /**
  * Utility to edit and interpret the ActionSet

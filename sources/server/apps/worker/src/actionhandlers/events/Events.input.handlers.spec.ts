@@ -35,9 +35,7 @@ describe('Event Input Handlers', function() {
             ],
         }).compile();
 
-        context.eventsInputHandler = module.get<EventsInputHandlers>(
-            EventsInputHandlers,
-        );
+        context.eventsInputHandler = module.get<EventsInputHandlers>(EventsInputHandlers);
     });
 
     describe('@events/textMetadata', function() {
@@ -75,13 +73,7 @@ describe('Event Input Handlers', function() {
             const actionSet: ActionSet = new ActionSet().load(actionSetEntity);
             const progress = async (p: number) => {};
 
-            const [
-                resActionSet,
-                update,
-            ] = await context.eventsInputHandler.textMetadataHandler(
-                actionSet,
-                progress,
-            );
+            const [resActionSet, update] = await context.eventsInputHandler.textMetadataHandler(actionSet, progress);
 
             expect(update).toEqual(true);
             expect(resActionSet.raw).toEqual({
@@ -138,13 +130,7 @@ describe('Event Input Handlers', function() {
             const actionSet: ActionSet = new ActionSet().load(actionSetEntity);
             const progress = async (p: number) => {};
 
-            const [
-                resActionSet,
-                update,
-            ] = await context.eventsInputHandler.textMetadataHandler(
-                actionSet,
-                progress,
-            );
+            const [resActionSet, update] = await context.eventsInputHandler.textMetadataHandler(actionSet, progress);
 
             expect(update).toEqual(true);
             expect(resActionSet.raw).toEqual({
@@ -201,10 +187,7 @@ describe('Event Input Handlers', function() {
             const actionSet: ActionSet = new ActionSet().load(actionSetEntity);
             const progress = async (p: number) => {};
 
-            const [
-                resActionSet,
-                update,
-            ] = await context.eventsInputHandler.modulesConfigurationHandler(
+            const [resActionSet, update] = await context.eventsInputHandler.modulesConfigurationHandler(
                 actionSet,
                 progress,
             );
@@ -263,10 +246,7 @@ describe('Event Input Handlers', function() {
             const actionSet: ActionSet = new ActionSet().load(actionSetEntity);
             const progress = async (p: number) => {};
 
-            const [
-                resActionSet,
-                update,
-            ] = await context.eventsInputHandler.modulesConfigurationHandler(
+            const [resActionSet, update] = await context.eventsInputHandler.modulesConfigurationHandler(
                 actionSet,
                 progress,
             );
@@ -306,9 +286,7 @@ describe('Event Input Handlers', function() {
                     {
                         name: 'Bataclan',
                         eventBegin: created_at,
-                        eventEnd: new Date(
-                            created_at.getTime() + 1000 * 60 * 60 * 24,
-                        ),
+                        eventEnd: new Date(created_at.getTime() + 1000 * 60 * 60 * 24),
                         location: {
                             label: '50 Boulevard Voltaire, 75011 Paris',
                             lat: 48.86311,
@@ -341,10 +319,7 @@ describe('Event Input Handlers', function() {
             const actionSet: ActionSet = new ActionSet().load(actionSetEntity);
             const progress = async (p: number) => {};
 
-            const [
-                resActionSet,
-                update,
-            ] = await context.eventsInputHandler.datesConfigurationHandler(
+            const [resActionSet, update] = await context.eventsInputHandler.datesConfigurationHandler(
                 actionSet,
                 progress,
             );
@@ -393,9 +368,7 @@ describe('Event Input Handlers', function() {
                 dates: [
                     {
                         eventBegin: created_at,
-                        eventEnd: new Date(
-                            created_at.getTime() + 1000 * 60 * 60 * 24,
-                        ),
+                        eventEnd: new Date(created_at.getTime() + 1000 * 60 * 60 * 24),
                         location: {
                             label: '50 Boulevard Voltaire, 75011 Paris',
                             lat: 48.86311,
@@ -428,10 +401,7 @@ describe('Event Input Handlers', function() {
             const actionSet: ActionSet = new ActionSet().load(actionSetEntity);
             const progress = async (p: number) => {};
 
-            const [
-                resActionSet,
-                update,
-            ] = await context.eventsInputHandler.datesConfigurationHandler(
+            const [resActionSet, update] = await context.eventsInputHandler.datesConfigurationHandler(
                 actionSet,
                 progress,
             );
@@ -470,9 +440,7 @@ describe('Event Input Handlers', function() {
                     {
                         name: 'Bataclan',
                         eventEnd: created_at,
-                        eventBegin: new Date(
-                            created_at.getTime() + 1000 * 60 * 60 * 24,
-                        ),
+                        eventBegin: new Date(created_at.getTime() + 1000 * 60 * 60 * 24),
                         location: {
                             label: '50 Boulevard Voltaire, 75011 Paris',
                             lat: 48.86311,
@@ -505,10 +473,7 @@ describe('Event Input Handlers', function() {
             const actionSet: ActionSet = new ActionSet().load(actionSetEntity);
             const progress = async (p: number) => {};
 
-            const [
-                resActionSet,
-                update,
-            ] = await context.eventsInputHandler.datesConfigurationHandler(
+            const [resActionSet, update] = await context.eventsInputHandler.datesConfigurationHandler(
                 actionSet,
                 progress,
             );
@@ -522,8 +487,7 @@ describe('Event Input Handlers', function() {
                         name: '@events/datesConfiguration',
                         data: JSON.stringify(datesConfiguration),
                         type: 'input',
-                        error:
-                            '{"details":null,"error":"event_end_before_event_begin"}',
+                        error: '{"details":null,"error":"event_end_before_event_begin"}',
                     },
                 ],
                 owner: 'ec677b12-d420-43a6-a597-ef84bf09f845',
@@ -548,9 +512,7 @@ describe('Event Input Handlers', function() {
                     {
                         name: 'Bataclan',
                         eventBegin: created_at,
-                        eventEnd: new Date(
-                            created_at.getTime() + 1000 * 60 * 60 * 24,
-                        ),
+                        eventEnd: new Date(created_at.getTime() + 1000 * 60 * 60 * 24),
                         location: {
                             label: '50 Boulevard Voltaire, 75011 Paris',
                             lat: 48.86311,
@@ -560,13 +522,9 @@ describe('Event Input Handlers', function() {
                 ],
             };
 
-            const resaleBegin = new Date(
-                created_at.getTime() - 1000 * 60 * 60 * 24,
-            );
+            const resaleBegin = new Date(created_at.getTime() - 1000 * 60 * 60 * 24);
 
-            const saleBegin = new Date(
-                created_at.getTime() - 1000 * 60 * 60 * 24,
-            );
+            const saleBegin = new Date(created_at.getTime() - 1000 * 60 * 60 * 24);
 
             const categoriesConfiguration = {
                 global: [
@@ -672,10 +630,7 @@ describe('Event Input Handlers', function() {
             const actionSet: ActionSet = new ActionSet().load(actionSetEntity);
             const progress = async (p: number) => {};
 
-            const [
-                resActionSet,
-                update,
-            ] = await context.eventsInputHandler.categoriesConfigurationHandler(
+            const [resActionSet, update] = await context.eventsInputHandler.categoriesConfigurationHandler(
                 actionSet,
                 progress,
             );
@@ -719,9 +674,7 @@ describe('Event Input Handlers', function() {
                     {
                         name: 'Bataclan',
                         eventBegin: created_at,
-                        eventEnd: new Date(
-                            created_at.getTime() + 1000 * 60 * 60 * 24,
-                        ),
+                        eventEnd: new Date(created_at.getTime() + 1000 * 60 * 60 * 24),
                         location: {
                             label: '50 Boulevard Voltaire, 75011 Paris',
                             lat: 48.86311,
@@ -731,9 +684,7 @@ describe('Event Input Handlers', function() {
                 ],
             };
 
-            const saleBegin = new Date(
-                created_at.getTime() - 1000 * 60 * 60 * 24,
-            );
+            const saleBegin = new Date(created_at.getTime() - 1000 * 60 * 60 * 24);
 
             const categoriesConfiguration = {
                 global: [
@@ -835,10 +786,7 @@ describe('Event Input Handlers', function() {
             const actionSet: ActionSet = new ActionSet().load(actionSetEntity);
             const progress = async (p: number) => {};
 
-            const [
-                resActionSet,
-                update,
-            ] = await context.eventsInputHandler.categoriesConfigurationHandler(
+            const [resActionSet, update] = await context.eventsInputHandler.categoriesConfigurationHandler(
                 actionSet,
                 progress,
             );
@@ -882,9 +830,7 @@ describe('Event Input Handlers', function() {
                     {
                         name: 'Bataclan',
                         eventBegin: created_at,
-                        eventEnd: new Date(
-                            created_at.getTime() + 1000 * 60 * 60 * 24,
-                        ),
+                        eventEnd: new Date(created_at.getTime() + 1000 * 60 * 60 * 24),
                         location: {
                             label: '50 Boulevard Voltaire, 75011 Paris',
                             lat: 48.86311,
@@ -894,9 +840,7 @@ describe('Event Input Handlers', function() {
                 ],
             };
 
-            const saleBegin = new Date(
-                created_at.getTime() - 1000 * 60 * 60 * 24,
-            );
+            const saleBegin = new Date(created_at.getTime() - 1000 * 60 * 60 * 24);
 
             const categoriesConfiguration = {
                 global: [
@@ -955,10 +899,7 @@ describe('Event Input Handlers', function() {
             const actionSet: ActionSet = new ActionSet().load(actionSetEntity);
             const progress = async (p: number) => {};
 
-            const [
-                resActionSet,
-                update,
-            ] = await context.eventsInputHandler.categoriesConfigurationHandler(
+            const [resActionSet, update] = await context.eventsInputHandler.categoriesConfigurationHandler(
                 actionSet,
                 progress,
             );
@@ -1002,9 +943,7 @@ describe('Event Input Handlers', function() {
                     {
                         name: 'Bataclan',
                         eventBegin: created_at,
-                        eventEnd: new Date(
-                            created_at.getTime() + 1000 * 60 * 60 * 24,
-                        ),
+                        eventEnd: new Date(created_at.getTime() + 1000 * 60 * 60 * 24),
                         location: {
                             label: '50 Boulevard Voltaire, 75011 Paris',
                             lat: 48.86311,
@@ -1014,13 +953,9 @@ describe('Event Input Handlers', function() {
                 ],
             };
 
-            const resaleBegin = new Date(
-                created_at.getTime() - 1000 * 60 * 60 * 24,
-            );
+            const resaleBegin = new Date(created_at.getTime() - 1000 * 60 * 60 * 24);
 
-            const saleBegin = new Date(
-                created_at.getTime() - 1000 * 60 * 60 * 24,
-            );
+            const saleBegin = new Date(created_at.getTime() - 1000 * 60 * 60 * 24);
 
             const categoriesConfiguration = {
                 global: [
@@ -1088,10 +1023,7 @@ describe('Event Input Handlers', function() {
             const actionSet: ActionSet = new ActionSet().load(actionSetEntity);
             const progress = async (p: number) => {};
 
-            const [
-                resActionSet,
-                update,
-            ] = await context.eventsInputHandler.categoriesConfigurationHandler(
+            const [resActionSet, update] = await context.eventsInputHandler.categoriesConfigurationHandler(
                 actionSet,
                 progress,
             );
@@ -1112,8 +1044,7 @@ describe('Event Input Handlers', function() {
                         name: '@events/categoriesConfiguration',
                         data: JSON.stringify(categoriesConfiguration),
                         type: 'input',
-                        error:
-                            '{"details":null,"error":"resale_dates_should_both_be_defined"}',
+                        error: '{"details":null,"error":"resale_dates_should_both_be_defined"}',
                     },
                 ],
                 owner: 'ec677b12-d420-43a6-a597-ef84bf09f845',
@@ -1136,9 +1067,7 @@ describe('Event Input Handlers', function() {
                     {
                         name: 'Bataclan',
                         eventBegin: created_at,
-                        eventEnd: new Date(
-                            created_at.getTime() + 1000 * 60 * 60 * 24,
-                        ),
+                        eventEnd: new Date(created_at.getTime() + 1000 * 60 * 60 * 24),
                         location: {
                             label: '50 Boulevard Voltaire, 75011 Paris',
                             lat: 48.86311,
@@ -1148,13 +1077,9 @@ describe('Event Input Handlers', function() {
                 ],
             };
 
-            const resaleBegin = new Date(
-                created_at.getTime() - 1000 * 60 * 60 * 24,
-            );
+            const resaleBegin = new Date(created_at.getTime() - 1000 * 60 * 60 * 24);
 
-            const saleBegin = new Date(
-                created_at.getTime() - 1000 * 60 * 60 * 24,
-            );
+            const saleBegin = new Date(created_at.getTime() - 1000 * 60 * 60 * 24);
 
             const categoriesConfiguration = {
                 global: [
@@ -1222,10 +1147,7 @@ describe('Event Input Handlers', function() {
             const actionSet: ActionSet = new ActionSet().load(actionSetEntity);
             const progress = async (p: number) => {};
 
-            const [
-                resActionSet,
-                update,
-            ] = await context.eventsInputHandler.categoriesConfigurationHandler(
+            const [resActionSet, update] = await context.eventsInputHandler.categoriesConfigurationHandler(
                 actionSet,
                 progress,
             );
@@ -1246,8 +1168,7 @@ describe('Event Input Handlers', function() {
                         name: '@events/categoriesConfiguration',
                         data: JSON.stringify(categoriesConfiguration),
                         type: 'input',
-                        error:
-                            '{"details":null,"error":"resale_dates_should_both_be_defined"}',
+                        error: '{"details":null,"error":"resale_dates_should_both_be_defined"}',
                     },
                 ],
                 owner: 'ec677b12-d420-43a6-a597-ef84bf09f845',
@@ -1270,9 +1191,7 @@ describe('Event Input Handlers', function() {
                     {
                         name: 'Bataclan',
                         eventBegin: created_at,
-                        eventEnd: new Date(
-                            created_at.getTime() + 1000 * 60 * 60 * 24,
-                        ),
+                        eventEnd: new Date(created_at.getTime() + 1000 * 60 * 60 * 24),
                         location: {
                             label: '50 Boulevard Voltaire, 75011 Paris',
                             lat: 48.86311,
@@ -1282,13 +1201,9 @@ describe('Event Input Handlers', function() {
                 ],
             };
 
-            const resaleBegin = new Date(
-                created_at.getTime() - 1000 * 60 * 60 * 24,
-            );
+            const resaleBegin = new Date(created_at.getTime() - 1000 * 60 * 60 * 24);
 
-            const saleBegin = new Date(
-                created_at.getTime() - 1000 * 60 * 60 * 24,
-            );
+            const saleBegin = new Date(created_at.getTime() - 1000 * 60 * 60 * 24);
 
             const categoriesConfiguration = {
                 global: [
@@ -1356,10 +1271,7 @@ describe('Event Input Handlers', function() {
             const actionSet: ActionSet = new ActionSet().load(actionSetEntity);
             const progress = async (p: number) => {};
 
-            const [
-                resActionSet,
-                update,
-            ] = await context.eventsInputHandler.categoriesConfigurationHandler(
+            const [resActionSet, update] = await context.eventsInputHandler.categoriesConfigurationHandler(
                 actionSet,
                 progress,
             );
@@ -1380,8 +1292,7 @@ describe('Event Input Handlers', function() {
                         name: '@events/categoriesConfiguration',
                         data: JSON.stringify(categoriesConfiguration),
                         type: 'input',
-                        error:
-                            '{"details":null,"error":"resale_dates_should_both_be_defined"}',
+                        error: '{"details":null,"error":"resale_dates_should_both_be_defined"}',
                     },
                 ],
                 owner: 'ec677b12-d420-43a6-a597-ef84bf09f845',
@@ -1404,9 +1315,7 @@ describe('Event Input Handlers', function() {
                     {
                         name: 'Bataclan',
                         eventBegin: created_at,
-                        eventEnd: new Date(
-                            created_at.getTime() + 1000 * 60 * 60 * 24,
-                        ),
+                        eventEnd: new Date(created_at.getTime() + 1000 * 60 * 60 * 24),
                         location: {
                             label: '50 Boulevard Voltaire, 75011 Paris',
                             lat: 48.86311,
@@ -1416,13 +1325,9 @@ describe('Event Input Handlers', function() {
                 ],
             };
 
-            const resaleBegin = new Date(
-                created_at.getTime() - 1000 * 60 * 60 * 24,
-            );
+            const resaleBegin = new Date(created_at.getTime() - 1000 * 60 * 60 * 24);
 
-            const saleBegin = new Date(
-                created_at.getTime() - 1000 * 60 * 60 * 24,
-            );
+            const saleBegin = new Date(created_at.getTime() - 1000 * 60 * 60 * 24);
 
             const categoriesConfiguration = {
                 global: [
@@ -1490,10 +1395,7 @@ describe('Event Input Handlers', function() {
             const actionSet: ActionSet = new ActionSet().load(actionSetEntity);
             const progress = async (p: number) => {};
 
-            const [
-                resActionSet,
-                update,
-            ] = await context.eventsInputHandler.categoriesConfigurationHandler(
+            const [resActionSet, update] = await context.eventsInputHandler.categoriesConfigurationHandler(
                 actionSet,
                 progress,
             );
@@ -1514,8 +1416,7 @@ describe('Event Input Handlers', function() {
                         name: '@events/categoriesConfiguration',
                         data: JSON.stringify(categoriesConfiguration),
                         type: 'input',
-                        error:
-                            '{"details":null,"error":"resale_dates_should_both_be_defined"}',
+                        error: '{"details":null,"error":"resale_dates_should_both_be_defined"}',
                     },
                 ],
                 owner: 'ec677b12-d420-43a6-a597-ef84bf09f845',
@@ -1538,9 +1439,7 @@ describe('Event Input Handlers', function() {
                     {
                         name: 'Bataclan',
                         eventBegin: created_at,
-                        eventEnd: new Date(
-                            created_at.getTime() + 1000 * 60 * 60 * 24,
-                        ),
+                        eventEnd: new Date(created_at.getTime() + 1000 * 60 * 60 * 24),
                         location: {
                             label: '50 Boulevard Voltaire, 75011 Paris',
                             lat: 48.86311,
@@ -1550,13 +1449,9 @@ describe('Event Input Handlers', function() {
                 ],
             };
 
-            const resaleBegin = new Date(
-                created_at.getTime() - 1000 * 60 * 60 * 24,
-            );
+            const resaleBegin = new Date(created_at.getTime() - 1000 * 60 * 60 * 24);
 
-            const saleBegin = new Date(
-                created_at.getTime() - 1000 * 60 * 60 * 24,
-            );
+            const saleBegin = new Date(created_at.getTime() - 1000 * 60 * 60 * 24);
 
             const categoriesConfiguration = {
                 global: [
@@ -1624,10 +1519,7 @@ describe('Event Input Handlers', function() {
             const actionSet: ActionSet = new ActionSet().load(actionSetEntity);
             const progress = async (p: number) => {};
 
-            const [
-                resActionSet,
-                update,
-            ] = await context.eventsInputHandler.categoriesConfigurationHandler(
+            const [resActionSet, update] = await context.eventsInputHandler.categoriesConfigurationHandler(
                 actionSet,
                 progress,
             );
@@ -1648,8 +1540,7 @@ describe('Event Input Handlers', function() {
                         name: '@events/categoriesConfiguration',
                         data: JSON.stringify(categoriesConfiguration),
                         type: 'input',
-                        error:
-                            '{"details":null,"error":"resale_end_before_resale_begin"}',
+                        error: '{"details":null,"error":"resale_end_before_resale_begin"}',
                     },
                 ],
                 owner: 'ec677b12-d420-43a6-a597-ef84bf09f845',
@@ -1672,9 +1563,7 @@ describe('Event Input Handlers', function() {
                     {
                         name: 'Bataclan',
                         eventBegin: created_at,
-                        eventEnd: new Date(
-                            created_at.getTime() + 1000 * 60 * 60 * 24,
-                        ),
+                        eventEnd: new Date(created_at.getTime() + 1000 * 60 * 60 * 24),
                         location: {
                             label: '50 Boulevard Voltaire, 75011 Paris',
                             lat: 48.86311,
@@ -1684,13 +1573,9 @@ describe('Event Input Handlers', function() {
                 ],
             };
 
-            const resaleBegin = new Date(
-                created_at.getTime() - 1000 * 60 * 60 * 24,
-            );
+            const resaleBegin = new Date(created_at.getTime() - 1000 * 60 * 60 * 24);
 
-            const saleBegin = new Date(
-                created_at.getTime() - 1000 * 60 * 60 * 24,
-            );
+            const saleBegin = new Date(created_at.getTime() - 1000 * 60 * 60 * 24);
 
             const categoriesConfiguration = {
                 global: [
@@ -1757,10 +1642,7 @@ describe('Event Input Handlers', function() {
             const actionSet: ActionSet = new ActionSet().load(actionSetEntity);
             const progress = async (p: number) => {};
 
-            const [
-                resActionSet,
-                update,
-            ] = await context.eventsInputHandler.categoriesConfigurationHandler(
+            const [resActionSet, update] = await context.eventsInputHandler.categoriesConfigurationHandler(
                 actionSet,
                 progress,
             );
@@ -1781,8 +1663,7 @@ describe('Event Input Handlers', function() {
                         name: '@events/categoriesConfiguration',
                         data: JSON.stringify(categoriesConfiguration),
                         type: 'input',
-                        error:
-                            '{"details":null,"error":"sale_end_before_sale_begin"}',
+                        error: '{"details":null,"error":"sale_end_before_sale_begin"}',
                     },
                 ],
                 owner: 'ec677b12-d420-43a6-a597-ef84bf09f845',
@@ -1805,9 +1686,7 @@ describe('Event Input Handlers', function() {
                     {
                         name: 'Bataclan',
                         eventBegin: created_at,
-                        eventEnd: new Date(
-                            created_at.getTime() + 1000 * 60 * 60 * 24,
-                        ),
+                        eventEnd: new Date(created_at.getTime() + 1000 * 60 * 60 * 24),
                         location: {
                             label: '50 Boulevard Voltaire, 75011 Paris',
                             lat: 48.86311,
@@ -1817,13 +1696,9 @@ describe('Event Input Handlers', function() {
                 ],
             };
 
-            const resaleBegin = new Date(
-                created_at.getTime() - 1000 * 60 * 60 * 24,
-            );
+            const resaleBegin = new Date(created_at.getTime() - 1000 * 60 * 60 * 24);
 
-            const saleBegin = new Date(
-                created_at.getTime() - 1000 * 60 * 60 * 24,
-            );
+            const saleBegin = new Date(created_at.getTime() - 1000 * 60 * 60 * 24);
 
             const categoriesConfiguration = {
                 global: [
@@ -1908,10 +1783,7 @@ describe('Event Input Handlers', function() {
             const actionSet: ActionSet = new ActionSet().load(actionSetEntity);
             const progress = async (p: number) => {};
 
-            const [
-                resActionSet,
-                update,
-            ] = await context.eventsInputHandler.categoriesConfigurationHandler(
+            const [resActionSet, update] = await context.eventsInputHandler.categoriesConfigurationHandler(
                 actionSet,
                 progress,
             );
@@ -1932,8 +1804,7 @@ describe('Event Input Handlers', function() {
                         name: '@events/categoriesConfiguration',
                         data: JSON.stringify(categoriesConfiguration),
                         type: 'input',
-                        error:
-                            '{"details":null,"error":"invalid_categories_per_dates_ratio"}',
+                        error: '{"details":null,"error":"invalid_categories_per_dates_ratio"}',
                     },
                 ],
                 owner: 'ec677b12-d420-43a6-a597-ef84bf09f845',
@@ -1956,9 +1827,7 @@ describe('Event Input Handlers', function() {
                     {
                         name: 'Bataclan',
                         eventBegin: created_at,
-                        eventEnd: new Date(
-                            created_at.getTime() + 1000 * 60 * 60 * 24,
-                        ),
+                        eventEnd: new Date(created_at.getTime() + 1000 * 60 * 60 * 24),
                         location: {
                             label: '50 Boulevard Voltaire, 75011 Paris',
                             lat: 48.86311,
@@ -1968,13 +1837,9 @@ describe('Event Input Handlers', function() {
                 ],
             };
 
-            const resaleBegin = new Date(
-                created_at.getTime() - 1000 * 60 * 60 * 24,
-            );
+            const resaleBegin = new Date(created_at.getTime() - 1000 * 60 * 60 * 24);
 
-            const saleBegin = new Date(
-                created_at.getTime() - 1000 * 60 * 60 * 24,
-            );
+            const saleBegin = new Date(created_at.getTime() - 1000 * 60 * 60 * 24);
 
             const categoriesConfiguration = {
                 global: [
@@ -2057,10 +1922,7 @@ describe('Event Input Handlers', function() {
             const actionSet: ActionSet = new ActionSet().load(actionSetEntity);
             const progress = async (p: number) => {};
 
-            const [
-                resActionSet,
-                update,
-            ] = await context.eventsInputHandler.categoriesConfigurationHandler(
+            const [resActionSet, update] = await context.eventsInputHandler.categoriesConfigurationHandler(
                 actionSet,
                 progress,
             );
@@ -2081,8 +1943,7 @@ describe('Event Input Handlers', function() {
                         name: '@events/categoriesConfiguration',
                         data: JSON.stringify(categoriesConfiguration),
                         type: 'input',
-                        error:
-                            '{"details":null,"error":"categories_name_conflict"}',
+                        error: '{"details":null,"error":"categories_name_conflict"}',
                     },
                 ],
                 owner: 'ec677b12-d420-43a6-a597-ef84bf09f845',
@@ -2105,9 +1966,7 @@ describe('Event Input Handlers', function() {
                     {
                         name: 'Bataclan',
                         eventBegin: created_at,
-                        eventEnd: new Date(
-                            created_at.getTime() + 1000 * 60 * 60 * 24,
-                        ),
+                        eventEnd: new Date(created_at.getTime() + 1000 * 60 * 60 * 24),
                         location: {
                             label: '50 Boulevard Voltaire, 75011 Paris',
                             lat: 48.86311,
@@ -2117,13 +1976,9 @@ describe('Event Input Handlers', function() {
                 ],
             };
 
-            const resaleBegin = new Date(
-                created_at.getTime() - 1000 * 60 * 60 * 24,
-            );
+            const resaleBegin = new Date(created_at.getTime() - 1000 * 60 * 60 * 24);
 
-            const saleBegin = new Date(
-                created_at.getTime() - 1000 * 60 * 60 * 24,
-            );
+            const saleBegin = new Date(created_at.getTime() - 1000 * 60 * 60 * 24);
 
             const categoriesConfiguration = {
                 global: [
@@ -2206,10 +2061,7 @@ describe('Event Input Handlers', function() {
             const actionSet: ActionSet = new ActionSet().load(actionSetEntity);
             const progress = async (p: number) => {};
 
-            const [
-                resActionSet,
-                update,
-            ] = await context.eventsInputHandler.categoriesConfigurationHandler(
+            const [resActionSet, update] = await context.eventsInputHandler.categoriesConfigurationHandler(
                 actionSet,
                 progress,
             );
@@ -2230,8 +2082,7 @@ describe('Event Input Handlers', function() {
                         name: '@events/categoriesConfiguration',
                         data: JSON.stringify(categoriesConfiguration),
                         type: 'input',
-                        error:
-                            '{"details":null,"error":"categories_name_conflict"}',
+                        error: '{"details":null,"error":"categories_name_conflict"}',
                     },
                 ],
                 owner: 'ec677b12-d420-43a6-a597-ef84bf09f845',
@@ -2253,10 +2104,7 @@ describe('Event Input Handlers', function() {
 
             const imagesMetadata = {
                 avatar: 'ec677b12-d420-43a6-a597-ef84bf09f845',
-                banners: [
-                    'ec677b16-d420-43a6-a597-ef84bf09f845',
-                    'ec677b16-d420-43a6-a597-ef84bf09f845',
-                ],
+                banners: ['ec677b16-d420-43a6-a597-ef84bf09f845', 'ec677b16-d420-43a6-a597-ef84bf09f845'],
             };
 
             when(
@@ -2326,13 +2174,7 @@ describe('Event Input Handlers', function() {
             const actionSet: ActionSet = new ActionSet().load(actionSetEntity);
             const progress = async (p: number) => {};
 
-            const [
-                resActionSet,
-                update,
-            ] = await context.eventsInputHandler.imagesMetadataHandler(
-                actionSet,
-                progress,
-            );
+            const [resActionSet, update] = await context.eventsInputHandler.imagesMetadataHandler(actionSet, progress);
 
             expect(update).toEqual(true);
             expect(resActionSet.raw).toEqual({
@@ -2388,13 +2230,7 @@ describe('Event Input Handlers', function() {
             const actionSet: ActionSet = new ActionSet().load(actionSetEntity);
             const progress = async (p: number) => {};
 
-            const [
-                resActionSet,
-                update,
-            ] = await context.eventsInputHandler.imagesMetadataHandler(
-                actionSet,
-                progress,
-            );
+            const [resActionSet, update] = await context.eventsInputHandler.imagesMetadataHandler(actionSet, progress);
 
             expect(update).toEqual(true);
             expect(resActionSet.raw).toEqual({
@@ -2426,10 +2262,7 @@ describe('Event Input Handlers', function() {
 
             const imagesMetadata = {
                 avatar: 'ec677b12-d420-43a6-a597-ef84bf09f845',
-                banners: [
-                    'ec677b16-d420-43a6-a597-ef84bf09f845',
-                    'ec677b16-d420-43a6-a597-ef84bf09f845',
-                ],
+                banners: ['ec677b16-d420-43a6-a597-ef84bf09f845', 'ec677b16-d420-43a6-a597-ef84bf09f845'],
             };
 
             when(
@@ -2488,13 +2321,7 @@ describe('Event Input Handlers', function() {
             const actionSet: ActionSet = new ActionSet().load(actionSetEntity);
             const progress = async (p: number) => {};
 
-            const [
-                resActionSet,
-                update,
-            ] = await context.eventsInputHandler.imagesMetadataHandler(
-                actionSet,
-                progress,
-            );
+            const [resActionSet, update] = await context.eventsInputHandler.imagesMetadataHandler(actionSet, progress);
 
             expect(update).toEqual(true);
             expect(resActionSet.raw).toEqual({
@@ -2525,10 +2352,7 @@ describe('Event Input Handlers', function() {
 
             const imagesMetadata = {
                 avatar: 'ec677b12-d420-43a6-a597-ef84bf09f845',
-                banners: [
-                    'ec677b16-d420-43a6-a597-ef84bf09f845',
-                    'ec677b16-d420-43a6-a597-ef84bf09f845',
-                ],
+                banners: ['ec677b16-d420-43a6-a597-ef84bf09f845', 'ec677b16-d420-43a6-a597-ef84bf09f845'],
             };
 
             when(
@@ -2598,13 +2422,7 @@ describe('Event Input Handlers', function() {
             const actionSet: ActionSet = new ActionSet().load(actionSetEntity);
             const progress = async (p: number) => {};
 
-            const [
-                resActionSet,
-                update,
-            ] = await context.eventsInputHandler.imagesMetadataHandler(
-                actionSet,
-                progress,
-            );
+            const [resActionSet, update] = await context.eventsInputHandler.imagesMetadataHandler(actionSet, progress);
 
             expect(update).toEqual(true);
             expect(resActionSet.raw).toEqual({
@@ -2635,10 +2453,7 @@ describe('Event Input Handlers', function() {
 
             const imagesMetadata = {
                 avatar: 'ec677b12-d420-43a6-a597-ef84bf09f845',
-                banners: [
-                    'ec677b16-d420-43a6-a597-ef84bf09f845',
-                    'ec677b16-d420-43a6-a597-ef84bf09f845',
-                ],
+                banners: ['ec677b16-d420-43a6-a597-ef84bf09f845', 'ec677b16-d420-43a6-a597-ef84bf09f845'],
             };
 
             when(
@@ -2697,13 +2512,7 @@ describe('Event Input Handlers', function() {
             const actionSet: ActionSet = new ActionSet().load(actionSetEntity);
             const progress = async (p: number) => {};
 
-            const [
-                resActionSet,
-                update,
-            ] = await context.eventsInputHandler.imagesMetadataHandler(
-                actionSet,
-                progress,
-            );
+            const [resActionSet, update] = await context.eventsInputHandler.imagesMetadataHandler(actionSet, progress);
 
             expect(update).toEqual(true);
             expect(resActionSet.raw).toEqual({
@@ -2734,10 +2543,7 @@ describe('Event Input Handlers', function() {
 
             const imagesMetadata = {
                 avatar: 'ec677b12-d420-43a6-a597-ef84bf09f845',
-                banners: [
-                    'ec677b16-d420-43a6-a597-ef84bf09f845',
-                    'ec677b16-d420-43a6-a597-ef84bf09f845',
-                ],
+                banners: ['ec677b16-d420-43a6-a597-ef84bf09f845', 'ec677b16-d420-43a6-a597-ef84bf09f845'],
             };
 
             when(
@@ -2807,13 +2613,7 @@ describe('Event Input Handlers', function() {
             const actionSet: ActionSet = new ActionSet().load(actionSetEntity);
             const progress = async (p: number) => {};
 
-            const [
-                resActionSet,
-                update,
-            ] = await context.eventsInputHandler.imagesMetadataHandler(
-                actionSet,
-                progress,
-            );
+            const [resActionSet, update] = await context.eventsInputHandler.imagesMetadataHandler(actionSet, progress);
 
             expect(update).toEqual(true);
             expect(resActionSet.raw).toEqual({
@@ -2869,10 +2669,7 @@ describe('Event Input Handlers', function() {
             const actionSet: ActionSet = new ActionSet().load(actionSetEntity);
             const progress = async (p: number) => {};
 
-            const [
-                resActionSet,
-                update,
-            ] = await context.eventsInputHandler.adminsConfigurationHandler(
+            const [resActionSet, update] = await context.eventsInputHandler.adminsConfigurationHandler(
                 actionSet,
                 progress,
             );
@@ -2931,10 +2728,7 @@ describe('Event Input Handlers', function() {
             const actionSet: ActionSet = new ActionSet().load(actionSetEntity);
             const progress = async (p: number) => {};
 
-            const [
-                resActionSet,
-                update,
-            ] = await context.eventsInputHandler.adminsConfigurationHandler(
+            const [resActionSet, update] = await context.eventsInputHandler.adminsConfigurationHandler(
                 actionSet,
                 progress,
             );

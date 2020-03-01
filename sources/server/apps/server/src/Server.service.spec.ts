@@ -30,16 +30,10 @@ describe('Server Service', () => {
         };
 
         const app: TestingModule = await Test.createTestingModule({
-            providers: [
-                ConfigServiceProvider,
-                ServerService,
-                WinstonLoggerServiceProvider,
-            ],
+            providers: [ConfigServiceProvider, ServerService, WinstonLoggerServiceProvider],
         }).compile();
 
-        const serverService: ServerService = app.get<ServerService>(
-            ServerService,
-        );
+        const serverService: ServerService = app.get<ServerService>(ServerService);
 
         context.configServiceMock = configServiceMock;
         context.serverService = serverService;

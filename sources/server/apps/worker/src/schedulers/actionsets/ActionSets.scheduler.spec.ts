@@ -2,21 +2,9 @@ import { ActionSetsScheduler } from '@app/worker/schedulers/actionsets/ActionSet
 import { ActionSetsService } from '@lib/common/actionsets/ActionSets.service';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 import { Job, JobOptions, Queue } from 'bull';
-import {
-    anything,
-    capture,
-    deepEqual,
-    instance,
-    mock,
-    verify,
-    when,
-} from 'ts-mockito';
+import { anything, capture, deepEqual, instance, mock, verify, when } from 'ts-mockito';
 import { Schedule } from 'nest-schedule';
-import {
-    ActionSetStatus,
-    ActionStatus,
-    ActionType,
-} from '@lib/common/actionsets/entities/ActionSet.entity';
+import { ActionSetStatus, ActionStatus, ActionType } from '@lib/common/actionsets/entities/ActionSet.entity';
 import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
 import { OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
 
@@ -194,14 +182,8 @@ describe('ActionSets Scheduler', function() {
                 error: null,
             });
 
-            when(
-                context.actionQueueMock.add('input', deepEqual(entity)),
-            ).thenResolve(void 0);
-            when(
-                context.actionQueueMock.getJobs(
-                    deepEqual(['active', 'waiting']),
-                ),
-            ).thenResolve([]);
+            when(context.actionQueueMock.add('input', deepEqual(entity))).thenResolve(void 0);
+            when(context.actionQueueMock.getJobs(deepEqual(['active', 'waiting']))).thenResolve([]);
             when(
                 context.actionSetsServiceMock.update(
                     deepEqual({
@@ -257,14 +239,8 @@ describe('ActionSets Scheduler', function() {
                     }),
                 ),
             ).called();
-            verify(
-                context.actionQueueMock.add('input', deepEqual(entity)),
-            ).called();
-            verify(
-                context.actionQueueMock.getJobs(
-                    deepEqual(['active', 'waiting']),
-                ),
-            ).called();
+            verify(context.actionQueueMock.add('input', deepEqual(entity))).called();
+            verify(context.actionQueueMock.getJobs(deepEqual(['active', 'waiting']))).called();
         });
 
         it('should skip only response', async function() {
@@ -339,14 +315,8 @@ describe('ActionSets Scheduler', function() {
                 error: null,
             });
 
-            when(
-                context.actionQueueMock.add('input', deepEqual(entity)),
-            ).thenResolve(void 0);
-            when(
-                context.actionQueueMock.getJobs(
-                    deepEqual(['active', 'waiting']),
-                ),
-            ).thenResolve([
+            when(context.actionQueueMock.add('input', deepEqual(entity))).thenResolve(void 0);
+            when(context.actionQueueMock.getJobs(deepEqual(['active', 'waiting']))).thenResolve([
                 {
                     data: entity,
                 } as any,
@@ -406,14 +376,8 @@ describe('ActionSets Scheduler', function() {
                     }),
                 ),
             ).never();
-            verify(
-                context.actionQueueMock.add('input', deepEqual(entity)),
-            ).never();
-            verify(
-                context.actionQueueMock.getJobs(
-                    deepEqual(['active', 'waiting']),
-                ),
-            ).called();
+            verify(context.actionQueueMock.add('input', deepEqual(entity))).never();
+            verify(context.actionQueueMock.getJobs(deepEqual(['active', 'waiting']))).called();
         });
     });
 });

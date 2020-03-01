@@ -1,13 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-    anything,
-    deepEqual,
-    instance,
-    mock,
-    spy,
-    verify,
-    when,
-} from 'ts-mockito';
+import { anything, deepEqual, instance, mock, spy, verify, when } from 'ts-mockito';
 import { uuid } from '@iaminfinity/express-cassandra';
 import { UserDto } from '@lib/common/users/dto/User.dto';
 import { ESSearchReturn } from '@lib/common/utils/ESSearchReturn';
@@ -136,9 +128,7 @@ describe('Events Controller', function() {
             controllers: [EventsController],
         }).compile();
 
-        context.eventsController = module.get<EventsController>(
-            EventsController,
-        );
+        context.eventsController = module.get<EventsController>(EventsController);
     });
 
     describe('search', function() {
@@ -174,10 +164,7 @@ describe('Events Controller', function() {
                     name: 'Test',
                     avatar: 'https://...',
                     banners: ['https://...'],
-                    dates: [
-                        'ec677b12-d420-43a6-a597-ef84bf09f845',
-                        'ec677b12-d420-43a6-a597-ef84bf09f845',
-                    ],
+                    dates: ['ec677b12-d420-43a6-a597-ef84bf09f845', 'ec677b12-d420-43a6-a597-ef84bf09f845'],
                     description: 'An event',
                     categories: [],
                     created_at: new Date(Date.now()),
@@ -209,11 +196,7 @@ describe('Events Controller', function() {
                 },
             };
 
-            when(
-                context.eventsServiceMock.searchElastic(
-                    deepEqual(internalEsQuery),
-                ),
-            ).thenResolve({
+            when(context.eventsServiceMock.searchElastic(deepEqual(internalEsQuery))).thenResolve({
                 error: null,
                 response: esReturn,
             });
@@ -290,9 +273,7 @@ describe('Events Controller', function() {
                 updated_at: new Date(Date.now()),
             };
 
-            when(
-                context.actionSetsServiceMock.create(deepEqual(entity)),
-            ).thenResolve({
+            when(context.actionSetsServiceMock.create(deepEqual(entity))).thenResolve({
                 response: {
                     ...entity,
                     ...extra_fields,
@@ -300,12 +281,9 @@ describe('Events Controller', function() {
                 error: null,
             });
 
-            const res: EventsCreateResponseDto = await context.eventsController.create(
-                body,
-                {
-                    id: 'cb70b84f-2746-4afb-b789-01f4917f3b28',
-                } as UserDto,
-            );
+            const res: EventsCreateResponseDto = await context.eventsController.create(body, {
+                id: 'cb70b84f-2746-4afb-b789-01f4917f3b28',
+            } as UserDto);
 
             expect(res.actionset).toEqual({
                 ...entity,
@@ -370,9 +348,7 @@ describe('Events Controller', function() {
                 dispatched_at: anything(),
             };
 
-            when(
-                context.actionSetsServiceMock.create(deepEqual(entity)),
-            ).thenResolve({
+            when(context.actionSetsServiceMock.create(deepEqual(entity))).thenResolve({
                 response: null,
                 error: 'unexpected error',
             });
@@ -459,10 +435,7 @@ describe('Events Controller', function() {
                 owner: 'c97ea2b4-174b-4d46-b307-9c010a03a385',
                 updated_at: new Date('2020-02-19T09:03:02.999Z'),
             };
-            const dateIds = [
-                '64f35afc-8e13-4f80-b9e6-00a6ef52a76d',
-                '64f35afc-8e13-4f80-b9e6-00a6ef52a77d',
-            ];
+            const dateIds = ['64f35afc-8e13-4f80-b9e6-00a6ef52a76d', '64f35afc-8e13-4f80-b9e6-00a6ef52a77d'];
             const dates: Partial<DateEntity>[] = [
                 {
                     event_begin: ('2020-02-20T09:02:57.492Z' as any) as Date,
@@ -472,8 +445,7 @@ describe('Events Controller', function() {
                         lon: 2.34015,
                         lat: 48.882301,
                     },
-                    location_label:
-                        '120 Boulevard de Rochechouart, 75018 Paris',
+                    location_label: '120 Boulevard de Rochechouart, 75018 Paris',
                     metadata: {
                         name: 'La Cigale',
                     },
@@ -546,10 +518,7 @@ describe('Events Controller', function() {
                 address: null,
                 owner: 'c97ea2b4-174b-4d46-b307-9c010a03a385',
                 admins: [],
-                dates: [
-                    '64f35afc-8e13-4f80-b9e6-00a6ef52a76d',
-                    '64f35afc-8e13-4f80-b9e6-00a6ef52a77d',
-                ],
+                dates: ['64f35afc-8e13-4f80-b9e6-00a6ef52a76d', '64f35afc-8e13-4f80-b9e6-00a6ef52a77d'],
                 categories: [
                     {
                         group_id: null,
@@ -572,10 +541,7 @@ describe('Events Controller', function() {
                     },
                 ],
                 avatar: 'e9b7af81-2c57-47d6-ba9a-1cdb2f33c1cb',
-                banners: [
-                    'decdea0b-2d00-4d57-b100-955f7ba41412',
-                    '531d71c9-ee88-4989-8925-ed8be8a7f918',
-                ],
+                banners: ['decdea0b-2d00-4d57-b100-955f7ba41412', '531d71c9-ee88-4989-8925-ed8be8a7f918'],
             };
 
             const eventAddress = '0x30199ec7ad0622c159cda3409a1f22a6dfe61de9';
@@ -609,9 +575,7 @@ describe('Events Controller', function() {
                 response: [actionSet],
             });
 
-            when(context.configServiceMock.get('TICKETFORGE_SCOPE')).thenReturn(
-                'ticket721_0',
-            );
+            when(context.configServiceMock.get('TICKETFORGE_SCOPE')).thenReturn('ticket721_0');
 
             when(context.currenciesServiceMock.get('Fiat')).thenResolve({
                 type: 'set',
@@ -628,9 +592,7 @@ describe('Events Controller', function() {
                 controller: ({} as any) as ContractsControllerBase,
             });
 
-            when(
-                context.datesServiceMock.create(deepEqual(dates[0])),
-            ).thenResolve({
+            when(context.datesServiceMock.create(deepEqual(dates[0]))).thenResolve({
                 error: null,
                 response: ({
                     ...dates[0],
@@ -638,9 +600,7 @@ describe('Events Controller', function() {
                 } as any) as DateEntity,
             });
 
-            when(
-                context.datesServiceMock.create(deepEqual(dates[1])),
-            ).thenResolve({
+            when(context.datesServiceMock.create(deepEqual(dates[1]))).thenResolve({
                 error: null,
                 response: ({
                     ...dates[1],
@@ -648,9 +608,7 @@ describe('Events Controller', function() {
                 } as any) as DateEntity,
             });
 
-            when(
-                context.eventsServiceMock.create(deepEqual(event)),
-            ).thenResolve({
+            when(context.eventsServiceMock.create(deepEqual(event))).thenResolve({
                 error: null,
                 response: ({
                     ...event,
@@ -658,11 +616,7 @@ describe('Events Controller', function() {
                 } as any) as EventEntity,
             });
 
-            when(
-                context.vaultereumServiceMock.write(
-                    `ethereum/accounts/event-${eventId.toLowerCase()}`,
-                ),
-            ).thenResolve({
+            when(context.vaultereumServiceMock.write(`ethereum/accounts/event-${eventId.toLowerCase()}`)).thenResolve({
                 error: null,
                 response: vaultereumAddressResponse,
             });
@@ -723,18 +677,10 @@ describe('Events Controller', function() {
             verify(context.configServiceMock.get('TICKETFORGE_SCOPE')).called();
             verify(context.currenciesServiceMock.get('Fiat')).called();
             verify(context.currenciesServiceMock.get('T721Token')).called();
-            verify(
-                context.datesServiceMock.create(deepEqual(dates[0])),
-            ).called();
-            verify(
-                context.datesServiceMock.create(deepEqual(dates[1])),
-            ).called();
+            verify(context.datesServiceMock.create(deepEqual(dates[0]))).called();
+            verify(context.datesServiceMock.create(deepEqual(dates[1]))).called();
             verify(context.eventsServiceMock.create(deepEqual(event))).called();
-            verify(
-                context.vaultereumServiceMock.write(
-                    `ethereum/accounts/event-${eventId.toLowerCase()}`,
-                ),
-            ).called();
+            verify(context.vaultereumServiceMock.write(`ethereum/accounts/event-${eventId.toLowerCase()}`)).called();
             verify(
                 context.eventsServiceMock.update(
                     deepEqual({
@@ -817,10 +763,7 @@ describe('Events Controller', function() {
                 owner: 'c97ea2b4-174b-4d46-b307-9c010a03a385',
                 updated_at: new Date('2020-02-19T09:03:02.999Z'),
             };
-            const dateIds = [
-                '64f35afc-8e13-4f80-b9e6-00a6ef52a76d',
-                '64f35afc-8e13-4f80-b9e6-00a6ef52a77d',
-            ];
+            const dateIds = ['64f35afc-8e13-4f80-b9e6-00a6ef52a76d', '64f35afc-8e13-4f80-b9e6-00a6ef52a77d'];
             const dates: Partial<DateEntity>[] = [
                 {
                     event_begin: ('2020-02-20T09:02:57.492Z' as any) as Date,
@@ -830,8 +773,7 @@ describe('Events Controller', function() {
                         lon: 2.34015,
                         lat: 48.882301,
                     },
-                    location_label:
-                        '120 Boulevard de Rochechouart, 75018 Paris',
+                    location_label: '120 Boulevard de Rochechouart, 75018 Paris',
                     metadata: {
                         name: 'La Cigale',
                     },
@@ -904,10 +846,7 @@ describe('Events Controller', function() {
                 address: null,
                 owner: 'c97ea2b4-174b-4d46-b307-9c010a03a385',
                 admins: [],
-                dates: [
-                    '64f35afc-8e13-4f80-b9e6-00a6ef52a76d',
-                    '64f35afc-8e13-4f80-b9e6-00a6ef52a77d',
-                ],
+                dates: ['64f35afc-8e13-4f80-b9e6-00a6ef52a76d', '64f35afc-8e13-4f80-b9e6-00a6ef52a77d'],
                 categories: [
                     {
                         group_id: null,
@@ -930,10 +869,7 @@ describe('Events Controller', function() {
                     },
                 ],
                 avatar: 'e9b7af81-2c57-47d6-ba9a-1cdb2f33c1cb',
-                banners: [
-                    'decdea0b-2d00-4d57-b100-955f7ba41412',
-                    '531d71c9-ee88-4989-8925-ed8be8a7f918',
-                ],
+                banners: ['decdea0b-2d00-4d57-b100-955f7ba41412', '531d71c9-ee88-4989-8925-ed8be8a7f918'],
             };
 
             const eventAddress = '0x30199ec7ad0622c159cda3409a1f22a6dfe61de9';
@@ -1058,10 +994,7 @@ describe('Events Controller', function() {
                 owner: 'c97ea2b4-174b-4d46-b307-9c010a03a385',
                 updated_at: new Date('2020-02-19T09:03:02.999Z'),
             };
-            const dateIds = [
-                '64f35afc-8e13-4f80-b9e6-00a6ef52a76d',
-                '64f35afc-8e13-4f80-b9e6-00a6ef52a77d',
-            ];
+            const dateIds = ['64f35afc-8e13-4f80-b9e6-00a6ef52a76d', '64f35afc-8e13-4f80-b9e6-00a6ef52a77d'];
             const dates: Partial<DateEntity>[] = [
                 {
                     event_begin: ('2020-02-20T09:02:57.492Z' as any) as Date,
@@ -1071,8 +1004,7 @@ describe('Events Controller', function() {
                         lon: 2.34015,
                         lat: 48.882301,
                     },
-                    location_label:
-                        '120 Boulevard de Rochechouart, 75018 Paris',
+                    location_label: '120 Boulevard de Rochechouart, 75018 Paris',
                     metadata: {
                         name: 'La Cigale',
                     },
@@ -1145,10 +1077,7 @@ describe('Events Controller', function() {
                 address: null,
                 owner: 'c97ea2b4-174b-4d46-b307-9c010a03a385',
                 admins: [],
-                dates: [
-                    '64f35afc-8e13-4f80-b9e6-00a6ef52a76d',
-                    '64f35afc-8e13-4f80-b9e6-00a6ef52a77d',
-                ],
+                dates: ['64f35afc-8e13-4f80-b9e6-00a6ef52a76d', '64f35afc-8e13-4f80-b9e6-00a6ef52a77d'],
                 categories: [
                     {
                         group_id: null,
@@ -1171,10 +1100,7 @@ describe('Events Controller', function() {
                     },
                 ],
                 avatar: 'e9b7af81-2c57-47d6-ba9a-1cdb2f33c1cb',
-                banners: [
-                    'decdea0b-2d00-4d57-b100-955f7ba41412',
-                    '531d71c9-ee88-4989-8925-ed8be8a7f918',
-                ],
+                banners: ['decdea0b-2d00-4d57-b100-955f7ba41412', '531d71c9-ee88-4989-8925-ed8be8a7f918'],
             };
 
             const eventAddress = '0x30199ec7ad0622c159cda3409a1f22a6dfe61de9';
@@ -1299,10 +1225,7 @@ describe('Events Controller', function() {
                 owner: 'c97ea2b4-174b-4d46-b307-9c010a03a385',
                 updated_at: new Date('2020-02-19T09:03:02.999Z'),
             };
-            const dateIds = [
-                '64f35afc-8e13-4f80-b9e6-00a6ef52a76d',
-                '64f35afc-8e13-4f80-b9e6-00a6ef52a77d',
-            ];
+            const dateIds = ['64f35afc-8e13-4f80-b9e6-00a6ef52a76d', '64f35afc-8e13-4f80-b9e6-00a6ef52a77d'];
             const dates: Partial<DateEntity>[] = [
                 {
                     event_begin: ('2020-02-20T09:02:57.492Z' as any) as Date,
@@ -1312,8 +1235,7 @@ describe('Events Controller', function() {
                         lon: 2.34015,
                         lat: 48.882301,
                     },
-                    location_label:
-                        '120 Boulevard de Rochechouart, 75018 Paris',
+                    location_label: '120 Boulevard de Rochechouart, 75018 Paris',
                     metadata: {
                         name: 'La Cigale',
                     },
@@ -1386,10 +1308,7 @@ describe('Events Controller', function() {
                 address: null,
                 owner: 'c97ea2b4-174b-4d46-b307-9c010a03a385',
                 admins: [],
-                dates: [
-                    '64f35afc-8e13-4f80-b9e6-00a6ef52a76d',
-                    '64f35afc-8e13-4f80-b9e6-00a6ef52a77d',
-                ],
+                dates: ['64f35afc-8e13-4f80-b9e6-00a6ef52a76d', '64f35afc-8e13-4f80-b9e6-00a6ef52a77d'],
                 categories: [
                     {
                         group_id: null,
@@ -1412,10 +1331,7 @@ describe('Events Controller', function() {
                     },
                 ],
                 avatar: 'e9b7af81-2c57-47d6-ba9a-1cdb2f33c1cb',
-                banners: [
-                    'decdea0b-2d00-4d57-b100-955f7ba41412',
-                    '531d71c9-ee88-4989-8925-ed8be8a7f918',
-                ],
+                banners: ['decdea0b-2d00-4d57-b100-955f7ba41412', '531d71c9-ee88-4989-8925-ed8be8a7f918'],
             };
 
             const eventAddress = '0x30199ec7ad0622c159cda3409a1f22a6dfe61de9';
@@ -1540,10 +1456,7 @@ describe('Events Controller', function() {
                 owner: 'c97ea2b4-174b-4d46-b307-9c010a03a385',
                 updated_at: new Date('2020-02-19T09:03:02.999Z'),
             };
-            const dateIds = [
-                '64f35afc-8e13-4f80-b9e6-00a6ef52a76d',
-                '64f35afc-8e13-4f80-b9e6-00a6ef52a77d',
-            ];
+            const dateIds = ['64f35afc-8e13-4f80-b9e6-00a6ef52a76d', '64f35afc-8e13-4f80-b9e6-00a6ef52a77d'];
             const dates: Partial<DateEntity>[] = [
                 {
                     event_begin: ('2020-02-20T09:02:57.492Z' as any) as Date,
@@ -1553,8 +1466,7 @@ describe('Events Controller', function() {
                         lon: 2.34015,
                         lat: 48.882301,
                     },
-                    location_label:
-                        '120 Boulevard de Rochechouart, 75018 Paris',
+                    location_label: '120 Boulevard de Rochechouart, 75018 Paris',
                     metadata: {
                         name: 'La Cigale',
                     },
@@ -1627,10 +1539,7 @@ describe('Events Controller', function() {
                 address: null,
                 owner: 'c97ea2b4-174b-4d46-b307-9c010a03a385',
                 admins: [],
-                dates: [
-                    '64f35afc-8e13-4f80-b9e6-00a6ef52a76d',
-                    '64f35afc-8e13-4f80-b9e6-00a6ef52a77d',
-                ],
+                dates: ['64f35afc-8e13-4f80-b9e6-00a6ef52a76d', '64f35afc-8e13-4f80-b9e6-00a6ef52a77d'],
                 categories: [
                     {
                         group_id: null,
@@ -1653,10 +1562,7 @@ describe('Events Controller', function() {
                     },
                 ],
                 avatar: 'e9b7af81-2c57-47d6-ba9a-1cdb2f33c1cb',
-                banners: [
-                    'decdea0b-2d00-4d57-b100-955f7ba41412',
-                    '531d71c9-ee88-4989-8925-ed8be8a7f918',
-                ],
+                banners: ['decdea0b-2d00-4d57-b100-955f7ba41412', '531d71c9-ee88-4989-8925-ed8be8a7f918'],
             };
 
             const eventAddress = '0x30199ec7ad0622c159cda3409a1f22a6dfe61de9';
@@ -1781,10 +1687,7 @@ describe('Events Controller', function() {
                 owner: 'c97ea2b4-174b-4d46-b307-9c010a03a385',
                 updated_at: new Date('2020-02-19T09:03:02.999Z'),
             };
-            const dateIds = [
-                '64f35afc-8e13-4f80-b9e6-00a6ef52a76d',
-                '64f35afc-8e13-4f80-b9e6-00a6ef52a77d',
-            ];
+            const dateIds = ['64f35afc-8e13-4f80-b9e6-00a6ef52a76d', '64f35afc-8e13-4f80-b9e6-00a6ef52a77d'];
             const dates: Partial<DateEntity>[] = [
                 {
                     event_begin: ('2020-02-20T09:02:57.492Z' as any) as Date,
@@ -1794,8 +1697,7 @@ describe('Events Controller', function() {
                         lon: 2.34015,
                         lat: 48.882301,
                     },
-                    location_label:
-                        '120 Boulevard de Rochechouart, 75018 Paris',
+                    location_label: '120 Boulevard de Rochechouart, 75018 Paris',
                     metadata: {
                         name: 'La Cigale',
                     },
@@ -1868,10 +1770,7 @@ describe('Events Controller', function() {
                 address: null,
                 owner: 'c97ea2b4-174b-4d46-b307-9c010a03a385',
                 admins: [],
-                dates: [
-                    '64f35afc-8e13-4f80-b9e6-00a6ef52a76d',
-                    '64f35afc-8e13-4f80-b9e6-00a6ef52a77d',
-                ],
+                dates: ['64f35afc-8e13-4f80-b9e6-00a6ef52a76d', '64f35afc-8e13-4f80-b9e6-00a6ef52a77d'],
                 categories: [
                     {
                         group_id: null,
@@ -1894,10 +1793,7 @@ describe('Events Controller', function() {
                     },
                 ],
                 avatar: 'e9b7af81-2c57-47d6-ba9a-1cdb2f33c1cb',
-                banners: [
-                    'decdea0b-2d00-4d57-b100-955f7ba41412',
-                    '531d71c9-ee88-4989-8925-ed8be8a7f918',
-                ],
+                banners: ['decdea0b-2d00-4d57-b100-955f7ba41412', '531d71c9-ee88-4989-8925-ed8be8a7f918'],
             };
 
             const eventAddress = '0x30199ec7ad0622c159cda3409a1f22a6dfe61de9';
@@ -1931,9 +1827,7 @@ describe('Events Controller', function() {
                 response: [actionSet],
             });
 
-            when(context.configServiceMock.get('TICKETFORGE_SCOPE')).thenReturn(
-                'ticket721_0',
-            );
+            when(context.configServiceMock.get('TICKETFORGE_SCOPE')).thenReturn('ticket721_0');
 
             when(context.currenciesServiceMock.get('Fiat')).thenResolve({
                 type: 'set',
@@ -1950,9 +1844,7 @@ describe('Events Controller', function() {
                 controller: ({} as any) as ContractsControllerBase,
             });
 
-            when(
-                context.datesServiceMock.create(deepEqual(dates[0])),
-            ).thenResolve({
+            when(context.datesServiceMock.create(deepEqual(dates[0]))).thenResolve({
                 error: 'unexpected_error',
                 response: null,
             });
@@ -1986,9 +1878,7 @@ describe('Events Controller', function() {
             verify(context.configServiceMock.get('TICKETFORGE_SCOPE')).called();
             verify(context.currenciesServiceMock.get('Fiat')).called();
             verify(context.currenciesServiceMock.get('T721Token')).called();
-            verify(
-                context.datesServiceMock.create(deepEqual(dates[0])),
-            ).called();
+            verify(context.datesServiceMock.create(deepEqual(dates[0]))).called();
         });
 
         it('event creation fail', async function() {
@@ -2054,10 +1944,7 @@ describe('Events Controller', function() {
                 owner: 'c97ea2b4-174b-4d46-b307-9c010a03a385',
                 updated_at: new Date('2020-02-19T09:03:02.999Z'),
             };
-            const dateIds = [
-                '64f35afc-8e13-4f80-b9e6-00a6ef52a76d',
-                '64f35afc-8e13-4f80-b9e6-00a6ef52a77d',
-            ];
+            const dateIds = ['64f35afc-8e13-4f80-b9e6-00a6ef52a76d', '64f35afc-8e13-4f80-b9e6-00a6ef52a77d'];
             const dates: Partial<DateEntity>[] = [
                 {
                     event_begin: ('2020-02-20T09:02:57.492Z' as any) as Date,
@@ -2067,8 +1954,7 @@ describe('Events Controller', function() {
                         lon: 2.34015,
                         lat: 48.882301,
                     },
-                    location_label:
-                        '120 Boulevard de Rochechouart, 75018 Paris',
+                    location_label: '120 Boulevard de Rochechouart, 75018 Paris',
                     metadata: {
                         name: 'La Cigale',
                     },
@@ -2141,10 +2027,7 @@ describe('Events Controller', function() {
                 address: null,
                 owner: 'c97ea2b4-174b-4d46-b307-9c010a03a385',
                 admins: [],
-                dates: [
-                    '64f35afc-8e13-4f80-b9e6-00a6ef52a76d',
-                    '64f35afc-8e13-4f80-b9e6-00a6ef52a77d',
-                ],
+                dates: ['64f35afc-8e13-4f80-b9e6-00a6ef52a76d', '64f35afc-8e13-4f80-b9e6-00a6ef52a77d'],
                 categories: [
                     {
                         group_id: null,
@@ -2167,10 +2050,7 @@ describe('Events Controller', function() {
                     },
                 ],
                 avatar: 'e9b7af81-2c57-47d6-ba9a-1cdb2f33c1cb',
-                banners: [
-                    'decdea0b-2d00-4d57-b100-955f7ba41412',
-                    '531d71c9-ee88-4989-8925-ed8be8a7f918',
-                ],
+                banners: ['decdea0b-2d00-4d57-b100-955f7ba41412', '531d71c9-ee88-4989-8925-ed8be8a7f918'],
             };
 
             const eventAddress = '0x30199ec7ad0622c159cda3409a1f22a6dfe61de9';
@@ -2204,9 +2084,7 @@ describe('Events Controller', function() {
                 response: [actionSet],
             });
 
-            when(context.configServiceMock.get('TICKETFORGE_SCOPE')).thenReturn(
-                'ticket721_0',
-            );
+            when(context.configServiceMock.get('TICKETFORGE_SCOPE')).thenReturn('ticket721_0');
 
             when(context.currenciesServiceMock.get('Fiat')).thenResolve({
                 type: 'set',
@@ -2223,9 +2101,7 @@ describe('Events Controller', function() {
                 controller: ({} as any) as ContractsControllerBase,
             });
 
-            when(
-                context.datesServiceMock.create(deepEqual(dates[0])),
-            ).thenResolve({
+            when(context.datesServiceMock.create(deepEqual(dates[0]))).thenResolve({
                 error: null,
                 response: ({
                     ...dates[0],
@@ -2233,9 +2109,7 @@ describe('Events Controller', function() {
                 } as any) as DateEntity,
             });
 
-            when(
-                context.datesServiceMock.create(deepEqual(dates[1])),
-            ).thenResolve({
+            when(context.datesServiceMock.create(deepEqual(dates[1]))).thenResolve({
                 error: null,
                 response: ({
                     ...dates[1],
@@ -2243,9 +2117,7 @@ describe('Events Controller', function() {
                 } as any) as DateEntity,
             });
 
-            when(
-                context.eventsServiceMock.create(deepEqual(event)),
-            ).thenResolve({
+            when(context.eventsServiceMock.create(deepEqual(event))).thenResolve({
                 error: 'unexpected_error',
                 response: null,
             });
@@ -2279,12 +2151,8 @@ describe('Events Controller', function() {
             verify(context.configServiceMock.get('TICKETFORGE_SCOPE')).called();
             verify(context.currenciesServiceMock.get('Fiat')).called();
             verify(context.currenciesServiceMock.get('T721Token')).called();
-            verify(
-                context.datesServiceMock.create(deepEqual(dates[0])),
-            ).called();
-            verify(
-                context.datesServiceMock.create(deepEqual(dates[1])),
-            ).called();
+            verify(context.datesServiceMock.create(deepEqual(dates[0]))).called();
+            verify(context.datesServiceMock.create(deepEqual(dates[1]))).called();
             verify(context.eventsServiceMock.create(deepEqual(event))).called();
         });
 
@@ -2351,10 +2219,7 @@ describe('Events Controller', function() {
                 owner: 'c97ea2b4-174b-4d46-b307-9c010a03a385',
                 updated_at: new Date('2020-02-19T09:03:02.999Z'),
             };
-            const dateIds = [
-                '64f35afc-8e13-4f80-b9e6-00a6ef52a76d',
-                '64f35afc-8e13-4f80-b9e6-00a6ef52a77d',
-            ];
+            const dateIds = ['64f35afc-8e13-4f80-b9e6-00a6ef52a76d', '64f35afc-8e13-4f80-b9e6-00a6ef52a77d'];
             const dates: Partial<DateEntity>[] = [
                 {
                     event_begin: ('2020-02-20T09:02:57.492Z' as any) as Date,
@@ -2364,8 +2229,7 @@ describe('Events Controller', function() {
                         lon: 2.34015,
                         lat: 48.882301,
                     },
-                    location_label:
-                        '120 Boulevard de Rochechouart, 75018 Paris',
+                    location_label: '120 Boulevard de Rochechouart, 75018 Paris',
                     metadata: {
                         name: 'La Cigale',
                     },
@@ -2438,10 +2302,7 @@ describe('Events Controller', function() {
                 address: null,
                 owner: 'c97ea2b4-174b-4d46-b307-9c010a03a385',
                 admins: [],
-                dates: [
-                    '64f35afc-8e13-4f80-b9e6-00a6ef52a76d',
-                    '64f35afc-8e13-4f80-b9e6-00a6ef52a77d',
-                ],
+                dates: ['64f35afc-8e13-4f80-b9e6-00a6ef52a76d', '64f35afc-8e13-4f80-b9e6-00a6ef52a77d'],
                 categories: [
                     {
                         group_id: null,
@@ -2464,10 +2325,7 @@ describe('Events Controller', function() {
                     },
                 ],
                 avatar: 'e9b7af81-2c57-47d6-ba9a-1cdb2f33c1cb',
-                banners: [
-                    'decdea0b-2d00-4d57-b100-955f7ba41412',
-                    '531d71c9-ee88-4989-8925-ed8be8a7f918',
-                ],
+                banners: ['decdea0b-2d00-4d57-b100-955f7ba41412', '531d71c9-ee88-4989-8925-ed8be8a7f918'],
             };
 
             const eventAddress = '0x30199ec7ad0622c159cda3409a1f22a6dfe61de9';
@@ -2501,9 +2359,7 @@ describe('Events Controller', function() {
                 response: [actionSet],
             });
 
-            when(context.configServiceMock.get('TICKETFORGE_SCOPE')).thenReturn(
-                'ticket721_0',
-            );
+            when(context.configServiceMock.get('TICKETFORGE_SCOPE')).thenReturn('ticket721_0');
 
             when(context.currenciesServiceMock.get('Fiat')).thenResolve({
                 type: 'set',
@@ -2520,9 +2376,7 @@ describe('Events Controller', function() {
                 controller: ({} as any) as ContractsControllerBase,
             });
 
-            when(
-                context.datesServiceMock.create(deepEqual(dates[0])),
-            ).thenResolve({
+            when(context.datesServiceMock.create(deepEqual(dates[0]))).thenResolve({
                 error: null,
                 response: ({
                     ...dates[0],
@@ -2530,9 +2384,7 @@ describe('Events Controller', function() {
                 } as any) as DateEntity,
             });
 
-            when(
-                context.datesServiceMock.create(deepEqual(dates[1])),
-            ).thenResolve({
+            when(context.datesServiceMock.create(deepEqual(dates[1]))).thenResolve({
                 error: null,
                 response: ({
                     ...dates[1],
@@ -2540,9 +2392,7 @@ describe('Events Controller', function() {
                 } as any) as DateEntity,
             });
 
-            when(
-                context.eventsServiceMock.create(deepEqual(event)),
-            ).thenResolve({
+            when(context.eventsServiceMock.create(deepEqual(event))).thenResolve({
                 error: null,
                 response: ({
                     ...event,
@@ -2550,11 +2400,7 @@ describe('Events Controller', function() {
                 } as any) as EventEntity,
             });
 
-            when(
-                context.vaultereumServiceMock.write(
-                    `ethereum/accounts/event-${eventId.toLowerCase()}`,
-                ),
-            ).thenResolve({
+            when(context.vaultereumServiceMock.write(`ethereum/accounts/event-${eventId.toLowerCase()}`)).thenResolve({
                 error: 'unexpected_error',
                 response: null,
             });
@@ -2588,18 +2434,10 @@ describe('Events Controller', function() {
             verify(context.configServiceMock.get('TICKETFORGE_SCOPE')).called();
             verify(context.currenciesServiceMock.get('Fiat')).called();
             verify(context.currenciesServiceMock.get('T721Token')).called();
-            verify(
-                context.datesServiceMock.create(deepEqual(dates[0])),
-            ).called();
-            verify(
-                context.datesServiceMock.create(deepEqual(dates[1])),
-            ).called();
+            verify(context.datesServiceMock.create(deepEqual(dates[0]))).called();
+            verify(context.datesServiceMock.create(deepEqual(dates[1]))).called();
             verify(context.eventsServiceMock.create(deepEqual(event))).called();
-            verify(
-                context.vaultereumServiceMock.write(
-                    `ethereum/accounts/event-${eventId.toLowerCase()}`,
-                ),
-            ).called();
+            verify(context.vaultereumServiceMock.write(`ethereum/accounts/event-${eventId.toLowerCase()}`)).called();
         });
 
         it('event entity conversion error', async function() {
@@ -2665,10 +2503,7 @@ describe('Events Controller', function() {
                 owner: 'c97ea2b4-174b-4d46-b307-9c010a03a385',
                 updated_at: new Date('2020-02-19T09:03:02.999Z'),
             };
-            const dateIds = [
-                '64f35afc-8e13-4f80-b9e6-00a6ef52a76d',
-                '64f35afc-8e13-4f80-b9e6-00a6ef52a77d',
-            ];
+            const dateIds = ['64f35afc-8e13-4f80-b9e6-00a6ef52a76d', '64f35afc-8e13-4f80-b9e6-00a6ef52a77d'];
             const dates: Partial<DateEntity>[] = [
                 {
                     event_begin: ('2020-02-20T09:02:57.492Z' as any) as Date,
@@ -2678,8 +2513,7 @@ describe('Events Controller', function() {
                         lon: 2.34015,
                         lat: 48.882301,
                     },
-                    location_label:
-                        '120 Boulevard de Rochechouart, 75018 Paris',
+                    location_label: '120 Boulevard de Rochechouart, 75018 Paris',
                     metadata: {
                         name: 'La Cigale',
                     },
@@ -2752,10 +2586,7 @@ describe('Events Controller', function() {
                 address: null,
                 owner: 'c97ea2b4-174b-4d46-b307-9c010a03a385',
                 admins: [],
-                dates: [
-                    '64f35afc-8e13-4f80-b9e6-00a6ef52a76d',
-                    '64f35afc-8e13-4f80-b9e6-00a6ef52a77d',
-                ],
+                dates: ['64f35afc-8e13-4f80-b9e6-00a6ef52a76d', '64f35afc-8e13-4f80-b9e6-00a6ef52a77d'],
                 categories: [
                     {
                         group_id: null,
@@ -2778,10 +2609,7 @@ describe('Events Controller', function() {
                     },
                 ],
                 avatar: 'e9b7af81-2c57-47d6-ba9a-1cdb2f33c1cb',
-                banners: [
-                    'decdea0b-2d00-4d57-b100-955f7ba41412',
-                    '531d71c9-ee88-4989-8925-ed8be8a7f918',
-                ],
+                banners: ['decdea0b-2d00-4d57-b100-955f7ba41412', '531d71c9-ee88-4989-8925-ed8be8a7f918'],
             };
 
             const eventAddress = '0x30199ec7ad0622c159cda3409a1f22a6dfe61de9';
@@ -2815,13 +2643,9 @@ describe('Events Controller', function() {
                 response: [actionSet],
             });
 
-            when(context.configServiceMock.get('TICKETFORGE_SCOPE')).thenReturn(
-                'ticket721_0',
-            );
+            when(context.configServiceMock.get('TICKETFORGE_SCOPE')).thenReturn('ticket721_0');
 
-            when(context.currenciesServiceMock.get('Fiat')).thenResolve(
-                undefined,
-            );
+            when(context.currenciesServiceMock.get('Fiat')).thenResolve(undefined);
 
             await expect(
                 context.eventsController.build(
@@ -2916,10 +2740,7 @@ describe('Events Controller', function() {
                 owner: 'c97ea2b4-174b-4d46-b307-9c010a03a385',
                 updated_at: new Date('2020-02-19T09:03:02.999Z'),
             };
-            const dateIds = [
-                '64f35afc-8e13-4f80-b9e6-00a6ef52a76d',
-                '64f35afc-8e13-4f80-b9e6-00a6ef52a77d',
-            ];
+            const dateIds = ['64f35afc-8e13-4f80-b9e6-00a6ef52a76d', '64f35afc-8e13-4f80-b9e6-00a6ef52a77d'];
             const dates: Partial<DateEntity>[] = [
                 {
                     event_begin: ('2020-02-20T09:02:57.492Z' as any) as Date,
@@ -2929,8 +2750,7 @@ describe('Events Controller', function() {
                         lon: 2.34015,
                         lat: 48.882301,
                     },
-                    location_label:
-                        '120 Boulevard de Rochechouart, 75018 Paris',
+                    location_label: '120 Boulevard de Rochechouart, 75018 Paris',
                     metadata: {
                         name: 'La Cigale',
                     },
@@ -3003,10 +2823,7 @@ describe('Events Controller', function() {
                 address: null,
                 owner: 'c97ea2b4-174b-4d46-b307-9c010a03a385',
                 admins: [],
-                dates: [
-                    '64f35afc-8e13-4f80-b9e6-00a6ef52a76d',
-                    '64f35afc-8e13-4f80-b9e6-00a6ef52a77d',
-                ],
+                dates: ['64f35afc-8e13-4f80-b9e6-00a6ef52a76d', '64f35afc-8e13-4f80-b9e6-00a6ef52a77d'],
                 categories: [
                     {
                         group_id: null,
@@ -3029,10 +2846,7 @@ describe('Events Controller', function() {
                     },
                 ],
                 avatar: 'e9b7af81-2c57-47d6-ba9a-1cdb2f33c1cb',
-                banners: [
-                    'decdea0b-2d00-4d57-b100-955f7ba41412',
-                    '531d71c9-ee88-4989-8925-ed8be8a7f918',
-                ],
+                banners: ['decdea0b-2d00-4d57-b100-955f7ba41412', '531d71c9-ee88-4989-8925-ed8be8a7f918'],
             };
 
             const eventAddress = '0x30199ec7ad0622c159cda3409a1f22a6dfe61de9';
@@ -3066,9 +2880,7 @@ describe('Events Controller', function() {
                 response: [actionSet],
             });
 
-            when(context.configServiceMock.get('TICKETFORGE_SCOPE')).thenReturn(
-                'ticket721_0',
-            );
+            when(context.configServiceMock.get('TICKETFORGE_SCOPE')).thenReturn('ticket721_0');
 
             when(context.currenciesServiceMock.get('Fiat')).thenResolve({
                 type: 'set',
@@ -3085,9 +2897,7 @@ describe('Events Controller', function() {
                 controller: ({} as any) as ContractsControllerBase,
             });
 
-            when(
-                context.datesServiceMock.create(deepEqual(dates[0])),
-            ).thenResolve({
+            when(context.datesServiceMock.create(deepEqual(dates[0]))).thenResolve({
                 error: null,
                 response: ({
                     ...dates[0],
@@ -3095,9 +2905,7 @@ describe('Events Controller', function() {
                 } as any) as DateEntity,
             });
 
-            when(
-                context.datesServiceMock.create(deepEqual(dates[1])),
-            ).thenResolve({
+            when(context.datesServiceMock.create(deepEqual(dates[1]))).thenResolve({
                 error: null,
                 response: ({
                     ...dates[1],
@@ -3105,9 +2913,7 @@ describe('Events Controller', function() {
                 } as any) as DateEntity,
             });
 
-            when(
-                context.eventsServiceMock.create(deepEqual(event)),
-            ).thenResolve({
+            when(context.eventsServiceMock.create(deepEqual(event))).thenResolve({
                 error: null,
                 response: ({
                     ...event,
@@ -3115,11 +2921,7 @@ describe('Events Controller', function() {
                 } as any) as EventEntity,
             });
 
-            when(
-                context.vaultereumServiceMock.write(
-                    `ethereum/accounts/event-${eventId.toLowerCase()}`,
-                ),
-            ).thenResolve({
+            when(context.vaultereumServiceMock.write(`ethereum/accounts/event-${eventId.toLowerCase()}`)).thenResolve({
                 error: null,
                 response: vaultereumAddressResponse,
             });
@@ -3167,18 +2969,10 @@ describe('Events Controller', function() {
             verify(context.configServiceMock.get('TICKETFORGE_SCOPE')).called();
             verify(context.currenciesServiceMock.get('Fiat')).called();
             verify(context.currenciesServiceMock.get('T721Token')).called();
-            verify(
-                context.datesServiceMock.create(deepEqual(dates[0])),
-            ).called();
-            verify(
-                context.datesServiceMock.create(deepEqual(dates[1])),
-            ).called();
+            verify(context.datesServiceMock.create(deepEqual(dates[0]))).called();
+            verify(context.datesServiceMock.create(deepEqual(dates[1]))).called();
             verify(context.eventsServiceMock.create(deepEqual(event))).called();
-            verify(
-                context.vaultereumServiceMock.write(
-                    `ethereum/accounts/event-${eventId.toLowerCase()}`,
-                ),
-            ).called();
+            verify(context.vaultereumServiceMock.write(`ethereum/accounts/event-${eventId.toLowerCase()}`)).called();
             verify(
                 context.eventsServiceMock.update(
                     deepEqual({
@@ -3254,10 +3048,7 @@ describe('Events Controller', function() {
                 owner: 'c97ea2b4-174b-4d46-b307-9c010a03a385',
                 updated_at: new Date('2020-02-19T09:03:02.999Z'),
             };
-            const dateIds = [
-                '64f35afc-8e13-4f80-b9e6-00a6ef52a76d',
-                '64f35afc-8e13-4f80-b9e6-00a6ef52a77d',
-            ];
+            const dateIds = ['64f35afc-8e13-4f80-b9e6-00a6ef52a76d', '64f35afc-8e13-4f80-b9e6-00a6ef52a77d'];
             const dates: Partial<DateEntity>[] = [
                 {
                     event_begin: ('2020-02-20T09:02:57.492Z' as any) as Date,
@@ -3267,8 +3058,7 @@ describe('Events Controller', function() {
                         lon: 2.34015,
                         lat: 48.882301,
                     },
-                    location_label:
-                        '120 Boulevard de Rochechouart, 75018 Paris',
+                    location_label: '120 Boulevard de Rochechouart, 75018 Paris',
                     metadata: {
                         name: 'La Cigale',
                     },
@@ -3341,10 +3131,7 @@ describe('Events Controller', function() {
                 address: null,
                 owner: 'c97ea2b4-174b-4d46-b307-9c010a03a385',
                 admins: [],
-                dates: [
-                    '64f35afc-8e13-4f80-b9e6-00a6ef52a76d',
-                    '64f35afc-8e13-4f80-b9e6-00a6ef52a77d',
-                ],
+                dates: ['64f35afc-8e13-4f80-b9e6-00a6ef52a76d', '64f35afc-8e13-4f80-b9e6-00a6ef52a77d'],
                 categories: [
                     {
                         group_id: null,
@@ -3367,10 +3154,7 @@ describe('Events Controller', function() {
                     },
                 ],
                 avatar: 'e9b7af81-2c57-47d6-ba9a-1cdb2f33c1cb',
-                banners: [
-                    'decdea0b-2d00-4d57-b100-955f7ba41412',
-                    '531d71c9-ee88-4989-8925-ed8be8a7f918',
-                ],
+                banners: ['decdea0b-2d00-4d57-b100-955f7ba41412', '531d71c9-ee88-4989-8925-ed8be8a7f918'],
             };
 
             const eventAddress = '0x30199ec7ad0622c159cda3409a1f22a6dfe61de9';
@@ -3404,9 +3188,7 @@ describe('Events Controller', function() {
                 response: [actionSet],
             });
 
-            when(context.configServiceMock.get('TICKETFORGE_SCOPE')).thenReturn(
-                'ticket721_0',
-            );
+            when(context.configServiceMock.get('TICKETFORGE_SCOPE')).thenReturn('ticket721_0');
 
             when(context.currenciesServiceMock.get('Fiat')).thenResolve({
                 type: 'set',
@@ -3423,9 +3205,7 @@ describe('Events Controller', function() {
                 controller: ({} as any) as ContractsControllerBase,
             });
 
-            when(
-                context.datesServiceMock.create(deepEqual(dates[0])),
-            ).thenResolve({
+            when(context.datesServiceMock.create(deepEqual(dates[0]))).thenResolve({
                 error: null,
                 response: ({
                     ...dates[0],
@@ -3433,9 +3213,7 @@ describe('Events Controller', function() {
                 } as any) as DateEntity,
             });
 
-            when(
-                context.datesServiceMock.create(deepEqual(dates[1])),
-            ).thenResolve({
+            when(context.datesServiceMock.create(deepEqual(dates[1]))).thenResolve({
                 error: null,
                 response: ({
                     ...dates[1],
@@ -3443,9 +3221,7 @@ describe('Events Controller', function() {
                 } as any) as DateEntity,
             });
 
-            when(
-                context.eventsServiceMock.create(deepEqual(event)),
-            ).thenResolve({
+            when(context.eventsServiceMock.create(deepEqual(event))).thenResolve({
                 error: null,
                 response: ({
                     ...event,
@@ -3453,11 +3229,7 @@ describe('Events Controller', function() {
                 } as any) as EventEntity,
             });
 
-            when(
-                context.vaultereumServiceMock.write(
-                    `ethereum/accounts/event-${eventId.toLowerCase()}`,
-                ),
-            ).thenResolve({
+            when(context.vaultereumServiceMock.write(`ethereum/accounts/event-${eventId.toLowerCase()}`)).thenResolve({
                 error: null,
                 response: vaultereumAddressResponse,
             });
@@ -3516,18 +3288,10 @@ describe('Events Controller', function() {
             verify(context.configServiceMock.get('TICKETFORGE_SCOPE')).called();
             verify(context.currenciesServiceMock.get('Fiat')).called();
             verify(context.currenciesServiceMock.get('T721Token')).called();
-            verify(
-                context.datesServiceMock.create(deepEqual(dates[0])),
-            ).called();
-            verify(
-                context.datesServiceMock.create(deepEqual(dates[1])),
-            ).called();
+            verify(context.datesServiceMock.create(deepEqual(dates[0]))).called();
+            verify(context.datesServiceMock.create(deepEqual(dates[1]))).called();
             verify(context.eventsServiceMock.create(deepEqual(event))).called();
-            verify(
-                context.vaultereumServiceMock.write(
-                    `ethereum/accounts/event-${eventId.toLowerCase()}`,
-                ),
-            ).called();
+            verify(context.vaultereumServiceMock.write(`ethereum/accounts/event-${eventId.toLowerCase()}`)).called();
             verify(
                 context.eventsServiceMock.update(
                     deepEqual({
@@ -3554,10 +3318,7 @@ describe('Events Controller', function() {
                 id: 'c97ea2b4-174b-4d46-b307-9c010a03a385',
                 address: '0x40199ec7ad0622c159cda3409a1f22a6dfe61de9',
             } as any) as UserDto;
-            const dateIds = [
-                '64f35afc-8e13-4f80-b9e6-00a6ef52a76d',
-                '64f35afc-8e13-4f80-b9e6-00a6ef52a77d',
-            ];
+            const dateIds = ['64f35afc-8e13-4f80-b9e6-00a6ef52a76d', '64f35afc-8e13-4f80-b9e6-00a6ef52a77d'];
             const dates: Partial<DateEntity>[] = [
                 {
                     event_begin: new Date('2020-02-20T09:02:57.492Z'),
@@ -3567,8 +3328,7 @@ describe('Events Controller', function() {
                         lon: 2.34015,
                         lat: 48.882301,
                     },
-                    location_label:
-                        '120 Boulevard de Rochechouart, 75018 Paris',
+                    location_label: '120 Boulevard de Rochechouart, 75018 Paris',
                     metadata: {
                         name: 'La Cigale',
                     },
@@ -3642,10 +3402,7 @@ describe('Events Controller', function() {
                 address: null,
                 owner: 'c97ea2b4-174b-4d46-b307-9c010a03a385',
                 admins: [],
-                dates: [
-                    '64f35afc-8e13-4f80-b9e6-00a6ef52a76d',
-                    '64f35afc-8e13-4f80-b9e6-00a6ef52a77d',
-                ],
+                dates: ['64f35afc-8e13-4f80-b9e6-00a6ef52a76d', '64f35afc-8e13-4f80-b9e6-00a6ef52a77d'],
                 categories: [
                     {
                         group_id: null,
@@ -3668,10 +3425,7 @@ describe('Events Controller', function() {
                     },
                 ],
                 avatar: 'e9b7af81-2c57-47d6-ba9a-1cdb2f33c1cb',
-                banners: [
-                    'decdea0b-2d00-4d57-b100-955f7ba41412',
-                    '531d71c9-ee88-4989-8925-ed8be8a7f918',
-                ],
+                banners: ['decdea0b-2d00-4d57-b100-955f7ba41412', '531d71c9-ee88-4989-8925-ed8be8a7f918'],
             };
 
             when(
@@ -3715,27 +3469,15 @@ describe('Events Controller', function() {
                 },
             };
 
-            when(subcontext.t721controllerMock.get()).thenResolve(
-                t721cInstance,
-            );
+            when(subcontext.t721controllerMock.get()).thenResolve(t721cInstance);
             when(context.t721AdminServiceMock.get()).thenResolve(t721aInstance);
 
-            when(context.configServiceMock.get('TICKETFORGE_SCOPE')).thenReturn(
-                'ticket721_0',
-            );
-            when(
-                context.configServiceMock.get('ETHEREUM_NODE_NETWORK_ID'),
-            ).thenReturn('2702');
-            when(
-                context.configServiceMock.get('ETHEREUM_MTX_DOMAIN_NAME'),
-            ).thenReturn('Refract Wallet');
-            when(
-                context.configServiceMock.get('ETHEREUM_MTX_VERSION'),
-            ).thenReturn('0');
+            when(context.configServiceMock.get('TICKETFORGE_SCOPE')).thenReturn('ticket721_0');
+            when(context.configServiceMock.get('ETHEREUM_NODE_NETWORK_ID')).thenReturn('2702');
+            when(context.configServiceMock.get('ETHEREUM_MTX_DOMAIN_NAME')).thenReturn('Refract Wallet');
+            when(context.configServiceMock.get('ETHEREUM_MTX_VERSION')).thenReturn('0');
 
-            when(
-                context.ticketforgeServiceMock.getScopeContracts('ticket721_0'),
-            ).thenReturn({
+            when(context.ticketforgeServiceMock.getScopeContracts('ticket721_0')).thenReturn({
                 mm: instance(subcontext.metaMarketplaceMock),
                 t721c: instance(subcontext.t721controllerMock),
             });
@@ -3781,9 +3523,7 @@ describe('Events Controller', function() {
                 controller: ({} as any) as ContractsControllerBase,
             });
 
-            when(
-                context.refractFactoryServiceMock.getNonce(user.address),
-            ).thenResolve(1);
+            when(context.refractFactoryServiceMock.getNonce(user.address)).thenResolve(1);
 
             const res = await context.eventsController.getPayload(
                 {
@@ -3798,8 +3538,7 @@ describe('Events Controller', function() {
                         name: 'Refract Wallet',
                         version: '0',
                         chainId: 2702,
-                        verifyingContract:
-                            '0x40199ec7ad0622c159cda3409a1f22a6dfe61de9',
+                        verifyingContract: '0x40199ec7ad0622c159cda3409a1f22a6dfe61de9',
                     },
                     primaryType: 'MetaTransaction',
                     types: {
@@ -3858,60 +3597,37 @@ describe('Events Controller', function() {
                         nonce: 1,
                         parameters: [
                             {
-                                from:
-                                    '0x40199ec7ad0622c159cda3409a1f22a6dfe61de9',
-                                to:
-                                    '0xf8A4d3a0B5859a24cd1320BA014ab17F623612e2',
-                                relayer:
-                                    '0xf8A4d3a0B5859a24cd1320BA014ab17F623612e2',
+                                from: '0x40199ec7ad0622c159cda3409a1f22a6dfe61de9',
+                                to: '0xf8A4d3a0B5859a24cd1320BA014ab17F623612e2',
+                                relayer: '0xf8A4d3a0B5859a24cd1320BA014ab17F623612e2',
                                 data: '0xabcd',
                                 value: '0',
                             },
                             {
-                                from:
-                                    '0x40199ec7ad0622c159cda3409a1f22a6dfe61de9',
-                                to:
-                                    '0xf8A4d3a0B5859a24cd1320BA014ab17F623612e2',
-                                relayer:
-                                    '0xf8A4d3a0B5859a24cd1320BA014ab17F623612e2',
+                                from: '0x40199ec7ad0622c159cda3409a1f22a6dfe61de9',
+                                to: '0xf8A4d3a0B5859a24cd1320BA014ab17F623612e2',
+                                relayer: '0xf8A4d3a0B5859a24cd1320BA014ab17F623612e2',
                                 data: '0xabcd',
                                 value: '0',
                             },
                         ],
                     },
                 },
-                groupId:
-                    '0x7468697320697320616e20494400000000000000000000000000000000000000',
+                groupId: '0x7468697320697320616e20494400000000000000000000000000000000000000',
             });
 
-            verify(
-                context.eventsServiceMock.search(deepEqual({ id: eventId })),
-            ).called();
+            verify(context.eventsServiceMock.search(deepEqual({ id: eventId }))).called();
             verify(subcontext.t721controllerMock.get()).called();
             verify(context.t721AdminServiceMock.get()).called();
             verify(context.configServiceMock.get('TICKETFORGE_SCOPE')).called();
-            verify(
-                context.configServiceMock.get('ETHEREUM_NODE_NETWORK_ID'),
-            ).called();
-            verify(
-                context.configServiceMock.get('ETHEREUM_MTX_DOMAIN_NAME'),
-            ).called();
-            verify(
-                context.configServiceMock.get('ETHEREUM_MTX_VERSION'),
-            ).called();
-            verify(
-                context.ticketforgeServiceMock.getScopeContracts('ticket721_0'),
-            ).called();
-            verify(
-                context.datesServiceMock.search(deepEqual({ id: dateIds[0] })),
-            ).called();
-            verify(
-                context.datesServiceMock.search(deepEqual({ id: dateIds[1] })),
-            ).called();
+            verify(context.configServiceMock.get('ETHEREUM_NODE_NETWORK_ID')).called();
+            verify(context.configServiceMock.get('ETHEREUM_MTX_DOMAIN_NAME')).called();
+            verify(context.configServiceMock.get('ETHEREUM_MTX_VERSION')).called();
+            verify(context.ticketforgeServiceMock.getScopeContracts('ticket721_0')).called();
+            verify(context.datesServiceMock.search(deepEqual({ id: dateIds[0] }))).called();
+            verify(context.datesServiceMock.search(deepEqual({ id: dateIds[1] }))).called();
             verify(context.currenciesServiceMock.get('T721Token')).called();
-            verify(
-                context.refractFactoryServiceMock.getNonce(user.address),
-            ).called();
+            verify(context.refractFactoryServiceMock.getNonce(user.address)).called();
         });
 
         it('should fail on event fetch error', async function() {
@@ -3919,10 +3635,7 @@ describe('Events Controller', function() {
                 id: 'c97ea2b4-174b-4d46-b307-9c010a03a385',
                 address: '0x40199ec7ad0622c159cda3409a1f22a6dfe61de9',
             } as any) as UserDto;
-            const dateIds = [
-                '64f35afc-8e13-4f80-b9e6-00a6ef52a76d',
-                '64f35afc-8e13-4f80-b9e6-00a6ef52a77d',
-            ];
+            const dateIds = ['64f35afc-8e13-4f80-b9e6-00a6ef52a76d', '64f35afc-8e13-4f80-b9e6-00a6ef52a77d'];
             const dates: Partial<DateEntity>[] = [
                 {
                     event_begin: new Date('2020-02-20T09:02:57.492Z'),
@@ -3932,8 +3645,7 @@ describe('Events Controller', function() {
                         lon: 2.34015,
                         lat: 48.882301,
                     },
-                    location_label:
-                        '120 Boulevard de Rochechouart, 75018 Paris',
+                    location_label: '120 Boulevard de Rochechouart, 75018 Paris',
                     metadata: {
                         name: 'La Cigale',
                     },
@@ -4007,10 +3719,7 @@ describe('Events Controller', function() {
                 address: null,
                 owner: 'c97ea2b4-174b-4d46-b307-9c010a03a385',
                 admins: [],
-                dates: [
-                    '64f35afc-8e13-4f80-b9e6-00a6ef52a76d',
-                    '64f35afc-8e13-4f80-b9e6-00a6ef52a77d',
-                ],
+                dates: ['64f35afc-8e13-4f80-b9e6-00a6ef52a76d', '64f35afc-8e13-4f80-b9e6-00a6ef52a77d'],
                 categories: [
                     {
                         group_id: null,
@@ -4033,10 +3742,7 @@ describe('Events Controller', function() {
                     },
                 ],
                 avatar: 'e9b7af81-2c57-47d6-ba9a-1cdb2f33c1cb',
-                banners: [
-                    'decdea0b-2d00-4d57-b100-955f7ba41412',
-                    '531d71c9-ee88-4989-8925-ed8be8a7f918',
-                ],
+                banners: ['decdea0b-2d00-4d57-b100-955f7ba41412', '531d71c9-ee88-4989-8925-ed8be8a7f918'],
             };
 
             when(
@@ -4069,9 +3775,7 @@ describe('Events Controller', function() {
                 },
             });
 
-            verify(
-                context.eventsServiceMock.search(deepEqual({ id: eventId })),
-            ).called();
+            verify(context.eventsServiceMock.search(deepEqual({ id: eventId }))).called();
         });
 
         it('should fail on event not found', async function() {
@@ -4079,10 +3783,7 @@ describe('Events Controller', function() {
                 id: 'c97ea2b4-174b-4d46-b307-9c010a03a385',
                 address: '0x40199ec7ad0622c159cda3409a1f22a6dfe61de9',
             } as any) as UserDto;
-            const dateIds = [
-                '64f35afc-8e13-4f80-b9e6-00a6ef52a76d',
-                '64f35afc-8e13-4f80-b9e6-00a6ef52a77d',
-            ];
+            const dateIds = ['64f35afc-8e13-4f80-b9e6-00a6ef52a76d', '64f35afc-8e13-4f80-b9e6-00a6ef52a77d'];
             const dates: Partial<DateEntity>[] = [
                 {
                     event_begin: new Date('2020-02-20T09:02:57.492Z'),
@@ -4092,8 +3793,7 @@ describe('Events Controller', function() {
                         lon: 2.34015,
                         lat: 48.882301,
                     },
-                    location_label:
-                        '120 Boulevard de Rochechouart, 75018 Paris',
+                    location_label: '120 Boulevard de Rochechouart, 75018 Paris',
                     metadata: {
                         name: 'La Cigale',
                     },
@@ -4167,10 +3867,7 @@ describe('Events Controller', function() {
                 address: null,
                 owner: 'c97ea2b4-174b-4d46-b307-9c010a03a385',
                 admins: [],
-                dates: [
-                    '64f35afc-8e13-4f80-b9e6-00a6ef52a76d',
-                    '64f35afc-8e13-4f80-b9e6-00a6ef52a77d',
-                ],
+                dates: ['64f35afc-8e13-4f80-b9e6-00a6ef52a76d', '64f35afc-8e13-4f80-b9e6-00a6ef52a77d'],
                 categories: [
                     {
                         group_id: null,
@@ -4193,10 +3890,7 @@ describe('Events Controller', function() {
                     },
                 ],
                 avatar: 'e9b7af81-2c57-47d6-ba9a-1cdb2f33c1cb',
-                banners: [
-                    'decdea0b-2d00-4d57-b100-955f7ba41412',
-                    '531d71c9-ee88-4989-8925-ed8be8a7f918',
-                ],
+                banners: ['decdea0b-2d00-4d57-b100-955f7ba41412', '531d71c9-ee88-4989-8925-ed8be8a7f918'],
             };
 
             when(
@@ -4229,9 +3923,7 @@ describe('Events Controller', function() {
                 },
             });
 
-            verify(
-                context.eventsServiceMock.search(deepEqual({ id: eventId })),
-            ).called();
+            verify(context.eventsServiceMock.search(deepEqual({ id: eventId }))).called();
         });
 
         it('should fail on invalid scope fetch', async function() {
@@ -4239,10 +3931,7 @@ describe('Events Controller', function() {
                 id: 'c97ea2b4-174b-4d46-b307-9c010a03a385',
                 address: '0x40199ec7ad0622c159cda3409a1f22a6dfe61de9',
             } as any) as UserDto;
-            const dateIds = [
-                '64f35afc-8e13-4f80-b9e6-00a6ef52a76d',
-                '64f35afc-8e13-4f80-b9e6-00a6ef52a77d',
-            ];
+            const dateIds = ['64f35afc-8e13-4f80-b9e6-00a6ef52a76d', '64f35afc-8e13-4f80-b9e6-00a6ef52a77d'];
             const dates: Partial<DateEntity>[] = [
                 {
                     event_begin: new Date('2020-02-20T09:02:57.492Z'),
@@ -4252,8 +3941,7 @@ describe('Events Controller', function() {
                         lon: 2.34015,
                         lat: 48.882301,
                     },
-                    location_label:
-                        '120 Boulevard de Rochechouart, 75018 Paris',
+                    location_label: '120 Boulevard de Rochechouart, 75018 Paris',
                     metadata: {
                         name: 'La Cigale',
                     },
@@ -4327,10 +4015,7 @@ describe('Events Controller', function() {
                 address: null,
                 owner: 'c97ea2b4-174b-4d46-b307-9c010a03a385',
                 admins: [],
-                dates: [
-                    '64f35afc-8e13-4f80-b9e6-00a6ef52a76d',
-                    '64f35afc-8e13-4f80-b9e6-00a6ef52a77d',
-                ],
+                dates: ['64f35afc-8e13-4f80-b9e6-00a6ef52a76d', '64f35afc-8e13-4f80-b9e6-00a6ef52a77d'],
                 categories: [
                     {
                         group_id: null,
@@ -4353,10 +4038,7 @@ describe('Events Controller', function() {
                     },
                 ],
                 avatar: 'e9b7af81-2c57-47d6-ba9a-1cdb2f33c1cb',
-                banners: [
-                    'decdea0b-2d00-4d57-b100-955f7ba41412',
-                    '531d71c9-ee88-4989-8925-ed8be8a7f918',
-                ],
+                banners: ['decdea0b-2d00-4d57-b100-955f7ba41412', '531d71c9-ee88-4989-8925-ed8be8a7f918'],
             };
 
             when(
@@ -4400,13 +4082,9 @@ describe('Events Controller', function() {
                 },
             };
 
-            when(context.configServiceMock.get('TICKETFORGE_SCOPE')).thenReturn(
-                'ticket721_0',
-            );
+            when(context.configServiceMock.get('TICKETFORGE_SCOPE')).thenReturn('ticket721_0');
 
-            when(
-                context.ticketforgeServiceMock.getScopeContracts('ticket721_0'),
-            ).thenReturn(null);
+            when(context.ticketforgeServiceMock.getScopeContracts('ticket721_0')).thenReturn(null);
 
             await expect(
                 context.eventsController.getPayload(
@@ -4427,13 +4105,9 @@ describe('Events Controller', function() {
                 },
             });
 
-            verify(
-                context.eventsServiceMock.search(deepEqual({ id: eventId })),
-            ).called();
+            verify(context.eventsServiceMock.search(deepEqual({ id: eventId }))).called();
             verify(context.configServiceMock.get('TICKETFORGE_SCOPE')).called();
-            verify(
-                context.ticketforgeServiceMock.getScopeContracts('ticket721_0'),
-            ).called();
+            verify(context.ticketforgeServiceMock.getScopeContracts('ticket721_0')).called();
         });
 
         it('should fail on next group id fetch', async function() {
@@ -4441,10 +4115,7 @@ describe('Events Controller', function() {
                 id: 'c97ea2b4-174b-4d46-b307-9c010a03a385',
                 address: '0x40199ec7ad0622c159cda3409a1f22a6dfe61de9',
             } as any) as UserDto;
-            const dateIds = [
-                '64f35afc-8e13-4f80-b9e6-00a6ef52a76d',
-                '64f35afc-8e13-4f80-b9e6-00a6ef52a77d',
-            ];
+            const dateIds = ['64f35afc-8e13-4f80-b9e6-00a6ef52a76d', '64f35afc-8e13-4f80-b9e6-00a6ef52a77d'];
             const dates: Partial<DateEntity>[] = [
                 {
                     event_begin: new Date('2020-02-20T09:02:57.492Z'),
@@ -4454,8 +4125,7 @@ describe('Events Controller', function() {
                         lon: 2.34015,
                         lat: 48.882301,
                     },
-                    location_label:
-                        '120 Boulevard de Rochechouart, 75018 Paris',
+                    location_label: '120 Boulevard de Rochechouart, 75018 Paris',
                     metadata: {
                         name: 'La Cigale',
                     },
@@ -4529,10 +4199,7 @@ describe('Events Controller', function() {
                 address: null,
                 owner: 'c97ea2b4-174b-4d46-b307-9c010a03a385',
                 admins: [],
-                dates: [
-                    '64f35afc-8e13-4f80-b9e6-00a6ef52a76d',
-                    '64f35afc-8e13-4f80-b9e6-00a6ef52a77d',
-                ],
+                dates: ['64f35afc-8e13-4f80-b9e6-00a6ef52a76d', '64f35afc-8e13-4f80-b9e6-00a6ef52a77d'],
                 categories: [
                     {
                         group_id: null,
@@ -4555,10 +4222,7 @@ describe('Events Controller', function() {
                     },
                 ],
                 avatar: 'e9b7af81-2c57-47d6-ba9a-1cdb2f33c1cb',
-                banners: [
-                    'decdea0b-2d00-4d57-b100-955f7ba41412',
-                    '531d71c9-ee88-4989-8925-ed8be8a7f918',
-                ],
+                banners: ['decdea0b-2d00-4d57-b100-955f7ba41412', '531d71c9-ee88-4989-8925-ed8be8a7f918'],
             };
 
             when(
@@ -4604,27 +4268,15 @@ describe('Events Controller', function() {
                 },
             };
 
-            when(subcontext.t721controllerMock.get()).thenResolve(
-                t721cInstance,
-            );
+            when(subcontext.t721controllerMock.get()).thenResolve(t721cInstance);
             when(context.t721AdminServiceMock.get()).thenResolve(t721aInstance);
 
-            when(context.configServiceMock.get('TICKETFORGE_SCOPE')).thenReturn(
-                'ticket721_0',
-            );
-            when(
-                context.configServiceMock.get('ETHEREUM_NODE_NETWORK_ID'),
-            ).thenReturn('2702');
-            when(
-                context.configServiceMock.get('ETHEREUM_MTX_DOMAIN_NAME'),
-            ).thenReturn('Refract Wallet');
-            when(
-                context.configServiceMock.get('ETHEREUM_MTX_VERSION'),
-            ).thenReturn('0');
+            when(context.configServiceMock.get('TICKETFORGE_SCOPE')).thenReturn('ticket721_0');
+            when(context.configServiceMock.get('ETHEREUM_NODE_NETWORK_ID')).thenReturn('2702');
+            when(context.configServiceMock.get('ETHEREUM_MTX_DOMAIN_NAME')).thenReturn('Refract Wallet');
+            when(context.configServiceMock.get('ETHEREUM_MTX_VERSION')).thenReturn('0');
 
-            when(
-                context.ticketforgeServiceMock.getScopeContracts('ticket721_0'),
-            ).thenReturn({
+            when(context.ticketforgeServiceMock.getScopeContracts('ticket721_0')).thenReturn({
                 mm: instance(subcontext.metaMarketplaceMock),
                 t721c: instance(subcontext.t721controllerMock),
             });
@@ -4648,15 +4300,11 @@ describe('Events Controller', function() {
                 },
             });
 
-            verify(
-                context.eventsServiceMock.search(deepEqual({ id: eventId })),
-            ).called();
+            verify(context.eventsServiceMock.search(deepEqual({ id: eventId }))).called();
             verify(subcontext.t721controllerMock.get()).called();
             verify(context.t721AdminServiceMock.get()).called();
             verify(context.configServiceMock.get('TICKETFORGE_SCOPE')).called();
-            verify(
-                context.ticketforgeServiceMock.getScopeContracts('ticket721_0'),
-            ).called();
+            verify(context.ticketforgeServiceMock.getScopeContracts('ticket721_0')).called();
         });
 
         it('should fail on date fetch', async function() {
@@ -4664,10 +4312,7 @@ describe('Events Controller', function() {
                 id: 'c97ea2b4-174b-4d46-b307-9c010a03a385',
                 address: '0x40199ec7ad0622c159cda3409a1f22a6dfe61de9',
             } as any) as UserDto;
-            const dateIds = [
-                '64f35afc-8e13-4f80-b9e6-00a6ef52a76d',
-                '64f35afc-8e13-4f80-b9e6-00a6ef52a77d',
-            ];
+            const dateIds = ['64f35afc-8e13-4f80-b9e6-00a6ef52a76d', '64f35afc-8e13-4f80-b9e6-00a6ef52a77d'];
             const dates: Partial<DateEntity>[] = [
                 {
                     event_begin: new Date('2020-02-20T09:02:57.492Z'),
@@ -4677,8 +4322,7 @@ describe('Events Controller', function() {
                         lon: 2.34015,
                         lat: 48.882301,
                     },
-                    location_label:
-                        '120 Boulevard de Rochechouart, 75018 Paris',
+                    location_label: '120 Boulevard de Rochechouart, 75018 Paris',
                     metadata: {
                         name: 'La Cigale',
                     },
@@ -4752,10 +4396,7 @@ describe('Events Controller', function() {
                 address: null,
                 owner: 'c97ea2b4-174b-4d46-b307-9c010a03a385',
                 admins: [],
-                dates: [
-                    '64f35afc-8e13-4f80-b9e6-00a6ef52a76d',
-                    '64f35afc-8e13-4f80-b9e6-00a6ef52a77d',
-                ],
+                dates: ['64f35afc-8e13-4f80-b9e6-00a6ef52a76d', '64f35afc-8e13-4f80-b9e6-00a6ef52a77d'],
                 categories: [
                     {
                         group_id: null,
@@ -4778,10 +4419,7 @@ describe('Events Controller', function() {
                     },
                 ],
                 avatar: 'e9b7af81-2c57-47d6-ba9a-1cdb2f33c1cb',
-                banners: [
-                    'decdea0b-2d00-4d57-b100-955f7ba41412',
-                    '531d71c9-ee88-4989-8925-ed8be8a7f918',
-                ],
+                banners: ['decdea0b-2d00-4d57-b100-955f7ba41412', '531d71c9-ee88-4989-8925-ed8be8a7f918'],
             };
 
             when(
@@ -4825,27 +4463,15 @@ describe('Events Controller', function() {
                 },
             };
 
-            when(subcontext.t721controllerMock.get()).thenResolve(
-                t721cInstance,
-            );
+            when(subcontext.t721controllerMock.get()).thenResolve(t721cInstance);
             when(context.t721AdminServiceMock.get()).thenResolve(t721aInstance);
 
-            when(context.configServiceMock.get('TICKETFORGE_SCOPE')).thenReturn(
-                'ticket721_0',
-            );
-            when(
-                context.configServiceMock.get('ETHEREUM_NODE_NETWORK_ID'),
-            ).thenReturn('2702');
-            when(
-                context.configServiceMock.get('ETHEREUM_MTX_DOMAIN_NAME'),
-            ).thenReturn('Refract Wallet');
-            when(
-                context.configServiceMock.get('ETHEREUM_MTX_VERSION'),
-            ).thenReturn('0');
+            when(context.configServiceMock.get('TICKETFORGE_SCOPE')).thenReturn('ticket721_0');
+            when(context.configServiceMock.get('ETHEREUM_NODE_NETWORK_ID')).thenReturn('2702');
+            when(context.configServiceMock.get('ETHEREUM_MTX_DOMAIN_NAME')).thenReturn('Refract Wallet');
+            when(context.configServiceMock.get('ETHEREUM_MTX_VERSION')).thenReturn('0');
 
-            when(
-                context.ticketforgeServiceMock.getScopeContracts('ticket721_0'),
-            ).thenReturn({
+            when(context.ticketforgeServiceMock.getScopeContracts('ticket721_0')).thenReturn({
                 mm: instance(subcontext.metaMarketplaceMock),
                 t721c: instance(subcontext.t721controllerMock),
             });
@@ -4880,18 +4506,12 @@ describe('Events Controller', function() {
                 },
             });
 
-            verify(
-                context.eventsServiceMock.search(deepEqual({ id: eventId })),
-            ).called();
+            verify(context.eventsServiceMock.search(deepEqual({ id: eventId }))).called();
             verify(subcontext.t721controllerMock.get()).called();
             verify(context.t721AdminServiceMock.get()).called();
             verify(context.configServiceMock.get('TICKETFORGE_SCOPE')).called();
-            verify(
-                context.ticketforgeServiceMock.getScopeContracts('ticket721_0'),
-            ).called();
-            verify(
-                context.datesServiceMock.search(deepEqual({ id: dateIds[0] })),
-            ).called();
+            verify(context.ticketforgeServiceMock.getScopeContracts('ticket721_0')).called();
+            verify(context.datesServiceMock.search(deepEqual({ id: dateIds[0] }))).called();
         });
 
         it('should fail when date unavailable', async function() {
@@ -4899,10 +4519,7 @@ describe('Events Controller', function() {
                 id: 'c97ea2b4-174b-4d46-b307-9c010a03a385',
                 address: '0x40199ec7ad0622c159cda3409a1f22a6dfe61de9',
             } as any) as UserDto;
-            const dateIds = [
-                '64f35afc-8e13-4f80-b9e6-00a6ef52a76d',
-                '64f35afc-8e13-4f80-b9e6-00a6ef52a77d',
-            ];
+            const dateIds = ['64f35afc-8e13-4f80-b9e6-00a6ef52a76d', '64f35afc-8e13-4f80-b9e6-00a6ef52a77d'];
             const dates: Partial<DateEntity>[] = [
                 {
                     event_begin: new Date('2020-02-20T09:02:57.492Z'),
@@ -4912,8 +4529,7 @@ describe('Events Controller', function() {
                         lon: 2.34015,
                         lat: 48.882301,
                     },
-                    location_label:
-                        '120 Boulevard de Rochechouart, 75018 Paris',
+                    location_label: '120 Boulevard de Rochechouart, 75018 Paris',
                     metadata: {
                         name: 'La Cigale',
                     },
@@ -4987,10 +4603,7 @@ describe('Events Controller', function() {
                 address: null,
                 owner: 'c97ea2b4-174b-4d46-b307-9c010a03a385',
                 admins: [],
-                dates: [
-                    '64f35afc-8e13-4f80-b9e6-00a6ef52a76d',
-                    '64f35afc-8e13-4f80-b9e6-00a6ef52a77d',
-                ],
+                dates: ['64f35afc-8e13-4f80-b9e6-00a6ef52a76d', '64f35afc-8e13-4f80-b9e6-00a6ef52a77d'],
                 categories: [
                     {
                         group_id: null,
@@ -5013,10 +4626,7 @@ describe('Events Controller', function() {
                     },
                 ],
                 avatar: 'e9b7af81-2c57-47d6-ba9a-1cdb2f33c1cb',
-                banners: [
-                    'decdea0b-2d00-4d57-b100-955f7ba41412',
-                    '531d71c9-ee88-4989-8925-ed8be8a7f918',
-                ],
+                banners: ['decdea0b-2d00-4d57-b100-955f7ba41412', '531d71c9-ee88-4989-8925-ed8be8a7f918'],
             };
 
             when(
@@ -5060,27 +4670,15 @@ describe('Events Controller', function() {
                 },
             };
 
-            when(subcontext.t721controllerMock.get()).thenResolve(
-                t721cInstance,
-            );
+            when(subcontext.t721controllerMock.get()).thenResolve(t721cInstance);
             when(context.t721AdminServiceMock.get()).thenResolve(t721aInstance);
 
-            when(context.configServiceMock.get('TICKETFORGE_SCOPE')).thenReturn(
-                'ticket721_0',
-            );
-            when(
-                context.configServiceMock.get('ETHEREUM_NODE_NETWORK_ID'),
-            ).thenReturn('2702');
-            when(
-                context.configServiceMock.get('ETHEREUM_MTX_DOMAIN_NAME'),
-            ).thenReturn('Refract Wallet');
-            when(
-                context.configServiceMock.get('ETHEREUM_MTX_VERSION'),
-            ).thenReturn('0');
+            when(context.configServiceMock.get('TICKETFORGE_SCOPE')).thenReturn('ticket721_0');
+            when(context.configServiceMock.get('ETHEREUM_NODE_NETWORK_ID')).thenReturn('2702');
+            when(context.configServiceMock.get('ETHEREUM_MTX_DOMAIN_NAME')).thenReturn('Refract Wallet');
+            when(context.configServiceMock.get('ETHEREUM_MTX_VERSION')).thenReturn('0');
 
-            when(
-                context.ticketforgeServiceMock.getScopeContracts('ticket721_0'),
-            ).thenReturn({
+            when(context.ticketforgeServiceMock.getScopeContracts('ticket721_0')).thenReturn({
                 mm: instance(subcontext.metaMarketplaceMock),
                 t721c: instance(subcontext.t721controllerMock),
             });
@@ -5115,18 +4713,12 @@ describe('Events Controller', function() {
                 },
             });
 
-            verify(
-                context.eventsServiceMock.search(deepEqual({ id: eventId })),
-            ).called();
+            verify(context.eventsServiceMock.search(deepEqual({ id: eventId }))).called();
             verify(subcontext.t721controllerMock.get()).called();
             verify(context.t721AdminServiceMock.get()).called();
             verify(context.configServiceMock.get('TICKETFORGE_SCOPE')).called();
-            verify(
-                context.ticketforgeServiceMock.getScopeContracts('ticket721_0'),
-            ).called();
-            verify(
-                context.datesServiceMock.search(deepEqual({ id: dateIds[0] })),
-            ).called();
+            verify(context.ticketforgeServiceMock.getScopeContracts('ticket721_0')).called();
+            verify(context.datesServiceMock.search(deepEqual({ id: dateIds[0] }))).called();
         });
     });
 
@@ -5136,10 +4728,7 @@ describe('Events Controller', function() {
                 id: 'c97ea2b4-174b-4d46-b307-9c010a03a385',
                 address: '0x40199ec7ad0622c159cda3409a1f22a6dfe61de9',
             } as any) as UserDto;
-            const dateIds = [
-                '64f35afc-8e13-4f80-b9e6-00a6ef52a76d',
-                '64f35afc-8e13-4f80-b9e6-00a6ef52a77d',
-            ];
+            const dateIds = ['64f35afc-8e13-4f80-b9e6-00a6ef52a76d', '64f35afc-8e13-4f80-b9e6-00a6ef52a77d'];
             const dates: Partial<DateEntity>[] = [
                 {
                     event_begin: new Date('2020-02-20T09:02:57.492Z'),
@@ -5149,8 +4738,7 @@ describe('Events Controller', function() {
                         lon: 2.34015,
                         lat: 48.882301,
                     },
-                    location_label:
-                        '120 Boulevard de Rochechouart, 75018 Paris',
+                    location_label: '120 Boulevard de Rochechouart, 75018 Paris',
                     metadata: {
                         name: 'La Cigale',
                     },
@@ -5224,10 +4812,7 @@ describe('Events Controller', function() {
                 address: null,
                 owner: 'c97ea2b4-174b-4d46-b307-9c010a03a385',
                 admins: [],
-                dates: [
-                    '64f35afc-8e13-4f80-b9e6-00a6ef52a76d',
-                    '64f35afc-8e13-4f80-b9e6-00a6ef52a77d',
-                ],
+                dates: ['64f35afc-8e13-4f80-b9e6-00a6ef52a76d', '64f35afc-8e13-4f80-b9e6-00a6ef52a77d'],
                 categories: [
                     {
                         group_id: null,
@@ -5250,18 +4835,14 @@ describe('Events Controller', function() {
                     },
                 ],
                 avatar: 'e9b7af81-2c57-47d6-ba9a-1cdb2f33c1cb',
-                banners: [
-                    'decdea0b-2d00-4d57-b100-955f7ba41412',
-                    '531d71c9-ee88-4989-8925-ed8be8a7f918',
-                ],
+                banners: ['decdea0b-2d00-4d57-b100-955f7ba41412', '531d71c9-ee88-4989-8925-ed8be8a7f918'],
             };
             const payload = {
                 domain: {
                     name: 'Refract Wallet',
                     version: '0',
                     chainId: 2702,
-                    verifyingContract:
-                        '0x40199ec7ad0622c159cda3409a1f22a6dfe61de9',
+                    verifyingContract: '0x40199ec7ad0622c159cda3409a1f22a6dfe61de9',
                 },
                 primaryType: 'MetaTransaction',
                 types: {
@@ -5322,16 +4903,14 @@ describe('Events Controller', function() {
                         {
                             from: '0x40199ec7ad0622c159cda3409a1f22a6dfe61de9',
                             to: '0xf8A4d3a0B5859a24cd1320BA014ab17F623612e2',
-                            relayer:
-                                '0xf8A4d3a0B5859a24cd1320BA014ab17F623612e2',
+                            relayer: '0xf8A4d3a0B5859a24cd1320BA014ab17F623612e2',
                             data: '0xabcd',
                             value: '0',
                         },
                         {
                             from: '0x40199ec7ad0622c159cda3409a1f22a6dfe61de9',
                             to: '0xf8A4d3a0B5859a24cd1320BA014ab17F623612e2',
-                            relayer:
-                                '0xf8A4d3a0B5859a24cd1320BA014ab17F623612e2',
+                            relayer: '0xf8A4d3a0B5859a24cd1320BA014ab17F623612e2',
                             data: '0xabcd',
                             value: '0',
                         },
@@ -5366,13 +4945,10 @@ describe('Events Controller', function() {
                 groupId: toB32('an event ID'),
             });
 
-            when(
-                context.txsServiceMock.mtx(deepEqual(payload), signature, user),
-            ).thenResolve({
+            when(context.txsServiceMock.mtx(deepEqual(payload), signature, user)).thenResolve({
                 error: null,
                 response: ({
-                    transaction_hash:
-                        '0x0899e1c32d82b06931843e3aabf33bf8fd3f7748bf9a423de23f018c78f86f32',
+                    transaction_hash: '0x0899e1c32d82b06931843e3aabf33bf8fd3f7748bf9a423de23f018c78f86f32',
                     confirmed: false,
                     block_number: 0,
                 } as any) as TxEntity,
@@ -5410,10 +4986,7 @@ describe('Events Controller', function() {
                     address: null,
                     owner: 'c97ea2b4-174b-4d46-b307-9c010a03a385',
                     admins: [],
-                    dates: [
-                        '64f35afc-8e13-4f80-b9e6-00a6ef52a76d',
-                        '64f35afc-8e13-4f80-b9e6-00a6ef52a77d',
-                    ],
+                    dates: ['64f35afc-8e13-4f80-b9e6-00a6ef52a76d', '64f35afc-8e13-4f80-b9e6-00a6ef52a77d'],
                     categories: [
                         {
                             group_id: null,
@@ -5436,12 +5009,8 @@ describe('Events Controller', function() {
                         },
                     ],
                     avatar: 'e9b7af81-2c57-47d6-ba9a-1cdb2f33c1cb',
-                    banners: [
-                        'decdea0b-2d00-4d57-b100-955f7ba41412',
-                        '531d71c9-ee88-4989-8925-ed8be8a7f918',
-                    ],
-                    group_id:
-                        '0x616e206576656e74204944000000000000000000000000000000000000000000',
+                    banners: ['decdea0b-2d00-4d57-b100-955f7ba41412', '531d71c9-ee88-4989-8925-ed8be8a7f918'],
+                    group_id: '0x616e206576656e74204944000000000000000000000000000000000000000000',
                 },
             });
 
@@ -5460,9 +5029,7 @@ describe('Events Controller', function() {
                     deepEqual(user),
                 ),
             ).called();
-            verify(
-                context.txsServiceMock.mtx(deepEqual(payload), signature, user),
-            ).called();
+            verify(context.txsServiceMock.mtx(deepEqual(payload), signature, user)).called();
             verify(
                 context.eventsServiceMock.update(
                     deepEqual({
@@ -5480,10 +5047,7 @@ describe('Events Controller', function() {
                 id: 'c97ea2b4-174b-4d46-b307-9c010a03a385',
                 address: '0x40199ec7ad0622c159cda3409a1f22a6dfe61de9',
             } as any) as UserDto;
-            const dateIds = [
-                '64f35afc-8e13-4f80-b9e6-00a6ef52a76d',
-                '64f35afc-8e13-4f80-b9e6-00a6ef52a77d',
-            ];
+            const dateIds = ['64f35afc-8e13-4f80-b9e6-00a6ef52a76d', '64f35afc-8e13-4f80-b9e6-00a6ef52a77d'];
             const dates: Partial<DateEntity>[] = [
                 {
                     event_begin: new Date('2020-02-20T09:02:57.492Z'),
@@ -5493,8 +5057,7 @@ describe('Events Controller', function() {
                         lon: 2.34015,
                         lat: 48.882301,
                     },
-                    location_label:
-                        '120 Boulevard de Rochechouart, 75018 Paris',
+                    location_label: '120 Boulevard de Rochechouart, 75018 Paris',
                     metadata: {
                         name: 'La Cigale',
                     },
@@ -5568,10 +5131,7 @@ describe('Events Controller', function() {
                 address: null,
                 owner: 'c97ea2b4-174b-4d46-b307-9c010a03a385',
                 admins: [],
-                dates: [
-                    '64f35afc-8e13-4f80-b9e6-00a6ef52a76d',
-                    '64f35afc-8e13-4f80-b9e6-00a6ef52a77d',
-                ],
+                dates: ['64f35afc-8e13-4f80-b9e6-00a6ef52a76d', '64f35afc-8e13-4f80-b9e6-00a6ef52a77d'],
                 categories: [
                     {
                         group_id: null,
@@ -5594,18 +5154,14 @@ describe('Events Controller', function() {
                     },
                 ],
                 avatar: 'e9b7af81-2c57-47d6-ba9a-1cdb2f33c1cb',
-                banners: [
-                    'decdea0b-2d00-4d57-b100-955f7ba41412',
-                    '531d71c9-ee88-4989-8925-ed8be8a7f918',
-                ],
+                banners: ['decdea0b-2d00-4d57-b100-955f7ba41412', '531d71c9-ee88-4989-8925-ed8be8a7f918'],
             };
             const payload = {
                 domain: {
                     name: 'Refract Wallet',
                     version: '0',
                     chainId: 2702,
-                    verifyingContract:
-                        '0x40199ec7ad0622c159cda3409a1f22a6dfe61de9',
+                    verifyingContract: '0x40199ec7ad0622c159cda3409a1f22a6dfe61de9',
                 },
                 primaryType: 'MetaTransaction',
                 types: {
@@ -5666,16 +5222,14 @@ describe('Events Controller', function() {
                         {
                             from: '0x40199ec7ad0622c159cda3409a1f22a6dfe61de9',
                             to: '0xf8A4d3a0B5859a24cd1320BA014ab17F623612e2',
-                            relayer:
-                                '0xf8A4d3a0B5859a24cd1320BA014ab17F623612e2',
+                            relayer: '0xf8A4d3a0B5859a24cd1320BA014ab17F623612e2',
                             data: '0xabcd',
                             value: '0',
                         },
                         {
                             from: '0x40199ec7ad0622c159cda3409a1f22a6dfe61de9',
                             to: '0xf8A4d3a0B5859a24cd1320BA014ab17F623612e2',
-                            relayer:
-                                '0xf8A4d3a0B5859a24cd1320BA014ab17F623612e2',
+                            relayer: '0xf8A4d3a0B5859a24cd1320BA014ab17F623612e2',
                             data: '0xabcd',
                             value: '0',
                         },
@@ -5732,10 +5286,7 @@ describe('Events Controller', function() {
                 id: 'c97ea2b4-174b-4d46-b307-9c010a03a385',
                 address: '0x40199ec7ad0622c159cda3409a1f22a6dfe61de9',
             } as any) as UserDto;
-            const dateIds = [
-                '64f35afc-8e13-4f80-b9e6-00a6ef52a76d',
-                '64f35afc-8e13-4f80-b9e6-00a6ef52a77d',
-            ];
+            const dateIds = ['64f35afc-8e13-4f80-b9e6-00a6ef52a76d', '64f35afc-8e13-4f80-b9e6-00a6ef52a77d'];
             const dates: Partial<DateEntity>[] = [
                 {
                     event_begin: new Date('2020-02-20T09:02:57.492Z'),
@@ -5745,8 +5296,7 @@ describe('Events Controller', function() {
                         lon: 2.34015,
                         lat: 48.882301,
                     },
-                    location_label:
-                        '120 Boulevard de Rochechouart, 75018 Paris',
+                    location_label: '120 Boulevard de Rochechouart, 75018 Paris',
                     metadata: {
                         name: 'La Cigale',
                     },
@@ -5820,10 +5370,7 @@ describe('Events Controller', function() {
                 address: null,
                 owner: 'c97ea2b4-174b-4d46-b307-9c010a03a385',
                 admins: [],
-                dates: [
-                    '64f35afc-8e13-4f80-b9e6-00a6ef52a76d',
-                    '64f35afc-8e13-4f80-b9e6-00a6ef52a77d',
-                ],
+                dates: ['64f35afc-8e13-4f80-b9e6-00a6ef52a76d', '64f35afc-8e13-4f80-b9e6-00a6ef52a77d'],
                 categories: [
                     {
                         group_id: null,
@@ -5846,18 +5393,14 @@ describe('Events Controller', function() {
                     },
                 ],
                 avatar: 'e9b7af81-2c57-47d6-ba9a-1cdb2f33c1cb',
-                banners: [
-                    'decdea0b-2d00-4d57-b100-955f7ba41412',
-                    '531d71c9-ee88-4989-8925-ed8be8a7f918',
-                ],
+                banners: ['decdea0b-2d00-4d57-b100-955f7ba41412', '531d71c9-ee88-4989-8925-ed8be8a7f918'],
             };
             const payload = {
                 domain: {
                     name: 'Refract Wallet',
                     version: '0',
                     chainId: 2702,
-                    verifyingContract:
-                        '0x40199ec7ad0622c159cda3409a1f22a6dfe61de9',
+                    verifyingContract: '0x40199ec7ad0622c159cda3409a1f22a6dfe61de9',
                 },
                 primaryType: 'MetaTransaction',
                 types: {
@@ -5918,16 +5461,14 @@ describe('Events Controller', function() {
                         {
                             from: '0x40199ec7ad0622c159cda3409a1f22a6dfe61de9',
                             to: '0xf8A4d3a0B5859a24cd1320BA014ab17F623612e2',
-                            relayer:
-                                '0xf8A4d3a0B5859a24cd1320BA014ab17F623612e2',
+                            relayer: '0xf8A4d3a0B5859a24cd1320BA014ab17F623612e2',
                             data: '0xabcd',
                             value: '0',
                         },
                         {
                             from: '0x40199ec7ad0622c159cda3409a1f22a6dfe61de9',
                             to: '0xf8A4d3a0B5859a24cd1320BA014ab17F623612e2',
-                            relayer:
-                                '0xf8A4d3a0B5859a24cd1320BA014ab17F623612e2',
+                            relayer: '0xf8A4d3a0B5859a24cd1320BA014ab17F623612e2',
                             data: '0xabcd',
                             value: '0',
                         },
@@ -5984,10 +5525,7 @@ describe('Events Controller', function() {
                 id: 'c97ea2b4-174b-4d46-b307-9c010a03a385',
                 address: '0x40199ec7ad0622c159cda3409a1f22a6dfe61de9',
             } as any) as UserDto;
-            const dateIds = [
-                '64f35afc-8e13-4f80-b9e6-00a6ef52a76d',
-                '64f35afc-8e13-4f80-b9e6-00a6ef52a77d',
-            ];
+            const dateIds = ['64f35afc-8e13-4f80-b9e6-00a6ef52a76d', '64f35afc-8e13-4f80-b9e6-00a6ef52a77d'];
             const dates: Partial<DateEntity>[] = [
                 {
                     event_begin: new Date('2020-02-20T09:02:57.492Z'),
@@ -5997,8 +5535,7 @@ describe('Events Controller', function() {
                         lon: 2.34015,
                         lat: 48.882301,
                     },
-                    location_label:
-                        '120 Boulevard de Rochechouart, 75018 Paris',
+                    location_label: '120 Boulevard de Rochechouart, 75018 Paris',
                     metadata: {
                         name: 'La Cigale',
                     },
@@ -6072,10 +5609,7 @@ describe('Events Controller', function() {
                 address: null,
                 owner: 'c97ea2b4-174b-4d46-b307-9c010a03a385',
                 admins: [],
-                dates: [
-                    '64f35afc-8e13-4f80-b9e6-00a6ef52a76d',
-                    '64f35afc-8e13-4f80-b9e6-00a6ef52a77d',
-                ],
+                dates: ['64f35afc-8e13-4f80-b9e6-00a6ef52a76d', '64f35afc-8e13-4f80-b9e6-00a6ef52a77d'],
                 categories: [
                     {
                         group_id: null,
@@ -6098,10 +5632,7 @@ describe('Events Controller', function() {
                     },
                 ],
                 avatar: 'e9b7af81-2c57-47d6-ba9a-1cdb2f33c1cb',
-                banners: [
-                    'decdea0b-2d00-4d57-b100-955f7ba41412',
-                    '531d71c9-ee88-4989-8925-ed8be8a7f918',
-                ],
+                banners: ['decdea0b-2d00-4d57-b100-955f7ba41412', '531d71c9-ee88-4989-8925-ed8be8a7f918'],
             };
 
             const payload = {
@@ -6109,8 +5640,7 @@ describe('Events Controller', function() {
                     name: 'Refract Wallet',
                     version: '0',
                     chainId: 2702,
-                    verifyingContract:
-                        '0x40199ec7ad0622c159cda3409a1f22a6dfe61de9',
+                    verifyingContract: '0x40199ec7ad0622c159cda3409a1f22a6dfe61de9',
                 },
                 primaryType: 'MetaTransaction',
                 types: {
@@ -6171,16 +5701,14 @@ describe('Events Controller', function() {
                         {
                             from: '0x40199ec7ad0622c159cda3409a1f22a6dfe61de9',
                             to: '0xf8A4d3a0B5859a24cd1320BA014ab17F623612e2',
-                            relayer:
-                                '0xf8A4d3a0B5859a24cd1320BA014ab17F623612e2',
+                            relayer: '0xf8A4d3a0B5859a24cd1320BA014ab17F623612e2',
                             data: '0xabcd',
                             value: '0',
                         },
                         {
                             from: '0x40199ec7ad0622c159cda3409a1f22a6dfe61de9',
                             to: '0xf8A4d3a0B5859a24cd1320BA014ab17F623612e2',
-                            relayer:
-                                '0xf8A4d3a0B5859a24cd1320BA014ab17F623612e2',
+                            relayer: '0xf8A4d3a0B5859a24cd1320BA014ab17F623612e2',
                             data: '0xabcd',
                             value: '0',
                         },
@@ -6264,10 +5792,7 @@ describe('Events Controller', function() {
                 id: 'c97ea2b4-174b-4d46-b307-9c010a03a385',
                 address: '0x40199ec7ad0622c159cda3409a1f22a6dfe61de9',
             } as any) as UserDto;
-            const dateIds = [
-                '64f35afc-8e13-4f80-b9e6-00a6ef52a76d',
-                '64f35afc-8e13-4f80-b9e6-00a6ef52a77d',
-            ];
+            const dateIds = ['64f35afc-8e13-4f80-b9e6-00a6ef52a76d', '64f35afc-8e13-4f80-b9e6-00a6ef52a77d'];
             const dates: Partial<DateEntity>[] = [
                 {
                     event_begin: new Date('2020-02-20T09:02:57.492Z'),
@@ -6277,8 +5802,7 @@ describe('Events Controller', function() {
                         lon: 2.34015,
                         lat: 48.882301,
                     },
-                    location_label:
-                        '120 Boulevard de Rochechouart, 75018 Paris',
+                    location_label: '120 Boulevard de Rochechouart, 75018 Paris',
                     metadata: {
                         name: 'La Cigale',
                     },
@@ -6352,10 +5876,7 @@ describe('Events Controller', function() {
                 address: null,
                 owner: 'c97ea2b4-174b-4d46-b307-9c010a03a385',
                 admins: [],
-                dates: [
-                    '64f35afc-8e13-4f80-b9e6-00a6ef52a76d',
-                    '64f35afc-8e13-4f80-b9e6-00a6ef52a77d',
-                ],
+                dates: ['64f35afc-8e13-4f80-b9e6-00a6ef52a76d', '64f35afc-8e13-4f80-b9e6-00a6ef52a77d'],
                 categories: [
                     {
                         group_id: null,
@@ -6378,18 +5899,14 @@ describe('Events Controller', function() {
                     },
                 ],
                 avatar: 'e9b7af81-2c57-47d6-ba9a-1cdb2f33c1cb',
-                banners: [
-                    'decdea0b-2d00-4d57-b100-955f7ba41412',
-                    '531d71c9-ee88-4989-8925-ed8be8a7f918',
-                ],
+                banners: ['decdea0b-2d00-4d57-b100-955f7ba41412', '531d71c9-ee88-4989-8925-ed8be8a7f918'],
             };
             const payload = {
                 domain: {
                     name: 'Refract Wallet',
                     version: '0',
                     chainId: 2702,
-                    verifyingContract:
-                        '0x40199ec7ad0622c159cda3409a1f22a6dfe61de9',
+                    verifyingContract: '0x40199ec7ad0622c159cda3409a1f22a6dfe61de9',
                 },
                 primaryType: 'MetaTransaction',
                 types: {
@@ -6450,16 +5967,14 @@ describe('Events Controller', function() {
                         {
                             from: '0x40199ec7ad0622c159cda3409a1f22a6dfe61de9',
                             to: '0xf8A4d3a0B5859a24cd1320BA014ab17F623612e2',
-                            relayer:
-                                '0xf8A4d3a0B5859a24cd1320BA014ab17F623612e2',
+                            relayer: '0xf8A4d3a0B5859a24cd1320BA014ab17F623612e2',
                             data: '0xabcd',
                             value: '0',
                         },
                         {
                             from: '0x40199ec7ad0622c159cda3409a1f22a6dfe61de9',
                             to: '0xf8A4d3a0B5859a24cd1320BA014ab17F623612e2',
-                            relayer:
-                                '0xf8A4d3a0B5859a24cd1320BA014ab17F623612e2',
+                            relayer: '0xf8A4d3a0B5859a24cd1320BA014ab17F623612e2',
                             data: '0xabcd',
                             value: '0',
                         },
@@ -6494,9 +6009,7 @@ describe('Events Controller', function() {
                 groupId: toB32('an event ID'),
             });
 
-            when(
-                context.txsServiceMock.mtx(deepEqual(payload), signature, user),
-            ).thenResolve({
+            when(context.txsServiceMock.mtx(deepEqual(payload), signature, user)).thenResolve({
                 error: 'unexpected_error',
                 response: null,
             });
@@ -6537,9 +6050,7 @@ describe('Events Controller', function() {
                     deepEqual(user),
                 ),
             ).called();
-            verify(
-                context.txsServiceMock.mtx(deepEqual(payload), signature, user),
-            ).called();
+            verify(context.txsServiceMock.mtx(deepEqual(payload), signature, user)).called();
         });
 
         it('should fail event update fail', async function() {
@@ -6547,10 +6058,7 @@ describe('Events Controller', function() {
                 id: 'c97ea2b4-174b-4d46-b307-9c010a03a385',
                 address: '0x40199ec7ad0622c159cda3409a1f22a6dfe61de9',
             } as any) as UserDto;
-            const dateIds = [
-                '64f35afc-8e13-4f80-b9e6-00a6ef52a76d',
-                '64f35afc-8e13-4f80-b9e6-00a6ef52a77d',
-            ];
+            const dateIds = ['64f35afc-8e13-4f80-b9e6-00a6ef52a76d', '64f35afc-8e13-4f80-b9e6-00a6ef52a77d'];
             const dates: Partial<DateEntity>[] = [
                 {
                     event_begin: new Date('2020-02-20T09:02:57.492Z'),
@@ -6560,8 +6068,7 @@ describe('Events Controller', function() {
                         lon: 2.34015,
                         lat: 48.882301,
                     },
-                    location_label:
-                        '120 Boulevard de Rochechouart, 75018 Paris',
+                    location_label: '120 Boulevard de Rochechouart, 75018 Paris',
                     metadata: {
                         name: 'La Cigale',
                     },
@@ -6635,10 +6142,7 @@ describe('Events Controller', function() {
                 address: null,
                 owner: 'c97ea2b4-174b-4d46-b307-9c010a03a385',
                 admins: [],
-                dates: [
-                    '64f35afc-8e13-4f80-b9e6-00a6ef52a76d',
-                    '64f35afc-8e13-4f80-b9e6-00a6ef52a77d',
-                ],
+                dates: ['64f35afc-8e13-4f80-b9e6-00a6ef52a76d', '64f35afc-8e13-4f80-b9e6-00a6ef52a77d'],
                 categories: [
                     {
                         group_id: null,
@@ -6661,18 +6165,14 @@ describe('Events Controller', function() {
                     },
                 ],
                 avatar: 'e9b7af81-2c57-47d6-ba9a-1cdb2f33c1cb',
-                banners: [
-                    'decdea0b-2d00-4d57-b100-955f7ba41412',
-                    '531d71c9-ee88-4989-8925-ed8be8a7f918',
-                ],
+                banners: ['decdea0b-2d00-4d57-b100-955f7ba41412', '531d71c9-ee88-4989-8925-ed8be8a7f918'],
             };
             const payload = {
                 domain: {
                     name: 'Refract Wallet',
                     version: '0',
                     chainId: 2702,
-                    verifyingContract:
-                        '0x40199ec7ad0622c159cda3409a1f22a6dfe61de9',
+                    verifyingContract: '0x40199ec7ad0622c159cda3409a1f22a6dfe61de9',
                 },
                 primaryType: 'MetaTransaction',
                 types: {
@@ -6733,16 +6233,14 @@ describe('Events Controller', function() {
                         {
                             from: '0x40199ec7ad0622c159cda3409a1f22a6dfe61de9',
                             to: '0xf8A4d3a0B5859a24cd1320BA014ab17F623612e2',
-                            relayer:
-                                '0xf8A4d3a0B5859a24cd1320BA014ab17F623612e2',
+                            relayer: '0xf8A4d3a0B5859a24cd1320BA014ab17F623612e2',
                             data: '0xabcd',
                             value: '0',
                         },
                         {
                             from: '0x40199ec7ad0622c159cda3409a1f22a6dfe61de9',
                             to: '0xf8A4d3a0B5859a24cd1320BA014ab17F623612e2',
-                            relayer:
-                                '0xf8A4d3a0B5859a24cd1320BA014ab17F623612e2',
+                            relayer: '0xf8A4d3a0B5859a24cd1320BA014ab17F623612e2',
                             data: '0xabcd',
                             value: '0',
                         },
@@ -6777,13 +6275,10 @@ describe('Events Controller', function() {
                 groupId: toB32('an event ID'),
             });
 
-            when(
-                context.txsServiceMock.mtx(deepEqual(payload), signature, user),
-            ).thenResolve({
+            when(context.txsServiceMock.mtx(deepEqual(payload), signature, user)).thenResolve({
                 error: null,
                 response: ({
-                    transaction_hash:
-                        '0x0899e1c32d82b06931843e3aabf33bf8fd3f7748bf9a423de23f018c78f86f32',
+                    transaction_hash: '0x0899e1c32d82b06931843e3aabf33bf8fd3f7748bf9a423de23f018c78f86f32',
                     confirmed: false,
                     block_number: 0,
                 } as any) as TxEntity,
@@ -6839,9 +6334,7 @@ describe('Events Controller', function() {
                     deepEqual(user),
                 ),
             ).called();
-            verify(
-                context.txsServiceMock.mtx(deepEqual(payload), signature, user),
-            ).called();
+            verify(context.txsServiceMock.mtx(deepEqual(payload), signature, user)).called();
             verify(
                 context.eventsServiceMock.update(
                     deepEqual({

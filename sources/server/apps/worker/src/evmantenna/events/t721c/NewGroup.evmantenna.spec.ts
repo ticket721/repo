@@ -90,24 +90,19 @@ describe('NewGroup EVMAntenna', function() {
             ],
         }).compile();
 
-        context.newgroupEVMAntenna = module.get<NewGroupT721CEVMAntenna>(
-            NewGroupT721CEVMAntenna,
-        );
+        context.newgroupEVMAntenna = module.get<NewGroupT721CEVMAntenna>(NewGroupT721CEVMAntenna);
     });
 
     describe('convert', function() {
         it('should generate new group batch queries', async function() {
-            const group_id =
-                '0x30efb335d55089d4eb0227ca1c8b444cace9cbae9c064fe5328ac8bd4ecade18';
+            const group_id = '0x30efb335d55089d4eb0227ca1c8b444cace9cbae9c064fe5328ac8bd4ecade18';
 
             const processableEVMEvent: EVMProcessableEvent = {
                 return_values:
                     '{"0":"0x30efb335d55089d4eb0227ca1c8b444cace9cbae9c064fe5328ac8bd4ecade18","1":"0xc05187f1ec1a88bA07A880AcE290ebE1b0941D9F","2":"@event/modules","id":"0x30efb335d55089d4eb0227ca1c8b444cace9cbae9c064fe5328ac8bd4ecade18","owner":"0xc05187f1ec1a88bA07A880AcE290ebE1b0941D9F","controllers":"@event/modules"}',
                 address: '0x4B2Ef35de91D5e4f2941B8A9B0B9E35554f0D8a8',
-                signature:
-                    '0xb0b533a8147431475b127bea5dc4c66cb9d6ea7851b18215e4ab83fe8e0b3fa6',
-                block_hash:
-                    '0x4d7d0c753f05c217ef76d8998a10d0bea9ed1278b2fbd076e365f5ff23de96bd',
+                signature: '0xb0b533a8147431475b127bea5dc4c66cb9d6ea7851b18215e4ab83fe8e0b3fa6',
+                block_hash: '0x4d7d0c753f05c217ef76d8998a10d0bea9ed1278b2fbd076e365f5ff23de96bd',
                 block_number: 55,
                 raw_topics: [
                     '0xb0b533a8147431475b127bea5dc4c66cb9d6ea7851b18215e4ab83fe8e0b3fa6',
@@ -119,8 +114,7 @@ describe('NewGroup EVMAntenna', function() {
                 raw_data:
                     '0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000e406576656e742f6d6f64756c6573000000000000000000000000000000000000',
                 log_index: 0,
-                transaction_hash:
-                    '0x93bd530dcc8ac28c32307d3a98fa9f829501ddd0f7ccf48a1b64811b718f158b',
+                transaction_hash: '0x93bd530dcc8ac28c32307d3a98fa9f829501ddd0f7ccf48a1b64811b718f158b',
                 artifact_name: 't721controller::T721Controller_v0',
             };
 
@@ -160,22 +154,17 @@ describe('NewGroup EVMAntenna', function() {
                             _score: 2.730029,
                             _source: {
                                 owner: '034768a0-742d-474d-99d2-fc7591c7be3a',
-                                address:
-                                    '0xfD1596c4f1289a004afcE04dF89602458d4E9DE5',
+                                address: '0xfD1596c4f1289a004afcE04dF89602458d4E9DE5',
                                 created_at: '2020-02-29T21:12:23.512Z',
                                 description: 'Justice Concert',
-                                dates: [
-                                    'a14c2cb6-921d-4bff-8ac5-e84c000011b5',
-                                    '7442f38c-5a02-4899-9d4b-a61cf6f884e7',
-                                ],
+                                dates: ['a14c2cb6-921d-4bff-8ac5-e84c000011b5', '7442f38c-5a02-4899-9d4b-a61cf6f884e7'],
                                 avatar: 'ece37bb0-176a-4746-9f70-981ee9bc7aa8',
                                 banners: [
                                     'a6b2bda6-d022-43ef-89a0-092b8c38e28e',
                                     '83d79dd8-3562-4f2d-b3f3-c5ce1e757bb3',
                                 ],
                                 updated_at: '2020-02-29T21:12:24.538Z',
-                                group_id:
-                                    '0x30efb335d55089d4eb0227ca1c8b444cace9cbae9c064fe5328ac8bd4ecade18',
+                                group_id: '0x30efb335d55089d4eb0227ca1c8b444cace9cbae9c064fe5328ac8bd4ecade18',
                                 name: 'Justice Woman WorldWide 2020',
                                 categories: {
                                     sale_begin: '2020-02-29T22:12:17.109Z',
@@ -204,10 +193,7 @@ describe('NewGroup EVMAntenna', function() {
             const queries: DryResponse[] = [];
             const rollbacks: DryResponse[] = [];
 
-            const append = (
-                query: DryResponse,
-                rollback: DryResponse,
-            ): void => {
+            const append = (query: DryResponse, rollback: DryResponse): void => {
                 if (query === null || rollback === null) {
                     throw new Error('should not have asymmetric');
                 }
@@ -216,9 +202,7 @@ describe('NewGroup EVMAntenna', function() {
                 rollbacks.unshift(rollback);
             };
 
-            when(
-                context.eventsServiceMock.searchElastic(deepEqual(esquery)),
-            ).thenResolve({
+            when(context.eventsServiceMock.searchElastic(deepEqual(esquery))).thenResolve({
                 error: null,
                 response: esresponse as any,
             });
@@ -257,21 +241,12 @@ describe('NewGroup EVMAntenna', function() {
                 },
             });
 
-            await context.newgroupEVMAntenna.convert(
-                processableEVMEvent,
-                append,
-            );
+            await context.newgroupEVMAntenna.convert(processableEVMEvent, append);
 
-            expect(queries).toEqual([
-                { query: 'preview => deployed query', params: [42] },
-            ]);
-            expect(rollbacks).toEqual([
-                { query: 'deployed => preview query', params: [42] },
-            ]);
+            expect(queries).toEqual([{ query: 'preview => deployed query', params: [42] }]);
+            expect(rollbacks).toEqual([{ query: 'deployed => preview query', params: [42] }]);
 
-            verify(
-                context.eventsServiceMock.searchElastic(deepEqual(esquery)),
-            ).called();
+            verify(context.eventsServiceMock.searchElastic(deepEqual(esquery))).called();
             verify(
                 context.eventsServiceMock.dryUpdate(
                     deepEqual({
@@ -295,17 +270,14 @@ describe('NewGroup EVMAntenna', function() {
         });
 
         it('should fail on event query error', async function() {
-            const group_id =
-                '0x30efb335d55089d4eb0227ca1c8b444cace9cbae9c064fe5328ac8bd4ecade18';
+            const group_id = '0x30efb335d55089d4eb0227ca1c8b444cace9cbae9c064fe5328ac8bd4ecade18';
 
             const processableEVMEvent: EVMProcessableEvent = {
                 return_values:
                     '{"0":"0x30efb335d55089d4eb0227ca1c8b444cace9cbae9c064fe5328ac8bd4ecade18","1":"0xc05187f1ec1a88bA07A880AcE290ebE1b0941D9F","2":"@event/modules","id":"0x30efb335d55089d4eb0227ca1c8b444cace9cbae9c064fe5328ac8bd4ecade18","owner":"0xc05187f1ec1a88bA07A880AcE290ebE1b0941D9F","controllers":"@event/modules"}',
                 address: '0x4B2Ef35de91D5e4f2941B8A9B0B9E35554f0D8a8',
-                signature:
-                    '0xb0b533a8147431475b127bea5dc4c66cb9d6ea7851b18215e4ab83fe8e0b3fa6',
-                block_hash:
-                    '0x4d7d0c753f05c217ef76d8998a10d0bea9ed1278b2fbd076e365f5ff23de96bd',
+                signature: '0xb0b533a8147431475b127bea5dc4c66cb9d6ea7851b18215e4ab83fe8e0b3fa6',
+                block_hash: '0x4d7d0c753f05c217ef76d8998a10d0bea9ed1278b2fbd076e365f5ff23de96bd',
                 block_number: 55,
                 raw_topics: [
                     '0xb0b533a8147431475b127bea5dc4c66cb9d6ea7851b18215e4ab83fe8e0b3fa6',
@@ -317,8 +289,7 @@ describe('NewGroup EVMAntenna', function() {
                 raw_data:
                     '0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000e406576656e742f6d6f64756c6573000000000000000000000000000000000000',
                 log_index: 0,
-                transaction_hash:
-                    '0x93bd530dcc8ac28c32307d3a98fa9f829501ddd0f7ccf48a1b64811b718f158b',
+                transaction_hash: '0x93bd530dcc8ac28c32307d3a98fa9f829501ddd0f7ccf48a1b64811b718f158b',
                 artifact_name: 't721controller::T721Controller_v0',
             };
 
@@ -358,22 +329,17 @@ describe('NewGroup EVMAntenna', function() {
                             _score: 2.730029,
                             _source: {
                                 owner: '034768a0-742d-474d-99d2-fc7591c7be3a',
-                                address:
-                                    '0xfD1596c4f1289a004afcE04dF89602458d4E9DE5',
+                                address: '0xfD1596c4f1289a004afcE04dF89602458d4E9DE5',
                                 created_at: '2020-02-29T21:12:23.512Z',
                                 description: 'Justice Concert',
-                                dates: [
-                                    'a14c2cb6-921d-4bff-8ac5-e84c000011b5',
-                                    '7442f38c-5a02-4899-9d4b-a61cf6f884e7',
-                                ],
+                                dates: ['a14c2cb6-921d-4bff-8ac5-e84c000011b5', '7442f38c-5a02-4899-9d4b-a61cf6f884e7'],
                                 avatar: 'ece37bb0-176a-4746-9f70-981ee9bc7aa8',
                                 banners: [
                                     'a6b2bda6-d022-43ef-89a0-092b8c38e28e',
                                     '83d79dd8-3562-4f2d-b3f3-c5ce1e757bb3',
                                 ],
                                 updated_at: '2020-02-29T21:12:24.538Z',
-                                group_id:
-                                    '0x30efb335d55089d4eb0227ca1c8b444cace9cbae9c064fe5328ac8bd4ecade18',
+                                group_id: '0x30efb335d55089d4eb0227ca1c8b444cace9cbae9c064fe5328ac8bd4ecade18',
                                 name: 'Justice Woman WorldWide 2020',
                                 categories: {
                                     sale_begin: '2020-02-29T22:12:17.109Z',
@@ -402,10 +368,7 @@ describe('NewGroup EVMAntenna', function() {
             const queries: DryResponse[] = [];
             const rollbacks: DryResponse[] = [];
 
-            const append = (
-                query: DryResponse,
-                rollback: DryResponse,
-            ): void => {
+            const append = (query: DryResponse, rollback: DryResponse): void => {
                 if (query === null || rollback === null) {
                     throw new Error('should not have asymmetric');
                 }
@@ -414,16 +377,12 @@ describe('NewGroup EVMAntenna', function() {
                 rollbacks.unshift(rollback);
             };
 
-            when(
-                context.eventsServiceMock.searchElastic(deepEqual(esquery)),
-            ).thenResolve({
+            when(context.eventsServiceMock.searchElastic(deepEqual(esquery))).thenResolve({
                 error: 'unexpected_error',
                 response: null,
             });
 
-            await expect(
-                context.newgroupEVMAntenna.convert(processableEVMEvent, append),
-            ).rejects.toMatchObject(
+            await expect(context.newgroupEVMAntenna.convert(processableEVMEvent, append)).rejects.toMatchObject(
                 new Error(
                     `NewGroupT721CEVMAntenna::convert | unable to recover appropriate event linked to id ${group_id}`,
                 ),
@@ -432,23 +391,18 @@ describe('NewGroup EVMAntenna', function() {
             expect(queries).toEqual([]);
             expect(rollbacks).toEqual([]);
 
-            verify(
-                context.eventsServiceMock.searchElastic(deepEqual(esquery)),
-            ).called();
+            verify(context.eventsServiceMock.searchElastic(deepEqual(esquery))).called();
         });
 
         it('should skip if no esresult', async function() {
-            const group_id =
-                '0x30efb335d55089d4eb0227ca1c8b444cace9cbae9c064fe5328ac8bd4ecade18';
+            const group_id = '0x30efb335d55089d4eb0227ca1c8b444cace9cbae9c064fe5328ac8bd4ecade18';
 
             const processableEVMEvent: EVMProcessableEvent = {
                 return_values:
                     '{"0":"0x30efb335d55089d4eb0227ca1c8b444cace9cbae9c064fe5328ac8bd4ecade18","1":"0xc05187f1ec1a88bA07A880AcE290ebE1b0941D9F","2":"@event/modules","id":"0x30efb335d55089d4eb0227ca1c8b444cace9cbae9c064fe5328ac8bd4ecade18","owner":"0xc05187f1ec1a88bA07A880AcE290ebE1b0941D9F","controllers":"@event/modules"}',
                 address: '0x4B2Ef35de91D5e4f2941B8A9B0B9E35554f0D8a8',
-                signature:
-                    '0xb0b533a8147431475b127bea5dc4c66cb9d6ea7851b18215e4ab83fe8e0b3fa6',
-                block_hash:
-                    '0x4d7d0c753f05c217ef76d8998a10d0bea9ed1278b2fbd076e365f5ff23de96bd',
+                signature: '0xb0b533a8147431475b127bea5dc4c66cb9d6ea7851b18215e4ab83fe8e0b3fa6',
+                block_hash: '0x4d7d0c753f05c217ef76d8998a10d0bea9ed1278b2fbd076e365f5ff23de96bd',
                 block_number: 55,
                 raw_topics: [
                     '0xb0b533a8147431475b127bea5dc4c66cb9d6ea7851b18215e4ab83fe8e0b3fa6',
@@ -460,8 +414,7 @@ describe('NewGroup EVMAntenna', function() {
                 raw_data:
                     '0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000e406576656e742f6d6f64756c6573000000000000000000000000000000000000',
                 log_index: 0,
-                transaction_hash:
-                    '0x93bd530dcc8ac28c32307d3a98fa9f829501ddd0f7ccf48a1b64811b718f158b',
+                transaction_hash: '0x93bd530dcc8ac28c32307d3a98fa9f829501ddd0f7ccf48a1b64811b718f158b',
                 artifact_name: 't721controller::T721Controller_v0',
             };
 
@@ -500,10 +453,7 @@ describe('NewGroup EVMAntenna', function() {
             const queries: DryResponse[] = [];
             const rollbacks: DryResponse[] = [];
 
-            const append = (
-                query: DryResponse,
-                rollback: DryResponse,
-            ): void => {
+            const append = (query: DryResponse, rollback: DryResponse): void => {
                 if (query === null || rollback === null) {
                     throw new Error('should not have asymmetric');
                 }
@@ -512,38 +462,28 @@ describe('NewGroup EVMAntenna', function() {
                 rollbacks.unshift(rollback);
             };
 
-            when(
-                context.eventsServiceMock.searchElastic(deepEqual(esquery)),
-            ).thenResolve({
+            when(context.eventsServiceMock.searchElastic(deepEqual(esquery))).thenResolve({
                 error: null,
                 response: esresponse as any,
             });
 
-            await context.newgroupEVMAntenna.convert(
-                processableEVMEvent,
-                append,
-            );
+            await context.newgroupEVMAntenna.convert(processableEVMEvent, append);
 
             expect(queries).toEqual([]);
             expect(rollbacks).toEqual([]);
 
-            verify(
-                context.eventsServiceMock.searchElastic(deepEqual(esquery)),
-            ).called();
+            verify(context.eventsServiceMock.searchElastic(deepEqual(esquery))).called();
         });
 
         it('should fail on forward query generation', async function() {
-            const group_id =
-                '0x30efb335d55089d4eb0227ca1c8b444cace9cbae9c064fe5328ac8bd4ecade18';
+            const group_id = '0x30efb335d55089d4eb0227ca1c8b444cace9cbae9c064fe5328ac8bd4ecade18';
 
             const processableEVMEvent: EVMProcessableEvent = {
                 return_values:
                     '{"0":"0x30efb335d55089d4eb0227ca1c8b444cace9cbae9c064fe5328ac8bd4ecade18","1":"0xc05187f1ec1a88bA07A880AcE290ebE1b0941D9F","2":"@event/modules","id":"0x30efb335d55089d4eb0227ca1c8b444cace9cbae9c064fe5328ac8bd4ecade18","owner":"0xc05187f1ec1a88bA07A880AcE290ebE1b0941D9F","controllers":"@event/modules"}',
                 address: '0x4B2Ef35de91D5e4f2941B8A9B0B9E35554f0D8a8',
-                signature:
-                    '0xb0b533a8147431475b127bea5dc4c66cb9d6ea7851b18215e4ab83fe8e0b3fa6',
-                block_hash:
-                    '0x4d7d0c753f05c217ef76d8998a10d0bea9ed1278b2fbd076e365f5ff23de96bd',
+                signature: '0xb0b533a8147431475b127bea5dc4c66cb9d6ea7851b18215e4ab83fe8e0b3fa6',
+                block_hash: '0x4d7d0c753f05c217ef76d8998a10d0bea9ed1278b2fbd076e365f5ff23de96bd',
                 block_number: 55,
                 raw_topics: [
                     '0xb0b533a8147431475b127bea5dc4c66cb9d6ea7851b18215e4ab83fe8e0b3fa6',
@@ -555,8 +495,7 @@ describe('NewGroup EVMAntenna', function() {
                 raw_data:
                     '0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000e406576656e742f6d6f64756c6573000000000000000000000000000000000000',
                 log_index: 0,
-                transaction_hash:
-                    '0x93bd530dcc8ac28c32307d3a98fa9f829501ddd0f7ccf48a1b64811b718f158b',
+                transaction_hash: '0x93bd530dcc8ac28c32307d3a98fa9f829501ddd0f7ccf48a1b64811b718f158b',
                 artifact_name: 't721controller::T721Controller_v0',
             };
 
@@ -596,22 +535,17 @@ describe('NewGroup EVMAntenna', function() {
                             _score: 2.730029,
                             _source: {
                                 owner: '034768a0-742d-474d-99d2-fc7591c7be3a',
-                                address:
-                                    '0xfD1596c4f1289a004afcE04dF89602458d4E9DE5',
+                                address: '0xfD1596c4f1289a004afcE04dF89602458d4E9DE5',
                                 created_at: '2020-02-29T21:12:23.512Z',
                                 description: 'Justice Concert',
-                                dates: [
-                                    'a14c2cb6-921d-4bff-8ac5-e84c000011b5',
-                                    '7442f38c-5a02-4899-9d4b-a61cf6f884e7',
-                                ],
+                                dates: ['a14c2cb6-921d-4bff-8ac5-e84c000011b5', '7442f38c-5a02-4899-9d4b-a61cf6f884e7'],
                                 avatar: 'ece37bb0-176a-4746-9f70-981ee9bc7aa8',
                                 banners: [
                                     'a6b2bda6-d022-43ef-89a0-092b8c38e28e',
                                     '83d79dd8-3562-4f2d-b3f3-c5ce1e757bb3',
                                 ],
                                 updated_at: '2020-02-29T21:12:24.538Z',
-                                group_id:
-                                    '0x30efb335d55089d4eb0227ca1c8b444cace9cbae9c064fe5328ac8bd4ecade18',
+                                group_id: '0x30efb335d55089d4eb0227ca1c8b444cace9cbae9c064fe5328ac8bd4ecade18',
                                 name: 'Justice Woman WorldWide 2020',
                                 categories: {
                                     sale_begin: '2020-02-29T22:12:17.109Z',
@@ -640,10 +574,7 @@ describe('NewGroup EVMAntenna', function() {
             const queries: DryResponse[] = [];
             const rollbacks: DryResponse[] = [];
 
-            const append = (
-                query: DryResponse,
-                rollback: DryResponse,
-            ): void => {
+            const append = (query: DryResponse, rollback: DryResponse): void => {
                 if (query === null || rollback === null) {
                     throw new Error('should not have asymmetric');
                 }
@@ -652,9 +583,7 @@ describe('NewGroup EVMAntenna', function() {
                 rollbacks.unshift(rollback);
             };
 
-            when(
-                context.eventsServiceMock.searchElastic(deepEqual(esquery)),
-            ).thenResolve({
+            when(context.eventsServiceMock.searchElastic(deepEqual(esquery))).thenResolve({
                 error: null,
                 response: esresponse as any,
             });
@@ -673,9 +602,7 @@ describe('NewGroup EVMAntenna', function() {
                 response: null,
             });
 
-            await expect(
-                context.newgroupEVMAntenna.convert(processableEVMEvent, append),
-            ).rejects.toMatchObject(
+            await expect(context.newgroupEVMAntenna.convert(processableEVMEvent, append)).rejects.toMatchObject(
                 new Error(
                     `NewGroupT721CEVMAntenna::convert | error while creating event update query: forward_update_query_building_error`,
                 ),
@@ -684,9 +611,7 @@ describe('NewGroup EVMAntenna', function() {
             expect(queries).toEqual([]);
             expect(rollbacks).toEqual([]);
 
-            verify(
-                context.eventsServiceMock.searchElastic(deepEqual(esquery)),
-            ).called();
+            verify(context.eventsServiceMock.searchElastic(deepEqual(esquery))).called();
             verify(
                 context.eventsServiceMock.dryUpdate(
                     deepEqual({
@@ -700,17 +625,14 @@ describe('NewGroup EVMAntenna', function() {
         });
 
         it('should fail on rollback query generation', async function() {
-            const group_id =
-                '0x30efb335d55089d4eb0227ca1c8b444cace9cbae9c064fe5328ac8bd4ecade18';
+            const group_id = '0x30efb335d55089d4eb0227ca1c8b444cace9cbae9c064fe5328ac8bd4ecade18';
 
             const processableEVMEvent: EVMProcessableEvent = {
                 return_values:
                     '{"0":"0x30efb335d55089d4eb0227ca1c8b444cace9cbae9c064fe5328ac8bd4ecade18","1":"0xc05187f1ec1a88bA07A880AcE290ebE1b0941D9F","2":"@event/modules","id":"0x30efb335d55089d4eb0227ca1c8b444cace9cbae9c064fe5328ac8bd4ecade18","owner":"0xc05187f1ec1a88bA07A880AcE290ebE1b0941D9F","controllers":"@event/modules"}',
                 address: '0x4B2Ef35de91D5e4f2941B8A9B0B9E35554f0D8a8',
-                signature:
-                    '0xb0b533a8147431475b127bea5dc4c66cb9d6ea7851b18215e4ab83fe8e0b3fa6',
-                block_hash:
-                    '0x4d7d0c753f05c217ef76d8998a10d0bea9ed1278b2fbd076e365f5ff23de96bd',
+                signature: '0xb0b533a8147431475b127bea5dc4c66cb9d6ea7851b18215e4ab83fe8e0b3fa6',
+                block_hash: '0x4d7d0c753f05c217ef76d8998a10d0bea9ed1278b2fbd076e365f5ff23de96bd',
                 block_number: 55,
                 raw_topics: [
                     '0xb0b533a8147431475b127bea5dc4c66cb9d6ea7851b18215e4ab83fe8e0b3fa6',
@@ -722,8 +644,7 @@ describe('NewGroup EVMAntenna', function() {
                 raw_data:
                     '0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000e406576656e742f6d6f64756c6573000000000000000000000000000000000000',
                 log_index: 0,
-                transaction_hash:
-                    '0x93bd530dcc8ac28c32307d3a98fa9f829501ddd0f7ccf48a1b64811b718f158b',
+                transaction_hash: '0x93bd530dcc8ac28c32307d3a98fa9f829501ddd0f7ccf48a1b64811b718f158b',
                 artifact_name: 't721controller::T721Controller_v0',
             };
 
@@ -763,22 +684,17 @@ describe('NewGroup EVMAntenna', function() {
                             _score: 2.730029,
                             _source: {
                                 owner: '034768a0-742d-474d-99d2-fc7591c7be3a',
-                                address:
-                                    '0xfD1596c4f1289a004afcE04dF89602458d4E9DE5',
+                                address: '0xfD1596c4f1289a004afcE04dF89602458d4E9DE5',
                                 created_at: '2020-02-29T21:12:23.512Z',
                                 description: 'Justice Concert',
-                                dates: [
-                                    'a14c2cb6-921d-4bff-8ac5-e84c000011b5',
-                                    '7442f38c-5a02-4899-9d4b-a61cf6f884e7',
-                                ],
+                                dates: ['a14c2cb6-921d-4bff-8ac5-e84c000011b5', '7442f38c-5a02-4899-9d4b-a61cf6f884e7'],
                                 avatar: 'ece37bb0-176a-4746-9f70-981ee9bc7aa8',
                                 banners: [
                                     'a6b2bda6-d022-43ef-89a0-092b8c38e28e',
                                     '83d79dd8-3562-4f2d-b3f3-c5ce1e757bb3',
                                 ],
                                 updated_at: '2020-02-29T21:12:24.538Z',
-                                group_id:
-                                    '0x30efb335d55089d4eb0227ca1c8b444cace9cbae9c064fe5328ac8bd4ecade18',
+                                group_id: '0x30efb335d55089d4eb0227ca1c8b444cace9cbae9c064fe5328ac8bd4ecade18',
                                 name: 'Justice Woman WorldWide 2020',
                                 categories: {
                                     sale_begin: '2020-02-29T22:12:17.109Z',
@@ -807,10 +723,7 @@ describe('NewGroup EVMAntenna', function() {
             const queries: DryResponse[] = [];
             const rollbacks: DryResponse[] = [];
 
-            const append = (
-                query: DryResponse,
-                rollback: DryResponse,
-            ): void => {
+            const append = (query: DryResponse, rollback: DryResponse): void => {
                 if (query === null || rollback === null) {
                     throw new Error('should not have asymmetric');
                 }
@@ -819,9 +732,7 @@ describe('NewGroup EVMAntenna', function() {
                 rollbacks.unshift(rollback);
             };
 
-            when(
-                context.eventsServiceMock.searchElastic(deepEqual(esquery)),
-            ).thenResolve({
+            when(context.eventsServiceMock.searchElastic(deepEqual(esquery))).thenResolve({
                 error: null,
                 response: esresponse as any,
             });
@@ -857,9 +768,7 @@ describe('NewGroup EVMAntenna', function() {
                 response: null,
             });
 
-            await expect(
-                context.newgroupEVMAntenna.convert(processableEVMEvent, append),
-            ).rejects.toMatchObject(
+            await expect(context.newgroupEVMAntenna.convert(processableEVMEvent, append)).rejects.toMatchObject(
                 new Error(
                     `NewGroupT721CEVMAntenna::convert | error while creating event update query: rollback_update_query_building_error`,
                 ),
@@ -868,9 +777,7 @@ describe('NewGroup EVMAntenna', function() {
             expect(queries).toEqual([]);
             expect(rollbacks).toEqual([]);
 
-            verify(
-                context.eventsServiceMock.searchElastic(deepEqual(esquery)),
-            ).called();
+            verify(context.eventsServiceMock.searchElastic(deepEqual(esquery))).called();
             verify(
                 context.eventsServiceMock.dryUpdate(
                     deepEqual({

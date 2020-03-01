@@ -62,9 +62,7 @@ export abstract class EmailDriver {
      *
      * @param options
      */
-    public abstract async send(
-        options: EmailDriverSendOptions,
-    ): Promise<EmailDriverResponse>;
+    public abstract async send(options: EmailDriverSendOptions): Promise<EmailDriverResponse>;
 
     /**
      * Configures the driver

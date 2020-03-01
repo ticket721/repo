@@ -8,12 +8,7 @@ import { EVMBlockRollbacksService } from '@lib/common/evmblockrollbacks/EVMBlock
  * Module to handle the Block Rollbacks
  */
 @Module({
-    imports: [
-        ExpressCassandraModule.forFeature([
-            EVMBlockRollbackEntity,
-            EVMBlockRollbacksRepository,
-        ]),
-    ],
+    imports: [ExpressCassandraModule.forFeature([EVMBlockRollbackEntity, EVMBlockRollbacksRepository])],
     providers: [EVMBlockRollbacksService],
     exports: [EVMBlockRollbacksService],
 })

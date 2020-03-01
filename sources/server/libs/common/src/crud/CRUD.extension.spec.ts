@@ -1,13 +1,4 @@
-import {
-    anything,
-    capture,
-    deepEqual,
-    instance,
-    mock,
-    spy,
-    verify,
-    when,
-} from 'ts-mockito';
+import { anything, capture, deepEqual, instance, mock, spy, verify, when } from 'ts-mockito';
 import {
     BaseModel,
     BaseModelStatic,
@@ -63,14 +54,10 @@ describe('CRUD Extension', function() {
                 },
             });
 
-            const crudext: CRUDExtension<
+            const crudext: CRUDExtension<Repository<FakeEntity>, FakeEntity> = new CRUDExtension<
                 Repository<FakeEntity>,
                 FakeEntity
-            > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
-                instance(context.modelMock),
-                instance(context.repositoryMock),
-                null,
-            );
+            >(instance(context.modelMock), instance(context.repositoryMock), null);
 
             const newEntity: FakeEntity = {
                 id: '016d3680-c2ac-4c6a-98f8-c63b22b3542f',
@@ -82,15 +69,8 @@ describe('CRUD Extension', function() {
                 name: 'test',
             };
 
-            when(
-                context.repositoryMock.create(deepEqual(newEntityProcessed)),
-            ).thenReturn(newEntityProcessed);
-            when(
-                context.repositoryMock.save(
-                    deepEqual(newEntityProcessed),
-                    undefined,
-                ),
-            ).thenCall(() => {
+            when(context.repositoryMock.create(deepEqual(newEntityProcessed))).thenReturn(newEntityProcessed);
+            when(context.repositoryMock.save(deepEqual(newEntityProcessed), undefined)).thenCall(() => {
                 return {
                     toPromise: () => Promise.resolve(newEntityProcessed),
                 };
@@ -106,12 +86,7 @@ describe('CRUD Extension', function() {
                     }),
                 ),
             ).called();
-            verify(
-                context.repositoryMock.save(
-                    deepEqual(newEntityProcessed),
-                    undefined,
-                ),
-            ).called();
+            verify(context.repositoryMock.save(deepEqual(newEntityProcessed), undefined)).called();
 
             expect(res.response).toEqual(newEntityProcessed);
             expect(res.error).toEqual(null);
@@ -138,14 +113,10 @@ describe('CRUD Extension', function() {
                 ttl: 3,
             };
 
-            const crudext: CRUDExtension<
+            const crudext: CRUDExtension<Repository<FakeEntity>, FakeEntity> = new CRUDExtension<
                 Repository<FakeEntity>,
                 FakeEntity
-            > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
-                instance(context.modelMock),
-                instance(context.repositoryMock),
-                null,
-            );
+            >(instance(context.modelMock), instance(context.repositoryMock), null);
 
             const newEntity: FakeEntity = {
                 id: '016d3680-c2ac-4c6a-98f8-c63b22b3542f',
@@ -157,15 +128,8 @@ describe('CRUD Extension', function() {
                 name: 'test',
             };
 
-            when(
-                context.repositoryMock.create(deepEqual(newEntityProcessed)),
-            ).thenReturn(newEntityProcessed);
-            when(
-                context.repositoryMock.save(
-                    deepEqual(newEntityProcessed),
-                    deepEqual(createOptions),
-                ),
-            ).thenCall(() => {
+            when(context.repositoryMock.create(deepEqual(newEntityProcessed))).thenReturn(newEntityProcessed);
+            when(context.repositoryMock.save(deepEqual(newEntityProcessed), deepEqual(createOptions))).thenCall(() => {
                 return {
                     toPromise: () => Promise.resolve(newEntityProcessed),
                 };
@@ -181,12 +145,7 @@ describe('CRUD Extension', function() {
                     }),
                 ),
             ).called();
-            verify(
-                context.repositoryMock.save(
-                    deepEqual(newEntityProcessed),
-                    deepEqual(createOptions),
-                ),
-            ).called();
+            verify(context.repositoryMock.save(deepEqual(newEntityProcessed), deepEqual(createOptions))).called();
 
             expect(res.response).toEqual(newEntityProcessed);
             expect(res.error).toEqual(null);
@@ -209,14 +168,10 @@ describe('CRUD Extension', function() {
                 },
             });
 
-            const crudext: CRUDExtension<
+            const crudext: CRUDExtension<Repository<FakeEntity>, FakeEntity> = new CRUDExtension<
                 Repository<FakeEntity>,
                 FakeEntity
-            > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
-                instance(context.modelMock),
-                instance(context.repositoryMock),
-                null,
-            );
+            >(instance(context.modelMock), instance(context.repositoryMock), null);
 
             const newEntity: FakeEntity = {
                 id: '016d3680-c2ac-4c6a-98f8-c63b22b3542f',
@@ -228,32 +183,17 @@ describe('CRUD Extension', function() {
                 name: 'test',
             };
 
-            when(
-                context.repositoryMock.create(deepEqual(newEntityProcessed)),
-            ).thenReturn(newEntityProcessed);
-            when(
-                context.repositoryMock.save(
-                    deepEqual(newEntityProcessed),
-                    undefined,
-                ),
-            ).thenCall(() => {
+            when(context.repositoryMock.create(deepEqual(newEntityProcessed))).thenReturn(newEntityProcessed);
+            when(context.repositoryMock.save(deepEqual(newEntityProcessed), undefined)).thenCall(() => {
                 return {
-                    toPromise: () =>
-                        Promise.reject(new Error('unexpected error')),
+                    toPromise: () => Promise.reject(new Error('unexpected error')),
                 };
             });
 
             const res = await crudext.create(newEntity);
 
-            verify(
-                context.repositoryMock.create(deepEqual(newEntityProcessed)),
-            ).called();
-            verify(
-                context.repositoryMock.save(
-                    deepEqual(newEntityProcessed),
-                    undefined,
-                ),
-            ).called();
+            verify(context.repositoryMock.create(deepEqual(newEntityProcessed))).called();
+            verify(context.repositoryMock.save(deepEqual(newEntityProcessed), undefined)).called();
 
             expect(res.error).toEqual('unexpected error');
             expect(res.response).toEqual(null);
@@ -281,18 +221,12 @@ describe('CRUD Extension', function() {
             const modelBuilderMock = mock<any>();
             const newModelMock = mock<BaseModelStatic<FakeEntity>>();
 
-            when(modelBuilderMock.build(anything())).thenReturn(
-                instance(newModelMock),
-            );
+            when(modelBuilderMock.build(anything())).thenReturn(instance(newModelMock));
 
-            const crudext: CRUDExtension<
+            const crudext: CRUDExtension<Repository<FakeEntity>, FakeEntity> = new CRUDExtension<
                 Repository<FakeEntity>,
                 FakeEntity
-            > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
-                instance(context.modelMock),
-                instance(context.repositoryMock),
-                instance(modelBuilderMock).build,
-            );
+            >(instance(context.modelMock), instance(context.repositoryMock), instance(modelBuilderMock).build);
 
             const newEntity: FakeEntity = {
                 id: '016d3680-c2ac-4c6a-98f8-c63b22b3542f',
@@ -309,9 +243,7 @@ describe('CRUD Extension', function() {
                 params: [],
             } as DryResponse;
 
-            when(
-                context.repositoryMock.create(deepEqual(newEntityProcessed)),
-            ).thenReturn(newEntityProcessed);
+            when(context.repositoryMock.create(deepEqual(newEntityProcessed))).thenReturn(newEntityProcessed);
 
             when(
                 newModelMock.save(
@@ -323,9 +255,7 @@ describe('CRUD Extension', function() {
 
             const res = await crudext.dryCreate(newEntity);
 
-            verify(
-                context.repositoryMock.create(deepEqual(newEntityProcessed)),
-            ).called();
+            verify(context.repositoryMock.create(deepEqual(newEntityProcessed))).called();
 
             verify(
                 newModelMock.save(
@@ -359,18 +289,12 @@ describe('CRUD Extension', function() {
             const modelBuilderMock = mock<any>();
             const newModelMock = mock<BaseModelStatic<FakeEntity>>();
 
-            when(modelBuilderMock.build(anything())).thenReturn(
-                instance(newModelMock),
-            );
+            when(modelBuilderMock.build(anything())).thenReturn(instance(newModelMock));
 
-            const crudext: CRUDExtension<
+            const crudext: CRUDExtension<Repository<FakeEntity>, FakeEntity> = new CRUDExtension<
                 Repository<FakeEntity>,
                 FakeEntity
-            > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
-                instance(context.modelMock),
-                instance(context.repositoryMock),
-                instance(modelBuilderMock).build,
-            );
+            >(instance(context.modelMock), instance(context.repositoryMock), instance(modelBuilderMock).build);
 
             const createOptions: CreateOptions = {
                 ttl: 3,
@@ -391,9 +315,7 @@ describe('CRUD Extension', function() {
                 params: [],
             } as DryResponse;
 
-            when(
-                context.repositoryMock.create(deepEqual(newEntityProcessed)),
-            ).thenReturn(newEntityProcessed);
+            when(context.repositoryMock.create(deepEqual(newEntityProcessed))).thenReturn(newEntityProcessed);
 
             when(
                 newModelMock.save(
@@ -406,9 +328,7 @@ describe('CRUD Extension', function() {
 
             const res = await crudext.dryCreate(newEntity, createOptions);
 
-            verify(
-                context.repositoryMock.create(deepEqual(newEntityProcessed)),
-            ).called();
+            verify(context.repositoryMock.create(deepEqual(newEntityProcessed))).called();
 
             verify(
                 newModelMock.save(
@@ -443,18 +363,12 @@ describe('CRUD Extension', function() {
             const modelBuilderMock = mock<any>();
             const newModelMock = mock<BaseModelStatic<FakeEntity>>();
 
-            when(modelBuilderMock.build(anything())).thenThrow(
-                new Error('query creation error'),
-            );
+            when(modelBuilderMock.build(anything())).thenThrow(new Error('query creation error'));
 
-            const crudext: CRUDExtension<
+            const crudext: CRUDExtension<Repository<FakeEntity>, FakeEntity> = new CRUDExtension<
                 Repository<FakeEntity>,
                 FakeEntity
-            > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
-                instance(context.modelMock),
-                instance(context.repositoryMock),
-                instance(modelBuilderMock).build,
-            );
+            >(instance(context.modelMock), instance(context.repositoryMock), instance(modelBuilderMock).build);
 
             const createOptions: CreateOptions = {
                 ttl: 3,
@@ -470,15 +384,11 @@ describe('CRUD Extension', function() {
                 name: 'test',
             };
 
-            when(
-                context.repositoryMock.create(deepEqual(newEntityProcessed)),
-            ).thenReturn(newEntityProcessed);
+            when(context.repositoryMock.create(deepEqual(newEntityProcessed))).thenReturn(newEntityProcessed);
 
             const res = await crudext.dryCreate(newEntity, createOptions);
 
-            verify(
-                context.repositoryMock.create(deepEqual(newEntityProcessed)),
-            ).called();
+            verify(context.repositoryMock.create(deepEqual(newEntityProcessed))).called();
 
             expect(res.response).toEqual(null);
             expect(res.error).toEqual('query creation error');
@@ -503,14 +413,10 @@ describe('CRUD Extension', function() {
                 },
             });
 
-            const crudext: CRUDExtension<
+            const crudext: CRUDExtension<Repository<FakeEntity>, FakeEntity> = new CRUDExtension<
                 Repository<FakeEntity>,
                 FakeEntity
-            > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
-                instance(context.modelMock),
-                instance(context.repositoryMock),
-                null,
-            );
+            >(instance(context.modelMock), instance(context.repositoryMock), null);
 
             const searchEntity: SearchQuery<FakeEntity> = {
                 id: '016d3680-c2ac-4c6a-98f8-c63b22b3542f',
@@ -527,12 +433,7 @@ describe('CRUD Extension', function() {
                 name: 'salut',
             };
 
-            when(
-                context.repositoryMock.find(
-                    deepEqual(searchEntityProcessed),
-                    undefined,
-                ),
-            ).thenCall(() => {
+            when(context.repositoryMock.find(deepEqual(searchEntityProcessed), undefined)).thenCall(() => {
                 return {
                     toPromise: () => Promise.resolve([newEntityProcessed]),
                 };
@@ -540,12 +441,7 @@ describe('CRUD Extension', function() {
 
             const res = await crudext.search(searchEntity);
 
-            verify(
-                context.repositoryMock.find(
-                    deepEqual(searchEntityProcessed),
-                    undefined,
-                ),
-            ).called();
+            verify(context.repositoryMock.find(deepEqual(searchEntityProcessed), undefined)).called();
 
             expect(res.response).toEqual([newEntityProcessed]);
             expect(res.error).toEqual(null);
@@ -568,14 +464,10 @@ describe('CRUD Extension', function() {
                 },
             });
 
-            const crudext: CRUDExtension<
+            const crudext: CRUDExtension<Repository<FakeEntity>, FakeEntity> = new CRUDExtension<
                 Repository<FakeEntity>,
                 FakeEntity
-            > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
-                instance(context.modelMock),
-                instance(context.repositoryMock),
-                null,
-            );
+            >(instance(context.modelMock), instance(context.repositoryMock), null);
 
             const searchEntity: SearchQuery<FakeEntity> = {
                 id: '016d3680-c2ac-4c6a-98f8-c63b22b3542f',
@@ -592,12 +484,7 @@ describe('CRUD Extension', function() {
                 name: 'salut',
             };
 
-            when(
-                context.repositoryMock.find(
-                    deepEqual(searchEntityProcessed),
-                    undefined,
-                ),
-            ).thenCall(() => {
+            when(context.repositoryMock.find(deepEqual(searchEntityProcessed), undefined)).thenCall(() => {
                 return {
                     toPromise: () => Promise.resolve(null),
                 };
@@ -605,12 +492,7 @@ describe('CRUD Extension', function() {
 
             const res = await crudext.search(searchEntity);
 
-            verify(
-                context.repositoryMock.find(
-                    deepEqual(searchEntityProcessed),
-                    undefined,
-                ),
-            ).called();
+            verify(context.repositoryMock.find(deepEqual(searchEntityProcessed), undefined)).called();
 
             expect(res.response).toEqual(null);
             expect(res.error).toEqual(null);
@@ -637,14 +519,10 @@ describe('CRUD Extension', function() {
                 allow_filtering: true,
             };
 
-            const crudext: CRUDExtension<
+            const crudext: CRUDExtension<Repository<FakeEntity>, FakeEntity> = new CRUDExtension<
                 Repository<FakeEntity>,
                 FakeEntity
-            > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
-                instance(context.modelMock),
-                instance(context.repositoryMock),
-                null,
-            );
+            >(instance(context.modelMock), instance(context.repositoryMock), null);
 
             const searchEntity: Partial<FakeEntity> = {
                 id: true as any,
@@ -659,25 +537,17 @@ describe('CRUD Extension', function() {
                 name: 'test',
             };
 
-            when(
-                context.repositoryMock.find(
-                    deepEqual(searchEntityProcessed),
-                    deepEqual(searchOptions),
-                ),
-            ).thenCall(() => {
-                return {
-                    toPromise: () => Promise.resolve([newEntityProcessed]),
-                };
-            });
+            when(context.repositoryMock.find(deepEqual(searchEntityProcessed), deepEqual(searchOptions))).thenCall(
+                () => {
+                    return {
+                        toPromise: () => Promise.resolve([newEntityProcessed]),
+                    };
+                },
+            );
 
             const res = await crudext.search(searchEntity, searchOptions);
 
-            verify(
-                context.repositoryMock.find(
-                    deepEqual(searchEntityProcessed),
-                    deepEqual(searchOptions),
-                ),
-            ).called();
+            verify(context.repositoryMock.find(deepEqual(searchEntityProcessed), deepEqual(searchOptions))).called();
 
             expect(res.response).toEqual([newEntityProcessed]);
             expect(res.error).toEqual(null);
@@ -700,14 +570,10 @@ describe('CRUD Extension', function() {
                 },
             });
 
-            const crudext: CRUDExtension<
+            const crudext: CRUDExtension<Repository<FakeEntity>, FakeEntity> = new CRUDExtension<
                 Repository<FakeEntity>,
                 FakeEntity
-            > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
-                instance(context.modelMock),
-                instance(context.repositoryMock),
-                null,
-            );
+            >(instance(context.modelMock), instance(context.repositoryMock), null);
 
             const searchEntity: SearchQuery<FakeEntity> = {
                 id: {
@@ -720,9 +586,7 @@ describe('CRUD Extension', function() {
             const searchEntityProcessed = {
                 id: {
                     $eq: uuid('016d3680-c2ac-4c6a-98f8-c63b22b3542f'),
-                    $contains_key: [
-                        uuid('016d3680-c2ac-4c6a-98f8-c63b22b3542f'),
-                    ],
+                    $contains_key: [uuid('016d3680-c2ac-4c6a-98f8-c63b22b3542f')],
                     $lt: {},
                 },
             };
@@ -732,12 +596,7 @@ describe('CRUD Extension', function() {
                 name: true as any,
             };
 
-            when(
-                context.repositoryMock.find(
-                    deepEqual(searchEntityProcessed),
-                    undefined,
-                ),
-            ).thenCall(() => {
+            when(context.repositoryMock.find(deepEqual(searchEntityProcessed), undefined)).thenCall(() => {
                 return {
                     toPromise: () => Promise.resolve([newEntityProcessed]),
                 };
@@ -745,12 +604,7 @@ describe('CRUD Extension', function() {
 
             const res = await crudext.search(searchEntity);
 
-            verify(
-                context.repositoryMock.find(
-                    deepEqual(searchEntityProcessed),
-                    undefined,
-                ),
-            ).called();
+            verify(context.repositoryMock.find(deepEqual(searchEntityProcessed), undefined)).called();
 
             expect(res.response).toEqual([newEntityProcessed]);
             expect(res.error).toEqual(null);
@@ -773,14 +627,10 @@ describe('CRUD Extension', function() {
                 },
             });
 
-            const crudext: CRUDExtension<
+            const crudext: CRUDExtension<Repository<FakeEntity>, FakeEntity> = new CRUDExtension<
                 Repository<FakeEntity>,
                 FakeEntity
-            > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
-                instance(context.modelMock),
-                instance(context.repositoryMock),
-                null,
-            );
+            >(instance(context.modelMock), instance(context.repositoryMock), null);
 
             const searchEntity: Partial<FakeEntity> = {
                 id: '016d3680-c2ac-4c6a-98f8-c63b22b3542f',
@@ -790,26 +640,15 @@ describe('CRUD Extension', function() {
                 id: uuid(searchEntity.id),
             };
 
-            when(
-                context.repositoryMock.find(
-                    deepEqual(searchEntityProcessed),
-                    undefined,
-                ),
-            ).thenCall(() => {
+            when(context.repositoryMock.find(deepEqual(searchEntityProcessed), undefined)).thenCall(() => {
                 return {
-                    toPromise: () =>
-                        Promise.reject(new Error('unexpected error')),
+                    toPromise: () => Promise.reject(new Error('unexpected error')),
                 };
             });
 
             const res = await crudext.search(searchEntity);
 
-            verify(
-                context.repositoryMock.find(
-                    deepEqual(searchEntityProcessed),
-                    undefined,
-                ),
-            ).called();
+            verify(context.repositoryMock.find(deepEqual(searchEntityProcessed), undefined)).called();
 
             expect(res.error).toEqual('unexpected error');
             expect(res.response).toEqual(null);
@@ -834,14 +673,10 @@ describe('CRUD Extension', function() {
                 },
             });
 
-            const crudext: CRUDExtension<
+            const crudext: CRUDExtension<Repository<FakeEntity>, FakeEntity> = new CRUDExtension<
                 Repository<FakeEntity>,
                 FakeEntity
-            > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
-                instance(context.modelMock),
-                instance(context.repositoryMock),
-                null,
-            );
+            >(instance(context.modelMock), instance(context.repositoryMock), null);
 
             const searchEntity: SearchQuery<FakeEntity> = {
                 id: '016d3680-c2ac-4c6a-98f8-c63b22b3542f',
@@ -904,14 +739,10 @@ describe('CRUD Extension', function() {
                 },
             });
 
-            const crudext: CRUDExtension<
+            const crudext: CRUDExtension<Repository<FakeEntity>, FakeEntity> = new CRUDExtension<
                 Repository<FakeEntity>,
                 FakeEntity
-            > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
-                instance(context.modelMock),
-                instance(context.repositoryMock),
-                null,
-            );
+            >(instance(context.modelMock), instance(context.repositoryMock), null);
 
             const searchOptions: SearchOptions<FakeEntity> = {
                 allow_filtering: true,
@@ -980,14 +811,10 @@ describe('CRUD Extension', function() {
                 },
             });
 
-            const crudext: CRUDExtension<
+            const crudext: CRUDExtension<Repository<FakeEntity>, FakeEntity> = new CRUDExtension<
                 Repository<FakeEntity>,
                 FakeEntity
-            > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
-                instance(context.modelMock),
-                instance(context.repositoryMock),
-                null,
-            );
+            >(instance(context.modelMock), instance(context.repositoryMock), null);
 
             const searchOptions: SearchOptions<FakeEntity> = {
                 allow_filtering: true,
@@ -1058,14 +885,10 @@ describe('CRUD Extension', function() {
                 },
             });
 
-            const crudext: CRUDExtension<
+            const crudext: CRUDExtension<Repository<FakeEntity>, FakeEntity> = new CRUDExtension<
                 Repository<FakeEntity>,
                 FakeEntity
-            > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
-                instance(context.modelMock),
-                instance(context.repositoryMock),
-                null,
-            );
+            >(instance(context.modelMock), instance(context.repositoryMock), null);
 
             const searchEntity: Partial<FakeEntity> = {
                 id: '016d3680-c2ac-4c6a-98f8-c63b22b3542f',
@@ -1132,14 +955,10 @@ describe('CRUD Extension', function() {
                 ttl: 3,
             };
 
-            const crudext: CRUDExtension<
+            const crudext: CRUDExtension<Repository<FakeEntity>, FakeEntity> = new CRUDExtension<
                 Repository<FakeEntity>,
                 FakeEntity
-            > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
-                instance(context.modelMock),
-                instance(context.repositoryMock),
-                null,
-            );
+            >(instance(context.modelMock), instance(context.repositoryMock), null);
 
             const searchEntity: Partial<FakeEntity> = {
                 id: '016d3680-c2ac-4c6a-98f8-c63b22b3542f',
@@ -1171,11 +990,7 @@ describe('CRUD Extension', function() {
                 };
             });
 
-            const res = await crudext.update(
-                searchEntity,
-                newEntity,
-                updateOptions,
-            );
+            const res = await crudext.update(searchEntity, newEntity, updateOptions);
 
             verify(
                 context.repositoryMock.update(
@@ -1210,14 +1025,10 @@ describe('CRUD Extension', function() {
                 ttl: 3,
             };
 
-            const crudext: CRUDExtension<
+            const crudext: CRUDExtension<Repository<FakeEntity>, FakeEntity> = new CRUDExtension<
                 Repository<FakeEntity>,
                 FakeEntity
-            > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
-                instance(context.modelMock),
-                instance(context.repositoryMock),
-                null,
-            );
+            >(instance(context.modelMock), instance(context.repositoryMock), null);
 
             const searchEntity: Partial<FakeEntity> = {
                 id: '016d3680-c2ac-4c6a-98f8-c63b22b3542f',
@@ -1245,16 +1056,11 @@ describe('CRUD Extension', function() {
                 ),
             ).thenCall(() => {
                 return {
-                    toPromise: () =>
-                        Promise.reject(new Error('unexpected error')),
+                    toPromise: () => Promise.reject(new Error('unexpected error')),
                 };
             });
 
-            const res = await crudext.update(
-                searchEntity,
-                newEntity,
-                updateOptions,
-            );
+            const res = await crudext.update(searchEntity, newEntity, updateOptions);
 
             verify(
                 context.repositoryMock.update(
@@ -1287,14 +1093,10 @@ describe('CRUD Extension', function() {
                 },
             });
 
-            const crudext: CRUDExtension<
+            const crudext: CRUDExtension<Repository<FakeEntity>, FakeEntity> = new CRUDExtension<
                 Repository<FakeEntity>,
                 FakeEntity
-            > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
-                instance(context.modelMock),
-                instance(context.repositoryMock),
-                null,
-            );
+            >(instance(context.modelMock), instance(context.repositoryMock), null);
 
             const searchEntity: Partial<FakeEntity> = {
                 id: '016d3680-c2ac-4c6a-98f8-c63b22b3542f',
@@ -1362,14 +1164,10 @@ describe('CRUD Extension', function() {
                 },
             });
 
-            const crudext: CRUDExtension<
+            const crudext: CRUDExtension<Repository<FakeEntity>, FakeEntity> = new CRUDExtension<
                 Repository<FakeEntity>,
                 FakeEntity
-            > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
-                instance(context.modelMock),
-                instance(context.repositoryMock),
-                null,
-            );
+            >(instance(context.modelMock), instance(context.repositoryMock), null);
 
             const updateOptions: UpdateOptions<FakeEntity> = {
                 ttl: 3,
@@ -1409,11 +1207,7 @@ describe('CRUD Extension', function() {
                 ),
             ).thenReturn(dryResponse as any);
 
-            const res = await crudext.dryUpdate(
-                searchEntity,
-                newEntity,
-                updateOptions,
-            );
+            const res = await crudext.dryUpdate(searchEntity, newEntity, updateOptions);
 
             verify(
                 context.modelMock.update(
@@ -1447,14 +1241,10 @@ describe('CRUD Extension', function() {
                 },
             });
 
-            const crudext: CRUDExtension<
+            const crudext: CRUDExtension<Repository<FakeEntity>, FakeEntity> = new CRUDExtension<
                 Repository<FakeEntity>,
                 FakeEntity
-            > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
-                instance(context.modelMock),
-                instance(context.repositoryMock),
-                null,
-            );
+            >(instance(context.modelMock), instance(context.repositoryMock), null);
 
             const updateOptions: UpdateOptions<FakeEntity> = {
                 ttl: 3,
@@ -1494,11 +1284,7 @@ describe('CRUD Extension', function() {
                 ),
             ).thenThrow(new Error('error while creating query'));
 
-            const res = await crudext.dryUpdate(
-                searchEntity,
-                newEntity,
-                updateOptions,
-            );
+            const res = await crudext.dryUpdate(searchEntity, newEntity, updateOptions);
 
             verify(
                 context.modelMock.update(
@@ -1534,14 +1320,10 @@ describe('CRUD Extension', function() {
                 },
             });
 
-            const crudext: CRUDExtension<
+            const crudext: CRUDExtension<Repository<FakeEntity>, FakeEntity> = new CRUDExtension<
                 Repository<FakeEntity>,
                 FakeEntity
-            > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
-                instance(context.modelMock),
-                instance(context.repositoryMock),
-                null,
-            );
+            >(instance(context.modelMock), instance(context.repositoryMock), null);
 
             const searchEntity: Partial<FakeEntity> = {
                 id: '016d3680-c2ac-4c6a-98f8-c63b22b3542f',
@@ -1551,12 +1333,7 @@ describe('CRUD Extension', function() {
                 id: uuid(searchEntity.id),
             };
 
-            when(
-                context.repositoryMock.delete(
-                    deepEqual(searchEntityProcessed),
-                    undefined,
-                ),
-            ).thenCall(() => {
+            when(context.repositoryMock.delete(deepEqual(searchEntityProcessed), undefined)).thenCall(() => {
                 return {
                     toPromise: () => Promise.resolve(void 0),
                 };
@@ -1564,12 +1341,7 @@ describe('CRUD Extension', function() {
 
             const res = await crudext.delete(searchEntity);
 
-            verify(
-                context.repositoryMock.delete(
-                    deepEqual(searchEntityProcessed),
-                    undefined,
-                ),
-            ).called();
+            verify(context.repositoryMock.delete(deepEqual(searchEntityProcessed), undefined)).called();
 
             expect(res.error).toEqual(null);
         });
@@ -1591,14 +1363,10 @@ describe('CRUD Extension', function() {
                 },
             });
 
-            const crudext: CRUDExtension<
+            const crudext: CRUDExtension<Repository<FakeEntity>, FakeEntity> = new CRUDExtension<
                 Repository<FakeEntity>,
                 FakeEntity
-            > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
-                instance(context.modelMock),
-                instance(context.repositoryMock),
-                null,
-            );
+            >(instance(context.modelMock), instance(context.repositoryMock), null);
 
             const searchEntity: Partial<FakeEntity> = {
                 id: '016d3680-c2ac-4c6a-98f8-c63b22b3542f',
@@ -1612,25 +1380,17 @@ describe('CRUD Extension', function() {
                 if_exists: true,
             };
 
-            when(
-                context.repositoryMock.delete(
-                    deepEqual(searchEntityProcessed),
-                    deepEqual(deleteOptions),
-                ),
-            ).thenCall(() => {
-                return {
-                    toPromise: () => Promise.resolve(void 0),
-                };
-            });
+            when(context.repositoryMock.delete(deepEqual(searchEntityProcessed), deepEqual(deleteOptions))).thenCall(
+                () => {
+                    return {
+                        toPromise: () => Promise.resolve(void 0),
+                    };
+                },
+            );
 
             const res = await crudext.delete(searchEntity, deleteOptions);
 
-            verify(
-                context.repositoryMock.delete(
-                    deepEqual(searchEntityProcessed),
-                    deepEqual(deleteOptions),
-                ),
-            ).called();
+            verify(context.repositoryMock.delete(deepEqual(searchEntityProcessed), deepEqual(deleteOptions))).called();
 
             expect(res.error).toEqual(null);
         });
@@ -1652,14 +1412,10 @@ describe('CRUD Extension', function() {
                 },
             });
 
-            const crudext: CRUDExtension<
+            const crudext: CRUDExtension<Repository<FakeEntity>, FakeEntity> = new CRUDExtension<
                 Repository<FakeEntity>,
                 FakeEntity
-            > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
-                instance(context.modelMock),
-                instance(context.repositoryMock),
-                null,
-            );
+            >(instance(context.modelMock), instance(context.repositoryMock), null);
 
             const searchEntity: Partial<FakeEntity> = {
                 id: '016d3680-c2ac-4c6a-98f8-c63b22b3542f',
@@ -1673,26 +1429,17 @@ describe('CRUD Extension', function() {
                 if_exists: true,
             };
 
-            when(
-                context.repositoryMock.delete(
-                    deepEqual(searchEntityProcessed),
-                    deepEqual(deleteOptions),
-                ),
-            ).thenCall(() => {
-                return {
-                    toPromise: () =>
-                        Promise.reject(new Error('unexpected error')),
-                };
-            });
+            when(context.repositoryMock.delete(deepEqual(searchEntityProcessed), deepEqual(deleteOptions))).thenCall(
+                () => {
+                    return {
+                        toPromise: () => Promise.reject(new Error('unexpected error')),
+                    };
+                },
+            );
 
             const res = await crudext.delete(searchEntity, deleteOptions);
 
-            verify(
-                context.repositoryMock.delete(
-                    deepEqual(searchEntityProcessed),
-                    deepEqual(deleteOptions),
-                ),
-            ).called();
+            verify(context.repositoryMock.delete(deepEqual(searchEntityProcessed), deepEqual(deleteOptions))).called();
 
             expect(res.error).toEqual('unexpected error');
         });
@@ -1716,14 +1463,10 @@ describe('CRUD Extension', function() {
                 },
             });
 
-            const crudext: CRUDExtension<
+            const crudext: CRUDExtension<Repository<FakeEntity>, FakeEntity> = new CRUDExtension<
                 Repository<FakeEntity>,
                 FakeEntity
-            > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
-                instance(context.modelMock),
-                instance(context.repositoryMock),
-                null,
-            );
+            >(instance(context.modelMock), instance(context.repositoryMock), null);
 
             const dryResponse = {
                 query: 'this is a cassandra query',
@@ -1778,14 +1521,10 @@ describe('CRUD Extension', function() {
                 },
             });
 
-            const crudext: CRUDExtension<
+            const crudext: CRUDExtension<Repository<FakeEntity>, FakeEntity> = new CRUDExtension<
                 Repository<FakeEntity>,
                 FakeEntity
-            > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
-                instance(context.modelMock),
-                instance(context.repositoryMock),
-                null,
-            );
+            >(instance(context.modelMock), instance(context.repositoryMock), null);
 
             const deleteOptions: DeleteOptions = {
                 if_exists: true,
@@ -1846,14 +1585,10 @@ describe('CRUD Extension', function() {
                 },
             });
 
-            const crudext: CRUDExtension<
+            const crudext: CRUDExtension<Repository<FakeEntity>, FakeEntity> = new CRUDExtension<
                 Repository<FakeEntity>,
                 FakeEntity
-            > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
-                instance(context.modelMock),
-                instance(context.repositoryMock),
-                null,
-            );
+            >(instance(context.modelMock), instance(context.repositoryMock), null);
 
             const deleteOptions: DeleteOptions = {
                 if_exists: true,
@@ -1916,14 +1651,10 @@ describe('CRUD Extension', function() {
                 },
             });
 
-            const crudext: CRUDExtension<
+            const crudext: CRUDExtension<Repository<FakeEntity>, FakeEntity> = new CRUDExtension<
                 Repository<FakeEntity>,
                 FakeEntity
-            > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
-                instance(context.modelMock),
-                instance(context.repositoryMock),
-                null,
-            );
+            >(instance(context.modelMock), instance(context.repositoryMock), null);
 
             const elasticSearchOptions: ESSearchQuery<FakeEntity> = {
                 body: {},
@@ -1933,21 +1664,16 @@ describe('CRUD Extension', function() {
                 name: 'test',
             };
 
-            when(
-                context.modelMock.search(elasticSearchOptions, anything()),
-            ).thenCall(() => {
-                const [osef, cb] = capture<
-                    ESSearchQuery<FakeEntity>,
-                    (...args: any[]) => void
-                >(context.modelMock.search).last();
+            when(context.modelMock.search(elasticSearchOptions, anything())).thenCall(() => {
+                const [osef, cb] = capture<ESSearchQuery<FakeEntity>, (...args: any[]) => void>(
+                    context.modelMock.search,
+                ).last();
                 cb(null, newEntity);
             });
 
             const res = await crudext.searchElastic(elasticSearchOptions);
 
-            verify(
-                context.modelMock.search(elasticSearchOptions, anything()),
-            ).called();
+            verify(context.modelMock.search(elasticSearchOptions, anything())).called();
 
             expect(res.error).toEqual(null);
             expect(res.response).toEqual(newEntity);
@@ -1970,14 +1696,10 @@ describe('CRUD Extension', function() {
                 },
             });
 
-            const crudext: CRUDExtension<
+            const crudext: CRUDExtension<Repository<FakeEntity>, FakeEntity> = new CRUDExtension<
                 Repository<FakeEntity>,
                 FakeEntity
-            > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
-                instance(context.modelMock),
-                instance(context.repositoryMock),
-                null,
-            );
+            >(instance(context.modelMock), instance(context.repositoryMock), null);
 
             const elasticSearchOptions: ESSearchQuery<FakeEntity> = {
                 body: {},
@@ -1987,43 +1709,30 @@ describe('CRUD Extension', function() {
                 ids: [
                     {
                         name: 'hi',
-                        current_id: uuid(
-                            '86573c78-acd5-44d1-bf68-2c833aa9d65f',
-                        ),
+                        current_id: uuid('86573c78-acd5-44d1-bf68-2c833aa9d65f'),
                     },
                     {
                         name: 'hi',
-                        current_id: uuid(
-                            '86573c78-acd5-44d1-bf68-2c833aa9d65f',
-                        ),
+                        current_id: uuid('86573c78-acd5-44d1-bf68-2c833aa9d65f'),
                     },
                 ],
                 hmm: uuid('86573c78-acd5-44d1-bf68-2c833aa9d65f'),
             };
 
-            when(
-                context.modelMock.search(elasticSearchOptions, anything()),
-            ).thenCall(() => {
-                const [osef, cb] = capture<
-                    ESSearchQuery<FakeEntity>,
-                    (...args: any[]) => void
-                >(context.modelMock.search).last();
+            when(context.modelMock.search(elasticSearchOptions, anything())).thenCall(() => {
+                const [osef, cb] = capture<ESSearchQuery<FakeEntity>, (...args: any[]) => void>(
+                    context.modelMock.search,
+                ).last();
                 cb(null, newEntity);
             });
 
             const res = await crudext.searchElastic(elasticSearchOptions);
 
-            verify(
-                context.modelMock.search(elasticSearchOptions, anything()),
-            ).called();
+            verify(context.modelMock.search(elasticSearchOptions, anything())).called();
 
             expect(res.error).toEqual(null);
-            expect(typeof (res.response as any).ids[0].current_id).toEqual(
-                'string',
-            );
-            expect(typeof (res.response as any).ids[1].current_id).toEqual(
-                'string',
-            );
+            expect(typeof (res.response as any).ids[0].current_id).toEqual('string');
+            expect(typeof (res.response as any).ids[1].current_id).toEqual('string');
             expect(typeof (res.response as any).hmm).toEqual('string');
             expect(res.response).toEqual(newEntity);
         });
@@ -2045,34 +1754,25 @@ describe('CRUD Extension', function() {
                 },
             });
 
-            const crudext: CRUDExtension<
+            const crudext: CRUDExtension<Repository<FakeEntity>, FakeEntity> = new CRUDExtension<
                 Repository<FakeEntity>,
                 FakeEntity
-            > = new CRUDExtension<Repository<FakeEntity>, FakeEntity>(
-                instance(context.modelMock),
-                instance(context.repositoryMock),
-                null,
-            );
+            >(instance(context.modelMock), instance(context.repositoryMock), null);
 
             const elasticSearchOptions: ESSearchQuery<FakeEntity> = {
                 body: {},
             };
 
-            when(
-                context.modelMock.search(elasticSearchOptions, anything()),
-            ).thenCall(() => {
-                const [osef, cb] = capture<
-                    ESSearchQuery<FakeEntity>,
-                    (...args: any[]) => void
-                >(context.modelMock.search).last();
+            when(context.modelMock.search(elasticSearchOptions, anything())).thenCall(() => {
+                const [osef, cb] = capture<ESSearchQuery<FakeEntity>, (...args: any[]) => void>(
+                    context.modelMock.search,
+                ).last();
                 cb(new Error('unexpected error'), null);
             });
 
             const res = await crudext.searchElastic(elasticSearchOptions);
 
-            verify(
-                context.modelMock.search(elasticSearchOptions, anything()),
-            ).called();
+            verify(context.modelMock.search(elasticSearchOptions, anything())).called();
 
             expect(res.error).toEqual('unexpected error');
             expect(res.response).toEqual(null);

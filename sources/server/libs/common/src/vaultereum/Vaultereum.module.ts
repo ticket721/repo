@@ -1,23 +1,17 @@
 import { DynamicModule, Global, Module } from '@nestjs/common';
 import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
-import {
-    VaultereumOptions,
-    VaultereumService,
-} from '@lib/common/vaultereum/Vaultereum.service';
+import { VaultereumOptions, VaultereumService } from '@lib/common/vaultereum/Vaultereum.service';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 
 /**
  * Build options for the Vaultereum Module
  */
-export interface VaultereumModuleAsyncOptions
-    extends Pick<DynamicModule, 'imports'> {
+export interface VaultereumModuleAsyncOptions extends Pick<DynamicModule, 'imports'> {
     /**
      * Factory to inject Vaultereum Service options
      * @param args
      */
-    useFactory: (
-        ...args: any[]
-    ) => Promise<VaultereumOptions> | VaultereumOptions;
+    useFactory: (...args: any[]) => Promise<VaultereumOptions> | VaultereumOptions;
 
     /**
      * Providers to inject into factory

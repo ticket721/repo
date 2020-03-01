@@ -1,11 +1,7 @@
 import { CRUDExtension } from '@lib/common/crud/CRUD.extension';
 import { GlobalConfigRepository } from '@lib/common/globalconfig/GlobalConfig.repository';
 import { GlobalEntity } from '@lib/common/globalconfig/entities/Global.entity';
-import {
-    BaseModel,
-    InjectModel,
-    InjectRepository,
-} from '@iaminfinity/express-cassandra';
+import { BaseModel, InjectModel, InjectRepository } from '@iaminfinity/express-cassandra';
 
 /**
  * Config Options
@@ -25,10 +21,7 @@ export interface GlobalConfigOptions {
 /**
  * Service to CRUD GlobalEntities
  */
-export class GlobalConfigService extends CRUDExtension<
-    GlobalConfigRepository,
-    GlobalEntity
-> {
+export class GlobalConfigService extends CRUDExtension<GlobalConfigRepository, GlobalEntity> {
     /**
      * Dependency Injection
      *

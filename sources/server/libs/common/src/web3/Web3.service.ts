@@ -60,9 +60,7 @@ export class Web3Service {
             }
 
             default:
-                throw new Error(
-                    `Unknown protocol ${this.options.protocol} to build web3 instance`,
-                );
+                throw new Error(`Unknown protocol ${this.options.protocol} to build web3 instance`);
         }
     }
 

@@ -133,14 +133,8 @@ describe('AppController (e2e)', () => {
     });
 
     describe('AuthenticationController', () => {
-        test(
-            '/authentication/local/register & /authentication/local/login (POST)',
-            register.bind(null, getCtx),
-        );
-        test(
-            '/authentication/web3/register & /authentication/web3/login (POST)',
-            web3register.bind(null, getCtx),
-        );
+        test('/authentication/local/register & /authentication/local/login (POST)', register.bind(null, getCtx));
+        test('/authentication/web3/register & /authentication/web3/login (POST)', web3register.bind(null, getCtx));
     });
 
     describe('ActionsController', () => {
@@ -152,9 +146,6 @@ describe('AppController (e2e)', () => {
     });
 
     describe('EventsController', () => {
-        test(
-            'Deploy Event justice (1 event, 2 dates, resale on)',
-            deployJustice.bind(null, getCtx),
-        );
+        test('Deploy Event justice (1 event, 2 dates, resale on)', deployJustice.bind(null, getCtx));
     });
 });

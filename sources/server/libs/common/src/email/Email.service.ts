@@ -25,12 +25,8 @@ export class EmailService {
      *
      * @param options
      */
-    async send(
-        options: EmailDriverSendOptions,
-    ): Promise<ServiceResponse<EmailDriverSendOptions>> {
-        const result: EmailDriverResponse = await this.emailDriver.send(
-            options,
-        );
+    async send(options: EmailDriverSendOptions): Promise<ServiceResponse<EmailDriverSendOptions>> {
+        const result: EmailDriverResponse = await this.emailDriver.send(options);
         switch (result.status) {
             case EmailDriverResponseStatus.Sent: {
                 return {

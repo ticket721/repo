@@ -21,9 +21,7 @@ describe('ESSearch Body Builder', function() {
             },
         };
 
-        const esb: ServiceResponse<EsSearchOptionsStatic> = ESSearchBodyBuilder(
-            input,
-        );
+        const esb: ServiceResponse<EsSearchOptionsStatic> = ESSearchBodyBuilder(input);
 
         expect(esb.error).toEqual(null);
         expect(esb.response).toEqual({
@@ -70,9 +68,7 @@ describe('ESSearch Body Builder', function() {
             ],
         };
 
-        const esb: ServiceResponse<EsSearchOptionsStatic> = ESSearchBodyBuilder(
-            input,
-        );
+        const esb: ServiceResponse<EsSearchOptionsStatic> = ESSearchBodyBuilder(input);
 
         expect(esb.error).toEqual(null);
         // Yes the end query is pretty unreadable :/
@@ -92,14 +88,12 @@ describe('ESSearch Body Builder', function() {
                                                     bool: {
                                                         must: {
                                                             nested: {
-                                                                path:
-                                                                    'obj.nested.fields',
+                                                                path: 'obj.nested.fields',
                                                                 query: {
                                                                     bool: {
                                                                         must: {
                                                                             nested: {
-                                                                                path:
-                                                                                    'obj.nested.fields.should',
+                                                                                path: 'obj.nested.fields.should',
                                                                                 query: {
                                                                                     bool: {
                                                                                         must: {
@@ -150,9 +144,7 @@ describe('ESSearch Body Builder', function() {
             },
         };
 
-        const esb: ServiceResponse<EsSearchOptionsStatic> = ESSearchBodyBuilder(
-            input,
-        );
+        const esb: ServiceResponse<EsSearchOptionsStatic> = ESSearchBodyBuilder(input);
 
         expect(esb.error).toEqual('page_index_without_page_size');
         expect(esb.response).toEqual(null);
@@ -192,9 +184,7 @@ describe('ESSearch Body Builder', function() {
             },
         };
 
-        const esb: ServiceResponse<EsSearchOptionsStatic> = ESSearchBodyBuilder(
-            input,
-        );
+        const esb: ServiceResponse<EsSearchOptionsStatic> = ESSearchBodyBuilder(input);
 
         expect(esb.error).toEqual(null);
         expect(esb.response).toEqual({

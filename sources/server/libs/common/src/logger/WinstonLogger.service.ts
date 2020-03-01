@@ -37,9 +37,7 @@ export class WinstonLoggerService implements LoggerService {
         });
 
         const myFormat = printf(data => {
-            return `[ ${data.timestamp} | ${
-                data.section ? data.section + ' | ' : ''
-            }${data.level} ] ${data.message}`;
+            return `[ ${data.timestamp} | ${data.section ? data.section + ' | ' : ''}${data.level} ] ${data.message}`;
         });
 
         if (process.env.NODE_ENV !== 'production') {

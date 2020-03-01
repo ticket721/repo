@@ -5,9 +5,7 @@ import { ESSearchHit } from '@lib/common/utils/ESSearchReturn';
  *
  * @param esResult
  */
-export function fromES<EntityType>(
-    esResult: ESSearchHit<EntityType>,
-): EntityType {
+export function fromES<EntityType>(esResult: ESSearchHit<EntityType>): EntityType {
     if (!esResult || !esResult._source) {
         return null;
     }

@@ -2,18 +2,9 @@ import { Inject, Injectable } from '@nestjs/common';
 import { CRUDExtension } from '@lib/common/crud/CRUD.extension';
 import { TxsRepository } from '@lib/common/txs/Txs.repository';
 import { TxEntity } from '@lib/common/txs/entities/Tx.entity';
-import {
-    BaseModel,
-    InjectModel,
-    InjectRepository,
-} from '@iaminfinity/express-cassandra';
+import { BaseModel, InjectModel, InjectRepository } from '@iaminfinity/express-cassandra';
 import { ServiceResponse } from '@lib/common/utils/ServiceResponse';
-import {
-    isAddress,
-    keccak256,
-    RefractMtx,
-    isTransactionHash,
-} from '@ticket721sources/global';
+import { isAddress, keccak256, RefractMtx, isTransactionHash } from '@ticket721sources/global';
 import { EIP712Payload } from '@ticket721/e712/lib';
 import { RefractFactoryV0Service } from '@lib/common/contracts/refract/RefractFactory.V0.service';
 import { UserDto } from '@lib/common/users/dto/User.dto';
@@ -175,13 +166,9 @@ export class TxsService extends CRUDExtension<TxsRepository, TxEntity> {
 
         const web3 = await this.web3Service.get();
 
-        const lastBlockGasPrice: Decimal = new Decimal(
-            await web3.eth.getGasPrice(),
-        );
+        const lastBlockGasPrice: Decimal = new Decimal(await web3.eth.getGasPrice());
         const gasLimitDecimal: Decimal = new Decimal(gasLimit);
-        const optimizedGasPrice: Decimal = new Decimal(
-            this.txOptions.targetGasPrice,
-        )
+        const optimizedGasPrice: Decimal = new Decimal(this.txOptions.targetGasPrice)
             .div(new Decimal(globalConfig.response[0].eth_eur_price))
             .div(gasLimitDecimal)
             .mul('10e18')
@@ -207,15 +194,9 @@ export class TxsService extends CRUDExtension<TxsRepository, TxEntity> {
      * @param to
      * @param data
      */
-    async estimateGasLimit(
-        from: string,
-        to: string,
-        data: string,
-    ): Promise<ServiceResponse<string>> {
+    async estimateGasLimit(from: string, to: string, data: string): Promise<ServiceResponse<string>> {
         if (!isAddress(from)) {
-            const vaultInfos = await this.vaultereumService.read(
-                `ethereum/accounts/${from}`,
-            );
+            const vaultInfos = await this.vaultereumService.read(`ethereum/accounts/${from}`);
 
             if (vaultInfos.error) {
                 return {
@@ -230,9 +211,7 @@ export class TxsService extends CRUDExtension<TxsRepository, TxEntity> {
 
         const nonce = await web3.eth.getTransactionCount(from);
 
-        const gasLimitEstimation = await (
-            await this.web3Service.get()
-        ).eth.estimateGas({
+        const gasLimitEstimation = await (await this.web3Service.get()).eth.estimateGas({
             from,
             nonce,
             to,
@@ -241,10 +220,7 @@ export class TxsService extends CRUDExtension<TxsRepository, TxEntity> {
 
         return {
             error: null,
-            response:
-                typeof gasLimitEstimation === 'string'
-                    ? gasLimitEstimation
-                    : gasLimitEstimation.toString(),
+            response: typeof gasLimitEstimation === 'string' ? gasLimitEstimation : gasLimitEstimation.toString(),
         };
     }
 
@@ -255,11 +231,7 @@ export class TxsService extends CRUDExtension<TxsRepository, TxEntity> {
      * @param signature
      * @param user
      */
-    async mtx(
-        payload: EIP712Payload,
-        signature: string,
-        user: UserDto,
-    ): Promise<ServiceResponse<TxEntity>> {
+    async mtx(payload: EIP712Payload, signature: string, user: UserDto): Promise<ServiceResponse<TxEntity>> {
         const rmtx: RefractMtx = new RefractMtx(
             this.txOptions.ethereumNetworkId,
             this.txOptions.ethereumMtxDomainName,
@@ -269,11 +241,7 @@ export class TxsService extends CRUDExtension<TxsRepository, TxEntity> {
 
         const signer = await rmtx.verify(payload, signature);
 
-        const verification = await this.refractFactoryService.isController(
-            user.address,
-            signer,
-            keccak256(user.email),
-        );
+        const verification = await this.refractFactoryService.isController(user.address, signer, keccak256(user.email));
 
         if (verification === false) {
             return {
@@ -282,17 +250,9 @@ export class TxsService extends CRUDExtension<TxsRepository, TxEntity> {
             };
         }
 
-        const args: [
-            number,
-            string[],
-            string[],
-            string,
-        ] = await encodeMetaTransaction(payload.message, signature);
+        const args: [number, string[], string[], string] = await encodeMetaTransaction(payload.message, signature);
 
-        const [
-            target,
-            encodedMtx,
-        ] = await this.refractFactoryService.encodeCall(
+        const [target, encodedMtx] = await this.refractFactoryService.encodeCall(
             user.address,
             signer,
             keccak256(user.email),
@@ -301,9 +261,7 @@ export class TxsService extends CRUDExtension<TxsRepository, TxEntity> {
 
         const t721Admin = await this.t721AdminService.get();
 
-        const encodedT721AdminExecuteTx = await t721Admin.methods
-            .refundedExecute(0, target, 0, encodedMtx)
-            .encodeABI();
+        const encodedT721AdminExecuteTx = await t721Admin.methods.refundedExecute(0, target, 0, encodedMtx).encodeABI();
 
         const gasLimitEstimation = await this.estimateGasLimit(
             this.txOptions.ethereumMtxRelayAdmin,
@@ -318,9 +276,7 @@ export class TxsService extends CRUDExtension<TxsRepository, TxEntity> {
             };
         }
 
-        const gasPriceEstimation = await this.estimateGasPrice(
-            gasLimitEstimation.response,
-        );
+        const gasPriceEstimation = await this.estimateGasPrice(gasLimitEstimation.response);
 
         if (gasPriceEstimation.error) {
             return {
@@ -366,9 +322,7 @@ export class TxsService extends CRUDExtension<TxsRepository, TxEntity> {
         gasPrice: string,
         gasLimit: string,
     ): Promise<ServiceResponse<TxEntity>> {
-        const accountCheck = await this.vaultereumService.read(
-            `ethereum/accounts/${from}`,
-        );
+        const accountCheck = await this.vaultereumService.read(`ethereum/accounts/${from}`);
 
         if (accountCheck.error) {
             return {
@@ -377,17 +331,14 @@ export class TxsService extends CRUDExtension<TxsRepository, TxEntity> {
             };
         }
 
-        const signedTx = await this.vaultereumService.write(
-            `ethereum/accounts/${from}/sign-tx`,
-            {
-                address_to: to,
-                amount: value,
-                gas_price: gasPrice,
-                gas_limit: gasLimit,
-                data: data.slice(2),
-                encoding: 'hex',
-            },
-        );
+        const signedTx = await this.vaultereumService.write(`ethereum/accounts/${from}/sign-tx`, {
+            address_to: to,
+            amount: value,
+            gas_price: gasPrice,
+            gas_limit: gasLimit,
+            data: data.slice(2),
+            encoding: 'hex',
+        });
 
         if (signedTx.error) {
             return {
@@ -396,9 +347,9 @@ export class TxsService extends CRUDExtension<TxsRepository, TxEntity> {
             };
         }
 
-        const tx = await (
-            await this.web3Service.get()
-        ).eth.sendSignedTransaction(signedTx.response.data.signed_transaction);
+        const tx = await (await this.web3Service.get()).eth.sendSignedTransaction(
+            signedTx.response.data.signed_transaction,
+        );
         const subscriptionRes = await this.subscribe(tx.transactionHash);
 
         if (subscriptionRes.error) {

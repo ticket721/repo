@@ -9,9 +9,7 @@ export interface Web3ModuleAsyncOptions extends Pick<DynamicModule, 'imports'> {
      * Factory to inject the service options
      * @param args
      */
-    useFactory: (
-        ...args: any[]
-    ) => Promise<Web3ServiceOptions> | Web3ServiceOptions;
+    useFactory: (...args: any[]) => Promise<Web3ServiceOptions> | Web3ServiceOptions;
 
     /**
      * Providers to inject to the factory

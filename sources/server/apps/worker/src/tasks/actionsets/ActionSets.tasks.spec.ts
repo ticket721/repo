@@ -87,9 +87,7 @@ describe('ActionSets Tasks', function() {
 
             const job: Job = new JobMock(actionSet) as Job;
 
-            when(
-                context.actionSetsServiceMock.getInputHandler('first'),
-            ).thenReturn(handler);
+            when(context.actionSetsServiceMock.getInputHandler('first')).thenReturn(handler);
             when(
                 context.actionSetsServiceMock.update(
                     deepEqual({
@@ -127,9 +125,7 @@ describe('ActionSets Tasks', function() {
             });
 
             await context.actionSetsTasks.input(job);
-            verify(
-                context.actionSetsServiceMock.getInputHandler('first'),
-            ).twice();
+            verify(context.actionSetsServiceMock.getInputHandler('first')).twice();
             verify(
                 context.actionSetsServiceMock.update(
                     deepEqual({
@@ -205,14 +201,10 @@ describe('ActionSets Tasks', function() {
 
             const job: Job = new JobMock(actionSet) as Job;
 
-            when(
-                context.actionSetsServiceMock.getInputHandler('first'),
-            ).thenReturn(handler);
+            when(context.actionSetsServiceMock.getInputHandler('first')).thenReturn(handler);
 
             await context.actionSetsTasks.input(job);
-            verify(
-                context.actionSetsServiceMock.getInputHandler('first'),
-            ).twice();
+            verify(context.actionSetsServiceMock.getInputHandler('first')).twice();
             verify(
                 context.actionSetsServiceMock.update(
                     deepEqual({
@@ -281,19 +273,13 @@ describe('ActionSets Tasks', function() {
 
             const job: Job = new JobMock(actionSet) as Job;
 
-            when(
-                context.actionSetsServiceMock.getInputHandler('first'),
-            ).thenReturn(undefined);
+            when(context.actionSetsServiceMock.getInputHandler('first')).thenReturn(undefined);
 
             await expect(context.actionSetsTasks.input(job)).rejects.toEqual(
-                new Error(
-                    `Cannot find input handler for action first in actionset ${actionSet.id}`,
-                ),
+                new Error(`Cannot find input handler for action first in actionset ${actionSet.id}`),
             );
 
-            verify(
-                context.actionSetsServiceMock.getInputHandler('first'),
-            ).called();
+            verify(context.actionSetsServiceMock.getInputHandler('first')).called();
             verify(
                 context.actionSetsServiceMock.update(
                     deepEqual({

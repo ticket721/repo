@@ -1,19 +1,12 @@
 import { CRUDExtension } from '@lib/common/crud/CRUD.extension';
-import {
-    BaseModel,
-    InjectModel,
-    InjectRepository,
-} from '@iaminfinity/express-cassandra';
+import { BaseModel, InjectModel, InjectRepository } from '@iaminfinity/express-cassandra';
 import { EVMBlockRollbacksRepository } from '@lib/common/evmblockrollbacks/EVMBlockRollbacks.repository';
 import { EVMBlockRollbackEntity } from '@lib/common/evmblockrollbacks/entities/EVMBlockRollback.entity';
 
 /**
  * Service to CRUD EVMBlockRollbackEntities
  */
-export class EVMBlockRollbacksService extends CRUDExtension<
-    EVMBlockRollbacksRepository,
-    EVMBlockRollbackEntity
-> {
+export class EVMBlockRollbacksService extends CRUDExtension<EVMBlockRollbacksRepository, EVMBlockRollbackEntity> {
     /**
      * Dependency Injection
      *

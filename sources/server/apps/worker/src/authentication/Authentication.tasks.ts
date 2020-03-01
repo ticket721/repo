@@ -5,10 +5,7 @@ import { EmailService } from '@lib/common/email/Email.service';
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@lib/common/config/Config.service';
-import {
-    InstanceSignature,
-    OutrospectionService,
-} from '@lib/common/outrospection/Outrospection.service';
+import { InstanceSignature, OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 
 /**
@@ -44,11 +41,7 @@ export class AuthenticationTasks implements OnModuleInit {
 
         if (signature.name === 'worker') {
             this.mailingQueue
-                .process(
-                    '@@mailing/validationEmail',
-                    1,
-                    this.validationEmail.bind(this),
-                )
+                .process('@@mailing/validationEmail', 1, this.validationEmail.bind(this))
                 .then(() => console.log(`Closing Bull Queue @@mailing`))
                 .catch(this.shutdownService.shutdownWithError);
         }
@@ -65,9 +58,7 @@ export class AuthenticationTasks implements OnModuleInit {
         });
 
         await job.progress(50);
-        const validationLink = `${this.configService.get(
-            'VALIDATION_URL',
-        )}?token=${encodeURIComponent(signature)}`;
+        const validationLink = `${this.configService.get('VALIDATION_URL')}?token=${encodeURIComponent(signature)}`;
         const res = await this.emailService.send({
             template: 'validate',
             to: job.data.email,

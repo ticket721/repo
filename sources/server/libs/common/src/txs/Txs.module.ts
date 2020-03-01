@@ -14,9 +14,7 @@ export interface TxsModuleAsyncOptions extends Pick<DynamicModule, 'imports'> {
      * Factory to inject Txs Service options
      * @param args
      */
-    useFactory: (
-        ...args: any[]
-    ) => Promise<TxsServiceOptions> | TxsServiceOptions;
+    useFactory: (...args: any[]) => Promise<TxsServiceOptions> | TxsServiceOptions;
 
     /**
      * Providers to inject into factory

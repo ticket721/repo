@@ -43,14 +43,8 @@ export class DatesController {
         description: StatusNames[StatusCodes.OK],
     })
     @HttpCode(200)
-    async search(
-        @Body() body: DatesSearchInputDto,
-        @User() user: UserDto,
-    ): Promise<DatesSearchResponseDto> {
-        const dates = await search<DateEntity, DatesService>(
-            this.datesService,
-            body,
-        );
+    async search(@Body() body: DatesSearchInputDto, @User() user: UserDto): Promise<DatesSearchResponseDto> {
+        const dates = await search<DateEntity, DatesService>(this.datesService, body);
 
         return {
             dates,

@@ -1,8 +1,5 @@
 import { ContractsController } from '@app/server/controllers/contracts/Contracts.controller';
-import {
-    ContractArtifact,
-    ContractsService,
-} from '@lib/common/contracts/Contracts.service';
+import { ContractArtifact, ContractsService } from '@lib/common/contracts/Contracts.service';
 import { instance, mock, verify, when } from 'ts-mockito';
 import { Test, TestingModule } from '@nestjs/testing';
 
@@ -28,16 +25,12 @@ describe('Contracts Controller', function() {
             controllers: [ContractsController],
         }).compile();
 
-        context.contractsController = app.get<ContractsController>(
-            ContractsController,
-        );
+        context.contractsController = app.get<ContractsController>(ContractsController);
     });
 
     describe('getContractArtifacts', function() {
         it('should recover contract artifacts', async function() {
-            when(
-                context.contractsServiceMock.getContractArtifacts(),
-            ).thenResolve({
+            when(context.contractsServiceMock.getContractArtifacts()).thenResolve({
                 ContractName: ({
                     contract: 'data',
                 } as any) as ContractArtifact,
@@ -51,9 +44,7 @@ describe('Contracts Controller', function() {
                 } as any) as ContractArtifact,
             });
 
-            verify(
-                context.contractsServiceMock.getContractArtifacts(),
-            ).called();
+            verify(context.contractsServiceMock.getContractArtifacts()).called();
         });
     });
 });

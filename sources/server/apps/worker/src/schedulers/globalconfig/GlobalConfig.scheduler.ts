@@ -1,9 +1,6 @@
 import { Inject, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { InjectSchedule, Schedule } from 'nest-schedule';
-import {
-    GlobalConfigOptions,
-    GlobalConfigService,
-} from '@lib/common/globalconfig/GlobalConfig.service';
+import { GlobalConfigOptions, GlobalConfigService } from '@lib/common/globalconfig/GlobalConfig.service';
 import { Web3Service } from '@lib/common/web3/Web3.service';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 import { GlobalEntity } from '@lib/common/globalconfig/entities/Global.entity';
@@ -64,13 +61,8 @@ export class GlobalConfigScheduler implements OnModuleInit, OnModuleDestroy {
             id: 'global',
         });
 
-        if (
-            currentGlobalConfig.error ||
-            currentGlobalConfig.response.length === 0
-        ) {
-            const error = new Error(
-                'GlobalConfigScheduler::global_document_fetch_error',
-            );
+        if (currentGlobalConfig.error || currentGlobalConfig.response.length === 0) {
+            const error = new Error('GlobalConfigScheduler::global_document_fetch_error');
             this.shutdownService.shutdownWithError(error);
             throw error;
         }

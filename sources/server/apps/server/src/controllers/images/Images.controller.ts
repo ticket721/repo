@@ -8,17 +8,8 @@ import {
     UseGuards,
     UseInterceptors,
 } from '@nestjs/common';
-import {
-    Roles,
-    RolesGuard,
-} from '@app/server/authentication/guards/RolesGuard.guard';
-import {
-    ApiBearerAuth,
-    ApiBody,
-    ApiConsumes,
-    ApiResponse,
-    ApiTags,
-} from '@nestjs/swagger';
+import { Roles, RolesGuard } from '@app/server/authentication/guards/RolesGuard.guard';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { User } from '@app/server/authentication/decorators/User.decorator';
 import { UserDto } from '@lib/common/users/dto/User.dto';
@@ -96,12 +87,8 @@ export class ImagesController {
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @Roles('authenticated')
     @UseFilters(new HttpExceptionFilter())
-    async upload(
-        @UploadedFiles() files,
-        @User() user: UserDto,
-    ): Promise<ImagesUploadResponseDto> {
-        const maxSize: number =
-            parseInt(this.configService.get('IMAGE_MAX_SIZE'), 10) * 1000000;
+    async upload(@UploadedFiles() files, @User() user: UserDto): Promise<ImagesUploadResponseDto> {
+        const maxSize: number = parseInt(this.configService.get('IMAGE_MAX_SIZE'), 10) * 1000000;
 
         const result: ImageEntity[] = [];
 
@@ -135,9 +122,7 @@ export class ImagesController {
                 },
             } as SortablePagedSearch);
 
-            const collision = await this.imagesService.searchElastic(
-                body.response,
-            );
+            const collision = await this.imagesService.searchElastic(body.response);
 
             if (collision.error) {
                 throw new HttpException(

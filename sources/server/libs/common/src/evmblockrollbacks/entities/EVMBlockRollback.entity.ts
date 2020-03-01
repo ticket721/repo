@@ -1,9 +1,4 @@
-import {
-    Column,
-    CreateDateColumn,
-    Entity,
-    UpdateDateColumn,
-} from '@iaminfinity/express-cassandra';
+import { Column, CreateDateColumn, Entity, UpdateDateColumn } from '@iaminfinity/express-cassandra';
 import { DryResponse } from '@lib/common/crud/CRUD.extension';
 
 /**

@@ -30,10 +30,7 @@ import { BullModule, BullModuleOptions } from '@nestjs/bull';
     providers: [
         {
             provide: EmailDriver,
-            useFactory: (
-                configService: ConfigService,
-                shutdownService: ShutdownService,
-            ): EmailDriver => {
+            useFactory: (configService: ConfigService, shutdownService: ShutdownService): EmailDriver => {
                 const emailEngine: string = configService.get('EMAIL_ENGINE');
 
                 switch (emailEngine) {
@@ -50,9 +47,7 @@ import { BullModule, BullModuleOptions } from '@nestjs/bull';
                     }
 
                     default: {
-                        const error = new Error(
-                            `Unknown mail engine ${emailEngine}`,
-                        );
+                        const error = new Error(`Unknown mail engine ${emailEngine}`);
                         shutdownService.shutdownWithError(error);
                         throw error;
                     }

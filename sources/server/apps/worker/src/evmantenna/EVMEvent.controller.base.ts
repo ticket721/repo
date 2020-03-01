@@ -2,19 +2,13 @@ import { ContractsControllerBase } from '@lib/common/contracts/ContractsControll
 import { Schedule } from 'nest-schedule';
 import { GlobalConfigService } from '@lib/common/globalconfig/GlobalConfig.service';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
-import {
-    InstanceSignature,
-    OutrospectionService,
-} from '@lib/common/outrospection/Outrospection.service';
+import { InstanceSignature, OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
 import { Job, Queue } from 'bull';
 import { EVMEventSetsService } from '@lib/common/evmeventsets/EVMEventSets.service';
 import { Repository } from '@iaminfinity/express-cassandra';
 import { EVMEvent } from '@lib/common/evmeventsets/entities/EVMEventSet.entity';
 import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
-import {
-    EVMAntennaMergerScheduler,
-    EVMProcessableEvent,
-} from '@app/worker/evmantenna/EVMAntennaMerger.scheduler';
+import { EVMAntennaMergerScheduler, EVMProcessableEvent } from '@app/worker/evmantenna/EVMAntennaMerger.scheduler';
 import { CRUDExtension, DryResponse } from '@lib/common/crud/CRUD.extension';
 import { OnModuleInit } from '@nestjs/common';
 import { ServiceResponse } from '@lib/common/utils/ServiceResponse';
@@ -196,9 +190,7 @@ export class EVMEventControllerBase implements OnModuleInit {
         this.fetchJobName = `@@evmantenna/fetchEVMEventsForBlock/${this.contractsController.getArtifactName()}/${
             this.eventName
         }`;
-        this.logger = new WinstonLoggerService(
-            `EVMEventController/${this.contractsController.getArtifactName()}`,
-        );
+        this.logger = new WinstonLoggerService(`EVMEventController/${this.contractsController.getArtifactName()}`);
     }
 
     /**
@@ -293,9 +285,7 @@ export class EVMEventControllerBase implements OnModuleInit {
      */
     async convert(event: EVMProcessableEvent, append: Appender): Promise<any> {
         const error = new Error(
-            `Error in ${this.contractsController.getArtifactName()}/${
-                this.eventName
-            } | convert should be overriden`,
+            `Error in ${this.contractsController.getArtifactName()}/${this.eventName} | convert should be overriden`,
         );
         this.shutdownService.shutdownWithError(error);
         throw error;
@@ -334,10 +324,7 @@ export class EVMEventControllerBase implements OnModuleInit {
      * @param artifactName
      */
     public isHandler(eventName: string, artifactName: string): boolean {
-        return (
-            this.eventName === eventName &&
-            this.contractsController.getArtifactName() === artifactName
-        );
+        return this.eventName === eventName && this.contractsController.getArtifactName() === artifactName;
     }
 
     /**
@@ -350,42 +337,26 @@ export class EVMEventControllerBase implements OnModuleInit {
 
         if (globalConfigRes.error || globalConfigRes.response.length === 0) {
             return this.shutdownService.shutdownWithError(
-                new Error(
-                    `Unable to recover global config: ${globalConfigRes.error ||
-                        'no global config'}`,
-                ),
+                new Error(`Unable to recover global config: ${globalConfigRes.error || 'no global config'}`),
             );
         }
 
         const globalConfig = globalConfigRes.response[0];
 
-        if (
-            globalConfig.block_number === 0 ||
-            globalConfig.processed_block_number === 0
-        ) {
+        if (globalConfig.block_number === 0 || globalConfig.processed_block_number === 0) {
             return;
         }
 
-        if (
-            this.currentFetchHeight === null ||
-            this.currentFetchHeight < globalConfig.processed_block_number
-        ) {
+        if (this.currentFetchHeight === null || this.currentFetchHeight < globalConfig.processed_block_number) {
             this.currentFetchHeight = globalConfig.processed_block_number;
         }
 
-        if (
-            this.currentDispatchHeight === null ||
-            this.currentDispatchHeight < globalConfig.processed_block_number
-        ) {
+        if (this.currentDispatchHeight === null || this.currentDispatchHeight < globalConfig.processed_block_number) {
             this.currentDispatchHeight = globalConfig.processed_block_number;
         }
 
         if (this.currentDispatchHeight < globalConfig.block_number) {
-            for (
-                let idx = this.currentDispatchHeight + 1;
-                idx <= globalConfig.block_number;
-                ++idx
-            ) {
+            for (let idx = this.currentDispatchHeight + 1; idx <= globalConfig.block_number; ++idx) {
                 await this.queue.add(this.fetchJobName, {
                     blockNumber: idx,
                 });
@@ -394,19 +365,12 @@ export class EVMEventControllerBase implements OnModuleInit {
             return;
         }
 
-        const currentJobs = (
-            await this.queue.getJobs(['active', 'waiting'])
-        ).filter(
-            (job: Job<EVMEventFetcherJob>): boolean =>
-                job.name === this.fetchJobName,
+        const currentJobs = (await this.queue.getJobs(['active', 'waiting'])).filter(
+            (job: Job<EVMEventFetcherJob>): boolean => job.name === this.fetchJobName,
         );
 
         if (this.currentFetchHeight < globalConfig.block_number) {
-            for (
-                let idx = this.currentFetchHeight + 1;
-                idx <= globalConfig.block_number;
-                ++idx
-            ) {
+            for (let idx = this.currentFetchHeight + 1; idx <= globalConfig.block_number; ++idx) {
                 const res = await this.evmEventSetsService.search({
                     block_number: idx,
                     event_name: this.eventName,
@@ -423,8 +387,7 @@ export class EVMEventControllerBase implements OnModuleInit {
                 if (res.response.length === 0) {
                     if (
                         currentJobs.findIndex(
-                            (job: Job<EVMEventFetcherJob>): boolean =>
-                                job.data.blockNumber === idx,
+                            (job: Job<EVMEventFetcherJob>): boolean => job.data.blockNumber === idx,
                         ) === -1
                     ) {
                         await this.queue.add(this.fetchJobName, {
@@ -444,10 +407,7 @@ export class EVMEventControllerBase implements OnModuleInit {
      * @param job
      */
     async fetchEVMEventsForBlock(job: Job<EVMEventFetcherJob>): Promise<void> {
-        const events = await this.fetch(
-            job.data.blockNumber,
-            job.data.blockNumber,
-        );
+        const events = await this.fetch(job.data.blockNumber, job.data.blockNumber);
 
         const createRes = await this.evmEventSetsService.create({
             artifact_name: this.contractsController.getArtifactName(),
@@ -480,9 +440,7 @@ export class EVMEventControllerBase implements OnModuleInit {
             this.logger.log(
                 `Caught ${events.length} ${
                     this.eventName
-                } from ${this.contractsController.getArtifactName()} at block ${
-                    job.data.blockNumber
-                }`,
+                } from ${this.contractsController.getArtifactName()} at block ${job.data.blockNumber}`,
             );
         }
 
@@ -499,9 +457,7 @@ export class EVMEventControllerBase implements OnModuleInit {
 
         if (signature.master === true && signature.name === 'worker') {
             this.schedule.scheduleIntervalJob(
-                `${this.contractsController.getArtifactName()}::${
-                    this.eventName
-                }`,
+                `${this.contractsController.getArtifactName()}::${this.eventName}`,
                 1000,
                 this.eventBackgroundFetcher.bind(this),
             );
@@ -509,14 +465,8 @@ export class EVMEventControllerBase implements OnModuleInit {
 
         if (signature.name === 'worker') {
             this.queue
-                .process(
-                    this.fetchJobName,
-                    1,
-                    this.fetchEVMEventsForBlock.bind(this),
-                )
-                .then(() =>
-                    console.log(`Closing Bull Queue ${this.fetchJobName}`),
-                )
+                .process(this.fetchJobName, 1, this.fetchEVMEventsForBlock.bind(this))
+                .then(() => console.log(`Closing Bull Queue ${this.fetchJobName}`))
                 .catch(this.shutdownService.shutdownWithError);
         }
     }

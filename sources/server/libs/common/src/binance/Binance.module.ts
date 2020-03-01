@@ -15,15 +15,12 @@ export interface BinanceModuleBuildOptions {
 /**
  * Build options for the Binance Module
  */
-export interface BinanceModuleAsyncOptions
-    extends Pick<DynamicModule, 'imports'> {
+export interface BinanceModuleAsyncOptions extends Pick<DynamicModule, 'imports'> {
     /**
      * Factory to inject Binance Service options
      * @param args
      */
-    useFactory: (
-        ...args: any[]
-    ) => Promise<BinanceModuleBuildOptions> | BinanceModuleBuildOptions;
+    useFactory: (...args: any[]) => Promise<BinanceModuleBuildOptions> | BinanceModuleBuildOptions;
 
     /**
      * Providers to inject into factory

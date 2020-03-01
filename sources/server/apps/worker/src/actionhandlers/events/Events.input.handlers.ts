@@ -1,7 +1,4 @@
-import {
-    ActionSetsService,
-    Progress,
-} from '@lib/common/actionsets/ActionSets.service';
+import { ActionSetsService, Progress } from '@lib/common/actionsets/ActionSets.service';
 import { ActionSet } from '@lib/common/actionsets/helper/ActionSet';
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import Joi from '@hapi/joi';
@@ -219,10 +216,7 @@ export class EventsInputHandlers implements OnModuleInit {
      * @param actionSetsService
      * @param imagesService
      */
-    constructor(
-        private readonly actionSetsService: ActionSetsService,
-        private readonly imagesService: ImagesService,
-    ) {}
+    constructor(private readonly actionSetsService: ActionSetsService, private readonly imagesService: ImagesService) {}
 
     /**
      * events/textMetadata dynamic argument checker
@@ -247,10 +241,7 @@ export class EventsInputHandlers implements OnModuleInit {
     /**
      * events/textMetadata handler
      */
-    async textMetadataHandler(
-        actionset: ActionSet,
-        progress: Progress,
-    ): Promise<[ActionSet, boolean]> {
+    async textMetadataHandler(actionset: ActionSet, progress: Progress): Promise<[ActionSet, boolean]> {
         const data = actionset.action.data;
 
         const { error } = this.textMetadataValidator.validate(data);
@@ -278,10 +269,7 @@ export class EventsInputHandlers implements OnModuleInit {
     /**
      * events/modulesConfiguration handler
      */
-    async modulesConfigurationHandler(
-        actionset: ActionSet,
-        progress: Progress,
-    ): Promise<[ActionSet, boolean]> {
+    async modulesConfigurationHandler(actionset: ActionSet, progress: Progress): Promise<[ActionSet, boolean]> {
         const data = actionset.action.data;
 
         const { error } = this.modulesConfigurationValidator.validate(data);
@@ -337,10 +325,7 @@ export class EventsInputHandlers implements OnModuleInit {
     /**
      * events/datesConfiguration handler
      */
-    async datesConfigurationHandler(
-        actionset: ActionSet,
-        progress: Progress,
-    ): Promise<[ActionSet, boolean]> {
+    async datesConfigurationHandler(actionset: ActionSet, progress: Progress): Promise<[ActionSet, boolean]> {
         const data = actionset.action.data;
 
         const { error } = this.datesConfigurationValidator.validate(data);
@@ -407,9 +392,7 @@ export class EventsInputHandlers implements OnModuleInit {
      */
     categoriesConfigurationValidator = Joi.object({
         global: Joi.array().items(this.categoryConfigurationValidator),
-        dates: Joi.array().items(
-            Joi.array().items(this.categoryConfigurationValidator),
-        ),
+        dates: Joi.array().items(Joi.array().items(this.categoryConfigurationValidator)),
     });
 
     /**
@@ -449,10 +432,7 @@ export class EventsInputHandlers implements OnModuleInit {
             return null;
         }
 
-        if (
-            (cat.resaleEnd && !cat.resaleBegin) ||
-            (!cat.resaleEnd && cat.resaleBegin)
-        ) {
+        if ((cat.resaleEnd && !cat.resaleBegin) || (!cat.resaleEnd && cat.resaleBegin)) {
             return 'resale_dates_should_both_be_defined';
         }
 
@@ -472,12 +452,8 @@ export class EventsInputHandlers implements OnModuleInit {
      */
     checkResaleDates(data: any): string {
         for (const global of data.global) {
-            global.resaleBegin = global.resaleBegin
-                ? new Date(global.resaleBegin)
-                : null;
-            global.resaleEnd = global.resaleEnd
-                ? new Date(global.resaleEnd)
-                : null;
+            global.resaleBegin = global.resaleBegin ? new Date(global.resaleBegin) : null;
+            global.resaleEnd = global.resaleEnd ? new Date(global.resaleEnd) : null;
             global.saleBegin = new Date(global.saleBegin);
             global.saleEnd = new Date(global.saleEnd);
 
@@ -490,9 +466,7 @@ export class EventsInputHandlers implements OnModuleInit {
 
         for (const date of data.dates) {
             for (const cat of date) {
-                cat.resaleBegin = cat.resaleBegin
-                    ? new Date(cat.resaleBegin)
-                    : null;
+                cat.resaleBegin = cat.resaleBegin ? new Date(cat.resaleBegin) : null;
                 cat.resaleEnd = cat.resaleEnd ? new Date(cat.resaleEnd) : null;
                 cat.saleBegin = new Date(cat.saleBegin);
                 cat.saleEnd = new Date(cat.saleEnd);
@@ -511,10 +485,7 @@ export class EventsInputHandlers implements OnModuleInit {
     /**
      * events/categoriesConfiguration handler
      */
-    async categoriesConfigurationHandler(
-        actionset: ActionSet,
-        progress: Progress,
-    ): Promise<[ActionSet, boolean]> {
+    async categoriesConfigurationHandler(actionset: ActionSet, progress: Progress): Promise<[ActionSet, boolean]> {
         const data = actionset.action.data;
 
         const { error } = this.categoriesConfigurationValidator.validate(data);
@@ -587,10 +558,7 @@ export class EventsInputHandlers implements OnModuleInit {
     /**
      * events/imagesMetadata handler
      */
-    async imagesMetadataHandler(
-        actionset: ActionSet,
-        progress: Progress,
-    ): Promise<[ActionSet, boolean]> {
+    async imagesMetadataHandler(actionset: ActionSet, progress: Progress): Promise<[ActionSet, boolean]> {
         const data = actionset.action.data;
 
         const { error } = this.imagesMetadataValidator.validate(data);
@@ -652,10 +620,7 @@ export class EventsInputHandlers implements OnModuleInit {
     /**
      * events/adminsConfiguration handler
      */
-    async adminsConfigurationHandler(
-        actionset: ActionSet,
-        progress: Progress,
-    ): Promise<[ActionSet, boolean]> {
+    async adminsConfigurationHandler(actionset: ActionSet, progress: Progress): Promise<[ActionSet, boolean]> {
         const data = actionset.action.data;
 
         const { error } = this.adminsConfigurationValidator.validate(data);
@@ -680,26 +645,17 @@ export class EventsInputHandlers implements OnModuleInit {
      */
     /* istanbul ignore next */
     onModuleInit(): void {
-        this.actionSetsService.setInputHandler(
-            '@events/textMetadata',
-            this.textMetadataHandler.bind(this),
-        );
+        this.actionSetsService.setInputHandler('@events/textMetadata', this.textMetadataHandler.bind(this));
         this.actionSetsService.setInputHandler(
             '@events/modulesConfiguration',
             this.modulesConfigurationHandler.bind(this),
         );
-        this.actionSetsService.setInputHandler(
-            '@events/datesConfiguration',
-            this.datesConfigurationHandler.bind(this),
-        );
+        this.actionSetsService.setInputHandler('@events/datesConfiguration', this.datesConfigurationHandler.bind(this));
         this.actionSetsService.setInputHandler(
             '@events/categoriesConfiguration',
             this.categoriesConfigurationHandler.bind(this),
         );
-        this.actionSetsService.setInputHandler(
-            '@events/imagesMetadata',
-            this.imagesMetadataHandler.bind(this),
-        );
+        this.actionSetsService.setInputHandler('@events/imagesMetadata', this.imagesMetadataHandler.bind(this));
         this.actionSetsService.setInputHandler(
             '@events/adminsConfiguration',
             this.adminsConfigurationHandler.bind(this),

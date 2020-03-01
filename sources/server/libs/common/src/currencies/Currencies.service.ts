@@ -161,9 +161,7 @@ export class CurrenciesService {
      *
      * @param currencyConfig
      */
-    private async loadContractMode(
-        currencyConfig: CurrencyConfig,
-    ): Promise<void> {
+    private async loadContractMode(currencyConfig: CurrencyConfig): Promise<void> {
         const controller: ContractsControllerBase = new ContractsControllerBase(
             this.contractsService,
             this.web3Service,
@@ -193,9 +191,7 @@ export class CurrenciesService {
      *
      * @param currencyConfig
      */
-    private async loadModuleMode(
-        currencyConfig: CurrencyConfig,
-    ): Promise<void> {
+    private async loadModuleMode(currencyConfig: CurrencyConfig): Promise<void> {
         const controller: ContractsControllerBase = new ContractsControllerBase(
             this.contractsService,
             this.web3Service,
@@ -276,8 +272,6 @@ export class CurrenciesService {
      * @param currency
      */
     public async get(currency: string): Promise<ERC20Currency | SetCurrency> {
-        return this.loaded
-            ? this.currencies[currency]
-            : (await this.load())[currency];
+        return this.loaded ? this.currencies[currency] : (await this.load())[currency];
     }
 }

@@ -1,19 +1,6 @@
-import {
-    Body,
-    Controller,
-    Get,
-    HttpCode,
-    HttpException,
-    Param,
-    Post,
-    UseFilters,
-    UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpException, Param, Post, UseFilters, UseGuards } from '@nestjs/common';
 import * as _ from 'lodash';
-import {
-    Roles,
-    RolesGuard,
-} from '@app/server/authentication/guards/RolesGuard.guard';
+import { Roles, RolesGuard } from '@app/server/authentication/guards/RolesGuard.guard';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { User } from '@app/server/authentication/decorators/User.decorator';
@@ -33,12 +20,7 @@ import { Action } from '@lib/common/actionsets/helper/Action';
 import { StatusCodes, StatusNames } from '@lib/common/utils/codes';
 import { EventsBuildResponseDto } from '@app/server/controllers/events/dto/EventsBuildResponse.dto';
 import { EventsBuildInputDto } from '@app/server/controllers/events/dto/EventsBuildInput.dto';
-import {
-    RefractMtx,
-    toAcceptedAddressFormat,
-    TransactionParameters,
-    uuidEq,
-} from '@ticket721sources/global';
+import { RefractMtx, toAcceptedAddressFormat, TransactionParameters, uuidEq } from '@ticket721sources/global';
 import { ActionSetToEventEntityConverter } from '@app/server/controllers/events/utils/ActionSet.EventEntity.converter';
 import { ConfigService } from '@lib/common/config/Config.service';
 import { CurrenciesService } from '@lib/common/currencies/Currencies.service';
@@ -47,10 +29,7 @@ import { Category, DateEntity } from '@lib/common/dates/entities/Date.entity';
 import { EventsDeployInputDto } from '@app/server/controllers/events/dto/EventsDeployInput.dto';
 import { EventsDeployResponseDto } from '@app/server/controllers/events/dto/EventsDeployResponse.dto';
 import { VaultereumService } from '@lib/common/vaultereum/Vaultereum.service';
-import {
-    ScopeBinding,
-    TicketforgeService,
-} from '@lib/common/contracts/Ticketforge.service';
+import { ScopeBinding, TicketforgeService } from '@lib/common/contracts/Ticketforge.service';
 import { EventsDeployGeneratePayloadParamsDto } from '@app/server/controllers/events/dto/EventsDeployGeneratePayloadParams.dto';
 import { EventsDeployGeneratePayloadResponseDto } from '@app/server/controllers/events/dto/EventsDeployGeneratePayloadResponse.dto';
 import { T721AdminService } from '@lib/common/contracts/T721Admin.service';
@@ -114,14 +93,8 @@ export class EventsController {
     })
     @HttpCode(200)
     @UseFilters(new HttpExceptionFilter())
-    async search(
-        @Body() body: EventsSearchInputDto,
-        @User() user: UserDto,
-    ): Promise<EventsSearchResponseDto> {
-        const events = await search<EventEntity, EventsService>(
-            this.eventsService,
-            body,
-        );
+    async search(@Body() body: EventsSearchInputDto, @User() user: UserDto): Promise<EventsSearchResponseDto> {
+        const events = await search<EventEntity, EventsService>(this.eventsService, body);
 
         return {
             events,
@@ -155,10 +128,7 @@ export class EventsController {
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @Roles('authenticated')
     @UseFilters(new HttpExceptionFilter())
-    async deploy(
-        @Body() body: EventsDeployInputDto,
-        @User() user: UserDto,
-    ): Promise<EventsDeployResponseDto> {
+    async deploy(@Body() body: EventsDeployInputDto, @User() user: UserDto): Promise<EventsDeployResponseDto> {
         const event = await this.eventsService.search({
             id: body.event,
         });
@@ -202,11 +172,7 @@ export class EventsController {
 
         const eventEntity = event.response[0];
 
-        const txRes = await this.txsService.mtx(
-            body.payload,
-            body.signature,
-            user,
-        );
+        const txRes = await this.txsService.mtx(body.payload, body.signature, user);
 
         if (txRes.error) {
             throw new HttpException(
@@ -315,9 +281,7 @@ export class EventsController {
         let nextId;
 
         try {
-            nextId = (
-                await t721controller.methods.getNextGroupId(user.address).call()
-            ).toLowerCase();
+            nextId = (await t721controller.methods.getNextGroupId(user.address).call()).toLowerCase();
         } catch (e) {
             throw new HttpException(
                 {
@@ -334,9 +298,7 @@ export class EventsController {
             from: user.address,
             to: t721controller._address,
             relayer: t721admin._address,
-            data: t721controller.methods
-                .createGroup('@event/modules')
-                .encodeABI(),
+            data: t721controller.methods.createGroup('@event/modules').encodeABI(),
             value: '0',
         });
 
@@ -367,10 +329,7 @@ export class EventsController {
                 );
             }
 
-            categories = [
-                ...categories,
-                ...dateEntityRes.response[0].categories,
-            ];
+            categories = [...categories, ...dateEntityRes.response[0].categories];
         }
 
         const registerCategoriesArguments = await encodeCategories(
@@ -384,9 +343,7 @@ export class EventsController {
                 from: user.address,
                 to: t721controller._address,
                 relayer: t721admin._address,
-                data: t721controller.methods
-                    .registerCategories(nextId, batch[0], batch[1], batch[2])
-                    .encodeABI(),
+                data: t721controller.methods.registerCategories(nextId, batch[0], batch[1], batch[2]).encodeABI(),
                 value: '0',
             });
         }
@@ -398,9 +355,7 @@ export class EventsController {
             user.address,
         );
 
-        const generatedNonce = await this.refractFactoryService.getNonce(
-            user.address,
-        );
+        const generatedNonce = await this.refractFactoryService.getNonce(user.address);
 
         return {
             payload: rmtx.generatePayload(
@@ -444,10 +399,7 @@ export class EventsController {
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @Roles('authenticated')
     @UseFilters(new HttpExceptionFilter())
-    async build(
-        @Body() body: EventsBuildInputDto,
-        @User() user: UserDto,
-    ): Promise<EventsBuildResponseDto> {
+    async build(@Body() body: EventsBuildInputDto, @User() user: UserDto): Promise<EventsBuildResponseDto> {
         const actionSet = await this.actionSetsService.search({
             id: body.completedActionSet,
         });
@@ -531,9 +483,7 @@ export class EventsController {
             datesSavedEntities.push(dateCreationRes.response);
         }
 
-        event.dates = datesSavedEntities.map(
-            (date: DateEntity): string => date.id,
-        );
+        event.dates = datesSavedEntities.map((date: DateEntity): string => date.id);
 
         const eventCreationRes = await this.eventsService.create(event);
 
@@ -548,9 +498,7 @@ export class EventsController {
         }
 
         const validatingAddressName = `event-${eventCreationRes.response.id.toLowerCase()}`;
-        const validatingAddressRes = await this.vaultereumService.write(
-            `ethereum/accounts/${validatingAddressName}`,
-        );
+        const validatingAddressRes = await this.vaultereumService.write(`ethereum/accounts/${validatingAddressName}`);
 
         if (validatingAddressRes.error) {
             throw new HttpException(
@@ -562,9 +510,7 @@ export class EventsController {
             );
         }
 
-        const eventAddress = toAcceptedAddressFormat(
-            validatingAddressRes.response.data.address,
-        );
+        const eventAddress = toAcceptedAddressFormat(validatingAddressRes.response.data.address);
 
         const eventAddressUpdateRes = await this.eventsService.update(
             {
@@ -619,10 +565,7 @@ export class EventsController {
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @Roles('authenticated')
     @UseFilters(new HttpExceptionFilter())
-    async create(
-        @Body() body: EventsCreateInputDto,
-        @User() user: UserDto,
-    ): Promise<EventsCreateResponseDto> {
+    async create(@Body() body: EventsCreateInputDto, @User() user: UserDto): Promise<EventsCreateResponseDto> {
         const actions: Action[] = [
             new Action()
                 .setName('@events/textMetadata')
@@ -656,9 +599,7 @@ export class EventsController {
             .setOwner(user)
             .setStatus('input:in progress');
 
-        const response: CRUDResponse<ActionSetEntity> = await this.actionSetsService.create(
-            actionSet.raw,
-        );
+        const response: CRUDResponse<ActionSetEntity> = await this.actionSetsService.create(actionSet.raw);
 
         if (response.error) {
             throw new HttpException(

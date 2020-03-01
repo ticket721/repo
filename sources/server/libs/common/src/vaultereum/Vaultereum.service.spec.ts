@@ -1,7 +1,4 @@
-import {
-    VaultClient,
-    VaultereumService,
-} from '@lib/common/vaultereum/Vaultereum.service';
+import { VaultClient, VaultereumService } from '@lib/common/vaultereum/Vaultereum.service';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 import { deepEqual, instance, mock, spy, verify, when } from 'ts-mockito';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -50,16 +47,10 @@ describe('Vaultereum Service', function() {
         };
 
         const module: TestingModule = await Test.createTestingModule({
-            providers: [
-                VaultereumOptionsProvider,
-                ShutdownServiceProvider,
-                VaultereumService,
-            ],
+            providers: [VaultereumOptionsProvider, ShutdownServiceProvider, VaultereumService],
         }).compile();
 
-        context.vaultereumService = module.get<VaultereumService>(
-            VaultereumService,
-        );
+        context.vaultereumService = module.get<VaultereumService>(VaultereumService);
     });
 
     describe('read', function() {
@@ -78,10 +69,7 @@ describe('Vaultereum Service', function() {
             when(clientMock.read(readPath, undefined)).thenResolve(readResult);
 
             await context.vaultereumService.onModuleInit();
-            const res = await context.vaultereumService.read(
-                readPath,
-                undefined,
-            );
+            const res = await context.vaultereumService.read(readPath, undefined);
 
             expect(res.error).toEqual(null);
             expect(res.response).toEqual(readResult);
@@ -97,15 +85,10 @@ describe('Vaultereum Service', function() {
             const readPath = 'ethereum/something';
 
             when(configureSpy.configure()).thenResolve(instance(clientMock));
-            when(clientMock.read(readPath, undefined)).thenThrow(
-                new Error('an error occured'),
-            );
+            when(clientMock.read(readPath, undefined)).thenThrow(new Error('an error occured'));
 
             await context.vaultereumService.onModuleInit();
-            const res = await context.vaultereumService.read(
-                readPath,
-                undefined,
-            );
+            const res = await context.vaultereumService.read(readPath, undefined);
 
             expect(res.error).toEqual('an error occured');
             expect(res.response).toEqual(null);
@@ -128,15 +111,10 @@ describe('Vaultereum Service', function() {
             const writePath = 'ethereum/something';
 
             when(configureSpy.configure()).thenResolve(instance(clientMock));
-            when(clientMock.write(writePath, undefined)).thenResolve(
-                writeResult,
-            );
+            when(clientMock.write(writePath, undefined)).thenResolve(writeResult);
 
             await context.vaultereumService.onModuleInit();
-            const res = await context.vaultereumService.write(
-                writePath,
-                undefined,
-            );
+            const res = await context.vaultereumService.write(writePath, undefined);
 
             expect(res.error).toEqual(null);
             expect(res.response).toEqual(writeResult);
@@ -152,15 +130,10 @@ describe('Vaultereum Service', function() {
             const writePath = 'ethereum/something';
 
             when(configureSpy.configure()).thenResolve(instance(clientMock));
-            when(clientMock.write(writePath, undefined)).thenThrow(
-                new Error('an error occured'),
-            );
+            when(clientMock.write(writePath, undefined)).thenThrow(new Error('an error occured'));
 
             await context.vaultereumService.onModuleInit();
-            const res = await context.vaultereumService.write(
-                writePath,
-                undefined,
-            );
+            const res = await context.vaultereumService.write(writePath, undefined);
 
             expect(res.error).toEqual('an error occured');
             expect(res.response).toEqual(null);
@@ -218,13 +191,9 @@ describe('Vaultereum Service', function() {
                 ),
             ).thenReturn(instance(clientMock));
 
-            when(clientMock.read('ethereum/config')).thenReject(
-                new Error('unexpected reasons'),
-            );
+            when(clientMock.read('ethereum/config')).thenReject(new Error('unexpected reasons'));
 
-            await expect(
-                context.vaultereumService.configure(),
-            ).rejects.toMatchObject(new Error('unexpected reasons'));
+            await expect(context.vaultereumService.configure()).rejects.toMatchObject(new Error('unexpected reasons'));
 
             verify(
                 configureSpy.build(
@@ -246,11 +215,7 @@ describe('Vaultereum Service', function() {
                     }),
                 ),
             ).never();
-            verify(
-                context.shutdownServiceMock.shutdownWithError(
-                    deepEqual(new Error('unexpected reasons')),
-                ),
-            ).called();
+            verify(context.shutdownServiceMock.shutdownWithError(deepEqual(new Error('unexpected reasons')))).called();
         });
     });
 });

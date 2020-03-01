@@ -1,18 +1,6 @@
-import {
-    Body,
-    Controller,
-    HttpCode,
-    HttpException,
-    Post,
-    Put,
-    UseFilters,
-    UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpException, Post, Put, UseFilters, UseGuards } from '@nestjs/common';
 import { ActionSetsService } from '@lib/common/actionsets/ActionSets.service';
-import {
-    Roles,
-    RolesGuard,
-} from '@app/server/authentication/guards/RolesGuard.guard';
+import { Roles, RolesGuard } from '@app/server/authentication/guards/RolesGuard.guard';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { User } from '@app/server/authentication/decorators/User.decorator';
@@ -21,10 +9,7 @@ import { search, hash } from '@lib/common/utils/ControllerBasics';
 import { SortablePagedSearch } from '@lib/common/utils/SortablePagedSearch';
 import { ActionsSearchInputDto } from '@app/server/controllers/actionsets/dto/ActionsSearchInput.dto';
 import { ActionsSearchResponseDto } from '@app/server/controllers/actionsets/dto/ActionsSearchResponse.dto';
-import {
-    ActionSetEntity,
-    ActionSetStatus,
-} from '@lib/common/actionsets/entities/ActionSet.entity';
+import { ActionSetEntity, ActionSetStatus } from '@lib/common/actionsets/entities/ActionSet.entity';
 import { ActionsUpdateInputDto } from '@app/server/controllers/actionsets/dto/ActionsUpdateInput.dto';
 import { ActionsUpdateResponseDto } from '@app/server/controllers/actionsets/dto/ActionsUpdateResponse.dto';
 import { CRUDResponse } from '@lib/common/crud/CRUD.extension';
@@ -77,19 +62,13 @@ export class ActionSetsController {
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @Roles('authenticated')
     @UseFilters(new HttpExceptionFilter())
-    async search(
-        @Body() body: ActionsSearchInputDto,
-        @User() user: UserDto,
-    ): Promise<ActionsSearchResponseDto> {
-        const actionsets = await search<ActionSetEntity, ActionSetsService>(
-            this.actionSetsService,
-            {
-                ...body,
-                owner: {
-                    $eq: user.id.toString(),
-                },
-            } as SortablePagedSearch,
-        );
+    async search(@Body() body: ActionsSearchInputDto, @User() user: UserDto): Promise<ActionsSearchResponseDto> {
+        const actionsets = await search<ActionSetEntity, ActionSetsService>(this.actionSetsService, {
+            ...body,
+            owner: {
+                $eq: user.id.toString(),
+            },
+        } as SortablePagedSearch);
 
         return {
             actionsets,
@@ -119,10 +98,7 @@ export class ActionSetsController {
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @Roles('authenticated')
     @UseFilters(new HttpExceptionFilter())
-    async hash(
-        @Body() body: ActionsHashInputDto,
-        @User() user: UserDto,
-    ): Promise<ActionsHashResponseDto> {
+    async hash(@Body() body: ActionsHashInputDto, @User() user: UserDto): Promise<ActionsHashResponseDto> {
         const { hash_fields, ...query } = body;
 
         const [count, hashed] = await hash<ActionSetEntity, ActionSetsService>(
@@ -169,15 +145,10 @@ export class ActionSetsController {
     @HttpCode(200)
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @Roles('authenticated')
-    async updateAction(
-        @Body() body: ActionsUpdateInputDto,
-        @User() user: UserDto,
-    ): Promise<ActionsUpdateResponseDto> {
-        const searchResult: CRUDResponse<ActionSetEntity[]> = await this.actionSetsService.search(
-            {
-                id: body.actionset_id,
-            },
-        );
+    async updateAction(@Body() body: ActionsUpdateInputDto, @User() user: UserDto): Promise<ActionsUpdateResponseDto> {
+        const searchResult: CRUDResponse<ActionSetEntity[]> = await this.actionSetsService.search({
+            id: body.actionset_id,
+        });
 
         if (searchResult.error) {
             throw new HttpException(
@@ -199,9 +170,7 @@ export class ActionSetsController {
             );
         }
 
-        const actionSet: ActionSet = new ActionSet().load(
-            searchResult.response[0],
-        );
+        const actionSet: ActionSet = new ActionSet().load(searchResult.response[0]);
 
         if (!actionSet.isOwner(user)) {
             throw new HttpException(
@@ -227,11 +196,7 @@ export class ActionSetsController {
 
         actionSet.actions[body.action_idx].setData(body.data);
 
-        actionSet.setStatus(
-            `${
-                actionSet.actions[body.action_idx].type
-            }:waiting` as ActionSetStatus,
-        );
+        actionSet.setStatus(`${actionSet.actions[body.action_idx].type}:waiting` as ActionSetStatus);
         actionSet.actions[body.action_idx].setStatus('waiting');
 
         actionSet.setCurrentAction(body.action_idx);

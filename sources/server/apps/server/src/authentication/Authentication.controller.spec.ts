@@ -42,9 +42,7 @@ const context: {
 
 describe('Authentication Controller', function() {
     beforeEach(async function() {
-        const authenticationServiceMock: AuthenticationService = mock(
-            AuthenticationService,
-        );
+        const authenticationServiceMock: AuthenticationService = mock(AuthenticationService);
         const configServiceMock: ConfigService = mock(ConfigService);
         const mailingQueueMock: QueueMock = mock(QueueMock);
         const jwtServiceMock: JwtService = mock(JwtService);
@@ -86,9 +84,7 @@ describe('Authentication Controller', function() {
             controllers: [AuthenticationController],
         }).compile();
 
-        context.authenticationController = module.get<AuthenticationController>(
-            AuthenticationController,
-        );
+        context.authenticationController = module.get<AuthenticationController>(AuthenticationController);
         context.authenticationServiceMock = authenticationServiceMock;
         context.configServiceMock = configServiceMock;
         context.mailingQueueMock = mailingQueueMock;
@@ -97,26 +93,16 @@ describe('Authentication Controller', function() {
 
     describe('web3Register', function() {
         test('should create a user', async function() {
-            const authenticationController: AuthenticationController =
-                context.authenticationController;
-            const authenticationServiceMock: AuthenticationService =
-                context.authenticationServiceMock;
+            const authenticationController: AuthenticationController = context.authenticationController;
+            const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
 
             const email = 'test@test.com';
             const username = 'salut';
             const wallet: Wallet = await createWallet();
             const address = toAcceptedAddressFormat(wallet.address);
-            const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(
-                1,
-            );
-            const register_payload = web3RegisterSigner.generateRegistrationProofPayload(
-                email,
-                username,
-            );
-            const register_signature = await web3RegisterSigner.sign(
-                wallet.privateKey,
-                register_payload[1],
-            );
+            const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(1);
+            const register_payload = web3RegisterSigner.generateRegistrationProofPayload(email, username);
+            const register_signature = await web3RegisterSigner.sign(wallet.privateKey, register_payload[1]);
 
             when(
                 authenticationServiceMock.createWeb3User(
@@ -182,10 +168,8 @@ describe('Authentication Controller', function() {
         });
 
         test('should create a user & return validation token', async function() {
-            const authenticationController: AuthenticationController =
-                context.authenticationController;
-            const authenticationServiceMock: AuthenticationService =
-                context.authenticationServiceMock;
+            const authenticationController: AuthenticationController = context.authenticationController;
+            const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
             const configServiceMock: ConfigService = context.configServiceMock;
 
             when(configServiceMock.get('NODE_ENV')).thenReturn('development');
@@ -194,17 +178,9 @@ describe('Authentication Controller', function() {
             const username = 'salut';
             const wallet: Wallet = await createWallet();
             const address = toAcceptedAddressFormat(wallet.address);
-            const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(
-                1,
-            );
-            const register_payload = web3RegisterSigner.generateRegistrationProofPayload(
-                email,
-                username,
-            );
-            const register_signature = await web3RegisterSigner.sign(
-                wallet.privateKey,
-                register_payload[1],
-            );
+            const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(1);
+            const register_payload = web3RegisterSigner.generateRegistrationProofPayload(email, username);
+            const register_signature = await web3RegisterSigner.sign(wallet.privateKey, register_payload[1]);
 
             when(
                 authenticationServiceMock.createWeb3User(
@@ -270,26 +246,16 @@ describe('Authentication Controller', function() {
         });
 
         test('email already in use', async function() {
-            const authenticationController: AuthenticationController =
-                context.authenticationController;
-            const authenticationServiceMock: AuthenticationService =
-                context.authenticationServiceMock;
+            const authenticationController: AuthenticationController = context.authenticationController;
+            const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
 
             const email = 'test@test.com';
             const username = 'salut';
             const wallet: Wallet = await createWallet();
             const address = toAcceptedAddressFormat(wallet.address);
-            const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(
-                1,
-            );
-            const register_payload = web3RegisterSigner.generateRegistrationProofPayload(
-                email,
-                username,
-            );
-            const register_signature = await web3RegisterSigner.sign(
-                wallet.privateKey,
-                register_payload[1],
-            );
+            const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(1);
+            const register_payload = web3RegisterSigner.generateRegistrationProofPayload(email, username);
+            const register_signature = await web3RegisterSigner.sign(wallet.privateKey, register_payload[1]);
 
             when(
                 authenticationServiceMock.createWeb3User(
@@ -315,9 +281,7 @@ describe('Authentication Controller', function() {
                 signature: register_signature.hex,
             };
 
-            await expect(
-                authenticationController.web3Register(user),
-            ).rejects.toMatchObject({
+            await expect(authenticationController.web3Register(user)).rejects.toMatchObject({
                 response: {
                     status: 409,
                     message: 'email_already_in_use',
@@ -342,26 +306,16 @@ describe('Authentication Controller', function() {
         });
 
         test('username already in use', async function() {
-            const authenticationController: AuthenticationController =
-                context.authenticationController;
-            const authenticationServiceMock: AuthenticationService =
-                context.authenticationServiceMock;
+            const authenticationController: AuthenticationController = context.authenticationController;
+            const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
 
             const email = 'test@test.com';
             const username = 'salut';
             const wallet: Wallet = await createWallet();
             const address = toAcceptedAddressFormat(wallet.address);
-            const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(
-                1,
-            );
-            const register_payload = web3RegisterSigner.generateRegistrationProofPayload(
-                email,
-                username,
-            );
-            const register_signature = await web3RegisterSigner.sign(
-                wallet.privateKey,
-                register_payload[1],
-            );
+            const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(1);
+            const register_payload = web3RegisterSigner.generateRegistrationProofPayload(email, username);
+            const register_signature = await web3RegisterSigner.sign(wallet.privateKey, register_payload[1]);
 
             when(
                 authenticationServiceMock.createWeb3User(
@@ -387,9 +341,7 @@ describe('Authentication Controller', function() {
                 signature: register_signature.hex,
             };
 
-            await expect(
-                authenticationController.web3Register(user),
-            ).rejects.toMatchObject({
+            await expect(authenticationController.web3Register(user)).rejects.toMatchObject({
                 response: {
                     status: 409,
                     message: 'username_already_in_use',
@@ -414,26 +366,16 @@ describe('Authentication Controller', function() {
         });
 
         test('address already in use', async function() {
-            const authenticationController: AuthenticationController =
-                context.authenticationController;
-            const authenticationServiceMock: AuthenticationService =
-                context.authenticationServiceMock;
+            const authenticationController: AuthenticationController = context.authenticationController;
+            const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
 
             const email = 'test@test.com';
             const username = 'salut';
             const wallet: Wallet = await createWallet();
             const address = toAcceptedAddressFormat(wallet.address);
-            const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(
-                1,
-            );
-            const register_payload = web3RegisterSigner.generateRegistrationProofPayload(
-                email,
-                username,
-            );
-            const register_signature = await web3RegisterSigner.sign(
-                wallet.privateKey,
-                register_payload[1],
-            );
+            const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(1);
+            const register_payload = web3RegisterSigner.generateRegistrationProofPayload(email, username);
+            const register_signature = await web3RegisterSigner.sign(wallet.privateKey, register_payload[1]);
 
             when(
                 authenticationServiceMock.createWeb3User(
@@ -459,9 +401,7 @@ describe('Authentication Controller', function() {
                 signature: register_signature.hex,
             };
 
-            await expect(
-                authenticationController.web3Register(user),
-            ).rejects.toMatchObject({
+            await expect(authenticationController.web3Register(user)).rejects.toMatchObject({
                 response: {
                     status: 409,
                     message: 'address_already_in_use',
@@ -486,26 +426,16 @@ describe('Authentication Controller', function() {
         });
 
         test('invalid signature', async function() {
-            const authenticationController: AuthenticationController =
-                context.authenticationController;
-            const authenticationServiceMock: AuthenticationService =
-                context.authenticationServiceMock;
+            const authenticationController: AuthenticationController = context.authenticationController;
+            const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
 
             const email = 'test@test.com';
             const username = 'salut';
             const wallet: Wallet = await createWallet();
             const address = toAcceptedAddressFormat(wallet.address);
-            const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(
-                1,
-            );
-            const register_payload = web3RegisterSigner.generateRegistrationProofPayload(
-                email,
-                username,
-            );
-            const register_signature = await web3RegisterSigner.sign(
-                wallet.privateKey,
-                register_payload[1],
-            );
+            const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(1);
+            const register_payload = web3RegisterSigner.generateRegistrationProofPayload(email, username);
+            const register_signature = await web3RegisterSigner.sign(wallet.privateKey, register_payload[1]);
 
             when(
                 authenticationServiceMock.createWeb3User(
@@ -531,9 +461,7 @@ describe('Authentication Controller', function() {
                 signature: register_signature.hex,
             };
 
-            await expect(
-                authenticationController.web3Register(user),
-            ).rejects.toMatchObject({
+            await expect(authenticationController.web3Register(user)).rejects.toMatchObject({
                 response: {
                     status: StatusCodes.Unauthorized,
                     message: 'invalid_signature',
@@ -558,26 +486,16 @@ describe('Authentication Controller', function() {
         });
 
         test('signature timed out', async function() {
-            const authenticationController: AuthenticationController =
-                context.authenticationController;
-            const authenticationServiceMock: AuthenticationService =
-                context.authenticationServiceMock;
+            const authenticationController: AuthenticationController = context.authenticationController;
+            const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
 
             const email = 'test@test.com';
             const username = 'salut';
             const wallet: Wallet = await createWallet();
             const address = toAcceptedAddressFormat(wallet.address);
-            const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(
-                1,
-            );
-            const register_payload = web3RegisterSigner.generateRegistrationProofPayload(
-                email,
-                username,
-            );
-            const register_signature = await web3RegisterSigner.sign(
-                wallet.privateKey,
-                register_payload[1],
-            );
+            const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(1);
+            const register_payload = web3RegisterSigner.generateRegistrationProofPayload(email, username);
+            const register_signature = await web3RegisterSigner.sign(wallet.privateKey, register_payload[1]);
 
             when(
                 authenticationServiceMock.createWeb3User(
@@ -603,9 +521,7 @@ describe('Authentication Controller', function() {
                 signature: register_signature.hex,
             };
 
-            await expect(
-                authenticationController.web3Register(user),
-            ).rejects.toMatchObject({
+            await expect(authenticationController.web3Register(user)).rejects.toMatchObject({
                 response: {
                     status: StatusCodes.Unauthorized,
                     message: 'signature_timed_out',
@@ -630,26 +546,16 @@ describe('Authentication Controller', function() {
         });
 
         test('signature is in the future', async function() {
-            const authenticationController: AuthenticationController =
-                context.authenticationController;
-            const authenticationServiceMock: AuthenticationService =
-                context.authenticationServiceMock;
+            const authenticationController: AuthenticationController = context.authenticationController;
+            const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
 
             const email = 'test@test.com';
             const username = 'salut';
             const wallet: Wallet = await createWallet();
             const address = toAcceptedAddressFormat(wallet.address);
-            const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(
-                1,
-            );
-            const register_payload = web3RegisterSigner.generateRegistrationProofPayload(
-                email,
-                username,
-            );
-            const register_signature = await web3RegisterSigner.sign(
-                wallet.privateKey,
-                register_payload[1],
-            );
+            const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(1);
+            const register_payload = web3RegisterSigner.generateRegistrationProofPayload(email, username);
+            const register_signature = await web3RegisterSigner.sign(wallet.privateKey, register_payload[1]);
 
             when(
                 authenticationServiceMock.createWeb3User(
@@ -675,9 +581,7 @@ describe('Authentication Controller', function() {
                 signature: register_signature.hex,
             };
 
-            await expect(
-                authenticationController.web3Register(user),
-            ).rejects.toMatchObject({
+            await expect(authenticationController.web3Register(user)).rejects.toMatchObject({
                 response: {
                     status: StatusCodes.Unauthorized,
                     message: 'signature_is_in_the_future',
@@ -702,26 +606,16 @@ describe('Authentication Controller', function() {
         });
 
         test('signature check fail', async function() {
-            const authenticationController: AuthenticationController =
-                context.authenticationController;
-            const authenticationServiceMock: AuthenticationService =
-                context.authenticationServiceMock;
+            const authenticationController: AuthenticationController = context.authenticationController;
+            const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
 
             const email = 'test@test.com';
             const username = 'salut';
             const wallet: Wallet = await createWallet();
             const address = toAcceptedAddressFormat(wallet.address);
-            const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(
-                1,
-            );
-            const register_payload = web3RegisterSigner.generateRegistrationProofPayload(
-                email,
-                username,
-            );
-            const register_signature = await web3RegisterSigner.sign(
-                wallet.privateKey,
-                register_payload[1],
-            );
+            const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(1);
+            const register_payload = web3RegisterSigner.generateRegistrationProofPayload(email, username);
+            const register_signature = await web3RegisterSigner.sign(wallet.privateKey, register_payload[1]);
 
             when(
                 authenticationServiceMock.createWeb3User(
@@ -747,9 +641,7 @@ describe('Authentication Controller', function() {
                 signature: register_signature.hex,
             };
 
-            await expect(
-                authenticationController.web3Register(user),
-            ).rejects.toMatchObject({
+            await expect(authenticationController.web3Register(user)).rejects.toMatchObject({
                 response: {
                     status: StatusCodes.UnprocessableEntity,
                     message: 'signature_check_fail',
@@ -774,26 +666,16 @@ describe('Authentication Controller', function() {
         });
 
         test('unexpected error', async function() {
-            const authenticationController: AuthenticationController =
-                context.authenticationController;
-            const authenticationServiceMock: AuthenticationService =
-                context.authenticationServiceMock;
+            const authenticationController: AuthenticationController = context.authenticationController;
+            const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
 
             const email = 'test@test.com';
             const username = 'salut';
             const wallet: Wallet = await createWallet();
             const address = toAcceptedAddressFormat(wallet.address);
-            const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(
-                1,
-            );
-            const register_payload = web3RegisterSigner.generateRegistrationProofPayload(
-                email,
-                username,
-            );
-            const register_signature = await web3RegisterSigner.sign(
-                wallet.privateKey,
-                register_payload[1],
-            );
+            const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(1);
+            const register_payload = web3RegisterSigner.generateRegistrationProofPayload(email, username);
+            const register_signature = await web3RegisterSigner.sign(wallet.privateKey, register_payload[1]);
 
             when(
                 authenticationServiceMock.createWeb3User(
@@ -819,9 +701,7 @@ describe('Authentication Controller', function() {
                 signature: register_signature.hex,
             };
 
-            await expect(
-                authenticationController.web3Register(user),
-            ).rejects.toMatchObject({
+            await expect(authenticationController.web3Register(user)).rejects.toMatchObject({
                 response: {
                     status: StatusCodes.InternalServerError,
                     message: 'this_error_does_not_exist',
@@ -848,10 +728,8 @@ describe('Authentication Controller', function() {
 
     describe('localRegister', function() {
         test('should create a user', async function() {
-            const authenticationController: AuthenticationController =
-                context.authenticationController;
-            const authenticationServiceMock: AuthenticationService =
-                context.authenticationServiceMock;
+            const authenticationController: AuthenticationController = context.authenticationController;
+            const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
 
             const email = 'test@test.com';
             const username = 'salut';
@@ -861,13 +739,7 @@ describe('Authentication Controller', function() {
             const encrypted = JSON.parse(await encryptWallet(wallet, hashedp));
 
             when(
-                authenticationServiceMock.createT721User(
-                    email,
-                    hashedp,
-                    username,
-                    deepEqual(encrypted),
-                    'en',
-                ),
+                authenticationServiceMock.createT721User(email, hashedp, username, deepEqual(encrypted), 'en'),
             ).thenReturn(
                 Promise.resolve({
                     response: {
@@ -910,21 +782,13 @@ describe('Authentication Controller', function() {
             expect(res.token).toBeDefined();
 
             verify(
-                authenticationServiceMock.createT721User(
-                    email,
-                    hashedp,
-                    username,
-                    deepEqual(encrypted),
-                    'en',
-                ),
+                authenticationServiceMock.createT721User(email, hashedp, username, deepEqual(encrypted), 'en'),
             ).called();
         });
 
         test('should create a user & return validation token in development mode', async function() {
-            const authenticationController: AuthenticationController =
-                context.authenticationController;
-            const authenticationServiceMock: AuthenticationService =
-                context.authenticationServiceMock;
+            const authenticationController: AuthenticationController = context.authenticationController;
+            const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
             const configServiceMock: ConfigService = context.configServiceMock;
 
             when(configServiceMock.get('NODE_ENV')).thenReturn('development');
@@ -937,13 +801,7 @@ describe('Authentication Controller', function() {
             const encrypted = JSON.parse(await encryptWallet(wallet, hashedp));
 
             when(
-                authenticationServiceMock.createT721User(
-                    email,
-                    hashedp,
-                    username,
-                    deepEqual(encrypted),
-                    'en',
-                ),
+                authenticationServiceMock.createT721User(email, hashedp, username, deepEqual(encrypted), 'en'),
             ).thenReturn(
                 Promise.resolve({
                     response: {
@@ -986,21 +844,13 @@ describe('Authentication Controller', function() {
             expect(res.token).toBeDefined();
 
             verify(
-                authenticationServiceMock.createT721User(
-                    email,
-                    hashedp,
-                    username,
-                    deepEqual(encrypted),
-                    'en',
-                ),
+                authenticationServiceMock.createT721User(email, hashedp, username, deepEqual(encrypted), 'en'),
             ).called();
         });
 
         test('email already in use - should error with 409', async function() {
-            const authenticationController: AuthenticationController =
-                context.authenticationController;
-            const authenticationServiceMock: AuthenticationService =
-                context.authenticationServiceMock;
+            const authenticationController: AuthenticationController = context.authenticationController;
+            const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
 
             const email = 'test@test.com';
             const username = 'salut';
@@ -1010,13 +860,7 @@ describe('Authentication Controller', function() {
             const encrypted = JSON.parse(encrypted_string);
 
             when(
-                authenticationServiceMock.createT721User(
-                    email,
-                    hashedp,
-                    username,
-                    deepEqual(encrypted),
-                    'en',
-                ),
+                authenticationServiceMock.createT721User(email, hashedp, username, deepEqual(encrypted), 'en'),
             ).thenReturn(
                 Promise.resolve({
                     response: null,
@@ -1031,9 +875,7 @@ describe('Authentication Controller', function() {
                 wallet: encrypted,
             };
 
-            await expect(
-                authenticationController.localRegister(user),
-            ).rejects.toMatchObject({
+            await expect(authenticationController.localRegister(user)).rejects.toMatchObject({
                 response: {
                     status: StatusCodes.Conflict,
                     message: 'email_already_in_use',
@@ -1046,21 +888,13 @@ describe('Authentication Controller', function() {
             });
 
             verify(
-                authenticationServiceMock.createT721User(
-                    email,
-                    hashedp,
-                    username,
-                    deepEqual(encrypted),
-                    'en',
-                ),
+                authenticationServiceMock.createT721User(email, hashedp, username, deepEqual(encrypted), 'en'),
             ).called();
         });
 
         test('username already in use - should error with 409', async function() {
-            const authenticationController: AuthenticationController =
-                context.authenticationController;
-            const authenticationServiceMock: AuthenticationService =
-                context.authenticationServiceMock;
+            const authenticationController: AuthenticationController = context.authenticationController;
+            const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
 
             const email = 'test@test.com';
             const username = 'salut';
@@ -1070,13 +904,7 @@ describe('Authentication Controller', function() {
             const encrypted = JSON.parse(encrypted_string);
 
             when(
-                authenticationServiceMock.createT721User(
-                    email,
-                    hashedp,
-                    username,
-                    deepEqual(encrypted),
-                    'en',
-                ),
+                authenticationServiceMock.createT721User(email, hashedp, username, deepEqual(encrypted), 'en'),
             ).thenReturn(
                 Promise.resolve({
                     response: null,
@@ -1091,9 +919,7 @@ describe('Authentication Controller', function() {
                 wallet: encrypted,
             };
 
-            await expect(
-                authenticationController.localRegister(user),
-            ).rejects.toMatchObject({
+            await expect(authenticationController.localRegister(user)).rejects.toMatchObject({
                 response: {
                     status: StatusCodes.Conflict,
                     message: 'username_already_in_use',
@@ -1106,21 +932,13 @@ describe('Authentication Controller', function() {
             });
 
             verify(
-                authenticationServiceMock.createT721User(
-                    email,
-                    hashedp,
-                    username,
-                    deepEqual(encrypted),
-                    'en',
-                ),
+                authenticationServiceMock.createT721User(email, hashedp, username, deepEqual(encrypted), 'en'),
             ).called();
         });
 
         test('address already in use - should error with 409', async function() {
-            const authenticationController: AuthenticationController =
-                context.authenticationController;
-            const authenticationServiceMock: AuthenticationService =
-                context.authenticationServiceMock;
+            const authenticationController: AuthenticationController = context.authenticationController;
+            const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
 
             const email = 'test@test.com';
             const username = 'salut';
@@ -1130,13 +948,7 @@ describe('Authentication Controller', function() {
             const encrypted = JSON.parse(encrypted_string);
 
             when(
-                authenticationServiceMock.createT721User(
-                    email,
-                    hashedp,
-                    username,
-                    deepEqual(encrypted),
-                    'en',
-                ),
+                authenticationServiceMock.createT721User(email, hashedp, username, deepEqual(encrypted), 'en'),
             ).thenReturn(
                 Promise.resolve({
                     response: null,
@@ -1151,9 +963,7 @@ describe('Authentication Controller', function() {
                 wallet: encrypted,
             };
 
-            await expect(
-                authenticationController.localRegister(user),
-            ).rejects.toMatchObject({
+            await expect(authenticationController.localRegister(user)).rejects.toMatchObject({
                 response: {
                     status: StatusCodes.Conflict,
                     message: 'address_already_in_use',
@@ -1166,21 +976,13 @@ describe('Authentication Controller', function() {
             });
 
             verify(
-                authenticationServiceMock.createT721User(
-                    email,
-                    hashedp,
-                    username,
-                    deepEqual(encrypted),
-                    'en',
-                ),
+                authenticationServiceMock.createT721User(email, hashedp, username, deepEqual(encrypted), 'en'),
             ).called();
         });
 
         test('invalid wallet format - should error with 422', async function() {
-            const authenticationController: AuthenticationController =
-                context.authenticationController;
-            const authenticationServiceMock: AuthenticationService =
-                context.authenticationServiceMock;
+            const authenticationController: AuthenticationController = context.authenticationController;
+            const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
 
             const email = 'test@test.com';
             const username = 'salut';
@@ -1190,13 +992,7 @@ describe('Authentication Controller', function() {
             const encrypted = JSON.parse(encrypted_string);
 
             when(
-                authenticationServiceMock.createT721User(
-                    email,
-                    hashedp,
-                    username,
-                    deepEqual(encrypted),
-                    'en',
-                ),
+                authenticationServiceMock.createT721User(email, hashedp, username, deepEqual(encrypted), 'en'),
             ).thenReturn(
                 Promise.resolve({
                     response: null,
@@ -1211,9 +1007,7 @@ describe('Authentication Controller', function() {
                 wallet: encrypted,
             };
 
-            await expect(
-                authenticationController.localRegister(user),
-            ).rejects.toMatchObject({
+            await expect(authenticationController.localRegister(user)).rejects.toMatchObject({
                 response: {
                     status: StatusCodes.UnprocessableEntity,
                     message: 'invalid_wallet_format',
@@ -1226,21 +1020,13 @@ describe('Authentication Controller', function() {
             });
 
             verify(
-                authenticationServiceMock.createT721User(
-                    email,
-                    hashedp,
-                    username,
-                    deepEqual(encrypted),
-                    'en',
-                ),
+                authenticationServiceMock.createT721User(email, hashedp, username, deepEqual(encrypted), 'en'),
             ).called();
         });
 
         test('invalid password format - should error with 422', async function() {
-            const authenticationController: AuthenticationController =
-                context.authenticationController;
-            const authenticationServiceMock: AuthenticationService =
-                context.authenticationServiceMock;
+            const authenticationController: AuthenticationController = context.authenticationController;
+            const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
 
             const email = 'test@test.com';
             const username = 'salut';
@@ -1250,13 +1036,7 @@ describe('Authentication Controller', function() {
             const encrypted = JSON.parse(encrypted_string);
 
             when(
-                authenticationServiceMock.createT721User(
-                    email,
-                    hashedp,
-                    username,
-                    deepEqual(encrypted),
-                    'en',
-                ),
+                authenticationServiceMock.createT721User(email, hashedp, username, deepEqual(encrypted), 'en'),
             ).thenReturn(
                 Promise.resolve({
                     response: null,
@@ -1271,9 +1051,7 @@ describe('Authentication Controller', function() {
                 wallet: encrypted,
             };
 
-            await expect(
-                authenticationController.localRegister(user),
-            ).rejects.toMatchObject({
+            await expect(authenticationController.localRegister(user)).rejects.toMatchObject({
                 response: {
                     status: StatusCodes.UnprocessableEntity,
                     message: 'password_should_be_keccak256',
@@ -1286,21 +1064,13 @@ describe('Authentication Controller', function() {
             });
 
             verify(
-                authenticationServiceMock.createT721User(
-                    email,
-                    hashedp,
-                    username,
-                    deepEqual(encrypted),
-                    'en',
-                ),
+                authenticationServiceMock.createT721User(email, hashedp, username, deepEqual(encrypted), 'en'),
             ).called();
         });
 
         test('unknown error - should error with 500', async function() {
-            const authenticationController: AuthenticationController =
-                context.authenticationController;
-            const authenticationServiceMock: AuthenticationService =
-                context.authenticationServiceMock;
+            const authenticationController: AuthenticationController = context.authenticationController;
+            const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
 
             const email = 'test@test.com';
             const username = 'salut';
@@ -1310,13 +1080,7 @@ describe('Authentication Controller', function() {
             const encrypted = JSON.parse(encrypted_string);
 
             when(
-                authenticationServiceMock.createT721User(
-                    email,
-                    hashedp,
-                    username,
-                    deepEqual(encrypted),
-                    'en',
-                ),
+                authenticationServiceMock.createT721User(email, hashedp, username, deepEqual(encrypted), 'en'),
             ).thenReturn(
                 Promise.resolve({
                     response: null,
@@ -1331,9 +1095,7 @@ describe('Authentication Controller', function() {
                 wallet: encrypted,
             };
 
-            await expect(
-                authenticationController.localRegister(user),
-            ).rejects.toMatchObject({
+            await expect(authenticationController.localRegister(user)).rejects.toMatchObject({
                 response: {
                     status: StatusCodes.InternalServerError,
                     message: 'this_error_does_not_exist',
@@ -1346,24 +1108,16 @@ describe('Authentication Controller', function() {
             });
 
             verify(
-                authenticationServiceMock.createT721User(
-                    email,
-                    hashedp,
-                    username,
-                    deepEqual(encrypted),
-                    'en',
-                ),
+                authenticationServiceMock.createT721User(email, hashedp, username, deepEqual(encrypted), 'en'),
             ).called();
         });
     });
 
     describe('validateEmail', function() {
         it('should return updated user', async function() {
-            const authenticationController: AuthenticationController =
-                context.authenticationController;
+            const authenticationController: AuthenticationController = context.authenticationController;
             const jwtServiceMock: JwtService = context.jwtServiceMock;
-            const authenticationServiceMock: AuthenticationService =
-                context.authenticationServiceMock;
+            const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
 
             const username = 'mortimr';
             const email = 'iulian@t721.com';
@@ -1406,11 +1160,9 @@ describe('Authentication Controller', function() {
         });
 
         it('should throw on expired token', async function() {
-            const authenticationController: AuthenticationController =
-                context.authenticationController;
+            const authenticationController: AuthenticationController = context.authenticationController;
             const jwtServiceMock: JwtService = context.jwtServiceMock;
-            const authenticationServiceMock: AuthenticationService =
-                context.authenticationServiceMock;
+            const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
 
             const username = 'mortimr';
             const email = 'iulian@t721.com';
@@ -1429,13 +1181,9 @@ describe('Authentication Controller', function() {
                 wallet: null,
             };
 
-            when(jwtServiceMock.verifyAsync('test_token')).thenThrow(
-                new Error('jwt expired'),
-            );
+            when(jwtServiceMock.verifyAsync('test_token')).thenThrow(new Error('jwt expired'));
 
-            await expect(
-                authenticationController.validateEmail({ token: 'test_token' }),
-            ).rejects.toMatchObject({
+            await expect(authenticationController.validateEmail({ token: 'test_token' })).rejects.toMatchObject({
                 response: {
                     status: 401,
                     message: 'jwt_expired',
@@ -1449,11 +1197,9 @@ describe('Authentication Controller', function() {
         });
 
         it('should throw on invalid signature', async function() {
-            const authenticationController: AuthenticationController =
-                context.authenticationController;
+            const authenticationController: AuthenticationController = context.authenticationController;
             const jwtServiceMock: JwtService = context.jwtServiceMock;
-            const authenticationServiceMock: AuthenticationService =
-                context.authenticationServiceMock;
+            const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
 
             const username = 'mortimr';
             const email = 'iulian@t721.com';
@@ -1472,13 +1218,9 @@ describe('Authentication Controller', function() {
                 wallet: null,
             };
 
-            when(jwtServiceMock.verifyAsync('test_token')).thenThrow(
-                new Error('invalid signature'),
-            );
+            when(jwtServiceMock.verifyAsync('test_token')).thenThrow(new Error('invalid signature'));
 
-            await expect(
-                authenticationController.validateEmail({ token: 'test_token' }),
-            ).rejects.toMatchObject({
+            await expect(authenticationController.validateEmail({ token: 'test_token' })).rejects.toMatchObject({
                 response: {
                     status: 401,
                     message: 'invalid_signature',
@@ -1492,11 +1234,9 @@ describe('Authentication Controller', function() {
         });
 
         it('should throw on unknown jwt error', async function() {
-            const authenticationController: AuthenticationController =
-                context.authenticationController;
+            const authenticationController: AuthenticationController = context.authenticationController;
             const jwtServiceMock: JwtService = context.jwtServiceMock;
-            const authenticationServiceMock: AuthenticationService =
-                context.authenticationServiceMock;
+            const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
 
             const username = 'mortimr';
             const email = 'iulian@t721.com';
@@ -1515,13 +1255,9 @@ describe('Authentication Controller', function() {
                 wallet: null,
             };
 
-            when(jwtServiceMock.verifyAsync('test_token')).thenThrow(
-                new Error('unknown error'),
-            );
+            when(jwtServiceMock.verifyAsync('test_token')).thenThrow(new Error('unknown error'));
 
-            await expect(
-                authenticationController.validateEmail({ token: 'test_token' }),
-            ).rejects.toMatchObject({
+            await expect(authenticationController.validateEmail({ token: 'test_token' })).rejects.toMatchObject({
                 response: {
                     status: 401,
                     message: 'invalid_signature',
@@ -1535,11 +1271,9 @@ describe('Authentication Controller', function() {
         });
 
         it('should throw on invalid auth service response', async function() {
-            const authenticationController: AuthenticationController =
-                context.authenticationController;
+            const authenticationController: AuthenticationController = context.authenticationController;
             const jwtServiceMock: JwtService = context.jwtServiceMock;
-            const authenticationServiceMock: AuthenticationService =
-                context.authenticationServiceMock;
+            const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
 
             const username = 'mortimr';
             const email = 'iulian@t721.com';
@@ -1574,9 +1308,7 @@ describe('Authentication Controller', function() {
                 }),
             );
 
-            await expect(
-                authenticationController.validateEmail({ token: 'test_token' }),
-            ).rejects.toMatchObject({
+            await expect(authenticationController.validateEmail({ token: 'test_token' })).rejects.toMatchObject({
                 response: {
                     status: 500,
                     message: 'unexpected_error',

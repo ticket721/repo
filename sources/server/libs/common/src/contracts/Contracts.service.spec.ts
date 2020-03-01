@@ -1,8 +1,4 @@
-import {
-    ContractArtifact,
-    ContractsService,
-    ContractsServiceOptions,
-} from '@lib/common/contracts/Contracts.service';
+import { ContractArtifact, ContractsService, ContractsServiceOptions } from '@lib/common/contracts/Contracts.service';
 import * as path from 'path';
 import { Web3Service } from '@lib/common/web3/Web3.service';
 import { anything, deepEqual, instance, mock, verify, when } from 'ts-mockito';
@@ -45,30 +41,14 @@ const configureWeb3Service = (
         if (!fs.statSync(path.join(artifactsPath, mod)).isDirectory()) {
             continue;
         }
-        const artifacts = fs.readdirSync(
-            path.join(artifactsPath, mod, 'build', 'contracts'),
-        );
+        const artifacts = fs.readdirSync(path.join(artifactsPath, mod, 'build', 'contracts'));
         for (const artifact of artifacts) {
             const artifact_data: ContractArtifact = JSON.parse(
-                fs
-                    .readFileSync(
-                        path.join(
-                            artifactsPath,
-                            mod,
-                            'build',
-                            'contracts',
-                            artifact,
-                        ),
-                    )
-                    .toString(),
+                fs.readFileSync(path.join(artifactsPath, mod, 'build', 'contracts', artifact)).toString(),
             );
-            if (
-                artifact_data.networks[net_id] &&
-                artifact_data.networks[net_id].address
-            ) {
+            if (artifact_data.networks[net_id] && artifact_data.networks[net_id].address) {
                 if (canceled === 0) {
-                    codes[artifact_data.networks[net_id].address] =
-                        artifact_data.deployedBytecode;
+                    codes[artifact_data.networks[net_id].address] = artifact_data.deployedBytecode;
                 }
                 data.push({
                     name: `${mod}::${artifact
@@ -87,11 +67,7 @@ const configureWeb3Service = (
     return data;
 };
 
-const artifact_path: string = path.join(
-    __dirname,
-    'test_material',
-    'test_artifact',
-);
+const artifact_path: string = path.join(__dirname, 'test_material', 'test_artifact');
 const network_id: number = 2702;
 
 describe('Contracts Service', function() {
@@ -100,19 +76,11 @@ describe('Contracts Service', function() {
             artifact_path,
         };
         const web3ServiceMock: Web3Service = mock(Web3Service);
-        const winstonLoggerService: WinstonLoggerService = new WinstonLoggerService(
-            'contracts',
-        );
+        const winstonLoggerService: WinstonLoggerService = new WinstonLoggerService('contracts');
         const shutdownServiceMock: ShutdownService = mock(ShutdownService);
-        const globalConfigServiceMock: GlobalConfigService = mock(
-            GlobalConfigService,
-        );
+        const globalConfigServiceMock: GlobalConfigService = mock(GlobalConfigService);
 
-        const contracts_data = configureWeb3Service(
-            web3ServiceMock,
-            artifact_path,
-            network_id,
-        );
+        const contracts_data = configureWeb3Service(web3ServiceMock, artifact_path, network_id);
 
         const contractsService: ContractsService = new ContractsService(
             contractsServiceOptions,
@@ -127,9 +95,7 @@ describe('Contracts Service', function() {
 
         for (const contract_data of contracts_data) {
             expect(contracts[contract_data.name]).toBeDefined();
-            expect(
-                contracts[contract_data.name].networks[network_id].address,
-            ).toEqual(contract_data.address);
+            expect(contracts[contract_data.name].networks[network_id].address).toEqual(contract_data.address);
         }
     });
 
@@ -138,17 +104,11 @@ describe('Contracts Service', function() {
             artifact_path: 'invalid/path',
         };
         const web3ServiceMock: Web3Service = mock(Web3Service);
-        const winstonLoggerService: WinstonLoggerService = new WinstonLoggerService(
-            'contracts',
-        );
+        const winstonLoggerService: WinstonLoggerService = new WinstonLoggerService('contracts');
         const shutdownServiceMock: ShutdownService = mock(ShutdownService);
-        const globalConfigServiceMock: GlobalConfigService = mock(
-            GlobalConfigService,
-        );
+        const globalConfigServiceMock: GlobalConfigService = mock(GlobalConfigService);
 
-        when(shutdownServiceMock.shutdownWithError(anything())).thenReturn(
-            undefined,
-        );
+        when(shutdownServiceMock.shutdownWithError(anything())).thenReturn(undefined);
         const contractsService: ContractsService = new ContractsService(
             contractsServiceOptions,
             instance(web3ServiceMock),
@@ -158,11 +118,8 @@ describe('Contracts Service', function() {
             instance(globalConfigServiceMock),
         );
 
-        await expect(
-            contractsService.getContractArtifacts(),
-        ).rejects.toMatchObject({
-            message:
-                "ENOENT: no such file or directory, scandir 'invalid/path'",
+        await expect(contractsService.getContractArtifacts()).rejects.toMatchObject({
+            message: "ENOENT: no such file or directory, scandir 'invalid/path'",
         });
 
         verify(shutdownServiceMock.shutdownWithError(anything())).called();
@@ -173,17 +130,11 @@ describe('Contracts Service', function() {
             artifact_path,
         };
         const web3ServiceMock: Web3Service = mock(Web3Service);
-        const winstonLoggerService: WinstonLoggerService = new WinstonLoggerService(
-            'contracts',
-        );
+        const winstonLoggerService: WinstonLoggerService = new WinstonLoggerService('contracts');
         const shutdownServiceMock: ShutdownService = mock(ShutdownService);
-        const globalConfigServiceMock: GlobalConfigService = mock(
-            GlobalConfigService,
-        );
+        const globalConfigServiceMock: GlobalConfigService = mock(GlobalConfigService);
 
-        when(shutdownServiceMock.shutdownWithError(anything())).thenReturn(
-            undefined,
-        );
+        when(shutdownServiceMock.shutdownWithError(anything())).thenReturn(undefined);
 
         configureWeb3Service(web3ServiceMock, artifact_path, network_id, 1);
 
@@ -196,9 +147,7 @@ describe('Contracts Service', function() {
             instance(globalConfigServiceMock),
         );
 
-        await expect(
-            contractsService.getContractArtifacts(),
-        ).rejects.toMatchObject({
+        await expect(contractsService.getContractArtifacts()).rejects.toMatchObject({
             message:
                 'Failed contract instance verification for refract::Migrations: network and artifact code do not match !',
         });
@@ -211,17 +160,11 @@ describe('Contracts Service', function() {
             artifact_path,
         };
         const web3ServiceMock: Web3Service = mock(Web3Service);
-        const winstonLoggerService: WinstonLoggerService = new WinstonLoggerService(
-            'contracts',
-        );
+        const winstonLoggerService: WinstonLoggerService = new WinstonLoggerService('contracts');
         const shutdownServiceMock: ShutdownService = mock(ShutdownService);
-        const globalConfigServiceMock: GlobalConfigService = mock(
-            GlobalConfigService,
-        );
+        const globalConfigServiceMock: GlobalConfigService = mock(GlobalConfigService);
 
-        when(shutdownServiceMock.shutdownWithError(anything())).thenReturn(
-            undefined,
-        );
+        when(shutdownServiceMock.shutdownWithError(anything())).thenReturn(undefined);
 
         configureWeb3Service(web3ServiceMock, artifact_path, network_id, 1);
 
@@ -267,17 +210,11 @@ describe('Contracts Service', function() {
             artifact_path,
         };
         const web3ServiceMock: Web3Service = mock(Web3Service);
-        const winstonLoggerService: WinstonLoggerService = new WinstonLoggerService(
-            'contracts',
-        );
+        const winstonLoggerService: WinstonLoggerService = new WinstonLoggerService('contracts');
         const shutdownServiceMock: ShutdownService = mock(ShutdownService);
-        const globalConfigServiceMock: GlobalConfigService = mock(
-            GlobalConfigService,
-        );
+        const globalConfigServiceMock: GlobalConfigService = mock(GlobalConfigService);
 
-        when(shutdownServiceMock.shutdownWithError(anything())).thenReturn(
-            undefined,
-        );
+        when(shutdownServiceMock.shutdownWithError(anything())).thenReturn(undefined);
 
         configureWeb3Service(web3ServiceMock, artifact_path, network_id);
 
@@ -348,17 +285,11 @@ describe('Contracts Service', function() {
             artifact_path,
         };
         const web3ServiceMock: Web3Service = mock(Web3Service);
-        const winstonLoggerService: WinstonLoggerService = new WinstonLoggerService(
-            'contracts',
-        );
+        const winstonLoggerService: WinstonLoggerService = new WinstonLoggerService('contracts');
         const shutdownServiceMock: ShutdownService = mock(ShutdownService);
-        const globalConfigServiceMock: GlobalConfigService = mock(
-            GlobalConfigService,
-        );
+        const globalConfigServiceMock: GlobalConfigService = mock(GlobalConfigService);
 
-        when(shutdownServiceMock.shutdownWithError(anything())).thenReturn(
-            undefined,
-        );
+        when(shutdownServiceMock.shutdownWithError(anything())).thenReturn(undefined);
 
         configureWeb3Service(web3ServiceMock, artifact_path, network_id);
 
@@ -389,9 +320,7 @@ describe('Contracts Service', function() {
         });
 
         await expect(contractsService.onModuleInit()).rejects.toMatchObject(
-            new Error(
-                `ContractsService::onModuleInit | error while fetching global config: unexpected_error`,
-            ),
+            new Error(`ContractsService::onModuleInit | error while fetching global config: unexpected_error`),
         );
 
         verify(
@@ -408,17 +337,11 @@ describe('Contracts Service', function() {
             artifact_path,
         };
         const web3ServiceMock: Web3Service = mock(Web3Service);
-        const winstonLoggerService: WinstonLoggerService = new WinstonLoggerService(
-            'contracts',
-        );
+        const winstonLoggerService: WinstonLoggerService = new WinstonLoggerService('contracts');
         const shutdownServiceMock: ShutdownService = mock(ShutdownService);
-        const globalConfigServiceMock: GlobalConfigService = mock(
-            GlobalConfigService,
-        );
+        const globalConfigServiceMock: GlobalConfigService = mock(GlobalConfigService);
 
-        when(shutdownServiceMock.shutdownWithError(anything())).thenReturn(
-            undefined,
-        );
+        when(shutdownServiceMock.shutdownWithError(anything())).thenReturn(undefined);
 
         configureWeb3Service(web3ServiceMock, artifact_path, network_id);
 
@@ -449,9 +372,7 @@ describe('Contracts Service', function() {
         });
 
         await expect(contractsService.onModuleInit()).rejects.toMatchObject(
-            new Error(
-                `ContractsService::onModuleInit | error while fetching global config: no initial config`,
-            ),
+            new Error(`ContractsService::onModuleInit | error while fetching global config: no initial config`),
         );
 
         verify(
@@ -468,17 +389,11 @@ describe('Contracts Service', function() {
             artifact_path,
         };
         const web3ServiceMock: Web3Service = mock(Web3Service);
-        const winstonLoggerService: WinstonLoggerService = new WinstonLoggerService(
-            'contracts',
-        );
+        const winstonLoggerService: WinstonLoggerService = new WinstonLoggerService('contracts');
         const shutdownServiceMock: ShutdownService = mock(ShutdownService);
-        const globalConfigServiceMock: GlobalConfigService = mock(
-            GlobalConfigService,
-        );
+        const globalConfigServiceMock: GlobalConfigService = mock(GlobalConfigService);
 
-        when(shutdownServiceMock.shutdownWithError(anything())).thenReturn(
-            undefined,
-        );
+        when(shutdownServiceMock.shutdownWithError(anything())).thenReturn(undefined);
 
         configureWeb3Service(web3ServiceMock, artifact_path, network_id);
 
@@ -523,9 +438,7 @@ describe('Contracts Service', function() {
         });
 
         await expect(contractsService.onModuleInit()).rejects.toMatchObject(
-            new Error(
-                `ContractsService::onModuleInit | error while updating global config: unexpected_error`,
-            ),
+            new Error(`ContractsService::onModuleInit | error while updating global config: unexpected_error`),
         );
 
         verify(

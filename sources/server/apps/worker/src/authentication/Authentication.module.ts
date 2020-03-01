@@ -9,9 +9,7 @@ import { AuthenticationTasks } from '@app/worker/authentication/Authentication.t
 @Module({
     imports: [
         JwtModule.registerAsync({
-            useFactory: async (
-                configService: ConfigService,
-            ): Promise<JwtModuleOptions> => ({
+            useFactory: async (configService: ConfigService): Promise<JwtModuleOptions> => ({
                 secret: configService.get('JWT_SECRET'),
                 signOptions: {
                     expiresIn: configService.get('JWT_EXPIRATION'),

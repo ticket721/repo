@@ -1,8 +1,5 @@
 import { DynamicModule, Global, Module } from '@nestjs/common';
-import {
-    GlobalConfigOptions,
-    GlobalConfigService,
-} from '@lib/common/globalconfig/GlobalConfig.service';
+import { GlobalConfigOptions, GlobalConfigService } from '@lib/common/globalconfig/GlobalConfig.service';
 import { ExpressCassandraModule } from '@iaminfinity/express-cassandra';
 import { ScheduleModule } from 'nest-schedule';
 import { GlobalEntity } from '@lib/common/globalconfig/entities/Global.entity';
@@ -11,15 +8,12 @@ import { GlobalConfigRepository } from '@lib/common/globalconfig/GlobalConfig.re
 /**
  * Build options for the GlobalConfig Module
  */
-export interface GlobalConfigModuleAsyncOptions
-    extends Pick<DynamicModule, 'imports'> {
+export interface GlobalConfigModuleAsyncOptions extends Pick<DynamicModule, 'imports'> {
     /**
      * Factory to inject GlobalConfig Service options
      * @param args
      */
-    useFactory: (
-        ...args: any[]
-    ) => Promise<GlobalConfigOptions> | GlobalConfigOptions;
+    useFactory: (...args: any[]) => Promise<GlobalConfigOptions> | GlobalConfigOptions;
 
     /**
      * Providers to inject into factory
@@ -38,17 +32,12 @@ export class GlobalConfigModule {
      *
      * @param options
      */
-    static registerAsync(
-        options: GlobalConfigModuleAsyncOptions,
-    ): DynamicModule {
+    static registerAsync(options: GlobalConfigModuleAsyncOptions): DynamicModule {
         return {
             module: GlobalConfigModule,
             imports: [
                 ...(options.imports ? options.imports : []),
-                ExpressCassandraModule.forFeature([
-                    GlobalEntity,
-                    GlobalConfigRepository,
-                ]),
+                ExpressCassandraModule.forFeature([GlobalEntity, GlobalConfigRepository]),
                 ScheduleModule.register(),
             ],
             providers: [

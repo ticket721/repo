@@ -133,9 +133,7 @@ export class AuthenticationController {
         description: StatusNames[StatusCodes.InternalServerError],
     })
     @UseFilters(new HttpExceptionFilter())
-    async localRegister(
-        @Body() body: LocalRegisterInputDto,
-    ): Promise<LocalRegisterResponseDto> {
+    async localRegister(@Body() body: LocalRegisterInputDto): Promise<LocalRegisterResponseDto> {
         const resp: ServiceResponse<PasswordlessUserDto> = await this.authenticationService.createT721User(
             body.email,
             body.password,
@@ -239,9 +237,7 @@ export class AuthenticationController {
         description: StatusNames[StatusCodes.InternalServerError],
     })
     @UseFilters(new HttpExceptionFilter())
-    async web3Register(
-        @Body() body: Web3RegisterInputDto,
-    ): Promise<Web3RegisterResponseDto> {
+    async web3Register(@Body() body: Web3RegisterInputDto): Promise<Web3RegisterResponseDto> {
         const resp: ServiceResponse<PasswordlessUserDto> = await this.authenticationService.createWeb3User(
             body.email,
             body.username,
@@ -348,17 +344,11 @@ export class AuthenticationController {
         description: StatusNames[StatusCodes.InternalServerError],
     })
     @UseFilters(new HttpExceptionFilter())
-    async validateEmail(
-        @Body() body: EmailValidationInputDto,
-    ): Promise<EmailValidationResponseDto> {
+    async validateEmail(@Body() body: EmailValidationInputDto): Promise<EmailValidationResponseDto> {
         let validatedUserRes: ServiceResponse<PasswordlessUserDto>;
         try {
-            const payload = await this.jwtService.verifyAsync<
-                EmailValidationTaskDto
-            >(body.token);
-            validatedUserRes = await this.authenticationService.validateUserEmail(
-                payload.id,
-            );
+            const payload = await this.jwtService.verifyAsync<EmailValidationTaskDto>(body.token);
+            validatedUserRes = await this.authenticationService.validateUserEmail(payload.id);
         } catch (e) {
             switch (e.message) {
                 case 'jwt expired': {

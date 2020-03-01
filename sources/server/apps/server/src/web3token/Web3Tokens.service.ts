@@ -32,23 +32,16 @@ export class Web3TokensService extends NestSchedule {
      *
      * @param token
      */
-    async register(
-        token: RegisterWeb3TokenServiceInputDto,
-    ): Promise<ServiceResponse<Web3TokenDto>> {
+    async register(token: RegisterWeb3TokenServiceInputDto): Promise<ServiceResponse<Web3TokenDto>> {
         try {
             const createdToken = await this.web3TokensRepository
                 .save(
                     this.web3TokensRepository.create({
-                        timestamp: (types.Long as any).fromNumber(
-                            token.timestamp,
-                        ),
+                        timestamp: (types.Long as any).fromNumber(token.timestamp),
                         address: token.address,
                     }),
                     {
-                        ttl: parseInt(
-                            this.configService.get('AUTH_SIGNATURE_TIMEOUT'),
-                            10,
-                        ),
+                        ttl: parseInt(this.configService.get('AUTH_SIGNATURE_TIMEOUT'), 10),
                     },
                 )
                 .toPromise();
@@ -70,9 +63,7 @@ export class Web3TokensService extends NestSchedule {
      *
      * @param token
      */
-    async check(
-        token: RegisterWeb3TokenServiceInputDto,
-    ): Promise<ServiceResponse<Web3TokenDto>> {
+    async check(token: RegisterWeb3TokenServiceInputDto): Promise<ServiceResponse<Web3TokenDto>> {
         try {
             const existingToken: Web3TokenDto = await this.web3TokensRepository
                 .findOne({

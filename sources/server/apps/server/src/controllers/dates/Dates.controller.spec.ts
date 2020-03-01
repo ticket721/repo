@@ -101,11 +101,7 @@ describe('Dates Controller', function() {
                 },
             };
 
-            when(
-                context.datesServiceMock.searchElastic(
-                    deepEqual(internalEsQuery),
-                ),
-            ).thenResolve({
+            when(context.datesServiceMock.searchElastic(deepEqual(internalEsQuery))).thenResolve({
                 error: null,
                 response: esReturn,
             });

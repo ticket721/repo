@@ -5,6 +5,4 @@ import { EVMBlockRollbackEntity } from '@lib/common/evmblockrollbacks/entities/E
  * Repository of the EVMBlockRollbackEntity
  */
 @EntityRepository(EVMBlockRollbackEntity)
-export class EVMBlockRollbacksRepository extends Repository<
-    EVMBlockRollbackEntity
-> {}
+export class EVMBlockRollbacksRepository extends Repository<EVMBlockRollbackEntity> {}

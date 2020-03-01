@@ -6,9 +6,7 @@ import { AxiosResponse } from 'axios';
 import config from '../../../../../simulation/config';
 import * as path from 'path';
 
-export async function deployJustice(
-    getCtx: () => { app: INestApplication; sdk: T721SDK },
-) {
+export async function deployJustice(getCtx: () => { app: INestApplication; sdk: T721SDK }) {
     const { app, sdk } = getCtx();
 
     const wallet = await createWallet();
@@ -30,9 +28,7 @@ export async function deployJustice(
             sdk,
             token,
             'justice',
-            path.resolve(
-                __dirname + '/../../../../../simulation/events/justice/images',
-            ),
+            path.resolve(__dirname + '/../../../../../simulation/events/justice/images'),
         );
     } catch (e) {
         console.error(e);
