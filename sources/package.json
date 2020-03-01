@@ -15,7 +15,7 @@
         "web3": "1.2.6"
     },
     "devDependencies": {
-        "@types/hapi__joi": "16.0.11",
+        "@types/hapi__joi": "16.0.12",
         "@types/node": "12.12.22"
     }
 }
