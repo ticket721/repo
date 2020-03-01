@@ -67,9 +67,7 @@ describe('RefractFactory V0 Service', function() {
             ],
         }).compile();
 
-        context.refractFactoryV0Service = app.get<RefractFactoryV0Service>(
-            RefractFactoryV0Service,
-        );
+        context.refractFactoryV0Service = app.get<RefractFactoryV0Service>(RefractFactoryV0Service);
     });
 
     describe('getNonce', function() {
@@ -132,11 +130,7 @@ describe('RefractFactory V0 Service', function() {
 
             when(context.web3ServiceMock.get()).thenResolve(web3);
 
-            const res = await context.refractFactoryV0Service.isController(
-                refract,
-                controller,
-                'abcd',
-            );
+            const res = await context.refractFactoryV0Service.isController(refract, controller, 'abcd');
 
             expect(res).toEqual(true);
 
@@ -165,11 +159,7 @@ describe('RefractFactory V0 Service', function() {
 
             when(context.web3ServiceMock.get()).thenResolve(web3);
 
-            const res = await context.refractFactoryV0Service.isController(
-                refract,
-                controller,
-                'abcd',
-            );
+            const res = await context.refractFactoryV0Service.isController(refract, controller, 'abcd');
 
             expect(res).toEqual(false);
 
@@ -189,11 +179,7 @@ describe('RefractFactory V0 Service', function() {
 
             when(context.web3ServiceMock.get()).thenResolve(web3);
 
-            const res = await context.refractFactoryV0Service.isController(
-                refract,
-                controller,
-                'abcd',
-            );
+            const res = await context.refractFactoryV0Service.isController(refract, controller, 'abcd');
 
             expect(res).toEqual(true);
 
@@ -205,8 +191,7 @@ describe('RefractFactory V0 Service', function() {
         it('should encode an mtx call on unexisting wallet', async function() {
             const refract = '0x5F0e8b014eB5C35f08D7A58AF2aB4b8bD458B85f';
             const controller = '0x5F0e8b014eB5C35f08D7A58AF2aB4b8bD458B85d';
-            const salt =
-                '0x77e78587a8faf8948e627ed3e9740b8054a545aa64730df06263970996fce882';
+            const salt = '0x77e78587a8faf8948e627ed3e9740b8054a545aa64730df06263970996fce882';
             const nonce = 0;
             const addr = [
                 '0x4B2Ef35de91D5e4f2941B8A9B0B9E35554f0D8a8',
@@ -257,8 +242,7 @@ describe('RefractFactory V0 Service', function() {
         it('should encode an mtx call on existing wallet', async function() {
             const refract = '0x5F0e8b014eB5C35f08D7A58AF2aB4b8bD458B85f';
             const controller = '0x5F0e8b014eB5C35f08D7A58AF2aB4b8bD458B85d';
-            const salt =
-                '0x77e78587a8faf8948e627ed3e9740b8054a545aa64730df06263970996fce882';
+            const salt = '0x77e78587a8faf8948e627ed3e9740b8054a545aa64730df06263970996fce882';
             const nonce = 0;
             const addr = [
                 '0x4B2Ef35de91D5e4f2941B8A9B0B9E35554f0D8a8',

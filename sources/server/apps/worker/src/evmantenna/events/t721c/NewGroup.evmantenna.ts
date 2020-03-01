@@ -1,7 +1,4 @@
-import {
-    Appender,
-    EVMEventControllerBase,
-} from '@app/worker/evmantenna/EVMEvent.controller.base';
+import { Appender, EVMEventControllerBase } from '@app/worker/evmantenna/EVMEvent.controller.base';
 import { GlobalConfigService } from '@lib/common/globalconfig/GlobalConfig.service';
 import { InjectSchedule, Schedule } from 'nest-schedule';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
@@ -87,8 +84,7 @@ export class NewGroupT721CEVMAntenna extends EVMEventControllerBase {
             return;
         }
 
-        const eventEntity: EventEntity =
-            eventSearchRes.response.hits.hits[0]._source;
+        const eventEntity: EventEntity = eventSearchRes.response.hits.hits[0]._source;
 
         const eventUpdateRes = await NewGroupT721CEVMAntenna.rollbackableUpdate(
             this.eventsService,

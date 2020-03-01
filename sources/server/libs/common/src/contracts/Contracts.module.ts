@@ -1,8 +1,5 @@
 import { DynamicModule, Global, Module } from '@nestjs/common';
-import {
-    ContractsService,
-    ContractsServiceOptions,
-} from '@lib/common/contracts/Contracts.service';
+import { ContractsService, ContractsServiceOptions } from '@lib/common/contracts/Contracts.service';
 import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
 import { TicketforgeService } from '@lib/common/contracts/Ticketforge.service';
 import { RefractFactoryV0Service } from '@lib/common/contracts/refract/RefractFactory.V0.service';
@@ -16,15 +13,12 @@ import { GlobalConfigModule } from '@lib/common/globalconfig/GlobalConfig.module
 /**
  * Build options for the Contracts Module
  */
-export interface ContractsModuleAsyncOptions
-    extends Pick<DynamicModule, 'imports'> {
+export interface ContractsModuleAsyncOptions extends Pick<DynamicModule, 'imports'> {
     /**
      * Factory to inject Contracts Service options
      * @param args
      */
-    useFactory: (
-        ...args: any[]
-    ) => Promise<ContractsServiceOptions> | ContractsServiceOptions;
+    useFactory: (...args: any[]) => Promise<ContractsServiceOptions> | ContractsServiceOptions;
 
     /**
      * Providers to inject into factory
@@ -46,11 +40,7 @@ export class ContractsModule {
     static registerAsync(options: ContractsModuleAsyncOptions): DynamicModule {
         return {
             module: ContractsModule,
-            imports: [
-                ...(options.imports ? options.imports : []),
-                FSModule,
-                GlobalConfigModule,
-            ],
+            imports: [...(options.imports ? options.imports : []), FSModule, GlobalConfigModule],
             providers: [
                 {
                     provide: 'CONTRACTS_MODULE_OPTIONS',

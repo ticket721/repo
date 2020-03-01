@@ -8,9 +8,7 @@ import { EventsService } from '@lib/common/events/Events.service';
  * Events Module
  */
 @Module({
-    imports: [
-        ExpressCassandraModule.forFeature([EventEntity, EventsRepository]),
-    ],
+    imports: [ExpressCassandraModule.forFeature([EventEntity, EventsRepository])],
     providers: [EventsService],
     exports: [EventsService],
 })

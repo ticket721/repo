@@ -1,9 +1,5 @@
 import { CRUDExtension } from '@lib/common/crud/CRUD.extension';
-import {
-    BaseModel,
-    InjectModel,
-    InjectRepository,
-} from '@iaminfinity/express-cassandra';
+import { BaseModel, InjectModel, InjectRepository } from '@iaminfinity/express-cassandra';
 import { ImagesRepository } from '@lib/common/images/Images.repository';
 import { ImageEntity } from '@lib/common/images/entities/Image.entity';
 import { ServiceResponse } from '@lib/common/utils/ServiceResponse';
@@ -11,10 +7,7 @@ import { ServiceResponse } from '@lib/common/utils/ServiceResponse';
 /**
  * Service to CRUD ImageEntities
  */
-export class ImagesService extends CRUDExtension<
-    ImagesRepository,
-    ImageEntity
-> {
+export class ImagesService extends CRUDExtension<ImagesRepository, ImageEntity> {
     /**
      * Dependency Injection
      *

@@ -17,9 +17,7 @@ import { AuthenticationController } from '@app/server/authentication/Authenticat
         UsersModule,
         Web3TokensModule,
         JwtModule.registerAsync({
-            useFactory: async (
-                configService: ConfigService,
-            ): Promise<JwtModuleOptions> => ({
+            useFactory: async (configService: ConfigService): Promise<JwtModuleOptions> => ({
                 secret: configService.get('JWT_SECRET'),
                 signOptions: {
                     expiresIn: configService.get('JWT_EXPIRATION'),
@@ -28,12 +26,7 @@ import { AuthenticationController } from '@app/server/authentication/Authenticat
             inject: [ConfigService],
         }),
     ],
-    providers: [
-        AuthenticationService,
-        LocalStrategy,
-        JwtStrategy,
-        Web3Strategy,
-    ],
+    providers: [AuthenticationService, LocalStrategy, JwtStrategy, Web3Strategy],
     controllers: [AuthenticationController],
 })
 export class AuthenticationModule {}

@@ -54,44 +54,30 @@ export class TxsScheduler implements OnModuleInit, OnModuleDestroy {
             id: 'global',
         });
 
-        if (
-            currentGlobalConfig.error ||
-            currentGlobalConfig.response.length === 0
-        ) {
+        if (currentGlobalConfig.error || currentGlobalConfig.response.length === 0) {
             return this.shutdownService.shutdownWithError(
-                new Error(
-                    'TxsScheduler::blockPolling unable to recover global config',
-                ),
+                new Error('TxsScheduler::blockPolling unable to recover global config'),
             );
         }
 
         const globalConfig = currentGlobalConfig.response[0];
 
-        if (
-            this.lastBlock === null ||
-            globalConfig.block_number > this.lastBlock
-        ) {
+        if (this.lastBlock === null || globalConfig.block_number > this.lastBlock) {
             const bodyBuilder = ESSearchBodyBuilder({
                 confirmed: {
                     $eq: false,
                 },
                 block_number: {
                     $gt: 0,
-                    $lte:
-                        globalConfig.block_number -
-                        this.txsOptions.blockThreshold,
+                    $lte: globalConfig.block_number - this.txsOptions.blockThreshold,
                 },
             } as SortablePagedSearch);
 
-            const pendingTransactions = await this.txsService.searchElastic(
-                bodyBuilder.response,
-            );
+            const pendingTransactions = await this.txsService.searchElastic(bodyBuilder.response);
 
             if (pendingTransactions.error) {
                 return this.shutdownService.shutdownWithError(
-                    new Error(
-                        'TxsScheduler::blockPolling error while fetching txs',
-                    ),
+                    new Error('TxsScheduler::blockPolling error while fetching txs'),
                 );
             }
 
@@ -110,15 +96,11 @@ export class TxsScheduler implements OnModuleInit, OnModuleDestroy {
 
                     if (updateStatus.error) {
                         return this.shutdownService.shutdownWithError(
-                            new Error(
-                                `TxsScheduler::blockPolling error while updating tx: ${updateStatus.error}`,
-                            ),
+                            new Error(`TxsScheduler::blockPolling error while updating tx: ${updateStatus.error}`),
                         );
                     }
 
-                    this.loggerService.log(
-                        `Confirmed Transaction ${parsed.transaction_hash}`,
-                    );
+                    this.loggerService.log(`Confirmed Transaction ${parsed.transaction_hash}`);
                 }
             }
         }
@@ -132,14 +114,9 @@ export class TxsScheduler implements OnModuleInit, OnModuleDestroy {
             id: 'global',
         });
 
-        if (
-            currentGlobalConfig.error ||
-            currentGlobalConfig.response.length === 0
-        ) {
+        if (currentGlobalConfig.error || currentGlobalConfig.response.length === 0) {
             return this.shutdownService.shutdownWithError(
-                new Error(
-                    'TxsScheduler::transactionInitialization unable to recover global config',
-                ),
+                new Error('TxsScheduler::transactionInitialization unable to recover global config'),
             );
         }
 
@@ -154,9 +131,7 @@ export class TxsScheduler implements OnModuleInit, OnModuleDestroy {
             },
         } as SortablePagedSearch);
 
-        const pendingTransactions = await this.txsService.searchElastic(
-            bodyBuilder.response,
-        );
+        const pendingTransactions = await this.txsService.searchElastic(bodyBuilder.response);
 
         if (pendingTransactions.error) {
             return this.shutdownService.shutdownWithError(
@@ -172,13 +147,9 @@ export class TxsScheduler implements OnModuleInit, OnModuleDestroy {
             for (const hit of pendingTransactions.response.hits.hits) {
                 const parsed = fromES<TxEntity>(hit);
 
-                const txReceipt = await web3.eth.getTransactionReceipt(
-                    parsed.transaction_hash,
-                );
+                const txReceipt = await web3.eth.getTransactionReceipt(parsed.transaction_hash);
 
-                const txInfos = await web3.eth.getTransaction(
-                    parsed.transaction_hash,
-                );
+                const txInfos = await web3.eth.getTransaction(parsed.transaction_hash);
 
                 if (txReceipt === null || txInfos === null) {
                     continue;
@@ -191,9 +162,7 @@ export class TxsScheduler implements OnModuleInit, OnModuleDestroy {
                     ? toAcceptedAddressFormat(txReceipt.contractAddress)
                     : null;
                 parsed.cumulative_gas_used = txReceipt.cumulativeGasUsed.toString();
-                parsed.cumulative_gas_used_ln = Decimal.log2(
-                    txReceipt.cumulativeGasUsed,
-                ).toNumber();
+                parsed.cumulative_gas_used_ln = Decimal.log2(txReceipt.cumulativeGasUsed).toNumber();
                 parsed.gas_used = txReceipt.gasUsed.toString();
                 parsed.gas_used_ln = Decimal.log2(txReceipt.gasUsed).toNumber();
                 parsed.gas_price = txInfos.gasPrice.toString();
@@ -210,19 +179,14 @@ export class TxsScheduler implements OnModuleInit, OnModuleDestroy {
                         data: log.data.toLowerCase(),
                         log_index: log.logIndex,
                         removed: log.removed || false,
-                        topics: log.topics.map((topic: string): string =>
-                            topic.toLowerCase(),
-                        ),
+                        topics: log.topics.map((topic: string): string => topic.toLowerCase()),
                         transaction_hash: log.transactionHash.toLowerCase(),
                         transaction_index: log.transactionIndex,
                         id: log.id,
                     }),
                 );
 
-                if (
-                    globalConfig.block_number - txReceipt.blockNumber >=
-                    this.txsOptions.blockThreshold
-                ) {
+                if (globalConfig.block_number - txReceipt.blockNumber >= this.txsOptions.blockThreshold) {
                     parsed.confirmed = true;
                 }
 
@@ -246,9 +210,7 @@ export class TxsScheduler implements OnModuleInit, OnModuleDestroy {
                 }
 
                 if (parsed.confirmed) {
-                    this.loggerService.log(
-                        `Initialized & Confirmed Transaction ${thash}`,
-                    );
+                    this.loggerService.log(`Initialized & Confirmed Transaction ${thash}`);
                 } else {
                     this.loggerService.log(`Initialized Transaction ${thash}`);
                 }

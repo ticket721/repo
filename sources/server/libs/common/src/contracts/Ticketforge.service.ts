@@ -54,18 +54,8 @@ export class TicketforgeService extends ContractsControllerBase {
         t721controllerV0: T721ControllerV0Service,
         metaMarketplaceV0: MetaMarketplaceV0Service,
     ) {
-        super(
-            contractsService,
-            web3Service,
-            shutdownService,
-            'ticketforge',
-            'TicketForge',
-        );
-        this.registerScopeBindings(
-            'ticket721_0',
-            metaMarketplaceV0,
-            t721controllerV0,
-        );
+        super(contractsService, web3Service, shutdownService, 'ticketforge', 'TicketForge');
+        this.registerScopeBindings('ticket721_0', metaMarketplaceV0, t721controllerV0);
     }
 
     /**
@@ -75,11 +65,7 @@ export class TicketforgeService extends ContractsControllerBase {
      * @param mm
      * @param t721c
      */
-    private registerScopeBindings(
-        name: string,
-        mm: ContractsControllerBase,
-        t721c: ContractsControllerBase,
-    ): void {
+    private registerScopeBindings(name: string, mm: ContractsControllerBase, t721c: ContractsControllerBase): void {
         this.scopeBindings[name] = {
             mm,
             t721c,

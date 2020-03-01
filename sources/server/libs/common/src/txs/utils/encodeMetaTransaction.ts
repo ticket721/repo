@@ -26,9 +26,7 @@ export async function encodeMetaTransaction(
         ret[MTXArguments.ADDR].push(param.relayer);
         ret[MTXArguments.NUMS].push(param.value);
         ret[MTXArguments.NUMS].push((param.data.length / 2 - 1).toString()); // /2 because of hex, -1 because of 0x
-        ret[MTXArguments.BDATA] = `${ret[MTXArguments.BDATA]}${param.data.slice(
-            2,
-        )}`;
+        ret[MTXArguments.BDATA] = `${ret[MTXArguments.BDATA]}${param.data.slice(2)}`;
     }
 
     return ret;

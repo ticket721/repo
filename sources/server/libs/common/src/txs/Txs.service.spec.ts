@@ -6,16 +6,7 @@ import { VaultereumService } from '@lib/common/vaultereum/Vaultereum.service';
 import { Web3Service } from '@lib/common/web3/Web3.service';
 import { RefractFactoryV0Service } from '@lib/common/contracts/refract/RefractFactory.V0.service';
 import { T721AdminService } from '@lib/common/contracts/T721Admin.service';
-import {
-    anything,
-    capture,
-    deepEqual,
-    instance,
-    mock,
-    spy,
-    verify,
-    when,
-} from 'ts-mockito';
+import { anything, capture, deepEqual, instance, mock, spy, verify, when } from 'ts-mockito';
 import { EsSearchOptionsStatic } from '@iaminfinity/express-cassandra/dist/orm/interfaces/externals/express-cassandra.interface';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from '@iaminfinity/express-cassandra/dist/utils/cassandra-orm.utils';
@@ -26,10 +17,7 @@ import { UserDto } from '@lib/common/users/dto/User.dto';
 class TxEntityMock {
     public _properties = null;
 
-    search(
-        options: EsSearchOptionsStatic,
-        callback?: (err: any, ret: any) => void,
-    ): void {
+    search(options: EsSearchOptionsStatic, callback?: (err: any, ret: any) => void): void {
         return;
     }
 }
@@ -123,12 +111,10 @@ describe('Txs Service', function() {
 
     describe('subscribe', function() {
         it('should subscribe to a transaction', async function() {
-            const transactionHash =
-                '0x642d048892f14c556d16dcbbdc5567bafee2d9bae40226d13807e72e097d59b8';
+            const transactionHash = '0x642d048892f14c556d16dcbbdc5567bafee2d9bae40226d13807e72e097d59b8';
             const spied = spy(context.txsService);
             const txentiy = {
-                transaction_hash:
-                    '0x93e56b205c2ca911b754536d2474a75b9823e0b3d2b3537d08457ebd5f8f8cce',
+                transaction_hash: '0x93e56b205c2ca911b754536d2474a75b9823e0b3d2b3537d08457ebd5f8f8cce',
                 confirmed: false,
                 block_number: 0,
             };
@@ -184,12 +170,10 @@ describe('Txs Service', function() {
         });
 
         it('should return existing transaction', async function() {
-            const transactionHash =
-                '0x642d048892f14c556d16dcbbdc5567bafee2d9bae40226d13807e72e097d59b8';
+            const transactionHash = '0x642d048892f14c556d16dcbbdc5567bafee2d9bae40226d13807e72e097d59b8';
             const spied = spy(context.txsService);
             const txentiy = {
-                transaction_hash:
-                    '0x93e56b205c2ca911b754536d2474a75b9823e0b3d2b3537d08457ebd5f8f8cce',
+                transaction_hash: '0x93e56b205c2ca911b754536d2474a75b9823e0b3d2b3537d08457ebd5f8f8cce',
                 confirmed: false,
                 block_number: 0,
             };
@@ -245,12 +229,10 @@ describe('Txs Service', function() {
         });
 
         it('should fail on invalid txhash', async function() {
-            const transactionHash =
-                '0x642d048892f14c556d16dcbbdc5567bafee2d9bae40226d13807e72e097d59';
+            const transactionHash = '0x642d048892f14c556d16dcbbdc5567bafee2d9bae40226d13807e72e097d59';
             const spied = spy(context.txsService);
             const txentiy = {
-                transaction_hash:
-                    '0x93e56b205c2ca911b754536d2474a75b9823e0b3d2b3537d08457ebd5f8f8cce',
+                transaction_hash: '0x93e56b205c2ca911b754536d2474a75b9823e0b3d2b3537d08457ebd5f8f8cce',
                 confirmed: false,
                 block_number: 0,
             };
@@ -264,12 +246,10 @@ describe('Txs Service', function() {
         });
 
         it('should fail on duplicate check error', async function() {
-            const transactionHash =
-                '0x642d048892f14c556d16dcbbdc5567bafee2d9bae40226d13807e72e097d59b8';
+            const transactionHash = '0x642d048892f14c556d16dcbbdc5567bafee2d9bae40226d13807e72e097d59b8';
             const spied = spy(context.txsService);
             const txentiy = {
-                transaction_hash:
-                    '0x93e56b205c2ca911b754536d2474a75b9823e0b3d2b3537d08457ebd5f8f8cce',
+                transaction_hash: '0x93e56b205c2ca911b754536d2474a75b9823e0b3d2b3537d08457ebd5f8f8cce',
                 confirmed: false,
                 block_number: 0,
             };
@@ -302,12 +282,10 @@ describe('Txs Service', function() {
         });
 
         it('should fail on creation error', async function() {
-            const transactionHash =
-                '0x642d048892f14c556d16dcbbdc5567bafee2d9bae40226d13807e72e097d59b8';
+            const transactionHash = '0x642d048892f14c556d16dcbbdc5567bafee2d9bae40226d13807e72e097d59b8';
             const spied = spy(context.txsService);
             const txentiy = {
-                transaction_hash:
-                    '0x93e56b205c2ca911b754536d2474a75b9823e0b3d2b3537d08457ebd5f8f8cce',
+                transaction_hash: '0x93e56b205c2ca911b754536d2474a75b9823e0b3d2b3537d08457ebd5f8f8cce',
                 confirmed: false,
                 block_number: 0,
             };
@@ -506,9 +484,7 @@ describe('Txs Service', function() {
                 },
             };
 
-            when(
-                context.vaultereumServiceMock.read(`ethereum/accounts/${from}`),
-            ).thenResolve({
+            when(context.vaultereumServiceMock.read(`ethereum/accounts/${from}`)).thenResolve({
                 error: null,
                 response: {
                     data: {
@@ -519,20 +495,14 @@ describe('Txs Service', function() {
 
             when(context.web3ServiceMock.get()).thenResolve(web3);
 
-            const res = await context.txsService.estimateGasLimit(
-                from,
-                to,
-                '0xabcd',
-            );
+            const res = await context.txsService.estimateGasLimit(from, to, '0xabcd');
 
             expect(res).toEqual({
                 error: null,
                 response: '1000000',
             });
 
-            verify(
-                context.vaultereumServiceMock.read(`ethereum/accounts/${from}`),
-            ).called();
+            verify(context.vaultereumServiceMock.read(`ethereum/accounts/${from}`)).called();
 
             verify(context.web3ServiceMock.get()).called();
         });
@@ -549,9 +519,7 @@ describe('Txs Service', function() {
                 },
             };
 
-            when(
-                context.vaultereumServiceMock.read(`ethereum/accounts/${from}`),
-            ).thenResolve({
+            when(context.vaultereumServiceMock.read(`ethereum/accounts/${from}`)).thenResolve({
                 error: null,
                 response: {
                     data: {
@@ -562,20 +530,14 @@ describe('Txs Service', function() {
 
             when(context.web3ServiceMock.get()).thenResolve(web3);
 
-            const res = await context.txsService.estimateGasLimit(
-                from,
-                to,
-                '0xabcd',
-            );
+            const res = await context.txsService.estimateGasLimit(from, to, '0xabcd');
 
             expect(res).toEqual({
                 error: null,
                 response: '1000000',
             });
 
-            verify(
-                context.vaultereumServiceMock.read(`ethereum/accounts/${from}`),
-            ).called();
+            verify(context.vaultereumServiceMock.read(`ethereum/accounts/${from}`)).called();
 
             verify(context.web3ServiceMock.get()).called();
         });
@@ -593,11 +555,7 @@ describe('Txs Service', function() {
 
             when(context.web3ServiceMock.get()).thenResolve(web3);
 
-            const res = await context.txsService.estimateGasLimit(
-                from,
-                to,
-                '0xabcd',
-            );
+            const res = await context.txsService.estimateGasLimit(from, to, '0xabcd');
 
             expect(res).toEqual({
                 error: null,
@@ -619,27 +577,19 @@ describe('Txs Service', function() {
                 },
             };
 
-            when(
-                context.vaultereumServiceMock.read(`ethereum/accounts/${from}`),
-            ).thenResolve({
+            when(context.vaultereumServiceMock.read(`ethereum/accounts/${from}`)).thenResolve({
                 error: 'unexpected_error',
                 response: null,
             });
 
-            const res = await context.txsService.estimateGasLimit(
-                from,
-                to,
-                '0xabcd',
-            );
+            const res = await context.txsService.estimateGasLimit(from, to, '0xabcd');
 
             expect(res).toEqual({
                 error: 'unexpected_error',
                 response: null,
             });
 
-            verify(
-                context.vaultereumServiceMock.read(`ethereum/accounts/${from}`),
-            ).called();
+            verify(context.vaultereumServiceMock.read(`ethereum/accounts/${from}`)).called();
         });
     });
 
@@ -650,8 +600,7 @@ describe('Txs Service', function() {
                     name: 'Refract Wallet',
                     version: '0',
                     chainId: 2702,
-                    verifyingContract:
-                        '0x77D751f6dfF3c701c552a24589BEC63caaFaEf5D',
+                    verifyingContract: '0x77D751f6dfF3c701c552a24589BEC63caaFaEf5D',
                 },
                 primaryType: 'MetaTransaction',
                 types: {
@@ -712,8 +661,7 @@ describe('Txs Service', function() {
                         {
                             from: '0x77D751f6dfF3c701c552a24589BEC63caaFaEf5D',
                             to: '0x1d276ee950745444BE5A22A94dC41845CCD21795',
-                            relayer:
-                                '0xe9CfF24ea9AB940e9F1041AfA9688805DdD71404',
+                            relayer: '0xe9CfF24ea9AB940e9F1041AfA9688805DdD71404',
                             data:
                                 '0xdc2ddcae0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000e406576656e742f6d6f64756c6573000000000000000000000000000000000000',
                             value: '0',
@@ -721,8 +669,7 @@ describe('Txs Service', function() {
                         {
                             from: '0x77D751f6dfF3c701c552a24589BEC63caaFaEf5D',
                             to: '0x1d276ee950745444BE5A22A94dC41845CCD21795',
-                            relayer:
-                                '0xe9CfF24ea9AB940e9F1041AfA9688805DdD71404',
+                            relayer: '0xe9CfF24ea9AB940e9F1041AfA9688805DdD71404',
                             data:
                                 '0xa032c39b8464cd7af6e74a68c015a423ee17228b225ab09f69ff6d95d17ed3e55414e7b500000000000000000000000000000000000000000000000000000000000000800000000000000000000000000000000000000000000000000000000000000340000000000000000000000000000000000000000000000000000000000000048000000000000000000000000000000000000000000000000000000000000000150000000000000000000000000000000000000000000000000000000000000064000000000000000000000000000000000000000000000000000000005e4ff040000000000000000000000000000000000000000000000000000000005e5125a0000000000000000000000000000000000000000000000000000000005e4ff040000000000000000000000000000000000000000000000000000000005e5125a00000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000006400000000000000000000000000000000000000000000000000000000000000c8000000000000000000000000000000000000000000000000000000005e4ff040000000000000000000000000000000000000000000000000000000005e5125a0000000000000000000000000000000000000000000000000000000005e4ff040000000000000000000000000000000000000000000000000000000005e5125a00000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000006400000000000000000000000000000000000000000000000000000000000000c8000000000000000000000000000000000000000000000000000000005e4ff040000000000000000000000000000000000000000000000000000000005e5125a0000000000000000000000000000000000000000000000000000000005e4ff040000000000000000000000000000000000000000000000000000000005e5125a00000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000006400000000000000000000000000000000000000000000000000000000000000090000000000000000000000007aacfebdc4aedac8881d0ef52011470a202cd6140000000000000000000000007aacfebdc4aedac8881d0ef52011470a202cd61400000000000000000000000014b1393544ad0788de910c7bb8188c44c72b9a060000000000000000000000007aacfebdc4aedac8881d0ef52011470a202cd6140000000000000000000000007aacfebdc4aedac8881d0ef52011470a202cd61400000000000000000000000014b1393544ad0788de910c7bb8188c44c72b9a060000000000000000000000007aacfebdc4aedac8881d0ef52011470a202cd6140000000000000000000000007aacfebdc4aedac8881d0ef52011470a202cd61400000000000000000000000014b1393544ad0788de910c7bb8188c44c72b9a0600000000000000000000000000000000000000000000000000000000000000067669705f300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000726567756c61725f305f300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000726567756c61725f315f300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
                             value: '0',
@@ -765,13 +712,7 @@ describe('Txs Service', function() {
             };
             const spied = spy(context.txsService);
 
-            when(
-                context.refractFactoryServiceMock.isController(
-                    user.address,
-                    signer,
-                    anything(),
-                ),
-            ).thenResolve(true);
+            when(context.refractFactoryServiceMock.isController(user.address, signer, anything())).thenResolve(true);
 
             when(
                 context.refractFactoryServiceMock.encodeCall(
@@ -787,9 +728,7 @@ describe('Txs Service', function() {
 
             when(context.t721AdminService.get()).thenResolve(t721adminContract);
 
-            when(
-                spied.estimateGasLimit('admin_0', target, '0x1234'),
-            ).thenResolve({
+            when(spied.estimateGasLimit('admin_0', target, '0x1234')).thenResolve({
                 error: null,
                 response: '1000000',
             });
@@ -799,48 +738,27 @@ describe('Txs Service', function() {
                 response: '150000000',
             });
 
-            when(
-                spied.sendRawTransaction(
-                    'admin_0',
-                    target,
-                    '0',
-                    '0x1234',
-                    '150000000',
-                    '1000000',
-                ),
-            ).thenResolve({
+            when(spied.sendRawTransaction('admin_0', target, '0', '0x1234', '150000000', '1000000')).thenResolve({
                 error: null,
                 response: ({
-                    transaction_hash:
-                        '0x93e56b205c2ca911b754536d2474a75b9823e0b3d2b3537d08457ebd5f8f8cce',
+                    transaction_hash: '0x93e56b205c2ca911b754536d2474a75b9823e0b3d2b3537d08457ebd5f8f8cce',
                     confirmed: false,
                     block_number: 0,
                 } as any) as TxEntity,
             });
 
-            const res = await context.txsService.mtx(
-                payload,
-                signature,
-                user as UserDto,
-            );
+            const res = await context.txsService.mtx(payload, signature, user as UserDto);
 
             expect(res).toEqual({
                 error: null,
                 response: {
-                    transaction_hash:
-                        '0x93e56b205c2ca911b754536d2474a75b9823e0b3d2b3537d08457ebd5f8f8cce',
+                    transaction_hash: '0x93e56b205c2ca911b754536d2474a75b9823e0b3d2b3537d08457ebd5f8f8cce',
                     confirmed: false,
                     block_number: 0,
                 },
             });
 
-            verify(
-                context.refractFactoryServiceMock.isController(
-                    user.address,
-                    signer,
-                    anything(),
-                ),
-            ).called();
+            verify(context.refractFactoryServiceMock.isController(user.address, signer, anything())).called();
             verify(
                 context.refractFactoryServiceMock.encodeCall(
                     user.address,
@@ -853,20 +771,9 @@ describe('Txs Service', function() {
                 ),
             ).called();
             verify(context.t721AdminService.get()).called();
-            verify(
-                spied.estimateGasLimit('admin_0', target, '0x1234'),
-            ).called();
+            verify(spied.estimateGasLimit('admin_0', target, '0x1234')).called();
             verify(spied.estimateGasPrice('1000000')).called();
-            verify(
-                spied.sendRawTransaction(
-                    'admin_0',
-                    target,
-                    '0',
-                    '0x1234',
-                    '150000000',
-                    '1000000',
-                ),
-            ).called();
+            verify(spied.sendRawTransaction('admin_0', target, '0', '0x1234', '150000000', '1000000')).called();
         });
 
         it('should fail on invalid controller', async function() {
@@ -875,8 +782,7 @@ describe('Txs Service', function() {
                     name: 'Refract Wallet',
                     version: '0',
                     chainId: 2702,
-                    verifyingContract:
-                        '0x77D751f6dfF3c701c552a24589BEC63caaFaEf5D',
+                    verifyingContract: '0x77D751f6dfF3c701c552a24589BEC63caaFaEf5D',
                 },
                 primaryType: 'MetaTransaction',
                 types: {
@@ -937,8 +843,7 @@ describe('Txs Service', function() {
                         {
                             from: '0x77D751f6dfF3c701c552a24589BEC63caaFaEf5D',
                             to: '0x1d276ee950745444BE5A22A94dC41845CCD21795',
-                            relayer:
-                                '0xe9CfF24ea9AB940e9F1041AfA9688805DdD71404',
+                            relayer: '0xe9CfF24ea9AB940e9F1041AfA9688805DdD71404',
                             data:
                                 '0xdc2ddcae0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000e406576656e742f6d6f64756c6573000000000000000000000000000000000000',
                             value: '0',
@@ -946,8 +851,7 @@ describe('Txs Service', function() {
                         {
                             from: '0x77D751f6dfF3c701c552a24589BEC63caaFaEf5D',
                             to: '0x1d276ee950745444BE5A22A94dC41845CCD21795',
-                            relayer:
-                                '0xe9CfF24ea9AB940e9F1041AfA9688805DdD71404',
+                            relayer: '0xe9CfF24ea9AB940e9F1041AfA9688805DdD71404',
                             data:
                                 '0xa032c39b8464cd7af6e74a68c015a423ee17228b225ab09f69ff6d95d17ed3e55414e7b500000000000000000000000000000000000000000000000000000000000000800000000000000000000000000000000000000000000000000000000000000340000000000000000000000000000000000000000000000000000000000000048000000000000000000000000000000000000000000000000000000000000000150000000000000000000000000000000000000000000000000000000000000064000000000000000000000000000000000000000000000000000000005e4ff040000000000000000000000000000000000000000000000000000000005e5125a0000000000000000000000000000000000000000000000000000000005e4ff040000000000000000000000000000000000000000000000000000000005e5125a00000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000006400000000000000000000000000000000000000000000000000000000000000c8000000000000000000000000000000000000000000000000000000005e4ff040000000000000000000000000000000000000000000000000000000005e5125a0000000000000000000000000000000000000000000000000000000005e4ff040000000000000000000000000000000000000000000000000000000005e5125a00000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000006400000000000000000000000000000000000000000000000000000000000000c8000000000000000000000000000000000000000000000000000000005e4ff040000000000000000000000000000000000000000000000000000000005e5125a0000000000000000000000000000000000000000000000000000000005e4ff040000000000000000000000000000000000000000000000000000000005e5125a00000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000006400000000000000000000000000000000000000000000000000000000000000090000000000000000000000007aacfebdc4aedac8881d0ef52011470a202cd6140000000000000000000000007aacfebdc4aedac8881d0ef52011470a202cd61400000000000000000000000014b1393544ad0788de910c7bb8188c44c72b9a060000000000000000000000007aacfebdc4aedac8881d0ef52011470a202cd6140000000000000000000000007aacfebdc4aedac8881d0ef52011470a202cd61400000000000000000000000014b1393544ad0788de910c7bb8188c44c72b9a060000000000000000000000007aacfebdc4aedac8881d0ef52011470a202cd6140000000000000000000000007aacfebdc4aedac8881d0ef52011470a202cd61400000000000000000000000014b1393544ad0788de910c7bb8188c44c72b9a0600000000000000000000000000000000000000000000000000000000000000067669705f300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000726567756c61725f305f300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000726567756c61725f315f300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
                             value: '0',
@@ -990,32 +894,16 @@ describe('Txs Service', function() {
             };
             const spied = spy(context.txsService);
 
-            when(
-                context.refractFactoryServiceMock.isController(
-                    user.address,
-                    signer,
-                    anything(),
-                ),
-            ).thenResolve(false);
+            when(context.refractFactoryServiceMock.isController(user.address, signer, anything())).thenResolve(false);
 
-            const res = await context.txsService.mtx(
-                payload,
-                signature,
-                user as UserDto,
-            );
+            const res = await context.txsService.mtx(payload, signature, user as UserDto);
 
             expect(res).toEqual({
                 error: 'payload_not_signed_by_controller',
                 response: null,
             });
 
-            verify(
-                context.refractFactoryServiceMock.isController(
-                    user.address,
-                    signer,
-                    anything(),
-                ),
-            ).called();
+            verify(context.refractFactoryServiceMock.isController(user.address, signer, anything())).called();
         });
 
         it('should fail on gas limit estimation error', async function() {
@@ -1024,8 +912,7 @@ describe('Txs Service', function() {
                     name: 'Refract Wallet',
                     version: '0',
                     chainId: 2702,
-                    verifyingContract:
-                        '0x77D751f6dfF3c701c552a24589BEC63caaFaEf5D',
+                    verifyingContract: '0x77D751f6dfF3c701c552a24589BEC63caaFaEf5D',
                 },
                 primaryType: 'MetaTransaction',
                 types: {
@@ -1086,8 +973,7 @@ describe('Txs Service', function() {
                         {
                             from: '0x77D751f6dfF3c701c552a24589BEC63caaFaEf5D',
                             to: '0x1d276ee950745444BE5A22A94dC41845CCD21795',
-                            relayer:
-                                '0xe9CfF24ea9AB940e9F1041AfA9688805DdD71404',
+                            relayer: '0xe9CfF24ea9AB940e9F1041AfA9688805DdD71404',
                             data:
                                 '0xdc2ddcae0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000e406576656e742f6d6f64756c6573000000000000000000000000000000000000',
                             value: '0',
@@ -1095,8 +981,7 @@ describe('Txs Service', function() {
                         {
                             from: '0x77D751f6dfF3c701c552a24589BEC63caaFaEf5D',
                             to: '0x1d276ee950745444BE5A22A94dC41845CCD21795',
-                            relayer:
-                                '0xe9CfF24ea9AB940e9F1041AfA9688805DdD71404',
+                            relayer: '0xe9CfF24ea9AB940e9F1041AfA9688805DdD71404',
                             data:
                                 '0xa032c39b8464cd7af6e74a68c015a423ee17228b225ab09f69ff6d95d17ed3e55414e7b500000000000000000000000000000000000000000000000000000000000000800000000000000000000000000000000000000000000000000000000000000340000000000000000000000000000000000000000000000000000000000000048000000000000000000000000000000000000000000000000000000000000000150000000000000000000000000000000000000000000000000000000000000064000000000000000000000000000000000000000000000000000000005e4ff040000000000000000000000000000000000000000000000000000000005e5125a0000000000000000000000000000000000000000000000000000000005e4ff040000000000000000000000000000000000000000000000000000000005e5125a00000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000006400000000000000000000000000000000000000000000000000000000000000c8000000000000000000000000000000000000000000000000000000005e4ff040000000000000000000000000000000000000000000000000000000005e5125a0000000000000000000000000000000000000000000000000000000005e4ff040000000000000000000000000000000000000000000000000000000005e5125a00000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000006400000000000000000000000000000000000000000000000000000000000000c8000000000000000000000000000000000000000000000000000000005e4ff040000000000000000000000000000000000000000000000000000000005e5125a0000000000000000000000000000000000000000000000000000000005e4ff040000000000000000000000000000000000000000000000000000000005e5125a00000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000006400000000000000000000000000000000000000000000000000000000000000090000000000000000000000007aacfebdc4aedac8881d0ef52011470a202cd6140000000000000000000000007aacfebdc4aedac8881d0ef52011470a202cd61400000000000000000000000014b1393544ad0788de910c7bb8188c44c72b9a060000000000000000000000007aacfebdc4aedac8881d0ef52011470a202cd6140000000000000000000000007aacfebdc4aedac8881d0ef52011470a202cd61400000000000000000000000014b1393544ad0788de910c7bb8188c44c72b9a060000000000000000000000007aacfebdc4aedac8881d0ef52011470a202cd6140000000000000000000000007aacfebdc4aedac8881d0ef52011470a202cd61400000000000000000000000014b1393544ad0788de910c7bb8188c44c72b9a0600000000000000000000000000000000000000000000000000000000000000067669705f300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000726567756c61725f305f300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000726567756c61725f315f300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
                             value: '0',
@@ -1139,13 +1024,7 @@ describe('Txs Service', function() {
             };
             const spied = spy(context.txsService);
 
-            when(
-                context.refractFactoryServiceMock.isController(
-                    user.address,
-                    signer,
-                    anything(),
-                ),
-            ).thenResolve(true);
+            when(context.refractFactoryServiceMock.isController(user.address, signer, anything())).thenResolve(true);
 
             when(
                 context.refractFactoryServiceMock.encodeCall(
@@ -1161,31 +1040,19 @@ describe('Txs Service', function() {
 
             when(context.t721AdminService.get()).thenResolve(t721adminContract);
 
-            when(
-                spied.estimateGasLimit('admin_0', target, '0x1234'),
-            ).thenResolve({
+            when(spied.estimateGasLimit('admin_0', target, '0x1234')).thenResolve({
                 error: 'unexpected_error',
                 response: null,
             });
 
-            const res = await context.txsService.mtx(
-                payload,
-                signature,
-                user as UserDto,
-            );
+            const res = await context.txsService.mtx(payload, signature, user as UserDto);
 
             expect(res).toEqual({
                 error: 'unexpected_error',
                 response: null,
             });
 
-            verify(
-                context.refractFactoryServiceMock.isController(
-                    user.address,
-                    signer,
-                    anything(),
-                ),
-            ).called();
+            verify(context.refractFactoryServiceMock.isController(user.address, signer, anything())).called();
             verify(
                 context.refractFactoryServiceMock.encodeCall(
                     user.address,
@@ -1198,9 +1065,7 @@ describe('Txs Service', function() {
                 ),
             ).called();
             verify(context.t721AdminService.get()).called();
-            verify(
-                spied.estimateGasLimit('admin_0', target, '0x1234'),
-            ).called();
+            verify(spied.estimateGasLimit('admin_0', target, '0x1234')).called();
         });
 
         it('should fail on gas price estimation error', async function() {
@@ -1209,8 +1074,7 @@ describe('Txs Service', function() {
                     name: 'Refract Wallet',
                     version: '0',
                     chainId: 2702,
-                    verifyingContract:
-                        '0x77D751f6dfF3c701c552a24589BEC63caaFaEf5D',
+                    verifyingContract: '0x77D751f6dfF3c701c552a24589BEC63caaFaEf5D',
                 },
                 primaryType: 'MetaTransaction',
                 types: {
@@ -1271,8 +1135,7 @@ describe('Txs Service', function() {
                         {
                             from: '0x77D751f6dfF3c701c552a24589BEC63caaFaEf5D',
                             to: '0x1d276ee950745444BE5A22A94dC41845CCD21795',
-                            relayer:
-                                '0xe9CfF24ea9AB940e9F1041AfA9688805DdD71404',
+                            relayer: '0xe9CfF24ea9AB940e9F1041AfA9688805DdD71404',
                             data:
                                 '0xdc2ddcae0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000e406576656e742f6d6f64756c6573000000000000000000000000000000000000',
                             value: '0',
@@ -1280,8 +1143,7 @@ describe('Txs Service', function() {
                         {
                             from: '0x77D751f6dfF3c701c552a24589BEC63caaFaEf5D',
                             to: '0x1d276ee950745444BE5A22A94dC41845CCD21795',
-                            relayer:
-                                '0xe9CfF24ea9AB940e9F1041AfA9688805DdD71404',
+                            relayer: '0xe9CfF24ea9AB940e9F1041AfA9688805DdD71404',
                             data:
                                 '0xa032c39b8464cd7af6e74a68c015a423ee17228b225ab09f69ff6d95d17ed3e55414e7b500000000000000000000000000000000000000000000000000000000000000800000000000000000000000000000000000000000000000000000000000000340000000000000000000000000000000000000000000000000000000000000048000000000000000000000000000000000000000000000000000000000000000150000000000000000000000000000000000000000000000000000000000000064000000000000000000000000000000000000000000000000000000005e4ff040000000000000000000000000000000000000000000000000000000005e5125a0000000000000000000000000000000000000000000000000000000005e4ff040000000000000000000000000000000000000000000000000000000005e5125a00000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000006400000000000000000000000000000000000000000000000000000000000000c8000000000000000000000000000000000000000000000000000000005e4ff040000000000000000000000000000000000000000000000000000000005e5125a0000000000000000000000000000000000000000000000000000000005e4ff040000000000000000000000000000000000000000000000000000000005e5125a00000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000006400000000000000000000000000000000000000000000000000000000000000c8000000000000000000000000000000000000000000000000000000005e4ff040000000000000000000000000000000000000000000000000000000005e5125a0000000000000000000000000000000000000000000000000000000005e4ff040000000000000000000000000000000000000000000000000000000005e5125a00000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000006400000000000000000000000000000000000000000000000000000000000000090000000000000000000000007aacfebdc4aedac8881d0ef52011470a202cd6140000000000000000000000007aacfebdc4aedac8881d0ef52011470a202cd61400000000000000000000000014b1393544ad0788de910c7bb8188c44c72b9a060000000000000000000000007aacfebdc4aedac8881d0ef52011470a202cd6140000000000000000000000007aacfebdc4aedac8881d0ef52011470a202cd61400000000000000000000000014b1393544ad0788de910c7bb8188c44c72b9a060000000000000000000000007aacfebdc4aedac8881d0ef52011470a202cd6140000000000000000000000007aacfebdc4aedac8881d0ef52011470a202cd61400000000000000000000000014b1393544ad0788de910c7bb8188c44c72b9a0600000000000000000000000000000000000000000000000000000000000000067669705f300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000726567756c61725f305f300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000726567756c61725f315f300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
                             value: '0',
@@ -1324,13 +1186,7 @@ describe('Txs Service', function() {
             };
             const spied = spy(context.txsService);
 
-            when(
-                context.refractFactoryServiceMock.isController(
-                    user.address,
-                    signer,
-                    anything(),
-                ),
-            ).thenResolve(true);
+            when(context.refractFactoryServiceMock.isController(user.address, signer, anything())).thenResolve(true);
 
             when(
                 context.refractFactoryServiceMock.encodeCall(
@@ -1346,9 +1202,7 @@ describe('Txs Service', function() {
 
             when(context.t721AdminService.get()).thenResolve(t721adminContract);
 
-            when(
-                spied.estimateGasLimit('admin_0', target, '0x1234'),
-            ).thenResolve({
+            when(spied.estimateGasLimit('admin_0', target, '0x1234')).thenResolve({
                 error: null,
                 response: '1000000',
             });
@@ -1358,24 +1212,14 @@ describe('Txs Service', function() {
                 response: null,
             });
 
-            const res = await context.txsService.mtx(
-                payload,
-                signature,
-                user as UserDto,
-            );
+            const res = await context.txsService.mtx(payload, signature, user as UserDto);
 
             expect(res).toEqual({
                 error: 'unexpected_error',
                 response: null,
             });
 
-            verify(
-                context.refractFactoryServiceMock.isController(
-                    user.address,
-                    signer,
-                    anything(),
-                ),
-            ).called();
+            verify(context.refractFactoryServiceMock.isController(user.address, signer, anything())).called();
             verify(
                 context.refractFactoryServiceMock.encodeCall(
                     user.address,
@@ -1388,9 +1232,7 @@ describe('Txs Service', function() {
                 ),
             ).called();
             verify(context.t721AdminService.get()).called();
-            verify(
-                spied.estimateGasLimit('admin_0', target, '0x1234'),
-            ).called();
+            verify(spied.estimateGasLimit('admin_0', target, '0x1234')).called();
             verify(spied.estimateGasPrice('1000000')).called();
         });
 
@@ -1400,8 +1242,7 @@ describe('Txs Service', function() {
                     name: 'Refract Wallet',
                     version: '0',
                     chainId: 2702,
-                    verifyingContract:
-                        '0x77D751f6dfF3c701c552a24589BEC63caaFaEf5D',
+                    verifyingContract: '0x77D751f6dfF3c701c552a24589BEC63caaFaEf5D',
                 },
                 primaryType: 'MetaTransaction',
                 types: {
@@ -1462,8 +1303,7 @@ describe('Txs Service', function() {
                         {
                             from: '0x77D751f6dfF3c701c552a24589BEC63caaFaEf5D',
                             to: '0x1d276ee950745444BE5A22A94dC41845CCD21795',
-                            relayer:
-                                '0xe9CfF24ea9AB940e9F1041AfA9688805DdD71404',
+                            relayer: '0xe9CfF24ea9AB940e9F1041AfA9688805DdD71404',
                             data:
                                 '0xdc2ddcae0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000e406576656e742f6d6f64756c6573000000000000000000000000000000000000',
                             value: '0',
@@ -1471,8 +1311,7 @@ describe('Txs Service', function() {
                         {
                             from: '0x77D751f6dfF3c701c552a24589BEC63caaFaEf5D',
                             to: '0x1d276ee950745444BE5A22A94dC41845CCD21795',
-                            relayer:
-                                '0xe9CfF24ea9AB940e9F1041AfA9688805DdD71404',
+                            relayer: '0xe9CfF24ea9AB940e9F1041AfA9688805DdD71404',
                             data:
                                 '0xa032c39b8464cd7af6e74a68c015a423ee17228b225ab09f69ff6d95d17ed3e55414e7b500000000000000000000000000000000000000000000000000000000000000800000000000000000000000000000000000000000000000000000000000000340000000000000000000000000000000000000000000000000000000000000048000000000000000000000000000000000000000000000000000000000000000150000000000000000000000000000000000000000000000000000000000000064000000000000000000000000000000000000000000000000000000005e4ff040000000000000000000000000000000000000000000000000000000005e5125a0000000000000000000000000000000000000000000000000000000005e4ff040000000000000000000000000000000000000000000000000000000005e5125a00000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000006400000000000000000000000000000000000000000000000000000000000000c8000000000000000000000000000000000000000000000000000000005e4ff040000000000000000000000000000000000000000000000000000000005e5125a0000000000000000000000000000000000000000000000000000000005e4ff040000000000000000000000000000000000000000000000000000000005e5125a00000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000006400000000000000000000000000000000000000000000000000000000000000c8000000000000000000000000000000000000000000000000000000005e4ff040000000000000000000000000000000000000000000000000000000005e5125a0000000000000000000000000000000000000000000000000000000005e4ff040000000000000000000000000000000000000000000000000000000005e5125a00000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000006400000000000000000000000000000000000000000000000000000000000000090000000000000000000000007aacfebdc4aedac8881d0ef52011470a202cd6140000000000000000000000007aacfebdc4aedac8881d0ef52011470a202cd61400000000000000000000000014b1393544ad0788de910c7bb8188c44c72b9a060000000000000000000000007aacfebdc4aedac8881d0ef52011470a202cd6140000000000000000000000007aacfebdc4aedac8881d0ef52011470a202cd61400000000000000000000000014b1393544ad0788de910c7bb8188c44c72b9a060000000000000000000000007aacfebdc4aedac8881d0ef52011470a202cd6140000000000000000000000007aacfebdc4aedac8881d0ef52011470a202cd61400000000000000000000000014b1393544ad0788de910c7bb8188c44c72b9a0600000000000000000000000000000000000000000000000000000000000000067669705f300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000726567756c61725f305f300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000726567756c61725f315f300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
                             value: '0',
@@ -1515,13 +1354,7 @@ describe('Txs Service', function() {
             };
             const spied = spy(context.txsService);
 
-            when(
-                context.refractFactoryServiceMock.isController(
-                    user.address,
-                    signer,
-                    anything(),
-                ),
-            ).thenResolve(true);
+            when(context.refractFactoryServiceMock.isController(user.address, signer, anything())).thenResolve(true);
 
             when(
                 context.refractFactoryServiceMock.encodeCall(
@@ -1537,9 +1370,7 @@ describe('Txs Service', function() {
 
             when(context.t721AdminService.get()).thenResolve(t721adminContract);
 
-            when(
-                spied.estimateGasLimit('admin_0', target, '0x1234'),
-            ).thenResolve({
+            when(spied.estimateGasLimit('admin_0', target, '0x1234')).thenResolve({
                 error: null,
                 response: '1000000',
             });
@@ -1549,38 +1380,19 @@ describe('Txs Service', function() {
                 response: '150000000',
             });
 
-            when(
-                spied.sendRawTransaction(
-                    'admin_0',
-                    target,
-                    '0',
-                    '0x1234',
-                    '150000000',
-                    '1000000',
-                ),
-            ).thenResolve({
+            when(spied.sendRawTransaction('admin_0', target, '0', '0x1234', '150000000', '1000000')).thenResolve({
                 error: 'unexpected_error',
                 response: null,
             });
 
-            const res = await context.txsService.mtx(
-                payload,
-                signature,
-                user as UserDto,
-            );
+            const res = await context.txsService.mtx(payload, signature, user as UserDto);
 
             expect(res).toEqual({
                 error: 'unexpected_error',
                 response: null,
             });
 
-            verify(
-                context.refractFactoryServiceMock.isController(
-                    user.address,
-                    signer,
-                    anything(),
-                ),
-            ).called();
+            verify(context.refractFactoryServiceMock.isController(user.address, signer, anything())).called();
             verify(
                 context.refractFactoryServiceMock.encodeCall(
                     user.address,
@@ -1593,27 +1405,15 @@ describe('Txs Service', function() {
                 ),
             ).called();
             verify(context.t721AdminService.get()).called();
-            verify(
-                spied.estimateGasLimit('admin_0', target, '0x1234'),
-            ).called();
+            verify(spied.estimateGasLimit('admin_0', target, '0x1234')).called();
             verify(spied.estimateGasPrice('1000000')).called();
-            verify(
-                spied.sendRawTransaction(
-                    'admin_0',
-                    target,
-                    '0',
-                    '0x1234',
-                    '150000000',
-                    '1000000',
-                ),
-            ).called();
+            verify(spied.sendRawTransaction('admin_0', target, '0', '0x1234', '150000000', '1000000')).called();
         });
     });
 
     describe('sendRawTransaction', function() {
         it('should send raw transaction', async function() {
-            const transactionHash =
-                '0x642d048892f14c556d16dcbbdc5567bafee2d9bae40226d13807e72e097d59b8';
+            const transactionHash = '0x642d048892f14c556d16dcbbdc5567bafee2d9bae40226d13807e72e097d59b8';
             const txentiy = {
                 transaction_hash: transactionHash,
                 confirmed: false,
@@ -1635,9 +1435,7 @@ describe('Txs Service', function() {
 
             const spied = spy(context.txsService);
 
-            when(
-                context.vaultereumServiceMock.read('ethereum/accounts/admin_0'),
-            ).thenResolve({
+            when(context.vaultereumServiceMock.read('ethereum/accounts/admin_0')).thenResolve({
                 error: null,
                 response: {},
             });
@@ -1670,23 +1468,14 @@ describe('Txs Service', function() {
                 response: (txentiy as any) as TxEntity,
             });
 
-            const res = await context.txsService.sendRawTransaction(
-                from,
-                to,
-                value,
-                data,
-                gasPrice,
-                gasLimit,
-            );
+            const res = await context.txsService.sendRawTransaction(from, to, value, data, gasPrice, gasLimit);
 
             expect(res).toEqual({
                 error: null,
                 response: txentiy,
             });
 
-            verify(
-                context.vaultereumServiceMock.read('ethereum/accounts/admin_0'),
-            ).called();
+            verify(context.vaultereumServiceMock.read('ethereum/accounts/admin_0')).called();
             verify(
                 context.vaultereumServiceMock.write(
                     'ethereum/accounts/admin_0/sign-tx',
@@ -1705,8 +1494,7 @@ describe('Txs Service', function() {
         });
 
         it('should fail on account check error', async function() {
-            const transactionHash =
-                '0x642d048892f14c556d16dcbbdc5567bafee2d9bae40226d13807e72e097d59b8';
+            const transactionHash = '0x642d048892f14c556d16dcbbdc5567bafee2d9bae40226d13807e72e097d59b8';
             const txentiy = {
                 transaction_hash: transactionHash,
                 confirmed: false,
@@ -1728,35 +1516,23 @@ describe('Txs Service', function() {
 
             const spied = spy(context.txsService);
 
-            when(
-                context.vaultereumServiceMock.read('ethereum/accounts/admin_0'),
-            ).thenResolve({
+            when(context.vaultereumServiceMock.read('ethereum/accounts/admin_0')).thenResolve({
                 error: 'unexpected_error',
                 response: null,
             });
 
-            const res = await context.txsService.sendRawTransaction(
-                from,
-                to,
-                value,
-                data,
-                gasPrice,
-                gasLimit,
-            );
+            const res = await context.txsService.sendRawTransaction(from, to, value, data, gasPrice, gasLimit);
 
             expect(res).toEqual({
                 error: 'unexpected_error',
                 response: null,
             });
 
-            verify(
-                context.vaultereumServiceMock.read('ethereum/accounts/admin_0'),
-            ).called();
+            verify(context.vaultereumServiceMock.read('ethereum/accounts/admin_0')).called();
         });
 
         it('should fail on tx signature error', async function() {
-            const transactionHash =
-                '0x642d048892f14c556d16dcbbdc5567bafee2d9bae40226d13807e72e097d59b8';
+            const transactionHash = '0x642d048892f14c556d16dcbbdc5567bafee2d9bae40226d13807e72e097d59b8';
             const txentiy = {
                 transaction_hash: transactionHash,
                 confirmed: false,
@@ -1778,9 +1554,7 @@ describe('Txs Service', function() {
 
             const spied = spy(context.txsService);
 
-            when(
-                context.vaultereumServiceMock.read('ethereum/accounts/admin_0'),
-            ).thenResolve({
+            when(context.vaultereumServiceMock.read('ethereum/accounts/admin_0')).thenResolve({
                 error: null,
                 response: {},
             });
@@ -1802,23 +1576,14 @@ describe('Txs Service', function() {
                 response: null,
             });
 
-            const res = await context.txsService.sendRawTransaction(
-                from,
-                to,
-                value,
-                data,
-                gasPrice,
-                gasLimit,
-            );
+            const res = await context.txsService.sendRawTransaction(from, to, value, data, gasPrice, gasLimit);
 
             expect(res).toEqual({
                 error: 'unexpected_error',
                 response: null,
             });
 
-            verify(
-                context.vaultereumServiceMock.read('ethereum/accounts/admin_0'),
-            ).called();
+            verify(context.vaultereumServiceMock.read('ethereum/accounts/admin_0')).called();
             verify(
                 context.vaultereumServiceMock.write(
                     'ethereum/accounts/admin_0/sign-tx',
@@ -1835,8 +1600,7 @@ describe('Txs Service', function() {
         });
 
         it('should fail on subscription error', async function() {
-            const transactionHash =
-                '0x642d048892f14c556d16dcbbdc5567bafee2d9bae40226d13807e72e097d59b8';
+            const transactionHash = '0x642d048892f14c556d16dcbbdc5567bafee2d9bae40226d13807e72e097d59b8';
             const txentiy = {
                 transaction_hash: transactionHash,
                 confirmed: false,
@@ -1858,9 +1622,7 @@ describe('Txs Service', function() {
 
             const spied = spy(context.txsService);
 
-            when(
-                context.vaultereumServiceMock.read('ethereum/accounts/admin_0'),
-            ).thenResolve({
+            when(context.vaultereumServiceMock.read('ethereum/accounts/admin_0')).thenResolve({
                 error: null,
                 response: {},
             });
@@ -1893,23 +1655,14 @@ describe('Txs Service', function() {
                 response: null,
             });
 
-            const res = await context.txsService.sendRawTransaction(
-                from,
-                to,
-                value,
-                data,
-                gasPrice,
-                gasLimit,
-            );
+            const res = await context.txsService.sendRawTransaction(from, to, value, data, gasPrice, gasLimit);
 
             expect(res).toEqual({
                 error: 'unexpected_error',
                 response: null,
             });
 
-            verify(
-                context.vaultereumServiceMock.read('ethereum/accounts/admin_0'),
-            ).called();
+            verify(context.vaultereumServiceMock.read('ethereum/accounts/admin_0')).called();
             verify(
                 context.vaultereumServiceMock.write(
                     'ethereum/accounts/admin_0/sign-tx',

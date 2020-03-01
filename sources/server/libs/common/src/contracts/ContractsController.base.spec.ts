@@ -1,7 +1,4 @@
-import {
-    Contracts,
-    ContractsService,
-} from '@lib/common/contracts/Contracts.service';
+import { Contracts, ContractsService } from '@lib/common/contracts/Contracts.service';
 import { Web3Service } from '@lib/common/web3/Web3.service';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 import { anything, deepEqual, instance, mock, verify, when } from 'ts-mockito';
@@ -328,8 +325,7 @@ describe('Contracts Controller Base', function() {
     it('should load dynamic contract instance', async function() {
         const moduleName: string = 'module';
         const contractName: string = 'ContractName';
-        const contractAddress: string =
-            '0x906e93fc23AEaCA87B6a85ac29030f7671166002';
+        const contractAddress: string = '0x906e93fc23AEaCA87B6a85ac29030f7671166002';
         const contractsController = new ContractsControllerBase(
             instance(context.contractsService),
             instance(context.web3Service),
@@ -383,8 +379,7 @@ describe('Contracts Controller Base', function() {
     it('should fail loading dynamic contract instance', async function() {
         const moduleName: string = 'module';
         const contractName: string = 'ContractName';
-        const contractAddress: string =
-            '0x906e93fc23AEaCA87B6a85ac29030f7671166002';
+        const contractAddress: string = '0x906e93fc23AEaCA87B6a85ac29030f7671166002';
         const contractsController = new ContractsControllerBase(
             instance(context.contractsService),
             instance(context.web3Service),
@@ -457,18 +452,14 @@ describe('Contracts Controller Base', function() {
             Promise.resolve((contractArtifact as any) as Contracts),
         );
 
-        const error = new Error(
-            `Cannot recover artifact for instance called ${contractName}`,
-        );
+        const error = new Error(`Cannot recover artifact for instance called ${contractName}`);
 
         await expect(contractsController.get()).rejects.toMatchObject(error);
 
         verify(context.contractsService.getContractArtifacts()).called();
         verify(context.web3Service.net()).never();
         verify(context.web3Service.get()).never();
-        verify(
-            context.shutdownService.shutdownWithError(deepEqual(error)),
-        ).called();
+        verify(context.shutdownService.shutdownWithError(deepEqual(error))).called();
     });
 
     it('should throw for null web3', async function() {
@@ -503,18 +494,14 @@ describe('Contracts Controller Base', function() {
         when(context.web3Service.net()).thenReturn(Promise.resolve(networkId));
         when(context.web3Service.get()).thenReturn(Promise.resolve(web3));
 
-        const error = new Error(
-            `Unable to recover web3 instance or data for contract ${contractName}`,
-        );
+        const error = new Error(`Unable to recover web3 instance or data for contract ${contractName}`);
 
         await expect(contractsController.get()).rejects.toMatchObject(error);
 
         verify(context.contractsService.getContractArtifacts()).called();
         verify(context.web3Service.net()).called();
         verify(context.web3Service.get()).called();
-        verify(
-            context.shutdownService.shutdownWithError(deepEqual(error)),
-        ).called();
+        verify(context.shutdownService.shutdownWithError(deepEqual(error))).called();
     });
 
     it('should throw for null networkId', async function() {
@@ -557,17 +544,13 @@ describe('Contracts Controller Base', function() {
         when(context.web3Service.net()).thenReturn(Promise.resolve(null));
         when(context.web3Service.get()).thenReturn(Promise.resolve(web3));
 
-        const error = new Error(
-            `Unable to recover web3 instance or data for contract ${contractName}`,
-        );
+        const error = new Error(`Unable to recover web3 instance or data for contract ${contractName}`);
 
         await expect(contractsController.get()).rejects.toMatchObject(error);
 
         verify(context.contractsService.getContractArtifacts()).called();
         verify(context.web3Service.net()).called();
         verify(context.web3Service.get()).called();
-        verify(
-            context.shutdownService.shutdownWithError(deepEqual(error)),
-        ).called();
+        verify(context.shutdownService.shutdownWithError(deepEqual(error))).called();
     });
 });

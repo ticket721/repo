@@ -1,39 +1,20 @@
-import {
-    EVMAntennaMergerScheduler,
-    EVMProcessableEvent,
-} from '@app/worker/evmantenna/EVMAntennaMerger.scheduler';
-import {
-    InstanceSignature,
-    OutrospectionService,
-} from '@lib/common/outrospection/Outrospection.service';
+import { EVMAntennaMergerScheduler, EVMProcessableEvent } from '@app/worker/evmantenna/EVMAntennaMerger.scheduler';
+import { InstanceSignature, OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
 import { Schedule } from 'nest-schedule';
 import { GlobalConfigService } from '@lib/common/globalconfig/GlobalConfig.service';
 import { EVMEventSetsService } from '@lib/common/evmeventsets/EVMEventSets.service';
 import { EVMBlockRollbacksService } from '@lib/common/evmblockrollbacks/EVMBlockRollbacks.service';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 import { Job, JobOptions } from 'bull';
-import {
-    anyFunction,
-    deepEqual,
-    instance,
-    mock,
-    verify,
-    when,
-} from 'ts-mockito';
+import { anyFunction, deepEqual, instance, mock, verify, when } from 'ts-mockito';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getQueueToken } from '@nestjs/bull';
 import { getConnectionToken } from '@iaminfinity/express-cassandra/dist/utils/cassandra-orm.utils';
-import {
-    Appender,
-    EVMEventControllerBase,
-} from '@app/worker/evmantenna/EVMEvent.controller.base';
+import { Appender, EVMEventControllerBase } from '@app/worker/evmantenna/EVMEvent.controller.base';
 import { GlobalEntity } from '@lib/common/globalconfig/entities/Global.entity';
 import { DryResponse } from '@lib/common/crud/CRUD.extension';
 import { ESSearchReturn } from '@lib/common/utils/ESSearchReturn';
-import {
-    EVMEvent,
-    EVMEventSetEntity,
-} from '@lib/common/evmeventsets/entities/EVMEventSet.entity';
+import { EVMEvent, EVMEventSetEntity } from '@lib/common/evmeventsets/entities/EVMEventSet.entity';
 
 class QueueMock<T = any> {
     add(name: string, data: T, opts?: JobOptions): Promise<Job<T>> {
@@ -81,22 +62,11 @@ describe('EVMAntenna Merger Scheduler', function() {
     beforeAll(async function() {
         context.newGroupEventControllerMock = mock(EVMEventControllerBase);
 
-        when(context.newGroupEventControllerMock.eventName).thenReturn(
-            'NewGroup',
-        );
-        when(context.newGroupEventControllerMock.artifactName).thenReturn(
-            'T721Controller_v0',
-        );
-        when(
-            context.newGroupEventControllerMock.isHandler(
-                'NewGroup',
-                'T721Controller_v0',
-            ),
-        ).thenReturn(true);
+        when(context.newGroupEventControllerMock.eventName).thenReturn('NewGroup');
+        when(context.newGroupEventControllerMock.artifactName).thenReturn('T721Controller_v0');
+        when(context.newGroupEventControllerMock.isHandler('NewGroup', 'T721Controller_v0')).thenReturn(true);
 
-        EVMAntennaMergerScheduler.registerEVMEventsController(
-            instance(context.newGroupEventControllerMock),
-        );
+        EVMAntennaMergerScheduler.registerEVMEventsController(instance(context.newGroupEventControllerMock));
     });
 
     beforeEach(async function() {
@@ -147,21 +117,14 @@ describe('EVMAntenna Merger Scheduler', function() {
             ],
         }).compile();
 
-        context.evmAntennaMergerScheduler = module.get<
-            EVMAntennaMergerScheduler
-        >(EVMAntennaMergerScheduler);
+        context.evmAntennaMergerScheduler = module.get<EVMAntennaMergerScheduler>(EVMAntennaMergerScheduler);
     });
 
     describe('registerEVMEventsControllers', function() {
         it('should check what has been done in beforeAll hook', async function() {
-            expect((EVMAntennaMergerScheduler as any).controllers).toHaveLength(
-                1,
-            );
+            expect((EVMAntennaMergerScheduler as any).controllers).toHaveLength(1);
             expect(
-                (EVMAntennaMergerScheduler as any).controllers[0].isHandler(
-                    'NewGroup',
-                    'T721Controller_v0',
-                ),
+                (EVMAntennaMergerScheduler as any).controllers[0].isHandler('NewGroup', 'T721Controller_v0'),
             ).toBeTruthy();
         });
     });
@@ -184,9 +147,7 @@ describe('EVMAntenna Merger Scheduler', function() {
                 response: [globalEntity],
             });
 
-            when(
-                context.queueMock.getJobs(deepEqual(['waiting', 'active'])),
-            ).thenResolve([]);
+            when(context.queueMock.getJobs(deepEqual(['waiting', 'active']))).thenResolve([]);
 
             await context.evmAntennaMergerScheduler.evmEventMergerPoller();
 
@@ -198,9 +159,7 @@ describe('EVMAntenna Merger Scheduler', function() {
                 ),
             ).called();
 
-            verify(
-                context.queueMock.getJobs(deepEqual(['waiting', 'active'])),
-            ).called();
+            verify(context.queueMock.getJobs(deepEqual(['waiting', 'active']))).called();
 
             verify(
                 context.queueMock.add(
@@ -257,9 +216,7 @@ describe('EVMAntenna Merger Scheduler', function() {
                 response: [globalEntity],
             });
 
-            when(
-                context.queueMock.getJobs(deepEqual(['waiting', 'active'])),
-            ).thenResolve([
+            when(context.queueMock.getJobs(deepEqual(['waiting', 'active']))).thenResolve([
                 {
                     name: `@@evmeventset/evmEventMerger`,
                 },
@@ -275,9 +232,7 @@ describe('EVMAntenna Merger Scheduler', function() {
                 ),
             ).called();
 
-            verify(
-                context.queueMock.getJobs(deepEqual(['waiting', 'active'])),
-            ).called();
+            verify(context.queueMock.getJobs(deepEqual(['waiting', 'active']))).called();
 
             verify(
                 context.queueMock.add(
@@ -301,9 +256,7 @@ describe('EVMAntenna Merger Scheduler', function() {
                 response: null,
             });
 
-            await expect(
-                context.evmAntennaMergerScheduler.evmEventMergerPoller(),
-            ).rejects.toMatchObject(
+            await expect(context.evmAntennaMergerScheduler.evmEventMergerPoller()).rejects.toMatchObject(
                 new Error(
                     `EVMAntennaMergerScheduler::evmEventMergerPoller | Unable to recover global config: unexpected_error`,
                 ),
@@ -340,9 +293,7 @@ describe('EVMAntenna Merger Scheduler', function() {
                 response: [],
             });
 
-            await expect(
-                context.evmAntennaMergerScheduler.evmEventMergerPoller(),
-            ).rejects.toMatchObject(
+            await expect(context.evmAntennaMergerScheduler.evmEventMergerPoller()).rejects.toMatchObject(
                 new Error(
                     `EVMAntennaMergerScheduler::evmEventMergerPoller | Unable to recover global config: no document found`,
                 ),
@@ -384,12 +335,7 @@ describe('EVMAntenna Merger Scheduler', function() {
                 params: [24],
             };
 
-            context.evmAntennaMergerScheduler.appender(
-                queries,
-                rollbacks,
-                query,
-                rollback,
-            );
+            context.evmAntennaMergerScheduler.appender(queries, rollbacks, query, rollback);
 
             expect(queries).toEqual([
                 1,
@@ -420,17 +366,8 @@ describe('EVMAntenna Merger Scheduler', function() {
                 params: [24],
             };
 
-            expect(() =>
-                context.evmAntennaMergerScheduler.appender(
-                    queries,
-                    rollbacks,
-                    query,
-                    rollback,
-                ),
-            ).toThrow(
-                new Error(
-                    `Cannot have asymmetric updates: each query must have its rollback !`,
-                ),
+            expect(() => context.evmAntennaMergerScheduler.appender(queries, rollbacks, query, rollback)).toThrow(
+                new Error(`Cannot have asymmetric updates: each query must have its rollback !`),
             );
         });
 
@@ -446,17 +383,8 @@ describe('EVMAntenna Merger Scheduler', function() {
 
             const rollback = null;
 
-            expect(() =>
-                context.evmAntennaMergerScheduler.appender(
-                    queries,
-                    rollbacks,
-                    query,
-                    rollback,
-                ),
-            ).toThrow(
-                new Error(
-                    `Cannot have asymmetric updates: each query must have its rollback !`,
-                ),
+            expect(() => context.evmAntennaMergerScheduler.appender(queries, rollbacks, query, rollback)).toThrow(
+                new Error(`Cannot have asymmetric updates: each query must have its rollback !`),
             );
         });
     });
@@ -491,11 +419,7 @@ describe('EVMAntenna Merger Scheduler', function() {
                 },
             };
 
-            when(
-                context.evmEventSetsServiceMock.searchElastic(
-                    deepEqual(esQuery),
-                ),
-            ).thenResolve({
+            when(context.evmEventSetsServiceMock.searchElastic(deepEqual(esQuery))).thenResolve({
                 error: null,
                 response: {
                     hits: {
@@ -520,10 +444,7 @@ describe('EVMAntenna Merger Scheduler', function() {
                     anyFunction(),
                 ),
             ).thenCall(
-                async (
-                    event: EVMProcessableEvent,
-                    appender: Appender,
-                ): Promise<void> => {
+                async (event: EVMProcessableEvent, appender: Appender): Promise<void> => {
                     const query = {
                         query: 'forward 0',
                         params: [42],
@@ -648,11 +569,7 @@ describe('EVMAntenna Merger Scheduler', function() {
 
             // Verifications
 
-            verify(
-                context.evmEventSetsServiceMock.searchElastic(
-                    deepEqual(esQuery),
-                ),
-            ).called();
+            verify(context.evmEventSetsServiceMock.searchElastic(deepEqual(esQuery))).called();
 
             // convertEventsToQueries
 
@@ -728,11 +645,7 @@ describe('EVMAntenna Merger Scheduler', function() {
                                 [
                                     {
                                         query: 'rollback packed',
-                                        params: [
-                                            'pack',
-                                            '123',
-                                            JSON.stringify({ packed: true }),
-                                        ],
+                                        params: ['pack', '123', JSON.stringify({ packed: true })],
                                     },
                                 ],
                             ],
@@ -787,11 +700,7 @@ describe('EVMAntenna Merger Scheduler', function() {
                 },
             };
 
-            when(
-                context.evmEventSetsServiceMock.searchElastic(
-                    deepEqual(esQuery),
-                ),
-            ).thenResolve({
+            when(context.evmEventSetsServiceMock.searchElastic(deepEqual(esQuery))).thenResolve({
                 error: null,
                 response: {
                     hits: {
@@ -816,10 +725,7 @@ describe('EVMAntenna Merger Scheduler', function() {
                     anyFunction(),
                 ),
             ).thenCall(
-                async (
-                    event: EVMProcessableEvent,
-                    appender: Appender,
-                ): Promise<void> => {
+                async (event: EVMProcessableEvent, appender: Appender): Promise<void> => {
                     const query = {
                         query: 'forward 0',
                         params: [42],
@@ -840,10 +746,7 @@ describe('EVMAntenna Merger Scheduler', function() {
                     anyFunction(),
                 ),
             ).thenCall(
-                async (
-                    event: EVMProcessableEvent,
-                    appender: Appender,
-                ): Promise<void> => {
+                async (event: EVMProcessableEvent, appender: Appender): Promise<void> => {
                     const query = {
                         query: 'forward 1',
                         params: [42],
@@ -864,10 +767,7 @@ describe('EVMAntenna Merger Scheduler', function() {
                     anyFunction(),
                 ),
             ).thenCall(
-                async (
-                    event: EVMProcessableEvent,
-                    appender: Appender,
-                ): Promise<void> => {
+                async (event: EVMProcessableEvent, appender: Appender): Promise<void> => {
                     const query = {
                         query: 'forward 2',
                         params: [42],
@@ -1008,11 +908,7 @@ describe('EVMAntenna Merger Scheduler', function() {
 
             // Verifications
 
-            verify(
-                context.evmEventSetsServiceMock.searchElastic(
-                    deepEqual(esQuery),
-                ),
-            ).called();
+            verify(context.evmEventSetsServiceMock.searchElastic(deepEqual(esQuery))).called();
 
             // convertEventsToQueries
 
@@ -1116,11 +1012,7 @@ describe('EVMAntenna Merger Scheduler', function() {
                                 [
                                     {
                                         query: 'rollback packed',
-                                        params: [
-                                            'pack',
-                                            '123',
-                                            JSON.stringify({ packed: true }),
-                                        ],
+                                        params: ['pack', '123', JSON.stringify({ packed: true })],
                                     },
                                 ],
                             ],
@@ -1149,11 +1041,7 @@ describe('EVMAntenna Merger Scheduler', function() {
                 },
             };
 
-            when(
-                context.evmEventSetsServiceMock.searchElastic(
-                    deepEqual(esQuery),
-                ),
-            ).thenResolve({
+            when(context.evmEventSetsServiceMock.searchElastic(deepEqual(esQuery))).thenResolve({
                 error: 'unexpected_error',
                 response: null,
             });
@@ -1174,11 +1062,7 @@ describe('EVMAntenna Merger Scheduler', function() {
 
             // Verifications
 
-            verify(
-                context.evmEventSetsServiceMock.searchElastic(
-                    deepEqual(esQuery),
-                ),
-            ).called();
+            verify(context.evmEventSetsServiceMock.searchElastic(deepEqual(esQuery))).called();
         });
 
         it('should interupt on invalid evm event set count', async function() {
@@ -1200,11 +1084,7 @@ describe('EVMAntenna Merger Scheduler', function() {
                 },
             };
 
-            when(
-                context.evmEventSetsServiceMock.searchElastic(
-                    deepEqual(esQuery),
-                ),
-            ).thenResolve({
+            when(context.evmEventSetsServiceMock.searchElastic(deepEqual(esQuery))).thenResolve({
                 error: null,
                 response: {
                     hits: {
@@ -1224,11 +1104,7 @@ describe('EVMAntenna Merger Scheduler', function() {
 
             // Verifications
 
-            verify(
-                context.evmEventSetsServiceMock.searchElastic(
-                    deepEqual(esQuery),
-                ),
-            ).called();
+            verify(context.evmEventSetsServiceMock.searchElastic(deepEqual(esQuery))).called();
         });
 
         it('should fail for unmatching controllers', async function() {
@@ -1276,11 +1152,7 @@ describe('EVMAntenna Merger Scheduler', function() {
                 },
             };
 
-            when(
-                context.evmEventSetsServiceMock.searchElastic(
-                    deepEqual(esQuery),
-                ),
-            ).thenResolve({
+            when(context.evmEventSetsServiceMock.searchElastic(deepEqual(esQuery))).thenResolve({
                 error: null,
                 response: {
                     hits: {
@@ -1313,11 +1185,7 @@ describe('EVMAntenna Merger Scheduler', function() {
 
             // Verifications
 
-            verify(
-                context.evmEventSetsServiceMock.searchElastic(
-                    deepEqual(esQuery),
-                ),
-            ).called();
+            verify(context.evmEventSetsServiceMock.searchElastic(deepEqual(esQuery))).called();
         });
 
         it('should fail on eventset deletion query generation error', async function() {
@@ -1365,11 +1233,7 @@ describe('EVMAntenna Merger Scheduler', function() {
                 },
             };
 
-            when(
-                context.evmEventSetsServiceMock.searchElastic(
-                    deepEqual(esQuery),
-                ),
-            ).thenResolve({
+            when(context.evmEventSetsServiceMock.searchElastic(deepEqual(esQuery))).thenResolve({
                 error: null,
                 response: {
                     hits: {
@@ -1394,10 +1258,7 @@ describe('EVMAntenna Merger Scheduler', function() {
                     anyFunction(),
                 ),
             ).thenCall(
-                async (
-                    event: EVMProcessableEvent,
-                    appender: Appender,
-                ): Promise<void> => {
+                async (event: EVMProcessableEvent, appender: Appender): Promise<void> => {
                     const query = {
                         query: 'forward 0',
                         params: [42],
@@ -1418,10 +1279,7 @@ describe('EVMAntenna Merger Scheduler', function() {
                     anyFunction(),
                 ),
             ).thenCall(
-                async (
-                    event: EVMProcessableEvent,
-                    appender: Appender,
-                ): Promise<void> => {
+                async (event: EVMProcessableEvent, appender: Appender): Promise<void> => {
                     const query = {
                         query: 'forward 1',
                         params: [42],
@@ -1442,10 +1300,7 @@ describe('EVMAntenna Merger Scheduler', function() {
                     anyFunction(),
                 ),
             ).thenCall(
-                async (
-                    event: EVMProcessableEvent,
-                    appender: Appender,
-                ): Promise<void> => {
+                async (event: EVMProcessableEvent, appender: Appender): Promise<void> => {
                     const query = {
                         query: 'forward 2',
                         params: [42],
@@ -1491,11 +1346,7 @@ describe('EVMAntenna Merger Scheduler', function() {
 
             // Verifications
 
-            verify(
-                context.evmEventSetsServiceMock.searchElastic(
-                    deepEqual(esQuery),
-                ),
-            ).called();
+            verify(context.evmEventSetsServiceMock.searchElastic(deepEqual(esQuery))).called();
 
             // convertEventsToQueries
 
@@ -1576,11 +1427,7 @@ describe('EVMAntenna Merger Scheduler', function() {
                 },
             };
 
-            when(
-                context.evmEventSetsServiceMock.searchElastic(
-                    deepEqual(esQuery),
-                ),
-            ).thenResolve({
+            when(context.evmEventSetsServiceMock.searchElastic(deepEqual(esQuery))).thenResolve({
                 error: null,
                 response: {
                     hits: {
@@ -1605,10 +1452,7 @@ describe('EVMAntenna Merger Scheduler', function() {
                     anyFunction(),
                 ),
             ).thenCall(
-                async (
-                    event: EVMProcessableEvent,
-                    appender: Appender,
-                ): Promise<void> => {
+                async (event: EVMProcessableEvent, appender: Appender): Promise<void> => {
                     const query = {
                         query: 'forward 0',
                         params: [42],
@@ -1629,10 +1473,7 @@ describe('EVMAntenna Merger Scheduler', function() {
                     anyFunction(),
                 ),
             ).thenCall(
-                async (
-                    event: EVMProcessableEvent,
-                    appender: Appender,
-                ): Promise<void> => {
+                async (event: EVMProcessableEvent, appender: Appender): Promise<void> => {
                     const query = {
                         query: 'forward 1',
                         params: [42],
@@ -1653,10 +1494,7 @@ describe('EVMAntenna Merger Scheduler', function() {
                     anyFunction(),
                 ),
             ).thenCall(
-                async (
-                    event: EVMProcessableEvent,
-                    appender: Appender,
-                ): Promise<void> => {
+                async (event: EVMProcessableEvent, appender: Appender): Promise<void> => {
                     const query = {
                         query: 'forward 2',
                         params: [42],
@@ -1721,11 +1559,7 @@ describe('EVMAntenna Merger Scheduler', function() {
 
             // Verifications
 
-            verify(
-                context.evmEventSetsServiceMock.searchElastic(
-                    deepEqual(esQuery),
-                ),
-            ).called();
+            verify(context.evmEventSetsServiceMock.searchElastic(deepEqual(esQuery))).called();
 
             // convertEventsToQueries
 
@@ -1819,11 +1653,7 @@ describe('EVMAntenna Merger Scheduler', function() {
                 },
             };
 
-            when(
-                context.evmEventSetsServiceMock.searchElastic(
-                    deepEqual(esQuery),
-                ),
-            ).thenResolve({
+            when(context.evmEventSetsServiceMock.searchElastic(deepEqual(esQuery))).thenResolve({
                 error: null,
                 response: {
                     hits: {
@@ -1848,10 +1678,7 @@ describe('EVMAntenna Merger Scheduler', function() {
                     anyFunction(),
                 ),
             ).thenCall(
-                async (
-                    event: EVMProcessableEvent,
-                    appender: Appender,
-                ): Promise<void> => {
+                async (event: EVMProcessableEvent, appender: Appender): Promise<void> => {
                     const query = {
                         query: 'forward 0',
                         params: [42],
@@ -1872,10 +1699,7 @@ describe('EVMAntenna Merger Scheduler', function() {
                     anyFunction(),
                 ),
             ).thenCall(
-                async (
-                    event: EVMProcessableEvent,
-                    appender: Appender,
-                ): Promise<void> => {
+                async (event: EVMProcessableEvent, appender: Appender): Promise<void> => {
                     const query = {
                         query: 'forward 1',
                         params: [42],
@@ -1896,10 +1720,7 @@ describe('EVMAntenna Merger Scheduler', function() {
                     anyFunction(),
                 ),
             ).thenCall(
-                async (
-                    event: EVMProcessableEvent,
-                    appender: Appender,
-                ): Promise<void> => {
+                async (event: EVMProcessableEvent, appender: Appender): Promise<void> => {
                     const query = {
                         query: 'forward 2',
                         params: [42],
@@ -1994,11 +1815,7 @@ describe('EVMAntenna Merger Scheduler', function() {
 
             // Verifications
 
-            verify(
-                context.evmEventSetsServiceMock.searchElastic(
-                    deepEqual(esQuery),
-                ),
-            ).called();
+            verify(context.evmEventSetsServiceMock.searchElastic(deepEqual(esQuery))).called();
 
             // convertEventsToQueries
 
@@ -2116,11 +1933,7 @@ describe('EVMAntenna Merger Scheduler', function() {
                 },
             };
 
-            when(
-                context.evmEventSetsServiceMock.searchElastic(
-                    deepEqual(esQuery),
-                ),
-            ).thenResolve({
+            when(context.evmEventSetsServiceMock.searchElastic(deepEqual(esQuery))).thenResolve({
                 error: null,
                 response: {
                     hits: {
@@ -2145,10 +1958,7 @@ describe('EVMAntenna Merger Scheduler', function() {
                     anyFunction(),
                 ),
             ).thenCall(
-                async (
-                    event: EVMProcessableEvent,
-                    appender: Appender,
-                ): Promise<void> => {
+                async (event: EVMProcessableEvent, appender: Appender): Promise<void> => {
                     const query = {
                         query: 'forward 0',
                         params: [42],
@@ -2169,10 +1979,7 @@ describe('EVMAntenna Merger Scheduler', function() {
                     anyFunction(),
                 ),
             ).thenCall(
-                async (
-                    event: EVMProcessableEvent,
-                    appender: Appender,
-                ): Promise<void> => {
+                async (event: EVMProcessableEvent, appender: Appender): Promise<void> => {
                     const query = {
                         query: 'forward 1',
                         params: [42],
@@ -2193,10 +2000,7 @@ describe('EVMAntenna Merger Scheduler', function() {
                     anyFunction(),
                 ),
             ).thenCall(
-                async (
-                    event: EVMProcessableEvent,
-                    appender: Appender,
-                ): Promise<void> => {
+                async (event: EVMProcessableEvent, appender: Appender): Promise<void> => {
                     const query = {
                         query: 'forward 2',
                         params: [42],
@@ -2318,11 +2122,7 @@ describe('EVMAntenna Merger Scheduler', function() {
                                 [
                                     {
                                         query: 'rollback packed',
-                                        params: [
-                                            'pack',
-                                            '123',
-                                            JSON.stringify({ packed: true }),
-                                        ],
+                                        params: ['pack', '123', JSON.stringify({ packed: true })],
                                     },
                                 ],
                             ],
@@ -2343,11 +2143,7 @@ describe('EVMAntenna Merger Scheduler', function() {
 
             // Verifications
 
-            verify(
-                context.evmEventSetsServiceMock.searchElastic(
-                    deepEqual(esQuery),
-                ),
-            ).called();
+            verify(context.evmEventSetsServiceMock.searchElastic(deepEqual(esQuery))).called();
 
             // convertEventsToQueries
 
@@ -2451,11 +2247,7 @@ describe('EVMAntenna Merger Scheduler', function() {
                                 [
                                     {
                                         query: 'rollback packed',
-                                        params: [
-                                            'pack',
-                                            '123',
-                                            JSON.stringify({ packed: true }),
-                                        ],
+                                        params: ['pack', '123', JSON.stringify({ packed: true })],
                                     },
                                 ],
                             ],
@@ -2473,33 +2265,13 @@ describe('EVMAntenna Merger Scheduler', function() {
                 master: true,
             } as InstanceSignature;
 
-            when(
-                context.outrospectionServiceMock.getInstanceSignature(),
-            ).thenResolve(signature);
-            when(
-                context.queueMock.process(
-                    `@@evmeventset/evmEventMerger`,
-                    1,
-                    anyFunction(),
-                ),
-            ).thenResolve();
+            when(context.outrospectionServiceMock.getInstanceSignature()).thenResolve(signature);
+            when(context.queueMock.process(`@@evmeventset/evmEventMerger`, 1, anyFunction())).thenResolve();
 
             await context.evmAntennaMergerScheduler.onApplicationBootstrap();
 
-            verify(
-                context.scheduleMock.scheduleIntervalJob(
-                    'evmEventMerger',
-                    100,
-                    anyFunction(),
-                ),
-            ).called();
-            verify(
-                context.queueMock.process(
-                    `@@evmeventset/evmEventMerger`,
-                    1,
-                    anyFunction(),
-                ),
-            ).called();
+            verify(context.scheduleMock.scheduleIntervalJob('evmEventMerger', 100, anyFunction())).called();
+            verify(context.queueMock.process(`@@evmeventset/evmEventMerger`, 1, anyFunction())).called();
         });
 
         it('should subscribe to bull only as worker non master', async function() {
@@ -2508,33 +2280,13 @@ describe('EVMAntenna Merger Scheduler', function() {
                 master: false,
             } as InstanceSignature;
 
-            when(
-                context.outrospectionServiceMock.getInstanceSignature(),
-            ).thenResolve(signature);
-            when(
-                context.queueMock.process(
-                    `@@evmeventset/evmEventMerger`,
-                    1,
-                    anyFunction(),
-                ),
-            ).thenResolve();
+            when(context.outrospectionServiceMock.getInstanceSignature()).thenResolve(signature);
+            when(context.queueMock.process(`@@evmeventset/evmEventMerger`, 1, anyFunction())).thenResolve();
 
             await context.evmAntennaMergerScheduler.onApplicationBootstrap();
 
-            verify(
-                context.scheduleMock.scheduleIntervalJob(
-                    'evmEventMerger',
-                    100,
-                    anyFunction(),
-                ),
-            ).never();
-            verify(
-                context.queueMock.process(
-                    `@@evmeventset/evmEventMerger`,
-                    1,
-                    anyFunction(),
-                ),
-            ).called();
+            verify(context.scheduleMock.scheduleIntervalJob('evmEventMerger', 100, anyFunction())).never();
+            verify(context.queueMock.process(`@@evmeventset/evmEventMerger`, 1, anyFunction())).called();
         });
 
         it('should subscribe to none as server non master', async function() {
@@ -2543,33 +2295,13 @@ describe('EVMAntenna Merger Scheduler', function() {
                 master: false,
             } as InstanceSignature;
 
-            when(
-                context.outrospectionServiceMock.getInstanceSignature(),
-            ).thenResolve(signature);
-            when(
-                context.queueMock.process(
-                    `@@evmeventset/evmEventMerger`,
-                    1,
-                    anyFunction(),
-                ),
-            ).thenResolve();
+            when(context.outrospectionServiceMock.getInstanceSignature()).thenResolve(signature);
+            when(context.queueMock.process(`@@evmeventset/evmEventMerger`, 1, anyFunction())).thenResolve();
 
             await context.evmAntennaMergerScheduler.onApplicationBootstrap();
 
-            verify(
-                context.scheduleMock.scheduleIntervalJob(
-                    'evmEventMerger',
-                    100,
-                    anyFunction(),
-                ),
-            ).never();
-            verify(
-                context.queueMock.process(
-                    `@@evmeventset/evmEventMerger`,
-                    1,
-                    anyFunction(),
-                ),
-            ).never();
+            verify(context.scheduleMock.scheduleIntervalJob('evmEventMerger', 100, anyFunction())).never();
+            verify(context.queueMock.process(`@@evmeventset/evmEventMerger`, 1, anyFunction())).never();
         });
     });
 });

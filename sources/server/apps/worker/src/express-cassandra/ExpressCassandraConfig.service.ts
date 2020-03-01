@@ -12,9 +12,7 @@ export class ExpressCassandraConfigService {
      *
      * @param config
      */
-    constructor /* instanbul ignore next */(
-        private readonly config: ConfigService,
-    ) {}
+    constructor /* instanbul ignore next */(private readonly config: ConfigService) {}
 
     /**
      * Builds the configuration for the `user` keyspace
@@ -25,9 +23,7 @@ export class ExpressCassandraConfigService {
                 consistency: types.consistencies.one,
             },
             clientOptions: {
-                contactPoints: this.config
-                    .get('CASSANDRA_CONTACT_POINTS')
-                    .split('+'),
+                contactPoints: this.config.get('CASSANDRA_CONTACT_POINTS').split('+'),
                 keyspace: 'ticket721',
                 protocolOptions: {
                     port: parseInt(this.config.get('CASSANDRA_PORT'), 10),
@@ -36,9 +32,7 @@ export class ExpressCassandraConfigService {
                     consistency: 1,
                 },
                 elasticsearch: {
-                    host: `${this.config.get(
-                        'ELASTICSEARCH_PROTOCOL',
-                    )}://${this.config.get(
+                    host: `${this.config.get('ELASTICSEARCH_PROTOCOL')}://${this.config.get(
                         'ELASTICSEARCH_HOST',
                     )}:${this.config.get('ELASTICSEARCH_PORT')}`,
                     apiVersion: '6.8',

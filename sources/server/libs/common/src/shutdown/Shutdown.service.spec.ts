@@ -29,9 +29,7 @@ describe('Shutdown Service', function() {
             providers: [WinstonLoggerServiceProvider, ShutdownService],
         }).compile();
 
-        const shutdownService: ShutdownService = app.get<ShutdownService>(
-            ShutdownService,
-        );
+        const shutdownService: ShutdownService = app.get<ShutdownService>(ShutdownService);
 
         context.shutdownService = shutdownService;
         context.winstonLoggerServiceMock = winstonLoggerServiceMock;
@@ -43,8 +41,7 @@ describe('Shutdown Service', function() {
             value = 2;
         };
         const shutdownService: ShutdownService = context.shutdownService;
-        const winstonLogger: WinstonLoggerService =
-            context.winstonLoggerServiceMock;
+        const winstonLogger: WinstonLoggerService = context.winstonLoggerServiceMock;
 
         shutdownService.subscribeToShutdown(fn.call.bind(fn));
         shutdownService.shutdown();
@@ -61,8 +58,7 @@ describe('Shutdown Service', function() {
             value = 2;
         };
         const shutdownService: ShutdownService = context.shutdownService;
-        const winstonLogger: WinstonLoggerService =
-            context.winstonLoggerServiceMock;
+        const winstonLogger: WinstonLoggerService = context.winstonLoggerServiceMock;
 
         shutdownService.subscribeToShutdown(fn.call.bind(fn));
         shutdownService.shutdownWithMessage('hi');
@@ -79,8 +75,7 @@ describe('Shutdown Service', function() {
             value = 2;
         };
         const shutdownService: ShutdownService = context.shutdownService;
-        const winstonLogger: WinstonLoggerService =
-            context.winstonLoggerServiceMock;
+        const winstonLogger: WinstonLoggerService = context.winstonLoggerServiceMock;
         const error = new Error('hi');
 
         shutdownService.subscribeToShutdown(fn.call.bind(fn));

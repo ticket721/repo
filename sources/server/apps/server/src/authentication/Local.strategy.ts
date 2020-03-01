@@ -16,9 +16,7 @@ export class LocalStrategy extends PassportStrategy(Strategy, 'local') {
      *
      * @param authenticationService
      */
-    constructor /* instanbul ignore next */(
-        private readonly authenticationService: AuthenticationService,
-    ) {
+    constructor /* instanbul ignore next */(private readonly authenticationService: AuthenticationService) {
         super({
             usernameField: 'email',
         });
@@ -30,10 +28,7 @@ export class LocalStrategy extends PassportStrategy(Strategy, 'local') {
      * @param email
      * @param password
      */
-    async validate(
-        email: string,
-        password: string,
-    ): Promise<PasswordlessUserDto> {
+    async validate(email: string, password: string): Promise<PasswordlessUserDto> {
         const resp: ServiceResponse<PasswordlessUserDto> = await this.authenticationService.validateUser(
             email,
             password,

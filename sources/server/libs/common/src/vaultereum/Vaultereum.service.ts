@@ -131,10 +131,7 @@ export class VaultereumService implements OnModuleInit {
      * @param path
      * @param args
      */
-    async write<DataType = any>(
-        path: string,
-        args?: any,
-    ): Promise<ServiceResponse<DataType>> {
+    async write<DataType = any>(path: string, args?: any): Promise<ServiceResponse<DataType>> {
         try {
             const res = (await this.client.write(path, args)) as DataType;
             return {
@@ -155,10 +152,7 @@ export class VaultereumService implements OnModuleInit {
      * @param path
      * @param args
      */
-    async read<DataType = any>(
-        path: string,
-        args?: any,
-    ): Promise<ServiceResponse<DataType>> {
+    async read<DataType = any>(path: string, args?: any): Promise<ServiceResponse<DataType>> {
         try {
             const res = (await this.client.read(path, args)) as DataType;
             return {

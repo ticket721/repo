@@ -14,10 +14,7 @@ export class ConfigModule {
                     provide: ConfigService,
                     useValue: new ConfigService(
                         joi,
-                        path.join(
-                            configPath,
-                            `${process.env.NODE_ENV || 'development'}.env`,
-                        ),
+                        path.join(configPath, `${process.env.NODE_ENV || 'development'}.env`),
                     ),
                 },
             ],

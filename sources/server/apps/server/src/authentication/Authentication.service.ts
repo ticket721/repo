@@ -40,20 +40,13 @@ export class AuthenticationService {
      * @param timestamp
      * @param signature
      */
-    async validateWeb3User(
-        timestamp: string,
-        signature: string,
-    ): Promise<ServiceResponse<PasswordlessUserDto>> {
+    async validateWeb3User(timestamp: string, signature: string): Promise<ServiceResponse<PasswordlessUserDto>> {
         const web3LoginSigner: Web3LoginSigner = new Web3LoginSigner(1); // recover from web3 module
 
-        const verification: [
-            boolean,
-            string,
-        ] = await web3LoginSigner.verifyAuthenticationProof(
+        const verification: [boolean, string] = await web3LoginSigner.verifyAuthenticationProof(
             signature,
             parseInt(timestamp, 10),
-            parseInt(this.configService.get('AUTH_SIGNATURE_TIMEOUT'), 10) *
-                1000,
+            parseInt(this.configService.get('AUTH_SIGNATURE_TIMEOUT'), 10) * 1000,
         );
 
         if (verification[0] === false) {
@@ -63,9 +56,7 @@ export class AuthenticationService {
             };
         }
 
-        const resp: ServiceResponse<UserDto> = await this.usersService.findByAddress(
-            verification[1],
-        );
+        const resp: ServiceResponse<UserDto> = await this.usersService.findByAddress(verification[1]);
 
         if (resp.error) {
             return resp;
@@ -92,13 +83,8 @@ export class AuthenticationService {
      * @param email
      * @param password
      */
-    async validateUser(
-        email: string,
-        password: string,
-    ): Promise<ServiceResponse<PasswordlessUserDto>> {
-        const resp: ServiceResponse<UserDto> = await this.usersService.findByEmail(
-            email,
-        );
+    async validateUser(email: string, password: string): Promise<ServiceResponse<PasswordlessUserDto>> {
+        const resp: ServiceResponse<UserDto> = await this.usersService.findByEmail(email);
 
         if (resp.error) {
             return resp;
@@ -142,9 +128,7 @@ export class AuthenticationService {
     ): Promise<ServiceResponse<PasswordlessUserDto>> {
         address = toAcceptedAddressFormat(address);
 
-        const emailUserResp: ServiceResponse<UserDto> = await this.usersService.findByEmail(
-            email,
-        );
+        const emailUserResp: ServiceResponse<UserDto> = await this.usersService.findByEmail(email);
         if (emailUserResp.error) {
             return emailUserResp;
         }
@@ -157,9 +141,7 @@ export class AuthenticationService {
             };
         }
 
-        const usernameUserResp: ServiceResponse<UserDto> = await this.usersService.findByUsername(
-            username,
-        );
+        const usernameUserResp: ServiceResponse<UserDto> = await this.usersService.findByUsername(username);
         if (usernameUserResp.error) {
             return usernameUserResp;
         }
@@ -172,9 +154,7 @@ export class AuthenticationService {
             };
         }
 
-        const addressUserResp: ServiceResponse<UserDto> = await this.usersService.findByAddress(
-            address,
-        );
+        const addressUserResp: ServiceResponse<UserDto> = await this.usersService.findByAddress(address);
         if (addressUserResp.error) {
             return addressUserResp;
         }
@@ -187,20 +167,14 @@ export class AuthenticationService {
             };
         }
 
-        const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(
-            1,
-        );
+        const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(1);
 
-        const verification: [
-            boolean,
-            string,
-        ] = await web3RegisterSigner.verifyRegistrationProof(
+        const verification: [boolean, string] = await web3RegisterSigner.verifyRegistrationProof(
             signature,
             parseInt(timestamp, 10),
             email,
             username,
-            parseInt(this.configService.get('AUTH_SIGNATURE_TIMEOUT'), 10) *
-                1000,
+            parseInt(this.configService.get('AUTH_SIGNATURE_TIMEOUT'), 10) * 1000,
         );
 
         if (verification[0] === false) {
@@ -217,18 +191,16 @@ export class AuthenticationService {
             };
         }
 
-        const newUser: ServiceResponse<UserDto> = await this.usersService.create(
-            {
-                email,
-                password: null,
-                username,
-                wallet: null,
-                address,
-                type: 'web3',
-                role: 'authenticated',
-                locale,
-            },
-        );
+        const newUser: ServiceResponse<UserDto> = await this.usersService.create({
+            email,
+            password: null,
+            username,
+            wallet: null,
+            address,
+            type: 'web3',
+            role: 'authenticated',
+            locale,
+        });
 
         if (newUser.error) {
             return newUser;
@@ -247,15 +219,11 @@ export class AuthenticationService {
      *
      * @param id
      */
-    async validateUserEmail(
-        id: string,
-    ): Promise<ServiceResponse<PasswordlessUserDto>> {
-        const updatedUserResp: ServiceResponse<UserDto> = await this.usersService.update(
-            {
-                id,
-                valid: true,
-            },
-        );
+    async validateUserEmail(id: string): Promise<ServiceResponse<PasswordlessUserDto>> {
+        const updatedUserResp: ServiceResponse<UserDto> = await this.usersService.update({
+            id,
+            valid: true,
+        });
 
         if (updatedUserResp.error) {
             return updatedUserResp;
@@ -285,9 +253,7 @@ export class AuthenticationService {
         wallet: EncryptedWallet,
         locale: string,
     ): Promise<ServiceResponse<PasswordlessUserDto>> {
-        const emailUserResp: ServiceResponse<UserDto> = await this.usersService.findByEmail(
-            email,
-        );
+        const emailUserResp: ServiceResponse<UserDto> = await this.usersService.findByEmail(email);
         if (emailUserResp.error) {
             return emailUserResp;
         }
@@ -300,9 +266,7 @@ export class AuthenticationService {
             };
         }
 
-        const usernameUserResp: ServiceResponse<UserDto> = await this.usersService.findByUsername(
-            username,
-        );
+        const usernameUserResp: ServiceResponse<UserDto> = await this.usersService.findByUsername(username);
         if (usernameUserResp.error) {
             return usernameUserResp;
         }
@@ -330,9 +294,7 @@ export class AuthenticationService {
             await refractFactoryV0.methods.predict(address, salt).call(),
         );
 
-        const addressUserResp: ServiceResponse<UserDto> = await this.usersService.findByAddress(
-            finalAddress,
-        );
+        const addressUserResp: ServiceResponse<UserDto> = await this.usersService.findByAddress(finalAddress);
         if (addressUserResp.error) {
             return addressUserResp;
         }
@@ -352,21 +314,16 @@ export class AuthenticationService {
             };
         }
 
-        const newUser: ServiceResponse<UserDto> = await this.usersService.create(
-            {
-                email,
-                password: await hash(
-                    password,
-                    parseInt(this.configService.get('BCRYPT_SALT_ROUNDS'), 10),
-                ),
-                username,
-                wallet: JSON.stringify(wallet),
-                address: finalAddress,
-                type: 't721',
-                role: 'authenticated',
-                locale,
-            },
-        );
+        const newUser: ServiceResponse<UserDto> = await this.usersService.create({
+            email,
+            password: await hash(password, parseInt(this.configService.get('BCRYPT_SALT_ROUNDS'), 10)),
+            username,
+            wallet: JSON.stringify(wallet),
+            address: finalAddress,
+            type: 't721',
+            role: 'authenticated',
+            locale,
+        });
 
         if (newUser.error) {
             return newUser;

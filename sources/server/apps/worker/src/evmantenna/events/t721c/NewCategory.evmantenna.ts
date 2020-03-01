@@ -1,7 +1,4 @@
-import {
-    Appender,
-    EVMEventControllerBase,
-} from '@app/worker/evmantenna/EVMEvent.controller.base';
+import { Appender, EVMEventControllerBase } from '@app/worker/evmantenna/EVMEvent.controller.base';
 import { GlobalConfigService } from '@lib/common/globalconfig/GlobalConfig.service';
 import { InjectSchedule, Schedule } from 'nest-schedule';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
@@ -113,17 +110,12 @@ export class NewCategoryT721CEVMAntenna extends EVMEventControllerBase {
             case 'event': {
                 const eventEntity: EventEntity = linked[1];
 
-                const eventCategories = cassandraArrayResult<Category>(
-                    eventEntity.categories,
-                );
+                const eventCategories = cassandraArrayResult<Category>(eventEntity.categories);
 
                 for (const category of eventCategories) {
                     category.prices = cassandraArrayResult(category.prices);
 
-                    if (
-                        toB32(category.category_name).toLowerCase() ===
-                        data.category_name.toLowerCase()
-                    ) {
+                    if (toB32(category.category_name).toLowerCase() === data.category_name.toLowerCase()) {
                         const oldCategories = cloneDeep(eventCategories);
 
                         category.status = 'deployed';
@@ -168,17 +160,12 @@ export class NewCategoryT721CEVMAntenna extends EVMEventControllerBase {
 
                     const date: DateEntity = dateFetchRes.response[0];
 
-                    const dateCategories: Category[] = cassandraArrayResult<
-                        Category
-                    >(date.categories);
+                    const dateCategories: Category[] = cassandraArrayResult<Category>(date.categories);
 
                     for (const category of dateCategories) {
                         category.prices = cassandraArrayResult(category.prices);
 
-                        if (
-                            toB32(category.category_name.toLowerCase()) ===
-                            data.category_name.toLowerCase()
-                        ) {
+                        if (toB32(category.category_name.toLowerCase()) === data.category_name.toLowerCase()) {
                             const oldCategories = cloneDeep(dateCategories);
 
                             category.status = 'deployed';

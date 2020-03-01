@@ -1,15 +1,7 @@
 import { ActionSet } from '@lib/common/actionsets/helper/ActionSet';
-import {
-    Category,
-    DateEntity,
-    Price,
-} from '@lib/common/dates/entities/Date.entity';
+import { Category, DateEntity, Price } from '@lib/common/dates/entities/Date.entity';
 import { EventEntity } from '@lib/common/events/entities/Event.entity';
-import {
-    CurrenciesService,
-    ERC20Currency,
-    SetCurrency,
-} from '@lib/common/currencies/Currencies.service';
+import { CurrenciesService, ERC20Currency, SetCurrency } from '@lib/common/currencies/Currencies.service';
 import { Decimal } from 'decimal.js';
 
 enum EventCreationActions {
@@ -44,10 +36,7 @@ async function resolveCurrencies(
                     continue;
                 }
 
-                currencies = [
-                    ...currencies,
-                    ...(await resolveCurrencies(currenciesService, curr, met)),
-                ];
+                currencies = [...currencies, ...(await resolveCurrencies(currenciesService, curr, met))];
 
                 met[curr] = true;
             }
@@ -69,10 +58,7 @@ async function resolveCurrencies(
         }
     }
 
-    currencies = currencies.filter(
-        (curr: string, pos: number): boolean =>
-            currencies.indexOf(curr) === pos,
-    );
+    currencies = currencies.filter((curr: string, pos: number): boolean => currencies.indexOf(curr) === pos);
 
     return currencies;
 }
@@ -84,20 +70,14 @@ async function resolveCurrencies(
  * @param currenciesService
  * @param prices
  */
-async function convertPrices(
-    tscope: string,
-    currenciesService: CurrenciesService,
-    prices: any[],
-): Promise<Price[]> {
+async function convertPrices(tscope: string, currenciesService: CurrenciesService, prices: any[]): Promise<Price[]> {
     let total: { currency: string; price: string }[] = [];
     const ret: Price[] = [];
 
     for (const curr of prices) {
         total = [
             ...total,
-            ...(
-                await resolveCurrencies(currenciesService, curr.currency, {})
-            ).map((curname: string) => ({
+            ...(await resolveCurrencies(currenciesService, curr.currency, {})).map((curname: string) => ({
                 currency: curname,
                 price: curr.price,
             })),
@@ -106,10 +86,7 @@ async function convertPrices(
 
     total = total.filter(
         (curr: { currency: string; price: string }, pos: number): boolean =>
-            total.findIndex(
-                (elem: { currency: string; price: string }) =>
-                    elem.currency === curr.currency,
-            ) === pos,
+            total.findIndex((elem: { currency: string; price: string }) => elem.currency === curr.currency) === pos,
     );
 
     for (const currency of total) {
@@ -152,11 +129,7 @@ async function convertCategories(
             resale_end: categories[catidx].resaleEnd,
             scope: tscope,
             status: 'preview',
-            prices: await convertPrices(
-                tscope,
-                currenciesService,
-                categories[catidx].currencies,
-            ),
+            prices: await convertPrices(tscope, currenciesService, categories[catidx].currencies),
             seats: categories[catidx].seats,
         });
     }
@@ -178,19 +151,9 @@ async function convertDates(
 ): Promise<Partial<DateEntity>[]> {
     const dateEntities: Partial<DateEntity>[] = [];
 
-    for (
-        let idx = 0;
-        idx <
-        actionset.actions[EventCreationActions.DatesConfiguration].data.dates
-            .length;
-        ++idx
-    ) {
-        const date =
-            actionset.actions[EventCreationActions.DatesConfiguration].data
-                .dates[idx];
-        const categories =
-            actionset.actions[EventCreationActions.CategoriesConfiguration].data
-                .dates[idx];
+    for (let idx = 0; idx < actionset.actions[EventCreationActions.DatesConfiguration].data.dates.length; ++idx) {
+        const date = actionset.actions[EventCreationActions.DatesConfiguration].data.dates[idx];
+        const categories = actionset.actions[EventCreationActions.CategoriesConfiguration].data.dates[idx];
 
         dateEntities.push({
             event_begin: date.eventBegin,
@@ -206,11 +169,7 @@ async function convertDates(
             },
             parent_id: null,
             parent_type: null,
-            categories: await convertCategories(
-                tscope,
-                currenciesService,
-                categories,
-            ),
+            categories: await convertCategories(tscope, currenciesService, categories),
         });
     }
 
@@ -233,26 +192,20 @@ async function convertEvent(
 ): Promise<Partial<EventEntity>> {
     const eventEntity: Partial<EventEntity> = {};
 
-    eventEntity.name =
-        actionset.actions[EventCreationActions.TextMetadata].data.name;
-    eventEntity.description =
-        actionset.actions[EventCreationActions.TextMetadata].data.description;
+    eventEntity.name = actionset.actions[EventCreationActions.TextMetadata].data.name;
+    eventEntity.description = actionset.actions[EventCreationActions.TextMetadata].data.description;
     eventEntity.status = 'preview';
     eventEntity.address = null;
     eventEntity.owner = owner;
-    eventEntity.admins =
-        actionset.actions[EventCreationActions.AdminsConfiguration].data.admins;
+    eventEntity.admins = actionset.actions[EventCreationActions.AdminsConfiguration].data.admins;
     eventEntity.dates = [];
     eventEntity.categories = await convertCategories(
         tscope,
         currenciesService,
-        actionset.actions[EventCreationActions.CategoriesConfiguration].data
-            .global,
+        actionset.actions[EventCreationActions.CategoriesConfiguration].data.global,
     );
-    eventEntity.avatar =
-        actionset.actions[EventCreationActions.ImagesMetadata].data.avatar;
-    eventEntity.banners =
-        actionset.actions[EventCreationActions.ImagesMetadata].data.banners;
+    eventEntity.avatar = actionset.actions[EventCreationActions.ImagesMetadata].data.avatar;
+    eventEntity.banners = actionset.actions[EventCreationActions.ImagesMetadata].data.banners;
 
     return eventEntity;
 }
@@ -272,17 +225,8 @@ export async function ActionSetToEventEntityConverter(
     currenciesService: CurrenciesService,
     owner: string,
 ): Promise<[Partial<DateEntity>[], Partial<EventEntity>]> {
-    const dateEntities: Partial<DateEntity>[] = await convertDates(
-        tscope,
-        actionset,
-        currenciesService,
-    );
-    const eventEntity: Partial<EventEntity> = await convertEvent(
-        tscope,
-        actionset,
-        currenciesService,
-        owner,
-    );
+    const dateEntities: Partial<DateEntity>[] = await convertDates(tscope, actionset, currenciesService);
+    const eventEntity: Partial<EventEntity> = await convertEvent(tscope, actionset, currenciesService, owner);
 
     return [dateEntities, eventEntity];
 }

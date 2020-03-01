@@ -1,21 +1,9 @@
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
-import {
-    Body,
-    Controller,
-    Get,
-    HttpCode,
-    HttpException,
-    Post,
-    UseFilters,
-    UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpException, Post, UseFilters, UseGuards } from '@nestjs/common';
 import { TxsService } from '@lib/common/txs/Txs.service';
 import { StatusCodes, StatusNames } from '@lib/common/utils/codes';
 import { AuthGuard } from '@nestjs/passport';
-import {
-    Roles,
-    RolesGuard,
-} from '@app/server/authentication/guards/RolesGuard.guard';
+import { Roles, RolesGuard } from '@app/server/authentication/guards/RolesGuard.guard';
 import { User } from '@app/server/authentication/decorators/User.decorator';
 import { UserDto } from '@lib/common/users/dto/User.dto';
 import { TxEntity } from '@lib/common/txs/entities/Tx.entity';
@@ -70,15 +58,8 @@ export class TxsController {
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @Roles('authenticated')
     @UseFilters(new HttpExceptionFilter())
-    async mtx(
-        @Body() body: TxsMtxInputDto,
-        @User() user: UserDto,
-    ): Promise<TxsMtxResponseDto> {
-        const txRes = await this.txsService.mtx(
-            body.payload,
-            body.signature,
-            user,
-        );
+    async mtx(@Body() body: TxsMtxInputDto, @User() user: UserDto): Promise<TxsMtxResponseDto> {
+        const txRes = await this.txsService.mtx(body.payload, body.signature, user);
 
         if (txRes.error) {
             throw new HttpException(
@@ -107,12 +88,8 @@ export class TxsController {
     @UseFilters(new HttpExceptionFilter())
     async infos(): Promise<TxsInfosResponseDto> {
         const artifacts = await this.contractsService.getContractArtifacts();
-        const networkId = parseInt(
-            this.configService.get('ETHEREUM_NODE_NETWORK_ID'),
-            10,
-        );
-        const relayer =
-            artifacts['t721admin::T721Admin'].networks[networkId].address;
+        const networkId = parseInt(this.configService.get('ETHEREUM_NODE_NETWORK_ID'), 10);
+        const relayer = artifacts['t721admin::T721Admin'].networks[networkId].address;
 
         return {
             relayer,
@@ -141,10 +118,7 @@ export class TxsController {
     @HttpCode(200)
     @UseFilters(new HttpExceptionFilter())
     /* istanbul ignore next */
-    async search(
-        @Body() body: TxsSearchInputDto,
-        @User() user: UserDto,
-    ): Promise<TxsSearchResponseDto> {
+    async search(@Body() body: TxsSearchInputDto, @User() user: UserDto): Promise<TxsSearchResponseDto> {
         const txs = await search<TxEntity, TxsService>(this.txsService, body);
         return { txs };
     }
@@ -172,10 +146,7 @@ export class TxsController {
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @Roles('authenticated')
     @UseFilters(new HttpExceptionFilter())
-    async subscribe(
-        @Body() body: TxsSubscribeInputDto,
-        @User() user: UserDto,
-    ): Promise<TxsSubscribeResponseDto> {
+    async subscribe(@Body() body: TxsSubscribeInputDto, @User() user: UserDto): Promise<TxsSubscribeResponseDto> {
         const txHash: string = body.transaction_hash.toLowerCase();
 
         if (!isTransactionHash(txHash)) {

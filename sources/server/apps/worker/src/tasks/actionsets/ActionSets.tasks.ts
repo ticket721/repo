@@ -5,10 +5,7 @@ import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ActionSetsService } from '@lib/common/actionsets/ActionSets.service';
 import { ActionSet } from '@lib/common/actionsets/helper/ActionSet';
 import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
-import {
-    InstanceSignature,
-    OutrospectionService,
-} from '@lib/common/outrospection/Outrospection.service';
+import { InstanceSignature, OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 
 /**
@@ -39,10 +36,7 @@ export class ActionSetsTasks implements OnModuleInit {
     async input(job: Job<ActionSetEntity>): Promise<void> {
         const actionSet: ActionSet = new ActionSet().load(job.data);
 
-        if (
-            this.actionSetsService.getInputHandler(actionSet.action.name) ===
-            undefined
-        ) {
+        if (this.actionSetsService.getInputHandler(actionSet.action.name) === undefined) {
             const error = Error(
                 `Cannot find input handler for action ${actionSet.action.name} in actionset ${actionSet.id}`,
             );
@@ -50,13 +44,8 @@ export class ActionSetsTasks implements OnModuleInit {
             throw error;
         }
 
-        this.loggerService.log(
-            `Calling ${actionSet.action.name} on ActionSet@${actionSet.id}`,
-        );
-        const [
-            updatedActionSet,
-            update,
-        ] = await this.actionSetsService.getInputHandler(actionSet.action.name)(
+        this.loggerService.log(`Calling ${actionSet.action.name} on ActionSet@${actionSet.id}`);
+        const [updatedActionSet, update] = await this.actionSetsService.getInputHandler(actionSet.action.name)(
             actionSet,
             job.progress.bind(job),
         );

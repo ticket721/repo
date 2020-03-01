@@ -13,9 +13,7 @@ const context: {
 
 describe('Controller Basics', function() {
     beforeEach(async function() {
-        const actionsSetsServiceMock: ActionSetsService = mock(
-            ActionSetsService,
-        );
+        const actionsSetsServiceMock: ActionSetsService = mock(ActionSetsService);
 
         context.actionSetsServiceMock = actionsSetsServiceMock;
     });
@@ -80,11 +78,7 @@ describe('Controller Basics', function() {
                 },
             };
 
-            when(
-                context.actionSetsServiceMock.searchElastic(
-                    deepEqual(internalEsQuery),
-                ),
-            ).thenResolve({
+            when(context.actionSetsServiceMock.searchElastic(deepEqual(internalEsQuery))).thenResolve({
                 error: null,
                 response: esReturn,
             });
@@ -107,10 +101,7 @@ describe('Controller Basics', function() {
             };
 
             await expect(
-                search<ActionSetEntity, ActionSetsService>(
-                    instance(context.actionSetsServiceMock),
-                    query,
-                ),
+                search<ActionSetEntity, ActionSetsService>(instance(context.actionSetsServiceMock), query),
             ).rejects.toMatchObject({
                 response: {
                     status: StatusCodes.BadRequest,
@@ -145,20 +136,13 @@ describe('Controller Basics', function() {
                 },
             };
 
-            when(
-                context.actionSetsServiceMock.searchElastic(
-                    deepEqual(internalEsQuery),
-                ),
-            ).thenResolve({
+            when(context.actionSetsServiceMock.searchElastic(deepEqual(internalEsQuery))).thenResolve({
                 error: 'unexpected_error',
                 response: null,
             });
 
             await expect(
-                search<ActionSetEntity, ActionSetsService>(
-                    instance(context.actionSetsServiceMock),
-                    query as any,
-                ),
+                search<ActionSetEntity, ActionSetsService>(instance(context.actionSetsServiceMock), query as any),
             ).rejects.toMatchObject({
                 response: {
                     status: StatusCodes.InternalServerError,
@@ -211,11 +195,7 @@ describe('Controller Basics', function() {
                 },
             };
 
-            when(
-                context.actionSetsServiceMock.searchElastic(
-                    deepEqual(internalEsQuery),
-                ),
-            ).thenResolve({
+            when(context.actionSetsServiceMock.searchElastic(deepEqual(internalEsQuery))).thenResolve({
                 error: null,
                 response: esReturn,
             });

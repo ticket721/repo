@@ -35,10 +35,7 @@ export class Web3Strategy extends PassportStrategy(Strategy, 'web3') {
      * @param timestamp
      * @param signature
      */
-    async validate(
-        timestamp: string,
-        signature: string,
-    ): Promise<PasswordlessUserDto> {
+    async validate(timestamp: string, signature: string): Promise<PasswordlessUserDto> {
         const resp: ServiceResponse<PasswordlessUserDto> = await this.authenticationService.validateWeb3User(
             timestamp,
             signature,
@@ -81,9 +78,7 @@ export class Web3Strategy extends PassportStrategy(Strategy, 'web3') {
                 address: resp.response.address,
             };
 
-            const token: ServiceResponse<Web3TokenDto> = await this.web3TokensService.check(
-                web3Token,
-            );
+            const token: ServiceResponse<Web3TokenDto> = await this.web3TokensService.check(web3Token);
 
             if (token.error) {
                 switch (token.error) {

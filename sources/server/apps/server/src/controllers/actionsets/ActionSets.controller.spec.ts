@@ -27,9 +27,7 @@ class QueueMock {
 
 describe('ActionSets Controller', function() {
     beforeEach(async function() {
-        const actionsSetsServiceMock: ActionSetsService = mock(
-            ActionSetsService,
-        );
+        const actionsSetsServiceMock: ActionSetsService = mock(ActionSetsService);
         const queueMock = mock(QueueMock);
 
         const ActionSetsServiceProvider = {
@@ -47,9 +45,7 @@ describe('ActionSets Controller', function() {
             controllers: [ActionSetsController],
         }).compile();
 
-        context.actionsController = module.get<ActionSetsController>(
-            ActionSetsController,
-        );
+        context.actionsController = module.get<ActionSetsController>(ActionSetsController);
         context.actionSetsServiceMock = actionsSetsServiceMock;
         context.queueMock = queueMock as any;
     });
@@ -74,8 +70,7 @@ describe('ActionSets Controller', function() {
                                 },
                                 {
                                     term: {
-                                        owner:
-                                            'ec677b12-d420-43a6-a597-ef84bf09f845',
+                                        owner: 'ec677b12-d420-43a6-a597-ef84bf09f845',
                                     },
                                 },
                             ],
@@ -122,11 +117,7 @@ describe('ActionSets Controller', function() {
                 },
             };
 
-            when(
-                context.actionSetsServiceMock.searchElastic(
-                    deepEqual(internalEsQuery),
-                ),
-            ).thenResolve({
+            when(context.actionSetsServiceMock.searchElastic(deepEqual(internalEsQuery))).thenResolve({
                 error: null,
                 response: esReturn,
             });
@@ -160,8 +151,7 @@ describe('ActionSets Controller', function() {
                                 },
                                 {
                                     term: {
-                                        owner:
-                                            'ec677b12-d420-43a6-a597-ef84bf09f845',
+                                        owner: 'ec677b12-d420-43a6-a597-ef84bf09f845',
                                     },
                                 },
                             ],
@@ -208,11 +198,7 @@ describe('ActionSets Controller', function() {
                 },
             };
 
-            when(
-                context.actionSetsServiceMock.searchElastic(
-                    deepEqual(internalEsQuery),
-                ),
-            ).thenResolve({
+            when(context.actionSetsServiceMock.searchElastic(deepEqual(internalEsQuery))).thenResolve({
                 error: null,
                 response: esReturn,
             });
@@ -222,8 +208,7 @@ describe('ActionSets Controller', function() {
             } as UserDto);
 
             expect(res).toEqual({
-                hash:
-                    '0xf2b6eff34c60421fefacfb54409487b90dd21772e1832bba2426c2dfc7c3d1e4',
+                hash: '0xf2b6eff34c60421fefacfb54409487b90dd21772e1832bba2426c2dfc7c3d1e4',
                 count: 1,
             });
         });
@@ -336,10 +321,7 @@ describe('ActionSets Controller', function() {
                 } as any,
             });
 
-            const res = await context.actionsController.updateAction(
-                query,
-                owner as UserDto,
-            );
+            const res = await context.actionsController.updateAction(query, owner as UserDto);
 
             expect(res.actionset).toEqual({
                 info: {
@@ -450,9 +432,7 @@ describe('ActionSets Controller', function() {
                 response: null,
             });
 
-            await expect(
-                context.actionsController.updateAction(query, owner as UserDto),
-            ).rejects.toMatchObject({
+            await expect(context.actionsController.updateAction(query, owner as UserDto)).rejects.toMatchObject({
                 response: {
                     status: StatusCodes.InternalServerError,
                     message: 'unexpected_error',
@@ -517,9 +497,7 @@ describe('ActionSets Controller', function() {
                 response: [entity],
             });
 
-            await expect(
-                context.actionsController.updateAction(query, owner as UserDto),
-            ).rejects.toMatchObject({
+            await expect(context.actionsController.updateAction(query, owner as UserDto)).rejects.toMatchObject({
                 response: {
                     status: StatusCodes.NotFound,
                     message: 'actionset_not_found',
@@ -560,9 +538,7 @@ describe('ActionSets Controller', function() {
                 response: [],
             });
 
-            await expect(
-                context.actionsController.updateAction(query, owner as UserDto),
-            ).rejects.toMatchObject({
+            await expect(context.actionsController.updateAction(query, owner as UserDto)).rejects.toMatchObject({
                 response: {
                     status: StatusCodes.NotFound,
                     message: 'actionset_not_found',
@@ -604,9 +580,7 @@ describe('ActionSets Controller', function() {
                 response: null,
             });
 
-            await expect(
-                context.actionsController.updateAction(query, owner as UserDto),
-            ).rejects.toMatchObject({
+            await expect(context.actionsController.updateAction(query, owner as UserDto)).rejects.toMatchObject({
                 response: {
                     status: StatusCodes.InternalServerError,
                     message: 'unexpected_error',
@@ -740,10 +714,7 @@ describe('ActionSets Controller', function() {
                 } as any,
             });
 
-            const res = await context.actionsController.updateAction(
-                query,
-                owner as UserDto,
-            );
+            const res = await context.actionsController.updateAction(query, owner as UserDto);
 
             expect(res.actionset).toEqual({
                 info: {
@@ -833,9 +804,7 @@ describe('ActionSets Controller', function() {
                 response: [entity],
             });
 
-            await expect(
-                context.actionsController.updateAction(query, owner as UserDto),
-            ).rejects.toMatchObject({
+            await expect(context.actionsController.updateAction(query, owner as UserDto)).rejects.toMatchObject({
                 response: {
                     status: StatusCodes.BadRequest,
                     message: 'action_idx_after_current_action',

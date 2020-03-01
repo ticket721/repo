@@ -31,9 +31,7 @@ const readyLogs = [
 export const ganache_snapshot = (ganachePort: number) => {
     console.log('STARTING @utils/ganache_snapshot');
 
-    const web3 = new Web3(
-        new Web3.providers.HttpProvider(`http://127.0.0.1:${ganachePort}`),
-    );
+    const web3 = new Web3(new Web3.providers.HttpProvider(`http://127.0.0.1:${ganachePort}`));
     return new Promise((ok, ko) => {
         (web3.currentProvider as any).send(
             {
@@ -57,9 +55,7 @@ export const ganache_snapshot = (ganachePort: number) => {
 export const ganache_revert = (snap_id: number, ganachePort: number) => {
     console.log('STARTING @utils/ganache_revert');
 
-    const web3 = new Web3(
-        new Web3.providers.HttpProvider(`http://127.0.0.1:${ganachePort}`),
-    );
+    const web3 = new Web3(new Web3.providers.HttpProvider(`http://127.0.0.1:${ganachePort}`));
     return new Promise((ok, ko) => {
         (web3.currentProvider as any).send(
             {
@@ -96,20 +92,14 @@ export async function run_contracts_migrations() {
     const current_dir = process.cwd();
     process.chdir('../..');
     const clean_proc = spawn(`env`, [
-        ...`T721_CONFIG=./config.ganache.e2e.remote.json gulp contracts::clean network::clean`.split(
-            ' ',
-        ),
+        ...`T721_CONFIG=./config.ganache.e2e.remote.json gulp contracts::clean network::clean`.split(' '),
     ]);
 
     await new Promise((ok, ko) => {
         clean_proc.on('close', ok);
     });
 
-    const network_proc = spawn(`env`, [
-        ...`T721_CONFIG=./config.ganache.e2e.remote.json gulp network::run`.split(
-            ' ',
-        ),
-    ]);
+    const network_proc = spawn(`env`, [...`T721_CONFIG=./config.ganache.e2e.remote.json gulp network::run`.split(' ')]);
 
     await new Promise((ok, ko) => {
         let found = false;
@@ -129,9 +119,7 @@ export async function run_contracts_migrations() {
     });
 
     const contracts_proc = spawn(`env`, [
-        ...`T721_CONFIG=./config.ganache.e2e.remote.json gulp contracts::run`.split(
-            ' ',
-        ),
+        ...`T721_CONFIG=./config.ganache.e2e.remote.json gulp contracts::run`.split(' '),
     ]);
 
     await new Promise((ok, ko) => {
@@ -152,9 +140,7 @@ export async function run_contracts_migrations() {
     });
 
     const server_prepare_proc = spawn(`env`, [
-        ...`T721_CONFIG=./config.ganache.e2e.remote.json gulp server::dev::prepare`.split(
-            ' ',
-        ),
+        ...`T721_CONFIG=./config.ganache.e2e.remote.json gulp server::dev::prepare`.split(' '),
     ]);
 
     await new Promise((ok, ko) => {
@@ -182,13 +168,9 @@ export async function run_contracts_migrations() {
 export const startDocker = async () => {
     console.log('STARTING @utils/startDocker');
 
-    docker_compose_up_proc = spawn(
-        `docker-compose`,
-        [...`-f ./infra.yaml up`.split(' ')],
-        {
-            cwd: `${process.cwd()}/scripts/`,
-        },
-    );
+    docker_compose_up_proc = spawn(`docker-compose`, [...`-f ./infra.yaml up`.split(' ')], {
+        cwd: `${process.cwd()}/scripts/`,
+    });
 
     await new Promise((ok, ko) => {
         let ready = false;
@@ -244,13 +226,9 @@ export const prepare = async () => {
 export const stopDocker = async () => {
     console.log('STARTING @utils/stopDocker');
 
-    const docker_compose_down_proc = spawn(
-        `docker-compose`,
-        [...`-f ./infra.yaml down`.split(' ')],
-        {
-            cwd: `${process.cwd()}/scripts/`,
-        },
-    );
+    const docker_compose_down_proc = spawn(`docker-compose`, [...`-f ./infra.yaml down`.split(' ')], {
+        cwd: `${process.cwd()}/scripts/`,
+    });
 
     await new Promise((ok, ko) => {
         docker_compose_down_proc.stderr.on('data', data => {
@@ -264,13 +242,9 @@ export const stopDocker = async () => {
         docker_compose_down_proc.on('close', ok);
     });
 
-    const docker_compose_rm_proc = spawn(
-        `docker-compose`,
-        [...`-f ./infra.yaml rm`.split(' ')],
-        {
-            cwd: `${process.cwd()}/scripts/`,
-        },
-    );
+    const docker_compose_rm_proc = spawn(`docker-compose`, [...`-f ./infra.yaml rm`.split(' ')], {
+        cwd: `${process.cwd()}/scripts/`,
+    });
 
     await new Promise((ok, ko) => {
         docker_compose_rm_proc.stderr.on('data', data => {
@@ -293,10 +267,7 @@ export const stopDocker = async () => {
     console.log('FINISHED @utils/stopDocker');
 };
 
-export const runMigrations = async (
-    cassandraPort: number,
-    elasticSearchPort: number,
-) => {
+export const runMigrations = async (cassandraPort: number, elasticSearchPort: number) => {
     console.log('STARTING @utils/runMigrations');
 
     return new Promise((ok, ko) => {
@@ -334,10 +305,7 @@ export const runMigrations = async (
     });
 };
 
-export const resetMigrations = async (
-    cassandraPort: number,
-    elasticSearchPort: number,
-) => {
+export const resetMigrations = async (cassandraPort: number, elasticSearchPort: number) => {
     console.log('STARTING @utils/resetMigrations');
 
     return new Promise((ok, ko) => {

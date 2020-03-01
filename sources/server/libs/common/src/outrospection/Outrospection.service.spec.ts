@@ -23,9 +23,7 @@ describe('Outrospection Service', function() {
 
     describe('constructor', function() {
         it('should build the Outrospection Service in dev mode', async function() {
-            when(context.configServiceMock.get('NODE_ENV')).thenReturn(
-                'development',
-            );
+            when(context.configServiceMock.get('NODE_ENV')).thenReturn('development');
 
             const outrospectionService = new OutrospectionService(
                 {
@@ -48,9 +46,7 @@ describe('Outrospection Service', function() {
         });
 
         it('should build the Outrospection Service in production mode', async function() {
-            when(context.configServiceMock.get('NODE_ENV')).thenReturn(
-                'production',
-            );
+            when(context.configServiceMock.get('NODE_ENV')).thenReturn('production');
 
             const outrospectionService = new OutrospectionService(
                 {
@@ -73,9 +69,7 @@ describe('Outrospection Service', function() {
         });
 
         it('should build the Outrospection Service with instance 2', async function() {
-            when(context.configServiceMock.get('NODE_ENV')).thenReturn(
-                'production',
-            );
+            when(context.configServiceMock.get('NODE_ENV')).thenReturn('production');
 
             const outrospectionService = new OutrospectionService(
                 {
@@ -98,9 +92,7 @@ describe('Outrospection Service', function() {
         });
 
         it('should fail on invalid hostname', async function() {
-            when(context.configServiceMock.get('NODE_ENV')).thenReturn(
-                'production',
-            );
+            when(context.configServiceMock.get('NODE_ENV')).thenReturn('production');
 
             expect((): void => {
                 new OutrospectionService(
@@ -111,27 +103,19 @@ describe('Outrospection Service', function() {
                     instance(context.shutdownServiceMock),
                     () => 'server-0',
                 );
-            }).toThrow(
-                new Error(
-                    `Invalid instance name 'worker', cannot extract position in hostname 'server-0'`,
-                ),
-            );
+            }).toThrow(new Error(`Invalid instance name 'worker', cannot extract position in hostname 'server-0'`));
 
             verify(
                 context.shutdownServiceMock.shutdownWithError(
                     deepEqual(
-                        new Error(
-                            `Invalid instance name 'worker', cannot extract position in hostname 'server-0'`,
-                        ),
+                        new Error(`Invalid instance name 'worker', cannot extract position in hostname 'server-0'`),
                     ),
                 ),
             ).called();
         });
 
         it('should fail on regexp test fail', async function() {
-            when(context.configServiceMock.get('NODE_ENV')).thenReturn(
-                'production',
-            );
+            when(context.configServiceMock.get('NODE_ENV')).thenReturn('production');
 
             expect((): void => {
                 new OutrospectionService(
@@ -142,18 +126,12 @@ describe('Outrospection Service', function() {
                     instance(context.shutdownServiceMock),
                     () => 'server--0',
                 );
-            }).toThrow(
-                new Error(
-                    `Invalid instance name 'worker', cannot extract position in hostname 'server--0'`,
-                ),
-            );
+            }).toThrow(new Error(`Invalid instance name 'worker', cannot extract position in hostname 'server--0'`));
 
             verify(
                 context.shutdownServiceMock.shutdownWithError(
                     deepEqual(
-                        new Error(
-                            `Invalid instance name 'worker', cannot extract position in hostname 'server--0'`,
-                        ),
+                        new Error(`Invalid instance name 'worker', cannot extract position in hostname 'server--0'`),
                     ),
                 ),
             ).called();

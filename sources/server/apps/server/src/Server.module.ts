@@ -41,10 +41,7 @@ import { GlobalConfigModule } from '@lib/common/globalconfig/GlobalConfig.module
 import { GlobalConfigOptions } from '@lib/common/globalconfig/GlobalConfig.service';
 import { TxsController } from '@app/server/controllers/txs/Txs.controller';
 import { ContractsController } from '@app/server/controllers/contracts/Contracts.controller';
-import {
-    BinanceModule,
-    BinanceModuleBuildOptions,
-} from '@lib/common/binance/Binance.module';
+import { BinanceModule, BinanceModuleBuildOptions } from '@lib/common/binance/Binance.module';
 import { OutrospectionModule } from '@lib/common/outrospection/Outrospection.module';
 import { EmailModule } from '@lib/common/email/Email.module';
 
@@ -77,8 +74,7 @@ import { EmailModule } from '@lib/common/email/Email.module';
         DatesModule,
         EventsModule,
         CurrenciesModule.registerAsync({
-            useFactory: (configService: ConfigService): string =>
-                configService.get('CURRENCIES_CONFIG_PATH'),
+            useFactory: (configService: ConfigService): string => configService.get('CURRENCIES_CONFIG_PATH'),
             inject: [ConfigService],
         }),
 
@@ -103,9 +99,7 @@ import { EmailModule } from '@lib/common/email/Email.module';
             inject: [ConfigService],
         }),
         ContractsModule.registerAsync({
-            useFactory: (
-                configService: ConfigService,
-            ): ContractsServiceOptions => ({
+            useFactory: (configService: ConfigService): ContractsServiceOptions => ({
                 artifact_path: configService.get('CONTRACTS_ARTIFACTS_PATH'),
             }),
             inject: [ConfigService],
@@ -115,75 +109,37 @@ import { EmailModule } from '@lib/common/email/Email.module';
                 VAULT_HOST: configService.get('VAULT_HOST'),
                 VAULT_PORT: parseInt(configService.get('VAULT_PORT'), 10),
                 VAULT_PROTOCOL: configService.get('VAULT_PROTOCOL'),
-                VAULT_ETHEREUM_NODE_HOST: configService.get(
-                    'VAULT_ETHEREUM_NODE_HOST',
-                ),
-                VAULT_ETHEREUM_NODE_PORT: parseInt(
-                    configService.get('VAULT_ETHEREUM_NODE_PORT'),
-                    10,
-                ),
-                VAULT_ETHEREUM_NODE_PROTOCOL: configService.get(
-                    'VAULT_ETHEREUM_NODE_PROTOCOL',
-                ),
-                VAULT_ETHEREUM_NODE_NETWORK_ID: parseInt(
-                    configService.get('VAULT_ETHEREUM_NODE_NETWORK_ID'),
-                    10,
-                ),
+                VAULT_ETHEREUM_NODE_HOST: configService.get('VAULT_ETHEREUM_NODE_HOST'),
+                VAULT_ETHEREUM_NODE_PORT: parseInt(configService.get('VAULT_ETHEREUM_NODE_PORT'), 10),
+                VAULT_ETHEREUM_NODE_PROTOCOL: configService.get('VAULT_ETHEREUM_NODE_PROTOCOL'),
+                VAULT_ETHEREUM_NODE_NETWORK_ID: parseInt(configService.get('VAULT_ETHEREUM_NODE_NETWORK_ID'), 10),
                 VAULT_TOKEN: configService.get('VAULT_TOKEN'),
             }),
             inject: [ConfigService],
         }),
         TxsModule.registerAsync({
             useFactory: (configService: ConfigService): TxsServiceOptions => ({
-                blockThreshold: parseInt(
-                    configService.get('TXS_BLOCK_THRESHOLD'),
-                    10,
-                ),
-                blockPollingRefreshRate: parseInt(
-                    configService.get('TXS_BLOCK_POLLING_REFRESH_RATE'),
-                    10,
-                ),
-                ethereumNetworkId: parseInt(
-                    configService.get('ETHEREUM_NODE_NETWORK_ID'),
-                    10,
-                ),
-                ethereumMtxDomainName: configService.get(
-                    'ETHEREUM_MTX_DOMAIN_NAME',
-                ),
+                blockThreshold: parseInt(configService.get('TXS_BLOCK_THRESHOLD'), 10),
+                blockPollingRefreshRate: parseInt(configService.get('TXS_BLOCK_POLLING_REFRESH_RATE'), 10),
+                ethereumNetworkId: parseInt(configService.get('ETHEREUM_NODE_NETWORK_ID'), 10),
+                ethereumMtxDomainName: configService.get('ETHEREUM_MTX_DOMAIN_NAME'),
                 ethereumMtxVersion: configService.get('ETHEREUM_MTX_VERSION'),
-                ethereumMtxRelayAdmin: configService.get(
-                    'VAULT_ETHEREUM_ASSIGNED_ADMIN',
-                ),
-                targetGasPrice: parseInt(
-                    configService.get('TXS_TARGET_GAS_PRICE'),
-                    10,
-                ),
+                ethereumMtxRelayAdmin: configService.get('VAULT_ETHEREUM_ASSIGNED_ADMIN'),
+                targetGasPrice: parseInt(configService.get('TXS_TARGET_GAS_PRICE'), 10),
             }),
             inject: [ConfigService],
         }),
         BinanceModule.registerAsync({
-            useFactory: (
-                configService: ConfigService,
-            ): BinanceModuleBuildOptions => ({
-                mock:
-                    configService.get('GLOBAL_CONFIG_BINANCE_MOCK') !== 'false',
+            useFactory: (configService: ConfigService): BinanceModuleBuildOptions => ({
+                mock: configService.get('GLOBAL_CONFIG_BINANCE_MOCK') !== 'false',
             }),
             inject: [ConfigService],
         }),
         GlobalConfigModule.registerAsync({
-            useFactory: (
-                configService: ConfigService,
-            ): GlobalConfigOptions => ({
-                blockNumberFetchingRate: parseInt(
-                    configService.get(
-                        'GLOBAL_CONFIG_BLOCK_NUMBER_FETCHING_RATE',
-                    ),
-                    10,
-                ),
+            useFactory: (configService: ConfigService): GlobalConfigOptions => ({
+                blockNumberFetchingRate: parseInt(configService.get('GLOBAL_CONFIG_BLOCK_NUMBER_FETCHING_RATE'), 10),
                 ethereumPriceFetchingRate: parseInt(
-                    configService.get(
-                        'GLOBAL_CONFIG_ETHEREUM_PRICE_FETCHING_RATE',
-                    ),
+                    configService.get('GLOBAL_CONFIG_ETHEREUM_PRICE_FETCHING_RATE'),
                     10,
                 ),
             }),

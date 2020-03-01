@@ -1,10 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import {
-    InjectRepository,
-    InjectModel,
-    BaseModel,
-    uuid,
-} from '@iaminfinity/express-cassandra';
+import { InjectRepository, InjectModel, BaseModel, uuid } from '@iaminfinity/express-cassandra';
 import { UsersRepository } from './Users.repository';
 import { UserEntity } from './entities/User.entity';
 import { UserDto } from './dto/User.dto';
@@ -63,9 +58,7 @@ export class UsersService {
      *
      * @param user
      */
-    async create(
-        user: CreateUserServiceInputDto,
-    ): Promise<ServiceResponse<UserDto>> {
+    async create(user: CreateUserServiceInputDto): Promise<ServiceResponse<UserDto>> {
         try {
             const createdUser = await this.usersRepository
                 .save(
@@ -95,9 +88,7 @@ export class UsersService {
      */
     async findById(id: string): Promise<ServiceResponse<UserDto>> {
         try {
-            const user: UserDto = await this.usersRepository
-                .findOne({ id: uuid(id) as any })
-                .toPromise();
+            const user: UserDto = await this.usersRepository.findOne({ id: uuid(id) as any }).toPromise();
             return {
                 response: user || null,
                 error: null,

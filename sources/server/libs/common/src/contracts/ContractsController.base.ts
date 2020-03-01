@@ -1,7 +1,4 @@
-import {
-    ContractArtifact,
-    ContractsService,
-} from '@lib/common/contracts/Contracts.service';
+import { ContractArtifact, ContractsService } from '@lib/common/contracts/Contracts.service';
 import { Web3Service } from '@lib/common/web3/Web3.service';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 import Web3 from 'web3';
@@ -59,9 +56,7 @@ export class ContractsControllerBase {
         protected readonly contractName: string,
         protected readonly options?: ContractsControllerBaseConfig,
     ) {
-        this.logger = new WinstonLoggerService(
-            options && options.name ? options.name : contractName,
-        );
+        this.logger = new WinstonLoggerService(options && options.name ? options.name : contractName);
     }
 
     /**
@@ -77,13 +72,8 @@ export class ContractsControllerBase {
      * @param contractCode
      * @param contractAddress
      */
-    private async verifyContract(
-        contractCode: string,
-        contractAddress: string,
-    ): Promise<boolean> {
-        const code = await (await this.web3Service.get()).eth.getCode(
-            contractAddress,
-        );
+    private async verifyContract(contractCode: string, contractAddress: string): Promise<boolean> {
+        const code = await (await this.web3Service.get()).eth.getCode(contractAddress);
 
         return code.toLowerCase() === contractCode.toLowerCase();
     }
@@ -93,20 +83,14 @@ export class ContractsControllerBase {
      */
     async loadContract(): Promise<void> {
         this.logger.log(
-            `Initializing ${
-                this.options && this.options.name
-                    ? this.options.name
-                    : this.contractName
-            } service`,
+            `Initializing ${this.options && this.options.name ? this.options.name : this.contractName} service`,
         );
-        this._contractData = (
-            await this.contractsService.getContractArtifacts()
-        )[`${this.moduleName}::${this.contractName}`];
+        this._contractData = (await this.contractsService.getContractArtifacts())[
+            `${this.moduleName}::${this.contractName}`
+        ];
 
         if (!this._contractData) {
-            const error: Error = new Error(
-                `Cannot recover artifact for instance called ${this.contractName}`,
-            );
+            const error: Error = new Error(`Cannot recover artifact for instance called ${this.contractName}`);
             this.shutdownService.shutdownWithError(error);
             throw error;
         }
@@ -115,9 +99,7 @@ export class ContractsControllerBase {
         const networkId: number = await this.web3Service.net();
 
         if (!web3 || (!networkId && networkId !== 0)) {
-            const error: Error = new Error(
-                `Unable to recover web3 instance or data for contract ${this.contractName}`,
-            );
+            const error: Error = new Error(`Unable to recover web3 instance or data for contract ${this.contractName}`);
             this.shutdownService.shutdownWithError(error);
             throw error;
         }
@@ -125,20 +107,14 @@ export class ContractsControllerBase {
         if (this.options && this.options.address) {
             if (
                 this._contractData.deployedBytecode &&
-                !(await this.verifyContract(
-                    this._contractData.deployedBytecode,
-                    this.options.address,
-                ))
+                !(await this.verifyContract(this._contractData.deployedBytecode, this.options.address))
             ) {
                 throw new Error(
                     `On-Chain code does not match for dynamically loaded contract address (${this.moduleName}::${this.contractName}@${this.options.address})`,
                 );
             }
 
-            this._contract = new web3.eth.Contract(
-                this._contractData.abi,
-                this.options.address,
-            );
+            this._contract = new web3.eth.Contract(this._contractData.abi, this.options.address);
         } else {
             this._contract = new web3.eth.Contract(
                 this._contractData.abi,
@@ -147,11 +123,7 @@ export class ContractsControllerBase {
         }
 
         this.logger.log(
-            `Service ${
-                this.options && this.options.name
-                    ? this.options.name
-                    : this.contractName
-            } initialized`,
+            `Service ${this.options && this.options.name ? this.options.name : this.contractName} initialized`,
         );
     }
 

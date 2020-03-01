@@ -1,13 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-    anyFunction,
-    anything,
-    deepEqual,
-    instance,
-    mock,
-    verify,
-    when,
-} from 'ts-mockito';
+import { anyFunction, anything, deepEqual, instance, mock, verify, when } from 'ts-mockito';
 import {
     createWallet,
     encryptWallet,
@@ -25,10 +17,7 @@ import { uuid } from '@iaminfinity/express-cassandra';
 import { ESSearchHit, ESSearchReturn } from '@lib/common/utils/ESSearchReturn';
 
 class UserEntityModelMock {
-    search(
-        options: EsSearchOptionsStatic,
-        callback?: (err: any, ret: any) => void,
-    ): void {
+    search(options: EsSearchOptionsStatic, callback?: (err: any, ret: any) => void): void {
         return;
     }
 }
@@ -45,9 +34,7 @@ const context: {
 
 describe('Users Service', function() {
     beforeEach(async function() {
-        const userEntityModelMock: UserEntityModelMock = mock(
-            UserEntityModelMock,
-        );
+        const userEntityModelMock: UserEntityModelMock = mock(UserEntityModelMock);
 
         const usersRepositoryMock: UsersRepository = mock(UsersRepository);
 
@@ -62,11 +49,7 @@ describe('Users Service', function() {
         };
 
         const module: TestingModule = await Test.createTestingModule({
-            providers: [
-                UsersRepositoryProvider,
-                UserModelProvider,
-                UsersService,
-            ],
+            providers: [UsersRepositoryProvider, UserModelProvider, UsersService],
         }).compile();
 
         context.usersService = module.get<UsersService>(UsersService);
@@ -77,10 +60,8 @@ describe('Users Service', function() {
     describe('findById', function() {
         test('should return existing user', async function() {
             const usersService: UsersService = context.usersService;
-            const userEntityModelMock: UserEntityModelMock =
-                context.userEntityModelMock;
-            const usersRepositoryMock: UsersRepository =
-                context.usersRepositoryMock;
+            const userEntityModelMock: UserEntityModelMock = context.userEntityModelMock;
+            const usersRepositoryMock: UsersRepository = context.usersRepositoryMock;
 
             const email = 'test@test.com';
             const username = 'salut';
@@ -111,9 +92,7 @@ describe('Users Service', function() {
                 };
             };
 
-            when(
-                usersRepositoryMock.findOne(deepEqual({ id: uuid(id) as any })),
-            ).thenCall(injected_cb);
+            when(usersRepositoryMock.findOne(deepEqual({ id: uuid(id) as any }))).thenCall(injected_cb);
 
             const res = await usersService.findById(id);
 
@@ -134,10 +113,8 @@ describe('Users Service', function() {
 
         test('should return null on undefined query result', async function() {
             const usersService: UsersService = context.usersService;
-            const userEntityModelMock: UserEntityModelMock =
-                context.userEntityModelMock;
-            const usersRepositoryMock: UsersRepository =
-                context.usersRepositoryMock;
+            const userEntityModelMock: UserEntityModelMock = context.userEntityModelMock;
+            const usersRepositoryMock: UsersRepository = context.usersRepositoryMock;
 
             const email = 'test@test.com';
             const username = 'salut';
@@ -157,9 +134,7 @@ describe('Users Service', function() {
                 };
             };
 
-            when(
-                usersRepositoryMock.findOne(deepEqual({ id: uuid(id) as any })),
-            ).thenCall(injected_cb);
+            when(usersRepositoryMock.findOne(deepEqual({ id: uuid(id) as any }))).thenCall(injected_cb);
 
             const res = await usersService.findById(id);
 
@@ -169,10 +144,8 @@ describe('Users Service', function() {
 
         test('unexpected search error', async function() {
             const usersService: UsersService = context.usersService;
-            const userEntityModelMock: UserEntityModelMock =
-                context.userEntityModelMock;
-            const usersRepositoryMock: UsersRepository =
-                context.usersRepositoryMock;
+            const userEntityModelMock: UserEntityModelMock = context.userEntityModelMock;
+            const usersRepositoryMock: UsersRepository = context.usersRepositoryMock;
 
             const email = 'test@test.com';
             const username = 'salut';
@@ -203,9 +176,7 @@ describe('Users Service', function() {
                 };
             };
 
-            when(
-                usersRepositoryMock.findOne(deepEqual({ id: uuid(id) as any })),
-            ).thenCall(injected_cb);
+            when(usersRepositoryMock.findOne(deepEqual({ id: uuid(id) as any }))).thenCall(injected_cb);
 
             const res = await usersService.findById(id);
 
@@ -217,8 +188,7 @@ describe('Users Service', function() {
     describe('findByAddress', function() {
         test('should return existing user', async function() {
             const usersService: UsersService = context.usersService;
-            const userEntityModelMock: UserEntityModelMock =
-                context.userEntityModelMock;
+            const userEntityModelMock: UserEntityModelMock = context.userEntityModelMock;
 
             const email = 'test@test.com';
             const username = 'salut';
@@ -309,8 +279,7 @@ describe('Users Service', function() {
 
         test('should return null on invalid address', async function() {
             const usersService: UsersService = context.usersService;
-            const userEntityModelMock: UserEntityModelMock =
-                context.userEntityModelMock;
+            const userEntityModelMock: UserEntityModelMock = context.userEntityModelMock;
 
             const wallet: Wallet = await createWallet();
             const address = wallet.address.slice(4);
@@ -320,15 +289,12 @@ describe('Users Service', function() {
             expect(res.error).toEqual('invalid_address_format');
             expect(res.response).toEqual(null);
 
-            verify(
-                userEntityModelMock.search(anything(), anyFunction()),
-            ).never();
+            verify(userEntityModelMock.search(anything(), anyFunction())).never();
         });
 
         test('unexpected search error', async function() {
             const usersService: UsersService = context.usersService;
-            const userEntityModelMock: UserEntityModelMock =
-                context.userEntityModelMock;
+            const userEntityModelMock: UserEntityModelMock = context.userEntityModelMock;
 
             const wallet: Wallet = await createWallet();
             const address = wallet.address;
@@ -377,8 +343,7 @@ describe('Users Service', function() {
 
         test('search with no hits', async function() {
             const usersService: UsersService = context.usersService;
-            const userEntityModelMock: UserEntityModelMock =
-                context.userEntityModelMock;
+            const userEntityModelMock: UserEntityModelMock = context.userEntityModelMock;
 
             const wallet: Wallet = await createWallet();
             const address = wallet.address;
@@ -441,8 +406,7 @@ describe('Users Service', function() {
     describe('findByUsername', function() {
         test('should return existing user', async function() {
             const usersService: UsersService = context.usersService;
-            const userEntityModelMock: UserEntityModelMock =
-                context.userEntityModelMock;
+            const userEntityModelMock: UserEntityModelMock = context.userEntityModelMock;
 
             const email = 'test@test.com';
             const username = 'salut';
@@ -533,8 +497,7 @@ describe('Users Service', function() {
 
         test('unexpected search error', async function() {
             const usersService: UsersService = context.usersService;
-            const userEntityModelMock: UserEntityModelMock =
-                context.userEntityModelMock;
+            const userEntityModelMock: UserEntityModelMock = context.userEntityModelMock;
 
             const username = 'salut';
             const wallet: Wallet = await createWallet();
@@ -583,8 +546,7 @@ describe('Users Service', function() {
 
         test('search with no hits', async function() {
             const usersService: UsersService = context.usersService;
-            const userEntityModelMock: UserEntityModelMock =
-                context.userEntityModelMock;
+            const userEntityModelMock: UserEntityModelMock = context.userEntityModelMock;
 
             const username = 'salut';
             const wallet: Wallet = await createWallet();
@@ -649,8 +611,7 @@ describe('Users Service', function() {
     describe('findByEmail', function() {
         test('should return existing user', async function() {
             const usersService: UsersService = context.usersService;
-            const userEntityModelMock: UserEntityModelMock =
-                context.userEntityModelMock;
+            const userEntityModelMock: UserEntityModelMock = context.userEntityModelMock;
 
             const email = 'test@test.com';
             const username = 'salut';
@@ -741,8 +702,7 @@ describe('Users Service', function() {
 
         test('unexpected search error', async function() {
             const usersService: UsersService = context.usersService;
-            const userEntityModelMock: UserEntityModelMock =
-                context.userEntityModelMock;
+            const userEntityModelMock: UserEntityModelMock = context.userEntityModelMock;
 
             const email = 'test@test.com';
             const wallet: Wallet = await createWallet();
@@ -790,8 +750,7 @@ describe('Users Service', function() {
 
         test('search with no hits', async function() {
             const usersService: UsersService = context.usersService;
-            const userEntityModelMock: UserEntityModelMock =
-                context.userEntityModelMock;
+            const userEntityModelMock: UserEntityModelMock = context.userEntityModelMock;
 
             const email = 'test@test.com';
 
@@ -853,8 +812,7 @@ describe('Users Service', function() {
     describe('create', function() {
         test('should create user', async function() {
             const usersService: UsersService = context.usersService;
-            const usersRepositoryMock: UsersRepository =
-                context.usersRepositoryMock;
+            const usersRepositoryMock: UsersRepository = context.usersRepositoryMock;
 
             const email = 'test@test.com';
             const username = 'salut';
@@ -889,16 +847,10 @@ describe('Users Service', function() {
                 };
             };
 
-            when(usersRepositoryMock.create(deepEqual(create_args))).thenReturn(
-                entity,
-            );
-            when(usersRepositoryMock.save(deepEqual(entity))).thenCall(
-                injected_cb,
-            );
+            when(usersRepositoryMock.create(deepEqual(create_args))).thenReturn(entity);
+            when(usersRepositoryMock.save(deepEqual(entity))).thenCall(injected_cb);
 
-            const res = await usersService.create(
-                create_args as CreateUserServiceInputDto,
-            );
+            const res = await usersService.create(create_args as CreateUserServiceInputDto);
 
             verify(usersRepositoryMock.create(deepEqual(create_args))).called();
             verify(usersRepositoryMock.save(deepEqual(entity))).called();
@@ -909,8 +861,7 @@ describe('Users Service', function() {
 
         test('should return unexpected error', async function() {
             const usersService: UsersService = context.usersService;
-            const usersRepositoryMock: UsersRepository =
-                context.usersRepositoryMock;
+            const usersRepositoryMock: UsersRepository = context.usersRepositoryMock;
 
             const email = 'test@test.com';
             const username = 'salut';
@@ -940,16 +891,10 @@ describe('Users Service', function() {
                 throw new Error('Unexpected internal error');
             };
 
-            when(usersRepositoryMock.create(deepEqual(create_args))).thenReturn(
-                entity,
-            );
-            when(usersRepositoryMock.save(deepEqual(entity))).thenCall(
-                injected_cb,
-            );
+            when(usersRepositoryMock.create(deepEqual(create_args))).thenReturn(entity);
+            when(usersRepositoryMock.save(deepEqual(entity))).thenCall(injected_cb);
 
-            const res = await usersService.create(
-                create_args as CreateUserServiceInputDto,
-            );
+            const res = await usersService.create(create_args as CreateUserServiceInputDto);
 
             verify(usersRepositoryMock.create(deepEqual(create_args))).called();
             verify(usersRepositoryMock.save(deepEqual(entity))).called();
@@ -962,10 +907,8 @@ describe('Users Service', function() {
     describe('update', function() {
         it('should update user', async function() {
             const usersService: UsersService = context.usersService;
-            const userEntityModelMock: UserEntityModelMock =
-                context.userEntityModelMock;
-            const usersRepositoryMock: UsersRepository =
-                context.usersRepositoryMock;
+            const userEntityModelMock: UserEntityModelMock = context.userEntityModelMock;
+            const usersRepositoryMock: UsersRepository = context.usersRepositoryMock;
 
             const email = 'test@test.com';
             const username = 'salut';
@@ -1002,9 +945,7 @@ describe('Users Service', function() {
                 };
             };
 
-            when(
-                usersRepositoryMock.findOne(deepEqual({ id: uuid(id) as any })),
-            ).thenCall(injected_cb);
+            when(usersRepositoryMock.findOne(deepEqual({ id: uuid(id) as any }))).thenCall(injected_cb);
 
             when(
                 usersRepositoryMock.update(
@@ -1037,8 +978,7 @@ describe('Users Service', function() {
 
         it('should report update error', async function() {
             const usersService: UsersService = context.usersService;
-            const usersRepositoryMock: UsersRepository =
-                context.usersRepositoryMock;
+            const usersRepositoryMock: UsersRepository = context.usersRepositoryMock;
 
             const id = '00000000-0000-0000-0000-000000000000';
 

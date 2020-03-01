@@ -3,15 +3,7 @@ import { ImagesController } from '@app/server/controllers/images/Images.controll
 import { ImagesService } from '@lib/common/images/Images.service';
 import { ConfigService } from '@lib/common/config/Config.service';
 import { FSService } from '@lib/common/fs/FS.service';
-import {
-    anything,
-    capture,
-    deepEqual,
-    instance,
-    mock,
-    verify,
-    when,
-} from 'ts-mockito';
+import { anything, capture, deepEqual, instance, mock, verify, when } from 'ts-mockito';
 import { UserDto } from '@lib/common/users/dto/User.dto';
 import { ESSearchReturn } from '@lib/common/utils/ESSearchReturn';
 import * as path from 'path';
@@ -55,9 +47,7 @@ describe('Images Controller', function() {
             controllers: [ImagesController],
         }).compile();
 
-        context.imagesController = module.get<ImagesController>(
-            ImagesController,
-        );
+        context.imagesController = module.get<ImagesController>(ImagesController);
     });
 
     describe('upload', function() {
@@ -81,18 +71,11 @@ describe('Images Controller', function() {
             const buffer = Buffer.from('o'.repeat(10000));
             const hash = keccak256(buffer.toString('hex')).toLowerCase();
 
-            when(context.configServiceMock.get('IMAGE_MAX_SIZE')).thenReturn(
-                '10',
-            );
-            when(
-                context.configServiceMock.get('IMAGE_SERVE_DIRECTORY'),
-            ).thenReturn('/images');
+            when(context.configServiceMock.get('IMAGE_MAX_SIZE')).thenReturn('10');
+            when(context.configServiceMock.get('IMAGE_SERVE_DIRECTORY')).thenReturn('/images');
             when(
                 context.fsService.writeFile(
-                    path.join(
-                        '/images',
-                        'ec677b12-d420-43a6-a597-ef84bf09f845.png',
-                    ),
+                    path.join('/images', 'ec677b12-d420-43a6-a597-ef84bf09f845.png'),
                     anything(),
                 ),
             );
@@ -162,8 +145,7 @@ describe('Images Controller', function() {
                         size: 10000,
                         mimetype: 'image/png',
                         encoding: 'utf8',
-                        hash:
-                            '0xc1ebe97418be29324a90d8036d927135dbdc6381bbcd1d9c084ecb64ffe32eeb',
+                        hash: '0xc1ebe97418be29324a90d8036d927135dbdc6381bbcd1d9c084ecb64ffe32eeb',
                         links: 0,
                     },
                 ],
@@ -171,10 +153,7 @@ describe('Images Controller', function() {
 
             verify(
                 context.fsService.writeFile(
-                    path.join(
-                        '/images',
-                        'ec677b12-d420-43a6-a597-ef84bf09f845.png',
-                    ),
+                    path.join('/images', 'ec677b12-d420-43a6-a597-ef84bf09f845.png'),
                     anything(),
                 ),
             ).called();
@@ -190,9 +169,7 @@ describe('Images Controller', function() {
                 ),
             ).called();
             verify(context.configServiceMock.get('IMAGE_MAX_SIZE')).called();
-            verify(
-                context.configServiceMock.get('IMAGE_SERVE_DIRECTORY'),
-            ).called();
+            verify(context.configServiceMock.get('IMAGE_SERVE_DIRECTORY')).called();
             verify(
                 context.imagesServiceMock.searchElastic(
                     deepEqual({
@@ -254,18 +231,11 @@ describe('Images Controller', function() {
                 },
             };
 
-            when(context.configServiceMock.get('IMAGE_MAX_SIZE')).thenReturn(
-                '10',
-            );
-            when(
-                context.configServiceMock.get('IMAGE_SERVE_DIRECTORY'),
-            ).thenReturn('/images');
+            when(context.configServiceMock.get('IMAGE_MAX_SIZE')).thenReturn('10');
+            when(context.configServiceMock.get('IMAGE_SERVE_DIRECTORY')).thenReturn('/images');
             when(
                 context.fsService.writeFile(
-                    path.join(
-                        '/images',
-                        'ec677b12-d420-43a6-a597-ef84bf09f845.png',
-                    ),
+                    path.join('/images', 'ec677b12-d420-43a6-a597-ef84bf09f845.png'),
                     anything(),
                 ),
             );
@@ -312,8 +282,7 @@ describe('Images Controller', function() {
                         size: 10000,
                         mimetype: 'image/png',
                         encoding: 'utf8',
-                        hash:
-                            '0xc1ebe97418be29324a90d8036d927135dbdc6381bbcd1d9c084ecb64ffe32eeb',
+                        hash: '0xc1ebe97418be29324a90d8036d927135dbdc6381bbcd1d9c084ecb64ffe32eeb',
                         links: 0,
                     },
                 ],
@@ -321,10 +290,7 @@ describe('Images Controller', function() {
 
             verify(
                 context.fsService.writeFile(
-                    path.join(
-                        '/images',
-                        'ec677b12-d420-43a6-a597-ef84bf09f845.png',
-                    ),
+                    path.join('/images', 'ec677b12-d420-43a6-a597-ef84bf09f845.png'),
                     anything(),
                 ),
             ).never();
@@ -340,9 +306,7 @@ describe('Images Controller', function() {
                 ),
             ).never();
             verify(context.configServiceMock.get('IMAGE_MAX_SIZE')).called();
-            verify(
-                context.configServiceMock.get('IMAGE_SERVE_DIRECTORY'),
-            ).never();
+            verify(context.configServiceMock.get('IMAGE_SERVE_DIRECTORY')).never();
             verify(
                 context.imagesServiceMock.searchElastic(
                     deepEqual({
@@ -367,9 +331,7 @@ describe('Images Controller', function() {
             const buffer = Buffer.from('o'.repeat(10000000));
             const hash = keccak256(buffer.toString('hex')).toLowerCase();
 
-            when(context.configServiceMock.get('IMAGE_MAX_SIZE')).thenReturn(
-                '1',
-            );
+            when(context.configServiceMock.get('IMAGE_MAX_SIZE')).thenReturn('1');
 
             await expect(
                 context.imagesController.upload(
@@ -399,10 +361,7 @@ describe('Images Controller', function() {
 
             verify(
                 context.fsService.writeFile(
-                    path.join(
-                        '/images',
-                        'ec677b12-d420-43a6-a597-ef84bf09f845.png',
-                    ),
+                    path.join('/images', 'ec677b12-d420-43a6-a597-ef84bf09f845.png'),
                     anything(),
                 ),
             ).never();
@@ -418,9 +377,7 @@ describe('Images Controller', function() {
                 ),
             ).never();
             verify(context.configServiceMock.get('IMAGE_MAX_SIZE')).called();
-            verify(
-                context.configServiceMock.get('IMAGE_SERVE_DIRECTORY'),
-            ).never();
+            verify(context.configServiceMock.get('IMAGE_SERVE_DIRECTORY')).never();
             verify(
                 context.imagesServiceMock.searchElastic(
                     deepEqual({
@@ -445,9 +402,7 @@ describe('Images Controller', function() {
             const buffer = Buffer.from('o'.repeat(1000000));
             const hash = keccak256(buffer.toString('hex')).toLowerCase();
 
-            when(context.configServiceMock.get('IMAGE_MAX_SIZE')).thenReturn(
-                '10',
-            );
+            when(context.configServiceMock.get('IMAGE_MAX_SIZE')).thenReturn('10');
 
             await expect(
                 context.imagesController.upload(
@@ -477,10 +432,7 @@ describe('Images Controller', function() {
 
             verify(
                 context.fsService.writeFile(
-                    path.join(
-                        '/images',
-                        'ec677b12-d420-43a6-a597-ef84bf09f845.png',
-                    ),
+                    path.join('/images', 'ec677b12-d420-43a6-a597-ef84bf09f845.png'),
                     anything(),
                 ),
             ).never();
@@ -496,9 +448,7 @@ describe('Images Controller', function() {
                 ),
             ).never();
             verify(context.configServiceMock.get('IMAGE_MAX_SIZE')).called();
-            verify(
-                context.configServiceMock.get('IMAGE_SERVE_DIRECTORY'),
-            ).never();
+            verify(context.configServiceMock.get('IMAGE_SERVE_DIRECTORY')).never();
             verify(
                 context.imagesServiceMock.searchElastic(
                     deepEqual({
@@ -539,12 +489,8 @@ describe('Images Controller', function() {
             const buffer = Buffer.from('o'.repeat(10000));
             const hash = keccak256(buffer.toString('hex')).toLowerCase();
 
-            when(context.configServiceMock.get('IMAGE_MAX_SIZE')).thenReturn(
-                '10',
-            );
-            when(
-                context.configServiceMock.get('IMAGE_SERVE_DIRECTORY'),
-            ).thenReturn('/images');
+            when(context.configServiceMock.get('IMAGE_MAX_SIZE')).thenReturn('10');
+            when(context.configServiceMock.get('IMAGE_SERVE_DIRECTORY')).thenReturn('/images');
             when(
                 context.imagesServiceMock.searchElastic(
                     deepEqual({
@@ -595,10 +541,7 @@ describe('Images Controller', function() {
 
             verify(
                 context.fsService.writeFile(
-                    path.join(
-                        '/images',
-                        'ec677b12-d420-43a6-a597-ef84bf09f845.png',
-                    ),
+                    path.join('/images', 'ec677b12-d420-43a6-a597-ef84bf09f845.png'),
                     anything(),
                 ),
             ).never();
@@ -614,9 +557,7 @@ describe('Images Controller', function() {
                 ),
             ).never();
             verify(context.configServiceMock.get('IMAGE_MAX_SIZE')).called();
-            verify(
-                context.configServiceMock.get('IMAGE_SERVE_DIRECTORY'),
-            ).never();
+            verify(context.configServiceMock.get('IMAGE_SERVE_DIRECTORY')).never();
             verify(
                 context.imagesServiceMock.searchElastic(
                     deepEqual({
@@ -657,18 +598,11 @@ describe('Images Controller', function() {
             const buffer = Buffer.from('o'.repeat(10000));
             const hash = keccak256(buffer.toString('hex')).toLowerCase();
 
-            when(context.configServiceMock.get('IMAGE_MAX_SIZE')).thenReturn(
-                '10',
-            );
-            when(
-                context.configServiceMock.get('IMAGE_SERVE_DIRECTORY'),
-            ).thenReturn('/images');
+            when(context.configServiceMock.get('IMAGE_MAX_SIZE')).thenReturn('10');
+            when(context.configServiceMock.get('IMAGE_SERVE_DIRECTORY')).thenReturn('/images');
             when(
                 context.fsService.writeFile(
-                    path.join(
-                        '/images',
-                        'ec677b12-d420-43a6-a597-ef84bf09f845.png',
-                    ),
+                    path.join('/images', 'ec677b12-d420-43a6-a597-ef84bf09f845.png'),
                     anything(),
                 ),
             );
@@ -736,10 +670,7 @@ describe('Images Controller', function() {
 
             verify(
                 context.fsService.writeFile(
-                    path.join(
-                        '/images',
-                        'ec677b12-d420-43a6-a597-ef84bf09f845.png',
-                    ),
+                    path.join('/images', 'ec677b12-d420-43a6-a597-ef84bf09f845.png'),
                     anything(),
                 ),
             ).never();
@@ -755,9 +686,7 @@ describe('Images Controller', function() {
                 ),
             ).called();
             verify(context.configServiceMock.get('IMAGE_MAX_SIZE')).called();
-            verify(
-                context.configServiceMock.get('IMAGE_SERVE_DIRECTORY'),
-            ).never();
+            verify(context.configServiceMock.get('IMAGE_SERVE_DIRECTORY')).never();
             verify(
                 context.imagesServiceMock.searchElastic(
                     deepEqual({

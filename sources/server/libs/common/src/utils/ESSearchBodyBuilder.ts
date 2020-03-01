@@ -11,10 +11,7 @@ import { ServiceResponse } from '@lib/common/utils/ServiceResponse';
  * @param body
  * @param args
  */
-function digger(
-    body: Partial<EsSearchOptionsStatic>,
-    ...args: string[]
-): Partial<EsSearchOptionsStatic> {
+function digger(body: Partial<EsSearchOptionsStatic>, ...args: string[]): Partial<EsSearchOptionsStatic> {
     if (!args.length) {
         return body;
     }
@@ -325,10 +322,7 @@ function nestedManager<T>(
         body: Partial<EsSearchOptionsStatic>,
     ) => Partial<EsSearchOptionsStatic>,
 ): Partial<EsSearchOptionsStatic> {
-    if (
-        typeof field[conditionField] === 'object' &&
-        !Array.isArray(field[conditionField])
-    ) {
+    if (typeof field[conditionField] === 'object' && !Array.isArray(field[conditionField])) {
         for (const key of Object.keys(field[conditionField])) {
             const nestedBody: Partial<EsSearchOptionsStatic> = SearchableFieldConverter(
                 `${fieldName}.${key}`,
@@ -367,113 +361,43 @@ export function SearchableFieldConverter<T = any>(
     body: Partial<EsSearchOptionsStatic>,
 ): Partial<EsSearchOptionsStatic> {
     if (defined(field.$eq)) {
-        body = nestedManager(
-            fieldName,
-            field,
-            body,
-            'must',
-            '$eq',
-            SearchableFieldEqualStatement,
-        );
+        body = nestedManager(fieldName, field, body, 'must', '$eq', SearchableFieldEqualStatement);
     }
 
     if (defined(field.$ne)) {
-        body = nestedManager(
-            fieldName,
-            field,
-            body,
-            'must',
-            '$ne',
-            SearchableFieldNotEqualStatement,
-        );
+        body = nestedManager(fieldName, field, body, 'must', '$ne', SearchableFieldNotEqualStatement);
     }
 
     if (defined(field.$in)) {
-        body = nestedManager(
-            fieldName,
-            field,
-            body,
-            'must',
-            '$in',
-            SearchableFieldInStatement,
-        );
+        body = nestedManager(fieldName, field, body, 'must', '$in', SearchableFieldInStatement);
     }
 
     if (defined(field.$nin)) {
-        body = nestedManager(
-            fieldName,
-            field,
-            body,
-            'must',
-            '$nin',
-            SearchableFieldNotInStatement,
-        );
+        body = nestedManager(fieldName, field, body, 'must', '$nin', SearchableFieldNotInStatement);
     }
 
     if (defined(field.$contains)) {
-        body = nestedManager(
-            fieldName,
-            field,
-            body,
-            'must',
-            '$contains',
-            SearchableFieldContainsStatement,
-        );
+        body = nestedManager(fieldName, field, body, 'must', '$contains', SearchableFieldContainsStatement);
     }
 
     if (defined(field.$ncontains)) {
-        body = nestedManager(
-            fieldName,
-            field,
-            body,
-            'must',
-            '$ncontains',
-            SearchableFieldNotContainsStatement,
-        );
+        body = nestedManager(fieldName, field, body, 'must', '$ncontains', SearchableFieldNotContainsStatement);
     }
 
     if (defined(field.$lt)) {
-        body = nestedManager(
-            fieldName,
-            field,
-            body,
-            'must',
-            '$lt',
-            SearchableFieldLowerThanStatement,
-        );
+        body = nestedManager(fieldName, field, body, 'must', '$lt', SearchableFieldLowerThanStatement);
     }
 
     if (defined(field.$gt)) {
-        body = nestedManager(
-            fieldName,
-            field,
-            body,
-            'must',
-            '$gt',
-            SearchableFieldGreaterThanStatement,
-        );
+        body = nestedManager(fieldName, field, body, 'must', '$gt', SearchableFieldGreaterThanStatement);
     }
 
     if (defined(field.$lte)) {
-        body = nestedManager(
-            fieldName,
-            field,
-            body,
-            'must',
-            '$lte',
-            SearchableFieldLowerThanEqualStatement,
-        );
+        body = nestedManager(fieldName, field, body, 'must', '$lte', SearchableFieldLowerThanEqualStatement);
     }
 
     if (defined(field.$gte)) {
-        body = nestedManager(
-            fieldName,
-            field,
-            body,
-            'must',
-            '$gte',
-            SearchableFieldGreaterThanEqualStatement,
-        );
+        body = nestedManager(fieldName, field, body, 'must', '$gte', SearchableFieldGreaterThanEqualStatement);
     }
 
     return body;
@@ -485,10 +409,7 @@ export function SearchableFieldConverter<T = any>(
  * @param field
  * @param body
  */
-function sortNestedManager(
-    field: Sort[],
-    body: Partial<EsSearchOptionsStatic>,
-): void {
+function sortNestedManager(field: Sort[], body: Partial<EsSearchOptionsStatic>): void {
     body.sort = [];
 
     for (const sortItem of field) {
@@ -517,9 +438,7 @@ function sortNestedManager(
  * @param req
  * @constructor
  */
-export function ESSearchBodyBuilder(
-    req: Partial<SortablePagedSearch>,
-): ServiceResponse<EsSearchOptionsStatic> {
+export function ESSearchBodyBuilder(req: Partial<SortablePagedSearch>): ServiceResponse<EsSearchOptionsStatic> {
     let body: Partial<EsSearchOptionsStatic> = {};
 
     for (const field of Object.keys(req)) {

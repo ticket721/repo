@@ -1,9 +1,4 @@
-import {
-    Column,
-    CreateDateColumn,
-    Entity,
-    UpdateDateColumn,
-} from '@iaminfinity/express-cassandra';
+import { Column, CreateDateColumn, Entity, UpdateDateColumn } from '@iaminfinity/express-cassandra';
 
 /**
  * Data Model of a single EVM Event

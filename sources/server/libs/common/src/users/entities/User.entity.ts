@@ -1,8 +1,4 @@
-import {
-    Entity,
-    Column,
-    GeneratedUUidColumn,
-} from '@iaminfinity/express-cassandra';
+import { Entity, Column, GeneratedUUidColumn } from '@iaminfinity/express-cassandra';
 
 /**
  * Entity representing a user

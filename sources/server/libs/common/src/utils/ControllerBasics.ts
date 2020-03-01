@@ -14,13 +14,11 @@ import { fromES } from '@lib/common/utils/fromES';
  * @param service
  * @param query
  */
-export async function search<
-    DataType,
-    ServiceType extends CRUDExtension<any, any>
->(service: ServiceType, query: SortablePagedSearch): Promise<DataType[]> {
-    const es: ServiceResponse<Partial<
-        EsSearchOptionsStatic
-    >> = ESSearchBodyBuilder(query);
+export async function search<DataType, ServiceType extends CRUDExtension<any, any>>(
+    service: ServiceType,
+    query: SortablePagedSearch,
+): Promise<DataType[]> {
+    const es: ServiceResponse<Partial<EsSearchOptionsStatic>> = ESSearchBodyBuilder(query);
 
     /**
      * Handle Query Builder errors
@@ -72,10 +70,7 @@ export async function search<
  * @param query
  * @param hashed
  */
-export async function hash<
-    DataType,
-    ServiceType extends CRUDExtension<any, any>
->(
+export async function hash<DataType, ServiceType extends CRUDExtension<any, any>>(
     service: ServiceType,
     query: SortablePagedSearch,
     hashed: string[],

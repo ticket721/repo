@@ -1,29 +1,19 @@
 import { CRUDExtension } from '@lib/common/crud/CRUD.extension';
 import { Injectable } from '@nestjs/common';
 import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
-import {
-    BaseModel,
-    InjectModel,
-    InjectRepository,
-} from '@iaminfinity/express-cassandra';
+import { BaseModel, InjectModel, InjectRepository } from '@iaminfinity/express-cassandra';
 import { ActionSetsRepository } from '@lib/common/actionsets/ActionSets.repository';
 import { ActionSet } from '@lib/common/actionsets/helper/ActionSet';
 
 export type Progress = (p: number) => Promise<void>;
 
-export type InputActionHandler = (
-    actionSet: ActionSet,
-    progress: Progress,
-) => Promise<[ActionSet, boolean]>;
+export type InputActionHandler = (actionSet: ActionSet, progress: Progress) => Promise<[ActionSet, boolean]>;
 
 /**
  * ActionSets Service, implements CRUD
  */
 @Injectable()
-export class ActionSetsService extends CRUDExtension<
-    ActionSetsRepository,
-    ActionSetEntity
-> {
+export class ActionSetsService extends CRUDExtension<ActionSetsRepository, ActionSetEntity> {
     /**
      * Dependency Injection
      *

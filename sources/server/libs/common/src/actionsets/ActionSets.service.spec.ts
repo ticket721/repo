@@ -1,20 +1,14 @@
 import { ActionSetsService } from '@lib/common/actionsets/ActionSets.service';
 import { ActionSetsRepository } from '@lib/common/actionsets/ActionSets.repository';
 import { instance, mock, when } from 'ts-mockito';
-import {
-    getModelToken,
-    getRepositoryToken,
-} from '@iaminfinity/express-cassandra/dist/utils/cassandra-orm.utils';
+import { getModelToken, getRepositoryToken } from '@iaminfinity/express-cassandra/dist/utils/cassandra-orm.utils';
 import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EsSearchOptionsStatic } from '@iaminfinity/express-cassandra/dist/orm/interfaces/externals/express-cassandra.interface';
 import { ConfigService } from '@lib/common/config/Config.service';
 
 class EntityModelMock {
-    search(
-        options: EsSearchOptionsStatic,
-        callback?: (err: any, ret: any) => void,
-    ): void {
+    search(options: EsSearchOptionsStatic, callback?: (err: any, ret: any) => void): void {
         return;
     }
 
@@ -72,26 +66,18 @@ describe('ActionSets Service', function() {
             ],
         }).compile();
 
-        context.actionSetsService = app.get<ActionSetsService>(
-            ActionSetsService,
-        );
+        context.actionSetsService = app.get<ActionSetsService>(ActionSetsService);
     });
 
     describe('getInputHandler', function() {
         it('should recover the input handler', async function() {
-            expect(
-                context.actionSetsService.getInputHandler('first'),
-            ).toBeUndefined();
+            expect(context.actionSetsService.getInputHandler('first')).toBeUndefined();
             context.actionSetsService.setInputHandler('first', {} as any);
-            expect(
-                context.actionSetsService.getInputHandler('first'),
-            ).toBeDefined();
+            expect(context.actionSetsService.getInputHandler('first')).toBeDefined();
         });
 
         it('should recover undefined if no handler exists', async function() {
-            expect(
-                context.actionSetsService.getInputHandler('first'),
-            ).toBeUndefined();
+            expect(context.actionSetsService.getInputHandler('first')).toBeUndefined();
         });
     });
 });

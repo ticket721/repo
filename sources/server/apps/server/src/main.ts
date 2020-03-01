@@ -10,10 +10,7 @@ import { Queue } from 'bull';
 import { getQueueToken } from '@nestjs/bull';
 import { setQueues, UI } from 'bull-board';
 import * as express from 'express';
-import {
-    InstanceSignature,
-    OutrospectionService,
-} from '@lib/common/outrospection/Outrospection.service';
+import { InstanceSignature, OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
 
 /**
  * Core Logger
@@ -63,13 +60,9 @@ async function main() {
 
     app.enableShutdownHooks();
     app.get(ShutdownService).subscribeToShutdown(() => app.close());
-    const instanceSignature: InstanceSignature = await app
-        .get(OutrospectionService)
-        .getInstanceSignature();
+    const instanceSignature: InstanceSignature = await app.get(OutrospectionService).getInstanceSignature();
 
-    logger.log(
-        `Started instance with signature ${instanceSignature.signature}`,
-    );
+    logger.log(`Started instance with signature ${instanceSignature.signature}`);
 
     await app.listen(configService.get('API_PORT'));
 }

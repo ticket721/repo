@@ -10,10 +10,7 @@ import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
 
 @Module({
     imports: [
-        ExpressCassandraModule.forFeature([
-            ActionSetEntity,
-            ActionSetsRepository,
-        ]),
+        ExpressCassandraModule.forFeature([ActionSetEntity, ActionSetsRepository]),
         BullModule.registerQueueAsync({
             inject: [ConfigService],
             name: 'action',

@@ -89,9 +89,7 @@ export class OutrospectionService {
 
             if (
                 hostname.indexOf(outrospectionOptions.name) !== 0 ||
-                !this.positionRegexp.test(
-                    hostname.slice(outrospectionOptions.name.length),
-                )
+                !this.positionRegexp.test(hostname.slice(outrospectionOptions.name.length))
             ) {
                 const error = new Error(
                     `Invalid instance name '${outrospectionOptions.name}', cannot extract position in hostname '${hostname}'`,
@@ -100,11 +98,7 @@ export class OutrospectionService {
                 throw error;
             }
 
-            this.position =
-                parseInt(
-                    hostname.slice(outrospectionOptions.name.length + 1),
-                    10,
-                ) + 1;
+            this.position = parseInt(hostname.slice(outrospectionOptions.name.length + 1), 10) + 1;
 
             if (this.position === 1) {
                 this.master = true;
@@ -119,9 +113,7 @@ export class OutrospectionService {
         const total = 1;
 
         return {
-            signature: `${this.outrospectionOptions.name} [${
-                this.position
-            } / ${total}]${this.master ? ' MASTER' : ''}`,
+            signature: `${this.outrospectionOptions.name} [${this.position} / ${total}]${this.master ? ' MASTER' : ''}`,
             master: this.master,
             name: this.outrospectionOptions.name,
             position: this.position,

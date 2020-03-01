@@ -5,8 +5,7 @@ import { CurrenciesService } from '@lib/common/currencies/Currencies.service';
 /**
  * Build options for the Currencies Module
  */
-export interface CurrenciesModuleAsyncOptions
-    extends Pick<DynamicModule, 'imports'> {
+export interface CurrenciesModuleAsyncOptions extends Pick<DynamicModule, 'imports'> {
     /**
      * Factory to inject Currencies Service options
      * @param args

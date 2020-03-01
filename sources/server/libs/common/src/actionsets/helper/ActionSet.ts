@@ -1,8 +1,4 @@
-import {
-    ActionEntity,
-    ActionSetEntity,
-    ActionSetStatus,
-} from '@lib/common/actionsets/entities/ActionSet.entity';
+import { ActionEntity, ActionSetEntity, ActionSetStatus } from '@lib/common/actionsets/entities/ActionSet.entity';
 import { Action } from '@lib/common/actionsets/helper/Action';
 import { UserDto } from '@lib/common/users/dto/User.dto';
 import { uuidEq } from '@ticket721sources/global';
@@ -62,18 +58,14 @@ export class ActionSet {
      * Recover actions field
      */
     get actions(): Action[] {
-        return this.entity.actions.map(
-            (a: ActionEntity): Action => new Action().load(a),
-        );
+        return this.entity.actions.map((a: ActionEntity): Action => new Action().load(a));
     }
 
     /**
      * Recover current action
      */
     get action(): Action {
-        return new Action().load(
-            this.entity.actions[this.entity.current_action],
-        );
+        return new Action().load(this.entity.actions[this.entity.current_action]);
     }
 
     /**
@@ -216,11 +208,8 @@ export class ActionSet {
             this.setStatus('complete');
         } else {
             this.entity.current_action = newIdx;
-            this.entity.actions[this.entity.current_action].status =
-                'in progress';
-            this.setStatus(
-                `${this.action.type}:in progress` as ActionSetStatus,
-            );
+            this.entity.actions[this.entity.current_action].status = 'in progress';
+            this.setStatus(`${this.action.type}:in progress` as ActionSetStatus);
         }
 
         return this;

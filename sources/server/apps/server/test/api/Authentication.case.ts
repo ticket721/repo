@@ -12,9 +12,7 @@ import { INestApplication } from '@nestjs/common';
 import { EmailValidationResponseDto } from '@app/server/authentication/dto/EmailValidationResponse.dto';
 import { StatusCodes, StatusNames } from '@lib/common/utils/codes';
 
-export async function register(
-    getCtx: () => { app: INestApplication; sdk: T721SDK },
-): Promise<void> {
+export async function register(getCtx: () => { app: INestApplication; sdk: T721SDK }): Promise<void> {
     jest.setTimeout(60000);
     const { sdk }: { sdk: T721SDK } = getCtx();
 
@@ -23,20 +21,11 @@ export async function register(
     const email = 'test@test.com';
     const username = 'mortimr';
 
-    const reg_res = (await sdk.localRegister(
-        email,
-        password,
-        username,
-        wallet,
-        () => {},
-        'fr',
-    )) as any;
+    const reg_res = (await sdk.localRegister(email, password, username, wallet, () => {}, 'fr')) as any;
 
     expect(reg_res.report_status).toEqual(undefined);
 
-    const resp: AxiosResponse<LocalRegisterResponseDto> = reg_res as AxiosResponse<
-        LocalRegisterResponseDto
-    >;
+    const resp: AxiosResponse<LocalRegisterResponseDto> = reg_res as AxiosResponse<LocalRegisterResponseDto>;
     expect(resp.data).toBeDefined();
     expect(resp.data.user.email).toEqual(email);
     expect(resp.data.user.username).toEqual(username);
@@ -66,10 +55,7 @@ export async function register(
         },
     });
 
-    const auth_res: AxiosResponse<LocalLoginResponseDto> = await sdk.localLogin(
-        'test@test.com',
-        password,
-    );
+    const auth_res: AxiosResponse<LocalLoginResponseDto> = await sdk.localLogin('test@test.com', password);
     expect(auth_res.data).toBeDefined();
     expect(auth_res.data.user.email).toEqual(email);
     expect(auth_res.data.user.username).toEqual(username);
@@ -77,9 +63,7 @@ export async function register(
     expect(auth_res.status).toEqual(200);
     expect(auth_res.statusText).toEqual('OK');
 
-    await expect(
-        sdk.localRegister(email, password, username, wallet, () => {}),
-    ).rejects.toMatchObject({
+    await expect(sdk.localRegister(email, password, username, wallet, () => {})).rejects.toMatchObject({
         response: {
             data: {
                 statusCode: 409,
@@ -91,15 +75,7 @@ export async function register(
         },
     });
 
-    await expect(
-        sdk.localRegister(
-            'test2@test.com',
-            password,
-            username,
-            wallet,
-            () => {},
-        ),
-    ).rejects.toMatchObject({
+    await expect(sdk.localRegister('test2@test.com', password, username, wallet, () => {})).rejects.toMatchObject({
         response: {
             data: {
                 statusCode: 409,
@@ -112,9 +88,7 @@ export async function register(
     });
 }
 
-export async function web3register(
-    getCtx: () => { app: INestApplication; sdk: T721SDK },
-): Promise<void> {
+export async function web3register(getCtx: () => { app: INestApplication; sdk: T721SDK }): Promise<void> {
     jest.setTimeout(60000);
     const { sdk }: { sdk: T721SDK } = getCtx();
 
@@ -125,37 +99,19 @@ export async function web3register(
     const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(1);
     const web3LoginSigner: Web3LoginSigner = new Web3LoginSigner(1);
 
-    const registerPayload = web3RegisterSigner.generateRegistrationProofPayload(
-        email,
-        username,
-    );
-    const signedPayload = await web3RegisterSigner.sign(
-        wallet.privateKey,
-        registerPayload[1],
-    );
+    const registerPayload = web3RegisterSigner.generateRegistrationProofPayload(email, username);
+    const signedPayload = await web3RegisterSigner.sign(wallet.privateKey, registerPayload[1]);
     let loginPayload = web3LoginSigner.generateAuthenticationProofPayload();
-    let signedLoginPayload = await web3LoginSigner.sign(
-        wallet.privateKey,
-        loginPayload[1],
-    );
+    let signedLoginPayload = await web3LoginSigner.sign(wallet.privateKey, loginPayload[1]);
 
-    const resp = await sdk.web3Register(
-        email,
-        username,
-        registerPayload[0],
-        wallet.address,
-        signedPayload.hex,
-        'fr',
-    );
+    const resp = await sdk.web3Register(email, username, registerPayload[0], wallet.address, signedPayload.hex, 'fr');
     expect(resp.data).toBeDefined();
     expect(resp.data.user.wallet).toEqual(null);
     expect(resp.data.user.email).toEqual(email);
     expect(resp.data.user.locale).toEqual('fr');
     expect(resp.data.user.valid).toEqual(false);
     expect(resp.data.user.username).toEqual(username);
-    expect(resp.data.user.address).toEqual(
-        toAcceptedAddressFormat(wallet.address),
-    );
+    expect(resp.data.user.address).toEqual(toAcceptedAddressFormat(wallet.address));
     expect(resp.data.token).toBeDefined();
     expect(resp.status).toEqual(201);
     expect(resp.statusText).toEqual('Created');
@@ -180,10 +136,7 @@ export async function web3register(
         },
     });
 
-    const login_resp = await sdk.web3Login(
-        loginPayload[0],
-        signedLoginPayload.hex,
-    );
+    const login_resp = await sdk.web3Login(loginPayload[0], signedLoginPayload.hex);
     expect(login_resp.data).toEqual({
         user: {
             address: toAcceptedAddressFormat(wallet.address),
@@ -198,14 +151,8 @@ export async function web3register(
         token: login_resp.data.token,
     });
 
-    const otherRegisterPayload = web3RegisterSigner.generateRegistrationProofPayload(
-        'other@test.com',
-        'other_user',
-    );
-    const otherSignedPayload = await web3RegisterSigner.sign(
-        other_wallet.privateKey,
-        otherRegisterPayload[1],
-    );
+    const otherRegisterPayload = web3RegisterSigner.generateRegistrationProofPayload('other@test.com', 'other_user');
+    const otherSignedPayload = await web3RegisterSigner.sign(other_wallet.privateKey, otherRegisterPayload[1]);
     await sdk.web3Register(
         'other@test.com',
         'other_user',
@@ -215,13 +162,7 @@ export async function web3register(
     );
 
     await expect(
-        sdk.web3Register(
-            email,
-            username,
-            registerPayload[0],
-            wallet.address,
-            signedPayload.hex,
-        ),
+        sdk.web3Register(email, username, registerPayload[0], wallet.address, signedPayload.hex),
     ).rejects.toMatchObject({
         response: {
             data: {
@@ -235,13 +176,7 @@ export async function web3register(
     });
 
     await expect(
-        sdk.web3Register(
-            'test2@test.com',
-            username,
-            registerPayload[0],
-            wallet.address,
-            signedPayload.hex,
-        ),
+        sdk.web3Register('test2@test.com', username, registerPayload[0], wallet.address, signedPayload.hex),
     ).rejects.toMatchObject({
         response: {
             data: {
@@ -255,13 +190,7 @@ export async function web3register(
     });
 
     await expect(
-        sdk.web3Register(
-            'test2@test.com',
-            'mortimr2',
-            registerPayload[0],
-            (await createWallet()).address,
-            '0x',
-        ),
+        sdk.web3Register('test2@test.com', 'mortimr2', registerPayload[0], (await createWallet()).address, '0x'),
     ).rejects.toMatchObject({
         response: {
             data: {
@@ -294,14 +223,8 @@ export async function web3register(
         },
     });
 
-    const conflictRegisterPayload = web3RegisterSigner.generateRegistrationProofPayload(
-        'test2@test.com',
-        'mortimr2',
-    );
-    const conflictSignedPayload = await web3RegisterSigner.sign(
-        other_wallet.privateKey,
-        conflictRegisterPayload[1],
-    );
+    const conflictRegisterPayload = web3RegisterSigner.generateRegistrationProofPayload('test2@test.com', 'mortimr2');
+    const conflictSignedPayload = await web3RegisterSigner.sign(other_wallet.privateKey, conflictRegisterPayload[1]);
 
     await expect(
         sdk.web3Register(
@@ -336,19 +259,10 @@ export async function web3register(
         },
         'Web3Register',
     );
-    const future_signature = await web3RegisterSigner.sign(
-        third_wallet.privateKey,
-        future_payload,
-    );
+    const future_signature = await web3RegisterSigner.sign(third_wallet.privateKey, future_payload);
 
     await expect(
-        sdk.web3Register(
-            future_email,
-            future_username,
-            future,
-            third_wallet.address,
-            future_signature.hex,
-        ),
+        sdk.web3Register(future_email, future_username, future, third_wallet.address, future_signature.hex),
     ).rejects.toMatchObject({
         response: {
             data: {
@@ -373,19 +287,10 @@ export async function web3register(
         },
         'Web3Register',
     );
-    const past_signature = await web3RegisterSigner.sign(
-        third_wallet.privateKey,
-        past_payload,
-    );
+    const past_signature = await web3RegisterSigner.sign(third_wallet.privateKey, past_payload);
 
     await expect(
-        sdk.web3Register(
-            past_email,
-            past_username,
-            past,
-            third_wallet.address,
-            past_signature.hex,
-        ),
+        sdk.web3Register(past_email, past_username, past, third_wallet.address, past_signature.hex),
     ).rejects.toMatchObject({
         response: {
             data: {
@@ -398,9 +303,7 @@ export async function web3register(
         },
     });
 
-    await expect(
-        sdk.web3Login(loginPayload[0], signedLoginPayload.hex),
-    ).rejects.toMatchObject({
+    await expect(sdk.web3Login(loginPayload[0], signedLoginPayload.hex)).rejects.toMatchObject({
         response: {
             data: {
                 message: 'duplicate_token_usage',
@@ -412,9 +315,7 @@ export async function web3register(
         },
     });
 
-    await expect(
-        sdk.web3Login(loginPayload[0] - 1, signedLoginPayload.hex),
-    ).rejects.toMatchObject({
+    await expect(sdk.web3Login(loginPayload[0] - 1, signedLoginPayload.hex)).rejects.toMatchObject({
         response: {
             data: {
                 message: 'invalid_signature',
@@ -432,14 +333,9 @@ export async function web3register(
         },
         'Web3Login',
     );
-    const past_login_signature = await web3LoginSigner.sign(
-        wallet.privateKey,
-        past_login_payload,
-    );
+    const past_login_signature = await web3LoginSigner.sign(wallet.privateKey, past_login_payload);
 
-    await expect(
-        sdk.web3Login(past, past_login_signature.hex),
-    ).rejects.toMatchObject({
+    await expect(sdk.web3Login(past, past_login_signature.hex)).rejects.toMatchObject({
         response: {
             data: {
                 message: 'signature_timed_out',
@@ -457,14 +353,9 @@ export async function web3register(
         },
         'Web3Login',
     );
-    const future_login_signature = await web3LoginSigner.sign(
-        wallet.privateKey,
-        future_login_payload,
-    );
+    const future_login_signature = await web3LoginSigner.sign(wallet.privateKey, future_login_payload);
 
-    await expect(
-        sdk.web3Login(future, future_login_signature.hex),
-    ).rejects.toMatchObject({
+    await expect(sdk.web3Login(future, future_login_signature.hex)).rejects.toMatchObject({
         response: {
             data: {
                 message: 'signature_is_in_the_future',

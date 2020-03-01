@@ -18,9 +18,7 @@ const context: {
 };
 
 class EmailDriverMock implements EmailDriver {
-    public async send(
-        options: EmailDriverSendOptions,
-    ): Promise<EmailDriverResponse> {
+    public async send(options: EmailDriverSendOptions): Promise<EmailDriverResponse> {
         return null;
     }
 

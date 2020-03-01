@@ -1,8 +1,5 @@
 import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
-import {
-    InstanceSignature,
-    OutrospectionService,
-} from '@lib/common/outrospection/Outrospection.service';
+import { InstanceSignature, OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
 import { InjectSchedule, Schedule } from 'nest-schedule';
 import { EVMEventControllerBase } from '@app/worker/evmantenna/EVMEvent.controller.base';
 import { GlobalConfigService } from '@lib/common/globalconfig/GlobalConfig.service';
@@ -12,10 +9,7 @@ import { GlobalEntity } from '@lib/common/globalconfig/entities/Global.entity';
 import { Job, Queue } from 'bull';
 import { InjectQueue } from '@nestjs/bull';
 import { ESSearchHit } from '@lib/common/utils/ESSearchReturn';
-import {
-    EVMEvent,
-    EVMEventSetEntity,
-} from '@lib/common/evmeventsets/entities/EVMEventSet.entity';
+import { EVMEvent, EVMEventSetEntity } from '@lib/common/evmeventsets/entities/EVMEventSet.entity';
 import { DryResponse } from '@lib/common/crud/CRUD.extension';
 import { Connection, InjectConnection } from '@iaminfinity/express-cassandra';
 import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
@@ -50,9 +44,7 @@ export class EVMAntennaMergerScheduler implements OnApplicationBootstrap {
     /**
      * Logger
      */
-    private readonly logger: WinstonLoggerService = new WinstonLoggerService(
-        'EVMAntennaMerger',
-    );
+    private readonly logger: WinstonLoggerService = new WinstonLoggerService('EVMAntennaMerger');
 
     /**
      * Dependency Injection
@@ -87,9 +79,7 @@ export class EVMAntennaMergerScheduler implements OnApplicationBootstrap {
      * Static method called by a controller to register itself
      * @param controller
      */
-    static registerEVMEventsController(
-        controller: EVMEventControllerBase,
-    ): void {
+    static registerEVMEventsController(controller: EVMEventControllerBase): void {
         EVMAntennaMergerScheduler.controllers.push(controller);
     }
 
@@ -121,9 +111,7 @@ export class EVMAntennaMergerScheduler implements OnApplicationBootstrap {
 
         const toProcess = processedHeight + 1;
 
-        const currentJob = (
-            await this.queue.getJobs(['waiting', 'active'])
-        ).filter(
+        const currentJob = (await this.queue.getJobs(['waiting', 'active'])).filter(
             (job: Job): boolean => job.name === `@@evmeventset/evmEventMerger`,
         );
 
@@ -142,16 +130,9 @@ export class EVMAntennaMergerScheduler implements OnApplicationBootstrap {
      * @param query
      * @param rollback
      */
-    appender(
-        querries: DryResponse[],
-        rollbacks: DryResponse[],
-        query: DryResponse,
-        rollback: DryResponse,
-    ): void {
+    appender(querries: DryResponse[], rollbacks: DryResponse[], query: DryResponse, rollback: DryResponse): void {
         if (!query || !rollback) {
-            throw new Error(
-                `Cannot have asymmetric updates: each query must have its rollback !`,
-            );
+            throw new Error(`Cannot have asymmetric updates: each query must have its rollback !`);
         }
 
         querries.push(query);
@@ -163,9 +144,7 @@ export class EVMAntennaMergerScheduler implements OnApplicationBootstrap {
      *
      * @param blockNumber
      */
-    private async fetchEvmEventSets(
-        blockNumber: number,
-    ): Promise<ESSearchHit<EVMEventSetEntity>[]> {
+    private async fetchEvmEventSets(blockNumber: number): Promise<ESSearchHit<EVMEventSetEntity>[]> {
         const esQuery = {
             body: {
                 query: {
@@ -180,9 +159,7 @@ export class EVMAntennaMergerScheduler implements OnApplicationBootstrap {
             },
         };
 
-        const EVMEventSets = await this.evmEventSetsService.searchElastic(
-            esQuery,
-        );
+        const EVMEventSets = await this.evmEventSetsService.searchElastic(esQuery);
 
         if (EVMEventSets.error) {
             throw new Error(
@@ -190,10 +167,7 @@ export class EVMAntennaMergerScheduler implements OnApplicationBootstrap {
             );
         }
 
-        if (
-            EVMEventSets.response.hits.total !==
-            EVMAntennaMergerScheduler.controllers.length
-        ) {
+        if (EVMEventSets.response.hits.total !== EVMAntennaMergerScheduler.controllers.length) {
             return null;
         }
 
@@ -205,41 +179,25 @@ export class EVMAntennaMergerScheduler implements OnApplicationBootstrap {
      *
      * @param esres
      */
-    private sortAndMergeEvents(
-        esres: ESSearchHit<EVMEventSetEntity>[],
-    ): EVMProcessableEvent[] {
+    private sortAndMergeEvents(esres: ESSearchHit<EVMEventSetEntity>[]): EVMProcessableEvent[] {
         return []
             .concat(
-                ...esres.map(
-                    (
-                        eshit: ESSearchHit<EVMEventSetEntity>,
-                    ): EVMProcessableEvent[] =>
-                        cassandraArrayResult(eshit._source.events).map(
-                            (esraw: EVMEvent): EVMProcessableEvent => ({
-                                ...esraw,
-                                artifact_name: eshit._source.artifact_name,
-                            }),
-                        ),
+                ...esres.map((eshit: ESSearchHit<EVMEventSetEntity>): EVMProcessableEvent[] =>
+                    cassandraArrayResult(eshit._source.events).map(
+                        (esraw: EVMEvent): EVMProcessableEvent => ({
+                            ...esraw,
+                            artifact_name: eshit._source.artifact_name,
+                        }),
+                    ),
                 ),
             )
-            .sort(
-                (
-                    rawEventA: EVMProcessableEvent,
-                    rawEventB: EVMProcessableEvent,
-                ): number => {
-                    if (
-                        rawEventA.transaction_index !==
-                        rawEventB.transaction_index
-                    ) {
-                        return (
-                            rawEventA.transaction_index -
-                            rawEventB.transaction_index
-                        );
-                    }
+            .sort((rawEventA: EVMProcessableEvent, rawEventB: EVMProcessableEvent): number => {
+                if (rawEventA.transaction_index !== rawEventB.transaction_index) {
+                    return rawEventA.transaction_index - rawEventB.transaction_index;
+                }
 
-                    return rawEventA.log_index - rawEventB.log_index;
-                },
-            );
+                return rawEventA.log_index - rawEventB.log_index;
+            });
     }
 
     /**
@@ -256,8 +214,7 @@ export class EVMAntennaMergerScheduler implements OnApplicationBootstrap {
     ): Promise<void> {
         for (const event of events) {
             const controllerIdx = EVMAntennaMergerScheduler.controllers.findIndex(
-                (controller: EVMEventControllerBase): boolean =>
-                    controller.isHandler(event.event, event.artifact_name),
+                (controller: EVMEventControllerBase): boolean => controller.isHandler(event.event, event.artifact_name),
             );
 
             if (controllerIdx === -1) {
@@ -279,18 +236,13 @@ export class EVMAntennaMergerScheduler implements OnApplicationBootstrap {
      * @param queries
      * @param blockNumber
      */
-    private async injectEventSetDeletionQueries(
-        queries: DryResponse[],
-        blockNumber: number,
-    ): Promise<void> {
+    private async injectEventSetDeletionQueries(queries: DryResponse[], blockNumber: number): Promise<void> {
         for (const controller of EVMAntennaMergerScheduler.controllers) {
-            const evmEventSetsRemoval = await this.evmEventSetsService.dryDelete(
-                {
-                    artifact_name: controller.artifactName,
-                    event_name: controller.eventName,
-                    block_number: blockNumber,
-                },
-            );
+            const evmEventSetsRemoval = await this.evmEventSetsService.dryDelete({
+                artifact_name: controller.artifactName,
+                event_name: controller.eventName,
+                block_number: blockNumber,
+            });
 
             if (evmEventSetsRemoval.error) {
                 throw new Error(
@@ -308,10 +260,7 @@ export class EVMAntennaMergerScheduler implements OnApplicationBootstrap {
      * @param queries
      * @param blockNumber
      */
-    private async injectProcessedHeightUpdateQuery(
-        queries: DryResponse[],
-        blockNumber: number,
-    ): Promise<void> {
+    private async injectProcessedHeightUpdateQuery(queries: DryResponse[], blockNumber: number): Promise<void> {
         const globalConfigRes = await this.globalConfigService.dryUpdate(
             {
                 id: 'global',
@@ -380,9 +329,7 @@ export class EVMAntennaMergerScheduler implements OnApplicationBootstrap {
      * @param job
      */
     async evmEventMerger(job: Job<EVMAntennaMergerJob>): Promise<void> {
-        const esQueryResult = await this.fetchEvmEventSets(
-            job.data.blockNumber,
-        );
+        const esQueryResult = await this.fetchEvmEventSets(job.data.blockNumber);
 
         if (esQueryResult === null) {
             return;
@@ -394,19 +341,9 @@ export class EVMAntennaMergerScheduler implements OnApplicationBootstrap {
         const rollbackBatch: DryResponse[] = [];
 
         await this.convertEventsToQueries(queryBatch, rollbackBatch, rawEvents);
-        await this.injectEventSetDeletionQueries(
-            queryBatch,
-            job.data.blockNumber,
-        );
-        await this.injectProcessedHeightUpdateQuery(
-            queryBatch,
-            job.data.blockNumber,
-        );
-        await this.injectBlockRollbackCreationQuery(
-            queryBatch,
-            rollbackBatch,
-            job.data.blockNumber,
-        );
+        await this.injectEventSetDeletionQueries(queryBatch, job.data.blockNumber);
+        await this.injectProcessedHeightUpdateQuery(queryBatch, job.data.blockNumber);
+        await this.injectBlockRollbackCreationQuery(queryBatch, rollbackBatch, job.data.blockNumber);
 
         try {
             await this.connection.doBatchAsync((queryBatch as any) as string[]);
@@ -418,9 +355,7 @@ export class EVMAntennaMergerScheduler implements OnApplicationBootstrap {
             throw e;
         }
 
-        this.logger.log(
-            `Successful block ${job.data.blockNumber} event fusion`,
-        );
+        this.logger.log(`Successful block ${job.data.blockNumber} event fusion`);
     }
 
     /**
@@ -430,25 +365,13 @@ export class EVMAntennaMergerScheduler implements OnApplicationBootstrap {
         const signature: InstanceSignature = await this.outrospectionService.getInstanceSignature();
 
         if (signature.master === true && signature.name === 'worker') {
-            this.schedule.scheduleIntervalJob(
-                'evmEventMerger',
-                100,
-                this.evmEventMergerPoller.bind(this),
-            );
+            this.schedule.scheduleIntervalJob('evmEventMerger', 100, this.evmEventMergerPoller.bind(this));
         }
 
         if (signature.name === 'worker') {
             this.queue
-                .process(
-                    `@@evmeventset/evmEventMerger`,
-                    1,
-                    this.evmEventMerger.bind(this),
-                )
-                .then(() =>
-                    console.log(
-                        `Closing Bull Queue @@evmeventset/evmEventMerger`,
-                    ),
-                )
+                .process(`@@evmeventset/evmEventMerger`, 1, this.evmEventMerger.bind(this))
+                .then(() => console.log(`Closing Bull Queue @@evmeventset/evmEventMerger`))
                 .catch(this.shutdownService.shutdownWithError);
         }
     }

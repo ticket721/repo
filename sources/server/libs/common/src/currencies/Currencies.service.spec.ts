@@ -1,8 +1,5 @@
 import { CurrenciesService } from '@lib/common/currencies/Currencies.service';
-import {
-    Contracts,
-    ContractsService,
-} from '@lib/common/contracts/Contracts.service';
+import { Contracts, ContractsService } from '@lib/common/contracts/Contracts.service';
 import { instance, mock, when } from 'ts-mockito';
 import { Web3Service } from '@lib/common/web3/Web3.service';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
@@ -308,9 +305,7 @@ describe('Currencies Service', function() {
         context.shutdownServiceMock = mock(ShutdownService);
         context.fsServiceMock = mock(FSService);
 
-        when(context.fsServiceMock.readFile(configPath)).thenReturn(
-            JSON.stringify(config),
-        );
+        when(context.fsServiceMock.readFile(configPath)).thenReturn(JSON.stringify(config));
 
         const app: TestingModule = await Test.createTestingModule({
             providers: [
@@ -338,9 +333,7 @@ describe('Currencies Service', function() {
             ],
         }).compile();
 
-        context.currenciesService = app.get<CurrenciesService>(
-            CurrenciesService,
-        );
+        context.currenciesService = app.get<CurrenciesService>(CurrenciesService);
 
         const Contract = class {
             constructor(abi: any, address: string) {}
@@ -376,9 +369,7 @@ describe('Currencies Service', function() {
 
         when(context.web3ServiceMock.get()).thenResolve(web3);
         when(context.web3ServiceMock.net()).thenResolve(networkId);
-        when(context.contractsServiceMock.getContractArtifacts()).thenResolve(
-            (contractArtifact as any) as Contracts,
-        );
+        when(context.contractsServiceMock.getContractArtifacts()).thenResolve((contractArtifact as any) as Contracts);
 
         const t721token = await context.currenciesService.get('T721Token');
         const dai = await context.currenciesService.get('Dai');
@@ -431,9 +422,7 @@ describe('Currencies Service', function() {
         context.shutdownServiceMock = mock(ShutdownService);
         context.fsServiceMock = mock(FSService);
 
-        when(context.fsServiceMock.readFile(configPath)).thenReturn(
-            JSON.stringify(config),
-        );
+        when(context.fsServiceMock.readFile(configPath)).thenReturn(JSON.stringify(config));
 
         await expect(
             Test.createTestingModule({
@@ -461,10 +450,6 @@ describe('Currencies Service', function() {
                     CurrenciesService,
                 ],
             }).compile(),
-        ).rejects.toMatchObject(
-            new Error(
-                'Currencies validation error: "[0].type" must be one of [erc20, set]',
-            ),
-        );
+        ).rejects.toMatchObject(new Error('Currencies validation error: "[0].type" must be one of [erc20, set]'));
     });
 });

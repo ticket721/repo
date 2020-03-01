@@ -46,11 +46,7 @@ export class ActionSetsScheduler implements OnModuleInit, OnModuleDestroy {
         const signature = await this.outrospectionService.getInstanceSignature();
 
         if (signature.master === true && signature.name === 'worker') {
-            this.schedule.scheduleIntervalJob(
-                'inputDispatcher',
-                1000,
-                this.inputDispatcher.bind(this),
-            );
+            this.schedule.scheduleIntervalJob('inputDispatcher', 1000, this.inputDispatcher.bind(this));
         }
     }
 
@@ -77,21 +73,14 @@ export class ActionSetsScheduler implements OnModuleInit, OnModuleDestroy {
             },
         } as SortablePagedSearch);
 
-        const res = await this.actionSetsService.searchElastic(
-            bodyBuilder.response,
-        );
+        const res = await this.actionSetsService.searchElastic(bodyBuilder.response);
 
         if (res.error) {
-            return this.shutdownService.shutdownWithError(
-                new Error('Error while requesting action sets'),
-            );
+            return this.shutdownService.shutdownWithError(new Error('Error while requesting action sets'));
         }
 
         const dispatched = new Date(Date.now());
-        const currentJobs = await this.actionQueue.getJobs([
-            'active',
-            'waiting',
-        ]);
+        const currentJobs = await this.actionQueue.getJobs(['active', 'waiting']);
 
         let count = 0;
         if (res.response.hits.total !== 0) {
@@ -99,10 +88,7 @@ export class ActionSetsScheduler implements OnModuleInit, OnModuleDestroy {
                 const entity = fromES(hit);
 
                 if (
-                    currentJobs.findIndex(
-                        (job: Job<ActionSetEntity>): boolean =>
-                            uuidEq(job.data.id, entity.id),
-                    ) !== -1
+                    currentJobs.findIndex((job: Job<ActionSetEntity>): boolean => uuidEq(job.data.id, entity.id)) !== -1
                 ) {
                     continue;
                 }
@@ -117,9 +103,7 @@ export class ActionSetsScheduler implements OnModuleInit, OnModuleDestroy {
         }
 
         if (count) {
-            this.loggerService.log(
-                `Dispatched ${count} ActionSets on the input queue`,
-            );
+            this.loggerService.log(`Dispatched ${count} ActionSets on the input queue`);
         }
     }
 }

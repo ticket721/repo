@@ -1,9 +1,6 @@
 import { GlobalConfigScheduler } from '@app/worker/schedulers/globalconfig/GlobalConfig.scheduler';
 import { Web3Service } from '@lib/common/web3/Web3.service';
-import {
-    GlobalConfigOptions,
-    GlobalConfigService,
-} from '@lib/common/globalconfig/GlobalConfig.service';
+import { GlobalConfigOptions, GlobalConfigService } from '@lib/common/globalconfig/GlobalConfig.service';
 import { Schedule } from 'nest-schedule';
 import { BinanceService } from '@lib/common/binance/Binance.service';
 import { deepEqual, instance, mock, verify, when } from 'ts-mockito';
@@ -82,9 +79,7 @@ describe('GlobalConfig Scheduler', function() {
             ],
         }).compile();
 
-        context.globalConfigScheduler = app.get<GlobalConfigScheduler>(
-            GlobalConfigScheduler,
-        );
+        context.globalConfigScheduler = app.get<GlobalConfigScheduler>(GlobalConfigScheduler);
     });
 
     describe('fetchETHEURPrice', function() {
@@ -285,17 +280,11 @@ describe('GlobalConfig Scheduler', function() {
 
             when(
                 context.shutdownServiceMock.shutdownWithError(
-                    deepEqual(
-                        new Error(
-                            'GlobalConfigScheduler::global_document_fetch_error',
-                        ),
-                    ),
+                    deepEqual(new Error('GlobalConfigScheduler::global_document_fetch_error')),
                 ),
             ).thenReturn();
 
-            await expect(
-                context.globalConfigScheduler.fetchBlockNumber(),
-            ).rejects.toEqual(
+            await expect(context.globalConfigScheduler.fetchBlockNumber()).rejects.toEqual(
                 new Error('GlobalConfigScheduler::global_document_fetch_error'),
             );
 
@@ -309,11 +298,7 @@ describe('GlobalConfig Scheduler', function() {
 
             verify(
                 context.shutdownServiceMock.shutdownWithError(
-                    deepEqual(
-                        new Error(
-                            'GlobalConfigScheduler::global_document_fetch_error',
-                        ),
-                    ),
+                    deepEqual(new Error('GlobalConfigScheduler::global_document_fetch_error')),
                 ),
             ).called();
         });
@@ -332,17 +317,11 @@ describe('GlobalConfig Scheduler', function() {
 
             when(
                 context.shutdownServiceMock.shutdownWithError(
-                    deepEqual(
-                        new Error(
-                            'GlobalConfigScheduler::global_document_fetch_error',
-                        ),
-                    ),
+                    deepEqual(new Error('GlobalConfigScheduler::global_document_fetch_error')),
                 ),
             ).thenReturn();
 
-            await expect(
-                context.globalConfigScheduler.fetchBlockNumber(),
-            ).rejects.toEqual(
+            await expect(context.globalConfigScheduler.fetchBlockNumber()).rejects.toEqual(
                 new Error('GlobalConfigScheduler::global_document_fetch_error'),
             );
 
@@ -356,11 +335,7 @@ describe('GlobalConfig Scheduler', function() {
 
             verify(
                 context.shutdownServiceMock.shutdownWithError(
-                    deepEqual(
-                        new Error(
-                            'GlobalConfigScheduler::global_document_fetch_error',
-                        ),
-                    ),
+                    deepEqual(new Error('GlobalConfigScheduler::global_document_fetch_error')),
                 ),
             ).called();
         });

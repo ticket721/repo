@@ -18,9 +18,7 @@ export class ServerService {
      * Recovers the ConfigService
      * @param configService
      */
-    constructor /* instanbul ignore next */(
-        private readonly configService: ConfigService,
-    ) {}
+    constructor /* instanbul ignore next */(private readonly configService: ConfigService) {}
 
     /**
      * Utility to get the API Information

@@ -8,26 +8,11 @@ import { Schedule } from 'nest-schedule';
 import { Job, Queue } from 'bull';
 import { GlobalConfigService } from '@lib/common/globalconfig/GlobalConfig.service';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
-import {
-    InstanceSignature,
-    OutrospectionService,
-} from '@lib/common/outrospection/Outrospection.service';
+import { InstanceSignature, OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
 import { EVMEventSetsService } from '@lib/common/evmeventsets/EVMEventSets.service';
-import {
-    anyFunction,
-    anything,
-    deepEqual,
-    instance,
-    mock,
-    spy,
-    verify,
-    when,
-} from 'ts-mockito';
+import { anyFunction, anything, deepEqual, instance, mock, spy, verify, when } from 'ts-mockito';
 import { GlobalEntity } from '@lib/common/globalconfig/entities/Global.entity';
-import {
-    EVMEvent,
-    EVMEventSetEntity,
-} from '@lib/common/evmeventsets/entities/EVMEventSet.entity';
+import { EVMEvent, EVMEventSetEntity } from '@lib/common/evmeventsets/entities/EVMEventSet.entity';
 import { CRUDExtension } from '@lib/common/crud/CRUD.extension';
 
 describe('EVMEvent Controller Base', function() {
@@ -62,9 +47,7 @@ describe('EVMEvent Controller Base', function() {
 
         const artifactName = 't721c::T721Controller_v0';
 
-        when(context.contractsControllerMock.getArtifactName()).thenReturn(
-            artifactName,
-        );
+        when(context.contractsControllerMock.getArtifactName()).thenReturn(artifactName);
 
         context.evmEventControllerBase = new EVMEventControllerBase(
             instance(context.contractsControllerMock),
@@ -80,17 +63,17 @@ describe('EVMEvent Controller Base', function() {
 
     describe('rollbackableDelete', function() {
         it('should throw on unimplemented call', async function() {
-            await expect(
-                EVMEventControllerBase.rollbackableDelete(null, null, null),
-            ).rejects.toMatchObject(new Error(`implement rollbackableDelete`));
+            await expect(EVMEventControllerBase.rollbackableDelete(null, null, null)).rejects.toMatchObject(
+                new Error(`implement rollbackableDelete`),
+            );
         });
     });
 
     describe('rollbackableCreate', function() {
         it('should throw on unimplemented call', async function() {
-            await expect(
-                EVMEventControllerBase.rollbackableCreate(null, null, null),
-            ).rejects.toMatchObject(new Error(`implement rollbackableCreate`));
+            await expect(EVMEventControllerBase.rollbackableCreate(null, null, null)).rejects.toMatchObject(
+                new Error(`implement rollbackableCreate`),
+            );
         });
     });
 
@@ -303,9 +286,7 @@ describe('EVMEvent Controller Base', function() {
         it('should recover artifact name', async function() {
             const artifactName = 't721c::T721Controller_v0';
 
-            when(context.contractsControllerMock.getArtifactName()).thenReturn(
-                artifactName,
-            );
+            when(context.contractsControllerMock.getArtifactName()).thenReturn(artifactName);
             const res = context.evmEventControllerBase.artifactName;
 
             expect(res).toEqual(artifactName);
@@ -319,20 +300,12 @@ describe('EVMEvent Controller Base', function() {
             const artifactName = 't721c::T721Controller_v0';
             const errorMsg = `Error in ${artifactName}/NewGroup | convert should be overriden`;
 
-            when(context.contractsControllerMock.getArtifactName()).thenReturn(
-                artifactName,
-            );
+            when(context.contractsControllerMock.getArtifactName()).thenReturn(artifactName);
 
-            await expect(
-                context.evmEventControllerBase.convert(null, null),
-            ).rejects.toMatchObject(new Error(errorMsg));
+            await expect(context.evmEventControllerBase.convert(null, null)).rejects.toMatchObject(new Error(errorMsg));
 
             verify(context.contractsControllerMock.getArtifactName()).called();
-            verify(
-                context.shutdownServiceMock.shutdownWithError(
-                    deepEqual(new Error(errorMsg)),
-                ),
-            ).called();
+            verify(context.shutdownServiceMock.shutdownWithError(deepEqual(new Error(errorMsg)))).called();
         });
     });
 
@@ -344,9 +317,7 @@ describe('EVMEvent Controller Base', function() {
                 getPastEvents: async (): Promise<EVMEventRawResult[]> => [],
             };
 
-            when(context.contractsControllerMock.getArtifactName()).thenReturn(
-                artifactName,
-            );
+            when(context.contractsControllerMock.getArtifactName()).thenReturn(artifactName);
             when(context.contractsControllerMock.get()).thenResolve(instance);
 
             const res = await context.evmEventControllerBase.fetch(0, 0);
@@ -360,14 +331,9 @@ describe('EVMEvent Controller Base', function() {
         it('should return true', async function() {
             const artifactName = 't721c::T721Controller_v0';
 
-            when(context.contractsControllerMock.getArtifactName()).thenReturn(
-                artifactName,
-            );
+            when(context.contractsControllerMock.getArtifactName()).thenReturn(artifactName);
 
-            const res = await context.evmEventControllerBase.isHandler(
-                'NewGroup',
-                artifactName,
-            );
+            const res = await context.evmEventControllerBase.isHandler('NewGroup', artifactName);
             expect(res).toEqual(true);
 
             verify(context.contractsControllerMock.getArtifactName()).called();
@@ -376,14 +342,9 @@ describe('EVMEvent Controller Base', function() {
         it('should return false for invalid event name', async function() {
             const artifactName = 't721c::T721Controller_v0';
 
-            when(context.contractsControllerMock.getArtifactName()).thenReturn(
-                artifactName,
-            );
+            when(context.contractsControllerMock.getArtifactName()).thenReturn(artifactName);
 
-            const res = await context.evmEventControllerBase.isHandler(
-                'NewCategory',
-                artifactName,
-            );
+            const res = await context.evmEventControllerBase.isHandler('NewCategory', artifactName);
             expect(res).toEqual(false);
 
             verify(context.contractsControllerMock.getArtifactName()).called();
@@ -392,14 +353,9 @@ describe('EVMEvent Controller Base', function() {
         it('should return false for invalid artifact name', async function() {
             const artifactName = 't721c::T721Controller_v0';
 
-            when(context.contractsControllerMock.getArtifactName()).thenReturn(
-                artifactName,
-            );
+            when(context.contractsControllerMock.getArtifactName()).thenReturn(artifactName);
 
-            const res = await context.evmEventControllerBase.isHandler(
-                'NewGroup',
-                'invalid',
-            );
+            const res = await context.evmEventControllerBase.isHandler('NewGroup', 'invalid');
             expect(res).toEqual(false);
 
             verify(context.contractsControllerMock.getArtifactName()).called();
@@ -465,19 +421,13 @@ describe('EVMEvent Controller Base', function() {
                 response: [globalEntity as GlobalEntity],
             });
 
-            when(
-                context.queueMock.getJobs(deepEqual(['active', 'waiting'])),
-            ).thenResolve([]);
+            when(context.queueMock.getJobs(deepEqual(['active', 'waiting']))).thenResolve([]);
 
-            when(context.contractsControllerMock.getArtifactName()).thenReturn(
-                artifactName,
-            );
+            when(context.contractsControllerMock.getArtifactName()).thenReturn(artifactName);
 
             await context.evmEventControllerBase.eventBackgroundFetcher();
 
-            verify(
-                context.queueMock.getJobs(deepEqual(['active', 'waiting'])),
-            ).called();
+            verify(context.queueMock.getJobs(deepEqual(['active', 'waiting']))).called();
 
             verify(context.contractsControllerMock.getArtifactName()).called();
         });
@@ -605,11 +555,7 @@ describe('EVMEvent Controller Base', function() {
 
             verify(
                 context.shutdownServiceMock.shutdownWithError(
-                    deepEqual(
-                        new Error(
-                            `Unable to recover global config: unexpected_error`,
-                        ),
-                    ),
+                    deepEqual(new Error(`Unable to recover global config: unexpected_error`)),
                 ),
             );
         });
@@ -638,11 +584,7 @@ describe('EVMEvent Controller Base', function() {
 
             verify(
                 context.shutdownServiceMock.shutdownWithError(
-                    deepEqual(
-                        new Error(
-                            `Unable to recover global config: no global config`,
-                        ),
-                    ),
+                    deepEqual(new Error(`Unable to recover global config: no global config`)),
                 ),
             );
         });
@@ -674,32 +616,22 @@ describe('EVMEvent Controller Base', function() {
                 response: [globalEntity as GlobalEntity],
             });
 
-            when(
-                context.queueMock.getJobs(deepEqual(['active', 'waiting'])),
-            ).thenResolve([]);
+            when(context.queueMock.getJobs(deepEqual(['active', 'waiting']))).thenResolve([]);
 
-            when(context.contractsControllerMock.getArtifactName()).thenReturn(
-                artifactName,
-            );
+            when(context.contractsControllerMock.getArtifactName()).thenReturn(artifactName);
 
-            when(
-                context.evmEventSetsServiceMock.search(deepEqual(query)),
-            ).thenResolve({
+            when(context.evmEventSetsServiceMock.search(deepEqual(query))).thenResolve({
                 error: 'unexpected_error',
                 response: null,
             });
 
             await context.evmEventControllerBase.eventBackgroundFetcher();
 
-            verify(
-                context.queueMock.getJobs(deepEqual(['active', 'waiting'])),
-            ).called();
+            verify(context.queueMock.getJobs(deepEqual(['active', 'waiting']))).called();
 
             verify(context.contractsControllerMock.getArtifactName()).called();
 
-            verify(
-                context.evmEventSetsServiceMock.search(deepEqual(query)),
-            ).called();
+            verify(context.evmEventSetsServiceMock.search(deepEqual(query))).called();
 
             verify(
                 context.shutdownServiceMock.shutdownWithError(
@@ -743,9 +675,7 @@ describe('EVMEvent Controller Base', function() {
                 response: [globalEntity as GlobalEntity],
             });
 
-            when(
-                context.queueMock.getJobs(deepEqual(['active', 'waiting'])),
-            ).thenResolve([
+            when(context.queueMock.getJobs(deepEqual(['active', 'waiting']))).thenResolve([
                 {
                     name: fetchJobName,
                     data: {
@@ -754,28 +684,20 @@ describe('EVMEvent Controller Base', function() {
                 } as Job,
             ]);
 
-            when(context.contractsControllerMock.getArtifactName()).thenReturn(
-                artifactName,
-            );
+            when(context.contractsControllerMock.getArtifactName()).thenReturn(artifactName);
 
-            when(
-                context.evmEventSetsServiceMock.search(deepEqual(query)),
-            ).thenResolve({
+            when(context.evmEventSetsServiceMock.search(deepEqual(query))).thenResolve({
                 error: null,
                 response,
             });
 
             await context.evmEventControllerBase.eventBackgroundFetcher();
 
-            verify(
-                context.queueMock.getJobs(deepEqual(['active', 'waiting'])),
-            ).called();
+            verify(context.queueMock.getJobs(deepEqual(['active', 'waiting']))).called();
 
             verify(context.contractsControllerMock.getArtifactName()).called();
 
-            verify(
-                context.evmEventSetsServiceMock.search(deepEqual(query)),
-            ).called();
+            verify(context.evmEventSetsServiceMock.search(deepEqual(query))).called();
         });
 
         it('should dispatch because job not running', async function() {
@@ -809,32 +731,22 @@ describe('EVMEvent Controller Base', function() {
                 response: [globalEntity as GlobalEntity],
             });
 
-            when(
-                context.queueMock.getJobs(deepEqual(['active', 'waiting'])),
-            ).thenResolve([]);
+            when(context.queueMock.getJobs(deepEqual(['active', 'waiting']))).thenResolve([]);
 
-            when(context.contractsControllerMock.getArtifactName()).thenReturn(
-                artifactName,
-            );
+            when(context.contractsControllerMock.getArtifactName()).thenReturn(artifactName);
 
-            when(
-                context.evmEventSetsServiceMock.search(deepEqual(query)),
-            ).thenResolve({
+            when(context.evmEventSetsServiceMock.search(deepEqual(query))).thenResolve({
                 error: null,
                 response,
             });
 
             await context.evmEventControllerBase.eventBackgroundFetcher();
 
-            verify(
-                context.queueMock.getJobs(deepEqual(['active', 'waiting'])),
-            ).called();
+            verify(context.queueMock.getJobs(deepEqual(['active', 'waiting']))).called();
 
             verify(context.contractsControllerMock.getArtifactName()).called();
 
-            verify(
-                context.evmEventSetsServiceMock.search(deepEqual(query)),
-            ).called();
+            verify(context.evmEventSetsServiceMock.search(deepEqual(query))).called();
 
             verify(
                 context.queueMock.add(
@@ -877,32 +789,22 @@ describe('EVMEvent Controller Base', function() {
                 response: [globalEntity as GlobalEntity],
             });
 
-            when(
-                context.queueMock.getJobs(deepEqual(['active', 'waiting'])),
-            ).thenResolve([]);
+            when(context.queueMock.getJobs(deepEqual(['active', 'waiting']))).thenResolve([]);
 
-            when(context.contractsControllerMock.getArtifactName()).thenReturn(
-                artifactName,
-            );
+            when(context.contractsControllerMock.getArtifactName()).thenReturn(artifactName);
 
-            when(
-                context.evmEventSetsServiceMock.search(deepEqual(query)),
-            ).thenResolve({
+            when(context.evmEventSetsServiceMock.search(deepEqual(query))).thenResolve({
                 error: null,
                 response,
             });
 
             await context.evmEventControllerBase.eventBackgroundFetcher();
 
-            verify(
-                context.queueMock.getJobs(deepEqual(['active', 'waiting'])),
-            ).called();
+            verify(context.queueMock.getJobs(deepEqual(['active', 'waiting']))).called();
 
             verify(context.contractsControllerMock.getArtifactName()).called();
 
-            verify(
-                context.evmEventSetsServiceMock.search(deepEqual(query)),
-            ).called();
+            verify(context.evmEventSetsServiceMock.search(deepEqual(query))).called();
 
             verify(
                 context.queueMock.add(
@@ -913,9 +815,7 @@ describe('EVMEvent Controller Base', function() {
                 ),
             ).never();
 
-            expect(
-                (context.evmEventControllerBase as any).currentFetchHeight,
-            ).toEqual(100);
+            expect((context.evmEventControllerBase as any).currentFetchHeight).toEqual(100);
         });
     });
 
@@ -932,27 +832,22 @@ describe('EVMEvent Controller Base', function() {
                 {
                     logIndex: 0,
                     transactionIndex: 0,
-                    transactionHash:
-                        '0x54ac26f354aadb32efafb927b3cf5f7a9223006f076760d799321989cf2e28b6',
-                    blockHash:
-                        '0x8a05e695944e5566e8a54c8bc23d6e7edd4a326b2e791e90486b5ea2101145d1',
+                    transactionHash: '0x54ac26f354aadb32efafb927b3cf5f7a9223006f076760d799321989cf2e28b6',
+                    blockHash: '0x8a05e695944e5566e8a54c8bc23d6e7edd4a326b2e791e90486b5ea2101145d1',
                     blockNumber: 34,
                     address: '0x4B2Ef35de91D5e4f2941B8A9B0B9E35554f0D8a8',
                     type: 'mined',
                     id: 'log_0f692965',
                     returnValues: {
-                        '0':
-                            '0x58d7c741e1121265d8f8cfbadad5bb4b1cfb8ed466f533005108cefdf8b89627',
+                        '0': '0x58d7c741e1121265d8f8cfbadad5bb4b1cfb8ed466f533005108cefdf8b89627',
                         '1': '0xc05187f1ec1a88bA07A880AcE290ebE1b0941D9F',
                         '2': '@event/modules',
-                        id:
-                            '0x58d7c741e1121265d8f8cfbadad5bb4b1cfb8ed466f533005108cefdf8b89627',
+                        id: '0x58d7c741e1121265d8f8cfbadad5bb4b1cfb8ed466f533005108cefdf8b89627',
                         owner: '0xc05187f1ec1a88bA07A880AcE290ebE1b0941D9F',
                         controllers: '@event/modules',
                     },
                     event: 'NewGroup',
-                    signature:
-                        '0xb0b533a8147431475b127bea5dc4c66cb9d6ea7851b18215e4ab83fe8e0b3fa6',
+                    signature: '0xb0b533a8147431475b127bea5dc4c66cb9d6ea7851b18215e4ab83fe8e0b3fa6',
                     raw: {
                         data:
                             '0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000e406576656e742f6d6f64756c6573000000000000000000000000000000000000',
@@ -981,14 +876,11 @@ describe('EVMEvent Controller Base', function() {
                             '0x000000000000000000000000c05187f1ec1a88ba07a880ace290ebe1b0941d9f',
                         ],
                         event: 'NewGroup',
-                        signature:
-                            '0xb0b533a8147431475b127bea5dc4c66cb9d6ea7851b18215e4ab83fe8e0b3fa6',
+                        signature: '0xb0b533a8147431475b127bea5dc4c66cb9d6ea7851b18215e4ab83fe8e0b3fa6',
                         log_index: 0,
                         transaction_index: 0,
-                        transaction_hash:
-                            '0x54ac26f354aadb32efafb927b3cf5f7a9223006f076760d799321989cf2e28b6',
-                        block_hash:
-                            '0x8a05e695944e5566e8a54c8bc23d6e7edd4a326b2e791e90486b5ea2101145d1',
+                        transaction_hash: '0x54ac26f354aadb32efafb927b3cf5f7a9223006f076760d799321989cf2e28b6',
+                        block_hash: '0x8a05e695944e5566e8a54c8bc23d6e7edd4a326b2e791e90486b5ea2101145d1',
                         block_number: 34,
                         address: '0x4B2Ef35de91D5e4f2941B8A9B0B9E35554f0D8a8',
                     },
@@ -1001,9 +893,7 @@ describe('EVMEvent Controller Base', function() {
 
             when(spied.fetch(99, 99)).thenResolve(rawEvents);
 
-            when(context.contractsControllerMock.getArtifactName()).thenReturn(
-                artifactName,
-            );
+            when(context.contractsControllerMock.getArtifactName()).thenReturn(artifactName);
 
             when(
                 context.evmEventSetsServiceMock.create(
@@ -1033,9 +923,7 @@ describe('EVMEvent Controller Base', function() {
                 response: eventSetEntity as EVMEventSetEntity,
             });
 
-            await context.evmEventControllerBase.fetchEVMEventsForBlock(
-                job as Job,
-            );
+            await context.evmEventControllerBase.fetchEVMEventsForBlock(job as Job);
 
             verify(spied.fetch(99, 99)).called();
 
@@ -1090,9 +978,7 @@ describe('EVMEvent Controller Base', function() {
 
             when(spied.fetch(99, 99)).thenResolve(rawEvents);
 
-            when(context.contractsControllerMock.getArtifactName()).thenReturn(
-                artifactName,
-            );
+            when(context.contractsControllerMock.getArtifactName()).thenReturn(artifactName);
 
             when(
                 context.evmEventSetsServiceMock.create(
@@ -1122,9 +1008,7 @@ describe('EVMEvent Controller Base', function() {
                 response: eventSetEntity as EVMEventSetEntity,
             });
 
-            await context.evmEventControllerBase.fetchEVMEventsForBlock(
-                job as Job,
-            );
+            await context.evmEventControllerBase.fetchEVMEventsForBlock(job as Job);
 
             verify(spied.fetch(99, 99)).called();
 
@@ -1168,27 +1052,22 @@ describe('EVMEvent Controller Base', function() {
                 {
                     logIndex: 0,
                     transactionIndex: 0,
-                    transactionHash:
-                        '0x54ac26f354aadb32efafb927b3cf5f7a9223006f076760d799321989cf2e28b6',
-                    blockHash:
-                        '0x8a05e695944e5566e8a54c8bc23d6e7edd4a326b2e791e90486b5ea2101145d1',
+                    transactionHash: '0x54ac26f354aadb32efafb927b3cf5f7a9223006f076760d799321989cf2e28b6',
+                    blockHash: '0x8a05e695944e5566e8a54c8bc23d6e7edd4a326b2e791e90486b5ea2101145d1',
                     blockNumber: 34,
                     address: '0x4B2Ef35de91D5e4f2941B8A9B0B9E35554f0D8a8',
                     type: 'mined',
                     id: 'log_0f692965',
                     returnValues: {
-                        '0':
-                            '0x58d7c741e1121265d8f8cfbadad5bb4b1cfb8ed466f533005108cefdf8b89627',
+                        '0': '0x58d7c741e1121265d8f8cfbadad5bb4b1cfb8ed466f533005108cefdf8b89627',
                         '1': '0xc05187f1ec1a88bA07A880AcE290ebE1b0941D9F',
                         '2': '@event/modules',
-                        id:
-                            '0x58d7c741e1121265d8f8cfbadad5bb4b1cfb8ed466f533005108cefdf8b89627',
+                        id: '0x58d7c741e1121265d8f8cfbadad5bb4b1cfb8ed466f533005108cefdf8b89627',
                         owner: '0xc05187f1ec1a88bA07A880AcE290ebE1b0941D9F',
                         controllers: '@event/modules',
                     },
                     event: 'NewGroup',
-                    signature:
-                        '0xb0b533a8147431475b127bea5dc4c66cb9d6ea7851b18215e4ab83fe8e0b3fa6',
+                    signature: '0xb0b533a8147431475b127bea5dc4c66cb9d6ea7851b18215e4ab83fe8e0b3fa6',
                     raw: {
                         data:
                             '0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000e406576656e742f6d6f64756c6573000000000000000000000000000000000000',
@@ -1217,14 +1096,11 @@ describe('EVMEvent Controller Base', function() {
                             '0x000000000000000000000000c05187f1ec1a88ba07a880ace290ebe1b0941d9f',
                         ],
                         event: 'NewGroup',
-                        signature:
-                            '0xb0b533a8147431475b127bea5dc4c66cb9d6ea7851b18215e4ab83fe8e0b3fa6',
+                        signature: '0xb0b533a8147431475b127bea5dc4c66cb9d6ea7851b18215e4ab83fe8e0b3fa6',
                         log_index: 0,
                         transaction_index: 0,
-                        transaction_hash:
-                            '0x54ac26f354aadb32efafb927b3cf5f7a9223006f076760d799321989cf2e28b6',
-                        block_hash:
-                            '0x8a05e695944e5566e8a54c8bc23d6e7edd4a326b2e791e90486b5ea2101145d1',
+                        transaction_hash: '0x54ac26f354aadb32efafb927b3cf5f7a9223006f076760d799321989cf2e28b6',
+                        block_hash: '0x8a05e695944e5566e8a54c8bc23d6e7edd4a326b2e791e90486b5ea2101145d1',
                         block_number: 34,
                         address: '0x4B2Ef35de91D5e4f2941B8A9B0B9E35554f0D8a8',
                     },
@@ -1237,9 +1113,7 @@ describe('EVMEvent Controller Base', function() {
 
             when(spied.fetch(99, 99)).thenResolve(rawEvents);
 
-            when(context.contractsControllerMock.getArtifactName()).thenReturn(
-                artifactName,
-            );
+            when(context.contractsControllerMock.getArtifactName()).thenReturn(artifactName);
 
             when(
                 context.evmEventSetsServiceMock.create(
@@ -1269,11 +1143,7 @@ describe('EVMEvent Controller Base', function() {
                 response: null,
             });
 
-            await expect(
-                context.evmEventControllerBase.fetchEVMEventsForBlock(
-                    job as Job,
-                ),
-            ).rejects.toMatchObject(
+            await expect(context.evmEventControllerBase.fetchEVMEventsForBlock(job as Job)).rejects.toMatchObject(
                 new Error(
                     `EVMEvemtControllerBase::fetchEVMEventsForBlock | Unable to create evmeventset: unexpected_error`,
                 ),
@@ -1320,35 +1190,15 @@ describe('EVMEvent Controller Base', function() {
             const artifactName = 't721c::T721Controller_v0';
             const fetchJobName = `@@evmantenna/fetchEVMEventsForBlock/${artifactName}/NewGroup`;
 
-            when(
-                context.outrospectionServiceMock.getInstanceSignature(),
-            ).thenResolve(signature as InstanceSignature);
-            when(
-                context.scheduleMock.scheduleIntervalJob(
-                    `${artifactName}::NewGroup`,
-                    1000,
-                    anything(),
-                ),
-            ).thenReturn();
-            when(
-                context.queueMock.process(fetchJobName, 1, anything()),
-            ).thenResolve();
+            when(context.outrospectionServiceMock.getInstanceSignature()).thenResolve(signature as InstanceSignature);
+            when(context.scheduleMock.scheduleIntervalJob(`${artifactName}::NewGroup`, 1000, anything())).thenReturn();
+            when(context.queueMock.process(fetchJobName, 1, anything())).thenResolve();
 
             await context.evmEventControllerBase.onModuleInit();
 
-            verify(
-                context.outrospectionServiceMock.getInstanceSignature(),
-            ).called();
-            verify(
-                context.scheduleMock.scheduleIntervalJob(
-                    `${artifactName}::NewGroup`,
-                    1000,
-                    anything(),
-                ),
-            ).called();
-            verify(
-                context.queueMock.process(fetchJobName, 1, anything()),
-            ).called();
+            verify(context.outrospectionServiceMock.getInstanceSignature()).called();
+            verify(context.scheduleMock.scheduleIntervalJob(`${artifactName}::NewGroup`, 1000, anything())).called();
+            verify(context.queueMock.process(fetchJobName, 1, anything())).called();
         });
 
         it('should shutdown on bull queue throw for worker master', async function() {
@@ -1360,39 +1210,17 @@ describe('EVMEvent Controller Base', function() {
             const artifactName = 't721c::T721Controller_v0';
             const fetchJobName = `@@evmantenna/fetchEVMEventsForBlock/${artifactName}/NewGroup`;
 
-            when(
-                context.outrospectionServiceMock.getInstanceSignature(),
-            ).thenResolve(signature as InstanceSignature);
-            when(
-                context.scheduleMock.scheduleIntervalJob(
-                    `${artifactName}::NewGroup`,
-                    1000,
-                    anything(),
-                ),
-            ).thenReturn();
-            when(
-                context.queueMock.process(fetchJobName, 1, anyFunction()),
-            ).thenReject(new Error('unexpected error'));
+            when(context.outrospectionServiceMock.getInstanceSignature()).thenResolve(signature as InstanceSignature);
+            when(context.scheduleMock.scheduleIntervalJob(`${artifactName}::NewGroup`, 1000, anything())).thenReturn();
+            when(context.queueMock.process(fetchJobName, 1, anyFunction())).thenReject(new Error('unexpected error'));
 
             await context.evmEventControllerBase.onModuleInit();
             await new Promise(ok => setTimeout(ok, 5000));
 
-            verify(
-                context.outrospectionServiceMock.getInstanceSignature(),
-            ).called();
-            verify(
-                context.queueMock.process(fetchJobName, 1, anyFunction()),
-            ).called();
-            verify(
-                context.shutdownServiceMock.shutdownWithError(anything()),
-            ).called();
-            verify(
-                context.scheduleMock.scheduleIntervalJob(
-                    `${artifactName}::NewGroup`,
-                    1000,
-                    anything(),
-                ),
-            ).called();
+            verify(context.outrospectionServiceMock.getInstanceSignature()).called();
+            verify(context.queueMock.process(fetchJobName, 1, anyFunction())).called();
+            verify(context.shutdownServiceMock.shutdownWithError(anything())).called();
+            verify(context.scheduleMock.scheduleIntervalJob(`${artifactName}::NewGroup`, 1000, anything())).called();
         }, 10000);
 
         it('should register for worker non master', async function() {
@@ -1404,35 +1232,15 @@ describe('EVMEvent Controller Base', function() {
             const artifactName = 't721c::T721Controller_v0';
             const fetchJobName = `@@evmantenna/fetchEVMEventsForBlock/${artifactName}/NewGroup`;
 
-            when(
-                context.outrospectionServiceMock.getInstanceSignature(),
-            ).thenResolve(signature as InstanceSignature);
-            when(
-                context.scheduleMock.scheduleIntervalJob(
-                    `${artifactName}::NewGroup`,
-                    1000,
-                    anything(),
-                ),
-            ).thenReturn();
-            when(
-                context.queueMock.process(fetchJobName, 1, anything()),
-            ).thenResolve();
+            when(context.outrospectionServiceMock.getInstanceSignature()).thenResolve(signature as InstanceSignature);
+            when(context.scheduleMock.scheduleIntervalJob(`${artifactName}::NewGroup`, 1000, anything())).thenReturn();
+            when(context.queueMock.process(fetchJobName, 1, anything())).thenResolve();
 
             await context.evmEventControllerBase.onModuleInit();
 
-            verify(
-                context.outrospectionServiceMock.getInstanceSignature(),
-            ).called();
-            verify(
-                context.scheduleMock.scheduleIntervalJob(
-                    `${artifactName}::NewGroup`,
-                    1000,
-                    anything(),
-                ),
-            ).never();
-            verify(
-                context.queueMock.process(fetchJobName, 1, anything()),
-            ).called();
+            verify(context.outrospectionServiceMock.getInstanceSignature()).called();
+            verify(context.scheduleMock.scheduleIntervalJob(`${artifactName}::NewGroup`, 1000, anything())).never();
+            verify(context.queueMock.process(fetchJobName, 1, anything())).called();
         });
 
         it('should register for server non master', async function() {
@@ -1444,35 +1252,15 @@ describe('EVMEvent Controller Base', function() {
             const artifactName = 't721c::T721Controller_v0';
             const fetchJobName = `@@evmantenna/fetchEVMEventsForBlock/${artifactName}/NewGroup`;
 
-            when(
-                context.outrospectionServiceMock.getInstanceSignature(),
-            ).thenResolve(signature as InstanceSignature);
-            when(
-                context.scheduleMock.scheduleIntervalJob(
-                    `${artifactName}::NewGroup`,
-                    1000,
-                    anything(),
-                ),
-            ).thenReturn();
-            when(
-                context.queueMock.process(fetchJobName, 1, anything()),
-            ).thenResolve();
+            when(context.outrospectionServiceMock.getInstanceSignature()).thenResolve(signature as InstanceSignature);
+            when(context.scheduleMock.scheduleIntervalJob(`${artifactName}::NewGroup`, 1000, anything())).thenReturn();
+            when(context.queueMock.process(fetchJobName, 1, anything())).thenResolve();
 
             await context.evmEventControllerBase.onModuleInit();
 
-            verify(
-                context.outrospectionServiceMock.getInstanceSignature(),
-            ).called();
-            verify(
-                context.scheduleMock.scheduleIntervalJob(
-                    `${artifactName}::NewGroup`,
-                    1000,
-                    anything(),
-                ),
-            ).never();
-            verify(
-                context.queueMock.process(fetchJobName, 1, anything()),
-            ).never();
+            verify(context.outrospectionServiceMock.getInstanceSignature()).called();
+            verify(context.scheduleMock.scheduleIntervalJob(`${artifactName}::NewGroup`, 1000, anything())).never();
+            verify(context.queueMock.process(fetchJobName, 1, anything())).never();
         });
     });
 });

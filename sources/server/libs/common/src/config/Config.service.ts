@@ -55,9 +55,7 @@ export class ConfigService {
      * @param envConfig
      */
     private validateInput(envConfig: EnvConfig): EnvConfig {
-        const { error, value: validatedEnvConfig } = this.joiConfig.validate(
-            envConfig,
-        );
+        const { error, value: validatedEnvConfig } = this.joiConfig.validate(envConfig);
 
         if (error) {
             throw new Error(`Config validation error: ${error.message}`);

@@ -109,9 +109,7 @@ export class CRUDExtension<RepositoryType extends Repository, EntityType> {
     constructor(
         private readonly _model: BaseModel<EntityType>,
         private readonly _repository: RepositoryType,
-        private readonly _modelBuilder: (
-            EntityType,
-        ) => BaseModelStatic<EntityType>,
+        private readonly _modelBuilder: (EntityType) => BaseModelStatic<EntityType>,
     ) {
         const properties = (this._model as any)._properties;
 
@@ -126,9 +124,7 @@ export class CRUDExtension<RepositoryType extends Repository, EntityType> {
      *
      * @param entity
      */
-    private adaptUUIDFieldTypesFilter(
-        entity: Partial<EntityType>,
-    ): Partial<EntityType> {
+    private adaptUUIDFieldTypesFilter(entity: Partial<EntityType>): Partial<EntityType> {
         const returnedValue: Partial<EntityType> = {};
 
         for (const field of Object.keys(entity)) {
@@ -147,9 +143,7 @@ export class CRUDExtension<RepositoryType extends Repository, EntityType> {
      *
      * @param entity
      */
-    private adaptFieldTypesFilter(
-        entity: Partial<EntityType>,
-    ): Partial<EntityType> {
+    private adaptFieldTypesFilter(entity: Partial<EntityType>): Partial<EntityType> {
         return this.adaptUUIDFieldTypesFilter(entity);
     }
 
@@ -186,17 +180,13 @@ export class CRUDExtension<RepositoryType extends Repository, EntityType> {
         switch (typeof entity) {
             case 'object': {
                 if (Array.isArray(entity)) {
-                    return entity.map((elem: any) =>
-                        this.adaptResponseTypeFilter(elem),
-                    );
+                    return entity.map((elem: any) => this.adaptResponseTypeFilter(elem));
                 } else {
                     if (entity && this.isUuid(entity)) {
                         return entity.toString();
                     } else {
                         for (const key of Object.keys(entity)) {
-                            entity[key] = this.adaptResponseTypeFilter(
-                                entity[key],
-                            );
+                            entity[key] = this.adaptResponseTypeFilter(entity[key]);
                         }
                         return entity;
                     }
@@ -214,9 +204,7 @@ export class CRUDExtension<RepositoryType extends Repository, EntityType> {
      *
      * @param query
      */
-    private adaptQueryUUIDFieldTypesFilter(
-        query: SearchQuery<EntityType>,
-    ): Partial<EntityType> {
+    private adaptQueryUUIDFieldTypesFilter(query: SearchQuery<EntityType>): Partial<EntityType> {
         const returnedValue: Partial<EntityType> = {};
 
         for (const field of Object.keys(query)) {
@@ -229,15 +217,11 @@ export class CRUDExtension<RepositoryType extends Repository, EntityType> {
                         returnedValue[field] = {};
                         for (const key of Object.keys(query[field])) {
                             if (typeof query[field][key] === 'string') {
-                                returnedValue[field][key] = uuid(
-                                    query[field][key],
-                                );
+                                returnedValue[field][key] = uuid(query[field][key]);
                             } else if (key === '$contains_key') {
                                 returnedValue[field][key] = [];
                                 for (const subkey of query[field][key]) {
-                                    returnedValue[field][key].push(
-                                        uuid(subkey),
-                                    );
+                                    returnedValue[field][key].push(uuid(subkey));
                                 }
                             } else {
                                 returnedValue[field][key] = query[field][key];
@@ -260,9 +244,7 @@ export class CRUDExtension<RepositoryType extends Repository, EntityType> {
      *
      * @param query
      */
-    private adaptQueryFieldTypesFilter(
-        query: SearchQuery<EntityType>,
-    ): Partial<EntityType> {
+    private adaptQueryFieldTypesFilter(query: SearchQuery<EntityType>): Partial<EntityType> {
         return this.adaptQueryUUIDFieldTypesFilter(query);
     }
 
@@ -279,16 +261,11 @@ export class CRUDExtension<RepositoryType extends Repository, EntityType> {
      * @param entity
      * @param options
      */
-    async dryCreate(
-        entity: Partial<EntityType>,
-        options?: CreateOptions,
-    ): Promise<CRUDResponse<DryResponse>> {
+    async dryCreate(entity: Partial<EntityType>, options?: CreateOptions): Promise<CRUDResponse<DryResponse>> {
         try {
-            const processedEntity: Partial<EntityType> = this.adaptFieldTypesFilter(
-                {
-                    ...entity,
-                },
-            );
+            const processedEntity: Partial<EntityType> = this.adaptFieldTypesFilter({
+                ...entity,
+            });
 
             const offlineEntity = this._repository.create(processedEntity);
             const createdEntity = await this._modelBuilder(offlineEntity).save({
@@ -314,16 +291,11 @@ export class CRUDExtension<RepositoryType extends Repository, EntityType> {
      * @param entity
      * @param options
      */
-    async create(
-        entity: Partial<EntityType>,
-        options?: CreateOptions,
-    ): Promise<CRUDResponse<EntityType>> {
+    async create(entity: Partial<EntityType>, options?: CreateOptions): Promise<CRUDResponse<EntityType>> {
         try {
-            const processedEntity: Partial<EntityType> = this.adaptFieldTypesFilter(
-                {
-                    ...entity,
-                },
-            );
+            const processedEntity: Partial<EntityType> = this.adaptFieldTypesFilter({
+                ...entity,
+            });
 
             const createdEntity: EntityType = await this._repository
                 .save(this._repository.create(processedEntity), options)
@@ -352,9 +324,7 @@ export class CRUDExtension<RepositoryType extends Repository, EntityType> {
         options?: SearchOptions<EntityType>,
     ): Promise<CRUDResponse<DryResponse>> {
         try {
-            const processedQuery: SearchQuery<EntityType> = this.adaptQueryFieldTypesFilter(
-                find,
-            );
+            const processedQuery: SearchQuery<EntityType> = this.adaptQueryFieldTypesFilter(find);
 
             const results = ((await this._model.find(processedQuery, {
                 ...(options || {}),
@@ -384,13 +354,9 @@ export class CRUDExtension<RepositoryType extends Repository, EntityType> {
         options?: SearchOptions<EntityType>,
     ): Promise<CRUDResponse<EntityType[]>> {
         try {
-            const processedQuery: SearchQuery<EntityType> = this.adaptQueryFieldTypesFilter(
-                find,
-            );
+            const processedQuery: SearchQuery<EntityType> = this.adaptQueryFieldTypesFilter(find);
 
-            const results: EntityType[] = await this._repository
-                .find(processedQuery, options)
-                .toPromise();
+            const results: EntityType[] = await this._repository.find(processedQuery, options).toPromise();
 
             return {
                 response: this.adaptResponseTypeFilter(results),
@@ -417,22 +383,14 @@ export class CRUDExtension<RepositoryType extends Repository, EntityType> {
         options?: UpdateOptions<EntityType>,
     ): Promise<ServiceResponse<DryResponse>> {
         try {
-            const processedEntity: Partial<EntityType> = this.adaptFieldTypesFilter(
-                entity,
-            );
-            const processedQuery: SearchQuery<EntityType> = this.adaptQueryFieldTypesFilter(
-                find,
-            );
+            const processedEntity: Partial<EntityType> = this.adaptFieldTypesFilter(entity);
+            const processedQuery: SearchQuery<EntityType> = this.adaptQueryFieldTypesFilter(find);
             (processedEntity as any).updated_at = new Date(Date.now());
 
-            const res = ((await this._model.update(
-                processedQuery,
-                processedEntity,
-                {
-                    ...(options || {}),
-                    return_query: true,
-                },
-            )) as any) as DryResponse;
+            const res = ((await this._model.update(processedQuery, processedEntity, {
+                ...(options || {}),
+                return_query: true,
+            })) as any) as DryResponse;
 
             return {
                 response: res,
@@ -460,17 +418,11 @@ export class CRUDExtension<RepositoryType extends Repository, EntityType> {
         options?: UpdateOptions<EntityType>,
     ): Promise<CRUDResponse<EntityType>> {
         try {
-            const processedEntity: Partial<EntityType> = this.adaptFieldTypesFilter(
-                entity,
-            );
-            const processedQuery: SearchQuery<EntityType> = this.adaptQueryFieldTypesFilter(
-                find,
-            );
+            const processedEntity: Partial<EntityType> = this.adaptFieldTypesFilter(entity);
+            const processedQuery: SearchQuery<EntityType> = this.adaptQueryFieldTypesFilter(find);
             (processedEntity as any).updated_at = new Date(Date.now());
 
-            const res = await this._repository
-                .update(processedQuery, processedEntity, options)
-                .toPromise();
+            const res = await this._repository.update(processedQuery, processedEntity, options).toPromise();
 
             return {
                 response: res,
@@ -490,22 +442,14 @@ export class CRUDExtension<RepositoryType extends Repository, EntityType> {
      * @param find
      * @param options
      */
-    async dryDelete(
-        find: SearchQuery<EntityType>,
-        options?: DeleteOptions,
-    ): Promise<CRUDResponse<DryResponse>> {
+    async dryDelete(find: SearchQuery<EntityType>, options?: DeleteOptions): Promise<CRUDResponse<DryResponse>> {
         try {
-            const processedQuery: SearchQuery<EntityType> = this.adaptQueryFieldTypesFilter(
-                find,
-            );
+            const processedQuery: SearchQuery<EntityType> = this.adaptQueryFieldTypesFilter(find);
 
-            const res: DryResponse = ((await this._model.delete(
-                processedQuery,
-                {
-                    ...(options || {}),
-                    return_query: true,
-                },
-            )) as any) as DryResponse;
+            const res: DryResponse = ((await this._model.delete(processedQuery, {
+                ...(options || {}),
+                return_query: true,
+            })) as any) as DryResponse;
 
             return {
                 response: res,
@@ -525,18 +469,11 @@ export class CRUDExtension<RepositoryType extends Repository, EntityType> {
      * @param find
      * @param options
      */
-    async delete(
-        find: SearchQuery<EntityType>,
-        options?: DeleteOptions,
-    ): Promise<CRUDResponse<void>> {
+    async delete(find: SearchQuery<EntityType>, options?: DeleteOptions): Promise<CRUDResponse<void>> {
         try {
-            const processedQuery: SearchQuery<EntityType> = this.adaptQueryFieldTypesFilter(
-                find,
-            );
+            const processedQuery: SearchQuery<EntityType> = this.adaptQueryFieldTypesFilter(find);
 
-            const res = await this._repository
-                .delete(processedQuery, options)
-                .toPromise();
+            const res = await this._repository.delete(processedQuery, options).toPromise();
 
             return {
                 response: res,
@@ -569,20 +506,16 @@ export class CRUDExtension<RepositoryType extends Repository, EntityType> {
      *
      * @param options
      */
-    async searchElastic(
-        options: ESSearchQuery<EntityType>,
-    ): Promise<CRUDResponse<ESSearchReturn<EntityType>>> {
+    async searchElastic(options: ESSearchQuery<EntityType>): Promise<CRUDResponse<ESSearchReturn<EntityType>>> {
         try {
-            const queryResult: ESSearchReturn<EntityType> = await new Promise(
-                (ok, ko): void => {
-                    this._model.search(options, (err, result): void => {
-                        if (err) {
-                            return ko(err);
-                        }
-                        ok(result);
-                    });
-                },
-            );
+            const queryResult: ESSearchReturn<EntityType> = await new Promise((ok, ko): void => {
+                this._model.search(options, (err, result): void => {
+                    if (err) {
+                        return ko(err);
+                    }
+                    ok(result);
+                });
+            });
 
             return {
                 response: this.adaptResponseTypeFilter(queryResult),

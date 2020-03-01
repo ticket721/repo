@@ -8,12 +8,7 @@ import { EVMEventSetsService } from '@lib/common/evmeventsets/EVMEventSets.servi
  * EVMEventSets Module, fetches and applies changes from Ethereum Contracts
  */
 @Module({
-    imports: [
-        ExpressCassandraModule.forFeature([
-            EVMEventSetEntity,
-            EVMEventSetsRepository,
-        ]),
-    ],
+    imports: [ExpressCassandraModule.forFeature([EVMEventSetEntity, EVMEventSetsRepository])],
     providers: [EVMEventSetsService],
     exports: [EVMEventSetsService],
 })

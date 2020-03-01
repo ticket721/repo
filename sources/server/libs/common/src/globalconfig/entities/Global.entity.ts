@@ -1,9 +1,4 @@
-import {
-    Column,
-    CreateDateColumn,
-    Entity,
-    UpdateDateColumn,
-} from '@iaminfinity/express-cassandra';
+import { Column, CreateDateColumn, Entity, UpdateDateColumn } from '@iaminfinity/express-cassandra';
 
 /**
  * Global Configuration entity. Used to synchronize dynamic data accross all nodes

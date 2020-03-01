@@ -1,9 +1,6 @@
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Controller, Get, HttpCode, UseFilters } from '@nestjs/common';
-import {
-    Contracts,
-    ContractsService,
-} from '@lib/common/contracts/Contracts.service';
+import { Contracts, ContractsService } from '@lib/common/contracts/Contracts.service';
 import { StatusCodes, StatusNames } from '@lib/common/utils/codes';
 import { ContractsFetchResponseDto } from '@app/server/controllers/contracts/dto/ContractsFetchResponse.dto';
 import { HttpExceptionFilter } from '@app/server/utils/HttpException.filter';

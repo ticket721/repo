@@ -77,16 +77,13 @@ describe('Authentication Tasks', function() {
             ],
         }).compile();
 
-        context.authenticationTasks = module.get<AuthenticationTasks>(
-            AuthenticationTasks,
-        );
+        context.authenticationTasks = module.get<AuthenticationTasks>(AuthenticationTasks);
     });
 
     describe('validationEmail', function() {
         it('should send an email', async function() {
             const jobMock: JobMock = mock(JobMock);
-            const authenticationTasks: AuthenticationTasks =
-                context.authenticationTasks;
+            const authenticationTasks: AuthenticationTasks = context.authenticationTasks;
             const emailServiceMock: EmailService = context.emailServiceMock;
             const jwtServiceMock: JwtService = context.jwtServiceMock;
             const mailingQueueMock: QueueMock = context.mailingQueueMock;
@@ -113,9 +110,7 @@ describe('Authentication Tasks', function() {
                 template: 'validate',
                 locale,
                 locals: {
-                    validationLink: `${validationUrl}?token=${encodeURIComponent(
-                        signature,
-                    )}`,
+                    validationLink: `${validationUrl}?token=${encodeURIComponent(signature)}`,
                     token: signature,
                 },
             };
@@ -131,9 +126,7 @@ describe('Authentication Tasks', function() {
                 ),
             ).thenReturn(Promise.resolve(signature));
 
-            when(configServiceMock.get('VALIDATION_URL')).thenReturn(
-                validationUrl,
-            );
+            when(configServiceMock.get('VALIDATION_URL')).thenReturn(validationUrl);
 
             when(emailServiceMock.send(deepEqual(emailPayload))).thenReturn(
                 Promise.resolve({
@@ -164,8 +157,7 @@ describe('Authentication Tasks', function() {
 
         it('should throw', async function() {
             const jobMock: JobMock = mock(JobMock);
-            const authenticationTasks: AuthenticationTasks =
-                context.authenticationTasks;
+            const authenticationTasks: AuthenticationTasks = context.authenticationTasks;
             const emailServiceMock: EmailService = context.emailServiceMock;
             const jwtServiceMock: JwtService = context.jwtServiceMock;
             const mailingQueueMock: QueueMock = context.mailingQueueMock;
@@ -192,9 +184,7 @@ describe('Authentication Tasks', function() {
                 template: 'validate',
                 locale,
                 locals: {
-                    validationLink: `${validationUrl}?token=${encodeURIComponent(
-                        signature,
-                    )}`,
+                    validationLink: `${validationUrl}?token=${encodeURIComponent(signature)}`,
                     token: signature,
                 },
             };
@@ -210,9 +200,7 @@ describe('Authentication Tasks', function() {
                 ),
             ).thenReturn(Promise.resolve(signature));
 
-            when(configServiceMock.get('VALIDATION_URL')).thenReturn(
-                validationUrl,
-            );
+            when(configServiceMock.get('VALIDATION_URL')).thenReturn(validationUrl);
 
             when(emailServiceMock.send(deepEqual(emailPayload))).thenReturn(
                 Promise.resolve({
@@ -221,9 +209,7 @@ describe('Authentication Tasks', function() {
                 }),
             );
 
-            await expect(
-                authenticationTasks.validationEmail(instance(jobMock) as Job),
-            ).rejects.toMatchObject({
+            await expect(authenticationTasks.validationEmail(instance(jobMock) as Job)).rejects.toMatchObject({
                 message: 'unexpected_error',
             });
 

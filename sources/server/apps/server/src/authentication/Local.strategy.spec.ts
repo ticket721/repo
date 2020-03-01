@@ -22,9 +22,7 @@ const context: {
 
 describe('Local Strategy', function() {
     beforeEach(async function() {
-        const authenticationServiceMock: AuthenticationService = mock(
-            AuthenticationService,
-        );
+        const authenticationServiceMock: AuthenticationService = mock(AuthenticationService);
 
         const AuthenticationServiceProvider = {
             provide: AuthenticationService,
@@ -42,8 +40,7 @@ describe('Local Strategy', function() {
     describe('validate', function() {
         test('should validate user', async function() {
             const localStrategy: LocalStrategy = context.localStrategy;
-            const authenticationServiceMock: AuthenticationService =
-                context.authenticationServiceMock;
+            const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
 
             const email = 'test@test.com';
             const username = 'salut';
@@ -53,9 +50,7 @@ describe('Local Strategy', function() {
             const encrypted_string = await encryptWallet(wallet, hashedp);
             const encrypted = JSON.parse(encrypted_string);
 
-            when(
-                authenticationServiceMock.validateUser(email, hashedp),
-            ).thenReturn(
+            when(authenticationServiceMock.validateUser(email, hashedp)).thenReturn(
                 Promise.resolve({
                     response: {
                         username,
@@ -86,15 +81,12 @@ describe('Local Strategy', function() {
                 valid: false,
             });
 
-            verify(
-                authenticationServiceMock.validateUser(email, hashedp),
-            ).called();
+            verify(authenticationServiceMock.validateUser(email, hashedp)).called();
         });
 
         test('should throw unauthorized exception', async function() {
             const localStrategy: LocalStrategy = context.localStrategy;
-            const authenticationServiceMock: AuthenticationService =
-                context.authenticationServiceMock;
+            const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
 
             const email = 'test@test.com';
             const username = 'salut';
@@ -104,18 +96,14 @@ describe('Local Strategy', function() {
             const encrypted_string = await encryptWallet(wallet, hashedp);
             const encrypted = JSON.parse(encrypted_string);
 
-            when(
-                authenticationServiceMock.validateUser(email, hashedp),
-            ).thenReturn(
+            when(authenticationServiceMock.validateUser(email, hashedp)).thenReturn(
                 Promise.resolve({
                     response: null,
                     error: 'invalid_credentials',
                 }),
             );
 
-            await expect(
-                localStrategy.validate(email, hashedp),
-            ).rejects.toMatchObject({
+            await expect(localStrategy.validate(email, hashedp)).rejects.toMatchObject({
                 status: StatusCodes.Unauthorized,
                 response: {
                     status: StatusCodes.Unauthorized,
@@ -127,15 +115,12 @@ describe('Local Strategy', function() {
                 },
             });
 
-            verify(
-                authenticationServiceMock.validateUser(email, hashedp),
-            ).called();
+            verify(authenticationServiceMock.validateUser(email, hashedp)).called();
         });
 
         test('should throw internal error exception', async function() {
             const localStrategy: LocalStrategy = context.localStrategy;
-            const authenticationServiceMock: AuthenticationService =
-                context.authenticationServiceMock;
+            const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
 
             const email = 'test@test.com';
             const username = 'salut';
@@ -145,18 +130,14 @@ describe('Local Strategy', function() {
             const encrypted_string = await encryptWallet(wallet, hashedp);
             const encrypted = JSON.parse(encrypted_string);
 
-            when(
-                authenticationServiceMock.validateUser(email, hashedp),
-            ).thenReturn(
+            when(authenticationServiceMock.validateUser(email, hashedp)).thenReturn(
                 Promise.resolve({
                     response: null,
                     error: 'internal_error',
                 }),
             );
 
-            await expect(
-                localStrategy.validate(email, hashedp),
-            ).rejects.toMatchObject({
+            await expect(localStrategy.validate(email, hashedp)).rejects.toMatchObject({
                 status: StatusCodes.InternalServerError,
                 response: {
                     status: StatusCodes.InternalServerError,
@@ -168,9 +149,7 @@ describe('Local Strategy', function() {
                 },
             });
 
-            verify(
-                authenticationServiceMock.validateUser(email, hashedp),
-            ).called();
+            verify(authenticationServiceMock.validateUser(email, hashedp)).called();
         });
     });
 });
