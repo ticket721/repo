@@ -20,6 +20,7 @@ import { DryResponse } from '@lib/common/crud/CRUD.extension';
 import { Connection, InjectConnection } from '@iaminfinity/express-cassandra';
 import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
 import { EVMBlockRollbacksService } from '@lib/common/evmblockrollbacks/EVMBlockRollbacks.service';
+import { cassandraArrayResult } from '@lib/common/utils/cassandraArrayResult';
 
 /**
  * Data Model contained inside the merge jobs
@@ -158,18 +159,20 @@ export class EVMAntennaMergerScheduler implements OnApplicationBootstrap {
     }
 
     /**
-     * Bull Task to merge a specific job
+     * Internal utility to fetch all evm event sets for a specific block
      *
-     * @param job
+     * @param blockNumber
      */
-    async evmEventMerger(job: Job<EVMAntennaMergerJob>): Promise<void> {
+    private async fetchEvmEventSets(
+        blockNumber: number,
+    ): Promise<ESSearchHit<EVMEventSetEntity>[]> {
         const esQuery = {
             body: {
                 query: {
                     bool: {
                         must: {
                             term: {
-                                block_number: job.data.blockNumber,
+                                block_number: blockNumber,
                             },
                         },
                     },
@@ -183,7 +186,7 @@ export class EVMAntennaMergerScheduler implements OnApplicationBootstrap {
 
         if (EVMEventSets.error) {
             throw new Error(
-                `EVMAntennaMergerScheduler::evmEventMerger | Error while fetching events for block ${job.data.blockNumber}: ${EVMEventSets.error}`,
+                `EVMAntennaMergerScheduler::fetchEvmEventSets | Error while fetching events for block ${blockNumber}: ${EVMEventSets.error}`,
             );
         }
 
@@ -191,34 +194,32 @@ export class EVMAntennaMergerScheduler implements OnApplicationBootstrap {
             EVMEventSets.response.hits.total !==
             EVMAntennaMergerScheduler.controllers.length
         ) {
-            return;
+            return null;
         }
 
-        const rawEvents: EVMProcessableEvent[] = []
+        return EVMEventSets.response.hits.hits;
+    }
+
+    /**
+     * Internal utility to sort and merge evm event sets by transaction / log order
+     *
+     * @param esres
+     */
+    private sortAndMergeEvents(
+        esres: ESSearchHit<EVMEventSetEntity>[],
+    ): EVMProcessableEvent[] {
+        return []
             .concat(
-                ...EVMEventSets.response.hits.hits.map(
+                ...esres.map(
                     (
                         eshit: ESSearchHit<EVMEventSetEntity>,
                     ): EVMProcessableEvent[] =>
-                        eshit._source.events
-                            ? Array.isArray(eshit._source.events)
-                                ? eshit._source.events.map(
-                                      (
-                                          esraw: EVMEvent,
-                                      ): EVMProcessableEvent => ({
-                                          ...esraw,
-                                          artifact_name:
-                                              eshit._source.artifact_name,
-                                      }),
-                                  )
-                                : [
-                                      {
-                                          ...(eshit._source.events as EVMEvent),
-                                          artifact_name:
-                                              eshit._source.artifact_name,
-                                      },
-                                  ]
-                            : [],
+                        cassandraArrayResult(eshit._source.events).map(
+                            (esraw: EVMEvent): EVMProcessableEvent => ({
+                                ...esraw,
+                                artifact_name: eshit._source.artifact_name,
+                            }),
+                        ),
                 ),
             )
             .sort(
@@ -239,11 +240,21 @@ export class EVMAntennaMergerScheduler implements OnApplicationBootstrap {
                     return rawEventA.log_index - rawEventB.log_index;
                 },
             );
+    }
 
-        const queryBatch: DryResponse[] = [];
-        const rollbackBatch: DryResponse[] = [];
-
-        for (const event of rawEvents) {
+    /**
+     * Internal utility to convert raw evm events to queries + rollbacks
+     *
+     * @param queries
+     * @param rollbacks
+     * @param events
+     */
+    private async convertEventsToQueries(
+        queries: DryResponse[],
+        rollbacks: DryResponse[],
+        events: EVMProcessableEvent[],
+    ): Promise<void> {
+        for (const event of events) {
             const controllerIdx = EVMAntennaMergerScheduler.controllers.findIndex(
                 (controller: EVMEventControllerBase): boolean =>
                     controller.isHandler(event.event, event.artifact_name),
@@ -251,59 +262,94 @@ export class EVMAntennaMergerScheduler implements OnApplicationBootstrap {
 
             if (controllerIdx === -1) {
                 throw new Error(
-                    `EVMAntennaMergerScheduler::evmEventMerger | event ${event.event} from ${event.artifact_name} has no matching controller`,
+                    `EVMAntennaMergerScheduler::convertEventsToQueries | event ${event.event} from ${event.artifact_name} has no matching controller`,
                 );
             }
 
             await EVMAntennaMergerScheduler.controllers[controllerIdx].convert(
                 event,
-                this.appender.bind(null, queryBatch, rollbackBatch),
+                this.appender.bind(null, queries, rollbacks),
             );
         }
+    }
 
+    /**
+     * Internal utility to add the query used to delete all evm event sets for currently processed block
+     *
+     * @param queries
+     * @param blockNumber
+     */
+    private async injectEventSetDeletionQueries(
+        queries: DryResponse[],
+        blockNumber: number,
+    ): Promise<void> {
         for (const controller of EVMAntennaMergerScheduler.controllers) {
             const evmEventSetsRemoval = await this.evmEventSetsService.dryDelete(
                 {
                     artifact_name: controller.artifactName,
                     event_name: controller.eventName,
-                    block_number: job.data.blockNumber,
+                    block_number: blockNumber,
                 },
             );
 
             if (evmEventSetsRemoval.error) {
                 throw new Error(
-                    `EVMAntennaMergerScheduler::evmEventMerger | error while creating evmeventset removal on event ${controller.eventName} on controller ${controller.artifactName}`,
+                    `EVMAntennaMergerScheduler::injectEventSetDeletionQueries | error while creating evmeventset removal on event ${controller.eventName} on controller ${controller.artifactName}`,
                 );
             }
 
-            queryBatch.push(evmEventSetsRemoval.response);
+            queries.push(evmEventSetsRemoval.response);
         }
+    }
 
+    /**
+     * Internal utility to add the query used to increment the processed block number
+     *
+     * @param queries
+     * @param blockNumber
+     */
+    private async injectProcessedHeightUpdateQuery(
+        queries: DryResponse[],
+        blockNumber: number,
+    ): Promise<void> {
         const globalConfigRes = await this.globalConfigService.dryUpdate(
             {
                 id: 'global',
             },
             {
-                processed_block_number: job.data.blockNumber,
+                processed_block_number: blockNumber,
             },
         );
 
         if (globalConfigRes.error) {
             throw new Error(
-                `EVMAntennaMergerScheduler::evmEventMerger | error while creating global config update query`,
+                `EVMAntennaMergerScheduler::evmEventMerger | error while creating global config update query: ${globalConfigRes.error}`,
             );
         }
 
-        queryBatch.push(globalConfigRes.response);
+        queries.push(globalConfigRes.response);
+    }
 
+    /**
+     * Internal utility to store emergency rollback queries into the database
+     *
+     * @param queries
+     * @param rollbacks
+     * @param blockNumber
+     */
+    private async injectBlockRollbackCreationQuery(
+        queries: DryResponse[],
+        rollbacks: DryResponse[],
+        blockNumber: number,
+    ): Promise<void> {
         const rollbackRes = await this.evmBlockRollbacksService.dryCreate({
-            block_number: job.data.blockNumber,
-            rollback_queries: rollbackBatch,
+            block_number: blockNumber,
+            rollback_queries: rollbacks,
         });
 
         if (rollbackRes.error) {
             throw new Error(
-                `EVMAntennaMergerScheduler::evmEventMerger | error while creating block rollback query: ${rollbackRes.error}`,
+                `EVMAntennaMergerScheduler::injectBlockRollbackCreationQuery | error while creating block rollback query: ${rollbackRes.error}`,
             );
         }
 
@@ -325,7 +371,42 @@ export class EVMAntennaMergerScheduler implements OnApplicationBootstrap {
             },
         );
 
-        queryBatch.push(rollbackRes.response);
+        queries.push(rollbackRes.response);
+    }
+
+    /**
+     * Bull Task to merge a specific job
+     *
+     * @param job
+     */
+    async evmEventMerger(job: Job<EVMAntennaMergerJob>): Promise<void> {
+        const esQueryResult = await this.fetchEvmEventSets(
+            job.data.blockNumber,
+        );
+
+        if (esQueryResult === null) {
+            return;
+        }
+
+        const rawEvents = this.sortAndMergeEvents(esQueryResult);
+
+        const queryBatch: DryResponse[] = [];
+        const rollbackBatch: DryResponse[] = [];
+
+        await this.convertEventsToQueries(queryBatch, rollbackBatch, rawEvents);
+        await this.injectEventSetDeletionQueries(
+            queryBatch,
+            job.data.blockNumber,
+        );
+        await this.injectProcessedHeightUpdateQuery(
+            queryBatch,
+            job.data.blockNumber,
+        );
+        await this.injectBlockRollbackCreationQuery(
+            queryBatch,
+            rollbackBatch,
+            job.data.blockNumber,
+        );
 
         try {
             await this.connection.doBatchAsync((queryBatch as any) as string[]);

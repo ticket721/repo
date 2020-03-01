@@ -16,7 +16,6 @@ import { EVMEventSetsService } from '@lib/common/evmeventsets/EVMEventSets.servi
 import {
     anyFunction,
     anything,
-    capture,
     deepEqual,
     instance,
     mock,
@@ -25,8 +24,6 @@ import {
     when,
 } from 'ts-mockito';
 import { GlobalEntity } from '@lib/common/globalconfig/entities/Global.entity';
-import { EsSearchOptionsStatic } from '@iaminfinity/express-cassandra';
-import { ESSearchReturn } from '@lib/common/utils/ESSearchReturn';
 import {
     EVMEvent,
     EVMEventSetEntity,

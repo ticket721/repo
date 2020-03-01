@@ -13,8 +13,6 @@ import { NewCategoryT721CEVMAntenna } from '@app/worker/evmantenna/events/t721c/
 import { DatesService } from '@lib/common/dates/Dates.service';
 import { toB32 } from '@ticket721sources/global';
 import { DryResponse } from '@lib/common/crud/CRUD.extension';
-import { EVMProcessableEvent } from '@app/worker/evmantenna/EVMAntennaMerger.scheduler';
-import { EventEntity } from '@lib/common/events/entities/Event.entity';
 import { Category, DateEntity } from '@lib/common/dates/entities/Date.entity';
 
 class QueueMock<T = any> {
