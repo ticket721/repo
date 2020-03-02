@@ -1,0 +1,12 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="format:checks (run prettier on source code but only checks) (@repo/server)" type="js.build_tools.npm" folderName="@ticket721source/server (npm)">
+    <package-json value="$PROJECT_DIR$/sources/server/package.json" />
+    <command value="run" />
+    <scripts>
+      <script value="format:check" />
+    </scripts>
+    <node-interpreter value="project" />
+    <envs />
+    <method v="2" />
+  </configuration>
+</component>

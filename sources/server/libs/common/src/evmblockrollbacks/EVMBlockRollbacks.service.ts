@@ -13,6 +13,7 @@ export class EVMBlockRollbacksService extends CRUDExtension<EVMBlockRollbacksRep
      * @param evmBlockRollbacksRepository
      * @param evmBlockRollbackEntity
      */
+    /* istanbul ignore next */
     constructor(
         @InjectRepository(EVMBlockRollbacksRepository)
         evmBlockRollbacksRepository: EVMBlockRollbacksRepository,

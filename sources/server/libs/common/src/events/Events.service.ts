@@ -13,6 +13,7 @@ export class EventsService extends CRUDExtension<EventsRepository, EventEntity> 
      * @param eventsRepository
      * @param eventEntity
      */
+    /* istanbul ignore next */
     constructor(
         @InjectRepository(EventsRepository)
         eventsRepository: EventsRepository,

@@ -28,7 +28,8 @@ async function main() {
         const mailing = app.get<Queue>(getQueueToken('mailing'));
         const action = app.get<Queue>(getQueueToken('action'));
         const evmantenna = app.get<Queue>(getQueueToken('evmantenna'));
-        setQueues([mailing, action, evmantenna]);
+        const dosojin = app.get<Queue>(getQueueToken('dosojin'));
+        setQueues([mailing, action, evmantenna, dosojin]);
         app.use('/admin/queues', UI);
     }
 

@@ -5,8 +5,9 @@
     "author": "",
     "license": "MIT",
     "scripts": {
-        "prebuild": "rimraf dist",
-        "build:server": "npm run prebuild && nest build server --tsc",
+        "build:server": "nest build server --tsc",
+        "build:worker": "nest build worker --tsc",
+        "build": "rimraf dist && npm run build:server && npm run build:worker",
         "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
         "format:check": "prettier --check \"apps/**/*.ts\" \"libs/**/*.ts\"",
         "start": "nest start",
@@ -18,7 +19,7 @@
         "lint": "tslint -p tsconfig.json -c tslint.json",
         "test": "jest --expand --verbose",
         "test:cov": "npm run test -- --coverage",
-        "test:server:e2e": "env NODE_ENV=test-e2e jest -c ./jest.server.e2e-config.js --expand --verbose --runInBand --forceExit",
+        "test:server:e2e": "env NODE_ENV=test-e2e jest -c ./jest.server.e2e-config.js --expand --verbose --runInBand",
         "test:server:e2e:cov": "npm run test:server:e2e -- --coverage"
     },
     "dependencies": {
@@ -39,6 +40,7 @@
         "class-transformer": "0.2.3",
         "class-validator": "0.11.0",
         "decimal.js": "^10.2.0",
+        "dosojin": "file:../../modules/dosojin",
         "dotenv": "8.2.0",
         "elasticsearch": "16.6.0",
         "email-templates": "7.0.4",
@@ -51,6 +53,7 @@
         "reflect-metadata": "0.1.13",
         "rimraf": "3.0.2",
         "rxjs": "6.5.4",
+        "stripe": "8.12.0",
         "swagger-ui-express": "4.1.3",
         "winston": "3.2.1"
     },

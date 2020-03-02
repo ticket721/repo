@@ -29,6 +29,12 @@ jobs:
                   path: ./node_modules
                   key: ${{ runner.os }}-${{ hashFiles('package-lock.json') }}-root
 
+            - name: CACHE /modules/dosojin
+              uses: actions/cache@v1
+              with:
+                  path: ./modules/dosojin
+                  key: ${{ runner.os }}-${{ hashFiles('modules/dosojin/package-lock.json') }}-root
+
             - name: CACHE /contracts/contracts_modules/metamarketplace/node_modules
               uses: actions/cache@v1
               with:
@@ -100,6 +106,9 @@ jobs:
 
             - name: Install contracts dependencies (npm run install:ticket721contracts)
               run: npm run install:ticket721contracts
+
+            - name: Install Dosojin (cd modules/dosojin && npm install)
+              run: cd modules/dosojin && npm install
 
             - name: Install sources dependencies (npm run install:ticket721sources)
               run: npm run install:ticket721sources
@@ -250,6 +259,12 @@ jobs:
             - name: Setup submodules (npm run setup:submodules:clone)
               run: npm run setup:submodules:clone
 
+            - name: CACHE /modules/dosojin
+              uses: actions/cache@v1
+              with:
+                  path: ./modules/dosojin
+                  key: ${{ runner.os }}-${{ hashFiles('modules/dosojin/package-lock.json') }}-root
+
             - name: CACHE sources/server/coverage
               uses: actions/cache@v1
               with:
@@ -371,6 +386,12 @@ jobs:
 
             - name: Setup submodules (npm run setup:submodules:clone)
               run: npm run setup:submodules:clone
+
+            - name: CACHE /modules/dosojin
+              uses: actions/cache@v1
+              with:
+                  path: ./modules/dosojin
+                  key: ${{ runner.os }}-${{ hashFiles('modules/dosojin/package-lock.json') }}-root
 
             - name: CACHE sources/server/coverage-server-e2e
               uses: actions/cache@v1

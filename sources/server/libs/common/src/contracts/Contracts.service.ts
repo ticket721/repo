@@ -1,10 +1,11 @@
-import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
+import { Global, Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { Web3Service } from '@lib/common/web3/Web3.service';
 import * as path from 'path';
 import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 import { FSService } from '@lib/common/fs/FS.service';
 import { GlobalConfigService } from '@lib/common/globalconfig/GlobalConfig.service';
+import EventEmitter from 'events';
 
 /**
  * Build option for the Contracts Service
@@ -284,6 +285,7 @@ export interface Contracts {
 /**
  * Service to load all contract artifacts from specific path
  */
+@Global()
 @Injectable()
 export class ContractsService implements OnModuleInit {
     /**
@@ -341,7 +343,7 @@ export class ContractsService implements OnModuleInit {
      *
      * @param networkId
      */
-    private async loadContracts(networkId: number): Promise<void> {
+    private loadContracts(networkId: number): void {
         try {
             this.contracts = {};
             const artifactContent: string[] = this.fsService.readDir(this.options.artifact_path);
@@ -376,15 +378,34 @@ export class ContractsService implements OnModuleInit {
      * Utility to load all available artifacts from given path
      */
     private async loadArtifacts(): Promise<Contracts> {
-        const networkId: number = await this.web3Service.net();
-        this.winstonLoggerService.log(`Starting contract instances import`);
-        await this.loadContracts(networkId);
-        this.winstonLoggerService.log(`Finished contract instances import`);
-        this.winstonLoggerService.log(`Starting contract instances verification`);
-        await this.verifyContracts(networkId);
-        this.winstonLoggerService.log(`Finished contract instances verification`);
+        if (!this.eventEmitter) {
+            this.eventEmitter = new EventEmitter.EventEmitter();
 
-        return this.contracts;
+            try {
+                const networkId: number = await this.web3Service.net();
+                this.winstonLoggerService.log(`Starting contract instances import`);
+                this.loadContracts(networkId);
+                this.winstonLoggerService.log(`Finished contract instances import`);
+                this.winstonLoggerService.log(`Starting contract instances verification`);
+                await this.verifyContracts(networkId);
+                this.winstonLoggerService.log(`Finished contract instances verification`);
+                this.eventEmitter.emit('contracts', this.contracts, null);
+            } catch (e) {
+                this.eventEmitter.emit('contracts', null, e);
+                throw e;
+            }
+
+            return this.contracts;
+        } else {
+            return new Promise((ok: any, ko: any): void => {
+                this.eventEmitter.on(`contracts`, (contracts: Contracts, error: any): void => {
+                    if (error) {
+                        return ko(error);
+                    }
+                    ok(contracts);
+                });
+            });
+        }
     }
 
     /**
@@ -393,6 +414,11 @@ export class ContractsService implements OnModuleInit {
     public async getContractArtifacts(): Promise<Contracts> {
         return this.contracts || this.loadArtifacts();
     }
+
+    /**
+     * Event Emitter used when multiple initialization are occuring at the same time
+     */
+    private eventEmitter: EventEmitter.EventEmitter = null;
 
     /**
      * Checks if processed_block_number is set, if not it

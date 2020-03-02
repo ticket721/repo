@@ -44,6 +44,10 @@ import { ContractsController } from '@app/server/controllers/contracts/Contracts
 import { BinanceModule, BinanceModuleBuildOptions } from '@lib/common/binance/Binance.module';
 import { OutrospectionModule } from '@lib/common/outrospection/Outrospection.module';
 import { EmailModule } from '@lib/common/email/Email.module';
+import { DosojinController } from '@app/server/controllers/dosojin/Dosojin.controller';
+import { GemOrdersModule } from '@lib/common/gemorders/GemOrders.module';
+import { CheckoutController } from '@app/server/controllers/checkout/Checkout.controller';
+import { StripeResourcesModule } from '@lib/common/striperesources/StripeResources.module';
 
 @Module({
     imports: [
@@ -73,6 +77,8 @@ import { EmailModule } from '@lib/common/email/Email.module';
         ActionSetsModule,
         DatesModule,
         EventsModule,
+        GemOrdersModule,
+        StripeResourcesModule,
         CurrenciesModule.registerAsync({
             useFactory: (configService: ConfigService): string => configService.get('CURRENCIES_CONFIG_PATH'),
             inject: [ConfigService],
@@ -157,6 +163,8 @@ import { EmailModule } from '@lib/common/email/Email.module';
         EventsController,
         TxsController,
         ContractsController,
+        DosojinController,
+        CheckoutController,
     ],
     providers: [
         ServerService,

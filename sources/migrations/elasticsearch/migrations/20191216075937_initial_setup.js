@@ -134,6 +134,34 @@ class M20191216075937_initial_setup extends ElasticMigration {
                 }
             }
         );
+        
+        await this.createIndex('ticket721_gemorder', 'ticket721');
+        await this.putMapping('ticket721_gemorder', 'gemorder', {
+            "gemorder": {
+                "discover": ".*"
+            }
+        });
+        await this.putSettings('ticket721_gemorder',
+            {
+                index: {
+                    synchronous_refresh: true
+                }
+            }
+        );
+        
+        await this.createIndex('ticket721_striperesource', 'ticket721');
+        await this.putMapping('ticket721_striperesource', 'striperesource', {
+            "striperesource": {
+                "discover": ".*"
+            }
+        });
+        await this.putSettings('ticket721_striperesource',
+            {
+                index: {
+                    synchronous_refresh: true
+                }
+            }
+        );
     }
 
     async down() {
@@ -147,6 +175,8 @@ class M20191216075937_initial_setup extends ElasticMigration {
         await this.removeIndex('ticket721_global');
         await this.removeIndex('ticket721_evmeventset');
         await this.removeIndex('ticket721_evmblockrollback');
+        await this.removeIndex('ticket721_gemorder');
+        await this.removeIndex('ticket721_striperesource');
     }
 }
 

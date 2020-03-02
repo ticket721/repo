@@ -1,0 +1,15 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="E2E (integration tests) (@repo/server) (@repo/worker)" type="JavaScriptTestRunnerJest" folderName="@ticket721sources/server (jest)">
+    <config-file value="$PROJECT_DIR$/sources/server/jest.server.e2e-config.js" />
+    <node-interpreter value="project" />
+    <node-options value="" />
+    <jest-package value="$PROJECT_DIR$/modules/dosojin/node_modules/jest" />
+    <working-dir value="$PROJECT_DIR$/sources/server" />
+    <jest-options value="--expand --verbose --runInBand" />
+    <envs>
+      <env name="NODE_ENV" value="test-e2e" />
+    </envs>
+    <scope-kind value="ALL" />
+    <method v="2" />
+  </configuration>
+</component>

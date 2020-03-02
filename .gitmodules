@@ -31,3 +31,9 @@
 [submodule "contracts/contracts_modules/t721admin"]
 	path = contracts/contracts_modules/t721admin
 	url = git@github.com:ticket721/t721admin
+[submodule "modules/dosojin"]
+	path = modules/dosojin
+	url = git@github.com:ticket721/dosojin
+[submodule "modules/vaultereum"]
+	path = modules/vaultereum
+	url = git@github.com:ticket721/vaultereum

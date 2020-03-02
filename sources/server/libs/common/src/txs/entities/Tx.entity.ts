@@ -84,7 +84,7 @@ export class TxEntity {
     confirmed: boolean;
 
     /**
-     * Flag valid if transaction hasn;t reverted during execution
+     * Flag valid if transaction hasn't reverted during execution
      */
     @Column({
         type: 'boolean',

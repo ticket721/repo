@@ -9,6 +9,7 @@ import { FSModule } from '@lib/common/fs/FS.module';
 import { T721AdminService } from '@lib/common/contracts/T721Admin.service';
 import { ContractsControllerBase } from '@lib/common/contracts/ContractsController.base';
 import { GlobalConfigModule } from '@lib/common/globalconfig/GlobalConfig.module';
+import { T721TokenService } from '@lib/common/contracts/T721Token.service';
 
 /**
  * Build options for the Contracts Module
@@ -57,6 +58,7 @@ export class ContractsModule {
                 T721ControllerV0Service,
                 MetaMarketplaceV0Service,
                 T721AdminService,
+                T721TokenService,
                 {
                     provide: 'CONTRACTS_CONTROLLER_BASE_CLASS',
                     useValue: ContractsControllerBase,
@@ -69,6 +71,7 @@ export class ContractsModule {
                 T721ControllerV0Service,
                 MetaMarketplaceV0Service,
                 T721AdminService,
+                T721TokenService,
             ],
         };
     }

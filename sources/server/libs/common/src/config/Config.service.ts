@@ -26,12 +26,19 @@ export class ConfigService {
      * from the environment and not from a file.
      *
      * @param joi
-     * @param filePath `.env` file
+     * @param filePaths
      */
-    constructor(joi: Joi.ObjectSchema, filePath?: string) {
+    constructor(joi: Joi.ObjectSchema, filePaths?: string[]) {
         /* istanbul ignore next */
-        if (filePath) {
-            this.envConfig = dotenv.parse(fs.readFileSync(filePath));
+        if (filePaths && filePaths.length) {
+            let env = {};
+            for (const filePath of filePaths) {
+                env = {
+                    ...dotenv.parse(fs.readFileSync(filePath)),
+                    ...env,
+                };
+            }
+            this.envConfig = env;
         } else {
             this.envConfig = process.env;
         }

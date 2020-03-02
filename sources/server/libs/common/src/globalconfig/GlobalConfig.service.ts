@@ -28,6 +28,7 @@ export class GlobalConfigService extends CRUDExtension<GlobalConfigRepository, G
      * @param globalConfigRepository
      * @param globalEntity
      */
+    /* istanbul ignore next */
     constructor(
         @InjectRepository(GlobalConfigRepository)
         globalConfigRepository: GlobalConfigRepository,

@@ -16,6 +16,7 @@ export class T721AdminService extends ContractsControllerBase {
      * @param web3Service
      * @param shutdownService
      */
+    /* istanbul ignore next */
     constructor(contractsService: ContractsService, web3Service: Web3Service, shutdownService: ShutdownService) {
         super(contractsService, web3Service, shutdownService, 't721admin', 'T721Admin');
     }

@@ -23,7 +23,6 @@
         "ci": "cd sources/global && npm run build && cd ../sdk && npm run build && cd ../global && npm run test:cov && cd ../server && npm run test:cov && npm run test:server:e2e:cov"
     },
     "dependencies": {
-        "lcov-result-merger": "3.1.0",
         "@commitlint/cli": "8.3.5",
         "@commitlint/config-conventional": "8.3.4",
         "@htmlacademy/editorconfig-cli": "1.0.0",
@@ -31,11 +30,14 @@
         "@types/dockerode": "2.5.24",
         "@types/signale": "1.2.1",
         "conventional-changelog-cli": "2.0.31",
+        "deep-extend": ">=0.5.1",
         "dockerode": "3.1.0",
         "fs-extra": "8.1.0",
         "gulp": "4.0.2",
         "husky": "4.2.3",
-        "lerna": "3.20.2",
+        "lcov-result-merger": "3.1.0",
+        "lerna": "^3.20.2",
+        "merge": ">=1.2.1",
         "portalize": "1.0.4",
         "signale": "1.4.0",
         "truffle-hdwallet-provider": "1.0.17",
@@ -43,9 +45,7 @@
         "typedoc": "0.16.11",
         "typedoc-plugin-markdown": "2.2.17",
         "typescript": "3.8.3",
-        "web3": "1.2.6",
-        "merge": ">=1.2.1",
-        "deep-extend": ">=0.5.1"
+        "web3": "1.2.6"
     },
     "editorconfig-cli": [
         "gulpfile.ts",
