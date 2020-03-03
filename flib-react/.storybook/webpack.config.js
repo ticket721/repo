@@ -1,36 +1,32 @@
 const createCompiler = require('@storybook/addon-docs/mdx-compiler-plugin');
+const path = require('path');
 
 module.exports = ({ config }) => {
-    config.module.rules.push({
-        test: /\.(ts|tsx)$/,
-        use: [
-            {
-                loader: require.resolve('awesome-typescript-loader'),
-            },
-            // Optional
-            {
-                loader: require.resolve('react-docgen-typescript-loader'),
-            },
-        ],
-    });
-    //config.module.rules.push({
-    //    test: /\.(stories|story)\.mdx$/,
-    //    use: [
-    //        {
-    //            loader: 'babel-loader',
-    //            // may or may not need this line depending on your app's setup
-    //            options: {
-    //                plugins: ['@babel/plugin-transform-react-jsx'],
-    //            },
-    //        },
-    //        {
-    //            loader: '@mdx-js/loader',
-    //            options: {
-    //                compilers: [createCompiler({})],
-    //            },
-    //        },
-    //    ],
-    //});
-    config.resolve.extensions.push('.ts', '.tsx', '.mdx');
-    return config;
+  config.module.rules.push({
+    test: /\.(ts|tsx)$/,
+    use: [
+      {
+        loader: require.resolve('awesome-typescript-loader'),
+      },
+      {
+        loader: require.resolve('react-docgen-typescript-loader'),
+      },
+    ],
+  },
+  {
+    test:/\.(woff|woff2|eot|ttf|otf)$/,
+    use: [
+      {
+        loader: 'file-loader',
+        query: {
+          name: '[name].[ext]'
+        }
+      }
+    ],
+    include: path.resolve(__dirname, '../')
+  });
+
+  config.resolve.extensions.push('.ts', '.tsx', '.mdx');
+
+  return config;
 };

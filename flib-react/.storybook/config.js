@@ -1,7 +1,25 @@
+import * as React from 'react';
 import { DocsContainer, DocsPage } from '@storybook/addon-docs/dist/blocks';
 import { INITIAL_VIEWPORTS } from '@storybook/addon-viewport';
-import { configure, addParameters } from '@storybook/react';
+import { configure, addParameters, addDecorator } from '@storybook/react';
+import { withThemesProvider } from "themeprovider-storybook";
+import { GlobalStyle } from '../src/shared/global';
 import { themes } from '@storybook/theming';
+
+const customThemes = [
+  {
+    name: 'T721',
+    buttonRadius: '8px',
+    primaryColor: '#079CF0',
+    primaryColorGradientEnd: '#2143AB',
+    primaryEventColor: '#EBBC16',
+    primaryEventColorGradientEnd: '#DB535B',
+    regularPadding: '16px'
+  }
+]
+
+addDecorator(withThemesProvider(customThemes));
+addDecorator(style => <><GlobalStyle />{style()}</>);
 
 addParameters({
     options: {
