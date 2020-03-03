@@ -1,4 +1,5 @@
 import { DocsContainer, DocsPage } from '@storybook/addon-docs/dist/blocks';
+import { INITIAL_VIEWPORTS } from '@storybook/addon-viewport';
 import { configure, addParameters } from '@storybook/react';
 import { themes } from '@storybook/theming';
 
@@ -10,6 +11,9 @@ addParameters({
     docs: {
         container: DocsContainer,
         page: DocsPage
+    },
+    viewport: {
+        viewports: INITIAL_VIEWPORTS
     }
 });
 
