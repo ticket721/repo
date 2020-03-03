@@ -28,8 +28,10 @@
   },
   "homepage": "https://github.com/ticket721/flib#readme",
   "dependencies": {
+    "@types/styled-components": "^5.0.1",
     "react": "16.13.0",
-    "react-dom": "16.13.0"
+    "react-dom": "16.13.0",
+    "styled-components": "^5.0.1"
   },
   "devDependencies": {
     "@babel/core": "7.8.4",

@@ -1,4 +1,5 @@
 import * as React from 'react';
+import styled from 'styled-components';
 
 export interface ButtonProps extends React.ComponentProps<any> {
     /**
@@ -17,30 +18,31 @@ export interface ButtonProps extends React.ComponentProps<any> {
     type: 'primary' | 'warning' | 'error';
 }
 
-const colors = {
-    'primary': '#188ae2',
-    'error': 'red',
-    'warning': 'orange'
-};
+const StyledButton = styled.button`
+  padding-bottom: 10px;
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-top: 15px;
+  background-color: blue;
+  &:active {
+    outline: 0;
+    color: #fff;
+    top: 1px;
+  }
+`;
+
 
 /**
  * This is a Button component
  */
 export const Button: React.FunctionComponent<ButtonProps> = (props: ButtonProps): JSX.Element => {
 
-    return <button
+    return <StyledButton
         name={props.title}
         onClick={props.onClick}
-        style={{
-            padding: 10,
-            borderRadius: 7,
-            backgroundColor: colors[props.type],
-            borderColor: colors[props.type],
-            cursor: 'pointer'
-        }}
     >
         {props.title}
-    </button>
+    </StyledButton>
 };
 
 Button.defaultProps = {
