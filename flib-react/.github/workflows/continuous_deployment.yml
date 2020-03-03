@@ -17,11 +17,15 @@ jobs:
               with:
                   node-version: 12.x
 
-            - name: Install dependencies (npm install)
-              run: npm install
+            - uses: borales/actions-yarn@v2.0.0
+              name: Install dependencies (yarn install)
+              with:
+                  cmd: install
 
-            - name: Build static app (npm run build)
-              run: npm run build
+            - uses: borales/actions-yarn@v2.0.0
+              name: Build static app (yarn build)
+              with:
+                  cmd: build
 
             - name: Build and Deploy
               uses: JamesIves/github-pages-deploy-action@releases/v3

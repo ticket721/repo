@@ -2,17 +2,9 @@
 
 exports[`Button Rendering Snapshot Tests Button renders correctly 1`] = `
 <button
+  className="sc-AxjAm etinct"
   name="test"
   onClick={[Function]}
-  style={
-    Object {
-      "backgroundColor": "#188ae2",
-      "borderColor": "#188ae2",
-      "borderRadius": 7,
-      "cursor": "pointer",
-      "padding": 10,
-    }
-  }
 >
   test
 </button>
