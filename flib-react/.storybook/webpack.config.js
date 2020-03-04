@@ -1,4 +1,3 @@
-const createCompiler = require('@storybook/addon-docs/mdx-compiler-plugin');
 const path = require('path');
 
 module.exports = ({ config }) => {

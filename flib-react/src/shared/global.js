@@ -20,6 +20,7 @@ export const masterReset = css`
 export const bodyStyles = css`
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
+  background: linear-gradient(91.44deg, #0A0812 0.31%, #120F1A 99.41%);
   box-sizing: border-box;
   font-family: 'Gordita', Arial, Helvetica, sans-serif;
   font-size: 16px;

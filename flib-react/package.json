@@ -12,8 +12,8 @@
     }
   },
   "scripts": {
-    "storybook": "start-storybook -p 6007 -s ./src",
-    "build": "build-storybook -c .storybook -o dist",
+    "storybook": "start-storybook -p 6007 -s ./static",
+    "build": "build-storybook -c .storybook -o dist -s ./static",
     "test": "jest --coverage",
     "test:update-snapshots": "jest --coverage -u"
   },
@@ -29,9 +29,11 @@
   "homepage": "https://github.com/ticket721/flib#readme",
   "dependencies": {
     "@types/styled-components": "^5.0.1",
+    "polished": "^3.4.4",
     "react": "16.13.0",
     "react-dom": "16.13.0",
-    "styled-components": "^5.0.1"
+    "styled-components": "^5.0.1",
+    "styled-components-breakpoint": "^3.0.0-preview.20"
   },
   "devDependencies": {
     "@babel/core": "7.8.4",
