@@ -14,7 +14,8 @@ const customThemes = [
     primaryColorGradientEnd: '#2143AB',
     primaryEventColor: '#EBBC16',
     primaryEventColorGradientEnd: '#DB535B',
-    regularPadding: '16px'
+    regularPadding: '16px',
+    secondaryColor: '#1B1726'
   }
 ]
 

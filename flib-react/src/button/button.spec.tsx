@@ -9,10 +9,11 @@ describe('Button Rendering Snapshot Tests', function () {
     it('Button renders correctly', function () {
 
         const props: ButtonProps = {
-            onClick: () => {
-            },
+            onClick: () => {},
             type: 'primary',
-            title: 'test'
+            title: 'test',
+            gradientStart: '#079CF0',
+            gradientEnd: '#fff'
         };
 
         const tree = renderer
@@ -36,7 +37,9 @@ describe('Button Functional DOM Tests', function () {
                 value = true;
             },
             type: 'primary',
-            title: 'test'
+            title: 'test',
+            gradientStart: '#079CF0',
+            gradientEnd: '#2143AB'
         };
         const button = shallow(<Button {...props}/>);
 

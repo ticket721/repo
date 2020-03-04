@@ -12,7 +12,7 @@
     }
   },
   "scripts": {
-    "storybook": "start-storybook -p 6006 -s ./src",
+    "storybook": "start-storybook -p 6007 -s ./src",
     "build": "build-storybook -c .storybook -o dist",
     "test": "jest --coverage",
     "test:update-snapshots": "jest --coverage -u"
