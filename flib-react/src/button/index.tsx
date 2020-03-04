@@ -27,8 +27,6 @@ export interface ButtonProps extends React.ComponentProps<any> {
   type: 'primary' | 'secondary' | 'custom';
 }
 
-
-
 const StyledButton = styled.button<ButtonProps>`
   ${props => props.type === 'primary' &&`
     background: linear-gradient(261.65deg, ${props.theme.primaryColor} 0%, ${props.theme.primaryColorGradientEnd} 100%);

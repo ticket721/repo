@@ -26,13 +26,3 @@ jobs:
               name: Build static app (yarn build)
               with:
                   cmd: build
-
-            - uses: borales/actions-yarn@v2.0.0
-              name: Run Jest Test Suite (yarn test)
-              with:
-                  cmd: test
-
-            - name: Coveralls
-              uses: coverallsapp/github-action@master
-              with:
-                  github-token: ${{ secrets.github_token }}
