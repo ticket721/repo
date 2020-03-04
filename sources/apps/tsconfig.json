@@ -1,4 +1,5 @@
 {
+    "extends": "./tsconfig.paths.json",
     "compilerOptions": {
         "target": "es5",
         "lib": [
@@ -10,28 +11,15 @@
         "skipLibCheck": true,
         "esModuleInterop": true,
         "allowSyntheticDefaultImports": true,
+        "strictNullChecks": false,
         "strict": true,
         "module": "esnext",
         "moduleResolution": "node",
         "resolveJsonModule": true,
+        "isolatedModules": false,
         "noEmit": true,
         "jsx": "react",
         "outDir": "./dist"
-    },
-    "baseUrl": "./",
-    "paths": {
-        "@libs/": [
-            "libs/"
-        ],
-        "@libs/*": [
-            "libs/*"
-        ],
-        "@apps/": [
-            "apps/"
-        ],
-        "@apps/*": [
-            "apps/*"
-        ]
     },
     "include": [
         "apps",
