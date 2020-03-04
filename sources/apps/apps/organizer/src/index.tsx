@@ -4,7 +4,7 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 
-// import '@libs/utils/i18n';
+import '@libs/utils/i18n';
 
 ReactDOM.render(<App />, document.getElementById('root'));
 

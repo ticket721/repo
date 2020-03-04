@@ -1,25 +1,29 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import './App.css';
-import { Scanner } from './components/scanner';
+import { Scanner }         from './components/scanner';
+import Foo                     from './components/foo';
 
-export function App() {
+export const App = () => {
     return (
-      <div className='App'>
+      <Suspense fallback='loading'>
+        <div className='App'>
           <header className='App-header'>
-              <p>
-                  Organizer
-              </p>
-              <Scanner
-                onScan={console.log}
-                onError={console.log}
-                onLoad={console.log}
-                delay={1000}
-                facingMode={'environment'}
-                width={'100%'}
-                height={'100%'} />
+            <p>
+              Organizer
+            </p>
+            <Foo foo={true} />
+            <Scanner
+              onScan={console.log}
+              onError={console.log}
+              onLoad={console.log}
+              delay={1000}
+              facingMode={'environment'}
+              width={'100%'}
+              height={'100%'} />
           </header>
-      </div>
+        </div>
+      </Suspense>
     );
-}
+};
 
 export default App;
