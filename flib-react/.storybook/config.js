@@ -12,10 +12,8 @@ const customThemes = [
     buttonRadius: '8px',
     primaryColor: '#079CF0',
     primaryColorGradientEnd: '#2143AB',
-    primaryEventColor: '#EBBC16',
-    primaryEventColorGradientEnd: '#DB535B',
-    regularPadding: '16px',
-    secondaryColor: '#1B1726'
+    regularSpacing: '16px',
+    warningColor: '#C91D31'
   }
 ]
 

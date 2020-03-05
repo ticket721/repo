@@ -1,4 +1,6 @@
 import * as React from 'react';
+import { rgba } from 'polished';
+import breakpoint from 'styled-components-breakpoint';
 import styled from '../../config/styled';
 
 export interface ButtonProps extends React.ComponentProps<any> {
@@ -8,14 +10,9 @@ export interface ButtonProps extends React.ComponentProps<any> {
   title: string;
 
   /**
-   * Gradient start color
+   * Array of colors to generate linear-gradient
    */
-  gradientStart?: string;
-
-  /**
-   * Gradient end color
-   */
-  gradientEnd?: string;
+  gradients?: Array<string>;
   /**
    * Method called upon button click
   */
@@ -24,42 +21,65 @@ export interface ButtonProps extends React.ComponentProps<any> {
   /**
    * Type of the button
     */
-  type: 'primary' | 'secondary' | 'custom';
+  type: 'primary' | 'secondary' | 'custom' | 'warning';
 }
 
 const StyledButton = styled.button<ButtonProps>`
   ${props => props.type === 'primary' &&`
-    background: linear-gradient(261.65deg, ${props.theme.primaryColor} 0%, ${props.theme.primaryColorGradientEnd} 100%);
+    background: linear-gradient(260deg, ${props.theme.primaryColor}, ${props.theme.primaryColorGradientEnd});
 
     &::before {
-      background: linear-gradient(0deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.15)), linear-gradient(259.17deg, ${props.theme.primaryColor} 0%, ${props.theme.primaryColorGradientEnd} 99.33%);
+      background: linear-gradient(0deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.15)), linear-gradient(260deg, ${props.theme.primaryColor}, ${props.theme.primaryColorGradientEnd});
     }
   `};
 
   ${props => props.type === 'secondary' &&`
-    background-color: ${props.theme.secondaryColor};
+    background-color: ${rgba('#FFFFFF', 0.1)};
+    transition: background-color 300ms ease;
+
+    &:hover {
+      background-color: ${rgba('#FFFFFF', 0.25)};
+    }
 
     &::before {
-      background: linear-gradient(0deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.15), ${props.theme.secondaryColor});
+      display: none;
     }
   `};
 
   ${props => props.type === 'custom' &&`
-    background: linear-gradient(261.65deg, ${props.gradientStart} 0%, ${props.gradientEnd} 100%);
+    background: linear-gradient(260deg, ${props.gradients?.join(', ')});
 
     &::before {
-      background: linear-gradient(0deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.15)), linear-gradient(259.17deg, ${props.gradientStart} 0%, ${props.gradientEnd} 99.33%);
+      background: linear-gradient(0deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.15)), linear-gradient(260deg, ${props.gradients?.join(', ')});
     }
   `};
 
+  ${props => props.type === 'warning' &&`
+    background-color: ${rgba(props.theme.warningColor, 0.4)};
+    transition: background-color 300ms ease;
+
+  &::before {
+    background-color: ${rgba(props.theme.warningColor, 0.9)};
+  }
+`};
+
+  align-items: center;
   border-radius: ${props => props.theme.buttonRadius};
   color: rgba(255, 255, 255, 0.9);
-  font-size: 14px;
+  display: inline-flex;
+  font-size: 15px;
   font-weight: 500;
-  line-height: 20px;
+  justify-content: center;
+  line-height: 1em;
+  margin: calc(${props => props.theme.regularSpacing} * 0.75) 0;
   overflow: hidden;
-  padding: ${props => props.theme.regularPadding};
+  padding: ${props => props.theme.regularSpacing};
   position: relative;
+  width: 100%;
+
+  ${breakpoint('desktop')
+    `font-size: 15px;`
+  }
 
   &::before {
     content: '';
@@ -80,11 +100,13 @@ const StyledButton = styled.button<ButtonProps>`
   }
 
   span {
+    display: flex;
+    justify-content: center;
+    padding-top: 1px;
     position: relative;
     z-index: 1;
   }
 `;
-
 
 /**
  * This is a Button component
@@ -94,8 +116,7 @@ export const Button: React.FunctionComponent<ButtonProps> = (props: ButtonProps)
   return <StyledButton
     name={props.title}
     onClick={props.onClick}
-    gradientStart={props.gradientStart}
-    gradientEnd={props.gradientEnd}
+    gradients={props.gradients}
     type={props.type}
   >
     <span>{props.title}</span>
