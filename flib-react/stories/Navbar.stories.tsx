@@ -7,12 +7,7 @@ export default {
   decorators: [
     withKnobs
   ],
-  component: Navbar,
-  parameters: {
-    viewport: {
-      defaultViewport: 'iphonex'
-    }
-  }
+  component: Navbar
 };
 
 

@@ -10,12 +10,7 @@ export default {
   decorators: [
     withKnobs
   ],
-  component: Button,
-  parameters: {
-    viewport: {
-      defaultViewport: 'iphonex'
-    }
-  }
+  component: Button
 };
 
 export const showcase = () => (

@@ -31,7 +31,8 @@ addParameters({
         page: DocsPage
     },
     viewport: {
-        viewports: INITIAL_VIEWPORTS
+        viewports: INITIAL_VIEWPORTS,
+        defaultViewport: 'iphonex',
     }
 });
 

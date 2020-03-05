@@ -9,30 +9,13 @@ export default {
   decorators: [
     withKnobs
   ],
-  component: Icon,
-  parameters: {
-    viewport: {
-      defaultViewport: 'iphonex'
-    }
-  }
+  component: Icon
 };
 
 const Item = styled.li`
-  display: inline-flex;
-  flex-direction: row;
   align-items: center;
-  flex: 0 1 20%;
-  min-width: 120px;
-
-  padding: 0px 7.5px 20px;
-
-  svg {
-    margin-right: 10px;
-    width: 24px;
-    height: 24px;
-  }
-
-
+  display: inline-flex;
+  justify-content: center;
 `;
 
 const List = styled.ul`
@@ -42,15 +25,16 @@ const List = styled.ul`
 `;
 
 export const showcase = () => (
-  <Icon icon="facehappy"/>
+  <Icon icon="logo" width="49" height="20" fill="#fff"/>
 );
 
 
 export const noLabels = () => (
   <List>
-    {Object.keys(icons).map(key => (
+    { Object.keys(icons).map(key => (
       <Item key={key}>
-        <Icon icon={key} aria-label={key} />
+        {key === 'logo' ?
+          <Icon icon={key} aria-label={key} height="20" width="49" /> : <Icon icon={key} aria-label={key} />}
       </Item>
     ))}
   </List>
