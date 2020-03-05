@@ -52,6 +52,7 @@
     "@storybook/client-api": "5.3.14",
     "@storybook/react": "5.3.14",
     "@storybook/theming": "5.3.14",
+    "@svgr/webpack": "^5.2.0",
     "@types/enzyme": "3.10.5",
     "@types/enzyme-adapter-react-16": "1.0.6",
     "@types/html-webpack-plugin": "3.2.2",

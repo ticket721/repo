@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { rgba } from 'polished';
 import breakpoint from 'styled-components-breakpoint';
-import styled from '../../config/styled';
+import styled from '../../../config/styled';
 
 export interface ButtonProps extends React.ComponentProps<any> {
   /**

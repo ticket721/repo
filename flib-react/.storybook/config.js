@@ -10,6 +10,7 @@ const customThemes = [
   {
     name: 'T721',
     buttonRadius: '8px',
+    doubleSpacing: '32px',
     primaryColor: '#079CF0',
     primaryColorGradientEnd: '#2143AB',
     regularSpacing: '16px',
