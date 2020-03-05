@@ -24,6 +24,7 @@ export const bodyStyles = css`
   box-sizing: border-box;
   font-family: 'Gordita', Arial, Helvetica, sans-serif;
   font-size: 16px;
+  line-height: 18px;
   position: relative;
   line-height: 1;
 `;

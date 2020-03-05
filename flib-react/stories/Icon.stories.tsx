@@ -1,22 +1,35 @@
 import * as React from 'react';
-import { withKnobs } from '@storybook/addon-knobs';
+import { color, select, withKnobs } from '@storybook/addon-knobs';
 import Icon from '../src/components/icon';
 import { icons } from '../src/shared/icons';
 import styled from '../config/styled';
 
 export default {
-  title: 'Icon',
+  component: Icon,
   decorators: [
     withKnobs
   ],
-  component: Icon
+  title: 'Icon'
 };
 
 const Item = styled.li`
-  align-items: center;
   display: inline-flex;
+  flex-wrap: wrap;
   justify-content: center;
+  margin: 1rem;
+  text-align: center;
+
+  span {
+    color: #fff;
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    margin-top: 0.75rem;
+    text-transform: capitalize;
+    width: 100%;
+  }
 `;
+
 
 const List = styled.ul`
   display: flex;
@@ -25,16 +38,29 @@ const List = styled.ul`
 `;
 
 export const showcase = () => (
-  <Icon icon="logo" width="49" height="20" fill="#fff"/>
+  <Icon
+    icon={select('Icon name', {
+      T721: 't721',
+      Arrow: 'arrow',
+      Chevron: 'chevron',
+      Home: 'home',
+      Profile: 'profile',
+      Tag: 'tag',
+      Search: 'search'
+    }, 't721')}
+    width="50"
+    height="50"
+    fill={color('Icon color', '#fff')}
+  />
 );
 
-
-export const noLabels = () => (
+export const list = () => (
   <List>
     { Object.keys(icons).map(key => (
       <Item key={key}>
-        {key === 'logo' ?
+        {key === 't721' ?
           <Icon icon={key} aria-label={key} height="20" width="49" /> : <Icon icon={key} aria-label={key} />}
+          <span>{ key }</span>
       </Item>
     ))}
   </List>
