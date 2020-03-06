@@ -2,7 +2,6 @@ import React from 'react';
 import styled from '../../../config/styled';
 import { Icon } from '../icon';
 
-
 export interface LinkProps extends React.ComponentProps<any> {
   label?: string;
   to: string;
@@ -12,6 +11,7 @@ export interface LinkProps extends React.ComponentProps<any> {
 
 const LinkInner = styled.span<LinkProps>`
   display: block;
+
   ${props => props.icon && `
     margin-right: 1rem;
   `}
@@ -30,6 +30,7 @@ export const Link: React.FunctionComponent<LinkProps> = (props: LinkProps): JSX.
   const content = (
     <>
       <LinkInner icon={props.wIcon}>
+        { props.children }
         { props.label }
       </LinkInner>
       { props.wIcon && <Icon icon={props.iconName ? props.iconName : ""} /> }

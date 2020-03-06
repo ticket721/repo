@@ -28,6 +28,7 @@
   },
   "homepage": "https://github.com/ticket721/flib#readme",
   "dependencies": {
+    "@sambego/storybook-state": "^2.0.1",
     "@types/styled-components": "^5.0.1",
     "polished": "^3.4.4",
     "react": "16.13.0",

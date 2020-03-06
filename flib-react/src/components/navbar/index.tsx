@@ -1,11 +1,9 @@
 import * as React from 'react';
 import styled from '../../../config/styled';
+import Link from '../link';
 import Icon from '../icon';
 
-export interface NavbarProps extends React.ComponentProps<any> {
-}
-
-const StyledNavbar = styled.nav<NavbarProps>`
+let StyledNavbar = styled.nav`
   align-items: center;
   background-color: rgba(33, 29, 45, 0.6);
   backdrop-filter: blur(6px);
@@ -19,15 +17,36 @@ const StyledNavbar = styled.nav<NavbarProps>`
   position: fixed;
   width: 100%;
   z-index: 10;
+
+  a {
+    padding: 0 1.25rem;
+    opacity: 0.6;
+    transition: opacity 300ms ease;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
 `
 
-export const Navbar: React.FunctionComponent<NavbarProps> = (props: NavbarProps): JSX.Element => {
+export const Navbar: React.FunctionComponent = (): JSX.Element => {
   return <StyledNavbar>
-    <Icon icon="home" width="24" height="24" fill="#fff" />
-    <Icon icon="search" width="24" height="24" fill="#fff" />
-    <Icon icon="t721" width="49" height="20" fill="#fff" />
-    <Icon icon="tag" width="24" height="24" fill="#fff" />
-    <Icon icon="profile" width="24" height="24" fill="#fff" />
+    <Link to="/">
+      <Icon icon="home" fill="#fff" />
+    </Link>
+    <Link to="/">
+      <Icon icon="search" fill="#fff" />
+    </Link>
+    <Link to="/" isActive>
+      <Icon icon="t721" height="20" width="49" fill="#fff" />
+    </Link>
+    <Link to="/">
+      <Icon icon="tag" fill="#fff"/>
+    </Link>
+
+    <Link to="/">
+      <Icon icon="profile" fill="#fff" />
+    </Link>
   </StyledNavbar>
 }
 
