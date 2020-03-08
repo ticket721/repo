@@ -35,7 +35,7 @@
         "bcrypt": "4.0.0",
         "binance-api-node": "^0.9.15",
         "bull": "3.13.0",
-        "bull-board": "0.6.0",
+        "bull-board": "0.7.0",
         "class-transformer": "0.2.3",
         "class-validator": "0.11.0",
         "decimal.js": "^10.2.0",
