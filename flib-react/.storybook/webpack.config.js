@@ -9,7 +9,7 @@ module.exports = ({ config }) => {
       },
       {
         loader: require.resolve('react-docgen-typescript-loader'),
-      },
+      }
     ],
   },
   {

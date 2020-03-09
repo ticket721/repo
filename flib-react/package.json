@@ -28,6 +28,7 @@
   },
   "homepage": "https://github.com/ticket721/flib#readme",
   "dependencies": {
+    "@sambego/storybook-state": "^2.0.1",
     "@types/styled-components": "^5.0.1",
     "polished": "^3.4.4",
     "react": "16.13.0",
@@ -52,6 +53,7 @@
     "@storybook/client-api": "5.3.14",
     "@storybook/react": "5.3.14",
     "@storybook/theming": "5.3.14",
+    "@svgr/webpack": "^5.2.0",
     "@types/enzyme": "3.10.5",
     "@types/enzyme-adapter-react-16": "1.0.6",
     "@types/html-webpack-plugin": "3.2.2",
