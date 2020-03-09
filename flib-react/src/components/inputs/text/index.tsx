@@ -1,5 +1,5 @@
 import * as React from 'react';
-import styled from '../../../config/styled';
+import styled from '../../../../config/styled';
 
 export interface InputProps extends React.ComponentProps<any> {
   error?:boolean;
@@ -80,7 +80,7 @@ const StyledInputContainer = styled.div<InputProps>`
 export const TextInput: React.FunctionComponent<InputProps> = (props: InputProps): JSX.Element => {
   return <StyledInputContainer error={props.error}>
       <StyledLabel htmlFor={props.name}>{props.label}</StyledLabel>
-      <input id={props.name} name={props.name} placeholder={props.placeholder} value={props.value}/>
+      <input id={props.name} name={props.name} placeholder={props.placeholder} defaultValue={props.value}/>
       {props.error && <Error>{ props.errorMessage }</Error> }
   </StyledInputContainer>
 }

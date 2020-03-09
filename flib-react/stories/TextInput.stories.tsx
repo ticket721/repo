@@ -1,17 +1,17 @@
 import * as React from 'react';
 import { action } from '@storybook/addon-actions';
 import { boolean, text, withKnobs } from '@storybook/addon-knobs';
-import TextInput from '../src/components/textInput';
+import TextInput from '../src/components/inputs/text';
 
 export default {
-  title: 'TextInput',
+  title: 'Text input',
   decorators: [
     withKnobs
   ],
   component: TextInput
 };
 
-export const showcase = () => (
+export const Text = () => (
   <TextInput
     error={boolean('Error', false)}
     errorMessage={text('Error message', 'Error')}
