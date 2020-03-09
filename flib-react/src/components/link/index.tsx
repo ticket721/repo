@@ -7,6 +7,7 @@ export interface LinkProps extends React.ComponentProps<any> {
   to: string;
   wIcon?: boolean;
   iconName?: string;
+  isActive?:boolean;
 }
 
 const LinkInner = styled.span<LinkProps>`
@@ -19,11 +20,38 @@ const LinkInner = styled.span<LinkProps>`
 `;
 
 
-const StyledLink = styled.a`
+const StyledLink = styled.a<LinkProps>`
   align-items: center;
   color: #fff;
   display: inline-flex;
+  opacity: 0.6;
+  padding: 0 1.25rem;
+  position: relative;
   text-decoration: none;
+  transition: opacity 300ms ease;
+
+  &:hover {
+    opacity: 1;
+  }
+
+
+  ${props => props.isActive  &&`
+    opacity: 1;
+
+    &::after {
+      background-color: ${props.theme.primaryColor};
+      border-radius: 100%;
+      bottom: -1rem;
+      content: "";
+      display: block;
+      height: 4px;
+      left: 0;
+      margin auto;
+      position: absolute;
+      right: 0;
+      width: 4px;
+    }
+  `}
 `;
 
 export const Link: React.FunctionComponent<LinkProps> = (props: LinkProps): JSX.Element => {
@@ -38,7 +66,7 @@ export const Link: React.FunctionComponent<LinkProps> = (props: LinkProps): JSX.
   );
 
 
-return <StyledLink href={props.to}>{content}</StyledLink>
+return <StyledLink isActive={props.isActive} href={props.to}>{content}</StyledLink>
 
 }
 
