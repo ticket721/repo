@@ -1,8 +1,9 @@
 export interface Theme {
-  buttonRadius: string;
-  regularSpacing: string;
+  biggerSpacing: string;
+  defaultRadius: string;
   doubleSpacing: string;
   primaryColor: string;
   primaryColorGradientEnd: string;
+  regularSpacing: string;
   warningColor: string;
 }
