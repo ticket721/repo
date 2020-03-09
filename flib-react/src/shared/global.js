@@ -22,11 +22,20 @@ export const bodyStyles = css`
   -webkit-font-smoothing: antialiased;
   background: linear-gradient(91.44deg, #0A0812 0.31%, #120F1A 99.41%);
   box-sizing: border-box;
+  color: rgba(255, 255, 255, 0.9);
   font-family: 'Gordita', Arial, Helvetica, sans-serif;
   font-size: 16px;
   line-height: 1;
   position: relative;
 `;
+
+export const labelStyles = css`
+  color: rgba( 255, 255, 255, 0.6);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 0 1.5rem;
+  text-transform: uppercase;
+`
 
 export const buttonStyles = css`
   appearance: none;
@@ -34,17 +43,47 @@ export const buttonStyles = css`
   font-family: 'Gordita', Arial, Helvetica, sans-serif;
 `;
 
+export const inputStyles = css`
+  color: rgba(255, 255, 255, 0.9);
+  font-family: 'Gordita', Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 1rem 1.5rem;
+
+  &:focus {
+    outline: none;
+  }
+
+  &::placeholder,
+  &::-webkit-input-placeholder {
+    color: rgba(255, 255, 255, 0.38);
+  }
+`;
+
 export const GlobalStyle = createGlobalStyle`
   * {
     ${masterReset}
   }
+
   html {
     box-sizing: border-box;
   }
+
   body {
     ${bodyStyles}
   }
+
   button {
     ${buttonStyles}
+  }
+
+  label {
+    ${labelStyles}
+  }
+
+  input,
+  textarea,
+  select {
+    ${inputStyles}
   }
 `;

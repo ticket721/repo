@@ -64,7 +64,7 @@ const StyledButton = styled.button<ButtonProps>`
 `};
 
   align-items: center;
-  border-radius: ${props => props.theme.buttonRadius};
+  border-radius: ${props => props.theme.defaultRadius};
   color: rgba(255, 255, 255, 0.9);
   display: inline-flex;
   font-size: 15px;
