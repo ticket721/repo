@@ -1,7 +1,12 @@
 import * as React from 'react';
-// import { action } from '@storybook/addon-actions';
-import { withKnobs } from '@storybook/addon-knobs';
+import { boolean, object, text, withKnobs } from '@storybook/addon-knobs';
 import SelectInput from '../src/components/inputs/select';
+
+const selectValues = [
+  { value: 'music', label: 'Music' },
+  { value: 'festival', label: 'Festival' },
+  { value: 'conference', label: 'Conference' }
+]
 
 export default {
   title: 'Select input',
@@ -12,6 +17,11 @@ export default {
 };
 
 export const Select = () => (
-  <SelectInput />
+  <SelectInput
+    label={text('Label', 'Category')}
+    placeholder={text('Placeholder', 'Select category')}
+    options={object('Values', selectValues)}
+    searchable={boolean('Search as you type ?', false)}
+  />
 );
 
