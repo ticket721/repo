@@ -60,6 +60,13 @@ export const inputStyles = css`
   }
 `;
 
+export const checkboxStyles = css`
+  opacity: 0;
+  position: absolute;
+  visibility: hidden;
+  z-index: -99999;
+`;
+
 export const GlobalStyle = createGlobalStyle`
   * {
     ${masterReset}
@@ -85,5 +92,10 @@ export const GlobalStyle = createGlobalStyle`
   textarea,
   select {
     ${inputStyles}
+  }
+
+  input[type='checkbox'],
+  input[type='radio'] {
+    ${checkboxStyles}
   }
 `;

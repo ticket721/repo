@@ -72,15 +72,6 @@ export interface SelectProps extends React.ComponentProps<any> {
   value?:string;
 }
 
-// const Error = styled.span`
-//   bottom: -24px;
-//   color: ${props => props.theme.warningColor};
-//   font-size: 13px;
-//   font-weight: 500;
-//   left: 0;
-//   position: absolute;
-// `;
-
 const StyledLabel = styled.label`
   display: inline-flex;
   transform: translateX(-12px);
