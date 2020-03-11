@@ -1,10 +1,11 @@
 import * as React from 'react';
 import styled from '../../../../config/styled';
 
-export interface CheckboxProps extends React.ComponentProps<any> {
+export interface RadioProps extends React.ComponentProps<any> {
   label: string;
   name:string;
-  onChange: (checked: boolean, id: string, e: React.ChangeEvent<HTMLElement> ) => void;
+  value: string;
+  onChange: (value: string, id: string, e: React.ChangeEvent<HTMLElement> ) => void;
 }
 
 const StyledLabel = styled.label`
@@ -16,10 +17,11 @@ const StyledLabel = styled.label`
   padding: 0;
   position: relative;
   text-transform: none;
+  transition: color 300ms ease;
 
   &::before {
-    background-color: ${props => props.theme.componentColor};
-    border-radius: ${props => props.theme.defaultRadius};
+    background-color: ${props => props.theme.componentColorLight};
+    border-radius: 100%;
     content: "";
     display: block;
     height: 1.5rem;
@@ -29,21 +31,22 @@ const StyledLabel = styled.label`
   }
 
   &::after {
-    border-bottom: 2px solid #FFF;
-    border-right: 2px solid #FFF;
+    background-color: #FFF;
+    border-radius: calc(${props => props.theme.defaultRadius} / 2);
     content: "";
     display: block;
     height: 10px;
-    left: 8px;
+    left: 7px;
     opacity: 0;
     position: absolute;
-    top: 4px;
-    transform: rotate(45deg);
+    top: 7px;
     transition: opacity 300ms ease;
-    width: 5px;
+    width: 10px;
   }
 
   &:hover {
+    color: ${props => props.theme.textColor};
+
     &::before {
       background-color: ${props => props.theme.componentColorLighter};
     }
@@ -51,11 +54,13 @@ const StyledLabel = styled.label`
 `;
 
 const StyledCheckboxContainer = styled.div`
-  color: ${props => props.theme.textColorDark}
+  color: ${props => props.theme.textColorDark};
   display: flex;
 
   input:checked {
     & ~ ${StyledLabel} {
+      color: ${props => props.theme.textColor};
+
       &::before {
         background: linear-gradient(260deg, ${props => props.theme.primaryColor}, ${props => props.theme.primaryColorGradientEnd});
       }
@@ -68,23 +73,24 @@ const StyledCheckboxContainer = styled.div`
 `;
 
 
-export const Checkbox: React.FunctionComponent<CheckboxProps> = (props: CheckboxProps): JSX.Element => {
+export const Radio: React.FunctionComponent<RadioProps> = (props: RadioProps): JSX.Element => {
   return <StyledCheckboxContainer>
     <input
-      type="checkbox"
+      type="radio"
       name={props.name}
-      id={props.name}
+      id={props.value}
       onChange={e => {
-        props.onChange(e.target.checked, props.name, e);
+        props.onChange(e.target.value, props.name, e);
       }}
+      value={props.value}
     />
-    <StyledLabel htmlFor={props.name}>{props.label}</StyledLabel>
+    <StyledLabel htmlFor={props.value}>{props.label}</StyledLabel>
   </StyledCheckboxContainer>;
 };
 
 
-Checkbox.defaultProps = {
+Radio.defaultProps = {
   onChange: () => {}
 };
 
-export default Checkbox;
+export default Radio;

@@ -7,8 +7,7 @@ import { MemoryRouter, NavLink } from 'react-router-dom';
 export default {
   title: 'Navbar',
   decorators: [
-    withKnobs,
-
+    withKnobs
   ],
   component: Navbar
 };
