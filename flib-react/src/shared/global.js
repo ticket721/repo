@@ -94,6 +94,10 @@ export const GlobalStyle = createGlobalStyle`
     ${inputStyles}
   }
 
+  textarea {
+    min-height: 150px;
+  }
+
   input[type='checkbox'],
   input[type='radio'] {
     ${checkboxStyles}

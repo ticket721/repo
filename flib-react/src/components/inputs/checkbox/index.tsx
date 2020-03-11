@@ -67,7 +67,6 @@ const StyledCheckboxContainer = styled.div`
   }
 `;
 
-
 export const Checkbox: React.FunctionComponent<CheckboxProps> = (props: CheckboxProps): JSX.Element => {
   return <StyledCheckboxContainer>
     <input

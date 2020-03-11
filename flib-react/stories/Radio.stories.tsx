@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { action } from '@storybook/addon-actions';
 import { text, withKnobs } from '@storybook/addon-knobs';
-import { Radio } from '../src/components/inputs/radio';
+import Radio from '../src/components/inputs/radio';
 
 const onChange = action('change');
 
