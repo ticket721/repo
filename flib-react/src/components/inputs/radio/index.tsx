@@ -9,6 +9,7 @@ export interface RadioProps extends React.ComponentProps<any> {
 }
 
 const StyledLabel = styled.label`
+  align-items: center;
   cursor: pointer;
   display: inline-flex;
   font-size: 14px;
@@ -56,6 +57,11 @@ const StyledLabel = styled.label`
 const StyledCheckboxContainer = styled.div`
   color: ${props => props.theme.textColorDark};
   display: flex;
+  margin-bottom: ${props => props.theme.regularSpacing};
+
+  &:last-of-type {
+    margin: 0;
+  }
 
   input:checked {
     & ~ ${StyledLabel} {

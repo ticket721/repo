@@ -18,7 +18,7 @@ const StyledLabel = styled.label`
   text-transform: none;
 
   &::before {
-    background-color: ${props => props.theme.componentColor};
+    background-color: ${props => props.theme.componentColorLight};
     border-radius: ${props => props.theme.defaultRadius};
     content: "";
     display: block;

@@ -21,6 +21,7 @@ const StyledLabel = styled.label`
   text-transform: none;
 
   p {
+    color: ${props  => props.theme.textColorDark};
     font-size: 14px;
     font-weight: 500;
     padding-top: 0.5rem;
@@ -59,13 +60,15 @@ const ToggleSwitch = styled.span`
 `;
 
 const ToggleSwitchContainer = styled.div`
-  background-color: ${props => props.theme.componentColor};
+  background-color: ${props => props.theme.componentColorLight};
   border-radius: ${props => props.theme.defaultRadius};
   content: "";
   display: block;
   height: 24px;
   padding-left: ${props => props.theme.doubleSpacing};
-  position: relative;
+  position: absolute;
+  right: 0;
+  top: 0;
   width: 44px;
 `;
 
@@ -92,10 +95,6 @@ export const Toggle: React.FunctionComponent<ToggleProps> = (props: ToggleProps)
 
   return <StyledCheckboxContainer>
       <StyledLabel htmlFor={props.name}>{props.label}
-      {props.description &&
-        <p>{props.description}</p>
-      }</StyledLabel>
-      <div>
         <input
           type="checkbox"
           name={props.name}
@@ -107,7 +106,10 @@ export const Toggle: React.FunctionComponent<ToggleProps> = (props: ToggleProps)
         <ToggleSwitchContainer>
           <ToggleSwitch />
         </ToggleSwitchContainer>
-      </div>
+        {props.description &&
+          <p>{props.description}</p>
+        }
+      </StyledLabel>
     </StyledCheckboxContainer>;
 };
 
