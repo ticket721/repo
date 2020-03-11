@@ -5,7 +5,6 @@ import { Checkbox } from '../src/components//inputs/checkbox';
 
 const onChange = action('change');
 
-
 export default {
   title: 'Checkbox',
   component: Checkbox
@@ -15,7 +14,6 @@ export const showcase = () => (
   <Checkbox
     label={text('Label', 'Checkbox label')}
     name={text('Input name', 'checkbox')}
-    checked={true}
     onChange={onChange}
   />
 );

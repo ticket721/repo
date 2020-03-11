@@ -1,7 +1,7 @@
 import * as React from 'react';
 import styled from '../../../../config/styled';
 
-export interface CheckboxProps extends React.ComponentProps<any> {
+export interface ToggleProps extends React.ComponentProps<any> {
   label: string;
   defaultChecked?:boolean;
   name:string;
@@ -69,7 +69,7 @@ const StyledCheckboxContainer = styled.div`
 `;
 
 
-export const Checkbox: React.FunctionComponent<CheckboxProps> = (props: CheckboxProps): JSX.Element => {
+export const Toggle: React.FunctionComponent<ToggleProps> = (props: ToggleProps): JSX.Element => {
 
 
   return <StyledCheckboxContainer>
@@ -86,8 +86,8 @@ export const Checkbox: React.FunctionComponent<CheckboxProps> = (props: Checkbox
 };
 
 
-Checkbox.defaultProps = {
+Toggle.defaultProps = {
   onChange: () => {},
 };
 
-export default Checkbox;
+export default Toggle;
