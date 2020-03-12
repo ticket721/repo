@@ -18,3 +18,17 @@ export function uuidEq(uuid1: string, uuid2: string): boolean {
 export function toB32(text: string): string {
     return formatBytes32String(text).toLowerCase();
 }
+
+/**
+ * Left pads string
+ *
+ * @param text
+ * @param length
+ * @param character
+ */
+export function leftPad(text: string, length: number, character: string = '0'): string {
+    if (text.length > length) {
+        return text;
+    }
+    return `${character.repeat(length - text.length)}${text}`;
+}

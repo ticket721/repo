@@ -40,6 +40,8 @@ import { TxsScheduler } from '@app/worker/schedulers/txs/Txs.scheduler';
 import { EVMAntennaModule } from '@app/worker/evmantenna/EVMAntenna.module';
 import { GlobalConfigScheduler } from '@app/worker/schedulers/globalconfig/GlobalConfig.scheduler';
 import { EVMEventSetsModule } from '@lib/common/evmeventsets/EVMEventSets.module';
+import { GemOrdersModule } from '@lib/common/gemorders/GemOrders.module';
+import { DosojinRunnerModule, DosojinRunnerModuleBuildOptions } from '@app/worker/dosojinrunner/DosojinRunner.module';
 
 @Module({
     imports: [
@@ -65,6 +67,7 @@ import { EVMEventSetsModule } from '@lib/common/evmeventsets/EVMEventSets.module
         DatesModule,
         EventsModule,
         EVMEventSetsModule,
+        GemOrdersModule,
         CurrenciesModule.registerAsync({
             useFactory: (configService: ConfigService): string => configService.get('CURRENCIES_CONFIG_PATH'),
             inject: [ConfigService],
@@ -72,6 +75,14 @@ import { EVMEventSetsModule } from '@lib/common/evmeventsets/EVMEventSets.module
 
         // Ethereum Listeners
         EVMAntennaModule,
+
+        // Dosojin Handler
+        DosojinRunnerModule.registerAsync({
+            useFactory: (configService: ConfigService): DosojinRunnerModuleBuildOptions => ({
+                stripePrivateKey: configService.get('DOSOJIN_STRIPE_PRIVATE_KEY'),
+            }),
+            inject: [ConfigService],
+        }),
 
         // Utility Modules
         FSModule,

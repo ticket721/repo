@@ -13,6 +13,7 @@ export class DatesService extends CRUDExtension<DatesRepository, DateEntity> {
      * @param datesRepository
      * @param dateEntity
      */
+    /* istanbul ignore next */
     constructor(
         @InjectRepository(DatesRepository)
         datesRepository: DatesRepository,

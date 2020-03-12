@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, Post } from '@nestjs/common';
+import { Body, Controller, HttpCode, Post, UseFilters } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { User } from '@app/server/authentication/decorators/User.decorator';
 import { UserDto } from '@lib/common/users/dto/User.dto';
@@ -8,6 +8,7 @@ import { DatesSearchResponseDto } from '@app/server/controllers/dates/dto/DatesS
 import { DateEntity } from '@lib/common/dates/entities/Date.entity';
 import { DatesSearchInputDto } from '@app/server/controllers/dates/dto/DatesSearchInput.dto';
 import { StatusCodes, StatusNames } from '@lib/common/utils/codes';
+import { HttpExceptionFilter } from '@app/server/utils/HttpException.filter';
 
 /**
  * Generic Dates controller. Recover Dates linked to all types of events
@@ -43,6 +44,7 @@ export class DatesController {
         description: StatusNames[StatusCodes.OK],
     })
     @HttpCode(200)
+    @UseFilters(new HttpExceptionFilter())
     async search(@Body() body: DatesSearchInputDto, @User() user: UserDto): Promise<DatesSearchResponseDto> {
         const dates = await search<DateEntity, DatesService>(this.datesService, body);
 

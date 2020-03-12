@@ -266,6 +266,118 @@ var migration1576415205 = {
             params: []
         };
 
+        const gem__operation_status_type_creation = {
+            query: `CREATE TYPE ticket721.gem__operation_status (
+                        status text,
+                        layer int,
+                        dosojin text,
+                        operation_list list<text>,
+            );`,
+            params: []
+        };
+
+        const gem__transfer_entity_status_type_creation = {
+            query: `CREATE TYPE ticket721.gem__transfer_entity_status (
+                        status text,
+                        layer int,
+                        dosojin text,
+                        name text,
+            );`,
+            params: []
+        };
+
+        const gem__transfer_status_type_creation = {
+            query: `CREATE TYPE ticket721.gem__transfer_status (
+                        connector frozen<ticket721.gem__transfer_entity_status>,
+                        receptacle frozen<ticket721.gem__transfer_entity_status>
+            );`,
+            params: []
+        };
+        
+        const gem__payload_cost_type_creation = {
+            query: `CREATE TYPE ticket721.gem__payload_cost (
+                        value text,
+                        scope text,
+                        dosojin text,
+                        entity_name text,
+                        entity_type text,
+                        layer int,
+                        reason text
+            );`,
+            params: []
+        };
+
+        const gem__payload_type_creation = {
+            query: `CREATE TYPE ticket721.gem__payload (
+                    values text,
+                    costs list<frozen<ticket721.gem__payload_cost>>
+            );`,
+            params: []
+        };
+        
+        const gem__error_info_type_creation = {
+            query: `CREATE TYPE ticket721.gem__error_info (
+                        dosojin text,
+                        entity_name text,
+                        entity_type text,
+                        layer int,
+                        message text
+            );`,
+            params: []
+        };
+        
+        const gem__route_history_type_creation = {
+            query: `CREATE TYPE ticket721.gem__route_history (
+                        layer int,
+                        dosojin text,
+                        entity_name text,
+                        entity_type text,
+                        count int
+            );`,
+            params: []
+        };
+        
+        const gem_type_creation = {
+            query: `CREATE TYPE ticket721.gem (
+                        action_type text,
+                        operation_status frozen<ticket721.gem__operation_status>,
+                        transfer_status frozen<ticket721.gem__transfer_status>,
+                        gem_status text,
+                        gem_payload frozen<ticket721.gem__payload>,
+                        error_info frozen<ticket721.gem__error_info>,
+                        route_history list<frozen<ticket721.gem__route_history>>,
+                        gem_data text,
+                        refresh_timer int,
+                    );`,
+            params: []
+        };
+
+        const gem_order_table_creation = {
+            query: `CREATE TABLE ticket721.gemorder (
+                        id text PRIMARY KEY,
+                        distribution_id bigint,
+                        circuit_name text,
+                        owner uuid,
+                        initial_arguments text,
+                        gem frozen<ticket721.gem>,
+                        refresh_timer int,
+                        initialized boolean,
+                        created_at timestamp,
+                        updated_at timestamp,
+                    );`,
+            params: []
+        };
+
+        const stripe_resource_table_creation = {
+            query: `CREATE TABLE ticket721.striperesource (
+                        id text PRIMARY KEY,
+                        used_by uuid,
+                        created_at timestamp,
+                        updated_at timestamp,
+                    );`,
+            params: []
+        };
+
         try {
 
             // Types first
@@ -287,11 +399,35 @@ var migration1576415205 = {
             console.log('Tx Log Type Creation');
             await db.execute(tx_log_type_creation.query, tx_log_type_creation.params, {prepare: true});
 
-            console.log('EVM Evemt Type Creation');
+            console.log('EVM Event Type Creation');
             await db.execute(evm_event_type_creation.query, evm_event_type_creation.params, {prepare: true});
 
-            console.log('EVM Evemt Type Creation');
+            console.log('Dry Response Type Creation');
             await db.execute(dry_response_type_creation.query, dry_response_type_creation.params, {prepare: true});
+
+            console.log('Gem Operation Status Type Creation');
+            await db.execute(gem__operation_status_type_creation.query, gem__operation_status_type_creation.params, {prepare: true});
+
+            console.log('Gem Transfer Entity Status Type Creation');
+            await db.execute(gem__transfer_entity_status_type_creation.query, gem__transfer_entity_status_type_creation.params, {prepare: true});
+
+            console.log('Gem Transfer Status Type Creation');
+            await db.execute(gem__transfer_status_type_creation.query, gem__transfer_status_type_creation.params, {prepare: true});
+
+            console.log('Gem Payload Cost Type Creation');
+            await db.execute(gem__payload_cost_type_creation.query, gem__payload_cost_type_creation.params, {prepare: true});
+
+            console.log('Gem Payload Type Creation');
+            await db.execute(gem__payload_type_creation.query, gem__payload_type_creation.params, {prepare: true});
+
+            console.log('Gem Error Info Type Creation');
+            await db.execute(gem__error_info_type_creation.query, gem__error_info_type_creation.params, {prepare: true});
+
+            console.log('Gem Route History Type Creation');
+            await db.execute(gem__route_history_type_creation.query, gem__route_history_type_creation.params, {prepare: true});
+
+            console.log('Gem Type Creation');
+            await db.execute(gem_type_creation.query, gem_type_creation.params, {prepare: true});
 
             // Then tables
             console.log('User Table Creation');
@@ -326,6 +462,12 @@ var migration1576415205 = {
 
             console.log('EVM Block Rollback Table Creation');
             await db.execute(evm_block_rollback_table_creation.query, evm_block_rollback_table_creation.params, { prepare: true });
+
+            console.log('Gem Order Table Creation');
+            await db.execute(gem_order_table_creation.query, gem_order_table_creation.params, { prepare: true });
+
+            console.log('Stripe Resource Table Creation');
+            await db.execute(stripe_resource_table_creation.query, stripe_resource_table_creation.params, { prepare: true });
 
         } catch (e) {
             return handler(e, false);
@@ -425,6 +567,56 @@ var migration1576415205 = {
             params: []
         };
 
+        const gem__operation_status_type_creation = {
+            query: `DROP TYPE ticket721.gem__operation_status`,
+            params: []
+        };
+
+        const gem__transfer_entity_status_type_creation = {
+            query: `DROP TYPE ticket721.gem__transfer_entity_status`,
+            params: []
+        };
+
+        const gem__transfer_status_type_creation = {
+            query: `DROP TYPE ticket721.gem__transfer_status`,
+            params: []
+        };
+
+        const gem__payload_cost_type_creation = {
+            query: `DROP TYPE ticket721.gem__payload_cost`,
+            params: []
+        };
+
+        const gem__payload_type_creation = {
+            query: `DROP TYPE ticket721.gem__payload`,
+            params: []
+        };
+
+        const gem__error_info_type_creation = {
+            query: `DROP TYPE ticket721.gem__error_info`,
+            params: []
+        };
+
+        const gem__route_history_type_creation = {
+            query: `DROP TYPE ticket721.gem__route_history`,
+            params: []
+        };
+
+        const gem_type_creation = {
+            query: `DROP TYPE ticket721.gem`,
+            params: []
+        };
+
+        const gem_order_table_creation = {
+            query: `DROP TABLE ticket721.gemorder`,
+            params: []
+        };
+
+        const stripe_resource_table_creation = {
+            query: `DROP TABLE ticket721.striperesource`,
+            params: []
+        };
+
         try {
 
             // Tables first
@@ -458,6 +650,12 @@ var migration1576415205 = {
             console.log('EVM Block Rollback Table Deletion');
             await db.execute(evm_block_rollback_table_creation.query, evm_block_rollback_table_creation.params, { prepare: true });
 
+            console.log('Gem Order Table Creation');
+            await db.execute(gem_order_table_creation.query, gem_order_table_creation.params, { prepare: true });
+
+            console.log('Stripe Resource Table Creation');
+            await db.execute(stripe_resource_table_creation.query, stripe_resource_table_creation.params, { prepare: true });
+
             // Then Types
             console.log('Action Type Deletion');
             await db.execute(action_type_creation.query, action_type_creation.params, { prepare: true });
@@ -482,6 +680,30 @@ var migration1576415205 = {
 
             console.log('Dry Response Type Deletion');
             await db.execute(dry_response_type_creation.query, dry_response_type_creation.params, { prepare: true });
+
+            console.log('Gem Type Creation');
+            await db.execute(gem_type_creation.query, gem_type_creation.params, {prepare: true});
+
+            console.log('Gem Route History Type Creation');
+            await db.execute(gem__route_history_type_creation.query, gem__route_history_type_creation.params, {prepare: true});
+
+            console.log('Gem Error Info Type Creation');
+            await db.execute(gem__error_info_type_creation.query, gem__error_info_type_creation.params, {prepare: true});
+
+            console.log('Gem Payload Type Creation');
+            await db.execute(gem__payload_type_creation.query, gem__payload_type_creation.params, {prepare: true});
+
+            console.log('Gem Payload Cost Type Creation');
+            await db.execute(gem__payload_cost_type_creation.query, gem__payload_cost_type_creation.params, {prepare: true});
+
+            console.log('Gem Transfer Status Type Creation');
+            await db.execute(gem__transfer_status_type_creation.query, gem__transfer_status_type_creation.params, {prepare: true});
+
+            console.log('Gem Transfer Entity Status Type Creation');
+            await db.execute(gem__transfer_entity_status_type_creation.query, gem__transfer_entity_status_type_creation.params, {prepare: true});
+
+            console.log('Gem Operation Status Type Creation');
+            await db.execute(gem__operation_status_type_creation.query, gem__operation_status_type_creation.params, {prepare: true});
 
         } catch (e) {
             return handler(e, false);

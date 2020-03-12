@@ -1,13 +1,158 @@
 import { ContractArtifact, ContractsService, ContractsServiceOptions } from '@lib/common/contracts/Contracts.service';
 import * as path from 'path';
 import { Web3Service } from '@lib/common/web3/Web3.service';
-import { anything, deepEqual, instance, mock, verify, when } from 'ts-mockito';
+import { anything, deepEqual, instance, mock, spy, verify, when } from 'ts-mockito';
 import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 import * as fs from 'fs';
 import { FSService } from '@lib/common/fs/FS.service';
 import { GlobalConfigService } from '@lib/common/globalconfig/GlobalConfig.service';
 import { GlobalEntity } from '@lib/common/globalconfig/entities/Global.entity';
+import DoneCallback = jest.DoneCallback;
+
+const configureWeb3ServiceAndProvideThrowCallback = (
+    web3Service: Web3Service,
+    artifactsPath: string,
+    net_id: number,
+    canceled: number = 0,
+): any => {
+    const codes = {};
+    const data = [];
+
+    const cb = {
+        call: () => true,
+    };
+
+    const promise = address => {
+        return new Promise<string>((ok, ko) => {
+            cb.call = () => {
+                ko(new Error('intended error'));
+                return true;
+            };
+        });
+    };
+
+    const web3 = {
+        eth: {
+            getCode: (address: string): Promise<string> => {
+                return promise(address);
+            },
+            getBlockNumber: async (): Promise<number> => {
+                return 100;
+            },
+            getTransaction: async (): Promise<any> => ({
+                blockNumber: 80,
+            }),
+        },
+    };
+
+    when(web3Service.net()).thenReturn(Promise.resolve(net_id));
+    when(web3Service.get<any>()).thenReturn(web3);
+
+    const modules = fs.readdirSync(artifactsPath);
+    for (const mod of modules) {
+        if (!fs.statSync(path.join(artifactsPath, mod)).isDirectory()) {
+            continue;
+        }
+        const artifacts = fs.readdirSync(path.join(artifactsPath, mod, 'build', 'contracts'));
+        for (const artifact of artifacts) {
+            const artifact_data: ContractArtifact = JSON.parse(
+                fs.readFileSync(path.join(artifactsPath, mod, 'build', 'contracts', artifact)).toString(),
+            );
+            if (artifact_data.networks[net_id] && artifact_data.networks[net_id].address) {
+                if (canceled === 0) {
+                    codes[artifact_data.networks[net_id].address] = artifact_data.deployedBytecode;
+                }
+                data.push({
+                    name: `${mod}::${artifact
+                        .split('.')
+                        .slice(0, -1)
+                        .join('.')}`,
+                    address: artifact_data.networks[net_id].address,
+                });
+                if (canceled > 0) {
+                    --canceled;
+                }
+            }
+        }
+    }
+
+    return cb;
+};
+
+const configureWeb3ServiceAndProvideCallback = (
+    web3Service: Web3Service,
+    artifactsPath: string,
+    net_id: number,
+    canceled: number = 0,
+): any => {
+    const codes = {};
+    const data = [];
+
+    const cb = {
+        call: () => false,
+    };
+
+    const promise = address => {
+        return new Promise<string>((ok, ko) => {
+            cb.call = () => {
+                if (!codes[address]) {
+                    ok('0x');
+                }
+                ok(codes[address]);
+
+                return true;
+            };
+        });
+    };
+
+    const web3 = {
+        eth: {
+            getCode: (address: string): Promise<string> => {
+                return promise(address);
+            },
+            getBlockNumber: async (): Promise<number> => {
+                return 100;
+            },
+            getTransaction: async (): Promise<any> => ({
+                blockNumber: 80,
+            }),
+        },
+    };
+
+    when(web3Service.net()).thenReturn(Promise.resolve(net_id));
+    when(web3Service.get<any>()).thenReturn(web3);
+
+    const modules = fs.readdirSync(artifactsPath);
+    for (const mod of modules) {
+        if (!fs.statSync(path.join(artifactsPath, mod)).isDirectory()) {
+            continue;
+        }
+        const artifacts = fs.readdirSync(path.join(artifactsPath, mod, 'build', 'contracts'));
+        for (const artifact of artifacts) {
+            const artifact_data: ContractArtifact = JSON.parse(
+                fs.readFileSync(path.join(artifactsPath, mod, 'build', 'contracts', artifact)).toString(),
+            );
+            if (artifact_data.networks[net_id] && artifact_data.networks[net_id].address) {
+                if (canceled === 0) {
+                    codes[artifact_data.networks[net_id].address] = artifact_data.deployedBytecode;
+                }
+                data.push({
+                    name: `${mod}::${artifact
+                        .split('.')
+                        .slice(0, -1)
+                        .join('.')}`,
+                    address: artifact_data.networks[net_id].address,
+                });
+                if (canceled > 0) {
+                    --canceled;
+                }
+            }
+        }
+    }
+
+    return cb;
+};
 
 const configureWeb3Service = (
     web3Service: Web3Service,
@@ -460,4 +605,104 @@ describe('Contracts Service', function() {
             ),
         ).called();
     });
+
+    test('should use event emitter when multiple artifacts loadings happen', async function(done: DoneCallback) {
+        const contractsServiceOptions: ContractsServiceOptions = {
+            artifact_path,
+        };
+        const web3ServiceMock: Web3Service = mock(Web3Service);
+        const winstonLoggerService: WinstonLoggerService = new WinstonLoggerService('contracts');
+        const shutdownServiceMock: ShutdownService = mock(ShutdownService);
+        const globalConfigServiceMock: GlobalConfigService = mock(GlobalConfigService);
+
+        when(shutdownServiceMock.shutdownWithError(anything())).thenReturn(undefined);
+
+        const cb = configureWeb3ServiceAndProvideCallback(web3ServiceMock, artifact_path, network_id);
+
+        const contractsService: ContractsService = new ContractsService(
+            contractsServiceOptions,
+            instance(web3ServiceMock),
+            winstonLoggerService,
+            instance(shutdownServiceMock),
+            new FSService(),
+            instance(globalConfigServiceMock),
+        );
+
+        let donecall = 0;
+
+        contractsService.getContractArtifacts().then(res => {
+            if (donecall === 1) {
+                donecall = 2;
+                done();
+            } else {
+                donecall += 1;
+            }
+        });
+
+        contractsService.getContractArtifacts().then(res => {
+            if (donecall === 1) {
+                donecall = 2;
+                done();
+            } else {
+                donecall += 1;
+            }
+        });
+
+        await new Promise((ok, ko) => setTimeout(ok, 2000));
+
+        while (donecall !== 2) {
+            await new Promise((ok, ko) => setTimeout(ok, 100));
+            cb.call();
+        }
+    }, 20000);
+
+    test('should use event emitter when multiple artifacts loadings happen and propagate throw', async function(done: DoneCallback) {
+        const contractsServiceOptions: ContractsServiceOptions = {
+            artifact_path,
+        };
+        const web3ServiceMock: Web3Service = mock(Web3Service);
+        const winstonLoggerService: WinstonLoggerService = new WinstonLoggerService('contracts');
+        const shutdownServiceMock: ShutdownService = mock(ShutdownService);
+        const globalConfigServiceMock: GlobalConfigService = mock(GlobalConfigService);
+
+        when(shutdownServiceMock.shutdownWithError(anything())).thenReturn(undefined);
+
+        const cb = configureWeb3ServiceAndProvideThrowCallback(web3ServiceMock, artifact_path, network_id);
+
+        const contractsService: ContractsService = new ContractsService(
+            contractsServiceOptions,
+            instance(web3ServiceMock),
+            winstonLoggerService,
+            instance(shutdownServiceMock),
+            new FSService(),
+            instance(globalConfigServiceMock),
+        );
+
+        let donecall = 0;
+
+        contractsService.getContractArtifacts().catch(err => {
+            if (donecall === 1) {
+                donecall = 2;
+                done();
+            } else {
+                donecall += 1;
+            }
+        });
+
+        contractsService.getContractArtifacts().catch(err => {
+            if (donecall === 1) {
+                donecall = 2;
+                done();
+            } else {
+                donecall += 1;
+            }
+        });
+
+        await new Promise((ok, ko) => setTimeout(ok, 2000));
+
+        while (donecall !== 2) {
+            await new Promise((ok, ko) => setTimeout(ok, 100));
+            cb.call();
+        }
+    }, 20000);
 });

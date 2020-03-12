@@ -1,0 +1,13 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="UT (unitary tests) (@repo/global) (@repo/global)" type="JavaScriptTestRunnerJest" folderName="@ticket721sources/global (jest)">
+    <config-file value="$PROJECT_DIR$/sources/global/jest.config.js" />
+    <node-interpreter value="project" />
+    <node-options value="" />
+    <jest-package value="$PROJECT_DIR$/sources/global/node_modules/jest" />
+    <working-dir value="$PROJECT_DIR$/sources/global" />
+    <jest-options value="--expand --verbose" />
+    <envs />
+    <scope-kind value="ALL" />
+    <method v="2" />
+  </configuration>
+</component>

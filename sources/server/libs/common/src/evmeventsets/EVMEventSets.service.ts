@@ -13,6 +13,7 @@ export class EVMEventSetsService extends CRUDExtension<EVMEventSetsRepository, E
      * @param evmEventSetsRepository
      * @param evmEventSetEntity
      */
+    /* istanbul ignore next */
     constructor(
         @InjectRepository(EVMEventSetsRepository)
         evmEventSetsRepository: EVMEventSetsRepository,

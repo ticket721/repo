@@ -12,10 +12,10 @@ export class ConfigModule {
             providers: [
                 {
                     provide: ConfigService,
-                    useValue: new ConfigService(
-                        joi,
+                    useValue: new ConfigService(joi, [
                         path.join(configPath, `${process.env.NODE_ENV || 'development'}.env`),
-                    ),
+                        path.join(configPath, `${process.env.NODE_ENV || 'development'}.secret.env`),
+                    ]),
                 },
             ],
             exports: [ConfigService],
