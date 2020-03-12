@@ -64,7 +64,18 @@ describe('GemOrder Entity', function() {
                     layer: 0,
                     reason: 'because',
                 },
+                {
+                    value: null,
+                    scope: 'fiat_eur',
+                    dosojin: 'main',
+                    entity_name: 'entity',
+                    entity_type: 'connector',
+                    layer: 0,
+                    reason: 'because',
+                },
             ];
+
+            rawGem.gem_payload.values = null;
 
             const processedRawGem = GemOrderEntity.fromDosojinRaw(rawGem);
 
@@ -83,7 +94,41 @@ describe('GemOrder Entity', function() {
                             scope: 'fiat_eur',
                             value: '"123"',
                         },
+                        {
+                            dosojin: 'main',
+                            entity_name: 'entity',
+                            entity_type: 'connector',
+                            layer: 0,
+                            reason: 'because',
+                            scope: 'fiat_eur',
+                            value: null,
+                        },
                     ],
+                    values: '{}',
+                },
+                gem_status: undefined,
+                operation_status: null,
+                refresh_timer: null,
+                route_history: [],
+                transfer_status: null,
+            });
+        });
+
+        it('should convert gem with gemdata null', async function() {
+            const gem = new Gem();
+
+            const rawGem = gem.raw;
+
+            rawGem.gem_data = null;
+
+            const processedRawGem = GemOrderEntity.fromDosojinRaw(rawGem);
+
+            expect(processedRawGem).toEqual({
+                action_type: 'transfer',
+                error_info: null,
+                gem_data: '{}',
+                gem_payload: {
+                    costs: [],
                     values: '{}',
                 },
                 gem_status: undefined,
@@ -120,6 +165,76 @@ describe('GemOrder Entity', function() {
                 transfer_status: null,
             });
         });
+
+        it('should convert gem with operation status', async function() {
+            const gem = new Gem();
+
+            const rawGem = gem.raw;
+
+            rawGem.operation_status = {
+                status: 'status',
+                layer: 0,
+                dosojin: 'dosojin',
+                operation_list: [],
+            };
+
+            const processedRawGem = GemOrderEntity.fromDosojinRaw(rawGem);
+
+            expect(processedRawGem).toEqual({
+                action_type: 'transfer',
+                error_info: null,
+                gem_data: '{}',
+                gem_payload: {
+                    costs: [],
+                    values: '{}',
+                },
+                gem_status: undefined,
+                operation_status: {
+                    dosojin: 'dosojin',
+                    layer: 0,
+                    operation_list: [],
+                    status: 'status',
+                },
+                refresh_timer: null,
+                route_history: [],
+                transfer_status: null,
+            });
+        });
+
+        it('should convert gem with operation status (and null operation_list)', async function() {
+            const gem = new Gem();
+
+            const rawGem = gem.raw;
+
+            rawGem.operation_status = {
+                status: 'status',
+                layer: 0,
+                dosojin: 'dosojin',
+                operation_list: null,
+            };
+
+            const processedRawGem = GemOrderEntity.fromDosojinRaw(rawGem);
+
+            expect(processedRawGem).toEqual({
+                action_type: 'transfer',
+                error_info: null,
+                gem_data: '{}',
+                gem_payload: {
+                    costs: [],
+                    values: '{}',
+                },
+                gem_status: undefined,
+                operation_status: {
+                    dosojin: 'dosojin',
+                    layer: 0,
+                    operation_list: [],
+                    status: 'status',
+                },
+                refresh_timer: null,
+                route_history: [],
+                transfer_status: null,
+            });
+        });
     });
 
     describe('toDosojinRaw', function() {
@@ -133,6 +248,38 @@ describe('GemOrder Entity', function() {
             const backFromProcessedRawGem = GemOrderEntity.toDosojinRaw(processedRawGem);
 
             expect(backFromProcessedRawGem).toEqual(rawGem);
+        });
+
+        it('should convert to gem with payload', async function() {
+            const gem = new Gem().addPayloadValue('fiat_eur', new BN(10));
+
+            const rawGem = gem.raw;
+
+            const processedRawGem = GemOrderEntity.fromDosojinRaw(rawGem);
+
+            const backFromProcessedRawGem = GemOrderEntity.toDosojinRaw(processedRawGem);
+
+            expect(backFromProcessedRawGem).toEqual(rawGem);
+        });
+
+        it('should convert to gem with payload null values', async function() {
+            const gem = new Gem();
+
+            const rawGem = gem.raw;
+
+            rawGem.gem_payload.values = null;
+
+            const processedRawGem = GemOrderEntity.fromDosojinRaw(rawGem);
+
+            const backFromProcessedRawGem = GemOrderEntity.toDosojinRaw(processedRawGem);
+
+            expect(backFromProcessedRawGem).toEqual({
+                ...rawGem,
+                gem_payload: {
+                    ...rawGem.gem_payload,
+                    values: {},
+                },
+            });
         });
 
         it('should convert to gem with costs', async function() {
@@ -157,6 +304,87 @@ describe('GemOrder Entity', function() {
             const backFromProcessedRawGem = GemOrderEntity.toDosojinRaw(processedRawGem);
 
             expect(backFromProcessedRawGem).toEqual(rawGem);
+        });
+
+        it('should convert to gem with costs null values', async function() {
+            const gem = new Gem();
+
+            const rawGem = gem.raw;
+
+            rawGem.gem_payload.costs = null;
+
+            const processedRawGem = GemOrderEntity.fromDosojinRaw(rawGem);
+
+            const backFromProcessedRawGem = GemOrderEntity.toDosojinRaw(processedRawGem);
+
+            expect(backFromProcessedRawGem).toEqual({
+                ...rawGem,
+                gem_payload: {
+                    ...rawGem.gem_payload,
+                    costs: [],
+                },
+            });
+        });
+
+        it('should convert to gem with operation status', async function() {
+            const gem = new Gem();
+
+            const rawGem = gem.raw;
+
+            rawGem.operation_status = {
+                status: 'status',
+                layer: 0,
+                dosojin: 'dosojin',
+                operation_list: [],
+            };
+
+            const processedRawGem = GemOrderEntity.fromDosojinRaw(rawGem);
+
+            const backFromProcessedRawGem = GemOrderEntity.toDosojinRaw(processedRawGem);
+
+            expect(backFromProcessedRawGem).toEqual(rawGem);
+        });
+
+        it('should convert to gem with empty route history', async function() {
+            const gem = new Gem();
+
+            const rawGem = gem.raw;
+
+            rawGem.route_history = null;
+
+            const processedRawGem = GemOrderEntity.fromDosojinRaw(rawGem);
+
+            const backFromProcessedRawGem = GemOrderEntity.toDosojinRaw(processedRawGem);
+
+            expect(backFromProcessedRawGem).toEqual({
+                ...rawGem,
+                route_history: [],
+            });
+        });
+
+        it('should convert to gem with operation status (empty list)', async function() {
+            const gem = new Gem();
+
+            const rawGem = gem.raw;
+
+            rawGem.operation_status = {
+                status: 'status',
+                layer: 0,
+                dosojin: 'dosojin',
+                operation_list: null,
+            };
+
+            const processedRawGem = GemOrderEntity.fromDosojinRaw(rawGem);
+
+            const backFromProcessedRawGem = GemOrderEntity.toDosojinRaw(processedRawGem);
+
+            expect(backFromProcessedRawGem).toEqual({
+                ...rawGem,
+                operation_status: {
+                    ...rawGem.operation_status,
+                    operation_list: [],
+                },
+            });
         });
     });
 

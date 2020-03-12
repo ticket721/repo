@@ -330,15 +330,17 @@ export class GemOrderEntity {
             transfer_status: gem.transfer_status,
             gem_status: gem.gem_status,
             gem_payload: {
-                values: gem.gem_payload.values ? JSON.stringify(gem.gem_payload.values) : null,
-                costs: gem.gem_payload.costs.map((cost: any): any => ({
-                    ...cost,
-                    value: cost.value ? JSON.stringify(cost.value) : null,
-                })),
+                values: gem.gem_payload.values ? JSON.stringify(gem.gem_payload.values) : '{}',
+                costs: gem.gem_payload.costs
+                    ? gem.gem_payload.costs.map((cost: any): any => ({
+                          ...cost,
+                          value: cost.value ? JSON.stringify(cost.value) : null,
+                      }))
+                    : [],
             },
             error_info: gem.error_info,
             route_history: gem.route_history,
-            gem_data: gem.gem_data ? JSON.stringify(gem.gem_data) : null,
+            gem_data: gem.gem_data ? JSON.stringify(gem.gem_data) : '{}',
             refresh_timer: gem.refresh_timer,
         };
     }
@@ -362,7 +364,7 @@ export class GemOrderEntity {
             transfer_status: gem.transfer_status,
             gem_status: gem.gem_status,
             gem_payload: {
-                values: gem.gem_payload.values ? JSON.parse(gem.gem_payload.values) : null,
+                values: gem.gem_payload.values ? JSON.parse(gem.gem_payload.values) : {},
                 costs: gem.gem_payload.costs
                     ? gem.gem_payload.costs.map((cost: any): any => ({
                           ...cost,
@@ -372,7 +374,7 @@ export class GemOrderEntity {
             },
             error_info: gem.error_info,
             route_history: gem.route_history || [],
-            gem_data: gem.gem_data ? JSON.parse(gem.gem_data) : null,
+            gem_data: gem.gem_data ? JSON.parse(gem.gem_data) : {},
             refresh_timer: gem.refresh_timer,
         };
     }
