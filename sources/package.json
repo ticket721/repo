@@ -16,6 +16,6 @@
     },
     "devDependencies": {
         "@types/hapi__joi": "16.0.12",
-        "@types/node": "13.7.7"
+        "@types/node": "13.9.0"
     }
 }
