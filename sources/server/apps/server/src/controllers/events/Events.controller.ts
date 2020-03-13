@@ -39,7 +39,7 @@ import { TxsService } from '@lib/common/txs/Txs.service';
 import { HttpExceptionFilter } from '@app/server/utils/HttpException.filter';
 import { EventsDeploySignPayloadParamsDto } from '@app/server/controllers/events/dto/EventsDeploySignPayloadParams.dto';
 import { EventsDeploySignPayloadResponseDto } from '@app/server/controllers/events/dto/EventsDeploySignPayloadResponse.dto';
-import { UserTypes } from '@app/server/authentication/guards/UserTypes.guard';
+import { UserTypes } from '@app/server/authentication/guards/UserTypesGuard.guard';
 
 /**
  * Events controller to create and fetch events

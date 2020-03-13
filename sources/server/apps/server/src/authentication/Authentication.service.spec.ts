@@ -859,6 +859,51 @@ describe('Authentication Service', function() {
             verify(usersServiceMock.findByUsername(username)).called();
         });
 
+        test('should fail on vaul account creation', async function() {
+            const authenticationService: AuthenticationService = context.authenticationService;
+            const usersServiceMock: UsersService = context.usersServiceMock;
+
+            const email = 'test@test.com';
+            const username = 'salut';
+            const hashedp = toAcceptedKeccak256Format(keccak256('salut'));
+
+            const serviceResponse: ServiceResponse<UserDto> = {
+                response: {
+                    email,
+                    username,
+                    address: resultAddress,
+                    type: 't721',
+                    password: hashedp,
+                    id: '0',
+                    role: 'authenticated',
+                    locale: 'en',
+                    valid: false,
+                },
+                error: null,
+            };
+
+            const emptyServiceResponse: Promise<ServiceResponse<UserDto>> = Promise.resolve({
+                response: null,
+                error: null,
+            });
+
+            when(usersServiceMock.findByEmail(email)).thenReturn(emptyServiceResponse);
+            when(usersServiceMock.findByUsername(username)).thenReturn(emptyServiceResponse);
+            when(context.vaultereumServiceMock.write(anyString())).thenResolve({
+                error: 'unexpected_error',
+                response: null,
+            });
+
+            const res = await authenticationService.createT721User(email, hashedp, username, 'en');
+
+            expect(res.response).toBeDefined();
+            expect(res.error).toEqual('user_wallet_creation_error');
+            expect(res.response).toEqual(null);
+
+            verify(usersServiceMock.findByEmail(email)).called();
+            verify(usersServiceMock.findByUsername(username)).called();
+        });
+
         test('email already in use', async function() {
             const authenticationService: AuthenticationService = context.authenticationService;
             const usersServiceMock: UsersService = context.usersServiceMock;

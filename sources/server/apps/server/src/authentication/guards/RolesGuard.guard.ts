@@ -9,6 +9,7 @@ import { PasswordlessUserDto } from '../dto/PasswordlessUser.dto';
  * @param roles
  * @constructor
  */
+/* istanbul ignore next */
 export const Roles = (...roles: string[]) => SetMetadata('roles', roles);
 
 /**
@@ -31,7 +32,6 @@ export class RolesGuard implements CanActivate {
     canActivate(context: ExecutionContext): boolean {
         const roles = this.reflector.get<string[]>('roles', context.getHandler());
 
-        /* istanbul ignore next */
         if (!roles) {
             return true;
         }

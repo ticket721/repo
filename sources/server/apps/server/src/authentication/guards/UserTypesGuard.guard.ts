@@ -9,6 +9,7 @@ import { PasswordlessUserDto } from '../dto/PasswordlessUser.dto';
  * @param userTypes
  * @constructor
  */
+/* istanbul ignore next */
 export const UserTypes = (...userTypes: string[]) => SetMetadata('usertypes', userTypes);
 
 /**
@@ -31,7 +32,6 @@ export class UserTypesGuard implements CanActivate {
     canActivate(context: ExecutionContext): boolean {
         const userTypes = this.reflector.get<string[]>('usertypes', context.getHandler());
 
-        /* istanbul ignore next */
         if (!userTypes) {
             return true;
         }
