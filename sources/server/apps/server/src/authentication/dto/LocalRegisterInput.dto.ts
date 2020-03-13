@@ -1,6 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsEmail, IsIn, IsObject, IsOptional, IsString } from 'class-validator';
-import { EncryptedWallet } from '@ticket721sources/global';
+import { IsEmail, IsIn, IsOptional, IsString } from 'class-validator';
 
 /**
  * Expected input when creating a local account
@@ -26,13 +25,6 @@ export class LocalRegisterInputDto {
     @ApiProperty()
     @IsString()
     password: string;
-
-    /**
-     * Encrypted Wallet to store
-     */
-    @ApiProperty()
-    @IsObject()
-    wallet: EncryptedWallet;
 
     /**
      * User Locale

@@ -2,8 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { PasswordlessUserDto } from './dto/PasswordlessUser.dto';
 import { compare, hash } from 'bcrypt';
 import {
-    EncryptedWallet,
-    isV3EncryptedWallet,
     toAcceptedAddressFormat,
     isKeccak256,
     Web3LoginSigner,
@@ -15,6 +13,8 @@ import { ConfigService } from '@lib/common/config/Config.service';
 import { UserDto } from '@lib/common/users/dto/User.dto';
 import { RefractFactoryV0Service } from '@lib/common/contracts/refract/RefractFactory.V0.service';
 import { ServiceResponse } from '@lib/common/utils/ServiceResponse';
+import { VaultereumService } from '@lib/common/vaultereum/Vaultereum.service';
+import { uuid } from '@iaminfinity/express-cassandra';
 
 /**
  * Authentication services and utilities
@@ -27,11 +27,13 @@ export class AuthenticationService {
      * @param usersService
      * @param configService
      * @param refractFactoryService
+     * @param vaultereumService
      */
     constructor /* instanbul ignore next */(
         private readonly usersService: UsersService,
         private readonly configService: ConfigService,
         private readonly refractFactoryService: RefractFactoryV0Service,
+        private readonly vaultereumService: VaultereumService,
     ) {}
 
     /**
@@ -195,7 +197,6 @@ export class AuthenticationService {
             email,
             password: null,
             username,
-            wallet: null,
             address,
             type: 'web3',
             role: 'authenticated',
@@ -250,7 +251,6 @@ export class AuthenticationService {
         email: string,
         password: string,
         username: string,
-        wallet: EncryptedWallet,
         locale: string,
     ): Promise<ServiceResponse<PasswordlessUserDto>> {
         const emailUserResp: ServiceResponse<UserDto> = await this.usersService.findByEmail(email);
@@ -279,14 +279,19 @@ export class AuthenticationService {
             };
         }
 
-        if (!isV3EncryptedWallet(wallet)) {
+        const userId = uuid()
+            .toString()
+            .toLowerCase();
+        const controllerAddressRes = await this.vaultereumService.write(`ethereum/accounts/user-${userId}`);
+
+        if (controllerAddressRes.error) {
             return {
                 response: null,
-                error: 'invalid_wallet_format',
+                error: 'user_wallet_creation_error',
             };
         }
 
-        const address = toAcceptedAddressFormat(wallet.address);
+        const address = toAcceptedAddressFormat(controllerAddressRes.response.data.address);
 
         const refractFactoryV0 = await this.refractFactoryService.get();
         const salt = keccak256(email);
@@ -315,10 +320,10 @@ export class AuthenticationService {
         }
 
         const newUser: ServiceResponse<UserDto> = await this.usersService.create({
+            id: uuid(userId),
             email,
             password: await hash(password, parseInt(this.configService.get('BCRYPT_SALT_ROUNDS'), 10)),
             username,
-            wallet: JSON.stringify(wallet),
             address: finalAddress,
             type: 't721',
             role: 'authenticated',

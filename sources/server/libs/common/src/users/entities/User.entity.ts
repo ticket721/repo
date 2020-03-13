@@ -13,10 +13,6 @@ import { Entity, Column, GeneratedUUidColumn } from '@iaminfinity/express-cassan
                 type: 'keyword',
                 index: false,
             },
-            wallet: {
-                type: 'keyword',
-                index: false,
-            },
         },
     },
 } as any)
@@ -58,14 +54,6 @@ export class UserEntity {
         type: 'text',
     })
     type: 't721' | 'web3';
-
-    /**
-     * Account wallet
-     */
-    @Column({
-        type: 'text',
-    })
-    wallet: string;
 
     /**
      * Account address

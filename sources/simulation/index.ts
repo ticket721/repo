@@ -1,22 +1,9 @@
 import config                       from './config';
-import { Wallet }                   from 'ethers';
-import { createWallet, RefractMtx } from '@ticket721sources/global';
 import * as fs                      from 'fs';
 import { T721SDK }                  from '@ticket721sources/sdk';
 import { AxiosResponse }            from 'axios';
 import FormData                     from 'form-data';
 import { UserDto }                  from '../server/libs/common/src/users/dto/User.dto';
-
-const loadWallet = async (path: string): Promise<Wallet> => {
-    if (fs.existsSync(path)) {
-        const walletJson = require(path);
-        return new Wallet(walletJson.pk);
-    } else {
-        const wallet = await createWallet();
-        fs.writeFileSync(path, JSON.stringify({ pk: wallet.privateKey }, null, 4));
-        return wallet;
-    }
-};
 
 const waitForAction = async (sdk: T721SDK, token: string, actionset: string): Promise<any> => {
     let tries = 0;
@@ -60,7 +47,7 @@ const waitForAction = async (sdk: T721SDK, token: string, actionset: string): Pr
     });
 };
 
-export const createEvent = async (user: UserDto, wallet: Wallet, sdk: T721SDK, token: string, event: string, imagesPath: string): Promise<void> => {
+export const createEvent = async (user: UserDto, sdk: T721SDK, token: string, event: string, imagesPath: string): Promise<void> => {
     console.log(`Deploying Test Event with ID: ${event}`);
 
     const infos = require(`./events/${event}/info`).default;
@@ -202,20 +189,18 @@ export const createEvent = async (user: UserDto, wallet: Wallet, sdk: T721SDK, t
     });
     console.log('Create Event - Build: OK.');
 
-    console.log('Create Event - Generate Payload: ...');
-    const eventDeployPayload = await sdk.events.deploy.generatePayload(token, resultingEvent.data.event.id);
-    console.log('Create Event - Generate Payload: OK.');
+    console.log('Create Event - Sign Payload: ...');
+    const eventDeployPayload = await sdk.events.deploy.signPayload(token, resultingEvent.data.event.id);
+    console.log('Create Event - Sign Payload: OK.');
 
-    const payload = eventDeployPayload.data.payload;
-    const refractSigner = new RefractMtx(2702, 'Refract Wallet', '0', user.address);
-    const signature = await refractSigner.sign(wallet.privateKey, payload);
+    const signedPayload = eventDeployPayload.data;
 
     console.log('Create Event - Deploy: ...');
     await sdk.events.deploy.run(
         token,
         {
-            payload,
-            signature: signature.hex,
+            payload: signedPayload.payload,
+            signature: signedPayload.signature,
             event: resultingEvent.data.event.id,
         },
     );
@@ -223,13 +208,11 @@ export const createEvent = async (user: UserDto, wallet: Wallet, sdk: T721SDK, t
 
 };
 
-const eventCreator = async (sdk: T721SDK, token: string, user: UserDto, wallet: Wallet): Promise<void> => {
-    await createEvent(user, wallet, sdk, token, 'justice', './events/justice/images');
+const eventCreator = async (sdk: T721SDK, token: string, user: UserDto): Promise<void> => {
+    await createEvent(user, sdk, token, 'justice', './events/justice/images');
 };
 
 const main = async (): Promise<void> => {
-    const wallet = await loadWallet(config.wallet);
-
     const sdk = new T721SDK();
     sdk.connect(config.host, config.port, config.protocol as 'http' | 'https');
 
@@ -245,16 +228,14 @@ const main = async (): Promise<void> => {
     } catch (e) {
         console.log('Cannot Login: Creating Account');
         if (e.response.status === 401) {
-            const res: AxiosResponse = await sdk.localRegister(config.email, config.password, 'tester', wallet, null, 'en') as AxiosResponse;
+            const res: AxiosResponse = await sdk.localRegister(config.email, config.password, 'tester', 'en') as AxiosResponse;
             await sdk.validateEmail(res.data.validationToken);
             token = res.data.token;
             user = res.data.user;
         }
     }
 
-    console.log('Controller ', wallet.address);
-
-    await eventCreator(sdk, token, user, wallet);
+    await eventCreator(sdk, token, user);
 
 };
 

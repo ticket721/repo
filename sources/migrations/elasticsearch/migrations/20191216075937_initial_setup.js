@@ -15,10 +15,6 @@ class M20191216075937_initial_setup extends ElasticMigration {
                     password: {
                         type: "keyword",
                         index: false
-                    },
-                    wallet: {
-                        type: "keyword",
-                        index: false
                     }
                 }
             }

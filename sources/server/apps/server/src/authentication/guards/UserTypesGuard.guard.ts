@@ -4,19 +4,19 @@ import { SetMetadata } from '@nestjs/common';
 import { PasswordlessUserDto } from '../dto/PasswordlessUser.dto';
 
 /**
- * Roles decorator
+ * UserTypes decorator
  *
- * @param roles
+ * @param userTypes
  * @constructor
  */
 /* istanbul ignore next */
-export const Roles = (...roles: string[]) => SetMetadata('roles', roles);
+export const UserTypes = (...userTypes: string[]) => SetMetadata('usertypes', userTypes);
 
 /**
  * Guard called to prevent unauthorized users from calling route
  */
 @Injectable()
-export class RolesGuard implements CanActivate {
+export class UserTypesGuard implements CanActivate {
     /**
      * Dependency Injection
      *
@@ -25,14 +25,14 @@ export class RolesGuard implements CanActivate {
     constructor(private readonly reflector: Reflector) {}
 
     /**
-     * Verifier to check if uzer has adequate rights
+     * Verifier to check if user has adequate type
      *
      * @param context
      */
     canActivate(context: ExecutionContext): boolean {
-        const roles = this.reflector.get<string[]>('roles', context.getHandler());
+        const userTypes = this.reflector.get<string[]>('usertypes', context.getHandler());
 
-        if (!roles) {
+        if (!userTypes) {
             return true;
         }
 
@@ -43,6 +43,6 @@ export class RolesGuard implements CanActivate {
             return false;
         }
 
-        return roles.indexOf(user.role) !== -1;
+        return userTypes.indexOf(user.type) !== -1;
     }
 }

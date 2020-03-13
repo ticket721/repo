@@ -10,12 +10,11 @@ export async function fetchActions(getCtx: () => { app: INestApplication; sdk: T
     jest.setTimeout(60000);
     const { sdk }: { sdk: T721SDK } = getCtx();
 
-    const wallet: Wallet = await createWallet();
     const password = 'xqd65g87sh76_98d-';
     const email = 'test@test.com';
     const username = 'mortimr';
 
-    const reg_res = (await sdk.localRegister(email, password, username, wallet, () => {}, 'fr')) as any;
+    const reg_res = (await sdk.localRegister(email, password, username, 'fr')) as any;
 
     expect(reg_res.report_status).toEqual(undefined);
 

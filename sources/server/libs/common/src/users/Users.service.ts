@@ -74,6 +74,7 @@ export class UsersService {
                 error: null,
             };
         } catch (e) {
+            console.error(e);
             return {
                 response: null,
                 error: 'unexpected_error',
