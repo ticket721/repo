@@ -39,6 +39,7 @@ import { TxsService } from '@lib/common/txs/Txs.service';
 import { HttpExceptionFilter } from '@app/server/utils/HttpException.filter';
 import { EventsDeploySignPayloadParamsDto } from '@app/server/controllers/events/dto/EventsDeploySignPayloadParams.dto';
 import { EventsDeploySignPayloadResponseDto } from '@app/server/controllers/events/dto/EventsDeploySignPayloadResponse.dto';
+import { UserTypes } from '@app/server/authentication/guards/UserTypes.guard';
 
 /**
  * Events controller to create and fetch events
@@ -393,21 +394,12 @@ export class EventsController {
     @HttpCode(200)
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @Roles('authenticated')
+    @UserTypes('t721')
     @UseFilters(new HttpExceptionFilter())
     async signPayload(
         @Param() params: EventsDeploySignPayloadParamsDto,
         @User() user: UserDto,
     ): Promise<EventsDeploySignPayloadResponseDto> {
-        if (user.type !== 't721') {
-            throw new HttpException(
-                {
-                    status: StatusCodes.BadRequest,
-                    message: 'route_reserved_for_t721_users',
-                },
-                StatusCodes.BadRequest,
-            );
-        }
-
         const generatedPayload: EventsDeployGeneratePayloadResponseDto = await this.getPayload(params, user);
 
         const rmtx: RefractMtx = new RefractMtx(

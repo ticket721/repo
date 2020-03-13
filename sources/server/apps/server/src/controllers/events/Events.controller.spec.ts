@@ -4722,6 +4722,139 @@ describe('Events Controller', function() {
         });
     });
 
+    describe('signPayload', function() {
+        const payload = {
+            payload: {
+                domain: {
+                    name: 'Refract Wallet',
+                    version: '0',
+                    chainId: 2702,
+                    verifyingContract: '0x2639AA1C0d0E5D7B81df884d9803e5B09d5d7699',
+                },
+                primaryType: 'MetaTransaction',
+                types: {
+                    MetaTransaction: [
+                        {
+                            name: 'parameters',
+                            type: 'TransactionParameters[]',
+                        },
+                        {
+                            name: 'nonce',
+                            type: 'uint256',
+                        },
+                    ],
+                    TransactionParameters: [
+                        {
+                            type: 'address',
+                            name: 'from',
+                        },
+                        {
+                            type: 'address',
+                            name: 'to',
+                        },
+                        {
+                            type: 'address',
+                            name: 'relayer',
+                        },
+                        {
+                            type: 'uint256',
+                            name: 'value',
+                        },
+                        {
+                            type: 'bytes',
+                            name: 'data',
+                        },
+                    ],
+                    EIP712Domain: [
+                        {
+                            name: 'name',
+                            type: 'string',
+                        },
+                        {
+                            name: 'version',
+                            type: 'string',
+                        },
+                        {
+                            name: 'chainId',
+                            type: 'uint256',
+                        },
+                        {
+                            name: 'verifyingContract',
+                            type: 'address',
+                        },
+                    ],
+                },
+                message: {
+                    nonce: 0,
+                    parameters: [
+                        {
+                            from: '0x2639AA1C0d0E5D7B81df884d9803e5B09d5d7699',
+                            to: '0xa2D86C46956B3E01b95a5E12336573A56e981c84',
+                            relayer: '0xd9F1a84B696F6EE0e08BfF39Ca2E0Ef356346F34',
+                            data:
+                                '0xdc2ddcae0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000e406576656e742f6d6f64756c6573000000000000000000000000000000000000',
+                            value: '0',
+                        },
+                        {
+                            from: '0x2639AA1C0d0E5D7B81df884d9803e5B09d5d7699',
+                            to: '0xa2D86C46956B3E01b95a5E12336573A56e981c84',
+                            relayer: '0xd9F1a84B696F6EE0e08BfF39Ca2E0Ef356346F34',
+                            data:
+                                '0xa032c39b068079054729852072b8e6cd99aa2c28b982241bfd2a1bcd9f6f1959617e4ab200000000000000000000000000000000000000000000000000000000000000800000000000000000000000000000000000000000000000000000000000000340000000000000000000000000000000000000000000000000000000000000048000000000000000000000000000000000000000000000000000000000000000150000000000000000000000000000000000000000000000000000000000000064000000000000000000000000000000000000000000000000000000005e6bcdc2000000000000000000000000000000000000000000000000000000005e6d0322000000000000000000000000000000000000000000000000000000005e6bcdc2000000000000000000000000000000000000000000000000000000005e6d03220000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000006400000000000000000000000000000000000000000000000000000000000000c8000000000000000000000000000000000000000000000000000000005e6bcdc2000000000000000000000000000000000000000000000000000000005e6d0322000000000000000000000000000000000000000000000000000000005e6bcdc2000000000000000000000000000000000000000000000000000000005e6d03220000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000006400000000000000000000000000000000000000000000000000000000000000c8000000000000000000000000000000000000000000000000000000005e6bcdc2000000000000000000000000000000000000000000000000000000005e6d0322000000000000000000000000000000000000000000000000000000005e6bcdc2000000000000000000000000000000000000000000000000000000005e6d0322000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000640000000000000000000000000000000000000000000000000000000000000009000000000000000000000000786d0ba120213d5ce470903759f032edb19a2e45000000000000000000000000786d0ba120213d5ce470903759f032edb19a2e4500000000000000000000000025b7b6c0e182564b96bc9d8005636f89cb26e027000000000000000000000000786d0ba120213d5ce470903759f032edb19a2e45000000000000000000000000786d0ba120213d5ce470903759f032edb19a2e4500000000000000000000000025b7b6c0e182564b96bc9d8005636f89cb26e027000000000000000000000000786d0ba120213d5ce470903759f032edb19a2e45000000000000000000000000786d0ba120213d5ce470903759f032edb19a2e4500000000000000000000000025b7b6c0e182564b96bc9d8005636f89cb26e02700000000000000000000000000000000000000000000000000000000000000067669705f300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000726567756c61725f305f300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000726567756c61725f315f300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+                            value: '0',
+                        },
+                    ],
+                },
+            },
+            groupId: '0x068079054729852072b8e6cd99aa2c28b982241bfd2a1bcd9f6f1959617e4ab2',
+        };
+
+        it('should sign event payload', async function() {
+            const spied = spy(context.eventsController);
+
+            const eventId = 'eventid';
+
+            const user = {
+                id: 'userid',
+                address: '0x1234567812345678912345678912345678900090',
+            } as UserDto;
+
+            when(
+                spied.getPayload(
+                    deepEqual({
+                        event: eventId,
+                    }),
+                    deepEqual(user),
+                ),
+            ).thenResolve(payload);
+
+            when(context.configServiceMock.get('ETHEREUM_NODE_NETWORK_ID')).thenReturn('1');
+            when(context.configServiceMock.get('ETHEREUM_MTX_DOMAIN_NAME')).thenReturn('Refract Wallet');
+            when(context.configServiceMock.get('ETHEREUM_MTX_VERSION')).thenReturn('0');
+            when(context.vaultereumServiceMock.getSigner('user-userid')).thenReturn(
+                async (...args: any[]): Promise<any> => ({
+                    hex: '0xabcd',
+                    r: '0xabcd',
+                    v: 1,
+                    s: '0xabcd',
+                }),
+            );
+
+            const signature = await context.eventsController.signPayload(
+                {
+                    event: eventId,
+                },
+                user,
+            );
+
+            expect(signature).toEqual({
+                payload: payload.payload,
+                groupId: payload.groupId,
+                signature: '0xabcd',
+            });
+        });
+    });
+
     describe('deploy', function() {
         it('should deploy an event to the ethereum blockchain', async function() {
             const user = ({
