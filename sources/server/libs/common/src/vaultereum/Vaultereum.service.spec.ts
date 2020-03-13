@@ -218,4 +218,62 @@ describe('Vaultereum Service', function() {
             verify(context.shutdownServiceMock.shutdownWithError(deepEqual(new Error('unexpected reasons')))).called();
         });
     });
+
+    describe('getSigner', function() {
+        it('should return signed data', async function() {
+            const encoded = '0xabcd';
+            const spied = spy(context.vaultereumService);
+
+            when(
+                spied.write(
+                    `ethereum/accounts/signer/sign`,
+                    deepEqual({
+                        data: encoded.slice(2),
+                        encoding: 'hex',
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: {
+                    data: {
+                        signature: '0x' + '1'.repeat(130),
+                    },
+                },
+            });
+
+            const signer = context.vaultereumService.getSigner('signer');
+            const signature = await signer(encoded);
+
+            expect(signature).toEqual({
+                hex:
+                    '0x1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111',
+                r: '0x1111111111111111111111111111111111111111111111111111111111111111',
+                v: 17,
+                s: '0x1111111111111111111111111111111111111111111111111111111111111111',
+            });
+        });
+
+        it('should fail on signature error', async function() {
+            const encoded = '0xabcd';
+            const spied = spy(context.vaultereumService);
+
+            when(
+                spied.write(
+                    `ethereum/accounts/signer/sign`,
+                    deepEqual({
+                        data: encoded.slice(2),
+                        encoding: 'hex',
+                    }),
+                ),
+            ).thenResolve({
+                error: 'unexpected_error',
+                response: null,
+            });
+
+            const signer = context.vaultereumService.getSigner('signer');
+            await expect(signer(encoded)).rejects.toMatchObject(
+                new Error(`Unable to sign using external vault signer for account signer: unexpected_error`),
+            );
+        });
+    });
 });
