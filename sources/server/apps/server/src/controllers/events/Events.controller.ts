@@ -37,6 +37,8 @@ import { encodeCategories } from '@app/server/controllers/events/utils/encodeCat
 import { RefractFactoryV0Service } from '@lib/common/contracts/refract/RefractFactory.V0.service';
 import { TxsService } from '@lib/common/txs/Txs.service';
 import { HttpExceptionFilter } from '@app/server/utils/HttpException.filter';
+import { EventsDeploySignPayloadParamsDto } from '@app/server/controllers/events/dto/EventsDeploySignPayloadParams.dto';
+import { EventsDeploySignPayloadResponseDto } from '@app/server/controllers/events/dto/EventsDeploySignPayloadResponse.dto';
 
 /**
  * Events controller to create and fetch events
@@ -366,6 +368,64 @@ export class EventsController {
                 'MetaTransaction',
             ),
             groupId: nextId,
+        };
+    }
+
+    /**
+     * Recover MetaTransaction EIP712 payload to sign
+     *
+     * @param params
+     * @param user
+     */
+    @Get('/signp/deploy/:event')
+    @ApiResponse({
+        status: StatusCodes.NotFound,
+        description: StatusNames[StatusCodes.NotFound],
+    })
+    @ApiResponse({
+        status: StatusCodes.BadRequest,
+        description: StatusNames[StatusCodes.BadRequest],
+    })
+    @ApiResponse({
+        status: StatusCodes.OK,
+        description: StatusNames[StatusCodes.OK],
+    })
+    @HttpCode(200)
+    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @Roles('authenticated')
+    @UseFilters(new HttpExceptionFilter())
+    async signPayload(
+        @Param() params: EventsDeploySignPayloadParamsDto,
+        @User() user: UserDto,
+    ): Promise<EventsDeploySignPayloadResponseDto> {
+        if (user.type !== 't721') {
+            throw new HttpException(
+                {
+                    status: StatusCodes.BadRequest,
+                    message: 'route_reserved_for_t721_users',
+                },
+                StatusCodes.BadRequest,
+            );
+        }
+
+        const generatedPayload: EventsDeployGeneratePayloadResponseDto = await this.getPayload(params, user);
+
+        const rmtx: RefractMtx = new RefractMtx(
+            parseInt(this.configService.get('ETHEREUM_NODE_NETWORK_ID'), 10),
+            this.configService.get('ETHEREUM_MTX_DOMAIN_NAME'),
+            this.configService.get('ETHEREUM_MTX_VERSION'),
+            user.address,
+        );
+
+        const signature = await rmtx.sign(
+            this.vaultereumService.getSigner(`user-${user.id}`),
+            generatedPayload.payload,
+        );
+
+        return {
+            payload: generatedPayload.payload,
+            groupId: generatedPayload.groupId,
+            signature: signature.hex,
         };
     }
 

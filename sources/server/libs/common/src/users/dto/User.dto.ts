@@ -28,11 +28,6 @@ export class UserDto {
     type: 't721' | 'web3';
 
     /**
-     * Encrypted wallet
-     */
-    wallet: string;
-
-    /**
      * Address of the account
      */
     address: string;

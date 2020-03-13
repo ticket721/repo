@@ -118,7 +118,6 @@ describe('Authentication Controller', function() {
                     response: {
                         username,
                         email,
-                        wallet: null,
                         type: 'web3',
                         address,
                         id: '0',
@@ -145,7 +144,6 @@ describe('Authentication Controller', function() {
             expect(res.user).toEqual({
                 username,
                 email,
-                wallet: null,
                 type: 'web3',
                 address: toAcceptedAddressFormat(address),
                 id: '0',
@@ -196,7 +194,6 @@ describe('Authentication Controller', function() {
                     response: {
                         username,
                         email,
-                        wallet: null,
                         type: 'web3',
                         address,
                         id: '0',
@@ -223,7 +220,6 @@ describe('Authentication Controller', function() {
             expect(res.user).toEqual({
                 username,
                 email,
-                wallet: null,
                 type: 'web3',
                 address: toAcceptedAddressFormat(address),
                 id: '0',
@@ -738,9 +734,7 @@ describe('Authentication Controller', function() {
             const hashedp = toAcceptedKeccak256Format(keccak256('salut'));
             const encrypted = JSON.parse(await encryptWallet(wallet, hashedp));
 
-            when(
-                authenticationServiceMock.createT721User(email, hashedp, username, deepEqual(encrypted), 'en'),
-            ).thenReturn(
+            when(authenticationServiceMock.createT721User(email, hashedp, username, 'en')).thenReturn(
                 Promise.resolve({
                     response: {
                         username,
@@ -761,7 +755,6 @@ describe('Authentication Controller', function() {
                 username: 'salut',
                 password: hashedp,
                 email: 'test@test.com',
-                wallet: encrypted,
             };
 
             const res = await authenticationController.localRegister(user);
@@ -781,9 +774,7 @@ describe('Authentication Controller', function() {
             });
             expect(res.token).toBeDefined();
 
-            verify(
-                authenticationServiceMock.createT721User(email, hashedp, username, deepEqual(encrypted), 'en'),
-            ).called();
+            verify(authenticationServiceMock.createT721User(email, hashedp, username, 'en')).called();
         });
 
         test('should create a user & return validation token in development mode', async function() {
@@ -800,9 +791,7 @@ describe('Authentication Controller', function() {
             const hashedp = toAcceptedKeccak256Format(keccak256('salut'));
             const encrypted = JSON.parse(await encryptWallet(wallet, hashedp));
 
-            when(
-                authenticationServiceMock.createT721User(email, hashedp, username, deepEqual(encrypted), 'en'),
-            ).thenReturn(
+            when(authenticationServiceMock.createT721User(email, hashedp, username, 'en')).thenReturn(
                 Promise.resolve({
                     response: {
                         username,
@@ -823,7 +812,6 @@ describe('Authentication Controller', function() {
                 username: 'salut',
                 password: hashedp,
                 email: 'test@test.com',
-                wallet: encrypted,
             };
 
             const res = await authenticationController.localRegister(user);
@@ -843,9 +831,7 @@ describe('Authentication Controller', function() {
             });
             expect(res.token).toBeDefined();
 
-            verify(
-                authenticationServiceMock.createT721User(email, hashedp, username, deepEqual(encrypted), 'en'),
-            ).called();
+            verify(authenticationServiceMock.createT721User(email, hashedp, username, 'en')).called();
         });
 
         test('email already in use - should error with 409', async function() {
@@ -859,9 +845,7 @@ describe('Authentication Controller', function() {
             const encrypted_string = await encryptWallet(wallet, hashedp);
             const encrypted = JSON.parse(encrypted_string);
 
-            when(
-                authenticationServiceMock.createT721User(email, hashedp, username, deepEqual(encrypted), 'en'),
-            ).thenReturn(
+            when(authenticationServiceMock.createT721User(email, hashedp, username, 'en')).thenReturn(
                 Promise.resolve({
                     response: null,
                     error: 'email_already_in_use',
@@ -872,7 +856,6 @@ describe('Authentication Controller', function() {
                 username: 'salut',
                 password: hashedp,
                 email: 'test@test.com',
-                wallet: encrypted,
             };
 
             await expect(authenticationController.localRegister(user)).rejects.toMatchObject({
@@ -887,9 +870,7 @@ describe('Authentication Controller', function() {
                 },
             });
 
-            verify(
-                authenticationServiceMock.createT721User(email, hashedp, username, deepEqual(encrypted), 'en'),
-            ).called();
+            verify(authenticationServiceMock.createT721User(email, hashedp, username, 'en')).called();
         });
 
         test('username already in use - should error with 409', async function() {
@@ -903,9 +884,7 @@ describe('Authentication Controller', function() {
             const encrypted_string = await encryptWallet(wallet, hashedp);
             const encrypted = JSON.parse(encrypted_string);
 
-            when(
-                authenticationServiceMock.createT721User(email, hashedp, username, deepEqual(encrypted), 'en'),
-            ).thenReturn(
+            when(authenticationServiceMock.createT721User(email, hashedp, username, 'en')).thenReturn(
                 Promise.resolve({
                     response: null,
                     error: 'username_already_in_use',
@@ -916,7 +895,6 @@ describe('Authentication Controller', function() {
                 username: 'salut',
                 password: hashedp,
                 email: 'test@test.com',
-                wallet: encrypted,
             };
 
             await expect(authenticationController.localRegister(user)).rejects.toMatchObject({
@@ -931,9 +909,7 @@ describe('Authentication Controller', function() {
                 },
             });
 
-            verify(
-                authenticationServiceMock.createT721User(email, hashedp, username, deepEqual(encrypted), 'en'),
-            ).called();
+            verify(authenticationServiceMock.createT721User(email, hashedp, username, 'en')).called();
         });
 
         test('address already in use - should error with 409', async function() {
@@ -947,9 +923,7 @@ describe('Authentication Controller', function() {
             const encrypted_string = await encryptWallet(wallet, hashedp);
             const encrypted = JSON.parse(encrypted_string);
 
-            when(
-                authenticationServiceMock.createT721User(email, hashedp, username, deepEqual(encrypted), 'en'),
-            ).thenReturn(
+            when(authenticationServiceMock.createT721User(email, hashedp, username, 'en')).thenReturn(
                 Promise.resolve({
                     response: null,
                     error: 'address_already_in_use',
@@ -960,7 +934,6 @@ describe('Authentication Controller', function() {
                 username: 'salut',
                 password: hashedp,
                 email: 'test@test.com',
-                wallet: encrypted,
             };
 
             await expect(authenticationController.localRegister(user)).rejects.toMatchObject({
@@ -975,53 +948,7 @@ describe('Authentication Controller', function() {
                 },
             });
 
-            verify(
-                authenticationServiceMock.createT721User(email, hashedp, username, deepEqual(encrypted), 'en'),
-            ).called();
-        });
-
-        test('invalid wallet format - should error with 422', async function() {
-            const authenticationController: AuthenticationController = context.authenticationController;
-            const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
-
-            const email = 'test@test.com';
-            const username = 'salut';
-            const wallet: Wallet = await createWallet();
-            const hashedp = toAcceptedKeccak256Format(keccak256('salut'));
-            const encrypted_string = await encryptWallet(wallet, hashedp);
-            const encrypted = JSON.parse(encrypted_string);
-
-            when(
-                authenticationServiceMock.createT721User(email, hashedp, username, deepEqual(encrypted), 'en'),
-            ).thenReturn(
-                Promise.resolve({
-                    response: null,
-                    error: 'invalid_wallet_format',
-                }),
-            );
-
-            const user: LocalRegisterInputDto = {
-                username: 'salut',
-                password: hashedp,
-                email: 'test@test.com',
-                wallet: encrypted,
-            };
-
-            await expect(authenticationController.localRegister(user)).rejects.toMatchObject({
-                response: {
-                    status: StatusCodes.UnprocessableEntity,
-                    message: 'invalid_wallet_format',
-                },
-                status: StatusCodes.UnprocessableEntity,
-                message: {
-                    status: StatusCodes.UnprocessableEntity,
-                    message: 'invalid_wallet_format',
-                },
-            });
-
-            verify(
-                authenticationServiceMock.createT721User(email, hashedp, username, deepEqual(encrypted), 'en'),
-            ).called();
+            verify(authenticationServiceMock.createT721User(email, hashedp, username, 'en')).called();
         });
 
         test('invalid password format - should error with 422', async function() {
@@ -1035,9 +962,7 @@ describe('Authentication Controller', function() {
             const encrypted_string = await encryptWallet(wallet, hashedp);
             const encrypted = JSON.parse(encrypted_string);
 
-            when(
-                authenticationServiceMock.createT721User(email, hashedp, username, deepEqual(encrypted), 'en'),
-            ).thenReturn(
+            when(authenticationServiceMock.createT721User(email, hashedp, username, 'en')).thenReturn(
                 Promise.resolve({
                     response: null,
                     error: 'password_should_be_keccak256',
@@ -1048,7 +973,6 @@ describe('Authentication Controller', function() {
                 username: 'salut',
                 password: hashedp,
                 email: 'test@test.com',
-                wallet: encrypted,
             };
 
             await expect(authenticationController.localRegister(user)).rejects.toMatchObject({
@@ -1063,9 +987,7 @@ describe('Authentication Controller', function() {
                 },
             });
 
-            verify(
-                authenticationServiceMock.createT721User(email, hashedp, username, deepEqual(encrypted), 'en'),
-            ).called();
+            verify(authenticationServiceMock.createT721User(email, hashedp, username, 'en')).called();
         });
 
         test('unknown error - should error with 500', async function() {
@@ -1079,9 +1001,7 @@ describe('Authentication Controller', function() {
             const encrypted_string = await encryptWallet(wallet, hashedp);
             const encrypted = JSON.parse(encrypted_string);
 
-            when(
-                authenticationServiceMock.createT721User(email, hashedp, username, deepEqual(encrypted), 'en'),
-            ).thenReturn(
+            when(authenticationServiceMock.createT721User(email, hashedp, username, 'en')).thenReturn(
                 Promise.resolve({
                     response: null,
                     error: 'this_error_does_not_exist',
@@ -1092,7 +1012,6 @@ describe('Authentication Controller', function() {
                 username: 'salut',
                 password: hashedp,
                 email: 'test@test.com',
-                wallet: encrypted,
             };
 
             await expect(authenticationController.localRegister(user)).rejects.toMatchObject({
@@ -1107,9 +1026,7 @@ describe('Authentication Controller', function() {
                 },
             });
 
-            verify(
-                authenticationServiceMock.createT721User(email, hashedp, username, deepEqual(encrypted), 'en'),
-            ).called();
+            verify(authenticationServiceMock.createT721User(email, hashedp, username, 'en')).called();
         });
     });
 
@@ -1142,7 +1059,6 @@ describe('Authentication Controller', function() {
                 type: 't721',
                 address: '0x...',
                 role: 'authenticated',
-                wallet: null,
             };
 
             when(authenticationServiceMock.validateUserEmail('123')).thenReturn(
@@ -1178,7 +1094,6 @@ describe('Authentication Controller', function() {
                 type: 't721',
                 address: '0x...',
                 role: 'authenticated',
-                wallet: null,
             };
 
             when(jwtServiceMock.verifyAsync('test_token')).thenThrow(new Error('jwt expired'));
@@ -1215,7 +1130,6 @@ describe('Authentication Controller', function() {
                 type: 't721',
                 address: '0x...',
                 role: 'authenticated',
-                wallet: null,
             };
 
             when(jwtServiceMock.verifyAsync('test_token')).thenThrow(new Error('invalid signature'));
@@ -1252,7 +1166,6 @@ describe('Authentication Controller', function() {
                 type: 't721',
                 address: '0x...',
                 role: 'authenticated',
-                wallet: null,
             };
 
             when(jwtServiceMock.verifyAsync('test_token')).thenThrow(new Error('unknown error'));
@@ -1289,7 +1202,6 @@ describe('Authentication Controller', function() {
                 type: 't721',
                 address: '0x...',
                 role: 'authenticated',
-                wallet: null,
             };
 
             when(jwtServiceMock.verifyAsync('test_token')).thenReturn(

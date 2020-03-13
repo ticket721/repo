@@ -138,7 +138,6 @@ export class AuthenticationController {
             body.email,
             body.password,
             body.username,
-            body.wallet,
             body.locale || 'en',
         );
         if (resp.error) {
@@ -154,7 +153,6 @@ export class AuthenticationController {
                         StatusCodes.Conflict,
                     );
 
-                case 'invalid_wallet_format':
                 case 'password_should_be_keccak256':
                     throw new HttpException(
                         {

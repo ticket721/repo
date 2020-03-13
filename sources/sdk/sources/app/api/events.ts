@@ -18,6 +18,7 @@ import { EventsBuildInputDto }                    from '@app/server/controllers/
 import { EventsDeployInputDto }                   from '@app/server/controllers/events/dto/EventsDeployInput.dto';
 import { EventsDeployResponseDto }                from '@app/server/controllers/events/dto/EventsDeployResponse.dto';
 import { EventsDeployGeneratePayloadResponseDto } from '@app/server/controllers/events/dto/EventsDeployGeneratePayloadResponse.dto';
+import { EventsDeploySignPayloadResponseDto }     from '@app/server/controllers/events/dto/EventsDeploySignPayloadResponse.dto';
 
 export async function eventsSearch(
     token: string,
@@ -160,6 +161,19 @@ export async function eventsDeployGeneratePayload(
     const self: T721SDK = this;
 
     return self.get(`/events/genp/deploy/${event}`, {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+    });
+}
+
+export async function eventsDeploySignPayload(
+    token: string,
+    event: string,
+): Promise<AxiosResponse<EventsDeploySignPayloadResponseDto>> {
+
+    const self: T721SDK = this;
+
+    return self.get(`/events/signp/deploy/${event}`, {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
     });

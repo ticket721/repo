@@ -21,7 +21,7 @@ export async function register(getCtx: () => { app: INestApplication; sdk: T721S
     const email = 'test@test.com';
     const username = 'mortimr';
 
-    const reg_res = (await sdk.localRegister(email, password, username, wallet, () => {}, 'fr')) as any;
+    const reg_res = (await sdk.localRegister(email, password, username, 'fr')) as any;
 
     expect(reg_res.report_status).toEqual(undefined);
 
@@ -63,7 +63,7 @@ export async function register(getCtx: () => { app: INestApplication; sdk: T721S
     expect(auth_res.status).toEqual(200);
     expect(auth_res.statusText).toEqual('OK');
 
-    await expect(sdk.localRegister(email, password, username, wallet, () => {})).rejects.toMatchObject({
+    await expect(sdk.localRegister(email, password, username)).rejects.toMatchObject({
         response: {
             data: {
                 statusCode: 409,
@@ -75,7 +75,7 @@ export async function register(getCtx: () => { app: INestApplication; sdk: T721S
         },
     });
 
-    await expect(sdk.localRegister('test2@test.com', password, username, wallet, () => {})).rejects.toMatchObject({
+    await expect(sdk.localRegister('test2@test.com', password, username)).rejects.toMatchObject({
         response: {
             data: {
                 statusCode: 409,
@@ -106,7 +106,6 @@ export async function web3register(getCtx: () => { app: INestApplication; sdk: T
 
     const resp = await sdk.web3Register(email, username, registerPayload[0], wallet.address, signedPayload.hex, 'fr');
     expect(resp.data).toBeDefined();
-    expect(resp.data.user.wallet).toEqual(null);
     expect(resp.data.user.email).toEqual(email);
     expect(resp.data.user.locale).toEqual('fr');
     expect(resp.data.user.valid).toEqual(false);

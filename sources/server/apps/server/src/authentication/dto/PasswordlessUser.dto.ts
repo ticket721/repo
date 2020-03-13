@@ -23,11 +23,6 @@ export class PasswordlessUserDto {
     type: 't721' | 'web3';
 
     /**
-     * Stored encrypted wallet
-     */
-    wallet: string;
-
-    /**
      * Address of the account
      */
     address: string;

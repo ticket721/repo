@@ -1,9 +1,16 @@
-import { IsEmail, IsString } from 'class-validator';
+import { IsEmail, IsOptional, IsString } from 'class-validator';
 
 /**
  * Input format when creating a user with the UserService
  */
 export class CreateUserServiceInputDto {
+    /**
+     * Unique Identifier
+     */
+    @IsString()
+    @IsOptional()
+    id?: any;
+
     /**
      * Unique email
      */
@@ -21,12 +28,6 @@ export class CreateUserServiceInputDto {
      */
     @IsString()
     password: string;
-
-    /**
-     * Encrypted wallet
-     */
-    @IsString()
-    wallet: string;
 
     /**
      * Address

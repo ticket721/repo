@@ -2,6 +2,8 @@ import { Inject, OnModuleInit } from '@nestjs/common';
 import VaultClientBuilder from 'node-vault';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 import { ServiceResponse } from '@lib/common/utils/ServiceResponse';
+import { EIP712Signature } from '@ticket721/e712';
+import { ExternalSigner } from '@ticket721/e712/lib/EIP712Signer';
 
 /**
  * Options to build and use Vaultereum
@@ -94,6 +96,7 @@ export class VaultereumService implements OnModuleInit {
     /**
      * Builds the Vault client
      */
+
     /* istanbul ignore next */
     public build(args: any): VaultClient {
         return VaultClientBuilder(args);
@@ -165,5 +168,35 @@ export class VaultereumService implements OnModuleInit {
                 response: null,
             };
         }
+    }
+
+    /**
+     * Get e712 signer using vaultereum
+     *
+     * @param signer
+     */
+    getSigner(signer: string): ExternalSigner {
+        return async (encodedPayload: string): Promise<EIP712Signature> => {
+            const signature = await this.write(`ethereum/accounts/${signer}/sign`, {
+                data: encodedPayload.slice(2),
+                encoding: 'hex',
+            });
+
+            if (signature.error) {
+                throw new Error(`Unable to sign using external vault signer for account ${signer}: ${signature.error}`);
+            }
+
+            const hexSignature = signature.response.data.signature;
+            const v = parseInt(hexSignature.slice(130), 16);
+            const r = `0x${hexSignature.slice(2, 2 + 64)}`;
+            const s = `0x${hexSignature.slice(2 + 64, 2 + 128)}`;
+
+            return {
+                hex: hexSignature,
+                r,
+                v,
+                s,
+            };
+        };
     }
 }

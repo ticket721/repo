@@ -1,13 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { anyFunction, anything, deepEqual, instance, mock, verify, when } from 'ts-mockito';
-import {
-    createWallet,
-    encryptWallet,
-    keccak256,
-    toAcceptedAddressFormat,
-    toAcceptedKeccak256Format,
-    Wallet,
-} from '@ticket721sources/global';
+import { keccak256, toAcceptedAddressFormat, toAcceptedKeccak256Format } from '@ticket721sources/global';
 import { UsersService } from './Users.service';
 import { UserEntity } from './entities/User.entity';
 import { UsersRepository } from './Users.repository';
@@ -31,6 +24,8 @@ const context: {
     userEntityModelMock: null,
     usersRepositoryMock: null,
 };
+
+const finalAddress = `0x0000000000111111111100000000001111111111`;
 
 describe('Users Service', function() {
     beforeEach(async function() {
@@ -60,23 +55,18 @@ describe('Users Service', function() {
     describe('findById', function() {
         test('should return existing user', async function() {
             const usersService: UsersService = context.usersService;
-            const userEntityModelMock: UserEntityModelMock = context.userEntityModelMock;
             const usersRepositoryMock: UsersRepository = context.usersRepositoryMock;
 
             const email = 'test@test.com';
             const username = 'salut';
-            const wallet: Wallet = await createWallet();
-            const address = wallet.address;
             const hashedp = toAcceptedKeccak256Format(keccak256('salut'));
-            const encrypted_string = await encryptWallet(wallet, hashedp);
             const id = '00000000-0000-0000-0000-000000000000';
 
             const generated_cb = async (): Promise<UserEntity> => {
                 return {
                     username,
                     email,
-                    wallet: encrypted_string,
-                    address,
+                    address: finalAddress,
                     password: hashedp,
                     id,
                     type: 't721',
@@ -100,8 +90,7 @@ describe('Users Service', function() {
             expect(res.response).toEqual({
                 username,
                 email,
-                wallet: encrypted_string,
-                address,
+                address: finalAddress,
                 password: hashedp,
                 id,
                 type: 't721',
@@ -113,15 +102,8 @@ describe('Users Service', function() {
 
         test('should return null on undefined query result', async function() {
             const usersService: UsersService = context.usersService;
-            const userEntityModelMock: UserEntityModelMock = context.userEntityModelMock;
             const usersRepositoryMock: UsersRepository = context.usersRepositoryMock;
 
-            const email = 'test@test.com';
-            const username = 'salut';
-            const wallet: Wallet = await createWallet();
-            const address = wallet.address;
-            const hashedp = toAcceptedKeccak256Format(keccak256('salut'));
-            const encrypted_string = await encryptWallet(wallet, hashedp);
             const id = '00000000-0000-0000-0000-000000000000';
 
             const generated_cb = async (): Promise<UserEntity> => {
@@ -144,23 +126,18 @@ describe('Users Service', function() {
 
         test('unexpected search error', async function() {
             const usersService: UsersService = context.usersService;
-            const userEntityModelMock: UserEntityModelMock = context.userEntityModelMock;
             const usersRepositoryMock: UsersRepository = context.usersRepositoryMock;
 
             const email = 'test@test.com';
             const username = 'salut';
-            const wallet: Wallet = await createWallet();
-            const address = wallet.address;
             const hashedp = toAcceptedKeccak256Format(keccak256('salut'));
-            const encrypted_string = await encryptWallet(wallet, hashedp);
             const id = '00000000-0000-0000-0000-000000000000';
 
             const generated_cb = async (): Promise<UserEntity> => {
                 return {
                     username,
                     email,
-                    wallet: encrypted_string,
-                    address,
+                    address: finalAddress,
                     password: hashedp,
                     id,
                     type: 't721',
@@ -192,10 +169,7 @@ describe('Users Service', function() {
 
             const email = 'test@test.com';
             const username = 'salut';
-            const wallet: Wallet = await createWallet();
-            const address = wallet.address;
             const hashedp = toAcceptedKeccak256Format(keccak256('salut'));
-            const encrypted_string = await encryptWallet(wallet, hashedp);
 
             const injected_cb = (options: any, cb: any): void => {
                 cb(null, {
@@ -220,8 +194,7 @@ describe('Users Service', function() {
                                     username,
                                     email,
                                     password: hashedp,
-                                    wallet: encrypted_string,
-                                    address: toAcceptedAddressFormat(address),
+                                    address: toAcceptedAddressFormat(finalAddress),
                                     id: '0',
                                     type: 't721',
                                     role: 'authenticated',
@@ -238,7 +211,7 @@ describe('Users Service', function() {
                         body: {
                             query: {
                                 match: {
-                                    address,
+                                    address: finalAddress,
                                 },
                             },
                         },
@@ -247,17 +220,16 @@ describe('Users Service', function() {
                 ),
             ).thenCall(injected_cb);
 
-            const res = await usersService.findByAddress(address);
+            const res = await usersService.findByAddress(finalAddress);
 
             expect(res.error).toEqual(null);
             expect(res.response).toEqual({
                 username,
                 email,
-                address: toAcceptedAddressFormat(address),
+                address: toAcceptedAddressFormat(finalAddress),
                 id: '0',
                 type: 't721',
                 password: hashedp,
-                wallet: encrypted_string,
                 role: 'authenticated',
             });
 
@@ -267,7 +239,7 @@ describe('Users Service', function() {
                         body: {
                             query: {
                                 match: {
-                                    address,
+                                    address: finalAddress,
                                 },
                             },
                         },
@@ -281,10 +253,7 @@ describe('Users Service', function() {
             const usersService: UsersService = context.usersService;
             const userEntityModelMock: UserEntityModelMock = context.userEntityModelMock;
 
-            const wallet: Wallet = await createWallet();
-            const address = wallet.address.slice(4);
-
-            const res = await usersService.findByAddress(address);
+            const res = await usersService.findByAddress('0x' + finalAddress.slice(4));
 
             expect(res.error).toEqual('invalid_address_format');
             expect(res.response).toEqual(null);
@@ -296,11 +265,6 @@ describe('Users Service', function() {
             const usersService: UsersService = context.usersService;
             const userEntityModelMock: UserEntityModelMock = context.userEntityModelMock;
 
-            const wallet: Wallet = await createWallet();
-            const address = wallet.address;
-            const hashedp = toAcceptedKeccak256Format(keccak256('salut'));
-            const encrypted_string = await encryptWallet(wallet, hashedp);
-
             const injected_cb = (options: any, cb: any): void => {
                 cb({ error: 'exists' }, null);
             };
@@ -311,7 +275,7 @@ describe('Users Service', function() {
                         body: {
                             query: {
                                 match: {
-                                    address,
+                                    address: finalAddress,
                                 },
                             },
                         },
@@ -320,7 +284,7 @@ describe('Users Service', function() {
                 ),
             ).thenCall(injected_cb);
 
-            const res = await usersService.findByAddress(address);
+            const res = await usersService.findByAddress(finalAddress);
 
             expect(res.error).toEqual('unexpected_error');
             expect(res.response).toEqual(null);
@@ -331,7 +295,7 @@ describe('Users Service', function() {
                         body: {
                             query: {
                                 match: {
-                                    address,
+                                    address: finalAddress,
                                 },
                             },
                         },
@@ -344,9 +308,6 @@ describe('Users Service', function() {
         test('search with no hits', async function() {
             const usersService: UsersService = context.usersService;
             const userEntityModelMock: UserEntityModelMock = context.userEntityModelMock;
-
-            const wallet: Wallet = await createWallet();
-            const address = wallet.address;
 
             const injected_cb = (options: any, cb: any): void => {
                 cb(null, {
@@ -372,7 +333,7 @@ describe('Users Service', function() {
                         body: {
                             query: {
                                 match: {
-                                    address,
+                                    address: finalAddress,
                                 },
                             },
                         },
@@ -381,7 +342,7 @@ describe('Users Service', function() {
                 ),
             ).thenCall(injected_cb);
 
-            const res = await usersService.findByAddress(address);
+            const res = await usersService.findByAddress(finalAddress);
 
             expect(res.error).toEqual(null);
             expect(res.response).toEqual(null);
@@ -392,7 +353,7 @@ describe('Users Service', function() {
                         body: {
                             query: {
                                 match: {
-                                    address,
+                                    address: finalAddress,
                                 },
                             },
                         },
@@ -410,10 +371,7 @@ describe('Users Service', function() {
 
             const email = 'test@test.com';
             const username = 'salut';
-            const wallet: Wallet = await createWallet();
-            const address = wallet.address;
             const hashedp = toAcceptedKeccak256Format(keccak256('salut'));
-            const encrypted_string = await encryptWallet(wallet, hashedp);
 
             const injected_cb = (options: any, cb: any): void => {
                 cb(null, {
@@ -438,8 +396,7 @@ describe('Users Service', function() {
                                     username,
                                     email,
                                     password: hashedp,
-                                    wallet: encrypted_string,
-                                    address: toAcceptedAddressFormat(address),
+                                    address: toAcceptedAddressFormat(finalAddress),
                                     id: '0',
                                     type: 't721',
                                     role: 'authenticated',
@@ -471,11 +428,10 @@ describe('Users Service', function() {
             expect(res.response).toEqual({
                 username,
                 email,
-                address: toAcceptedAddressFormat(address),
+                address: toAcceptedAddressFormat(finalAddress),
                 id: '0',
                 type: 't721',
                 password: hashedp,
-                wallet: encrypted_string,
                 role: 'authenticated',
             });
 
@@ -500,9 +456,6 @@ describe('Users Service', function() {
             const userEntityModelMock: UserEntityModelMock = context.userEntityModelMock;
 
             const username = 'salut';
-            const wallet: Wallet = await createWallet();
-            const hashedp = toAcceptedKeccak256Format(keccak256('salut'));
-            const encrypted_string = await encryptWallet(wallet, hashedp);
 
             const injected_cb = (options: any, cb: any): void => {
                 cb({ error: 'exists' }, null);
@@ -549,9 +502,6 @@ describe('Users Service', function() {
             const userEntityModelMock: UserEntityModelMock = context.userEntityModelMock;
 
             const username = 'salut';
-            const wallet: Wallet = await createWallet();
-            const hashedp = toAcceptedKeccak256Format(keccak256('salut'));
-            const encrypted_string = await encryptWallet(wallet, hashedp);
 
             const injected_cb = (options: any, cb: any): void => {
                 cb(null, {
@@ -615,10 +565,7 @@ describe('Users Service', function() {
 
             const email = 'test@test.com';
             const username = 'salut';
-            const wallet: Wallet = await createWallet();
-            const address = wallet.address;
             const hashedp = toAcceptedKeccak256Format(keccak256('salut'));
-            const encrypted_string = await encryptWallet(wallet, hashedp);
 
             const injected_cb = (options: any, cb: any): void => {
                 cb(null, {
@@ -643,8 +590,7 @@ describe('Users Service', function() {
                                     username,
                                     email,
                                     password: hashedp,
-                                    wallet: encrypted_string,
-                                    address: toAcceptedAddressFormat(address),
+                                    address: toAcceptedAddressFormat(finalAddress),
                                     id: '0',
                                     type: 't721',
                                     role: 'authenticated',
@@ -676,11 +622,10 @@ describe('Users Service', function() {
             expect(res.response).toEqual({
                 username,
                 email,
-                address: toAcceptedAddressFormat(address),
+                address: toAcceptedAddressFormat(finalAddress),
                 id: '0',
                 type: 't721',
                 password: hashedp,
-                wallet: encrypted_string,
                 role: 'authenticated',
             });
 
@@ -705,8 +650,6 @@ describe('Users Service', function() {
             const userEntityModelMock: UserEntityModelMock = context.userEntityModelMock;
 
             const email = 'test@test.com';
-            const wallet: Wallet = await createWallet();
-            const hashedp = toAcceptedKeccak256Format(keccak256('salut'));
 
             const injected_cb = (options: any, cb: any): void => {
                 cb({ error: 'exists' }, null);
@@ -816,17 +759,13 @@ describe('Users Service', function() {
 
             const email = 'test@test.com';
             const username = 'salut';
-            const wallet: Wallet = await createWallet();
-            const address = wallet.address;
             const hashedp = toAcceptedKeccak256Format(keccak256('salut'));
-            const encrypted_string = await encryptWallet(wallet, hashedp);
 
             const create_args = {
                 username,
                 email,
                 password: hashedp,
-                address: toAcceptedAddressFormat(address),
-                wallet: encrypted_string,
+                address: toAcceptedAddressFormat(finalAddress),
                 type: 't721',
                 locale: 'en',
                 valid: false,
@@ -865,17 +804,13 @@ describe('Users Service', function() {
 
             const email = 'test@test.com';
             const username = 'salut';
-            const wallet: Wallet = await createWallet();
-            const address = wallet.address;
             const hashedp = toAcceptedKeccak256Format(keccak256('salut'));
-            const encrypted_string = await encryptWallet(wallet, hashedp);
 
             const create_args = {
                 username,
                 email,
                 password: hashedp,
-                address: toAcceptedAddressFormat(address),
-                wallet: encrypted_string,
+                address: toAcceptedAddressFormat(finalAddress),
                 type: 't721',
                 role: 'authenticated',
                 locale: 'en',
@@ -907,23 +842,18 @@ describe('Users Service', function() {
     describe('update', function() {
         it('should update user', async function() {
             const usersService: UsersService = context.usersService;
-            const userEntityModelMock: UserEntityModelMock = context.userEntityModelMock;
             const usersRepositoryMock: UsersRepository = context.usersRepositoryMock;
 
             const email = 'test@test.com';
             const username = 'salut';
-            const wallet: Wallet = await createWallet();
-            const address = wallet.address;
             const hashedp = toAcceptedKeccak256Format(keccak256('salut'));
-            const encrypted_string = await encryptWallet(wallet, hashedp);
             const id = '00000000-0000-0000-0000-000000000000';
 
             const generated_cb = async (): Promise<UserEntity> => {
                 return {
                     username,
                     email,
-                    wallet: encrypted_string,
-                    address,
+                    address: finalAddress,
                     password: hashedp,
                     id,
                     type: 't721',
@@ -965,8 +895,7 @@ describe('Users Service', function() {
             expect(res.response).toEqual({
                 username,
                 email,
-                wallet: encrypted_string,
-                address,
+                address: finalAddress,
                 password: hashedp,
                 id,
                 type: 't721',

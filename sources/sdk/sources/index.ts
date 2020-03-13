@@ -22,7 +22,7 @@ import {
     eventsCreate, eventsCreateAdminsConfiguration, eventsCreateCategoriesConfiguration,
     eventsCreateDatesConfiguration, eventsCreateImagesMetadata,
     eventsCreateModulesConfiguration,
-    eventsCreateTextMetadata, eventsDeploy, eventsDeployGeneratePayload,
+    eventsCreateTextMetadata, eventsDeploy, eventsDeployGeneratePayload, eventsDeploySignPayload,
     eventsSearch,
 } from './app/api/events';
 import { metaTx, txsInfos, txsSearch, txsSubscribe } from './app/api/txs';
@@ -59,6 +59,7 @@ export class T721SDK {
         this.events.create.categoriesConfiguration = this.events.create.categoriesConfiguration.bind(this);
         this.events.create.imagesMetadata = this.events.create.imagesMetadata.bind(this);
         this.events.create.adminsConfiguration = this.events.create.adminsConfiguration.bind(this);
+        this.events.deploy.signPayload = this.events.deploy.signPayload.bind(this);
         this.events.deploy.generatePayload = this.events.deploy.generatePayload.bind(this);
         this.events.deploy.run = this.events.deploy.run.bind(this);
         this.events.search = this.events.search.bind(this);
@@ -171,6 +172,7 @@ export class T721SDK {
         },
         deploy: {
             generatePayload: eventsDeployGeneratePayload,
+            signPayload: eventsDeploySignPayload,
             run: eventsDeploy,
         },
     };

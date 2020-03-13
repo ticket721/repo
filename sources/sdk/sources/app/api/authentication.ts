@@ -1,11 +1,8 @@
-import { ProgressCallback }         from 'ethers/utils';
 import {
     keccak256,
     toAcceptedKeccak256Format,
-    encryptWallet,
     getPasswordStrength,
     PasswordStrengthReport,
-    Wallet,
     Web3RegisterSigner,
     Web3LoginSigner,
 }                                     from '@ticket721sources/global';
@@ -31,23 +28,12 @@ export async function localRegister(
     email: string,
     password: string,
     username: string,
-    wallet: Wallet,
-    _progress: ProgressCallback,
     locale?: string,
 ): Promise<AxiosResponse<LocalRegisterResponseDto> | FailedRegisterReport> {
 
     const self: T721SDK = this;
 
-    const progress: ProgressCallback = (p: number): void => {
-        if (_progress) {
-            return _progress(p);
-        }
-    };
-
-    progress(0);
-
     const report = getPasswordStrength(password);
-    progress(10);
 
     if (report.score < 3) {
         return {
@@ -56,21 +42,12 @@ export async function localRegister(
         };
     }
 
-    let lastEmitted = 0;
-    const encrypted: string = await encryptWallet(wallet, password, (encryptionProgress: number): void => {
-        if (Math.floor((encryptionProgress / 100) * 80) > lastEmitted) {
-            lastEmitted = Math.floor((encryptionProgress / 100) * 80);
-            progress(10 + lastEmitted);
-        }
-    });
-
     const hashed = toAcceptedKeccak256Format(keccak256(password));
 
     const createUser: LocalRegisterInputDto = {
         username,
         password: hashed,
         email,
-        wallet: JSON.parse(encrypted),
         locale,
     };
 

@@ -9,7 +9,6 @@ var migration1576415205 = {
                     username text,
                     password text,
                     type text,
-                    wallet text,
                     address text,
                     role text,
                     valid boolean,

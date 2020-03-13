@@ -10,13 +10,7 @@ export async function deployJustice(getCtx: () => { app: INestApplication; sdk: 
     const { app, sdk } = getCtx();
 
     const wallet = await createWallet();
-    const res: AxiosResponse = (await sdk.localRegister(
-        config.email,
-        config.password,
-        'tester',
-        wallet,
-        null,
-    )) as AxiosResponse;
+    const res: AxiosResponse = (await sdk.localRegister(config.email, config.password, 'tester')) as AxiosResponse;
     await sdk.validateEmail(res.data.validationToken);
     const token = res.data.token;
     const user = res.data.user;
@@ -24,7 +18,6 @@ export async function deployJustice(getCtx: () => { app: INestApplication; sdk: 
     try {
         await createEvent(
             user,
-            wallet,
             sdk,
             token,
             'justice',
