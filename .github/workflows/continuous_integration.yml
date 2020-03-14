@@ -13,58 +13,57 @@ jobs:
             #
 
             - uses: actions/checkout@v1
-            - name: Use Node.js 12.x
+            - name: "Use Node.js 12.x"
               uses: actions/setup-node@v1.2.0
               with:
                   node-version: 12.x
 
-            - name: Setup SSH Agent
+            - name: "Setup SSH Agent"
               uses: webfactory/ssh-agent@v0.1.1
               with:
                   ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-            - name: Install required tools globally (npm install -g lerna lcov-result-merger)
-              run: npm install -g lerna@3.16.4 lcov-result-merger@3.1.0
+            - name: "Install required tools globally (npm install -g lerna lcov-result-merger yarn)"
+              run: npm install -g lerna@3.16.4 lcov-result-merger@3.1.0 yarn@1.22.4
 
-            - uses: borales/actions-yarn@v2.0.0
-              with:
-                  cmd: setup:submodules:clone
+            - name: "Recover submodules (yarn setup:submodules:clone)"
+              run: yarn setup:submodules:clone
 
             #
             # Cache Yarn Workspaces
             #
 
-            - name: CACHE root
+            - name: "CACHE root"
               uses: actions/cache@v1
               with:
                   path: ./node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-root
 
-            - name: CACHE @backend_migrations
+            - name: "CACHE @backend_migrations"
               uses: actions/cache@v1
               with:
                   path: ./modules/@backend_migrations/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-root
 
-            - name: CACHE @backend_nest
+            - name: "CACHE @backend_nest"
               uses: actions/cache@v1
               with:
                   path: ./modules/@backend_nest/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-root
 
-            - name: CACHE @backend_simulation
+            - name: "CACHE @backend_simulation"
               uses: actions/cache@v1
               with:
                   path: ./modules/@backend_simulation/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-root
 
-            - name: CACHE @common_global
+            - name: "CACHE @common_global"
               uses: actions/cache@v1
               with:
                   path: ./modules/@common_global/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-root
 
-            - name: CACHE @common_sdk
+            - name: "CACHE @common_sdk"
               uses: actions/cache@v1
               with:
                   path: ./modules/@common_sdk/node_modules
@@ -74,25 +73,25 @@ jobs:
             # Cache Public Modules
             #
 
-            - name: CACHE @public_dosojin
+            - name: "CACHE @public_dosojin"
               uses: actions/cache@v1
               with:
                   path: ./modules/@public_dosojin/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('./modules/@public_dosojin/yarn.lock') }}-root
 
-            - name: CACHE @public_e712
+            - name: "CACHE @public_e712"
               uses: actions/cache@v1
               with:
                   path: ./modules/@public_e712/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('./modules/@public_e712/yarn.lock') }}-root
 
-            - name: CACHE @public_erc2280
+            - name: "CACHE @public_erc2280"
               uses: actions/cache@v1
               with:
                   path: ./modules/@public_erc2280/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('./modules/@public_erc2280/yarn.lock') }}-root
 
-            - name: CACHE @public_ethvtx
+            - name: "CACHE @public_ethvtx"
               uses: actions/cache@v1
               with:
                   path: ./modules/@public_ethvtx/node_modules
@@ -102,37 +101,37 @@ jobs:
             # Cache Smart Contracts Modules
             #
 
-            - name: CACHE /contracts/contracts_modules/metamarketplace/node_modules
+            - name: "CACHE /contracts/contracts_modules/metamarketplace/node_modules"
               uses: actions/cache@v1
               with:
                   path: ./contracts/contracts_modules/metamarketplace/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('contracts/contracts_modules/metamarketplace/package-lock.json') }}-metamarketplace
 
-            - name: CACHE /contracts/contracts_modules/refract/node_modules
+            - name: "CACHE /contracts/contracts_modules/refract/node_modules"
               uses: actions/cache@v1
               with:
                   path: ./contracts/contracts_modules/refract/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('contracts/contracts_modules/refract/package-lock.json') }}-refract
 
-            - name: CACHE /contracts/contracts_modules/t721admin/node_modules
+            - name: "CACHE /contracts/contracts_modules/t721admin/node_modules"
               uses: actions/cache@v1
               with:
                   path: ./contracts/contracts_modules/t721admin/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('contracts/contracts_modules/t721admin/package-lock.json') }}-t721admin
 
-            - name: CACHE /contracts/contracts_modules/t721controller/node_modules
+            - name: "CACHE /contracts/contracts_modules/t721controller/node_modules"
               uses: actions/cache@v1
               with:
                   path: ./contracts/contracts_modules/t721controller/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('contracts/contracts_modules/t721controller/package-lock.json') }}-t721controller
 
-            - name: CACHE /contracts/contracts_modules/t721token/node_modules
+            - name: "CACHE /contracts/contracts_modules/t721token/node_modules"
               uses: actions/cache@v1
               with:
                   path: ./contracts/contracts_modules/t721token/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('contracts/contracts_modules/t721token/package-lock.json') }}-t721token
 
-            - name: CACHE /contracts/contracts_modules/ticketforge/node_modules
+            - name: "CACHE /contracts/contracts_modules/ticketforge/node_modules"
               uses: actions/cache@v1
               with:
                   path: ./contracts/contracts_modules/ticketforge/node_modules
@@ -142,13 +141,11 @@ jobs:
             # Run Complete install
             #
 
-            - name: Install all dependencies
-              uses: borales/actions-yarn@v2.0.0
-              with:
-                  cmd: "@install"
+            - name: "Install all dependencies (yarn @install)"
+              run: "yarn @install"
 
-            - name: Install contracts dependencies (npm run install:ticket721contracts)
-              run: npm run install:ticket721contracts
+            - name: Install contracts dependencies (yarn install:ticket721contracts)
+              run: yarn install:ticket721contracts
 
 #    global:
 #        needs: install
