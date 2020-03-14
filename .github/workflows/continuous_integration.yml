@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
     install:
-        name: "@repo/install"
+        name: "[STAGE 1][@repo] install"
         runs-on: ubuntu-latest
         steps:
 
@@ -77,25 +77,25 @@ jobs:
               uses: actions/cache@v1
               with:
                   path: ./modules/@public_dosojin/node_modules
-                  key: ${{ runner.os }}-${{ hashFiles('./modules/@public_dosojin/yarn.lock') }}-root
+                  key: ${{ runner.os }}-${{ hashFiles('modules/@public_dosojin/yarn.lock') }}-root
 
             - name: "CACHE @public_e712"
               uses: actions/cache@v1
               with:
                   path: ./modules/@public_e712/node_modules
-                  key: ${{ runner.os }}-${{ hashFiles('./modules/@public_e712/yarn.lock') }}-root
+                  key: ${{ runner.os }}-${{ hashFiles('modules/@public_e712/yarn.lock') }}-root
 
             - name: "CACHE @public_erc2280"
               uses: actions/cache@v1
               with:
                   path: ./modules/@public_erc2280/node_modules
-                  key: ${{ runner.os }}-${{ hashFiles('./modules/@public_erc2280/yarn.lock') }}-root
+                  key: ${{ runner.os }}-${{ hashFiles('modules/@public_erc2280/yarn.lock') }}-root
 
             - name: "CACHE @public_ethvtx"
               uses: actions/cache@v1
               with:
                   path: ./modules/@public_ethvtx/node_modules
-                  key: ${{ runner.os }}-${{ hashFiles('./modules/@public_ethvtx/yarn.lock') }}-root
+                  key: ${{ runner.os }}-${{ hashFiles('modules/@public_ethvtx/yarn.lock') }}-root
 
             #
             # Cache Smart Contracts Modules
