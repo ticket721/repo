@@ -145,12 +145,12 @@ jobs:
               run: "yarn @install"
 
     global:
-        name: "[STAGE 2][@common/sdk] build, lint & test"
+        name: "[STAGE 2][@common/global] build, lint & test"
         needs: install
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v1
-            - name: Use Node.js 12.x
+            - name: "Use Node.js 12.x"
               uses: actions/setup-node@v1.2.0
               with:
                   node-version: 12.x
@@ -158,7 +158,7 @@ jobs:
             - name: "Install required tools globally (npm install -g yarn)"
               run: npm install -g yarn@1.22.4
 
-            - name: CACHE @common/global/coverage
+            - name: "CACHE @common/global/coverage"
               uses: actions/cache@v1
               with:
                   path: modules/@common_global/coverage
@@ -180,78 +180,71 @@ jobs:
                   path: ./modules/@common_global/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_global
 
-            - name: Build @ticket721sources/global (yarn build in modules/@common_global)
+            - name: "Build @ticket721sources/global (yarn build in modules/@common_global)"
               working-directory: modules/@common_global
               run: yarn build
 
-            - name: TSLint @ticket721sources/global (yarn lint in modules/@common_global)
+            - name: "TSLint @ticket721sources/global (yarn lint in modules/@common_global)"
               working-directory: modules/@common_global
               run: yarn lint
 
-            - name: Test @ticket721sources/global (yarn test:cov in modules/@common_global)
+            - name: "Test @ticket721sources/global (yarn test:cov in modules/@common_global)"
               working-directory: modules/@common_global
               run: yarn test:cov
 
-#    sdk:
-#        needs: install
-#        runs-on: ubuntu-latest
-#        steps:
-#            - uses: actions/checkout@v1
-#            - name: Use Node.js 12.x
-#              uses: actions/setup-node@v1.2.0
-#              with:
-#                  node-version: 12.x
-#
-#            - name: CACHE /node_modules
-#              uses: actions/cache@v1
-#              with:
-#                  path: ./node_modules
-#                  key: ${{ runner.os }}-${{ hashFiles('package-lock.json') }}-root
-#
-#            - name: CACHE /sources/node_modules
-#              uses: actions/cache@v1
-#              with:
-#                  path: ./sources/node_modules
-#                  key: ${{ runner.os }}-${{ hashFiles('sources/package-lock.json') }}-sources
-#
-#            - name: CACHE /sources/global/node_modules
-#              uses: actions/cache@v1
-#              with:
-#                  path: ./sources/global/node_modules
-#                  key: ${{ runner.os }}-${{ hashFiles('sources/global/package-lock.json') }}-global
-#
-#            - name: CACHE /sources/sdk/node_modules
-#              uses: actions/cache@v1
-#              with:
-#                  path: ./sources/sdk/node_modules
-#                  key: ${{ runner.os }}-${{ hashFiles('sources/sdk/package-lock.json') }}-sdk
-#
-#            - name: CACHE /sources/migrations/node_modules
-#              uses: actions/cache@v1
-#              with:
-#                  path: ./sources/migrations/node_modules
-#                  key: ${{ runner.os }}-${{ hashFiles('sources/migrations/package-lock.json') }}-migrations
-#
-#            - name: CACHE /sources/server/node_modules
-#              uses: actions/cache@v1
-#              with:
-#                  path: ./sources/server/node_modules
-#                  key: ${{ runner.os }}-${{ hashFiles('sources/server/package-lock.json') }}-server
-#
-#            - name: Link sources (npm run link:sources)
-#              run: npm run link:sources
-#
-#            - name: Build @ticket721sources/global (npm run build in sources/global)
-#              working-directory: sources/global
-#              run: npm run build
-#
-#            - name: Build @ticket721sources/sdk (npm run build in sources/sdk)
-#              working-directory: sources/sdk
-#              run: npm run build
-#
-#            - name: TSLint @ticket721sources/sdk (npm run lint in sources/sdk)
-#              working-directory: sources/sdk
-#              run: npm run lint
+    sdk:
+        name: "[STAGE 2][@common/sdk] build"
+        needs: install
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v1
+            - name: Use Node.js 12.x
+              uses: actions/setup-node@v1.2.0
+              with:
+                  node-version: 12.x
+
+            - name: CACHE /node_modules
+              uses: actions/cache@v1
+              with:
+                  path: ./node_modules
+                  key: ${{ runner.os }}-${{ hashFiles('package-lock.json') }}-root
+
+            - name: "Install required tools globally (npm install -g yarn)"
+              run: npm install -g yarn@1.22.4
+
+            #
+            # Cache Yarn Workspaces
+            #
+
+            - name: "CACHE root"
+              uses: actions/cache@v1
+              with:
+                  path: ./node_modules
+                  key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-root
+
+            - name: "CACHE @common_global"
+              uses: actions/cache@v1
+              with:
+                  path: ./modules/@common_global/node_modules
+                  key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_global
+
+            - name: "CACHE @common_sdk"
+              uses: actions/cache@v1
+              with:
+                  path: ./modules/@common_global/node_modules
+                  key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_global
+
+            - name: "Build @ticket721sources/global (npm run build in sources/global)"
+              working-directory: modules/@common_global
+              run: yarn build
+
+            - name: "Build @ticket721sources/sdk (npm run build in sources/sdk)"
+              working-directory: modules/@common_sdk
+              run: yarn build
+
+            - name: "TSLint @ticket721sources/sdk (npm run lint in sources/sdk)"
+              working-directory: modules/@common_sdk
+              run: yarn lint
 
 #    server:
 #        needs: install
