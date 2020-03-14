@@ -101,37 +101,37 @@ jobs:
             # Cache Smart Contracts Modules
             #
 
-            - name: "CACHE /contracts/contracts_modules/metamarketplace/node_modules"
+            - name: "CACHE @contracts_metamarketplace"
               uses: actions/cache@v1
               with:
                   path: ./contracts/contracts_modules/metamarketplace/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('contracts/contracts_modules/metamarketplace/package-lock.json') }}-metamarketplace
 
-            - name: "CACHE /contracts/contracts_modules/refract/node_modules"
+            - name: "CACHE @contracts_refract"
               uses: actions/cache@v1
               with:
                   path: ./contracts/contracts_modules/refract/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('contracts/contracts_modules/refract/package-lock.json') }}-refract
 
-            - name: "CACHE /contracts/contracts_modules/t721admin/node_modules"
+            - name: "CACHE @contracts_t721admin"
               uses: actions/cache@v1
               with:
                   path: ./contracts/contracts_modules/t721admin/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('contracts/contracts_modules/t721admin/package-lock.json') }}-t721admin
 
-            - name: "CACHE /contracts/contracts_modules/t721controller/node_modules"
+            - name: "CACHE @contracts_t721controller"
               uses: actions/cache@v1
               with:
                   path: ./contracts/contracts_modules/t721controller/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('contracts/contracts_modules/t721controller/package-lock.json') }}-t721controller
 
-            - name: "CACHE /contracts/contracts_modules/t721token/node_modules"
+            - name: "CACHE @contracts_t721token"
               uses: actions/cache@v1
               with:
                   path: ./contracts/contracts_modules/t721token/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('contracts/contracts_modules/t721token/package-lock.json') }}-t721token
 
-            - name: "CACHE /contracts/contracts_modules/ticketforge/node_modules"
+            - name: "CACHE @contracts_ticketforge"
               uses: actions/cache@v1
               with:
                   path: ./contracts/contracts_modules/ticketforge/node_modules
@@ -143,9 +143,6 @@ jobs:
 
             - name: "Install all dependencies (yarn @install)"
               run: "yarn @install"
-
-            - name: Install contracts dependencies (yarn install:ticket721contracts)
-              run: yarn install:ticket721contracts
 
 #    global:
 #        needs: install
