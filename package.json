@@ -29,7 +29,13 @@
         "modules/@backend_nest",
         "modules/@backend_simulation",
         "modules/@common_global",
-        "modules/@common_sdk"
+        "modules/@common_sdk",
+        "contracts/contracts_modules/metamarketplace",
+        "contracts/contracts_modules/refract",
+        "contracts/contracts_modules/t721admin",
+        "contracts/contracts_modules/t721controller",
+        "contracts/contracts_modules/t721token",
+        "contracts/contracts_modules/ticketforge"
     ],
     "dependencies": {
         "@commitlint/cli": "8.3.5",
