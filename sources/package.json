@@ -4,7 +4,7 @@
     "private": true,
     "scripts": {},
     "dependencies": {
-        "@hapi/joi": "17.1.0",
+        "@hapi/joi": "17.1.1",
         "@ticket721/e712": "0.4.1",
         "axios": "0.19.2",
         "bignumber.js": "9.0.0",
