@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
     install:
-        name: @repo/install
+        name: "@repo/install"
         runs-on: ubuntu-latest
         steps:
 
