@@ -19,7 +19,7 @@
         "codecov:upload": "(curl -s https://codecov.io/bash) > /tmp/codecov.sh && chmod +x /tmp/codecov.sh && /tmp/codecov.sh -f sources/global/coverage/lcov.info -f sources/server/coverage/lcov.info -f sources/server/coverage-server-e2e/lcov.info",
         "@clean": "lerna clean -y && lerna exec 'yarn @lerna/postclean' && rm -rf node_modules && yarn clean:portals",
         "ci": "cd sources/global && npm run build && cd ../sdk && npm run build && cd ../global && npm run test:cov && cd ../server && npm run test:cov && npm run test:server:e2e:cov",
-        "@install/public/install": "cd modules && ls -d */ | grep '@public_' | xargs -P 1 -I % sh -c 'echo % && cd % && if test -f package.json; then yarn install; fi'",
+        "@install/public/install": "cd modules && ls -d */ | grep '@public_' | xargs -P 1 -I % sh -c 'echo % && cd % && if test -f package.json; then env NODE_ENV=development yarn install; fi'",
         "@install/public/postinstall": "cd modules && ls -d */ | grep '@public_' | xargs -P 1 -I % sh -c 'echo % && cd % && if test -f package.json; then yarn @lerna/postinstall; fi'",
         "@install": "yarn @install/public/install && yarn install",
         "postinstall": "yarn @install/public/postinstall && lerna exec 'yarn @lerna/postinstall' && yarn setup:portals"
@@ -60,7 +60,8 @@
         "typedoc": "0.16.11",
         "typedoc-plugin-markdown": "2.2.17",
         "typescript": "3.8.3",
-        "web3": "1.2.6"
+        "web3": "1.2.6",
+        "@types/jest": "25.1.3"
     },
     "editorconfig-cli": [
         "gulpfile.ts",

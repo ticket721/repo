@@ -17,10 +17,10 @@
     "dependencies": {
         "@common/global": "1.0.0",
         "axios": "0.19.2",
-        "@ticket721/e712": "0.4.1"
+        "@ticket721/e712": "0.4.1",
+        "supertest": "^4.0.2"
     },
     "devDependencies": {
-        "supertest": "^4.0.2",
         "typescript": "3.8.3",
         "watch": "^1.0.2",
         "@types/node": "13.7.7",
