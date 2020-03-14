@@ -43,31 +43,31 @@ jobs:
               uses: actions/cache@v1
               with:
                   path: ./modules/@backend_migrations/node_modules
-                  key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-root
+                  key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-backend_migrations
 
             - name: "CACHE @backend_nest"
               uses: actions/cache@v1
               with:
                   path: ./modules/@backend_nest/node_modules
-                  key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-root
+                  key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-backend_nest
 
             - name: "CACHE @backend_simulation"
               uses: actions/cache@v1
               with:
                   path: ./modules/@backend_simulation/node_modules
-                  key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-root
+                  key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-backend_simulation
 
             - name: "CACHE @common_global"
               uses: actions/cache@v1
               with:
                   path: ./modules/@common_global/node_modules
-                  key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-root
+                  key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_global
 
             - name: "CACHE @common_sdk"
               uses: actions/cache@v1
               with:
                   path: ./modules/@common_sdk/node_modules
-                  key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-root
+                  key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_sdk
 
             #
             # Cache Public Modules
@@ -77,25 +77,25 @@ jobs:
               uses: actions/cache@v1
               with:
                   path: ./modules/@public_dosojin/node_modules
-                  key: ${{ runner.os }}-${{ hashFiles('modules/@public_dosojin/yarn.lock') }}-root
+                  key: ${{ runner.os }}-${{ hashFiles('modules/@public_dosojin/yarn.lock') }}-public_dosojin
 
             - name: "CACHE @public_e712"
               uses: actions/cache@v1
               with:
                   path: ./modules/@public_e712/node_modules
-                  key: ${{ runner.os }}-${{ hashFiles('modules/@public_e712/yarn.lock') }}-root
+                  key: ${{ runner.os }}-${{ hashFiles('modules/@public_e712/yarn.lock') }}-public_e712
 
             - name: "CACHE @public_erc2280"
               uses: actions/cache@v1
               with:
                   path: ./modules/@public_erc2280/node_modules
-                  key: ${{ runner.os }}-${{ hashFiles('modules/@public_erc2280/yarn.lock') }}-root
+                  key: ${{ runner.os }}-${{ hashFiles('modules/@public_erc2280/yarn.lock') }}-public_erc2280
 
             - name: "CACHE @public_ethvtx"
               uses: actions/cache@v1
               with:
                   path: ./modules/@public_ethvtx/node_modules
-                  key: ${{ runner.os }}-${{ hashFiles('modules/@public_ethvtx/yarn.lock') }}-root
+                  key: ${{ runner.os }}-${{ hashFiles('modules/@public_ethvtx/yarn.lock') }}-public_ethvtx
 
             #
             # Cache Smart Contracts Modules
