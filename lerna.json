@@ -1,21 +1,12 @@
 {
     "packages": [
-        "modules/e712",
-        "modules/erc2280",
-        "modules/ethvtx",
-        "modules/dosojin",
-        "contracts/contracts_modules/metamarketplace",
-        "contracts/contracts_modules/t721controller",
-        "contracts/contracts_modules/t721admin",
-        "contracts/contracts_modules/t721token",
-        "contracts/contracts_modules/ticketforge",
-        "contracts/contracts_modules/refract",
-        "sources",
-        "sources/server",
-        "sources/migrations",
-        "sources/global",
-        "sources/sdk",
-        "sources/simulation"
+        "modules/@backend_migrations",
+        "modules/@backend_nest",
+        "modules/@backend_simulation",
+        "modules/@common_global",
+        "modules/@common_sdk"
     ],
-    "version": "1.0.0"
+    "version": "independent",
+    "npmClient": "yarn",
+    "useWorkspaces": true
 }

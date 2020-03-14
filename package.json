@@ -3,9 +3,9 @@
     "private": true,
     "scripts": {
         "setup:submodules:clone": "git submodule update --init --recursive",
-        "setup:submodules:checkout_modules": "cd modules/e712 && git checkout master && cd ../ethvtx && git checkout develop && cd ../erc2280 && git checkout master && cd ../test-geth && git checkout master",
+        "setup:submodules:checkout_modules": "cd modules/@public_e712 && git checkout master && cd ../@public_ethvtx && git checkout develop && cd ../@public_erc2280 && git checkout master && cd ../@public_test-geth && git checkout master && cd ../@public_vaultereum && git checkout master && cd ../@public_dosojin && git checkout develop",
         "setup:submodules:checkout_contracts": "cd contracts/contracts_modules/metamarketplace && git checkout develop && cd ../refract && git checkout develop && cd ../t721controller && git checkout develop && cd ../ticketforge && git checkout develop && cd ../t721admin && git checkout develop && cd ../t721token && git checkout develop",
-        "setup:submodules": "npm run setup:submodules:clone && npm run setup:submodules:checkout_modules && npm run setup:submodules:checkout_contracts",
+        "setup:submodules": "yarn setup:submodules:clone && yarn setup:submodules:checkout_modules && yarn setup:submodules:checkout_contracts",
         "setup:portals": "portalize init ./portalize.config.json",
         "setup": "npm run setup:submodules && npm run setup:portals",
         "clean:portals": "portalize dismantle ./portalize.config.json",
@@ -14,14 +14,23 @@
         "doc": "npm run doc:network && npm run doc:contracts",
         "install:ticket721sources": "lerna bootstrap --scope '@ticket721sources/*'",
         "install:ticket721contracts": "lerna bootstrap --scope '@ticket721contracts/*'",
-        "bootstrap": "lerna bootstrap && lerna exec 'npm install' --scope '@ticket721sources/*'",
         "link:sources": "lerna exec 'npm install' --scope '@ticket721sources/*'",
         "merge_coverage_reports": "rm -rf coverage && mkdir coverage && lcov-result-merger './sources/**/coverage*/lcov.info' './coverage/lcov.info'",
         "codecov:upload": "(curl -s https://codecov.io/bash) > /tmp/codecov.sh && chmod +x /tmp/codecov.sh && /tmp/codecov.sh -f sources/global/coverage/lcov.info -f sources/server/coverage/lcov.info -f sources/server/coverage-server-e2e/lcov.info",
-        "clean": "lerna clean -y && rm -rf node_modules",
-        "postinstall": "npm run bootstrap",
-        "ci": "cd sources/global && npm run build && cd ../sdk && npm run build && cd ../global && npm run test:cov && cd ../server && npm run test:cov && npm run test:server:e2e:cov"
+        "@clean": "lerna clean -y && lerna exec 'yarn @lerna/postclean' && rm -rf node_modules && yarn clean:portals",
+        "ci": "cd sources/global && npm run build && cd ../sdk && npm run build && cd ../global && npm run test:cov && cd ../server && npm run test:cov && npm run test:server:e2e:cov",
+        "@install/public/install": "cd modules && ls -d */ | grep '@public_' | xargs -P 4 -I % sh -c 'echo % && cd % && if test -f package.json; then yarn install; fi'",
+        "@install/public/postinstall": "cd modules && ls -d */ | grep '@public_' | xargs -P 4 -I % sh -c 'echo % && cd % && if test -f package.json; then yarn @lerna/postinstall; fi'",
+        "@install": "yarn @install/public/install && yarn install",
+        "postinstall": "yarn @install/public/postinstall && lerna exec 'yarn @lerna/postinstall' && yarn setup:portals"
     },
+    "workspaces": [
+        "modules/@backend_migrations",
+        "modules/@backend_nest",
+        "modules/@backend_simulation",
+        "modules/@common_global",
+        "modules/@common_sdk"
+    ],
     "dependencies": {
         "@commitlint/cli": "8.3.5",
         "@commitlint/config-conventional": "8.3.4",
