@@ -1,4 +1,8 @@
-## Ticket721 Monorepo
+# Ticket721 Monorepo
+
+<p align="center">
+  <img src=".assets/@repo.png">
+</p>
 
 | Name | Status |
 | :---: | :---: |
