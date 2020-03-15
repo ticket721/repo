@@ -365,11 +365,11 @@ jobs:
             - name: "Setup portals (yarn setup:portals)"
               run: yarn setup:portals
 
-            - name: "Build @ticket721sources/global (yarn build in modules/@common_global)"
+            - name: "Build @common_global (yarn build in modules/@common_global)"
               working-directory: modules/@common_global
               run: yarn build
 
-            - name: "Build @ticket721sources/sdk (npm run build in modules/@common_sdk)"
+            - name: "Build @common_sdk (yarn build in modules/@common_sdk)"
               working-directory: modules/@common_sdk
               run: yarn build
 
@@ -524,45 +524,6 @@ jobs:
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-backend_simulation
 
             - name: "Setup portals (yarn setup:portals)"
-              run: yarn setup:portals
-
-            - name: "Build @ticket721sources/global (yarn build in modules/@common_global)"
-              working-directory: modules/@common_global
-              run: yarn build
-
-            - name: "Build @ticket721sources/sdk (npm run build in modules/@common_sdk)"
-              working-directory: modules/@common_sdk
-              run: yarn build
-
-            - name: "Build @backend_nest @app/server"
-              working-directory: modules/@backend_nest
-              env:
-                  NODE_ENV: production
-              run: yarn build:server
-
-            - name: "Build @backend_nest @app/worker"
-              working-directory: modules/@backend_nest
-              env:
-                  NODE_ENV: production
-              run: yarn build:worker
-
-            - name: "Run @ticket721sources/server @app/server, @app/worker, @lib/common unitary tests (yarn test:cov in modules/@backend_nest)"
-              working-directory: modules/@backend_nest
-              run: yarn test:cov
-
-            - name: "Format check on @backend_nest"
-              working-directory: modules/@backend_nest
-              run: yarn format:check
-
-            - name: "TSLint check on @backend_nest"
-              working-directory: modules/@backend_nest
-              run: yarn lint
-
-            - name: "Compodoc Coverage check on @backend_nest"
-              working-directory: modules/@backend_nest
-              run: yarn doc:coverage
-
-            - name: "Setup portals (npm run setup:portals)"
               run: yarn setup:portals
 
             - name: "Build @common_global (yarn build in modules/@common_global)"
