@@ -407,12 +407,12 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v1
-            - name: Use Node.js 12.x
+            - name: "Use Node.js 12.x"
               uses: actions/setup-node@v1.2.0
               with:
                   node-version: 12.x
 
-            - name: Setup SSH Agent
+            - name: "Setup SSH Agent"
               uses: webfactory/ssh-agent@v0.1.1
               with:
                   ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
@@ -483,11 +483,11 @@ jobs:
             # Cache Coverage Directory
             #
 
-            - name: "CACHE @backend_nest/coverage"
+            - name: "CACHE @backend_nest/coverage-server-e2e"
               uses: actions/cache@v1
               with:
-                  path: modules/@backend_nest/coverage
-                  key: ${{ runner.os }}-backend_nest-coverage-${{ github.sha }}
+                  path: modules/@backend_nest/coverage-server-e2e
+                  key: ${{ runner.os }}-backend_nest-coverage-server-e2e${{ github.sha }}
 
             #
             # Cache Yarn Workspaces
@@ -516,6 +516,12 @@ jobs:
               with:
                   path: ./modules/@backend_nest/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-backend_nest
+                  
+            - name: "CACHE @backend_simulation"
+              uses: actions/cache@v1
+              with:
+                  path: ./modules/@backend_simulation/node_modules
+                  key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-backend_simulation
 
             - name: "Setup portals (yarn setup:portals)"
               run: yarn setup:portals
@@ -692,42 +698,46 @@ jobs:
 #            - name: Run @ticket721sources/server @app/server e2e tests (npm run test:server:e2e:cov in sources/server)
 #              run: sudo sysctl -w vm.max_map_count=262144 && cd sources/server && npm run test:server:e2e:cov
 
-#    coverage:
-#        needs: [global, sdk, server, server-e2e]
-#        runs-on: ubuntu-latest
-#        steps:
-#            - uses: actions/checkout@v1
-#            - name: Use Node.js 12.x
-#              uses: actions/setup-node@v1.2.0
-#              with:
-#                  node-version: 12.x
-#
-#            - name: CACHE /node_modules
-#              uses: actions/cache@v1
-#              with:
-#                  path: ./node_modules
-#                  key: ${{ runner.os }}-${{ hashFiles('package-lock.json') }}-root
-#
-#            - name: CACHE sources/global/coverage
-#              uses: actions/cache@v1
-#              with:
-#                  path: sources/global/coverage
-#                  key: ${{ runner.os }}-global-coverage-${{ github.sha }}
-#
-#            - name: CACHE sources/server/coverage
-#              uses: actions/cache@v1
-#              with:
-#                  path: sources/server/coverage
-#                  key: ${{ runner.os }}-server-coverage-${{ github.sha }}
-#
-#            - name: CACHE sources/server/coverage-server-e2e
-#              uses: actions/cache@v1
-#              with:
-#                  path: sources/server/coverage-server-e2e
-#                  key: ${{ runner.os }}-coverage-server-e2e-${{ github.sha }}
-#
-#            - name: Codecov (npm run codecov:upload)
-#              run: npm run codecov:upload
-#              env:
-#                  CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-#
+    coverage:
+        name: "[S3] [@repo] upload coverage data"
+        needs: [global, sdk, server, server-e2e]
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v1
+            - name: "Use Node.js 12.x"
+              uses: actions/setup-node@v1.2.0
+              with:
+                  node-version: 12.x
+
+            - name: "Install required tools globally (npm install -g yarn)"
+              run: npm install -g yarn@1.22.4
+
+            - name: "CACHE /node_modules"
+              uses: actions/cache@v1
+              with:
+                  path: ./node_modules
+                  key: ${{ runner.os }}-${{ hashFiles('package-lock.json') }}-root
+
+            - name: "CACHE @backend_nest/coverage-server-e2e"
+              uses: actions/cache@v1
+              with:
+                  path: modules/@backend_nest/coverage-server-e2e
+                  key: ${{ runner.os }}-backend_nest-coverage-server-e2e${{ github.sha }}
+
+            - name: "CACHE @backend_nest/coverage"
+              uses: actions/cache@v1
+              with:
+                  path: modules/@backend_nest/coverage
+                  key: ${{ runner.os }}-backend_nest-coverage-${{ github.sha }}
+
+            - name: "CACHE @common/global/coverage"
+              uses: actions/cache@v1
+              with:
+                  path: modules/@common_global/coverage
+                  key: ${{ runner.os }}-common_global-coverage-${{ github.sha }}
+
+            - name: "Codecov (yarn codecov:upload)"
+              run: yarn codecov:upload
+              env:
+                  CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
