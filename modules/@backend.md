@@ -1,7 +1,7 @@
 # @backend
 
 <p align="center">
-  <img src=".assets/@backend.png">
+  <img src="../.assets/@backend.png">
 </p>
 
 

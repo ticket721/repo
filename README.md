@@ -17,35 +17,35 @@ This Monorepo contains all code and tools required by Ticket721 to operate all s
 
 We are using both Lerna and Yarn to power our monorepo. The Yarn workspaces are helping us factorize all the dependencies of the monorepo into one major `node_modules`. Lerna provides a really easy to use cli to operate all the modules.
 
-### Modules
+## Modules
 
 The Monorepo is composed of several types of modules. All of the modules can be found in the `modules` directory.
 
-#### `@public` modules
+### `@public` modules
 
 These modules are actually git submodules. The reason behind this is that they are public tools, and are published on some public repositories (`npm`, `docker hub`, ...). This type of module is different from all the others, they are not handles by Lerna or Yarn as part of the Monorepo for a simple reason: we need their dependencies installed properly and not factorized in order to have a good and up-to-date lockfile shipped with the published content. This is why we are installing them individually.
 
-#### `@contracts` modules
+### `@contracts` modules
 
 These modules contain smart contracts used by Ticket721. They also are git submodules because we need to make them public. The reason behind this is that any smart contract published on a public ledger should be verifiable, and we make sure it is by providing the actual code of the contract. The difference with the `@public` modules is that they are registered as part of the monorepo and their dependencies are factorized with the rest of the modules, simply because the need for an up-to-date lockfile is not that important (all dependencies are mostly development tools for Smart Contracts).
 
-#### `@common` modules
+### `@common` modules
 
 These modules contain code, libraries, or anything that is used in at least 2 other modules. These modules should be used as much as possible and without restriction to enhance code reusability.
 
-#### `@backend` modules
+### `@backend` modules
 
 These modules contain code, scripts and utilities used to operate the backend section of the infrastructure. Infrastructure configuration should not be part of it. Everything around our servers (api, workers, development scripts, migrations) should be included into `@backend`.
 
-#### `@frontend` modules
+### `@frontend` modules
 
 These modules contain code, scripts and utilities used to operate the frontend section of the infrastructure. It will mainly be composed of the application served on client side, their components, configurations, etc ...
 
-#### `@infra` modules
+### `@infra` modules
 
 These modules should contain infrastructure related configuration, scripts and resources. Instead of having one huge deployment configuration, we prefer to cut things into several entities, each with its ability to properly scal independently from others.
 
-#### The engines
+### The engines
 
 Some code is located outside the `modules` directory. The `gulp`, `network` and `contracts` directories mainly contain code used for task running, and managing ethereum smart contracts deployments in a better manner (multi truffle project).
 

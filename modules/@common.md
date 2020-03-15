@@ -1,6 +1,6 @@
 # @common
 
 <p align="center">
-  <img src=".assets/@common.png">
+  <img src="../.assets/@common.png">
 </p>
 
