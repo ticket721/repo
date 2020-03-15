@@ -3,6 +3,22 @@ name: T721 Monorepo CI
 on: [push]
 
 jobs:
+
+#     /$$$$  /$$$$$$    /$$   /$$$$
+#    | $$_/ /$$__  $$ /$$$$  |_  $$
+#    | $$  | $$  \__/|_  $$    | $$
+#    | $$  |  $$$$$$   | $$    | $$
+#    | $$   \____  $$  | $$    | $$
+#    | $$   /$$  \ $$  | $$    | $$
+#    | $$$$|  $$$$$$/ /$$$$$$ /$$$$
+#    |____/ \______/ |______/|____/
+#
+#    @repo - install
+#
+#    Install all dependencies of workspace modules, public modules and contracts modules
+#    Everything is stored into cache
+#
+
     install:
         name: "[S1] [@repo] install"
         runs-on: ubuntu-latest
@@ -146,6 +162,23 @@ jobs:
               env:
                   NODE_ENV: production
 
+#     /$$$$  /$$$$$$   /$$$$$$  /$$$$
+#    | $$_/ /$$__  $$ /$$__  $$|_  $$
+#    | $$  | $$  \__/|__/  \ $$  | $$
+#    | $$  |  $$$$$$   /$$$$$$/  | $$
+#    | $$   \____  $$ /$$____/   | $$
+#    | $$   /$$  \ $$| $$        | $$
+#    | $$$$|  $$$$$$/| $$$$$$$$ /$$$$
+#    |____/ \______/ |________/|____/
+#
+#    @common_global - build, lint & test
+#
+#    Recovers required dependencies from cache
+#    Builds sources to verify everything still transpiles properly
+#    Lints sources to verify everything is formatted properly
+#    Runs unitary tests to verify logic is kept
+#
+
     global:
         name: "[S2] [@common/global] build, lint & test"
         needs: install
@@ -198,8 +231,24 @@ jobs:
               working-directory: modules/@common_global
               run: yarn test:cov
 
+#     /$$$$  /$$$$$$   /$$$$$$  /$$$$
+#    | $$_/ /$$__  $$ /$$__  $$|_  $$
+#    | $$  | $$  \__/|__/  \ $$  | $$
+#    | $$  |  $$$$$$   /$$$$$$/  | $$
+#    | $$   \____  $$ /$$____/   | $$
+#    | $$   /$$  \ $$| $$        | $$
+#    | $$$$|  $$$$$$/| $$$$$$$$ /$$$$
+#    |____/ \______/ |________/|____/
+#
+#    @common_sdk - build & lint
+#
+#    Recovers required dependencies from cache
+#    Builds sources to verify everything still transpiles properly
+#    Lints sources to verify everything is formatted properly
+#
+
     sdk:
-        name: "[S2] [@common/sdk] build"
+        name: "[S2] [@common/sdk] build & lint"
         needs: install
         runs-on: ubuntu-latest
         steps:
@@ -245,6 +294,25 @@ jobs:
             - name: "TSLint @ticket721sources/sdk (npm run lint in sources/sdk)"
               working-directory: modules/@common_sdk
               run: yarn lint
+
+#     /$$$$  /$$$$$$   /$$$$$$  /$$$$
+#    | $$_/ /$$__  $$ /$$__  $$|_  $$
+#    | $$  | $$  \__/|__/  \ $$  | $$
+#    | $$  |  $$$$$$   /$$$$$$/  | $$
+#    | $$   \____  $$ /$$____/   | $$
+#    | $$   /$$  \ $$| $$        | $$
+#    | $$$$|  $$$$$$/| $$$$$$$$ /$$$$
+#    |____/ \______/ |________/|____/
+#
+#    @backend_nest - build, lint, format, doc & test
+#
+#    Recovers required dependencies from cache
+#    Builds sources to verify everything still transpiles properly
+#    Lints sources to verify everything is formatted properly
+#    Runs prettier norm checker to verify everything is formatted properly
+#    Runs compodoc coverage reported to verify all documentation is done
+#    Runs unitary tests to verify logic is kept
+#
 
     server:
         name: "[S2] [@backend/nest] build, lint & test"
@@ -401,6 +469,21 @@ jobs:
               working-directory: modules/@backend_nest
               run: yarn doc:coverage
 
+#     /$$$$  /$$$$$$   /$$$$$$  /$$$$
+#    | $$_/ /$$__  $$ /$$__  $$|_  $$
+#    | $$  | $$  \__/|__/  \ $$  | $$
+#    | $$  |  $$$$$$   /$$$$$$/  | $$
+#    | $$   \____  $$ /$$____/   | $$
+#    | $$   /$$  \ $$| $$        | $$
+#    | $$$$|  $$$$$$/| $$$$$$$$ /$$$$
+#    |____/ \______/ |________/|____/
+#
+#    @backend_nest - test-e2e
+#
+#    Recovers required dependencies from cache
+#    Runs e2e tests to verify components are properly working together
+#
+
     server-e2e:
         name: "[S2] [@backend/nest] test-e2e"
         needs: install
@@ -537,127 +620,20 @@ jobs:
             - name: "Run @backend_nest @app/server e2e tests (yarn test:server:e2e:cov in modules/@backend_nest)"
               run: sudo sysctl -w vm.max_map_count=262144 && cd modules/@backend_nest && yarn test:server:e2e:cov
 
-#    server-e2e:
-#        needs: install
-#        runs-on: ubuntu-latest
-#        steps:
-#            - uses: actions/checkout@v1
-#            - name: Use Node.js 12.x
-#              uses: actions/setup-node@v1.2.0
-#              with:
-#                  node-version: 12.x
+#     /$$$$  /$$$$$$   /$$$$$$  /$$$$
+#    | $$_/ /$$__  $$ /$$__  $$|_  $$
+#    | $$  | $$  \__/|__/  \ $$  | $$
+#    | $$  |  $$$$$$    /$$$$$/  | $$
+#    | $$   \____  $$  |___  $$  | $$
+#    | $$   /$$  \ $$ /$$  \ $$  | $$
+#    | $$$$|  $$$$$$/|  $$$$$$/ /$$$$
+#    |____/ \______/  \______/ |____/
 #
-#            - name: Setup SSH Agent
-#              uses: webfactory/ssh-agent@v0.1.1
-#              with:
-#                  ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+#    @repo - upload coverage data
 #
-#            - name: Install required tools globally (npm install -g truffle)
-#              run: npm install -g truffle@5.1.6
+#    Recovers required dependencies from cache
+#    Uploads coverage artifacts to codecov
 #
-#            - name: Setup submodules (npm run setup:submodules:clone)
-#              run: npm run setup:submodules:clone
-#
-#            - name: CACHE /modules/dosojin
-#              uses: actions/cache@v1
-#              with:
-#                  path: ./modules/dosojin
-#                  key: ${{ runner.os }}-${{ hashFiles('modules/dosojin/package-lock.json') }}-root
-#
-#            - name: CACHE sources/server/coverage-server-e2e
-#              uses: actions/cache@v1
-#              with:
-#                  path: sources/server/coverage-server-e2e
-#                  key: ${{ runner.os }}-coverage-server-e2e-${{ github.sha }}
-#
-#            - name: CACHE /node_modules
-#              uses: actions/cache@v1
-#              with:
-#                  path: ./node_modules
-#                  key: ${{ runner.os }}-${{ hashFiles('package-lock.json') }}-root
-#
-#            - name: CACHE /contracts/contracts_modules/metamarketplace/node_modules
-#              uses: actions/cache@v1
-#              with:
-#                  path: ./contracts/contracts_modules/metamarketplace/node_modules
-#                  key: ${{ runner.os }}-${{ hashFiles('contracts/contracts_modules/metamarketplace/package-lock.json') }}-metamarketplace
-#
-#            - name: CACHE /contracts/contracts_modules/refract/node_modules
-#              uses: actions/cache@v1
-#              with:
-#                  path: ./contracts/contracts_modules/refract/node_modules
-#                  key: ${{ runner.os }}-${{ hashFiles('contracts/contracts_modules/refract/package-lock.json') }}-refract
-#
-#            - name: CACHE /contracts/contracts_modules/t721admin/node_modules
-#              uses: actions/cache@v1
-#              with:
-#                  path: ./contracts/contracts_modules/t721admin/node_modules
-#                  key: ${{ runner.os }}-${{ hashFiles('contracts/contracts_modules/t721admin/package-lock.json') }}-t721admin
-#
-#            - name: CACHE /contracts/contracts_modules/t721controller/node_modules
-#              uses: actions/cache@v1
-#              with:
-#                  path: ./contracts/contracts_modules/t721controller/node_modules
-#                  key: ${{ runner.os }}-${{ hashFiles('contracts/contracts_modules/t721controller/package-lock.json') }}-t721controller
-#
-#            - name: CACHE /contracts/contracts_modules/t721token/node_modules
-#              uses: actions/cache@v1
-#              with:
-#                  path: ./contracts/contracts_modules/t721token/node_modules
-#                  key: ${{ runner.os }}-${{ hashFiles('contracts/contracts_modules/t721token/package-lock.json') }}-t721token
-#
-#            - name: CACHE /contracts/contracts_modules/ticketforge/node_modules
-#              uses: actions/cache@v1
-#              with:
-#                  path: ./contracts/contracts_modules/ticketforge/node_modules
-#                  key: ${{ runner.os }}-${{ hashFiles('contracts/contracts_modules/ticketforge/package-lock.json') }}-ticketforge
-#
-#            - name: CACHE /sources/node_modules
-#              uses: actions/cache@v1
-#              with:
-#                  path: ./sources/node_modules
-#                  key: ${{ runner.os }}-${{ hashFiles('sources/package-lock.json') }}-sources
-#
-#            - name: CACHE /sources/global/node_modules
-#              uses: actions/cache@v1
-#              with:
-#                  path: ./sources/global/node_modules
-#                  key: ${{ runner.os }}-${{ hashFiles('sources/global/package-lock.json') }}-global
-#
-#            - name: CACHE /sources/sdk/node_modules
-#              uses: actions/cache@v1
-#              with:
-#                  path: ./sources/sdk/node_modules
-#                  key: ${{ runner.os }}-${{ hashFiles('sources/sdk/package-lock.json') }}-sdk
-#
-#            - name: CACHE /sources/migrations/node_modules
-#              uses: actions/cache@v1
-#              with:
-#                  path: ./sources/migrations/node_modules
-#                  key: ${{ runner.os }}-${{ hashFiles('sources/migrations/package-lock.json') }}-migrations
-#
-#            - name: CACHE /sources/server/node_modules
-#              uses: actions/cache@v1
-#              with:
-#                  path: ./sources/server/node_modules
-#                  key: ${{ runner.os }}-${{ hashFiles('sources/server/package-lock.json') }}-server
-#
-#            - name: Link sources (npm run link:sources)
-#              run: npm run link:sources
-#
-#            - name: Setup portals (npm run setup:portals)
-#              run: npm run setup:portals
-#
-#            - name: Build @ticket721sources/global (npm run build in sources/global)
-#              working-directory: sources/global
-#              run: npm run build
-#
-#            - name: Build @ticket721sources/sdk (npm run build in sources/sdk)
-#              working-directory: sources/sdk
-#              run: npm run build
-#
-#            - name: Run @ticket721sources/server @app/server e2e tests (npm run test:server:e2e:cov in sources/server)
-#              run: sudo sysctl -w vm.max_map_count=262144 && cd sources/server && npm run test:server:e2e:cov
 
     coverage:
         name: "[S3] [@repo] upload coverage data"
@@ -701,4 +677,3 @@ jobs:
               run: yarn codecov:upload
               env:
                   CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-
