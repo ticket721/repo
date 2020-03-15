@@ -375,10 +375,14 @@ jobs:
 
             - name: "Build @backend_nest @app/server"
               working-directory: modules/@backend_nest
+              env:
+                  NODE_ENV: production
               run: yarn build:server
 
             - name: "Build @backend_nest @app/worker"
               working-directory: modules/@backend_nest
+              env:
+                  NODE_ENV: production
               run: yarn build:worker
 
             - name: "Run @ticket721sources/server @app/server, @app/worker, @lib/common unitary tests (yarn test:cov in modules/@backend_nest)"
