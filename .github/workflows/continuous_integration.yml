@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
     install:
-        name: "[STAGE 1][@repo] install"
+        name: "[S1] [@repo] install"
         runs-on: ubuntu-latest
         steps:
 
@@ -147,7 +147,7 @@ jobs:
                   NODE_ENV: production
 
     global:
-        name: "[STAGE 2][@common/global] build, lint & test"
+        name: "[S2] [@common/global] build, lint & test"
         needs: install
         runs-on: ubuntu-latest
         steps:
@@ -160,11 +160,15 @@ jobs:
             - name: "Install required tools globally (npm install -g yarn)"
               run: npm install -g yarn@1.22.4
 
+            #
+            # Cache Coverage Directory
+            #
+
             - name: "CACHE @common/global/coverage"
               uses: actions/cache@v1
               with:
                   path: modules/@common_global/coverage
-                  key: ${{ runner.os }}-global-coverage-${{ github.sha }}
+                  key: ${{ runner.os }}-common_global-coverage-${{ github.sha }}
 
             #
             # Cache Yarn Workspaces
@@ -195,12 +199,12 @@ jobs:
               run: yarn test:cov
 
     sdk:
-        name: "[STAGE 2][@common/sdk] build"
+        name: "[S2] [@common/sdk] build"
         needs: install
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v1
-            - name: Use Node.js 12.x
+            - name: "Use Node.js 12.x"
               uses: actions/setup-node@v1.2.0
               with:
                   node-version: 12.x
@@ -242,129 +246,156 @@ jobs:
               working-directory: modules/@common_sdk
               run: yarn lint
 
-#    server:
-#        needs: install
-#        runs-on: ubuntu-latest
-#        steps:
-#            - uses: actions/checkout@v1
-#            - name: Use Node.js 12.x
-#              uses: actions/setup-node@v1.2.0
-#              with:
-#                  node-version: 12.x
-#
-#            - name: Setup SSH Agent
-#              uses: webfactory/ssh-agent@v0.1.1
-#              with:
-#                  ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-#
-#            - name: Setup submodules (npm run setup:submodules:clone)
-#              run: npm run setup:submodules:clone
-#
-#            - name: CACHE /modules/dosojin
-#              uses: actions/cache@v1
-#              with:
-#                  path: ./modules/dosojin
-#                  key: ${{ runner.os }}-${{ hashFiles('modules/dosojin/package-lock.json') }}-root
-#
-#            - name: CACHE sources/server/coverage
-#              uses: actions/cache@v1
-#              with:
-#                  path: sources/server/coverage
-#                  key: ${{ runner.os }}-server-coverage-${{ github.sha }}
-#
-#            - name: CACHE /node_modules
-#              uses: actions/cache@v1
-#              with:
-#                  path: ./node_modules
-#                  key: ${{ runner.os }}-${{ hashFiles('package-lock.json') }}-root
-#
-#            - name: CACHE /contracts/contracts_modules/metamarketplace/node_modules
-#              uses: actions/cache@v1
-#              with:
-#                  path: ./contracts/contracts_modules/metamarketplace/node_modules
-#                  key: ${{ runner.os }}-${{ hashFiles('contracts/contracts_modules/metamarketplace/package-lock.json') }}-metamarketplace
-#
-#            - name: CACHE /contracts/contracts_modules/refract/node_modules
-#              uses: actions/cache@v1
-#              with:
-#                  path: ./contracts/contracts_modules/refract/node_modules
-#                  key: ${{ runner.os }}-${{ hashFiles('contracts/contracts_modules/refract/package-lock.json') }}-refract
-#
-#            - name: CACHE /contracts/contracts_modules/t721controller/node_modules
-#              uses: actions/cache@v1
-#              with:
-#                  path: ./contracts/contracts_modules/t721controller/node_modules
-#                  key: ${{ runner.os }}-${{ hashFiles('contracts/contracts_modules/t721controller/package-lock.json') }}-t721controller
-#
-#            - name: CACHE /contracts/contracts_modules/ticketforge/node_modules
-#              uses: actions/cache@v1
-#              with:
-#                  path: ./contracts/contracts_modules/ticketforge/node_modules
-#                  key: ${{ runner.os }}-${{ hashFiles('contracts/contracts_modules/ticketforge/package-lock.json') }}-ticketforge
-#
-#            - name: CACHE /sources/node_modules
-#              uses: actions/cache@v1
-#              with:
-#                  path: ./sources/node_modules
-#                  key: ${{ runner.os }}-${{ hashFiles('sources/package-lock.json') }}-sources
-#
-#            - name: CACHE /sources/global/node_modules
-#              uses: actions/cache@v1
-#              with:
-#                  path: ./sources/global/node_modules
-#                  key: ${{ runner.os }}-${{ hashFiles('sources/global/package-lock.json') }}-global
-#
-#            - name: CACHE /sources/sdk/node_modules
-#              uses: actions/cache@v1
-#              with:
-#                  path: ./sources/sdk/node_modules
-#                  key: ${{ runner.os }}-${{ hashFiles('sources/sdk/package-lock.json') }}-sdk
-#
-#            - name: CACHE /sources/migrations/node_modules
-#              uses: actions/cache@v1
-#              with:
-#                  path: ./sources/migrations/node_modules
-#                  key: ${{ runner.os }}-${{ hashFiles('sources/migrations/package-lock.json') }}-migrations
-#
-#            - name: CACHE /sources/server/node_modules
-#              uses: actions/cache@v1
-#              with:
-#                  path: ./sources/server/node_modules
-#                  key: ${{ runner.os }}-${{ hashFiles('sources/server/package-lock.json') }}-server
-#
-#            - name: Link sources (npm run link:sources)
-#              run: npm run link:sources
-#
-#            - name: Setup portals (npm run setup:portals)
-#              run: npm run setup:portals
-#
-#            - name: Build @ticket721sources/global (npm run build in sources/global)
-#              working-directory: sources/global
-#              run: npm run build
-#
-#            - name: Build @ticket721sources/sdk (npm run build in sources/sdk)
-#              working-directory: sources/sdk
-#              run: npm run build
-#
-#            - name: Build @ticket721sources/server @app/server
-#              working-directory: sources/server
-#              run: npm run build:server
-#
-#            - name: Run @ticket721sources/server @app/server, @lib/common unitary tests (npm run test:cov in sources/server)
-#              working-directory: sources/server
-#              run: npm run test:cov
-#
-#            - name: Format check on @ticket721sources/server
-#              working-directory: sources/server
-#              run: npm run format:check
-#
-#            - name: TSLint check on @ticket721sources/server
-#              working-directory: sources/server
-#              run: npm run lint
-#
-#            - name: Compodoc Coverage check on @ticket721sources/server
-#              working-directory: sources/server
-#              run: npm run doc:coverage
+    server:
+        name: "[S2] [@backend/nest] buil, lint, test"
+        needs: install
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v1
+            - name: Use Node.js 12.x
+              uses: actions/setup-node@v1.2.0
+              with:
+                  node-version: 12.x
+
+            - name: Setup SSH Agent
+              uses: webfactory/ssh-agent@v0.1.1
+              with:
+                  ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+            - name: "Install required tools globally (npm install -g yarn)"
+              run: npm install -g yarn@1.22.4
+
+            - name: "Setup submodules (yarn setup:submodules:clone)"
+              run: yarn setup:submodules:clone
+
+            #
+            # Cache Smart Contracts Modules
+            #
+
+            - name: "CACHE @contracts_metamarketplace"
+              uses: actions/cache@v1
+              with:
+                  path: ./contracts/contracts_modules/metamarketplace/node_modules
+                  key: ${{ runner.os }}-${{ hashFiles('contracts/contracts_modules/metamarketplace/package-lock.json') }}-@contracts_metamarketplace
+
+            - name: "CACHE @contracts_refract"
+              uses: actions/cache@v1
+              with:
+                  path: ./contracts/contracts_modules/refract/node_modules
+                  key: ${{ runner.os }}-${{ hashFiles('contracts/contracts_modules/refract/package-lock.json') }}-@contracts_refract
+
+            - name: "CACHE @contracts_t721admin"
+              uses: actions/cache@v1
+              with:
+                  path: ./contracts/contracts_modules/t721admin/node_modules
+                  key: ${{ runner.os }}-${{ hashFiles('contracts/contracts_modules/t721admin/package-lock.json') }}-@contracts_t721admin
+
+            - name: "CACHE @contracts_t721controller"
+              uses: actions/cache@v1
+              with:
+                  path: ./contracts/contracts_modules/t721controller/node_modules
+                  key: ${{ runner.os }}-${{ hashFiles('contracts/contracts_modules/t721controller/package-lock.json') }}-@contracts_t721controller
+
+            - name: "CACHE @contracts_t721token"
+              uses: actions/cache@v1
+              with:
+                  path: ./contracts/contracts_modules/t721token/node_modules
+                  key: ${{ runner.os }}-${{ hashFiles('contracts/contracts_modules/t721token/package-lock.json') }}-@contracts_t721token
+
+            - name: "CACHE @contracts_ticketforge"
+              uses: actions/cache@v1
+              with:
+                  path: ./contracts/contracts_modules/ticketforge/node_modules
+                  key: ${{ runner.os }}-${{ hashFiles('contracts/contracts_modules/ticketforge/package-lock.json') }}-@contracts_ticketforge
+
+            #
+            # Cache Public Modules
+            #
+
+            - name: "CACHE @public_dosojin"
+              uses: actions/cache@v1
+              with:
+                  path: ./modules/@public_dosojin/node_modules
+                  key: ${{ runner.os }}-${{ hashFiles('modules/@public_dosojin/yarn.lock') }}-public_dosojin
+
+            - name: "CACHE @public_e712"
+              uses: actions/cache@v1
+              with:
+                  path: ./modules/@public_e712/node_modules
+                  key: ${{ runner.os }}-${{ hashFiles('modules/@public_e712/yarn.lock') }}-public_e712
+
+            #
+            # Cache Coverage Directory
+            #
+
+            - name: "CACHE @backend_nest/coverage"
+              uses: actions/cache@v1
+              with:
+                  path: modules/@backend_nest/coverage
+                  key: ${{ runner.os }}-backend_nest-coverage-${{ github.sha }}
+
+            #
+            # Cache Yarn Workspaces
+            #
+
+            - name: "CACHE root"
+              uses: actions/cache@v1
+              with:
+                  path: ./node_modules
+                  key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-root
+
+            - name: "CACHE @common_sdk"
+              uses: actions/cache@v1
+              with:
+                  path: ./modules/@common_sdk/node_modules
+                  key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_sdk
+
+            - name: "CACHE @common_global"
+              uses: actions/cache@v1
+              with:
+                  path: ./modules/@common_global/node_modules
+                  key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_global
+
+            - name: "CACHE @backend_nest"
+              uses: actions/cache@v1
+              with:
+                  path: ./modules/@backend_nest/node_modules
+                  key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-backend_nest
+
+            - name: "Setup portals (yarn setup:portals)"
+              run: yarn setup:portals
+
+            - name: "Build @ticket721sources/global (yarn build in modules/@common_global)"
+              working-directory: modules/@common_global
+              run: yarn build
+
+            - name: "Build @ticket721sources/sdk (npm run build in modules/@common_sdk)"
+              working-directory: modules/@common_sdk
+              run: yarn build
+
+            - name: "Build @backend_nest @app/server"
+              working-directory: modules/@backend_nest
+              run: yarn build:server
+
+            - name: "Build @backend_nest @app/worker"
+              working-directory: modules/@backend_nest
+              run: yarn build:worker
+
+            - name: "Run @ticket721sources/server @app/server, @app/worker, @lib/common unitary tests (yarn test:cov in modules/@backend_nest)"
+              working-directory: modules/@backend_nest
+              run: yarn test:cov
+
+            - name: "Format check on @backend_nest"
+              working-directory: modules/@backend_nest
+              run: yarn format:check
+
+            - name: "TSLint check on @backend_nest"
+              working-directory: modules/@backend_nest
+              run: yarn lint
+
+            - name: "Compodoc Coverage check on @backend_nest"
+              working-directory: modules/@backend_nest
+              run: yarn doc:coverage
 
 
 #    server-e2e:
