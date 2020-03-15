@@ -1,39 +1,39 @@
 [submodule "modules/e712"]
-	path = modules/e712
+	path = modules/@public_e712
 	url = git@github.com:ticket721/e712
 	branch = master
 [submodule "modules/ethvtx"]
-	path = modules/ethvtx
+	path = modules/@public_ethvtx
 	url = git@github.com:ticket721/ethvtx
 	branch = develop
 [submodule "modules/test-geth"]
-	path = modules/test-geth
+	path = modules/@public_test-geth
 	url = git@github.com:ticket721/test-geth
 	branch = master
 [submodule "modules/erc2280"]
-	path = modules/erc2280
+	path = modules/@public_erc2280
 	url = git@github.com:ticket721/erc2280
 [submodule "contracts/contracts_modules/ticketforge"]
-	path = contracts/contracts_modules/ticketforge
+	path = modules/@contracts_ticketforge
 	url = git@github.com:ticket721/ticketforge
 [submodule "contracts/contracts_modules/metamarketplace"]
-	path = contracts/contracts_modules/metamarketplace
+	path = modules/@contracts_metamarketplace
 	url = git@github.com:ticket721/metamarketplace
 [submodule "contracts/contracts_modules/t721controller"]
-	path = contracts/contracts_modules/t721controller
+	path = modules/@contracts_t721controller
 	url = git@github.com:ticket721/t721controller
 [submodule "contracts/contracts_modules/refract"]
-	path = contracts/contracts_modules/refract
+	path = modules/@contracts_refract
 	url = git@github.com:ticket721/refract
 [submodule "contracts/contracts_modules/t721token"]
-	path = contracts/contracts_modules/t721token
+	path = modules/@contracts_t721token
 	url = git@github.com:ticket721/t721token
 [submodule "contracts/contracts_modules/t721admin"]
-	path = contracts/contracts_modules/t721admin
+	path = modules/@contracts_t721admin
 	url = git@github.com:ticket721/t721admin
 [submodule "modules/dosojin"]
-	path = modules/dosojin
+	path = modules/@public_dosojin
 	url = git@github.com:ticket721/dosojin
 [submodule "modules/vaultereum"]
-	path = modules/vaultereum
+	path = modules/@public_vaultereum
 	url = git@github.com:ticket721/vaultereum

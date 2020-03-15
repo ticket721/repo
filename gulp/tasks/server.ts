@@ -1,5 +1,5 @@
 import { repo_log }                               from '../utils/log';
-import { adminRegistration, configureVaultereum } from '../../sources/tasks/AdminRegistration.dev';
+import { adminRegistration, configureVaultereum } from '../../modules/@backend_tasks/AdminRegistration.dev';
 import { get_config }                             from '../utils/get_config';
 import { DevConfigGuard }    from '../config';
 

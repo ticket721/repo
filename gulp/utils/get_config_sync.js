@@ -8,7 +8,7 @@ const fs = require('fs');
 function get_config_sync() {
 
     try {
-        const configPath = `${path.resolve('../../../', process.env.T721_CONFIG)}`;
+        const configPath = `${path.resolve('../../', process.env.T721_CONFIG)}`;
         return JSON.parse(fs.readFileSync(configPath).toString());
     } catch (e) {
         console.log('Could not load config');

@@ -1,0 +1,27 @@
+{
+    "name": "@common/sdk",
+    "version": "1.0.0",
+    "description": "Handle server requests",
+    "main": "lib/@common_sdk/sources/index.js",
+    "module": "lib/@common_sdk/sources/index.js",
+    "types": "lib/@common_sdk/sources/index.d.ts",
+    "scripts": {
+        "build": "tsc",
+        "watch": "watch 'yarn build && echo \"Done !\"' sources",
+        "lint": "tslint --project .",
+        "@lerna/postinstall": "yarn build",
+        "@lerna/postclean": "rm -rf lib"
+    },
+    "author": "Iulian Rotaru",
+    "license": "MIT",
+    "dependencies": {
+        "@common/global": "1.0.0",
+        "axios": "0.19.2",
+        "@ticket721/e712": "0.4.1",
+        "supertest": "^4.0.2",
+        "tslint": "6.0.0",
+        "typescript": "3.8.3",
+        "watch": "^1.0.2",
+        "@types/node": "13.7.7"
+    }
+}

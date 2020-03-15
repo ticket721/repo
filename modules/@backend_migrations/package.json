@@ -1,0 +1,17 @@
+{
+    "name": "@backend/migrations",
+    "version": "1.0.0",
+    "description": "Handle cassandra and elasticsearch migration",
+    "main": "index.js",
+    "scripts": {
+        "@lerna/postinstall": "echo '@backend/migrations has no postinstall'",
+        "@lerna/postclean": "echo '@backend/migrations has no postclean'"
+    },
+    "author": "Iulian Rotaru",
+    "license": "MIT",
+    "dependencies": {
+        "cassandra-driver": "3.6.0",
+        "cassandra-migrate": "1.2.333",
+        "elastic-migrate": "github:ticket721/elastic-migrate#master"
+    }
+}

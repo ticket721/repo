@@ -103,7 +103,7 @@ export class ContractsEngine extends Engine<ContractsConfig> {
 
         // #4 Change current directory to contract module directory
         try {
-            process.chdir(from_root(`contracts/contracts_modules/${mod.name}`));
+            process.chdir(from_root(`modules/@contracts_${mod.name}`));
         } catch (e) {
             modlog.fatal(`ContractsEngine::run | cannot change directory to ${mod.name} module`);
             modlog.fatal(e);
@@ -164,7 +164,7 @@ export class ContractsEngine extends Engine<ContractsConfig> {
         }
         modlog.success(`ContractsEngine::run | saving build artifacts`);
 
-        const build_dir = from_root(path.join('contracts', 'contracts_modules', mod.name, 'build'));
+        const build_dir = from_root(path.join('modules', `@contracts_${mod.name}`, 'build'));
 
         // #8 Save build artifacts to portal
         try {

@@ -9,7 +9,7 @@ import * as fse from 'fs-extra';
  * @param net_name
  */
 export function recover_build(module_name: string, net_name: string): void {
-    const build_dir_path = from_root(path.join('contracts', 'contracts_modules', module_name, 'build'));
+    const build_dir_path = from_root(path.join('modules', `@contracts_${module_name}`, 'build'));
     const artifact_dir_path = from_root(path.join('artifacts', net_name, module_name, 'build'));
 
     if (fse.existsSync(artifact_dir_path)) {

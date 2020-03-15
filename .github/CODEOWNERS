@@ -1,1 +1,8 @@
-* @ticket721/admins @ticket721/core
+* @ticket721/owners
+modules/@backend_* @ticket721/backend
+modules/@common_* @ticket721/common
+modules/@contracts_* @ticket721/contracts
+modules/@public_* @ticket721/public
+modules/@frontend_* @ticket721/frontend
+modules/@infra_* @ticket721/infra
+

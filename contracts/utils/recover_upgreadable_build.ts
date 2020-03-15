@@ -9,7 +9,7 @@ import * as fse from 'fs-extra';
  * @param net_name
  */
 export function recover_upgradeable_build(module_name: string, net_name: string): void {
-    const build_dir_path = from_root(path.join('contracts', 'contracts_modules', module_name, '.openzeppelin'));
+    const build_dir_path = from_root(path.join('modules', `@contracts_${module_name}`, '.openzeppelin'));
     const artifact_dir_path = from_root(path.join('artifacts', net_name, module_name, 'upgradeable'));
 
     if (fse.existsSync(artifact_dir_path)) {
