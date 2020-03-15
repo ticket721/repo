@@ -1,13 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PasswordlessUserDto } from './dto/PasswordlessUser.dto';
 import { compare, hash } from 'bcrypt';
-import {
-    toAcceptedAddressFormat,
-    isKeccak256,
-    Web3LoginSigner,
-    Web3RegisterSigner,
-    keccak256,
-} from '@common/global';
+import { toAcceptedAddressFormat, isKeccak256, Web3LoginSigner, Web3RegisterSigner, keccak256 } from '@common/global';
 import { UsersService } from '@lib/common/users/Users.service';
 import { ConfigService } from '@lib/common/config/Config.service';
 import { UserDto } from '@lib/common/users/dto/User.dto';

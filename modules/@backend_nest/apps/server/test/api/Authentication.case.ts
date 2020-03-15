@@ -1,11 +1,5 @@
 import { T721SDK, AxiosResponse } from '@common/sdk';
-import {
-    Wallet,
-    createWallet,
-    toAcceptedAddressFormat,
-    Web3LoginSigner,
-    Web3RegisterSigner,
-} from '@common/global';
+import { Wallet, createWallet, toAcceptedAddressFormat, Web3LoginSigner, Web3RegisterSigner } from '@common/global';
 import { LocalRegisterResponseDto } from '@app/server/authentication/dto/LocalRegisterResponse.dto';
 import { LocalLoginResponseDto } from '@app/server/authentication/dto/LocalLoginResponse.dto';
 import { INestApplication } from '@nestjs/common';
