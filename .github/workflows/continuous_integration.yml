@@ -673,11 +673,11 @@ jobs:
             - name: "Install required tools globally (npm install -g yarn)"
               run: npm install -g yarn@1.22.4
 
-            - name: "CACHE /node_modules"
+            - name: "CACHE root"
               uses: actions/cache@v1
               with:
                   path: ./node_modules
-                  key: ${{ runner.os }}-${{ hashFiles('package-lock.json') }}-root
+                  key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-root
 
             - name: "CACHE @backend_nest/coverage-server-e2e"
               uses: actions/cache@v1
