@@ -8,7 +8,7 @@ import * as fse from 'fs-extra';
  * @param module_name
  */
 export function clear_upgradeable_build(module_name: string): void {
-    const build_dir_path = from_root(path.join('contracts', 'contracts_modules', module_name, '.openzeppelin'));
+    const build_dir_path = from_root(path.join('modules', `@contracts_${module_name}`, '.openzeppelin'));
 
     if (fse.existsSync(build_dir_path)) {
         const files = fse.readdirSync(build_dir_path);

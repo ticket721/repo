@@ -120,38 +120,38 @@ jobs:
             - name: "CACHE @contracts_metamarketplace"
               uses: actions/cache@v1
               with:
-                  path: ./contracts/contracts_modules/metamarketplace/node_modules
-                  key: ${{ runner.os }}-${{ hashFiles('contracts/contracts_modules/metamarketplace/package-lock.json') }}-@contracts_metamarketplace
+                  path: ./modules/@contracts_metamarketplace/node_modules
+                  key: ${{ runner.os }}-${{ hashFiles('modules/@contracts_metamarketplace/package-lock.json') }}-@contracts_metamarketplace
 
             - name: "CACHE @contracts_refract"
               uses: actions/cache@v1
               with:
-                  path: ./contracts/contracts_modules/refract/node_modules
-                  key: ${{ runner.os }}-${{ hashFiles('contracts/contracts_modules/refract/package-lock.json') }}-@contracts_refract
+                  path: ./modules/@contracts_refract/node_modules
+                  key: ${{ runner.os }}-${{ hashFiles('modules/@contracts_refract/package-lock.json') }}-@contracts_refract
 
             - name: "CACHE @contracts_t721admin"
               uses: actions/cache@v1
               with:
-                  path: ./contracts/contracts_modules/t721admin/node_modules
-                  key: ${{ runner.os }}-${{ hashFiles('contracts/contracts_modules/t721admin/package-lock.json') }}-@contracts_t721admin
+                  path: ./modules/@contracts_t721admin/node_modules
+                  key: ${{ runner.os }}-${{ hashFiles('modules/@contracts_t721admin/package-lock.json') }}-@contracts_t721admin
 
             - name: "CACHE @contracts_t721controller"
               uses: actions/cache@v1
               with:
-                  path: ./contracts/contracts_modules/t721controller/node_modules
-                  key: ${{ runner.os }}-${{ hashFiles('contracts/contracts_modules/t721controller/package-lock.json') }}-@contracts_t721controller
+                  path: ./modules/@contracts_t721controller/node_modules
+                  key: ${{ runner.os }}-${{ hashFiles('modules/@contracts_t721controller/package-lock.json') }}-@contracts_t721controller
 
             - name: "CACHE @contracts_t721token"
               uses: actions/cache@v1
               with:
-                  path: ./contracts/contracts_modules/t721token/node_modules
-                  key: ${{ runner.os }}-${{ hashFiles('contracts/contracts_modules/t721token/package-lock.json') }}-@contracts_t721token
+                  path: ./modules/@contracts_t721token/node_modules
+                  key: ${{ runner.os }}-${{ hashFiles('modules/@contracts_t721token/package-lock.json') }}-@contracts_t721token
 
             - name: "CACHE @contracts_ticketforge"
               uses: actions/cache@v1
               with:
-                  path: ./contracts/contracts_modules/ticketforge/node_modules
-                  key: ${{ runner.os }}-${{ hashFiles('contracts/contracts_modules/ticketforge/package-lock.json') }}-@contracts_ticketforge
+                  path: ./modules/@contracts_ticketforge/node_modules
+                  key: ${{ runner.os }}-${{ hashFiles('modules/@contracts_ticketforge/package-lock.json') }}-@contracts_ticketforge
 
             #
             # Run Complete install
@@ -343,38 +343,38 @@ jobs:
             - name: "CACHE @contracts_metamarketplace"
               uses: actions/cache@v1
               with:
-                  path: ./contracts/contracts_modules/metamarketplace/node_modules
-                  key: ${{ runner.os }}-${{ hashFiles('contracts/contracts_modules/metamarketplace/package-lock.json') }}-@contracts_metamarketplace
+                  path: ./modules/@contracts_metamarketplace/node_modules
+                  key: ${{ runner.os }}-${{ hashFiles('modules/@contracts_metamarketplace/package-lock.json') }}-@contracts_metamarketplace
 
             - name: "CACHE @contracts_refract"
               uses: actions/cache@v1
               with:
-                  path: ./contracts/contracts_modules/refract/node_modules
-                  key: ${{ runner.os }}-${{ hashFiles('contracts/contracts_modules/refract/package-lock.json') }}-@contracts_refract
+                  path: ./modules/@contracts_refract/node_modules
+                  key: ${{ runner.os }}-${{ hashFiles('modules/@contracts_refract/package-lock.json') }}-@contracts_refract
 
             - name: "CACHE @contracts_t721admin"
               uses: actions/cache@v1
               with:
-                  path: ./contracts/contracts_modules/t721admin/node_modules
-                  key: ${{ runner.os }}-${{ hashFiles('contracts/contracts_modules/t721admin/package-lock.json') }}-@contracts_t721admin
+                  path: ./modules/@contracts_t721admin/node_modules
+                  key: ${{ runner.os }}-${{ hashFiles('modules/@contracts_t721admin/package-lock.json') }}-@contracts_t721admin
 
             - name: "CACHE @contracts_t721controller"
               uses: actions/cache@v1
               with:
-                  path: ./contracts/contracts_modules/t721controller/node_modules
-                  key: ${{ runner.os }}-${{ hashFiles('contracts/contracts_modules/t721controller/package-lock.json') }}-@contracts_t721controller
+                  path: ./modules/@contracts_t721controller/node_modules
+                  key: ${{ runner.os }}-${{ hashFiles('modules/@contracts_t721controller/package-lock.json') }}-@contracts_t721controller
 
             - name: "CACHE @contracts_t721token"
               uses: actions/cache@v1
               with:
-                  path: ./contracts/contracts_modules/t721token/node_modules
-                  key: ${{ runner.os }}-${{ hashFiles('contracts/contracts_modules/t721token/package-lock.json') }}-@contracts_t721token
+                  path: ./modules/@contracts_t721token/node_modules
+                  key: ${{ runner.os }}-${{ hashFiles('modules/@contracts_t721token/package-lock.json') }}-@contracts_t721token
 
             - name: "CACHE @contracts_ticketforge"
               uses: actions/cache@v1
               with:
-                  path: ./contracts/contracts_modules/ticketforge/node_modules
-                  key: ${{ runner.os }}-${{ hashFiles('contracts/contracts_modules/ticketforge/package-lock.json') }}-@contracts_ticketforge
+                  path: ./modules/@contracts_ticketforge/node_modules
+                  key: ${{ runner.os }}-${{ hashFiles('modules/@contracts_ticketforge/package-lock.json') }}-@contracts_ticketforge
 
             #
             # Cache Public Modules
@@ -513,38 +513,38 @@ jobs:
             - name: "CACHE @contracts_metamarketplace"
               uses: actions/cache@v1
               with:
-                  path: ./contracts/contracts_modules/metamarketplace/node_modules
-                  key: ${{ runner.os }}-${{ hashFiles('contracts/contracts_modules/metamarketplace/package-lock.json') }}-@contracts_metamarketplace
+                  path: ./modules/@contracts_metamarketplace/node_modules
+                  key: ${{ runner.os }}-${{ hashFiles('modules/@contracts_metamarketplace/package-lock.json') }}-@contracts_metamarketplace
 
             - name: "CACHE @contracts_refract"
               uses: actions/cache@v1
               with:
-                  path: ./contracts/contracts_modules/refract/node_modules
-                  key: ${{ runner.os }}-${{ hashFiles('contracts/contracts_modules/refract/package-lock.json') }}-@contracts_refract
+                  path: ./modules/@contracts_refract/node_modules
+                  key: ${{ runner.os }}-${{ hashFiles('modules/@contracts_refract/package-lock.json') }}-@contracts_refract
 
             - name: "CACHE @contracts_t721admin"
               uses: actions/cache@v1
               with:
-                  path: ./contracts/contracts_modules/t721admin/node_modules
-                  key: ${{ runner.os }}-${{ hashFiles('contracts/contracts_modules/t721admin/package-lock.json') }}-@contracts_t721admin
+                  path: ./modules/@contracts_t721admin/node_modules
+                  key: ${{ runner.os }}-${{ hashFiles('modules/@contracts_t721admin/package-lock.json') }}-@contracts_t721admin
 
             - name: "CACHE @contracts_t721controller"
               uses: actions/cache@v1
               with:
-                  path: ./contracts/contracts_modules/t721controller/node_modules
-                  key: ${{ runner.os }}-${{ hashFiles('contracts/contracts_modules/t721controller/package-lock.json') }}-@contracts_t721controller
+                  path: ./modules/@contracts_t721controller/node_modules
+                  key: ${{ runner.os }}-${{ hashFiles('modules/@contracts_t721controller/package-lock.json') }}-@contracts_t721controller
 
             - name: "CACHE @contracts_t721token"
               uses: actions/cache@v1
               with:
-                  path: ./contracts/contracts_modules/t721token/node_modules
-                  key: ${{ runner.os }}-${{ hashFiles('contracts/contracts_modules/t721token/package-lock.json') }}-@contracts_t721token
+                  path: ./modules/@contracts_t721token/node_modules
+                  key: ${{ runner.os }}-${{ hashFiles('modules/@contracts_t721token/package-lock.json') }}-@contracts_t721token
 
             - name: "CACHE @contracts_ticketforge"
               uses: actions/cache@v1
               with:
-                  path: ./contracts/contracts_modules/ticketforge/node_modules
-                  key: ${{ runner.os }}-${{ hashFiles('contracts/contracts_modules/ticketforge/package-lock.json') }}-@contracts_ticketforge
+                  path: ./modules/@contracts_ticketforge/node_modules
+                  key: ${{ runner.os }}-${{ hashFiles('modules/@contracts_ticketforge/package-lock.json') }}-@contracts_ticketforge
 
             #
             # Cache Public Modules
