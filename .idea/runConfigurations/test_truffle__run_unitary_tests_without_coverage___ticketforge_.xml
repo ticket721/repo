@@ -1,0 +1,12 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="test:truffle (run unitary tests without coverage) (ticketforge)" type="js.build_tools.npm" folderName="@contracts_ticketforge (yarn)">
+    <package-json value="$PROJECT_DIR$/modules/@contracts_ticketforge/package.json" />
+    <command value="run" />
+    <scripts>
+      <script value="test:truffle" />
+    </scripts>
+    <node-interpreter value="project" />
+    <envs />
+    <method v="2" />
+  </configuration>
+</component>

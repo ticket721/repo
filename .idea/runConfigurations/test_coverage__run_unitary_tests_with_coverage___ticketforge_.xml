@@ -1,0 +1,12 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="test:coverage (run unitary tests with coverage) (ticketforge)" type="js.build_tools.npm" folderName="@contracts_ticketforge (yarn)">
+    <package-json value="$PROJECT_DIR$/modules/@contracts_ticketforge/package.json" />
+    <command value="run" />
+    <scripts>
+      <script value="test:coverage" />
+    </scripts>
+    <node-interpreter value="project" />
+    <envs />
+    <method v="2" />
+  </configuration>
+</component>

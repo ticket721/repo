@@ -2,23 +2,17 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/contracts/contracts_modules/metamarketplace" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/contracts/contracts_modules/refract" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/contracts/contracts_modules/t721admin" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/contracts/contracts_modules/t721controller" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/contracts/contracts_modules/t721token" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/contracts/contracts_modules/ticketforge" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/modules/@contracts_metamarketplace" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/modules/@contracts_refract" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/modules/@contracts_t721admin" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/modules/@contracts_t721controller" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/modules/@contracts_t721token" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/modules/@contracts_ticketforge" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/modules/@public_dosojin" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/modules/@public_e712" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/modules/@public_erc2280" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/modules/@public_ethvtx" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/modules/@public_test-geth" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/modules/@public_vaultereum" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/modules/dosojin" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/modules/e712" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/modules/erc2280" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/modules/ethvtx" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/modules/test-geth" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/modules/vaultereum" vcs="Git" />
   </component>
 </project>

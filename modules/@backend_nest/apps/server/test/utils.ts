@@ -168,6 +168,52 @@ export async function run_contracts_migrations() {
 export const startDocker = async () => {
     console.log('STARTING @utils/startDocker');
 
+    const docker_compose_down_proc = spawn(`docker-compose`, [...`-f ./infra.yaml down`.split(' ')], {
+        cwd: `${process.cwd()}/scripts/`,
+    });
+
+    await new Promise((ok, ko) => {
+
+        docker_compose_down_proc.on('exit', (code) => {
+            if (code === 0) {
+                return ok();
+            }
+            ko(code);
+        });
+
+        docker_compose_down_proc.stderr.on('data', (data) => {
+            process.stderr.write(data.toString());
+        });
+
+        docker_compose_down_proc.stdout.on('data', (data) => {
+            process.stdout.write(data.toString());
+        });
+
+    });
+
+    const docker_compose_rm_proc = spawn(`docker-compose`, [...`-f ./infra.yaml rm`.split(' ')], {
+        cwd: `${process.cwd()}/scripts/`,
+    });
+
+    await new Promise((ok, ko) => {
+
+        docker_compose_rm_proc.on('exit', (code) => {
+            if (code === 0) {
+                return ok();
+            }
+            ko(code);
+        });
+
+        docker_compose_rm_proc.stderr.on('data', (data) => {
+            process.stderr.write(data.toString());
+        });
+
+        docker_compose_rm_proc.stdout.on('data', (data) => {
+            process.stdout.write(data.toString());
+        });
+
+    });
+
     docker_compose_up_proc = spawn(`docker-compose`, [...`-f ./infra.yaml up`.split(' ')], {
         cwd: `${process.cwd()}/scripts/`,
     });
