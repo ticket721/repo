@@ -19,7 +19,7 @@
         "@lerna/postclean": "rm -rf lib"
     },
     "dependencies": {
-        "cassandra-driver": "3.6.0",
+        "cassandra-driver": "4.4.0",
         "js-sha3": "0.8.0",
         "zxcvbn": "4.4.2",
         "@ticket721/e712": "0.4.1",
