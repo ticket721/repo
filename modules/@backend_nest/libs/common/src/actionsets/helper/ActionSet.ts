@@ -77,7 +77,9 @@ export class ActionSet {
         this.entity.actions = actions.map((a: Action): ActionEntity => a.raw);
 
         this.entity.current_action = 0;
-        this.entity.current_status = `${this.entity.actions[this.entity.current_action].type}:in progress` as ActionSetStatus;
+        this.entity.current_status = `${
+            this.entity.actions[this.entity.current_action].type
+        }:in progress` as ActionSetStatus;
 
         return this;
     }
