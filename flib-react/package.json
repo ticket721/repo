@@ -50,7 +50,7 @@
     "@storybook/addon-options": "5.3.14",
     "@storybook/addon-viewport": "^5.3.14",
     "@storybook/addons": "5.3.14",
-    "@storybook/client-api": "5.3.14",
+    "@storybook/client-api": "5.3.17",
     "@storybook/react": "5.3.14",
     "@storybook/theming": "5.3.17",
     "@svgr/webpack": "^5.2.0",
