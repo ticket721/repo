@@ -159,8 +159,6 @@ jobs:
 
             - name: "Install all dependencies (yarn @install)"
               run: "yarn @install"
-              env:
-                  NODE_ENV: production
 
 #     /$$$$  /$$$$$$   /$$$$$$  /$$$$
 #    | $$_/ /$$__  $$ /$$__  $$|_  $$

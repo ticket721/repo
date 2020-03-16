@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="test:lint (run linting tests) (t721admin)" type="js.build_tools.npm" folderName="@ticket721contracts/t721admin (npm)">
-    <package-json value="$PROJECT_DIR$/contracts/contracts_modules/t721admin/package.json" />
+  <configuration default="false" name="test:lint (run linting tests) (t721admin)" type="js.build_tools.npm" folderName="@contracts_t721admin (yarn)">
+    <package-json value="$PROJECT_DIR$/modules/@contracts_t721admin/package.json" />
     <command value="run" />
     <scripts>
       <script value="test:lint" />

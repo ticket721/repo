@@ -30,5 +30,5 @@ export const toAcceptedKeccak256Format = (hash: string): string => {
 };
 
 export const keccak256 = (data: string): string => {
-    return toAcceptedKeccak256Format(HashLib.keccak256(data));
+    return toAcceptedKeccak256Format(HashLib.keccak_256(data));
 };

@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="test:truffle (run unitary tests without coverage) (t721token)" type="js.build_tools.npm" folderName="@ticket721contracts/t721token (npm)">
+  <configuration default="false" name="test:truffle (run unitary tests without coverage) (t721token)" type="js.build_tools.npm" folderName="@contracts_t721token (yarn)">
     <package-json value="$PROJECT_DIR$/contracts/contracts_modules/t721token/package.json" />
     <command value="run" />
     <scripts>

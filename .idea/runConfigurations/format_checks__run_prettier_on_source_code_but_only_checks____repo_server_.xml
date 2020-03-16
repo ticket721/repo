@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="format:checks (run prettier on source code but only checks) (@repo/server)" type="js.build_tools.npm" folderName="@ticket721source/server (npm)">
-    <package-json value="$PROJECT_DIR$/sources/server/package.json" />
+  <configuration default="false" name="format:checks (run prettier on source code but only checks) (@repo/server)" type="js.build_tools.npm" folderName="@backend_nest (yarn)">
+    <package-json value="$PROJECT_DIR$/modules/@backend_nest/package.json" />
     <command value="run" />
     <scripts>
       <script value="format:check" />
