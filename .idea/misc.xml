@@ -3,4 +3,7 @@
   <component name="JavaScriptSettings">
     <option name="languageLevel" value="ES6" />
   </component>
+  <component name="ProjectPlainTextFileTypeManager">
+    <file url="file://$PROJECT_DIR$/modules/@contracts_t721controller/test_cases/setFeeCollector_from_non_owner.js" />
+  </component>
 </project>

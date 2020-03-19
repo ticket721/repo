@@ -82,11 +82,6 @@
                         "range": [3, 3]
                     },
                     {
-                        "name": "t721controller",
-                        "test": false,
-                        "range": [3, 3]
-                    },
-                    {
                         "name": "t721token",
                         "test": false,
                         "range": [3, 3]
