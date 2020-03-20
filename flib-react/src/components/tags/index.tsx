@@ -25,17 +25,27 @@ const customStyles = {
     }
   }),
   control: () => ({
+    alignItems: 'flex-start',
+    background: 'url(assets/icons/icon--tag.svg) 24px 16px/16px no-repeat',
     display: 'flex',
     paddingBottom: 4,
-    paddingLeft: 24,
+    paddingLeft: 60,
     paddingRight: 24,
-    paddingTop: 2
+    paddingTop: 2,
+
+    '& > div': {
+      flexWrap: 'wrap'
+    }
   }),
   indicatorSeparator: () => ({
     border: 'none'
   }),
   input: () => ({
-    color: 'rgba(255, 255, 255, 0.6)'
+    color: 'rgba(255, 255, 255, 0.9)',
+    fontSize: 14,
+    fontWeight: 500,
+    paddingBottom: 12,
+    paddingTop: 12
   }),
   menu: () => ({
     backgroundColor: 'rgba(255, 255, 255, 0.06)',
@@ -49,8 +59,11 @@ const customStyles = {
   }),
   placeholder: () => ({
     color: 'rgba(255, 255, 255, 0.38)',
-    fontSize: '14px',
-    fontWeight: 500
+    fontSize: 14,
+    fontWeight: 500,
+    paddingBottom: 12,
+    paddingTop: 12,
+    position: 'absolute' as 'absolute',
   }),
   valueContainer: () => ({
     alignItems: 'center',
@@ -58,10 +71,34 @@ const customStyles = {
     flex: 1,
     padding: 0
   }),
-  singleValue: () => ({
-    fontSize: 14,
+  singleValue: () => ({
+    color: 'red'
+  }),
+  multiValue: () => ({
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.04)',
+    borderRadius: 8,
+    cursor: 'pointer',
+    display: 'inline-flex',
     fontWeight: 500,
-    opacity: 0.9
+    marginRight: 8,
+    paddingBottom: 12,
+    paddingLeft: 16,
+    paddingRight: 8,
+    paddingTop: 14,
+
+    '> div': {
+      borderRadius: 0,
+      color: '#fff',
+      fontSize: 13,
+      marginRight: 8,
+      padding: 0,
+
+      '&:last-of-type:hover': {
+        backgroundColor: 'transparent',
+        color: '#FFF'
+      }
+    }
   })
 }
 
@@ -141,8 +178,8 @@ export const Tags: React.FunctionComponent<TagsProps> = (props: TagsProps): JSX.
               }}
               defaultValue={props.defaultValue}
               inputValue={props.inputValue}
-              isClearable
               menuIsOpen={false}
+              isClearable={false}
               isMulti
               placeholder={props.placeholder}
               styles={customStyles}

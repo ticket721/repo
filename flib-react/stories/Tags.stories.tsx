@@ -1,12 +1,29 @@
 import * as React from 'react';
-// import { action } from '@storybook/addon-actions';
 import { text, withKnobs } from '@storybook/addon-knobs';
 import Tags from '../src/components/tags';
 import { Store, State} from "@sambego/storybook-state";
 
+interface StoreObject {
+  tags: Tag[];
+  inputValue: string;
+};
+interface Tag {
+  label: string;
+  value: string;
+};
+
+interface Tag {
+  label: string,
+  value: string
+}
+
+const createTags = (label: string) => ({
+  label,
+  value: label
+})
+
 const onChange = (value: any) => {
-  console.log(value)
-  store.set({value: value})
+  store.set({ tags: value })
 }
 
 const onInputChange = (inputValue: string) => {
@@ -14,19 +31,26 @@ const onInputChange = (inputValue: string) => {
 }
 
 const onKeyDown = (e: React.KeyboardEvent<HTMLElement>, value: string) => {
+  const tags = store.get('tags');
+  if(!store.get('inputValue')) return;
+
   switch (e.key) {
     case 'Enter':
     case 'Tab':
-      store.set({inputValue: ''})
-      store.set({ value:
-        [ ...store.get('value'),
-          {
-            label: value,
-            value: value
-          }
-        ]
-      })
-      e.preventDefault();
+      store.set({ inputValue: '' })
+
+      if(!tags) {
+        store.set({ tags: [
+          createTags(value)
+        ]})
+      } else {
+        store.set({ tags: [
+          ...tags,
+          createTags(value)
+        ]})
+      }
+
+    e.preventDefault();
   }
 };
 
@@ -38,15 +62,12 @@ export default {
   component: Tags
 };
 
-const store = new Store({
-  key: 0,
-  value: [{
-    value: 'OI',
-    label: 'OI OI',
-  }],
-  inputValue: ''
-});
+let storeObject: StoreObject = {
+  tags: [],
+  inputValue: ""
+}
 
+const store = new Store(storeObject);
 
 export const showcase = () => (
   <State store={store}>
@@ -55,7 +76,7 @@ export const showcase = () => (
         label={text('Label', 'Tags')}
         placeholder={text('Placeholder', 'Add a tag, then press enter')}
         inputValue={state.inputValue}
-        value={state.value}
+        value={state.tags}
         onChange={onChange}
         onKeyDown={onKeyDown}
         onInputChange={onInputChange}
