@@ -52,17 +52,17 @@
                         "range": [1, 2]
                     },
                     {
+                        "name": "t721controller",
+                        "test": false,
+                        "range": [1, 2]
+                    },
+                    {
                         "name": "metamarketplace",
                         "test": false,
                         "range": [1, 2]
                     },
                     {
                         "name": "t721admin",
-                        "test": false,
-                        "range": [1, 2]
-                    },
-                    {
-                        "name": "t721controller",
                         "test": false,
                         "range": [1, 2]
                     },
