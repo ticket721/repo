@@ -28,7 +28,7 @@
     "dependencies": {
         "@iaminfinity/express-cassandra": "6.0.0",
         "@nestjs/bull": "0.0.2",
-        "@nestjs/common": "6.11.8",
+        "@nestjs/common": "7.0.5",
         "@nestjs/core": "6.11.8",
         "@nestjs/jwt": "6.1.2",
         "@nestjs/passport": "6.2.0",
