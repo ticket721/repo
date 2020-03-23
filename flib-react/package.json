@@ -30,7 +30,7 @@
   "dependencies": {
     "@sambego/storybook-state": "^2.0.1",
     "@types/styled-components": "^5.0.1",
-    "polished": "^3.5.0",
+    "polished": "^3.5.1",
     "react": "16.13.1",
     "react-dom": "16.13.1",
     "styled-components": "^5.0.1",
