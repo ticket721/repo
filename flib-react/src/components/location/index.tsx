@@ -1,16 +1,19 @@
 import * as React from 'react';
 import Select from 'react-select';
-import styled from '../../../../config/styled';
+import styled from '../../../config/styled';
 
+const components = {
+  DropdownIndicator: null,
+};
 const customStyles = {
   option: () => ({
-    backgroundColor: 'transparent',
+    background: 'transparent url(assets/icons/icon--location-gray.svg) 24px center/12px 16px no-repeat',
     color: 'rgba(255, 255, 255, 0.6)',
     cursor: 'pointer',
     fontSize: 14,
     fontWeight: 500,
     paddingBottom: 12,
-    paddingLeft: 24,
+    paddingLeft: 48,
     paddingRight: 24,
     paddingTop: 12,
     transition: 'all 300ms ease',
@@ -21,11 +24,12 @@ const customStyles = {
     }
   }),
   control: () => ({
+    background: 'url(assets/icons/icon--location.svg) 24px 17px/12px 16px no-repeat',
     display: 'flex',
-    paddingBottom: 8,
-    paddingLeft: 24,
+    paddingBottom: 24,
+    paddingLeft: 48,
     paddingRight: 24,
-    paddingTop: 2
+    paddingTop: 16
   }),
   indicatorSeparator: () => ({
     border: 'none'
@@ -46,9 +50,6 @@ const customStyles = {
     overflow: 'auto',
     padding: 0,
   }),
-  noOptionsMessage: () => ({
-    fontSize: 14
-  }),
   placeholder: () => ({
     color: 'rgba(255, 255, 255, 0.38)',
     fontSize: '14px',
@@ -68,14 +69,13 @@ const customStyles = {
   })
 };
 
-export interface SelectProps extends React.ComponentProps<any> {
+export interface LocationProps extends React.ComponentProps<any> {
   defaultValue?:object;
   error?:boolean;
   errorMessage?:string;
   label:string;
   options: Array<object>,
   placeholder: string;
-  searchable?:boolean;
   value?:string;
 }
 
@@ -99,7 +99,7 @@ const StyledLabel = styled.label`
   }
 `;
 
-const StyledInputContainer = styled.div<SelectProps>`
+const StyledInputContainer = styled.div<LocationProps>`
   background-color: ${props => props.theme.componentColor};
   border-radius: ${props => props.theme.defaultRadius};
   display: flex;
@@ -127,20 +127,20 @@ const StyledInputContainer = styled.div<SelectProps>`
     }
   }
 `;
-export const SelectInput: React.FunctionComponent<SelectProps> = (props: SelectProps): JSX.Element => {
+export const Location: React.FunctionComponent<LocationProps> = (props: LocationProps): JSX.Element => {
   return  <StyledInputContainer>
-            <StyledLabel>{props.label}</StyledLabel>
-            <Select
-              defaultValue={props.defaultValue}
-              isClearable
-              noOptionsMessage={() => "No values available"}
-              options={props.options}
-              placeholder={props.placeholder}
-              isSearchable={props.searchable}
-              styles={customStyles}
-            />
-          </StyledInputContainer>
+    <StyledLabel>{props.label}</StyledLabel>
+    <Select
+      components={components}
+      defaultValue={props.defaultValue}
+      dropdownIndicator={false}
+      isClearable
+      noOptionsMessage={() => "No values available"}
+      options={props.options}
+      placeholder={props.placeholder}
+      styles={customStyles}
+    />
+  </StyledInputContainer>
+};
 
-}
-
-export default SelectInput;
+export default Location;
