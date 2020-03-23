@@ -9,11 +9,18 @@ import { themes } from '@storybook/theming';
 const customThemes = [
   {
     name: 'T721',
-    buttonRadius: '8px',
+    biggerSpacing: '24px',
+    componentColor: 'rgba(255, 255, 255, 0.04)',
+    componentColorLight: 'rgba(355, 255, 255, 0.06)',
+    componentColorLighter: 'rgba(355, 255, 255, 0.1)',
+    defaultRadius: '8px',
     doubleSpacing: '32px',
     primaryColor: '#079CF0',
     primaryColorGradientEnd: '#2143AB',
     regularSpacing: '16px',
+    textColor: 'rgba(255, 255, 255, 0.9)',
+    textColorDark: 'rgba(355, 255, 255, 0.6)',
+    textColorDarker: 'rgba(355, 255, 255, 0.38)',
     warningColor: '#C91D31'
   }
 ]
@@ -22,18 +29,17 @@ addDecorator(withThemesProvider(customThemes));
 addDecorator(style => <><GlobalStyle />{style()}</>);
 
 addParameters({
-    options: {
-        theme: themes.dark,
-        name: 'T721 React FLIB'
-    },
-    docs: {
-        container: DocsContainer,
-        page: DocsPage
-    },
-    viewport: {
-        viewports: INITIAL_VIEWPORTS,
-        defaultViewport: 'iphonex',
-    }
+  options: {
+    theme: themes.dark,
+    name: 'T721 React FLIB'
+  },
+  docs: {
+    container: DocsContainer,
+    page: DocsPage
+  },
+  viewport: {
+    viewports: INITIAL_VIEWPORTS
+  }
 });
 
 // automatically import all files ending in *.stories.tsx

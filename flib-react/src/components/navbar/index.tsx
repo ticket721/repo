@@ -14,7 +14,40 @@ let StyledNavbar = styled.nav`
   padding: calc(${props => props.theme.regularSpacing} * 1.5) ${props => props.theme.doubleSpacing};
   position: fixed;
   width: 100%;
-`
+
+  a {
+    align-items: center;
+    color: #fff;
+    display: inline-flex;
+    opacity: 0.6;
+    padding: 0 1.25rem;
+    position: relative;
+    text-decoration: none;
+    transition: opacity 300ms ease;
+
+    &:hover {
+      opacity: 1;
+    }
+
+
+    &.active {
+      opacity: 1;
+
+      &::after {
+        background-color: ${props => props.theme.primaryColor};
+        border-radius: 100%;
+        bottom: -1rem;
+        content: "";
+        display: block;
+        height: 4px;
+        left: 0;
+        margin auto;
+        position: absolute;
+        right: 0;
+        width: 4px;
+      }
+    }
+  }`
 
 export const Navbar: React.FunctionComponent = (props): JSX.Element => {
   return <StyledNavbar>
