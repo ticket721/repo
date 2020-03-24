@@ -3,41 +3,46 @@ import { text, withKnobs } from '@storybook/addon-knobs';
 import Tags from '../src/components/tags';
 import { Store, State} from "@sambego/storybook-state";
 
+const maxItems:number = 2;
+
 interface StoreObject {
   tags: Tag[];
   inputValue: string;
-};
+  items: number;
+}
+
 interface Tag {
   label: string;
   value: string;
-};
-
-interface Tag {
-  label: string,
-  value: string
 }
 
 const createTags = (label: string) => ({
-  label,
+  label: label,
   value: label
-})
+});
 
 const onChange = (value: any) => {
-  store.set({ tags: value })
-}
+  const itemsNumber = !value ? 0 : value.length;
+
+  store.set({
+    items: itemsNumber,
+    tags: value
+  })
+};
 
 const onInputChange = (inputValue: string) => {
   store.set({inputValue: inputValue})
-}
+};
 
 const onKeyDown = (e: React.KeyboardEvent<HTMLElement>, value: string) => {
   const tags = store.get('tags');
-  if(!store.get('inputValue')) return;
+
+  if(!store.get('inputValue') || tags.length === maxItems) return;
 
   switch (e.key) {
     case 'Enter':
     case 'Tab':
-      store.set({ inputValue: '' })
+      store.set({ inputValue: '' });
 
       if(!tags) {
         store.set({ tags: [
@@ -49,6 +54,7 @@ const onKeyDown = (e: React.KeyboardEvent<HTMLElement>, value: string) => {
           createTags(value)
         ]})
       }
+      store.set({'items': tags.length + 1});
 
     e.preventDefault();
   }
@@ -64,19 +70,22 @@ export default {
 
 let storeObject: StoreObject = {
   tags: [],
+  items: 0,
   inputValue: ""
-}
+};
 
 const store = new Store(storeObject);
 
 export const showcase = () => (
   <State store={store}>
-    {state =>[
+    {state => [
       <Tags
         label={text('Label', 'Tags')}
         placeholder={text('Placeholder', 'Add a tag, then press enter')}
         inputValue={state.inputValue}
         value={state.tags}
+        currentTagsNumber={state.items}
+        maxTags={maxItems}
         onChange={onChange}
         onKeyDown={onKeyDown}
         onInputChange={onInputChange}
