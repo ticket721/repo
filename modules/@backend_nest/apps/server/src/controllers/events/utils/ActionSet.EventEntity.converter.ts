@@ -3,6 +3,7 @@ import { Category, DateEntity, Price } from '@lib/common/dates/entities/Date.ent
 import { EventEntity } from '@lib/common/events/entities/Event.entity';
 import { CurrenciesService, ERC20Currency, SetCurrency } from '@lib/common/currencies/Currencies.service';
 import { Decimal } from 'decimal.js';
+import { types } from '@iaminfinity/express-cassandra';
 
 enum EventCreationActions {
     TextMetadata,
@@ -108,11 +109,13 @@ async function convertPrices(tscope: string, currenciesService: CurrenciesServic
  * Convert categories to saveable format
  *
  * @param tscope
+ * @param groupID
  * @param currenciesService
  * @param categories
  */
 async function convertCategories(
     tscope: string,
+    groupID: string,
     currenciesService: CurrenciesService,
     categories: any[],
 ): Promise<Category[]> {
@@ -120,7 +123,7 @@ async function convertCategories(
 
     for (let catidx = 0; catidx < categories.length; ++catidx) {
         ret.push({
-            group_id: null,
+            group_id: groupID,
             category_name: categories[catidx].name,
             category_index: catidx,
             sale_begin: categories[catidx].saleBegin,
@@ -128,7 +131,6 @@ async function convertCategories(
             resale_begin: categories[catidx].resaleBegin,
             resale_end: categories[catidx].resaleEnd,
             scope: tscope,
-            status: 'preview',
             prices: await convertPrices(tscope, currenciesService, categories[catidx].currencies),
             seats: categories[catidx].seats,
         });
@@ -141,11 +143,15 @@ async function convertCategories(
  * Convert Dates to saveable format
  *
  * @param tscope
+ * @param eventUUID
+ * @param groupID
  * @param actionset
  * @param currenciesService
  */
 async function convertDates(
     tscope: string,
+    eventUUID: string,
+    groupID: string,
     actionset: ActionSet,
     currenciesService: CurrenciesService,
 ): Promise<Partial<DateEntity>[]> {
@@ -167,9 +173,9 @@ async function convertDates(
             metadata: {
                 name: date.name,
             },
-            parent_id: null,
-            parent_type: null,
-            categories: await convertCategories(tscope, currenciesService, categories),
+            parent_id: types.Uuid.fromString(eventUUID) as any,
+            parent_type: 'event',
+            categories: await convertCategories(tscope, groupID, currenciesService, categories),
         });
     }
 
@@ -180,12 +186,18 @@ async function convertDates(
  * Convert Event to saveable format
  *
  * @param tscope
+ * @param eventUUID
+ * @param groupID
+ * @param address
  * @param actionset
  * @param currenciesService
  * @param owner
  */
 async function convertEvent(
     tscope: string,
+    eventUUID: string,
+    groupID: string,
+    address: string,
     actionset: ActionSet,
     currenciesService: CurrenciesService,
     owner: string,
@@ -195,17 +207,20 @@ async function convertEvent(
     eventEntity.name = actionset.actions[EventCreationActions.TextMetadata].data.name;
     eventEntity.description = actionset.actions[EventCreationActions.TextMetadata].data.description;
     eventEntity.status = 'preview';
-    eventEntity.address = null;
+    eventEntity.address = address;
     eventEntity.owner = owner;
     eventEntity.admins = actionset.actions[EventCreationActions.AdminsConfiguration].data.admins;
     eventEntity.dates = [];
     eventEntity.categories = await convertCategories(
         tscope,
+        groupID,
         currenciesService,
         actionset.actions[EventCreationActions.CategoriesConfiguration].data.global,
     );
     eventEntity.avatar = actionset.actions[EventCreationActions.ImagesMetadata].data.avatar;
     eventEntity.banners = actionset.actions[EventCreationActions.ImagesMetadata].data.banners;
+    eventEntity.id = types.Uuid.fromString(eventUUID) as any;
+    eventEntity.group_id = groupID;
 
     return eventEntity;
 }
@@ -214,6 +229,9 @@ async function convertEvent(
  * Convert event creation ActionSet into "preview" Event
  *
  * @param tscope
+ * @param groupID
+ * @param eventUUID
+ * @param address
  * @param actionset
  * @param currenciesService
  * @param owner
@@ -221,12 +239,29 @@ async function convertEvent(
  */
 export async function ActionSetToEventEntityConverter(
     tscope: string,
+    groupID: string,
+    eventUUID: string,
+    address: string,
     actionset: ActionSet,
     currenciesService: CurrenciesService,
     owner: string,
 ): Promise<[Partial<DateEntity>[], Partial<EventEntity>]> {
-    const dateEntities: Partial<DateEntity>[] = await convertDates(tscope, actionset, currenciesService);
-    const eventEntity: Partial<EventEntity> = await convertEvent(tscope, actionset, currenciesService, owner);
+    const dateEntities: Partial<DateEntity>[] = await convertDates(
+        tscope,
+        eventUUID,
+        groupID,
+        actionset,
+        currenciesService,
+    );
+    const eventEntity: Partial<EventEntity> = await convertEvent(
+        tscope,
+        eventUUID,
+        groupID,
+        address,
+        actionset,
+        currenciesService,
+        owner,
+    );
 
     return [dateEntities, eventEntity];
 }

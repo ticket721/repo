@@ -1,0 +1,12 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="test:truffle (run unitary tests without coverage) (metamarketplace)" type="js.build_tools.npm" folderName="@contracts_metamarketplace">
+    <package-json value="$PROJECT_DIR$/modules/@contracts_metamarketplace/package.json" />
+    <command value="run" />
+    <scripts>
+      <script value="test:truffle" />
+    </scripts>
+    <node-interpreter value="project" />
+    <envs />
+    <method v="2" />
+  </configuration>
+</component>

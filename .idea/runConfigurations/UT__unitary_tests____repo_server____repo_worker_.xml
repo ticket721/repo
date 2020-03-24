@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="UT (unitary tests) (@repo/server) (@repo/worker)" type="JavaScriptTestRunnerJest" folderName="@ticket721sources/server (jest)">
+  <configuration default="false" name="UT (unitary tests) (@repo/server) (@repo/worker)" type="JavaScriptTestRunnerJest" folderName="@backend_nest (jest)">
     <config-file value="$PROJECT_DIR$/modules/@backend_nest/jest.config.js" />
     <node-interpreter value="project" />
     <node-options value="" />

@@ -1,10 +1,8 @@
 import { Module } from '@nestjs/common';
-import { NewGroupT721CEVMAntenna } from '@app/worker/evmantenna/events/t721c/NewGroup.evmantenna';
 import { BullModule, BullModuleOptions } from '@nestjs/bull';
 import { ConfigService } from '@lib/common/config/Config.service';
 import { EVMEventSetsModule } from '@lib/common/evmeventsets/EVMEventSets.module';
 import { EVMAntennaMergerScheduler } from '@app/worker/evmantenna/EVMAntennaMerger.scheduler';
-import { NewCategoryT721CEVMAntenna } from '@app/worker/evmantenna/events/t721c/NewCategory.evmantenna';
 import { EventsModule } from '@lib/common/events/Events.module';
 import { DatesModule } from '@lib/common/dates/Dates.module';
 import { EVMBlockRollbacksModule } from '@lib/common/evmblockrollbacks/EVMBlockRollbacks.module';
@@ -27,12 +25,6 @@ import { EVMBlockRollbacksModule } from '@lib/common/evmblockrollbacks/EVMBlockR
             }),
         }),
     ],
-    providers: [
-        // T721Controller_v0
-        NewGroupT721CEVMAntenna,
-        NewCategoryT721CEVMAntenna,
-
-        EVMAntennaMergerScheduler,
-    ],
+    providers: [EVMAntennaMergerScheduler],
 })
 export class EVMAntennaModule {}

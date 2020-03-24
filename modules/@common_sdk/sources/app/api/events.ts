@@ -10,15 +10,13 @@ import {
     EventsCreateDatesConfiguration, EventsCreateImagesMetadata,
     EventsCreateModulesConfiguration,
     EventsCreateTextMetadata,
-}                                                 from '@app/worker/actionhandlers/events/Events.input.handlers';
-import { ActionsUpdateResponseDto }               from '@app/server/controllers/actionsets/dto/ActionsUpdateResponse.dto';
-import { actionsUpdate}                           from './actions';
-import { EventsBuildResponseDto }                 from '@app/server/controllers/events/dto/EventsBuildResponse.dto';
-import { EventsBuildInputDto }                    from '@app/server/controllers/events/dto/EventsBuildInput.dto';
-import { EventsDeployInputDto }                   from '@app/server/controllers/events/dto/EventsDeployInput.dto';
-import { EventsDeployResponseDto }                from '@app/server/controllers/events/dto/EventsDeployResponse.dto';
-import { EventsDeployGeneratePayloadResponseDto } from '@app/server/controllers/events/dto/EventsDeployGeneratePayloadResponse.dto';
-import { EventsDeploySignPayloadResponseDto }     from '@app/server/controllers/events/dto/EventsDeploySignPayloadResponse.dto';
+}                                   from '@app/worker/actionhandlers/events/Events.input.handlers';
+import { ActionsUpdateResponseDto } from '@app/server/controllers/actionsets/dto/ActionsUpdateResponse.dto';
+import { actionsUpdate}             from './actions';
+import { EventsBuildResponseDto }   from '@app/server/controllers/events/dto/EventsBuildResponse.dto';
+import { EventsBuildInputDto }      from '@app/server/controllers/events/dto/EventsBuildInput.dto';
+import { EventsStartInputDto }      from '@app/server/controllers/events/dto/EventsStartInput.dto';
+import { EventsStartResponseDto }   from '@app/server/controllers/events/dto/EventsStartResponse.dto';
 
 export async function eventsSearch(
     token: string,
@@ -153,41 +151,16 @@ export async function eventsCreateAdminsConfiguration(
     );
 }
 
-export async function eventsDeployGeneratePayload(
+export async function eventsStart(
     token: string,
-    event: string,
-): Promise<AxiosResponse<EventsDeployGeneratePayloadResponseDto>> {
+    query: EventsStartInputDto
+): Promise<AxiosResponse<EventsStartResponseDto>> {
 
     const self: T721SDK = this;
 
-    return self.get(`/events/genp/deploy/${event}`, {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-    });
-}
-
-export async function eventsDeploySignPayload(
-    token: string,
-    event: string,
-): Promise<AxiosResponse<EventsDeploySignPayloadResponseDto>> {
-
-    const self: T721SDK = this;
-
-    return self.get(`/events/signp/deploy/${event}`, {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-    });
-}
-
-export async function eventsDeploy(
-    token: string,
-    query: EventsDeployInputDto,
-): Promise<AxiosResponse<EventsDeployResponseDto>> {
-
-    const self: T721SDK = this;
-
-    return self.post<EventsDeployInputDto>(`/events/deploy`, {
+    return self.post<EventsStartInputDto>('/events/start', {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
     }, query);
+
 }

@@ -25,12 +25,12 @@ export class EventEntity {
     id: string;
 
     /**
-     * Unique ID of the Date
+     * Status of the event
      */
     @Column({
         type: 'text',
     })
-    status: 'preview' | 'deployed';
+    status: 'preview' | 'live';
 
     /**
      * Validating address

@@ -80,11 +80,6 @@ export interface Category {
      * Total number of available tickets
      */
     seats: number;
-
-    /**
-     * Current status of the category
-     */
-    status: 'preview' | 'deployed';
 }
 
 /**
@@ -119,6 +114,14 @@ export class DateEntity {
      */
     @GeneratedUUidColumn()
     id: string;
+
+    /**
+     * Current status of the category
+     */
+    @Column({
+        type: 'text',
+    })
+    status: 'preview' | 'live';
 
     /**
      * Timestamp of the beginning of the event
