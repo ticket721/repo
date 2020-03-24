@@ -15,6 +15,7 @@ const customThemes = [
     componentColorLighter: 'rgba(355, 255, 255, 0.1)',
     defaultRadius: '8px',
     doubleSpacing: '32px',
+    fontStack: `'Gordita', Arial, Helvetica, sans-serif`,
     primaryColor: '#079CF0',
     primaryColorGradientEnd: '#2143AB',
     regularSpacing: '16px',

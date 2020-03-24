@@ -5,6 +5,7 @@ export interface Theme {
   componentColorLighter: string;
   defaultRadius: string;
   doubleSpacing: string;
+  fontStack: string;
   primaryColor: string;
   primaryColorGradientEnd: string;
   regularSpacing: string;
