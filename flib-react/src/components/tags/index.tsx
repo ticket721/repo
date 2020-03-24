@@ -91,7 +91,9 @@ const customStyles = {
       borderRadius: 0,
       color: '#fff',
       fontSize: 13,
+      lineHeight: '1em',
       marginRight: 8,
+      overflow: 'visible',
       padding: 0,
 
       '&:last-of-type:hover': {
