@@ -110,6 +110,8 @@ export interface TagsProps extends React.ComponentProps<any> {
   errorMessage?:string;
   inputValue:string;
   label:string;
+  currentTagsNumber?:number;
+  maxTags?:number;
   placeholder: string;
   value?:Array<object>;
   onInputChange: (inputValue: string) => void;
@@ -135,6 +137,14 @@ const StyledLabel = styled.label`
     transition: opacity 300ms ease;
     width: 4px;
   }
+`;
+
+const Counter = styled.span`
+  color: ${props => props.theme.textColorDarker};
+  font-size: 11px;
+  font-weight: 700;
+  position: absolute;
+  right: ${props => props.theme.biggerSpacing};
 `;
 
 const StyledInputContainer = styled.div<TagsProps>`
@@ -166,6 +176,11 @@ const StyledInputContainer = styled.div<TagsProps>`
 export const Tags: React.FunctionComponent<TagsProps> = (props: TagsProps): JSX.Element => {
   return  <StyledInputContainer>
             <StyledLabel>{props.label}</StyledLabel>
+
+            { props.maxTags &&
+              <Counter>{props.currentTagsNumber}/{props.maxTags}</Counter>
+            }
+
             <CreatableSelect
               components={components}
               onChange={e => {
