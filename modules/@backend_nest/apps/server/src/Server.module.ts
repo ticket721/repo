@@ -48,6 +48,7 @@ import { DosojinController } from '@app/server/controllers/dosojin/Dosojin.contr
 import { GemOrdersModule } from '@lib/common/gemorders/GemOrders.module';
 import { CheckoutController } from '@app/server/controllers/checkout/Checkout.controller';
 import { StripeResourcesModule } from '@lib/common/striperesources/StripeResources.module';
+import { ToolBoxModule } from '@lib/common/toolbox/ToolBox.module';
 
 @Module({
     imports: [
@@ -90,6 +91,7 @@ import { StripeResourcesModule } from '@lib/common/striperesources/StripeResourc
         // Utility Modules
         FSModule,
         ShutdownModule,
+        ToolBoxModule,
 
         // Notification Modules
         EmailModule,

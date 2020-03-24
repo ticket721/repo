@@ -74,6 +74,7 @@ describe('Dates Controller', function() {
                     updated_at: new Date(Date.now()),
                     parent_id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
                     parent_type: 'event',
+                    status: 'preview',
                 },
             ];
 

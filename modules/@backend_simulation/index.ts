@@ -189,22 +189,11 @@ export const createEvent = async (user: UserDto, sdk: T721SDK, token: string, ev
     });
     console.log('Create Event - Build: OK.');
 
-    console.log('Create Event - Sign Payload: ...');
-    const eventDeployPayload = await sdk.events.deploy.signPayload(token, resultingEvent.data.event.id);
-    console.log('Create Event - Sign Payload: OK.');
+    const liveEvent = await sdk.events.start(token, {
+        event: resultingEvent.data.event.id
+    });
 
-    const signedPayload = eventDeployPayload.data;
-
-    console.log('Create Event - Deploy: ...');
-    await sdk.events.deploy.run(
-        token,
-        {
-            payload: signedPayload.payload,
-            signature: signedPayload.signature,
-            event: resultingEvent.data.event.id,
-        },
-    );
-    console.log('Create Event - Deploy: OK.');
+    console.log(liveEvent.data.event);
 
 };
 

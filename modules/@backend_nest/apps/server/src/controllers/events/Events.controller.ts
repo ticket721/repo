@@ -1,5 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpException, Param, Post, UseFilters, UseGuards } from '@nestjs/common';
-import * as _ from 'lodash';
+import { Body, Controller, HttpCode, HttpException, Post, UseFilters, UseGuards } from '@nestjs/common';
 import { Roles, RolesGuard } from '@app/server/authentication/guards/RolesGuard.guard';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
@@ -20,26 +19,17 @@ import { Action } from '@lib/common/actionsets/helper/Action';
 import { StatusCodes, StatusNames } from '@lib/common/utils/codes';
 import { EventsBuildResponseDto } from '@app/server/controllers/events/dto/EventsBuildResponse.dto';
 import { EventsBuildInputDto } from '@app/server/controllers/events/dto/EventsBuildInput.dto';
-import { RefractMtx, toAcceptedAddressFormat, TransactionParameters, uuidEq } from '@common/global';
+import { toAcceptedAddressFormat, uuidEq, getT721ControllerGroupID } from '@common/global';
 import { ActionSetToEventEntityConverter } from '@app/server/controllers/events/utils/ActionSet.EventEntity.converter';
 import { ConfigService } from '@lib/common/config/Config.service';
 import { CurrenciesService } from '@lib/common/currencies/Currencies.service';
 import { DatesService } from '@lib/common/dates/Dates.service';
-import { Category, DateEntity } from '@lib/common/dates/entities/Date.entity';
-import { EventsDeployInputDto } from '@app/server/controllers/events/dto/EventsDeployInput.dto';
-import { EventsDeployResponseDto } from '@app/server/controllers/events/dto/EventsDeployResponse.dto';
+import { DateEntity } from '@lib/common/dates/entities/Date.entity';
 import { VaultereumService } from '@lib/common/vaultereum/Vaultereum.service';
-import { ScopeBinding, TicketforgeService } from '@lib/common/contracts/Ticketforge.service';
-import { EventsDeployGeneratePayloadParamsDto } from '@app/server/controllers/events/dto/EventsDeployGeneratePayloadParams.dto';
-import { EventsDeployGeneratePayloadResponseDto } from '@app/server/controllers/events/dto/EventsDeployGeneratePayloadResponse.dto';
-import { T721AdminService } from '@lib/common/contracts/T721Admin.service';
-import { encodeCategories } from '@app/server/controllers/events/utils/encodeCategories';
-import { RefractFactoryV0Service } from '@lib/common/contracts/refract/RefractFactory.V0.service';
-import { TxsService } from '@lib/common/txs/Txs.service';
 import { HttpExceptionFilter } from '@app/server/utils/HttpException.filter';
-import { EventsDeploySignPayloadParamsDto } from '@app/server/controllers/events/dto/EventsDeploySignPayloadParams.dto';
-import { EventsDeploySignPayloadResponseDto } from '@app/server/controllers/events/dto/EventsDeploySignPayloadResponse.dto';
-import { UserTypes } from '@app/server/authentication/guards/UserTypesGuard.guard';
+import { UUIDToolService } from '@lib/common/toolbox/UUID.tool.service';
+import { EventsStartInputDto } from '@app/server/controllers/events/dto/EventsStartInput.dto';
+import { EventsStartResponseDto } from '@app/server/controllers/events/dto/EventsStartResponse.dto';
 
 /**
  * Events controller to create and fetch events
@@ -57,10 +47,7 @@ export class EventsController {
      * @param currenciesService
      * @param datesService
      * @param vaultereumService
-     * @param ticketforgeService
-     * @param t721AdminService
-     * @param refractFactoryService
-     * @param txsService
+     * @param uuidToolService
      */
     constructor(
         private readonly eventsService: EventsService,
@@ -69,10 +56,7 @@ export class EventsController {
         private readonly currenciesService: CurrenciesService,
         private readonly datesService: DatesService,
         private readonly vaultereumService: VaultereumService,
-        private readonly ticketforgeService: TicketforgeService,
-        private readonly t721AdminService: T721AdminService,
-        private readonly refractFactoryService: RefractFactoryV0Service,
-        private readonly txsService: TxsService,
+        private readonly uuidToolService: UUIDToolService,
     ) {}
 
     /**
@@ -105,48 +89,54 @@ export class EventsController {
     }
 
     /**
-     * Deploys an event on the ethereum blockchain
+     * Starts a preview event and its dates
      *
      * @param body
      * @param user
      */
-    @Post('/deploy')
+    @Post('/start')
+    @ApiResponse({
+        status: StatusCodes.NotFound,
+        description: StatusNames[StatusCodes.NotFound],
+    })
+    @ApiResponse({
+        status: StatusCodes.Unauthorized,
+        description: StatusNames[StatusCodes.Unauthorized],
+    })
+    @ApiResponse({
+        status: StatusCodes.BadRequest,
+        description: StatusNames[StatusCodes.BadRequest],
+    })
     @ApiResponse({
         status: StatusCodes.InternalServerError,
         description: StatusNames[StatusCodes.InternalServerError],
     })
     @ApiResponse({
-        status: StatusCodes.BadRequest,
-        description: StatusNames[StatusCodes.BadRequest],
+        status: StatusCodes.Created,
+        description: StatusNames[StatusCodes.Created],
     })
-    @ApiResponse({
-        status: StatusCodes.NotFound,
-        description: StatusNames[StatusCodes.NotFound],
-    })
-    @ApiResponse({
-        status: StatusCodes.OK,
-        description: StatusNames[StatusCodes.OK],
-    })
-    @HttpCode(200)
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @Roles('authenticated')
     @UseFilters(new HttpExceptionFilter())
-    async deploy(@Body() body: EventsDeployInputDto, @User() user: UserDto): Promise<EventsDeployResponseDto> {
-        const event = await this.eventsService.search({
+    async start(@Body() body: EventsStartInputDto, @User() user: UserDto): Promise<EventsStartResponseDto> {
+        // 1. Start by fetching the event
+        const eventQueryRes = await this.eventsService.search({
             id: body.event,
         });
 
-        if (event.error) {
+        // 2. Throw if there is a query error
+        if (eventQueryRes.error) {
             throw new HttpException(
                 {
                     status: StatusCodes.InternalServerError,
-                    message: event.error,
+                    message: eventQueryRes.error,
                 },
                 StatusCodes.InternalServerError,
             );
         }
 
-        if (event.response.length === 0) {
+        // 3. Throw if no events matches given id
+        if (eventQueryRes.response.length === 0) {
             throw new HttpException(
                 {
                     status: StatusCodes.NotFound,
@@ -156,268 +146,89 @@ export class EventsController {
             );
         }
 
-        const generatedPayload = await this.getPayload(
-            {
-                event: body.event,
-            },
-            user,
-        );
+        const eventEntity = eventQueryRes.response[0];
 
-        if (!_.isEqual(body.payload, generatedPayload.payload)) {
+        // 4. Throw if user is not event owner
+        if (!uuidEq(eventEntity.owner, user.id)) {
             throw new HttpException(
                 {
-                    status: StatusCodes.BadRequest,
-                    message: 'invalid_payload',
+                    status: StatusCodes.Unauthorized,
+                    message: 'not_event_owner',
                 },
-                StatusCodes.BadRequest,
+                StatusCodes.Unauthorized,
             );
         }
 
-        const eventEntity = event.response[0];
+        // 5. Update event status to live
+        const eventUpdateQuery = await this.eventsService.update(
+            {
+                id: body.event,
+            },
+            {
+                status: 'live',
+            },
+        );
 
-        const txRes = await this.txsService.mtx(body.payload, body.signature, user);
-
-        if (txRes.error) {
+        // 6. Throw if update failed
+        if (eventUpdateQuery.error) {
             throw new HttpException(
                 {
                     status: StatusCodes.InternalServerError,
-                    message: txRes.error,
+                    message: eventUpdateQuery.error,
                 },
                 StatusCodes.InternalServerError,
             );
         }
 
-        const updateRes = await this.eventsService.update(
-            {
-                id: eventEntity.id,
-            },
-            {
-                group_id: generatedPayload.groupId,
-            },
-        );
+        // 7. If no dates given, use all date, if dates given check them
+        if (!body.dates) {
+            body.dates = eventEntity.dates;
+        } else {
+            for (const date of body.dates) {
+                if (
+                    eventEntity.dates.findIndex((value: string): boolean => {
+                        return uuidEq(value, date);
+                    }) === -1
+                ) {
+                    throw new HttpException(
+                        {
+                            status: StatusCodes.BadRequest,
+                            message: 'specified_date_not_in_event',
+                        },
+                        StatusCodes.BadRequest,
+                    );
+                }
+            }
+        }
 
-        if (updateRes.error) {
-            throw new HttpException(
+        for (const date of body.dates) {
+            // 8. For each date, update status to live
+            const dateUpdateRes = await this.datesService.update(
                 {
-                    status: StatusCodes.InternalServerError,
-                    message: updateRes.error,
+                    id: date,
                 },
-                StatusCodes.InternalServerError,
+                {
+                    status: 'live',
+                },
             );
+
+            // 9. Throw if update fails
+            if (dateUpdateRes.error) {
+                throw new HttpException(
+                    {
+                        status: StatusCodes.InternalServerError,
+                        message: dateUpdateRes.error,
+                    },
+                    StatusCodes.InternalServerError,
+                );
+            }
         }
 
         return {
             event: {
                 ...eventEntity,
-                group_id: generatedPayload.groupId,
+                status: 'live',
             },
-        };
-    }
-
-    /**
-     * Recover MetaTransaction EIP712 payload to sign
-     *
-     * @param params
-     * @param user
-     */
-    @Get('/genp/deploy/:event')
-    @ApiResponse({
-        status: StatusCodes.NotFound,
-        description: StatusNames[StatusCodes.NotFound],
-    })
-    @ApiResponse({
-        status: StatusCodes.BadRequest,
-        description: StatusNames[StatusCodes.BadRequest],
-    })
-    @ApiResponse({
-        status: StatusCodes.OK,
-        description: StatusNames[StatusCodes.OK],
-    })
-    @HttpCode(200)
-    @UseGuards(AuthGuard('jwt'), RolesGuard)
-    @Roles('authenticated')
-    @UseFilters(new HttpExceptionFilter())
-    async getPayload(
-        @Param() params: EventsDeployGeneratePayloadParamsDto,
-        @User() user: UserDto,
-    ): Promise<EventsDeployGeneratePayloadResponseDto> {
-        const event = await this.eventsService.search({
-            id: params.event,
-        });
-
-        if (event.error) {
-            throw new HttpException(
-                {
-                    status: StatusCodes.InternalServerError,
-                    message: event.error,
-                },
-                StatusCodes.InternalServerError,
-            );
-        }
-
-        if (event.response.length === 0) {
-            throw new HttpException(
-                {
-                    status: StatusCodes.NotFound,
-                    message: 'event_not_found',
-                },
-                StatusCodes.NotFound,
-            );
-        }
-
-        const eventEntity: EventEntity = event.response[0];
-        const scopeContracts: ScopeBinding = this.ticketforgeService.getScopeContracts(
-            this.configService.get('TICKETFORGE_SCOPE'),
-        );
-        if (!scopeContracts) {
-            throw new HttpException(
-                {
-                    status: StatusCodes.NotFound,
-                    message: 'scope_contracts_not_found',
-                },
-                StatusCodes.NotFound,
-            );
-        }
-
-        const t721controller = await scopeContracts.t721c.get();
-        const t721admin = await this.t721AdminService.get();
-        let nextId;
-
-        try {
-            nextId = (await t721controller.methods.getNextGroupId(user.address).call()).toLowerCase();
-        } catch (e) {
-            throw new HttpException(
-                {
-                    status: StatusCodes.InternalServerError,
-                    message: 'cannot_retrieve_group_id',
-                },
-                StatusCodes.InternalServerError,
-            );
-        }
-
-        const parameters: TransactionParameters[] = [];
-
-        parameters.push({
-            from: user.address,
-            to: t721controller._address,
-            relayer: t721admin._address,
-            data: t721controller.methods.createGroup('@event/modules').encodeABI(),
-            value: '0',
-        });
-
-        let categories: Category[] = [...eventEntity.categories];
-
-        for (const date of eventEntity.dates) {
-            const dateEntityRes = await this.datesService.search({
-                id: date,
-            });
-
-            if (dateEntityRes.error) {
-                throw new HttpException(
-                    {
-                        status: StatusCodes.InternalServerError,
-                        message: dateEntityRes.error,
-                    },
-                    StatusCodes.InternalServerError,
-                );
-            }
-
-            if (dateEntityRes.response.length === 0) {
-                throw new HttpException(
-                    {
-                        status: StatusCodes.NotFound,
-                        message: 'date_entry_not_found',
-                    },
-                    StatusCodes.NotFound,
-                );
-            }
-
-            categories = [...categories, ...dateEntityRes.response[0].categories];
-        }
-
-        const registerCategoriesArguments = await encodeCategories(
-            eventEntity.address,
-            this.currenciesService,
-            categories,
-        );
-
-        for (const batch of registerCategoriesArguments) {
-            parameters.push({
-                from: user.address,
-                to: t721controller._address,
-                relayer: t721admin._address,
-                data: t721controller.methods.registerCategories(nextId, batch[0], batch[1], batch[2]).encodeABI(),
-                value: '0',
-            });
-        }
-
-        const rmtx: RefractMtx = new RefractMtx(
-            parseInt(this.configService.get('ETHEREUM_NODE_NETWORK_ID'), 10),
-            this.configService.get('ETHEREUM_MTX_DOMAIN_NAME'),
-            this.configService.get('ETHEREUM_MTX_VERSION'),
-            user.address,
-        );
-
-        const generatedNonce = await this.refractFactoryService.getNonce(user.address);
-
-        return {
-            payload: rmtx.generatePayload(
-                {
-                    nonce: generatedNonce,
-                    parameters,
-                },
-                'MetaTransaction',
-            ),
-            groupId: nextId,
-        };
-    }
-
-    /**
-     * Recover MetaTransaction EIP712 payload to sign
-     *
-     * @param params
-     * @param user
-     */
-    @Get('/signp/deploy/:event')
-    @ApiResponse({
-        status: StatusCodes.NotFound,
-        description: StatusNames[StatusCodes.NotFound],
-    })
-    @ApiResponse({
-        status: StatusCodes.BadRequest,
-        description: StatusNames[StatusCodes.BadRequest],
-    })
-    @ApiResponse({
-        status: StatusCodes.OK,
-        description: StatusNames[StatusCodes.OK],
-    })
-    @HttpCode(200)
-    @UseGuards(AuthGuard('jwt'), RolesGuard)
-    @Roles('authenticated')
-    @UserTypes('t721')
-    @UseFilters(new HttpExceptionFilter())
-    async signPayload(
-        @Param() params: EventsDeploySignPayloadParamsDto,
-        @User() user: UserDto,
-    ): Promise<EventsDeploySignPayloadResponseDto> {
-        const generatedPayload: EventsDeployGeneratePayloadResponseDto = await this.getPayload(params, user);
-
-        const rmtx: RefractMtx = new RefractMtx(
-            parseInt(this.configService.get('ETHEREUM_NODE_NETWORK_ID'), 10),
-            this.configService.get('ETHEREUM_MTX_DOMAIN_NAME'),
-            this.configService.get('ETHEREUM_MTX_VERSION'),
-            user.address,
-        );
-
-        const signature = await rmtx.sign(
-            this.vaultereumService.getSigner(`user-${user.id}`),
-            generatedPayload.payload,
-        );
-
-        return {
-            payload: generatedPayload.payload,
-            groupId: generatedPayload.groupId,
-            signature: signature.hex,
         };
     }
 
@@ -498,12 +309,60 @@ export class EventsController {
             );
         }
 
+        // Generate unique identifier
+        let eventUUID: string;
+        let eventsCollisionRes: CRUDResponse<EventEntity[]>;
+
+        // Verify very low probability collision
+        do {
+            eventUUID = this.uuidToolService.generate();
+            eventsCollisionRes = await this.eventsService.search({
+                id: eventUUID,
+            });
+
+            if (eventsCollisionRes.error) {
+                throw new HttpException(
+                    {
+                        status: StatusCodes.InternalServerError,
+                        message: eventsCollisionRes.error,
+                    },
+                    StatusCodes.InternalServerError,
+                );
+            }
+        } while (eventsCollisionRes.response.length !== 0);
+
+        // Create Vault address
+
+        const validatingAddressName = `event-${eventUUID.toLowerCase()}`;
+        const validatingAddressRes = await this.vaultereumService.write(`ethereum/accounts/${validatingAddressName}`);
+
+        if (validatingAddressRes.error) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.InternalServerError,
+                    message: validatingAddressRes.error,
+                },
+                StatusCodes.InternalServerError,
+            );
+        }
+
+        const eventAddress = toAcceptedAddressFormat(validatingAddressRes.response.data.address);
+
+        // Generate Group ID
+
+        const groupId = getT721ControllerGroupID(eventUUID, eventAddress);
+
+        // Generate Dates and event entities
+
         let dates;
         let event;
 
         try {
             [dates, event] = await ActionSetToEventEntityConverter(
                 this.configService.get('TICKETFORGE_SCOPE'),
+                groupId,
+                eventUUID,
+                eventAddress,
                 new ActionSet().load(actionSetEntity),
                 this.currenciesService,
                 user.id,
@@ -517,6 +376,8 @@ export class EventsController {
                 StatusCodes.InternalServerError,
             );
         }
+
+        // Create Dates
 
         const datesSavedEntities: DateEntity[] = [];
 
@@ -535,6 +396,8 @@ export class EventsController {
             datesSavedEntities.push(dateCreationRes.response);
         }
 
+        // Create Event
+
         event.dates = datesSavedEntities.map((date: DateEntity): string => date.id);
 
         const eventCreationRes = await this.eventsService.create(event);
@@ -549,56 +412,8 @@ export class EventsController {
             );
         }
 
-        const validatingAddressName = `event-${eventCreationRes.response.id.toLowerCase()}`;
-        const validatingAddressRes = await this.vaultereumService.write(`ethereum/accounts/${validatingAddressName}`);
-
-        if (validatingAddressRes.error) {
-            throw new HttpException(
-                {
-                    status: StatusCodes.InternalServerError,
-                    message: validatingAddressRes.error,
-                },
-                StatusCodes.InternalServerError,
-            );
-        }
-
-        const eventAddress = toAcceptedAddressFormat(validatingAddressRes.response.data.address);
-
-        const eventAddressUpdateRes = await this.eventsService.update(
-            {
-                id: eventCreationRes.response.id,
-            },
-            {
-                address: eventAddress,
-            },
-        );
-
-        if (eventAddressUpdateRes.error) {
-            throw new HttpException(
-                {
-                    status: StatusCodes.InternalServerError,
-                    message: eventAddressUpdateRes.error,
-                },
-                StatusCodes.InternalServerError,
-            );
-        }
-
-        const fullEvent = await this.eventsService.search({
-            id: eventCreationRes.response.id,
-        });
-
-        if (fullEvent.error) {
-            throw new HttpException(
-                {
-                    status: StatusCodes.InternalServerError,
-                    message: fullEvent.error,
-                },
-                StatusCodes.InternalServerError,
-            );
-        }
-
         return {
-            event: fullEvent.response[0],
+            event: eventCreationRes.response,
         };
     }
 

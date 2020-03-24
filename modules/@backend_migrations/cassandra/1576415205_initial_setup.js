@@ -94,7 +94,6 @@ var migration1576415205 = {
                         resale_end timestamp,
                         scope text,
                         prices list<frozen<ticket721.price>>,
-                        status text,
                         seats int
                     );`,
             params: []
@@ -119,6 +118,7 @@ var migration1576415205 = {
                         metadata frozen<ticket721.date_metadata>,
                         parent_id uuid,
                         parent_type text,
+                        status text,
                         created_at timestamp,
                         updated_at timestamp
                     );`,

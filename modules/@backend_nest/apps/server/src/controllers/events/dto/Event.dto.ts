@@ -12,7 +12,7 @@ export class EventDto {
     /**
      * Status of the Event
      */
-    status: 'preview' | 'deployed';
+    status: 'preview' | 'live';
 
     /**
      * Validating address
