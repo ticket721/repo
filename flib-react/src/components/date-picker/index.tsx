@@ -61,16 +61,59 @@ const StyledInputContainer = styled.div`
   }
 
   .react-datepicker {
+    background-color: ${props => props.theme.componentColorLight};
+    border: none;
+    color: ${props => props.theme.textColor};
     font-family: ${props => props.theme.fontStack};
 
     &__triangle {
       display: none;
     }
 
+    &__current-month {
+      color: ${props => props.theme.textColor};
+      font-size: 20px;
+      padding-left: ${props => props.theme.biggerSpacing};
+    }
+
+    &__day-names {
+      display: flex;
+    }
+
+    &__day-name,
+    &__day {
+      align-items: center;
+      background-color: transparent;
+      border-radius: ${props => props.theme.defaultRadius};
+      color: ${props => props.theme.textColor};
+      display: inline-flex;
+      font-size: 14px;
+      font-weight: 500;
+      justify-content: center;
+      height: 40px;
+      transition: background-color 300ms ease;
+      width: 40px;
+
+      &--outside-month {
+        color: ${props => props.theme.textColorDarker};
+      }
+
+      &--selected {
+        background: linear-gradient(265deg, ${props => props.theme.primaryColor}, ${props => props.theme.primaryColorGradientEnd});
+      }
+    }
+
+    &__day:hover {
+      background-color: ${props => props.theme.componentColor};
+      border-radius: ${props => props.theme.defaultRadius};
+    }
+
     &__header {
-      border-bottom-left-radius: ${props => props.theme.defaultRadius};
-      border-top-left-radius: ${props => props.theme.defaultRadius};
-      padding: ${props => props.theme.biggerSpacing};
+      background: ${props => props.theme.componentColor};
+      border: none;
+      border-radius: ${props => props.theme.defaultRadius};
+      padding: ${props => props.theme.biggerSpacing} 0 0;
+      text-align: left;
     }
 
     &-wrapper {

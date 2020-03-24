@@ -37,6 +37,7 @@ const onInputChange = (inputValue: string) => {
 const onKeyDown = (e: React.KeyboardEvent<HTMLElement>, value: string) => {
   const tags = store.get('tags');
   const tagsLength = tags ? tags.length : 0;
+
   if(!store.get('inputValue') || tagsLength === maxItems) return;
 
   switch (e.key) {
@@ -62,11 +63,11 @@ const onKeyDown = (e: React.KeyboardEvent<HTMLElement>, value: string) => {
 };
 
 export default {
-  title: 'Tags',
+  component: Tags,
   decorators: [
     withKnobs
   ],
-  component: Tags
+  title: 'Tags'
 };
 
 let storeObject: StoreObject = {
