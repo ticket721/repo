@@ -36,8 +36,8 @@ const onInputChange = (inputValue: string) => {
 
 const onKeyDown = (e: React.KeyboardEvent<HTMLElement>, value: string) => {
   const tags = store.get('tags');
-
-  if(!store.get('inputValue') || tags.length === maxItems) return;
+  const tagsLength = tags ? tags.length : 0;
+  if(!store.get('inputValue') || tagsLength === maxItems) return;
 
   switch (e.key) {
     case 'Enter':
@@ -54,7 +54,8 @@ const onKeyDown = (e: React.KeyboardEvent<HTMLElement>, value: string) => {
           createTags(value)
         ]})
       }
-      store.set({'items': tags.length + 1});
+
+      store.set({'items': tagsLength + 1});
 
     e.preventDefault();
   }
