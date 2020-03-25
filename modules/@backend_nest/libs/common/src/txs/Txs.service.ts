@@ -100,7 +100,7 @@ export class TxsService extends CRUDExtension<TxsRepository, TxEntity> {
      *
      * @param txhash
      */
-    async subscribe(txhash: string): Promise<ServiceResponse<TxEntity>> {
+    async subscribe(txhash: string, broadcasted?: boolean): Promise<ServiceResponse<TxEntity>> {
         txhash = txhash.toLowerCase();
 
         if (!isTransactionHash(txhash)) {
@@ -132,6 +132,7 @@ export class TxsService extends CRUDExtension<TxsRepository, TxEntity> {
             transaction_hash: txhash,
             confirmed: false,
             block_number: 0,
+            broadcasted_at: broadcasted ? new Date(Date.now()) : null,
         });
 
         if (createdTx.error) {
@@ -350,7 +351,7 @@ export class TxsService extends CRUDExtension<TxsRepository, TxEntity> {
         const tx = await (await this.web3Service.get()).eth.sendSignedTransaction(
             signedTx.response.data.signed_transaction,
         );
-        const subscriptionRes = await this.subscribe(tx.transactionHash);
+        const subscriptionRes = await this.subscribe(tx.transactionHash, true);
 
         if (subscriptionRes.error) {
             return {

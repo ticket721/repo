@@ -180,6 +180,7 @@ var migration1576415205 = {
                         gas_price_ln double,
                         logs list<frozen<ticket721.tx_log>>,
                         logs_bloom text,
+                        broadcasted_at timestamp,
                         created_at timestamp,
                         updated_at timestamp
                     );`,
