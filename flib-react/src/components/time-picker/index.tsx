@@ -52,6 +52,10 @@ const StyledInputContainer = styled.div`
       }
     }
 
+    .react-datepicker-wrapper::after {
+      transform: rotate(0deg);
+    }
+
     ${StyledLabel} {
       transform: translateX(0px);
 
@@ -102,9 +106,19 @@ const StyledInputContainer = styled.div`
     &-wrapper {
       background: url('assets/icons/icon--clock.svg') 24px 17px/14px no-repeat;
       padding-left: 24px;
+      position: relative;
 
       &::after {
-        background: url('assets/icons/icon--chevron.svg')
+        background: url('assets/icons/icon--chevron.svg') center/cover no-repeat;
+        bottom: ${props => props.theme.biggerSpacing};
+        content: "";
+        display: block;
+        height: 7px;
+        position: absolute;
+        right: ${props => props.theme.biggerSpacing};
+        transform: rotate(-180deg);
+        transition: transform 300ms ease;
+        width: 12px;
       }
 
       input{
