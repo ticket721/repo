@@ -210,6 +210,6 @@ Tags.defaultProps = {
   onKeyDown: () => {},
   onInputChange: () => {},
   onChange: () => {}
-}
+};
 
 export default Tags;

@@ -6,7 +6,7 @@ const selectValues = [
   { value: 'music', label: 'Music' },
   { value: 'festival', label: 'Festival' },
   { value: 'conference', label: 'Conference' }
-]
+];
 
 export default {
   title: 'Select input',
@@ -16,12 +16,12 @@ export default {
   component: SelectInput
 };
 
-export const Select = () => (
+export const showcase = () => (
   <SelectInput
     label={text('Label', 'Category')}
     placeholder={text('Placeholder', 'Select category')}
     options={object('Values', selectValues)}
-    searchable={boolean('Search as you type ?', false)}
+    searchable={boolean('Search as you type ?', true)}
   />
 );
 

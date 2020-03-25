@@ -81,7 +81,6 @@ export const Checkbox: React.FunctionComponent<CheckboxProps> = (props: Checkbox
   </StyledCheckboxContainer>;
 };
 
-
 Checkbox.defaultProps = {
   onChange: () => {}
 };
