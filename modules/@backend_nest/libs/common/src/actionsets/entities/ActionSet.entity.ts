@@ -6,14 +6,16 @@ import {
     UpdateDateColumn,
 } from '@iaminfinity/express-cassandra';
 
-export type ActionStatus = 'waiting' | 'in progress' | 'complete' | 'error';
+export type ActionStatus = 'waiting' | 'in progress' | 'incomplete' | 'complete' | 'error';
 export type ActionSetStatus =
     | 'input:waiting'
     | 'input:in progress'
     | 'input:error'
+    | 'input:incomplete'
     | 'event:waiting'
     | 'event:in progress'
     | 'event:error'
+    | 'event:incomplete'
     | 'complete'
     | 'error';
 export type ActionType = 'input' | 'event';

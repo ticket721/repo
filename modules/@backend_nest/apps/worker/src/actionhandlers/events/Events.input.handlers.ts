@@ -4,6 +4,7 @@ import { Injectable, OnModuleInit } from '@nestjs/common';
 import Joi from '@hapi/joi';
 import { closestCity } from '@common/global';
 import { ImagesService } from '@lib/common/images/Images.service';
+import { ChecksRunnerUtil } from '@lib/common/actionsets/helper/ChecksRunner.util';
 
 /**
  * events/textMetadata arguments
@@ -221,22 +222,27 @@ export class EventsInputHandlers implements OnModuleInit {
     /**
      * events/textMetadata dynamic argument checker
      */
-    textMetadataValidator = Joi.object({
+    textMetadataValidator = Joi.object<EventsCreateTextMetadata>({
         name: Joi.string()
             .max(50)
             .min(3)
-            .required(),
+            .optional(),
         description: Joi.string()
             .max(1000)
-            .required(),
+            .optional(),
         tags: Joi.array()
             .items(
                 Joi.string()
                     .max(16)
                     .min(3),
             )
-            .required(),
+            .optional(),
     });
+
+    /**
+     * events/textMetadata dynamic fields checker
+     */
+    textMetadataFields = ['name', 'description', 'tags'];
 
     /**
      * events/textMetadata handler
@@ -244,17 +250,37 @@ export class EventsInputHandlers implements OnModuleInit {
     async textMetadataHandler(actionset: ActionSet, progress: Progress): Promise<[ActionSet, boolean]> {
         const data = actionset.action.data;
 
-        const { error } = this.textMetadataValidator.validate(data);
+        const { error, error_trace } = ChecksRunnerUtil<EventsCreateTextMetadata>(
+            data,
+            this.textMetadataValidator,
+            this.textMetadataFields,
+        );
 
-        if (error) {
-            actionset.action.setError({
-                details: error,
-                error: 'validation_error',
-            });
-            actionset.action.setStatus('error');
-            actionset.setStatus('input:error');
-        } else {
-            actionset.next();
+        switch (error) {
+            case 'error': {
+                actionset.action.setError({
+                    details: error_trace,
+                    error: 'validation_error',
+                });
+                actionset.action.setStatus('error');
+                actionset.setStatus('input:error');
+                break;
+            }
+
+            case 'incomplete': {
+                actionset.action.setIncomplete({
+                    details: error_trace,
+                    error: 'incomplete_error',
+                });
+                actionset.action.setStatus('incomplete');
+                actionset.setStatus('input:incomplete');
+                break;
+            }
+
+            case undefined: {
+                actionset.next();
+                break;
+            }
         }
 
         await progress(100);
@@ -264,7 +290,12 @@ export class EventsInputHandlers implements OnModuleInit {
     /**
      * events/modulesConfiguration dynamic argument checker
      */
-    modulesConfigurationValidator = Joi.object({});
+    modulesConfigurationValidator = Joi.object<EventsCreateModulesConfiguration>({});
+
+    /**
+     * events/modulesConfiguration dynamic fields checker
+     */
+    modulesConfigurationFields: string[] = [];
 
     /**
      * events/modulesConfiguration handler
@@ -272,17 +303,41 @@ export class EventsInputHandlers implements OnModuleInit {
     async modulesConfigurationHandler(actionset: ActionSet, progress: Progress): Promise<[ActionSet, boolean]> {
         const data = actionset.action.data;
 
-        const { error } = this.modulesConfigurationValidator.validate(data);
+        const { error, error_trace } = ChecksRunnerUtil<EventsCreateModulesConfiguration>(
+            data,
+            this.modulesConfigurationValidator,
+            this.modulesConfigurationFields,
+        );
 
-        if (error) {
-            actionset.action.setError({
-                details: error,
-                error: 'validation_error',
-            });
-            actionset.action.setStatus('error');
-            actionset.setStatus('input:error');
-        } else {
-            actionset.next();
+        switch (error) {
+            case 'error': {
+                actionset.action.setError({
+                    details: error_trace,
+                    error: 'validation_error',
+                });
+                actionset.action.setStatus('error');
+                actionset.setStatus('input:error');
+
+                break;
+            }
+
+            // No fields, so cannot be incomplete
+            /* istanbul ignore next */
+            case 'incomplete': {
+                actionset.action.setIncomplete({
+                    details: error_trace,
+                    error: 'incomplete_error',
+                });
+                actionset.action.setStatus('incomplete');
+                actionset.setStatus('input:incomplete');
+
+                break;
+            }
+
+            case undefined: {
+                actionset.next();
+                break;
+            }
         }
 
         await progress(100);
@@ -292,7 +347,7 @@ export class EventsInputHandlers implements OnModuleInit {
     /**
      * events/datesConfiguration dynamic argument checker
      */
-    datesConfigurationValidator = Joi.object({
+    datesConfigurationValidator = Joi.object<EventsCreateDatesConfiguration>({
         dates: Joi.array()
             .items(
                 Joi.object({
@@ -308,8 +363,13 @@ export class EventsInputHandlers implements OnModuleInit {
                         .required(),
                 }),
             )
-            .required(),
+            .optional(),
     });
+
+    /**
+     * events/datesConfiguration dynamic field checker
+     */
+    datesConfigurationFields: string[] = ['dates'];
 
     /**
      * events/datesConfiguration dates checker
@@ -328,39 +388,59 @@ export class EventsInputHandlers implements OnModuleInit {
     async datesConfigurationHandler(actionset: ActionSet, progress: Progress): Promise<[ActionSet, boolean]> {
         const data = actionset.action.data;
 
-        const { error } = this.datesConfigurationValidator.validate(data);
+        const { error, error_trace } = ChecksRunnerUtil<EventsCreateDatesConfiguration>(
+            data,
+            this.datesConfigurationValidator,
+            this.datesConfigurationFields,
+        );
 
-        if (error) {
-            actionset.action.setError({
-                details: error,
-                error: 'validation_error',
-            });
-            actionset.action.setStatus('error');
-            actionset.setStatus('input:error');
-        } else {
-            for (const date of data.dates) {
-                date.eventBegin = new Date(date.eventBegin);
-                date.eventEnd = new Date(date.eventEnd);
+        switch (error) {
+            case 'error': {
+                actionset.action.setError({
+                    details: error_trace,
+                    error: 'validation_error',
+                });
+                actionset.action.setStatus('error');
+                actionset.setStatus('input:error');
 
-                if (this.checkEventDates(date) !== null) {
-                    actionset.action.setError({
-                        details: null,
-                        error: this.checkEventDates(date),
-                    });
-                    actionset.action.setStatus('error');
-                    actionset.setStatus('input:error');
-                    await progress(100);
-                    return [actionset, true];
-                }
-
-                const city = closestCity(date.location);
-
-                date.city = city;
+                break;
             }
 
-            actionset.action.setData(data);
+            case 'incomplete': {
+                actionset.action.setIncomplete({
+                    details: error_trace,
+                    error: 'incomplete_error',
+                });
+                actionset.action.setStatus('incomplete');
+                actionset.setStatus('input:incomplete');
 
-            actionset.next();
+                break;
+            }
+
+            case undefined: {
+                for (const date of data.dates) {
+                    date.eventBegin = new Date(date.eventBegin);
+                    date.eventEnd = new Date(date.eventEnd);
+
+                    if (this.checkEventDates(date) !== null) {
+                        actionset.action.setError({
+                            details: null,
+                            error: this.checkEventDates(date),
+                        });
+                        actionset.action.setStatus('error');
+                        actionset.setStatus('input:error');
+                        await progress(100);
+                        return [actionset, true];
+                    }
+
+                    date.city = closestCity(date.location);
+                }
+
+                actionset.action.setData(data);
+
+                actionset.next();
+                break;
+            }
         }
 
         await progress(100);
@@ -390,10 +470,19 @@ export class EventsInputHandlers implements OnModuleInit {
     /**
      * events/categoriesConfiguration dynamic argument checker
      */
-    categoriesConfigurationValidator = Joi.object({
-        global: Joi.array().items(this.categoryConfigurationValidator),
-        dates: Joi.array().items(Joi.array().items(this.categoryConfigurationValidator)),
+    categoriesConfigurationValidator = Joi.object<EventsCreateCategoriesConfiguration>({
+        global: Joi.array()
+            .items(this.categoryConfigurationValidator)
+            .optional(),
+        dates: Joi.array()
+            .items(Joi.array().items(this.categoryConfigurationValidator))
+            .optional(),
     });
+
+    /**
+     * events/categoriesConfiguration dynamic fields checker
+     */
+    categoriesConfigurationFields: string[] = ['global', 'dates'];
 
     /**
      * events/categoriesConfiguration check name conflicts
@@ -488,57 +577,78 @@ export class EventsInputHandlers implements OnModuleInit {
     async categoriesConfigurationHandler(actionset: ActionSet, progress: Progress): Promise<[ActionSet, boolean]> {
         const data = actionset.action.data;
 
-        const { error } = this.categoriesConfigurationValidator.validate(data);
+        const { error, error_trace } = ChecksRunnerUtil<EventsCreateCategoriesConfiguration>(
+            data,
+            this.categoriesConfigurationValidator,
+            this.categoriesConfigurationFields,
+        );
 
-        if (error) {
-            actionset.action.setError({
-                details: error,
-                error: 'validation_error',
-            });
-            actionset.action.setStatus('error');
-            actionset.setStatus('input:error');
-        } else {
-            const dates = actionset.actions[actionset.current_action - 1].data;
-
-            if (dates.dates.length !== data.dates.length) {
+        switch (error) {
+            case 'error': {
                 actionset.action.setError({
-                    details: null,
-                    error: 'invalid_categories_per_dates_ratio',
+                    details: error_trace,
+                    error: 'validation_error',
                 });
                 actionset.action.setStatus('error');
                 actionset.setStatus('input:error');
-                await progress(100);
-                return [actionset, true];
+
+                break;
             }
 
-            const conflict = await this.checkCategoriesConflicts(data);
-
-            if (conflict) {
-                actionset.action.setError({
-                    details: null,
-                    error: conflict,
+            case 'incomplete': {
+                actionset.action.setIncomplete({
+                    details: error_trace,
+                    error: 'incomplete_error',
                 });
-                actionset.action.setStatus('error');
-                actionset.setStatus('input:error');
-                await progress(100);
-                return [actionset, true];
+                actionset.action.setStatus('incomplete');
+                actionset.setStatus('input:incomplete');
+
+                break;
             }
 
-            const datesChecks = this.checkResaleDates(data);
+            case undefined: {
+                const dates = actionset.actions[actionset.current_action - 1].data;
 
-            if (datesChecks) {
-                actionset.action.setError({
-                    details: null,
-                    error: datesChecks,
-                });
-                actionset.action.setStatus('error');
-                actionset.setStatus('input:error');
-                await progress(100);
-                return [actionset, true];
+                if (dates.dates.length !== data.dates.length) {
+                    actionset.action.setError({
+                        details: null,
+                        error: 'invalid_categories_per_dates_ratio',
+                    });
+                    actionset.action.setStatus('error');
+                    actionset.setStatus('input:error');
+                    await progress(100);
+                    return [actionset, true];
+                }
+
+                const conflict = await this.checkCategoriesConflicts(data);
+
+                if (conflict) {
+                    actionset.action.setError({
+                        details: null,
+                        error: conflict,
+                    });
+                    actionset.action.setStatus('error');
+                    actionset.setStatus('input:error');
+                    await progress(100);
+                    return [actionset, true];
+                }
+
+                const datesChecks = this.checkResaleDates(data);
+
+                if (datesChecks) {
+                    actionset.action.setError({
+                        details: null,
+                        error: datesChecks,
+                    });
+                    actionset.action.setStatus('error');
+                    actionset.setStatus('input:error');
+                    await progress(100);
+                    return [actionset, true];
+                }
+
+                actionset.action.setData(data);
+                actionset.next();
             }
-
-            actionset.action.setData(data);
-            actionset.next();
         }
 
         await progress(100);
@@ -548,12 +658,17 @@ export class EventsInputHandlers implements OnModuleInit {
     /**
      * events/imagesMetadata dynamic argument checker
      */
-    imagesMetadataValidator = Joi.object({
-        avatar: Joi.string().required(),
+    imagesMetadataValidator = Joi.object<EventsCreateImagesMetadata>({
+        avatar: Joi.string().optional(),
         banners: Joi.array()
             .items(Joi.string())
-            .required(),
+            .optional(),
     });
+
+    /**
+     * events/imagesMetadata dynamic fields checker
+     */
+    imagesMetadataFields: string[] = ['avatar', 'banners'];
 
     /**
      * events/imagesMetadata handler
@@ -561,37 +676,41 @@ export class EventsInputHandlers implements OnModuleInit {
     async imagesMetadataHandler(actionset: ActionSet, progress: Progress): Promise<[ActionSet, boolean]> {
         const data = actionset.action.data;
 
-        const { error } = this.imagesMetadataValidator.validate(data);
+        const { error, error_trace } = ChecksRunnerUtil<EventsCreateImagesMetadata>(
+            data,
+            this.imagesMetadataValidator,
+            this.imagesMetadataFields,
+        );
 
-        if (error) {
-            actionset.action.setError({
-                details: error,
-                error: 'validation_error',
-            });
-            actionset.action.setStatus('error');
-            actionset.setStatus('input:error');
-        } else {
-            const avatarQuery = await this.imagesService.search({
-                id: data.avatar,
-            });
-
-            if (avatarQuery.error || avatarQuery.response.length === 0) {
+        switch (error) {
+            case 'error': {
                 actionset.action.setError({
-                    details: error,
-                    error: 'cannot_find_image',
+                    details: error_trace,
+                    error: 'validation_error',
                 });
                 actionset.action.setStatus('error');
                 actionset.setStatus('input:error');
-                await progress(100);
-                return [actionset, true];
+
+                break;
             }
 
-            for (const banner of data.banners) {
-                const bannerQuery = await this.imagesService.search({
-                    id: banner,
+            case 'incomplete': {
+                actionset.action.setIncomplete({
+                    details: error_trace,
+                    error: 'incomplete_error',
+                });
+                actionset.action.setStatus('incomplete');
+                actionset.setStatus('input:incomplete');
+
+                break;
+            }
+
+            case undefined: {
+                const avatarQuery = await this.imagesService.search({
+                    id: data.avatar,
                 });
 
-                if (bannerQuery.error || bannerQuery.response.length === 0) {
+                if (avatarQuery.error || avatarQuery.response.length === 0) {
                     actionset.action.setError({
                         details: error,
                         error: 'cannot_find_image',
@@ -601,9 +720,28 @@ export class EventsInputHandlers implements OnModuleInit {
                     await progress(100);
                     return [actionset, true];
                 }
-            }
 
-            actionset.next();
+                for (const banner of data.banners) {
+                    const bannerQuery = await this.imagesService.search({
+                        id: banner,
+                    });
+
+                    if (bannerQuery.error || bannerQuery.response.length === 0) {
+                        actionset.action.setError({
+                            details: error,
+                            error: 'cannot_find_image',
+                        });
+                        actionset.action.setStatus('error');
+                        actionset.setStatus('input:error');
+                        await progress(100);
+                        return [actionset, true];
+                    }
+                }
+
+                actionset.next();
+
+                break;
+            }
         }
 
         await progress(100);
@@ -614,8 +752,15 @@ export class EventsInputHandlers implements OnModuleInit {
      * events/adminsConfiguration dynamic argument checker
      */
     adminsConfigurationValidator = Joi.object({
-        admins: Joi.array().items(Joi.string()),
+        admins: Joi.array()
+            .items(Joi.string())
+            .optional(),
     });
+
+    /**
+     * events/adminsConfiguration dynamic fields checker
+     */
+    adminsConfigurationFields: string[] = ['admins'];
 
     /**
      * events/adminsConfiguration handler
@@ -623,17 +768,39 @@ export class EventsInputHandlers implements OnModuleInit {
     async adminsConfigurationHandler(actionset: ActionSet, progress: Progress): Promise<[ActionSet, boolean]> {
         const data = actionset.action.data;
 
-        const { error } = this.adminsConfigurationValidator.validate(data);
+        const { error, error_trace } = ChecksRunnerUtil<EventsCreateAdminsConfiguration>(
+            data,
+            this.adminsConfigurationValidator,
+            this.adminsConfigurationFields,
+        );
 
-        if (error) {
-            actionset.action.setError({
-                details: error,
-                error: 'validation_error',
-            });
-            actionset.action.setStatus('error');
-            actionset.setStatus('input:error');
-        } else {
-            actionset.next();
+        switch (error) {
+            case 'error': {
+                actionset.action.setError({
+                    details: error_trace,
+                    error: 'validation_error',
+                });
+                actionset.action.setStatus('error');
+                actionset.setStatus('input:error');
+
+                break;
+            }
+
+            case 'incomplete': {
+                actionset.action.setIncomplete({
+                    details: error_trace,
+                    error: 'incomplete_error',
+                });
+                actionset.action.setStatus('incomplete');
+                actionset.setStatus('input:incomplete');
+
+                break;
+            }
+
+            case undefined: {
+                actionset.next();
+                break;
+            }
         }
 
         await progress(100);

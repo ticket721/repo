@@ -120,6 +120,17 @@ export class Action {
     }
 
     /**
+     * Set error field when incomplete status
+     *
+     * @param error
+     */
+    setIncomplete(error: any): Action {
+        this.entity.error = JSON.stringify(error);
+
+        return this;
+    }
+
+    /**
      * Set type field
      *
      * @param type
