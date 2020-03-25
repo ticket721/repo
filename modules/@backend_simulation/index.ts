@@ -33,8 +33,12 @@ const waitForAction = async (sdk: T721SDK, token: string, actionset: string): Pr
                     case 'input:in progress':
                         return ok(actionSetEntity.current_status);
                     case 'error':
+                    case 'input:incomplete':
+                    case 'event:incomplete':
                     case 'input:error':
                     case 'event:error':
+                        console.log(`Got ${actionSetEntity.current_status} on entity`);
+                        console.log(actionSetEntity.actions[actionSetEntity.current_action].error);
                         return ko({
                             current_status: actionSetEntity.current_status,
                             error: actionSetEntity.actions[actionSetEntity.current_action].error,

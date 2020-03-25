@@ -97,10 +97,11 @@ describe('Event Input Handlers', function() {
             });
         });
 
-        it('should error on missing name', async function() {
+        it('should error on invalid name', async function() {
             const textData = {
                 description: 'event description',
                 tags: ['event', 'test'],
+                name: 123,
             };
 
             const created_at = new Date(Date.now());
@@ -142,12 +143,69 @@ describe('Event Input Handlers', function() {
                         data: JSON.stringify(textData),
                         type: 'input',
                         error:
-                            '{"details":{"_original":{"description":"event description","tags":["event","test"]},"details":[{"message":"\\"name\\" is required","path":["name"],"type":"any.required","context":{"label":"name","key":"name"}}]},"error":"validation_error"}',
+                            '{"details":{"_original":{"description":"event description","tags":["event","test"],"name":123},"details":[{"message":"\\"name\\" must be a string","path":["name"],"type":"string.base","context":{"label":"name","value":123,"key":"name"}}]},"error":"validation_error"}',
                     },
                 ],
                 owner: 'ec677b12-d420-43a6-a597-ef84bf09f845',
                 current_action: 0,
                 current_status: 'input:error',
+                name: '@event/creation',
+                created_at,
+                updated_at,
+                dispatched_at,
+            });
+        });
+
+        it('should incomplete on missing name', async function() {
+            const textData = {
+                description: 'event description',
+                tags: ['event', 'test'],
+            };
+
+            const created_at = new Date(Date.now());
+            const updated_at = created_at;
+            const dispatched_at = created_at;
+
+            const actionSetEntity: ActionSetEntity = {
+                id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                actions: [
+                    {
+                        status: 'waiting',
+                        name: '@events/textMetadata',
+                        data: JSON.stringify(textData),
+                        type: 'input',
+                        error: null,
+                    },
+                ],
+                owner: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                current_action: 0,
+                current_status: 'input:waiting',
+                name: '@event/creation',
+                created_at,
+                updated_at,
+                dispatched_at,
+            };
+
+            const actionSet: ActionSet = new ActionSet().load(actionSetEntity);
+            const progress = async (p: number) => {};
+
+            const [resActionSet, update] = await context.eventsInputHandler.textMetadataHandler(actionSet, progress);
+
+            expect(update).toEqual(true);
+            expect(resActionSet.raw).toEqual({
+                id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                actions: [
+                    {
+                        status: 'incomplete',
+                        name: '@events/textMetadata',
+                        data: JSON.stringify(textData),
+                        type: 'input',
+                        error: '{"details":["name"],"error":"incomplete_error"}',
+                    },
+                ],
+                owner: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                current_action: 0,
+                current_status: 'input:incomplete',
                 name: '@event/creation',
                 created_at,
                 updated_at,
@@ -423,6 +481,63 @@ describe('Event Input Handlers', function() {
                 owner: 'ec677b12-d420-43a6-a597-ef84bf09f845',
                 current_action: 0,
                 current_status: 'input:error',
+                name: '@event/creation',
+                created_at,
+                updated_at,
+                dispatched_at,
+            });
+        });
+
+        it('should incomplete on missing date', async function() {
+            const created_at = new Date(Date.now());
+            const updated_at = created_at;
+            const dispatched_at = created_at;
+
+            const datesConfiguration = {};
+
+            const actionSetEntity: ActionSetEntity = {
+                id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                actions: [
+                    {
+                        status: 'waiting',
+                        name: '@events/datesConfiguration',
+                        data: JSON.stringify(datesConfiguration),
+                        type: 'input',
+                        error: null,
+                    },
+                ],
+                owner: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                current_action: 0,
+                current_status: 'input:waiting',
+                name: '@event/creation',
+                created_at,
+                updated_at,
+                dispatched_at,
+            };
+
+            const actionSet: ActionSet = new ActionSet().load(actionSetEntity);
+            const progress = async (p: number) => {};
+
+            const [resActionSet, update] = await context.eventsInputHandler.datesConfigurationHandler(
+                actionSet,
+                progress,
+            );
+
+            expect(update).toEqual(true);
+            expect(resActionSet.raw).toEqual({
+                id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                actions: [
+                    {
+                        status: 'incomplete',
+                        name: '@events/datesConfiguration',
+                        data: JSON.stringify(datesConfiguration),
+                        type: 'input',
+                        error: '{"details":["dates"],"error":"incomplete_error"}',
+                    },
+                ],
+                owner: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                current_action: 0,
+                current_status: 'input:incomplete',
                 name: '@event/creation',
                 created_at,
                 updated_at,
@@ -813,6 +928,94 @@ describe('Event Input Handlers', function() {
                 owner: 'ec677b12-d420-43a6-a597-ef84bf09f845',
                 current_action: 1,
                 current_status: 'complete',
+                name: '@event/creation',
+                created_at,
+                updated_at,
+                dispatched_at,
+            });
+        });
+
+        it('should incomplete on missing payload', async function() {
+            const created_at = new Date(Date.now());
+            const updated_at = created_at;
+            const dispatched_at = created_at;
+
+            const datesConfiguration = {
+                dates: [
+                    {
+                        name: 'Bataclan',
+                        eventBegin: created_at,
+                        eventEnd: new Date(created_at.getTime() + 1000 * 60 * 60 * 24),
+                        location: {
+                            label: '50 Boulevard Voltaire, 75011 Paris',
+                            lat: 48.86311,
+                            lon: 2.37087,
+                        },
+                    },
+                ],
+            };
+
+            const saleBegin = new Date(created_at.getTime() - 1000 * 60 * 60 * 24);
+
+            const categoriesConfiguration = {};
+
+            const actionSetEntity: ActionSetEntity = {
+                id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                actions: [
+                    {
+                        status: 'complete',
+                        name: '@events/datesConfiguration',
+                        data: JSON.stringify(datesConfiguration),
+                        type: 'input',
+                        error: null,
+                    },
+                    {
+                        status: 'waiting',
+                        name: '@events/categoriesConfiguration',
+                        data: JSON.stringify(categoriesConfiguration),
+                        type: 'input',
+                        error: null,
+                    },
+                ],
+                owner: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                current_action: 1,
+                current_status: 'input:waiting',
+                name: '@event/creation',
+                created_at,
+                updated_at,
+                dispatched_at,
+            };
+
+            const actionSet: ActionSet = new ActionSet().load(actionSetEntity);
+            const progress = async (p: number) => {};
+
+            const [resActionSet, update] = await context.eventsInputHandler.categoriesConfigurationHandler(
+                actionSet,
+                progress,
+            );
+
+            expect(update).toEqual(true);
+            expect(resActionSet.raw).toEqual({
+                id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                actions: [
+                    {
+                        status: 'complete',
+                        name: '@events/datesConfiguration',
+                        data: JSON.stringify(datesConfiguration),
+                        type: 'input',
+                        error: null,
+                    },
+                    {
+                        status: 'incomplete',
+                        name: '@events/categoriesConfiguration',
+                        data: JSON.stringify(categoriesConfiguration),
+                        type: 'input',
+                        error: '{"details":["global","dates"],"error":"incomplete_error"}',
+                    },
+                ],
+                owner: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                current_action: 1,
+                current_status: 'input:incomplete',
                 name: '@event/creation',
                 created_at,
                 updated_at,
@@ -2097,7 +2300,7 @@ describe('Event Input Handlers', function() {
     });
 
     describe('@events/imagesMetadata', function() {
-        it('should validate dates configuration', async function() {
+        it('should validate images configuration', async function() {
             const created_at = new Date(Date.now());
             const updated_at = created_at;
             const dispatched_at = created_at;
@@ -2198,6 +2401,106 @@ describe('Event Input Handlers', function() {
             });
         });
 
+        it('should incomplete on missing images configuration', async function() {
+            const created_at = new Date(Date.now());
+            const updated_at = created_at;
+            const dispatched_at = created_at;
+
+            const imagesMetadata = {
+                avatar: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+            };
+
+            when(
+                context.imagesServiceMock.search(
+                    deepEqual({
+                        id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: [
+                    {
+                        id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                        mimetype: 'type',
+                        size: 10000,
+                        encoding: 'encoding',
+                        hash: 'hash',
+                        links: 0,
+                        created_at,
+                        updated_at,
+                    },
+                ],
+            });
+
+            when(
+                context.imagesServiceMock.search(
+                    deepEqual({
+                        id: 'ec677b16-d420-43a6-a597-ef84bf09f845',
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: [
+                    {
+                        id: 'ec677b16-d420-43a6-a597-ef84bf09f845',
+                        mimetype: 'type',
+                        size: 10000,
+                        encoding: 'encoding',
+                        hash: 'hash',
+                        links: 0,
+                        created_at,
+                        updated_at,
+                    },
+                ],
+            });
+
+            const actionSetEntity: ActionSetEntity = {
+                id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                actions: [
+                    {
+                        status: 'waiting',
+                        name: '@events/imagesMetadata',
+                        data: JSON.stringify(imagesMetadata),
+                        type: 'input',
+                        error: null,
+                    },
+                ],
+                owner: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                current_action: 0,
+                current_status: 'input:waiting',
+                name: '@event/creation',
+                created_at,
+                updated_at,
+                dispatched_at,
+            };
+
+            const actionSet: ActionSet = new ActionSet().load(actionSetEntity);
+            const progress = async (p: number) => {};
+
+            const [resActionSet, update] = await context.eventsInputHandler.imagesMetadataHandler(actionSet, progress);
+
+            expect(update).toEqual(true);
+            expect(resActionSet.raw).toEqual({
+                id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                actions: [
+                    {
+                        status: 'incomplete',
+                        name: '@events/imagesMetadata',
+                        data: JSON.stringify(imagesMetadata),
+                        type: 'input',
+                        error: '{"details":["banners"],"error":"incomplete_error"}',
+                    },
+                ],
+                owner: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                current_action: 0,
+                current_status: 'input:incomplete',
+                name: '@event/creation',
+                created_at,
+                updated_at,
+                dispatched_at,
+            });
+        });
+
         it('should fail on invalid payload', async function() {
             const created_at = new Date(Date.now());
             const updated_at = created_at;
@@ -2205,6 +2508,7 @@ describe('Event Input Handlers', function() {
 
             const imagesMetadata = {
                 avatar: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                banners: 'ec677b12-d420-43a6-a597-ef84bf09f845',
             };
 
             const actionSetEntity: ActionSetEntity = {
@@ -2242,7 +2546,7 @@ describe('Event Input Handlers', function() {
                         data: JSON.stringify(imagesMetadata),
                         type: 'input',
                         error:
-                            '{"details":{"_original":{"avatar":"ec677b12-d420-43a6-a597-ef84bf09f845"},"details":[{"message":"\\"banners\\" is required","path":["banners"],"type":"any.required","context":{"label":"banners","key":"banners"}}]},"error":"validation_error"}',
+                            '{"details":{"_original":{"avatar":"ec677b12-d420-43a6-a597-ef84bf09f845","banners":"ec677b12-d420-43a6-a597-ef84bf09f845"},"details":[{"message":"\\"banners\\" must be an array","path":["banners"],"type":"array.base","context":{"label":"banners","value":"ec677b12-d420-43a6-a597-ef84bf09f845","key":"banners"}}]},"error":"validation_error"}',
                     },
                 ],
                 owner: 'ec677b12-d420-43a6-a597-ef84bf09f845',
@@ -2640,7 +2944,9 @@ describe('Event Input Handlers', function() {
 
     describe('@events/adminsConfiguration', function() {
         it('should admins Configuration', async function() {
-            const adminsConfiguration = {};
+            const adminsConfiguration = {
+                admins: [],
+            };
 
             const created_at = new Date(Date.now());
             const updated_at = created_at;
@@ -2749,6 +3055,63 @@ describe('Event Input Handlers', function() {
                 owner: 'ec677b12-d420-43a6-a597-ef84bf09f845',
                 current_action: 0,
                 current_status: 'input:error',
+                name: '@event/creation',
+                created_at,
+                updated_at,
+                dispatched_at,
+            });
+        });
+
+        it('should error on missing admin field', async function() {
+            const adminsConfiguration = {};
+
+            const created_at = new Date(Date.now());
+            const updated_at = created_at;
+            const dispatched_at = created_at;
+
+            const actionSetEntity: ActionSetEntity = {
+                id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                actions: [
+                    {
+                        status: 'waiting',
+                        name: '@events/adminsConfiguration',
+                        data: JSON.stringify(adminsConfiguration),
+                        type: 'input',
+                        error: null,
+                    },
+                ],
+                owner: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                current_action: 0,
+                current_status: 'input:waiting',
+                name: '@event/creation',
+                created_at,
+                updated_at,
+                dispatched_at,
+            };
+
+            const actionSet: ActionSet = new ActionSet().load(actionSetEntity);
+            const progress = async (p: number) => {};
+
+            const [resActionSet, update] = await context.eventsInputHandler.adminsConfigurationHandler(
+                actionSet,
+                progress,
+            );
+
+            expect(update).toEqual(true);
+            expect(resActionSet.raw).toEqual({
+                id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                actions: [
+                    {
+                        status: 'incomplete',
+                        name: '@events/adminsConfiguration',
+                        data: JSON.stringify(adminsConfiguration),
+                        type: 'input',
+                        error: '{"details":["admins"],"error":"incomplete_error"}',
+                    },
+                ],
+                owner: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                current_action: 0,
+                current_status: 'input:incomplete',
                 name: '@event/creation',
                 created_at,
                 updated_at,
