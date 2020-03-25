@@ -1,6 +1,6 @@
 import * as React from 'react';
 import DatePicker from '../src/components/date-picker'
-import { text, withKnobs } from '@storybook/addon-knobs';
+import { text, withKnobs, select } from '@storybook/addon-knobs';
 import { Store, State} from "@sambego/storybook-state";
 
 export default {
@@ -28,6 +28,12 @@ const onChange = (date: Date) => {
   })
 };
 
+const locales = {
+  None: '',
+  French: 'fr',
+  Spanish: 'es',
+  Italian: 'it',
+};
 
 export const singleDate = () => (
   <State store={store}>
@@ -35,6 +41,7 @@ export const singleDate = () => (
       <DatePicker
         dateFormat={text('date format', 'iii, MMM do, yyyy')}
         label={text('Label', 'Start date')}
+        locale={select('Select locale', locales, '')}
         onChange={onChange}
         placeholderText={text('Placeholder', 'Pick a date')}
         selected={state.selectedDate}

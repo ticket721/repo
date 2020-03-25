@@ -1,11 +1,19 @@
 import * as React from 'react';
-import DatePicker from 'react-datepicker';
+import DatePicker, { registerLocale } from 'react-datepicker';
 import styled from '../../../config/styled';
 import "react-datepicker/dist/react-datepicker.css";
+import fr from "date-fns/locale/fr";
+import es from "date-fns/locale/es";
+import it from "date-fns/locale/it";
+
+registerLocale('es', es);
+registerLocale('fr', fr);
+registerLocale('it', it);
 
 export interface CustomDatePickerProps extends React.ComponentProps<any> {
   dateFormat: string;
   label: string;
+  locale?:string;
   onChange: (date: Date) => void;
   open?: boolean;
   placeholderText?: string;
@@ -170,6 +178,7 @@ export const CustomDatePicker: React.FunctionComponent<CustomDatePickerProps> = 
       <StyledLabel>{props.label}</StyledLabel>
       <DatePicker
         dateFormat={props.dateFormat}
+        locale={props.locale}
         onChange={props.onChange}
         open={props.open}
         placeholderText={props.placeholderText}
