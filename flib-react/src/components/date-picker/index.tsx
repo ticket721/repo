@@ -4,8 +4,10 @@ import styled from '../../../config/styled';
 import "react-datepicker/dist/react-datepicker.css";
 
 export interface CustomDatePickerProps extends React.ComponentProps<any> {
+  dateFormat: string;
   label: string;
-  onChange: () => void;
+  onChange: (date: Date) => void;
+  open?: boolean;
   placeholderText?: string;
   selected?: Date;
 }
@@ -66,6 +68,21 @@ const StyledInputContainer = styled.div`
     color: ${props => props.theme.textColor};
     font-family: ${props => props.theme.fontStack};
 
+    &__navigation {
+      background: url('assets/icons/icon--arrow.svg') center/cover no-repeat;
+      border: none;
+      height: 16px;
+      right: ${props => props.theme.biggerSpacing};
+      top: ${props => props.theme.biggerSpacing};
+      width: 16px;
+
+      &--previous {
+        left: auto;
+        right: 3.5rem;
+        transform: rotate(180deg);
+      }
+    }
+
     &__triangle {
       display: none;
     }
@@ -73,11 +90,15 @@ const StyledInputContainer = styled.div`
     &__current-month {
       color: ${props => props.theme.textColor};
       font-size: 20px;
-      padding-left: ${props => props.theme.biggerSpacing};
+      padding-left: 14px;
     }
 
     &__day-names {
       display: flex;
+    }
+
+    &__month {
+      margin: 0 12px;
     }
 
     &__day-name,
@@ -91,6 +112,8 @@ const StyledInputContainer = styled.div`
       font-weight: 500;
       justify-content: center;
       height: 40px;
+      line-height: 1em;
+      text-align: auto;
       transition: background-color 300ms ease;
       width: 40px;
 
@@ -101,23 +124,37 @@ const StyledInputContainer = styled.div`
       &--selected {
         background: linear-gradient(265deg, ${props => props.theme.primaryColor}, ${props => props.theme.primaryColorGradientEnd});
       }
+
+      &--today {
+        background-color: ${props => props.theme.componentColor};
+        border-radius: ${props => props.theme.defaultRadius};
+      }
     }
 
-    &__day:hover {
-      background-color: ${props => props.theme.componentColor};
-      border-radius: ${props => props.theme.defaultRadius};
+    &__day {
+      &-name {
+        color: ${props => props.theme.textColorDarker};
+        font-size: 13px;
+        height: auto;
+        padding: 1rem 0 0.5rem;
+      }
+
+      &:hover {
+        background-color: ${props => props.theme.componentColor};
+        border-radius: ${props => props.theme.defaultRadius};
+      }
     }
 
     &__header {
       background: ${props => props.theme.componentColor};
       border: none;
       border-radius: ${props => props.theme.defaultRadius};
-      padding: ${props => props.theme.biggerSpacing} 0 0;
+      padding: ${props => props.theme.biggerSpacing} 12px 0;
       text-align: left;
     }
 
     &-wrapper {
-      background: url(assets/icons/icon--calendar.svg) 24px 16px/14px no-repeat;
+      background: url('assets/icons/icon--calendar.svg') 24px 16px/14px no-repeat;
       padding-left: 24px;
 
       input{
@@ -132,9 +169,10 @@ export const CustomDatePicker: React.FunctionComponent<CustomDatePickerProps> = 
   return <StyledInputContainer>
       <StyledLabel>{props.label}</StyledLabel>
       <DatePicker
+        dateFormat={props.dateFormat}
         onChange={props.onChange}
+        open={props.open}
         placeholderText={props.placeholderText}
-        open
         selected={props.selected}
       />
   </StyledInputContainer>
