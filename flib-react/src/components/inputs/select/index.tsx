@@ -22,10 +22,19 @@ const customStyles = {
   }),
   control: () => ({
     display: 'flex',
-    paddingBottom: 8,
+    paddingBottom: 24,
     paddingLeft: 24,
     paddingRight: 24,
-    paddingTop: 2
+    paddingTop: 16
+  }),
+  indicatorsContainer: () => ({
+    display: 'flex',
+    position: 'relative' as 'relative',
+
+    '& > div': {
+
+      padding: 0
+    }
   }),
   indicatorSeparator: () => ({
     border: 'none'
@@ -47,7 +56,14 @@ const customStyles = {
     padding: 0,
   }),
   noOptionsMessage: () => ({
-    fontSize: 14
+    color: 'rgba(255, 255, 255, 0.6)',
+    cursor: 'pointer',
+    fontSize: 14,
+    fontWeight: 500,
+    paddingBottom: 12,
+    paddingLeft: 24,
+    paddingRight: 24,
+    paddingTop: 12,
   }),
   placeholder: () => ({
     color: 'rgba(255, 255, 255, 0.38)',
@@ -114,10 +130,6 @@ const StyledInputContainer = styled.div<SelectProps>`
   &:focus-within {
     background-color: ${props => props.theme.componentColorLighter};
 
-
-  &:focus-within {
-    background-color: ${props => props.theme.componentColorLighter};
-
     ${StyledLabel} {
       transform: translateX(0px);
 
@@ -132,8 +144,8 @@ export const SelectInput: React.FunctionComponent<SelectProps> = (props: SelectP
             <StyledLabel>{props.label}</StyledLabel>
             <Select
               defaultValue={props.defaultValue}
-              isClearable
               noOptionsMessage={() => "No values available"}
+              menuIsOpen
               options={props.options}
               placeholder={props.placeholder}
               isSearchable={props.searchable}

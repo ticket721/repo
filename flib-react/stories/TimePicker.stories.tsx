@@ -12,22 +12,25 @@ export default {
 }
 
 interface StoreObject {
-  selectedTime: Date;
+  selectedTime: Date | undefined;
 }
 
 let storeObject: StoreObject = {
-  selectedTime: new Date()
+  selectedTime: undefined
 };
 
 const store = new Store(storeObject);
 
 const onChange = (date: Date) => {
-  console.log(store.get('selectedTime'));
   store.set({
     selectedTime: date
   })
 };
 
+//optionnal: used to prevent manual input
+const onChangeRaw = (e: React.FocusEvent<HTMLInputElement>) => {
+  e.preventDefault();
+}
 
 export const showcase = () => (
   <State store={store}>
@@ -36,6 +39,8 @@ export const showcase = () => (
         dateFormat={text('Time format', 'h:mm aa')}
         label={text('Label', 'Start time')}
         onChange={onChange}
+        onChangeRaw={onChangeRaw}
+        placeholderText={text('Placeholder', 'Pick start time')}
         selected={state.selectedTime}
       />
     ]}

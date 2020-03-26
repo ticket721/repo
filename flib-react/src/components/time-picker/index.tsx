@@ -7,7 +7,9 @@ export interface CustomTimePickerProps extends React.ComponentProps<any> {
   dateFormat?: string;
   label: string;
   onChange: (date: Date) => void;
+  onChangeRaw?: (e: React.FocusEvent<HTMLInputElement>) => void;
   open?: boolean;
+  placeholder?: string;
   selected?: Date;
 }
 
@@ -100,7 +102,6 @@ const StyledInputContainer = styled.div`
           }
         }
       }
-
     }
 
     &-wrapper {
@@ -135,6 +136,8 @@ export const CustomTimePicker: React.FunctionComponent<CustomTimePickerProps> = 
       <DatePicker
         dateFormat={props.dateFormat}
         onChange={props.onChange}
+        onChangeRaw={props.onChangeRaw}
+        placeholderText={props.placeholder}
         selected={props.selected}
         showTimeSelect
         showTimeSelectOnly

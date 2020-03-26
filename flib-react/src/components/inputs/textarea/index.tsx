@@ -2,10 +2,12 @@ import * as React from 'react';
 import styled from '../../../../config/styled';
 
 export interface TextareaProps extends React.ComponentProps<any> {
+  currentCount: string | number;
   error?:boolean;
   errorMessage?:string;
   label:string;
-  maxChar: number;
+  keyPress: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
+  maxChar?: number;
   name:string;
   placeholder: string;
   value?:string;
@@ -84,22 +86,26 @@ const LabelsContainer = styled.div`
   font-size: 11px;
   font-weight: 700;
   justify-content: space-between;
-  padding: ${props => props.theme.biggerSpacing};
+  padding: 0 ${props => props.theme.biggerSpacing};
 `;
 
 export const Textarea: React.FunctionComponent<TextareaProps> = (props: TextareaProps): JSX.Element => {
-  // const countChars = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-  //   const textAreaValue = e.target as HTMLTextAreaElement;
-
-  //   test(textAreaValue.value.length)
-  // }
-
   return <StyledTextarea error={props.error}>
       <LabelsContainer>
         <StyledLabel htmlFor={props.name}>{props.label}</StyledLabel>
+        {props.maxChar &&
+          <span>{props.currentCount}/{props.maxChar}</span>
+        }
       </LabelsContainer>
 
-      <textarea id={props.name} name={props.name} placeholder={props.placeholder} defaultValue={props.value} maxLength={props.maxChar}></textarea>
+      <textarea
+        id={props.name}
+        name={props.name}
+        placeholder={props.placeholder}
+        defaultValue={props.value}
+        onKeyUp={props.keyPress}
+        maxLength={props.maxChar}>
+      </textarea>
 
       {props.error && <Error>{ props.errorMessage }</Error> }
   </StyledTextarea>
