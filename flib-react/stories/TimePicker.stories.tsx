@@ -12,7 +12,7 @@ export default {
 }
 
 interface StoreObject {
-  selectedTime: Date;
+  selectedTime: Date | undefined;
 }
 
 let storeObject: StoreObject = {
