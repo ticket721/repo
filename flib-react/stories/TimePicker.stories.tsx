@@ -2,7 +2,6 @@ import * as React from 'react';
 import TimePicker from '../src/components/time-picker'
 import { text, withKnobs } from '@storybook/addon-knobs';
 import { Store, State} from "@sambego/storybook-state";
-import { roundToNearestMinutes } from 'date-fns';
 
 export default {
   component: TimePicker,
@@ -17,7 +16,7 @@ interface StoreObject {
 }
 
 let storeObject: StoreObject = {
-  selectedTime: roundToNearestMinutes(new Date(), {nearestTo: 30})
+  selectedTime: undefined
 };
 
 const store = new Store(storeObject);
