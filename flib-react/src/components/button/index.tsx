@@ -4,23 +4,9 @@ import breakpoint from 'styled-components-breakpoint';
 import styled from '../../../config/styled';
 
 export interface ButtonProps extends React.ComponentProps<any> {
-  /**
-   * Title of the button
-  */
   title: string;
-
-  /**
-   * Array of colors to generate linear-gradient
-   */
   gradients?: Array<string>;
-  /**
-   * Method called upon button click
-  */
   onClick: () => void;
-
-  /**
-   * Type of the button
-    */
   type: 'primary' | 'secondary' | 'custom' | 'warning';
 }
 
@@ -108,9 +94,6 @@ const StyledButton = styled.button<ButtonProps>`
   }
 `;
 
-/**
- * This is a Button component
- */
 export const Button: React.FunctionComponent<ButtonProps> = (props: ButtonProps): JSX.Element => {
 
   return <StyledButton
