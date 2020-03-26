@@ -21,12 +21,16 @@ let storeObject: StoreObject = {
 
 const store = new Store(storeObject);
 
-
 const onChange = (date: Date) => {
   store.set({
     selectedDate: date
   })
 };
+
+//optionnal: used to prevent manual input
+const onChangeRaw = (e: React.FocusEvent<HTMLInputElement>) => {
+  e.preventDefault();
+}
 
 const locales = {
   None: '',
@@ -43,6 +47,7 @@ export const singleDate = () => (
         label={text('Label', 'Start date')}
         locale={select('Select locale', locales, '')}
         onChange={onChange}
+        onChangeRaw={onChangeRaw}
         placeholderText={text('Placeholder', 'Pick a date')}
         selected={state.selectedDate}
       />

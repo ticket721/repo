@@ -24,12 +24,30 @@ const customStyles = {
     }
   }),
   control: () => ({
+    alignItems: 'center',
     background: 'url(assets/icons/icon--location.svg) 24px 17px/12px 16px no-repeat',
     display: 'flex',
     paddingBottom: 24,
     paddingLeft: 48,
     paddingRight: 24,
     paddingTop: 16
+  }),
+  indicatorsContainer: () => ({
+    position: 'relative' as 'relative',
+
+    '& > div': {
+      background: 'url(assets/icons/icon--close.svg) center/cover no-repeat',
+      content: '',
+      cursor: 'pointer',
+      display: 'block',
+      height: 12,
+      padding: 0,
+      width: 12,
+
+      'svg' : {
+        display: 'none'
+      }
+    }
   }),
   indicatorSeparator: () => ({
     border: 'none'
@@ -49,6 +67,16 @@ const customStyles = {
     maxHeight: 300,
     overflow: 'auto',
     padding: 0,
+  }),
+  noOptionsMessage: () => ({
+    color: 'rgba(255, 255, 255, 0.6)',
+    cursor: 'pointer',
+    fontSize: 14,
+    fontWeight: 500,
+    paddingBottom: 12,
+    paddingLeft: 24,
+    paddingRight: 24,
+    paddingTop: 12,
   }),
   placeholder: () => ({
     color: 'rgba(255, 255, 255, 0.38)',
@@ -110,10 +138,6 @@ const StyledInputContainer = styled.div<LocationProps>`
   &:hover {
     background-color: ${props => props.theme.componentColorLight};
   }
-
-  &:focus-within {
-    background-color: ${props => props.theme.componentColorLighter};
-
 
   &:focus-within {
     background-color: ${props => props.theme.componentColorLighter};

@@ -14,7 +14,9 @@ export interface CustomDatePickerProps extends React.ComponentProps<any> {
   dateFormat: string;
   label: string;
   locale?:string;
+  minDate?: Date;
   onChange: (date: Date) => void;
+  onChangeRaw?: (e: React.FocusEvent<HTMLInputElement>) => void;
   open?: boolean;
   placeholderText?: string;
   selected?: Date;
@@ -125,7 +127,8 @@ const StyledInputContainer = styled.div`
       transition: background-color 300ms ease;
       width: 40px;
 
-      &--outside-month {
+      &--outside-month,
+      &--disabled {
         color: ${props => props.theme.textColorDarker};
       }
 
@@ -179,7 +182,9 @@ export const CustomDatePicker: React.FunctionComponent<CustomDatePickerProps> = 
       <DatePicker
         dateFormat={props.dateFormat}
         locale={props.locale}
+        minDate={props.minDate}
         onChange={props.onChange}
+        onChangeRaw={props.onChangeRaw}
         open={props.open}
         placeholderText={props.placeholderText}
         selected={props.selected}
