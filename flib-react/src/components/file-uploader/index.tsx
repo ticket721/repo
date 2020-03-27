@@ -1,13 +1,41 @@
 import * as React from 'react';
-import { useDropzone } from 'react-dropzone';
+import Dropzone from 'react-dropzone-uploader';
 import styled from '../../../config/styled';
+import 'react-dropzone-uploader/dist/styles.css';
 import Icon from '../icon';
 
 export interface FileUploaderProps extends React.ComponentProps<any> {
-  label: string;
+  uploadRecommandations?: string;
+  dragDropLabel: string;
+  browseLabel: string;
+  // onChange: (e: React.ChangeEvent<HTMLElement>)=> void;
 }
 
-const StyledContainer = styled.div<FileUploaderProps>`
+
+const InfosContainer = styled.div`
+  position: absolute;
+  text-align: center;
+
+  svg {
+    margin: auto;
+  }
+`
+
+const LabelsContainer = styled.div`
+  font-size: 14px;
+  font-weight: 500;
+  margin-top: ${props => props.theme.biggerSpacing};
+  opacity: 1;
+  text-align: center;
+  transition: opacity 300ms ease;
+
+  p:last-of-type {
+    color: ${props => props.theme.textColorDark};
+    margin-top: 8px;
+  }
+`;
+
+const StyledContainer = styled.div`
   align-items: center;
   background-color: ${props => props.theme.componentColorLight};
   border-radius: ${props => props.theme.defaultRadius};
@@ -20,46 +48,60 @@ const StyledContainer = styled.div<FileUploaderProps>`
   transition: background-color 300ms ease;
   width: 100%;
 
-  ${props => props.isDragActive &&`
-    background-color: ${props.theme.componentColorLighter};
+  &:hover {
+    background-color: ${props => props.theme.componentColorLighter};
+  }
 
-    svg {
-      transform: rotate(-15deg);
+  .dzu {
+    &-dropzone {
+      border: none;
+      height: 100%;
     }
-  `};
 
+    &-dropzoneActive {
+      background-color: ${props => props.theme.componentColorLighter};
+
+      & ~ ${InfosContainer} {
+        ${LabelsContainer} {
+          opacity: 0;
+        }
+
+        svg {
+          fill: ${props => props.theme.textColor};
+          transform: translateY(20px) rotate(-15deg);
+        }
+      }
+    }
+  }
 `;
 
+const Disclaimer = styled.p`
+  color: ${props => props.theme.textColorDarker};
+  font-size: 14px;
+  font-weight: 500;
+  padding-top: ${props => props.theme.regularSpacing};
+`
 
 export const FileUploader: React.FunctionComponent<FileUploaderProps> = (props: FileUploaderProps): JSX.Element => {
-  const { acceptedFiles,
-    getRootProps,
-    getInputProps,
-    isDragActive,
-    isDragAccept,
-    isDragReject} = useDropzone();
 
-  const files = acceptedFiles.map(file => (
-    <li key={file.name}>
-      {file.name} - {file.size} bytes
-    </li>
-  ));
+  return <div>
+          <StyledContainer>
+            <Dropzone
+              accept='image/*'
+              inputContent={null}
+              multiple={false}
+            />
+            <InfosContainer>
+              <Icon icon='gallery' height="56" width="66" fill='rgba(255, 255, 255, 0.6)' />
+              <LabelsContainer>
+                <p>{props.dragDropLabel}</p>
+                <p>{props.browseLabel}</p>
+              </LabelsContainer>
+            </InfosContainer>
+          </StyledContainer>
 
-  return <StyledContainer {...getRootProps({isDragActive, isDragAccept, isDragReject})}>
-          <input {...getInputProps()} />
-          <Icon
-            fill="rgba(255, 255, 255, 0.38)"
-            height="56"
-            icon="gallery"
-            width="66"
-          />
-          <p>{props.label}</p>
-          <aside>
-            <h4>Files</h4>
-            <ul>{files}</ul>
-          </aside>
-        </StyledContainer>
-
+          <Disclaimer>{props.uploadRecommandations}</Disclaimer>
+        </div>
 };
 
 export default FileUploader;

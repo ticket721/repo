@@ -1,6 +1,6 @@
 import * as React from 'react';
 import FileUploader from '../src/components/file-uploader';
-import { withKnobs } from '@storybook/addon-knobs';
+import { text, withKnobs } from '@storybook/addon-knobs';
 
 export default {
   title: 'FileUploader',
@@ -11,5 +11,9 @@ export default {
 };
 
 export const singleFile = () => (
-  <FileUploader label="Upload" />
+  <FileUploader
+    uploadRecommandations={text('Upload recommandation', 'Image only')}
+    dragDropLabel={text('Drag and drop label', 'Drag and drop an image')}
+    browseLabel={text('Browse label', 'or Browse to choose a file')}
+  />
 );

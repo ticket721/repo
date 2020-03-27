@@ -20,8 +20,8 @@ const customThemes = [
     primaryColorGradientEnd: '#2143AB',
     regularSpacing: '16px',
     textColor: 'rgba(255, 255, 255, 0.9)',
-    textColorDark: 'rgba(355, 255, 255, 0.6)',
-    textColorDarker: 'rgba(355, 255, 255, 0.38)',
+    textColorDark: 'rgba(255, 255, 255, 0.6)',
+    textColorDarker: 'rgba(255, 255, 255, 0.38)',
     warningColor: '#C91D31'
   }
 ]

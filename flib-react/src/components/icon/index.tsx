@@ -13,6 +13,7 @@ const Svg = styled.svg`
   display: block;
   fill: ${props => props.fill ? props.fill : props.theme.primaryColor};
   height: ${props => props.height ? props.height : 24}px;
+  transition: all 300ms ease;
   width: ${props => props.width ? props.width : 24}px;
 `;
 
