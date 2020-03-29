@@ -1,6 +1,6 @@
 import { ExceptionFilter, Catch, ArgumentsHost, HttpException } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { StatusNames } from '@lib/common/utils/codes';
+import { StatusNames } from '@lib/common/utils/codes.value';
 
 /**
  * Utility to catch HttpExceptions and respond properly to Http Requests

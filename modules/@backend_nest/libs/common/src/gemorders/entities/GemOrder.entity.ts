@@ -1,5 +1,6 @@
 import { Column, CreateDateColumn, Entity, UpdateDateColumn } from '@iaminfinity/express-cassandra';
 import { RawGem } from 'dosojin';
+import { ECAAG } from '@lib/common/utils/ECAAG.helper';
 
 /**
  * Raw Gem Entity stored in the database
@@ -228,6 +229,38 @@ export interface RawGemEntity {
 } as any)
 export class GemOrderEntity {
     /**
+     * Entity Builder
+     *
+     * @param go
+     */
+    constructor(go?: GemOrderEntity) {
+        if (go) {
+            this.id = go.id ? go.id.toString() : go.id;
+            this.distribution_id = go.distribution_id;
+            this.circuit_name = go.circuit_name;
+            this.initial_arguments = go.initial_arguments;
+            this.gem = go.gem;
+            this.gem.operation_status = this.gem.operation_status
+                ? {
+                      ...this.gem.operation_status,
+                      operation_list: ECAAG(this.gem.operation_status.operation_list),
+                  }
+                : this.gem.operation_status;
+            this.gem.route_history = ECAAG(this.gem.route_history);
+            this.gem.gem_payload = this.gem.gem_payload
+                ? {
+                      ...this.gem.gem_payload,
+                      costs: ECAAG(this.gem.gem_payload.costs),
+                  }
+                : this.gem.gem_payload;
+            this.initialized = go.initialized;
+            this.refresh_timer = go.refresh_timer;
+            this.created_at = go.created_at;
+            this.updated_at = go.updated_at;
+        }
+    }
+
+    /**
      * Unique ID that is the hash of the payment method id
      */
     @Column({
@@ -253,14 +286,6 @@ export class GemOrderEntity {
     })
     // tslint:disable-next-line:variable-name
     circuit_name: string;
-
-    /**
-     * ID of the order owner
-     */
-    @Column({
-        type: 'uuid',
-    })
-    owner: string;
 
     /**
      * Initial Arguments to pass to the circuit

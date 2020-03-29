@@ -49,6 +49,9 @@ import { GemOrdersModule } from '@lib/common/gemorders/GemOrders.module';
 import { CheckoutController } from '@app/server/controllers/checkout/Checkout.controller';
 import { StripeResourcesModule } from '@lib/common/striperesources/StripeResources.module';
 import { ToolBoxModule } from '@lib/common/toolbox/ToolBox.module';
+import { CategoriesModule } from '@lib/common/categories/Categories.module';
+import { RightsModule } from '@lib/common/rights/Rights.module';
+import { CategoriesController } from '@app/server/controllers/categories/Categories.controller';
 
 @Module({
     imports: [
@@ -77,6 +80,8 @@ import { ToolBoxModule } from '@lib/common/toolbox/ToolBox.module';
         Web3TokensModule,
         ActionSetsModule,
         DatesModule,
+        CategoriesModule,
+        RightsModule,
         EventsModule,
         GemOrdersModule,
         StripeResourcesModule,
@@ -167,6 +172,7 @@ import { ToolBoxModule } from '@lib/common/toolbox/ToolBox.module';
         ContractsController,
         DosojinController,
         CheckoutController,
+        CategoriesController,
     ],
     providers: [
         ServerService,

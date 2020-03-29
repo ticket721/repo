@@ -8,14 +8,18 @@ export class Web3LoginInputDto {
     /**
      * Timestamp used for the signature. Base 10 format
      */
-    @ApiProperty()
+    @ApiProperty({
+        description: 'Signature timestamp',
+    })
     @IsString()
     timestamp: string;
 
     /**
      * Signature of the Web3Register data type
      */
-    @ApiProperty()
+    @ApiProperty({
+        description: 'Address ownership signature',
+    })
     @IsString()
     signature: string;
 }

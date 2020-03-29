@@ -8,28 +8,36 @@ export class LocalRegisterInputDto {
     /**
      * Unique email to link to account
      */
-    @ApiProperty()
+    @ApiProperty({
+        description: 'User email',
+    })
     @IsEmail()
     email: string;
 
     /**
      * Unique username to use
      */
-    @ApiProperty()
+    @ApiProperty({
+        description: 'User username',
+    })
     @IsString()
     username: string;
 
     /**
      * Keccak256 hash of the pure password
      */
-    @ApiProperty()
+    @ApiProperty({
+        description: 'User password',
+    })
     @IsString()
     password: string;
 
     /**
      * User Locale
      */
-    @ApiPropertyOptional()
+    @ApiPropertyOptional({
+        description: 'User locale',
+    })
     @IsIn(['en', 'fr'])
     @IsOptional()
     locale?: string = 'en';

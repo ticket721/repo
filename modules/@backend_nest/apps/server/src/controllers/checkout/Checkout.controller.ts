@@ -1,17 +1,22 @@
-import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Body, Controller, HttpCode, HttpException, Post, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, HttpCode, HttpException, Post, UseFilters, UseGuards } from '@nestjs/common';
 import { UserDto } from '@lib/common/users/dto/User.dto';
-import { User } from '@app/server/authentication/decorators/User.decorator';
+import { User } from '@app/server/authentication/decorators/User.controller.decorator';
 import { StripeResourcesService } from '@lib/common/striperesources/StripeResources.service';
 import { ResolveCartWithPaymentIntentInputDto } from '@app/server/controllers/checkout/dto/ResolveCartWithPaymentIntentInput.dto';
 import { ResolveCartWithPaymentIntentResponseDto } from '@app/server/controllers/checkout/dto/ResolveCartWithPaymentIntentResponse.dto';
-import { StatusCodes, StatusNames } from '@lib/common/utils/codes';
+import { StatusCodes } from '@lib/common/utils/codes.value';
 import { GemOrdersService } from '@lib/common/gemorders/GemOrders.service';
-import regionRestrictions from '@app/server/controllers/checkout/restrictions/regionRestrictions';
-import methodsRestrictions from '@app/server/controllers/checkout/restrictions/methodsRestrictions';
+import regionRestrictions from '@app/server/controllers/checkout/restrictions/regionRestrictions.value';
+import methodsRestrictions from '@app/server/controllers/checkout/restrictions/methodsRestrictions.value';
 import { keccak256 } from '@common/global';
 import { AuthGuard } from '@nestjs/passport';
 import { Roles, RolesGuard } from '@app/server/authentication/guards/RolesGuard.guard';
+import { StripeResourceEntity } from '@lib/common/striperesources/entities/StripeResource.entity';
+import { ControllerBasics } from '@lib/common/utils/ControllerBasics.base';
+import { GemOrderEntity } from '@lib/common/gemorders/entities/GemOrder.entity';
+import { HttpExceptionFilter } from '@app/server/utils/HttpException.filter';
+import { ApiResponses } from '@app/server/utils/ApiResponses.controller.decorator';
 
 /**
  * Checkout controller to create, update and resolve carts
@@ -19,7 +24,7 @@ import { Roles, RolesGuard } from '@app/server/authentication/guards/RolesGuard.
 @ApiBearerAuth()
 @ApiTags('checkout')
 @Controller('checkout')
-export class CheckoutController {
+export class CheckoutController extends ControllerBasics<StripeResourceEntity> {
     /**
      * Dependency Injection
      *
@@ -29,7 +34,9 @@ export class CheckoutController {
     constructor(
         private readonly stripeResourcesService: StripeResourcesService,
         private readonly gemOrdersService: GemOrdersService,
-    ) {}
+    ) {
+        super();
+    }
 
     /**
      * Resolves a cart with a stripe payment intent
@@ -38,44 +45,23 @@ export class CheckoutController {
      * @param user
      */
     @Post('/resolve/paymentintent')
-    @ApiResponse({
-        status: StatusCodes.InternalServerError,
-        description: StatusNames[StatusCodes.InternalServerError],
-    })
-    @ApiResponse({
-        status: StatusCodes.Conflict,
-        description: StatusNames[StatusCodes.Conflict],
-    })
-    @ApiResponse({
-        status: StatusCodes.Unauthorized,
-        description: StatusNames[StatusCodes.Unauthorized],
-    })
-    @ApiResponse({
-        status: StatusCodes.OK,
-        description: StatusNames[StatusCodes.OK],
-    })
-    @HttpCode(200)
     @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.OK)
     @Roles('authenticated')
+    @ApiResponses([StatusCodes.OK, StatusCodes.InternalServerError, StatusCodes.Conflict])
     async resolveCartWithPaymentIntent(
         @Body() body: ResolveCartWithPaymentIntentInputDto,
         @User() user: UserDto,
     ): Promise<ResolveCartWithPaymentIntentResponseDto> {
-        const stripeResourceRes = await this.stripeResourcesService.search({
-            id: body.paymentIntentId.toLowerCase(),
-        });
+        const stripeResourceEntities: StripeResourceEntity[] = await this._get<StripeResourceEntity>(
+            this.stripeResourcesService,
+            {
+                id: body.paymentIntentId.toLowerCase(),
+            },
+        );
 
-        if (stripeResourceRes.error) {
-            throw new HttpException(
-                {
-                    status: StatusCodes.InternalServerError,
-                    message: 'stripe_resource_check_fail',
-                },
-                StatusCodes.InternalServerError,
-            );
-        }
-
-        if (stripeResourceRes.response.length > 0) {
+        if (stripeResourceEntities.length > 0) {
             throw new HttpException(
                 {
                     status: StatusCodes.Conflict,
@@ -85,7 +71,8 @@ export class CheckoutController {
             );
         }
 
-        const stripeResourceRegistration = await this.stripeResourcesService.create(
+        await this._new<StripeResourceEntity>(
+            this.stripeResourcesService,
             {
                 id: body.paymentIntentId.toString(),
                 used_by: user.id,
@@ -94,16 +81,6 @@ export class CheckoutController {
                 if_not_exist: true,
             },
         );
-
-        if (stripeResourceRegistration.error) {
-            throw new HttpException(
-                {
-                    status: StatusCodes.InternalServerError,
-                    message: 'stripe_resource_registration_error',
-                },
-                StatusCodes.InternalServerError,
-            );
-        }
 
         const gemId: string = keccak256(body.paymentIntentId)
             .slice(2)
@@ -133,22 +110,12 @@ export class CheckoutController {
             );
         }
 
-        const gemOrder = await this.gemOrdersService.search({
+        const gemOrder = await this._getOne<GemOrderEntity>(this.gemOrdersService, {
             id: gemId,
         });
 
-        if (gemOrder.error || gemOrder.response.length === 0) {
-            throw new HttpException(
-                {
-                    status: StatusCodes.InternalServerError,
-                    message: 'gem_order_query_error',
-                },
-                StatusCodes.InternalServerError,
-            );
-        }
-
         return {
-            gemOrder: gemOrder.response[0],
+            gemOrder,
         };
     }
 }

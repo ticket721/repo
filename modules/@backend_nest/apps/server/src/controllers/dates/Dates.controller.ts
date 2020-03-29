@@ -1,14 +1,41 @@
-import { Body, Controller, HttpCode, Post, UseFilters } from '@nestjs/common';
-import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { User } from '@app/server/authentication/decorators/User.decorator';
+import {
+    Body,
+    Controller,
+    Delete,
+    HttpCode,
+    HttpException,
+    Param,
+    Post,
+    Put,
+    UseFilters,
+    UseGuards,
+} from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { User } from '@app/server/authentication/decorators/User.controller.decorator';
 import { UserDto } from '@lib/common/users/dto/User.dto';
-import { search } from '@lib/common/utils/ControllerBasics';
+import { ControllerBasics } from '@lib/common/utils/ControllerBasics.base';
 import { DatesService } from '@lib/common/dates/Dates.service';
 import { DatesSearchResponseDto } from '@app/server/controllers/dates/dto/DatesSearchResponse.dto';
 import { DateEntity } from '@lib/common/dates/entities/Date.entity';
 import { DatesSearchInputDto } from '@app/server/controllers/dates/dto/DatesSearchInput.dto';
-import { StatusCodes, StatusNames } from '@lib/common/utils/codes';
+import { StatusCodes } from '@lib/common/utils/codes.value';
 import { HttpExceptionFilter } from '@app/server/utils/HttpException.filter';
+import { DatesCreateInputDto } from '@app/server/controllers/dates/dto/DatesCreateInput.dto';
+import { DatesAddCategoriesInputDto } from '@app/server/controllers/dates/dto/DatesAddCategoriesInput.dto';
+import { DatesDeleteCategoriesInputDto } from '@app/server/controllers/dates/dto/DatesDeleteCategoriesInput.dto';
+import { DatesUpdateInputDto } from '@app/server/controllers/dates/dto/DatesUpdateInput.dto';
+import { DatesCreateResponseDto } from '@app/server/controllers/dates/dto/DatesCreateResponse.dto';
+import { DatesAddCategoriesResponseDto } from '@app/server/controllers/dates/dto/DatesAddCategoriesResponse.dto';
+import { DatesDeleteCategoriesResponseDto } from '@app/server/controllers/dates/dto/DatesDeleteCategoriesResponse.dto';
+import { DatesUpdateResponseDto } from '@app/server/controllers/dates/dto/DatesUpdateResponse.dto';
+import { RightsService } from '@lib/common/rights/Rights.service';
+import { AuthGuard } from '@nestjs/passport';
+import { Roles, RolesGuard } from '@app/server/authentication/guards/RolesGuard.guard';
+import { uuidEq } from '@common/global';
+import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
+import { CategoriesService } from '@lib/common/categories/Categories.service';
+import { isFutureDateRange } from '@common/global/lib/utils';
+import { ApiResponses } from '@app/server/utils/ApiResponses.controller.decorator';
 
 /**
  * Generic Dates controller. Recover Dates linked to all types of events
@@ -16,40 +43,323 @@ import { HttpExceptionFilter } from '@app/server/utils/HttpException.filter';
 @ApiBearerAuth()
 @ApiTags('dates')
 @Controller('dates')
-export class DatesController {
+export class DatesController extends ControllerBasics<DateEntity> {
     /**
      * Dependency Injection
      *
      * @param datesService
+     * @param rightsService
+     * @param categoriesService
      */
-    constructor(private readonly datesService: DatesService) {}
+    constructor(
+        private readonly datesService: DatesService,
+        private readonly rightsService: RightsService,
+        private readonly categoriesService: CategoriesService,
+    ) {
+        super();
+    }
 
     /**
      * Search for dates
      *
      * @param body
-     * @param user
      */
     @Post('/search')
-    @ApiResponse({
-        status: StatusCodes.InternalServerError,
-        description: StatusNames[StatusCodes.InternalServerError],
-    })
-    @ApiResponse({
-        status: StatusCodes.BadRequest,
-        description: StatusNames[StatusCodes.BadRequest],
-    })
-    @ApiResponse({
-        status: StatusCodes.OK,
-        description: StatusNames[StatusCodes.OK],
-    })
-    @HttpCode(200)
     @UseFilters(new HttpExceptionFilter())
-    async search(@Body() body: DatesSearchInputDto, @User() user: UserDto): Promise<DatesSearchResponseDto> {
-        const dates = await search<DateEntity, DatesService>(this.datesService, body);
+    @HttpCode(StatusCodes.OK)
+    @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized, StatusCodes.InternalServerError, StatusCodes.BadRequest])
+    async search(@Body() body: DatesSearchInputDto): Promise<DatesSearchResponseDto> {
+        await this._authorizeGlobal(this.rightsService, this.datesService, null, null, ['route_search']);
+
+        const dates = await this._search(this.datesService, body);
 
         return {
             dates,
+        };
+    }
+
+    /**
+     * Creates a Date
+     *
+     * @param body
+     * @param user
+     */
+    @Post('/')
+    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.Created)
+    @Roles('authenticated')
+    @ApiResponses([
+        StatusCodes.Created,
+        StatusCodes.Unauthorized,
+        StatusCodes.BadRequest,
+        StatusCodes.InternalServerError,
+    ])
+    async create(@Body() body: DatesCreateInputDto, @User() user: UserDto): Promise<DatesCreateResponseDto> {
+        await this._authorizeGlobal(this.rightsService, this.datesService, user, body.group_id, [
+            'owner',
+            'admin',
+            'route_create',
+        ]);
+
+        if (!isFutureDateRange(new Date(body.timestamps.event_begin), new Date(body.timestamps.event_end))) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.BadRequest,
+                    message: 'invalid_event_dates',
+                },
+                StatusCodes.BadRequest,
+            );
+        }
+
+        const newEntity: DateEntity = await this._new<DateEntity>(this.datesService, body);
+
+        return {
+            date: newEntity,
+        };
+    }
+
+    /**
+     * Adds categories to a Date
+     *
+     * @param body
+     * @param dateId
+     * @param user
+     */
+    @Post('/:dateId/categories')
+    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.Created)
+    @Roles('authenticated')
+    @ApiResponses([
+        StatusCodes.Created,
+        StatusCodes.BadRequest,
+        StatusCodes.Unauthorized,
+        StatusCodes.InternalServerError,
+    ])
+    async addCategories(
+        @Body() body: DatesAddCategoriesInputDto,
+        @Param('dateId') dateId: string,
+        @User() user: UserDto,
+    ): Promise<DatesAddCategoriesResponseDto> {
+        const dateEntity: DateEntity = await this._authorizeOne(
+            this.rightsService,
+            this.datesService,
+            user,
+            {
+                id: dateId,
+            },
+            'group_id',
+            ['owner', 'admin', 'route_add_categories'],
+        );
+
+        for (const categoryId of body.categories) {
+            if (dateEntity.categories.findIndex((ec: string): boolean => uuidEq(ec, categoryId)) !== -1) {
+                throw new HttpException(
+                    {
+                        status: StatusCodes.Conflict,
+                        message: 'category_already_in_date',
+                    },
+                    StatusCodes.Conflict,
+                );
+            }
+
+            const category: CategoryEntity = await this._getOne<CategoryEntity>(this.categoriesService, {
+                id: categoryId,
+            });
+
+            if (this.categoriesService.isBound(category)) {
+                throw new HttpException(
+                    {
+                        status: StatusCodes.BadRequest,
+                        message: 'category_already_bound',
+                    },
+                    StatusCodes.BadRequest,
+                );
+            }
+
+            if (category.group_id !== dateEntity.group_id) {
+                throw new HttpException(
+                    {
+                        status: StatusCodes.BadRequest,
+                        message: 'group_id_not_matching',
+                    },
+                    StatusCodes.BadRequest,
+                );
+            }
+
+            dateEntity.categories.push(categoryId);
+        }
+
+        await this._edit<DateEntity>(
+            this.datesService,
+            {
+                id: dateId,
+            },
+            {
+                categories: dateEntity.categories,
+            },
+        );
+
+        for (const categoryId of body.categories) {
+            const boundRes = await this.categoriesService.bind(categoryId, 'date', dateId);
+
+            if (boundRes.error) {
+                throw new HttpException(
+                    {
+                        status: StatusCodes.InternalServerError,
+                        message: boundRes.error,
+                    },
+                    StatusCodes.InternalServerError,
+                );
+            }
+        }
+
+        return {
+            date: dateEntity,
+        };
+    }
+
+    /**
+     * Remove Categories from Date
+     *
+     * @param body
+     * @param dateId
+     * @param user
+     */
+    @Delete('/:dateId/categories')
+    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.OK)
+    @Roles('authenticated')
+    @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized, StatusCodes.NotFound, StatusCodes.InternalServerError])
+    async deleteCategories(
+        @Body() body: DatesDeleteCategoriesInputDto,
+        @Param('dateId') dateId: string,
+        @User() user: UserDto,
+    ): Promise<DatesDeleteCategoriesResponseDto> {
+        const entity: DateEntity = await this._authorizeOne(
+            this.rightsService,
+            this.datesService,
+            user,
+            {
+                id: dateId,
+            },
+            'group_id',
+            ['owner', 'admin', 'route_delete_categories'],
+        );
+
+        const finalCategories: string[] = [];
+
+        for (const category of entity.categories) {
+            if (body.categories.findIndex((catToDelete: string): boolean => uuidEq(catToDelete, category)) === -1) {
+                finalCategories.push(category);
+            }
+        }
+
+        if (finalCategories.length !== entity.categories.length - body.categories.length) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.NotFound,
+                    message: 'categories_not_found',
+                },
+                StatusCodes.NotFound,
+            );
+        }
+
+        await this._edit<DateEntity>(
+            this.datesService,
+            {
+                id: entity.id,
+            },
+            {
+                categories: finalCategories,
+            },
+        );
+
+        for (const category of body.categories) {
+            const unbindRes = await this.categoriesService.unbind(category);
+
+            if (unbindRes.error) {
+                throw new HttpException(
+                    {
+                        status: StatusCodes.InternalServerError,
+                        message: unbindRes.error,
+                    },
+                    StatusCodes.InternalServerError,
+                );
+            }
+        }
+
+        return {
+            date: {
+                ...entity,
+                categories: finalCategories,
+            },
+        };
+    }
+
+    /**
+     * Update Date
+     *
+     * @param body
+     * @param dateId
+     * @param user
+     */
+    @Put('/:dateId')
+    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.OK)
+    @Roles('authenticated')
+    @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized, StatusCodes.BadRequest, StatusCodes.InternalServerError])
+    async update(
+        @Body() body: DatesUpdateInputDto,
+        @Param('dateId') dateId: string,
+        @User() user: UserDto,
+    ): Promise<DatesUpdateResponseDto> {
+        const dateEntity: DateEntity = await this._authorizeOne(
+            this.rightsService,
+            this.datesService,
+            user,
+            {
+                id: dateId,
+            },
+            'group_id',
+            ['owner', 'admin', 'route_update'],
+        );
+
+        if (
+            !isFutureDateRange(
+                body.timestamps && body.timestamps.event_begin
+                    ? new Date(body.timestamps.event_begin)
+                    : dateEntity.timestamps.event_begin,
+                body.timestamps && body.timestamps.event_end
+                    ? new Date(body.timestamps.event_end)
+                    : dateEntity.timestamps.event_end,
+            )
+        ) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.BadRequest,
+                    message: 'invalid_event_dates',
+                },
+                StatusCodes.BadRequest,
+            );
+        }
+
+        await this._edit<DateEntity>(
+            this.datesService,
+            {
+                id: dateId,
+            },
+            body,
+        );
+
+        return {
+            date: {
+                ...dateEntity,
+                ...body,
+            },
         };
     }
 }

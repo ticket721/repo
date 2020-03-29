@@ -12,8 +12,8 @@ import { getQueueToken } from '@nestjs/bull';
 import { getConnectionToken } from '@iaminfinity/express-cassandra/dist/utils/cassandra-orm.utils';
 import { Appender, EVMEventControllerBase } from '@app/worker/evmantenna/EVMEvent.controller.base';
 import { GlobalEntity } from '@lib/common/globalconfig/entities/Global.entity';
-import { DryResponse } from '@lib/common/crud/CRUD.extension';
-import { ESSearchReturn } from '@lib/common/utils/ESSearchReturn';
+import { DryResponse } from '@lib/common/crud/CRUDExtension.base';
+import { ESSearchReturn } from '@lib/common/utils/ESSearchReturn.type';
 import { EVMEvent, EVMEventSetEntity } from '@lib/common/evmeventsets/entities/EVMEventSet.entity';
 
 class QueueMock<T = any> {

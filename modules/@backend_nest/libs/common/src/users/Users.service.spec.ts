@@ -7,7 +7,7 @@ import { UsersRepository } from './Users.repository';
 import { EsSearchOptionsStatic } from '@iaminfinity/express-cassandra/dist/orm/interfaces/externals/express-cassandra.interface';
 import { CreateUserServiceInputDto } from './dto/CreateUserServiceInput.dto';
 import { uuid } from '@iaminfinity/express-cassandra';
-import { ESSearchHit, ESSearchReturn } from '@lib/common/utils/ESSearchReturn';
+import { ESSearchHit, ESSearchReturn } from '@lib/common/utils/ESSearchReturn.type';
 
 class UserEntityModelMock {
     search(options: EsSearchOptionsStatic, callback?: (err: any, ret: any) => void): void {

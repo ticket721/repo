@@ -18,6 +18,24 @@ import {
 } as any)
 export class ImageEntity {
     /**
+     * Entity Builder
+     *
+     * @param i
+     */
+    constructor(i?: ImageEntity) {
+        if (i) {
+            this.id = i.id ? i.id.toString() : i.id;
+            this.mimetype = i.mimetype;
+            this.size = i.size;
+            this.encoding = i.encoding;
+            this.hash = i.hash;
+            this.links = i.links;
+            this.created_at = i.created_at;
+            this.updated_at = i.updated_at;
+        }
+    }
+
+    /**
      * Unique identifier of the image. Also used on the path to recover the image
      */
     @GeneratedUUidColumn()

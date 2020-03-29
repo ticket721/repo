@@ -1,13 +1,13 @@
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { InjectSchedule, Schedule } from 'nest-schedule';
 import { ActionSetsService } from '@lib/common/actionsets/ActionSets.service';
-import { ESSearchBodyBuilder } from '@lib/common/utils/ESSearchBodyBuilder';
-import { SortablePagedSearch } from '@lib/common/utils/SortablePagedSearch';
+import { ESSearchBodyBuilder } from '@lib/common/utils/ESSearchBodyBuilder.helper';
+import { SortablePagedSearch } from '@lib/common/utils/SortablePagedSearch.type';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
-import { fromES } from '@lib/common/utils/fromES';
+import { fromES } from '@lib/common/utils/fromES.helper';
 import { Job, Queue } from 'bull';
 import { InjectQueue } from '@nestjs/bull';
-import { ActionSet } from '@lib/common/actionsets/helper/ActionSet';
+import { ActionSet } from '@lib/common/actionsets/helper/ActionSet.class';
 import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
 import { uuidEq } from '@common/global';
 import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';

@@ -4,7 +4,7 @@ const cities = require('./cities.json');
 /**
  * Longitude / Latitude Coordinates
  */
-export interface Coordinates {
+export class Coordinates {
     /**
      * Longitude
      */

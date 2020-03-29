@@ -1,0 +1,842 @@
+import { T721SDK } from '@common/sdk';
+import _ from 'lodash';
+import { StatusCodes, StatusNames } from '@lib/common/utils/codes.value';
+import { AxiosResponse } from 'axios';
+import { LocalRegisterResponseDto } from '@app/server/authentication/dto/LocalRegisterResponse.dto';
+import { LocalLoginResponseDto } from '@app/server/authentication/dto/LocalLoginResponse.dto';
+import { EmailValidationResponseDto } from '@app/server/authentication/dto/EmailValidationResponse.dto';
+import { createWallet, Web3LoginSigner, Web3RegisterSigner } from '@common/global';
+import { Web3LoginResponseDto } from '@app/server/authentication/dto/Web3LoginResponse.dto';
+
+const generateEmail = () => {
+    // tslint:disable-next-line:no-bitwise
+    return `${_.times(64, () => ((Math.random() * 0xf) << 0).toString(16)).join('')}@ticket721.com`;
+};
+
+const generateUserName = () => {
+    // tslint:disable-next-line:no-bitwise
+    return _.times(64, () => ((Math.random() * 0xf) << 0).toString(16)).join('');
+};
+
+const getSDK = async (getCtx: () => { ready: Promise<void> }): Promise<T721SDK> => {
+    const { ready } = getCtx();
+
+    await ready;
+
+    const sdk = new T721SDK();
+    sdk.connect('localhost', 3000, 'http');
+
+    return sdk;
+};
+
+const generatePassword = generateUserName;
+
+const failWithCode = async (promise: Promise<any>, code: StatusCodes): Promise<void> => {
+    let res;
+
+    try {
+        res = await promise;
+    } catch (e) {
+        expect(e.response.data).toMatchObject({
+            statusCode: code,
+            name: StatusNames[code],
+        });
+        return;
+    }
+
+    throw new Error(`Expected request to fail with status ${code}, but succeeded with status ${res.status}`);
+};
+
+export default function(getCtx: () => { ready: Promise<void> }) {
+    return function() {
+        describe('web3Register (POST /web3/register)', function() {
+            test.concurrent('should create a new web3 account', async function() {
+                const sdk = await getSDK(getCtx);
+
+                const user = {
+                    email: generateEmail(),
+                    username: generateUserName(),
+                    password: generatePassword(),
+                    wallet: await createWallet(),
+                };
+
+                const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(2702);
+
+                const [timestamp, signature] = await web3RegisterSigner.generateRegistrationProof(
+                    user.email,
+                    user.username,
+                    user.wallet.privateKey,
+                );
+
+                const response: AxiosResponse<LocalRegisterResponseDto> = (await sdk.web3Register(
+                    user.email,
+                    user.username,
+                    timestamp,
+                    user.wallet.address,
+                    signature.hex,
+                )) as AxiosResponse<LocalRegisterResponseDto>;
+
+                expect(response.data).toEqual({
+                    token: response.data.token,
+                    user: {
+                        address: user.wallet.address,
+                        email: user.email,
+                        id: response.data.user.id,
+                        locale: 'en',
+                        role: 'authenticated',
+                        type: 'web3',
+                        username: user.username,
+                        valid: false,
+                    },
+                    validationToken: response.data.validationToken,
+                } as LocalRegisterResponseDto);
+            });
+
+            test.concurrent('should create a new web3 account with fr locale', async function() {
+                const sdk = await getSDK(getCtx);
+
+                const user = {
+                    email: generateEmail(),
+                    username: generateUserName(),
+                    password: generatePassword(),
+                    wallet: await createWallet(),
+                };
+
+                const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(2702);
+
+                const [timestamp, signature] = await web3RegisterSigner.generateRegistrationProof(
+                    user.email,
+                    user.username,
+                    user.wallet.privateKey,
+                );
+
+                const response: AxiosResponse<LocalRegisterResponseDto> = (await sdk.web3Register(
+                    user.email,
+                    user.username,
+                    timestamp,
+                    user.wallet.address,
+                    signature.hex,
+                    'fr',
+                )) as AxiosResponse<LocalRegisterResponseDto>;
+
+                expect(response.data).toEqual({
+                    token: response.data.token,
+                    user: {
+                        address: user.wallet.address,
+                        email: user.email,
+                        id: response.data.user.id,
+                        locale: 'fr',
+                        role: 'authenticated',
+                        type: 'web3',
+                        username: user.username,
+                        valid: false,
+                    },
+                    validationToken: response.data.validationToken,
+                } as LocalRegisterResponseDto);
+            });
+
+            test.concurrent('should fail creating web3 account for invalid arguments', async function() {
+                const sdk = await getSDK(getCtx);
+
+                const user = {
+                    email: generateEmail(),
+                    username: generateUserName(),
+                    password: generatePassword(),
+                    wallet: await createWallet(),
+                };
+
+                const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(2702);
+
+                const [timestamp, signature] = await web3RegisterSigner.generateRegistrationProof(
+                    user.email,
+                    user.username,
+                    user.wallet.privateKey,
+                );
+
+                await failWithCode(
+                    sdk.web3Register([] as any, user.username, timestamp, user.wallet.address, signature.hex, 'fr'),
+                    StatusCodes.BadRequest,
+                );
+            });
+
+            test.concurrent('should fail creating web3 account for email conflict', async function() {
+                const sdk = await getSDK(getCtx);
+
+                const user = {
+                    email: generateEmail(),
+                    username: generateUserName(),
+                    password: generatePassword(),
+                    wallet: await createWallet(),
+                };
+
+                const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(2702);
+
+                {
+                    const [timestamp, signature] = await web3RegisterSigner.generateRegistrationProof(
+                        user.email,
+                        user.username,
+                        user.wallet.privateKey,
+                    );
+
+                    await sdk.web3Register(
+                        user.email,
+                        user.username,
+                        timestamp,
+                        user.wallet.address,
+                        signature.hex,
+                        'fr',
+                    );
+                }
+
+                {
+                    const otherUser = {
+                        email: user.email,
+                        username: generateUserName(),
+                        password: generatePassword(),
+                        wallet: await createWallet(),
+                    };
+
+                    const [timestamp, signature] = await web3RegisterSigner.generateRegistrationProof(
+                        otherUser.email,
+                        otherUser.username,
+                        otherUser.wallet.privateKey,
+                    );
+                    await failWithCode(
+                        sdk.web3Register(
+                            otherUser.email,
+                            otherUser.username,
+                            timestamp,
+                            otherUser.wallet.address,
+                            signature.hex,
+                            'fr',
+                        ),
+                        StatusCodes.Conflict,
+                    );
+                }
+            });
+
+            test.concurrent('should fail creating web3 account for username conflict', async function() {
+                const sdk = await getSDK(getCtx);
+
+                const user = {
+                    email: generateEmail(),
+                    username: generateUserName(),
+                    password: generatePassword(),
+                    wallet: await createWallet(),
+                };
+
+                const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(2702);
+
+                {
+                    const [timestamp, signature] = await web3RegisterSigner.generateRegistrationProof(
+                        user.email,
+                        user.username,
+                        user.wallet.privateKey,
+                    );
+
+                    await sdk.web3Register(
+                        user.email,
+                        user.username,
+                        timestamp,
+                        user.wallet.address,
+                        signature.hex,
+                        'fr',
+                    );
+                }
+
+                {
+                    const otherUser = {
+                        email: generateEmail(),
+                        username: user.username,
+                        password: generatePassword(),
+                        wallet: await createWallet(),
+                    };
+
+                    const [timestamp, signature] = await web3RegisterSigner.generateRegistrationProof(
+                        otherUser.email,
+                        otherUser.username,
+                        otherUser.wallet.privateKey,
+                    );
+                    await failWithCode(
+                        sdk.web3Register(
+                            otherUser.email,
+                            otherUser.username,
+                            timestamp,
+                            otherUser.wallet.address,
+                            signature.hex,
+                            'fr',
+                        ),
+                        StatusCodes.Conflict,
+                    );
+                }
+            });
+
+            test.concurrent('should fail creating web3 account for address conflict', async function() {
+                const sdk = await getSDK(getCtx);
+
+                const user = {
+                    email: generateEmail(),
+                    username: generateUserName(),
+                    password: generatePassword(),
+                    wallet: await createWallet(),
+                };
+
+                const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(2702);
+
+                {
+                    const [timestamp, signature] = await web3RegisterSigner.generateRegistrationProof(
+                        user.email,
+                        user.username,
+                        user.wallet.privateKey,
+                    );
+
+                    await sdk.web3Register(
+                        user.email,
+                        user.username,
+                        timestamp,
+                        user.wallet.address,
+                        signature.hex,
+                        'fr',
+                    );
+                }
+
+                {
+                    const otherUser = {
+                        email: generateEmail(),
+                        username: generateUserName(),
+                        password: generatePassword(),
+                        wallet: user.wallet,
+                    };
+
+                    const [timestamp, signature] = await web3RegisterSigner.generateRegistrationProof(
+                        otherUser.email,
+                        otherUser.username,
+                        otherUser.wallet.privateKey,
+                    );
+                    await failWithCode(
+                        sdk.web3Register(
+                            otherUser.email,
+                            otherUser.username,
+                            timestamp,
+                            otherUser.wallet.address,
+                            signature.hex,
+                            'fr',
+                        ),
+                        StatusCodes.Conflict,
+                    );
+                }
+            });
+
+            test.concurrent('should fail creating web3 account for invalid signature', async function() {
+                const sdk = await getSDK(getCtx);
+
+                const user = {
+                    email: generateEmail(),
+                    username: generateUserName(),
+                    password: generatePassword(),
+                    wallet: await createWallet(),
+                };
+
+                const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(2703);
+
+                const [timestamp, signature] = await web3RegisterSigner.generateRegistrationProof(
+                    user.email,
+                    user.username,
+                    user.wallet.privateKey,
+                );
+
+                await failWithCode(
+                    sdk.web3Register(user.email, user.username, timestamp, user.wallet.address, signature.hex),
+                    StatusCodes.Unauthorized,
+                );
+            });
+
+            test.concurrent('should fail creating web3 account for expired timestamp', async function() {
+                const sdk = await getSDK(getCtx);
+
+                const user = {
+                    email: generateEmail(),
+                    username: generateUserName(),
+                    password: generatePassword(),
+                    wallet: await createWallet(),
+                };
+
+                const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(2702);
+
+                const expiredTimestamp = Date.now() - 1000000;
+
+                const payload = await web3RegisterSigner.generatePayload(
+                    {
+                        timestamp: expiredTimestamp,
+                        email: user.email,
+                        username: user.username,
+                    },
+                    'Web3Register',
+                );
+
+                const signature = await web3RegisterSigner.sign(user.wallet.privateKey, payload);
+
+                await failWithCode(
+                    sdk.web3Register(user.email, user.username, expiredTimestamp, user.wallet.address, signature.hex),
+                    StatusCodes.Unauthorized,
+                );
+            });
+
+            test.concurrent('should fail creating web3 account for timestamp in the future', async function() {
+                const sdk = await getSDK(getCtx);
+
+                const user = {
+                    email: generateEmail(),
+                    username: generateUserName(),
+                    password: generatePassword(),
+                    wallet: await createWallet(),
+                };
+
+                const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(2702);
+
+                const futureTimestamp = Date.now() + 1000000;
+
+                const payload = await web3RegisterSigner.generatePayload(
+                    {
+                        timestamp: futureTimestamp,
+                        email: user.email,
+                        username: user.username,
+                    },
+                    'Web3Register',
+                );
+
+                const signature = await web3RegisterSigner.sign(user.wallet.privateKey, payload);
+
+                await failWithCode(
+                    sdk.web3Register(user.email, user.username, futureTimestamp, user.wallet.address, signature.hex),
+                    StatusCodes.Unauthorized,
+                );
+            });
+        });
+
+        describe('web3Login (POST /web3/login)', function() {
+            test.concurrent('should login properly on created & validated account', async function() {
+                const sdk = await getSDK(getCtx);
+
+                const user = {
+                    email: generateEmail(),
+                    username: generateUserName(),
+                    password: generatePassword(),
+                    wallet: await createWallet(),
+                };
+
+                {
+                    const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(2702);
+                    const [timestamp, signature] = await web3RegisterSigner.generateRegistrationProof(
+                        user.email,
+                        user.username,
+                        user.wallet.privateKey,
+                    );
+
+                    const response: AxiosResponse<LocalRegisterResponseDto> = (await sdk.web3Register(
+                        user.email,
+                        user.username,
+                        timestamp,
+                        user.wallet.address,
+                        signature.hex,
+                    )) as AxiosResponse<LocalRegisterResponseDto>;
+
+                    await sdk.validateEmail(response.data.validationToken);
+                }
+
+                {
+                    const web3LoginSigner: Web3LoginSigner = new Web3LoginSigner(2702);
+                    const [timestamp, signature] = await web3LoginSigner.generateAuthenticationProof(
+                        user.wallet.privateKey,
+                    );
+
+                    const loginResponse: AxiosResponse<Web3LoginResponseDto> = await sdk.web3Login(
+                        timestamp,
+                        signature.hex,
+                    );
+
+                    expect(loginResponse.data).toEqual({
+                        token: loginResponse.data.token,
+                        user: {
+                            address: user.wallet.address,
+                            email: user.email,
+                            id: loginResponse.data.user.id,
+                            locale: 'en',
+                            role: 'authenticated',
+                            type: 'web3',
+                            username: user.username,
+                            valid: true,
+                        },
+                    } as LocalRegisterResponseDto);
+                }
+            });
+
+            test.concurrent('should fail login with invalid signature', async function() {
+                const sdk = await getSDK(getCtx);
+
+                const user = {
+                    email: generateEmail(),
+                    username: generateUserName(),
+                    password: generatePassword(),
+                    wallet: await createWallet(),
+                };
+
+                {
+                    const web3LoginSigner: Web3LoginSigner = new Web3LoginSigner(2702);
+                    const [timestamp, signature] = await web3LoginSigner.generateAuthenticationProof(
+                        user.wallet.privateKey,
+                    );
+
+                    await failWithCode(sdk.web3Login(timestamp, signature.hex), StatusCodes.Unauthorized);
+                }
+            });
+
+            test.concurrent('should fail login for signature in the past', async function() {
+                const sdk = await getSDK(getCtx);
+
+                const user = {
+                    email: generateEmail(),
+                    username: generateUserName(),
+                    password: generatePassword(),
+                    wallet: await createWallet(),
+                };
+
+                {
+                    const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(2702);
+                    const [timestamp, signature] = await web3RegisterSigner.generateRegistrationProof(
+                        user.email,
+                        user.username,
+                        user.wallet.privateKey,
+                    );
+
+                    const response: AxiosResponse<LocalRegisterResponseDto> = (await sdk.web3Register(
+                        user.email,
+                        user.username,
+                        timestamp,
+                        user.wallet.address,
+                        signature.hex,
+                    )) as AxiosResponse<LocalRegisterResponseDto>;
+
+                    await sdk.validateEmail(response.data.validationToken);
+                }
+
+                {
+                    const expiredTimestamp = Date.now() - 1000000;
+
+                    const web3LoginSigner: Web3LoginSigner = new Web3LoginSigner(2702);
+
+                    const payload = web3LoginSigner.generatePayload(
+                        {
+                            timestamp: expiredTimestamp,
+                        },
+                        'Web3Login',
+                    );
+
+                    const signature = await web3LoginSigner.sign(user.wallet.privateKey, payload);
+
+                    await failWithCode(sdk.web3Login(expiredTimestamp, signature.hex), StatusCodes.Unauthorized);
+                }
+            });
+
+            test.concurrent('should fail login for signature in the future', async function() {
+                const sdk = await getSDK(getCtx);
+
+                const user = {
+                    email: generateEmail(),
+                    username: generateUserName(),
+                    password: generatePassword(),
+                    wallet: await createWallet(),
+                };
+
+                {
+                    const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(2702);
+                    const [timestamp, signature] = await web3RegisterSigner.generateRegistrationProof(
+                        user.email,
+                        user.username,
+                        user.wallet.privateKey,
+                    );
+
+                    const response: AxiosResponse<LocalRegisterResponseDto> = (await sdk.web3Register(
+                        user.email,
+                        user.username,
+                        timestamp,
+                        user.wallet.address,
+                        signature.hex,
+                    )) as AxiosResponse<LocalRegisterResponseDto>;
+
+                    await sdk.validateEmail(response.data.validationToken);
+                }
+
+                {
+                    const futureTimestamp = Date.now() + 1000000;
+
+                    const web3LoginSigner: Web3LoginSigner = new Web3LoginSigner(2702);
+
+                    const payload = web3LoginSigner.generatePayload(
+                        {
+                            timestamp: futureTimestamp,
+                        },
+                        'Web3Login',
+                    );
+
+                    const signature = await web3LoginSigner.sign(user.wallet.privateKey, payload);
+
+                    await failWithCode(sdk.web3Login(futureTimestamp, signature.hex), StatusCodes.Unauthorized);
+                }
+            });
+        });
+
+        describe('localRegister (POST /local/register)', function() {
+            test.concurrent('should create a new t721 account', async function() {
+                const sdk = await getSDK(getCtx);
+
+                const user = {
+                    email: generateEmail(),
+                    username: generateUserName(),
+                    password: generatePassword(),
+                };
+
+                const response: AxiosResponse<LocalRegisterResponseDto> = (await sdk.localRegister(
+                    user.email,
+                    user.password,
+                    user.username,
+                )) as AxiosResponse<LocalRegisterResponseDto>;
+
+                expect(response.data).toEqual({
+                    token: response.data.token,
+                    user: {
+                        address: response.data.user.address,
+                        email: user.email,
+                        id: response.data.user.id,
+                        locale: 'en',
+                        role: 'authenticated',
+                        type: 't721',
+                        username: user.username,
+                        valid: false,
+                    },
+                    validationToken: response.data.validationToken,
+                } as LocalRegisterResponseDto);
+            });
+
+            test.concurrent('should create a new t721 account with fr locale', async function() {
+                const sdk = await getSDK(getCtx);
+
+                const user = {
+                    email: generateEmail(),
+                    username: generateUserName(),
+                    password: generatePassword(),
+                };
+
+                const response: AxiosResponse<LocalRegisterResponseDto> = (await sdk.localRegister(
+                    user.email,
+                    user.password,
+                    user.username,
+                    'fr',
+                )) as AxiosResponse<LocalRegisterResponseDto>;
+
+                expect(response.data).toEqual({
+                    token: response.data.token,
+                    user: {
+                        address: response.data.user.address,
+                        email: user.email,
+                        id: response.data.user.id,
+                        locale: 'fr',
+                        role: 'authenticated',
+                        type: 't721',
+                        username: user.username,
+                        valid: false,
+                    },
+                    validationToken: response.data.validationToken,
+                } as LocalRegisterResponseDto);
+            });
+
+            test.concurrent('should fail creating a new t721 account for invalid arguments', async function() {
+                const sdk = await getSDK(getCtx);
+
+                const user = {
+                    email: [],
+                    username: generateUserName(),
+                    password: generatePassword(),
+                };
+
+                await failWithCode(
+                    sdk.localRegister(user.email as any, user.password, user.username),
+                    StatusCodes.BadRequest,
+                );
+            });
+
+            test.concurrent('should fail creating a new t721 account for email conflict', async function() {
+                const sdk = await getSDK(getCtx);
+
+                const user = {
+                    email: generateEmail(),
+                    username: generateUserName(),
+                    password: generatePassword(),
+                };
+
+                await sdk.localRegister(user.email, user.password, user.username);
+
+                await failWithCode(
+                    sdk.localRegister(user.email, generatePassword(), generateUserName()),
+                    StatusCodes.Conflict,
+                );
+            });
+
+            test.concurrent('should fail creating a new t721 account for username conflict', async function() {
+                const sdk = await getSDK(getCtx);
+
+                const user = {
+                    email: generateEmail(),
+                    username: generateUserName(),
+                    password: generatePassword(),
+                };
+
+                await sdk.localRegister(user.email, user.password, user.username);
+
+                await failWithCode(
+                    sdk.localRegister(generateEmail(), generatePassword(), user.username),
+                    StatusCodes.Conflict,
+                );
+            });
+
+            test.concurrent('should fail creating a new t721 account for invalid password format', async function() {
+                const sdk = await getSDK(getCtx);
+
+                const user = {
+                    email: generateEmail(),
+                    username: generateUserName(),
+                    password: `${generatePassword()}${generatePassword()}`,
+                };
+
+                await failWithCode(
+                    sdk.post(
+                        '/authentication/local/register',
+                        {
+                            'Content-Type': 'application/json',
+                        },
+                        user,
+                    ),
+                    StatusCodes.UnprocessableEntity,
+                );
+            });
+        });
+
+        describe('localLogin (POST /local/login)', function() {
+            test.concurrent('should login properly on created & validated account', async function() {
+                const sdk = await getSDK(getCtx);
+
+                const user = {
+                    email: generateEmail(),
+                    username: generateUserName(),
+                    password: generatePassword(),
+                };
+
+                const response: AxiosResponse<LocalRegisterResponseDto> = (await sdk.localRegister(
+                    user.email,
+                    user.password,
+                    user.username,
+                )) as AxiosResponse<LocalRegisterResponseDto>;
+
+                await sdk.validateEmail(response.data.validationToken);
+
+                const loginResponse: AxiosResponse<LocalLoginResponseDto> = await sdk.localLogin(
+                    user.email,
+                    user.password,
+                );
+
+                expect(loginResponse.data).toEqual({
+                    user: {
+                        valid: true,
+                        address: loginResponse.data.user.address,
+                        role: 'authenticated',
+                        id: loginResponse.data.user.id,
+                        locale: 'en',
+                        type: 't721',
+                        email: loginResponse.data.user.email,
+                        username: loginResponse.data.user.username,
+                    },
+                    token: loginResponse.data.token,
+                } as LocalLoginResponseDto);
+            });
+
+            test.concurrent('should fail login on invalid password', async function() {
+                const sdk = await getSDK(getCtx);
+
+                const user = {
+                    email: generateEmail(),
+                    username: generateUserName(),
+                    password: generatePassword(),
+                };
+
+                const response: AxiosResponse<LocalRegisterResponseDto> = (await sdk.localRegister(
+                    user.email,
+                    user.password,
+                    user.username,
+                )) as AxiosResponse<LocalRegisterResponseDto>;
+
+                await sdk.validateEmail(response.data.validationToken);
+
+                await failWithCode(sdk.localLogin(user.email, user.username), StatusCodes.Unauthorized);
+            });
+
+            test.concurrent('should fail login on unknown user', async function() {
+                const sdk = await getSDK(getCtx);
+
+                const user = {
+                    email: generateEmail(),
+                    username: generateUserName(),
+                    password: generatePassword(),
+                };
+
+                await failWithCode(sdk.localLogin(user.email, user.username), StatusCodes.Unauthorized);
+            });
+        });
+
+        describe('validateEmail (POST /validate)', function() {
+            test.concurrent('should validate created account', async function() {
+                const sdk = await getSDK(getCtx);
+
+                const user = {
+                    email: generateEmail(),
+                    username: generateUserName(),
+                    password: generatePassword(),
+                };
+
+                const response: AxiosResponse<LocalRegisterResponseDto> = (await sdk.localRegister(
+                    user.email,
+                    user.password,
+                    user.username,
+                )) as AxiosResponse<LocalRegisterResponseDto>;
+
+                const validationResponse: AxiosResponse<EmailValidationResponseDto> = await sdk.validateEmail(
+                    response.data.validationToken,
+                );
+
+                expect(validationResponse.data).toEqual({
+                    user: {
+                        valid: true,
+                        address: validationResponse.data.user.address,
+                        role: 'authenticated',
+                        id: validationResponse.data.user.id,
+                        locale: 'en',
+                        type: 't721',
+                        email: validationResponse.data.user.email,
+                        username: validationResponse.data.user.username,
+                    },
+                } as EmailValidationResponseDto);
+            });
+
+            test.concurrent('should fail validating', async function() {
+                const sdk = await getSDK(getCtx);
+
+                const user = {
+                    email: generateEmail(),
+                    username: generateUserName(),
+                    password: generatePassword(),
+                };
+
+                await failWithCode(sdk.validateEmail(user.email), StatusCodes.Unauthorized);
+            });
+        });
+    };
+}

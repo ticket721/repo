@@ -3,7 +3,7 @@ import { Job, Queue } from 'bull';
 import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ActionSetsService } from '@lib/common/actionsets/ActionSets.service';
-import { ActionSet } from '@lib/common/actionsets/helper/ActionSet';
+import { ActionSet } from '@lib/common/actionsets/helper/ActionSet.class';
 import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
 import { InstanceSignature, OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';

@@ -6,9 +6,10 @@ import { UsersService } from '@lib/common/users/Users.service';
 import { ConfigService } from '@lib/common/config/Config.service';
 import { UserDto } from '@lib/common/users/dto/User.dto';
 import { RefractFactoryV0Service } from '@lib/common/contracts/refract/RefractFactory.V0.service';
-import { ServiceResponse } from '@lib/common/utils/ServiceResponse';
+import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
 import { VaultereumService } from '@lib/common/vaultereum/Vaultereum.service';
 import { uuid } from '@iaminfinity/express-cassandra';
+import { Web3Service } from '@lib/common/web3/Web3.service';
 
 /**
  * Authentication services and utilities
@@ -22,12 +23,14 @@ export class AuthenticationService {
      * @param configService
      * @param refractFactoryService
      * @param vaultereumService
+     * @param web3Service
      */
     constructor /* instanbul ignore next */(
         private readonly usersService: UsersService,
         private readonly configService: ConfigService,
         private readonly refractFactoryService: RefractFactoryV0Service,
         private readonly vaultereumService: VaultereumService,
+        private readonly web3Service: Web3Service,
     ) {}
 
     /**
@@ -37,7 +40,9 @@ export class AuthenticationService {
      * @param signature
      */
     async validateWeb3User(timestamp: string, signature: string): Promise<ServiceResponse<PasswordlessUserDto>> {
-        const web3LoginSigner: Web3LoginSigner = new Web3LoginSigner(1); // recover from web3 module
+        const networkId: number = await this.web3Service.net();
+
+        const web3LoginSigner: Web3LoginSigner = new Web3LoginSigner(networkId);
 
         const verification: [boolean, string] = await web3LoginSigner.verifyAuthenticationProof(
             signature,
@@ -163,7 +168,9 @@ export class AuthenticationService {
             };
         }
 
-        const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(1);
+        const networkId: number = await this.web3Service.net();
+
+        const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(networkId);
 
         const verification: [boolean, string] = await web3RegisterSigner.verifyRegistrationProof(
             signature,

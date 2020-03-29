@@ -1,5 +1,5 @@
-import { SortablePagedSearch } from '@lib/common/utils/SortablePagedSearch';
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { SortablePagedSearch } from '@lib/common/utils/SortablePagedSearch.type';
+import { ApiProperty } from '@nestjs/swagger';
 import { IsString } from 'class-validator';
 
 /**
@@ -9,7 +9,7 @@ export class TxsSubscribeInputDto extends SortablePagedSearch {
     /**
      * Transaction hash to follow
      */
-    @ApiPropertyOptional({
+    @ApiProperty({
         description: 'Hash of transaction to follow',
     })
     @IsString()

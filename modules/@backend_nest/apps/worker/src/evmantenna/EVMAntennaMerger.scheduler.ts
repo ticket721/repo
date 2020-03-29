@@ -8,13 +8,13 @@ import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 import { GlobalEntity } from '@lib/common/globalconfig/entities/Global.entity';
 import { Job, Queue } from 'bull';
 import { InjectQueue } from '@nestjs/bull';
-import { ESSearchHit } from '@lib/common/utils/ESSearchReturn';
+import { ESSearchHit } from '@lib/common/utils/ESSearchReturn.type';
 import { EVMEvent, EVMEventSetEntity } from '@lib/common/evmeventsets/entities/EVMEventSet.entity';
-import { DryResponse } from '@lib/common/crud/CRUD.extension';
+import { DryResponse } from '@lib/common/crud/CRUDExtension.base';
 import { Connection, InjectConnection } from '@iaminfinity/express-cassandra';
 import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
 import { EVMBlockRollbacksService } from '@lib/common/evmblockrollbacks/EVMBlockRollbacks.service';
-import { cassandraArrayResult } from '@lib/common/utils/cassandraArrayResult';
+import { cassandraArrayResultHelper } from '@lib/common/utils/cassandraArrayResult.helper';
 
 /**
  * Data Model contained inside the merge jobs
@@ -183,7 +183,7 @@ export class EVMAntennaMergerScheduler implements OnApplicationBootstrap {
         return []
             .concat(
                 ...esres.map((eshit: ESSearchHit<EVMEventSetEntity>): EVMProcessableEvent[] =>
-                    cassandraArrayResult(eshit._source.events).map(
+                    cassandraArrayResultHelper(eshit._source.events).map(
                         (esraw: EVMEvent): EVMProcessableEvent => ({
                             ...esraw,
                             artifact_name: eshit._source.artifact_name,

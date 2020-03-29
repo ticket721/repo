@@ -1,4 +1,7 @@
 {
+    "rules": {
+        "max-classes-per-file": false
+    },
     "defaultSeverity": "error",
     "extends": ["../tslint.json"],
     "linterOptions": {

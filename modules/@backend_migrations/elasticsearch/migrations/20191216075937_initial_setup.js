@@ -55,10 +55,55 @@ class M20191216075937_initial_setup extends ElasticMigration {
             }
         );
 
+        await this.createIndex('ticket721_right', 'ticket721');
+        await this.putMapping('ticket721_right', 'right', {
+            "right": {
+                "discover": ".*"
+            }
+        });
+        await this.putSettings('ticket721_right',
+            {
+                index: {
+                    synchronous_refresh: true,
+                    max_result_window: 2147483647
+                }
+            }
+        );
+        
+        await this.createIndex('ticket721_category', 'ticket721');
+        await this.putMapping('ticket721_category', 'category', {
+            "category": {
+                "discover": ".*"
+            }
+        });
+        await this.putSettings('ticket721_category',
+            {
+                index: {
+                    synchronous_refresh: true
+                }
+            }
+        );
+
         await this.createIndex('ticket721_actionset', 'ticket721');
         await this.putMapping('ticket721_actionset', 'actionset', {
             "actionset": {
-                "discover": ".*"
+                "discover": "^((?!links).*)",
+                "properties": {
+                    "links": {
+                        "type": "nested",
+                        "cql_collection": "list",
+                        "properties": {
+                            "id": {
+                                "cql_collection": "singleton",
+                                "type": "keyword"
+                            },
+                            "type": {
+                                "cql_collection": "singleton",
+                                "type": "text"
+                            }
+                        }
+                    }
+                }
             }
         });
         await this.putSettings('ticket721_actionset',
@@ -72,16 +117,52 @@ class M20191216075937_initial_setup extends ElasticMigration {
         await this.createIndex('ticket721_date', 'ticket721');
         await this.putMapping('ticket721_date', 'date', {
             "date": {
-                "discover": "^((?!location).*)",
+                "discover": "^((?!(location|metadata)).*)",
                 "properties": {
                     "location": {
-                        "type": "geo_point",
-                        "cql_collection": "singleton"
+                        "type": "nested",
+                        "cql_collection": "singleton",
+                        "properties": {
+                            "location": {
+                                "type": "geo_point",
+                                "cql_collection": "singleton"
+                            },
+                            "location_label": {
+                                "cql_collection": "singleton",
+                                "type": "text"
+                            },
+                            "assigned_city": {
+                                "cql_collection": "singleton",
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    "metadata": {
+                        "type": "nested",
+                        "cql_collection": "singleton",
+                        "properties": {
+                            "avatar": {
+                                "cql_collection": "singleton",
+                                "type": "keyword"
+                            },
+                            "name": {
+                                "cql_collection": "singleton",
+                                "type": "text"
+                            },
+                            "description": {
+                                "cql_collection": "singleton",
+                                "type": "text"
+                            },
+                            "tags": {
+                                "cql_collection": "list",
+                                "type": "text"
+                            }
+                        }
                     }
                 }
             }
         });
-
+        
         await this.createIndex('ticket721_event', 'ticket721');
         await this.putMapping('ticket721_event', 'event', {
             "event": {

@@ -32,3 +32,18 @@ export function leftPad(text: string, length: number, character: string = '0'): 
     }
     return `${character.repeat(length - text.length)}${text}`;
 }
+
+/**
+ * Serialize string to remove all whitespace and replace them with _
+ *
+ * @param text
+ */
+export function serialize(text: string): string {
+    return text
+        .toLowerCase()
+        .replace(/\s/g, '_')
+}
+
+export function isFutureDateRange(begin: Date, end: Date): boolean {
+    return ((end.getTime() > begin.getTime()) && (begin.getTime() > Date.now()));
+}

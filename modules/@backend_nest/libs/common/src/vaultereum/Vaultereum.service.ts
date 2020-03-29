@@ -1,7 +1,7 @@
 import { Inject, OnModuleInit } from '@nestjs/common';
 import VaultClientBuilder from 'node-vault';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
-import { ServiceResponse } from '@lib/common/utils/ServiceResponse';
+import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
 import { EIP712Signature } from '@ticket721/e712';
 import { ExternalSigner } from '@ticket721/e712/lib/EIP712Signer';
 

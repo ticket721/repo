@@ -6,6 +6,8 @@ import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entit
 import { Test, TestingModule } from '@nestjs/testing';
 import { EsSearchOptionsStatic } from '@iaminfinity/express-cassandra/dist/orm/interfaces/externals/express-cassandra.interface';
 import { ConfigService } from '@lib/common/config/Config.service';
+import { ModuleRef } from '@nestjs/core';
+import { RightsService } from '@lib/common/rights/Rights.service';
 
 class EntityModelMock {
     search(options: EsSearchOptionsStatic, callback?: (err: any, ret: any) => void): void {
@@ -21,11 +23,15 @@ describe('ActionSets Service', function() {
         actionSetsRepository: ActionSetsRepository;
         actionSetModel: EntityModelMock;
         configServiceMock: ConfigService;
+        moduleRefMock: ModuleRef;
+        rightsServiceMock: RightsService;
     } = {
         actionSetsService: null,
         actionSetsRepository: null,
         actionSetModel: null,
         configServiceMock: null,
+        moduleRefMock: null,
+        rightsServiceMock: null,
     };
 
     beforeEach(async function() {
@@ -41,6 +47,8 @@ describe('ActionSets Service', function() {
                 },
             },
         });
+        context.moduleRefMock = mock(ModuleRef);
+        context.rightsServiceMock = mock(RightsService);
 
         const ConfigServiceProvider = {
             provide: ConfigService,
@@ -57,11 +65,23 @@ describe('ActionSets Service', function() {
             useValue: instance(context.actionSetsRepository),
         };
 
+        const ModuleRefProvider = {
+            provide: ModuleRef,
+            useValue: instance(context.moduleRefMock),
+        };
+
+        const RightsServiceProvider = {
+            provide: RightsService,
+            useValue: instance(context.rightsServiceMock),
+        };
+
         const app: TestingModule = await Test.createTestingModule({
             providers: [
                 ActionSetEntityModelProvider,
                 ActionSetsRepositoryProvider,
                 ConfigServiceProvider,
+                ModuleRefProvider,
+                RightsServiceProvider,
                 ActionSetsService,
             ],
         }).compile();

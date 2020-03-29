@@ -6,9 +6,9 @@ const DAY = 24 * HOUR;
 export default {
     nonce: 1,
     admins: [],
-    name: "Justice Woman WorldWide 2020",
-    description: "Justice Concert",
-    tags: ["french", "electro", "disco"],
+    name: 'Justice Woman WorldWide 2020',
+    description: 'Justice Concert',
+    tags: ['french', 'electro', 'disco'],
     dates: [
         {
             name: 'La Cigale',
@@ -34,7 +34,7 @@ export default {
     categories: {
         global: [
             {
-                name: 'vip',
+                name: 'VIP Tickets',
                 saleBegin: new Date(Date.now() + HOUR),
                 saleEnd: new Date(Date.now() + 23 * HOUR),
                 resaleBegin: new Date(Date.now() + HOUR),
@@ -51,7 +51,7 @@ export default {
         dates: [
             [
                 {
-                    name: 'regular',
+                    name: 'Regular Tickets',
                     saleBegin: new Date(Date.now() + HOUR),
                     saleEnd: new Date(Date.now() + 23 * HOUR),
                     resaleBegin: new Date(Date.now() + HOUR),
@@ -67,7 +67,7 @@ export default {
             ],
             [
                 {
-                    name: 'regular',
+                    name: 'Regular Tickets',
                     saleBegin: new Date(Date.now() + HOUR),
                     saleEnd: new Date(Date.now() + 23 * HOUR),
                     resaleBegin: new Date(Date.now() + HOUR),
@@ -84,10 +84,6 @@ export default {
         ]
     },
     images: {
-        avatar: 'avatar.jpg',
-        banners: [
-            'banner_one.jpg',
-            'banner_two.jpg'
-        ]
+        avatar: 'avatar.jpg'
     }
 }

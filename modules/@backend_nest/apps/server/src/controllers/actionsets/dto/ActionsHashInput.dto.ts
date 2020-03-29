@@ -1,7 +1,7 @@
 import { IsArray, IsOptional } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { SearchableField } from '@lib/common/utils/SearchableField.type';
-import { SortablePagedSearch } from '@lib/common/utils/SortablePagedSearch';
+import { SortablePagedSearch } from '@lib/common/utils/SortablePagedSearch.type';
 import { ActionEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
 
 /**

@@ -1,5 +1,6 @@
 import { Column, CreateDateColumn, Entity, UpdateDateColumn } from '@iaminfinity/express-cassandra';
-import { DryResponse } from '@lib/common/crud/CRUD.extension';
+import { DryResponse } from '@lib/common/crud/CRUDExtension.base';
+import { ECAAG } from '@lib/common/utils/ECAAG.helper';
 
 /**
  * Each processed block produces one Block Rollback
@@ -12,6 +13,25 @@ import { DryResponse } from '@lib/common/crud/CRUD.extension';
     },
 } as any)
 export class EVMBlockRollbackEntity {
+    /**
+     * Entity Builder
+     *
+     * @param evmb
+     */
+    constructor(evmb?: EVMBlockRollbackEntity) {
+        if (evmb) {
+            this.block_number = evmb.block_number;
+            this.rollback_queries = ECAAG(evmb.rollback_queries).map(
+                (dr: DryResponse): DryResponse => ({
+                    ...dr,
+                    params: ECAAG(dr.params),
+                }),
+            );
+            this.created_at = evmb.created_at;
+            this.updated_at = evmb.updated_at;
+        }
+    }
+
     /**
      * Block Number
      */

@@ -1,5 +1,3 @@
-import { Category } from '@lib/common/dates/entities/Date.entity';
-
 /**
  * Date Model for most of event related calls
  */
@@ -10,24 +8,15 @@ export class EventDto {
     id: string;
 
     /**
-     * Status of the Event
+     * Event Group ID
      */
-    status: 'preview' | 'live';
+    // tslint:disable-next-line:variable-name
+    group_id: string;
 
     /**
      * Validating address
      */
     address: string;
-
-    /**
-     * Unique ID of the Owner
-     */
-    owner: string;
-
-    /**
-     * Unique ID of the Admins
-     */
-    admins: string[];
 
     /**
      * Unique ID of the Dates
@@ -37,33 +26,12 @@ export class EventDto {
     /**
      * Ticket categories that are cross-dates
      */
-    categories: Category[];
+    categories: string[];
 
     /**
      * Name of the event
      */
     name: string;
-
-    /**
-     * Description of the event
-     */
-    description: string;
-
-    /**
-     * Avatar image of the event
-     */
-    avatar: string;
-
-    /**
-     * Banner images of the event
-     */
-    banners: string[];
-
-    /**
-     * Description of the event
-     */
-    // tslint:disable-next-line:variable-name
-    group_id: string;
 
     /**
      * Creation timestamp

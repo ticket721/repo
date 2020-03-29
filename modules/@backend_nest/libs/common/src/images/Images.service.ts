@@ -1,8 +1,8 @@
-import { CRUDExtension } from '@lib/common/crud/CRUD.extension';
+import { CRUDExtension } from '@lib/common/crud/CRUDExtension.base';
 import { BaseModel, InjectModel, InjectRepository } from '@iaminfinity/express-cassandra';
 import { ImagesRepository } from '@lib/common/images/Images.repository';
 import { ImageEntity } from '@lib/common/images/entities/Image.entity';
-import { ServiceResponse } from '@lib/common/utils/ServiceResponse';
+import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
 
 /**
  * Service to CRUD ImageEntities
@@ -26,6 +26,10 @@ export class ImagesService extends CRUDExtension<ImagesRepository, ImageEntity> 
             /* istanbul ignore next */
             (e: ImageEntity) => {
                 return new imageEntity(e);
+            },
+            /* istanbul ignore next */
+            (i: ImageEntity) => {
+                return new ImageEntity(i);
             },
         );
     }

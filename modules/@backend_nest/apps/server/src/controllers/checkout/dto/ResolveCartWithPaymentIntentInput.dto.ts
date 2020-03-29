@@ -8,7 +8,9 @@ export class ResolveCartWithPaymentIntentInputDto {
     /**
      * Payment Intent ID containing the payment
      */
-    @ApiProperty()
+    @ApiProperty({
+        description: 'Payment Intent to use to resolve the current cart',
+    })
     @IsString()
     paymentIntentId: string;
 }

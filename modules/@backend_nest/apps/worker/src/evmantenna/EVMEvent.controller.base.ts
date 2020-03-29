@@ -9,9 +9,9 @@ import { Repository } from '@iaminfinity/express-cassandra';
 import { EVMEvent } from '@lib/common/evmeventsets/entities/EVMEventSet.entity';
 import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
 import { EVMAntennaMergerScheduler, EVMProcessableEvent } from '@app/worker/evmantenna/EVMAntennaMerger.scheduler';
-import { CRUDExtension, DryResponse } from '@lib/common/crud/CRUD.extension';
+import { CRUDExtension, DryResponse } from '@lib/common/crud/CRUDExtension.base';
 import { OnModuleInit } from '@nestjs/common';
-import { ServiceResponse } from '@lib/common/utils/ServiceResponse';
+import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
 
 /**
  * Configuration for an EVM Event fetching function

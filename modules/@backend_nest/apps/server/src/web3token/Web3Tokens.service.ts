@@ -6,7 +6,7 @@ import { RegisterWeb3TokenServiceInputDto } from '@app/server/web3token/dto/Regi
 import { Web3TokenDto } from '@app/server/web3token/dto/Web3Token.dto';
 import { NestSchedule } from 'nest-schedule';
 import { ConfigService } from '@lib/common/config/Config.service';
-import { ServiceResponse } from '@lib/common/utils/ServiceResponse';
+import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
 
 /**
  * Utilities and services around the user entity

@@ -8,14 +8,18 @@ export class LocalLoginInputDto {
     /**
      * User Email
      */
-    @ApiProperty()
+    @ApiProperty({
+        description: 'User email',
+    })
     @IsEmail()
     email: string;
 
     /**
      * Keccak256 hash of pure password
      */
-    @ApiProperty()
+    @ApiProperty({
+        description: 'User password',
+    })
     @IsString()
     password: string;
 }

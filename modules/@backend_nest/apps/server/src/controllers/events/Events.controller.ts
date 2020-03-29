@@ -1,26 +1,32 @@
-import { Body, Controller, HttpCode, HttpException, Post, UseFilters, UseGuards } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Delete,
+    HttpCode,
+    HttpException,
+    Param,
+    Post,
+    Put,
+    UseFilters,
+    UseGuards,
+} from '@nestjs/common';
 import { Roles, RolesGuard } from '@app/server/authentication/guards/RolesGuard.guard';
-import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
-import { User } from '@app/server/authentication/decorators/User.decorator';
+import { User } from '@app/server/authentication/decorators/User.controller.decorator';
 import { UserDto } from '@lib/common/users/dto/User.dto';
-import { search } from '@lib/common/utils/ControllerBasics';
+import { ControllerBasics } from '@lib/common/utils/ControllerBasics.base';
 import { ActionSetsService } from '@lib/common/actionsets/ActionSets.service';
-import { EventsCreateInputDto } from '@app/server/controllers/events/dto/EventsCreateInput.dto';
-import { EventsCreateResponseDto } from '@app/server/controllers/events/dto/EventsCreateResponse.dto';
-import { CRUDResponse } from '@lib/common/crud/CRUD.extension';
-import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
 import { EventsService } from '@lib/common/events/Events.service';
 import { EventsSearchInputDto } from '@app/server/controllers/events/dto/EventsSearchInput.dto';
 import { EventsSearchResponseDto } from '@app/server/controllers/events/dto/EventsSearchResponse.dto';
 import { EventEntity } from '@lib/common/events/entities/Event.entity';
-import { ActionSet } from '@lib/common/actionsets/helper/ActionSet';
-import { Action } from '@lib/common/actionsets/helper/Action';
-import { StatusCodes, StatusNames } from '@lib/common/utils/codes';
+import { ActionSet } from '@lib/common/actionsets/helper/ActionSet.class';
+import { StatusCodes } from '@lib/common/utils/codes.value';
 import { EventsBuildResponseDto } from '@app/server/controllers/events/dto/EventsBuildResponse.dto';
 import { EventsBuildInputDto } from '@app/server/controllers/events/dto/EventsBuildInput.dto';
-import { toAcceptedAddressFormat, uuidEq, getT721ControllerGroupID } from '@common/global';
-import { ActionSetToEventEntityConverter } from '@app/server/controllers/events/utils/ActionSet.EventEntity.converter';
+import { getT721ControllerGroupID, toAcceptedAddressFormat, uuidEq } from '@common/global';
+import { ActionSetToEventEntityConverter } from '@app/server/controllers/events/utils/ActionSetToEventEntityConverter.helper';
 import { ConfigService } from '@lib/common/config/Config.service';
 import { CurrenciesService } from '@lib/common/currencies/Currencies.service';
 import { DatesService } from '@lib/common/dates/Dates.service';
@@ -30,6 +36,21 @@ import { HttpExceptionFilter } from '@app/server/utils/HttpException.filter';
 import { UUIDToolService } from '@lib/common/toolbox/UUID.tool.service';
 import { EventsStartInputDto } from '@app/server/controllers/events/dto/EventsStartInput.dto';
 import { EventsStartResponseDto } from '@app/server/controllers/events/dto/EventsStartResponse.dto';
+import { EventsUpdateInputDto } from '@app/server/controllers/events/dto/EventsUpdateInput.dto';
+import { EventsUpdateResponseDto } from '@app/server/controllers/events/dto/EventsUpdateResponse.dto';
+import { CategoriesService } from '@lib/common/categories/Categories.service';
+import { EventsAddDatesInputDto } from '@app/server/controllers/events/dto/EventsAddDatesInput.dto';
+import { EventsDeleteDatesInputDto } from '@app/server/controllers/events/dto/EventsDeleteDatesInput.dto';
+import { EventsAddCategoriesInputDto } from '@app/server/controllers/events/dto/EventsAddCategoriesInput.dto';
+import { EventsDeleteCategoriesInputDto } from '@app/server/controllers/events/dto/EventsDeleteCategoriesInput.dto';
+import { EventsDeleteCategoriesResponseDto } from '@app/server/controllers/events/dto/EventsDeleteCategoriesResponse.dto';
+import { EventsAddCategoriesResponseDto } from '@app/server/controllers/events/dto/EventsAddCategoriesResponse.dto';
+import { EventsAddDatesResponseDto } from '@app/server/controllers/events/dto/EventsAddDatesResponse.dto';
+import { EventsDeleteDatesResponseDto } from '@app/server/controllers/events/dto/EventsDeleteDatesResponse.dto';
+import { RightsService } from '@lib/common/rights/Rights.service';
+import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
+import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
+import { ApiResponses } from '@app/server/utils/ApiResponses.controller.decorator';
 
 /**
  * Events controller to create and fetch events
@@ -37,7 +58,7 @@ import { EventsStartResponseDto } from '@app/server/controllers/events/dto/Event
 @ApiBearerAuth()
 @ApiTags('events')
 @Controller('events')
-export class EventsController {
+export class EventsController extends ControllerBasics<EventEntity> {
     /**
      * Dependency Injection
      *
@@ -46,8 +67,10 @@ export class EventsController {
      * @param configService
      * @param currenciesService
      * @param datesService
+     * @param categoriesService
      * @param vaultereumService
      * @param uuidToolService
+     * @param rightsService
      */
     constructor(
         private readonly eventsService: EventsService,
@@ -55,33 +78,27 @@ export class EventsController {
         private readonly configService: ConfigService,
         private readonly currenciesService: CurrenciesService,
         private readonly datesService: DatesService,
+        private readonly categoriesService: CategoriesService,
         private readonly vaultereumService: VaultereumService,
         private readonly uuidToolService: UUIDToolService,
-    ) {}
+        private readonly rightsService: RightsService,
+    ) {
+        super();
+    }
 
     /**
      * Search for events
      *
      * @param body
-     * @param user
      */
     @Post('/search')
-    @ApiResponse({
-        status: StatusCodes.InternalServerError,
-        description: StatusNames[StatusCodes.InternalServerError],
-    })
-    @ApiResponse({
-        status: StatusCodes.BadRequest,
-        description: StatusNames[StatusCodes.BadRequest],
-    })
-    @ApiResponse({
-        status: StatusCodes.OK,
-        description: StatusNames[StatusCodes.OK],
-    })
-    @HttpCode(200)
     @UseFilters(new HttpExceptionFilter())
-    async search(@Body() body: EventsSearchInputDto, @User() user: UserDto): Promise<EventsSearchResponseDto> {
-        const events = await search<EventEntity, EventsService>(this.eventsService, body);
+    @HttpCode(StatusCodes.OK)
+    @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized, StatusCodes.InternalServerError])
+    async search(@Body() body: EventsSearchInputDto): Promise<EventsSearchResponseDto> {
+        await this._authorizeGlobal(this.rightsService, this.eventsService, null, null, ['route_search']);
+
+        const events = await this._search(this.eventsService, body);
 
         return {
             events,
@@ -95,30 +112,29 @@ export class EventsController {
      * @param user
      */
     @Post('/start')
-    @ApiResponse({
-        status: StatusCodes.NotFound,
-        description: StatusNames[StatusCodes.NotFound],
-    })
-    @ApiResponse({
-        status: StatusCodes.Unauthorized,
-        description: StatusNames[StatusCodes.Unauthorized],
-    })
-    @ApiResponse({
-        status: StatusCodes.BadRequest,
-        description: StatusNames[StatusCodes.BadRequest],
-    })
-    @ApiResponse({
-        status: StatusCodes.InternalServerError,
-        description: StatusNames[StatusCodes.InternalServerError],
-    })
-    @ApiResponse({
-        status: StatusCodes.Created,
-        description: StatusNames[StatusCodes.Created],
-    })
     @UseGuards(AuthGuard('jwt'), RolesGuard)
-    @Roles('authenticated')
     @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.OK)
+    @Roles('authenticated')
+    @ApiResponses([
+        StatusCodes.OK,
+        StatusCodes.NotFound,
+        StatusCodes.Unauthorized,
+        StatusCodes.BadRequest,
+        StatusCodes.InternalServerError,
+    ])
     async start(@Body() body: EventsStartInputDto, @User() user: UserDto): Promise<EventsStartResponseDto> {
+        await this._authorize(
+            this.rightsService,
+            this.eventsService,
+            user,
+            {
+                id: body.event,
+            },
+            'group_id',
+            ['owner', 'admin'],
+        );
+
         // 1. Start by fetching the event
         const eventQueryRes = await this.eventsService.search({
             id: body.event,
@@ -148,39 +164,7 @@ export class EventsController {
 
         const eventEntity = eventQueryRes.response[0];
 
-        // 4. Throw if user is not event owner
-        if (!uuidEq(eventEntity.owner, user.id)) {
-            throw new HttpException(
-                {
-                    status: StatusCodes.Unauthorized,
-                    message: 'not_event_owner',
-                },
-                StatusCodes.Unauthorized,
-            );
-        }
-
-        // 5. Update event status to live
-        const eventUpdateQuery = await this.eventsService.update(
-            {
-                id: body.event,
-            },
-            {
-                status: 'live',
-            },
-        );
-
-        // 6. Throw if update failed
-        if (eventUpdateQuery.error) {
-            throw new HttpException(
-                {
-                    status: StatusCodes.InternalServerError,
-                    message: eventUpdateQuery.error,
-                },
-                StatusCodes.InternalServerError,
-            );
-        }
-
-        // 7. If no dates given, use all date, if dates given check them
+        // 5. If no dates given, use all date, if dates given check them
         if (!body.dates) {
             body.dates = eventEntity.dates;
         } else {
@@ -202,7 +186,7 @@ export class EventsController {
         }
 
         for (const date of body.dates) {
-            // 8. For each date, update status to live
+            // 6. For each date, update status to live
             const dateUpdateRes = await this.datesService.update(
                 {
                     id: date,
@@ -212,7 +196,7 @@ export class EventsController {
                 },
             );
 
-            // 9. Throw if update fails
+            // 7. Throw if update fails
             if (dateUpdateRes.error) {
                 throw new HttpException(
                     {
@@ -225,10 +209,7 @@ export class EventsController {
         }
 
         return {
-            event: {
-                ...eventEntity,
-                status: 'live',
-            },
+            event: eventEntity,
         };
     }
 
@@ -238,56 +219,30 @@ export class EventsController {
      * @param body
      * @param user
      */
-    @Post('/build')
-    @ApiResponse({
-        status: StatusCodes.NotFound,
-        description: StatusNames[StatusCodes.NotFound],
-    })
-    @ApiResponse({
-        status: StatusCodes.Unauthorized,
-        description: StatusNames[StatusCodes.Unauthorized],
-    })
-    @ApiResponse({
-        status: StatusCodes.BadRequest,
-        description: StatusNames[StatusCodes.BadRequest],
-    })
-    @ApiResponse({
-        status: StatusCodes.InternalServerError,
-        description: StatusNames[StatusCodes.InternalServerError],
-    })
-    @ApiResponse({
-        status: StatusCodes.Created,
-        description: StatusNames[StatusCodes.Created],
-    })
+    @Post('/')
     @UseGuards(AuthGuard('jwt'), RolesGuard)
-    @Roles('authenticated')
     @UseFilters(new HttpExceptionFilter())
-    async build(@Body() body: EventsBuildInputDto, @User() user: UserDto): Promise<EventsBuildResponseDto> {
-        const actionSet = await this.actionSetsService.search({
-            id: body.completedActionSet,
-        });
+    @HttpCode(StatusCodes.Created)
+    @Roles('authenticated')
+    @ApiResponses([
+        StatusCodes.Created,
+        StatusCodes.Unauthorized,
+        StatusCodes.BadRequest,
+        StatusCodes.InternalServerError,
+    ])
+    async create(@Body() body: EventsBuildInputDto, @User() user: UserDto): Promise<EventsBuildResponseDto> {
+        await this._authorizeGlobal(this.rightsService, this.eventsService, null, null, ['route_create']);
 
-        if (actionSet.error) {
-            throw new HttpException(
-                {
-                    status: StatusCodes.InternalServerError,
-                    message: actionSet.error,
-                },
-                StatusCodes.InternalServerError,
-            );
-        }
-
-        if (actionSet.response.length === 0) {
-            throw new HttpException(
-                {
-                    status: StatusCodes.NotFound,
-                    message: 'actionset_not_found',
-                },
-                StatusCodes.NotFound,
-            );
-        }
-
-        const actionSetEntity = actionSet.response[0];
+        const actionSetEntity = await this._authorizeOne<ActionSetEntity>(
+            this.rightsService,
+            this.actionSetsService,
+            user,
+            {
+                id: body.completedActionSet,
+            },
+            'id',
+            ['owner'],
+        );
 
         if (actionSetEntity.current_status !== 'complete') {
             throw new HttpException(
@@ -299,37 +254,17 @@ export class EventsController {
             );
         }
 
-        if (!uuidEq(actionSetEntity.owner, user.id)) {
-            throw new HttpException(
-                {
-                    status: StatusCodes.Unauthorized,
-                    message: 'not_actionset_owner',
-                },
-                StatusCodes.Unauthorized,
-            );
-        }
-
         // Generate unique identifier
         let eventUUID: string;
-        let eventsCollisionRes: CRUDResponse<EventEntity[]>;
+        let eventsCollision: EventEntity[];
 
         // Verify very low probability collision
         do {
             eventUUID = this.uuidToolService.generate();
-            eventsCollisionRes = await this.eventsService.search({
+            eventsCollision = await this._get<EventEntity>(this.eventsService, {
                 id: eventUUID,
             });
-
-            if (eventsCollisionRes.error) {
-                throw new HttpException(
-                    {
-                        status: StatusCodes.InternalServerError,
-                        message: eventsCollisionRes.error,
-                    },
-                    StatusCodes.InternalServerError,
-                );
-            }
-        } while (eventsCollisionRes.response.length !== 0);
+        } while (eventsCollision.length !== 0);
 
         // Create Vault address
 
@@ -354,11 +289,12 @@ export class EventsController {
 
         // Generate Dates and event entities
 
-        let dates;
         let event;
+        let datesWithCategories;
+        let eventCategories;
 
         try {
-            [dates, event] = await ActionSetToEventEntityConverter(
+            [event, datesWithCategories, eventCategories] = await ActionSetToEventEntityConverter(
                 this.configService.get('TICKETFORGE_SCOPE'),
                 groupId,
                 eventUUID,
@@ -366,6 +302,7 @@ export class EventsController {
                 new ActionSet().load(actionSetEntity),
                 this.currenciesService,
                 user.id,
+                this.uuidToolService.generate,
             );
         } catch (e) {
             throw new HttpException(
@@ -377,109 +314,484 @@ export class EventsController {
             );
         }
 
-        // Create Dates
+        const dates: DateEntity[] = [];
 
-        const datesSavedEntities: DateEntity[] = [];
+        for (const dateWithCategories of datesWithCategories) {
+            const createdDateWithCategories = await this.datesService.createDateWithCategories(
+                dateWithCategories[0],
+                dateWithCategories[1],
+            );
 
-        for (const date of dates) {
-            const dateCreationRes = await this.datesService.create(date);
-
-            if (dateCreationRes.error) {
+            if (createdDateWithCategories.error) {
                 throw new HttpException(
                     {
                         status: StatusCodes.InternalServerError,
-                        message: dateCreationRes.error,
+                        message: createdDateWithCategories.error,
                     },
                     StatusCodes.InternalServerError,
                 );
             }
-            datesSavedEntities.push(dateCreationRes.response);
+
+            dates.push(createdDateWithCategories.response[0]);
         }
 
-        // Create Event
+        const createdEventWithCategories = await this.eventsService.createEventWithDatesAndCategories(
+            event,
+            dates,
+            eventCategories,
+        );
 
-        event.dates = datesSavedEntities.map((date: DateEntity): string => date.id);
-
-        const eventCreationRes = await this.eventsService.create(event);
-
-        if (eventCreationRes.error) {
+        if (createdEventWithCategories.error) {
             throw new HttpException(
                 {
                     status: StatusCodes.InternalServerError,
-                    message: eventCreationRes.error,
+                    message: createdEventWithCategories.error,
+                },
+                StatusCodes.InternalServerError,
+            );
+        }
+
+        const ownerRights = await this.rightsService.addRights(user, [
+            {
+                entity: 'event',
+                entityValue: groupId,
+                rights: {
+                    owner: true,
+                },
+            },
+            {
+                entity: 'category',
+                entityValue: groupId,
+                rights: {
+                    owner: true,
+                },
+            },
+            {
+                entity: 'date',
+                entityValue: groupId,
+                rights: {
+                    owner: true,
+                },
+            },
+        ]);
+
+        if (ownerRights.error) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.InternalServerError,
+                    message: createdEventWithCategories.error,
                 },
                 StatusCodes.InternalServerError,
             );
         }
 
         return {
-            event: eventCreationRes.response,
+            event: createdEventWithCategories.response[0],
         };
     }
 
     /**
-     * Creates an event action set
+     * Edits an Event Entity
+     *
+     * @param body
+     * @param eventId
+     * @param user
      */
-    @Post('/')
-    @ApiResponse({
-        status: StatusCodes.BadRequest,
-        description: StatusNames[StatusCodes.BadRequest],
-    })
-    @ApiResponse({
-        status: StatusCodes.Created,
-        description: StatusNames[StatusCodes.Created],
-    })
+    @Put('/:eventId')
     @UseGuards(AuthGuard('jwt'), RolesGuard)
-    @Roles('authenticated')
     @UseFilters(new HttpExceptionFilter())
-    async create(@Body() body: EventsCreateInputDto, @User() user: UserDto): Promise<EventsCreateResponseDto> {
-        const actions: Action[] = [
-            new Action()
-                .setName('@events/textMetadata')
-                .setData<EventsCreateInputDto>(body)
-                .setType('input')
-                .setStatus('in progress'),
-            new Action()
-                .setName('@events/modulesConfiguration')
-                .setType('input')
-                .setStatus('in progress'),
-            new Action()
-                .setName('@events/datesConfiguration')
-                .setType('input')
-                .setStatus('in progress'),
-            new Action()
-                .setName('@events/categoriesConfiguration')
-                .setType('input')
-                .setStatus('in progress'),
-            new Action()
-                .setName('@events/imagesMetadata')
-                .setType('input')
-                .setStatus('in progress'),
-            new Action()
-                .setName('@events/adminsConfiguration')
-                .setType('input')
-                .setStatus('in progress'),
-        ];
-        const actionSet: ActionSet = new ActionSet()
-            .setName('@events/creation')
-            .setActions(actions)
-            .setOwner(user)
-            .setStatus('input:in progress');
+    @HttpCode(StatusCodes.OK)
+    @Roles('authenticated')
+    @ApiResponses([StatusCodes.OK, StatusCodes.NotFound, StatusCodes.Unauthorized, StatusCodes.InternalServerError])
+    async update(
+        @Body() body: EventsUpdateInputDto,
+        @Param('eventId') eventId: string,
+        @User() user: UserDto,
+    ): Promise<EventsUpdateResponseDto> {
+        const event: EventEntity = await this._authorizeOne(
+            this.rightsService,
+            this.eventsService,
+            user,
+            {
+                id: eventId,
+            },
+            'group_id',
+            ['owner', 'admin', 'route_update_metadata'],
+        );
 
-        const response: CRUDResponse<ActionSetEntity> = await this.actionSetsService.create(actionSet.raw);
+        await this._edit<EventEntity>(
+            this.eventsService,
+            {
+                id: eventId,
+            },
+            body,
+        );
 
-        if (response.error) {
+        return {
+            event: {
+                ...event,
+                ...body,
+            },
+        };
+    }
+
+    /**
+     * Deletes a category from the event
+     *
+     * @param body
+     * @param eventId
+     * @param user
+     */
+    @Delete('/:eventId/categories')
+    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.OK)
+    @Roles('authenticated')
+    @ApiResponses([StatusCodes.OK, StatusCodes.NotFound, StatusCodes.Unauthorized, StatusCodes.InternalServerError])
+    async deleteCategories(
+        @Body() body: EventsDeleteCategoriesInputDto,
+        @Param('eventId') eventId: string,
+        @User() user: UserDto,
+    ): Promise<EventsDeleteCategoriesResponseDto> {
+        const entity: EventEntity = await this._authorizeOne(
+            this.rightsService,
+            this.eventsService,
+            user,
+            {
+                id: eventId,
+            },
+            'group_id',
+            ['owner', 'admin', 'route_delete_categories'],
+        );
+
+        const finalCategories: string[] = [];
+
+        for (const category of entity.categories) {
+            if (body.categories.findIndex((catToDelete: string): boolean => uuidEq(catToDelete, category)) === -1) {
+                finalCategories.push(category);
+            }
+        }
+
+        if (finalCategories.length !== entity.categories.length - body.categories.length) {
             throw new HttpException(
                 {
-                    status: StatusCodes.BadRequest,
-                    message: response.error,
+                    status: StatusCodes.NotFound,
+                    message: 'categories_not_found',
                 },
-                StatusCodes.BadRequest,
+                StatusCodes.NotFound,
             );
         }
 
+        await this._edit<EventEntity>(
+            this.eventsService,
+            {
+                id: entity.id,
+            },
+            {
+                categories: finalCategories,
+            },
+        );
+
+        for (const category of body.categories) {
+            const unbindRes = await this.categoriesService.unbind(category);
+
+            if (unbindRes.error) {
+                throw new HttpException(
+                    {
+                        status: StatusCodes.InternalServerError,
+                        message: unbindRes.error,
+                    },
+                    StatusCodes.InternalServerError,
+                );
+            }
+        }
+
         return {
-            actionset: response.response,
+            event: {
+                ...entity,
+                categories: finalCategories,
+            },
+        };
+    }
+
+    /**
+     * Adds a category to the event
+     *
+     * @param body
+     * @param eventId
+     * @param user
+     */
+    @Post('/:eventId/categories')
+    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.Created)
+    @Roles('authenticated')
+    @ApiResponses([
+        StatusCodes.Created,
+        StatusCodes.NotFound,
+        StatusCodes.Unauthorized,
+        StatusCodes.InternalServerError,
+    ])
+    async addCategories(
+        @Body() body: EventsAddCategoriesInputDto,
+        @Param('eventId') eventId: string,
+        @User() user: UserDto,
+    ): Promise<EventsAddCategoriesResponseDto> {
+        const eventEntity: EventEntity = await this._authorizeOne(
+            this.rightsService,
+            this.eventsService,
+            user,
+            {
+                id: eventId,
+            },
+            'group_id',
+            ['owner', 'admin', 'route_add_categories'],
+        );
+
+        for (const categoryId of body.categories) {
+            if (eventEntity.categories.findIndex((ec: string): boolean => uuidEq(ec, categoryId)) !== -1) {
+                throw new HttpException(
+                    {
+                        status: StatusCodes.Conflict,
+                        message: 'category_already_in_event',
+                    },
+                    StatusCodes.Conflict,
+                );
+            }
+
+            const category: CategoryEntity = await this._getOne<CategoryEntity>(this.categoriesService, {
+                id: categoryId,
+            });
+
+            if (this.categoriesService.isBound(category)) {
+                throw new HttpException(
+                    {
+                        status: StatusCodes.BadRequest,
+                        message: 'category_already_bound',
+                    },
+                    StatusCodes.BadRequest,
+                );
+            }
+
+            if (category.group_id !== eventEntity.group_id) {
+                throw new HttpException(
+                    {
+                        status: StatusCodes.BadRequest,
+                        message: 'group_id_not_matching',
+                    },
+                    StatusCodes.BadRequest,
+                );
+            }
+
+            eventEntity.categories.push(categoryId);
+        }
+
+        await this._edit<EventEntity>(
+            this.eventsService,
+            {
+                id: eventId,
+            },
+            {
+                categories: eventEntity.categories,
+            },
+        );
+
+        for (const categoryId of body.categories) {
+            const boundRes = await this.categoriesService.bind(categoryId, 'event', eventId);
+
+            if (boundRes.error) {
+                throw new HttpException(
+                    {
+                        status: StatusCodes.InternalServerError,
+                        message: boundRes.error,
+                    },
+                    StatusCodes.InternalServerError,
+                );
+            }
+        }
+
+        return {
+            event: eventEntity,
+        };
+    }
+
+    /**
+     * Deletes a date from an event
+     *
+     * @param body
+     * @param eventId
+     * @param user
+     */
+    @Delete('/:eventId/dates')
+    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.OK)
+    @Roles('authenticated')
+    @ApiResponses([StatusCodes.OK, StatusCodes.NotFound, StatusCodes.Unauthorized, StatusCodes.InternalServerError])
+    async deleteDates(
+        @Body() body: EventsDeleteDatesInputDto,
+        @Param('eventId') eventId: string,
+        @User() user: UserDto,
+    ): Promise<EventsDeleteDatesResponseDto> {
+        const entity: EventEntity = await this._authorizeOne(
+            this.rightsService,
+            this.eventsService,
+            user,
+            {
+                id: eventId,
+            },
+            'group_id',
+            ['owner', 'admin', 'route_delete_dates'],
+        );
+
+        const finalDates: string[] = [];
+
+        for (const date of entity.dates) {
+            if (body.dates.findIndex((did: string): boolean => uuidEq(did, date)) === -1) {
+                finalDates.push(date);
+            }
+        }
+
+        if (finalDates.length === entity.dates.length) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.NotFound,
+                    message: 'dates_not_found',
+                },
+                StatusCodes.NotFound,
+            );
+        }
+
+        await this._edit<EventEntity>(
+            this.eventsService,
+            {
+                id: eventId,
+            },
+            {
+                dates: finalDates,
+            },
+        );
+
+        for (const date of body.dates) {
+            const unbindRes = await this.datesService.unbind(date);
+
+            if (unbindRes.error) {
+                throw new HttpException(
+                    {
+                        status: StatusCodes.InternalServerError,
+                        message: unbindRes.error,
+                    },
+                    StatusCodes.InternalServerError,
+                );
+            }
+        }
+
+        return {
+            event: {
+                ...entity,
+                dates: finalDates,
+            },
+        };
+    }
+
+    /**
+     * Adds a date to the event
+     *
+     * @param body
+     * @param eventId
+     * @param user
+     */
+    @Post('/:eventId/dates')
+    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.Created)
+    @Roles('authenticated')
+    @ApiResponses([
+        StatusCodes.Created,
+        StatusCodes.NotFound,
+        StatusCodes.Unauthorized,
+        StatusCodes.InternalServerError,
+    ])
+    async addDates(
+        @Body() body: EventsAddDatesInputDto,
+        @Param('eventId') eventId: string,
+        @User() user: UserDto,
+    ): Promise<EventsAddDatesResponseDto> {
+        const eventEntity: EventEntity = await this._authorizeOne(
+            this.rightsService,
+            this.eventsService,
+            user,
+            {
+                id: eventId,
+            },
+            'group_id',
+            ['owner', 'admin', 'route_add_dates'],
+        );
+
+        for (const dateId of body.dates) {
+            if (eventEntity.dates.findIndex((ec: string): boolean => uuidEq(ec, dateId)) !== -1) {
+                throw new HttpException(
+                    {
+                        status: StatusCodes.Conflict,
+                        message: 'date_already_in_event',
+                    },
+                    StatusCodes.Conflict,
+                );
+            }
+
+            const date: DateEntity = await this._getOne<DateEntity>(this.datesService, {
+                id: dateId,
+            });
+
+            if (this.datesService.isBound(date)) {
+                throw new HttpException(
+                    {
+                        status: StatusCodes.BadRequest,
+                        message: 'date_already_bound',
+                    },
+                    StatusCodes.BadRequest,
+                );
+            }
+
+            if (date.group_id !== eventEntity.group_id) {
+                throw new HttpException(
+                    {
+                        status: StatusCodes.BadRequest,
+                        message: 'group_id_not_matching',
+                    },
+                    StatusCodes.BadRequest,
+                );
+            }
+
+            eventEntity.dates.push(dateId);
+        }
+
+        await this._edit<EventEntity>(
+            this.eventsService,
+            {
+                id: eventId,
+            },
+            {
+                dates: eventEntity.dates,
+            },
+        );
+
+        for (const dateId of body.dates) {
+            const boundRes = await this.datesService.bind(dateId, 'event', eventId);
+
+            if (boundRes.error) {
+                throw new HttpException(
+                    {
+                        status: StatusCodes.InternalServerError,
+                        message: boundRes.error,
+                    },
+                    StatusCodes.InternalServerError,
+                );
+            }
+        }
+
+        return {
+            event: eventEntity,
         };
     }
 }

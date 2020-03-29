@@ -10,7 +10,7 @@ import { GemOrdersService } from '@lib/common/gemorders/GemOrders.service';
 import { InjectQueue } from '@nestjs/bull';
 import { Job, Queue } from 'bull';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
-import { ESSearchHit } from '@lib/common/utils/ESSearchReturn';
+import { ESSearchHit } from '@lib/common/utils/ESSearchReturn.type';
 import { GemOrderEntity } from '@lib/common/gemorders/entities/GemOrder.entity';
 import { Gem } from 'dosojin';
 

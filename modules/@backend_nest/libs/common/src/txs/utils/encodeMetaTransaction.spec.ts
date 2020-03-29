@@ -1,4 +1,4 @@
-import { encodeMetaTransaction } from '@lib/common/txs/utils/encodeMetaTransaction';
+import { encodeMetaTransaction } from '@lib/common/txs/utils/encodeMetaTransaction.helper';
 
 describe('encodeMetaTransaction', function() {
     it('should build mtx evm arguments', async function() {

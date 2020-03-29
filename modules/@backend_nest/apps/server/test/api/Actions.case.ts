@@ -4,7 +4,7 @@ import { LocalRegisterResponseDto } from '@app/server/authentication/dto/LocalRe
 import { INestApplication } from '@nestjs/common';
 import { EmailValidationResponseDto } from '@app/server/authentication/dto/EmailValidationResponse.dto';
 import { ActionsSearchResponseDto } from '@app/server/controllers/actionsets/dto/ActionsSearchResponse.dto';
-import { StatusCodes, StatusNames } from '@lib/common/utils/codes';
+import { StatusCodes, StatusNames } from '@lib/common/utils/codes.value';
 
 export async function fetchActions(getCtx: () => { app: INestApplication; sdk: T721SDK }): Promise<void> {
     jest.setTimeout(60000);

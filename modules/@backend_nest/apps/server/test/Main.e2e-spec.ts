@@ -1,26 +1,25 @@
+jest.setTimeout(30000);
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { T721SDK } from '@common/sdk';
-import {
-    ganache_revert,
-    ganache_snapshot,
-    prepare,
-    resetMigrations,
-    runMigrations,
-    startDocker,
-    stopDocker,
-} from './utils';
+import { prepare, runMigrations, startDocker, stopDocker } from './utils';
 import { ServerModule } from '../src/Server.module';
 import ascii from './ascii';
 
-import { getApiInfo } from './App.case';
-import { register, web3register } from './api/Authentication.case';
-import { fetchActions } from './api/Actions.case';
-import { fetchDates } from './api/Dates.case';
-import { deployJustice } from './api/Events.case';
 import { WorkerModule } from '@app/worker/Worker.module';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
+
+import AuthenticationControllerTestSuite from '@app/server/authentication/Authentication.controller.routes-spec';
+import ActionSetsControllerTestSuite from '@app/server/controllers/actionsets/ActionSets.controller.routes-spec';
+import CategoriesControllerTestSuite from '@app/server/controllers/categories/Categories.controller.routes-spec';
+import CheckoutControllerTestSuite from '@app/server/controllers/checkout/Checkout.controller.routes-spec';
+import ContractsControllerTestSuite from '@app/server/controllers/contracts/Contracts.controller.routes-spec';
+import DatesControllerTestSuite from '@app/server/controllers/dates/Dates.controller.routes-spec';
+import DosojinControllerTestSuite from '@app/server/controllers/dosojin/Dosojin.controller.routes-spec';
+import EventsControllerTestSuite from '@app/server/controllers/events/Events.controller.routes-spec';
+import ImagesControllerTestSuite from '@app/server/controllers/images/Images.controller.routes-spec';
+import TxsControllerTestSuite from '@app/server/controllers/txs/Txs.controller.routes-spec';
 
 const cassandraPort = 32702;
 const elasticSearchPort = 32610;
@@ -29,18 +28,24 @@ const ganachePort = 38545;
 const vaultereumPorts = [8200, 8201];
 const consulPort = 8500;
 
+let global_ok;
+
 const context: {
     app: INestApplication;
     worker: INestApplication;
-    sdk: T721SDK;
+    ready: Promise<void>;
 } = {
     app: null,
     worker: null,
-    sdk: null,
+    ready: new Promise(ok => {
+        global_ok = ok;
+    }),
 };
 
-const getCtx = (): { app: INestApplication; sdk: T721SDK } => context;
+const getCtx = (): { ready: Promise<void> } => context;
 let snap_id = null;
+
+const shouldDeploy = () => process.env.DEPLOY === 'true';
 
 describe('AppController (e2e)', () => {
     let app: INestApplication;
@@ -51,35 +56,11 @@ describe('AppController (e2e)', () => {
         process.stdout.write(ascii.beforeAll);
         console.log('STARTED');
 
-        if (process.env.NO_DEPLOY !== 'true') {
+        if (shouldDeploy()) {
             await startDocker();
+            await prepare();
+            await runMigrations(cassandraPort, elasticSearchPort);
         }
-
-        await prepare();
-
-        process.stdout.write(ascii.beforeAll);
-        console.log('FINISHED');
-    }, 60000 * 30);
-
-    afterAll(async function() {
-        process.stdout.write(ascii.afterAll);
-        console.log('STARTED');
-
-        if (process.env.NO_DEPLOY !== 'true') {
-            await stopDocker();
-        }
-
-        process.stdout.write(ascii.afterAll);
-        console.log('FINISHED');
-    }, 60000);
-
-    beforeEach(async function() {
-        process.stdout.write(ascii.beforeEach);
-        console.log('STARTED');
-
-        await ganache_revert(snap_id, ganachePort);
-        snap_id = await ganache_snapshot(ganachePort);
-        await runMigrations(cassandraPort, elasticSearchPort);
 
         const appFixture: TestingModule = await Test.createTestingModule({
             imports: [ServerModule],
@@ -91,7 +72,7 @@ describe('AppController (e2e)', () => {
         app.get(ShutdownService).subscribeToShutdown(() => {
             console.log('Server & Worker Shut Down');
         });
-        await app.init();
+        await app.listen(3000);
 
         const workerFixture: TestingModule = await Test.createTestingModule({
             imports: [WorkerModule],
@@ -104,48 +85,38 @@ describe('AppController (e2e)', () => {
         });
         await worker.init();
 
-        sdk = new T721SDK();
-        sdk.local(app.getHttpServer());
-
         context.app = app;
         context.worker = worker;
-        context.sdk = sdk;
 
-        process.stdout.write(ascii.beforeEach);
+        process.stdout.write(ascii.beforeAll);
         console.log('FINISHED');
-    }, 60000);
+        global_ok();
+    }, 60000 * 30);
 
-    afterEach(async function() {
-        process.stdout.write(ascii.afterEach);
+    afterAll(async function() {
+        process.stdout.write(ascii.afterAll);
         console.log('STARTED');
 
         await context.app.close();
         await context.worker.close();
-        await new Promise((ok, ko) => setTimeout(ok, 5000));
-        await resetMigrations(cassandraPort, elasticSearchPort);
 
-        process.stdout.write(ascii.afterEach);
+        if (shouldDeploy()) {
+            await new Promise((ok, ko) => setTimeout(ok, 5000));
+            await stopDocker();
+        }
+
+        process.stdout.write(ascii.afterAll);
         console.log('FINISHED');
     }, 60000);
 
-    describe('AppController', () => {
-        test('/ (GET)', getApiInfo.bind(null, getCtx));
-    });
-
-    describe('AuthenticationController', () => {
-        test('/authentication/local/register & /authentication/local/login (POST)', register.bind(null, getCtx));
-        test('/authentication/web3/register & /authentication/web3/login (POST)', web3register.bind(null, getCtx));
-    });
-
-    describe('ActionsController', () => {
-        test('/actions/search', fetchActions.bind(null, getCtx));
-    });
-
-    describe('DatesController', () => {
-        test('/dates/search', fetchDates.bind(null, getCtx));
-    });
-
-    describe('EventsController', () => {
-        test('Deploy Event justice (1 event, 2 dates, resale on)', deployJustice.bind(null, getCtx));
-    });
+    describe('Authentication Controller', AuthenticationControllerTestSuite(getCtx));
+    // describe('ActionSets Controller', ActionSetsControllerTestSuite);
+    // describe('Categories Controller', CategoriesControllerTestSuite);
+    // describe('Checkout Controller', CheckoutControllerTestSuite);
+    // describe('Contracts Controller', ContractsControllerTestSuite);
+    // describe('Dates Controller', DatesControllerTestSuite);
+    // describe('Dosojin Controller', DosojinControllerTestSuite);
+    // describe('Events Controller', EventsControllerTestSuite);
+    // describe('Images Controller', ImagesControllerTestSuite);
+    // describe('Txs Controller', TxsControllerTestSuite);
 });

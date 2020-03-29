@@ -1,4 +1,4 @@
-import { CRUDExtension } from '@lib/common/crud/CRUD.extension';
+import { CRUDExtension } from '@lib/common/crud/CRUDExtension.base';
 import { GlobalConfigRepository } from '@lib/common/globalconfig/GlobalConfig.repository';
 import { GlobalEntity } from '@lib/common/globalconfig/entities/Global.entity';
 import { BaseModel, InjectModel, InjectRepository } from '@iaminfinity/express-cassandra';
@@ -41,6 +41,10 @@ export class GlobalConfigService extends CRUDExtension<GlobalConfigRepository, G
             /* istanbul ignore next */
             (e: GlobalEntity) => {
                 return new globalEntity(e);
+            },
+            /* istanbul ignore next */
+            () => {
+                return new GlobalEntity();
             },
         );
     }

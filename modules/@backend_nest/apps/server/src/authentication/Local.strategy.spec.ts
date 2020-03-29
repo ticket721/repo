@@ -10,7 +10,7 @@ import {
     Wallet,
 } from '@common/global';
 import { LocalStrategy } from './Local.strategy';
-import { StatusCodes } from '@lib/common/utils/codes';
+import { StatusCodes } from '@lib/common/utils/codes.value';
 
 const context: {
     localStrategy: LocalStrategy;

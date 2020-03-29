@@ -1,4 +1,4 @@
-import { CRUDExtension } from '@lib/common/crud/CRUD.extension';
+import { CRUDExtension } from '@lib/common/crud/CRUDExtension.base';
 import { BaseModel, InjectModel, InjectRepository } from '@iaminfinity/express-cassandra';
 import { EVMEventSetsRepository } from '@lib/common/evmeventsets/EVMEventSets.repository';
 import { EVMEventSetEntity } from '@lib/common/evmeventsets/entities/EVMEventSet.entity';
@@ -26,6 +26,10 @@ export class EVMEventSetsService extends CRUDExtension<EVMEventSetsRepository, E
             /* istanbul ignore next */
             (e: EVMEventSetEntity) => {
                 return new evmEventSetEntity(e);
+            },
+            /* istanbul ignore next */
+            (evmes: EVMEventSetEntity) => {
+                return new EVMEventSetEntity(evmes);
             },
         );
     }

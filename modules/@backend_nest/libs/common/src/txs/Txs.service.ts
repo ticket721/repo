@@ -1,14 +1,14 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { CRUDExtension } from '@lib/common/crud/CRUD.extension';
+import { CRUDExtension } from '@lib/common/crud/CRUDExtension.base';
 import { TxsRepository } from '@lib/common/txs/Txs.repository';
 import { TxEntity } from '@lib/common/txs/entities/Tx.entity';
 import { BaseModel, InjectModel, InjectRepository } from '@iaminfinity/express-cassandra';
-import { ServiceResponse } from '@lib/common/utils/ServiceResponse';
+import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
 import { isAddress, keccak256, RefractMtx, isTransactionHash } from '@common/global';
 import { EIP712Payload } from '@ticket721/e712/lib';
 import { RefractFactoryV0Service } from '@lib/common/contracts/refract/RefractFactory.V0.service';
 import { UserDto } from '@lib/common/users/dto/User.dto';
-import { encodeMetaTransaction } from '@lib/common/txs/utils/encodeMetaTransaction';
+import { encodeMetaTransaction } from '@lib/common/txs/utils/encodeMetaTransaction.helper';
 import { T721AdminService } from '@lib/common/contracts/T721Admin.service';
 import { VaultereumService } from '@lib/common/vaultereum/Vaultereum.service';
 import { Web3Service } from '@lib/common/web3/Web3.service';
@@ -91,6 +91,10 @@ export class TxsService extends CRUDExtension<TxsRepository, TxEntity> {
             /* istanbul ignore next */
             (e: TxEntity) => {
                 return new txEntity(e);
+            },
+            /* istanbul ignore next */
+            (tx: TxEntity) => {
+                return new TxEntity(tx);
             },
         );
     }
