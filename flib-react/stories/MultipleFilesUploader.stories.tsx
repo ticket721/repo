@@ -1,18 +1,18 @@
 import * as React from 'react';
-import FileUploader from '../src/components/file-uploader/single';
+import MultipleFilesUploader from '../src/components/file-uploader/multiple';
 import { boolean, text, withKnobs } from '@storybook/addon-knobs';
 
 export default {
-  title: 'FileUploader',
+  title: 'MultipleFilesUploader',
   decorators: [
     withKnobs
   ],
-  component: FileUploader
+  component: MultipleFilesUploader
 };
 
 
-export const singleFile = () => (
-  <FileUploader
+export const multipleFiles = () => (
+  <MultipleFilesUploader
     browseLabel={text('Browse label', 'or Browse to choose a file')}
     dragDropLabel={text('Drag and drop label', 'Drag and drop an image')}
     errorMessage={text('Error message' , `Can't upload your file`)}

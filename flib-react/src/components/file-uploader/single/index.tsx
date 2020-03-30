@@ -1,8 +1,8 @@
 import * as React from 'react';
 import Dropzone, { IDropzoneProps } from 'react-dropzone-uploader';
-import styled from '../../../config/styled';
+import styled from '../../../../config/styled';
 import 'react-dropzone-uploader/dist/styles.css';
-import Icon from '../icon';
+import Icon from '../../icon';
 import { keyframes } from 'styled-components';
 
 export interface FileUploaderProps extends React.ComponentProps<any> {
@@ -180,7 +180,7 @@ export const FileUploader: React.FunctionComponent<FileUploaderProps> = (props: 
               onChangeStatus={handleChangeStatus}
             />
             <InfosContainer>
-              <Icon icon='upload' height="56" width="66" fill={!props.hasErrors ? 'rgba(255, 255, 255, 0.6)' : '#C91D31' } />
+              <Icon icon='upload' height="56" width="66" fill={!props.hasErrors ? 'rgba(255, 255, 255, 0.38)' : '#C91D31' } />
               <LabelsContainer>
                 <p>{props.dragDropLabel}</p>
                 <p>{props.browseLabel}</p>
