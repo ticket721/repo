@@ -1,9 +1,9 @@
 import * as React from 'react';
-import Dropzone, { IDropzoneProps, ILayoutProps } from 'react-dropzone-uploader';
+import Dropzone, { IDropzoneProps, ILayoutProps, IInputProps } from 'react-dropzone-uploader';
 import styled from '../../../../config/styled';
 import 'react-dropzone-uploader/dist/styles.css';
-// import Icon from '../../icon';
-// import { keyframes } from 'styled-components';
+import Icon from '../../icon';
+import { keyframes } from 'styled-components';
 
 export interface MultipleFilesUploaderProps extends React.ComponentProps<any> {
   browseLabel: string;
@@ -13,136 +13,153 @@ export interface MultipleFilesUploaderProps extends React.ComponentProps<any> {
   uploadRecommandations?: string;
 }
 
+const InfosContainer = styled.div`
+  position: absolute;
+  text-align: center;
+  z-index: 0;
 
-// const InfosContainer = styled.div`
-//   position: absolute;
-//   text-align: center;
-//   z-index: 0;
+  svg {
+    margin: auto;
+  }
+`
 
-//   svg {
-//     margin: auto;
-//   }
-// `
+const fadeIn = keyframes`
+  0% { opacity:0; }
+  66% { opacity:0; }
+  100% { opacity:1; }
+`;
 
-// const LabelsContainer = styled.div`
-//   font-size: 14px;
-//   font-weight: 500;
-//   margin-top: ${props => props.theme.biggerSpacing};
-//   opacity: 1;
-//   text-align: center;
-//   transition: opacity 300ms ease;
+const StyledContainer = styled.div`
+  max-width: 600px;
 
-//   p:last-of-type {
-//     color: ${props => props.theme.textColorDark};
-//     margin-top: 8px;
-//   }
-// `;
+  .dzu {
+    &-dropzone {
+      border: none;
+      z-index: 1;
+      align-items: center;
+      background-color: ${props => props.theme.componentColorLight};
+      border-radius: ${props => props.theme.defaultRadius};
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      height: 375px;
+      justify-content: center;
+      transition: background-color 300ms ease;
 
-// const fadeIn = keyframes`
-//   0% { opacity:0; }
-//   66% { opacity:0; }
-//   100% { opacity:1; }
-// `;
+      &:hover {
+        background-color: ${props => props.theme.componentColorLighter};
+      }
+    }
 
-// const StyledContainer = styled.div`
-//   align-items: center;
-//   background-color: ${props => props.theme.componentColorLight};
-//   border-radius: ${props => props.theme.defaultRadius};
-//   cursor: pointer;
-//   display: flex;
-//   flex-direction: column;
-//   justify-content: center;
-//   height: 375px;
-//   max-width: 600px;
-//   transition: background-color 300ms ease;
-//   width: 100%;
+    &-inputLabel,
+    &-inputLabelWithFiles {
+      align-items: center;
+      background: none;
+      border-radius: 0;
+      bottom: 0;
+      color: ${props => props.theme.textColor};
+      cursor: pointer;
+      display: flex;
+      font-family: ${props => props.theme.fontStack};
+      font-size: 14px;
+      font-weight: 500;
+      justify-content: center;
+      left: 0;
+      margin: 0;
+      opacity: 1;
+      position: absolute;
+      right: 0;
+      text-transform: none;
+      top: 0;
+      transition: opacity 300ms ease;
 
-//   &:hover {
-//     background-color: ${props => props.theme.componentColorLighter};
-//   }
+      span {
+        display: block;
 
-//   .dzu {
-//     &-dropzone {
-//       border: none;
-//       height: 100%;
-//       z-index: 1;
-//     }
+        &:first-of-type {
+          margin-top: ${props => props.theme.biggerSpacing};
+        }
 
-//     &-dropzoneActive {
-//       background-color: ${props => props.theme.componentColorLighter};
+        &:last-of-type {
+          color: ${props => props.theme.textColorDark};
+          margin-top: 8px;
+        }
+      }
+    }
 
-//       & ~ ${InfosContainer} {
-//         ${LabelsContainer} {
-//           opacity: 0;
-//         }
+    &-dropzoneActive {
+      background-color: ${props => props.theme.componentColorLighter};
+        svg {
+          fill: ${props => props.theme.textColor};
+          transform: translateY(20px) rotate(-15deg);
+        }
 
-//         svg {
-//           fill: ${props => props.theme.textColor};
-//           transform: translateY(20px) rotate(-15deg);
-//         }
-//       }
-//     }
+        span {
+          opacity: 0;
+        }
+    }
 
-//     &-preview {
-//       &Container {
-//         animation: 1s ease 0s normal forwards 1 ${fadeIn};
-//         border: none;
+    &-preview {
+      &Container {
+        animation: 1s ease 0s normal forwards 1 ${fadeIn};
+        border: none;
 
+        &::after {
+          background: linear-gradient(180deg, rgba(10, 11, 23, 0.7) 0%, rgba(17, 16, 24, 0) 100%);
+          content: "";
+          display: block;
+          height: 100%;
+          left: 0;
+          opacity: 0;
+          position: absolute;
+          top: 0;
+          transition: opacity 300ms ease;
+          width: 100%;
+          z-index: 0;
+        }
 
-//         &::after {
-//           background: linear-gradient(180deg, rgba(10, 11, 23, 0.7) 0%, rgba(17, 16, 24, 0) 100%);
-//           content: "";
-//           display: block;
-//           height: 100%;
-//           left: 0;
-//           opacity: 0;
-//           position: absolute;
-//           top: 0;
-//           transition: opacity 300ms ease;
-//           width: 100%;
-//           z-index: 0;
-//         }
+        &:hover {
+          .dzu-previewStatusContainer,
+          &::after {
+            opacity: 1;
+          }
+        }
+      }
 
-//         &:hover {
-//           .dzu-previewStatusContainer,
-//           &::after {
-//             opacity: 1;
-//           }
-//         }
-//       }
+      &Image {
+        border-radius: 0;
+        height: 100%;
+        max-height: none;
+        max-width: none;
+        object-fit: cover;
+        width: 100%;
+      }
 
-//       &Image {
-//         border-radius: 0;
-//         height: 100%;
-//         max-height: none;
-//         max-width: none;
-//         object-fit: cover;
-//         width: 100%;
-//       }
+      &Button {
+        background-image: url('assets/icons/icon--close.svg') !important;
+        margin: 0;
+      }
 
-//       &Button {
-//         background-image: url('assets/icons/icon--close.svg') !important;
-//         margin: 0;
-//       }
+      &StatusContainer {
+        opacity: 0;
+        position: absolute;
+        right: ${props => props.theme.biggerSpacing};
+        top: ${props => props.theme.biggerSpacing};
+        transition: opacity 300ms ease;
+        z-index: 1;
 
-//       &StatusContainer {
-//         opacity: 0;
-//         position: absolute;
-//         right: ${props => props.theme.biggerSpacing};
-//         top: ${props => props.theme.biggerSpacing};
-//         transition: opacity 300ms ease;
-//         z-index: 1;
-
-//         progress {
-//           display: none;
-//         }
-//       }
-//     }
-//   }
-// `;
+        progress {
+          display: none;
+        }
+      }
+    }
+  }
+`;
 
 const PreviewsContainer = styled.div`
+  background: ${props => props.theme.componentColor};
   display: flex;
+  margin-top: ${props => props.theme.doubleSpacing};
 `
 
 const Disclaimer = styled.p`
@@ -157,17 +174,42 @@ const ErrorMsg = styled(Disclaimer)`
   font-size: 13px;
 `
 
-
 export const MultipleFilesUploader: React.FunctionComponent<MultipleFilesUploaderProps> = (props: MultipleFilesUploaderProps): JSX.Element => {
 
+  const Input = ({ accept, onFiles, getFilesFromEvent }: IInputProps) => {
+
+    return (
+      <InfosContainer>
+        <Icon icon='gallery' height='62' width='72' fill='rgba(255, 255, 255, 0.38)'/>
+        <span>{ props.dragDropLabel }</span>
+        <span>{ props.browseLabel }</span>
+        <input
+          style={{ display: 'none' }}
+          type="file"
+          accept={accept}
+          multiple
+          onChange={e => {
+            getFilesFromEvent(e).then(chosenFiles => {
+              onFiles(chosenFiles)
+            })
+          }}
+        />
+      </InfosContainer>
+    )
+  }
   const Layout = ({ input, previews, submitButton, dropzoneProps, files, extra: { maxFiles } }: ILayoutProps) => {
     return (
-      <div>
+      <StyledContainer>
         <div {...dropzoneProps}>{files.length < maxFiles && input}</div>
-        <PreviewsContainer>
-          {previews}
-        </PreviewsContainer>
-      </div>
+        <Disclaimer>{props.uploadRecommandations}</Disclaimer>
+          {props.hasErrors &&
+            <ErrorMsg>{props.errorMessage}</ErrorMsg>
+          }
+
+          <PreviewsContainer>
+            {previews}
+          </PreviewsContainer>
+      </StyledContainer>
     )
   }
 
@@ -182,27 +224,14 @@ export const MultipleFilesUploader: React.FunctionComponent<MultipleFilesUploade
   }
 
   return <div>
-          <div>
-            <Dropzone
-              accept='image/*'
-              getUploadParams={getUploadParams}
-              inputContent={null}
-              LayoutComponent={Layout}
-              onChangeStatus={handleChangeStatus}
-            />
-            {/* <InfosContainer>
-              <Icon icon='gallery' height="62" width="72" fill={!props.hasErrors ? 'rgba(255, 255, 255, 0.38)' : '#C91D31' } />
-              <LabelsContainer>
-                <p>{props.dragDropLabel}</p>
-                <p>{props.browseLabel}</p>
-              </LabelsContainer>
-            </InfosContainer> */}
-          </div>
-
-          <Disclaimer>{props.uploadRecommandations}</Disclaimer>
-          {props.hasErrors &&
-            <ErrorMsg>{props.errorMessage}</ErrorMsg>
-          }
+          <Dropzone
+            accept='image/*'
+            getUploadParams={getUploadParams}
+            inputContent={Input}
+            inputWithFilesContent={Input}
+            LayoutComponent={Layout}
+            onChangeStatus={handleChangeStatus}
+          />
         </div>
 };
 
