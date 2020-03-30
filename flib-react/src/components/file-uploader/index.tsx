@@ -48,7 +48,6 @@ const StyledContainer = styled.div`
   align-items: center;
   background-color: ${props => props.theme.componentColorLight};
   border-radius: ${props => props.theme.defaultRadius};
-  cursor: pointer;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -81,6 +80,10 @@ const StyledContainer = styled.div`
           transform: translateY(20px) rotate(-15deg);
         }
       }
+    }
+
+    &-inputLabel{
+      cursor: pointer;
     }
 
     &-preview{
