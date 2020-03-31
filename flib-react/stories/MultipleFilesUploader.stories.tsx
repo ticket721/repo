@@ -17,6 +17,7 @@ export const multipleFiles = () => (
     dragDropLabel={text('Drag and drop label', 'Drag and drop an image')}
     errorMessage={text('Error message' , `Can't upload your file`)}
     hasErrors={boolean('Has errors ?', false)}
+    noFilesMsg={text('No file message', 'No file or video')}
     uploadRecommandations={text('Upload recommandation', 'Image only')}
   />
 );

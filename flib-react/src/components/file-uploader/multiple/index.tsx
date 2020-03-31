@@ -9,6 +9,7 @@ export interface MultipleFilesUploaderProps extends React.ComponentProps<any> {
   browseLabel: string;
   dragDropLabel: string;
   errorMessage: string;
+  noFilesMsg: string;
   hasErrors?: boolean;
   uploadRecommandations?: string;
 }
@@ -137,7 +138,7 @@ const StyledContainer = styled.div`
 
       &Button {
         background-image: url('assets/icons/icon--close.svg') !important;
-        margin: 0;
+        margin: 0 auto;
       }
 
       &StatusContainer {
@@ -158,8 +159,61 @@ const StyledContainer = styled.div`
 
 const PreviewsContainer = styled.div`
   background: ${props => props.theme.componentColor};
-  display: flex;
+  border-radius: ${props => props.theme.defaultRadius};
   margin-top: ${props => props.theme.doubleSpacing};
+  font-size: 14px;
+  font-weight: 500;
+  min-height: 185px;
+  padding: ${props => props.theme.biggerSpacing};
+
+  label {
+    display: block;
+    padding: 0 0 8px;
+    width: 100%;
+  }
+
+  span {
+    color: ${props => props.theme.textColorDarker};
+    display: block;
+    margin-top: 8px;
+  }
+
+  div {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .dzu {
+    &-preview{
+      &Container {
+        border-radius: ${props => props.theme.defaultRadius};
+        height: 104px;
+        overflow: hidden;
+        margin: 8px 4px 0;
+        padding: 0;
+        width: 104px;
+
+        &::after {
+          background: linear-gradient(0deg, rgba(10, 11, 23, 0.8), rgba(10, 11, 23, 0.8));
+        }
+
+        &:nth-of-type(5n + 1) {
+          margin-left: 0;
+        }
+
+        &:nth-of-type(5n + 5) {
+          margin-right: 0;
+        }
+      }
+
+      &StatusContainer {
+        bottom: 0;
+        left: 0;
+        right: 0;
+        top: 0;
+      }
+    }
+  }
 `
 
 const Disclaimer = styled.p`
@@ -180,7 +234,7 @@ export const MultipleFilesUploader: React.FunctionComponent<MultipleFilesUploade
 
     return (
       <InfosContainer>
-        <Icon icon='gallery' height='62' width='72' fill='rgba(255, 255, 255, 0.38)'/>
+        <Icon icon='gallery' height="62" width="72" fill={!props.hasErrors ? 'rgba(255, 255, 255, 0.38)' : '#C91D31' } />
         <span>{ props.dragDropLabel }</span>
         <span>{ props.browseLabel }</span>
         <input
@@ -197,7 +251,8 @@ export const MultipleFilesUploader: React.FunctionComponent<MultipleFilesUploade
       </InfosContainer>
     )
   }
-  const Layout = ({ input, previews, submitButton, dropzoneProps, files, extra: { maxFiles } }: ILayoutProps) => {
+
+  const Layout = ({ input, previews, dropzoneProps, files, extra: { maxFiles } }: ILayoutProps) => {
     return (
       <StyledContainer>
         <div {...dropzoneProps}>{files.length < maxFiles && input}</div>
@@ -207,7 +262,13 @@ export const MultipleFilesUploader: React.FunctionComponent<MultipleFilesUploade
           }
 
           <PreviewsContainer>
-            {previews}
+            <label>Photos & Videos</label>
+            {!files.length &&
+              <span>{props.noFilesMsg}</span>
+            }
+            <div>
+              {previews}
+            </div>
           </PreviewsContainer>
       </StyledContainer>
     )
