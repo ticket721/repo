@@ -1,16 +1,18 @@
 import * as React from 'react';
 import Dropzone, { IDropzoneProps, ILayoutProps, IInputProps } from 'react-dropzone-uploader';
-import styled from '../../../../config/styled';
+import styled from '../../../config/styled';
 import 'react-dropzone-uploader/dist/styles.css';
-import Icon from '../../icon';
+import Icon from '../icon';
 import { keyframes } from 'styled-components';
 
-export interface MultipleFilesUploaderProps extends React.ComponentProps<any> {
+export interface FilesUploaderProps extends React.ComponentProps<any> {
   browseLabel: string;
   dragDropLabel: string;
   errorMessage: string;
-  noFilesMsg: string;
   hasErrors?: boolean;
+  noFilesMsg?: string;
+  maxFiles?: number;
+  multiple?: boolean;
   uploadRecommandations?: string;
 }
 
@@ -104,6 +106,7 @@ const StyledContainer = styled.div`
       &Container {
         animation: 1s ease 0s normal forwards 1 ${fadeIn};
         border: none;
+        padding: 0;
 
         &::after {
           background: linear-gradient(180deg, rgba(10, 11, 23, 0.7) 0%, rgba(17, 16, 24, 0) 100%);
@@ -190,7 +193,6 @@ const PreviewsContainer = styled.div`
         height: 104px;
         overflow: hidden;
         margin: 8px 4px 0;
-        padding: 0;
         width: 104px;
 
         &::after {
@@ -228,20 +230,20 @@ const ErrorMsg = styled(Disclaimer)`
   font-size: 13px;
 `
 
-export const MultipleFilesUploader: React.FunctionComponent<MultipleFilesUploaderProps> = (props: MultipleFilesUploaderProps): JSX.Element => {
+export const FilesUploader: React.FunctionComponent<FilesUploaderProps> = (props: FilesUploaderProps): JSX.Element => {
 
   const Input = ({ accept, onFiles, getFilesFromEvent }: IInputProps) => {
 
     return (
       <InfosContainer>
-        <Icon icon='gallery' height="62" width="72" fill={!props.hasErrors ? 'rgba(255, 255, 255, 0.38)' : '#C91D31' } />
+        <Icon icon={props.multiple ? 'gallery' : 'upload'} height="62" width="72" fill={!props.hasErrors ? 'rgba(255, 255, 255, 0.38)' : '#C91D31' } />
         <span>{ props.dragDropLabel }</span>
         <span>{ props.browseLabel }</span>
         <input
           style={{ display: 'none' }}
           type="file"
           accept={accept}
-          multiple
+          multiple={props.multiple}
           onChange={e => {
             getFilesFromEvent(e).then(chosenFiles => {
               onFiles(chosenFiles)
@@ -255,21 +257,26 @@ export const MultipleFilesUploader: React.FunctionComponent<MultipleFilesUploade
   const Layout = ({ input, previews, dropzoneProps, files, extra: { maxFiles } }: ILayoutProps) => {
     return (
       <StyledContainer>
-        <div {...dropzoneProps}>{files.length < maxFiles && input}</div>
+        <div {...dropzoneProps}>
+          { previews }
+          {files.length < maxFiles && input}
+        </div>
         <Disclaimer>{props.uploadRecommandations}</Disclaimer>
           {props.hasErrors &&
             <ErrorMsg>{props.errorMessage}</ErrorMsg>
           }
 
-          <PreviewsContainer>
-            <label>Photos & Videos</label>
-            {!files.length &&
-              <span>{props.noFilesMsg}</span>
-            }
-            <div>
-              {previews}
-            </div>
-          </PreviewsContainer>
+          {props.multiple &&
+            <PreviewsContainer>
+              <label>Photos & Videos</label>
+              {!files.length &&
+                <span>{props.noFilesMsg}</span>
+              }
+              <div>
+                {previews}
+              </div>
+            </PreviewsContainer>
+          }
       </StyledContainer>
     )
   }
@@ -291,15 +298,16 @@ export const MultipleFilesUploader: React.FunctionComponent<MultipleFilesUploade
             inputContent={Input}
             inputWithFilesContent={Input}
             LayoutComponent={Layout}
+            maxFiles={props.multiple ? props.maxFiles : 1}
             onChangeStatus={handleChangeStatus}
           />
         </div>
 };
 
 
-MultipleFilesUploader.defaultProps = {
+FilesUploader.defaultProps = {
   hasErrors: false
 };
 
 
-export default MultipleFilesUploader;
+export default FilesUploader;
