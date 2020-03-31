@@ -71,7 +71,7 @@
     "@types/node": "12.12.22",
     "@types/react": "16.9.29",
     "@types/react-test-renderer": "16.9.2",
-    "@types/webpack": "4.41.9",
+    "@types/webpack": "4.41.10",
     "awesome-typescript-loader": "5.2.1",
     "babel-loader": "8.1.0",
     "conventional-changelog-cli": "2.0.31",
