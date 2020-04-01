@@ -61,7 +61,7 @@
     "@storybook/addon-viewport": "^5.3.18",
     "@storybook/addons": "5.3.18",
     "@storybook/client-api": "5.3.18",
-    "@storybook/react": "5.3.17",
+    "@storybook/react": "5.3.18",
     "@storybook/theming": "5.3.18",
     "@svgr/webpack": "^5.3.0",
     "@types/enzyme": "3.10.5",
