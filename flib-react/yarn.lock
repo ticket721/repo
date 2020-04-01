@@ -1808,7 +1808,7 @@
     global "^4.3.2"
     util-deprecate "^1.0.2"
 
-"@storybook/api@5.3.17", "@storybook/api@^5.3.3":
+"@storybook/api@5.3.17":
   version "5.3.17"
   resolved "https://registry.yarnpkg.com/@storybook/api/-/api-5.3.17.tgz#1c0dad3309afef6b0a5585cb59c65824fb4d2721"
   integrity sha512-G40jtXFY10hQo6GSw5JeFYt41loD4+7s0uU18Rm6lfa/twOgp6vqqyDCWDvpRRxRBB5uDIKKHLt13X9gWe8tQQ==
@@ -1834,7 +1834,7 @@
     telejson "^3.2.0"
     util-deprecate "^1.0.2"
 
-"@storybook/api@5.3.18":
+"@storybook/api@5.3.18", "@storybook/api@^5.3.3":
   version "5.3.18"
   resolved "https://registry.yarnpkg.com/@storybook/api/-/api-5.3.18.tgz#95582ab90d947065e0e34ed603650a3630dcbd16"
   integrity sha512-QXaccNCARHzPWOuxYndiebGWBZmwiUvRgB9ji0XTJBS3y8K0ZPb5QyuqiKPaEWUj8dBA8rzdDtkW3Yt95Namaw==

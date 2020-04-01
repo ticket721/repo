@@ -59,7 +59,7 @@
     "@storybook/addon-links": "5.3.18",
     "@storybook/addon-options": "5.3.17",
     "@storybook/addon-viewport": "^5.3.17",
-    "@storybook/addons": "5.3.17",
+    "@storybook/addons": "5.3.18",
     "@storybook/client-api": "5.3.18",
     "@storybook/react": "5.3.17",
     "@storybook/theming": "5.3.17",
