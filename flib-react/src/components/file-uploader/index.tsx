@@ -1,6 +1,9 @@
 import * as React from 'react';
 import Dropzone, { IDropzoneProps, ILayoutProps, IInputProps } from 'react-dropzone-uploader';
 import styled from '../../../config/styled';
+//@ts-ignore
+import { getDroppedOrSelectedFiles } from 'html5-file-selector';
+//@ts-ignore
 import 'react-dropzone-uploader/dist/styles.css';
 import Icon from '../icon';
 import { keyframes } from 'styled-components';
@@ -215,8 +218,7 @@ const PreviewsContainer = styled.div`
         top: 0;
       }
     }
-  }
-`
+  }`
 
 const Disclaimer = styled.p`
   color: ${props => props.theme.textColorDarker};
@@ -233,7 +235,7 @@ const ErrorMsg = styled(Disclaimer)`
 export const FilesUploader: React.FunctionComponent<FilesUploaderProps> = (props: FilesUploaderProps): JSX.Element => {
 
   const Input = ({ accept, onFiles, getFilesFromEvent }: IInputProps) => {
-
+    console.log(getFilesFromEvent)
     return (
       <InfosContainer>
         <Icon icon={props.multiple ? 'gallery' : 'upload'} height="62" width="72" fill={!props.hasErrors ? 'rgba(255, 255, 255, 0.38)' : '#C91D31' } />
@@ -258,7 +260,10 @@ export const FilesUploader: React.FunctionComponent<FilesUploaderProps> = (props
     return (
       <StyledContainer>
         <div {...dropzoneProps}>
-          { previews }
+          {!props.multiple &&
+            previews
+          }
+
           {files.length < maxFiles && input}
         </div>
         <Disclaimer>{props.uploadRecommandations}</Disclaimer>
@@ -286,9 +291,15 @@ export const FilesUploader: React.FunctionComponent<FilesUploaderProps> = (props
     return { url: 'https://httpbin.org/post' }
   }
 
-  // manage error here 👇
+  // todo: manage error here 👇
   const handleChangeStatus: IDropzoneProps['onChangeStatus'] = ({ meta }, status) => {
     console.log(status, meta)
+  }
+
+  const getFilesFromEvent = async (e: any) => {
+    const chosenFiles = await getDroppedOrSelectedFiles(e);
+
+    return chosenFiles.map((f: { fileObject: any; }) => f.fileObject);
   }
 
   return <div>
@@ -297,6 +308,7 @@ export const FilesUploader: React.FunctionComponent<FilesUploaderProps> = (props
             getUploadParams={getUploadParams}
             inputContent={Input}
             inputWithFilesContent={Input}
+            getFilesFromEvent={getFilesFromEvent}
             LayoutComponent={Layout}
             maxFiles={props.multiple ? props.maxFiles : 1}
             onChangeStatus={handleChangeStatus}
