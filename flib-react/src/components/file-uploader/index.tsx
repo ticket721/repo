@@ -1,12 +1,9 @@
 import * as React from 'react';
-import Dropzone, { IDropzoneProps, ILayoutProps, IInputProps } from 'react-dropzone-uploader';
+import Dropzone, { IDropzoneProps, ILayoutProps } from 'react-dropzone-uploader';
 import styled from '../../../config/styled';
-//@ts-ignore
-import { getDroppedOrSelectedFiles } from 'html5-file-selector';
-//@ts-ignore
 import 'react-dropzone-uploader/dist/styles.css';
-import Icon from '../icon';
 import { keyframes } from 'styled-components';
+import Icon from '../icon';
 
 export interface FilesUploaderProps extends React.ComponentProps<any> {
   browseLabel: string;
@@ -23,6 +20,18 @@ const InfosContainer = styled.div`
   position: absolute;
   text-align: center;
   z-index: 0;
+
+  span {
+    display: block;
+
+    &:first-of-type {
+      margin-top: ${props => props.theme.biggerSpacing};
+    }
+    &:last-of-type {
+      color: ${props => props.theme.textColorDark};
+      margin-top: 8px;
+    }
+  }
 
   svg {
     margin: auto;
@@ -109,6 +118,7 @@ const StyledContainer = styled.div`
       &Container {
         animation: 1s ease 0s normal forwards 1 ${fadeIn};
         border: none;
+        height: 100%;
         padding: 0;
 
         &::after {
@@ -233,33 +243,16 @@ const ErrorMsg = styled(Disclaimer)`
 `
 
 export const FilesUploader: React.FunctionComponent<FilesUploaderProps> = (props: FilesUploaderProps): JSX.Element => {
-
-  const Input = ({ accept, onFiles, getFilesFromEvent }: IInputProps) => {
-    console.log(getFilesFromEvent)
-    return (
-      <InfosContainer>
-        <Icon icon={props.multiple ? 'gallery' : 'upload'} height="62" width="72" fill={!props.hasErrors ? 'rgba(255, 255, 255, 0.38)' : '#C91D31' } />
-        <span>{ props.dragDropLabel }</span>
-        <span>{ props.browseLabel }</span>
-        <input
-          style={{ display: 'none' }}
-          type="file"
-          accept={accept}
-          multiple={props.multiple}
-          onChange={e => {
-            getFilesFromEvent(e).then(chosenFiles => {
-              onFiles(chosenFiles)
-            })
-          }}
-        />
-      </InfosContainer>
-    )
-  }
-
   const Layout = ({ input, previews, dropzoneProps, files, extra: { maxFiles } }: ILayoutProps) => {
     return (
       <StyledContainer>
         <div {...dropzoneProps}>
+        <InfosContainer>
+          <Icon icon={props.multiple ? 'gallery' : 'upload'} height="62" width="72" fill={!props.hasErrors ? 'rgba(255, 255, 255, 0.38)' : '#C91D31' } />        
+          <span>{props.dragDropLabel}</span>
+          <span>{props.browseLabel}</span>
+        </InfosContainer>
+
           {!props.multiple &&
             previews
           }
@@ -296,19 +289,13 @@ export const FilesUploader: React.FunctionComponent<FilesUploaderProps> = (props
     console.log(status, meta)
   }
 
-  const getFilesFromEvent = async (e: any) => {
-    const chosenFiles = await getDroppedOrSelectedFiles(e);
-
-    return chosenFiles.map((f: { fileObject: any; }) => f.fileObject);
-  }
-
   return <div>
           <Dropzone
             accept='image/*'
+            canCancel={true}
             getUploadParams={getUploadParams}
-            inputContent={Input}
-            inputWithFilesContent={Input}
-            getFilesFromEvent={getFilesFromEvent}
+            inputContent={null}
+            inputWithFilesContent={null}
             LayoutComponent={Layout}
             maxFiles={props.multiple ? props.maxFiles : 1}
             onChangeStatus={handleChangeStatus}
