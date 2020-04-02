@@ -67,6 +67,10 @@ export const checkboxStyles = css`
   z-index: -99999;
 `;
 
+export const listStyles = css`
+  list-style: none;
+`
+
 export const GlobalStyle = createGlobalStyle`
   * {
     ${masterReset}
@@ -86,6 +90,10 @@ export const GlobalStyle = createGlobalStyle`
 
   label {
     ${labelStyles}
+  }
+
+  ul {
+    ${listStyles}
   }
 
   input,

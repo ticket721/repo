@@ -151,6 +151,7 @@ const StyledInputContainer = styled.div<LocationProps>`
     }
   }
 `;
+
 export const Location: React.FunctionComponent<LocationProps> = (props: LocationProps): JSX.Element => {
   return  <StyledInputContainer>
     <StyledLabel>{props.label}</StyledLabel>
