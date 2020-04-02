@@ -110,4 +110,18 @@ export const GlobalStyle = createGlobalStyle`
   input[type='radio'] {
     ${checkboxStyles}
   }
+
+  .row {
+    display: flex;
+  }
+
+  .jcsb {
+    justify-content: space-between;
+  }
+
+  .container {
+    margin: 1.5rem auto;
+    max-width: 600px;
+    width: 100%;
+  }
 `;

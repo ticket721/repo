@@ -1,4 +1,5 @@
 import * as React from 'react';
+import Icon from '../icon';
 import styled from '../../../config/styled';
 
 export interface InviteOrganizersProps extends React.ComponentProps<any> {
@@ -6,21 +7,26 @@ export interface InviteOrganizersProps extends React.ComponentProps<any> {
   organizers: SingleOrganizer[];
   sendInvite: () => void;
   handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleRemove: (user: SingleOrganizer) => void;
   inputLabel: string;
   label:string;
   placeholder: string;
+  inputValue: string;
 }
 
 interface OrganizerProp {
   key: string | number;
   organizer: SingleOrganizer;
+  removable?: boolean;
+  removeUser: (user: SingleOrganizer) => void;
 }
 
 interface SingleOrganizer {
   acceptedOn?: string | Date | null;
-  id: string | number;
+  email: string;
+  id: string;
   name?: string;
-  image?: string;
+  image: string | undefined;
   status?: string | null;
 }
 
@@ -93,6 +99,10 @@ const ListItem = styled.li`
   &:last-of-type {
     margin-bottom: 0;
   }
+
+  button {
+    margin-left: auto;
+  }
 `;
 
 const ImgContainer = styled.div`
@@ -104,7 +114,7 @@ const ImgContainer = styled.div`
 
   img {
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
     width: 100%;
   }
 `;
@@ -118,35 +128,59 @@ const StyledInput = styled.input`
   margin-left: ${props => props.theme.biggerSpacing};
 `;
 
+const RoundedButton = styled.button`
+  background-color: ${props => props.theme.componentColorLight};
+  border-radius: 100%;
+  height: 40px;
+  margin-right: ${props => props.theme.biggerSpacing};
+  width: 40px;
+
+  svg {
+    margin: auto;
+    transform: rotate(180deg);
+  }
+`;
+
 const Organizer = (props: OrganizerProp) => {
-  return <ListItem key={props.organizer.id}>
+  return <ListItem>
       <ImgContainer>
-        <img src={props.organizer.image} alt={props.organizer.name}/>
+        <img src={props.organizer.image ? props.organizer.image: 'assets/images/t721--logo.png'} alt={props.organizer.name}/>
       </ImgContainer>
       <div>
-        <span>{props.organizer.name}</span>
+        <span>{props.organizer.name ? props.organizer.name : props.organizer.email}</span>
         {props.organizer.status &&
           <span>{props.organizer.status} {props.organizer.acceptedOn && `on ${props.organizer.acceptedOn}`}</span>
         }
       </div>
+      {props.removable &&
+        <button type="button" onClick={() => props.removeUser(props.organizer)}>
+          <Icon icon='close' height='12' width='12' fill='rgba(255,255,255, 0.6)' />
+        </button>
+      }
     </ListItem>
 };
 
 const InviteOrganizers: React.FunctionComponent<InviteOrganizersProps> = (props: InviteOrganizersProps): JSX.Element => {
-  return <div>
+  return <div className="container">
     <StyledContainer>
       <label>{props.label}</label>
       <OrganizersList>
-        <Organizer key={props.currentUser.id} organizer={props.currentUser} />
+        <Organizer key={props.currentUser.id} organizer={props.currentUser} removeUser={props.handleRemove}/>
         {props.organizers.map((organizer) => {
-          return <Organizer key={organizer.id} organizer={organizer}/>
+          return <Organizer key={organizer.id ? organizer.id : organizer.email} organizer={organizer} removable removeUser={props.handleRemove}/>
         })}
       </OrganizersList>
     </StyledContainer>
     <StyledInputContainer>
       <StyledLabel>{props.inputLabel}</StyledLabel>
-      <StyledInput type="text" placeholder={props.placeholder} value={props.value} onChange={props.handleChange} />
-      <button type="button" onClick={props.sendInvite}>Send</button>
+      <div className="row jcsb">
+        <StyledInput type="text" placeholder={props.placeholder} value={props.inputValue} onChange={props.handleChange} />
+        {props.inputValue  &&
+          <RoundedButton type="button" onClick={props.sendInvite}>
+            <Icon icon='arrow' height='14' width='14' fill='rgba(255, 255, 255, 0.9)' />
+          </RoundedButton>
+        }
+      </div>
     </StyledInputContainer>
   </div>
 }
