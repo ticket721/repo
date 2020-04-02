@@ -3,11 +3,13 @@ import { BaseModel, InjectModel, InjectRepository } from '@iaminfinity/express-c
 import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
 import { CategoriesRepository } from '@lib/common/categories/Categories.repository';
 import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
+import { Boundable } from '@lib/common/utils/Boundable.type';
 
 /**
  * Service to CRUD CategoryEntities
  */
-export class CategoriesService extends CRUDExtension<CategoriesRepository, CategoryEntity> {
+export class CategoriesService extends CRUDExtension<CategoriesRepository, CategoryEntity>
+    implements Boundable<CategoryEntity> {
     /**
      * Dependency injection
      *
@@ -44,7 +46,7 @@ export class CategoriesService extends CRUDExtension<CategoriesRepository, Categ
     async bind(id: string, entity: string, entityId: string): Promise<ServiceResponse<CategoryEntity>> {
         const category = await this.search({
             id,
-        });
+        } as CategoryEntity);
 
         if (category.error) {
             return {
@@ -55,14 +57,14 @@ export class CategoriesService extends CRUDExtension<CategoriesRepository, Categ
 
         if (category.response.length === 0) {
             return {
-                error: 'category_not_found',
+                error: 'entity_not_found',
                 response: null,
             };
         }
 
         if (this.isBound(category.response[0])) {
             return {
-                error: 'category_already_bound',
+                error: 'entity_already_bound',
                 response: null,
             };
         }
@@ -70,11 +72,11 @@ export class CategoriesService extends CRUDExtension<CategoriesRepository, Categ
         const boundReq = await this.update(
             {
                 id,
-            },
+            } as CategoryEntity,
             {
                 parent_id: entityId,
                 parent_type: entity,
-            },
+            } as Partial<CategoryEntity>,
         );
 
         if (boundReq.error) {
@@ -111,7 +113,7 @@ export class CategoriesService extends CRUDExtension<CategoriesRepository, Categ
     async unbind(id: string): Promise<ServiceResponse<CategoryEntity>> {
         const category = await this.search({
             id,
-        });
+        } as CategoryEntity);
 
         if (category.error) {
             return {
@@ -122,14 +124,14 @@ export class CategoriesService extends CRUDExtension<CategoriesRepository, Categ
 
         if (category.response.length === 0) {
             return {
-                error: 'category_not_found',
+                error: 'entity_not_found',
                 response: null,
             };
         }
 
         if (!this.isBound(category.response[0])) {
             return {
-                error: 'category_not_bound',
+                error: 'entity_not_bound',
                 response: null,
             };
         }
@@ -137,11 +139,11 @@ export class CategoriesService extends CRUDExtension<CategoriesRepository, Categ
         const boundReq = await this.update(
             {
                 id,
-            },
+            } as CategoryEntity,
             {
                 parent_id: null,
                 parent_type: null,
-            },
+            } as Partial<CategoryEntity>,
         );
 
         if (boundReq.error) {

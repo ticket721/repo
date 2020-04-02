@@ -1,4 +1,4 @@
-import { DateEntity, DateLocation, DateMetadata, DateTimestamps } from '@lib/common/dates/entities/Date.entity';
+import { DateEntity, DateMetadata, DateTimestamps, InputDateLocation } from '@lib/common/dates/entities/Date.entity';
 import { IsOptional, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiPropertyOptional } from '@nestjs/swagger';
@@ -6,7 +6,7 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 /**
  * Data model required when updating date
  */
-export class DatesUpdateInputDto implements Partial<Pick<DateEntity, 'location' | 'timestamps' | 'metadata'>> {
+export class DatesUpdateInputDto implements Partial<Pick<DateEntity, 'timestamps' | 'metadata'>> {
     /**
      * Edits location info
      */
@@ -14,9 +14,9 @@ export class DatesUpdateInputDto implements Partial<Pick<DateEntity, 'location' 
         description: 'Edits the location information',
     })
     @ValidateNested()
-    @Type(() => DateLocation)
+    @Type(() => InputDateLocation)
     @IsOptional()
-    location?: DateLocation;
+    location?: InputDateLocation;
 
     /**
      * Edits timestamps info

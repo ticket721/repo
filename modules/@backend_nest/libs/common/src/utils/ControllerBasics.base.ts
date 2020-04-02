@@ -2,7 +2,13 @@ import { EsSearchOptionsStatic, Repository, SaveOptionsStatic } from '@iaminfini
 import { ESSearchBodyBuilder } from '@lib/common/utils/ESSearchBodyBuilder.helper';
 import { SortablePagedSearch } from '@lib/common/utils/SortablePagedSearch.type';
 import { HttpException } from '@nestjs/common';
-import { CRUDExtension, SearchOptions, SearchQuery, UpdateOptions } from '@lib/common/crud/CRUDExtension.base';
+import {
+    CRUDExtension,
+    CRUDResponse,
+    SearchOptions,
+    SearchQuery,
+    UpdateOptions,
+} from '@lib/common/crud/CRUDExtension.base';
 import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
 import { StatusCodes } from '@lib/common/utils/codes.value';
 import { fromES } from '@lib/common/utils/fromES.helper';
@@ -10,11 +16,120 @@ import { UserDto } from '@lib/common/users/dto/User.dto';
 import { RightsService } from '@lib/common/rights/Rights.service';
 import { ESSearchHit } from '@lib/common/utils/ESSearchReturn.type';
 import { RightEntity } from '@lib/common/rights/entities/Right.entity';
+import { Boundable } from '@lib/common/utils/Boundable.type';
 
 /**
  * Controller Basics, contains most methods used in controllers
  */
 export class ControllerBasics<EntityType> {
+    /**
+     * Helper to use entity binding system
+     *
+     * @param service
+     * @param id
+     * @param entity
+     * @param entityId
+     * @private
+     */
+    public async _bind<CustomEntityType = EntityType>(
+        service: Boundable<CustomEntityType>,
+        id: string,
+        entity: string,
+        entityId: string,
+    ): Promise<CustomEntityType> {
+        const boundRes = await service.bind(id, entity, entityId);
+
+        if (boundRes.error) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.InternalServerError,
+                    message: boundRes.error,
+                },
+                StatusCodes.InternalServerError,
+            );
+        }
+
+        return boundRes.response;
+    }
+
+    /**
+     * Wrap crud response and throw hhtp error on any error with given code
+     *
+     * @param promise
+     * @param errorStatus
+     * @private
+     */
+    public async _crudCall<ResType = any>(
+        promise: Promise<CRUDResponse<ResType>>,
+        errorStatus: StatusCodes,
+    ): Promise<ResType> {
+        const res = await promise;
+
+        if (res.error) {
+            throw new HttpException(
+                {
+                    status: errorStatus,
+                    message: res.error,
+                },
+                errorStatus,
+            );
+        }
+
+        return res.response;
+    }
+
+    /**
+     * Wrap service call and throw hhtp error on any error with given code
+     *
+     * @param promise
+     * @param errorStatus
+     * @private
+     */
+    public async _serviceCall<ResType = any>(
+        promise: Promise<ServiceResponse<ResType>>,
+        errorStatus: StatusCodes,
+    ): Promise<ResType> {
+        const res = await promise;
+
+        if (res.error) {
+            throw new HttpException(
+                {
+                    status: errorStatus,
+                    message: res.error,
+                },
+                errorStatus,
+            );
+        }
+
+        return res.response;
+    }
+
+    /**
+     * Helper to use entity unbinding system
+     *
+     * @param service
+     * @param id
+     * @private
+     */
+    public async _unbind<CustomEntityType = EntityType>(
+        service: Boundable<CustomEntityType>,
+        id: string,
+    ): Promise<CustomEntityType> {
+        const unboundRes = await service.unbind(id);
+
+        if (unboundRes.error) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.InternalServerError,
+                    message: unboundRes.error,
+                },
+                StatusCodes.InternalServerError,
+            );
+        }
+
+        return unboundRes.response;
+    }
+
     /**
      * Generic search query, able to throw HttpExceptions
      *

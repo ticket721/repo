@@ -20,6 +20,7 @@ import DosojinControllerTestSuite from '@app/server/controllers/dosojin/Dosojin.
 import EventsControllerTestSuite from '@app/server/controllers/events/Events.controller.routes-spec';
 import ImagesControllerTestSuite from '@app/server/controllers/images/Images.controller.routes-spec';
 import TxsControllerTestSuite from '@app/server/controllers/txs/Txs.controller.routes-spec';
+import RightsControllerTestSuite from '@app/server/controllers/rights/Rights.controller.routes-spec';
 
 const cassandraPort = 32702;
 const elasticSearchPort = 32610;
@@ -110,13 +111,15 @@ describe('AppController (e2e)', () => {
     }, 60000);
 
     describe('Authentication Controller', AuthenticationControllerTestSuite(getCtx));
-    // describe('ActionSets Controller', ActionSetsControllerTestSuite);
-    // describe('Categories Controller', CategoriesControllerTestSuite);
+    describe('ActionSets Controller', ActionSetsControllerTestSuite(getCtx));
+    describe('Categories Controller', CategoriesControllerTestSuite(getCtx));
+    describe('Rights Controller', RightsControllerTestSuite(getCtx));
+    describe('Contracts Controller', ContractsControllerTestSuite(getCtx));
+    describe('Dates Controller', DatesControllerTestSuite(getCtx));
+    describe('Images Controller', ImagesControllerTestSuite(getCtx));
+    describe('Events Controller', EventsControllerTestSuite(getCtx));
+    describe('Txs Controller', TxsControllerTestSuite(getCtx));
+
     // describe('Checkout Controller', CheckoutControllerTestSuite);
-    // describe('Contracts Controller', ContractsControllerTestSuite);
-    // describe('Dates Controller', DatesControllerTestSuite);
     // describe('Dosojin Controller', DosojinControllerTestSuite);
-    // describe('Events Controller', EventsControllerTestSuite);
-    // describe('Images Controller', ImagesControllerTestSuite);
-    // describe('Txs Controller', TxsControllerTestSuite);
 });

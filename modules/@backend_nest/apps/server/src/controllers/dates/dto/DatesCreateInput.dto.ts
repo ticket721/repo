@@ -1,4 +1,4 @@
-import { DateEntity, DateLocation, DateMetadata, DateTimestamps } from '@lib/common/dates/entities/Date.entity';
+import { DateEntity, DateMetadata, DateTimestamps, InputDateLocation } from '@lib/common/dates/entities/Date.entity';
 import { IsOptional, IsString, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
@@ -6,7 +6,7 @@ import { ApiProperty } from '@nestjs/swagger';
 /**
  * Data model required when creating a new date
  */
-export class DatesCreateInputDto implements Pick<DateEntity, 'group_id' | 'location' | 'timestamps' | 'metadata'> {
+export class DatesCreateInputDto implements Pick<DateEntity, 'group_id' | 'timestamps' | 'metadata'> {
     /**
      * Date Group ID
      */
@@ -25,9 +25,9 @@ export class DatesCreateInputDto implements Pick<DateEntity, 'group_id' | 'locat
         description: 'Location of the date',
     })
     @ValidateNested()
-    @Type(() => DateLocation)
+    @Type(() => InputDateLocation)
     @IsOptional()
-    location: DateLocation;
+    location: InputDateLocation;
 
     /**
      * Date timestamps info

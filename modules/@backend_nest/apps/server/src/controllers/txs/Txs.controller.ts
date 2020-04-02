@@ -65,12 +65,9 @@ export class TxsController extends ControllerBasics<TxEntity> {
      * @param user
      */
     @Post('/search')
-    @UseGuards(AuthGuard('jwt'), RolesGuard)
     @UseFilters(new HttpExceptionFilter())
     @HttpCode(StatusCodes.OK)
-    @Roles('authenticated')
     @ApiResponses([StatusCodes.OK, StatusCodes.BadRequest, StatusCodes.InternalServerError])
-    /* istanbul ignore next */
     async search(@Body() body: TxsSearchInputDto, @User() user: UserDto): Promise<TxsSearchResponseDto> {
         const txs = await this._search(this.txsService, body);
         return { txs };
@@ -101,20 +98,13 @@ export class TxsController extends ControllerBasics<TxEntity> {
             );
         }
 
-        const subscriptionResult = await this.txsService.subscribe(txHash);
-
-        if (subscriptionResult.error) {
-            throw new HttpException(
-                {
-                    status: StatusCodes.InternalServerError,
-                    message: subscriptionResult.error,
-                },
-                StatusCodes.InternalServerError,
-            );
-        }
+        const subscription = await this._serviceCall<TxEntity>(
+            this.txsService.subscribe(txHash),
+            StatusCodes.InternalServerError,
+        );
 
         return {
-            tx: subscriptionResult.response,
+            tx: subscription,
         };
     }
 }

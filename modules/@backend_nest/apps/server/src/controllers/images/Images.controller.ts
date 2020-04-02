@@ -20,10 +20,8 @@ import { ImagesUploadInputDto } from '@app/server/controllers/images/dto/ImagesU
 import { ImagesService } from '@lib/common/images/Images.service';
 import { ConfigService } from '@lib/common/config/Config.service';
 import { keccak256 } from '@common/global';
-import { ESSearchBodyBuilder } from '@lib/common/utils/ESSearchBodyBuilder.helper';
 import { SortablePagedSearch } from '@lib/common/utils/SortablePagedSearch.type';
 import { ImageEntity } from '@lib/common/images/entities/Image.entity';
-import { fromES } from '@lib/common/utils/fromES.helper';
 import * as path from 'path';
 import { FSService } from '@lib/common/fs/FS.service';
 import { HttpExceptionFilter } from '@app/server/utils/HttpException.filter';
@@ -89,6 +87,7 @@ export class ImagesController extends ControllerBasics<ImageEntity> {
         const result: ImageEntity[] = [];
 
         for (const file of files) {
+            /* istanbul ignore next */
             if (file.size > maxSize) {
                 throw new HttpException(
                     {
@@ -101,6 +100,7 @@ export class ImagesController extends ControllerBasics<ImageEntity> {
 
             file.hash = keccak256(file.buffer.toString('hex')).toLowerCase();
 
+            /* istanbul ignore next */
             if (mimetypeMapping[file.mimetype] === undefined) {
                 throw new HttpException(
                     {
@@ -111,27 +111,15 @@ export class ImagesController extends ControllerBasics<ImageEntity> {
                 );
             }
 
-            const body = ESSearchBodyBuilder({
+            const collision = await this._elasticGet<ImageEntity>(this.imagesService, {
                 $page_size: 1,
                 hash: {
                     $eq: file.hash,
                 },
             } as SortablePagedSearch);
 
-            const collision = await this.imagesService.searchElastic(body.response);
-
-            if (collision.error) {
-                throw new HttpException(
-                    {
-                        status: StatusCodes.InternalServerError,
-                        message: 'image_collision_check_error',
-                    },
-                    StatusCodes.InternalServerError,
-                );
-            }
-
-            if (collision.response.hits.total === 1) {
-                result.push(fromES(collision.response.hits.hits[0]));
+            if (collision.length === 1) {
+                result.push(collision[0]);
                 continue;
             }
 
@@ -142,6 +130,7 @@ export class ImagesController extends ControllerBasics<ImageEntity> {
                 `${imageId}${mimetypeMapping[file.mimetype]}`,
             );
 
+            /* istanbul ignore next */
             try {
                 this.fsService.writeFile(imagePath, file.buffer);
             } catch (e) {

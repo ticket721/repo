@@ -1,9 +1,10 @@
-import { AxiosResponse }        from 'axios';
-import { T721SDK }              from '../../index';
-import { TxsSearchResponseDto } from '@app/server/controllers/txs/dto/TxsSearchResponse.dto';
-import { TxsSearchInputDto }    from '@app/server/controllers/txs/dto/TxsSearchInput.dto';
-import { TxsSubscribeInputDto } from '@app/server/controllers/txs/dto/TxsSubscribeInput.dto';
-import { TxsInfosResponseDto }  from '@app/server/controllers/txs/dto/TxsInfosResponse.dto';
+import { AxiosResponse }           from 'axios';
+import { T721SDK }                 from '../../index';
+import { TxsSearchResponseDto }    from '@app/server/controllers/txs/dto/TxsSearchResponse.dto';
+import { TxsSearchInputDto }       from '@app/server/controllers/txs/dto/TxsSearchInput.dto';
+import { TxsSubscribeInputDto }    from '@app/server/controllers/txs/dto/TxsSubscribeInput.dto';
+import { TxsInfosResponseDto }     from '@app/server/controllers/txs/dto/TxsInfosResponse.dto';
+import { TxsSubscribeResponseDto } from '@app/server/controllers/txs/dto/TxsSubscribeResponse.dto';
 
 export async function txsInfos(): Promise<AxiosResponse<TxsInfosResponseDto>> {
 
@@ -30,7 +31,7 @@ export async function txsSearch(
 export async function txsSubscribe(
     token: string,
     query: TxsSubscribeInputDto,
-): Promise<AxiosResponse<TxsSubscribeInputDto>> {
+): Promise<AxiosResponse<TxsSubscribeResponseDto>> {
 
     const self: T721SDK = this;
 

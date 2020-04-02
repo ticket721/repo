@@ -1,4 +1,4 @@
-import { IsArray, IsOptional, IsUUID } from 'class-validator';
+import { IsOptional, IsUUID } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 /**
@@ -20,8 +20,7 @@ export class EventsStartInputDto {
     @ApiPropertyOptional({
         description: 'Date IDs to start. If omitted, all dates are started.',
     })
-    @IsArray()
-    @IsUUID()
+    @IsUUID('4', { each: true })
     @IsOptional()
     dates?: string[];
 }

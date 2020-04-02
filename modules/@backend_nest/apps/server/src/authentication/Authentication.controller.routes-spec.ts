@@ -1,51 +1,11 @@
-import { T721SDK } from '@common/sdk';
-import _ from 'lodash';
-import { StatusCodes, StatusNames } from '@lib/common/utils/codes.value';
+import { StatusCodes } from '@lib/common/utils/codes.value';
 import { AxiosResponse } from 'axios';
 import { LocalRegisterResponseDto } from '@app/server/authentication/dto/LocalRegisterResponse.dto';
 import { LocalLoginResponseDto } from '@app/server/authentication/dto/LocalLoginResponse.dto';
 import { EmailValidationResponseDto } from '@app/server/authentication/dto/EmailValidationResponse.dto';
 import { createWallet, Web3LoginSigner, Web3RegisterSigner } from '@common/global';
 import { Web3LoginResponseDto } from '@app/server/authentication/dto/Web3LoginResponse.dto';
-
-const generateEmail = () => {
-    // tslint:disable-next-line:no-bitwise
-    return `${_.times(64, () => ((Math.random() * 0xf) << 0).toString(16)).join('')}@ticket721.com`;
-};
-
-const generateUserName = () => {
-    // tslint:disable-next-line:no-bitwise
-    return _.times(64, () => ((Math.random() * 0xf) << 0).toString(16)).join('');
-};
-
-const getSDK = async (getCtx: () => { ready: Promise<void> }): Promise<T721SDK> => {
-    const { ready } = getCtx();
-
-    await ready;
-
-    const sdk = new T721SDK();
-    sdk.connect('localhost', 3000, 'http');
-
-    return sdk;
-};
-
-const generatePassword = generateUserName;
-
-const failWithCode = async (promise: Promise<any>, code: StatusCodes): Promise<void> => {
-    let res;
-
-    try {
-        res = await promise;
-    } catch (e) {
-        expect(e.response.data).toMatchObject({
-            statusCode: code,
-            name: StatusNames[code],
-        });
-        return;
-    }
-
-    throw new Error(`Expected request to fail with status ${code}, but succeeded with status ${res.status}`);
-};
+import { failWithCode, generateEmail, generatePassword, generateUserName, getSDK } from '../../test/utils';
 
 export default function(getCtx: () => { ready: Promise<void> }) {
     return function() {

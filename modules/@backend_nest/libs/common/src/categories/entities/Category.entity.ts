@@ -38,7 +38,7 @@ export class CategoryEntity {
             this.scope = c.scope;
             this.prices = ECAAG(c.prices);
             this.seats = c.seats;
-            this.parent_id = c.parent_id;
+            this.parent_id = c.parent_id ? c.parent_id.toString() : c.parent_id;
             this.parent_type = c.parent_type;
             this.created_at = c.created_at;
             this.updated_at = c.updated_at;

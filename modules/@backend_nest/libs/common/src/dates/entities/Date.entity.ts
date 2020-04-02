@@ -6,7 +6,7 @@ import {
     UpdateDateColumn,
 } from '@iaminfinity/express-cassandra';
 import { ECAAG } from '@lib/common/utils/ECAAG.helper';
-import { IsDateString, IsNumber, IsString, IsUUID, ValidateNested } from 'class-validator';
+import { IsDateString, IsNumber, IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 
 /**
@@ -29,6 +29,7 @@ export class DateMetadata {
      * Date avatar
      */
     @IsUUID()
+    @IsOptional()
     avatar: string;
 
     /**
@@ -72,6 +73,25 @@ export class Coordinates {
      */
     @IsNumber()
     lat: number;
+}
+
+/**
+ * Input type for the date location
+ */
+export class InputDateLocation {
+    /**
+     * Coordinates of the date
+     */
+    @ValidateNested()
+    @Type(() => Coordinates)
+    location: Coordinates;
+
+    /**
+     * Location label of the date
+     */
+    @IsString()
+    // tslint:disable-next-line:variable-name
+    location_label: string;
 }
 
 /**
@@ -168,7 +188,7 @@ export class DateEntity {
             this.timestamps = d.timestamps;
             this.metadata = d.metadata;
             this.metadata.tags = ECAAG(this.metadata.tags);
-            this.parent_id = d.parent_id;
+            this.parent_id = d.parent_id ? d.parent_id.toString() : d.parent_id;
             this.parent_type = d.parent_type;
             this.created_at = d.created_at;
             this.updated_at = d.updated_at;

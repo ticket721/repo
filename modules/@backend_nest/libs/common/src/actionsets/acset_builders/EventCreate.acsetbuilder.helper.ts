@@ -3,6 +3,7 @@ import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
 import { ActionSet } from '@lib/common/actionsets/helper/ActionSet.class';
 import { Action } from '@lib/common/actionsets/helper/Action.class';
 import { UserDto } from '@lib/common/users/dto/User.dto';
+import Joi from '@hapi/joi';
 
 /**
  * Initial arguments to create the event creation
@@ -15,6 +16,13 @@ export interface EventCreateAcsetBuilderArgs {
 }
 
 /**
+ * Dynamic Validation Schema
+ */
+const EventCreateAcsetBuilderChecker = Joi.object({
+    name: Joi.string().required(),
+});
+
+/**
  * ActionSet builder class for the event creation process
  */
 export class EventCreateAcsetbuilderHelper implements ActionSetBuilderBase<EventCreateAcsetBuilderArgs> {
@@ -25,6 +33,17 @@ export class EventCreateAcsetbuilderHelper implements ActionSetBuilderBase<Event
      * @param args
      */
     async buildActionSet(caller: UserDto, args: EventCreateAcsetBuilderArgs): Promise<ServiceResponse<ActionSet>> {
+        const { error, value } = EventCreateAcsetBuilderChecker.validate(args);
+
+        if (error) {
+            return {
+                error: 'acset_invalid_arguments',
+                response: null,
+            };
+        }
+
+        args = value;
+
         try {
             const actions: Action[] = [
                 new Action()

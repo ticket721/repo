@@ -5,16 +5,18 @@ import { DateEntity } from '@lib/common/dates/entities/Date.entity';
 import { CategoriesService } from '@lib/common/categories/Categories.service';
 import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
 import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
+import { Boundable } from '@lib/common/utils/Boundable.type';
 
 /**
  * Service to CRUD DateEntities
  */
-export class DatesService extends CRUDExtension<DatesRepository, DateEntity> {
+export class DatesService extends CRUDExtension<DatesRepository, DateEntity> implements Boundable<DateEntity> {
     /**
      * Dependency injection
      *
      * @param datesRepository
      * @param dateEntity
+     * @param categoriesService
      */
     constructor(
         @InjectRepository(DatesRepository)

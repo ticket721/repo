@@ -124,7 +124,7 @@ export class EventsController extends ControllerBasics<EventEntity> {
         StatusCodes.InternalServerError,
     ])
     async start(@Body() body: EventsStartInputDto, @User() user: UserDto): Promise<EventsStartResponseDto> {
-        await this._authorize(
+        const eventEntity = await this._authorizeOne(
             this.rightsService,
             this.eventsService,
             user,
@@ -135,36 +135,6 @@ export class EventsController extends ControllerBasics<EventEntity> {
             ['owner', 'admin'],
         );
 
-        // 1. Start by fetching the event
-        const eventQueryRes = await this.eventsService.search({
-            id: body.event,
-        });
-
-        // 2. Throw if there is a query error
-        if (eventQueryRes.error) {
-            throw new HttpException(
-                {
-                    status: StatusCodes.InternalServerError,
-                    message: eventQueryRes.error,
-                },
-                StatusCodes.InternalServerError,
-            );
-        }
-
-        // 3. Throw if no events matches given id
-        if (eventQueryRes.response.length === 0) {
-            throw new HttpException(
-                {
-                    status: StatusCodes.NotFound,
-                    message: 'event_not_found',
-                },
-                StatusCodes.NotFound,
-            );
-        }
-
-        const eventEntity = eventQueryRes.response[0];
-
-        // 5. If no dates given, use all date, if dates given check them
         if (!body.dates) {
             body.dates = eventEntity.dates;
         } else {
@@ -186,8 +156,8 @@ export class EventsController extends ControllerBasics<EventEntity> {
         }
 
         for (const date of body.dates) {
-            // 6. For each date, update status to live
-            const dateUpdateRes = await this.datesService.update(
+            await this._edit<DateEntity>(
+                this.datesService,
                 {
                     id: date,
                 },
@@ -195,17 +165,6 @@ export class EventsController extends ControllerBasics<EventEntity> {
                     status: 'live',
                 },
             );
-
-            // 7. Throw if update fails
-            if (dateUpdateRes.error) {
-                throw new HttpException(
-                    {
-                        status: StatusCodes.InternalServerError,
-                        message: dateUpdateRes.error,
-                    },
-                    StatusCodes.InternalServerError,
-                );
-            }
         }
 
         return {
@@ -269,19 +228,12 @@ export class EventsController extends ControllerBasics<EventEntity> {
         // Create Vault address
 
         const validatingAddressName = `event-${eventUUID.toLowerCase()}`;
-        const validatingAddressRes = await this.vaultereumService.write(`ethereum/accounts/${validatingAddressName}`);
+        const validatingAddressRes = await this._serviceCall<any>(
+            this.vaultereumService.write(`ethereum/accounts/${validatingAddressName}`),
+            StatusCodes.InternalServerError,
+        );
 
-        if (validatingAddressRes.error) {
-            throw new HttpException(
-                {
-                    status: StatusCodes.InternalServerError,
-                    message: validatingAddressRes.error,
-                },
-                StatusCodes.InternalServerError,
-            );
-        }
-
-        const eventAddress = toAcceptedAddressFormat(validatingAddressRes.response.data.address);
+        const eventAddress = toAcceptedAddressFormat(validatingAddressRes.data.address);
 
         // Generate Group ID
 
@@ -317,76 +269,48 @@ export class EventsController extends ControllerBasics<EventEntity> {
         const dates: DateEntity[] = [];
 
         for (const dateWithCategories of datesWithCategories) {
-            const createdDateWithCategories = await this.datesService.createDateWithCategories(
-                dateWithCategories[0],
-                dateWithCategories[1],
+            const createdDateWithCategories = await this._serviceCall<[DateEntity, CategoryEntity[]]>(
+                this.datesService.createDateWithCategories(dateWithCategories[0], dateWithCategories[1]),
+                StatusCodes.InternalServerError,
             );
 
-            if (createdDateWithCategories.error) {
-                throw new HttpException(
-                    {
-                        status: StatusCodes.InternalServerError,
-                        message: createdDateWithCategories.error,
-                    },
-                    StatusCodes.InternalServerError,
-                );
-            }
-
-            dates.push(createdDateWithCategories.response[0]);
+            dates.push(createdDateWithCategories[0]);
         }
 
-        const createdEventWithCategories = await this.eventsService.createEventWithDatesAndCategories(
-            event,
-            dates,
-            eventCategories,
+        const createdEventWithCategories = await this._serviceCall<[EventEntity, CategoryEntity[]]>(
+            this.eventsService.createEventWithDatesAndCategories(event, dates, eventCategories),
+            StatusCodes.InternalServerError,
         );
 
-        if (createdEventWithCategories.error) {
-            throw new HttpException(
+        await this._crudCall<any>(
+            this.rightsService.addRights(user, [
                 {
-                    status: StatusCodes.InternalServerError,
-                    message: createdEventWithCategories.error,
+                    entity: 'event',
+                    entityValue: groupId,
+                    rights: {
+                        owner: true,
+                    },
                 },
-                StatusCodes.InternalServerError,
-            );
-        }
-
-        const ownerRights = await this.rightsService.addRights(user, [
-            {
-                entity: 'event',
-                entityValue: groupId,
-                rights: {
-                    owner: true,
-                },
-            },
-            {
-                entity: 'category',
-                entityValue: groupId,
-                rights: {
-                    owner: true,
-                },
-            },
-            {
-                entity: 'date',
-                entityValue: groupId,
-                rights: {
-                    owner: true,
-                },
-            },
-        ]);
-
-        if (ownerRights.error) {
-            throw new HttpException(
                 {
-                    status: StatusCodes.InternalServerError,
-                    message: createdEventWithCategories.error,
+                    entity: 'category',
+                    entityValue: groupId,
+                    rights: {
+                        owner: true,
+                    },
                 },
-                StatusCodes.InternalServerError,
-            );
-        }
+                {
+                    entity: 'date',
+                    entityValue: groupId,
+                    rights: {
+                        owner: true,
+                    },
+                },
+            ]),
+            StatusCodes.InternalServerError,
+        );
 
         return {
-            event: createdEventWithCategories.response[0],
+            event: createdEventWithCategories[0],
         };
     }
 
@@ -493,17 +417,7 @@ export class EventsController extends ControllerBasics<EventEntity> {
         );
 
         for (const category of body.categories) {
-            const unbindRes = await this.categoriesService.unbind(category);
-
-            if (unbindRes.error) {
-                throw new HttpException(
-                    {
-                        status: StatusCodes.InternalServerError,
-                        message: unbindRes.error,
-                    },
-                    StatusCodes.InternalServerError,
-                );
-            }
+            await this._unbind<CategoryEntity>(this.categoriesService, category);
         }
 
         return {
@@ -597,17 +511,7 @@ export class EventsController extends ControllerBasics<EventEntity> {
         );
 
         for (const categoryId of body.categories) {
-            const boundRes = await this.categoriesService.bind(categoryId, 'event', eventId);
-
-            if (boundRes.error) {
-                throw new HttpException(
-                    {
-                        status: StatusCodes.InternalServerError,
-                        message: boundRes.error,
-                    },
-                    StatusCodes.InternalServerError,
-                );
-            }
+            await this._bind<CategoryEntity>(this.categoriesService, categoryId, 'event', eventId);
         }
 
         return {
@@ -673,17 +577,7 @@ export class EventsController extends ControllerBasics<EventEntity> {
         );
 
         for (const date of body.dates) {
-            const unbindRes = await this.datesService.unbind(date);
-
-            if (unbindRes.error) {
-                throw new HttpException(
-                    {
-                        status: StatusCodes.InternalServerError,
-                        message: unbindRes.error,
-                    },
-                    StatusCodes.InternalServerError,
-                );
-            }
+            await this._unbind<DateEntity>(this.datesService, date);
         }
 
         return {
@@ -777,17 +671,7 @@ export class EventsController extends ControllerBasics<EventEntity> {
         );
 
         for (const dateId of body.dates) {
-            const boundRes = await this.datesService.bind(dateId, 'event', eventId);
-
-            if (boundRes.error) {
-                throw new HttpException(
-                    {
-                        status: StatusCodes.InternalServerError,
-                        message: boundRes.error,
-                    },
-                    StatusCodes.InternalServerError,
-                );
-            }
+            await this._bind<DateEntity>(this.datesService, dateId, 'event', eventId);
         }
 
         return {

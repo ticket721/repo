@@ -52,6 +52,7 @@ import { ToolBoxModule } from '@lib/common/toolbox/ToolBox.module';
 import { CategoriesModule } from '@lib/common/categories/Categories.module';
 import { RightsModule } from '@lib/common/rights/Rights.module';
 import { CategoriesController } from '@app/server/controllers/categories/Categories.controller';
+import { RightsController } from '@app/server/controllers/rights/Rights.controller';
 
 @Module({
     imports: [
@@ -173,6 +174,7 @@ import { CategoriesController } from '@app/server/controllers/categories/Categor
         DosojinController,
         CheckoutController,
         CategoriesController,
+        RightsController,
     ],
     providers: [
         ServerService,

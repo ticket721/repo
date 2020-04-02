@@ -16,7 +16,7 @@ import { UserDto } from '@lib/common/users/dto/User.dto';
 import { ControllerBasics } from '@lib/common/utils/ControllerBasics.base';
 import { DatesService } from '@lib/common/dates/Dates.service';
 import { DatesSearchResponseDto } from '@app/server/controllers/dates/dto/DatesSearchResponse.dto';
-import { DateEntity } from '@lib/common/dates/entities/Date.entity';
+import { DateEntity, DateLocation } from '@lib/common/dates/entities/Date.entity';
 import { DatesSearchInputDto } from '@app/server/controllers/dates/dto/DatesSearchInput.dto';
 import { StatusCodes } from '@lib/common/utils/codes.value';
 import { HttpExceptionFilter } from '@app/server/utils/HttpException.filter';
@@ -31,7 +31,7 @@ import { DatesUpdateResponseDto } from '@app/server/controllers/dates/dto/DatesU
 import { RightsService } from '@lib/common/rights/Rights.service';
 import { AuthGuard } from '@nestjs/passport';
 import { Roles, RolesGuard } from '@app/server/authentication/guards/RolesGuard.guard';
-import { uuidEq } from '@common/global';
+import { closestCity, uuidEq } from '@common/global';
 import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
 import { CategoriesService } from '@lib/common/categories/Categories.service';
 import { isFutureDateRange } from '@common/global/lib/utils';
@@ -112,7 +112,14 @@ export class DatesController extends ControllerBasics<DateEntity> {
             );
         }
 
-        const newEntity: DateEntity = await this._new<DateEntity>(this.datesService, body);
+        const newEntity: DateEntity = await this._new<DateEntity>(this.datesService, {
+            ...body,
+            location: {
+                location: body.location.location,
+                location_label: body.location.location_label,
+                assigned_city: closestCity(body.location.location).id,
+            },
+        });
 
         return {
             date: newEntity,
@@ -202,17 +209,7 @@ export class DatesController extends ControllerBasics<DateEntity> {
         );
 
         for (const categoryId of body.categories) {
-            const boundRes = await this.categoriesService.bind(categoryId, 'date', dateId);
-
-            if (boundRes.error) {
-                throw new HttpException(
-                    {
-                        status: StatusCodes.InternalServerError,
-                        message: boundRes.error,
-                    },
-                    StatusCodes.InternalServerError,
-                );
-            }
+            await this._bind<CategoryEntity>(this.categoriesService, categoryId, 'date', dateId);
         }
 
         return {
@@ -278,17 +275,7 @@ export class DatesController extends ControllerBasics<DateEntity> {
         );
 
         for (const category of body.categories) {
-            const unbindRes = await this.categoriesService.unbind(category);
-
-            if (unbindRes.error) {
-                throw new HttpException(
-                    {
-                        status: StatusCodes.InternalServerError,
-                        message: unbindRes.error,
-                    },
-                    StatusCodes.InternalServerError,
-                );
-            }
+            await this._unbind<CategoryEntity>(this.categoriesService, category);
         }
 
         return {
@@ -347,18 +334,28 @@ export class DatesController extends ControllerBasics<DateEntity> {
             );
         }
 
+        if (body.location) {
+            body.location = {
+                location: body.location.location,
+                location_label: body.location.location_label,
+                assigned_city: closestCity(body.location.location).id,
+            } as DateLocation;
+        }
+
         await this._edit<DateEntity>(
             this.datesService,
             {
                 id: dateId,
             },
-            body,
+            {
+                ...(body as Partial<Pick<DateEntity, 'timestamps' | 'metadata' | 'location'>>),
+            },
         );
 
         return {
             date: {
                 ...dateEntity,
-                ...body,
+                ...(body as Partial<Pick<DateEntity, 'timestamps' | 'metadata' | 'location'>>),
             },
         };
     }

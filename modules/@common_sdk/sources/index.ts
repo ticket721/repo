@@ -24,10 +24,11 @@ import {
     eventsCreateModulesConfiguration,
     eventsCreateTextMetadata, eventsDeleteCategories, eventsDeleteDates,
     eventsSearch, eventsStart, eventsUpdate,
-}                                                                                           from './app/api/events';
-import { txsInfos, txsSearch, txsSubscribe }                                                from './app/api/txs';
-import { contractsFetch }                                                                   from './app/api/contracts';
-import { categoriesCreate, categoriesSearch, categoriesUpdate }                             from './app/api/categories';
+}                                                               from './app/api/events';
+import { txsInfos, txsSearch, txsSubscribe }                    from './app/api/txs';
+import { contractsFetch }                                       from './app/api/contracts';
+import { categoriesCreate, categoriesSearch, categoriesUpdate } from './app/api/categories';
+import { rightsSearch }                                         from './app/api/rights';
 
 export { FailedRegisterReport } from './app/api/authentication';
 
@@ -79,6 +80,8 @@ export class T721SDK {
         this.categories.create = this.categories.create.bind(this);
         this.categories.search = this.categories.search.bind(this);
         this.categories.update = this.categories.update.bind(this);
+
+        this.rights.search = this.rights.search.bind(this);
 
         this.images.upload = this.images.upload.bind(this);
 
@@ -213,6 +216,10 @@ export class T721SDK {
         addCategories: eventsAddCategories,
         deleteDates: eventsDeleteDates,
         addDates: eventsAddDates,
+    };
+
+    public rights = {
+        search: rightsSearch,
     };
 
     public categories = {
