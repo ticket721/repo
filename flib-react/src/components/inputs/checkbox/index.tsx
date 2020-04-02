@@ -51,7 +51,7 @@ const StyledLabel = styled.label`
 `;
 
 const StyledCheckboxContainer = styled.div`
-  color: ${props => props.theme.textColorDark}
+  color: ${props => props.theme.textColorDark};
   display: flex;
 
   input:checked {

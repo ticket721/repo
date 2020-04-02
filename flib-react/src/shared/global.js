@@ -67,6 +67,10 @@ export const checkboxStyles = css`
   z-index: -99999;
 `;
 
+export const listStyles = css`
+  list-style: none;
+`
+
 export const GlobalStyle = createGlobalStyle`
   * {
     ${masterReset}
@@ -88,6 +92,10 @@ export const GlobalStyle = createGlobalStyle`
     ${labelStyles}
   }
 
+  ul {
+    ${listStyles}
+  }
+
   input,
   textarea,
   select {
@@ -101,5 +109,19 @@ export const GlobalStyle = createGlobalStyle`
   input[type='checkbox'],
   input[type='radio'] {
     ${checkboxStyles}
+  }
+
+  .row {
+    display: flex;
+  }
+
+  .jcsb {
+    justify-content: space-between;
+  }
+
+  .container {
+    margin: 1.5rem auto;
+    max-width: 600px;
+    width: 100%;
   }
 `;
