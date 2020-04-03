@@ -145,7 +145,6 @@ export const SelectInput: React.FunctionComponent<SelectProps> = (props: SelectP
             <Select
               defaultValue={props.defaultValue}
               noOptionsMessage={() => "No values available"}
-              menuIsOpen
               options={props.options}
               placeholder={props.placeholder}
               isSearchable={props.searchable}

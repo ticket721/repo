@@ -37,7 +37,7 @@ const customStyles = {
 
     '& > div': {
       background: 'url(assets/icons/icon--close.svg) center/cover no-repeat',
-      content: '',
+      content: '""',
       cursor: 'pointer',
       display: 'block',
       height: 12,
@@ -115,7 +115,7 @@ const StyledLabel = styled.label`
   &::before {
     background-color: ${ props => props.theme.primaryColor};
     border-radius: 100%;
-    content: "";
+    content: '';
     display: inline-block;
     height: 4px;
     margin-right: 8px;

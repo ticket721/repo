@@ -1,15 +1,15 @@
 import * as React from 'react';
 import { color, select, withKnobs } from '@storybook/addon-knobs';
-import Icon from '../src/components/icon';
-import { icons } from '../src/shared/icons';
-import styled from '../config/styled';
+import Icon from '../../src/components/icon';
+import { icons } from '../../src/shared/icons';
+import styled from '../../config/styled';
 
 export default {
   component: Icon,
   decorators: [
     withKnobs
   ],
-  title: 'Icon'
+  title: 'Global|Icon'
 };
 
 const Item = styled.li`

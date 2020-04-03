@@ -1,9 +1,9 @@
 import * as React from 'react';
-import FilesUploader from '../src/components/file-uploader';
+import FilesUploader from '../../src/components/file-uploader';
 import { boolean, text, withKnobs, number } from '@storybook/addon-knobs';
 
 export default {
-  title: 'FilesUploader',
+  title: 'Global|FilesUploader',
   decorators: [
     withKnobs
   ],

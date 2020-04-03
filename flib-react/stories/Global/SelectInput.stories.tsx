@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { boolean, object, text, withKnobs } from '@storybook/addon-knobs';
-import SelectInput from '../src/components/inputs/select';
+import SelectInput from '../../src/components/inputs/select';
 
 const selectValues = [
   { value: 'music', label: 'Music' },
@@ -9,7 +9,7 @@ const selectValues = [
 ];
 
 export default {
-  title: 'Select input',
+  title: 'Global|Select input',
   decorators: [
     withKnobs
   ],

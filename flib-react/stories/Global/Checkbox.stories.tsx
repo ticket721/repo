@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { action } from '@storybook/addon-actions';
 import { text, withKnobs } from '@storybook/addon-knobs';
-import Checkbox from '../src/components//inputs/checkbox';
+import Checkbox from '../../src/components//inputs/checkbox';
 
 const onChange = action('change');
 
 export default {
-  title: 'Checkbox',
+  title: 'Global|Checkbox',
   component: Checkbox,
   decorator: [
     withKnobs

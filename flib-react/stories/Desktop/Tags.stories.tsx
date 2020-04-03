@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { text, withKnobs } from '@storybook/addon-knobs';
-import Tags from '../src/components/tags';
+import Tags from '../../src/components/tags';
 import { Store, State} from "@sambego/storybook-state";
 
 const maxItems:number = 2;
@@ -67,7 +67,7 @@ export default {
   decorators: [
     withKnobs
   ],
-  title: 'Tags'
+  title: 'Desktop|Tags'
 };
 
 let storeObject: StoreObject = {

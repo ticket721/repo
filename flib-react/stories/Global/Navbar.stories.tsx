@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { withKnobs } from '@storybook/addon-knobs';
-import Navbar from '../src/components/navbar';
-import Icon from '../src/components/icon';
+import Navbar from '../../src/components/navbar';
+import Icon from '../../src/components/icon';
 import { MemoryRouter, NavLink } from 'react-router-dom';
 
 export default {
-  title: 'Navbar',
+  title: 'Global|Navbar',
   decorators: [
     withKnobs
   ],

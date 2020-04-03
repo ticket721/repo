@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { withKnobs, text } from '@storybook/addon-knobs';
 import { Store, State} from "@sambego/storybook-state";
-import Organizers from '../src/components/organizers';
+import Organizers from '../../src/components/organizers';
 
 export default {
-  title: 'Invite Organizers',
+  title: 'Desktop|Invite Organizers',
   decorators: [
     withKnobs
   ],

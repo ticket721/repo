@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { action } from '@storybook/addon-actions';
 import { boolean, text, withKnobs } from '@storybook/addon-knobs';
-import TextInput from '../src/components/inputs/text';
+import TextInput from '../../src/components/inputs/text';
 
 export default {
-  title: 'Text input',
+  title: 'Global|Text input',
   decorators: [
     withKnobs
   ],

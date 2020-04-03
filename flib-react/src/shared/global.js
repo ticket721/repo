@@ -115,8 +115,17 @@ export const GlobalStyle = createGlobalStyle`
     display: flex;
   }
 
+  .aic {
+    align-items: center;
+  }
+
   .jcsb {
     justify-content: space-between;
+  }
+
+  .column {
+    display: flex;
+    flex-direction: column;
   }
 
   .container {
