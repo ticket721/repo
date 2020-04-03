@@ -97,13 +97,13 @@ const StyledButton = styled.button<ButtonProps>`
 export const Button: React.FunctionComponent<ButtonProps> = (props: ButtonProps): JSX.Element => {
 
   return <StyledButton
-    name={props.title}
-    onClick={props.onClick}
-    gradients={props.gradients}
-    type={props.type}
-  >
-    <span>{props.title}</span>
-  </StyledButton>
+      name={props.title}
+      onClick={props.onClick}
+      gradients={props.gradients}
+      type={props.type}
+    >
+      <span>{props.title}</span>
+    </StyledButton>
 };
 
 Button.defaultProps = {
