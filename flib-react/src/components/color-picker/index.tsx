@@ -93,7 +93,6 @@ const PickerContainer = styled.div`
       order: 1;
 
       &:first-child {
-        border-radius: ${props => props.theme.defaultRadius};
         margin-bottom: ${props => props.theme.regularSpacing};
       }
 
