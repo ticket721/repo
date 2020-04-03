@@ -88,6 +88,8 @@ export class EVMEventSetEntity {
                     raw_topics: ECAAG(e.raw_topics),
                 }),
             );
+            this.created_at = evmes.created_at;
+            this.updated_at = evmes.updated_at;
         }
     }
 
