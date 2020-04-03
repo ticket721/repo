@@ -82,7 +82,7 @@
     "enzyme-adapter-react-16": "1.15.2",
     "html-webpack-plugin": "4.0.4",
     "husky": "4.2.3",
-    "jest": "25.2.6",
+    "jest": "25.2.7",
     "react-docgen-typescript-loader": "3.7.2",
     "react-test-renderer": "16.13.1",
     "themeprovider-storybook": "^1.4.0",
