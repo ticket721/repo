@@ -1,5 +1,4 @@
 import { DateEntity } from '@lib/common/dates/entities/Date.entity';
-import { ECAAG } from '@lib/common/utils/ECAAG.helper';
 
 describe('Date Entity', function() {
     describe('constructor', function() {

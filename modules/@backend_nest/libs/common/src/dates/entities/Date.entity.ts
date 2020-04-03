@@ -102,7 +102,7 @@ export class DateLocation {
      * Coordinates of the date
      */
     @ValidateNested()
-    @Type(() => Coordinates)
+    @Type(/* istanbul ignore next */ () => Coordinates)
     location: Coordinates;
 
     /**

@@ -47,7 +47,7 @@ export class DatesService extends CRUDExtension<DatesRepository, DateEntity> imp
      */
     async createDateWithCategories(
         date: Partial<DateEntity>,
-        categories: Partial<CategoryEntity[]>,
+        categories: Partial<CategoryEntity>[],
     ): Promise<ServiceResponse<[DateEntity, CategoryEntity[]]>> {
         const storedCategories: CategoryEntity[] = [];
 
@@ -109,14 +109,14 @@ export class DatesService extends CRUDExtension<DatesRepository, DateEntity> imp
 
         if (date.response.length === 0) {
             return {
-                error: 'date_not_found',
+                error: 'entity_not_found',
                 response: null,
             };
         }
 
         if (this.isBound(date.response[0])) {
             return {
-                error: 'date_already_bound',
+                error: 'entity_already_bound',
                 response: null,
             };
         }
@@ -175,14 +175,14 @@ export class DatesService extends CRUDExtension<DatesRepository, DateEntity> imp
 
         if (date.response.length === 0) {
             return {
-                error: 'date_not_found',
+                error: 'entity_not_found',
                 response: null,
             };
         }
 
         if (!this.isBound(date.response[0])) {
             return {
-                error: 'date_not_bound',
+                error: 'entity_not_bound',
                 response: null,
             };
         }
