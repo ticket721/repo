@@ -115,6 +115,10 @@ export const GlobalStyle = createGlobalStyle`
     display: flex;
   }
 
+  .aic {
+    align-items: center;
+  }
+
   .jcsb {
     justify-content: space-between;
   }
