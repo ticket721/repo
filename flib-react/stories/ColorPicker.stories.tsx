@@ -39,6 +39,7 @@ export const showcase = () => (
           color={state.color}
           handleChange={handleChange}
           handleClick={handleClick}
+          presetLabel={text('Preset colors label', 'Color from main image')}
           presetColors={array('Preset colors:', colors)}
           showPicker={state.showPicker}
         />

@@ -8,6 +8,7 @@ export interface ColorPickerProps extends React.ComponentProps<any> {
   handleChange: (color: ColorResult) => void;
   handleClick: () => void;
   presetColors: any[];
+  presetLabel?: string;
   showPicker: boolean;
 }
 
@@ -159,7 +160,7 @@ export const ColorPicker: React.FunctionComponent<ColorPickerProps> = (props: Co
           {props.showPicker &&
             <PickerContainer>
               <Cover onClick={props.handleClick}/>
-              { props.presetColors.length > 0 && <label>Color from main img</label> }
+              { props.presetColors.length > 0 && <label>{props.presetLabel}</label> }
               <SketchPicker
                 color={props.color}
                 disableAlpha={true}
