@@ -344,46 +344,6 @@ export class ControllerBasics<EntityType> {
     }
 
     /**
-     * Helper to authorize on a specific set of entities
-     *
-     * @param rightsService
-     * @param service
-     * @param user
-     * @param query
-     * @param field
-     * @param requiredRights
-     * @private
-     */
-    public async _authorize<AuthorizeEntity = EntityType>(
-        rightsService: RightsService,
-        service: CRUDExtension<Repository<AuthorizeEntity>, AuthorizeEntity>,
-        user: UserDto,
-        query: SearchQuery<AuthorizeEntity>,
-        field: string,
-        requiredRights: string[],
-    ): Promise<AuthorizeEntity[]> {
-        const hasRights = await rightsService.hasRightsUpon<Repository<AuthorizeEntity>, AuthorizeEntity>(
-            service,
-            user,
-            query,
-            field,
-            requiredRights,
-        );
-
-        if (hasRights.error) {
-            throw new HttpException(
-                {
-                    status: StatusCodes.Unauthorized,
-                    message: 'unauthorized_action',
-                },
-                StatusCodes.Unauthorized,
-            );
-        }
-
-        return hasRights.response;
-    }
-
-    /**
      * Helper to authorize on a single entity
      *
      * @param rightsService

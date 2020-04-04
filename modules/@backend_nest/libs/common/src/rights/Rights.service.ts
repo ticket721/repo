@@ -67,7 +67,7 @@ export class RightsService extends CRUDExtension<RightsRepository, RightEntity> 
         let rightsConfig: RightsConfig;
 
         try {
-            rightsConfig = this.moduleRef.get(`@rights/${entityName}`, { strict: false });
+            rightsConfig = await this.moduleRef.get(`@rights/${entityName}`, { strict: false });
         } catch (e) {
             return {
                 error: 'cannot_find_config',
@@ -142,7 +142,7 @@ export class RightsService extends CRUDExtension<RightsRepository, RightEntity> 
         let rightsConfig: RightsConfig;
 
         try {
-            rightsConfig = this.moduleRef.get(`@rights/${entityName}`, { strict: false });
+            rightsConfig = await this.moduleRef.get(`@rights/${entityName}`, { strict: false });
         } catch (e) {
             return {
                 error: 'cannot_find_config',
@@ -175,46 +175,13 @@ export class RightsService extends CRUDExtension<RightsRepository, RightEntity> 
             };
         }
 
-        if (field) {
-            for (const entity of entityQuery.response) {
-                const entityValue: any = _.get(entity, field);
+        for (const entity of entityQuery.response) {
+            const entityValue: any = _.get(entity, field);
 
-                const rightsQuery = await this.search({
-                    grantee_id: user.id,
-                    entity_type: entityName,
-                    entity_value: entityValue,
-                });
-
-                if (rightsQuery.error) {
-                    return {
-                        error: rightsQuery.error,
-                        response: null,
-                    };
-                }
-
-                if (rightsQuery.response.length === 0) {
-                    return {
-                        error: 'rights_not_found',
-                        response: null,
-                    };
-                }
-
-                const right: RightEntity = rightsQuery.response[0];
-
-                for (const rightKey of Object.keys(right.rights)) {
-                    if (requiredRights.indexOf(rightKey) === -1) {
-                        return {
-                            error: 'unauthorized',
-                            response: null,
-                        };
-                    }
-                }
-            }
-        } else {
             const rightsQuery = await this.search({
                 grantee_id: user.id,
                 entity_type: entityName,
-                entity_value: null,
+                entity_value: entityValue,
             });
 
             if (rightsQuery.error) {
@@ -229,6 +196,17 @@ export class RightsService extends CRUDExtension<RightsRepository, RightEntity> 
                     error: 'rights_not_found',
                     response: null,
                 };
+            }
+
+            const right: RightEntity = rightsQuery.response[0];
+
+            for (const rightKey of Object.keys(right.rights)) {
+                if (requiredRights.indexOf(rightKey) === -1) {
+                    return {
+                        error: 'unauthorized',
+                        response: null,
+                    };
+                }
             }
         }
 
@@ -344,7 +322,7 @@ export class RightsService extends CRUDExtension<RightsRepository, RightEntity> 
 
             try {
                 try {
-                    rightsConfig = this.moduleRef.get(`@rights/${right.entity}`, { strict: false });
+                    rightsConfig = await this.moduleRef.get(`@rights/${right.entity}`, { strict: false });
                 } catch (e) {
                     throw new Error('cannot_find_config');
                 }
