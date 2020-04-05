@@ -96,7 +96,7 @@ export class ActionSetsService extends CRUDExtension<ActionSetsRepository, Actio
         let builder: ActionSetBuilderBase;
 
         try {
-            builder = this.moduleRef.get(`ACTION_SET_BUILDER/${name}`);
+            builder = await this.moduleRef.get(`ACTION_SET_BUILDER/${name}`);
         } catch (e) {
             return {
                 error: 'unknown_builder',
