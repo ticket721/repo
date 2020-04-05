@@ -86,7 +86,7 @@
         "@types/passport-jwt": "3.0.3",
         "@types/passport-local": "1.0.33",
         "@types/supertest": "2.0.8",
-        "prettier": "1.19.1",
+        "prettier": "2.0.3",
         "ts-mockito": "2.5.0",
         "ts-node": "8.4.1",
         "tsconfig-paths": "3.9.0",
