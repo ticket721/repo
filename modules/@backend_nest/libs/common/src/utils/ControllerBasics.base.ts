@@ -53,6 +53,32 @@ export class ControllerBasics<EntityType> {
     }
 
     /**
+     * Helper to use entity unbinding system
+     *
+     * @param service
+     * @param id
+     * @private
+     */
+    public async _unbind<CustomEntityType = EntityType>(
+        service: Boundable<CustomEntityType>,
+        id: string,
+    ): Promise<CustomEntityType> {
+        const unboundRes = await service.unbind(id);
+
+        if (unboundRes.error) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.InternalServerError,
+                    message: unboundRes.error,
+                },
+                StatusCodes.InternalServerError,
+            );
+        }
+
+        return unboundRes.response;
+    }
+
+    /**
      * Wrap crud response and throw hhtp error on any error with given code
      *
      * @param promise
@@ -105,32 +131,6 @@ export class ControllerBasics<EntityType> {
     }
 
     /**
-     * Helper to use entity unbinding system
-     *
-     * @param service
-     * @param id
-     * @private
-     */
-    public async _unbind<CustomEntityType = EntityType>(
-        service: Boundable<CustomEntityType>,
-        id: string,
-    ): Promise<CustomEntityType> {
-        const unboundRes = await service.unbind(id);
-
-        if (unboundRes.error) {
-            throw new HttpException(
-                {
-                    status: StatusCodes.InternalServerError,
-                    message: unboundRes.error,
-                },
-                StatusCodes.InternalServerError,
-            );
-        }
-
-        return unboundRes.response;
-    }
-
-    /**
      * Generic search query, able to throw HttpExceptions
      *
      * @param service
@@ -139,13 +139,13 @@ export class ControllerBasics<EntityType> {
      * @param field
      * @param query
      */
-    public async _searchRestricted(
-        service: CRUDExtension<Repository<EntityType>, EntityType>,
+    public async _searchRestricted<CustomEntityType = EntityType>(
+        service: CRUDExtension<Repository<CustomEntityType>, CustomEntityType>,
         rightsService: RightsService,
         user: UserDto,
         field: string,
         query: SortablePagedSearch,
-    ): Promise<EntityType[]> {
+    ): Promise<CustomEntityType[]> {
         const entityName = service.name;
 
         const restrictionEsQuery = {
@@ -176,7 +176,7 @@ export class ControllerBasics<EntityType> {
             throw new HttpException(
                 {
                     status: StatusCodes.InternalServerError,
-                    message: restrictionsRes,
+                    message: restrictionsRes.error,
                 },
                 StatusCodes.InternalServerError,
             );
@@ -187,7 +187,7 @@ export class ControllerBasics<EntityType> {
         );
 
         if (query[field] && query[field].$in) {
-            for (const value of query[field]) {
+            for (const value of query[field].$in) {
                 if (aggregatedFields.findIndex((agg: any): boolean => agg === value) === -1) {
                     throw new HttpException(
                         {
@@ -208,49 +208,40 @@ export class ControllerBasics<EntityType> {
             query[field].$in = aggregatedFields;
         }
 
-        const es: ServiceResponse<Partial<EsSearchOptionsStatic>> = ESSearchBodyBuilder(query);
+        return this._elasticGet<CustomEntityType>(service, query);
+    }
 
-        /**
-         * Handle Query Builder errors
-         */
-        if (es.error) {
-            switch (es.error) {
-                case 'page_index_without_page_size': {
-                    throw new HttpException(
-                        {
-                            status: StatusCodes.BadRequest,
-                            message: es.error,
-                        },
-                        StatusCodes.BadRequest,
-                    );
-                }
-            }
+    /**
+     * Builds an ESQuery body
+     *
+     * @param query
+     * @private
+     */
+    public _esQueryBuilder<CustomEntity = EntityType>(query: SortablePagedSearch): EsSearchOptionsStatic {
+        let esQuery;
+        try {
+            esQuery = ESSearchBodyBuilder(query);
+        } catch (e) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.InternalServerError,
+                    message: 'body_creation_error',
+                },
+                StatusCodes.InternalServerError,
+            );
         }
 
-        const searchResults = await service.searchElastic(es.response);
-
-        /**
-         * Handle Request errors
-         */
-        if (searchResults.error) {
-            switch (searchResults.error) {
-                default: {
-                    throw new HttpException(
-                        {
-                            status: StatusCodes.InternalServerError,
-                            message: searchResults.error,
-                        },
-                        StatusCodes.InternalServerError,
-                    );
-                }
-            }
+        if (esQuery.error) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.BadRequest,
+                    message: esQuery.error,
+                },
+                StatusCodes.BadRequest,
+            );
         }
 
-        if (searchResults.response.hits.total !== 0) {
-            return searchResults.response.hits.hits.map(fromES);
-        }
-
-        return [];
+        return esQuery.response;
     }
 
     /**
@@ -263,42 +254,21 @@ export class ControllerBasics<EntityType> {
         service: CRUDExtension<Repository<EntityType>, EntityType>,
         query: SortablePagedSearch,
     ): Promise<EntityType[]> {
-        const es: ServiceResponse<Partial<EsSearchOptionsStatic>> = ESSearchBodyBuilder(query);
+        const es: EsSearchOptionsStatic = this._esQueryBuilder(query);
 
-        /**
-         * Handle Query Builder errors
-         */
-        if (es.error) {
-            switch (es.error) {
-                case 'page_index_without_page_size': {
-                    throw new HttpException(
-                        {
-                            status: StatusCodes.BadRequest,
-                            message: es.error,
-                        },
-                        StatusCodes.BadRequest,
-                    );
-                }
-            }
-        }
-
-        const searchResults = await service.searchElastic(es.response);
+        const searchResults = await service.searchElastic(es);
 
         /**
          * Handle Request errors
          */
         if (searchResults.error) {
-            switch (searchResults.error) {
-                default: {
-                    throw new HttpException(
-                        {
-                            status: StatusCodes.InternalServerError,
-                            message: searchResults.error,
-                        },
-                        StatusCodes.InternalServerError,
-                    );
-                }
-            }
+            throw new HttpException(
+                {
+                    status: StatusCodes.InternalServerError,
+                    message: searchResults.error,
+                },
+                StatusCodes.InternalServerError,
+            );
         }
 
         if (searchResults.response.hits.total !== 0) {
@@ -404,19 +374,9 @@ export class ControllerBasics<EntityType> {
         service: CRUDExtension<Repository<CustomEntityType>, CustomEntityType>,
         query: SortablePagedSearch,
     ): Promise<CustomEntityType[]> {
-        const esQuery = ESSearchBodyBuilder(query);
+        const esQuery = this._esQueryBuilder(query);
 
-        if (esQuery.error) {
-            throw new HttpException(
-                {
-                    status: StatusCodes.InternalServerError,
-                    message: esQuery.error,
-                },
-                StatusCodes.InternalServerError,
-            );
-        }
-
-        const entitiesQueryRes = await service.searchElastic(esQuery.response);
+        const entitiesQueryRes = await service.searchElastic(esQuery);
 
         if (entitiesQueryRes.error) {
             throw new HttpException(
