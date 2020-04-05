@@ -6,6 +6,7 @@ import { DECORATORS } from '@nestjs/swagger/dist/constants';
  *
  * @param options
  */
+/* istanbul ignore next */
 export function ApiResponses(options: StatusCodes[]) {
     const groupedMetadata = {};
 

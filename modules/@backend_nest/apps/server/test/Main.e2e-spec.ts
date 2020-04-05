@@ -11,6 +11,7 @@ import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
 
 import AuthenticationControllerTestSuite from '@app/server/authentication/Authentication.controller.routes-spec';
+import ServerControllerTestSuite from '@app/server/controllers/server/Server.controller.routes-spec';
 import ActionSetsControllerTestSuite from '@app/server/controllers/actionsets/ActionSets.controller.routes-spec';
 import CategoriesControllerTestSuite from '@app/server/controllers/categories/Categories.controller.routes-spec';
 import CheckoutControllerTestSuite from '@app/server/controllers/checkout/Checkout.controller.routes-spec';
@@ -110,6 +111,7 @@ describe('AppController (e2e)', () => {
         console.log('FINISHED');
     }, 60000);
 
+    describe('Server Controller', ServerControllerTestSuite(getCtx));
     describe('Authentication Controller', AuthenticationControllerTestSuite(getCtx));
     describe('ActionSets Controller', ActionSetsControllerTestSuite(getCtx));
     describe('Categories Controller', CategoriesControllerTestSuite(getCtx));

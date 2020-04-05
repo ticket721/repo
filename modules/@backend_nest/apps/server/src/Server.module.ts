@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ExpressCassandraModule } from '@iaminfinity/express-cassandra';
 import { AuthenticationModule } from './authentication/Authentication.module';
-import { ServerController } from './Server.controller';
 import { ServerService } from './Server.service';
 import { UsersRepository } from '@lib/common/users/Users.repository';
 import { UserEntity } from '@lib/common/users/entities/User.entity';
@@ -53,6 +52,7 @@ import { CategoriesModule } from '@lib/common/categories/Categories.module';
 import { RightsModule } from '@lib/common/rights/Rights.module';
 import { CategoriesController } from '@app/server/controllers/categories/Categories.controller';
 import { RightsController } from '@app/server/controllers/rights/Rights.controller';
+import { ServerController } from '@app/server/controllers/server/Server.controller';
 
 @Module({
     imports: [
