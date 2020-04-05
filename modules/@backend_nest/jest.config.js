@@ -30,7 +30,7 @@ module.exports = {
         '<rootDir>(.*).module.ts', // Useless to test modules
         '<rootDir>(.*).driver.ts', // Driver of external service
         '<rootDir>(.*).routes-spec.ts', // E2E tests
-        '<rootDir>(.*).controller.ts', // E2E focuses on them
+        '<rootDir>(.*)/controllers/(.*).controller.ts', // E2E focuses on them
         '<rootDir>(.*).controller.decorator.ts', // E2E focuses on them
         '<rootDir>(.*).dto.ts', // Basically types
         '<rootDir>(.*).type.ts', // Types
