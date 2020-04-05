@@ -48,7 +48,7 @@ export class EventsService extends CRUDExtension<EventsRepository, EventEntity> 
      */
     async createEventWithDatesAndCategories(
         event: Partial<EventEntity>,
-        dates: DateEntity[],
+        dates: Partial<DateEntity>[],
         categories: Partial<CategoryEntity>[],
     ): Promise<ServiceResponse<[EventEntity, CategoryEntity[]]>> {
         const storedCategories: CategoryEntity[] = [];
