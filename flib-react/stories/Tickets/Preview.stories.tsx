@@ -38,9 +38,14 @@ const PullUp = styled.div`
 `
 
 const Container = styled.div`
-  border-radius: 8px;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
   margin: 1rem;
   overflow: hidden;
+
+  .row {
+    margin-bottom: 16px;
+  }
 `
 
 export const Header = () => (
@@ -53,6 +58,10 @@ export const Infos = () => (
 
 export const FullPreview = () => (
   <Container>
+    <div className="row jcsb aife">
+      <h1>My tickets</h1>
+      <a href="#todo">View past ticket</a>
+    </div>
     <TicketHeader ticket={defaultTicket} />
     <PullUp>
       <TicketPreview ticket={defaultTicket} />

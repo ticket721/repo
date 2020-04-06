@@ -71,6 +71,13 @@ export const listStyles = css`
   list-style: none;
 `
 
+export const linkStyle = css`
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+`
+
 export const GlobalStyle = createGlobalStyle`
   * {
     ${masterReset}
@@ -96,6 +103,10 @@ export const GlobalStyle = createGlobalStyle`
     ${listStyles}
   }
 
+  a {
+    ${linkStyle}
+  }
+
   input,
   textarea,
   select {
@@ -117,6 +128,10 @@ export const GlobalStyle = createGlobalStyle`
 
   .aic {
     align-items: center;
+  }
+
+  .aife {
+    align-items: flex-end;
   }
 
   .jcsb {
