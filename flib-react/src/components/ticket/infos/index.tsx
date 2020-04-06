@@ -1,41 +1,21 @@
 import * as React from 'react';
 import styled from '../../../../config/styled';
-import Icon from '../../icon';
 import TicketInterface from '../../../shared/ticketInterface';
-import Gradient from '../../../shared/gradients';
+import LocationCard from '../cards/location';
+import DateTimeCard from '../cards/datetime';
 
 export interface PreviewInfosProps extends React.ComponentProps<any> {
   ticket: TicketInterface;
 }
 
-const PreviewContainer = styled.main`
+const PreviewContainer = styled.main<PreviewInfosProps>`
   background: linear-gradient(180deg, ${props => props.theme.componentGradientStart}, ${props => props.theme.componentGradientEnd});
   border-radius: ${props => props.theme.defaultRadius};
   font-size: 14px;
   font-weight: 500;
-  padding: ${props => props.theme.biggerSpacing};
+  padding: 12px 0;
   width: calc(100% - 8px);
-
-  .row {
-    margin-bottom: ${props => props.theme.regularSpacing};
-
-    &:last-of-type {
-      margin-bottom: 0;
-    }
-  }
-
-  .column {
-    margin-left: ${props => props.theme.regularSpacing};
-
-    span {
-      margin: 4px 0;
-
-      &:last-of-type {
-        color: ${props => props.theme.textColorDark};
-      }
-    }
-  }
-`
+`;
 
 const TicketHeaderInfos = styled.div`
   background-image: linear-gradient(180deg, ${props => props.theme.componentGradientStart}, ${props => props.theme.componentGradientStart});
@@ -56,7 +36,7 @@ const TicketHeaderInfos = styled.div`
   }
 `
 const Separator = styled.div`
-  background-color: ${props => props.theme.componentGradientEnd};
+  background-color: ${props => props.theme.componentColor};
   content: "";
   display: block;
   height: 2px;
@@ -85,9 +65,33 @@ const Separator = styled.div`
   }
 `
 
+const Gradient = styled.div<PreviewInfosProps>`
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0), ${props => props.ticket.gradients.join(', ')});
+  bottom: 0;
+  content: '';
+  height: 100%;
+  position: absolute;
+  right: 0;
+  transform: matrix(-1, 0, 0, 1, 0, 0);
+  width: 8px;
+
+  &::after {
+    background: linear-gradient(180deg, ${props => props.ticket.gradients.join(', ')});
+    content: '';
+    display: block;
+    filter: blur(100px);
+    height: 100%;
+    opacity: 0.12;
+    transform: matrix(-1, 0, 0, 1, 0, 0);
+    width: 150px;
+  }
+`
+
 const Subtitle = styled.span`
   color: ${props => props.theme.textColorDark};
+  display: block;
   font-size: 13px;
+  padding: 12px ${props => props.theme.biggerSpacing};
 `;
 
 export const PreviewInfos: React.FunctionComponent<PreviewInfosProps> = (props: PreviewInfosProps): JSX.Element => {
@@ -98,28 +102,27 @@ export const PreviewInfos: React.FunctionComponent<PreviewInfosProps> = (props: 
               <h3>{props.ticket.ticketType}</h3>
             </TicketHeaderInfos>
             <Separator />
-            <PreviewContainer>
-              <div className="row">
-                <Icon icon='calendar' fill={props.ticket.mainColor} width='16' height='18' />
-                <div className="column">
-                  <span>{props.ticket.startDate} - {props.ticket.endDate}</span>
-                  <Subtitle>{props.ticket.startTime} - {props.ticket.endTime}</Subtitle>
-                </div>
-              </div>
-              <div className="row">
-                <Icon icon='location' fill={props.ticket.mainColor} width='12' height='16' />
-                <div className="column">
-                  <span>{props.ticket.location}</span>
-                  <Subtitle>{props.ticket.address}</Subtitle>
-                </div>
-              </div>
+            <PreviewContainer ticket={props.ticket}>
+              <DateTimeCard
+                endDate={props.ticket.endDate}
+                endTime={props.ticket.endTime}
+                iconColor={props.ticket.mainColor}
+                startDate={props.ticket.startDate}
+                startTime={props.ticket.startTime}
+              />
+              <LocationCard
+                iconColor={props.ticket.mainColor}
+                location={props.ticket.location}
+                address={props.ticket.address}
+              />
+
               {props.ticket.addOns &&
                 <div>
                   <Subtitle>{props.ticket.addOns} add-ons purchased</Subtitle>
                 </div>
               }
             </PreviewContainer>
-            <Gradient gradients={props.ticket.gradients} />
+            <Gradient ticket={props.ticket} />
           </div>
 };
 

@@ -148,4 +148,26 @@ export const GlobalStyle = createGlobalStyle`
     max-width: 600px;
     width: 100%;
   }
+
+  h1 {
+    font-size: 24px;
+    font-weight: 700;
+  }
+
+  h2 {
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  h3 {
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  h4 {
+    font-size: 14px;
+    font-weight: 500;
+  }
+
 `;
+

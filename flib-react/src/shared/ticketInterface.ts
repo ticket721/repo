@@ -10,6 +10,14 @@ export default interface Ticket {
   startTime: string;
   endDate: string;
   endTime: string;
+  ticketId: string;
   addOns: number;
   image: string;
+  seat?: SeatProps
+}
+
+interface SeatProps {
+  block: string;
+  row: string;
+  number: string | number;
 }

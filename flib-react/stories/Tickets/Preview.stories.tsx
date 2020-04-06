@@ -13,6 +13,7 @@ const defaultTicket = {
   startDate: '2020/02/14',
   endDate: '2020/20/15',
   startTime: '2:00PM',
+  ticketId: '00251501AS-D04546SD',
   endTime: '4:00PM',
   gradients: ['#EBBC16', '#DB535B'],
   mainColor: '#EBBC16',
@@ -27,8 +28,7 @@ export default {
   ],
   parameters: {
     viewport: { defaultViewport: 'iphone6' },
-  },
-  component: TicketHeader
+  }
 };
 
 const PullUp = styled.div`
@@ -47,14 +47,6 @@ const Container = styled.div`
     margin-bottom: 16px;
   }
 `
-
-export const Header = () => (
-  <TicketHeader ticket={defaultTicket} />
-);
-
-export const Infos = () => (
-  <TicketPreview ticket={defaultTicket} />
-)
 
 export const FullPreview = () => (
   <Container>
