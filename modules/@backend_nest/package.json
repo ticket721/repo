@@ -32,7 +32,7 @@
         "@nestjs/core": "6.11.8",
         "@nestjs/jwt": "6.1.2",
         "@nestjs/passport": "6.2.0",
-        "@nestjs/platform-express": "6.11.8",
+        "@nestjs/platform-express": "7.0.7",
         "@nestjs/swagger": "4.3.1",
         "@common/global": "1.0.0",
         "@common/sdk": "1.0.0",
