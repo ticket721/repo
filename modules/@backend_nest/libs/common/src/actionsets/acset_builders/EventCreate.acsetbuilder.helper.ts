@@ -44,46 +44,39 @@ export class EventCreateAcsetbuilderHelper implements ActionSetBuilderBase<Event
 
         args = value;
 
-        try {
-            const actions: Action[] = [
-                new Action()
-                    .setName('@events/textMetadata')
-                    .setData<EventCreateAcsetBuilderArgs>(args)
-                    .setType('input')
-                    .setStatus('in progress'),
-                new Action()
-                    .setName('@events/modulesConfiguration')
-                    .setType('input')
-                    .setStatus('in progress'),
-                new Action()
-                    .setName('@events/datesConfiguration')
-                    .setType('input')
-                    .setStatus('in progress'),
-                new Action()
-                    .setName('@events/categoriesConfiguration')
-                    .setType('input')
-                    .setStatus('in progress'),
-                new Action()
-                    .setName('@events/imagesMetadata')
-                    .setType('input')
-                    .setStatus('in progress'),
-                new Action()
-                    .setName('@events/adminsConfiguration')
-                    .setType('input')
-                    .setStatus('in progress'),
-            ];
-            return {
-                error: null,
-                response: new ActionSet()
-                    .setName('@events/creation')
-                    .setActions(actions)
-                    .setStatus('input:in progress'),
-            };
-        } catch (e) {
-            return {
-                error: 'acset_build_error',
-                response: null,
-            };
-        }
+        const actions: Action[] = [
+            new Action()
+                .setName('@events/textMetadata')
+                .setData<EventCreateAcsetBuilderArgs>(args)
+                .setType('input')
+                .setStatus('in progress'),
+            new Action()
+                .setName('@events/modulesConfiguration')
+                .setType('input')
+                .setStatus('in progress'),
+            new Action()
+                .setName('@events/datesConfiguration')
+                .setType('input')
+                .setStatus('in progress'),
+            new Action()
+                .setName('@events/categoriesConfiguration')
+                .setType('input')
+                .setStatus('in progress'),
+            new Action()
+                .setName('@events/imagesMetadata')
+                .setType('input')
+                .setStatus('in progress'),
+            new Action()
+                .setName('@events/adminsConfiguration')
+                .setType('input')
+                .setStatus('in progress'),
+        ];
+        return {
+            error: null,
+            response: new ActionSet()
+                .setName('@events/creation')
+                .setActions(actions)
+                .setStatus('input:in progress'),
+        };
     }
 }
