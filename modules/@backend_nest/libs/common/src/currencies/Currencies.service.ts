@@ -338,14 +338,14 @@ export class CurrenciesService {
             case 'set': {
                 const setCurrency: SetCurrency = currency as SetCurrency;
 
+                if (met[setCurrency.name] === true) {
+                    break;
+                }
+
+                met[setCurrency.name] = true;
+
                 for (const setInternalCurrency of setCurrency.contains) {
-                    if (met[setInternalCurrency] === true) {
-                        continue;
-                    }
-
                     currencies = [...currencies, ...(await this.internalRecursiveResolver(setInternalCurrency, met))];
-
-                    met[setInternalCurrency] = true;
                 }
 
                 break;
@@ -358,6 +358,7 @@ export class CurrenciesService {
                     break;
                 }
 
+                met[erc20Currency.name] = true;
                 currencies.push(erc20Currency.name);
 
                 break;
