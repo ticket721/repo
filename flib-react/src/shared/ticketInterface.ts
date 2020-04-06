@@ -6,7 +6,7 @@ export default interface Ticket {
   number: number;
   ticketType: string;
   startDate: string;
-  gradients?: Array<string>;
+  gradients: string[];
   startTime: string;
   endDate: string;
   endTime: string;

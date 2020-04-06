@@ -2,6 +2,7 @@ import * as React from 'react';
 import styled from '../../../../config/styled';
 import Icon from '../../icon';
 import TicketInterface from '../../../shared/ticketInterface';
+import Gradient from '../../../shared/gradients';
 
 export interface PreviewInfosProps extends React.ComponentProps<any> {
   ticket: TicketInterface;
@@ -84,27 +85,6 @@ const Separator = styled.div`
   }
 `
 
-const BlurredGradient = styled.div`
-  bottom: 0;
-  content: '';
-  height: 100%;
-  position: absolute;
-  right: 0;
-  transform: matrix(-1, 0, 0, 1, 0, 0);
-  width: 8px;
-
-  &::after {
-    background: linear-gradient(180deg, rgba(235, 188, 22), rgba(219, 83, 91) 100%);
-    content: '';
-    display: block;
-    filter: blur(100px);
-    height: 100%;
-    opacity: 0.12;
-    transform: matrix(-1, 0, 0, 1, 0, 0);
-    width: 150px;
-  }
-`
-
 const Subtitle = styled.span`
   color: ${props => props.theme.textColorDark};
   font-size: 13px;
@@ -139,7 +119,7 @@ export const PreviewInfos: React.FunctionComponent<PreviewInfosProps> = (props: 
                 </div>
               }
             </PreviewContainer>
-            <BlurredGradient />
+            <Gradient gradients={props.ticket.gradients} />
           </div>
 };
 

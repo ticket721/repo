@@ -14,8 +14,8 @@ const defaultTicket = {
   endDate: '2020/20/15',
   startTime: '2:00PM',
   endTime: '4:00PM',
-  gradients: ['#22c1c3', '#68bf93', '#8cbe7b', '#bdbd59', '#fdbb2d'],
-  mainColor: '#22c1c3',
+  gradients: ['#EBBC16', '#DB535B'],
+  mainColor: '#EBBC16',
   addOns: 2,
   image: '/assets/images/ticket-1.jpg'
 }

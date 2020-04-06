@@ -5,7 +5,7 @@ import styled from '../../../config/styled';
 
 export interface ButtonProps extends React.ComponentProps<any> {
   title: string;
-  gradients?: Array<string>;
+  gradients?: string[];
   onClick: () => void;
   type: 'primary' | 'secondary' | 'custom' | 'warning';
 }
