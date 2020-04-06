@@ -2572,6 +2572,125 @@ describe('Event Input Handlers', function() {
                 dispatched_at,
             });
         });
+
+        it('should fail on incomplete', async function() {
+            const created_at = new Date(Date.now());
+            const updated_at = created_at;
+            const dispatched_at = created_at;
+
+            const imagesMetadata: Partial<EventsCreateImagesMetadata> = {};
+
+            const actionSetEntity: ActionSetEntity = {
+                id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                actions: [
+                    {
+                        status: 'waiting',
+                        name: '@events/imagesMetadata',
+                        data: JSON.stringify(imagesMetadata),
+                        type: 'input',
+                        error: null,
+                    },
+                ],
+                links: [],
+                current_action: 0,
+                current_status: 'input:waiting',
+                name: '@event/creation',
+                created_at,
+                updated_at,
+                dispatched_at,
+            };
+
+            const actionSet: ActionSet = new ActionSet().load(actionSetEntity);
+            const progress = async (p: number) => {};
+
+            const [resActionSet, update] = await context.eventsInputHandler.imagesMetadataHandler(
+                context.eventsInputHandler.imagesMetadataFields,
+                actionSet,
+                progress,
+            );
+
+            expect(update).toEqual(true);
+            expect(resActionSet.raw).toEqual({
+                id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                actions: [
+                    {
+                        status: 'incomplete',
+                        name: '@events/imagesMetadata',
+                        data: JSON.stringify(imagesMetadata),
+                        type: 'input',
+                        error: '{"details":["avatar"],"error":"incomplete_error"}',
+                    },
+                ],
+                links: [],
+                current_action: 0,
+                current_status: 'input:incomplete',
+                name: '@event/creation',
+                created_at,
+                updated_at,
+                dispatched_at,
+            });
+        });
+
+        it('should fail on invalid id', async function() {
+            const created_at = new Date(Date.now());
+            const updated_at = created_at;
+            const dispatched_at = created_at;
+
+            const imagesMetadata: Partial<EventsCreateImagesMetadata> = {
+                avatar: 'abcd',
+            };
+
+            const actionSetEntity: ActionSetEntity = {
+                id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                actions: [
+                    {
+                        status: 'waiting',
+                        name: '@events/imagesMetadata',
+                        data: JSON.stringify(imagesMetadata),
+                        type: 'input',
+                        error: null,
+                    },
+                ],
+                links: [],
+                current_action: 0,
+                current_status: 'input:waiting',
+                name: '@event/creation',
+                created_at,
+                updated_at,
+                dispatched_at,
+            };
+
+            const actionSet: ActionSet = new ActionSet().load(actionSetEntity);
+            const progress = async (p: number) => {};
+
+            const [resActionSet, update] = await context.eventsInputHandler.imagesMetadataHandler(
+                context.eventsInputHandler.imagesMetadataFields,
+                actionSet,
+                progress,
+            );
+
+            expect(update).toEqual(true);
+            expect(resActionSet.raw).toEqual({
+                id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                actions: [
+                    {
+                        status: 'error',
+                        name: '@events/imagesMetadata',
+                        data: JSON.stringify(imagesMetadata),
+                        type: 'input',
+                        error:
+                            '{"details":{"_original":{"avatar":"abcd"},"details":[{"message":"\\"avatar\\" must be a valid GUID","path":["avatar"],"type":"string.guid","context":{"label":"avatar","value":"abcd","key":"avatar"}}]},"error":"validation_error"}',
+                    },
+                ],
+                links: [],
+                current_action: 0,
+                current_status: 'input:error',
+                name: '@event/creation',
+                created_at,
+                updated_at,
+                dispatched_at,
+            });
+        });
     });
 
     describe('@events/adminsConfiguration', function() {

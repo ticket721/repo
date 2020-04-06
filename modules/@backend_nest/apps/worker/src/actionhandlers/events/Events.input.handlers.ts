@@ -674,7 +674,9 @@ export class EventsInputHandlers implements OnModuleInit {
      * events/imagesMetadata dynamic argument checker
      */
     imagesMetadataValidator = Joi.object<EventsCreateImagesMetadata>({
-        avatar: Joi.string().optional(),
+        avatar: Joi.string()
+            .uuid()
+            .optional(),
     });
 
     /**
