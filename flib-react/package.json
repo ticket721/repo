@@ -86,7 +86,7 @@
     "react-docgen-typescript-loader": "3.7.2",
     "react-test-renderer": "16.13.1",
     "themeprovider-storybook": "^1.4.0",
-    "ts-jest": "25.3.0",
+    "ts-jest": "25.3.1",
     "ts-node": "8.8.2",
     "tslint": "6.1.1",
     "typescript": "3.8.3",
