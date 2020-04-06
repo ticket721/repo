@@ -2,6 +2,16 @@ import { spawn } from 'child_process';
 import fs from 'fs-extra';
 import Web3 from 'web3';
 import readline from 'readline';
+import { T721SDK } from '@common/sdk';
+import { StatusCodes, StatusNames } from '@lib/common/utils/codes.value';
+import _ from 'lodash';
+import { AxiosResponse } from 'axios';
+import { LocalRegisterResponseDto } from '@app/server/authentication/dto/LocalRegisterResponse.dto';
+import { EmailValidationResponseDto } from '@app/server/authentication/dto/EmailValidationResponse.dto';
+import { PasswordlessUserDto } from '@app/server/authentication/dto/PasswordlessUser.dto';
+import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
+import { ActionsSearchResponseDto } from '@app/server/controllers/actionsets/dto/ActionsSearchResponse.dto';
+import CassandraDriver from 'cassandra-driver';
 
 let docker_compose_up_proc = null;
 
@@ -383,4 +393,137 @@ export const resetMigrations = async (cassandraPort: number, elasticSearchPort: 
             }
         });
     });
+};
+
+export const generateEmail = () => {
+    // tslint:disable-next-line:no-bitwise
+    return `${_.times(64, () => ((Math.random() * 0xf) << 0).toString(16)).join('')}@ticket721.com`;
+};
+
+export const generateUserName = () => {
+    // tslint:disable-next-line:no-bitwise
+    return _.times(64, () => ((Math.random() * 0xf) << 0).toString(16)).join('');
+};
+
+export const getSDK = async (getCtx: () => { ready: Promise<void> }): Promise<T721SDK> => {
+    const { ready } = getCtx();
+
+    await ready;
+
+    const sdk = new T721SDK();
+    sdk.connect('localhost', 3000, 'http');
+
+    return sdk;
+};
+
+export const generatePassword = generateUserName;
+
+export const failWithCode = async (promise: Promise<any>, code: StatusCodes): Promise<void> => {
+    let res;
+
+    try {
+        res = await promise;
+    } catch (e) {
+        expect(e.response.data).toMatchObject({
+            statusCode: code,
+            name: StatusNames[code],
+        });
+        return;
+    }
+
+    throw new Error(`Expected request to fail with status ${code}, but succeeded with status ${res.status}`);
+};
+
+export const getUser = async (
+    sdk: T721SDK,
+): Promise<{
+    token: string;
+    user: PasswordlessUserDto;
+    password: string;
+}> => {
+    const user = {
+        email: generateEmail(),
+        username: generateUserName(),
+        password: generatePassword(),
+    };
+
+    const response: AxiosResponse<LocalRegisterResponseDto> = (await sdk.localRegister(
+        user.email,
+        user.password,
+        user.username,
+    )) as AxiosResponse<LocalRegisterResponseDto>;
+
+    const validatedResponse: AxiosResponse<EmailValidationResponseDto> = await sdk.validateEmail(
+        response.data.validationToken,
+    );
+
+    return {
+        token: response.data.token,
+        user: validatedResponse.data.user,
+        password: user.password,
+    };
+};
+
+export const pause = async (time: number): Promise<void> => {
+    return new Promise(ok => setTimeout(ok, time));
+};
+
+export const getSDKAndUser = async (
+    getCtx: () => { ready: Promise<void> },
+): Promise<{
+    sdk: T721SDK;
+    token: string;
+    user: PasswordlessUserDto;
+    password: string;
+}> => {
+    const sdk = await getSDK(getCtx);
+    const { token, user, password } = await getUser(sdk);
+
+    return {
+        sdk,
+        token,
+        user,
+        password,
+    };
+};
+
+export const waitForActionSet = async (
+    sdk: T721SDK,
+    token: string,
+    id: string,
+    checker: (as: ActionSetEntity) => boolean,
+): Promise<ActionSetEntity> => {
+    let actionSet: AxiosResponse<ActionsSearchResponseDto>;
+
+    do {
+        actionSet = await sdk.actions.search(token, {
+            id: {
+                $eq: id,
+            },
+        });
+    } while (!checker(actionSet.data.actionsets[0]));
+
+    return actionSet.data.actionsets[0];
+};
+
+export const admin_addRight = async (
+    user: string,
+    entity: string,
+    entity_value: string,
+    rights: string,
+): Promise<void> => {
+    const client = new CassandraDriver.Client({
+        contactPoints: ['localhost'],
+        keyspace: 'ticket721',
+        protocolOptions: {
+            port: 32702,
+        },
+        queryOptions: {
+            consistency: 1,
+        },
+    });
+
+    const query = `INSERT INTO ticket721.right (grantee_id, entity_type, entity_value, rights) VALUES (${user}, '${entity}', '${entity_value}', ${rights});`;
+
+    await client.execute(query);
 };

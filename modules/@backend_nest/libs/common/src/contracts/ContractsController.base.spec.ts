@@ -553,4 +553,41 @@ describe('Contracts Controller Base', function() {
         verify(context.web3Service.get()).called();
         verify(context.shutdownService.shutdownWithError(deepEqual(error))).called();
     });
+
+    it('should recover artifact name', async function() {
+        const moduleName: string = 'module';
+        const contractName: string = 'ContractName';
+        const contractsController = new ContractsControllerBase(
+            instance(context.contractsService),
+            instance(context.web3Service),
+            instance(context.shutdownService),
+            moduleName,
+            contractName,
+        );
+
+        const address: string = '0x87c02dec6b33498b489e1698801fc2ef79d02eef';
+        const networkId: number = 2702;
+        const contractArtifact = {
+            [`${moduleName}::${contractName}`]: {
+                abi: ERC20_ABI,
+                networks: {
+                    [networkId]: {
+                        address,
+                    },
+                },
+            },
+        };
+
+        const Contract = class {
+            constructor(abi: any, address: string) {}
+        };
+
+        const web3 = {
+            eth: {
+                Contract,
+            },
+        };
+
+        expect(contractsController.getArtifactName()).toEqual('module::ContractName');
+    });
 });

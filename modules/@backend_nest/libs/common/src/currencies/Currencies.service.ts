@@ -5,6 +5,50 @@ import { ContractsService } from '@lib/common/contracts/Contracts.service';
 import { ContractsControllerBase } from '@lib/common/contracts/ContractsController.base';
 import { Web3Service } from '@lib/common/web3/Web3.service';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
+import { IsNumber, IsNumberString, IsString } from 'class-validator';
+import { Decimal } from 'decimal.js';
+import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
+
+/**
+ * Price of the Category
+ */
+export class Price {
+    /**
+     * Currency of the price
+     */
+    @IsString()
+    currency: string;
+
+    /**
+     * Value as a string decimal 10
+     */
+    @IsString()
+    value: string;
+
+    /**
+     * Value as a log
+     */
+    @IsNumber()
+    // tslint:disable-next-line:variable-name
+    log_value: number;
+}
+
+/**
+ * Input Price expected from users
+ */
+export class InputPrice {
+    /**
+     * Currency Name
+     */
+    @IsString()
+    currency: string;
+
+    /**
+     * Currency Price
+     */
+    @IsNumberString()
+    price: string;
+}
 
 /**
  * Configuration for a currency type
@@ -273,5 +317,93 @@ export class CurrenciesService {
      */
     public async get(currency: string): Promise<ERC20Currency | SetCurrency> {
         return this.loaded ? this.currencies[currency] : (await this.load())[currency];
+    }
+
+    /**
+     * Internal helper to get all depending currencies
+     *
+     * @param inputPrice
+     * @param met
+     */
+    private async internalRecursiveResolver(inputPrice: string, met: { [key: string]: boolean }): Promise<string[]> {
+        let currencies: string[] = [];
+
+        const currency: ERC20Currency | SetCurrency = await this.get(inputPrice);
+
+        if (currency === undefined) {
+            throw new Error(`Cannot find currency ${inputPrice}`);
+        }
+
+        switch (currency.type) {
+            case 'set': {
+                const setCurrency: SetCurrency = currency as SetCurrency;
+
+                if (met[setCurrency.name] === true) {
+                    break;
+                }
+
+                met[setCurrency.name] = true;
+
+                for (const setInternalCurrency of setCurrency.contains) {
+                    currencies = [...currencies, ...(await this.internalRecursiveResolver(setInternalCurrency, met))];
+                }
+
+                break;
+            }
+
+            case 'erc20': {
+                const erc20Currency: ERC20Currency = currency as ERC20Currency;
+
+                if (met[erc20Currency.name] === true) {
+                    break;
+                }
+
+                met[erc20Currency.name] = true;
+                currencies.push(erc20Currency.name);
+
+                break;
+            }
+        }
+
+        return currencies;
+    }
+
+    /**
+     * Resolves all the given prices to a complete flat list of currencies
+     *
+     * @param inputPrices
+     */
+    public async resolveInputPrices(inputPrices: InputPrice[]): Promise<ServiceResponse<Price[]>> {
+        let ret: Price[] = [];
+
+        try {
+            for (const inputPrice of inputPrices) {
+                ret = [
+                    ...ret,
+                    ...(await this.internalRecursiveResolver(inputPrice.currency, {})).map(
+                        (curr: string): Price => ({
+                            currency: curr,
+                            value: inputPrice.price,
+                            log_value: Decimal.log2(inputPrice.price).toNumber(),
+                        }),
+                    ),
+                ];
+            }
+        } catch (e) {
+            return {
+                error: 'invalid_currencies',
+                response: null,
+            };
+        }
+
+        ret = ret.filter(
+            (elem: Price, idx: number): boolean =>
+                ret.findIndex((subElem: Price): boolean => subElem.currency === elem.currency) === idx,
+        );
+
+        return {
+            error: null,
+            response: ret,
+        };
     }
 }

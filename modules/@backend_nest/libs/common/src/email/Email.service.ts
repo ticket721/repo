@@ -5,7 +5,7 @@ import {
     EmailDriverSendOptions,
 } from '@lib/common/email/drivers/Email.driver.base';
 import { Injectable } from '@nestjs/common';
-import { ServiceResponse } from '@lib/common/utils/ServiceResponse';
+import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
 
 /**
  * Service to send emails with selected EmailDriver

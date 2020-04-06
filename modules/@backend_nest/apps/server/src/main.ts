@@ -1,7 +1,7 @@
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import { ValidationPipe } from '@nestjs/common';
+import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { ServerModule } from './Server.module';
 import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
 import { ConfigService } from '@lib/common/config/Config.service';
@@ -31,8 +31,12 @@ async function main() {
         new ValidationPipe({
             transform: true,
             forbidUnknownValues: true,
+            forbidNonWhitelisted: true,
+            whitelist: true,
         }),
     );
+
+    app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
     app.use(
         '/static',

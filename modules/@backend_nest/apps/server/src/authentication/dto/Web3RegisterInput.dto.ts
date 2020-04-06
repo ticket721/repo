@@ -8,42 +8,54 @@ export class Web3RegisterInputDto {
     /**
      * Unique email to link to account
      */
-    @ApiProperty()
+    @ApiProperty({
+        description: 'User email',
+    })
     @IsEmail()
     email: string;
 
     /**
      * Expected address after signature verification
      */
-    @ApiProperty()
+    @ApiProperty({
+        description: 'User address',
+    })
     @IsString()
     address: string;
 
     /**
      * Unique username to use
      */
-    @ApiProperty()
+    @ApiProperty({
+        description: 'User username',
+    })
     @IsString()
     username: string;
 
     /**
      * Timestamp used for the signature. Base 10 format
      */
-    @ApiProperty()
+    @ApiProperty({
+        description: 'User timestamp',
+    })
     @IsString()
     timestamp: string;
 
     /**
      * Signature of the Web3Register data type
      */
-    @ApiProperty()
+    @ApiProperty({
+        description: 'Address ownership',
+    })
     @IsString()
     signature: string;
 
     /**
      * User Locale
      */
-    @ApiPropertyOptional()
+    @ApiPropertyOptional({
+        description: 'User locale',
+    })
     @IsIn(['en', 'fr'])
     @IsOptional()
     locale?: string = 'en';

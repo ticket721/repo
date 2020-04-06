@@ -1,4 +1,5 @@
 import { Column, CreateDateColumn, Entity, UpdateDateColumn } from '@iaminfinity/express-cassandra';
+import { ECAAG } from '@lib/common/utils/ECAAG.helper';
 
 /**
  * Data Model of a single EVM Event
@@ -71,6 +72,27 @@ export interface EVMEvent {
     },
 } as any)
 export class EVMEventSetEntity {
+    /**
+     * Entity Builder
+     *
+     * @param evmes
+     */
+    constructor(evmes?: EVMEventSetEntity) {
+        if (evmes) {
+            this.artifact_name = evmes.artifact_name;
+            this.event_name = evmes.event_name;
+            this.block_number = evmes.block_number;
+            this.events = ECAAG(evmes.events).map(
+                (e: EVMEvent): EVMEvent => ({
+                    ...e,
+                    raw_topics: ECAAG(e.raw_topics),
+                }),
+            );
+            this.created_at = evmes.created_at;
+            this.updated_at = evmes.updated_at;
+        }
+    }
+
     /**
      * Name of the emitting artifact
      */

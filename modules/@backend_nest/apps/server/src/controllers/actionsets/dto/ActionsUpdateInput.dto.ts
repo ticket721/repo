@@ -1,29 +1,25 @@
-import { IsNumber, IsObject, IsOptional, IsUUID } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { IsNumber, IsObject, IsOptional } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 /**
  * Data model required to update an Action
  */
 export class ActionsUpdateInputDto {
     /**
-     * ActionSet to update
-     */
-    @ApiProperty()
-    @IsUUID()
-    // tslint:disable-next-line:variable-name
-    actionset_id: string;
-
-    /**
      * Data to insert into action before setting waiting status
      */
-    @ApiProperty()
+    @ApiProperty({
+        description: 'Date to insert at current or provided index',
+    })
     @IsObject()
     data: any;
 
     /**
      * If defined, edits another action than current one. Can throw on invalid index
      */
-    @ApiProperty()
+    @ApiPropertyOptional({
+        description: 'Action index to edit. If not provided, current will be modified',
+    })
     @IsNumber()
     @IsOptional()
     // tslint:disable-next-line:variable-name

@@ -8,7 +8,9 @@ export class EventsCreateInputDto {
     /**
      * Name to give to the event
      */
-    @ApiProperty()
+    @ApiProperty({
+        description: 'Name of the event',
+    })
     @IsString()
     name: string;
 }

@@ -1,4 +1,3 @@
-import { Coordinates } from '@common/global';
 import {
     Column,
     CreateDateColumn,
@@ -6,90 +5,119 @@ import {
     GeneratedUUidColumn,
     UpdateDateColumn,
 } from '@iaminfinity/express-cassandra';
-
-/**
- * Price of the Category
- */
-export interface Price {
-    /**
-     * Currency of the price
-     */
-    currency: string;
-
-    /**
-     * Value as a string decimal 10
-     */
-    value: string;
-
-    /**
-     * Value as a log
-     */
-    log_value: number;
-}
-
-/**
- * Ticket Category linked to Date
- */
-export interface Category {
-    /**
-     * Linked group id
-     */
-    group_id: string;
-
-    /**
-     * Name of the category
-     */
-    category_name: string;
-
-    /**
-     * Index of the category in the group
-     */
-    category_index: number;
-
-    /**
-     * Date at which the ticket sale is enabled. Both resale_begin and resale_end are either defined or undefined
-     */
-    sale_begin: Date;
-
-    /**
-     * Date at which the ticket is disabled
-     */
-    sale_end: Date;
-
-    /**
-     * Date at which the ticket sale is enabled. Both resale_begin and resale_end are either defined or undefined
-     */
-    resale_begin: Date;
-
-    /**
-     * Date at which the ticket is disabled
-     */
-    resale_end: Date;
-
-    /**
-     * Ticket scope
-     */
-    scope: string;
-
-    /**
-     * Prices of the category
-     */
-    prices: Price[];
-
-    /**
-     * Total number of available tickets
-     */
-    seats: number;
-}
+import { ECAAG } from '@lib/common/utils/ECAAG.helper';
+import { IsDateString, IsNumber, IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
 
 /**
  * Metadata of the date
  */
-export interface DateMetadata {
+export class DateMetadata {
     /**
      * Name to display along the date
      */
+    @IsString()
     name: string;
+
+    /**
+     * Date description
+     */
+    @IsString()
+    description: string;
+
+    /**
+     * Date avatar
+     */
+    @IsUUID()
+    @IsOptional()
+    avatar: string;
+
+    /**
+     * Date category tags
+     */
+    @IsString({ each: true })
+    tags: string[];
+}
+
+/**
+ * Timestamps of the date
+ */
+export class DateTimestamps {
+    /**
+     * Event Begin Date
+     */
+    @IsDateString()
+    // tslint:disable-next-line:variable-name
+    event_begin: Date;
+
+    /**
+     * Event End Date
+     */
+    @IsDateString()
+    // tslint:disable-next-line:variable-name
+    event_end: Date;
+}
+
+/**
+ * Coordinated with class validator decorator
+ */
+export class Coordinates {
+    /**
+     * Longitude
+     */
+    @IsNumber()
+    lon: number;
+
+    /**
+     * Latitude
+     */
+    @IsNumber()
+    lat: number;
+}
+
+/**
+ * Input type for the date location
+ */
+export class InputDateLocation {
+    /**
+     * Coordinates of the date
+     */
+    @ValidateNested()
+    @Type(() => Coordinates)
+    location: Coordinates;
+
+    /**
+     * Location label of the date
+     */
+    @IsString()
+    // tslint:disable-next-line:variable-name
+    location_label: string;
+}
+
+/**
+ * Location of the date
+ */
+export class DateLocation {
+    /**
+     * Coordinates of the date
+     */
+    @ValidateNested()
+    @Type(/* istanbul ignore next */ () => Coordinates)
+    location: Coordinates;
+
+    /**
+     * Location label of the date
+     */
+    @IsString()
+    // tslint:disable-next-line:variable-name
+    location_label: string;
+
+    /**
+     * City ID
+     */
+    @IsNumber()
+    // tslint:disable-next-line:variable-name
+    assigned_city: number;
 }
 
 /**
@@ -99,16 +127,74 @@ export interface DateMetadata {
     table_name: 'date',
     key: ['id'],
     es_index_mapping: {
-        discover: '^((?!location).*)',
+        discover: '^((?!(location|metadata)).*)',
         properties: {
             location: {
-                type: 'geo_point',
+                type: 'nested',
                 cql_collection: 'singleton',
+                properties: {
+                    location: {
+                        type: 'geo_point',
+                        cql_collection: 'singleton',
+                    },
+                    location_label: {
+                        cql_collection: 'singleton',
+                        type: 'text',
+                    },
+                    assigned_city: {
+                        cql_collection: 'singleton',
+                        type: 'integer',
+                    },
+                },
+            },
+            metadata: {
+                type: 'nested',
+                cql_collection: 'singleton',
+                properties: {
+                    avatar: {
+                        cql_collection: 'singleton',
+                        type: 'keyword',
+                    },
+                    name: {
+                        cql_collection: 'singleton',
+                        type: 'text',
+                    },
+                    description: {
+                        cql_collection: 'singleton',
+                        type: 'text',
+                    },
+                    tags: {
+                        cql_collection: 'list',
+                        type: 'text',
+                    },
+                },
             },
         },
     },
 } as any)
 export class DateEntity {
+    /**
+     * Entity Builder
+     *
+     * @param d
+     */
+    constructor(d?: DateEntity) {
+        if (d) {
+            this.id = d.id ? d.id.toString() : d.id;
+            this.group_id = d.group_id;
+            this.status = d.status;
+            this.categories = ECAAG(d.categories);
+            this.location = d.location;
+            this.timestamps = d.timestamps;
+            this.metadata = d.metadata;
+            this.metadata.tags = ECAAG(this.metadata.tags);
+            this.parent_id = d.parent_id ? d.parent_id.toString() : d.parent_id;
+            this.parent_type = d.parent_type;
+            this.created_at = d.created_at;
+            this.updated_at = d.updated_at;
+        }
+    }
+
     /**
      * Unique ID of the Date
      */
@@ -121,64 +207,46 @@ export class DateEntity {
     @Column({
         type: 'text',
     })
-    status: 'preview' | 'live';
-
-    /**
-     * Timestamp of the beginning of the event
-     */
-    @Column({
-        type: 'timestamp',
-    })
     // tslint:disable-next-line:variable-name
-    event_begin: Date;
+    group_id: string;
 
     /**
-     * Timestamp of the end of the event
-     */
-    @Column({
-        type: 'timestamp',
-    })
-    // tslint:disable-next-line:variable-name
-    event_end: Date;
-
-    /**
-     * Coordinates of the Date
-     */
-    @Column({
-        type: 'frozen',
-        typeDef: '<geo_point>',
-    })
-    location: Coordinates;
-
-    /**
-     * Location label of the date
+     * Current status of the category
      */
     @Column({
         type: 'text',
     })
-    // tslint:disable-next-line:variable-name
-    location_label: string;
-
-    /**
-     * Assigned city of the Date
-     */
-    @Column({
-        type: 'int',
-    })
-    // tslint:disable-next-line:variable-name
-    assigned_city: number;
+    status: 'preview' | 'live';
 
     /**
      * Ticket categories of the Date
      */
     @Column({
         type: 'list',
-        typeDef: '<frozen<category>>',
+        typeDef: '<uuid>',
     })
-    categories: Category[];
+    categories: string[];
 
     /**
-     * Metadata to use with the Date
+     * Location info
+     */
+    @Column({
+        type: 'frozen',
+        typeDef: '<date_location>',
+    })
+    location: DateLocation;
+
+    /**
+     * Timestamp info
+     */
+    @Column({
+        type: 'frozen',
+        typeDef: '<date_timestamps>',
+    })
+    timestamps: DateTimestamps;
+
+    /**
+     * Metadata info
      */
     @Column({
         type: 'frozen',

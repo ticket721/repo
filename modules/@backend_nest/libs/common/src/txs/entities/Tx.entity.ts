@@ -1,4 +1,5 @@
 import { Column, CreateDateColumn, Entity, UpdateDateColumn } from '@iaminfinity/express-cassandra';
+import { ECAAG } from '@lib/common/utils/ECAAG.helper';
 
 /**
  * Log Type
@@ -66,6 +67,40 @@ export interface Log {
     },
 } as any)
 export class TxEntity {
+    /**
+     * Entity Builder
+     *
+     * @param tx
+     */
+    constructor(tx?: TxEntity) {
+        if (tx) {
+            this.transaction_hash = tx.transaction_hash;
+            this.confirmed = tx.confirmed;
+            this.status = tx.status;
+            this.block_hash = tx.block_hash;
+            this.block_number = tx.block_number;
+            this.transaction_index = tx.transaction_index;
+            this.from_ = tx.from_;
+            this.to_ = tx.to_;
+            this.contract_address = tx.contract_address;
+            this.cumulative_gas_used = tx.cumulative_gas_used;
+            this.cumulative_gas_used_ln = tx.cumulative_gas_used_ln;
+            this.gas_used = tx.gas_used;
+            this.gas_used_ln = tx.gas_used_ln;
+            this.gas_price = tx.gas_price;
+            this.gas_price_ln = tx.gas_price_ln;
+            this.logs = ECAAG(tx.logs).map(
+                (l: Log): Log => ({
+                    ...l,
+                    topics: ECAAG(l.topics),
+                }),
+            );
+            this.logs_bloom = tx.logs_bloom;
+            this.created_at = tx.created_at;
+            this.updated_at = tx.updated_at;
+        }
+    }
+
     /**
      * Unique identifier of the transaction
      */

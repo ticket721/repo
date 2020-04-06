@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ExpressCassandraModule } from '@iaminfinity/express-cassandra';
 import { AuthenticationModule } from './authentication/Authentication.module';
-import { ServerController } from './Server.controller';
 import { ServerService } from './Server.service';
 import { UsersRepository } from '@lib/common/users/Users.repository';
 import { UserEntity } from '@lib/common/users/entities/User.entity';
@@ -49,6 +48,11 @@ import { GemOrdersModule } from '@lib/common/gemorders/GemOrders.module';
 import { CheckoutController } from '@app/server/controllers/checkout/Checkout.controller';
 import { StripeResourcesModule } from '@lib/common/striperesources/StripeResources.module';
 import { ToolBoxModule } from '@lib/common/toolbox/ToolBox.module';
+import { CategoriesModule } from '@lib/common/categories/Categories.module';
+import { RightsModule } from '@lib/common/rights/Rights.module';
+import { CategoriesController } from '@app/server/controllers/categories/Categories.controller';
+import { RightsController } from '@app/server/controllers/rights/Rights.controller';
+import { ServerController } from '@app/server/controllers/server/Server.controller';
 
 @Module({
     imports: [
@@ -77,6 +81,8 @@ import { ToolBoxModule } from '@lib/common/toolbox/ToolBox.module';
         Web3TokensModule,
         ActionSetsModule,
         DatesModule,
+        CategoriesModule,
+        RightsModule,
         EventsModule,
         GemOrdersModule,
         StripeResourcesModule,
@@ -167,6 +173,8 @@ import { ToolBoxModule } from '@lib/common/toolbox/ToolBox.module';
         ContractsController,
         DosojinController,
         CheckoutController,
+        CategoriesController,
+        RightsController,
     ],
     providers: [
         ServerService,

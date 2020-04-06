@@ -5,8 +5,16 @@ import {
     GeneratedUUidColumn,
     UpdateDateColumn,
 } from '@iaminfinity/express-cassandra';
+import { Link } from '@lib/common/utils/Link.type';
+import { ECAAG } from '@lib/common/utils/ECAAG.helper';
 
+/**
+ * Action Status
+ */
 export type ActionStatus = 'waiting' | 'in progress' | 'incomplete' | 'complete' | 'error';
+/**
+ * ActionSet Status
+ */
 export type ActionSetStatus =
     | 'input:waiting'
     | 'input:in progress'
@@ -18,6 +26,9 @@ export type ActionSetStatus =
     | 'event:incomplete'
     | 'complete'
     | 'error';
+/**
+ * Action Types
+ */
 export type ActionType = 'input' | 'event';
 
 /**
@@ -57,16 +68,45 @@ export interface ActionEntity {
     table_name: 'actionset',
     key: ['id'],
     es_index_mapping: {
-        discover: '^((?!actions).*)',
+        discover: '^((?!links).*)',
         properties: {
-            actions: {
+            links: {
                 type: 'nested',
-                cql_collection: 'set',
+                cql_collection: 'list',
+                properties: {
+                    id: {
+                        cql_collection: 'singleton',
+                        type: 'keyword',
+                    },
+                    type: {
+                        cql_collection: 'singleton',
+                        type: 'text',
+                    },
+                },
             },
         },
     },
 } as any)
 export class ActionSetEntity {
+    /**
+     * Entity Builder
+     *
+     * @param as
+     */
+    constructor(as?: Partial<ActionSetEntity>) {
+        if (as) {
+            this.id = as.id ? as.id.toString() : as.id;
+            this.actions = ECAAG(as.actions);
+            this.links = ECAAG(as.links);
+            this.current_action = as.current_action;
+            this.current_status = as.current_status;
+            this.name = as.name;
+            this.created_at = as.created_at;
+            this.updated_at = as.updated_at;
+            this.dispatched_at = as.dispatched_at;
+        }
+    }
+
     /**
      * Unique identifier
      */
@@ -83,12 +123,13 @@ export class ActionSetEntity {
     actions: ActionEntity[];
 
     /**
-     * Owner of the action set
+     * Links of actionsets
      */
     @Column({
-        type: 'uuid',
+        type: 'list',
+        typeDef: '<frozen<link>>',
     })
-    owner: string;
+    links: Link[];
 
     /**
      * Current action index

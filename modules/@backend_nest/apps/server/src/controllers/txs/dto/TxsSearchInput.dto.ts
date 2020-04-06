@@ -1,4 +1,4 @@
-import { SortablePagedSearch } from '@lib/common/utils/SortablePagedSearch';
+import { SortablePagedSearch } from '@lib/common/utils/SortablePagedSearch.type';
 import { SearchableField } from '@lib/common/utils/SearchableField.type';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsObject, IsOptional } from 'class-validator';

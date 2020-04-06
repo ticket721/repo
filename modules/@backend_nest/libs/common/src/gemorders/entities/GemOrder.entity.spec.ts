@@ -2,6 +2,169 @@ import { BN, Gem } from 'dosojin';
 import { GemOrderEntity } from '@lib/common/gemorders/entities/GemOrder.entity';
 
 describe('GemOrder Entity', function() {
+    describe('constructor', function() {
+        it('should build from nothing', function() {
+            const gemOrderEntity = new GemOrderEntity();
+
+            expect(gemOrderEntity).toEqual({});
+        });
+
+        it('should build from go with id', function() {
+            const rawGemOrderEntity = {
+                gem: {
+                    action_type: 'transfer',
+                    error_info: null,
+                    gem_data: '{}',
+                    gem_payload: {
+                        costs: [],
+                        values: '{}',
+                    },
+                    gem_status: undefined,
+                    operation_status: null,
+                    refresh_timer: null,
+                    route_history: [],
+                    transfer_status: null,
+                },
+                distribution_id: 123,
+                created_at: new Date(),
+                updated_at: new Date(),
+                id: 'abcd',
+                circuit_name: 'name',
+                initialized: true,
+                initial_arguments: '',
+                refresh_timer: 123,
+            } as GemOrderEntity;
+
+            const gemOrderEntity = new GemOrderEntity(rawGemOrderEntity);
+
+            expect(gemOrderEntity).toEqual(rawGemOrderEntity);
+        });
+
+        it('should build from go with payload', function() {
+            const rawGemOrderEntity = {
+                gem: {
+                    action_type: 'transfer',
+                    error_info: null,
+                    gem_data: '{}',
+                    gem_payload: null,
+                    gem_status: undefined,
+                    operation_status: null,
+                    refresh_timer: null,
+                    route_history: [],
+                    transfer_status: null,
+                },
+                distribution_id: 123,
+                created_at: new Date(),
+                updated_at: new Date(),
+                id: null,
+                circuit_name: 'name',
+                initialized: true,
+                initial_arguments: '',
+                refresh_timer: 123,
+            } as GemOrderEntity;
+
+            const gemOrderEntity = new GemOrderEntity(rawGemOrderEntity);
+
+            expect(gemOrderEntity).toEqual(rawGemOrderEntity);
+        });
+
+        it('should build from go', function() {
+            const rawGemOrderEntity = {
+                gem: {
+                    action_type: 'transfer',
+                    error_info: null,
+                    gem_data: '{}',
+                    gem_payload: {
+                        costs: [],
+                        values: '{}',
+                    },
+                    gem_status: undefined,
+                    operation_status: null,
+                    refresh_timer: null,
+                    route_history: [],
+                    transfer_status: null,
+                },
+                distribution_id: 123,
+                created_at: new Date(),
+                updated_at: new Date(),
+                id: null,
+                circuit_name: 'name',
+                initialized: true,
+                initial_arguments: '',
+                refresh_timer: 123,
+            } as GemOrderEntity;
+
+            const gemOrderEntity = new GemOrderEntity(rawGemOrderEntity);
+
+            expect(gemOrderEntity).toEqual(rawGemOrderEntity);
+        });
+
+        it('should build from go with transfer status', function() {
+            const rawGemOrderEntity = {
+                gem: {
+                    action_type: 'transfer',
+                    error_info: null,
+                    gem_data: '{}',
+                    gem_payload: {
+                        costs: [],
+                        values: '{}',
+                    },
+                    gem_status: undefined,
+                    operation_status: null,
+                    refresh_timer: null,
+                    route_history: [],
+                    transfer_status: {
+                        connector: null,
+                        receptacle: null,
+                    },
+                },
+                distribution_id: 123,
+                created_at: new Date(),
+                updated_at: new Date(),
+                id: null,
+                circuit_name: 'name',
+                initialized: true,
+                initial_arguments: '',
+                refresh_timer: 123,
+            } as GemOrderEntity;
+
+            const gemOrderEntity = new GemOrderEntity(rawGemOrderEntity);
+
+            expect(gemOrderEntity).toEqual(rawGemOrderEntity);
+        });
+
+        it('should build from go with operation status', function() {
+            const rawGemOrderEntity = {
+                gem: {
+                    action_type: 'transfer',
+                    error_info: null,
+                    gem_data: '{}',
+                    gem_payload: {
+                        costs: [],
+                        values: '{}',
+                    },
+                    gem_status: undefined,
+                    operation_status: {},
+                    refresh_timer: null,
+                    route_history: [],
+                    transfer_status: null,
+                },
+                distribution_id: 123,
+                created_at: new Date(),
+                updated_at: new Date(),
+                id: null,
+                circuit_name: 'name',
+                initialized: true,
+                initial_arguments: '',
+                refresh_timer: 123,
+            } as GemOrderEntity;
+
+            const gemOrderEntity = new GemOrderEntity(rawGemOrderEntity);
+
+            expect(gemOrderEntity).toEqual(rawGemOrderEntity);
+        });
+    });
+
     describe('fromDosojinRaw', function() {
         it('should convert freshly created gem', async function() {
             const gem = new Gem();

@@ -5,8 +5,8 @@ import { UserEntity } from './entities/User.entity';
 import { UserDto } from './dto/User.dto';
 import { CreateUserServiceInputDto } from './dto/CreateUserServiceInput.dto';
 import { toAcceptedAddressFormat } from '@common/global';
-import { ESSearchReturn } from '@lib/common/utils/ESSearchReturn';
-import { ServiceResponse } from '@lib/common/utils/ServiceResponse';
+import { ESSearchReturn } from '@lib/common/utils/ESSearchReturn.type';
+import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
 
 /**
  * Utilities and services around the user entity

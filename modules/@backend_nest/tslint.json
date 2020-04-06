@@ -1,9 +1,13 @@
 {
+    "rules": {
+        "max-classes-per-file": false
+    },
     "defaultSeverity": "error",
     "extends": ["../tslint.json"],
     "linterOptions": {
         "exclude": [
             "**/*.spec.ts",
+            "**/*.routes-spec.ts",
             "./apps/server/test/**/*.ts"
         ]
     }

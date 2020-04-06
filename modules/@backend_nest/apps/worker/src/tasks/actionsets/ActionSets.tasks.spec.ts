@@ -3,7 +3,7 @@ import { ActionSetsService } from '@lib/common/actionsets/ActionSets.service';
 import { deepEqual, instance, mock, verify, when } from 'ts-mockito';
 import { Job, Queue } from 'bull';
 import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
-import { ActionSet } from '@lib/common/actionsets/helper/ActionSet';
+import { ActionSet } from '@lib/common/actionsets/helper/ActionSet.class';
 import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
 import { OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
@@ -55,7 +55,7 @@ describe('ActionSets Tasks', function() {
                 id: 'ccf2ef65-3632-4277-a061-dddfefac48da',
                 name: 'test',
                 current_status: 'input:in progress',
-                owner: 'ccf2ef65-3632-4277-a061-dddfefac48da',
+                links: [],
                 actions: [
                     {
                         error: null,
@@ -96,7 +96,7 @@ describe('ActionSets Tasks', function() {
                     deepEqual({
                         name: 'test',
                         current_status: 'input:in progress',
-                        owner: 'ccf2ef65-3632-4277-a061-dddfefac48da',
+                        links: [],
                         actions: [
                             {
                                 error: null,
@@ -134,7 +134,7 @@ describe('ActionSets Tasks', function() {
                     deepEqual({
                         name: 'test',
                         current_status: 'input:in progress',
-                        owner: 'ccf2ef65-3632-4277-a061-dddfefac48da',
+                        links: [],
                         actions: [
                             {
                                 error: null,
@@ -169,7 +169,7 @@ describe('ActionSets Tasks', function() {
                 id: 'ccf2ef65-3632-4277-a061-dddfefac48da',
                 name: 'test',
                 current_status: 'input:in progress',
-                owner: 'ccf2ef65-3632-4277-a061-dddfefac48da',
+                links: [],
                 actions: [
                     {
                         error: null,
@@ -213,7 +213,7 @@ describe('ActionSets Tasks', function() {
                     deepEqual({
                         name: 'test',
                         current_status: 'input:in progress',
-                        owner: 'ccf2ef65-3632-4277-a061-dddfefac48da',
+                        links: [],
                         actions: [
                             {
                                 error: null,
@@ -248,7 +248,7 @@ describe('ActionSets Tasks', function() {
                 id: 'ccf2ef65-3632-4277-a061-dddfefac48da',
                 name: 'test',
                 current_status: 'input:in progress',
-                owner: 'ccf2ef65-3632-4277-a061-dddfefac48da',
+                links: [],
                 actions: [
                     {
                         error: null,
@@ -288,7 +288,7 @@ describe('ActionSets Tasks', function() {
                     deepEqual({
                         name: 'test',
                         current_status: 'input:in progress',
-                        owner: 'ccf2ef65-3632-4277-a061-dddfefac48da',
+                        links: [],
                         actions: [
                             {
                                 error: null,

@@ -1,10 +1,12 @@
-import { CRUDExtension } from '@lib/common/crud/CRUD.extension';
+import { CRUDExtension } from '@lib/common/crud/CRUDExtension.base';
 import { BaseModel, InjectModel, InjectRepository } from '@iaminfinity/express-cassandra';
 import { GemOrdersRepository } from '@lib/common/gemorders/GemOrders.repository';
 import { GemOrderEntity } from '@lib/common/gemorders/entities/GemOrder.entity';
-import { ServiceResponse } from '@lib/common/utils/ServiceResponse';
+import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
 import { types } from 'cassandra-driver';
-import { ESSearchReturn } from '@lib/common/utils/ESSearchReturn';
+import { ESSearchReturn } from '@lib/common/utils/ESSearchReturn.type';
+import { RightsService } from '@lib/common/rights/Rights.service';
+import { UserDto } from '@lib/common/users/dto/User.dto';
 
 /**
  * Service to CRUD Gem Orders
@@ -15,12 +17,14 @@ export class GemOrdersService extends CRUDExtension<GemOrdersRepository, GemOrde
      *
      * @param gemOrdersRepository
      * @param gemOrderEntity
+     * @param rightsService
      */
     constructor(
         @InjectRepository(GemOrdersRepository)
         gemOrdersRepository: GemOrdersRepository,
         @InjectModel(GemOrderEntity)
         gemOrderEntity: BaseModel<GemOrderEntity>,
+        private readonly rightsService: RightsService,
     ) {
         super(
             gemOrderEntity,
@@ -28,6 +32,10 @@ export class GemOrdersService extends CRUDExtension<GemOrdersRepository, GemOrde
             /* istanbul ignore next */
             (e: GemOrderEntity) => {
                 return new gemOrderEntity(e);
+            },
+            /* istanbul ignore next */
+            (go: GemOrderEntity) => {
+                return new GemOrderEntity(go);
             },
         );
     }
@@ -82,12 +90,26 @@ export class GemOrdersService extends CRUDExtension<GemOrdersRepository, GemOrde
                 circuit_name: circuit,
                 initial_arguments: JSON.stringify(args),
                 initialized: false,
-                owner: user,
                 refresh_timer: 1,
             },
             {
                 if_not_exist: true,
             },
+        );
+
+        await this.rightsService.addRights(
+            {
+                id: user,
+            } as UserDto,
+            [
+                {
+                    entityValue: collision,
+                    entity: 'gemorder',
+                    rights: {
+                        owner: true,
+                    },
+                },
+            ],
         );
 
         if (createdOrderRes.error) {

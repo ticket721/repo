@@ -2,21 +2,29 @@ import { AxiosResponse }            from 'axios';
 import { T721SDK }                  from '../../index';
 import { EventsSearchInputDto }     from '@app/server/controllers/events/dto/EventsSearchInput.dto';
 import { EventsSearchResponseDto }  from '@app/server/controllers/events/dto/EventsSearchResponse.dto';
-import { EventsCreateInputDto }     from '@app/server/controllers/events/dto/EventsCreateInput.dto';
-import { EventsCreateResponseDto }  from '@app/server/controllers/events/dto/EventsCreateResponse.dto';
 import {
     EventsCreateAdminsConfiguration,
     EventsCreateCategoriesConfiguration,
     EventsCreateDatesConfiguration, EventsCreateImagesMetadata,
     EventsCreateModulesConfiguration,
     EventsCreateTextMetadata,
-}                                   from '@app/worker/actionhandlers/events/Events.input.handlers';
-import { ActionsUpdateResponseDto } from '@app/server/controllers/actionsets/dto/ActionsUpdateResponse.dto';
-import { actionsUpdate}             from './actions';
-import { EventsBuildResponseDto }   from '@app/server/controllers/events/dto/EventsBuildResponse.dto';
-import { EventsBuildInputDto }      from '@app/server/controllers/events/dto/EventsBuildInput.dto';
-import { EventsStartInputDto }      from '@app/server/controllers/events/dto/EventsStartInput.dto';
-import { EventsStartResponseDto }   from '@app/server/controllers/events/dto/EventsStartResponse.dto';
+}                                            from '@app/worker/actionhandlers/events/Events.input.handlers';
+import { ActionsUpdateResponseDto }          from '@app/server/controllers/actionsets/dto/ActionsUpdateResponse.dto';
+import { actionsUpdate}                      from './actions';
+import { EventsBuildResponseDto }            from '@app/server/controllers/events/dto/EventsBuildResponse.dto';
+import { EventsBuildInputDto }               from '@app/server/controllers/events/dto/EventsBuildInput.dto';
+import { EventsStartInputDto }               from '@app/server/controllers/events/dto/EventsStartInput.dto';
+import { EventsStartResponseDto }            from '@app/server/controllers/events/dto/EventsStartResponse.dto';
+import { EventsUpdateInputDto }              from '@app/server/controllers/events/dto/EventsUpdateInput.dto';
+import { EventsUpdateResponseDto }           from '@app/server/controllers/events/dto/EventsUpdateResponse.dto';
+import { EventsDeleteCategoriesInputDto }    from '@app/server/controllers/events/dto/EventsDeleteCategoriesInput.dto';
+import { EventsDeleteCategoriesResponseDto } from '@app/server/controllers/events/dto/EventsDeleteCategoriesResponse.dto';
+import { EventsAddCategoriesInputDto }       from '@app/server/controllers/events/dto/EventsAddCategoriesInput.dto';
+import { EventsAddCategoriesResponseDto }    from '@app/server/controllers/events/dto/EventsAddCategoriesResponse.dto';
+import { EventsDeleteDatesInputDto }         from '@app/server/controllers/events/dto/EventsDeleteDatesInput.dto';
+import { EventsDeleteDatesResponseDto }      from '@app/server/controllers/events/dto/EventsDeleteDatesResponse.dto';
+import { EventsAddDatesInputDto }            from '@app/server/controllers/events/dto/EventsAddDatesInput.dto';
+import { EventsAddDatesResponseDto }         from '@app/server/controllers/events/dto/EventsAddDatesResponse.dto';
 
 export async function eventsSearch(
     token: string,
@@ -33,23 +41,11 @@ export async function eventsSearch(
 
 export async function eventsCreate(
     token: string,
-    query: EventsCreateInputDto,
-): Promise<AxiosResponse<EventsCreateResponseDto>> {
-    const self: T721SDK = this;
-
-    return self.post<EventsCreateInputDto>('/events', {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-    }, query);
-}
-
-export async function eventsBuild(
-    token: string,
     query: EventsBuildInputDto,
 ): Promise<AxiosResponse<EventsBuildResponseDto>> {
     const self: T721SDK = this;
 
-    return self.post<EventsBuildInputDto>('/events/build', {
+    return self.post<EventsBuildInputDto>('/events', {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
     }, query);
@@ -63,10 +59,10 @@ export async function eventsCreateTextMetadata(
 
     return (actionsUpdate.bind(this))(
         token,
+        actionset,
         {
-            actionset_id: actionset,
             data: query,
-            update_idx: 0,
+            action_idx: 0,
         },
     );
 }
@@ -79,10 +75,10 @@ export async function eventsCreateModulesConfiguration(
 
     return (actionsUpdate.bind(this))(
         token,
+        actionset,
         {
-            actionset_id: actionset,
             data: query,
-            update_idx: 1,
+            action_idx: 1,
         },
     );
 }
@@ -95,10 +91,10 @@ export async function eventsCreateDatesConfiguration(
 
     return (actionsUpdate.bind(this))(
         token,
+        actionset,
         {
-            actionset_id: actionset,
             data: query,
-            update_idx: 2,
+            action_idx: 2,
         },
     );
 }
@@ -111,10 +107,10 @@ export async function eventsCreateCategoriesConfiguration(
 
     return (actionsUpdate.bind(this))(
         token,
+        actionset,
         {
-            actionset_id: actionset,
             data: query,
-            update_idx: 3,
+            action_idx: 3,
         },
     );
 }
@@ -127,10 +123,10 @@ export async function eventsCreateImagesMetadata(
 
     return (actionsUpdate.bind(this))(
         token,
+        actionset,
         {
-            actionset_id: actionset,
             data: query,
-            update_idx: 4,
+            action_idx: 4,
         },
     );
 }
@@ -143,10 +139,10 @@ export async function eventsCreateAdminsConfiguration(
 
     return (actionsUpdate.bind(this))(
         token,
+        actionset,
         {
-            actionset_id: actionset,
             data: query,
-            update_idx: 5,
+            action_idx: 5,
         },
     );
 }
@@ -164,3 +160,80 @@ export async function eventsStart(
     }, query);
 
 }
+
+export async function eventsUpdate(
+    token: string,
+    event: string,
+    query: EventsUpdateInputDto
+): Promise<AxiosResponse<EventsUpdateResponseDto>> {
+
+    const self: T721SDK = this;
+
+    return self.put<EventsUpdateInputDto>(`/events/${event}`, {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+    }, query);
+
+}
+
+export async function eventsDeleteCategories(
+    token: string,
+    event: string,
+    query: EventsDeleteCategoriesInputDto
+): Promise<AxiosResponse<EventsDeleteCategoriesResponseDto>> {
+
+    const self: T721SDK = this;
+
+    return self.delete<EventsDeleteCategoriesInputDto>(`/events/${event}/categories`, {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+    }, query);
+
+}
+
+export async function eventsAddCategories(
+    token: string,
+    event: string,
+    query: EventsAddCategoriesInputDto
+): Promise<AxiosResponse<EventsAddCategoriesResponseDto>> {
+
+    const self: T721SDK = this;
+
+    return self.post<EventsAddCategoriesInputDto>(`/events/${event}/categories`, {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+    }, query);
+
+}
+
+export async function eventsDeleteDates(
+    token: string,
+    event: string,
+    query: EventsDeleteDatesInputDto
+): Promise<AxiosResponse<EventsDeleteDatesResponseDto>> {
+
+    const self: T721SDK = this;
+
+    return self.delete<EventsDeleteDatesInputDto>(`/events/${event}/dates`, {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+    }, query);
+
+}
+
+export async function eventsAddDates(
+    token: string,
+    event: string,
+    query: EventsAddDatesInputDto
+): Promise<AxiosResponse<EventsAddDatesResponseDto>> {
+
+    const self: T721SDK = this;
+
+    return self.post<EventsAddDatesInputDto>(`/events/${event}/dates`, {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+    }, query);
+
+}
+
+

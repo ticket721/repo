@@ -16,8 +16,9 @@ import { UsersService } from '@lib/common/users/Users.service';
 import { ConfigService } from '@lib/common/config/Config.service';
 import { UserDto } from '@lib/common/users/dto/User.dto';
 import { RefractFactoryV0Service } from '@lib/common/contracts/refract/RefractFactory.V0.service';
-import { ServiceResponse } from '@lib/common/utils/ServiceResponse';
+import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
 import { VaultereumService } from '@lib/common/vaultereum/Vaultereum.service';
+import { Web3Service } from '@lib/common/web3/Web3.service';
 
 const context: {
     authenticationService: AuthenticationService;
@@ -25,12 +26,14 @@ const context: {
     configServiceMock: ConfigService;
     refractFactoryV0ServiceMock: RefractFactoryV0Service;
     vaultereumServiceMock: VaultereumService;
+    web3ServiceMock: Web3Service;
 } = {
     authenticationService: null,
     usersServiceMock: null,
     configServiceMock: null,
     refractFactoryV0ServiceMock: null,
     vaultereumServiceMock: null,
+    web3ServiceMock: null,
 };
 
 const resultAddress = toAcceptedAddressFormat('0x87c02dec6b33498b489e1698801fc2ef79d02eef');
@@ -41,8 +44,10 @@ describe('Authentication Service', function() {
         context.configServiceMock = mock(ConfigService);
         context.refractFactoryV0ServiceMock = mock(RefractFactoryV0Service);
         context.vaultereumServiceMock = mock(VaultereumService);
+        context.web3ServiceMock = mock(Web3Service);
 
         when(context.configServiceMock.get('AUTH_SIGNATURE_TIMEOUT')).thenReturn('30');
+        when(context.web3ServiceMock.net()).thenResolve(1);
 
         const module: TestingModule = await Test.createTestingModule({
             providers: [
@@ -65,6 +70,11 @@ describe('Authentication Service', function() {
                 {
                     provide: VaultereumService,
                     useValue: instance(context.vaultereumServiceMock),
+                },
+
+                {
+                    provide: Web3Service,
+                    useValue: instance(context.web3ServiceMock),
                 },
             ],
         }).compile();

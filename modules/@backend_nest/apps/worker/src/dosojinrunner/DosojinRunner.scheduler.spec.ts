@@ -11,7 +11,7 @@ import { CircuitContainerBase } from '@app/worker/dosojinrunner/circuits/Circuit
 import { GemOrderEntity } from '@lib/common/gemorders/entities/GemOrder.entity';
 import { UserDto } from '@lib/common/users/dto/User.dto';
 import { Gem } from 'dosojin';
-import { ESSearchReturn } from '@lib/common/utils/ESSearchReturn';
+import { ESSearchReturn } from '@lib/common/utils/ESSearchReturn.type';
 
 class QueueMock<T = any> {
     add(name: string, data: T, opts?: JobOptions): Promise<Job<T>> {
@@ -149,10 +149,6 @@ describe('DosojinRunner Scheduler', function() {
         };
 
         it('should dispatch a gem to run', async function() {
-            const user: UserDto = {
-                id: 'userid',
-            } as UserDto;
-
             const gem = new Gem();
             const rawGem = GemOrderEntity.fromDosojinRaw(gem.raw);
 
@@ -162,8 +158,6 @@ describe('DosojinRunner Scheduler', function() {
                 distribution_id: 123,
 
                 circuit_name: 'token_minter',
-
-                owner: user.id,
 
                 initial_arguments: JSON.stringify({
                     name: 'hi',
@@ -207,10 +201,6 @@ describe('DosojinRunner Scheduler', function() {
         });
 
         it('should fail on gem query error', async function() {
-            const user: UserDto = {
-                id: 'userid',
-            } as UserDto;
-
             const gem = new Gem();
             const rawGem = GemOrderEntity.fromDosojinRaw(gem.raw);
 
@@ -220,8 +210,6 @@ describe('DosojinRunner Scheduler', function() {
                 distribution_id: 123,
 
                 circuit_name: 'token_minter',
-
-                owner: user.id,
 
                 initial_arguments: JSON.stringify({
                     name: 'hi',
@@ -258,10 +246,6 @@ describe('DosojinRunner Scheduler', function() {
         });
 
         it('should interrupt on empty gem query', async function() {
-            const user: UserDto = {
-                id: 'userid',
-            } as UserDto;
-
             const gem = new Gem();
             const rawGem = GemOrderEntity.fromDosojinRaw(gem.raw);
 
@@ -283,10 +267,6 @@ describe('DosojinRunner Scheduler', function() {
         });
 
         it('should not dispatch a gem to run (already in queue)', async function() {
-            const user: UserDto = {
-                id: 'userid',
-            } as UserDto;
-
             const gem = new Gem();
             const rawGem = GemOrderEntity.fromDosojinRaw(gem.raw);
 
@@ -296,8 +276,6 @@ describe('DosojinRunner Scheduler', function() {
                 distribution_id: 123,
 
                 circuit_name: 'token_minter',
-
-                owner: user.id,
 
                 initial_arguments: JSON.stringify({
                     name: 'hi',
@@ -376,8 +354,6 @@ describe('DosojinRunner Scheduler', function() {
 
                 circuit_name: 'token_minter',
 
-                owner: user.id,
-
                 initial_arguments: JSON.stringify({
                     name: 'hi',
                 }),
@@ -421,10 +397,6 @@ describe('DosojinRunner Scheduler', function() {
         });
 
         it('should initialize a gem without initial args', async function() {
-            const user: UserDto = {
-                id: 'userid',
-            } as UserDto;
-
             const gemOrder: GemOrderEntity = {
                 id: 'gemorderid',
 
@@ -433,8 +405,6 @@ describe('DosojinRunner Scheduler', function() {
                 distribution_id: 123,
 
                 circuit_name: 'token_minter',
-
-                owner: user.id,
 
                 initial_arguments: null,
 
@@ -494,10 +464,6 @@ describe('DosojinRunner Scheduler', function() {
         });
 
         it('should interrupt because gem already in queue', async function() {
-            const user: UserDto = {
-                id: 'userid',
-            } as UserDto;
-
             const gemOrder: GemOrderEntity = {
                 id: 'gemorderid',
 
@@ -506,8 +472,6 @@ describe('DosojinRunner Scheduler', function() {
                 distribution_id: 123,
 
                 circuit_name: 'token_minter',
-
-                owner: user.id,
 
                 initial_arguments: JSON.stringify({
                     name: 'hi',
@@ -558,10 +522,6 @@ describe('DosojinRunner Scheduler', function() {
         });
 
         it('should set error on unknown circuit', async function() {
-            const user: UserDto = {
-                id: 'userid',
-            } as UserDto;
-
             const gemOrder: GemOrderEntity = {
                 id: 'gemorderid',
 
@@ -570,8 +530,6 @@ describe('DosojinRunner Scheduler', function() {
                 distribution_id: 123,
 
                 circuit_name: 'token_minter_bis',
-
-                owner: user.id,
 
                 initial_arguments: JSON.stringify({
                     name: 'hi',
@@ -642,10 +600,6 @@ describe('DosojinRunner Scheduler', function() {
         });
 
         it('should fail on error gem update', async function() {
-            const user: UserDto = {
-                id: 'userid',
-            } as UserDto;
-
             const gemOrder: GemOrderEntity = {
                 id: 'gemorderid',
 
@@ -654,8 +608,6 @@ describe('DosojinRunner Scheduler', function() {
                 distribution_id: 123,
 
                 circuit_name: 'token_minter_bis',
-
-                owner: user.id,
 
                 initial_arguments: JSON.stringify({
                     name: 'hi',

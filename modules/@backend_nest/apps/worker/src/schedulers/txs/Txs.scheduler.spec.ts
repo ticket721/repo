@@ -7,7 +7,7 @@ import { deepEqual, instance, mock, verify, when } from 'ts-mockito';
 import { Test, TestingModule } from '@nestjs/testing';
 import { GlobalConfigService } from '@lib/common/globalconfig/GlobalConfig.service';
 import { GlobalEntity } from '@lib/common/globalconfig/entities/Global.entity';
-import { ESSearchReturn } from '@lib/common/utils/ESSearchReturn';
+import { ESSearchReturn } from '@lib/common/utils/ESSearchReturn.type';
 import { TxEntity } from '@lib/common/txs/entities/Tx.entity';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 import { toAcceptedAddressFormat } from '@common/global';

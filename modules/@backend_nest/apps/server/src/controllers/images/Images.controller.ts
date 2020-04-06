@@ -9,24 +9,25 @@ import {
     UseInterceptors,
 } from '@nestjs/common';
 import { Roles, RolesGuard } from '@app/server/authentication/guards/RolesGuard.guard';
-import { ApiBearerAuth, ApiBody, ApiConsumes, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
-import { User } from '@app/server/authentication/decorators/User.decorator';
+import { User } from '@app/server/authentication/decorators/User.controller.decorator';
 import { UserDto } from '@lib/common/users/dto/User.dto';
-import { StatusCodes, StatusNames } from '@lib/common/utils/codes';
+import { StatusCodes } from '@lib/common/utils/codes.value';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { ImagesUploadResponseDto } from '@app/server/controllers/images/dto/ImagesUploadResponse.dto';
 import { ImagesUploadInputDto } from '@app/server/controllers/images/dto/ImagesUploadInput.dto';
 import { ImagesService } from '@lib/common/images/Images.service';
 import { ConfigService } from '@lib/common/config/Config.service';
 import { keccak256 } from '@common/global';
-import { ESSearchBodyBuilder } from '@lib/common/utils/ESSearchBodyBuilder';
-import { SortablePagedSearch } from '@lib/common/utils/SortablePagedSearch';
+import { SortablePagedSearch } from '@lib/common/utils/SortablePagedSearch.type';
 import { ImageEntity } from '@lib/common/images/entities/Image.entity';
-import { fromES } from '@lib/common/utils/fromES';
 import * as path from 'path';
 import { FSService } from '@lib/common/fs/FS.service';
 import { HttpExceptionFilter } from '@app/server/utils/HttpException.filter';
+import { ControllerBasics } from '@lib/common/utils/ControllerBasics.base';
+import { UUIDToolService } from '@lib/common/toolbox/UUID.tool.service';
+import { ApiResponses } from '@app/server/utils/ApiResponses.controller.decorator';
 
 /**
  * Accepted Mimetypes
@@ -45,19 +46,23 @@ const mimetypeMapping = {
 @ApiBearerAuth()
 @ApiTags('images')
 @Controller('images')
-export class ImagesController {
+export class ImagesController extends ControllerBasics<ImageEntity> {
     /**
      * Dependency Injection
      *
      * @param imagesService
      * @param configService
      * @param fsService
+     * @param uuidToolService
      */
     constructor(
         private readonly imagesService: ImagesService,
         private readonly configService: ConfigService,
         private readonly fsService: FSService,
-    ) {}
+        private readonly uuidToolService: UUIDToolService,
+    ) {
+        super();
+    }
 
     /**
      * Upload Image(s)
@@ -66,33 +71,23 @@ export class ImagesController {
      * @param user
      */
     @Post('/')
-    @ApiResponse({
-        status: StatusCodes.InternalServerError,
-        description: StatusNames[StatusCodes.InternalServerError],
-    })
-    @ApiResponse({
-        status: StatusCodes.BadRequest,
-        description: StatusNames[StatusCodes.BadRequest],
-    })
-    @ApiResponse({
-        status: StatusCodes.OK,
-        description: StatusNames[StatusCodes.OK],
-    })
-    @HttpCode(200)
+    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @UseFilters(new HttpExceptionFilter())
+    @UseInterceptors(FilesInterceptor('images'))
+    @HttpCode(StatusCodes.Created)
+    @Roles('authenticated')
     @ApiBody({
         type: ImagesUploadInputDto,
     })
     @ApiConsumes('multipart/form-data')
-    @UseInterceptors(FilesInterceptor('images'))
-    @UseGuards(AuthGuard('jwt'), RolesGuard)
-    @Roles('authenticated')
-    @UseFilters(new HttpExceptionFilter())
+    @ApiResponses([StatusCodes.Created, StatusCodes.BadRequest, StatusCodes.InternalServerError])
     async upload(@UploadedFiles() files, @User() user: UserDto): Promise<ImagesUploadResponseDto> {
         const maxSize: number = parseInt(this.configService.get('IMAGE_MAX_SIZE'), 10) * 1000000;
 
         const result: ImageEntity[] = [];
 
         for (const file of files) {
+            /* istanbul ignore next */
             if (file.size > maxSize) {
                 throw new HttpException(
                     {
@@ -105,6 +100,7 @@ export class ImagesController {
 
             file.hash = keccak256(file.buffer.toString('hex')).toLowerCase();
 
+            /* istanbul ignore next */
             if (mimetypeMapping[file.mimetype] === undefined) {
                 throw new HttpException(
                     {
@@ -115,31 +111,40 @@ export class ImagesController {
                 );
             }
 
-            const body = ESSearchBodyBuilder({
+            const collision = await this._elasticGet<ImageEntity>(this.imagesService, {
                 $page_size: 1,
                 hash: {
                     $eq: file.hash,
                 },
             } as SortablePagedSearch);
 
-            const collision = await this.imagesService.searchElastic(body.response);
+            if (collision.length === 1) {
+                result.push(collision[0]);
+                continue;
+            }
 
-            if (collision.error) {
+            const imageId = this.uuidToolService.generate();
+
+            const imagePath = path.join(
+                this.configService.get('IMAGE_SERVE_DIRECTORY'),
+                `${imageId}${mimetypeMapping[file.mimetype]}`,
+            );
+
+            /* istanbul ignore next */
+            try {
+                this.fsService.writeFile(imagePath, file.buffer);
+            } catch (e) {
                 throw new HttpException(
                     {
                         status: StatusCodes.InternalServerError,
-                        message: 'image_collision_check_error',
+                        message: 'error_while_uploading_image',
                     },
                     StatusCodes.InternalServerError,
                 );
             }
 
-            if (collision.response.hits.total === 1) {
-                result.push(fromES(collision.response.hits.hits[0]));
-                continue;
-            }
-
-            const res = await this.imagesService.create({
+            const imageEntity: ImageEntity = await this._new<ImageEntity>(this.imagesService, {
+                id: imageId,
                 mimetype: file.mimetype,
                 size: file.size,
                 hash: file.hash,
@@ -147,24 +152,7 @@ export class ImagesController {
                 links: 0,
             });
 
-            if (res.error) {
-                throw new HttpException(
-                    {
-                        status: StatusCodes.InternalServerError,
-                        message: 'image_db_save_error',
-                    },
-                    StatusCodes.InternalServerError,
-                );
-            }
-
-            const imagePath = path.join(
-                this.configService.get('IMAGE_SERVE_DIRECTORY'),
-                `${res.response.id}${mimetypeMapping[file.mimetype]}`,
-            );
-
-            this.fsService.writeFile(imagePath, file.buffer);
-
-            result.push(res.response);
+            result.push(imageEntity);
         }
 
         for (const res of result) {

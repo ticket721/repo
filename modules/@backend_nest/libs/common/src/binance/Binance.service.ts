@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { ServiceResponse } from '@lib/common/utils/ServiceResponse';
+import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
 import { BinanceModuleBuildOptions } from '@lib/common/binance/Binance.module';
 
 /**

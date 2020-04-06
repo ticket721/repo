@@ -1,4 +1,4 @@
-import { leftPad, toB32, uuidEq } from './index';
+import { isFutureDateRange, leftPad, serialize, toB32, uuidEq } from './index';
 
 describe('Utils', function () {
 
@@ -47,6 +47,59 @@ describe('Utils', function () {
         it('should do nothing', function() {
 
             expect(leftPad('hihihi', 2)).toEqual('hihihi');
+
+        });
+
+    });
+
+    describe('serialize', function() {
+
+        it('should serialize an already serialized string', function() {
+
+            expect(serialize('vip')).toEqual('vip');
+
+        });
+
+        it('should serialize a string with uppercase letters', function() {
+
+            expect(serialize('Vip')).toEqual('vip');
+
+        });
+
+        it('should serialize a string with withespaces', function() {
+
+            expect(serialize('Vip Ticket')).toEqual('vip_ticket');
+
+        });
+
+    });
+
+    describe('isFutureDateRange', function() {
+
+        it('is indeed future date range', function() {
+
+            const begin = new Date(Date.now() + 1000 * 60);
+            const end = new Date(Date.now() + 1000 * 120);
+
+            expect(isFutureDateRange(begin, end)).toBeTruthy();
+
+        });
+
+        it('end before begin error', function() {
+
+            const begin = new Date(Date.now() + 1000 * 120);
+            const end = new Date(Date.now() + 1000 * 60);
+
+            expect(isFutureDateRange(begin, end)).toBeFalsy();
+
+        });
+
+        it('past dates', function() {
+
+            const begin = new Date(Date.now() - 1000 * 60);
+            const end = new Date(Date.now() - 1000 * 120);
+
+            expect(isFutureDateRange(begin, end)).toBeFalsy();
 
         });
 

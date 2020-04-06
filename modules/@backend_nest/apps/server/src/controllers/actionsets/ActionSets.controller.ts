@@ -1,26 +1,29 @@
-import { Body, Controller, HttpCode, HttpException, Post, Put, UseFilters, UseGuards } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpException, Param, Post, Put, UseFilters, UseGuards } from '@nestjs/common';
 import { ActionSetsService } from '@lib/common/actionsets/ActionSets.service';
 import { Roles, RolesGuard } from '@app/server/authentication/guards/RolesGuard.guard';
-import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
-import { User } from '@app/server/authentication/decorators/User.decorator';
+import { User } from '@app/server/authentication/decorators/User.controller.decorator';
 import { UserDto } from '@lib/common/users/dto/User.dto';
-import { search, hash } from '@lib/common/utils/ControllerBasics';
-import { SortablePagedSearch } from '@lib/common/utils/SortablePagedSearch';
+import { ControllerBasics } from '@lib/common/utils/ControllerBasics.base';
+import { SortablePagedSearch } from '@lib/common/utils/SortablePagedSearch.type';
 import { ActionsSearchInputDto } from '@app/server/controllers/actionsets/dto/ActionsSearchInput.dto';
 import { ActionsSearchResponseDto } from '@app/server/controllers/actionsets/dto/ActionsSearchResponse.dto';
 import { ActionSetEntity, ActionSetStatus } from '@lib/common/actionsets/entities/ActionSet.entity';
 import { ActionsUpdateInputDto } from '@app/server/controllers/actionsets/dto/ActionsUpdateInput.dto';
 import { ActionsUpdateResponseDto } from '@app/server/controllers/actionsets/dto/ActionsUpdateResponse.dto';
-import { CRUDResponse } from '@lib/common/crud/CRUD.extension';
-import { ActionSet } from '@lib/common/actionsets/helper/ActionSet';
-import { ActionsHashInputDto } from '@app/server/controllers/actionsets/dto/ActionsHashInput.dto';
-import { ActionsHashResponseDto } from '@app/server/controllers/actionsets/dto/ActionsHashResponse.dto';
-import { StatusCodes, StatusNames } from '@lib/common/utils/codes';
-import { defined } from '@lib/common/utils/defined';
+import { CRUDResponse } from '@lib/common/crud/CRUDExtension.base';
+import { ActionSet } from '@lib/common/actionsets/helper/ActionSet.class';
+import { StatusCodes } from '@lib/common/utils/codes.value';
+import { defined } from '@lib/common/utils/defined.helper';
 import { Queue } from 'bull';
 import { InjectQueue } from '@nestjs/bull';
 import { HttpExceptionFilter } from '@app/server/utils/HttpException.filter';
+import { EventCreateAcsetBuilderArgs } from '@lib/common/actionsets/acset_builders/EventCreate.acsetbuilder.helper';
+import { ActionsCreateInputDto } from '@app/server/controllers/actionsets/dto/ActionsCreateInput.dto';
+import { ActionsCreateResponseDto } from '@app/server/controllers/actionsets/dto/ActionsCreateResponse.dto';
+import { RightsService } from '@lib/common/rights/Rights.service';
+import { ApiResponses } from '@app/server/utils/ApiResponses.controller.decorator';
 
 /**
  * Generic Actions controller. Recover / delete action sets generated across the app
@@ -28,16 +31,20 @@ import { HttpExceptionFilter } from '@app/server/utils/HttpException.filter';
 @ApiBearerAuth()
 @ApiTags('actions')
 @Controller('actions')
-export class ActionSetsController {
+export class ActionSetsController extends ControllerBasics<ActionSetEntity> {
     /**
      * Dependency Injection
      * @param actionSetsService
      * @param actionQueue
+     * @param rightsService
      */
     constructor(
         private readonly actionSetsService: ActionSetsService,
         @InjectQueue('action') private readonly actionQueue: Queue,
-    ) {}
+        private readonly rightsService: RightsService,
+    ) {
+        super();
+    }
 
     /**
      * Search for action sets
@@ -46,28 +53,14 @@ export class ActionSetsController {
      * @param user
      */
     @Post('/search')
-    @ApiResponse({
-        status: StatusCodes.InternalServerError,
-        description: StatusNames[StatusCodes.InternalServerError],
-    })
-    @ApiResponse({
-        status: StatusCodes.BadRequest,
-        description: StatusNames[StatusCodes.BadRequest],
-    })
-    @ApiResponse({
-        status: StatusCodes.OK,
-        description: StatusNames[StatusCodes.OK],
-    })
-    @HttpCode(200)
     @UseGuards(AuthGuard('jwt'), RolesGuard)
-    @Roles('authenticated')
     @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.OK)
+    @Roles('authenticated')
+    @ApiResponses([StatusCodes.OK, StatusCodes.InternalServerError, StatusCodes.Unauthorized, StatusCodes.BadRequest])
     async search(@Body() body: ActionsSearchInputDto, @User() user: UserDto): Promise<ActionsSearchResponseDto> {
-        const actionsets = await search<ActionSetEntity, ActionSetsService>(this.actionSetsService, {
+        const actionsets = await this._searchRestricted(this.actionSetsService, this.rightsService, user, 'id', {
             ...body,
-            owner: {
-                $eq: user.id.toString(),
-            },
         } as SortablePagedSearch);
 
         return {
@@ -76,111 +69,36 @@ export class ActionSetsController {
     }
 
     /**
-     * Hashes a result, used to know when data changed
-     *
-     * @param body
-     * @param user
-     */
-    @Post('/hash')
-    @ApiResponse({
-        status: StatusCodes.InternalServerError,
-        description: StatusNames[StatusCodes.InternalServerError],
-    })
-    @ApiResponse({
-        status: StatusCodes.BadRequest,
-        description: StatusNames[StatusCodes.BadRequest],
-    })
-    @ApiResponse({
-        status: StatusCodes.OK,
-        description: StatusNames[StatusCodes.OK],
-    })
-    @HttpCode(200)
-    @UseGuards(AuthGuard('jwt'), RolesGuard)
-    @Roles('authenticated')
-    @UseFilters(new HttpExceptionFilter())
-    async hash(@Body() body: ActionsHashInputDto, @User() user: UserDto): Promise<ActionsHashResponseDto> {
-        const { hash_fields, ...query } = body;
-
-        const [count, hashed] = await hash<ActionSetEntity, ActionSetsService>(
-            this.actionSetsService,
-            {
-                ...query,
-                owner: {
-                    $eq: user.id.toString(),
-                },
-            } as SortablePagedSearch,
-            hash_fields,
-        );
-
-        return {
-            hash: hashed,
-            count,
-        };
-    }
-
-    /**
      * Route to update an action, its data and its status.
      * Will make the action dispatchable in the action queue.
      *
      * @param body
+     * @param actionSetId
      * @param user
      */
-    @Put('/')
-    @ApiResponse({
-        status: StatusCodes.InternalServerError,
-        description: StatusNames[StatusCodes.InternalServerError],
-    })
-    @ApiResponse({
-        status: StatusCodes.NotFound,
-        description: StatusNames[StatusCodes.NotFound],
-    })
-    @ApiResponse({
-        status: StatusCodes.BadRequest,
-        description: StatusNames[StatusCodes.BadRequest],
-    })
-    @ApiResponse({
-        status: StatusCodes.OK,
-        description: StatusNames[StatusCodes.OK],
-    })
-    @HttpCode(200)
+    @Put('/:actionSetId')
     @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.OK)
     @Roles('authenticated')
-    async updateAction(@Body() body: ActionsUpdateInputDto, @User() user: UserDto): Promise<ActionsUpdateResponseDto> {
-        const searchResult: CRUDResponse<ActionSetEntity[]> = await this.actionSetsService.search({
-            id: body.actionset_id,
-        });
+    @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized, StatusCodes.BadRequest, StatusCodes.Conflict])
+    async updateAction(
+        @Body() body: ActionsUpdateInputDto,
+        @Param('actionSetId') actionSetId: string,
+        @User() user: UserDto,
+    ): Promise<ActionsUpdateResponseDto> {
+        const actionSetEntity: ActionSetEntity = await this._authorizeOne(
+            this.rightsService,
+            this.actionSetsService,
+            user,
+            {
+                id: actionSetId,
+            },
+            'id',
+            ['owner'],
+        );
 
-        if (searchResult.error) {
-            throw new HttpException(
-                {
-                    status: StatusCodes.InternalServerError,
-                    message: searchResult.error,
-                },
-                StatusCodes.InternalServerError,
-            );
-        }
-
-        if (searchResult.response.length === 0) {
-            throw new HttpException(
-                {
-                    status: StatusCodes.NotFound,
-                    message: 'actionset_not_found',
-                },
-                StatusCodes.NotFound,
-            );
-        }
-
-        const actionSet: ActionSet = new ActionSet().load(searchResult.response[0]);
-
-        if (!actionSet.isOwner(user)) {
-            throw new HttpException(
-                {
-                    status: StatusCodes.NotFound,
-                    message: 'actionset_not_found',
-                },
-                StatusCodes.NotFound,
-            );
-        }
+        const actionSet = new ActionSet().load(actionSetEntity);
 
         if (!defined(body.action_idx)) {
             body.action_idx = actionSet.current_action;
@@ -204,25 +122,53 @@ export class ActionSetsController {
         const updateQuery = actionSet.getQuery();
         const updateBody = actionSet.withoutQuery();
 
-        const res = await this.actionSetsService.update(updateQuery, {
+        await this._edit<ActionSetEntity>(this.actionSetsService, updateQuery, {
             ...updateBody,
             dispatched_at: new Date(Date.now()),
         });
-
         await this.actionQueue.add('input', actionSet.raw);
 
-        if (res.error) {
+        return {
+            actionset: {
+                ...actionSetEntity,
+                ...updateBody,
+                dispatched_at: new Date(Date.now()),
+            },
+        };
+    }
+
+    /**
+     * Route to create an action set, its data and its status.
+     * Will make the action dispatchable in the action queue.
+     *
+     * @param body
+     * @param user
+     */
+    @Post('/')
+    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.Created)
+    @Roles('authenticated')
+    @ApiResponses([StatusCodes.Created, StatusCodes.BadRequest])
+    async createActions(@Body() body: ActionsCreateInputDto, @User() user: UserDto): Promise<ActionsCreateResponseDto> {
+        const response: CRUDResponse<ActionSetEntity> = await this.actionSetsService.build<EventCreateAcsetBuilderArgs>(
+            body.name,
+            user,
+            body.arguments,
+        );
+
+        if (response.error) {
             throw new HttpException(
                 {
-                    status: StatusCodes.InternalServerError,
-                    message: res.error,
+                    status: StatusCodes.BadRequest,
+                    message: response.error,
                 },
-                StatusCodes.InternalServerError,
+                StatusCodes.BadRequest,
             );
         }
 
         return {
-            actionset: res.response,
+            actionset: response.response,
         };
     }
 }

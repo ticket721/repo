@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CRUDExtension } from '@lib/common/crud/CRUD.extension';
+import { CRUDExtension } from '@lib/common/crud/CRUDExtension.base';
 import { StripeResourcesRepository } from '@lib/common/striperesources/StripeResources.repository';
 import { StripeResourceEntity } from '@lib/common/striperesources/entities/StripeResource.entity';
 import { BaseModel, InjectModel, InjectRepository } from '@iaminfinity/express-cassandra';
@@ -27,6 +27,10 @@ export class StripeResourcesService extends CRUDExtension<StripeResourcesReposit
             /* istanbul ignore next */
             (e: StripeResourceEntity) => {
                 return new stripeResourceEntity(e);
+            },
+            /* istanbul ignore next */
+            (sr: StripeResourceEntity) => {
+                return new StripeResourceEntity(sr);
             },
         );
     }

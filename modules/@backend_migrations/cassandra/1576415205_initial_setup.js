@@ -54,7 +54,7 @@ var migration1576415205 = {
         const actionset_table_creation = {
             query: `CREATE TABLE ticket721.actionset (
                     id UUID PRIMARY KEY,
-                    owner UUID,
+                    links list<frozen<ticket721.link>>,
                     current_action int,
                     current_status text,
                     name text,
@@ -74,6 +74,14 @@ var migration1576415205 = {
             params: []
         };
 
+        const link_type_creation = {
+            query: `CREATE TYPE ticket721.link (
+                        id uuid,
+                        type text
+                    );`,
+            params: []
+        };
+
         const price_type_creation = {
             query: `CREATE TYPE ticket721.price (
                         currency text,
@@ -83,25 +91,63 @@ var migration1576415205 = {
             params: []
         };
 
-        const category_type_creation = {
-            query: `CREATE TYPE ticket721.category (
+        const right_table_creation = {
+            query: `CREATE TABLE ticket721.right (
+                        grantee_id uuid,
+                        entity_type text,
+                        entity_value text,
+                        rights map<text, boolean>,
+                        created_at timestamp,
+                        updated_at timestamp,
+                        PRIMARY KEY((grantee_id), entity_type, entity_value)
+                    );`,
+            params: []
+        };
+
+        const category_table_creation = {
+            query: `CREATE TABLE ticket721.category (
+                        id UUID PRIMARY KEY,
                         group_id text,
                         category_name text,
-                        category_index int,
+                        display_name text,
                         sale_begin timestamp,
                         sale_end timestamp,
                         resale_begin timestamp,
                         resale_end timestamp,
                         scope text,
                         prices list<frozen<ticket721.price>>,
-                        seats int
+                        seats int,
+                        parent_id uuid,
+                        parent_type text,
+                        created_at timestamp,
+                        updated_at timestamp
                     );`,
             params: []
         };
 
         const date_metadata_type_creation = {
             query: `CREATE TYPE ticket721.date_metadata (
-                        name text
+                        name text,
+                        description text,
+                        tags list<text>,
+                        avatar text
+                    );`,
+            params: []
+        };
+
+        const date_timestamps_type_creation = {
+            query: `CREATE TYPE ticket721.date_timestamps (
+                        event_begin timestamp,
+                        event_end timestamp
+                    );`,
+            params: []
+        };
+
+        const date_location_type_creation = {
+            query: `CREATE TYPE ticket721.date_location (
+                        location frozen<ticket721.geo_point>,
+                        location_label text,
+                        assigned_city int
                     );`,
             params: []
         };
@@ -109,12 +155,10 @@ var migration1576415205 = {
         const date_table_creation = {
             query: `CREATE TABLE ticket721.date (
                         id UUID PRIMARY KEY,
-                        event_begin timestamp,
-                        event_end timestamp,
-                        location frozen<ticket721.geo_point>,
-                        location_label text,
-                        assigned_city int,
-                        categories list<frozen<ticket721.category>>,
+                        group_id text,
+                        categories list<uuid>,
+                        location frozen<ticket721.date_location>,
+                        timestamps frozen<ticket721.date_timestamps>,
                         metadata frozen<ticket721.date_metadata>,
                         parent_id uuid,
                         parent_type text,
@@ -128,17 +172,12 @@ var migration1576415205 = {
         const event_table_creation = {
             query: `CREATE TABLE ticket721.event (
                         id UUID PRIMARY KEY,
-                        status text,
-                        address text,
-                        owner uuid,
-                        admins list<uuid>,
-                        dates list<uuid>,
-                        categories list<frozen<ticket721.category>>,
-                        name text,
-                        description text,
-                        avatar uuid,
-                        banners list<uuid>,
                         group_id text,
+                        name text,
+                        address text,
+                        controller text,
+                        dates list<uuid>,
+                        categories list<uuid>,
                         created_at timestamp,
                         updated_at timestamp
                     );`,
@@ -356,7 +395,6 @@ var migration1576415205 = {
                         id text PRIMARY KEY,
                         distribution_id bigint,
                         circuit_name text,
-                        owner uuid,
                         initial_arguments text,
                         gem frozen<ticket721.gem>,
                         refresh_timer int,
@@ -386,14 +424,20 @@ var migration1576415205 = {
             console.log('GeoPoint Type Creation');
             await db.execute(geo_point_type_creation.query, geo_point_type_creation.params, { prepare: true });
 
+            console.log('Link Type Creation');
+            await db.execute(link_type_creation.query, link_type_creation.params, { prepare: true });
+
             console.log('Price Type Creation');
             await db.execute(price_type_creation.query, price_type_creation.params, { prepare: true });
 
-            console.log('Category Type Creation');
-            await db.execute(category_type_creation.query, category_type_creation.params, { prepare: true });
-
             console.log('Date Metadata Type Creation');
             await db.execute(date_metadata_type_creation.query, date_metadata_type_creation.params, { prepare: true });
+
+            console.log('Date Timestamps Type Creation');
+            await db.execute(date_timestamps_type_creation.query, date_timestamps_type_creation.params, { prepare: true });
+
+            console.log('Date Location Type Creation');
+            await db.execute(date_location_type_creation.query, date_location_type_creation.params, { prepare: true });
 
             console.log('Tx Log Type Creation');
             await db.execute(tx_log_type_creation.query, tx_log_type_creation.params, {prepare: true});
@@ -432,6 +476,9 @@ var migration1576415205 = {
             console.log('User Table Creation');
             await db.execute(user_table_creation.query, user_table_creation.params, { prepare: true });
 
+            console.log('Right Table Creation');
+            await db.execute(right_table_creation.query, right_table_creation.params, { prepare: true });
+
             console.log('Image Table Creation');
             await db.execute(image_table_creation.query, image_table_creation.params, { prepare: true });
 
@@ -440,6 +487,9 @@ var migration1576415205 = {
 
             console.log('ActionSet Table Creation');
             await db.execute(actionset_table_creation.query, actionset_table_creation.params, { prepare: true });
+
+            console.log('Category Table Creation');
+            await db.execute(category_table_creation.query, category_table_creation.params, { prepare: true });
 
             console.log('Date Table Creation');
             await db.execute(date_table_creation.query, date_table_creation.params, { prepare: true });
@@ -506,18 +556,38 @@ var migration1576415205 = {
             params: []
         };
 
+        const link_type_creation = {
+            query: 'DROP TYPE ticket721.link;',
+            params: []
+        };
+
         const price_type_creation = {
             query: 'DROP TYPE ticket721.price;',
             params: []
         };
 
-        const category_type_creation = {
-            query: 'DROP TYPE ticket721.category;',
+        const right_table_creation = {
+            query: 'DROP TABLE ticket721.right;',
+            params: []
+        };
+
+        const category_table_creation = {
+            query: 'DROP TABLE ticket721.category;',
             params: []
         };
 
         const date_metadata_type_creation = {
-            query: 'DROP TYPE ticket721.date_metadata;',
+            query: `DROP TYPE ticket721.date_metadata;`,
+            params: []
+        };
+
+        const date_timestamps_type_creation = {
+            query: `DROP TYPE ticket721.date_timestamps;`,
+            params: []
+        };
+
+        const date_location_type_creation = {
+            query: `DROP TYPE ticket721.date_location;`,
             params: []
         };
 
@@ -622,6 +692,9 @@ var migration1576415205 = {
             console.log('User Table Deletion');
             await db.execute(user_table_creation.query, user_table_creation.params, { prepare: true });
 
+            console.log('Right Table Deletion');
+            await db.execute(right_table_creation.query, right_table_creation.params, { prepare: true });
+
             console.log('Image Table Deletion');
             await db.execute(image_table_creation.query, image_table_creation.params, { prepare: true });
 
@@ -636,6 +709,9 @@ var migration1576415205 = {
 
             console.log('Event Table Deletion');
             await db.execute(event_table_creation.query, event_table_creation.params, { prepare: true });
+
+            console.log('Category Table Deletion');
+            await db.execute(category_table_creation.query, category_table_creation.params, { prepare: true });
 
             console.log('Tx Table Deletion');
             await db.execute(tx_table_creation.query, tx_table_creation.params, { prepare: true });
@@ -659,17 +735,17 @@ var migration1576415205 = {
             console.log('Action Type Deletion');
             await db.execute(action_type_creation.query, action_type_creation.params, { prepare: true });
 
-            console.log('GeoPoint Type Deletion');
-            await db.execute(geo_point_type_creation.query, geo_point_type_creation.params, { prepare: true });
-
-            console.log('Category Type Deletion');
-            await db.execute(category_type_creation.query, category_type_creation.params, { prepare: true });
-
             console.log('Price Type Deletion');
             await db.execute(price_type_creation.query, price_type_creation.params, { prepare: true });
 
             console.log('Date Metadata Type Deletion');
             await db.execute(date_metadata_type_creation.query, date_metadata_type_creation.params, { prepare: true });
+
+            console.log('Date Timestamps Type Deletion');
+            await db.execute(date_timestamps_type_creation.query, date_timestamps_type_creation.params, { prepare: true });
+
+            console.log('Date Location Type Deletion');
+            await db.execute(date_location_type_creation.query, date_location_type_creation.params, { prepare: true });
 
             console.log('Tx Log Type Deletion');
             await db.execute(tx_log_type_creation.query, tx_log_type_creation.params, { prepare: true });
@@ -703,6 +779,12 @@ var migration1576415205 = {
 
             console.log('Gem Operation Status Type Creation');
             await db.execute(gem__operation_status_type_creation.query, gem__operation_status_type_creation.params, {prepare: true});
+
+            console.log('GeoPoint Type Deletion');
+            await db.execute(geo_point_type_creation.query, geo_point_type_creation.params, { prepare: true });
+
+            console.log('Link Type Deletion');
+            await db.execute(link_type_creation.query, link_type_creation.params, { prepare: true });
 
         } catch (e) {
             return handler(e, false);

@@ -1,9 +1,9 @@
-import config                       from './config';
-import * as fs                      from 'fs';
-import { T721SDK }                  from '@common/sdk';
-import { AxiosResponse }            from 'axios';
-import FormData                     from 'form-data';
-import { UserDto }                  from '../@backend_nest/libs/common/src/users/dto/User.dto';
+import config            from './config';
+import * as fs           from 'fs';
+import { T721SDK }       from '@common/sdk';
+import { AxiosResponse } from 'axios';
+import FormData          from 'form-data';
+import { UserDto }       from '../@backend_nest/libs/common/src/users/dto/User.dto';
 
 const waitForAction = async (sdk: T721SDK, token: string, actionset: string): Promise<any> => {
     let tries = 0;
@@ -23,6 +23,8 @@ const waitForAction = async (sdk: T721SDK, token: string, actionset: string): Pr
             if (res.data.actionsets.length === 0) {
                 return;
             }
+
+            console.log(res.data.actionsets);
 
             const actionSetEntity = res.data.actionsets[0];
             if (actionSetEntity.current_status !== 'input:waiting' && actionSetEntity.current_status !== 'event:waiting') {
@@ -59,10 +61,13 @@ export const createEvent = async (user: UserDto, sdk: T721SDK, token: string, ev
 
     {
         console.log('Create Event: ...');
-        const res = await sdk.events.create.init(
+        const res = await sdk.actions.create(
             token,
             {
-                name: infos.name,
+                name: 'event_create',
+                arguments: {
+                    name: infos.name
+                },
             },
         );
         console.log('Create Event: OK.');
@@ -115,9 +120,7 @@ export const createEvent = async (user: UserDto, sdk: T721SDK, token: string, ev
     await waitForAction(sdk, token, id);
     console.log('Create Event - Categories Configuration: OK.');
 
-
     let avatarId = null;
-    let bannerIds = null;
 
     {
         const form = new FormData();
@@ -138,35 +141,12 @@ export const createEvent = async (user: UserDto, sdk: T721SDK, token: string, ev
 
     }
 
-    {
-        const form = new FormData();
-
-        for (const banner of infos.images.banners) {
-
-            form.append('images', fs.readFileSync(`${imagesPath}/${banner}`), {
-                filename: 'banner.jpg',
-            });
-        }
-
-        console.log('Create Event - Banners Upload: ...');
-        const res = await sdk.images.upload(
-            token,
-            form.getBuffer(),
-            form.getHeaders(),
-        );
-        console.log('Create Event - Banners Upload: OK.');
-
-        bannerIds = res.data.ids.map(img => img.id);
-
-    }
-
     console.log('Create Event - Images Metadata: ...');
     await sdk.events.create.imagesMetadata(
         token,
         id,
         {
-            avatar: avatarId,
-            banners: bannerIds,
+            avatar: avatarId
         },
     );
     await waitForAction(sdk, token, id);
@@ -188,7 +168,7 @@ export const createEvent = async (user: UserDto, sdk: T721SDK, token: string, ev
     console.log(`Created Event ${event} with action set id ${id}`);
 
     console.log('Create Event - Build: ...');
-    const resultingEvent = await sdk.events.create.build(token, {
+    const resultingEvent = await sdk.events.create.create(token, {
         completedActionSet: id,
     });
     console.log('Create Event - Build: OK.');

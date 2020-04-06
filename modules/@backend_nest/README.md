@@ -8,6 +8,31 @@
 $ lerna bootstrap --scope='@ticket721sources/*'
 ```
 
+## File Types
+
+| `extension` | Name | Description | UT | E2E |
+| :---: | :---: | :---: | :---: | :---: |
+| `.service.ts` | Service | Class containing raw logics | X | |
+| `.repository.ts` | Repository | Class containing entity related logics |   | |
+| `.entity.ts` | Entity | Entity mirroring database content | X | |
+| `.module.ts` | Module | Nest Module | | |
+| `.strategy.ts` | Strategy | Authentication Strategy | | X |
+| `.controller.ts` | Controller | Exposes HTTP routes | | X |
+| `.controller.decorator.ts` | Controller Decorator | HTTP Route decorator | | X |
+| `.tasks.ts` | Tasks | Class containing bull tasks | X | |
+| `.scheduler.ts` | Scheduler | Class containing scheduled callbacks | X | |
+| `.circuit.ts` | Circuit | Dosojin circuit | X | |
+| `.dosjin.ts` | Dosojin | Dosojin entity | X | |
+| `.base.ts` | Base Class | Inheritable class | X | |
+| `.class.ts` | Class |  | X | |
+| `.driver.ts` | Driver | Specific Implementation, linked to external lib, service ... |   | |
+| `.helper.ts` | Helper | Helper functions | X | |
+| `.type.ts` | Type | Typescript type / interface |   | |
+| `.joi.ts` | Joi Object Schema | Joi config for dynamic type scheking | X | |
+| `.value.ts` | Value | Static value |  | |
+| `.dto.ts` | Data Trasnfer Object |  |  | |
+
+
 ## Testing
 
 ### Unitary Tests

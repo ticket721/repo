@@ -5,8 +5,8 @@ import { AuthenticationService } from './Authentication.service';
 import { PasswordlessUserDto } from './dto/PasswordlessUser.dto';
 import { Web3TokenDto } from '@app/server/web3token/dto/Web3Token.dto';
 import { Web3TokensService } from '@app/server/web3token/Web3Tokens.service';
-import { ServiceResponse } from '@lib/common/utils/ServiceResponse';
-import { StatusCodes } from '@lib/common/utils/codes';
+import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
+import { StatusCodes } from '@lib/common/utils/codes.value';
 
 /**
  * Web3 Strategy to verify that signatures are valid

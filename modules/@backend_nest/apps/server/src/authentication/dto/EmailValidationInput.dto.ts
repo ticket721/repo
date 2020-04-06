@@ -4,11 +4,14 @@ import { IsString } from 'class-validator';
 /**
  * Input when validating email address with any account
  */
+/* istanbul ignore next */
 export class EmailValidationInputDto {
     /**
      * User Email
      */
-    @ApiProperty()
+    @ApiProperty({
+        description: 'Secret token proving email ownership',
+    })
     @IsString()
     token: string;
 }

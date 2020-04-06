@@ -1,17 +1,19 @@
 import { Body, Controller, HttpCode, Injectable, Post, UseFilters, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { StatusCodes, StatusNames } from '@lib/common/utils/codes';
-import { User } from '@app/server/authentication/decorators/User.decorator';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { StatusCodes } from '@lib/common/utils/codes.value';
+import { User } from '@app/server/authentication/decorators/User.controller.decorator';
 import { UserDto } from '@lib/common/users/dto/User.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { Roles, RolesGuard } from '@app/server/authentication/guards/RolesGuard.guard';
 import { HttpExceptionFilter } from '@app/server/utils/HttpException.filter';
-import { search } from '@lib/common/utils/ControllerBasics';
+import { ControllerBasics } from '@lib/common/utils/ControllerBasics.base';
 import { GemOrderEntity } from '@lib/common/gemorders/entities/GemOrder.entity';
 import { GemOrdersService } from '@lib/common/gemorders/GemOrders.service';
 import { GemOrdersSearchInputDto } from '@app/server/controllers/dosojin/dto/GemOrdersSearchInput.dto';
 import { GemOrdersSearchResponseDto } from '@app/server/controllers/dosojin/dto/GemOrdersSearchResponse.dto';
-import { SortablePagedSearch } from '@lib/common/utils/SortablePagedSearch';
+import { SortablePagedSearch } from '@lib/common/utils/SortablePagedSearch.type';
+import { RightsService } from '@lib/common/rights/Rights.service';
+import { ApiResponses } from '@app/server/utils/ApiResponses.controller.decorator';
 
 /**
  * Controller Handling Gem Orders
@@ -20,13 +22,16 @@ import { SortablePagedSearch } from '@lib/common/utils/SortablePagedSearch';
 @ApiBearerAuth()
 @ApiTags('dosojin')
 @Controller('dosojin')
-export class DosojinController {
+export class DosojinController extends ControllerBasics<GemOrderEntity> {
     /**
      * Dependency Injection
      *
      * @param gemOrdersService
+     * @param rightsService
      */
-    constructor(private readonly gemOrdersService: GemOrdersService) {}
+    constructor(private readonly gemOrdersService: GemOrdersService, private readonly rightsService: RightsService) {
+        super();
+    }
 
     /**
      * Fetches Gem Orders
@@ -35,29 +40,14 @@ export class DosojinController {
      * @param user
      */
     @Post('/search')
-    @ApiResponse({
-        status: StatusCodes.InternalServerError,
-        description: StatusNames[StatusCodes.InternalServerError],
-    })
-    @ApiResponse({
-        status: StatusCodes.BadRequest,
-        description: StatusNames[StatusCodes.BadRequest],
-    })
-    @ApiResponse({
-        status: StatusCodes.OK,
-        description: StatusNames[StatusCodes.OK],
-    })
-    @HttpCode(200)
     @UseGuards(AuthGuard('jwt'), RolesGuard)
-    @Roles('authenticated')
     @UseFilters(new HttpExceptionFilter())
-    /* istanbul ignore next */
+    @HttpCode(StatusCodes.OK)
+    @Roles('authenticated')
+    @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized, StatusCodes.InternalServerError, StatusCodes.BadRequest])
     async search(@Body() body: GemOrdersSearchInputDto, @User() user: UserDto): Promise<GemOrdersSearchResponseDto> {
-        const gemOrders = await search<GemOrderEntity, GemOrdersService>(this.gemOrdersService, {
+        const gemOrders = await this._searchRestricted(this.gemOrdersService, this.rightsService, user, 'id', {
             ...body,
-            owner: {
-                $eq: user.id,
-            },
         } as SortablePagedSearch);
 
         return {

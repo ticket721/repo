@@ -1,8 +1,8 @@
 import { ActionSetsService, Progress } from '@lib/common/actionsets/ActionSets.service';
-import { ActionSet } from '@lib/common/actionsets/helper/ActionSet';
+import { ActionSet } from '@lib/common/actionsets/helper/ActionSet.class';
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import Joi from '@hapi/joi';
-import { closestCity } from '@common/global';
+import { closestCity, serialize } from '@common/global';
 import { ImagesService } from '@lib/common/images/Images.service';
 import { ChecksRunnerUtil } from '@lib/common/actionsets/helper/ChecksRunner.util';
 
@@ -189,11 +189,6 @@ export interface EventsCreateImagesMetadata {
      * Image ID to use as avatar
      */
     avatar: string;
-
-    /**
-     * Images IDs to use as banners
-     */
-    banners: string[];
 }
 
 /**
@@ -247,13 +242,17 @@ export class EventsInputHandlers implements OnModuleInit {
     /**
      * events/textMetadata handler
      */
-    async textMetadataHandler(actionset: ActionSet, progress: Progress): Promise<[ActionSet, boolean]> {
+    async textMetadataHandler(
+        textMetadataFields: string[],
+        actionset: ActionSet,
+        progress: Progress,
+    ): Promise<[ActionSet, boolean]> {
         const data = actionset.action.data;
 
         const { error, error_trace } = ChecksRunnerUtil<EventsCreateTextMetadata>(
             data,
             this.textMetadataValidator,
-            this.textMetadataFields,
+            textMetadataFields,
         );
 
         switch (error) {
@@ -300,13 +299,17 @@ export class EventsInputHandlers implements OnModuleInit {
     /**
      * events/modulesConfiguration handler
      */
-    async modulesConfigurationHandler(actionset: ActionSet, progress: Progress): Promise<[ActionSet, boolean]> {
+    async modulesConfigurationHandler(
+        modulesConfigurationFields: string[],
+        actionset: ActionSet,
+        progress: Progress,
+    ): Promise<[ActionSet, boolean]> {
         const data = actionset.action.data;
 
         const { error, error_trace } = ChecksRunnerUtil<EventsCreateModulesConfiguration>(
             data,
             this.modulesConfigurationValidator,
-            this.modulesConfigurationFields,
+            modulesConfigurationFields,
         );
 
         switch (error) {
@@ -385,13 +388,17 @@ export class EventsInputHandlers implements OnModuleInit {
     /**
      * events/datesConfiguration handler
      */
-    async datesConfigurationHandler(actionset: ActionSet, progress: Progress): Promise<[ActionSet, boolean]> {
+    async datesConfigurationHandler(
+        datesConfigurationFields: string[],
+        actionset: ActionSet,
+        progress: Progress,
+    ): Promise<[ActionSet, boolean]> {
         const data = actionset.action.data;
 
         const { error, error_trace } = ChecksRunnerUtil<EventsCreateDatesConfiguration>(
             data,
             this.datesConfigurationValidator,
-            this.datesConfigurationFields,
+            datesConfigurationFields,
         );
 
         switch (error) {
@@ -491,24 +498,28 @@ export class EventsInputHandlers implements OnModuleInit {
         const registry: { [key: string]: boolean } = {};
 
         for (const global of data.global) {
-            global.name = `${global.name}_0`;
+            const serializedName = serialize(global.name).slice(0, 32);
 
-            if (registry[global.name]) {
+            if (registry[serializedName]) {
                 return 'categories_name_conflict';
             }
 
-            registry[global.name] = true;
+            registry[serializedName] = true;
+
+            global.serializedName = serializedName;
         }
 
         for (let idx = 0; idx < data.dates.length; ++idx) {
             for (const cat of data.dates[idx]) {
-                cat.name = `${cat.name}_${idx}_0`;
+                const serializedName = `${serialize(cat.name).slice(0, 32 - 1 - idx.toString().length)}_${idx}`;
 
-                if (registry[cat.name]) {
+                if (registry[serializedName]) {
                     return 'categories_name_conflict';
                 }
 
-                registry[cat.name] = true;
+                registry[serializedName] = true;
+
+                cat.serializedName = serializedName;
             }
         }
     }
@@ -574,13 +585,17 @@ export class EventsInputHandlers implements OnModuleInit {
     /**
      * events/categoriesConfiguration handler
      */
-    async categoriesConfigurationHandler(actionset: ActionSet, progress: Progress): Promise<[ActionSet, boolean]> {
+    async categoriesConfigurationHandler(
+        categoriesConfigurationFields: string[],
+        actionset: ActionSet,
+        progress: Progress,
+    ): Promise<[ActionSet, boolean]> {
         const data = actionset.action.data;
 
         const { error, error_trace } = ChecksRunnerUtil<EventsCreateCategoriesConfiguration>(
             data,
             this.categoriesConfigurationValidator,
-            this.categoriesConfigurationFields,
+            categoriesConfigurationFields,
         );
 
         switch (error) {
@@ -659,27 +674,30 @@ export class EventsInputHandlers implements OnModuleInit {
      * events/imagesMetadata dynamic argument checker
      */
     imagesMetadataValidator = Joi.object<EventsCreateImagesMetadata>({
-        avatar: Joi.string().optional(),
-        banners: Joi.array()
-            .items(Joi.string())
+        avatar: Joi.string()
+            .uuid()
             .optional(),
     });
 
     /**
      * events/imagesMetadata dynamic fields checker
      */
-    imagesMetadataFields: string[] = ['avatar', 'banners'];
+    imagesMetadataFields: string[] = ['avatar'];
 
     /**
      * events/imagesMetadata handler
      */
-    async imagesMetadataHandler(actionset: ActionSet, progress: Progress): Promise<[ActionSet, boolean]> {
+    async imagesMetadataHandler(
+        imagesMetadataFields: string[],
+        actionset: ActionSet,
+        progress: Progress,
+    ): Promise<[ActionSet, boolean]> {
         const data = actionset.action.data;
 
         const { error, error_trace } = ChecksRunnerUtil<EventsCreateImagesMetadata>(
             data,
             this.imagesMetadataValidator,
-            this.imagesMetadataFields,
+            imagesMetadataFields,
         );
 
         switch (error) {
@@ -721,23 +739,6 @@ export class EventsInputHandlers implements OnModuleInit {
                     return [actionset, true];
                 }
 
-                for (const banner of data.banners) {
-                    const bannerQuery = await this.imagesService.search({
-                        id: banner,
-                    });
-
-                    if (bannerQuery.error || bannerQuery.response.length === 0) {
-                        actionset.action.setError({
-                            details: error,
-                            error: 'cannot_find_image',
-                        });
-                        actionset.action.setStatus('error');
-                        actionset.setStatus('input:error');
-                        await progress(100);
-                        return [actionset, true];
-                    }
-                }
-
                 actionset.next();
 
                 break;
@@ -765,13 +766,17 @@ export class EventsInputHandlers implements OnModuleInit {
     /**
      * events/adminsConfiguration handler
      */
-    async adminsConfigurationHandler(actionset: ActionSet, progress: Progress): Promise<[ActionSet, boolean]> {
+    async adminsConfigurationHandler(
+        adminsConfigurationFields: string[],
+        actionset: ActionSet,
+        progress: Progress,
+    ): Promise<[ActionSet, boolean]> {
         const data = actionset.action.data;
 
         const { error, error_trace } = ChecksRunnerUtil<EventsCreateAdminsConfiguration>(
             data,
             this.adminsConfigurationValidator,
-            this.adminsConfigurationFields,
+            adminsConfigurationFields,
         );
 
         switch (error) {
@@ -810,22 +815,32 @@ export class EventsInputHandlers implements OnModuleInit {
     /**
      * Handlers injection
      */
+
     /* istanbul ignore next */
     onModuleInit(): void {
-        this.actionSetsService.setInputHandler('@events/textMetadata', this.textMetadataHandler.bind(this));
+        this.actionSetsService.setInputHandler(
+            '@events/textMetadata',
+            this.textMetadataHandler.bind(this, this.textMetadataFields),
+        );
         this.actionSetsService.setInputHandler(
             '@events/modulesConfiguration',
-            this.modulesConfigurationHandler.bind(this),
+            this.modulesConfigurationHandler.bind(this, this.modulesConfigurationFields),
         );
-        this.actionSetsService.setInputHandler('@events/datesConfiguration', this.datesConfigurationHandler.bind(this));
+        this.actionSetsService.setInputHandler(
+            '@events/datesConfiguration',
+            this.datesConfigurationHandler.bind(this, this.datesConfigurationFields),
+        );
         this.actionSetsService.setInputHandler(
             '@events/categoriesConfiguration',
-            this.categoriesConfigurationHandler.bind(this),
+            this.categoriesConfigurationHandler.bind(this, this.categoriesConfigurationFields),
         );
-        this.actionSetsService.setInputHandler('@events/imagesMetadata', this.imagesMetadataHandler.bind(this));
+        this.actionSetsService.setInputHandler(
+            '@events/imagesMetadata',
+            this.imagesMetadataHandler.bind(this, this.imagesMetadataFields),
+        );
         this.actionSetsService.setInputHandler(
             '@events/adminsConfiguration',
-            this.adminsConfigurationHandler.bind(this),
+            this.adminsConfigurationHandler.bind(this, this.adminsConfigurationFields),
         );
     }
 }

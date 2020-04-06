@@ -3,11 +3,12 @@ import { EsSearchOptionsStatic } from '@iaminfinity/express-cassandra/dist/orm/i
 import { GemOrdersRepository } from '@lib/common/gemorders/GemOrders.repository';
 import { anyNumber, anything, capture, deepEqual, instance, mock, spy, verify, when } from 'ts-mockito';
 import { Test } from '@nestjs/testing';
-import { ESSearchReturn } from '@lib/common/utils/ESSearchReturn';
+import { ESSearchReturn } from '@lib/common/utils/ESSearchReturn.type';
 import { GemOrderEntity } from '@lib/common/gemorders/entities/GemOrder.entity';
 import { types } from 'cassandra-driver';
 import { keccak256 } from '@common/global';
 import { UserDto } from '@lib/common/users/dto/User.dto';
+import { RightsService } from '@lib/common/rights/Rights.service';
 
 class GemOrderEntityMock {
     public _properties = null;
@@ -22,10 +23,12 @@ describe('GemOrders Service', function() {
         gemOrdersService: GemOrdersService;
         gemOrdersEntityMock: GemOrderEntityMock;
         gemOrdersRepositoryMock: GemOrdersRepository;
+        rightsServiceMock: RightsService;
     } = {
         gemOrdersService: null,
         gemOrdersEntityMock: null,
         gemOrdersRepositoryMock: null,
+        rightsServiceMock: null,
     };
 
     beforeEach(async function() {
@@ -36,6 +39,7 @@ describe('GemOrders Service', function() {
                 fields: {},
             },
         });
+        context.rightsServiceMock = mock(RightsService);
 
         const app = await Test.createTestingModule({
             providers: [
@@ -46,6 +50,10 @@ describe('GemOrders Service', function() {
                 {
                     provide: GemOrdersRepository,
                     useValue: instance(context.gemOrdersRepositoryMock),
+                },
+                {
+                    provide: RightsService,
+                    useValue: instance(context.rightsServiceMock),
                 },
                 GemOrdersService,
             ],
@@ -102,7 +110,6 @@ describe('GemOrders Service', function() {
                         circuit_name: circuit,
                         initial_arguments: JSON.stringify(args),
                         initialized: false,
-                        owner: user.id,
                         refresh_timer: 1,
                     }),
                     deepEqual({
@@ -147,7 +154,6 @@ describe('GemOrders Service', function() {
                         circuit_name: circuit,
                         initial_arguments: JSON.stringify(args),
                         initialized: false,
-                        owner: user.id,
                         refresh_timer: 1,
                     }),
                     deepEqual({
@@ -266,7 +272,6 @@ describe('GemOrders Service', function() {
                         circuit_name: circuit,
                         initial_arguments: JSON.stringify(args),
                         initialized: false,
-                        owner: user.id,
                         refresh_timer: 1,
                     }),
                     deepEqual({
@@ -312,7 +317,6 @@ describe('GemOrders Service', function() {
                         circuit_name: circuit,
                         initial_arguments: JSON.stringify(args),
                         initialized: false,
-                        owner: user.id,
                         refresh_timer: 1,
                     }),
                     deepEqual({

@@ -1,16 +1,16 @@
 import {
     Body,
     Controller,
+    HttpCode,
     HttpException,
     Injectable,
     Post,
+    Request,
     UseFilters,
     UseGuards,
-    Request,
-    HttpCode,
 } from '@nestjs/common';
 import { AuthenticationService } from './Authentication.service';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 import { PasswordlessUserDto } from './dto/PasswordlessUser.dto';
 import { LocalRegisterResponseDto } from './dto/LocalRegisterResponse.dto';
 import { LocalRegisterInputDto } from './dto/LocalRegisterInput.dto';
@@ -27,8 +27,9 @@ import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
 import { EmailValidationTaskDto } from '@app/server/authentication/dto/EmailValidationTask.dto';
 import { ConfigService } from '@lib/common/config/Config.service';
-import { StatusCodes, StatusNames } from '@lib/common/utils/codes';
-import { ServiceResponse } from '@lib/common/utils/ServiceResponse';
+import { StatusCodes } from '@lib/common/utils/codes.value';
+import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
+import { ApiResponses } from '@app/server/utils/ApiResponses.controller.decorator';
 
 /**
  * Controller exposing the authentication routes
@@ -55,84 +56,73 @@ export class AuthenticationController {
     /**
      * [POST /authentication/web3/login] : Login with web3 account
      */
-    @UseGuards(AuthGuard('web3'))
     @Post('/web3/login')
-    @HttpCode(200)
-    @ApiResponse({
-        status: StatusCodes.OK,
-        description: StatusNames[StatusCodes.OK],
-    })
-    @ApiResponse({
-        status: StatusCodes.Unauthorized,
-        description: StatusNames[StatusCodes.Unauthorized],
-    })
-    @ApiResponse({
-        status: StatusCodes.InternalServerError,
-        description: StatusNames[StatusCodes.InternalServerError],
-    })
+    @UseGuards(AuthGuard('web3'))
     @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.OK)
+    @ApiResponses([StatusCodes.OK, StatusCodes.InternalServerError])
     /* istanbul ignore next */
     async web3Login(@Request() req): Promise<Web3LoginResponseDto> {
-        return {
-            user: req.user,
-            token: this.jwtService.sign({
-                username: req.user.username,
-                sub: req.user.id,
-            }),
-        };
+        try {
+            return {
+                user: req.user,
+                token: this.jwtService.sign({
+                    username: req.user.username,
+                    sub: req.user.id,
+                }),
+            };
+        } catch (e) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.InternalServerError,
+                    message: 'token_signature_error',
+                },
+                StatusCodes.InternalServerError,
+            );
+        }
     }
 
     /**
      * [POST /authentication/local/login] : Login with local account
      */
-    @UseGuards(AuthGuard('local'))
     @Post('/local/login')
-    @HttpCode(200)
-    @ApiResponse({
-        status: StatusCodes.OK,
-        description: StatusNames[StatusCodes.OK],
-    })
-    @ApiResponse({
-        status: StatusCodes.Unauthorized,
-        description: StatusNames[StatusCodes.Unauthorized],
-    })
-    @ApiResponse({
-        status: StatusCodes.InternalServerError,
-        description: StatusNames[StatusCodes.InternalServerError],
-    })
+    @UseGuards(AuthGuard('local'))
     @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.OK)
+    @ApiResponses([StatusCodes.OK, StatusCodes.InternalServerError])
     /* istanbul ignore next */
     async localLogin(@Request() req): Promise<LocalLoginResponseDto> {
-        return {
-            user: req.user,
-            token: this.jwtService.sign({
-                username: req.user.username,
-                sub: req.user.id,
-            }),
-        };
+        try {
+            return {
+                user: req.user,
+                token: this.jwtService.sign({
+                    username: req.user.username,
+                    sub: req.user.id,
+                }),
+            };
+        } catch (e) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.InternalServerError,
+                    message: 'token_signature_error',
+                },
+                StatusCodes.InternalServerError,
+            );
+        }
     }
 
     /**
      * [POST /authentication/local/register] : Create a new local account
      */
     @Post('/local/register')
-    @ApiResponse({
-        status: StatusCodes.Created,
-        description: StatusNames[StatusCodes.Created],
-    })
-    @ApiResponse({
-        status: StatusCodes.Conflict,
-        description: StatusNames[StatusCodes.Conflict],
-    })
-    @ApiResponse({
-        status: StatusCodes.UnprocessableEntity,
-        description: StatusNames[StatusCodes.UnprocessableEntity],
-    })
-    @ApiResponse({
-        status: StatusCodes.InternalServerError,
-        description: StatusNames[StatusCodes.InternalServerError],
-    })
     @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.Created)
+    @ApiResponses([
+        StatusCodes.Created,
+        StatusCodes.Conflict,
+        StatusCodes.UnprocessableEntity,
+        StatusCodes.InternalServerError,
+    ])
     async localRegister(@Body() body: LocalRegisterInputDto): Promise<LocalRegisterResponseDto> {
         const resp: ServiceResponse<PasswordlessUserDto> = await this.authenticationService.createT721User(
             body.email,
@@ -214,27 +204,15 @@ export class AuthenticationController {
      * [POST /authentication/web3/register] : Create a new web3 account
      */
     @Post('/web3/register')
-    @ApiResponse({
-        status: StatusCodes.Created,
-        description: StatusNames[StatusCodes.Created],
-    })
-    @ApiResponse({
-        status: StatusCodes.Conflict,
-        description: StatusNames[StatusCodes.Conflict],
-    })
-    @ApiResponse({
-        status: StatusCodes.Unauthorized,
-        description: StatusNames[StatusCodes.Unauthorized],
-    })
-    @ApiResponse({
-        status: StatusCodes.UnprocessableEntity,
-        description: StatusNames[StatusCodes.UnprocessableEntity],
-    })
-    @ApiResponse({
-        status: StatusCodes.InternalServerError,
-        description: StatusNames[StatusCodes.InternalServerError],
-    })
     @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.Created)
+    @ApiResponses([
+        StatusCodes.Created,
+        StatusCodes.Conflict,
+        StatusCodes.Unauthorized,
+        StatusCodes.UnprocessableEntity,
+        StatusCodes.InternalServerError,
+    ])
     async web3Register(@Body() body: Web3RegisterInputDto): Promise<Web3RegisterResponseDto> {
         const resp: ServiceResponse<PasswordlessUserDto> = await this.authenticationService.createWeb3User(
             body.email,
@@ -329,19 +307,9 @@ export class AuthenticationController {
      * [POST /authentication/validate] : Validates a user's email address
      */
     @Post('/validate')
-    @ApiResponse({
-        status: StatusCodes.OK,
-        description: StatusNames[StatusCodes.OK],
-    })
-    @ApiResponse({
-        status: StatusCodes.Unauthorized,
-        description: StatusNames[StatusCodes.Unauthorized],
-    })
-    @ApiResponse({
-        status: StatusCodes.InternalServerError,
-        description: StatusNames[StatusCodes.InternalServerError],
-    })
     @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.OK)
+    @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized, StatusCodes.InternalServerError])
     async validateEmail(@Body() body: EmailValidationInputDto): Promise<EmailValidationResponseDto> {
         let validatedUserRes: ServiceResponse<PasswordlessUserDto>;
         try {

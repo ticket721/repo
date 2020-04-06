@@ -13,7 +13,7 @@ import { EVMEventSetsService } from '@lib/common/evmeventsets/EVMEventSets.servi
 import { anyFunction, anything, deepEqual, instance, mock, spy, verify, when } from 'ts-mockito';
 import { GlobalEntity } from '@lib/common/globalconfig/entities/Global.entity';
 import { EVMEvent, EVMEventSetEntity } from '@lib/common/evmeventsets/entities/EVMEventSet.entity';
-import { CRUDExtension } from '@lib/common/crud/CRUD.extension';
+import { CRUDExtension } from '@lib/common/crud/CRUDExtension.base';
 
 describe('EVMEvent Controller Base', function() {
     const context: {

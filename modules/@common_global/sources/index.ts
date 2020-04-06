@@ -8,6 +8,6 @@ export { Web3LoginSigner }                                                   fro
 export { Web3RegisterSigner }                                                from './signers/Web3Register';
 export { RefractMtx, MetaTransaction, TransactionParameters }                from './signers/RefractMtx';
 export { Coordinates, closestCity, City }                                    from './geoloc';
-export { uuidEq, toB32, leftPad }                                            from './utils';
+export { uuidEq, toB32, leftPad, serialize }                                 from './utils';
 export { isTransactionHash, toAcceptedTransactionHashFormat }                from './transactions';
 export { getT721ControllerGroupID, encode }                                  from './abi';

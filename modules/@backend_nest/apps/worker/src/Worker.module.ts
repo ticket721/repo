@@ -42,6 +42,8 @@ import { GlobalConfigScheduler } from '@app/worker/schedulers/globalconfig/Globa
 import { EVMEventSetsModule } from '@lib/common/evmeventsets/EVMEventSets.module';
 import { GemOrdersModule } from '@lib/common/gemorders/GemOrders.module';
 import { DosojinRunnerModule, DosojinRunnerModuleBuildOptions } from '@app/worker/dosojinrunner/DosojinRunner.module';
+import { CategoriesModule } from '@lib/common/categories/Categories.module';
+import { RightsModule } from '@lib/common/rights/Rights.module';
 
 @Module({
     imports: [
@@ -65,6 +67,8 @@ import { DosojinRunnerModule, DosojinRunnerModuleBuildOptions } from '@app/worke
         ImagesModule,
         ActionSetsModule,
         DatesModule,
+        RightsModule,
+        CategoriesModule,
         EventsModule,
         EVMEventSetsModule,
         GemOrdersModule,

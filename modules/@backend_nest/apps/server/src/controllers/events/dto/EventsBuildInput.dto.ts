@@ -9,6 +9,9 @@ export class EventsBuildInputDto {
     /**
      * Name of the completed action set
      */
+    @ApiProperty({
+        description: 'Complete ActionSet ID to consume',
+    })
     @ApiProperty()
     @IsString()
     completedActionSet: string;

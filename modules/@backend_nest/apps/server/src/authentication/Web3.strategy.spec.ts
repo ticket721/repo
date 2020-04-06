@@ -4,7 +4,7 @@ import { AuthenticationService } from './Authentication.service';
 import { createWallet, toAcceptedAddressFormat, Wallet, Web3LoginSigner } from '@common/global';
 import { Web3Strategy } from '@app/server/authentication/Web3.strategy';
 import { Web3TokensService } from '@app/server/web3token/Web3Tokens.service';
-import { StatusCodes } from '@lib/common/utils/codes';
+import { StatusCodes } from '@lib/common/utils/codes.value';
 
 const context: {
     localStrategy: Web3Strategy;
