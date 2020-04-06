@@ -79,7 +79,7 @@
     },
     "devDependencies": {
         "@types/node": "13.7.7",
-        "@types/bull": "3.10.6",
+        "@types/bull": "3.12.1",
         "@types/dotenv": "8.2.0",
         "@types/express": "4.17.1",
         "@types/jest": "25.1.3",
