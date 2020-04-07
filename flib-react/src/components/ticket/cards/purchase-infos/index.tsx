@@ -2,22 +2,26 @@ import * as React from 'react';
 import styled from '../../../../../config/styled';
 import Icon from '../../../icon';
 
-export interface LocationCardProps extends React.ComponentProps<any> {
-  location: string;
-  address: string;
-  iconColor?: string;
-  link?: string;
-  linkLabel?: string;
+export interface PurchaseInfosCardProps extends React.ComponentProps<any> {
+  date: string;
+  iconColor: string;
+  price: string;
   wSeparator?: boolean;
 }
 
-const Container = styled.div`
+const Container = styled.section`
   background-image: linear-gradient(180deg, ${props => props.theme.componentGradientStart}, ${props => props.theme.componentGradientStart});
   display: flex;
+  flex-wrap: wrap;
   font-size: 14px;
   font-weight: 500;
   padding: ${props => props.theme.biggerSpacing};
-  position: relative;
+  overflow: hidden;
+
+  label {
+    color: ${props => props.theme.textColor};
+    padding: 0;
+  }
 
   span {
     &:first-of-type {
@@ -31,7 +35,19 @@ const Container = styled.div`
   };
 
   svg {
+    position: relative;
     margin-right: ${props => props.theme.regularSpacing};
+    top: -3px;
+  }
+
+  .column {
+    &:first-of-type {
+      padding-right: ${props => props.theme.biggerSpacing};
+    }
+
+    &:last-of-type {
+      padding-left: ${props => props.theme.biggerSpacing};
+    }
   }
 `;
 
@@ -67,13 +83,17 @@ const Separator = styled.div`
   }
 `
 
-export const LocationCard: React.FunctionComponent<LocationCardProps> = (props: LocationCardProps): JSX.Element => {
+export const PurchaseInfosCard: React.FunctionComponent<PurchaseInfosCardProps> = (props: PurchaseInfosCardProps): JSX.Element => {
 
   return <Container>
-            <Icon icon='location' fill={props.iconColor} width='12' height='16' />
+            <Icon icon='ticket' fill={props.iconColor} width='18' height='18' />
             <div className="column">
-              <span>{props.location}</span>
-              <span>{props.address}</span>
+              <label>Date purchased</label>
+              <span>{props.date}</span>
+            </div>
+            <div className="column">
+              <label>Price</label>
+              <span>{props.price}</span>
             </div>
             {props.wSeparator &&
               <Separator />
@@ -81,4 +101,4 @@ export const LocationCard: React.FunctionComponent<LocationCardProps> = (props: 
         </Container>
 };
 
-export default LocationCard;
+export default PurchaseInfosCard;

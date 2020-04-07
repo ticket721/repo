@@ -13,7 +13,9 @@ export default interface Ticket {
   ticketId: string;
   addOns: number;
   image: string;
-  seat?: SeatProps
+  seat?: SeatProps,
+  purchase_date?: string;
+  price?: string;
 }
 
 interface SeatProps {

@@ -3,6 +3,7 @@ import { withKnobs } from '@storybook/addon-knobs';
 import DateTimeCard from '../../src/components/ticket/cards/datetime';
 import LocationCard from '../../src/components/ticket/cards/location';
 import TicketInfosCard from '../../src/components/ticket/cards/ticket-infos';
+import PurchaseInfosCard from '../../src/components/ticket/cards/purchase-infos';
 
 const defaultTicket = {
   name: 'Tall Heights - 2020 tour',
@@ -23,7 +24,9 @@ const defaultTicket = {
     block: 'A',
     row: 'A3',
     number: 53,
-  }
+  },
+  purchase_date: '2020/04/07',
+  price: '$135'
 }
 
 export default {
@@ -58,7 +61,16 @@ export const TicketInformations = () => (
   <TicketInfosCard
     eventName={defaultTicket.name}
     ticketType={defaultTicket.ticketType}
-    ticketI={defaultTicket.ticketId}
+    ticketID={defaultTicket.ticketId}
     seatInfo={defaultTicket.seat}
   />
 );
+
+export const PurchaseInfos = () => (
+  <PurchaseInfosCard
+    date={defaultTicket.purchase_date}
+    iconColor={defaultTicket.mainColor}
+    price={defaultTicket.price}
+    wSeparator
+  />
+)
