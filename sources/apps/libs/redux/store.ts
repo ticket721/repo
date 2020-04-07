@@ -8,16 +8,27 @@ import { VtxContract }                                           from 'ethvtx/li
 import { FooReducer }                                            from './reducers/foo.reducers';
 import { FooSaga }                                               from './sagas/foo.sagas';
 import '../utils/window';
+import { SetupSaga }                                             from '@libs/redux/setup/setup.sagas';
+import { entryPoint }                                            from '@libs/redux/entryPoint';
+import { configureVtx, getInitialState, getReducers, getSagas }  from 'ethvtx/lib';
+import { SetupReducer }                                          from '@libs/redux/setup/setup.reducers';
+import {createMemoryHistory} from 'history';
+import {connectRouter, routerMiddleware} from 'connected-react-router';
 
-export function configureStore(): Store<State> {
-    // @ts-ignore
-    const initialState: AppState = configureVtx<AppState>(getInitialState<AppState>(InitialAppState), {
-        confirmation_threshold: 2,
-        poll_timer: 300
-    });
+export type AppState = SpecificState & State;
+
+export const history = createMemoryHistory();
+
+export const initialState: AppState = configureVtx<AppState>(getInitialState<SpecificState>(InitialAppState) as AppState, {
+    confirmation_threshold: 2,
+    poll_timer: 300
+});
+
+export function configureStore(): Store<AppState> {
 
     const reducers: Reducer<AppState> = getReducers({
-        foo: FooReducer
+        properties: SetupReducer,
+        router: connectRouter(history)
     });
 
     const sagaMiddleware = createSagaMiddleware();
@@ -30,7 +41,7 @@ export function configureStore(): Store<State> {
     const store: Store<AppState> = createStore(
         reducers,
         initialState,
-        composeEnhancer(applyMiddleware(sagaMiddleware))
+        composeEnhancer(applyMiddleware(sagaMiddleware, routerMiddleware(history)))
     );
 
     const saga: Saga = getSagas(store, [

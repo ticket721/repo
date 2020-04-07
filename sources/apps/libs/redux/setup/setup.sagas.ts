@@ -7,11 +7,22 @@ function* startSaga(action: IStart): SagaIterator {
 
     const state: AppState = yield select();
 
-    try {
-        yield call(setTimeout, () => true, 1000);
-    } catch (e) {
-        throw e;
-    }
+    const web3 = new Web3(new Web3.providers.HttpProvider(state.configs.ethereum_endpoint_url));
+
+    yield put(VtxconfigSetWeb3(web3));
+
+    yield put(VtxconfigSetAllowedNet(state.configs.ethereum_network_id, state.configs.ethereum_network_genesis_hash));
+
+    yield put(VtxconfigReset());
+}
+
+function* getDevice(): Generator<SagaIterator> {
+    const deviceInfos = deviceDetect();
+
+    yield put(SetDeviceInfos(
+        deviceInfos.device,
+        deviceInfos.browser,
+    ));
 }
 
 export function* SetupSaga(): SagaIterator {

@@ -1,6 +1,6 @@
 {
     "defaultSeverity": "error",
-    "extends": ["../tslint.json"],
+    "extends": ["../../modules/tslint.json"],
     "linterOptions": {
         "exclude": [
             "**/*.spec.ts"
