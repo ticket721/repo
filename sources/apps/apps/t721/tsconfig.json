@@ -5,6 +5,6 @@
     ],
     "compilerOptions": {
         "forceConsistentCasingInFileNames": true,
-        "isolatedModules": true
+        "isolatedModules": false
     }
 }

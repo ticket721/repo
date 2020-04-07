@@ -3,14 +3,19 @@
     "version": "0.1.0",
     "private": true,
     "dependencies": {
+        "@capacitor/android": "1.5.1",
+        "@capacitor/core": "1.5.1",
+        "@capacitor/ios": "1.5.1",
         "react-qr-reader": "2.2.1"
     },
     "devDependencies": {
+        "@capacitor/cli": "1.5.1",
         "@types/react-qr-reader": "2.1.2"
     },
     "scripts": {
         "start": "node ../../scripts/start.js",
         "build": "node ../../scripts/build.js",
+        "sync_apps": "npm run build && npx cap sync",
         "test": "node ../../scripts/test.js"
     },
     "eslintConfig": {

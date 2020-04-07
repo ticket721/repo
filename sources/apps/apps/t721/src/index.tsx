@@ -1,12 +1,41 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
+import React                               from 'react';
+import ReactDOM                            from 'react-dom';
 import './index.css';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
+import App                                 from './App';
+import * as serviceWorker                  from './serviceWorker';
+import {Provider}                          from 'react-redux';
+import {Store}                             from 'redux';
+import {AppState, configureStore, history} from '@libs/redux/store';
+import {BrowserRouter}       from 'react-router-dom';
+import { ConnectedRouter }                 from 'connected-react-router';
+import ScrollToTop                         from '@libs/components/ScrollToTop';
+import { GlobalStyle }                     from '@libs/shared/global';
+import { ThemeProvider }                   from 'styled-components';
 
-ReactDOM.render(<App />, document.getElementById('root'));
+const store: Store<AppState> = configureStore();
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
+const customTheme = {
+  name: 'T721',
+  buttonRadius: '8px',
+  doubleSpacing: '32px',
+  primaryColor: '#079CF0',
+  primaryColorGradientEnd: '#2143AB',
+  regularSpacing: '16px',
+  warningColor: '#C91D31'
+};
+
+ReactDOM.render(
+    <Provider store={store}>
+        <ConnectedRouter history={history}>
+            <ScrollToTop>
+                <GlobalStyle />
+                <ThemeProvider theme={customTheme}>
+                <BrowserRouter>
+                    <App />
+                </BrowserRouter>
+                </ThemeProvider>
+            </ScrollToTop>
+        </ConnectedRouter>
+    </Provider>, document.getElementById('root'));
+
 serviceWorker.register();

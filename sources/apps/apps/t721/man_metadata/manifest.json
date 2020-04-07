@@ -1,6 +1,7 @@
 {
   "short_name": "T721",
   "name": "Ticket721",
+    "orientation": "portrait",
   "icons": [
     {
       "src": "favicon.ico",
@@ -18,8 +19,9 @@
       "sizes": "512x512"
     }
   ],
-  "start_url": ".",
   "display": "standalone",
+    "scope": "/",
+    "start_url": "/",
   "theme_color": "#000000",
   "background_color": "#000000"
 }
