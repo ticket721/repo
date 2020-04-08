@@ -37,7 +37,7 @@
         "@common/global": "1.0.0",
         "@common/sdk": "1.0.0",
         "bcrypt": "4.0.0",
-        "binance-api-node": "0.9.15",
+        "binance-api-node": "0.9.18",
         "bull": "3.13.0",
         "bull-board": "0.6.0",
         "class-transformer": "0.2.3",
