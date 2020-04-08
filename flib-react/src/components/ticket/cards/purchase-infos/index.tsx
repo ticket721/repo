@@ -1,104 +1,54 @@
 import * as React from 'react';
 import styled from '../../../../../config/styled';
+import CardContainer from '../../../elements/card-container';
+import Separator from '../../../elements/separator';
 import Icon from '../../../icon';
 
 export interface PurchaseInfosCardProps extends React.ComponentProps<any> {
   date: string;
   iconColor: string;
   price: string;
+  removeBg?: boolean;
   wSeparator?: boolean;
 }
 
-const Container = styled.section`
-  background-image: linear-gradient(180deg, ${props => props.theme.componentGradientStart}, ${props => props.theme.componentGradientStart});
-  display: flex;
-  flex-wrap: wrap;
-  font-size: 14px;
-  font-weight: 500;
-  padding: ${props => props.theme.biggerSpacing};
-  overflow: hidden;
-
-  label {
-    color: ${props => props.theme.textColor};
-    padding: 0;
-  }
-
-  span {
-    &:first-of-type {
-      margin-top: 2px;
-    }
-
-    &:last-of-type {
-      color: ${props => props.theme.textColorDark};
-      margin-top: 8px;
-    }
-  };
-
-  svg {
-    position: relative;
-    margin-right: ${props => props.theme.regularSpacing};
-    top: -3px;
-  }
-
-  .column {
-    &:first-of-type {
-      padding-right: ${props => props.theme.biggerSpacing};
-    }
-
-    &:last-of-type {
-      padding-left: ${props => props.theme.biggerSpacing};
-    }
-  }
+const IconContainer = styled.div`
+  position: relative;
+  margin-right: ${props => props.theme.regularSpacing};
+  top: -3px;
 `;
 
-const Separator = styled.div`
-  background-color: ${props => props.theme.componentColor};
-  bottom: 0;
-  content: "";
+const Info = styled.span`
+  color: ${props => props.theme.textColorDark};
   display: block;
-  height: 2px;
-  left: 0;
-  position: absolute;
-  width: 100%;
-  z-index: 100;
+  margin-top: 8px;
 
-  &::before,
-  &::after {
-    background-color: ${props => props.theme.componentGradientEnd};
-    content: "";
-    display: inline-block;
-    height: ${props => props.theme.regularSpacing};
-    position: absolute;
-    top: -7px;
-    transform: rotate(45deg);
-    width: ${props => props.theme.regularSpacing};
-  }
-
-  &::before {
-    left: -8px;
-  }
-
-  &::after {
-    right: -8px;
-  }
 `
+
+const Label = styled.label`
+  color: ${props => props.theme.textColor};
+  display: block;
+  padding: 0 ${props => props.theme.doubleSpacing} 0 0;
+`;
 
 export const PurchaseInfosCard: React.FunctionComponent<PurchaseInfosCardProps> = (props: PurchaseInfosCardProps): JSX.Element => {
 
-  return <Container>
-            <Icon icon='ticket' fill={props.iconColor} width='18' height='18' />
-            <div className="column">
-              <label>Date purchased</label>
-              <span>{props.date}</span>
+  return <CardContainer removeBg={props.removeBg}>
+            <IconContainer>
+              <Icon icon='ticket' fill={props.iconColor} width='18' height='18' />
+            </IconContainer>
+            <div>
+              <Label>Date purchased</Label>
+              <Info>{props.date}</Info>
             </div>
-            <div className="column">
-              <label>Price</label>
-              <span>{props.price}</span>
+            <div>
+              <Label>Price</Label>
+              <Info>{props.price}</Info>
             </div>
             {props.wSeparator &&
               <Separator />
             }
-        </Container>
+        </CardContainer>
 };
 
 export default PurchaseInfosCard;

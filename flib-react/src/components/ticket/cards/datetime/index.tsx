@@ -1,5 +1,7 @@
 import * as React from 'react';
 import styled from '../../../../../config/styled';
+import CardContainer from '../../../elements/card-container';
+import Separator from '../../../elements/separator';
 import Icon from '../../../icon';
 
 export interface DateTimeCardProps extends React.ComponentProps<any> {
@@ -10,79 +12,62 @@ export interface DateTimeCardProps extends React.ComponentProps<any> {
   iconColor?: string;
   link?: string;
   linkLabel?: string;
+  removeBg?: boolean;
   wSeparator?: boolean;
 }
 
-const Container = styled.div`
-  background-image: linear-gradient(180deg, ${props => props.theme.componentGradientStart}, ${props => props.theme.componentGradientStart});
-  display: flex;
-  font-size: 14px;
-  font-weight: 500;
-  padding: ${props => props.theme.biggerSpacing};
-  position: relative;
+const Info = styled.span`
+  &:first-of-type {
+    margin-top: 2px;
+  }
 
-  span {
-    &:first-of-type {
-      margin-top: 2px;
-    }
-
-    &:last-of-type {
-      color: ${props => props.theme.textColorDark};
-      margin-top: 8px;
-    }
-  };
-
-  svg {
-    margin-right: ${props => props.theme.regularSpacing};
+  &:last-of-type {
+    color: ${props => props.theme.textColorDark};
+    margin-top: 8px;
   }
 `;
 
+const Column = styled.div<DateTimeCardProps>`
+  display: flex;
+  flex-direction: column;
 
-const Separator = styled.div`
-  background-color: ${props => props.theme.componentColor};
-  bottom: 0;
-  content: "";
-  display: block;
-  height: 2px;
-  left: 0;
-  position: absolute;
-  width: 100%;
-  z-index: 100;
+  a {
+    align-items: center;
+    display: inline-flex;
+    margin-top: ${props => props.theme.regularSpacing};
 
-  &::before,
-  &::after {
-    background-color: ${props => props.theme.componentGradientEnd};
-    content: "";
-    display: inline-block;
-    height: ${props => props.theme.regularSpacing};
-    position: absolute;
-    top: -7px;
-    transform: rotate(45deg);
-    width: ${props => props.theme.regularSpacing};
+    svg {
+      margin-left: ${props => props.theme.smallSpacing};
+    }
+
+    ${props => props.iconColor &&`
+      color: ${props.iconColor};
+    `}
   }
-
-  &::before {
-    left: -8px;
-  }
-
-  &::after {
-    right: -8px;
-  }
+`
+const IconContainer = styled.div`
+  margin-right: ${props => props.theme.regularSpacing};
 `
 
 export const DateTimeCard: React.FunctionComponent<DateTimeCardProps> = (props: DateTimeCardProps): JSX.Element => {
 
-  return <Container>
-          <Icon icon='calendar' fill={props.iconColor} width='16' height='18' />
-          <div className="column">
-            <span>{props.startDate} - {props.endDate}</span>
-            <span>{props.startTime} - {props.endTime}</span>
-          </div>
+  return <CardContainer removeBg={props.removeBg}>
+          <IconContainer>
+            <Icon icon='calendar' fill={props.iconColor} width='16' height='18' />
+          </IconContainer>
+          <Column iconColor={props.iconColor}>
+            <Info>{props.startDate} - {props.endDate}</Info>
+            <Info>{props.startTime} - {props.endTime}</Info>
+             {/* TODO - Update to use react-router if necessary */}
+             {props.link &&
+              <a href={props.link}>{props.linkLabel} <Icon icon="chevron" height="12" width="8" fill={props.iconColor} /> </a>
+            }
+          </Column>
 
           {props.wSeparator &&
             <Separator />
           }
-        </Container>
+        </CardContainer>
 };
 
 export default DateTimeCard;

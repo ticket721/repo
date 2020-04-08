@@ -11,6 +11,7 @@ export interface Theme {
   primaryColor: string;
   primaryColorGradientEnd: string;
   regularSpacing: string;
+  smallSpacing: string;
   textColor: string;
   textColorDark: string;
   textColorDarker: string;

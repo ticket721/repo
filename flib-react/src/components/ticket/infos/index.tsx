@@ -8,7 +8,7 @@ export interface PreviewInfosProps extends React.ComponentProps<any> {
   ticket: TicketInterface;
 }
 
-const PreviewContainer = styled.main<PreviewInfosProps>`
+const PreviewContainer = styled.main`
   background: linear-gradient(180deg, ${props => props.theme.componentGradientStart}, ${props => props.theme.componentGradientEnd});
   border-radius: ${props => props.theme.defaultRadius};
   font-size: 14px;
@@ -102,18 +102,20 @@ export const PreviewInfos: React.FunctionComponent<PreviewInfosProps> = (props: 
               <h3>{props.ticket.ticketType}</h3>
             </TicketHeaderInfos>
             <Separator />
-            <PreviewContainer ticket={props.ticket}>
+            <PreviewContainer>
               <DateTimeCard
                 endDate={props.ticket.endDate}
                 endTime={props.ticket.endTime}
                 iconColor={props.ticket.mainColor}
                 startDate={props.ticket.startDate}
                 startTime={props.ticket.startTime}
+                removeBg
               />
               <LocationCard
                 iconColor={props.ticket.mainColor}
                 location={props.ticket.location}
                 address={props.ticket.address}
+                removeBg
               />
 
               {props.ticket.addOns &&

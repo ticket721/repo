@@ -2,6 +2,7 @@ import * as React from 'react';
 import { withKnobs } from '@storybook/addon-knobs';
 import DateTimeCard from '../../src/components/ticket/cards/datetime';
 import LocationCard from '../../src/components/ticket/cards/location';
+import SponsorsCard  from '../../src/components/ticket/cards/sponsors';
 import TicketInfosCard from '../../src/components/ticket/cards/ticket-infos';
 import PurchaseInfosCard from '../../src/components/ticket/cards/purchase-infos';
 
@@ -29,6 +30,29 @@ const defaultTicket = {
   price: '$135'
 }
 
+const sponsorsList = [
+  {
+    id: 1,
+    name: 'XLive',
+    logo: 'assets/images/logo--xlive.png'
+  },
+  {
+    id: 2,
+    name: 'iHeart',
+    logo: 'assets/images/logo--iheart.png'
+  },
+  {
+    id: 3,
+    name: 'Corus',
+    logo: 'assets/images/logo--corus.png'
+  },
+  {
+    id: 4,
+    name: 'SXSW',
+    logo: 'assets/images/logo--sxsw.png'
+  }
+];
+
 export default {
   title: 'Ticket|Cards',
   decorators: [
@@ -49,11 +73,35 @@ export const DateTime = () => (
   />
 );
 
+export const DateTimeWithLink = () => (
+  <DateTimeCard
+    endDate={defaultTicket.endDate}
+    endTime={defaultTicket.endTime}
+    iconColor={defaultTicket.mainColor}
+    startDate={defaultTicket.startDate}
+    startTime={defaultTicket.startTime}
+    link="linkto"
+    linkLabel="View more dates"
+  />
+);
+
+
 export const Location = () => (
   <LocationCard
     location={defaultTicket.location}
     address={defaultTicket.address}
     iconColor={defaultTicket.mainColor}
+  />
+);
+
+
+export const LocationWithLink = () => (
+  <LocationCard
+    location={defaultTicket.location}
+    address={defaultTicket.address}
+    iconColor={defaultTicket.mainColor}
+    link='direction'
+    linkLabel='Get directions'
   />
 );
 
@@ -72,5 +120,12 @@ export const PurchaseInfos = () => (
     iconColor={defaultTicket.mainColor}
     price={defaultTicket.price}
     wSeparator
+  />
+)
+
+export const Sponsors = () => (
+  <SponsorsCard
+    title='Sponsors'
+    sponsors={sponsorsList}
   />
 )

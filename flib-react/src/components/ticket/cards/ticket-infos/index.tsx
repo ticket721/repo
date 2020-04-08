@@ -98,7 +98,6 @@ const TicketId = styled.span`
   margin-bottom: 8px;
 `;
 
-
 export const TicketInfosCard: React.FunctionComponent<TicketInfosCardProps> = (props: TicketInfosCardProps): JSX.Element => {
 
   return <Container>

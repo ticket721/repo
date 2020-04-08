@@ -1,5 +1,7 @@
 import * as React from 'react';
 import styled from '../../../../../config/styled';
+import CardContainer from '../../../elements/card-container';
+import Separator from '../../../elements/separator';
 import Icon from '../../../icon';
 
 export interface LocationCardProps extends React.ComponentProps<any> {
@@ -8,77 +10,62 @@ export interface LocationCardProps extends React.ComponentProps<any> {
   iconColor?: string;
   link?: string;
   linkLabel?: string;
+  removeBg?: boolean;
   wSeparator?: boolean;
 }
 
-const Container = styled.div`
-  background-image: linear-gradient(180deg, ${props => props.theme.componentGradientStart}, ${props => props.theme.componentGradientStart});
-  display: flex;
-  font-size: 14px;
-  font-weight: 500;
-  padding: ${props => props.theme.biggerSpacing};
-  position: relative;
+const Info = styled.span`
+  &:first-of-type {
+    margin-top: 2px;
+  }
 
-  span {
-    &:first-of-type {
-      margin-top: 2px;
-    }
-
-    &:last-of-type {
-      color: ${props => props.theme.textColorDark};
-      margin-top: 8px;
-    }
-  };
-
-  svg {
-    margin-right: ${props => props.theme.regularSpacing};
+  &:last-of-type {
+    color: ${props => props.theme.textColorDark};
+    margin-top: 8px;
   }
 `;
 
-const Separator = styled.div`
-  background-color: ${props => props.theme.componentColor};
-  bottom: 0;
-  content: "";
-  display: block;
-  height: 2px;
-  left: 0;
-  position: absolute;
-  width: 100%;
-  z-index: 100;
+const Column = styled.div<LocationCardProps>`
+  display: flex;
+  flex-direction: column;
+  a {
+    align-items: center;
+    display: inline-flex;
+    margin-top: ${props => props.theme.regularSpacing};
 
-  &::before,
-  &::after {
-    background-color: ${props => props.theme.componentGradientEnd};
-    content: "";
-    display: inline-block;
-    height: ${props => props.theme.regularSpacing};
-    position: absolute;
-    top: -7px;
-    transform: rotate(45deg);
-    width: ${props => props.theme.regularSpacing};
-  }
+    svg {
+      margin-left: ${props => props.theme.smallSpacing};
+    }
 
-  &::before {
-    left: -8px;
-  }
+    ${props => props.iconColor &&`
+      color: ${props.iconColor};
+    `}
 
-  &::after {
-    right: -8px;
+
   }
 `
 
-export const LocationCard: React.FunctionComponent<LocationCardProps> = (props: LocationCardProps): JSX.Element => {
+const IconContainer = styled.div`
+  margin-right: ${props => props.theme.regularSpacing};
+`;
 
-  return <Container>
+export const LocationCard: React.FunctionComponent<LocationCardProps> = (props: LocationCardProps): JSX.Element => {
+  return <CardContainer removeBg={props.removeBg}>
+          <IconContainer>
             <Icon icon='location' fill={props.iconColor} width='12' height='16' />
-            <div className="column">
-              <span>{props.location}</span>
-              <span>{props.address}</span>
-            </div>
-            {props.wSeparator &&
-              <Separator />
+          </IconContainer>
+          <Column iconColor={props.iconColor}>
+            <Info>{props.location}</Info>
+            <Info>{props.address}</Info>
+            {/* TODO - Update to use react-router if necessary */}
+            {props.link &&
+              <a href={props.link}>{props.linkLabel} <Icon icon="chevron" height="12" width="8" fill={props.iconColor} /> </a>
             }
-        </Container>
+          </Column>
+          {props.wSeparator &&
+            <Separator />
+          }
+        </CardContainer>
 };
 
 export default LocationCard;

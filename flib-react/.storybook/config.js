@@ -21,6 +21,7 @@ const customThemes = [
     primaryColor: '#079CF0',
     primaryColorGradientEnd: '#2143AB',
     regularSpacing: '16px',
+    smallSpacing: '8px',
     textColor: 'rgba(255, 255, 255, 0.9)',
     textColorDark: 'rgba(255, 255, 255, 0.6)',
     textColorDarker: 'rgba(255, 255, 255, 0.38)',

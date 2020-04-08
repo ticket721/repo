@@ -107,6 +107,10 @@ export const GlobalStyle = createGlobalStyle`
     ${linkStyle}
   }
 
+  p {
+    line-height: 20px;
+  }
+
   input,
   textarea,
   select {
