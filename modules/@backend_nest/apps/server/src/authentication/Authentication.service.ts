@@ -1,16 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { PasswordlessUserDto }                                                                  from './dto/PasswordlessUser.dto';
-import { compare, hash }                                                                        from 'bcrypt';
+import { PasswordlessUserDto } from './dto/PasswordlessUser.dto';
+import { compare, hash } from 'bcrypt';
 import { toAcceptedAddressFormat, isKeccak256, Web3LoginSigner, Web3RegisterSigner, keccak256 } from '@common/global';
-import { UsersService }                                                                         from '@lib/common/users/Users.service';
-import { ConfigService }                                                                        from '@lib/common/config/Config.service';
-import { UserDto }                                                                              from '@lib/common/users/dto/User.dto';
-import { RefractFactoryV0Service }                                                              from '@lib/common/contracts/refract/RefractFactory.V0.service';
-import { ServiceResponse }                                                                      from '@lib/common/utils/ServiceResponse.type';
-import { VaultereumService }                                                                    from '@lib/common/vaultereum/Vaultereum.service';
-import { uuid }                                                                                 from '@iaminfinity/express-cassandra';
-import { Web3Service }                                                                          from '@lib/common/web3/Web3.service';
-import { id }                                                                                   from 'ethers/utils';
+import { UsersService } from '@lib/common/users/Users.service';
+import { ConfigService } from '@lib/common/config/Config.service';
+import { UserDto } from '@lib/common/users/dto/User.dto';
+import { RefractFactoryV0Service } from '@lib/common/contracts/refract/RefractFactory.V0.service';
+import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
+import { VaultereumService } from '@lib/common/vaultereum/Vaultereum.service';
+import { uuid } from '@iaminfinity/express-cassandra';
+import { Web3Service } from '@lib/common/web3/Web3.service';
 
 /**
  * Authentication services and utilities
