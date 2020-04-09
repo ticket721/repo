@@ -343,10 +343,7 @@ export class AuthenticationService {
         };
     }
 
-    async updateUserPassword(
-        email: string,
-        password: string,
-    ): Promise<ServiceResponse<PasswordlessUserDto>> {
+    async updateUserPassword(email: string, password: string): Promise<ServiceResponse<PasswordlessUserDto>> {
         const emailUserResp: ServiceResponse<UserDto> = await this.usersService.findByEmail(email);
         if (emailUserResp.error) {
             return {
