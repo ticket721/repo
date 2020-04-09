@@ -1,15 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { PasswordlessUserDto } from './dto/PasswordlessUser.dto';
-import { compare, hash } from 'bcrypt';
+import { PasswordlessUserDto }                                                                  from './dto/PasswordlessUser.dto';
+import { compare, hash }                                                                        from 'bcrypt';
 import { toAcceptedAddressFormat, isKeccak256, Web3LoginSigner, Web3RegisterSigner, keccak256 } from '@common/global';
-import { UsersService } from '@lib/common/users/Users.service';
-import { ConfigService } from '@lib/common/config/Config.service';
-import { UserDto } from '@lib/common/users/dto/User.dto';
-import { RefractFactoryV0Service } from '@lib/common/contracts/refract/RefractFactory.V0.service';
-import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
-import { VaultereumService } from '@lib/common/vaultereum/Vaultereum.service';
-import { uuid } from '@iaminfinity/express-cassandra';
-import { Web3Service } from '@lib/common/web3/Web3.service';
+import { UsersService }                                                                         from '@lib/common/users/Users.service';
+import { ConfigService }                                                                        from '@lib/common/config/Config.service';
+import { UserDto }                                                                              from '@lib/common/users/dto/User.dto';
+import { RefractFactoryV0Service }                                                              from '@lib/common/contracts/refract/RefractFactory.V0.service';
+import { ServiceResponse }                                                                      from '@lib/common/utils/ServiceResponse.type';
+import { VaultereumService }                                                                    from '@lib/common/vaultereum/Vaultereum.service';
+import { uuid }                                                                                 from '@iaminfinity/express-cassandra';
+import { Web3Service }                                                                          from '@lib/common/web3/Web3.service';
+import { id }                                                                                   from 'ethers/utils';
 
 /**
  * Authentication services and utilities
@@ -339,6 +340,45 @@ export class AuthenticationService {
 
         return {
             response: newUser.response,
+            error: null,
+        };
+    }
+
+    async updateUserPassword(
+        email: string,
+        password: string,
+        username: string,
+    ): Promise<ServiceResponse<PasswordlessUserDto>> {
+        const emailUserResp: ServiceResponse<UserDto> = await this.usersService.findByEmail(email);
+        if (emailUserResp.error) {
+            return {
+                response: null,
+                error: 'user_not_found',
+            };
+        }
+        const user: UserDto = emailUserResp.response;
+
+        if (!isKeccak256(password)) {
+            return {
+                response: null,
+                error: 'password_should_be_keccak256',
+            };
+        }
+
+        const updatedUser: ServiceResponse<UserDto> = await this.usersService.update({
+            id: user.id,
+            email,
+            password: await hash(password, parseInt(this.configService.get('BCRYPT_SALT_ROUNDS'), 10)),
+            username,
+        });
+        if (updatedUser.error) {
+            return updatedUser;
+        }
+
+        delete updatedUser.response.password;
+
+        return {
+            response: updatedUser.response,
             error: null,
         };
     }
