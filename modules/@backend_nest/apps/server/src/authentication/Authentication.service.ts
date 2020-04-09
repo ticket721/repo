@@ -346,7 +346,6 @@ export class AuthenticationService {
     async updateUserPassword(
         email: string,
         password: string,
-        username: string,
     ): Promise<ServiceResponse<PasswordlessUserDto>> {
         const emailUserResp: ServiceResponse<UserDto> = await this.usersService.findByEmail(email);
         if (emailUserResp.error) {
@@ -368,7 +367,6 @@ export class AuthenticationService {
             id: user.id,
             email,
             password: await hash(password, parseInt(this.configService.get('BCRYPT_SALT_ROUNDS'), 10)),
-            username,
         });
         if (updatedUser.error) {
             return updatedUser;

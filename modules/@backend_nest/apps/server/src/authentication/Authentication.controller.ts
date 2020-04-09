@@ -317,7 +317,7 @@ export class AuthenticationController {
         StatusCodes.InternalServerError,
     ])
     async updatePassword(@Body() body: Partial<UserDto>): Promise<PasswordlessUserDto> {
-        const resp = await this.authenticationService.updateUserPassword(body.email, body.password, body.username);
+        const resp = await this.authenticationService.updateUserPassword(body.email, body.password);
         if (resp.error) {
             switch (resp.error) {
                 case 'user_not_found':
