@@ -1,35 +1,26 @@
-import {
-    Body,
-    Controller,
-    HttpCode,
-    HttpException,
-    Injectable,
-    Post,
-    Request,
-    UseFilters,
-    UseGuards,
-} from '@nestjs/common';
-import { AuthenticationService } from './Authentication.service';
-import { ApiTags } from '@nestjs/swagger';
-import { PasswordlessUserDto } from './dto/PasswordlessUser.dto';
-import { LocalRegisterResponseDto } from './dto/LocalRegisterResponse.dto';
-import { LocalRegisterInputDto } from './dto/LocalRegisterInput.dto';
-import { JwtService } from '@nestjs/jwt';
-import { AuthGuard } from '@nestjs/passport';
-import { LocalLoginResponseDto } from './dto/LocalLoginResponse.dto';
-import { HttpExceptionFilter } from '../utils/HttpException.filter';
-import { Web3RegisterInputDto } from '@app/server/authentication/dto/Web3RegisterInput.dto';
-import { Web3RegisterResponseDto } from '@app/server/authentication/dto/Web3RegisterResponse.dto';
-import { Web3LoginResponseDto } from '@app/server/authentication/dto/Web3LoginResponse.dto';
-import { EmailValidationInputDto } from '@app/server/authentication/dto/EmailValidationInput.dto';
+import { Body, Controller, HttpCode, HttpException, Injectable, Post, Request, UseFilters, UseGuards } from '@nestjs/common';
+import { AuthenticationService }                                                                       from './Authentication.service';
+import { ApiTags }                                                                                     from '@nestjs/swagger';
+import { PasswordlessUserDto }                                                                         from './dto/PasswordlessUser.dto';
+import { LocalRegisterResponseDto }                                                                    from './dto/LocalRegisterResponse.dto';
+import { LocalRegisterInputDto }                                                                       from './dto/LocalRegisterInput.dto';
+import { JwtService }                                                                                  from '@nestjs/jwt';
+import { AuthGuard }                                                                                   from '@nestjs/passport';
+import { LocalLoginResponseDto }                                                                       from './dto/LocalLoginResponse.dto';
+import { HttpExceptionFilter }                                                                         from '../utils/HttpException.filter';
+import { Web3RegisterInputDto }                                                                        from '@app/server/authentication/dto/Web3RegisterInput.dto';
+import { Web3RegisterResponseDto }    from '@app/server/authentication/dto/Web3RegisterResponse.dto';
+import { Web3LoginResponseDto }       from '@app/server/authentication/dto/Web3LoginResponse.dto';
+import { EmailValidationInputDto }    from '@app/server/authentication/dto/EmailValidationInput.dto';
 import { EmailValidationResponseDto } from '@app/server/authentication/dto/EmailValidationResponse.dto';
-import { InjectQueue } from '@nestjs/bull';
-import { Queue } from 'bull';
-import { EmailValidationTaskDto } from '@app/server/authentication/dto/EmailValidationTask.dto';
-import { ConfigService } from '@lib/common/config/Config.service';
-import { StatusCodes } from '@lib/common/utils/codes.value';
-import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
-import { ApiResponses } from '@app/server/utils/ApiResponses.controller.decorator';
+import { InjectQueue }                from '@nestjs/bull';
+import { Queue }                      from 'bull';
+import { EmailValidationTaskDto }     from '@app/server/authentication/dto/EmailValidationTask.dto';
+import { ConfigService }              from '@lib/common/config/Config.service';
+import { StatusCodes }                from '@lib/common/utils/codes.value';
+import { ServiceResponse }            from '@lib/common/utils/ServiceResponse.type';
+import { ApiResponses }               from '@app/server/utils/ApiResponses.controller.decorator';
+import { UserDto }                    from '@lib/common/users/dto/User.dto';
 
 /**
  * Controller exposing the authentication routes
@@ -303,6 +294,56 @@ export class AuthenticationController {
         }
     }
 
+    /**
+     * [POST /authentication/password/update] : Updates user's password
+     */
+    @Post('local/password/update')
+    @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.OK)
+    @ApiResponses([
+        StatusCodes.OK,
+        StatusCodes.Conflict,
+        StatusCodes.UnprocessableEntity,
+        StatusCodes.InternalServerError,
+    ])
+    async updatePassword(@Body() body: Partial<UserDto>): Promise<PasswordlessUserDto> {
+        const resp = await this.authenticationService.updateUserPassword(
+            body.email,
+            body.password,
+            body.username,
+        );
+        if (resp.error) {
+            switch (resp.error) {
+                case 'user_not_found':
+                    throw new HttpException(
+                        {
+                            status: StatusCodes.Conflict,
+                            message: resp.error,
+                        },
+                        StatusCodes.Conflict,
+                    );
+
+                case 'password_should_be_keccak256':
+                    throw new HttpException(
+                        {
+                            status: StatusCodes.UnprocessableEntity,
+                            message: resp.error,
+                        },
+                        StatusCodes.UnprocessableEntity,
+                    );
+                default:
+                    throw new HttpException(
+                        {
+                            status: StatusCodes.InternalServerError,
+                            message: resp.error,
+                        },
+                        StatusCodes.InternalServerError,
+                    );
+            }
+        } else {
+            return resp.response;
+        }
+    }
     /**
      * [POST /authentication/validate] : Validates a user's email address
      */
