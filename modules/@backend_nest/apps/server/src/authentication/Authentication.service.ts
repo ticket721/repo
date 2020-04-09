@@ -365,7 +365,6 @@ export class AuthenticationService {
 
         const updatedUser: ServiceResponse<UserDto> = await this.usersService.update({
             id: user.id,
-            email,
             password: await hash(password, parseInt(this.configService.get('BCRYPT_SALT_ROUNDS'), 10)),
         });
         if (updatedUser.error) {
