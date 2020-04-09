@@ -11,16 +11,15 @@ export interface IconProps extends React.ComponentProps<any> {
 
 const Svg = styled.svg`
   display: block;
-  fill: ${props => props.fill ? props.fill : props.theme.primaryColor};
-  height: ${props => props.height ? props.height : 24}px;
+  height: ${props => props.height ? `${props.height}px` : '100%'};
   transition: all 300ms ease;
-  width: ${props => props.width ? props.width : 24}px;
+  width: ${props => props.width ? `${props.width}px` : '100%'};
 `;
 
 
 export const Icon: React.FunctionComponent<IconProps> = (props: IconProps): JSX.Element => {
-  return <Svg fill={props.fill} height={props.height} width={props.width}>
-      <path d={icons[props.icon]} />
+  return <Svg height={props.height} width={props.width}>
+      <path d={icons[props.icon]} fill={props.fill}/>
     </Svg>
 }
 

@@ -9,6 +9,9 @@ import LocationCard from '../../src/components/ticket/cards/location';
 import TitleText from '../../src/components/ticket/cards/title-text'
 import PurchaseInfosCard from '../../src/components/ticket/cards/purchase-infos';
 import SponsorsCard from '../../src/components/ticket/cards/sponsors';
+import QrCodeButton from '../../src/components/ticket/qr-code';
+import LinkButton from '../../src/components/ticket/link-button';
+import TopNav from '../../src/components/ticket/top-nav';
 
 const defaultTicket = {
   name: 'Tall Heights - 2020 tour',
@@ -72,6 +75,7 @@ export default {
 const PullUp = styled.div`
   border-bottom-left-radius: 8px;
   border-bottom-right-radius: 8px;
+  margin-bottom: 32px;
   margin-top: -100px;
   overflow: hidden;
   position: relative;
@@ -83,8 +87,10 @@ const Container = styled.div`
   width: calc(100% - 8px);
 `
 
+
 export const Preview = () => (
   <div>
+    <TopNav label="1 of 2" />
     <TicketHeader ticket={defaultTicket} fullWidth/>
     <PullUp>
       <Container>
@@ -123,5 +129,11 @@ export const Preview = () => (
       </Container>
       <Gradient values={defaultTicket.gradients} />
     </PullUp>
+    <div className="container">
+      <LinkButton label="View previous transactions" to="#todo" />
+    </div>
+    <div className="container">
+      <QrCodeButton label="Tap to scan your QR code" />
+    </div>
   </div>
 );

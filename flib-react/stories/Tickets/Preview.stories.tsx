@@ -42,21 +42,19 @@ const Container = styled.div`
   border-bottom-right-radius: 8px;
   margin: 1rem;
   overflow: hidden;
-
-  .row {
-    margin-bottom: 16px;
-  }
 `
 
 export const FullPreview = () => (
-  <Container>
-    <div className="row jcsb aife">
-      <h1>My tickets</h1>
-      <a href="#todo">View past ticket</a>
-    </div>
-    <TicketHeader ticket={defaultTicket} />
-    <PullUp>
-      <TicketPreview ticket={defaultTicket} />
-    </PullUp>
-  </Container>
+  <div>
+    <Container>
+      <div className="row jcsb aife">
+        <h1>My tickets</h1>
+        <a href="#todo">View past ticket</a>
+      </div>
+      <TicketHeader ticket={defaultTicket} />
+      <PullUp>
+        <TicketPreview ticket={defaultTicket} />
+      </PullUp>
+    </Container>
+  </div>
 )

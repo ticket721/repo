@@ -138,6 +138,10 @@ export const GlobalStyle = createGlobalStyle`
     align-items: flex-end;
   }
 
+  .jcc{
+    justify-content: center;
+  }
+
   .jcsb {
     justify-content: space-between;
   }
@@ -148,9 +152,8 @@ export const GlobalStyle = createGlobalStyle`
   }
 
   .container {
-    margin: 1.5rem auto;
+    margin: 1.5rem 1rem;
     max-width: 600px;
-    width: 100%;
   }
 
   h1 {

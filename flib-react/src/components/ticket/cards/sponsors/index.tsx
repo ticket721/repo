@@ -39,8 +39,8 @@ export const Sponsors: React.FunctionComponent<SponsorsProps> = (props:SponsorsP
            <Title>{props.title}</Title>
            <Grid>
             {props.sponsors.map((sponsor) =>
-              <ImgContainer>
-                <img src={sponsor.logo} key={sponsor.id} />
+              <ImgContainer key={sponsor.id}>
+                <img src={sponsor.logo} />
               </ImgContainer>
             )}
            </Grid>
