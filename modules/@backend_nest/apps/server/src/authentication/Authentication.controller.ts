@@ -312,7 +312,7 @@ export class AuthenticationController {
     @HttpCode(StatusCodes.OK)
     @ApiResponses([
         StatusCodes.OK,
-        StatusCodes.Conflict,
+        StatusCodes.Unauthorized,
         StatusCodes.UnprocessableEntity,
         StatusCodes.InternalServerError,
     ])
@@ -323,10 +323,10 @@ export class AuthenticationController {
                 case 'user_not_found':
                     throw new HttpException(
                         {
-                            status: StatusCodes.Conflict,
+                            status: StatusCodes.Unauthorized,
                             message: resp.error,
                         },
-                        StatusCodes.Conflict,
+                        StatusCodes.Unauthorized,
                     );
 
                 case 'password_should_be_keccak256':
