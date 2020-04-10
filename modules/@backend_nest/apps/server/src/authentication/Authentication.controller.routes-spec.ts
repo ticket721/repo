@@ -1,11 +1,20 @@
-import { StatusCodes }                                                             from '@lib/common/utils/codes.value';
-import { AxiosResponse }                                                           from 'axios';
-import { LocalRegisterResponseDto }                                                from '@app/server/authentication/dto/LocalRegisterResponse.dto';
-import { LocalLoginResponseDto }                                                   from '@app/server/authentication/dto/LocalLoginResponse.dto';
-import { EmailValidationResponseDto }                                              from '@app/server/authentication/dto/EmailValidationResponse.dto';
-import { createWallet, Web3LoginSigner, Web3RegisterSigner }                       from '@common/global';
-import { Web3LoginResponseDto }                                                    from '@app/server/authentication/dto/Web3LoginResponse.dto';
-import { failWithCode, generateEmail, generatePassword, generateUserName, getSDK } from '../../test/utils';
+import { StatusCodes } from '@lib/common/utils/codes.value';
+import { AxiosResponse } from 'axios';
+import { LocalRegisterResponseDto } from '@app/server/authentication/dto/LocalRegisterResponse.dto';
+import { LocalLoginResponseDto } from '@app/server/authentication/dto/LocalLoginResponse.dto';
+import { EmailValidationResponseDto } from '@app/server/authentication/dto/EmailValidationResponse.dto';
+import { createWallet, Web3LoginSigner, Web3RegisterSigner } from '@common/global';
+import { Web3LoginResponseDto } from '@app/server/authentication/dto/Web3LoginResponse.dto';
+import {
+    failWithCode,
+    generateEmail,
+    generatePassword,
+    generateUserName,
+    getSDK,
+    getSDKAndUser,
+} from '../../test/utils';
+import { T721SDK } from '@common/sdk';
+import { PasswordlessUserDto } from '@app/server/authentication/dto/PasswordlessUser.dto';
 
 export default function(getCtx: () => { ready: Promise<void> }) {
     return function() {
