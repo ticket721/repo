@@ -122,7 +122,10 @@ export function web3LoginPayload(networkId: number): [number, EIP712Payload] {
     return web3LoginSigner.generateAuthenticationProofPayload();
 }
 
-export async function updatePassword(email: string, password: string) {
+export async function updatePassword(
+    token: string,
+    email: string,
+    password: string): Promise<AxiosResponse<Partial<UserDto>> | FailedRegisterReport> {
     const self: T721SDK = this;
 
     const report = getPasswordStrength(password);
@@ -141,8 +144,9 @@ export async function updatePassword(email: string, password: string) {
         password: hashed,
     };
 
-    return self.post('/authentication/local/password/change',
+    return self.post<Partial<UserDto>>('/authentication/local/password/update',
         {
+            Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
         }, updateUser);
 }
