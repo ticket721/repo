@@ -12973,10 +12973,10 @@ styled-components@^5.1.0:
     shallowequal "^1.1.0"
     supports-color "^5.5.0"
 
-styled-react-modal@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/styled-react-modal/-/styled-react-modal-2.0.0.tgz#b42eec58c76b4c91afb4af925f2ab39e43b57263"
-  integrity sha512-WVsYpmdfWBgN51yEnIoLlqirhaWYizXFy+/p9Of75OBIiccMzT7gLVUZXPrV3xZDrLJNW/85orYuNOEcaBaKeA==
+styled-react-modal@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/styled-react-modal/-/styled-react-modal-2.0.1.tgz#513d47bdbdba67f474a8a4dfeb13d072a172c7fc"
+  integrity sha512-uoyPlwdM8FLmdOE8dvA3iv2IOnlqMsygPxLAZy8WaK0pEcon67+SWJY/osAWZuBvRKtSo/VXn1fRCYVgbD0KUQ==
 
 subarg@^1.0.0:
   version "1.0.0"
@@ -13176,14 +13176,14 @@ text-table@0.2.0, text-table@^0.2.0:
   resolved "https://registry.yarnpkg.com/text-table/-/text-table-0.2.0.tgz#7f5ee823ae805207c00af2df4a84ec3fcfa570b4"
   integrity sha1-f17oI66AUgfACvLfSoTsP8+lcLQ=
 
-themeprovider-storybook@^1.4.0:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/themeprovider-storybook/-/themeprovider-storybook-1.4.0.tgz#f6162e3ccce283bd7f3e5d9d57cd4b01a5985bf5"
-  integrity sha512-Xt4Y0him1wppGz2M7Jq/2DYWWWFTvTepBlcK9cLOQ/5xvcsttw5H9dd52mbq4QokRSx+ZZEQaPGc0GCCZX3ZVA==
+themeprovider-storybook@^1.5.1:
+  version "1.5.1"
+  resolved "https://registry.yarnpkg.com/themeprovider-storybook/-/themeprovider-storybook-1.5.1.tgz#c15e66d46ffe92c32c5aed5ca3e98e8eb3919c5b"
+  integrity sha512-TQNZ3kqQp3wUies4V47SOVyq5PK0X+lOe/l9bup7nATeZEfwlBqO8ByBYqtcN8+FG91Ge+dSRx7rOWqLwMqmGg==
   dependencies:
     immutable "^4.0.0-rc.12"
     react-json-view "^1.19.1"
-    styled-react-modal "^2.0.0"
+    styled-react-modal "^2.0.1"
 
 throat@^5.0.0:
   version "5.0.0"
