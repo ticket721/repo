@@ -18,7 +18,7 @@ import { Web3RegisterInputDto }       from '@app/server/authentication/dto/Web3R
 import { Web3LoginInputDto }          from '@app/server/authentication/dto/Web3LoginInput.dto';
 import { EmailValidationResponseDto } from '@app/server/authentication/dto/EmailValidationResponse.dto';
 import { EmailValidationInputDto }    from '@app/server/authentication/dto/EmailValidationInput.dto';
-import { UserDto }                    from '../../../lib/@backend_nest/libs/common/src/users/dto/User.dto';
+import { UserDto }                    from '@lib/common/users/dto/User.dto';
 
 export interface FailedRegisterReport {
     report_status: 'weak';
