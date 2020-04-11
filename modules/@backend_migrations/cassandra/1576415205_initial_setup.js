@@ -76,8 +76,9 @@ var migration1576415205 = {
 
         const link_type_creation = {
             query: `CREATE TYPE ticket721.link (
-                        id uuid,
-                        type text
+                        id text,
+                        type text,
+                        field text
                     );`,
             params: []
         };
@@ -410,7 +411,28 @@ var migration1576415205 = {
                         id text PRIMARY KEY,
                         used_by uuid,
                         created_at timestamp,
-                        updated_at timestamp,
+                        updated_at timestamp
+                    );`,
+            params: []
+        };
+
+        const metadata_table_creation = {
+            query: `CREATE TABLE ticket721.metadata (
+                        id UUID PRIMARY KEY,
+                        class_name text,
+                        type_name text,
+                        links list<frozen<ticket721.link>>,
+                        readers list<frozen<ticket721.link>>,
+                        public_read boolean,
+                        writers list<frozen<ticket721.link>>,
+                        public_write boolean,
+                        bool_ map<text, boolean>,
+                        str_ map<text, text>,
+                        int_ map<text, int>,
+                        date_ map<text, timestamp>,
+                        double_ map<text, double>,
+                        created_at timestamp,
+                        updated_at timestamp
                     );`,
             params: []
         };
@@ -517,6 +539,9 @@ var migration1576415205 = {
 
             console.log('Stripe Resource Table Creation');
             await db.execute(stripe_resource_table_creation.query, stripe_resource_table_creation.params, { prepare: true });
+
+            console.log('Metadata Table Creation');
+            await db.execute(metadata_table_creation.query, metadata_table_creation.params, { prepare: true });
 
         } catch (e) {
             return handler(e, false);
@@ -686,6 +711,11 @@ var migration1576415205 = {
             params: []
         };
 
+        const metadata_table_creation = {
+            query: `DROP TABLE ticket721.metadata`,
+            params: []
+        };
+
         try {
 
             // Tables first
@@ -730,6 +760,9 @@ var migration1576415205 = {
 
             console.log('Stripe Resource Table Creation');
             await db.execute(stripe_resource_table_creation.query, stripe_resource_table_creation.params, { prepare: true });
+
+            console.log('Metadata Table Creation');
+            await db.execute(metadata_table_creation.query, metadata_table_creation.params, { prepare: true });
 
             // Then Types
             console.log('Action Type Deletion');

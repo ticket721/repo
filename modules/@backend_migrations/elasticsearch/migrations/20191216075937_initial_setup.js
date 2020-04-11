@@ -253,6 +253,14 @@ class M20191216075937_initial_setup extends ElasticMigration {
                 }
             }
         );
+        
+        await this.createIndex('ticket721_metadata', 'ticket721');
+        await this.putMapping('ticket721_metadata', 'metadata', {
+            "metadata": {
+                "discover": ".*"
+            }
+        });
+
     }
 
     async down() {
@@ -269,6 +277,8 @@ class M20191216075937_initial_setup extends ElasticMigration {
         await this.removeIndex('ticket721_evmblockrollback');
         await this.removeIndex('ticket721_gemorder');
         await this.removeIndex('ticket721_striperesource');
+        await this.removeIndex('ticket721_category');
+        await this.removeIndex('ticket721_metadata');
     }
 }
 

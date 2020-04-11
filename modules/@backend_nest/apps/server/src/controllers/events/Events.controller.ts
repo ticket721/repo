@@ -51,6 +51,7 @@ import { RightsService } from '@lib/common/rights/Rights.service';
 import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
 import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
 import { ApiResponses } from '@app/server/utils/ApiResponses.controller.decorator';
+import { MetadatasService } from '@lib/common/metadatas/Metadatas.service';
 
 /**
  * Events controller to create and fetch events
@@ -71,6 +72,7 @@ export class EventsController extends ControllerBasics<EventEntity> {
      * @param vaultereumService
      * @param uuidToolService
      * @param rightsService
+     * @param metadatasService
      */
     constructor(
         private readonly eventsService: EventsService,
@@ -82,6 +84,7 @@ export class EventsController extends ControllerBasics<EventEntity> {
         private readonly vaultereumService: VaultereumService,
         private readonly uuidToolService: UUIDToolService,
         private readonly rightsService: RightsService,
+        private readonly metadatasService: MetadatasService,
     ) {
         super();
     }
@@ -132,7 +135,7 @@ export class EventsController extends ControllerBasics<EventEntity> {
                 id: body.event,
             },
             'group_id',
-            ['owner', 'admin'],
+            ['admin'],
         );
 
         if (!body.dates) {
@@ -170,6 +173,121 @@ export class EventsController extends ControllerBasics<EventEntity> {
         return {
             event: eventEntity,
         };
+    }
+
+    /**
+     * Generates history metadata for all created entities
+     *
+     * @param event
+     * @param dates
+     * @param categories
+     * @param user
+     */
+    private async generateHistoryMetadata(
+        event: EventEntity,
+        dates: DateEntity[],
+        categories: CategoryEntity[],
+        user: UserDto,
+    ): Promise<void> {
+        await this._serviceCall(
+            this.metadatasService.attach(
+                'history',
+                'create',
+                [
+                    {
+                        type: 'event',
+                        id: event.id,
+                        field: 'id',
+                        rightId: event.group_id,
+                        rightField: 'group_id',
+                    },
+                ],
+                [
+                    {
+                        type: 'event',
+                        id: event.group_id,
+                        field: 'group_id',
+                    },
+                ],
+                [],
+                {
+                    date: {
+                        at: new Date(Date.now()),
+                    },
+                },
+                user,
+                this.eventsService,
+            ),
+            StatusCodes.InternalServerError,
+        );
+
+        for (const date of dates) {
+            await this._serviceCall(
+                this.metadatasService.attach(
+                    'history',
+                    'create',
+                    [
+                        {
+                            type: 'date',
+                            id: date.id,
+                            field: 'id',
+                            rightId: date.group_id,
+                            rightField: 'group_id',
+                        },
+                    ],
+                    [
+                        {
+                            type: 'date',
+                            id: date.group_id,
+                            field: 'group_id',
+                        },
+                    ],
+                    [],
+                    {
+                        date: {
+                            at: new Date(Date.now()),
+                        },
+                    },
+                    user,
+                    this.datesService,
+                ),
+                StatusCodes.InternalServerError,
+            );
+        }
+
+        for (const category of categories) {
+            await this._serviceCall(
+                this.metadatasService.attach(
+                    'history',
+                    'create',
+                    [
+                        {
+                            type: 'category',
+                            id: category.id,
+                            field: 'id',
+                            rightId: category.group_id,
+                            rightField: 'group_id',
+                        },
+                    ],
+                    [
+                        {
+                            type: 'category',
+                            id: category.group_id,
+                            field: 'group_id',
+                        },
+                    ],
+                    [],
+                    {
+                        date: {
+                            at: new Date(Date.now()),
+                        },
+                    },
+                    user,
+                    this.categoriesService,
+                ),
+                StatusCodes.InternalServerError,
+            );
+        }
     }
 
     /**
@@ -267,6 +385,7 @@ export class EventsController extends ControllerBasics<EventEntity> {
         }
 
         const dates: DateEntity[] = [];
+        let categories: CategoryEntity[] = [];
 
         for (const dateWithCategories of datesWithCategories) {
             const createdDateWithCategories = await this._serviceCall<[DateEntity, CategoryEntity[]]>(
@@ -275,12 +394,15 @@ export class EventsController extends ControllerBasics<EventEntity> {
             );
 
             dates.push(createdDateWithCategories[0]);
+            categories = [...categories, ...createdDateWithCategories[1]];
         }
 
         const createdEventWithCategories = await this._serviceCall<[EventEntity, CategoryEntity[]]>(
             this.eventsService.createEventWithDatesAndCategories(event, dates, eventCategories),
             StatusCodes.InternalServerError,
         );
+
+        categories = [...categories, ...createdEventWithCategories[1]];
 
         await this._crudCall<any>(
             this.rightsService.addRights(user, [
@@ -308,6 +430,8 @@ export class EventsController extends ControllerBasics<EventEntity> {
             ]),
             StatusCodes.InternalServerError,
         );
+
+        await this.generateHistoryMetadata(createdEventWithCategories[0], dates, categories, user);
 
         return {
             event: createdEventWithCategories[0],
@@ -340,7 +464,7 @@ export class EventsController extends ControllerBasics<EventEntity> {
                 id: eventId,
             },
             'group_id',
-            ['owner', 'admin', 'route_update_metadata'],
+            ['route_update_metadata'],
         );
 
         await this._edit<EventEntity>(
@@ -349,6 +473,38 @@ export class EventsController extends ControllerBasics<EventEntity> {
                 id: eventId,
             },
             body,
+        );
+
+        await this._serviceCall(
+            this.metadatasService.attach(
+                'history',
+                'update',
+                [
+                    {
+                        type: 'event',
+                        id: event.id,
+                        field: 'id',
+                        rightId: event.group_id,
+                        rightField: 'group_id',
+                    },
+                ],
+                [
+                    {
+                        type: 'event',
+                        id: event.group_id,
+                        field: 'group_id',
+                    },
+                ],
+                [],
+                {
+                    date: {
+                        at: new Date(Date.now()),
+                    },
+                },
+                user,
+                this.eventsService,
+            ),
+            StatusCodes.InternalServerError,
         );
 
         return {
@@ -385,7 +541,7 @@ export class EventsController extends ControllerBasics<EventEntity> {
                 id: eventId,
             },
             'group_id',
-            ['owner', 'admin', 'route_delete_categories'],
+            ['route_delete_categories'],
         );
 
         const finalCategories: string[] = [];
@@ -419,6 +575,38 @@ export class EventsController extends ControllerBasics<EventEntity> {
         for (const category of body.categories) {
             await this._unbind<CategoryEntity>(this.categoriesService, category);
         }
+
+        await this._serviceCall(
+            this.metadatasService.attach(
+                'history',
+                'delete_categories',
+                [
+                    {
+                        type: 'event',
+                        id: entity.id,
+                        field: 'id',
+                        rightId: entity.group_id,
+                        rightField: 'group_id',
+                    },
+                ],
+                [
+                    {
+                        type: 'event',
+                        id: entity.group_id,
+                        field: 'group_id',
+                    },
+                ],
+                [],
+                {
+                    date: {
+                        at: new Date(Date.now()),
+                    },
+                },
+                user,
+                this.eventsService,
+            ),
+            StatusCodes.InternalServerError,
+        );
 
         return {
             event: {
@@ -459,7 +647,7 @@ export class EventsController extends ControllerBasics<EventEntity> {
                 id: eventId,
             },
             'group_id',
-            ['owner', 'admin', 'route_add_categories'],
+            ['route_add_categories'],
         );
 
         for (const categoryId of body.categories) {
@@ -514,6 +702,38 @@ export class EventsController extends ControllerBasics<EventEntity> {
             await this._bind<CategoryEntity>(this.categoriesService, categoryId, 'event', eventId);
         }
 
+        await this._serviceCall(
+            this.metadatasService.attach(
+                'history',
+                'add_categories',
+                [
+                    {
+                        type: 'event',
+                        id: eventEntity.id,
+                        field: 'id',
+                        rightId: eventEntity.group_id,
+                        rightField: 'group_id',
+                    },
+                ],
+                [
+                    {
+                        type: 'event',
+                        id: eventEntity.group_id,
+                        field: 'group_id',
+                    },
+                ],
+                [],
+                {
+                    date: {
+                        at: new Date(Date.now()),
+                    },
+                },
+                user,
+                this.eventsService,
+            ),
+            StatusCodes.InternalServerError,
+        );
+
         return {
             event: eventEntity,
         };
@@ -545,7 +765,7 @@ export class EventsController extends ControllerBasics<EventEntity> {
                 id: eventId,
             },
             'group_id',
-            ['owner', 'admin', 'route_delete_dates'],
+            ['route_delete_dates'],
         );
 
         const finalDates: string[] = [];
@@ -579,6 +799,38 @@ export class EventsController extends ControllerBasics<EventEntity> {
         for (const date of body.dates) {
             await this._unbind<DateEntity>(this.datesService, date);
         }
+
+        await this._serviceCall(
+            this.metadatasService.attach(
+                'history',
+                'delete_dates',
+                [
+                    {
+                        type: 'event',
+                        id: entity.id,
+                        field: 'id',
+                        rightId: entity.group_id,
+                        rightField: 'group_id',
+                    },
+                ],
+                [
+                    {
+                        type: 'event',
+                        id: entity.group_id,
+                        field: 'group_id',
+                    },
+                ],
+                [],
+                {
+                    date: {
+                        at: new Date(Date.now()),
+                    },
+                },
+                user,
+                this.eventsService,
+            ),
+            StatusCodes.InternalServerError,
+        );
 
         return {
             event: {
@@ -619,7 +871,7 @@ export class EventsController extends ControllerBasics<EventEntity> {
                 id: eventId,
             },
             'group_id',
-            ['owner', 'admin', 'route_add_dates'],
+            ['route_add_dates'],
         );
 
         for (const dateId of body.dates) {
@@ -673,6 +925,38 @@ export class EventsController extends ControllerBasics<EventEntity> {
         for (const dateId of body.dates) {
             await this._bind<DateEntity>(this.datesService, dateId, 'event', eventId);
         }
+
+        await this._serviceCall(
+            this.metadatasService.attach(
+                'history',
+                'delete_dates',
+                [
+                    {
+                        type: 'event',
+                        id: eventEntity.id,
+                        field: 'id',
+                        rightId: eventEntity.group_id,
+                        rightField: 'group_id',
+                    },
+                ],
+                [
+                    {
+                        type: 'event',
+                        id: eventEntity.group_id,
+                        field: 'group_id',
+                    },
+                ],
+                [],
+                {
+                    date: {
+                        at: new Date(Date.now()),
+                    },
+                },
+                user,
+                this.eventsService,
+            ),
+            StatusCodes.InternalServerError,
+        );
 
         return {
             event: eventEntity,

@@ -29,6 +29,7 @@ import { txsInfos, txsSearch, txsSubscribe }                    from './app/api/
 import { contractsFetch }                                       from './app/api/contracts';
 import { categoriesCreate, categoriesSearch, categoriesUpdate } from './app/api/categories';
 import { rightsSearch }                                         from './app/api/rights';
+import { metadatasFetch }                                       from './app/api/metadatas';
 
 export { FailedRegisterReport } from './app/api/authentication';
 
@@ -90,6 +91,8 @@ export class T721SDK {
         this.txs.infos = this.txs.infos.bind(this);
 
         this.contracts.fetch = this.contracts.fetch.bind(this);
+
+        this.metadatas.fetch = this.metadatas.fetch.bind(this);
     }
 
     connect(host: string, port: number, protocol: 'http' | 'https' = 'http') {
@@ -241,4 +244,8 @@ export class T721SDK {
     public contracts = {
         fetch: contractsFetch,
     };
+
+    public metadatas = {
+        fetch: metadatasFetch,
+    }
 }
