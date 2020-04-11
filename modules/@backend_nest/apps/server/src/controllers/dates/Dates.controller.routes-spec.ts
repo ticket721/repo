@@ -21,7 +21,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const groupID = generateUserName();
+                const groupID = `0x${generateUserName()}`;
 
                 await admin_addRight(user.id, 'date', groupID, "{ 'owner' : true }");
                 const newDate = await sdk.dates.create(token, {
@@ -67,7 +67,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const groupID = generateUserName();
+                const groupID = `0x${generateUserName()}`;
 
                 await admin_addRight(user.id, 'date', groupID, "{ 'owner' : true }");
                 const newDate = await sdk.dates.create(token, {
@@ -115,7 +115,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const groupID = generateUserName();
+                const groupID = `0x${generateUserName()}`;
 
                 await admin_addRight(user.id, 'date', groupID, "{ 'owner' : true }");
                 const newDate = await sdk.dates.create(token, {
@@ -177,7 +177,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const groupID = generateUserName();
+                const groupID = `0x${generateUserName()}`;
 
                 await admin_addRight(user.id, 'date', groupID, "{ 'owner' : true }");
                 await failWithCode(
@@ -218,7 +218,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const groupID = generateUserName();
+                const groupID = `0x${generateUserName()}`;
 
                 await failWithCode(
                     sdk.dates.create(token, {
@@ -258,7 +258,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const groupID = generateUserName();
+                const groupID = `0x${generateUserName()}`;
 
                 await admin_addRight(user.id, 'date', groupID, "{ 'owner' : true }");
 
@@ -302,7 +302,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const groupID = generateUserName();
+                const groupID = `0x${generateUserName()}`;
 
                 await admin_addRight(user.id, 'date', groupID, "{ 'owner' : true }");
                 await admin_addRight(user.id, 'category', groupID, "{ 'owner' : true }");
@@ -364,7 +364,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const groupID = generateUserName();
+                const groupID = `0x${generateUserName()}`;
 
                 await admin_addRight(user.id, 'date', groupID, "{ 'owner' : true }");
                 await admin_addRight(user.id, 'category', groupID, "{ 'owner' : true }");
@@ -427,7 +427,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const groupID = generateUserName();
+                const groupID = `0x${generateUserName()}`;
 
                 await admin_addRight(user.id, 'date', groupID, "{ 'owner' : true }");
                 await admin_addRight(user.id, 'category', groupID, "{ 'owner' : true }");
@@ -494,7 +494,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const groupID = generateUserName();
+                const groupID = `0x${generateUserName()}`;
 
                 await admin_addRight(user.id, 'date', groupID, "{ 'owner' : true }");
                 await admin_addRight(user.id, 'category', groupID, "{ 'owner' : true }");
@@ -582,8 +582,8 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const groupID = generateUserName();
-                const otherGroupID = generateUserName();
+                const groupID = `0x${generateUserName()}`;
+                const otherGroupID = `0x${generateUserName()}`;
 
                 await admin_addRight(user.id, 'date', groupID, "{ 'owner' : true }");
                 await admin_addRight(user.id, 'category', groupID, "{ 'owner' : true }");
@@ -651,7 +651,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const groupID = generateUserName();
+                const groupID = `0x${generateUserName()}`;
 
                 await admin_addRight(user.id, 'date', groupID, "{ 'owner' : true }");
                 await admin_addRight(user.id, 'category', groupID, "{ 'owner' : true }");
@@ -733,7 +733,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const groupID = generateUserName();
+                const groupID = `0x${generateUserName()}`;
 
                 await admin_addRight(user.id, 'date', groupID, "{ 'owner' : true }");
                 await admin_addRight(user.id, 'category', groupID, "{ 'owner' : true }");
@@ -800,7 +800,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const groupID = generateUserName();
+                const groupID = `0x${generateUserName()}`;
 
                 await admin_addRight(user.id, 'date', groupID, "{ 'owner' : true }");
                 await admin_addRight(user.id, 'category', groupID, "{ 'owner' : true }");
@@ -863,7 +863,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const groupID = generateUserName();
+                const groupID = `0x${generateUserName()}`;
 
                 await admin_addRight(user.id, 'date', groupID, "{ 'owner' : true }");
                 await admin_addRight(user.id, 'category', groupID, "{ 'owner' : true }");
@@ -928,7 +928,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const groupID = generateUserName();
+                const groupID = `0x${generateUserName()}`;
 
                 await admin_addRight(user.id, 'date', groupID, "{ 'owner' : true }");
                 const newDate = await sdk.dates.create(token, {
@@ -977,7 +977,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const groupID = generateUserName();
+                const groupID = `0x${generateUserName()}`;
 
                 await admin_addRight(user.id, 'date', groupID, "{ 'owner' : true }");
                 const newDate = await sdk.dates.create(token, {
@@ -1034,7 +1034,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const groupID = generateUserName();
+                const groupID = `0x${generateUserName()}`;
 
                 await admin_addRight(user.id, 'date', groupID, "{ 'owner' : true }");
                 const newDate = await sdk.dates.create(token, {
@@ -1084,7 +1084,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const groupID = generateUserName();
+                const groupID = `0x${generateUserName()}`;
 
                 await admin_addRight(user.id, 'date', groupID, "{ 'owner' : true }");
                 const newDate = await sdk.dates.create(token, {

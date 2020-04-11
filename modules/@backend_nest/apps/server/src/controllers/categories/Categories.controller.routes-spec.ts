@@ -20,7 +20,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const groupID = generateUserName();
+                const groupID = `0x${generateUserName()}`;
 
                 await admin_addRight(user.id, 'category', groupID, "{ 'owner' : true }");
 
@@ -74,7 +74,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const groupID = generateUserName();
+                const groupID = `0x${generateUserName()}`;
 
                 await failWithCode(
                     sdk.categories.create(token, {
@@ -109,7 +109,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const groupID = generateUserName();
+                const groupID = `0x${generateUserName()}`;
 
                 await admin_addRight(user.id, 'category', groupID, "{ 'owner' : true }");
 
@@ -162,7 +162,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const groupID = generateUserName();
+                const groupID = `0x${generateUserName()}`;
 
                 await admin_addRight(user.id, 'category', groupID, "{ 'owner' : true }");
 
@@ -199,7 +199,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const groupID = generateUserName();
+                const groupID = `0x${generateUserName()}`;
 
                 await admin_addRight(user.id, 'category', groupID, "{ 'owner' : true }");
 
@@ -236,7 +236,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const groupID = generateUserName();
+                const groupID = `0x${generateUserName()}`;
 
                 await admin_addRight(user.id, 'category', groupID, "{ 'owner' : true }");
 
@@ -275,7 +275,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const groupID = generateUserName();
+                const groupID = `0x${generateUserName()}`;
 
                 await admin_addRight(user.id, 'category', groupID, "{ 'owner' : true }");
 
@@ -333,7 +333,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const groupID = generateUserName();
+                const groupID = `0x${generateUserName()}`;
 
                 await admin_addRight(user.id, 'category', groupID, "{ 'owner' : true }");
 
@@ -398,7 +398,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
 
                 const otherUser = await getUser(sdk);
 
-                const groupID = generateUserName();
+                const groupID = `0x${generateUserName()}`;
 
                 await admin_addRight(user.id, 'category', groupID, "{ 'owner' : true }");
 
@@ -439,7 +439,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const groupID = generateUserName();
+                const groupID = `0x${generateUserName()}`;
 
                 await admin_addRight(user.id, 'category', groupID, "{ 'owner' : true }");
 
@@ -481,7 +481,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const groupID = generateUserName();
+                const groupID = `0x${generateUserName()}`;
 
                 await admin_addRight(user.id, 'category', groupID, "{ 'owner' : true }");
 
@@ -523,7 +523,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const groupID = generateUserName();
+                const groupID = `0x${generateUserName()}`;
 
                 await admin_addRight(user.id, 'category', groupID, "{ 'owner' : true }");
 
@@ -571,7 +571,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const groupID = generateUserName();
+                const groupID = `0x${generateUserName()}`;
 
                 await admin_addRight(user.id, 'category', groupID, "{ 'owner' : true }");
 

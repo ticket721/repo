@@ -53,6 +53,8 @@ import { RightsModule } from '@lib/common/rights/Rights.module';
 import { CategoriesController } from '@app/server/controllers/categories/Categories.controller';
 import { RightsController } from '@app/server/controllers/rights/Rights.controller';
 import { ServerController } from '@app/server/controllers/server/Server.controller';
+import { MetadatasController } from '@app/server/controllers/metadatas/Metadatas.controller';
+import { MetadatasModule } from '@lib/common/metadatas/Metadatas.module';
 
 @Module({
     imports: [
@@ -86,6 +88,7 @@ import { ServerController } from '@app/server/controllers/server/Server.controll
         EventsModule,
         GemOrdersModule,
         StripeResourcesModule,
+        MetadatasModule,
         CurrenciesModule.registerAsync({
             useFactory: (configService: ConfigService): string => configService.get('CURRENCIES_CONFIG_PATH'),
             inject: [ConfigService],
@@ -175,6 +178,7 @@ import { ServerController } from '@app/server/controllers/server/Server.controll
         CheckoutController,
         CategoriesController,
         RightsController,
+        MetadatasController,
     ],
     providers: [
         ServerService,

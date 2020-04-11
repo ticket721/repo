@@ -33,6 +33,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { Roles, RolesGuard } from '@app/server/authentication/guards/RolesGuard.guard';
 import { isFutureDateRange } from '@common/global/lib/utils';
 import { ApiResponses } from '@app/server/utils/ApiResponses.controller.decorator';
+import { MetadatasService } from '@lib/common/metadatas/Metadatas.service';
 
 /**
  * Generic Categories controller. Recover Categories linked to all types of events
@@ -49,12 +50,14 @@ export class CategoriesController extends ControllerBasics<CategoryEntity> {
      * @param rightsService
      * @param configService
      * @param currenciesService
+     * @param metadatasService
      */
     constructor(
         private readonly categoriesService: CategoriesService,
         private readonly rightsService: RightsService,
         private readonly configService: ConfigService,
         private readonly currenciesService: CurrenciesService,
+        private readonly metadatasService: MetadatasService,
     ) {
         super();
     }
@@ -91,11 +94,7 @@ export class CategoriesController extends ControllerBasics<CategoryEntity> {
     @Roles('authenticated')
     @ApiResponses([StatusCodes.Created, StatusCodes.Conflict, StatusCodes.BadRequest, StatusCodes.InternalServerError])
     async create(@Body() body: CategoriesCreateInputDto, @User() user: UserDto): Promise<CategoriesCreateResponseDto> {
-        await this._authorizeGlobal(this.rightsService, this.categoriesService, user, body.group_id, [
-            'owner',
-            'admin',
-            'route_create',
-        ]);
+        await this._authorizeGlobal(this.rightsService, this.categoriesService, user, body.group_id, ['route_create']);
 
         const scope = this.configService.get('TICKETFORGE_SCOPE');
         const categoryName = serialize(body.display_name);
@@ -164,6 +163,38 @@ export class CategoriesController extends ControllerBasics<CategoryEntity> {
             seats: body.seats,
         });
 
+        await this._serviceCall(
+            this.metadatasService.attach(
+                'history',
+                'create',
+                [
+                    {
+                        type: 'category',
+                        id: categoryEntity.id,
+                        field: 'id',
+                        rightId: categoryEntity.group_id,
+                        rightField: 'group_id',
+                    },
+                ],
+                [
+                    {
+                        type: 'category',
+                        id: body.group_id,
+                        field: 'group_id',
+                    },
+                ],
+                [],
+                {
+                    date: {
+                        at: new Date(Date.now()),
+                    },
+                },
+                user,
+                this.categoriesService,
+            ),
+            StatusCodes.InternalServerError,
+        );
+
         return {
             category: categoryEntity,
         };
@@ -201,7 +232,7 @@ export class CategoriesController extends ControllerBasics<CategoryEntity> {
                 id: categoryId,
             },
             'group_id',
-            ['owner', 'admin', 'route_update'],
+            ['route_update'],
         );
 
         if (
@@ -261,6 +292,38 @@ export class CategoriesController extends ControllerBasics<CategoryEntity> {
                 ...body,
                 prices: body.prices ? newPrices : categoryEntity.prices,
             },
+        );
+
+        await this._serviceCall(
+            this.metadatasService.attach(
+                'history',
+                'update',
+                [
+                    {
+                        type: 'category',
+                        id: categoryEntity.id,
+                        field: 'id',
+                        rightId: categoryEntity.group_id,
+                        rightField: 'group_id',
+                    },
+                ],
+                [
+                    {
+                        type: 'category',
+                        id: categoryEntity.group_id,
+                        field: 'group_id',
+                    },
+                ],
+                [],
+                {
+                    date: {
+                        at: new Date(Date.now()),
+                    },
+                },
+                user,
+                this.categoriesService,
+            ),
+            StatusCodes.InternalServerError,
         );
 
         return {

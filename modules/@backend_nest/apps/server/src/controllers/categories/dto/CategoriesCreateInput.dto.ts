@@ -1,5 +1,5 @@
 import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
-import { IsDateString, IsNumber, IsString, ValidateNested } from 'class-validator';
+import { IsDateString, IsHexadecimal, IsNumber, IsString, Length, ValidateNested } from 'class-validator';
 import { InputPrice } from '@lib/common/currencies/Currencies.service';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
@@ -19,7 +19,8 @@ export class CategoriesCreateInputDto
     @ApiProperty({
         description: 'Group ID of the category to create',
     })
-    @IsString()
+    @IsHexadecimal()
+    @Length(66, 66)
     // tslint:disable-next-line:variable-name
     group_id: string;
 

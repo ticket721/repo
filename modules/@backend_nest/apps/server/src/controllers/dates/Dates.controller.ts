@@ -36,6 +36,7 @@ import { CategoryEntity } from '@lib/common/categories/entities/Category.entity'
 import { CategoriesService } from '@lib/common/categories/Categories.service';
 import { isFutureDateRange } from '@common/global/lib/utils';
 import { ApiResponses } from '@app/server/utils/ApiResponses.controller.decorator';
+import { MetadatasService } from '@lib/common/metadatas/Metadatas.service';
 
 /**
  * Generic Dates controller. Recover Dates linked to all types of events
@@ -50,11 +51,13 @@ export class DatesController extends ControllerBasics<DateEntity> {
      * @param datesService
      * @param rightsService
      * @param categoriesService
+     * @param metadatasService
      */
     constructor(
         private readonly datesService: DatesService,
         private readonly rightsService: RightsService,
         private readonly categoriesService: CategoriesService,
+        private readonly metadatasService: MetadatasService,
     ) {
         super();
     }
@@ -96,11 +99,7 @@ export class DatesController extends ControllerBasics<DateEntity> {
         StatusCodes.InternalServerError,
     ])
     async create(@Body() body: DatesCreateInputDto, @User() user: UserDto): Promise<DatesCreateResponseDto> {
-        await this._authorizeGlobal(this.rightsService, this.datesService, user, body.group_id, [
-            'owner',
-            'admin',
-            'route_create',
-        ]);
+        await this._authorizeGlobal(this.rightsService, this.datesService, user, body.group_id, ['route_create']);
 
         if (!isFutureDateRange(new Date(body.timestamps.event_begin), new Date(body.timestamps.event_end))) {
             throw new HttpException(
@@ -120,6 +119,38 @@ export class DatesController extends ControllerBasics<DateEntity> {
                 assigned_city: closestCity(body.location.location).id,
             },
         });
+
+        await this._serviceCall(
+            this.metadatasService.attach(
+                'history',
+                'create',
+                [
+                    {
+                        type: 'date',
+                        id: newEntity.id,
+                        field: 'id',
+                        rightId: newEntity.group_id,
+                        rightField: 'group_id',
+                    },
+                ],
+                [
+                    {
+                        type: 'date',
+                        id: newEntity.group_id,
+                        field: 'group_id',
+                    },
+                ],
+                [],
+                {
+                    date: {
+                        at: new Date(Date.now()),
+                    },
+                },
+                user,
+                this.datesService,
+            ),
+            StatusCodes.InternalServerError,
+        );
 
         return {
             date: newEntity,
@@ -157,7 +188,7 @@ export class DatesController extends ControllerBasics<DateEntity> {
                 id: dateId,
             },
             'group_id',
-            ['owner', 'admin', 'route_add_categories'],
+            ['route_add_categories'],
         );
 
         for (const categoryId of body.categories) {
@@ -212,6 +243,38 @@ export class DatesController extends ControllerBasics<DateEntity> {
             await this._bind<CategoryEntity>(this.categoriesService, categoryId, 'date', dateId);
         }
 
+        await this._serviceCall(
+            this.metadatasService.attach(
+                'history',
+                'add_categories',
+                [
+                    {
+                        type: 'date',
+                        id: dateEntity.id,
+                        field: 'id',
+                        rightId: dateEntity.group_id,
+                        rightField: 'group_id',
+                    },
+                ],
+                [
+                    {
+                        type: 'date',
+                        id: dateEntity.group_id,
+                        field: 'group_id',
+                    },
+                ],
+                [],
+                {
+                    date: {
+                        at: new Date(Date.now()),
+                    },
+                },
+                user,
+                this.datesService,
+            ),
+            StatusCodes.InternalServerError,
+        );
+
         return {
             date: dateEntity,
         };
@@ -243,7 +306,7 @@ export class DatesController extends ControllerBasics<DateEntity> {
                 id: dateId,
             },
             'group_id',
-            ['owner', 'admin', 'route_delete_categories'],
+            ['route_delete_categories'],
         );
 
         const finalCategories: string[] = [];
@@ -277,6 +340,38 @@ export class DatesController extends ControllerBasics<DateEntity> {
         for (const category of body.categories) {
             await this._unbind<CategoryEntity>(this.categoriesService, category);
         }
+
+        await this._serviceCall(
+            this.metadatasService.attach(
+                'history',
+                'delete_categories',
+                [
+                    {
+                        type: 'date',
+                        id: entity.id,
+                        field: 'id',
+                        rightId: entity.group_id,
+                        rightField: 'group_id',
+                    },
+                ],
+                [
+                    {
+                        type: 'date',
+                        id: entity.group_id,
+                        field: 'group_id',
+                    },
+                ],
+                [],
+                {
+                    date: {
+                        at: new Date(Date.now()),
+                    },
+                },
+                user,
+                this.datesService,
+            ),
+            StatusCodes.InternalServerError,
+        );
 
         return {
             date: {
@@ -312,7 +407,7 @@ export class DatesController extends ControllerBasics<DateEntity> {
                 id: dateId,
             },
             'group_id',
-            ['owner', 'admin', 'route_update'],
+            ['route_update'],
         );
 
         if (
@@ -350,6 +445,38 @@ export class DatesController extends ControllerBasics<DateEntity> {
             {
                 ...(body as Partial<Pick<DateEntity, 'timestamps' | 'metadata' | 'location'>>),
             },
+        );
+
+        await this._serviceCall(
+            this.metadatasService.attach(
+                'history',
+                'update',
+                [
+                    {
+                        type: 'date',
+                        id: dateEntity.id,
+                        field: 'id',
+                        rightId: dateEntity.group_id,
+                        rightField: 'group_id',
+                    },
+                ],
+                [
+                    {
+                        type: 'date',
+                        id: dateEntity.group_id,
+                        field: 'group_id',
+                    },
+                ],
+                [],
+                {
+                    date: {
+                        at: new Date(Date.now()),
+                    },
+                },
+                user,
+                this.datesService,
+            ),
+            StatusCodes.InternalServerError,
         );
 
         return {
