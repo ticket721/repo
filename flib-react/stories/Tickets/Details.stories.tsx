@@ -26,7 +26,7 @@ const defaultTicket = {
   gradients: ['#EBBC16 6.25%', '#DB535B'],
   mainColor: '#EBBC16',
   addOns: 2,
-  image: '/assets/images/ticket-1.jpg',
+  image: 'assets/images/ticket-1.jpg',
   ticketId: '00251501AS-D04546SD',
   seat: {
     block: 'A',
