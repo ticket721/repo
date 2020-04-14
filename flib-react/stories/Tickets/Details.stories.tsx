@@ -84,9 +84,8 @@ const PullUp = styled.div`
 
 const Container = styled.div`
   overflow: hidden;
-  width: calc(100% - 8px);
+  padding-right: 8px;
 `
-
 
 export const Preview = () => (
   <div>
@@ -107,23 +106,27 @@ export const Preview = () => (
           startDate={defaultTicket.startDate}
           startTime={defaultTicket.startTime}
           wSeparator
+          overflowSeparator
         />
         <LocationCard
           location={defaultTicket.location}
           address={defaultTicket.address}
           iconColor={defaultTicket.mainColor}
           wSeparator
+          overflowSeparator
         />
         <PurchaseInfosCard
           date={defaultTicket.purchase_date}
           iconColor={defaultTicket.mainColor}
           price={defaultTicket.price}
           wSeparator
+          overflowSeparator
         />
         <SponsorsCard
           sponsors={sponsorsList}
           title='Sponsors'
           wSeparator
+          overflowSeparator
         />
         <TitleText title="2x beers" text="Quisque at risus molestie, interdum lectus sed, ultrices quam."/>
       </Container>

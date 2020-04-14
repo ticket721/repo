@@ -4,8 +4,9 @@ import Separator from '../../../elements/separator';
 import styled from '../../../../../config/styled';
 
 export interface SponsorsProps extends React.ComponentProps<any> {
-  title: string;
+  overflowSeparator?: boolean;
   sponsors: any[];
+  title: string;
   wSeparator?: boolean;
 }
 
@@ -45,7 +46,7 @@ export const Sponsors: React.FunctionComponent<SponsorsProps> = (props:SponsorsP
             )}
            </Grid>
             {props.wSeparator &&
-              <Separator />
+              <Separator overflow={props.overflowSeparator} />
             }
         </CardContainer>
 };

@@ -12,6 +12,7 @@ export interface DateTimeCardProps extends React.ComponentProps<any> {
   iconColor?: string;
   link?: string;
   linkLabel?: string;
+  overflowSeparator?: boolean;
   removeBg?: boolean;
   wSeparator?: boolean;
 }
@@ -65,7 +66,7 @@ export const DateTimeCard: React.FunctionComponent<DateTimeCardProps> = (props: 
           </Column>
 
           {props.wSeparator &&
-            <Separator />
+            <Separator overflow={props.overflowSeparator}/>
           }
         </CardContainer>
 };

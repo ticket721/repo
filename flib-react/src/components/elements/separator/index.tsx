@@ -1,21 +1,24 @@
 import * as React from 'react';
 import styled from '../../../../config/styled';
 
+export interface SeparatorProps extends React.ComponentProps<any> {
+  overflow?: boolean;
+}
 
-const SeparatorContainer = styled.div`
-  background-color: ${props => props.theme.componentGradientEnd};
+const SeparatorContainer = styled.div<SeparatorProps>`
+  background-color: #0B0912;
   bottom: 0;
   content: "";
   display: block;
   height: 2px;
   left: 0;
   position: absolute;
-  width: 100%;
+  width: ${props => props.overflow ? 'calc(100% + 8px)' : '100%'};
   z-index: 100;
 
   &::before,
   &::after {
-    background-color: ${props => props.theme.componentGradientEnd};
+    background-color: #0B0912;
     content: "";
     display: inline-block;
     height: ${props => props.theme.regularSpacing};
@@ -32,11 +35,17 @@ const SeparatorContainer = styled.div`
   &::after {
     right: -8px;
   }
+
+  ${props => props.overflow && `
+    &::after {
+      display: none;
+    }
+  `}
 `
 
-export const Separator: React.FunctionComponent = (): JSX.Element => {
+export const Separator: React.FunctionComponent<SeparatorProps> = (props: SeparatorProps): JSX.Element => {
 
-  return <SeparatorContainer />
+  return <SeparatorContainer overflow={props.overflow}/>
 
 };
 

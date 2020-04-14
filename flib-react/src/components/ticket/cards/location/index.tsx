@@ -10,6 +10,7 @@ export interface LocationCardProps extends React.ComponentProps<any> {
   iconColor?: string;
   link?: string;
   linkLabel?: string;
+  overflowSeparator?: boolean;
   removeBg?: boolean;
   wSeparator?: boolean;
 }
@@ -63,7 +64,7 @@ export const LocationCard: React.FunctionComponent<LocationCardProps> = (props: 
             }
           </Column>
           {props.wSeparator &&
-            <Separator />
+            <Separator overflow={props.overflowSeparator} />
           }
         </CardContainer>
 };
