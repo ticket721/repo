@@ -10,7 +10,7 @@
     "author": "Iulian Rotaru",
     "license": "MIT",
     "dependencies": {
-        "cassandra-driver": "3.6.0",
+        "cassandra-driver": "4.5.1",
         "cassandra-migrate": "1.2.333",
         "elastic-migrate": "github:ticket721/elastic-migrate#master"
     }
