@@ -16,19 +16,19 @@ export const showcase = () => (
   <MemoryRouter>
     <Navbar>
       <NavLink to="/home">
-        <Icon icon="home" fill="#fff" />
+        <Icon icon="home" fill="#fff"  height="22" width="24" />
       </NavLink>
       <NavLink to="/search">
-        <Icon icon="search" fill="#fff" />
+        <Icon icon="search" fill="#fff"  height="22" width="22" />
       </NavLink>
       <NavLink to="/">
         <Icon icon="t721" height="20" width="49" fill="#fff" />
       </NavLink>
       <NavLink to="/tags">
-        <Icon icon="tag" fill="#fff"/>
+        <Icon icon="tag" fill="#fff" height="24" width="24" />
       </NavLink>
       <NavLink to="/profile">
-        <Icon icon="profile" fill="#fff" />
+        <Icon icon="profile" fill="#fff"  height="21" width="24" />
       </NavLink>
     </Navbar>
   </MemoryRouter>
