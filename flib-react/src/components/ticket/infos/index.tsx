@@ -10,7 +10,8 @@ export interface PreviewInfosProps extends React.ComponentProps<any> {
 
 const PreviewContainer = styled.main`
   background: linear-gradient(180deg, ${props => props.theme.componentGradientStart}, ${props => props.theme.componentGradientEnd});
-  border-radius: ${props => props.theme.defaultRadius};
+  border-bottom-left-radius: ${props => props.theme.defaultRadius};
+  border-top-left-radius: ${props => props.theme.defaultRadius};
   font-size: 14px;
   font-weight: 500;
   padding: 12px 0;
@@ -36,17 +37,16 @@ const TicketHeaderInfos = styled.div`
   }
 `
 const Separator = styled.div`
-  background-color: ${props => props.theme.componentColor};
+  background-color: #0B0912;
   content: "";
   display: block;
   height: 2px;
   position: relative;
-  width: 100%;
+  width: calc(100% + 8px);
   z-index: 100;
 
-  &::before,
-  &::after {
-    background-color: ${props => props.theme.componentGradientEnd};
+  &::before{
+    background-color: #0B0912;
     content: "";
     display: inline-block;
     height: ${props => props.theme.regularSpacing};
@@ -58,10 +58,6 @@ const Separator = styled.div`
 
   &::before {
     left: -8px;
-  }
-
-  &::after {
-    right: -8px;
   }
 `
 

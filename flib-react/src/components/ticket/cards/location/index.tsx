@@ -64,7 +64,7 @@ export const LocationCard: React.FunctionComponent<LocationCardProps> = (props: 
             }
           </Column>
           {props.wSeparator &&
-            <Separator overflow={props.overflowSeparator} />
+            <Separator />
           }
         </CardContainer>
 };

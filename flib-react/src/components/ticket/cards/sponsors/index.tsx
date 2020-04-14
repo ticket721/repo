@@ -46,7 +46,7 @@ export const Sponsors: React.FunctionComponent<SponsorsProps> = (props:SponsorsP
             )}
            </Grid>
             {props.wSeparator &&
-              <Separator overflow={props.overflowSeparator} />
+              <Separator />
             }
         </CardContainer>
 };

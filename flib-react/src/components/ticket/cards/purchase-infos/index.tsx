@@ -7,7 +7,6 @@ import Icon from '../../../icon';
 export interface PurchaseInfosCardProps extends React.ComponentProps<any> {
   date: string;
   iconColor: string;
-  overflowSeparator?: boolean;
   price: string;
   removeBg?: boolean;
   wSeparator?: boolean;
@@ -47,7 +46,7 @@ export const PurchaseInfosCard: React.FunctionComponent<PurchaseInfosCardProps> 
               <Info>{props.price}</Info>
             </div>
             {props.wSeparator &&
-              <Separator overflow={props.overflowSeparator} />
+              <Separator />
             }
         </CardContainer>
 };
