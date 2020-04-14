@@ -15,7 +15,7 @@ const defaultTicket = {
   startTime: '2:00PM',
   ticketId: '00251501AS-D04546SD',
   endTime: '4:00PM',
-  gradients: ['#EBBC16', '#DB535B'],
+  gradients: ['#EBBC16 6.25%', '#DB535B'],
   mainColor: '#EBBC16',
   addOns: 2,
   image: '/assets/images/ticket-1.jpg'

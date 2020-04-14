@@ -40,8 +40,6 @@ const Column = styled.div<LocationCardProps>`
     ${props => props.iconColor &&`
       color: ${props.iconColor};
     `}
-
-
   }
 `
 
