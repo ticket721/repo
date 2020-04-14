@@ -1,8 +1,8 @@
 import * as React from 'react';
-import styled from '../../../../../config/styled';
-import CardContainer from '../../../elements/card-container';
-import Separator from '../../../elements/separator';
-import Icon from '../../../icon';
+import styled from '../../../../config/styled';
+import CardContainer from '../../elements/card-container';
+import Separator from '../../elements/separator';
+import Icon from '../../icon';
 
 export interface LocationCardProps extends React.ComponentProps<any> {
   location: string;
@@ -28,6 +28,7 @@ const Info = styled.span`
 const Column = styled.div<LocationCardProps>`
   display: flex;
   flex-direction: column;
+
   a {
     align-items: center;
     display: inline-flex;

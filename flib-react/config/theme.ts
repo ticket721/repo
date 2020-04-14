@@ -1,4 +1,5 @@
 export interface Theme {
+  bigRadius: string;
   biggerSpacing: string;
   componentColor: string;
   componentColorLight: string;
@@ -6,6 +7,7 @@ export interface Theme {
   componentGradientStart: string;
   componentGradientEnd: string;
   defaultRadius: string;
+  darkBg: string;
   doubleSpacing: string;
   fontStack: string;
   primaryColor: string;

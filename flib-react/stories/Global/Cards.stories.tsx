@@ -1,10 +1,12 @@
 import * as React from 'react';
-import { withKnobs } from '@storybook/addon-knobs';
-import DateTimeCard from '../../src/components/ticket/cards/datetime';
-import LocationCard from '../../src/components/ticket/cards/location';
-import SponsorsCard  from '../../src/components/ticket/cards/sponsors';
-import TicketInfosCard from '../../src/components/ticket/cards/ticket-infos';
-import PurchaseInfosCard from '../../src/components/ticket/cards/purchase-infos';
+import { withKnobs, text } from '@storybook/addon-knobs';
+import DateTimeCard from '../../src/components/cards/datetime';
+import LocationCard from '../../src/components/cards/location';
+import SponsorsCard  from '../../src/components/cards/sponsors';
+import TicketInfosCard from '../../src/components/cards/ticket-infos';
+import PurchaseInfosCard from '../../src/components/cards/purchase-infos';
+import ReadMoreCard from '../../src/components/cards/read-more';
+import { State, Store } from '@sambego/storybook-state';
 
 const defaultTicket = {
   name: 'Tall Heights - 2020 tour',
@@ -54,7 +56,7 @@ const sponsorsList = [
 ];
 
 export default {
-  title: 'Ticket|Cards',
+  title: 'Global|Cards',
   decorators: [
     withKnobs
   ],
@@ -62,6 +64,19 @@ export default {
     viewport: { defaultViewport: 'iphone6' },
   }
 };
+
+
+const toggleText = () => {
+  store.set({
+    label: store.get('showText') ? 'Read more': 'Read less',
+    showText: !store.get('showText')
+  })
+}
+
+const store = new Store({
+  label: 'Read more',
+  showText: false
+})
 
 export const DateTime = () => (
   <DateTimeCard
@@ -93,7 +108,6 @@ export const Location = () => (
     iconColor={defaultTicket.mainColor}
   />
 );
-
 
 export const LocationWithLink = () => (
   <LocationCard
@@ -128,4 +142,19 @@ export const Sponsors = () => (
     title='Sponsors'
     sponsors={sponsorsList}
   />
+)
+
+export const ReadMore = () => (
+  <State store={store}>
+  {state => [
+    <ReadMoreCard
+      showText={state.showText}
+      toggleText={toggleText}
+      readMoreColor={defaultTicket.mainColor}
+      title="About"
+      text={text('Description', 'Duis posuere dui ut arcu dictum pellentesque. Nunc ex nulla, dictum sed risus eget, tempus pretium ex. Mauris ornare tempor blandit. Cras et mollis quam, sit amet porttitor odio. Duis posuere dui ut arcu dictum pellentesque. Nunc ex nulla, dictum sed risus eget, tempus pretium ex. Mauris ornare tempor blandit. Cras et mollis quam, sit amet porttitor odio.')}
+      readMoreLabel={state.label}
+    />
+  ]}
+  </State>
 )

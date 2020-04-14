@@ -7,11 +7,14 @@ export interface GradientProps extends React.ComponentProps<any> {
    * So the result looks like this
    * ['#EBBC16 6.25%', '#DB535B']
   */
+  blurOnly?:boolean;
   values: string[];
 }
 
 const GradientBar = styled.div<GradientProps>`
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0), ${props => props.values.join(', ')});
+  ${props => !props.blurOnly && `
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0), ${props.values.join(', ')});
+  `}
   bottom: 0;
   content: '';
   height: 100%;
@@ -34,7 +37,7 @@ const GradientBar = styled.div<GradientProps>`
 
 export const Gradient: React.FunctionComponent<GradientProps> = (props: GradientProps): JSX.Element => {
 
-  return <GradientBar values={props.values}></GradientBar>
+  return <GradientBar values={props.values} blurOnly={props.blurOnly} />
 
 };
 

@@ -9,6 +9,7 @@ import { themes } from '@storybook/theming';
 const customThemes = [
   {
     name: 'T721',
+    bigRadius: '32px',
     biggerSpacing: '24px',
     componentColor: 'rgba(255, 255, 255, 0.04)',
     componentColorLight: 'rgba(355, 255, 255, 0.06)',
@@ -16,6 +17,7 @@ const customThemes = [
     componentGradientStart: '#241F33',
     componentGradientEnd: '#1B1726',
     defaultRadius: '8px',
+    darkBg: '#1B1726',
     doubleSpacing: '32px',
     fontStack: `'Gordita', Arial, Helvetica, sans-serif`,
     primaryColor: '#079CF0',
