@@ -44,7 +44,7 @@ const Container = styled.div`
   overflow: hidden;
 `
 
-export const FullPreview = () => (
+export const showcase = () => (
   <div>
     <Container>
       <div className="row jcsb aife">

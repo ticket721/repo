@@ -1,21 +1,19 @@
 import * as React from 'react';
 import styled from '../../../../config/styled';
 
-
 const SeparatorContainer = styled.div`
-  background-color: ${props => props.theme.componentGradientEnd};
+  background-color: #0B0912;
   bottom: 0;
   content: "";
   display: block;
   height: 2px;
   left: 0;
   position: absolute;
-  width: 100%;
+  width: calc(100% + 8px);
   z-index: 100;
 
-  &::before,
-  &::after {
-    background-color: ${props => props.theme.componentGradientEnd};
+  &::before {
+    background-color: #0B0912;
     content: "";
     display: inline-block;
     height: ${props => props.theme.regularSpacing};
@@ -29,9 +27,6 @@ const SeparatorContainer = styled.div`
     left: -8px;
   }
 
-  &::after {
-    right: -8px;
-  }
 `
 
 export const Separator: React.FunctionComponent = (): JSX.Element => {

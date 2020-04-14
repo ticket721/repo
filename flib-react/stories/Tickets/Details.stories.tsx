@@ -84,11 +84,10 @@ const PullUp = styled.div`
 
 const Container = styled.div`
   overflow: hidden;
-  width: calc(100% - 8px);
+  padding-right: 8px;
 `
 
-
-export const Preview = () => (
+export const showcase = () => (
   <div>
     <TopNav label="1 of 2" />
     <TicketHeader ticket={defaultTicket} fullWidth/>

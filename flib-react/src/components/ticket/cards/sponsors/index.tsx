@@ -4,8 +4,9 @@ import Separator from '../../../elements/separator';
 import styled from '../../../../../config/styled';
 
 export interface SponsorsProps extends React.ComponentProps<any> {
-  title: string;
+  overflowSeparator?: boolean;
   sponsors: any[];
+  title: string;
   wSeparator?: boolean;
 }
 
