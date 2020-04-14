@@ -2,6 +2,11 @@ import * as React from 'react';
 import styled from '../../../../config/styled';
 
 export interface GradientProps extends React.ComponentProps<any> {
+  /**
+   * Add 6.25% to the 1st value of the array
+   * So the result looks like this
+   * ['#EBBC16 6.25%', '#DB535B']
+  */
   values: string[];
 }
 
