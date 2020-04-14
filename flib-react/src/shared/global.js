@@ -71,6 +71,13 @@ export const listStyles = css`
   list-style: none;
 `
 
+export const linkStyle = css`
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+`
+
 export const GlobalStyle = createGlobalStyle`
   * {
     ${masterReset}
@@ -96,6 +103,14 @@ export const GlobalStyle = createGlobalStyle`
     ${listStyles}
   }
 
+  a {
+    ${linkStyle}
+  }
+
+  p {
+    line-height: 20px;
+  }
+
   input,
   textarea,
   select {
@@ -119,13 +134,47 @@ export const GlobalStyle = createGlobalStyle`
     align-items: center;
   }
 
+  .aife {
+    align-items: flex-end;
+  }
+
+  .jcc{
+    justify-content: center;
+  }
+
   .jcsb {
     justify-content: space-between;
   }
 
-  .container {
-    margin: 1.5rem auto;
-    max-width: 600px;
-    width: 100%;
+  .column {
+    display: flex;
+    flex-direction: column;
   }
+
+  .container {
+    margin: 1.5rem 1rem;
+    max-width: 600px;
+  }
+
+  h1 {
+    font-size: 24px;
+    font-weight: 700;
+  }
+
+  h2 {
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  h3 {
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  h4 {
+    font-size: 14px;
+    font-weight: 500;
+  }
+
 `;
+

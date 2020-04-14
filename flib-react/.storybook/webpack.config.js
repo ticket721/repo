@@ -13,7 +13,7 @@ module.exports = ({ config }) => {
     ],
   },
   {
-    test:/\.(woff|woff2|eot|ttf|otf)$/,
+    test:/\.(woff|woff2|eot|ttf|otf|jpg|png)$/,
     use: [
       {
         loader: 'file-loader',

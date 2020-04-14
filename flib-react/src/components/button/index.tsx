@@ -5,7 +5,7 @@ import styled from '../../../config/styled';
 
 export interface ButtonProps extends React.ComponentProps<any> {
   title: string;
-  gradients?: Array<string>;
+  gradients?: string[];
   onClick: () => void;
   type: 'primary' | 'secondary' | 'custom' | 'warning';
 }
@@ -44,9 +44,9 @@ const StyledButton = styled.button<ButtonProps>`
     background-color: ${rgba(props.theme.warningColor, 0.4)};
     transition: background-color 300ms ease;
 
-  &::before {
-    background-color: ${rgba(props.theme.warningColor, 0.9)};
-  }
+    &::before {
+      background-color: ${rgba(props.theme.warningColor, 0.9)};
+    }
 `};
 
   align-items: center;
