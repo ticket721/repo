@@ -128,6 +128,8 @@ export const GlobalStyle = createGlobalStyle`
 
   .row {
     display: flex;
+    flex: 0 0 100%;
+    width: 100%;
   }
 
   .aic {
@@ -174,6 +176,12 @@ export const GlobalStyle = createGlobalStyle`
   h4 {
     font-size: 14px;
     font-weight: 500;
+  }
+
+  .utils {
+    &--mb {
+      margin-bottom: 1rem;
+    }
   }
 
 `;

@@ -10,26 +10,18 @@ export interface PhotosVideosCardProps extends React.ComponentProps<any> {
   wSeparator?: boolean;
 }
 
-const H3 = styled.h3`
-  margin-bottom: ${props => props.theme.regularSpacing};
-  width: 100%;
-`
-
 const PhotosGrid = styled.div`
   display: flex;
+  margin-top: ${props => props.theme.biggerSpacing};
+  height: 50vh;
+  max-height: 200px;
+  width: 100%;
 
   .column {
-    flex: 0 0 50%;
-    height: 50vh;
-    max-height: 200px;
-    overflow: hidden;
+    flex: 1 1 0;
 
-    &:first-of-type{
-      padding-right: calc(${props => props.theme.smallSpacing} / 2);
-    }
-
-    &:last-of-type {
-      padding-left: calc(${props => props.theme.smallSpacing} / 2);
+    &:nth-of-type(2) {
+      padding-left: ${props => props.theme.smallSpacing};
     }
   }
 
@@ -40,31 +32,30 @@ const PhotosGrid = styled.div`
     width: 100%;
 
     &__container  {
-      height: 50%;
+      flex: 1;
+      overflow: auto;
 
-      &:first-of-type {
-        padding-bottom: calc(${props => props.theme.smallSpacing} / 2);
-      }
-
-      &:last-of-type {
-        padding-top: calc(${props => props.theme.smallSpacing} / 2);
+      &:nth-of-type(2) {
+        padding-top: ${props => props.theme.smallSpacing} ;
       }
     }
   }
-
 `
 
 export const PhotosVideosCard: React.FunctionComponent<PhotosVideosCardProps> = (props: PhotosVideosCardProps): JSX.Element => {
 
   return <CardContainer removeBg={props.removeBg}>
-            <H3>{props.title}</H3>
+            <div className="row aic jcsb">
+              <h3>{props.title}</h3>
+              <a href="#todo">View all</a>
+            </div>
             <PhotosGrid>
               <div className="column">
-                <img src={props.photos[1]} className="img" />
+                <img src={props.photos[0]} className="img" />
               </div>
               <div className="column">
                 <div className="img__container">
-                  <img src={props.photos[0]} className="img"/>
+                  <img src={props.photos[1]} className="img"/>
                 </div>
                 <div className="img__container">
                   <img src={props.photos[2]} className="img"/>
