@@ -5,9 +5,14 @@ import styled from '../../../../config/styled';
 
 export interface SponsorsProps extends React.ComponentProps<any> {
   overflowSeparator?: boolean;
-  sponsors: any[];
+  sponsors: Logo[];
   title: string;
   wSeparator?: boolean;
+}
+
+interface Logo {
+  id: string | number;
+  logo: string;
 }
 
 const Grid = styled.div`

@@ -1,12 +1,13 @@
 import * as React from 'react';
 import { withKnobs, text } from '@storybook/addon-knobs';
+import { State, Store } from '@sambego/storybook-state';
 import DateTimeCard from '../../src/components/cards/datetime';
 import LocationCard from '../../src/components/cards/location';
 import SponsorsCard  from '../../src/components/cards/sponsors';
 import TicketInfosCard from '../../src/components/cards/ticket-infos';
 import PurchaseInfosCard from '../../src/components/cards/purchase-infos';
 import ReadMoreCard from '../../src/components/cards/read-more';
-import { State, Store } from '@sambego/storybook-state';
+import TagsListCard from '../../src/components/cards/tags-list';
 
 const defaultTicket = {
   name: 'Tall Heights - 2020 tour',
@@ -55,6 +56,33 @@ const sponsorsList = [
   }
 ];
 
+const tags = [
+  {
+    id: 1,
+    label: 'indie rock'
+  },
+  {
+    id: 12,
+    label: 'country'
+  },
+  {
+    id: 11,
+    label: 'rock'
+  },
+  {
+    id: 41,
+    label: 'rock'
+  },
+  {
+    id: 141,
+    label: 'concert'
+  },
+  {
+    id: 91,
+    label: 'rock'
+  }
+]
+
 export default {
   title: 'Global|Cards',
   decorators: [
@@ -73,9 +101,16 @@ const toggleText = () => {
   })
 }
 
+const toggleAll = () => {
+  store.set({
+    showAll: !store.get('showAll')
+  })
+}
+
 const store = new Store({
   label: 'Read more',
-  showText: false
+  showText: false,
+  showAll: false
 })
 
 export const DateTime = () => (
@@ -135,6 +170,19 @@ export const PurchaseInfos = () => (
     price={defaultTicket.price}
     wSeparator
   />
+)
+
+export const TagsList = () => (
+  <State store={store}>
+    {state => [
+      <TagsListCard
+        label={text ('Label', 'Tags')}
+        handleToggle={toggleAll}
+        showAll={state.showAll}
+        tags={tags}
+      />
+    ]}
+  </State>
 )
 
 export const Sponsors = () => (

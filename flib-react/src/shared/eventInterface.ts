@@ -10,7 +10,7 @@ export default interface Event {
   endTime: string;
   image: string;
   about: string;
-  tags: string[];
+  tags: Tag[];
   resale: boolean;
   photos?: string[];
   refundPolicy: RefundPolicy;
@@ -20,6 +20,11 @@ export default interface Event {
 interface RefundPolicy {
   title: string;
   description: string;
+}
+
+interface Tag {
+  id: string | number;
+  label: string;
 }
 
 interface HostProps {

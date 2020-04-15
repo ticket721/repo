@@ -53,14 +53,21 @@ export const PhotosVideosCard: React.FunctionComponent<PhotosVideosCardProps> = 
               <div className="column">
                 <img src={props.photos[0]} className="img" />
               </div>
-              <div className="column">
-                <div className="img__container">
-                  <img src={props.photos[1]} className="img"/>
+              {props.photos.length > 1 &&
+                <div className="column">
+                  {props.photos[1] &&
+                    <div className="img__container">
+                      <img src={props.photos[1]} className="img"/>
+                    </div>
+                  }
+
+                  {props.photos[2] &&
+                    <div className="img__container">
+                      <img src={props.photos[2]} className="img"/>
+                    </div>
+                  }
                 </div>
-                <div className="img__container">
-                  <img src={props.photos[2]} className="img"/>
-                </div>
-              </div>
+              }
             </PhotosGrid>
         </CardContainer>
 };

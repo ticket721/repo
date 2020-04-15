@@ -1,15 +1,45 @@
 import * as React from 'react';
-import { withKnobs } from '@storybook/addon-knobs';
+import { withKnobs, text } from '@storybook/addon-knobs';
+import { action } from '@storybook/addon-actions';
+import { Store, State } from '@sambego/storybook-state';
 import styled from '../../config/styled';
+
 import EventHeader from '../../src/components/events/header';
 import LocationCard from '../../src/components/cards/location';
 import DateTimeCard from '../../src/components/cards/datetime';
 import ReadMore from '../../src/components/cards/read-more';
 import Border from '../../src/components/elements/border';
 import PhotosVideosCard from '../../src/components/cards/photos-videos';
-import { action } from '@storybook/addon-actions';
 import Gradient from '../../src/components/elements/gradient';
-import { Store, State } from '@sambego/storybook-state';
+import TagsListCard from '../../src/components/cards/tags-list';
+
+
+const tags = [
+  {
+    id: 1,
+    label: 'indie rock'
+  },
+  {
+    id: 12,
+    label: 'country'
+  },
+  {
+    id: 11,
+    label: 'rock'
+  },
+  {
+    id: 41,
+    label: 'rock'
+  },
+  {
+    id: 141,
+    label: 'concert'
+  },
+  {
+    id: 91,
+    label: 'rock'
+  }
+]
 
 const eventDetails = {
   name: 'Ticket #1',
@@ -23,7 +53,7 @@ const eventDetails = {
     title: '10 dats before',
     description: 'Sed ac mattis elit, aliquam lobortis purus. Suspendisse a ex et mattis.'
   },
-  tags: ['music', 'concert', 'metal'],
+  tags: tags,
   resale: true,
   hostedBy: {
     name: 'Band',
@@ -35,6 +65,7 @@ const eventDetails = {
   image: 'assets/images/ticket-1.jpg',
   photos: ['assets/images/event-1.jpg', 'assets/images/event-2.jpg', 'assets/images/event-3.jpg']
 }
+
 
 export default {
   title: 'Events|Details',
@@ -64,9 +95,16 @@ const toggleText = () => {
   })
 }
 
+const toggleAll = () => {
+  store.set({
+    showAll: !store.get('showAll')
+  })
+}
+
 const store = new Store({
   label: 'Read more',
-  showText: false
+  showText: false,
+  showAll: false
 })
 
 export const showcase = () => (
@@ -104,7 +142,18 @@ export const showcase = () => (
             removeBg
           />
           <Border />
-          <PhotosVideosCard title="Photos & videos" photos={eventDetails.photos} removeBg />
+          <PhotosVideosCard
+            title="Photos & videos"
+            photos={eventDetails.photos} removeBg
+          />
+          <Border />
+          <TagsListCard
+            label={text ('Label', 'Tags')}
+            handleToggle={toggleAll}
+            showAll={state.showAll}
+            tags={eventDetails.tags}
+            removeBg
+          />
         </BgContainer>
         <Gradient values={eventDetails.gradients} blurOnly/>
       </Container>
