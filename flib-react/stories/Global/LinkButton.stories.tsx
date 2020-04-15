@@ -1,10 +1,9 @@
 import * as React from 'react';
 import { withKnobs, text } from '@storybook/addon-knobs';
-import LinkButton from '../../src/components/ticket/link-button';
-
+import LinkButton from '../../src/components/elements/link-button';
 
 export default {
-  title: 'Ticket|LinkButton',
+  title: 'Global|LinkButton',
   decorators: [
     withKnobs
   ],

@@ -10,7 +10,7 @@ import TitleText from '../../src/components/cards/title-text'
 import PurchaseInfosCard from '../../src/components/cards/purchase-infos';
 import SponsorsCard from '../../src/components/cards/sponsors';
 import QrCodeButton from '../../src/components/ticket/qr-code';
-import LinkButton from '../../src/components/ticket/link-button';
+import LinkButton from '../../src/components/elements/link-button';
 import TopNav from '../../src/components/ticket/top-nav';
 
 const defaultTicket = {

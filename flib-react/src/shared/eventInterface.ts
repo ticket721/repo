@@ -30,6 +30,7 @@ interface Tag {
 interface HostProps {
   name: string;
   image: string;
+  eventsLink?: string;
   spotifyUrl?: string;
   numberEvents?: number;
 }

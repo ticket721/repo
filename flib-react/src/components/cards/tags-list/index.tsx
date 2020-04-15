@@ -41,13 +41,15 @@ const ToggleButton = styled(Item)`
 export const TagsList: React.FunctionComponent<TagsListProps> = (props:TagsListProps): JSX.Element => {
   let maxItems = props.showAll ? props.tags.length : 3;
 
-  return <CardContainer removeBg>
+  return <CardContainer removeBg={props.removeBg}>
       <h3>{props.label}</h3>
       <List>
         {props.tags.slice(0, maxItems).map((tag) => {
           return <Item key={tag.id}>{tag.label}</Item>
         })}
-        <ToggleButton key="default" onClick={props.handleToggle}>{props.showAll ? 'Hide' : `${props.tags.length - 3} +`}</ToggleButton>
+        {props.tags.length > 3 &&
+          <ToggleButton key="default" onClick={props.handleToggle}>{props.showAll ? 'Hide' : `${props.tags.length - 3} +`}</ToggleButton>
+        }
       </List>
   </CardContainer>
 }

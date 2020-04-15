@@ -12,7 +12,7 @@ import Border from '../../src/components/elements/border';
 import PhotosVideosCard from '../../src/components/cards/photos-videos';
 import Gradient from '../../src/components/elements/gradient';
 import TagsListCard from '../../src/components/cards/tags-list';
-
+import HostedByCard from '../../src/components/cards/hosted-by';
 
 const tags = [
   {
@@ -57,7 +57,10 @@ const eventDetails = {
   resale: true,
   hostedBy: {
     name: 'Band',
-    image: 'assets/images/ticker-1.jpg'
+    image: 'assets/images/band-1.jpg',
+    spotifyUrl: 'https://spotify.com',
+    numberEvents: 12,
+    eventsLink: 'todo'
   },
   endTime: '4:00PM',
   gradients: ['#EBBC16', '#DB535B'],
@@ -152,6 +155,12 @@ export const showcase = () => (
             handleToggle={toggleAll}
             showAll={state.showAll}
             tags={eventDetails.tags}
+            removeBg
+          />
+          <Border />
+          <HostedByCard
+            title="Hosted by"
+            hostedBy={eventDetails.hostedBy}
             removeBg
           />
         </BgContainer>

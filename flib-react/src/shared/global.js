@@ -128,7 +128,6 @@ export const GlobalStyle = createGlobalStyle`
 
   .row {
     display: flex;
-    flex: 0 0 100%;
     width: 100%;
   }
 
@@ -176,6 +175,13 @@ export const GlobalStyle = createGlobalStyle`
   h4 {
     font-size: 14px;
     font-weight: 500;
+
+    &.uppercase {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
   }
 
   .utils {

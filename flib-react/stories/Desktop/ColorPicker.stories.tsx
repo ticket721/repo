@@ -9,7 +9,7 @@ export default {
   decorators: [
     withKnobs
   ],
-  title: 'ColorPicker'
+  title: 'Desktop|ColorPicker'
 }
 
 const handleChange = (color: ColorResult) => {
