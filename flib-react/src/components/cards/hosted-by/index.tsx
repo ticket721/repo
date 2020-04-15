@@ -46,11 +46,6 @@ const Infos = styled.div`
     display: block;
     margin-top: ${props => props.theme.smallSpacing};
   }
-
-  a {
-    transform: rotate(180deg);
-  }
-
   + * {
     margin-top: ${props => props.theme.biggerSpacing};
   }
@@ -74,7 +69,7 @@ export const HostedBy: React.FunctionComponent<HostedByProps> = (props:HostedByP
             </div>
             {/* UPDATE TO USE router-link */}
             {props.hostedBy.eventsLink &&
-              <a href={props.hostedBy.eventsLink}><Icon icon="arrow" height="16" width="16" fill="rgba(255, 255, 255, 0.9)" /></a>
+              <a href={props.hostedBy.eventsLink}><Icon icon="rightArrow" height="16" width="16" fill="rgba(255, 255, 255, 0.9)" /></a>
             }
           </Infos>
 

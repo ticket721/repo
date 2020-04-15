@@ -21,7 +21,8 @@ const GradientBar = styled.div<GradientProps>`
   position: absolute;
   right: 0;
   transform: matrix(-1, 0, 0, 1, 0, 0);
-  width: 8px;
+  width: ${props => props.blurOnly ? '0px' : '8px'};
+  z-index: 0;
 
   &::after {
     background: linear-gradient(180deg, ${props => props.values.join(', ')});

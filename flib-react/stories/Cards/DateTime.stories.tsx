@@ -1,31 +1,6 @@
 import * as React from 'react';
-import { withKnobs } from '@storybook/addon-knobs';
+import { withKnobs, text } from '@storybook/addon-knobs';
 import DateTimeCard from '../../src/components/cards/datetime';
-
-const defaultTicket = {
-  name: 'Tall Heights - 2020 tour',
-  location: 'Philharmonie de Paris',
-  address: '221 avenue Jean Jaurès, Paris',
-  number: 12,
-  ticketType: '2 Days pass',
-  startDate: '2020/02/14',
-  endDate: '2020/20/15',
-  startTime: '2:00PM',
-  endTime: '4:00PM',
-  gradients: ['#EBBC16', '#DB535B'],
-  mainColor: '#EBBC16',
-  addOns: 2,
-  image: '/assets/images/ticket-1.jpg',
-  ticketId: '00251501AS-D04546SD',
-  seat: {
-    block: 'A',
-    row: 'A3',
-    number: 53,
-  },
-  purchase_date: '2020/04/07',
-  price: '$135'
-}
-
 
 export default {
   title: 'Cards|Datetime',
@@ -39,23 +14,23 @@ export default {
 
 export const DateTimeOnly = () => (
   <DateTimeCard
-    endDate={defaultTicket.endDate}
-    endTime={defaultTicket.endTime}
-    iconColor={defaultTicket.mainColor}
-    startDate={defaultTicket.startDate}
-    startTime={defaultTicket.startTime}
+    endDate={text('End date', '2020/02/15')}
+    endTime={text('End time', '4:00PM')}
+    iconColor={text('Icon color: ', '#EBBC16')}
+    startDate={text('Start date', '2020/02/14')}
+    startTime={text('Start time', '2:00PM')}
   />
 );
 
 export const DateTimeWithLink = () => (
   <DateTimeCard
-    endDate={defaultTicket.endDate}
-    endTime={defaultTicket.endTime}
-    iconColor={defaultTicket.mainColor}
-    startDate={defaultTicket.startDate}
-    startTime={defaultTicket.startTime}
+    endDate={text('End date', '2020/02/15')}
+    endTime={text('End time', '4:00PM')}
+    iconColor={text('Icon color: ', '#EBBC16')}
+    startDate={text('Start date', '2020/02/14')}
+    startTime={text('Start time', '2:00PM')}
     link="linkto"
-    linkLabel="View more dates"
+    linkLabel={text('Link label', 'Get more informations')}
   />
 );
 

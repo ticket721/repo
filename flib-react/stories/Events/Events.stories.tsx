@@ -12,6 +12,7 @@ import Border from '../../src/components/elements/border';
 import PhotosVideosCard from '../../src/components/cards/photos-videos';
 import Gradient from '../../src/components/elements/gradient';
 import TagsListCard from '../../src/components/cards/tags-list';
+import DescriptionLinkCard from '../../src/components/cards/description-link';
 import HostedByCard from '../../src/components/cards/hosted-by';
 
 const tags = [
@@ -50,8 +51,9 @@ const eventDetails = {
   startTime: '2:00PM',
   about: 'Duis posuere dui ut arcu dictum pellentesque. Nunc ex nulla, dictum sed risus eget, tempus pretium ex. Mauris ornare tempor blandit. Cras et mollis quam, sit amet porttitor odio. Duis posuere dui ut arcu dictum pellentesque. Nunc ex nulla, dictum sed risus eget, tempus pretium ex. Mauris ornare tempor blandit. Cras et mollis quam, sit amet porttitor odio.',
   refundPolicy: {
-    title: '10 dats before',
-    description: 'Sed ac mattis elit, aliquam lobortis purus. Suspendisse a ex et mattis.'
+    title: '10 days before',
+    description: 'Sed ac mattis elit, aliquam lobortis purus. Suspendisse a ex et mattis.',
+    link: '#todo'
   },
   tags: tags,
   resale: true,
@@ -161,6 +163,14 @@ export const showcase = () => (
           <HostedByCard
             title="Hosted by"
             hostedBy={eventDetails.hostedBy}
+            removeBg
+          />
+          <Border />
+          <DescriptionLinkCard
+            link={eventDetails.refundPolicy.link}
+            title={eventDetails.refundPolicy.title}
+            subtitle="Refund policy"
+            text={eventDetails.refundPolicy.description}
             removeBg
           />
         </BgContainer>
