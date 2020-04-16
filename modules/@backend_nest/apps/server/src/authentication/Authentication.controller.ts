@@ -21,19 +21,19 @@ import { HttpExceptionFilter } from '../utils/HttpException.filter';
 import { Web3RegisterInputDto } from '@app/server/authentication/dto/Web3RegisterInput.dto';
 import { Web3RegisterResponseDto } from '@app/server/authentication/dto/Web3RegisterResponse.dto';
 import { Web3LoginResponseDto } from '@app/server/authentication/dto/Web3LoginResponse.dto';
-import { EmailValidationInputDto }    from '@app/server/authentication/dto/EmailValidationInput.dto';
+import { EmailValidationInputDto } from '@app/server/authentication/dto/EmailValidationInput.dto';
 import { EmailValidationResponseDto } from '@app/server/authentication/dto/EmailValidationResponse.dto';
-import { InjectQueue }                from '@nestjs/bull';
-import { Queue }                      from 'bull';
-import { EmailValidationTaskDto }     from '@app/server/authentication/dto/EmailValidationTask.dto';
-import { ConfigService }              from '@lib/common/config/Config.service';
-import { StatusCodes }                from '@lib/common/utils/codes.value';
-import { ServiceResponse }            from '@lib/common/utils/ServiceResponse.type';
-import { ApiResponses }               from '@app/server/utils/ApiResponses.controller.decorator';
-import { ResetPasswordTaskDto }       from '@app/server/authentication/dto/resetPasswordTask.dto';
-import { UserDto }                    from '@lib/common/users/dto/User.dto';
-import { ResetPasswordResponseDto }   from '@app/server/authentication/dto/resetPasswordResponse.dto';
-import { ResetPasswordInputDto }      from '@app/server/authentication/dto/resetPasswordInput.dto';
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
+import { EmailValidationTaskDto } from '@app/server/authentication/dto/EmailValidationTask.dto';
+import { ConfigService } from '@lib/common/config/Config.service';
+import { StatusCodes } from '@lib/common/utils/codes.value';
+import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
+import { ApiResponses } from '@app/server/utils/ApiResponses.controller.decorator';
+import { ResetPasswordTaskDto } from '@app/server/authentication/dto/resetPasswordTask.dto';
+import { UserDto } from '@lib/common/users/dto/User.dto';
+import { ResetPasswordResponseDto } from '@app/server/authentication/dto/resetPasswordResponse.dto';
+import { ResetPasswordInputDto } from '@app/server/authentication/dto/resetPasswordInput.dto';
 
 /**
  * Controller exposing the authentication routes

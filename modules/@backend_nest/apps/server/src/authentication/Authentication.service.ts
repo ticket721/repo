@@ -351,7 +351,7 @@ export class AuthenticationService {
      */
     async resetUserPassword(email: string, username: string): Promise<ServiceResponse<PasswordlessUserDto>> {
         const emailUserResp: ServiceResponse<UserDto> = await this.usersService.findByEmail(email);
-        if (emailUserResp.error || emailUserResp.response.username != username) {
+        if (emailUserResp.error || emailUserResp.response.username !== username) {
             return {
                 response: null,
                 error: 'user_not_found',
@@ -399,5 +399,4 @@ export class AuthenticationService {
             response: updatedUserResp.response,
         };
     }
-
 }

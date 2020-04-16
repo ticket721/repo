@@ -1,4 +1,4 @@
-import { ApiProperty }         from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { PasswordlessUserDto } from '@app/server/authentication/dto/PasswordlessUser.dto';
 
 /**
