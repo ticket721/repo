@@ -2,7 +2,6 @@ import * as React from 'react';
 import { withKnobs, text } from '@storybook/addon-knobs';
 import QrCodeButton from '../../src/components/ticket/qr-code';
 
-
 export default {
   title: 'Ticket|QrCode',
   decorators: [

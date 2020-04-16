@@ -214,7 +214,7 @@ export const showcase = () => (
         ctaLabel="Get tickets"
         title="Tickets from"
         onClick={action('clicked')}
-        priceRange="From 34€ to 56€ each"
+        subtitle="From 34€ to 56€ each"
         gradients={eventDetails.gradients}
         show={state.showCta}
       />
