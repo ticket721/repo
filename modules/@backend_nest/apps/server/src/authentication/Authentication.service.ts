@@ -369,4 +369,35 @@ export class AuthenticationService {
             error: null,
         };
     }
+
+    /**
+     * Reset user password
+     *
+     * @param id
+     * @param password
+     */
+    async validateResetPassword(id: string, password: string): Promise<ServiceResponse<PasswordlessUserDto>> {
+        if (!isKeccak256(password)) {
+            return {
+                response: null,
+                error: 'password_should_be_keccak256',
+            };
+        }
+        const updatedUserResp: ServiceResponse<UserDto> = await this.usersService.update({
+            id,
+            password: await hash(password, parseInt(this.configService.get('BCRYPT_SALT_ROUNDS'), 10)),
+        });
+
+        if (updatedUserResp.error) {
+            return updatedUserResp;
+        }
+
+        delete updatedUserResp.response.password;
+
+        return {
+            error: null,
+            response: updatedUserResp.response,
+        };
+    }
+
 }

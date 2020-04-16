@@ -21,17 +21,19 @@ import { HttpExceptionFilter } from '../utils/HttpException.filter';
 import { Web3RegisterInputDto } from '@app/server/authentication/dto/Web3RegisterInput.dto';
 import { Web3RegisterResponseDto } from '@app/server/authentication/dto/Web3RegisterResponse.dto';
 import { Web3LoginResponseDto } from '@app/server/authentication/dto/Web3LoginResponse.dto';
-import { EmailValidationInputDto } from '@app/server/authentication/dto/EmailValidationInput.dto';
+import { EmailValidationInputDto }    from '@app/server/authentication/dto/EmailValidationInput.dto';
 import { EmailValidationResponseDto } from '@app/server/authentication/dto/EmailValidationResponse.dto';
-import { InjectQueue } from '@nestjs/bull';
-import { Queue } from 'bull';
-import { EmailValidationTaskDto } from '@app/server/authentication/dto/EmailValidationTask.dto';
-import { ConfigService } from '@lib/common/config/Config.service';
-import { StatusCodes } from '@lib/common/utils/codes.value';
-import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
-import { ApiResponses } from '@app/server/utils/ApiResponses.controller.decorator';
-import { EmailResetPasswordTaskDto } from '@app/server/authentication/dto/EmailResetPasswordTask.dto';
-import { UserDto } from '@lib/common/users/dto/User.dto';
+import { InjectQueue }                from '@nestjs/bull';
+import { Queue }                      from 'bull';
+import { EmailValidationTaskDto }     from '@app/server/authentication/dto/EmailValidationTask.dto';
+import { ConfigService }              from '@lib/common/config/Config.service';
+import { StatusCodes }                from '@lib/common/utils/codes.value';
+import { ServiceResponse }            from '@lib/common/utils/ServiceResponse.type';
+import { ApiResponses }               from '@app/server/utils/ApiResponses.controller.decorator';
+import { ResetPasswordTaskDto }       from '@app/server/authentication/dto/resetPasswordTask.dto';
+import { UserDto }                    from '@lib/common/users/dto/User.dto';
+import { ResetPasswordResponseDto }   from '@app/server/authentication/dto/resetPasswordResponse.dto';
+import { ResetPasswordInputDto }      from '@app/server/authentication/dto/resetPasswordInput.dto';
 
 /**
  * Controller exposing the authentication routes
@@ -346,7 +348,7 @@ export class AuthenticationController {
                     username: resp.response.username,
                     locale: resp.response.locale,
                     id: resp.response.id,
-                } as EmailResetPasswordTaskDto,
+                } as ResetPasswordTaskDto,
                 {
                     attempts: 5,
                     backoff: 5000,
@@ -354,6 +356,58 @@ export class AuthenticationController {
             );
         }
         return resp.response;
+    }
+
+    /**
+     * [POST /authentication/validate] : Validates a user's email address
+     */
+    @Post('/validate/password/reset')
+    @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.OK)
+    @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized, StatusCodes.InternalServerError])
+    async validateResetPassword(@Body() body: ResetPasswordInputDto): Promise<ResetPasswordResponseDto> {
+        let validatedUserRes: ServiceResponse<PasswordlessUserDto>;
+        try {
+            const payload = await this.jwtService.verifyAsync<ResetPasswordTaskDto>(body.token);
+            validatedUserRes = await this.authenticationService.validateResetPassword(payload.id, body.password);
+        } catch (e) {
+            switch (e.message) {
+                case 'jwt expired': {
+                    throw new HttpException(
+                        {
+                            status: StatusCodes.Unauthorized,
+                            message: 'jwt_expired',
+                        },
+                        StatusCodes.Unauthorized,
+                    );
+                }
+
+                default:
+                case 'invalid signature': {
+                    throw new HttpException(
+                        {
+                            status: StatusCodes.Unauthorized,
+                            message: 'invalid_signature',
+                        },
+                        StatusCodes.Unauthorized,
+                    );
+                }
+            }
+        }
+
+        if (validatedUserRes.error) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.InternalServerError,
+                    message: validatedUserRes.error,
+                },
+                StatusCodes.InternalServerError,
+            );
+        }
+
+        return {
+            user: validatedUserRes.response,
+        };
     }
 
     /**

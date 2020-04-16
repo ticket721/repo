@@ -6,8 +6,8 @@ import { Injectable, OnModuleInit } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@lib/common/config/Config.service';
 import { InstanceSignature, OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
-import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
-import { EmailResetPasswordTaskDto } from '@app/server/authentication/dto/EmailResetPasswordTask.dto';
+import { ShutdownService }      from '@lib/common/shutdown/Shutdown.service';
+import { ResetPasswordTaskDto } from '@app/server/authentication/dto/resetPasswordTask.dto';
 
 /**
  * Task collection for the Authentication module
@@ -81,7 +81,7 @@ export class AuthenticationTasks implements OnModuleInit {
         await job.progress(100);
     }
 
-    async resetPasswordEmail(job: Job<EmailResetPasswordTaskDto>): Promise<void> {
+    async resetPasswordEmail(job: Job<ResetPasswordTaskDto>): Promise<void> {
         await job.progress(10);
         const signature = await this.jwtService.signAsync(job.data, {
             expiresIn: '1 day',

@@ -1,7 +1,7 @@
 /**
  * Data structure required by the reseting password task
  */
-export class EmailResetPasswordTaskDto {
+export class ResetPasswordTaskDto {
     /**
      * Email recipient
      */

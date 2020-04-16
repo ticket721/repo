@@ -5,7 +5,7 @@ import { IsString } from 'class-validator';
  * Input when reseting password
  */
 /* istanbul ignore next */
-export class EmailResetPasswordInputDto {
+export class ResetPasswordInputDto {
     /**
      * User Email
      */
@@ -14,4 +14,5 @@ export class EmailResetPasswordInputDto {
     })
     @IsString()
     token: string;
+    password: string;
 }
