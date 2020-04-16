@@ -1,7 +1,7 @@
 import * as React from 'react';
 import styled from '../../../config/styled';
 
-let StyledNavbar = styled.nav`
+const StyledNavbar = styled.nav`
   align-items: center;
   background-color: rgba(33, 29, 45, 0.6);
   backdrop-filter: blur(6px);
@@ -41,7 +41,7 @@ let StyledNavbar = styled.nav`
         display: block;
         height: 4px;
         left: 0;
-        margin auto;
+        margin: auto;
         position: absolute;
         right: 0;
         width: 4px;

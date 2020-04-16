@@ -14,6 +14,8 @@ import Gradient from '../../src/components/elements/gradient';
 import TagsListCard from '../../src/components/cards/tags-list';
 import DescriptionLinkCard from '../../src/components/cards/description-link';
 import HostedByCard from '../../src/components/cards/hosted-by';
+import EventCarousel from '../../src/components/events/carousel';
+import EventCta from '../../src/components/events/cta';
 
 const tags = [
   {
@@ -90,7 +92,7 @@ const Container = styled.div`
 
 const BgContainer = styled.div`
   background-color: #1B1726;
-  margin-bottom: 32px;
+  margin-bottom: 24px;
 `
 
 const toggleText = () => {
@@ -109,8 +111,35 @@ const toggleAll = () => {
 const store = new Store({
   label: 'Read more',
   showText: false,
-  showAll: false
+  showAll: false,
+  showCta: false
 })
+const slides = [
+  {
+    id: 1,
+    name: 'Matt Houlonski Houlonski',
+    date: 'Mon, Feb 16 8:30PM',
+    url: 'assets/images/slide-1.jpg'
+  },
+  {
+    id: 2,
+    name: 'Matt Houlonski',
+    date: 'Mon, Feb 16 8:30PM',
+    url: 'assets/images/slide-2.jpg'
+  },
+  {
+    id: 3,
+    name: 'Matt Houlonski',
+    date: 'Mon, Feb 16 8:30PM',
+    url: 'assets/images/slide-1.jpg'
+  }
+]
+
+const onChange = (isVisible: boolean) => {
+  store.set({
+    showCta: isVisible ? false : true
+  })
+}
 
 export const showcase = () => (
   <State store={store}>
@@ -119,6 +148,7 @@ export const showcase = () => (
       <Container>
         <EventHeader
           event={eventDetails}
+          onChange={onChange}
           onClick={action('clicked')}
         />
         <BgContainer>
@@ -174,8 +204,20 @@ export const showcase = () => (
             removeBg
           />
         </BgContainer>
+        <EventCarousel
+          title="More events"
+          slides={slides}
+        />
         <Gradient values={eventDetails.gradients} blurOnly/>
       </Container>
+      <EventCta
+        ctaLabel="Get tickets"
+        title="Tickets from"
+        onClick={action('clicked')}
+        priceRange="From 34€ to 56€ each"
+        gradients={eventDetails.gradients}
+        show={state.showCta}
+      />
       </div>
     ]}
   </State>

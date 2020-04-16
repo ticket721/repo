@@ -3,10 +3,12 @@ import styled from '../../../../config/styled';
 import EventInterface from '../../../shared/eventInterface';
 import Border from '../../elements/border';
 import Button from '../../button';
+import VisibiltySensor from 'react-visibility-sensor';
 
 export interface EventHeaderProps extends React.ComponentProps<any> {
   event: EventInterface;
   onClick: () => void;
+  onChange: (e: any) => void;
 }
 
 const Header = styled.header<EventHeaderProps>`
@@ -44,12 +46,14 @@ export const EventHeader: React.FunctionComponent<EventHeaderProps> = (props: Ev
           <Infos>
             <h2>{props.event.name}</h2>
             <h4>Ticket from €49 to €100 each</h4>
-            <Button
-              type="custom"
-              title="Get tickets"
-              gradients={props.event.gradients}
-              onClick={props.onClick}
-            />
+            <VisibiltySensor onChange={props.onChange}>
+              <Button
+                type="custom"
+                title="Get tickets"
+                gradients={props.event.gradients}
+                onClick={props.onClick}
+              />
+            </VisibiltySensor>
           </Infos>
           <Border />
         </Header>
