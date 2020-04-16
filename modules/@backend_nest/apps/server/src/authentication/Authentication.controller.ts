@@ -30,6 +30,8 @@ import { ConfigService } from '@lib/common/config/Config.service';
 import { StatusCodes } from '@lib/common/utils/codes.value';
 import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
 import { ApiResponses } from '@app/server/utils/ApiResponses.controller.decorator';
+import { EmailResetPasswordTaskDto } from '@app/server/authentication/dto/EmailResetPasswordTask.dto';
+import { UserDto } from '@lib/common/users/dto/User.dto';
 
 /**
  * Controller exposing the authentication routes
@@ -301,6 +303,57 @@ export class AuthenticationController {
                         : undefined,
             };
         }
+    }
+
+    /**
+     * [POST /authentication/local/password/update] : Updates user's password
+     */
+    @Post('local/password/reset')
+    @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.OK)
+    @ApiResponses([
+        StatusCodes.OK,
+        StatusCodes.Unauthorized,
+        StatusCodes.UnprocessableEntity,
+        StatusCodes.InternalServerError,
+    ])
+    async resetPassword(@Body() body: Partial<UserDto>): Promise<PasswordlessUserDto> {
+        const resp = await this.authenticationService.resetUserPassword(body.email, body.username);
+        if (resp.error) {
+            switch (resp.error) {
+                case 'user_not_found':
+                    throw new HttpException(
+                        {
+                            status: StatusCodes.Unauthorized,
+                            message: resp.error,
+                        },
+                        StatusCodes.Unauthorized,
+                    );
+                default:
+                    throw new HttpException(
+                        {
+                            status: StatusCodes.InternalServerError,
+                            message: resp.error,
+                        },
+                        StatusCodes.InternalServerError,
+                    );
+            }
+        } else {
+            await this.mailingQueue.add(
+                '@@mailing/resetPasswordEmail',
+                {
+                    email: resp.response.email,
+                    username: resp.response.username,
+                    locale: resp.response.locale,
+                    id: resp.response.id,
+                } as EmailResetPasswordTaskDto,
+                {
+                    attempts: 5,
+                    backoff: 5000,
+                },
+            );
+        }
+        return resp.response;
     }
 
     /**
