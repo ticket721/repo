@@ -5,7 +5,7 @@ import Button from '../../button';
 export interface EventCtaProps extends React.ComponentProps<any> {
   ctaLabel: string;
   title: string;
-  priceRange: string;
+  subtitle: string;
   show?: boolean;
   gradients?: string[];
   onClick: () => void;
@@ -58,7 +58,7 @@ export const EventCta: React.FunctionComponent<EventCtaProps> = (props: EventCta
   return <CtaContainer show={props.show}>
           <div>
             <h4 className="uppercase">{props.title}</h4>
-            <span>{props.priceRange}</span>
+            <span>{props.subtitle}</span>
           </div>
           <Button title={props.ctaLabel} type="custom" gradients={props.gradients} onClick={props.onClick} />
         </CtaContainer>

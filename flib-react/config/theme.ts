@@ -6,8 +6,9 @@ export interface Theme {
   componentColorLighter: string;
   componentGradientStart: string;
   componentGradientEnd: string;
-  defaultRadius: string;
   darkBg: string;
+  darkerBg: string;
+  defaultRadius: string;
   doubleSpacing: string;
   fontStack: string;
   primaryColor: string;
