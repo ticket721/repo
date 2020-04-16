@@ -1400,4 +1400,167 @@ describe('Authentication Service', function() {
             expect(res.response).toEqual(null);
         });
     });
+
+    describe('resetUserPassword', function() {
+        test('email query internal error', async function() {
+            const authenticationService: AuthenticationService = context.authenticationService;
+            const usersServiceMock: UsersService = context.usersServiceMock;
+
+            const email = 'notexisting@test.com';
+            const username = 'anonymous';
+
+            when(usersServiceMock.findByEmail(email)).thenReturn(
+                Promise.resolve({
+                    response: null,
+                    error: 'user_not_found',
+                }),
+            );
+
+            const res = await authenticationService.resetUserPassword(email, username);
+
+            expect(res.response).toEqual(null);
+            expect(res.error).toEqual('user_not_found');
+
+            verify(usersServiceMock.findByEmail(email)).called();
+        });
+
+        test('Password reset successful', async function() {
+            const authenticationService: AuthenticationService = context.authenticationService;
+            const usersServiceMock: UsersService = context.usersServiceMock;
+
+            const email = 'user@test.com';
+            const username = 'user';
+
+            const serviceResponse: ServiceResponse<UserDto> = {
+                response: {
+                    email: email,
+                    username: username,
+                    address: anyString(),
+                    type: 't721',
+                    password: anyString(),
+                    id: '0',
+                    role: anyString(),
+                    locale: 'en',
+                    valid: true,
+                },
+                error: null,
+            };
+
+            when(usersServiceMock.findByEmail(email)).thenResolve({
+                error: null,
+                response: {
+                    id: '0',
+                    email: email,
+                    password: anyString(),
+                    username: username,
+                    locale: 'en',
+                    address: anyString(),
+                    type: 't721',
+                    role: anyString(),
+                    valid: true,
+                },
+            });
+
+            const res = await authenticationService.resetUserPassword(email, username);
+            delete serviceResponse.response.password;
+            expect(res.response).toEqual(serviceResponse.response);
+            expect(res.error).toEqual(null);
+            verify(usersServiceMock.findByEmail(email)).called();
+        });
+    })
+
+    describe('validateResetPassword', function() {
+        test('Bad password formating', async function() {
+            const authenticationService: AuthenticationService = context.authenticationService;
+
+            const id = '0';
+            const password = 'NotHashedPassword';
+
+            const res = await authenticationService.validateResetPassword(id, password)
+
+            expect(res.response).toEqual(null);
+            expect(res.error).toEqual('password_should_be_keccak256');
+        });
+
+        test('Password reset internal error', async function() {
+            const authenticationService: AuthenticationService = context.authenticationService;
+            const usersServiceMock: UsersService = context.usersServiceMock;
+
+            const id = '0';
+            const password = toAcceptedKeccak256Format(keccak256('password'));
+
+            when(
+                usersServiceMock.update(
+                    deepEqual({
+                        id: anything(),
+                        password: anyString(),
+                    }),
+                ),
+            ).thenReturn(
+                Promise.resolve({
+                    response: null,
+                    error: 'unexpected_error',
+                }),
+            );
+
+            const res = await authenticationService.validateResetPassword(id, password);
+
+            expect(res.response).toEqual(null);
+            expect(res.error).toEqual('unexpected_error');
+            verify(
+                usersServiceMock.update(
+                    deepEqual({
+                        id: anything(),
+                        password: anyString(),
+                    }),
+                ),
+            ).called();
+        });
+
+        test('Password reset successful', async function() {
+            const authenticationService: AuthenticationService = context.authenticationService;
+            const usersServiceMock: UsersService = context.usersServiceMock;
+
+            const id = '0';
+            const password = toAcceptedKeccak256Format(keccak256('password'));
+
+            const serviceResponse: ServiceResponse<UserDto> = {
+                response: {
+                    email: anyString(),
+                    username: anyString(),
+                    address: anyString(),
+                    type: 't721',
+                    password: anyString(),
+                    id: id,
+                    role: 'authenticated',
+                    locale: 'en',
+                    valid: false,
+                },
+                error: null,
+            };
+
+            when(
+                usersServiceMock.update(
+                    deepEqual({
+                        id: anything(),
+                        password: anyString(),
+                    }),
+                ),
+            ).thenReturn(Promise.resolve(serviceResponse));
+
+            const res = await authenticationService.validateResetPassword(id, password);
+
+            delete serviceResponse.response.password;
+            expect(res.response).toEqual(serviceResponse.response);
+            expect(res.error).toEqual(null);
+            verify(
+                usersServiceMock.update(
+                    deepEqual({
+                        id: anything(),
+                        password: anyString(),
+                    }),
+                ),
+            ).called();
+        });
+    })
 });
