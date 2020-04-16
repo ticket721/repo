@@ -342,4 +342,31 @@ export class AuthenticationService {
             error: null,
         };
     }
+
+    /**
+     * Reset user password
+     *
+     * @param email
+     * @param username
+     */
+    async resetUserPassword(email: string, username: string): Promise<ServiceResponse<PasswordlessUserDto>> {
+        const emailUserResp: ServiceResponse<UserDto> = await this.usersService.findByEmail(email);
+        if (emailUserResp.error || emailUserResp.response.username != username) {
+            return {
+                response: null,
+                error: 'user_not_found',
+            };
+        }
+        const user: UserDto = emailUserResp.response;
+        const updatedUser: ServiceResponse<UserDto> = {
+            response: user,
+            error: null,
+        };
+        delete updatedUser.response.password;
+
+        return {
+            response: updatedUser.response,
+            error: null,
+        };
+    }
 }
