@@ -1,0 +1,24 @@
+/**
+ * Data structure required by the reseting password task
+ */
+export class EmailResetPasswordTaskDto {
+    /**
+     * Email recipient
+     */
+    email: string;
+
+    /**
+     * Locale to use
+     */
+    locale: string;
+
+    /**
+     * Username
+     */
+    username: string;
+
+    /**
+     * User id
+     */
+    id: string;
+}

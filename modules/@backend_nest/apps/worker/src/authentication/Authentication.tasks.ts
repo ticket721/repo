@@ -7,6 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@lib/common/config/Config.service';
 import { InstanceSignature, OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
+import { EmailResetPasswordTaskDto } from '@app/server/authentication/dto/EmailResetPasswordTask.dto';
 
 /**
  * Task collection for the Authentication module
@@ -44,6 +45,10 @@ export class AuthenticationTasks implements OnModuleInit {
                 .process('@@mailing/validationEmail', 1, this.validationEmail.bind(this))
                 .then(() => console.log(`Closing Bull Queue @@mailing`))
                 .catch(this.shutdownService.shutdownWithError);
+            this.mailingQueue
+                .process('@@mailing/resetPasswordEmail', 1, this.resetPasswordEmail.bind(this))
+                .then(() => console.log(`Closing Bull Queue @@mailing`))
+                .catch(this.shutdownService.shutdownWithError);
         }
     }
 
@@ -61,6 +66,31 @@ export class AuthenticationTasks implements OnModuleInit {
         const validationLink = `${this.configService.get('VALIDATION_URL')}?token=${encodeURIComponent(signature)}`;
         const res = await this.emailService.send({
             template: 'validate',
+            to: job.data.email,
+            locale: job.data.locale,
+            locals: {
+                validationLink,
+                token: signature,
+            },
+        });
+
+        if (res.error) {
+            throw new Error(res.error);
+        }
+
+        await job.progress(100);
+    }
+
+    async resetPasswordEmail(job: Job<EmailResetPasswordTaskDto>): Promise<void> {
+        await job.progress(10);
+        const signature = await this.jwtService.signAsync(job.data, {
+            expiresIn: '1 day',
+        });
+
+        await job.progress(50);
+        const validationLink = `${this.configService.get('RESET_PASSWORD_URL')}?token=${encodeURIComponent(signature)}`;
+        const res = await this.emailService.send({
+            template: 'reset',
             to: job.data.email,
             locale: job.data.locale,
             locals: {
