@@ -88,9 +88,9 @@ export interface SelectProps extends React.ComponentProps<any> {
   defaultValue?:object;
   error?:boolean;
   errorMessage?:string;
-  label:string;
+  label?:string;
   options: Array<object>,
-  placeholder: string;
+  placeholder?: string;
   searchable?:boolean;
   value?:string;
 }
@@ -139,9 +139,12 @@ const StyledInputContainer = styled.div<SelectProps>`
     }
   }
 `;
+
 export const SelectInput: React.FunctionComponent<SelectProps> = (props: SelectProps): JSX.Element => {
   return  <StyledInputContainer>
-            <StyledLabel>{props.label}</StyledLabel>
+            {props.label &&
+              <StyledLabel>{props.label}</StyledLabel>
+            }
             <Select
               defaultValue={props.defaultValue}
               noOptionsMessage={() => "No values available"}
