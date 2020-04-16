@@ -18,9 +18,9 @@ const Container = styled.section<CardContainerProps>`
 
 `;
 
-export const CardContainer: React.FunctionComponent<CardContainerProps> = (props: CardContainerProps): JSX.Element => {
+export const CardContainer: React.FunctionComponent<CardContainerProps & {className?: string}> = (props: CardContainerProps): JSX.Element => {
 
-  return <Container removeBg={props.removeBg}>
+  return <Container className={props.className} removeBg={props.removeBg}>
           {props.children}
         </Container>
 };
