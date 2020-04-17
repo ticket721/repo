@@ -15,7 +15,7 @@ const Container = styled.section<CardContainerProps>`
   font-weight: 500;
   padding: ${props => props.theme.biggerSpacing};
   position: relative;
-
+  z-index: 100;
 `;
 
 export const CardContainer: React.FunctionComponent<CardContainerProps & {className?: string}> = (props: CardContainerProps): JSX.Element => {
