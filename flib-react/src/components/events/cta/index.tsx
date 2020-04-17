@@ -13,7 +13,7 @@ export interface EventCtaProps extends React.ComponentProps<any> {
 
 const CtaContainer = styled.div<EventCtaProps>`
   align-items: center;
-  background-color: ${props => props.theme.componentColorLight};
+  background-color: rgba(33, 29, 45, 0.6);
   backdrop-filter: blur(40px);
   border-top-left-radius: ${props => props.theme.bigRadius};
   border-top-right-radius: ${props => props.theme.bigRadius};
@@ -62,6 +62,10 @@ export const EventCta: React.FunctionComponent<EventCtaProps> = (props: EventCta
           </div>
           <Button title={props.ctaLabel} type="custom" gradients={props.gradients} onClick={props.onClick} />
         </CtaContainer>
+}
+
+EventCta.defaultProps = {
+  gradients: ['#079CF0', '#2143AB']
 }
 
 export default EventCta;

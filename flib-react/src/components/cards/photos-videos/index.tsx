@@ -33,7 +33,7 @@ const PhotosGrid = styled.div`
 
     &__container  {
       flex: 1;
-      overflow: auto;
+      overflow: hidden;
 
       &:nth-of-type(2) {
         padding-top: ${props => props.theme.smallSpacing} ;
