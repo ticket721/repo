@@ -60,13 +60,19 @@ export const TicketQty: React.FunctionComponent<TicketQtyProps> = (props: Ticket
   },{
     "value": "2",
     "label": "2"
+  },{
+    "value": "3",
+    "label": "3"
   }]
+
   return <Container selected={props.selected} gradient={props.gradient}>
             <div className="row aic jcsb">
               <h3>{props.title}</h3>
               <Select
                 defaultValue={options[0]}
                 options={options}
+                menu
+                searchable={false}
               />
             </div>
             <h4>{props.price} /each</h4>

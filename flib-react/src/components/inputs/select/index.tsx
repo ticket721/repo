@@ -44,7 +44,7 @@ const customStyles = {
     fontSize: 14
   }),
   menu: () => ({
-    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+    backgroundColor: '#262331',
     borderRadius: 8,
     marginTop: 8,
     position: 'absolute' as 'absolute',
@@ -80,6 +80,7 @@ const customStyles = {
   singleValue: () => ({
     fontSize: 14,
     fontWeight: 500,
+    marginRight: 8,
     opacity: 0.9
   })
 };
@@ -120,8 +121,14 @@ const StyledInputContainer = styled.div<SelectProps>`
   border-radius: ${props => props.theme.defaultRadius};
   display: flex;
   flex-direction: column;
-  padding-top: ${props => props.theme.biggerSpacing};
+  padding-top: ${props => props.label ? props.theme.biggerSpacing : 0};
   transition: background-color 300ms ease;
+
+  ${props => !props.label &&`
+    [class*="Control"] {
+      padding: 12px;
+    }
+  `}
 
   &:hover {
     background-color: ${props => props.theme.componentColorLight};
@@ -141,7 +148,7 @@ const StyledInputContainer = styled.div<SelectProps>`
 `;
 
 export const SelectInput: React.FunctionComponent<SelectProps> = (props: SelectProps): JSX.Element => {
-  return  <StyledInputContainer>
+  return  <StyledInputContainer label={props.label}>
             {props.label &&
               <StyledLabel>{props.label}</StyledLabel>
             }

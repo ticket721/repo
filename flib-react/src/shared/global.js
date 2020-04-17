@@ -95,6 +95,10 @@ export const GlobalStyle = createGlobalStyle`
     ${buttonStyles}
   }
 
+  div {
+    display: block;
+  }
+
   label {
     ${labelStyles}
   }
