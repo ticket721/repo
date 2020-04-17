@@ -1467,7 +1467,7 @@ describe('Authentication Service', function() {
             expect(res.error).toEqual(null);
             verify(usersServiceMock.findByEmail(email)).called();
         });
-    })
+    });
 
     describe('validateResetPassword', function() {
         test('Bad password formating', async function() {
@@ -1476,7 +1476,7 @@ describe('Authentication Service', function() {
             const id = '0';
             const password = 'NotHashedPassword';
 
-            const res = await authenticationService.validateResetPassword(id, password)
+            const res = await authenticationService.validateResetPassword(id, password);
 
             expect(res.response).toEqual(null);
             expect(res.error).toEqual('password_should_be_keccak256');
@@ -1562,5 +1562,5 @@ describe('Authentication Service', function() {
                 ),
             ).called();
         });
-    })
+    });
 });

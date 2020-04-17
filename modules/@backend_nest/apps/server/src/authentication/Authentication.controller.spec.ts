@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthenticationController } from './Authentication.controller';
-import { instance, mock, verify, when } from 'ts-mockito';
+import { anyString, instance, mock, verify, when } from 'ts-mockito';
 import { AuthenticationService } from './Authentication.service';
 import {
     createWallet,
@@ -19,6 +19,8 @@ import { getQueueToken } from '@nestjs/bull';
 import { Job, JobOptions } from 'bull';
 import { PasswordlessUserDto } from '@app/server/authentication/dto/PasswordlessUser.dto';
 import { StatusCodes } from '@lib/common/utils/codes.value';
+import { UserDto } from '@lib/common/users/dto/User.dto';
+import { UnprocessableEntityException } from '@nestjs/common';
 
 class QueueMock<T = any> {
     add(name: string, data: T, opts?: JobOptions): Promise<Job<T>> {
@@ -1231,6 +1233,299 @@ describe('Authentication Controller', function() {
                     message: 'unexpected_error',
                 },
             });
+        });
+    });
+
+    describe('resetPassword', function() {
+        test('user not found - should error 401', async function() {
+            const authenticationController: AuthenticationController = context.authenticationController;
+            const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
+
+            const email = 'test@test.com';
+            const username = 'salut';
+
+            when(authenticationServiceMock.resetUserPassword(email, username)).thenReturn(
+                Promise.resolve({
+                    response: null,
+                    error: 'user_not_found',
+                }),
+            );
+
+            const user: Partial<UserDto> = {
+                email: email,
+                username: username,
+            };
+
+            await expect(authenticationController.resetPassword(user)).rejects.toMatchObject({
+                response: {
+                    status: StatusCodes.Unauthorized,
+                    message: 'user_not_found',
+                },
+                status: StatusCodes.Unauthorized,
+                message: {
+                    status: StatusCodes.Unauthorized,
+                    message: 'user_not_found',
+                },
+            });
+
+            verify(authenticationServiceMock.resetUserPassword(email, username)).called();
+        });
+
+        test('internal server error - should error 500', async function() {
+            const authenticationController: AuthenticationController = context.authenticationController;
+            const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
+
+            const email = 'test@test.com';
+            const username = 'salut';
+
+            when(authenticationServiceMock.resetUserPassword(email, username)).thenReturn(
+                Promise.resolve({
+                    response: null,
+                    error: 'unexpected_error',
+                }),
+            );
+
+            const user: Partial<UserDto> = {
+                email: email,
+                username: username,
+            };
+
+            await expect(authenticationController.resetPassword(user)).rejects.toMatchObject({
+                response: {
+                    status: StatusCodes.InternalServerError,
+                    message: 'unexpected_error',
+                },
+                status: StatusCodes.InternalServerError,
+                message: {
+                    status: StatusCodes.InternalServerError,
+                    message: 'unexpected_error',
+                },
+            });
+
+            verify(authenticationServiceMock.resetUserPassword(email, username)).called();
+        });
+
+        test('reset password successful', async function() {
+            const authenticationController: AuthenticationController = context.authenticationController;
+            const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
+
+            const email = 'test@test.com';
+            const username = 'salut';
+
+            when(authenticationServiceMock.resetUserPassword(email, username)).thenReturn(
+                Promise.resolve({
+                    response: {
+                        username: username,
+                        email: email,
+                        type: 't721',
+                        address: anyString(),
+                        id: '0',
+                        role: 'authenticated',
+                        locale: 'en',
+                        valid: false,
+                    },
+                    error: null,
+                }),
+            );
+
+            const user: Partial<UserDto> = {
+                username: username,
+                email: email,
+            };
+
+            const res = await authenticationController.resetPassword(user);
+            expect(res).toEqual({
+                username: username,
+                email: email,
+                type: 't721',
+                address: anyString(),
+                id: '0',
+                role: 'authenticated',
+                locale: 'en',
+                valid: false,
+            });
+
+            verify(authenticationServiceMock.resetUserPassword(email, username)).called();
+        });
+    });
+
+    describe('validateResetPassword', function() {
+        test('should throw on signature error', async function() {
+            const authenticationController: AuthenticationController = context.authenticationController;
+            const jwtServiceMock: JwtService = context.jwtServiceMock;
+
+            when(jwtServiceMock.verifyAsync('test_token')).thenThrow(new Error('unknown error'));
+
+            await expect(
+                authenticationController.validateResetPassword({
+                    token: 'test_token',
+                    password: 'anypass',
+                }),
+            ).rejects.toMatchObject({
+                response: {
+                    status: StatusCodes.Unauthorized,
+                    message: 'invalid_signature',
+                },
+                status: StatusCodes.Unauthorized,
+                message: {
+                    status: StatusCodes.Unauthorized,
+                    message: 'invalid_signature',
+                },
+            });
+        });
+
+        test('should throw on jwt error', async function() {
+            const authenticationController: AuthenticationController = context.authenticationController;
+            const jwtServiceMock: JwtService = context.jwtServiceMock;
+
+            when(jwtServiceMock.verifyAsync('test_token')).thenThrow(new Error('jwt expired'));
+
+            await expect(
+                authenticationController.validateResetPassword({
+                    token: 'test_token',
+                    password: 'anypass',
+                }),
+            ).rejects.toMatchObject({
+                response: {
+                    status: StatusCodes.Unauthorized,
+                    message: 'jwt_expired',
+                },
+                status: StatusCodes.Unauthorized,
+                message: {
+                    status: StatusCodes.Unauthorized,
+                    message: 'jwt_expired',
+                },
+            });
+        });
+
+        test('internal server error', async function() {
+            const authenticationController: AuthenticationController = context.authenticationController;
+            const jwtServiceMock: JwtService = context.jwtServiceMock;
+            const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
+
+            const username = 'salut';
+            const email = 'test@t721.com';
+            const id = '123';
+            const locale = 'en';
+
+            when(jwtServiceMock.verifyAsync('test_token')).thenReturn(
+                Promise.resolve({
+                    username,
+                    email,
+                    id,
+                    locale,
+                }),
+            );
+
+            when(authenticationServiceMock.validateResetPassword('123', 'BofPass')).thenReturn(
+                Promise.resolve({
+                    error: 'unexpected_error',
+                    response: null,
+                }),
+            );
+
+            await expect(
+                authenticationController.validateResetPassword({ token: 'test_token', password: 'BofPass' }),
+            ).rejects.toMatchObject({
+                response: {
+                    status: StatusCodes.InternalServerError,
+                    message: 'unexpected_error',
+                },
+                status: StatusCodes.InternalServerError,
+                message: {
+                    status: StatusCodes.InternalServerError,
+                    message: 'unexpected_error',
+                },
+            });
+        });
+
+        test('password format error', async function() {
+            const authenticationController: AuthenticationController = context.authenticationController;
+            const jwtServiceMock: JwtService = context.jwtServiceMock;
+            const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
+
+            const username = 'salut';
+            const email = 'test@t721.com';
+            const id = '123';
+            const locale = 'en';
+
+            when(jwtServiceMock.verifyAsync('test_token')).thenReturn(
+                Promise.resolve({
+                    username,
+                    email,
+                    id,
+                    locale,
+                }),
+            );
+
+            when(authenticationServiceMock.validateResetPassword('123', 'BofPass')).thenReturn(
+                Promise.resolve({
+                    error: 'password_should_be_keccak256',
+                    response: null,
+                }),
+            );
+
+            await expect(
+                authenticationController.validateResetPassword({ token: 'test_token', password: 'BofPass' }),
+            ).rejects.toMatchObject({
+                response: {
+                    status: StatusCodes.UnprocessableEntity,
+                    message: 'password_should_be_keccak256',
+                },
+                status: StatusCodes.UnprocessableEntity,
+                message: {
+                    status: StatusCodes.UnprocessableEntity,
+                    message: 'password_should_be_keccak256',
+                },
+            });
+        });
+
+        test('validation successful', async function() {
+            const authenticationController: AuthenticationController = context.authenticationController;
+            const jwtServiceMock: JwtService = context.jwtServiceMock;
+            const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
+
+            const username = 'salut';
+            const email = 'test@t721.com';
+            const id = '123';
+            const locale = 'en';
+
+            when(jwtServiceMock.verifyAsync('test_token')).thenReturn(
+                Promise.resolve({
+                    username,
+                    email,
+                    id,
+                    locale,
+                }),
+            );
+
+            const user: PasswordlessUserDto = {
+                username,
+                id,
+                email,
+                locale,
+                valid: true,
+                type: 't721',
+                address: '0x...',
+                role: 'authenticated',
+            };
+
+            when(authenticationServiceMock.validateResetPassword('123', 'password')).thenReturn(
+                Promise.resolve({
+                    error: null,
+                    response: user,
+                }),
+            );
+
+            const res = await authenticationController.validateResetPassword({
+                token: 'test_token',
+                password: 'password',
+            });
+            expect(res).toEqual({
+                user: user,
+            });
+
+            verify(authenticationServiceMock.validateResetPassword('123', 'password')).called();
         });
     });
 });

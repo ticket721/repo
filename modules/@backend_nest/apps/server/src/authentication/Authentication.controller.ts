@@ -395,7 +395,15 @@ export class AuthenticationController {
             }
         }
 
-        if (validatedUserRes.error) {
+        if (validatedUserRes.error === 'password_should_be_keccak256') {
+            throw new HttpException(
+                {
+                    status: StatusCodes.UnprocessableEntity,
+                    message: validatedUserRes.error,
+                },
+                StatusCodes.UnprocessableEntity,
+            );
+        } else if (validatedUserRes.error) {
             throw new HttpException(
                 {
                     status: StatusCodes.InternalServerError,
