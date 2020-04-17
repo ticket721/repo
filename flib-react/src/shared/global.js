@@ -164,6 +164,7 @@ export const GlobalStyle = createGlobalStyle`
   h1 {
     font-size: 24px;
     font-weight: 700;
+    margin-bottom: 16px;
   }
 
   h2 {

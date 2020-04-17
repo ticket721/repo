@@ -49,9 +49,9 @@ const IconContainer = styled.div`
   margin-right: ${props => props.theme.regularSpacing};
 `
 
-export const DateTimeCard: React.FunctionComponent<DateTimeCardProps> = (props: DateTimeCardProps): JSX.Element => {
+export const DateTimeCard: React.FunctionComponent<DateTimeCardProps & {className?: string}> = (props: DateTimeCardProps): JSX.Element => {
 
-  return <CardContainer removeBg={props.removeBg}>
+  return <CardContainer removeBg={props.removeBg} className={props.className}>
           <IconContainer>
             <Icon icon='calendar' fill={props.iconColor} width='16' height='18' />
           </IconContainer>

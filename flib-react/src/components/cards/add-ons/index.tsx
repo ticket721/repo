@@ -25,14 +25,12 @@ const Title = styled.h4`
   width: 100%;
 `;
 
-
 const Container = styled(CardContainer)`
   label  {
     font-size: 1rem;
     font-weight: 700;
   }
 `
-
 export const DescriptonLink: React.FunctionComponent<DescriptionLinkProps> = (props: DescriptionLinkProps): JSX.Element => {
   return <Container removeBg={props.removeBg}>
           <Title className="uppercase">{props.title}</Title>
