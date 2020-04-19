@@ -3,18 +3,11 @@
     "private": true,
     "scripts": {
         "setup:submodules:clone": "git submodule update --init --recursive",
-        "setup:submodules:checkout_modules": "cd modules/@public_e712 && git checkout master && cd ../@public_ethvtx && git checkout develop && cd ../@public_erc2280 && git checkout master && cd ../@public_test-geth && git checkout master && cd ../@public_vaultereum && git checkout master && cd ../@public_dosojin && git checkout develop",
-        "setup:submodules:checkout_contracts": "cd contracts/contracts_modules/metamarketplace && git checkout develop && cd ../refract && git checkout develop && cd ../t721controller && git checkout develop && cd ../ticketforge && git checkout develop && cd ../t721admin && git checkout develop && cd ../t721token && git checkout develop",
-        "setup:submodules": "yarn setup:submodules:clone && yarn setup:submodules:checkout_modules && yarn setup:submodules:checkout_contracts",
         "setup:portals": "portalize init ./portalize.config.json",
-        "setup": "npm run setup:submodules && npm run setup:portals",
         "clean:portals": "portalize dismantle ./portalize.config.json",
         "doc:network": "rm -rf network/doc && typedoc --tsconfig typedoc.tsconfig.json --excludeNotExported --readme none --theme markdown --out network/doc --mode file --name '@ticket721_repo/network_engine' network/index.ts",
         "doc:contracts": "rm -rf contracts/doc && typedoc --tsconfig typedoc.tsconfig.json --excludeNotExported --readme none --theme markdown --out contracts/doc --mode file --name '@ticket721_repo/contracts_engine' contracts/index.ts",
         "doc": "npm run doc:network && npm run doc:contracts",
-        "install:ticket721sources": "lerna bootstrap --scope '@ticket721sources/*'",
-        "install:ticket721contracts": "lerna bootstrap --scope '@ticket721contracts/*'",
-        "link:sources": "lerna exec 'npm install' --scope '@ticket721sources/*'",
         "merge_coverage_reports": "rm -rf coverage && mkdir coverage && lcov-result-merger './sources/**/coverage*/lcov.info' './coverage/lcov.info'",
         "codecov:upload": "(curl -s https://codecov.io/bash) > /tmp/codecov.sh && chmod +x /tmp/codecov.sh && /tmp/codecov.sh -f modules/@common_global/coverage/lcov.info -f modules/@backend_nest/coverage/lcov.info -f modules/@backend_nest/coverage-server-e2e/lcov.info",
         "@clean": "lerna clean -y && lerna exec 'yarn @lerna/postclean' && yarn @clean/public/postclean && rm -rf node_modules && yarn clean:portals",
@@ -25,19 +18,28 @@
         "@install": "yarn @install/public/install && yarn @install/public/postinstall && yarn install",
         "postinstall": "lerna exec 'yarn @lerna/postinstall' && yarn setup:portals"
     },
-    "workspaces": [
-        "modules/@backend_migrations",
-        "modules/@backend_nest",
-        "modules/@backend_simulation",
-        "modules/@common_global",
-        "modules/@common_sdk",
-        "modules/@contracts_metamarketplace",
-        "modules/@contracts_refract",
-        "modules/@contracts_t721admin",
-        "modules/@contracts_t721controller",
-        "modules/@contracts_t721token",
-        "modules/@contracts_ticketforge"
-    ],
+    "workspaces": {
+
+        "packages": [
+            "modules/@backend_migrations",
+            "modules/@backend_nest",
+            "modules/@backend_simulation",
+            "modules/@common_global",
+            "modules/@common_sdk",
+            "modules/@contracts_metamarketplace",
+            "modules/@contracts_refract",
+            "modules/@contracts_t721admin",
+            "modules/@contracts_t721controller",
+            "modules/@contracts_t721token",
+            "modules/@contracts_ticketforge",
+            "modules/@frontend_core",
+            "modules/@frontend_organizer-app",
+            "modules/@frontend_staff-app",
+            "modules/@frontend_t721-app",
+            "modules/@frontend_flib-react"
+        ],
+        "nohoist": ["**/jest"]
+},
     "dependencies": {
         "@commitlint/cli": "8.3.5",
         "@commitlint/config-conventional": "8.3.4",
