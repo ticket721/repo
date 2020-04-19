@@ -37,3 +37,6 @@
 [submodule "modules/vaultereum"]
 	path = modules/@public_vaultereum
 	url = git@github.com:ticket721/vaultereum
+[submodule "modules/@frontend_flib-react"]
+	path = modules/@frontend_flib-react
+	url = git@github.com:ticket721/flib-react

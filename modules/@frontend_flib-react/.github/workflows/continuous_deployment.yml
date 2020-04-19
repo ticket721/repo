@@ -1,0 +1,41 @@
+name: FLIB React CD
+
+on:
+    push:
+        branches:
+            - master
+
+jobs:
+    deploy:
+
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v1
+            - name: Use Node.js 12.x
+              uses: actions/setup-node@v1
+              with:
+                  node-version: 12.x
+
+            - uses: borales/actions-yarn@v2.0.0
+              name: Install dependencies (yarn install)
+              with:
+                  cmd: install
+
+            - uses: borales/actions-yarn@v2.0.0
+              name: Build lib (yarn build)
+              with:
+                  cmd: build
+
+            - uses: borales/actions-yarn@v2.0.0
+              name: Build static app (yarn build-storybook)
+              with:
+                  cmd: build-storybook
+
+            - name: Build and Deploy
+              uses: JamesIves/github-pages-deploy-action@releases/v3
+              with:
+                  ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+                  BRANCH: gh-pages
+                  FOLDER: dist
+                  CLEAN: true
