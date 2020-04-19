@@ -1,9 +1,0 @@
-{
-    "defaultSeverity": "error",
-    "extends": ["../../modules/tslint.json"],
-    "linterOptions": {
-        "exclude": [
-            "**/*.spec.ts"
-        ]
-    }
-}

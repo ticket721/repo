@@ -1,0 +1,6 @@
+{
+  "appName": "staff",
+  "appId": "com.ticket721.staff",
+  "webDir": "build",
+  "npmClient": "yarn"
+}

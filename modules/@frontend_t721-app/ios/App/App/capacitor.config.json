@@ -1,0 +1,6 @@
+{
+  "appName": "t721",
+  "appId": "com.ticket721.t721",
+  "webDir": "build",
+  "npmClient": "yarn"
+}
