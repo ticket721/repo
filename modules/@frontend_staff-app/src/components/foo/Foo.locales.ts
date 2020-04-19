@@ -1,4 +1,4 @@
-import i18n from '@libs/utils/i18n';
+import i18n from '@frontend/core/lib/utils/i18n';
 
 // en translations
 i18n.addResourceBundle('en', 'foo', {

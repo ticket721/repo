@@ -12,7 +12,7 @@ export const Home: React.FC = () => (
         <Foo foo={true} />
       </header>
       <Scanner
-        onScan={(data: string) => console.log(data)}
+        onScan={(data: string | null) => console.log(data)}
         onError={console.log}
         onLoad={console.log}
         delay={1000}
