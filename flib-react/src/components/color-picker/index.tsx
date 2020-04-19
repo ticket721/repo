@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { SketchPicker, ColorResult } from 'react-color';
-import styled from '../../../config/styled';
+import styled from '../../config/styled';
 
 export interface ColorPickerProps extends React.ComponentProps<any> {
   label: string;

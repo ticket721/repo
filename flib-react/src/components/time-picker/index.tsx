@@ -1,6 +1,6 @@
 import * as React from 'react';
 import DatePicker from 'react-datepicker';
-import styled from '../../../config/styled';
+import styled from '../../config/styled';
 import "react-datepicker/dist/react-datepicker.css";
 
 export interface CustomTimePickerProps extends React.ComponentProps<any> {

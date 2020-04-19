@@ -1,7 +1,7 @@
 import * as React from 'react';
 import CardContainer from '../../../elements/card-container';
 import Separator from '../../../elements/separator';
-import styled from '../../../../../config/styled';
+import styled from '../../../../config/styled';
 
 export interface SponsorsProps extends React.ComponentProps<any> {
   overflowSeparator?: boolean;

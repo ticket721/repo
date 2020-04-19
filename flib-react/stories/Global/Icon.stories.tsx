@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { color, select, withKnobs } from '@storybook/addon-knobs';
-import Icon from '../../src/components/icon';
-import { icons } from '../../src/shared/icons';
-import styled from '../../config/styled';
+import Icon      from '../../src/components/icon';
+import { icons } from '../../src/shared';
+import styled    from '../../src/config/styled';
 
 export default {
   component: Icon,

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import styled from '../../../../config/styled';
+import styled from '../../../config/styled';
 
 export interface QrCodeProps extends React.ComponentProps<any> {
   label: string;

@@ -1,6 +1,6 @@
 import * as React from 'react';
-import styled from '../../../config/styled';
-import { icons } from '../../shared/icons';
+import styled    from '../../config/styled';
+import { icons } from '../../shared';
 
 export interface IconProps extends React.ComponentProps<any> {
   fill?: string;

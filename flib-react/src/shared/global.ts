@@ -35,7 +35,7 @@ export const labelStyles = css`
   font-weight: 700;
   padding: 0 1.5rem;
   text-transform: uppercase;
-`
+`;
 
 export const buttonStyles = css`
   appearance: none;
@@ -69,16 +69,16 @@ export const checkboxStyles = css`
 
 export const listStyles = css`
   list-style: none;
-`
+`;
 
 export const linkStyle = css`
   color: rgba(255, 255, 255, 0.6);
   font-size: 14px;
   font-weight: 500;
   text-decoration: none;
-`
+`;
 
-export const GlobalStyle = createGlobalStyle`
+export const GlobalStyles = createGlobalStyle`
   * {
     ${masterReset}
   }

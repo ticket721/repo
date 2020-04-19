@@ -2,7 +2,7 @@ import * as React from 'react';
 import { withKnobs } from '@storybook/addon-knobs';
 import TicketHeader from '../../src/components/ticket/header';
 import TicketInfosCard from '../../src/components/ticket/cards/ticket-infos';
-import styled from '../../config/styled';
+import styled from '../../src/config/styled';
 import Gradient from '../../src/components/elements/gradient';
 import DateTimeCard from '../../src/components/ticket/cards/datetime';
 import LocationCard from '../../src/components/ticket/cards/location';
