@@ -23,11 +23,6 @@ jobs:
                   cmd: install
 
             - uses: borales/actions-yarn@v2.0.0
-              name: Build lib (yarn build)
-              with:
-                  cmd: build
-
-            - uses: borales/actions-yarn@v2.0.0
               name: Build static app (yarn build-storybook)
               with:
                   cmd: build-storybook
