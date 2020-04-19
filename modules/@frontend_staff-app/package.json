@@ -31,7 +31,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject",
+    "lint": "tslint --project .",
     "@lerna/postinstall": "echo '@frontend/staff-app has no postinstall'",
     "@lerna/postclean": "echo '@frontend/staff-app has no postclean'"
   },
@@ -51,7 +51,9 @@
     ]
   },
   "devDependencies": {
-    "@capacitor/cli": "2.0.1"
+    "@capacitor/cli": "2.0.1",
+    "@types/react-qr-reader": "2.1.3",
+    "tslint": "6.0.0"
   },
   "description": "An Ionic project"
 }

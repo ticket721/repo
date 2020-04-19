@@ -32,7 +32,8 @@
         "typescript": "3.8.3"
     },
     "devDependencies": {
-        "@capacitor/cli": "2.0.1"
+        "@capacitor/cli": "2.0.1",
+        "tslint": "6.0.0"
     },
     "resolutions": {
         "react-scripts/**/jest": "24.9.0"
@@ -41,7 +42,7 @@
         "start": "react-scripts start",
         "build": "react-scripts build",
         "test": "react-scripts test",
-        "eject": "react-scripts eject",
+        "lint": "tslint --project .",
         "@lerna/postinstall": "echo '@frontend/t721-app has no postinstall'",
         "@lerna/postclean": "echo '@frontend/t721-app has no postclean'"
     },

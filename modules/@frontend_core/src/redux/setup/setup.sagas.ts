@@ -4,6 +4,7 @@ import { call, select, takeEvery, put }         from 'redux-saga/effects';
 import Web3                                                         from 'web3';
 import { VtxconfigReset, VtxconfigSetAllowedNet, VtxconfigSetWeb3 } from 'ethvtx/lib/vtxconfig/actions/actions';
 
+// tslint:disable-next-line:no-var-requires
 const deviceDetect = require('device-detect');
 
 import { IStart, IStartVtx, SetDeviceInfos, SetupActions } from './setup.actions';

@@ -34,13 +34,14 @@
         "@types/react-redux": "7.1.7",
         "@types/styled-components": "5.1.0",
         "device-detect": "1.0.7",
+        "tslint": "6.0.0",
         "ts-loader": "^7.0.0",
         "typescript": "3.7.5"
     },
     "scripts": {
         "build": "rm -rf lib && tsc",
         "watch": "watch 'yarn build && echo \"Done !\"' src",
-        "lint": "tslint -p tsconfig.json -c tslint.json",
+        "lint": "tslint --project .",
         "@lerna/postinstall": "yarn build",
         "@lerna/postclean": "rm -rf lib"
     },
