@@ -2,7 +2,7 @@ import * as React from 'react';
 import CardContainer from '../../elements/card-container';
 import Toggle from '../../inputs/toggle';
 import slugify from 'slugify';
-import styled from '../../../../config/styled';
+import styled from '../../../config/styled';
 
 export interface DescriptionLinkProps extends React.ComponentProps<any> {
   addOns: AddOn[];

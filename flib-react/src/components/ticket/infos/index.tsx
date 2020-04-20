@@ -1,15 +1,15 @@
 import * as React from 'react';
 import styled from '../../../config/styled';
 import TicketInterface from '../../../shared/ticketInterface';
-import LocationCard from '../../cards/location';
-import DateTimeCard from '../../cards/datetime';
+import LocationCard from '../cards/location';
+import DateTimeCard from '../cards/datetime';
 
 export interface PreviewInfosProps extends React.ComponentProps<any> {
   ticket: TicketInterface;
 }
 
 const PreviewContainer = styled.main`
-  background: linear-gradient(180deg, ${props => props.theme.componentGradientStart}, ${props => props.theme.componentGradientEnd});
+  background: linear-gradient(180deg, ${props => props.theme.darkBg}, ${props => props.theme.darkerBg});
   border-bottom-left-radius: ${props => props.theme.defaultRadius};
   border-top-left-radius: ${props => props.theme.defaultRadius};
   font-size: 14px;
@@ -19,7 +19,7 @@ const PreviewContainer = styled.main`
 `;
 
 const TicketHeaderInfos = styled.div`
-  background-image: linear-gradient(180deg, ${props => props.theme.componentGradientStart}, ${props => props.theme.componentGradientStart});
+  background-image: linear-gradient(180deg, ${props => props.theme.darkBg}, ${props => props.theme.darkerBg});
   border-top-right-radius: ${ props => props.theme.defaultRadius};
   padding: ${props => props.theme.doubleSpacing} ${props => props.theme.biggerSpacing} ${props => props.theme.biggerSpacing};
   width: calc(100% - 8px);

@@ -7,7 +7,7 @@ export interface CardContainerProps extends React.ComponentProps<any> {
 
 const Container = styled.section<CardContainerProps>`
   ${props => !props.removeBg &&`
-    background-image: linear-gradient(180deg, ${props.theme.componentGradientStart}, ${props.theme.componentGradientStart});
+    background-image: linear-gradient(180deg, ${props.theme.darkBg}, ${props.theme.darkerBg});
   `}
   display: flex;
   flex-wrap: wrap;

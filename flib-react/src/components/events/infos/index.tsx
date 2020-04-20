@@ -1,8 +1,8 @@
 import * as React from 'react';
-import styled from '../../../../config/styled';
+import styled from '../../../config/styled';
 import eventInterface from '../../../shared/eventInterface';
-import LocationCard from '../../cards/location';
-import DateTimeCard from '../../cards/datetime';
+import LocationCard from '../../ticket/cards/location';
+import DateTimeCard from '../../ticket/cards/datetime';
 
 export interface EventInfosProps extends React.ComponentProps<any> {
   event: eventInterface;

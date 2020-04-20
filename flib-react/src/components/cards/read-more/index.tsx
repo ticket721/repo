@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Separator from '../../elements/separator';
 import CardContainer from '../../elements/card-container';
-import styled from '../../../../config/styled';
+import styled from '../../../config/styled';
 
 export interface ReadMoreProps extends React.ComponentProps<any> {
   removeBg?: boolean;

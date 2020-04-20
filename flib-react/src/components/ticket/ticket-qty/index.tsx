@@ -1,5 +1,5 @@
 import * as React from 'react';
-import styled from '../../../../config/styled';
+import styled from '../../../config/styled';
 import Select from '../../inputs/select';
 
 export interface TicketQtyProps extends React.ComponentProps<any> {

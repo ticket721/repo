@@ -1,5 +1,5 @@
 import * as React from 'react';
-import styled from '../../../../config/styled';
+import styled from '../../../config/styled';
 
 export interface SingleImageProps extends React.ComponentProps<any> {
   src: string;
