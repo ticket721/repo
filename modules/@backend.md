@@ -25,6 +25,13 @@ To run the infrastructure, go into `modules/@backend_nest/scripts` and run the f
 docker-compose -f ./infra.yaml down && docker-compose -f ./infra.yaml rm && ./run_dev_infra.sh
 ```
 
+#### max_map_count error in elassandra ?
+
+If you have an error mentioning that your max_map_count should be at least 262144, run the following command:
+```
+sudo sysctl -w vm.max_map_count=262144
+```
+
 ### 2. Building dependencies
 
 You will also need to be sure that the dependencies are properly built. What I advise you to do is to keep a terminal open with the following commands running in the background:

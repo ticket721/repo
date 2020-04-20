@@ -10,7 +10,12 @@
         "modules/@contracts_t721admin",
         "modules/@contracts_t721controller",
         "modules/@contracts_t721token",
-        "modules/@contracts_ticketforge"
+        "modules/@contracts_ticketforge",
+        "modules/@frontend_core",
+        "modules/@frontend_organizer-app",
+        "modules/@frontend_staff-app",
+        "modules/@frontend_t721-app",
+        "modules/@frontend_flib-react"
     ],
     "version": "independent",
     "npmClient": "yarn",

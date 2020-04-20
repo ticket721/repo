@@ -292,8 +292,8 @@ jobs:
             - name: "CACHE @common_sdk"
               uses: actions/cache@v1
               with:
-                  path: ./modules/@common_global/node_modules
-                  key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_global
+                  path: ./modules/@common_sdk/node_modules
+                  key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_sdk
 
             #
             # Build dependencies
