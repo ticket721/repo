@@ -1,16 +1,16 @@
 import * as React from 'react';
 import { withKnobs } from '@storybook/addon-knobs';
 import TicketHeader from '../../src/components/ticket/header';
-import TicketInfosCard from '../../src/components/cards/ticket-infos';
-import styled from '../../config/styled';
+import TicketInfosCard from '../../src/components/ticket/cards/ticket-infos';
+import styled from '../../src/config/styled';
 import Gradient from '../../src/components/elements/gradient';
-import DateTimeCard from '../../src/components/cards/datetime';
-import LocationCard from '../../src/components/cards/location';
-import TitleText from '../../src/components/cards/title-text'
-import PurchaseInfosCard from '../../src/components/cards/purchase-infos';
-import SponsorsCard from '../../src/components/cards/sponsors';
+import DateTimeCard from '../../src/components/ticket/cards/datetime';
+import LocationCard from '../../src/components/ticket/cards/location';
+import TitleText from '../../src/components/ticket/cards/title-text'
+import PurchaseInfosCard from '../../src/components/ticket/cards/purchase-infos';
+import SponsorsCard from '../../src/components/ticket/cards/sponsors';
 import QrCodeButton from '../../src/components/ticket/qr-code';
-import LinkButton from '../../src/components/elements/link-button';
+import LinkButton from '../../src/components/ticket/link-button';
 import TopNav from '../../src/components/ticket/top-nav';
 
 const defaultTicket = {

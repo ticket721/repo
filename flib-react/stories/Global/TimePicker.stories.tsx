@@ -1,7 +1,7 @@
 import * as React from 'react';
 import TimePicker from '../../src/components/time-picker'
 import { text, withKnobs } from '@storybook/addon-knobs';
-import { Store, State} from "@sambego/storybook-state";
+import { Store, State} from '@sambego/storybook-state';
 
 export default {
   component: TimePicker,

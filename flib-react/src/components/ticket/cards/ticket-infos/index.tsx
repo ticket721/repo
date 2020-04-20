@@ -1,6 +1,6 @@
 import * as React from 'react';
 import styled from '../../../../config/styled';
-import Icon from '../../icon';
+import Icon from '../../../icon';
 
 export interface TicketInfosCardProps extends React.ComponentProps<any> {
   ticketID?: string;

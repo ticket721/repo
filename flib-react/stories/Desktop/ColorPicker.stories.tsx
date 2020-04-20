@@ -2,7 +2,7 @@ import * as React from 'react';
 import ColorPicker from '../../src/components/color-picker'
 import {  withKnobs, text, array } from '@storybook/addon-knobs';
 import { ColorResult } from 'react-color';
-import { Store, State} from "@sambego/storybook-state";
+import { Store, State} from '@sambego/storybook-state';
 
 export default {
   component: ColorPicker,

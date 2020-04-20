@@ -1,8 +1,8 @@
 import * as React from 'react';
-import styled from '../../../../config/styled';
+import styled from '../../../config/styled';
 import TicketInterface from '../../../shared/ticketInterface';
-import LocationCard from '../../cards/location';
-import DateTimeCard from '../../cards/datetime';
+import LocationCard from '../cards/location';
+import DateTimeCard from '../cards/datetime';
 
 export interface PreviewInfosProps extends React.ComponentProps<any> {
   ticket: TicketInterface;

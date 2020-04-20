@@ -1,14 +1,12 @@
 import * as React from 'react';
 import styled from '../../../../config/styled';
-import CardContainer from '../../elements/card-container';
-import Separator from '../../elements/separator';
-import Icon from '../../icon';
+import CardContainer from '../../../elements/card-container';
+import Separator from '../../../elements/separator';
+import Icon from '../../../icon';
 
-export interface DateTimeCardProps extends React.ComponentProps<any> {
-  startDate: string;
-  endDate: string;
-  endTime: string;
-  startTime: string;
+export interface LocationCardProps extends React.ComponentProps<any> {
+  location: string;
+  address: string;
   iconColor?: string;
   link?: string;
   linkLabel?: string;
@@ -27,7 +25,7 @@ const Info = styled.span`
   }
 `;
 
-const Column = styled.div<DateTimeCardProps>`
+const Column = styled.div<LocationCardProps>`
   display: flex;
   flex-direction: column;
 
@@ -45,29 +43,28 @@ const Column = styled.div<DateTimeCardProps>`
     `}
   }
 `
+
 const IconContainer = styled.div`
   margin-right: ${props => props.theme.regularSpacing};
-`
+`;
 
-export const DateTimeCard: React.FunctionComponent<DateTimeCardProps> = (props: DateTimeCardProps): JSX.Element => {
-
+export const LocationCard: React.FunctionComponent<LocationCardProps> = (props: LocationCardProps): JSX.Element => {
   return <CardContainer removeBg={props.removeBg}>
           <IconContainer>
-            <Icon icon='calendar' fill={props.iconColor} width='16' height='18' />
+            <Icon icon='location' fill={props.iconColor} width='12' height='16' />
           </IconContainer>
           <Column iconColor={props.iconColor}>
-            <Info>{props.startDate} - {props.endDate}</Info>
-            <Info>{props.startTime} - {props.endTime}</Info>
-             {/* TODO - Update to use react-router if necessary */}
-             {props.link &&
+            <Info>{props.location}</Info>
+            <Info>{props.address}</Info>
+            {/* TODO - Update to use react-router if necessary */}
+            {props.link &&
               <a href={props.link}>{props.linkLabel} <Icon icon="chevron" height="12" width="8" fill={props.iconColor} /> </a>
             }
           </Column>
-
           {props.wSeparator &&
             <Separator />
           }
         </CardContainer>
 };
 
-export default DateTimeCard;
+export default LocationCard;

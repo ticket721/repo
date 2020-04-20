@@ -1,6 +1,6 @@
 import * as React from 'react';
-import styled from '../../../../config/styled';
-import Icon from '../../icon';
+import styled from '../../../config/styled';
+import Icon from '../../../components/icon';
 
 export interface LinkProps extends React.ComponentProps<any> {
   image?: string;

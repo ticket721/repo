@@ -1,7 +1,7 @@
 import * as React from 'react';
 import CardContainer from '../../elements/card-container';
-import styled from '../../../../config/styled';
-import LinkButton from '../../elements/link-button';
+import styled from '../../../config/styled';
+import LinkButton from '../../ticket/link-button';
 import Icon from '../../icon';
 
 export interface HostedByProps extends React.ComponentProps<any> {

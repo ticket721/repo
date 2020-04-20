@@ -1,7 +1,7 @@
 import * as React from 'react';
 import DatePicker from '../../src/components/date-picker'
 import { text, withKnobs, select } from '@storybook/addon-knobs';
-import { Store, State} from "@sambego/storybook-state";
+import { Store, State} from '@sambego/storybook-state';
 
 export default {
   component: DatePicker,

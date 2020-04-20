@@ -111,5 +111,4 @@ dist
 
 # Storybook
 storybook-static
-dist
 lib

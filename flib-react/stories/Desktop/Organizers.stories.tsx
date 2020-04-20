@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { withKnobs, text } from '@storybook/addon-knobs';
-import { Store, State} from "@sambego/storybook-state";
+import { Store, State} from '@sambego/storybook-state';
 import Organizers from '../../src/components/organizers';
 
 export default {
