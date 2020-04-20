@@ -4,7 +4,7 @@ import { Store, State } from '@sambego/storybook-state';
 import { action } from '@storybook/addon-actions'
 import styled from '../../src/config/styled';
 
-import SingleImage from '../../src/components/cards/single-image';
+import SingleImage from '../../src/components/events/single-image';
 import TicketQty from '../../src/components/ticket/ticket-qty';
 import AddOns from '../../src/components/cards/add-ons';
 import DescriptonLink from '../../src/components/cards/description-link';

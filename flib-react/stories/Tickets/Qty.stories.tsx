@@ -1,4 +1,3 @@
-
 import * as React from 'react';
 import { withKnobs, text, number, boolean, array } from '@storybook/addon-knobs';
 import TicketQty from '../../src/components/ticket/ticket-qty';
@@ -28,4 +27,3 @@ export const showcase = () => (
     title={text('Title', 'Tickets')}
   />
 );
-
