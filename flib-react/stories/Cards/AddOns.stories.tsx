@@ -21,7 +21,7 @@ const addOns = [
     description: 'Get 2 free beers for 15€'
   },
   {
-    id: 'a12',
+    id: 'a1w2',
     name: 'VIP access',
     price: 150,
     description: 'Get VIP access'

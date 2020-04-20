@@ -7,7 +7,7 @@ const components = {
 };
 const customStyles = {
   option: () => ({
-    background: 'transparent url(assets/icons/icon--location-gray.svg) 24px center/12px 16px no-repeat',
+    background: 'transparent url(assets/icons/icon--pin-gray.svg) 24px center/12px 16px no-repeat',
     color: 'rgba(255, 255, 255, 0.6)',
     cursor: 'pointer',
     fontSize: 14,
@@ -25,7 +25,7 @@ const customStyles = {
   }),
   control: () => ({
     alignItems: 'center',
-    background: 'url(assets/icons/icon--location.svg) 24px 17px/12px 16px no-repeat',
+    background: 'url(assets/icons/icon--pin.svg) 24px 17px/12px 16px no-repeat',
     display: 'flex',
     paddingBottom: 24,
     paddingLeft: 48,

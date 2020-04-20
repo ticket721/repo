@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { withKnobs, text } from '@storybook/addon-knobs';
-import SingleImage from '../../src/components/cards/single-image';
+import { withKnobs, text, number, boolean } from '@storybook/addon-knobs';
+import SingleImage from '../../src/components/events/single-image';
 
 export default {
   title: 'Cards|Single image',
@@ -12,9 +12,20 @@ export default {
   }
 };
 
-export const showcase = () => (
+export const ImageOnly = () => (
   <SingleImage
     src={text('URL', 'assets/images/ticket-1.jpg')}
+    imgOnly
   />
 );
 
+export const WithDetails = () => (
+  <SingleImage
+    src={text('URL', 'assets/images/ticket-1.jpg')}
+    price={number('Price', 55)}
+    mainColor={text('Color', '#E4863C')}
+    text={text('short description', 'January 8th 2021')}
+    smaller={boolean('Smaller ?', false)}
+    title={text('Title', 'Gallant')}
+  />
+)

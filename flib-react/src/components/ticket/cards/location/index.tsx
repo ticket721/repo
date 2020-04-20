@@ -51,7 +51,7 @@ const IconContainer = styled.div`
 export const LocationCard: React.FunctionComponent<LocationCardProps & {className?: string}> = (props: LocationCardProps): JSX.Element => {
   return <CardContainer className={props.className} removeBg={props.removeBg}>
           <IconContainer>
-            <Icon icon='location' fill={props.iconColor} width='12' height='16' />
+            <Icon icon='pin' fill={props.iconColor} width='12' height='16' />
           </IconContainer>
           <Column iconColor={props.iconColor}>
             <Info>{props.location}</Info>

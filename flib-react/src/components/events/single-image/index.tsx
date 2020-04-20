@@ -23,6 +23,7 @@ const Container = styled.div<SingleImageProps>`
     object-fit: cover;
     width: 100%;
   }
+
   ${props => !props.imgOnly &&`
     &::after {
       background: linear-gradient(180deg, rgba(10, 8, 18, 0), rgba(10, 8, 18, 0.85));
@@ -72,15 +73,15 @@ const Details = styled.div<SingleImageProps>`
   }
 `
 
-export const SingleImage: React.FunctionComponent<SingleImageProps> = (props: SingleImageProps): JSX.Element => {
-  return <Container imgOnly={props.imgOnly} smaller={props.smaller}>
+export const SingleImage: React.FunctionComponent<SingleImageProps & {className?: string}> = (props: SingleImageProps): JSX.Element => {
+  return <Container imgOnly={props.imgOnly} smaller={props.smaller} className={props.className}>
           <img src={props.src} />
           {!props.imgOnly &&
-            <Details mainColor={props.mainColor}>
+            <Details mainColor={props.mainColor} smaller={props.smaller}>
               <h3>{props.title}</h3>
               <p>
               {props.price &&
-                <span>{props.price}</span>
+                <span>{props.price}€</span>
               }
               {props.text}
               </p>
