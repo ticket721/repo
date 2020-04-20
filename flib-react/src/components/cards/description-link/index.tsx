@@ -1,7 +1,7 @@
 import * as React from 'react';
 import CardContainer from '../../elements/card-container';
 import Icon from '../../icon';
-import styled from '../../../../config/styled';
+import styled from '../../../config/styled';
 
 export interface DescriptionLinkProps extends React.ComponentProps<any> {
   removeBg?: boolean;

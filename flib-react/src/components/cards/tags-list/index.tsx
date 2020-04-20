@@ -1,6 +1,6 @@
 import * as React from 'react';
 import CardContainer from '../../elements/card-container';
-import styled from '../../../../config/styled';
+import styled from '../../../config/styled';
 
 export interface TagsListProps extends React.ComponentProps<any> {
   tags: Tag[];

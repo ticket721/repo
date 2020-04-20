@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { withKnobs, text } from '@storybook/addon-knobs';
-import TitleTextCard from '../../src/components/cards/title-text';
+import TitleTextCard from '../../src/components/ticket/cards/title-text';
 
 export default {
   title: 'Cards|Title and text',
