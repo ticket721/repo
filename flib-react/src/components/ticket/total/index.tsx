@@ -85,9 +85,6 @@ const CollapsedContainer = styled.section<PurchaseTotalProps>`
   }
 `
 
-const Qty = styled.span`
-  margin: 0 ${props => props.theme.smallSpacing} 0 auto;
-`
 export const PurchaseTotal: React.FunctionComponent<PurchaseTotalProps> = (props:PurchaseTotalProps): JSX.Element => {
  const feesTotal = () => {
    let amount = 0;
@@ -103,13 +100,13 @@ export const PurchaseTotal: React.FunctionComponent<PurchaseTotalProps> = (props
           <Title className="uppercase">{props.label}</Title>
           <h2>{props.total}€</h2>
           <Row>
-            <span>Tickets</span>
-            <Qty>{props.tickets.quantity}x</Qty><span>{props.tickets.price.toFixed(2)}€</span>
+            <span>Tickets x{props.tickets.quantity}</span>
+            <span>{props.tickets.price.toFixed(2)}€</span>
           </Row>
           {props.addOns?.map((addOn: AddOn) => {
             return <Row key={addOn.id}>
-              <span>{addOn.name}</span>
-              <div><Qty>{addOn.quantity}x</Qty>{addOn.price.toFixed(2)}€</div>
+              <span>{addOn.name} x{addOn.quantity}</span>
+              <div>{addOn.price.toFixed(2)}€</div>
             </Row>
           })}
           <Separator />

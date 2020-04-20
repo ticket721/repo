@@ -83,6 +83,15 @@ const Gradient = styled.div<PreviewInfosProps>`
   }
 `
 
+const DateTime = styled(DateTimeCard)`
+  padding-bottom: 12px;
+`
+
+const Location = styled(LocationCard)`
+  padding-bottom: 12px;
+  padding-top: 12px;
+`
+
 const Subtitle = styled.span`
   color: ${props => props.theme.textColorDark};
   display: block;
@@ -99,7 +108,7 @@ export const PreviewInfos: React.FunctionComponent<PreviewInfosProps> = (props: 
             </TicketHeaderInfos>
             <Separator />
             <PreviewContainer>
-              <DateTimeCard
+              <DateTime
                 endDate={props.ticket.endDate}
                 endTime={props.ticket.endTime}
                 iconColor={props.ticket.mainColor}
@@ -107,7 +116,7 @@ export const PreviewInfos: React.FunctionComponent<PreviewInfosProps> = (props: 
                 startTime={props.ticket.startTime}
                 removeBg
               />
-              <LocationCard
+              <Location
                 iconColor={props.ticket.mainColor}
                 location={props.ticket.location}
                 address={props.ticket.address}

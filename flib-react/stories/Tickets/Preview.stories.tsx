@@ -47,7 +47,7 @@ const Container = styled.div`
 export const showcase = () => (
   <div>
     <Container>
-      <div className="row jcsb aife">
+      <div className="row jcsb aic">
         <h1>My tickets</h1>
         <a href="#todo">View past ticket</a>
       </div>

@@ -17,13 +17,13 @@ const addOns = [
   {
     id: 'a12',
     name: '2 free beers',
-    price: '15€',
+    price: 15,
     description: 'Get 2 free beers for 15€'
   },
   {
     id: 'a12',
     name: 'VIP access',
-    price: '150€',
+    price: 150,
     description: 'Get VIP access'
   }
 ];

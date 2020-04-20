@@ -112,7 +112,7 @@ export const GlobalStyles = createGlobalStyle`
   }
 
   p {
-    line-height: 20px;
+    line-height: 150%;
   }
 
   input,
@@ -175,11 +175,13 @@ export const GlobalStyles = createGlobalStyle`
   h3 {
     font-size: 16px;
     font-weight: 700;
+    line-height: 150%;
   }
 
   h4 {
     font-size: 14px;
     font-weight: 500;
+    line-height: 150%;
 
     &.uppercase {
       font-size: 12px;

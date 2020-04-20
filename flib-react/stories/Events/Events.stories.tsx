@@ -146,6 +146,7 @@ export const showcase = () => (
     {state => [
     <div>
       <Container>
+        <Gradient values={eventDetails.gradients} blurOnly />
         <EventHeader
           event={eventDetails}
           onChange={onChange}
@@ -208,7 +209,6 @@ export const showcase = () => (
           title="More events"
           slides={slides}
         />
-        <Gradient values={eventDetails.gradients} blurOnly/>
       </Container>
       <EventCta
         ctaLabel="Get tickets"

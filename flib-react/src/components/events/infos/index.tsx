@@ -10,7 +10,11 @@ export interface EventInfosProps extends React.ComponentProps<any> {
 }
 
 const Container = styled.div<EventInfosProps>`
-  padding: ${props => props.pullUp ? `56px ${props.theme.biggerSpacing}` : props.theme.biggerSpacing};
+  background-color: ${props => props.theme.darkerBg};
+  ${props => props.pullUp &&`
+    margin-top: -24px;
+  `}
+  padding: ${props => props.pullUp ? `56px ${props.theme.biggerSpacing} ${props.theme.biggerSpacing}` : props.theme.biggerSpacing};
 
   h2 {
     margin-bottom: 12px;

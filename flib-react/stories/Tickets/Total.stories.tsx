@@ -27,7 +27,6 @@ const addOns = [
   }
 ]
 
-
 const fees = [
   {
     id: 1,

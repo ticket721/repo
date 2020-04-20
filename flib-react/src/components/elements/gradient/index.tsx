@@ -1,6 +1,11 @@
 import * as React from 'react';
 import styled from '../../../config/styled';
 
+/**
+ * Position as first child in HTML
+ * to avoid z-index problems
+ */
+
 export interface GradientProps extends React.ComponentProps<any> {
   /**
    * Add 6.25% to the 1st value of the array
@@ -21,6 +26,7 @@ const GradientBar = styled.div<GradientProps>`
   position: absolute;
   right: 0;
   transform: matrix(-1, 0, 0, 1, 0, 0);
+  user-select: none;
   width: ${props => props.blurOnly ? '0px' : '8px'};
   z-index: 0;
 

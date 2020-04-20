@@ -4,7 +4,7 @@ import Toggle from '../../inputs/toggle';
 import slugify from 'slugify';
 import styled from '../../../config/styled';
 
-export interface DescriptionLinkProps extends React.ComponentProps<any> {
+export interface AddOnsProps extends React.ComponentProps<any> {
   addOns: AddOn[];
   onChange: () => void;
   removeBg?: boolean;
@@ -15,7 +15,7 @@ export interface DescriptionLinkProps extends React.ComponentProps<any> {
 interface AddOn {
   id: number | string;
   name:string;
-  price: string;
+  price: number;
   description: string;
 }
 
@@ -31,11 +31,11 @@ const Container = styled(CardContainer)`
     font-weight: 700;
   }
 `
-export const DescriptonLink: React.FunctionComponent<DescriptionLinkProps> = (props: DescriptionLinkProps): JSX.Element => {
+export const AddOns: React.FunctionComponent<AddOnsProps> = (props: AddOnsProps): JSX.Element => {
   return <Container removeBg={props.removeBg}>
           <Title className="uppercase">{props.title}</Title>
           {props.addOns.map((addOn: AddOn) => {
-            const toggleLabel = `${addOn.name} - ${addOn.price}`;
+            const toggleLabel = `${addOn.name} - ${addOn.price}€`;
 
             return  <Toggle
                       gradient={props.gradient}
@@ -48,6 +48,6 @@ export const DescriptonLink: React.FunctionComponent<DescriptionLinkProps> = (pr
 
           })}
         </Container>
-};
+};AddOns
 
-export default DescriptonLink;
+export default AddOns;

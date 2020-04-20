@@ -9,12 +9,13 @@ export interface TicketQtyProps extends React.ComponentProps<any> {
   feesIncluded?: boolean;
   selected?:boolean;
   price: string;
-  title: string;
+  title?: string;
   ticketsLeft: number;
+  typeName: string;
 }
 
 const Container = styled.article<TicketQtyProps>`
-  background-color: ${props => props.selected ? props.theme.darkerBg : props.theme.darkBg};
+  background-color: ${props => props.theme.darkerBg};
   border-bottom: 2px solid #000;
   font-weight: 500;
   padding: ${props => props.theme.biggerSpacing};
@@ -38,9 +39,19 @@ const Container = styled.article<TicketQtyProps>`
     width: 2px;
   }
 
+  h3 {
+    position: relative;
+    top: 4px;
+  }
+
   h4 {
     font-size: 15px;
-    margin: ${props => props.theme.regularSpacing} 0 ${props => props.theme.smallSpacing};
+    margin: 4px 0 ${props => props.theme.smallSpacing};
+
+    &.uppercase {
+      color: ${props => props.theme.textColorDarker};
+      margin: 0 0 ${props => props.theme.regularSpacing};
+    }
 
     & + span {
       color: ${props => props.theme.textColorDarker};
@@ -66,8 +77,11 @@ export const TicketQty: React.FunctionComponent<TicketQtyProps> = (props: Ticket
   }]
 
   return <Container selected={props.selected} gradient={props.gradient}>
-            <div className="row aic jcsb">
-              <h3>{props.title}</h3>
+            {props.title &&
+              <h4 className="uppercase">{props.title}</h4>
+            }
+            <div className="row jcsb">
+              <h3>{props.typeName}</h3>
               <Select
                 defaultValue={options[0]}
                 options={options}

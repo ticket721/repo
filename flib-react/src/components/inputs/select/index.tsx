@@ -32,7 +32,6 @@ const customStyles = {
     position: 'relative' as 'relative',
 
     '& > div': {
-
       padding: 0
     }
   }),
@@ -124,9 +123,13 @@ const StyledInputContainer = styled.div<SelectProps>`
   padding-top: ${props => props.label ? props.theme.biggerSpacing : 0};
   transition: background-color 300ms ease;
 
+  [class*="dummyInput"] {
+    display: none;
+  }
+
   ${props => !props.label &&`
     [class*="Control"] {
-      padding: 12px;
+      padding: 10px 9px 8.5px 12px;
     }
   `}
 

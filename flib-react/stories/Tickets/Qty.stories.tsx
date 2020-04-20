@@ -23,8 +23,9 @@ export const showcase = () => (
     feesIncluded={boolean('Fees included ?', false)}
     selected={boolean('Selected ?', false)}
     price={text('Starting price', '55€')}
-    title={text('Ticket type', '2 days VIP pass')}
+    typeName={text('Ticket type', '2 days VIP pass')}
     ticketsLeft={number('Tickets left', 10)}
+    title={text('Title', 'Tickets')}
   />
 );
 
