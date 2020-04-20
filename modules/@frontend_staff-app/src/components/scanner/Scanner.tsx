@@ -14,15 +14,15 @@ export interface ScannerProps {
 export const Scanner: React.FC<ScannerProps> = (props: ScannerProps): React.ReactElement => {
     return (
         <div>
-          <QrReader
+            <QrReader
             onScan={props.onScan}
             onError={props.onError}
             onLoad={props.onLoad}
             delay={props.delay}
             facingMode={props.facingMode}
             style={{
-              'width': props.width,
-              'heigth': props.height
+                'width': props.width,
+                'heigth': props.height
             }}
             showViewFinder={false} />
         </div>

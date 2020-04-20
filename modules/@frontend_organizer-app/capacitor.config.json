@@ -1,6 +1,6 @@
 {
-  "appName": "organizer",
-  "appId": "com.ticket721.organizer",
-  "webDir": "build",
-  "npmClient": "yarn"
+    "appName": "organizer",
+    "appId": "com.ticket721.organizer",
+    "webDir": "build",
+    "npmClient": "yarn"
 }

@@ -27,6 +27,7 @@ ReactDOM.render(
                 </BrowserRouter>
             </ThemeProvider>
         </ConnectedRouter>
-    </Provider>, document.getElementById('root'));
+    </Provider>, document.getElementById('root')
+);
 
 serviceWorker.register();

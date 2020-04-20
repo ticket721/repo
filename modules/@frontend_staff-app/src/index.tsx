@@ -17,16 +17,17 @@ const store: Store<AppState> = configureStore();
 
 ReactDOM.render(
     <Provider store={store}>
-      <ConnectedRouter history={history}>
-        <GlobalStyles />
-        <ThemeProvider theme={customThemes['t721']}>
-          <BrowserRouter>
-            <ScrollToTop>
-              <App />
-            </ScrollToTop>
-          </BrowserRouter>
-        </ThemeProvider>
-      </ConnectedRouter>
-    </Provider>, document.getElementById('root'));
+        <ConnectedRouter history={history}>
+            <GlobalStyles />
+            <ThemeProvider theme={customThemes['t721']}>
+                <BrowserRouter>
+                    <ScrollToTop>
+                        <App />
+                    </ScrollToTop>
+                </BrowserRouter>
+            </ThemeProvider>
+        </ConnectedRouter>
+    </Provider>, document.getElementById('root')
+);
 
 serviceWorker.register();
