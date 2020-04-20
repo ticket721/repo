@@ -23,9 +23,9 @@ jobs:
                   cmd: install
 
             - uses: borales/actions-yarn@v2.0.0
-              name: Build static app (yarn build)
+              name: Build static app (yarn build-storybook)
               with:
-                  cmd: build
+                  cmd: build-storybook
 
             - name: Build and Deploy
               uses: JamesIves/github-pages-deploy-action@releases/v3

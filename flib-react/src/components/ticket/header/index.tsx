@@ -1,5 +1,5 @@
 import * as React from 'react';
-import styled from '../../../../config/styled';
+import styled from '../../../config/styled';
 import TicketInterface from '../../../shared/ticketInterface';
 
 export interface TicketHeaderProps extends React.ComponentProps<any> {

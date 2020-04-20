@@ -1,5 +1,5 @@
 import * as React from 'react';
-import styled from '../../../config/styled';
+import styled from '../../config/styled';
 
 const StyledNavbar = styled.nav`
   align-items: center;

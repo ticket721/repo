@@ -1,6 +1,6 @@
 import * as React from 'react';
-import Separator from '../../elements/separator';
-import CardContainer from '../../elements/card-container';
+import Separator from '../../../elements/separator';
+import CardContainer from '../../../elements/card-container';
 import styled from '../../../../config/styled';
 
 export interface TitleTextProps extends React.ComponentProps<any> {

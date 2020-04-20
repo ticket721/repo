@@ -1,5 +1,5 @@
 import * as React from 'react';
-import styled from '../../../../config/styled';
+import styled from '../../../config/styled';
 import Icon from '../../../components/icon';
 
 export interface TopNavProps extends React.ComponentProps<any> {
