@@ -2,7 +2,7 @@ import * as React from 'react';
 import { action } from '@storybook/addon-actions';
 import { boolean, number, text, withKnobs } from '@storybook/addon-knobs';
 import Textarea from '../../src/components/inputs/textarea';
-import { Store, State} from "@sambego/storybook-state";
+import { Store, State} from '@sambego/storybook-state';
 
 export default {
   title: 'Global|Textarea',

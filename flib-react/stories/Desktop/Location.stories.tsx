@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {object, text, withKnobs} from '@storybook/addon-knobs';
-import Location from "../../src/components/location";
+import Location from '../../src/components/location';
 
 const selectValues = [
   { value: 'Phil Smoke Meat, 188 avenue Jean Jaurès, Paris', label: 'Phil Smoke Meat, 188 avenue Jean Jaurès, Paris' },

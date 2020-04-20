@@ -1,8 +1,8 @@
 import * as React from 'react';
 import styled from '../../../../config/styled';
-import CardContainer from '../../elements/card-container';
-import Separator from '../../elements/separator';
-import Icon from '../../icon';
+import CardContainer from '../../../elements/card-container';
+import Separator from '../../../elements/separator';
+import Icon from '../../../icon';
 
 export interface PurchaseInfosCardProps extends React.ComponentProps<any> {
   date: string;

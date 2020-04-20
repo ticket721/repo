@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Dropzone, { IDropzoneProps, ILayoutProps } from 'react-dropzone-uploader';
-import styled from '../../../config/styled';
+import styled from '../../config/styled';
 import 'react-dropzone-uploader/dist/styles.css';
 import { keyframes } from 'styled-components';
 import Icon from '../icon';

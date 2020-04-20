@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { withKnobs } from '@storybook/addon-knobs';
-import styled from '../../config/styled';
+import styled from '../../src/config/styled';
 import TicketHeader from '../../src/components/ticket/header';
 import TicketPreview from '../../src/components/ticket/infos';
 

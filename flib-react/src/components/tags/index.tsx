@@ -1,6 +1,6 @@
 import * as React from 'react';
 import CreatableSelect from 'react-select/creatable';
-import styled from '../../../config/styled';
+import styled from '../../config/styled';
 
 const components = {
   DropdownIndicator: null,

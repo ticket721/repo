@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Icon from '../icon';
-import styled from '../../../config/styled';
+import styled from '../../config/styled';
 
 export interface InviteOrganizersProps extends React.ComponentProps<any> {
   currentUser: SingleOrganizer;
