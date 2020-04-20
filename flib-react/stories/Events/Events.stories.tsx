@@ -2,11 +2,11 @@ import * as React from 'react';
 import { withKnobs, text } from '@storybook/addon-knobs';
 import { action } from '@storybook/addon-actions';
 import { Store, State } from '@sambego/storybook-state';
-import styled from '../../config/styled';
+import styled from '../../src/config/styled';
 
 import EventHeader from '../../src/components/events/header';
-import LocationCard from '../../src/components/cards/location';
-import DateTimeCard from '../../src/components/cards/datetime';
+import LocationCard from '../../src/components/ticket/cards/location';
+import DateTimeCard from '../../src/components/ticket/cards/datetime';
 import ReadMore from '../../src/components/cards/read-more';
 import Border from '../../src/components/elements/border';
 import PhotosVideosCard from '../../src/components/cards/photos-videos';

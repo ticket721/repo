@@ -1,5 +1,5 @@
 import * as React from 'react';
-import styled from '../../../../config/styled';
+import styled from '../../../config/styled';
 import EventInterface from '../../../shared/eventInterface';
 import Border from '../../elements/border';
 import Button from '../../button';

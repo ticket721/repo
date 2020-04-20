@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { withKnobs, text } from '@storybook/addon-knobs';
-import DateTimeCard from '../../src/components/cards/datetime';
+import DateTimeCard from '../../src/components/ticket/cards/datetime';
 
 export default {
   title: 'Cards|Datetime',

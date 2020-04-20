@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { withKnobs, text } from '@storybook/addon-knobs';
-import SponsorsCard from '../../src/components/cards/sponsors';
+import SponsorsCard from '../../src/components/ticket/cards/sponsors';
 
 export default {
   title: 'Cards|Sponsors',

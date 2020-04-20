@@ -1,5 +1,5 @@
 import * as React from 'react';
-import styled from '../../../../config/styled';
+import styled from '../../../config/styled';
 import Button from '../../button';
 
 export interface EventCtaProps extends React.ComponentProps<any> {

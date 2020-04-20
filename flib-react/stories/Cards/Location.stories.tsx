@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { withKnobs, text } from '@storybook/addon-knobs';
-import LocationCard from '../../src/components/cards/location';
+import LocationCard from '../../src/components/ticket/cards/location';
 
 export default {
   title: 'Cards|Location',
