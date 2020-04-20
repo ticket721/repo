@@ -88,6 +88,7 @@ const Container = styled.div`
   border-bottom-left-radius: 8px;
   border-bottom-right-radius: 8px;
   overflow: hidden;
+  margin-bottom: 148px;
 `
 
 const BgContainer = styled.div`
