@@ -260,6 +260,21 @@ class M20191216075937_initial_setup extends ElasticMigration {
                 "discover": ".*"
             }
         });
+        
+        await this.createIndex('ticket721_authorization', 'ticket721');
+        await this.putMapping('ticket721_authorization', 'authorization', {
+            "authorization": {
+                "discover": ".*"
+            }
+        });
+        await this.putSettings('ticket721_authorization',
+            {
+                index: {
+                    synchronous_refresh: true
+                }
+            }
+        );
+
 
     }
 

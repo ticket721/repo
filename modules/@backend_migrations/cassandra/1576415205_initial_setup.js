@@ -46,7 +46,8 @@ var migration1576415205 = {
                     name text,
                     data text,
                     type text,
-                    error text
+                    error text,
+                    private boolean
                     );`,
             params: []
         };
@@ -118,6 +119,7 @@ var migration1576415205 = {
                         scope text,
                         prices list<frozen<ticket721.price>>,
                         seats int,
+                        reserved int,
                         parent_id uuid,
                         parent_type text,
                         created_at timestamp,
@@ -332,7 +334,7 @@ var migration1576415205 = {
             );`,
             params: []
         };
-        
+
         const gem__payload_cost_type_creation = {
             query: `CREATE TYPE ticket721.gem__payload_cost (
                         value text,
@@ -353,7 +355,7 @@ var migration1576415205 = {
             );`,
             params: []
         };
-        
+
         const gem__error_info_type_creation = {
             query: `CREATE TYPE ticket721.gem__error_info (
                         dosojin text,
@@ -364,7 +366,7 @@ var migration1576415205 = {
             );`,
             params: []
         };
-        
+
         const gem__route_history_type_creation = {
             query: `CREATE TYPE ticket721.gem__route_history (
                         layer int,
@@ -375,7 +377,7 @@ var migration1576415205 = {
             );`,
             params: []
         };
-        
+
         const gem_type_creation = {
             query: `CREATE TYPE ticket721.gem (
                         action_type text,
@@ -433,6 +435,30 @@ var migration1576415205 = {
                         double_ map<text, double>,
                         created_at timestamp,
                         updated_at timestamp
+                    );`,
+            params: []
+        };
+
+        const authorization_table_creation = {
+            query: `CREATE TABLE ticket721.authorization ( 
+                        id uuid,
+                        granter text,
+                        grantee text,
+                        mode text,
+                        links list<frozen<ticket721.link>>,
+                        codes text,
+                        selectors text,
+                        args text,
+                        signature text,
+                        readable_signature boolean,
+                        user_expiration timestamp,
+                        be_expiration timestamp,
+                        cancelled boolean,
+                        consumed boolean,
+                        dispatched boolean,
+                        created_at timestamp,
+                        updated_at timestamp,
+                        PRIMARY KEY((id), granter, grantee, mode)
                     );`,
             params: []
         };
@@ -543,6 +569,8 @@ var migration1576415205 = {
             console.log('Metadata Table Creation');
             await db.execute(metadata_table_creation.query, metadata_table_creation.params, { prepare: true });
 
+            console.log('Authorization Table Creation');
+            await db.execute(authorization_table_creation.query, authorization_table_creation.params, { prepare: true });
         } catch (e) {
             return handler(e, false);
         }
@@ -716,6 +744,12 @@ var migration1576415205 = {
             params: []
         };
 
+        const authorization_table_creation = {
+            query: `DROP TABLE ticket721.authorization`,
+            params: []
+        };
+
+
         try {
 
             // Tables first
@@ -763,6 +797,9 @@ var migration1576415205 = {
 
             console.log('Metadata Table Creation');
             await db.execute(metadata_table_creation.query, metadata_table_creation.params, { prepare: true });
+
+            console.log('Authorization Table Creation');
+            await db.execute(authorization_table_creation.query, authorization_table_creation.params, { prepare: true });
 
             // Then Types
             console.log('Action Type Deletion');
