@@ -305,7 +305,6 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 });
 
                 await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-                    console.log(JSON.stringify(as, null, 4));
                     return (
                         as.current_status === 'input:error' &&
                         JSON.parse(as.actions[as.current_action].error).error === 'cart_too_big'

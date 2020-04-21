@@ -5,10 +5,15 @@ import {
     GeneratedUUidColumn,
     UpdateDateColumn,
 } from '@iaminfinity/express-cassandra';
-import { Link } from '@lib/common/utils/Link.type';
 
+/**
+ * Authorization modes
+ */
 export type AuthorizationModes = 'sealSale' | 'mint' | 'attach' | 'withdraw';
 
+/**
+ * Authorization entity holding a signature for a user to redeem a ticket
+ */
 @Entity<AuthorizationEntity>({
     table_name: 'authorization',
     key: [['id'], 'granter', 'grantee', 'mode'],
@@ -18,12 +23,16 @@ export type AuthorizationModes = 'sealSale' | 'mint' | 'attach' | 'withdraw';
     },
 } as any)
 export class AuthorizationEntity {
+    /**
+     * Entity Builder
+     *
+     * @param a
+     */
     constructor(a?: AuthorizationEntity) {
         if (a) {
             this.id = a.id ? a.id.toString() : a.id;
             this.granter = a.granter;
             this.grantee = a.grantee;
-            this.links = a.links;
             this.mode = a.mode;
             this.codes = a.codes;
             this.selectors = a.selectors;
@@ -46,77 +55,110 @@ export class AuthorizationEntity {
     @GeneratedUUidColumn()
     id: string;
 
+    /**
+     * Granter address
+     */
     @Column({
         type: 'text',
     })
     granter: string;
 
+    /**
+     * Grantee address
+     */
     @Column({
         type: 'text',
     })
     grantee: string;
 
+    /**
+     * Authorization mode
+     */
     @Column({
         type: 'text',
     })
     mode: AuthorizationModes;
 
-    @Column({
-        type: 'list',
-        typeDef: '<frozen<link>>',
-    })
-    links: Link[];
-
+    /**
+     * Unique codes of the authorization
+     */
     @Column({
         type: 'text',
     })
     codes: string;
 
+    /**
+     * Selector string used for queries
+     */
     @Column({
         type: 'text',
     })
     selectors: string;
 
+    /**
+     * Complete flattened argument list
+     */
     @Column({
         type: 'text',
     })
     args: string;
 
+    /**
+     * Hex signature
+     */
     @Column({
         type: 'text',
     })
     signature: string;
 
+    /**
+     * True if signature can be seen by user
+     */
     @Column({
         type: 'boolean',
     })
     // tslint:disable-next-line:variable-name
     readable_signature: boolean;
 
+    /**
+     * True if signature has been cancelled
+     */
     @Column({
         type: 'boolean',
     })
     // tslint:disable-next-line:variable-name
     cancelled: boolean;
 
+    /**
+     * True if signature has been broadcasted in a transaction
+     */
     @Column({
         type: 'boolean',
     })
     // tslint:disable-next-line:variable-name
     dispatched: boolean;
 
+    /**
+     * True if the signature has been properly used to mint a ticket
+     */
     @Column({
         type: 'boolean',
     })
     // tslint:disable-next-line:variable-name
     consumed: boolean;
 
+    /**
+     * Date upon which the signature is shown as expired for the user
+     */
     @Column({
         type: 'timestamp',
     })
     // tslint:disable-next-line:variable-name
     user_expiration: Date;
 
+    /**
+     * Date after which the authorization is considered as expired and holds no more seats
+     */
     @Column({
         type: 'timestamp',
     })

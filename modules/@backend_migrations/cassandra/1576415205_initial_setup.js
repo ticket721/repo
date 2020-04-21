@@ -445,7 +445,6 @@ var migration1576415205 = {
                         granter text,
                         grantee text,
                         mode text,
-                        links list<frozen<ticket721.link>>,
                         codes text,
                         selectors text,
                         args text,

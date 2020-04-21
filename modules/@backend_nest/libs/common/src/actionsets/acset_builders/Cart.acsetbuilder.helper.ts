@@ -5,12 +5,27 @@ import { Action } from '@lib/common/actionsets/helper/Action.class';
 import { UserDto } from '@lib/common/users/dto/User.dto';
 import Joi from '@hapi/joi';
 
+/**
+ * Input arguments for the Cart AcSet Builder
+ */
 // tslint:disable-next-line:no-empty-interface
 export interface CartAcsetBuilderArgs {}
 
+/**
+ * Data Validator for the Cart Acset Builder
+ */
 const CartAcsetBuilderChecker = Joi.object({});
 
+/**
+ * Helper class containing the build method for the cart acset
+ */
 export class CartAcsetbuilderHelper implements ActionSetBuilderBase<CartAcsetBuilderArgs> {
+    /**
+     * Builder of the Cart Action Sets
+     *
+     * @param caller
+     * @param args
+     */
     async buildActionSet(caller: UserDto, args: CartAcsetBuilderArgs): Promise<ServiceResponse<ActionSet>> {
         const { error, value } = CartAcsetBuilderChecker.validate(args);
 

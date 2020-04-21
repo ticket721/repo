@@ -14,11 +14,7 @@ export class ActionSetsScheduler implements OnModuleInit, OnModuleDestroy {
      * @param outrospectionService
      */
     constructor(
-        // private readonly actionSetsService: ActionSetsService,
-        // private readonly shutdownService: ShutdownService,
-        // @InjectQueue('action') private readonly actionQueue: Queue,
         @InjectSchedule() private readonly schedule: Schedule,
-        // private readonly loggerService: WinstonLoggerService,
         private readonly outrospectionService: OutrospectionService,
     ) {}
 
@@ -31,7 +27,7 @@ export class ActionSetsScheduler implements OnModuleInit, OnModuleDestroy {
         const signature = await this.outrospectionService.getInstanceSignature();
 
         if (signature.master === true && signature.name === 'worker') {
-            this.schedule.scheduleIntervalJob('eventDispatcher', 1000, this.eventDispatcher.bind(this));
+            // this.schedule.scheduleIntervalJob('eventDispatcher', 1000, this.eventDispatcher.bind(this));
         }
     }
 
@@ -41,17 +37,5 @@ export class ActionSetsScheduler implements OnModuleInit, OnModuleDestroy {
     /* istanbul ignore next */
     onModuleDestroy(): void {
         this.schedule.cancelJobs();
-    }
-
-    async eventDispatcher(): Promise<void> {
-        // const bodyBuilder = ESSearchBodyBuilder({
-        //     $page_size: 10000,
-        //     current_status: {
-        //         $eq: 'event:waiting',
-        //     },
-        //     dispatched_at: {
-        //         $lt: 'now-5s',
-        //     },
-        // } as SortablePagedSearch);
     }
 }

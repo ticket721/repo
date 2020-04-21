@@ -180,6 +180,14 @@ export class ActionSetsService extends CRUDExtension<ActionSetsRepository, Actio
         };
     }
 
+    /**
+     * Sets a specific step into error mode
+     *
+     * @param actionSetId
+     * @param error
+     * @param details
+     * @param actionIdx
+     */
     async errorStep(
         actionSetId: string,
         error: string,
@@ -206,11 +214,11 @@ export class ActionSetsService extends CRUDExtension<ActionSetsRepository, Actio
 
         const actionSet = new ActionSet().load(actionSetRes.response[0]);
 
-        actionSet.action.setError({
+        actionSet.actions[actionIdx].setError({
             details,
             error,
         });
-        actionSet.action.setStatus('error');
+        actionSet.actions[actionIdx].setStatus('error');
         actionSet.setStatus('input:error');
 
         const updateRes = await this.update(actionSet.getQuery(), actionSet.withoutQuery());
@@ -228,6 +236,13 @@ export class ActionSetsService extends CRUDExtension<ActionSetsRepository, Actio
         };
     }
 
+    /**
+     * Method to update an action set step and trigger a bull task to check it
+     *
+     * @param actionSetId
+     * @param actionIdx
+     * @param data
+     */
     async updateAction(
         actionSetId: string | ActionSet,
         actionIdx: number,

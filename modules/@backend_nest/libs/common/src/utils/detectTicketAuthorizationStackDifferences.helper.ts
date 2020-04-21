@@ -1,6 +1,12 @@
 import { AuthorizedTicketMintingFormat, TicketMintingFormat } from '@lib/common/utils/Cart.type';
 import _ from 'lodash';
 
+/**
+ * Utility to check if steps 1 and 3 of the cart match
+ *
+ * @param requestedAuthorizations
+ * @param existingAuthorizations
+ */
 export function detectAuthorizationStackDifferences(
     requestedAuthorizations: TicketMintingFormat[],
     existingAuthorizations: AuthorizedTicketMintingFormat[],

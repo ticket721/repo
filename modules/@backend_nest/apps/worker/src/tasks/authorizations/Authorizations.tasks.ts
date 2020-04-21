@@ -13,19 +13,66 @@ import { CategoryEntity } from '@lib/common/categories/entities/Category.entity'
 import { MintAuthorization, toB32 } from '@common/global';
 import { ActionSetsService } from '@lib/common/actionsets/ActionSets.service';
 
+/**
+ * Input for the authorization generation task
+ */
 export interface GenerateMintingAuthorizationsTaskInput {
+    /**
+     * ID of the cart action set
+     */
     actionSetId: string;
+
+    /**
+     * List of authorizations to deliver
+     */
     authorizations: TicketMintingFormat[];
+
+    /**
+     * List of previously existing cart authorizations
+     */
     oldAuthorizations?: AuthorizedTicketMintingFormat[];
+
+    /**
+     * Total prices
+     */
     prices: Price[];
+
+    /**
+     * Commitment type
+     */
     commitType: 'stripe';
+
+    /**
+     * Expiration time for the authorizations
+     */
     expirationTime: number;
+
+    /**
+     * Flag to set the readability of the signature
+     */
     signatureReadable: boolean;
+
+    /**
+     * User that gets the signature granting
+     */
     grantee: UserDto;
 }
 
+/**
+ * Helper class containing the Authorization Tasks
+ */
 @Injectable()
 export class AuthorizationsTasks implements OnModuleInit {
+    /**
+     * Dependency Injection
+     *
+     * @param actionSetsService
+     * @param authorizationQueue
+     * @param outrospectionService
+     * @param shutdownService
+     * @param categoriesService
+     * @param authorizationsService
+     */
     constructor(
         private readonly actionSetsService: ActionSetsService,
         @InjectQueue('authorization') private readonly authorizationQueue: Queue,
@@ -35,7 +82,13 @@ export class AuthorizationsTasks implements OnModuleInit {
         private readonly authorizationsService: AuthorizationsService,
     ) {}
 
-    async gatherCategories(
+    /**
+     * Internal utility to fetch categories
+     *
+     * @param authorizations
+     * @param oldAuthorizations
+     */
+    private async gatherCategories(
         authorizations: TicketMintingFormat[],
         oldAuthorizations: AuthorizedTicketMintingFormat[],
     ): Promise<{ [key: string]: CategoryEntity }> {
@@ -78,7 +131,12 @@ export class AuthorizationsTasks implements OnModuleInit {
         return ret;
     }
 
-    async generateFreeSeatsCounts(
+    /**
+     * Internal utility to count free seats after old authorizations are removed
+     *
+     * @param oldAuthorizations
+     */
+    private async generateFreeSeatsCounts(
         oldAuthorizations: AuthorizedTicketMintingFormat[],
     ): Promise<{ [key: string]: number }> {
         const ret: { [key: string]: number } = {};
@@ -144,7 +202,14 @@ export class AuthorizationsTasks implements OnModuleInit {
         return ret;
     }
 
-    async seatsCountChecker(
+    /**
+     * Internal utility to check if enough seats are left for the cart
+     *
+     * @param authorizations
+     * @param freeSeatsCounts
+     * @param categories
+     */
+    private async seatsCountChecker(
         authorizations: TicketMintingFormat[],
         freeSeatsCounts: { [key: string]: number },
         categories: { [key: string]: CategoryEntity },
@@ -223,6 +288,11 @@ export class AuthorizationsTasks implements OnModuleInit {
         return true;
     }
 
+    /**
+     * Bull task in charge of the authorization generation
+     *
+     * @param job
+     */
     async generateMintingAuthorizationsTask(job: Job<GenerateMintingAuthorizationsTaskInput>): Promise<void> {
         const authorizationData: GenerateMintingAuthorizationsTaskInput = job.data;
 
@@ -289,7 +359,6 @@ export class AuthorizationsTasks implements OnModuleInit {
     /**
      * Subscribes worker instances only
      */
-
     /* istanbul ignore next */
     async onModuleInit(): Promise<void> {
         const signature: InstanceSignature = await this.outrospectionService.getInstanceSignature();

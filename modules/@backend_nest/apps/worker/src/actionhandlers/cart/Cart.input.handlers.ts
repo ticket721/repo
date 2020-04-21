@@ -10,22 +10,60 @@ import { BigNumber } from 'bignumber.js';
 import { detectAuthorizationStackDifferences } from '@lib/common/utils/detectTicketAuthorizationStackDifferences.helper';
 import { ConfigService } from '@lib/common/config/Config.service';
 
+/**
+ * Data Model of the Ticket Selection step
+ */
 export interface CartTicketSelections {
+    /**
+     * Array of tickets with price and category
+     */
     tickets: TicketMintingFormat[];
+
+    /**
+     * Final total price that will get computed during the first step
+     */
     total?: Price[];
 }
 
+/**
+ * Data Model of the Modules Configuration step
+ */
 // tslint:disable-next-line:no-empty-interface
 export interface CartModulesConfiguration {}
 
+/**
+ * Data Model of the Authorizations step
+ */
 export interface CartAuthorizations {
+    /**
+     * Final authorizations format
+     */
     authorizations: AuthorizedTicketMintingFormat[];
+
+    /**
+     * Type of cart commitment
+     */
     commitType: 'stripe';
+
+    /**
+     * Total price to pay
+     */
     total: Price[];
 }
 
+/**
+ * Class containing all input handlers of the Cart action set
+ */
 @Injectable()
 export class CartInputHandlers implements OnModuleInit {
+    /**
+     * Dependency Injection
+     *
+     * @param actionSetsService
+     * @param categoriesService
+     * @param currenciesService
+     * @param configService
+     */
     constructor(
         private readonly actionSetsService: ActionSetsService,
         private readonly categoriesService: CategoriesService,
@@ -33,6 +71,9 @@ export class CartInputHandlers implements OnModuleInit {
         private readonly configService: ConfigService,
     ) {}
 
+    /**
+     * Data Model validator for the Ticket Selection step
+     */
     ticketSelectionsValidator = Joi.object<CartTicketSelections>({
         tickets: Joi.array()
             .items(
@@ -47,8 +88,18 @@ export class CartInputHandlers implements OnModuleInit {
             .required(),
     });
 
+    /**
+     * Mandatory fields for the Ticket Selection step
+     */
     ticketSelectionsFields = ['tickets'];
 
+    /**
+     * Internal helper to check input prices validity. Basically we check if the prices the user asks for match
+     * the prices set by the organizer.
+     *
+     * @param inputPrice
+     * @param categoryPrices
+     */
     private async priceChecks(inputPrice: InputPrice, categoryPrices: Price[]): Promise<[Price[], string, Price[]]> {
         const resolvedPrice = await this.currenciesService.resolveInputPrices([inputPrice]);
 
@@ -68,6 +119,13 @@ export class CartInputHandlers implements OnModuleInit {
         return [validCurrencies, null, resolvedPrice.response];
     }
 
+    /**
+     * Input Handler of the Ticket Selection Step
+     *
+     * @param textMetadataFields
+     * @param actionset
+     * @param progress
+     */
     async ticketSelectionsHandler(
         textMetadataFields: string[],
         actionset: ActionSet,
@@ -189,10 +247,23 @@ export class CartInputHandlers implements OnModuleInit {
         return [actionset, true];
     }
 
+    /**
+     * Data Model validator for the Modules Configuration step
+     */
     modulesConfigurationValidator = Joi.object<CartTicketSelections>({});
 
+    /**
+     * Mandatory fields for the modules configuration step
+     */
     modulesConfigurationFields = [];
 
+    /**
+     * Input Handler of the Modules Configuration Step
+     *
+     * @param modulesConfigurationFields
+     * @param actionset
+     * @param progress
+     */
     async modulesConfigurationHandler(
         modulesConfigurationFields: string[],
         actionset: ActionSet,
@@ -237,6 +308,9 @@ export class CartInputHandlers implements OnModuleInit {
         return [actionset, true];
     }
 
+    /**
+     * Data Model validator of the authorizations step
+     */
     authorizationsValidator = Joi.object<CartAuthorizations>({
         authorizations: Joi.array()
             .items(
@@ -266,8 +340,18 @@ export class CartInputHandlers implements OnModuleInit {
         ),
     });
 
+    /**
+     * Mandatory fields of the authorization steps
+     */
     authorizationsFields = ['authorizations', 'commitType', 'total'];
 
+    /**
+     * Input Handler of the Authorizations Step
+     *
+     * @param authorizationsFields
+     * @param actionset
+     * @param progress
+     */
     async authorizationsHandler(
         authorizationsFields: string[],
         actionset: ActionSet,
@@ -323,6 +407,9 @@ export class CartInputHandlers implements OnModuleInit {
         return [actionset, true];
     }
 
+    /**
+     * Lifecycle callback to register all input handlers
+     */
     /* istanbul ignore next */
     onModuleInit(): void {
         this.actionSetsService.setInputHandler(

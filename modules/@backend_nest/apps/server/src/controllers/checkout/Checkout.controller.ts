@@ -53,6 +53,12 @@ export class CheckoutController extends ControllerBasics<StripeResourceEntity> {
         super();
     }
 
+    /**
+     * Route to commit a cart to a stripe payment
+     *
+     * @param body
+     * @param user
+     */
     @Post('/cart/commit/stripe')
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @UseFilters(new HttpExceptionFilter())

@@ -62,6 +62,11 @@ export class AuthorizationsService extends CRUDExtension<AuthorizationsRepositor
         );
     }
 
+    /**
+     * Internal utility to get the event controller from an event
+     *
+     * @param eventId
+     */
     private async resolveEventControllerAddress(eventId: string): Promise<ServiceResponse<[string, string]>> {
         const eventEntityRes = await this.eventsService.search({
             id: eventId,
@@ -82,6 +87,11 @@ export class AuthorizationsService extends CRUDExtension<AuthorizationsRepositor
         };
     }
 
+    /**
+     * Internal utility to get the event controller from a date
+     *
+     * @param dateId
+     */
     private async resolveDateControllerAddress(dateId: string): Promise<ServiceResponse<[string, string]>> {
         const dateEntityRes = await this.datesService.search({
             id: dateId,
@@ -99,7 +109,12 @@ export class AuthorizationsService extends CRUDExtension<AuthorizationsRepositor
         return this.resolveEventControllerAddress(dateEntity.parent_id);
     }
 
-    async getControllerAddress(category: CategoryEntity): Promise<ServiceResponse<[string, string]>> {
+    /**
+     * Internal utility to get the event controller from a category
+     *
+     * @param category
+     */
+    private async getControllerAddress(category: CategoryEntity): Promise<ServiceResponse<[string, string]>> {
         switch (category.parent_type) {
             case 'date': {
                 return this.resolveDateControllerAddress(category.parent_id);
@@ -110,6 +125,11 @@ export class AuthorizationsService extends CRUDExtension<AuthorizationsRepositor
         }
     }
 
+    /**
+     * Internal uility to generate a unique authorization code for a ticket minting
+     *
+     * @param owner
+     */
     private async getUniqueAuthorizationCode(owner: string): Promise<string> {
         const instance = await this.t721ControllerV0Service.get();
 
@@ -125,6 +145,15 @@ export class AuthorizationsService extends CRUDExtension<AuthorizationsRepositor
         return randomBytes;
     }
 
+    /**
+     * Utility to generate authorizations. Does 0 checks, should be made before calling
+     *
+     * @param authorizations
+     * @param prices
+     * @param expirationTime
+     * @param grantee
+     * @param signatureReadable
+     */
     async validateTicketAuthorizations(
         authorizations: TicketMintingFormat[],
         prices: Price[],
