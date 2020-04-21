@@ -14,6 +14,7 @@ export default {
 
 export const ImageOnly = () => (
   <SingleImage
+    id={1}
     src={text('URL', 'assets/images/ticket-1.jpg')}
     imgOnly
   />
@@ -22,6 +23,7 @@ export const ImageOnly = () => (
 export const WithDetails = () => (
   <SingleImage
     src={text('URL', 'assets/images/ticket-1.jpg')}
+    id={1}
     price={number('Price', 55)}
     mainColor={text('Color', '#E4863C')}
     text={text('short description', 'January 8th 2021')}

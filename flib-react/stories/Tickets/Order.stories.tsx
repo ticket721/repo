@@ -115,7 +115,7 @@ export const showcase = () => (
           <TopNav label="Tall heights tour 2020" />
           <Header>
             <h1>Review your order</h1>
-            <SingleImage src='assets/images/ticket-1.jpg' />
+            <SingleImage src='assets/images/ticket-1.jpg' id={1} />
           </Header>
         <Container>
           <Gradient values={gradientsValues} blurOnly/>

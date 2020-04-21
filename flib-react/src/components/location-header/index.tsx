@@ -8,19 +8,29 @@ export interface LocationHeaderProps extends React.ComponentProps<any> {
   mainColor?: string;
 }
 
-const Container = styled.div`
-  background-color: #120F1A;
-  content: "";
-  display: block;
-  height: 2px;
+const Container = styled.section`
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  padding: ${props => props.theme.biggerSpacing} ${props => props.theme.biggerSpacing} 0;
   width: 100%;
+
+  h4 {
+    color: ${props => props.theme.textColorDark};
+    font-size: 13px;
+    margin-bottom: 4px;
+
+  }
+
 `
 
 export const LocationHeader: React.FunctionComponent<LocationHeaderProps> = (props: LocationHeaderProps): JSX.Element => {
   return <Container>
-          <label>{props.title}</label>
-
-          <h3 className="row"><Icon fill={props.mainColor} icon="location" height="20" width="20" />{props.location}</h3>
+          <div>
+            <h4>{props.title}</h4>
+            <h3 className="row"><Icon fill={props.mainColor} icon="location" height="20" width="20" />{props.location}</h3>
+          </div>
+          <button type="button"><Icon icon="filter" height="12" width="16" fill="rgba(255, 255, 255, 0.9)" /></button>
         </Container>
 };
 

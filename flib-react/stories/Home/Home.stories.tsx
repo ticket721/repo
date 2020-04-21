@@ -1,7 +1,9 @@
 import * as React from 'react';
-import { withKnobs } from '@storybook/addon-knobs';
+import { withKnobs, text } from '@storybook/addon-knobs';
 import slugify from 'slugify';
 import styled from '../../src/config/styled';
+
+import LocationHeader from '../../src/components/location-header';
 import FeaturedCarousel from '../../src/components/events/featured-carousel';
 import CategoriesCarousel from '../../src/components/events/categories-carousel';
 import SingleImage from '../../src/components/events/single-image';
@@ -18,18 +20,21 @@ export default {
 
 const featuredSlides = [
   {
+    id: '1',
     title: 'Matt Houlonski Houlonski',
     text: 'Mon, Feb 16 8:30PM',
     src: 'assets/images/slide-1.jpg',
     price: 33
   },
   {
+    id: '2',
     title: 'Matt Houlonski',
     text: 'Mon, Feb 16 8:30PM',
     src: 'assets/images/slide-2.jpg',
     price: 33
   },
   {
+    id: '3',
     title: 'Matt Houlonski',
     text: 'Mon, Feb 16 8:30PM',
     src: 'assets/images/slide-1.jpg',
@@ -96,6 +101,7 @@ const Container = styled.div`
 
 export const showcase = () => (
   <div>
+    <LocationHeader location={text('Current location', 'San Jose, CA')} title={text('Title', 'Browsing events in')} />
     <FeaturedCarousel
       slides={featuredSlides}
     />

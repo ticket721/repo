@@ -3,6 +3,7 @@ import styled from '../../../config/styled';
 
 export interface SingleImageProps extends React.ComponentProps<any> {
   price?: number;
+  id: string | number;
   src: string;
   text?: string;
   title?:string;

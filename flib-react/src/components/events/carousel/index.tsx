@@ -1,6 +1,5 @@
 import * as React from 'react';
-import AliceCarousel from 'react-alice-carousel';
-import 'react-alice-carousel/lib/alice-carousel.css';
+import Flicking from "@egjs/react-flicking";
 import styled from '../../../config/styled';
 
 export interface EventCarouselProps extends React.ComponentProps<any> {
@@ -16,15 +15,14 @@ interface Slide {
 }
 
 const SlideContainer = styled.article`
-  margin-top: ${props => props.theme.regularSpacing};
-  padding: 0 4px;
+  width: 150px;
 `
 const ImgContainer = styled.div`
   border-radius: ${props => props.theme.defaultRadius};
   height: 150px;
   margin: auto;
   overflow: hidden;
-  width: 150px;
+  width: 100%;
 
   img {
     height: 100%;
@@ -70,37 +68,25 @@ const CarouselContainer = styled.section`
   position: relative;
   z-index: 1;
 
-  .alice-carousel {
-    left: -8px;
-    position: relative;
+  h2 {
+    margin-bottom: ${props => props.theme.regularSpacing};
   }
 `
 
 export const EventCarousel: React.FunctionComponent<EventCarouselProps> = (props: EventCarouselProps): JSX.Element => {
-  const responsive = {
-    0: {
-      items: 2
-    }
-  }
-
-  const stagePadding = {
-    paddingLeft: 0,
-    paddingRight: 24
-  }
 
   return  <CarouselContainer>
             <h2>{props.title}</h2>
-            <AliceCarousel
-              buttonsDisabled={true}
-              dotsDisabled={true}
-              infinite={false}
-              mouseTrackingEnabled={true}
-              responsive={responsive}
-              stagePadding={stagePadding}
-              items={props.slides.map((slide: Slide) => {
+            <Flicking
+              anchor={0}
+              collectStatistics={false}
+              hanger={0}
+              gap={16}
+            >
+            {props.slides.map((slide: Slide) => {
                 return <SlideItem slide={slide} />
               })}
-            />
+            </Flicking>
           </CarouselContainer>
 
 };

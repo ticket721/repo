@@ -1,6 +1,5 @@
 import * as React from 'react';
-import AliceCarousel from 'react-alice-carousel';
-import 'react-alice-carousel/lib/alice-carousel.css';
+import Flicking from "@egjs/react-flicking";
 import styled from '../../../config/styled';
 import slugify from 'slugify';
 
@@ -15,9 +14,6 @@ interface CategoryProps {
   url: string;
 }
 
-const SlideContainer = styled.article`
-  margin-top: ${props => props.theme.regularSpacing};
-`
 const ImgContainer = styled.div`
   align-items: center;
   background-color: ${props => props.theme.componentColorLight};
@@ -56,14 +52,14 @@ const Infos = styled.div`
 `
 
 const SlideItem = (props: any) => {
-  return <SlideContainer key={slugify(props.slide.name)}>
+  return <article key={slugify(props.slide.name)}>
             <ImgContainer>
               <img src={props.slide.icon} draggable="false"/>
             </ImgContainer>
             <Infos>
               <h4 className="uppercase">{props.slide.name}</h4>
             </Infos>
-          </SlideContainer>
+          </article>
 }
 
 const CarouselContainer = styled.section`
@@ -71,36 +67,24 @@ const CarouselContainer = styled.section`
   position: relative;
   z-index: 1;
 
-  .alice-carousel {
-    left: -8px;
-    position: relative;
+  h2 {
+    margin-bottom: ${props => props.theme.regularSpacing};
   }
 `
 
 export const CategoriesCarousel: React.FunctionComponent<CategoriesCarouselProps> = (props: CategoriesCarouselProps): JSX.Element => {
-  const responsive = {
-    0: {
-      items: 3
-    }
-  }
-  const stagePadding = {
-    paddingLeft: 0,
-    paddingRight: 48
-  }
-
   return  <CarouselContainer>
             <h2>{props.title}</h2>
-            <AliceCarousel
-              buttonsDisabled={true}
-              dotsDisabled={true}
-              infinite={false}
-              mouseTrackingEnabled={true}
-              responsive={responsive}
-              stagePadding={stagePadding}
-              items={props.slides.map((slide: CategoryProps) => {
+            <Flicking
+              anchor={0}
+              collectStatistics={false}
+              hanger={0}
+              gap={16}
+            >
+            {props.slides.map((slide: CategoryProps) => {
                 return <SlideItem slide={slide} />
               })}
-            />
+            </Flicking>
           </CarouselContainer>
 
 };
