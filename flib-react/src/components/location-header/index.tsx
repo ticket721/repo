@@ -19,18 +19,20 @@ const Container = styled.section`
     color: ${props => props.theme.textColorDark};
     font-size: 13px;
     margin-bottom: 4px;
-
   }
+`
 
+const LocationIcon = styled(Icon)`
+  margin-right: ${props => props.theme.smallSpacing};
 `
 
 export const LocationHeader: React.FunctionComponent<LocationHeaderProps> = (props: LocationHeaderProps): JSX.Element => {
   return <Container>
           <div>
             <h4>{props.title}</h4>
-            <h3 className="row"><Icon fill={props.mainColor} icon="location" height="20" width="20" />{props.location}</h3>
+            <h3 className="row"><LocationIcon fill={props.mainColor} icon="location" height="16" width="16" />{props.location}</h3>
           </div>
-          <button type="button"><Icon icon="filter" height="12" width="16" fill="rgba(255, 255, 255, 0.9)" /></button>
+          <button type="button"><Icon icon="filter" height="16" width="16" fill="rgba(255, 255, 255, 0.9)" /></button>
         </Container>
 };
 

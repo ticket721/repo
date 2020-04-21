@@ -49,7 +49,7 @@ export const showcase = () => (
       Search: 'search'
     }, 't721')}
     width="50"
-    height="50"
+    height="20"
     fill={color('Icon color', '#fff')}
   />
 );

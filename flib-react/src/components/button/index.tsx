@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { rgba } from 'polished';
-import breakpoint from 'styled-components-breakpoint';
 import styled from '../../config/styled';
 
 export interface ButtonProps extends React.ComponentProps<any> {
@@ -62,10 +61,6 @@ const StyledButton = styled.button<ButtonProps>`
   padding: ${props => props.theme.regularSpacing};
   position: relative;
   width: 100%;
-
-  ${breakpoint('desktop')
-    `font-size: 15px;`
-  }
 
   &::before {
     content: '';

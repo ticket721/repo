@@ -67,6 +67,10 @@ const Subnav = styled.nav`
   }
 `
 
+const IconDots = styled(Icon)`
+  height: 4px;
+`
+
 export const TopNav: React.FunctionComponent<TopNavProps> = (props: TopNavProps): JSX.Element => {
 
   return <Container className={props.scrolled ? 'scrolled' : ''}>
@@ -74,7 +78,7 @@ export const TopNav: React.FunctionComponent<TopNavProps> = (props: TopNavProps)
           <span>{props.label}</span>
           {props.subNav?.length &&
             <SubnavContainer onClick={props.handleClick}>
-              <Icon icon="dots" fill="rgba(255, 255, 255, 0.9)" height="4" width="18" />
+              <IconDots icon="dots" fill="rgba(255, 255, 255, 0.9)" height="4" width="18" />
               {props.showSubNav &&
                 <Subnav>
                   {props.subNav.map(el => {
