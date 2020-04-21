@@ -44,11 +44,21 @@ export class ActionSetsTasks implements OnModuleInit {
             throw error;
         }
 
-        this.loggerService.log(`Calling ${actionSet.action.name} on ActionSet@${actionSet.id}`);
-        const [updatedActionSet, update] = await this.actionSetsService.getInputHandler(actionSet.action.name)(
-            actionSet,
-            job.progress.bind(job),
-        );
+        let [updatedActionSet, update] = [null, null];
+
+        for (let idx = actionSet.current_action; idx < actionSet.actions.length; idx++) {
+            const callIdx = actionSet.current_action;
+
+            this.loggerService.log(`Calling ${actionSet.action.name} on ActionSet@${actionSet.id}`);
+            [updatedActionSet, update] = await this.actionSetsService.getInputHandler(actionSet.action.name)(
+                actionSet,
+                job.progress.bind(job),
+            );
+
+            if (!(updatedActionSet.current_action > callIdx && updatedActionSet.action.data !== null)) {
+                break;
+            }
+        }
 
         if (update) {
             const query = updatedActionSet.getQuery();

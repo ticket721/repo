@@ -1,0 +1,304 @@
+import { Injectable, OnModuleInit } from '@nestjs/common';
+import { InjectQueue } from '@nestjs/bull';
+import { Job, Queue } from 'bull';
+import { InstanceSignature, OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
+import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
+import { AuthorizationsService } from '@lib/common/authorizations/Authorizations.service';
+import { CategoriesService } from '@lib/common/categories/Categories.service';
+import { Price } from '@lib/common/currencies/Currencies.service';
+import { AuthorizedTicketMintingFormat, TicketMintingFormat } from '@lib/common/utils/Cart.type';
+import { detectAuthorizationStackDifferences } from '@lib/common/utils/detectTicketAuthorizationStackDifferences.helper';
+import { UserDto } from '@lib/common/users/dto/User.dto';
+import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
+import { MintAuthorization, toB32 } from '@common/global';
+import { ActionSetsService } from '@lib/common/actionsets/ActionSets.service';
+
+export interface GenerateMintingAuthorizationsTaskInput {
+    actionSetId: string;
+    authorizations: TicketMintingFormat[];
+    oldAuthorizations?: AuthorizedTicketMintingFormat[];
+    prices: Price[];
+    commitType: 'stripe';
+    expirationTime: number;
+    signatureReadable: boolean;
+    grantee: UserDto;
+}
+
+@Injectable()
+export class AuthorizationsTasks implements OnModuleInit {
+    constructor(
+        private readonly actionSetsService: ActionSetsService,
+        @InjectQueue('authorization') private readonly authorizationQueue: Queue,
+        private readonly outrospectionService: OutrospectionService,
+        private readonly shutdownService: ShutdownService,
+        private readonly categoriesService: CategoriesService,
+        private readonly authorizationsService: AuthorizationsService,
+    ) {}
+
+    async gatherCategories(
+        authorizations: TicketMintingFormat[],
+        oldAuthorizations: AuthorizedTicketMintingFormat[],
+    ): Promise<{ [key: string]: CategoryEntity }> {
+        const ret: { [key: string]: CategoryEntity } = {};
+
+        for (const authorization of authorizations) {
+            if (ret[authorization.categoryId]) {
+                continue;
+            }
+
+            const categoryReq = await this.categoriesService.search({
+                id: authorization.categoryId,
+            });
+
+            if (categoryReq.error || categoryReq.response.length === 0) {
+                throw new Error(`Cannot find category ${authorization.categoryId}`);
+            }
+
+            ret[categoryReq.response[0].id] = categoryReq.response[0];
+        }
+
+        if (oldAuthorizations) {
+            for (const authorization of oldAuthorizations) {
+                if (ret[authorization.categoryId]) {
+                    continue;
+                }
+
+                const categoryReq = await this.categoriesService.search({
+                    id: authorization.categoryId,
+                });
+
+                if (categoryReq.error || categoryReq.response.length === 0) {
+                    throw new Error(`Cannot find category ${authorization.categoryId}`);
+                }
+
+                ret[categoryReq.response[0].id] = categoryReq.response[0];
+            }
+        }
+
+        return ret;
+    }
+
+    async generateFreeSeatsCounts(
+        oldAuthorizations: AuthorizedTicketMintingFormat[],
+    ): Promise<{ [key: string]: number }> {
+        const ret: { [key: string]: number } = {};
+
+        for (const authorization of oldAuthorizations) {
+            const authorizationEntityRes = await this.authorizationsService.search({
+                id: authorization.authorizationId,
+                mode: 'mint',
+                granter: authorization.granter,
+                grantee: authorization.grantee,
+            });
+
+            if (authorizationEntityRes.error || authorizationEntityRes.response.length === 0) {
+                throw new Error(`Cannot find authorization ${authorization.authorizationId}`);
+            }
+
+            const authorizationEntity = authorizationEntityRes.response[0];
+
+            if (
+                !authorizationEntity.cancelled &&
+                !authorizationEntity.consumed &&
+                !authorizationEntity.dispatched &&
+                !authorizationEntity.readable_signature &&
+                Date.now() < authorizationEntity.be_expiration.getTime()
+            ) {
+                const cancellationRes = await this.authorizationsService.update(
+                    {
+                        id: authorizationEntity.id,
+                        granter: authorizationEntity.granter,
+                        grantee: authorizationEntity.grantee,
+                        mode: 'mint',
+                    },
+                    {
+                        signature: null,
+                        cancelled: true,
+                    },
+                );
+
+                if (cancellationRes.error) {
+                    throw new Error(`Cannot cancel authorization ${authorization.authorizationId}`);
+                }
+
+                if (ret[authorizationEntity.id] !== undefined) {
+                    ret[authorizationEntity.id] += 1;
+                } else {
+                    ret[authorizationEntity.id] = 1;
+                }
+            }
+
+            if (
+                !authorizationEntity.cancelled &&
+                !authorizationEntity.consumed &&
+                !authorizationEntity.dispatched &&
+                authorizationEntity.readable_signature &&
+                Date.now() < authorizationEntity.be_expiration.getTime()
+            ) {
+                throw new Error(
+                    `Cannot cancel authorization ${authorizationEntity.id} with public signature: wait for natural expiration`,
+                );
+            }
+        }
+
+        return ret;
+    }
+
+    async seatsCountChecker(
+        authorizations: TicketMintingFormat[],
+        freeSeatsCounts: { [key: string]: number },
+        categories: { [key: string]: CategoryEntity },
+    ): Promise<boolean> {
+        const reservedSeatsCounts: { [key: string]: number } = {};
+
+        for (const authorization of authorizations) {
+            const countRes = await this.authorizationsService.countElastic({
+                body: {
+                    query: {
+                        bool: {
+                            filter: {
+                                range: {
+                                    be_expiration: {
+                                        gt: 'now',
+                                    },
+                                },
+                            },
+                            must: [
+                                {
+                                    term: {
+                                        selectors: MintAuthorization.toSelectorFormat(
+                                            categories[authorization.categoryId].group_id,
+                                            toB32(categories[authorization.categoryId].category_name),
+                                        ),
+                                    },
+                                },
+                                {
+                                    term: {
+                                        cancelled: false,
+                                    },
+                                },
+                                {
+                                    term: {
+                                        consumed: false,
+                                    },
+                                },
+                                {
+                                    term: {
+                                        dispatched: false,
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                },
+            });
+
+            if (countRes.error) {
+                throw new Error(`Cannot count authorizations`);
+            }
+
+            let remainingSeats =
+                categories[authorization.categoryId].seats -
+                (countRes.response.count + categories[authorization.categoryId].reserved);
+
+            if (freeSeatsCounts[authorization.categoryId] !== undefined) {
+                remainingSeats += freeSeatsCounts[authorization.categoryId];
+            }
+
+            if (reservedSeatsCounts[authorization.categoryId] !== undefined) {
+                remainingSeats -= reservedSeatsCounts[authorization.categoryId];
+            }
+
+            if (remainingSeats < 1) {
+                return false;
+            }
+
+            if (reservedSeatsCounts[authorization.categoryId] !== undefined) {
+                reservedSeatsCounts[authorization.categoryId] += 1;
+            } else {
+                reservedSeatsCounts[authorization.categoryId] = 1;
+            }
+        }
+
+        return true;
+    }
+
+    async generateMintingAuthorizationsTask(job: Job<GenerateMintingAuthorizationsTaskInput>): Promise<void> {
+        const authorizationData: GenerateMintingAuthorizationsTaskInput = job.data;
+
+        const categories: { [key: string]: CategoryEntity } = await this.gatherCategories(
+            authorizationData.authorizations,
+            authorizationData.oldAuthorizations,
+        );
+
+        let freeSeatsCounts: { [key: string]: number } = {};
+
+        if (authorizationData.oldAuthorizations) {
+            if (
+                !detectAuthorizationStackDifferences(
+                    authorizationData.authorizations,
+                    authorizationData.oldAuthorizations,
+                )
+            ) {
+                return;
+            }
+
+            freeSeatsCounts = await this.generateFreeSeatsCounts(authorizationData.oldAuthorizations);
+        }
+
+        if (!(await this.seatsCountChecker(job.data.authorizations, freeSeatsCounts, categories))) {
+            const errorUpdateStepRes = await this.actionSetsService.errorStep(
+                authorizationData.actionSetId,
+                'no_seats_left',
+                {},
+                2,
+            );
+
+            if (errorUpdateStepRes.error) {
+                throw new Error(`Error while detecting error on actionset ${authorizationData.actionSetId}`);
+            }
+
+            return;
+        }
+
+        const authorizationsCreationRes = await this.authorizationsService.validateTicketAuthorizations(
+            job.data.authorizations,
+            job.data.prices,
+            authorizationData.expirationTime,
+            authorizationData.grantee.address,
+            authorizationData.signatureReadable,
+        );
+
+        if (authorizationsCreationRes.error) {
+            throw new Error(`Error while creating authorizations`);
+        }
+
+        const actionSetUpdate = await this.actionSetsService.updateAction(authorizationData.actionSetId, 2, {
+            commitType: 'stripe',
+            total: authorizationData.prices,
+            authorizations: authorizationsCreationRes.response,
+        });
+
+        if (actionSetUpdate.error) {
+            throw new Error(`Error while updating actionSet`);
+        }
+
+        await job.progress(100);
+    }
+
+    /**
+     * Subscribes worker instances only
+     */
+
+    /* istanbul ignore next */
+    async onModuleInit(): Promise<void> {
+        const signature: InstanceSignature = await this.outrospectionService.getInstanceSignature();
+
+        if (signature.name === 'worker' && signature.master) {
+            this.authorizationQueue
+                .process('generateMintingAuthorizations', 1, this.generateMintingAuthorizationsTask.bind(this))
+                .then(() => console.log(`Closing Bull Queue @@authorizations`))
+                .catch(this.shutdownService.shutdownWithError);
+        }
+    }
+}

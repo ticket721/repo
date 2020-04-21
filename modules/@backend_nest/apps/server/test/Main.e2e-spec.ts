@@ -124,6 +124,6 @@ describe('AppController (e2e)', () => {
     describe('Txs Controller', TxsControllerTestSuite(getCtx));
     describe('Metadatas Controller', MetadatasControllerTestSuite(getCtx));
 
-    // describe('Checkout Controller', CheckoutControllerTestSuite);
+    describe('Checkout Controller', CheckoutControllerTestSuite(getCtx));
     // describe('Dosojin Controller', DosojinControllerTestSuite);
 });

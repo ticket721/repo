@@ -9,15 +9,13 @@ import { ControllerBasics } from '@lib/common/utils/ControllerBasics.base';
 import { SortablePagedSearch } from '@lib/common/utils/SortablePagedSearch.type';
 import { ActionsSearchInputDto } from '@app/server/controllers/actionsets/dto/ActionsSearchInput.dto';
 import { ActionsSearchResponseDto } from '@app/server/controllers/actionsets/dto/ActionsSearchResponse.dto';
-import { ActionSetEntity, ActionSetStatus } from '@lib/common/actionsets/entities/ActionSet.entity';
+import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
 import { ActionsUpdateInputDto } from '@app/server/controllers/actionsets/dto/ActionsUpdateInput.dto';
 import { ActionsUpdateResponseDto } from '@app/server/controllers/actionsets/dto/ActionsUpdateResponse.dto';
 import { CRUDResponse } from '@lib/common/crud/CRUDExtension.base';
 import { ActionSet } from '@lib/common/actionsets/helper/ActionSet.class';
 import { StatusCodes } from '@lib/common/utils/codes.value';
 import { defined } from '@lib/common/utils/defined.helper';
-import { Queue } from 'bull';
-import { InjectQueue } from '@nestjs/bull';
 import { HttpExceptionFilter } from '@app/server/utils/HttpException.filter';
 import { EventCreateAcsetBuilderArgs } from '@lib/common/actionsets/acset_builders/EventCreate.acsetbuilder.helper';
 import { ActionsCreateInputDto } from '@app/server/controllers/actionsets/dto/ActionsCreateInput.dto';
@@ -35,14 +33,9 @@ export class ActionSetsController extends ControllerBasics<ActionSetEntity> {
     /**
      * Dependency Injection
      * @param actionSetsService
-     * @param actionQueue
      * @param rightsService
      */
-    constructor(
-        private readonly actionSetsService: ActionSetsService,
-        @InjectQueue('action') private readonly actionQueue: Queue,
-        private readonly rightsService: RightsService,
-    ) {
+    constructor(private readonly actionSetsService: ActionSetsService, private readonly rightsService: RightsService) {
         super();
     }
 
@@ -112,28 +105,34 @@ export class ActionSetsController extends ControllerBasics<ActionSetEntity> {
             );
         }
 
-        actionSet.actions[body.action_idx].setData(body.data);
+        if (actionSet.actions[body.action_idx].private) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.Unauthorized,
+                    message: 'cannot_update_private_action',
+                },
+                StatusCodes.Unauthorized,
+            );
+        }
 
-        actionSet.setStatus(`${actionSet.actions[body.action_idx].type}:waiting` as ActionSetStatus);
-        actionSet.actions[body.action_idx].setStatus('waiting');
+        const actionSetUpdateDispatchRes = await this.actionSetsService.updateAction(
+            actionSet,
+            body.action_idx,
+            body.data,
+        );
 
-        actionSet.setCurrentAction(body.action_idx);
-
-        const updateQuery = actionSet.getQuery();
-        const updateBody = actionSet.withoutQuery();
-
-        await this._edit<ActionSetEntity>(this.actionSetsService, updateQuery, {
-            ...updateBody,
-            dispatched_at: new Date(Date.now()),
-        });
-        await this.actionQueue.add('input', actionSet.raw);
+        if (actionSetUpdateDispatchRes.error) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.InternalServerError,
+                    message: 'cannot_update_action_set',
+                },
+                StatusCodes.InternalServerError,
+            );
+        }
 
         return {
-            actionset: {
-                ...actionSetEntity,
-                ...updateBody,
-                dispatched_at: new Date(Date.now()),
-            },
+            actionset: actionSetUpdateDispatchRes.response,
         };
     }
 
