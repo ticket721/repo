@@ -9,6 +9,7 @@ describe('Action Helper', function() {
             error: null,
             type: 'input',
             data: '{"name": "lol"}',
+            private: false,
         };
 
         const action: Action = new Action();
@@ -18,6 +19,7 @@ describe('Action Helper', function() {
             data: null,
             error: null,
             status: null,
+            private: false,
         });
         action.load(actionEntity);
 
@@ -31,6 +33,7 @@ describe('Action Helper', function() {
             error: null,
             type: 'input',
             data: '{"name": "lol"}',
+            private: false,
         };
 
         const action: Action = new Action();
@@ -48,6 +51,7 @@ describe('Action Helper', function() {
             error: null,
             type: 'input',
             data: '{"name": "lol"}',
+            private: false,
         };
 
         const action: Action = new Action();
@@ -65,6 +69,7 @@ describe('Action Helper', function() {
             error: null,
             type: 'input',
             data: '{"name": "lol"}',
+            private: false,
         };
 
         const action: Action = new Action();
@@ -82,6 +87,7 @@ describe('Action Helper', function() {
             error: null,
             type: 'input',
             data: '{"name": "lol"}',
+            private: false,
         };
 
         const action: Action = new Action();
@@ -99,6 +105,7 @@ describe('Action Helper', function() {
             error: null,
             type: 'input',
             data: '{"name": "lol"}',
+            private: false,
         };
 
         const action: Action = new Action();
@@ -107,5 +114,23 @@ describe('Action Helper', function() {
         expect(action.type).toEqual('input');
         action.setType('event');
         expect(action.type).toEqual('event');
+    });
+
+    it('should get & set private field', function() {
+        const actionEntity: ActionEntity = {
+            name: 'my action',
+            status: 'in progress',
+            error: null,
+            type: 'input',
+            data: '{"name": "lol"}',
+            private: false,
+        };
+
+        const action: Action = new Action();
+        action.load(actionEntity);
+
+        expect(action.private).toEqual(false);
+        action.setPrivacy(true);
+        expect(action.private).toEqual(true);
     });
 });

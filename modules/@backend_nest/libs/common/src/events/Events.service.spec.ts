@@ -83,14 +83,21 @@ describe('Events Service', function() {
                 } as CategoryEntity,
             ];
 
+            const resultingCategoryEntities = categoryEntities.map(
+                (cat: CategoryEntity): CategoryEntity => ({
+                    ...cat,
+                    reserved: 0,
+                }),
+            );
+
             const eventEntity: EventEntity = {
                 group_id: groupId,
                 id: 'event',
             } as EventEntity;
 
-            when(context.categoriesServiceMock.create(deepEqual(categoryEntities[0]))).thenResolve({
+            when(context.categoriesServiceMock.create(deepEqual(resultingCategoryEntities[0]))).thenResolve({
                 error: null,
-                response: categoryEntities[0],
+                response: resultingCategoryEntities[0],
             });
 
             const spiedService = spy(context.eventsService);
@@ -107,9 +114,9 @@ describe('Events Service', function() {
             );
 
             expect(res.error).toEqual(null);
-            expect(res.response).toEqual([eventEntity, categoryEntities]);
+            expect(res.response).toEqual([eventEntity, resultingCategoryEntities]);
 
-            verify(context.categoriesServiceMock.create(deepEqual(categoryEntities[0]))).called();
+            verify(context.categoriesServiceMock.create(deepEqual(resultingCategoryEntities[0]))).called();
             verify(spiedService.create(deepEqual(eventEntity))).called();
         });
 
@@ -170,12 +177,19 @@ describe('Events Service', function() {
                 } as CategoryEntity,
             ];
 
+            const resultingCategoryEntities = categoryEntities.map(
+                (cat: CategoryEntity): CategoryEntity => ({
+                    ...cat,
+                    reserved: 0,
+                }),
+            );
+
             const eventEntity: EventEntity = {
                 group_id: groupId,
                 id: 'event',
             } as EventEntity;
 
-            when(context.categoriesServiceMock.create(deepEqual(categoryEntities[0]))).thenResolve({
+            when(context.categoriesServiceMock.create(deepEqual(resultingCategoryEntities[0]))).thenResolve({
                 error: 'unexpected_error',
                 response: null,
             });
@@ -189,7 +203,7 @@ describe('Events Service', function() {
             expect(res.error).toEqual('unexpected_error');
             expect(res.response).toEqual(null);
 
-            verify(context.categoriesServiceMock.create(deepEqual(categoryEntities[0]))).called();
+            verify(context.categoriesServiceMock.create(deepEqual(resultingCategoryEntities[0]))).called();
         });
 
         it('should fail on date group id mismatch', async function() {
@@ -213,14 +227,21 @@ describe('Events Service', function() {
                 } as CategoryEntity,
             ];
 
+            const resultingCategoryEntities = categoryEntities.map(
+                (cat: CategoryEntity): CategoryEntity => ({
+                    ...cat,
+                    reserved: 0,
+                }),
+            );
+
             const eventEntity: EventEntity = {
                 group_id: groupId,
                 id: 'event',
             } as EventEntity;
 
-            when(context.categoriesServiceMock.create(deepEqual(categoryEntities[0]))).thenResolve({
+            when(context.categoriesServiceMock.create(deepEqual(resultingCategoryEntities[0]))).thenResolve({
                 error: null,
-                response: categoryEntities[0],
+                response: resultingCategoryEntities[0],
             });
 
             const res = await context.eventsService.createEventWithDatesAndCategories(
@@ -232,7 +253,7 @@ describe('Events Service', function() {
             expect(res.error).toEqual('invalid_date_group_id');
             expect(res.response).toEqual(null);
 
-            verify(context.categoriesServiceMock.create(deepEqual(categoryEntities[0]))).called();
+            verify(context.categoriesServiceMock.create(deepEqual(resultingCategoryEntities[0]))).called();
         });
 
         it('should fail on event creation error', async function() {
@@ -256,14 +277,21 @@ describe('Events Service', function() {
                 } as CategoryEntity,
             ];
 
+            const resultingCategoryEntities = categoryEntities.map(
+                (cat: CategoryEntity): CategoryEntity => ({
+                    ...cat,
+                    reserved: 0,
+                }),
+            );
+
             const eventEntity: EventEntity = {
                 group_id: groupId,
                 id: 'event',
             } as EventEntity;
 
-            when(context.categoriesServiceMock.create(deepEqual(categoryEntities[0]))).thenResolve({
+            when(context.categoriesServiceMock.create(deepEqual(resultingCategoryEntities[0]))).thenResolve({
                 error: null,
-                response: categoryEntities[0],
+                response: resultingCategoryEntities[0],
             });
 
             const spiedService = spy(context.eventsService);
@@ -282,7 +310,7 @@ describe('Events Service', function() {
             expect(res.error).toEqual('unexpected_error');
             expect(res.response).toEqual(null);
 
-            verify(context.categoriesServiceMock.create(deepEqual(categoryEntities[0]))).called();
+            verify(context.categoriesServiceMock.create(deepEqual(resultingCategoryEntities[0]))).called();
             verify(spiedService.create(deepEqual(eventEntity))).called();
         });
     });

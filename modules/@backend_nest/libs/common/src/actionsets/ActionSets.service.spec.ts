@@ -12,6 +12,8 @@ import { ActionSetBuilderBase } from '@lib/common/actionsets/helper/ActionSet.bu
 import { UserDto } from '@lib/common/users/dto/User.dto';
 import { ActionSet } from '@lib/common/actionsets/helper/ActionSet.class';
 import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
+import { Job, JobOptions } from 'bull';
+import { getQueueToken } from '@nestjs/bull';
 
 class EntityModelMock {
     search(options: EsSearchOptionsStatic, callback?: (err: any, ret: any) => void): void {
@@ -33,6 +35,12 @@ class AcSetBuilderBaseMock implements ActionSetBuilderBase {
     }
 }
 
+class QueueMock<T = any> {
+    add(name: string, data: T, opts?: JobOptions): Promise<Job<T>> {
+        return null;
+    }
+}
+
 describe('ActionSets Service', function() {
     const context: {
         actionSetsService: ActionSetsService;
@@ -41,6 +49,7 @@ describe('ActionSets Service', function() {
         configServiceMock: ConfigService;
         moduleRefMock: ModuleRefMock;
         rightsServiceMock: RightsService;
+        queueMock: QueueMock;
     } = {
         actionSetsService: null,
         actionSetsRepository: null,
@@ -48,6 +57,7 @@ describe('ActionSets Service', function() {
         configServiceMock: null,
         moduleRefMock: null,
         rightsServiceMock: null,
+        queueMock: null,
     };
 
     beforeEach(async function() {
@@ -65,6 +75,7 @@ describe('ActionSets Service', function() {
         });
         context.moduleRefMock = mock(ModuleRefMock);
         context.rightsServiceMock = mock(RightsService);
+        context.queueMock = mock(QueueMock);
 
         const ConfigServiceProvider = {
             provide: ConfigService,
@@ -91,6 +102,11 @@ describe('ActionSets Service', function() {
             useValue: instance(context.rightsServiceMock),
         };
 
+        const QueueProvider = {
+            provide: getQueueToken('action'),
+            useValue: instance(context.queueMock),
+        };
+
         const app: TestingModule = await Test.createTestingModule({
             providers: [
                 ActionSetEntityModelProvider,
@@ -98,6 +114,7 @@ describe('ActionSets Service', function() {
                 ConfigServiceProvider,
                 ModuleRefProvider,
                 RightsServiceProvider,
+                QueueProvider,
                 ActionSetsService,
             ],
         }).compile();
@@ -114,6 +131,18 @@ describe('ActionSets Service', function() {
 
         it('should recover undefined if no handler exists', async function() {
             expect(context.actionSetsService.getInputHandler('first')).toBeUndefined();
+        });
+    });
+
+    describe('getEventHandler', function() {
+        it('should recover the event handler', async function() {
+            expect(context.actionSetsService.getEventHandler('first')).toBeUndefined();
+            context.actionSetsService.setEventHandler('first', {} as any);
+            expect(context.actionSetsService.getEventHandler('first')).toBeDefined();
+        });
+
+        it('should recover undefined if no handler exists', async function() {
+            expect(context.actionSetsService.getEventHandler('first')).toBeUndefined();
         });
     });
 

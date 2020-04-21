@@ -1,5 +1,4 @@
 import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
-import { ECAAG } from '@lib/common/utils/ECAAG.helper';
 
 describe('Category Entity', function() {
     describe('constructor', function() {
@@ -22,6 +21,7 @@ describe('Category Entity', function() {
                 scope: 'abcd',
                 prices: [],
                 seats: 100,
+                reserved: 20,
                 parent_id: 'abcd',
                 parent_type: 'entity',
                 created_at: new Date(),
@@ -46,6 +46,7 @@ describe('Category Entity', function() {
                 scope: 'abcd',
                 prices: [],
                 seats: 100,
+                reserved: 20,
                 parent_id: null,
                 parent_type: 'entity',
                 created_at: new Date(),

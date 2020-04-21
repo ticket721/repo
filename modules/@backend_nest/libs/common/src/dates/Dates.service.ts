@@ -59,7 +59,10 @@ export class DatesService extends CRUDExtension<DatesRepository, DateEntity> imp
                 };
             }
 
-            const categoryCreationRes = await this.categoriesService.create(category);
+            const categoryCreationRes = await this.categoriesService.create({
+                ...category,
+                reserved: 0,
+            });
 
             if (categoryCreationRes.error) {
                 return {
