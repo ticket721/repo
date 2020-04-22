@@ -121,6 +121,8 @@ export class ActionSetsController extends ControllerBasics<ActionSetEntity> {
             body.data,
         );
 
+        // Cannot trigger this step from e2e
+        /* istanbul ignore next */
         if (actionSetUpdateDispatchRes.error) {
             throw new HttpException(
                 {
