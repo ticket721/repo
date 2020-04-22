@@ -19,7 +19,7 @@ export const showcase = () => (
   <EventCta
     gradients={array('Gradient colors', gradientValues)}
     onClick={action('clicked')}
-    priceRange={text('Price range', '33€ to 100€ each')}
+    subtitle={text('Price range', '33€ to 100€ each')}
     title={text('Title', 'Tickets from')}
     ctaLabel={text('Button label', 'Get tickets')}
     show={boolean('Show ?', true)}

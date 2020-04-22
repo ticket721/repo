@@ -40,8 +40,6 @@ const tags = [
     label: 'rock'
   }
 ]
-
-
 const toggleAll = () => {
   store.set({
     showAll: !store.get('showAll')
@@ -51,7 +49,6 @@ const toggleAll = () => {
 const store = new Store({
   showAll: false
 })
-
 
 export const NoToggle = () => (
   <TagsListCard

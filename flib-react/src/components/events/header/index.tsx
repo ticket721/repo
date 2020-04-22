@@ -32,6 +32,7 @@ const Header = styled.header<EventHeaderProps>`
 
 const Infos = styled.div`
   background-color: ${props => props.theme.darkBg};
+  background-color: ${props => props.theme.darkerBg};
   border-top-right-radius: ${props => props.theme.bigRadius};
   color: ${props => props.theme.textColor};
   margin-top: -20vh;

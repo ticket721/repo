@@ -40,7 +40,7 @@ const Container = styled.section`
 `;
 
 const TopInfo = styled.div`
-  background-image: linear-gradient(180deg, ${props => props.theme.componentGradientStart}, ${props => props.theme.componentGradientStart});
+  background-image: linear-gradient(180deg, ${props => props.theme.darkBg}, ${props => props.theme.darkerBg});
   padding: ${props => props.theme.doubleSpacing} ${props => props.theme.biggerSpacing} ${props => props.theme.biggerSpacing};
   position: relative;
   width: 100%;

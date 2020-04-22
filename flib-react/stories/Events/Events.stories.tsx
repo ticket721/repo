@@ -88,7 +88,6 @@ const Container = styled.div`
   border-bottom-left-radius: 8px;
   border-bottom-right-radius: 8px;
   overflow: hidden;
-  margin-bottom: 148px;
 `
 
 const BgContainer = styled.div`
@@ -147,6 +146,7 @@ export const showcase = () => (
     {state => [
     <div>
       <Container>
+        <Gradient values={eventDetails.gradients} blurOnly />
         <EventHeader
           event={eventDetails}
           onChange={onChange}
@@ -209,13 +209,12 @@ export const showcase = () => (
           title="More events"
           slides={slides}
         />
-        <Gradient values={eventDetails.gradients} blurOnly/>
       </Container>
       <EventCta
         ctaLabel="Get tickets"
         title="Tickets from"
         onClick={action('clicked')}
-        priceRange="From 34€ to 56€ each"
+        subtitle="From 34€ to 56€ each"
         gradients={eventDetails.gradients}
         show={state.showCta}
       />

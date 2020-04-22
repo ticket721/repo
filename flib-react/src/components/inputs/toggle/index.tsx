@@ -6,12 +6,14 @@ export interface ToggleProps extends React.ComponentProps<any> {
   name:string;
   description?: string;
   onChange: (checked: boolean, id: string, e: React.ChangeEvent<HTMLElement> ) => void;
+  gradient?: string[];
 }
 
 const StyledLabel = styled.label`
   color: ${props => props.theme.textColor};
   cursor: pointer;
   display: inline-flex;
+  flex: 1;
   flex-wrap: wrap;
   font-size: 14px;
   font-weight: 700;
@@ -72,14 +74,20 @@ const ToggleSwitchContainer = styled.div`
   width: 44px;
 `;
 
-const StyledCheckboxContainer = styled.div`
+const StyledCheckboxContainer = styled.div<ToggleProps>`
   color: ${props => props.theme.textColorDark};
   display: flex;
+  margin-bottom: ${props => props.theme.biggerSpacing};
+  width: 100%;
+
+  &:last-of-type {
+    margin-bottom: 0;
+  }
 
   input:checked {
     & ~ ${ToggleSwitchContainer} {
       ${ToggleSwitch} {
-        background: linear-gradient(260deg, ${props => props.theme.primaryColor}, ${props => props.theme.primaryColorGradientEnd});
+        background: linear-gradient(260deg, ${props => props.gradient?.join(', ')});
         transform: translateX(100%);
 
         &::after {
@@ -91,9 +99,9 @@ const StyledCheckboxContainer = styled.div`
 `;
 
 
-export const Toggle: React.FunctionComponent<ToggleProps> = (props: ToggleProps): JSX.Element => {
+export const Toggle: React.FunctionComponent<ToggleProps & {className ?: string}> = (props: ToggleProps): JSX.Element => {
 
-  return <StyledCheckboxContainer>
+  return <StyledCheckboxContainer gradient={props.gradient}>
       <StyledLabel htmlFor={props.name}>{props.label}
         <input
           type="checkbox"
@@ -116,6 +124,7 @@ export const Toggle: React.FunctionComponent<ToggleProps> = (props: ToggleProps)
 
 Toggle.defaultProps = {
   onChange: () => {},
+  gradient: ['#079CF0', '#2143AB']
 };
 
 export default Toggle;

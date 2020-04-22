@@ -32,7 +32,6 @@ const customStyles = {
     position: 'relative' as 'relative',
 
     '& > div': {
-
       padding: 0
     }
   }),
@@ -44,7 +43,7 @@ const customStyles = {
     fontSize: 14
   }),
   menu: () => ({
-    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+    backgroundColor: '#262331',
     borderRadius: 8,
     marginTop: 8,
     position: 'absolute' as 'absolute',
@@ -80,6 +79,7 @@ const customStyles = {
   singleValue: () => ({
     fontSize: 14,
     fontWeight: 500,
+    marginRight: 8,
     opacity: 0.9
   })
 };
@@ -88,9 +88,9 @@ export interface SelectProps extends React.ComponentProps<any> {
   defaultValue?:object;
   error?:boolean;
   errorMessage?:string;
-  label:string;
+  label?:string;
   options: Array<object>,
-  placeholder: string;
+  placeholder?: string;
   searchable?:boolean;
   value?:string;
 }
@@ -120,8 +120,18 @@ const StyledInputContainer = styled.div<SelectProps>`
   border-radius: ${props => props.theme.defaultRadius};
   display: flex;
   flex-direction: column;
-  padding-top: ${props => props.theme.biggerSpacing};
+  padding-top: ${props => props.label ? props.theme.biggerSpacing : 0};
   transition: background-color 300ms ease;
+
+  [class*="dummyInput"] {
+    display: none;
+  }
+
+  ${props => !props.label &&`
+    [class*="Control"] {
+      padding: 10px 9px 8.5px 12px;
+    }
+  `}
 
   &:hover {
     background-color: ${props => props.theme.componentColorLight};
@@ -139,9 +149,12 @@ const StyledInputContainer = styled.div<SelectProps>`
     }
   }
 `;
+
 export const SelectInput: React.FunctionComponent<SelectProps> = (props: SelectProps): JSX.Element => {
-  return  <StyledInputContainer>
-            <StyledLabel>{props.label}</StyledLabel>
+  return  <StyledInputContainer label={props.label}>
+            {props.label &&
+              <StyledLabel>{props.label}</StyledLabel>
+            }
             <Select
               defaultValue={props.defaultValue}
               noOptionsMessage={() => "No values available"}
