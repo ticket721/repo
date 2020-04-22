@@ -18,10 +18,7 @@ export function detectAuthorizationStackDifferences(
     for (let idx = 0; idx < requestedAuthorizations.length; ++idx) {
         if (
             requestedAuthorizations[idx].categoryId !== existingAuthorizations[idx].categoryId ||
-            !_.isEqual(
-                _.sortBy(requestedAuthorizations[idx].price || []),
-                _.sortBy(existingAuthorizations[idx].price || []),
-            )
+            !_.isEqual(requestedAuthorizations[idx].price, existingAuthorizations[idx].price)
         ) {
             return true;
         }
