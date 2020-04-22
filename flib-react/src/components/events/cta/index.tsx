@@ -21,7 +21,6 @@ const CtaContainer = styled.div<EventCtaProps>`
   ${browser?.name !== 'firefox' &&`
     backdrop-filter: blur(40px);
   `}
-
   border-top-left-radius: ${props => props.theme.bigRadius};
   border-top-right-radius: ${props => props.theme.bigRadius};
   bottom: 0;

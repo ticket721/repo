@@ -13,7 +13,6 @@ export default {
   }
 };
 
-
 const gradientValues = ['#079CF0','#2143AB'];
 
 export const showcase = () => (
