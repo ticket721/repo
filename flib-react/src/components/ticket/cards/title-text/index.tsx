@@ -4,7 +4,6 @@ import CardContainer from '../../../elements/card-container';
 import styled from '../../../../config/styled';
 
 export interface TitleTextProps extends React.ComponentProps<any> {
-  title: string;
   removeBg?: boolean;
   text: string;
   wSeparator?: boolean;
@@ -16,14 +15,17 @@ const H3 = styled.h3`
 `
 const Text = styled.p`
   color: ${props => props.theme.textColorDark};
+  max-height: 78px;
+  overflow: hidden;
+  transition: max-height 300ms ease;
+  width: 100%;
 `
 
 export const TitleText: React.FunctionComponent<TitleTextProps> = (props: TitleTextProps): JSX.Element => {
 
   return <CardContainer removeBg={props.removeBg}>
-           <H3>{props.title}</H3>
-           <Text>{props.text}</Text>
-
+            <H3>{props.title}</H3>
+            <Text>{props.text}</Text>
             {props.wSeparator &&
               <Separator />
             }

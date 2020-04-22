@@ -1,24 +1,34 @@
 import * as React from 'react';
 import styled from '../../../config/styled';
 
+/**
+ * Position as first child in HTML
+ * to avoid z-index problems
+ */
+
 export interface GradientProps extends React.ComponentProps<any> {
   /**
    * Add 6.25% to the 1st value of the array
    * So the result looks like this
    * ['#EBBC16 6.25%', '#DB535B']
   */
+  blurOnly?:boolean;
   values: string[];
 }
 
 const GradientBar = styled.div<GradientProps>`
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0), ${props => props.values.join(', ')});
+  ${props => !props.blurOnly && `
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0), ${props.values.join(', ')});
+  `}
   bottom: 0;
   content: '';
   height: 100%;
   position: absolute;
   right: 0;
   transform: matrix(-1, 0, 0, 1, 0, 0);
-  width: 8px;
+  user-select: none;
+  width: ${props => props.blurOnly ? '0px' : '8px'};
+  z-index: 0;
 
   &::after {
     background: linear-gradient(180deg, ${props => props.values.join(', ')});
@@ -34,7 +44,7 @@ const GradientBar = styled.div<GradientProps>`
 
 export const Gradient: React.FunctionComponent<GradientProps> = (props: GradientProps): JSX.Element => {
 
-  return <GradientBar values={props.values}></GradientBar>
+  return <GradientBar values={props.values} blurOnly={props.blurOnly} />
 
 };
 

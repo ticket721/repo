@@ -93,6 +93,8 @@ export const showcase = () => (
     <TicketHeader ticket={defaultTicket} fullWidth/>
     <PullUp>
       <Container>
+        <Gradient values={defaultTicket.gradients} />
+
         <TicketInfosCard
           eventName={defaultTicket.name}
           ticketType={defaultTicket.ticketType}
@@ -126,7 +128,6 @@ export const showcase = () => (
         />
         <TitleText title="2x beers" text="Quisque at risus molestie, interdum lectus sed, ultrices quam."/>
       </Container>
-      <Gradient values={defaultTicket.gradients} />
     </PullUp>
     <div className="container">
       <LinkButton label="View previous transactions" to="#todo" />

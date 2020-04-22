@@ -41,7 +41,7 @@ const StyledNavbar = styled.nav`
         display: block;
         height: 4px;
         left: 0;
-        margin auto;
+        margin: auto;
         position: absolute;
         right: 0;
         width: 4px;

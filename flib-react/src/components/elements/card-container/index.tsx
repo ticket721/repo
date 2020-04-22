@@ -7,7 +7,7 @@ export interface CardContainerProps extends React.ComponentProps<any> {
 
 const Container = styled.section<CardContainerProps>`
   ${props => !props.removeBg &&`
-    background-image: linear-gradient(180deg, ${props.theme.componentGradientStart}, ${props.theme.componentGradientStart});
+    background-color: ${props.theme.darkerBg};
   `}
   display: flex;
   flex-wrap: wrap;
@@ -15,12 +15,11 @@ const Container = styled.section<CardContainerProps>`
   font-weight: 500;
   padding: ${props => props.theme.biggerSpacing};
   position: relative;
-
 `;
 
-export const CardContainer: React.FunctionComponent<CardContainerProps> = (props: CardContainerProps): JSX.Element => {
+export const CardContainer: React.FunctionComponent<CardContainerProps & {className?: string}> = (props: CardContainerProps): JSX.Element => {
 
-  return <Container removeBg={props.removeBg}>
+  return <Container className={props.className} removeBg={props.removeBg}>
           {props.children}
         </Container>
 };

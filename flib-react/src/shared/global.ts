@@ -95,6 +95,10 @@ export const GlobalStyles = createGlobalStyle`
     ${buttonStyles}
   }
 
+  div {
+    display: block;
+  }
+
   label {
     ${labelStyles}
   }
@@ -108,7 +112,7 @@ export const GlobalStyles = createGlobalStyle`
   }
 
   p {
-    line-height: 20px;
+    line-height: 150%;
   }
 
   input,
@@ -128,6 +132,7 @@ export const GlobalStyles = createGlobalStyle`
 
   .row {
     display: flex;
+    width: 100%;
   }
 
   .aic {
@@ -159,6 +164,7 @@ export const GlobalStyles = createGlobalStyle`
   h1 {
     font-size: 24px;
     font-weight: 700;
+    margin-bottom: 16px;
   }
 
   h2 {
@@ -169,11 +175,26 @@ export const GlobalStyles = createGlobalStyle`
   h3 {
     font-size: 16px;
     font-weight: 700;
+    line-height: 150%;
   }
 
   h4 {
     font-size: 14px;
     font-weight: 500;
+    line-height: 150%;
+
+    &.uppercase {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+  }
+
+  .utils {
+    &--mb {
+      margin-bottom: 1rem;
+    }
   }
 
 `;

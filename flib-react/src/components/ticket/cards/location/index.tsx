@@ -28,6 +28,7 @@ const Info = styled.span`
 const Column = styled.div<LocationCardProps>`
   display: flex;
   flex-direction: column;
+
   a {
     align-items: center;
     display: inline-flex;
@@ -40,8 +41,6 @@ const Column = styled.div<LocationCardProps>`
     ${props => props.iconColor &&`
       color: ${props.iconColor};
     `}
-
-
   }
 `
 
@@ -49,10 +48,10 @@ const IconContainer = styled.div`
   margin-right: ${props => props.theme.regularSpacing};
 `;
 
-export const LocationCard: React.FunctionComponent<LocationCardProps> = (props: LocationCardProps): JSX.Element => {
-  return <CardContainer removeBg={props.removeBg}>
+export const LocationCard: React.FunctionComponent<LocationCardProps & {className?: string}> = (props: LocationCardProps): JSX.Element => {
+  return <CardContainer className={props.className} removeBg={props.removeBg}>
           <IconContainer>
-            <Icon icon='location' fill={props.iconColor} width='12' height='16' />
+            <Icon icon='pin' fill={props.iconColor} width='12' height='16' />
           </IconContainer>
           <Column iconColor={props.iconColor}>
             <Info>{props.location}</Info>
