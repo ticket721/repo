@@ -8,9 +8,12 @@ export interface TicketTypeProps extends React.ComponentProps<any> {
   description: string;
   feesIncluded?: boolean;
   selected?:boolean;
+  soldOutLabel: string;
   startingPrice: string;
+  startingPriceLabel: string;
   title: string;
   ticketsLeft: number;
+  ticketsLeftLabel: string;
 }
 
 const Container = styled.article<TicketTypeProps>`
@@ -73,9 +76,10 @@ export const TicketType: React.FunctionComponent<TicketTypeProps> = (props: Tick
   return <Container selected={props.selected} gradient={props.gradient}>
             <div className="row aic jcsb">
               <h3>{props.title}</h3>
-              <TicketCount ticketsLeft={props.ticketsLeft}><Icon icon="ticket" fill={props.color} width="18" height="18" />{props.ticketsLeft < 1 ? 'Sold out' : `${props.ticketsLeft} left`}</TicketCount>
+              <TicketCount ticketsLeft={props.ticketsLeft}><Icon icon="ticket" fill={props.color} width="18" height="18" />{props.ticketsLeft < 1 ? props.soldOutLabel : `${props.ticketsLeft} ${props.ticketsLeftLabel}`}</TicketCount>
             </div>
-            <h4>Starting at {props.startingPrice}</h4>
+            <h4>{props.startingPriceLabel} {props.startingPrice}</h4>
+
             <span>{props.feesIncluded ? 'Fees included' : '+ fees'}</span>
             <p>{props.description}</p>
           </Container>
