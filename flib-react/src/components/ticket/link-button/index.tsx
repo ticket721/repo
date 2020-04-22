@@ -21,7 +21,6 @@ const LinkContainer = styled.div`
   font-size: 15px;
   font-weight: 500;
   width: 100%;
-
   img {
     box-shadow: 0px 2px 28px rgba(0, 0, 0, 0.2);
     margin-right: ${props => props.theme.regularSpacing};

@@ -1,6 +1,9 @@
 import * as React from 'react';
 import styled from '../../../config/styled';
+import { detect } from 'detect-browser';
 import Button from '../../button';
+
+const browser = detect();
 
 export interface EventCtaProps extends React.ComponentProps<any> {
   ctaLabel: string;
@@ -13,8 +16,11 @@ export interface EventCtaProps extends React.ComponentProps<any> {
 
 const CtaContainer = styled.div<EventCtaProps>`
   align-items: center;
-  background-color: rgba(33, 29, 45, 0.6);
-  backdrop-filter: blur(40px);
+  background-color: ${browser?.name === 'firefox' ? 'rgba(33, 29, 45, 0.95)' : 'rgba(33, 29, 45, 0.6)'};
+
+  ${browser?.name !== 'firefox' &&`
+    backdrop-filter: blur(40px);
+  `}
   border-top-left-radius: ${props => props.theme.bigRadius};
   border-top-right-radius: ${props => props.theme.bigRadius};
   bottom: 0;
@@ -37,7 +43,7 @@ const CtaContainer = styled.div<EventCtaProps>`
   `}
 
   h4 {
-    color: ${props => props.theme.textColorDarker};
+    color: ${browser?.name === 'firefox' ? '#9a989a' : props => props.theme.textColorDarker};
     margin-bottom: ${props => props.theme.smallSpacing};
   }
 
@@ -47,6 +53,7 @@ const CtaContainer = styled.div<EventCtaProps>`
 
   button {
     margin: 0;
+  & * {
     flex: 2;
   }
 `

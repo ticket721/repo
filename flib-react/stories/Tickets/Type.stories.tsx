@@ -21,9 +21,12 @@ export const showcase = () => (
     description={text('Description', ' Sed ac mattis elit, aliquam lobortis puus dictumst. Suspendisse a ex et lorem mattis faucibus rhoncus at justo')}
     feesIncluded={boolean('Fees included ?', false)}
     selected={boolean('Selected ?', false)}
+    soldOutLabel={text('Sold out', 'Sold out')}
     startingPrice={text('Starting price', '55€')}
+    startingPriceLabel={text('Starting at', 'Starting at')}
     title={text('Ticket type', '2 days VIP pass')}
     ticketsLeft={number('Tickets left', 10)}
+    ticketsLeftLabel={text('Tickets left', 'left')}
   />
 );
 
@@ -36,6 +39,9 @@ export const list = () => (
       startingPrice="550€"
       title="2 days VIP pass"
       ticketsLeft={0}
+      soldOutLabel="Sold out"
+      startingPriceLabel="Starting at"
+      ticketsLeftLabel="left"
     />
     <TicketType
        description="Sed ac mattis elit"
@@ -44,6 +50,9 @@ export const list = () => (
        startingPrice="55€"
        title="1 day ticket"
        ticketsLeft={130}
+       soldOutLabel="Sold out"
+       startingPriceLabel="Starting at"
+       ticketsLeftLabel="left"
     />
   </div>
 );

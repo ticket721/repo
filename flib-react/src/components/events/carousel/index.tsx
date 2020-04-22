@@ -67,14 +67,12 @@ const CarouselContainer = styled.section`
   padding: ${props => props.theme.biggerSpacing} 0 ${props => props.theme.biggerSpacing} ${props => props.theme.biggerSpacing};
   position: relative;
   z-index: 1;
-
   h2 {
     margin-bottom: ${props => props.theme.regularSpacing};
   }
 `
 
 export const EventCarousel: React.FunctionComponent<EventCarouselProps> = (props: EventCarouselProps): JSX.Element => {
-
   return  <CarouselContainer>
             <h2>{props.title}</h2>
             <Flicking
@@ -88,7 +86,6 @@ export const EventCarousel: React.FunctionComponent<EventCarouselProps> = (props
               })}
             </Flicking>
           </CarouselContainer>
-
 };
 
 export default EventCarousel;
