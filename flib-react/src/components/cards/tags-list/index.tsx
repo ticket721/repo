@@ -35,7 +35,7 @@ const List = styled.div`
 const ToggleButton = styled(Item)`
   cursor: pointer;
   position: relative;
-  z-index: 10000;
+  z-index: 10;
 `;
 
 export const TagsList: React.FunctionComponent<TagsListProps> = (props:TagsListProps): JSX.Element => {
