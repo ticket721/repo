@@ -79,6 +79,7 @@ export const TicketType: React.FunctionComponent<TicketTypeProps> = (props: Tick
               <TicketCount ticketsLeft={props.ticketsLeft}><Icon icon="ticket" fill={props.color} width="18" height="18" />{props.ticketsLeft < 1 ? props.soldOutLabel : `${props.ticketsLeft} ${props.ticketsLeftLabel}`}</TicketCount>
             </div>
             <h4>{props.startingPriceLabel} {props.startingPrice}</h4>
+
             <span>{props.feesIncluded ? 'Fees included' : '+ fees'}</span>
             <p>{props.description}</p>
           </Container>

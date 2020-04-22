@@ -1,33 +1,33 @@
 import * as React from 'react';
 import Flicking from "@egjs/react-flicking";
 import styled from '../../../config/styled';
+import slugify from 'slugify';
 
-export interface EventCarouselProps extends React.ComponentProps<any> {
+export interface CategoriesCarouselProps extends React.ComponentProps<any> {
   title: string;
-  slides: Slide[];
+  slides: CategoryProps[];
 }
 
-interface Slide {
-  id: number | string;
+interface CategoryProps {
   name: string;
-  date: string;
+  icon: string;
   url: string;
 }
 
-const SlideContainer = styled.article`
-  width: 150px;
-`
 const ImgContainer = styled.div`
+  align-items: center;
+  background-color: ${props => props.theme.componentColorLight};
   border-radius: ${props => props.theme.defaultRadius};
-  height: 150px;
+  display: flex;
+  height: 96px;
+  justify-content: center;
   margin: auto;
   overflow: hidden;
-  width: 100%;
+  width: 96px;
 
   img {
-    height: 100%;
-    object-fit: cover;
-    width: 100%;
+    height: 32px;
+    width: auto;
   }
 `
 
@@ -52,15 +52,14 @@ const Infos = styled.div`
 `
 
 const SlideItem = (props: any) => {
-  return <SlideContainer>
-      <ImgContainer>
-        <img src={props.slide.url} draggable="false"/>
-      </ImgContainer>
-      <Infos>
-        <h4 className="uppercase">{props.slide.name}</h4>
-        <span>{props.slide.date}</span>
-      </Infos>
-    </SlideContainer>
+  return <article key={slugify(props.slide.name)}>
+            <ImgContainer>
+              <img src={props.slide.icon} draggable="false"/>
+            </ImgContainer>
+            <Infos>
+              <h4 className="uppercase">{props.slide.name}</h4>
+            </Infos>
+          </article>
 }
 
 const CarouselContainer = styled.section`
@@ -73,8 +72,7 @@ const CarouselContainer = styled.section`
   }
 `
 
-export const EventCarousel: React.FunctionComponent<EventCarouselProps> = (props: EventCarouselProps): JSX.Element => {
-
+export const CategoriesCarousel: React.FunctionComponent<CategoriesCarouselProps> = (props: CategoriesCarouselProps): JSX.Element => {
   return  <CarouselContainer>
             <h2>{props.title}</h2>
             <Flicking
@@ -83,7 +81,7 @@ export const EventCarousel: React.FunctionComponent<EventCarouselProps> = (props
               hanger={0}
               gap={16}
             >
-            {props.slides.map((slide: Slide) => {
+            {props.slides.map((slide: CategoryProps) => {
                 return <SlideItem slide={slide} />
               })}
             </Flicking>
@@ -91,4 +89,4 @@ export const EventCarousel: React.FunctionComponent<EventCarouselProps> = (props
 
 };
 
-export default EventCarousel;
+export default CategoriesCarousel;

@@ -16,7 +16,7 @@ const photos = ['assets/images/event-1.jpg', 'assets/images/event-2.jpg', 'asset
 
 export const grid = () => (
   <PhotosVideosCard
-    title={text('Title','Photos & videos')}
+    title={text('Title','Photos and videos')}
     photos={photos}
   />
 )

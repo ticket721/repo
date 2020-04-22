@@ -5,8 +5,6 @@ export interface Theme {
   componentColor: string;
   componentColorLight: string;
   componentColorLighter: string;
-  componentGradientStart: string;
-  componentGradientEnd: string;
   darkBg: string;
   darkerBg: string;
   defaultRadius: string;
@@ -31,13 +29,12 @@ export const customThemes: Themes = {
         name: 'T721',
         bigRadius: '32px',
         biggerSpacing: '24px',
+        bigRadius: '32px',
         componentColor: 'rgba(255, 255, 255, 0.04)',
         componentColorLight: 'rgba(355, 255, 255, 0.06)',
         componentColorLighter: 'rgba(355, 255, 255, 0.1)',
-        componentGradientStart: '#241F33',
-        componentGradientEnd: '#1B1726',
-        darkBg: '#1B1726',
-        darkerBg: '#241F33',
+        darkBg: '#241F33',
+        darkerBg: '#1B1726',
         defaultRadius: '8px',
         doubleSpacing: '32px',
         fontStack: `'Gordita', Arial, Helvetica, sans-serif`,
