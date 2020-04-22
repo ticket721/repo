@@ -75,17 +75,15 @@ export class CartInputHandlers implements OnModuleInit {
      * Data Model validator for the Ticket Selection step
      */
     ticketSelectionsValidator = Joi.object<CartTicketSelections>({
-        tickets: Joi.array()
-            .items(
-                Joi.object({
-                    categoryId: Joi.string().required(),
-                    price: Joi.object({
-                        currency: Joi.string().required(),
-                        price: Joi.string().required(),
-                    }).optional(),
-                }),
-            )
-            .required(),
+        tickets: Joi.array().items(
+            Joi.object({
+                categoryId: Joi.string().required(),
+                price: Joi.object({
+                    currency: Joi.string().required(),
+                    price: Joi.string().required(),
+                }).optional(),
+            }),
+        ),
     });
 
     /**
@@ -104,7 +102,7 @@ export class CartInputHandlers implements OnModuleInit {
         const resolvedPrice = await this.currenciesService.resolveInputPrices([inputPrice]);
 
         if (resolvedPrice.error) {
-            return [[], 'currency_resolution_error', null];
+            return [[], 'currency_resolution_error', []];
         }
 
         const validCurrencies = resolvedPrice.response.filter((price: Price): boolean => {
@@ -183,10 +181,10 @@ export class CartInputHandlers implements OnModuleInit {
                         id: ticket.categoryId,
                     });
 
-                    if (categorySearchRes.error) {
+                    if (categorySearchRes.error || categorySearchRes.response.length === 0) {
                         actionset.action.setError({
                             details: null,
-                            error: categorySearchRes.error,
+                            error: categorySearchRes.error || 'category_not_found',
                         });
                         actionset.action.setStatus('error');
                         actionset.setStatus('input:error');
@@ -200,10 +198,10 @@ export class CartInputHandlers implements OnModuleInit {
                         categorySearchRes.response[0].prices,
                     );
 
-                    if (resolvedCurrencies[0].length > 0) {
+                    if (resolvedCurrencies[0].length > 0 || resolvedCurrencies[1] !== null) {
                         actionset.action.setError({
                             details: resolvedCurrencies[0],
-                            error: 'price_not_matching',
+                            error: resolvedCurrencies[1] || 'price_not_matching',
                         });
                         actionset.action.setStatus('error');
                         actionset.setStatus('input:error');
@@ -220,7 +218,9 @@ export class CartInputHandlers implements OnModuleInit {
                                 .plus(new BigNumber(resolvedCurrency.value))
                                 .toString();
                         } else {
-                            totalPrices[resolvedCurrency.currency] = resolvedCurrency;
+                            totalPrices[resolvedCurrency.currency] = {
+                                ...resolvedCurrency,
+                            };
                         }
                     }
 
@@ -288,6 +288,8 @@ export class CartInputHandlers implements OnModuleInit {
                 break;
             }
 
+            // Ignore until implemented
+            /* istanbul ignore next */
             case 'incomplete': {
                 actionset.action.setIncomplete({
                     details: error_trace,
@@ -312,25 +314,23 @@ export class CartInputHandlers implements OnModuleInit {
      * Data Model validator of the authorizations step
      */
     authorizationsValidator = Joi.object<CartAuthorizations>({
-        authorizations: Joi.array()
-            .items(
-                Joi.object({
-                    categoryId: Joi.string().required(),
-                    price: Joi.object({
-                        currency: Joi.string().required(),
-                        price: Joi.string().required(),
-                    }).optional(),
-                    authorizationId: Joi.string().required(),
-                    groupId: Joi.string().required(),
-                    categoryName: Joi.string().required(),
-                    granter: Joi.string().required(),
-                    grantee: Joi.string().required(),
-                    granterController: Joi.string().required(),
-                    expiration: Joi.date().required(),
-                }),
-            )
-            .required(),
-        commitType: Joi.string().required(),
+        authorizations: Joi.array().items(
+            Joi.object({
+                categoryId: Joi.string().required(),
+                price: Joi.object({
+                    currency: Joi.string().required(),
+                    price: Joi.string().required(),
+                }).optional(),
+                authorizationId: Joi.string().required(),
+                groupId: Joi.string().required(),
+                categoryName: Joi.string().required(),
+                granter: Joi.string().required(),
+                grantee: Joi.string().required(),
+                granterController: Joi.string().required(),
+                expiration: Joi.date().required(),
+            }),
+        ),
+        commitType: Joi.string(),
         total: Joi.array().items(
             Joi.object({
                 currency: Joi.string().required(),
