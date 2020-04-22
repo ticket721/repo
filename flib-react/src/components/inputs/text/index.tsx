@@ -80,7 +80,7 @@ const StyledInputContainer = styled.div<InputProps>`
 export const TextInput: React.FunctionComponent<InputProps> = (props: InputProps): JSX.Element => {
   return <StyledInputContainer error={props.error}>
       <StyledLabel htmlFor={props.name}>{props.label}</StyledLabel>
-      <input id={props.name} name={props.name} placeholder={props.placeholder} defaultValue={props.value}/>
+      <input id={props.name} name={props.name} placeholder={props.placeholder} defaultValue={props.value} onKeyUp={props.onChange} />
       {props.error && <Error>{ props.errorMessage }</Error> }
   </StyledInputContainer>
 }

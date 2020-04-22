@@ -7,14 +7,14 @@ export interface SearchCategoryProps extends React.ComponentProps<any> {
   src: string;
   text?: string;
   title?:string;
+  icon: string;
   mainColor?: string;
-  gradient?: string[];
+  gradient: string[];
 }
 
 const Container = styled.div<SearchCategoryProps>`
   border-radius: ${props => props.theme.defaultRadius};
   height: 150px;
-  margin: auto;
   overflow: hidden;
   position: relative;
   width: 100%;
@@ -61,7 +61,7 @@ const CategoryIcon = styled(Icon)`
 
 export const SearchCategory: React.FunctionComponent<SearchCategoryProps & {className?: string}> = (props: SearchCategoryProps): JSX.Element => {
   return <Container className={props.className} gradient={props.gradient}>
-          <CategoryIcon icon="tag" height="24" width="24" fill="rgba(255, 255, 255, 0.25)" />
+          <CategoryIcon icon={props.icon} height="32" width="32" fill="rgba(255, 255, 255, 0.25)" />
           <img src={props.src} />
           {!props.imgOnly &&
             <Details mainColor={props.mainColor} smaller={props.smaller}>
@@ -73,7 +73,8 @@ export const SearchCategory: React.FunctionComponent<SearchCategoryProps & {clas
 };
 
 SearchCategory.defaultProps = {
-  mainColor: '#079CF0'
+  mainColor: '#079CF0',
+  gradient: ['#079CF0','#2143AB']
 }
 
 export default SearchCategory;

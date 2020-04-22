@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { action } from '@storybook/addon-actions';
 import { text, withKnobs } from '@storybook/addon-knobs';
 import SearchInput from '../../src/components/search/input';
+import { Store, State } from '@sambego/storybook-state';
 
 export default {
   title: 'Search|Input',
@@ -13,12 +13,38 @@ export default {
   }
 };
 
+
+const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const target = e.target as HTMLInputElement;
+
+  store.set({
+    value: target.value
+  })
+};
+
+const clearInput = () => {
+  store.set({
+    value: ''
+  })
+}
+
+const store = new Store({
+  value: '',
+});
+
 export const Text = () => (
-  <SearchInput
-    name={text('Input name', 'example')}
-    onChange={action('typing...')}
-    placeholder={text('Placeholder', 'Events, artists, venues...')}
-    value={text('Value', '')}
-  />
+  <State store={store}>
+  {state => [
+    <SearchInput
+      clearInput={clearInput}
+      name={text('Input name', 'example')}
+      onChange={handleChange}
+      cancel={clearInput}
+      placeholder={text('Placeholder', 'Events, artists, venues...')}
+      value={state.value}
+      cancelLabel={text('Cancel label', 'Cancel')}
+    />
+  ]}
+  </State>
 );
 

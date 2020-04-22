@@ -188,6 +188,7 @@ export const showcase = () => (
             handleToggle={toggleAll}
             showAll={state.showAll}
             tags={eventDetails.tags}
+            hideLabel="Hide"
             removeBg
           />
           <Border />

@@ -156,9 +156,17 @@ export const GlobalStyles = createGlobalStyle`
     flex-direction: column;
   }
 
+  .clear--nav {
+    margin-top: 1.5rem;
+  }
+
   .container {
     margin: 1.5rem 1rem;
     max-width: 600px;
+  }
+
+  .margin--lr {
+    margin: 0 1.5rem;
   }
 
   h1 {

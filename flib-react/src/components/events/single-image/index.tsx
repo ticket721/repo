@@ -15,6 +15,7 @@ export interface SingleImageProps extends React.ComponentProps<any> {
 const Container = styled.div<SingleImageProps>`
   border-radius: ${props => props.theme.biggerSpacing};
   height: ${props => props.smaller ? '165px' : '200px'};
+  margin-bottom: ${props => props.theme.regularSpacing};
   overflow: hidden;
   position: relative;
   width: 100%;
