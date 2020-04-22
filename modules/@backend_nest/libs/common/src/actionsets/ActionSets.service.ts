@@ -219,7 +219,7 @@ export class ActionSetsService extends CRUDExtension<ActionSetsRepository, Actio
             error,
         });
         actionSet.actions[actionIdx].setStatus('error');
-        actionSet.setStatus('input:error');
+        actionSet.setStatus(`${actionSet.actions[actionIdx].type}:error` as ActionSetStatus);
 
         const updateRes = await this.update(actionSet.getQuery(), actionSet.withoutQuery());
 
