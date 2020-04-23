@@ -3,6 +3,6 @@ export function truncate(width: string): string {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    width: 100px;
+    width: ${width};
     `);
 }
