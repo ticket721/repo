@@ -354,9 +354,10 @@ export class AuthenticationService {
         if (emailUserResp.error || emailUserResp.response.username !== username) {
             return {
                 response: null,
-                error: 'user_not_found',
-            };
+                error: null,
+            }
         }
+
         const user: UserDto = emailUserResp.response;
         const updatedUser: ServiceResponse<UserDto> = {
             response: user,

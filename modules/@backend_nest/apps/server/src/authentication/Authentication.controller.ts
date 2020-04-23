@@ -322,25 +322,14 @@ export class AuthenticationController {
     async resetPassword(@Body() body: Partial<UserDto>): Promise<PasswordlessUserDto> {
         const resp = await this.authenticationService.resetUserPassword(body.email, body.username);
         if (resp.error) {
-            switch (resp.error) {
-                case 'user_not_found':
-                    throw new HttpException(
-                        {
-                            status: StatusCodes.Unauthorized,
-                            message: resp.error,
-                        },
-                        StatusCodes.Unauthorized,
-                    );
-                default:
-                    throw new HttpException(
-                        {
-                            status: StatusCodes.InternalServerError,
-                            message: resp.error,
-                        },
-                        StatusCodes.InternalServerError,
-                    );
-            }
-        } else {
+            throw new HttpException(
+                {
+                    status: StatusCodes.InternalServerError,
+                    message: resp.error,
+                },
+                StatusCodes.InternalServerError,
+            );
+        } else if (resp.response != null) {
             await this.mailingQueue.add(
                 '@@mailing/resetPasswordEmail',
                 {

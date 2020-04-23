@@ -1419,7 +1419,7 @@ describe('Authentication Service', function() {
             const res = await authenticationService.resetUserPassword(email, username);
 
             expect(res.response).toEqual(null);
-            expect(res.error).toEqual('user_not_found');
+            expect(res.error).toEqual(null);
 
             verify(usersServiceMock.findByEmail(email)).called();
         });

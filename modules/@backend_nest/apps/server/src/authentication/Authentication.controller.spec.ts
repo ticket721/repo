@@ -1247,7 +1247,7 @@ describe('Authentication Controller', function() {
             when(authenticationServiceMock.resetUserPassword(email, username)).thenReturn(
                 Promise.resolve({
                     response: null,
-                    error: 'user_not_found',
+                    error: null,
                 }),
             );
 
@@ -1256,17 +1256,9 @@ describe('Authentication Controller', function() {
                 username: username,
             };
 
-            await expect(authenticationController.resetPassword(user)).rejects.toMatchObject({
-                response: {
-                    status: StatusCodes.Unauthorized,
-                    message: 'user_not_found',
-                },
-                status: StatusCodes.Unauthorized,
-                message: {
-                    status: StatusCodes.Unauthorized,
-                    message: 'user_not_found',
-                },
-            });
+            const res = await authenticationController.resetPassword(user)
+
+            expect(res).toEqual(null);
 
             verify(authenticationServiceMock.resetUserPassword(email, username)).called();
         });
