@@ -1245,7 +1245,7 @@ describe('Authentication Controller', function() {
             const email = 'test@test.com';
             const username = 'salut';
 
-            when(authenticationServiceMock.isEmailExist(email, username)).thenResolve(false);
+            when(authenticationServiceMock.isEmailExist(email)).thenResolve(false);
 
             const user: Partial<UserDto> = {
                 email: email,
@@ -1254,7 +1254,7 @@ describe('Authentication Controller', function() {
 
             await authenticationController.resetPassword(user);
 
-            verify(authenticationServiceMock.isEmailExist(email, username)).called();
+            verify(authenticationServiceMock.isEmailExist(email)).called();
         });
 
         test('reset password successful', async function() {
@@ -1264,7 +1264,7 @@ describe('Authentication Controller', function() {
             const email = 'test@test.com';
             const username = 'salut';
 
-            when(authenticationServiceMock.isEmailExist(email, username)).thenResolve(true);
+            when(authenticationServiceMock.isEmailExist(email)).thenResolve(true);
 
             const user: Partial<UserDto> = {
                 email: email,
@@ -1273,7 +1273,7 @@ describe('Authentication Controller', function() {
 
             await authenticationController.resetPassword(user);
 
-            verify(authenticationServiceMock.isEmailExist(email, username)).called();
+            verify(authenticationServiceMock.isEmailExist(email)).called();
         });
     });
 

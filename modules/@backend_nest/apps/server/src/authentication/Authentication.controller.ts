@@ -320,7 +320,7 @@ export class AuthenticationController {
         StatusCodes.InternalServerError,
     ])
     async resetPassword(@Body() body: Partial<UserDto>) {
-        const resp = await this.authenticationService.isEmailExist(body.email, body.username);
+        const resp = await this.authenticationService.isEmailExist(body.email);
         if (resp === true) {
             await this.mailingQueue.add(
                 '@@mailing/resetPasswordEmail',

@@ -1416,7 +1416,7 @@ describe('Authentication Service', function() {
                 }),
             );
 
-            const res = await authenticationService.isEmailExist(email, username);
+            const res = await authenticationService.isEmailExist(email);
 
             expect(res).toEqual(false);
 
@@ -1449,7 +1449,7 @@ describe('Authentication Service', function() {
                 }),
             );
 
-            const res = await authenticationService.isEmailExist(email, username);
+            const res = await authenticationService.isEmailExist(email);
 
             expect(res).toEqual(true);
 
