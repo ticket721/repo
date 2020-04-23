@@ -19,7 +19,7 @@ const NavBar: React.FC = () => (
           </Name>
           <Amount>
             <span className='currency'>€&nbsp;</span>
-            <span>350</span>
+            <span>3500</span>
           </Amount>
         </Informations>
       </Profile>
@@ -31,14 +31,15 @@ const Container = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 25px;
+  padding: 8px 24px;
+  height: 80px;
 `;
 
 const ActionContainer = styled.div`
   display: flex;
   justify-content: space-evenly;
   align-items: center;
-  width: 400px;
+  width: 304px;
   && button {
     outline: none;
     font-size: 13px;
@@ -47,10 +48,10 @@ const ActionContainer = styled.div`
 
 const Profile = styled.div`
   display: flex;
-  width: 100%;
+  width: 169px;
   background-color: rgba(255, 255, 255, 0.06);
   border-radius: ${(props) => props.theme.defaultRadius};
-  padding: 8px 16px;
+  padding: 12px 16px;
 `;
 
 const ProfilePicture = styled.div`
@@ -64,8 +65,9 @@ const Informations = styled.div`
   display: flex;
   flex-direction: column;
   min-width: 100px;
-  padding-left: 10px;
+  padding-left: 8px;
   font-size: 13px;
+  justify-content: space-evenly;
 `;
 
 const Name = styled.button`
@@ -75,7 +77,7 @@ const Name = styled.button`
   justify-content: space-between;
   span {
     ${ truncate('100px') };
-    padding-right: 10px;
+    padding-right: 8px;
   }
   svg {
     transform: rotate(90deg);
