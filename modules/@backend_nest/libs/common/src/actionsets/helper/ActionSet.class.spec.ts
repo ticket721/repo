@@ -1,6 +1,5 @@
 import { Action } from '@lib/common/actionsets/helper/Action.class';
 import { ActionSet } from '@lib/common/actionsets/helper/ActionSet.class';
-import { UserDto } from '@lib/common/users/dto/User.dto';
 
 describe('ActionSet', function() {
     it('should load an ActionSetEntity', function() {
@@ -35,6 +34,7 @@ describe('ActionSet', function() {
                     name: 'first',
                     data: '{"name":"hello"}',
                     status: 'in progress',
+                    private: false,
                 },
                 {
                     error: null,
@@ -42,6 +42,7 @@ describe('ActionSet', function() {
                     name: 'second',
                     data: '{"name":"hello"}',
                     status: 'in progress',
+                    private: false,
                 },
             ],
             current_action: 0,
@@ -61,6 +62,7 @@ describe('ActionSet', function() {
                     name: 'first',
                     data: '{"name":"hello"}',
                     status: 'in progress',
+                    private: false,
                 },
                 {
                     error: null,
@@ -68,6 +70,7 @@ describe('ActionSet', function() {
                     name: 'second',
                     data: '{"name":"hello"}',
                     status: 'in progress',
+                    private: false,
                 },
             ],
             current_action: 0,
@@ -156,6 +159,7 @@ describe('ActionSet', function() {
             name: 'first',
             data: '{"name":"hello"}',
             status: 'complete',
+            private: false,
         });
 
         expect(actionSet.action.raw).toEqual({
@@ -164,6 +168,7 @@ describe('ActionSet', function() {
             name: 'second',
             data: '{"name":"hello"}',
             status: 'in progress',
+            private: false,
         });
 
         expect(actionSet.status).toEqual('event:in progress');
@@ -176,6 +181,7 @@ describe('ActionSet', function() {
             name: 'second',
             data: '{"name":"hello"}',
             status: 'complete',
+            private: false,
         });
 
         expect(actionSet.action.raw).toEqual({
@@ -184,6 +190,7 @@ describe('ActionSet', function() {
             name: 'second',
             data: '{"name":"hello"}',
             status: 'complete',
+            private: false,
         });
 
         expect(actionSet.status).toEqual('complete');
@@ -218,6 +225,7 @@ describe('ActionSet', function() {
                     name: 'first',
                     data: '{"name":"hello"}',
                     status: 'in progress',
+                    private: false,
                 },
             },
             {
@@ -227,6 +235,7 @@ describe('ActionSet', function() {
                     name: 'second',
                     data: '{"name":"hello"}',
                     status: 'in progress',
+                    private: false,
                 },
             },
         ]);
@@ -237,6 +246,7 @@ describe('ActionSet', function() {
                 name: 'first',
                 data: '{"name":"hello"}',
                 status: 'in progress',
+                private: false,
             },
         });
         actions[0].setName('very first');
@@ -249,6 +259,7 @@ describe('ActionSet', function() {
                     name: 'very first',
                     data: '{"name":"hello"}',
                     status: 'in progress',
+                    private: false,
                 },
             },
             {
@@ -258,6 +269,7 @@ describe('ActionSet', function() {
                     name: 'second',
                     data: '{"name":"hello"}',
                     status: 'in progress',
+                    private: false,
                 },
             },
         ]);
@@ -349,6 +361,7 @@ describe('ActionSet', function() {
                     name: 'first',
                     data: '{"name":"hello"}',
                     status: 'in progress',
+                    private: false,
                 },
                 {
                     error: null,
@@ -356,10 +369,43 @@ describe('ActionSet', function() {
                     name: 'second',
                     data: '{"name":"hello"}',
                     status: 'in progress',
+                    private: false,
                 },
             ],
             current_action: 0,
             dispatched_at: actionSet.raw.dispatched_at,
         });
+    });
+
+    it('should advance to next action', function() {
+        const actions: Action[] = [
+            new Action()
+                .setType('input')
+                .setName('first')
+                .setData({ name: 'hello' })
+                .setStatus('in progress'),
+
+            new Action()
+                .setType('event')
+                .setName('second')
+                .setData({ name: 'hello' })
+                .setStatus('in progress'),
+        ];
+
+        const actionSet: ActionSet = new ActionSet()
+            .setName('test')
+            .setStatus('input:in progress')
+            .setId('ccf2ef65-3632-4277-a061-dddfefac48da')
+            .setActions(actions);
+
+        actionSet.next();
+
+        expect(actionSet.status).toEqual('event:in progress');
+        expect(actionSet.current_action).toEqual(1);
+
+        actionSet.next();
+
+        expect(actionSet.status).toEqual('complete');
+        expect(actionSet.current_action).toEqual(1);
     });
 });

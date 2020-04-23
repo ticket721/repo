@@ -30,6 +30,8 @@ import { contractsFetch }                                       from './app/api/
 import { categoriesCreate, categoriesSearch, categoriesUpdate } from './app/api/categories';
 import { rightsSearch }                                         from './app/api/rights';
 import { metadatasFetch }                                       from './app/api/metadatas';
+import { cartModulesConfiguration, cartTicketSelections }       from './app/api/cart';
+import { checkoutCartCommitStripe }                             from './app/api/checkout';
 
 export { FailedRegisterReport } from './app/api/authentication';
 
@@ -93,6 +95,10 @@ export class T721SDK {
         this.contracts.fetch = this.contracts.fetch.bind(this);
 
         this.metadatas.fetch = this.metadatas.fetch.bind(this);
+
+        this.cart.ticketSelections = this.cart.ticketSelections.bind(this);
+        this.cart.modulesConfiguration = this.cart.modulesConfiguration.bind(this);
+        this.checkout.cart.commitStripe = this.checkout.cart.commitStripe.bind(this);
     }
 
     connect(host: string, port: number, protocol: 'http' | 'https' = 'http') {
@@ -247,5 +253,16 @@ export class T721SDK {
 
     public metadatas = {
         fetch: metadatasFetch,
+    };
+
+    public cart = {
+        ticketSelections: cartTicketSelections,
+        modulesConfiguration: cartModulesConfiguration,
+    };
+
+    public checkout = {
+        cart: {
+            commitStripe: checkoutCartCommitStripe
+        }
     }
 }

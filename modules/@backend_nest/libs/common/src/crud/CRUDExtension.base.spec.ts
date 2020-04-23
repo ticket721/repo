@@ -15,11 +15,19 @@ import {
     SearchQuery,
     UpdateOptions,
 } from '@lib/common/crud/CRUDExtension.base';
+import { ESCountReturn } from '@lib/common/utils/ESCountReturn.type';
+import { ESSearchHit, ESSearchReturn } from '@lib/common/utils/ESSearchReturn.type';
 
 class FakeEntity {
     id: string;
     name: string;
     updated_at?: Date;
+}
+
+class EsClientMock {
+    async count(...args: any[]): Promise<ESCountReturn> {
+        return null;
+    }
 }
 
 const context: {
@@ -52,18 +60,29 @@ describe('CRUD Extension', function() {
                         name: {
                             type: 'text',
                         },
+                        obj: {
+                            type: 'object',
+                        },
                     },
                 },
             });
 
-            const newEntity: FakeEntity = {
+            const newEntity: any = {
                 id: '016d3680-c2ac-4c6a-98f8-c63b22b3542f',
                 name: 'test',
+                obj: {
+                    value: 'hi',
+                    field: null,
+                },
             };
 
             const newEntityProcessed = {
                 id: uuid(newEntity.id),
                 name: 'test',
+                obj: {
+                    value: 'hi',
+                    field: null,
+                },
             };
 
             const crudext: CRUDExtension<Repository<FakeEntity>, FakeEntity> = new CRUDExtension<
@@ -80,18 +99,10 @@ describe('CRUD Extension', function() {
 
             const res = await crudext.create(newEntity);
 
-            verify(
-                context.repositoryMock.create(
-                    deepEqual({
-                        id: uuid('016d3680-c2ac-4c6a-98f8-c63b22b3542f'),
-                        name: 'test',
-                    }),
-                ),
-            ).called();
-            verify(context.repositoryMock.save(deepEqual(newEntityProcessed), undefined)).called();
-
             expect(res.response).toEqual(newEntityProcessed);
             expect(res.error).toEqual(null);
+
+            verify(context.repositoryMock.save(deepEqual(newEntityProcessed), undefined)).called();
         });
 
         it('creates an entity with options', async function() {
@@ -1677,8 +1688,19 @@ describe('CRUD Extension', function() {
                 body: {},
             };
 
-            const newEntity = {
-                name: 'test',
+            const newEntity: Partial<ESSearchReturn<FakeEntity>> = {
+                hits: {
+                    total: 1,
+                    hits: [
+                        {
+                            _source: {
+                                id: 'fake_id',
+                                name: 'hi',
+                                updated_at: new Date(Date.now()),
+                            },
+                        } as any,
+                    ],
+                } as any,
             };
 
             when(context.modelMock.search(elasticSearchOptions, anything())).thenCall(() => {
@@ -1793,6 +1815,138 @@ describe('CRUD Extension', function() {
 
             expect(res.error).toEqual('unexpected error');
             expect(res.response).toEqual(null);
+        });
+    });
+
+    describe('countElastic', function() {
+        it('count for entities', async function() {
+            when(context.modelMock._properties).thenReturn({
+                schema: {
+                    table_name: 'fake',
+                    keyspace: 't721',
+                    key: ['id'],
+                    fields: {
+                        id: {
+                            type: 'uuid',
+                        },
+                        name: {
+                            type: 'text',
+                        },
+                    },
+                },
+            });
+
+            const crudext: CRUDExtension<Repository<FakeEntity>, FakeEntity> = new CRUDExtension<
+                Repository<FakeEntity>,
+                FakeEntity
+            >(instance(context.modelMock), instance(context.repositoryMock), null, entityBuilder);
+
+            const elasticSearchOptions: ESSearchQuery<FakeEntity> = {
+                body: {},
+            };
+
+            const esClientMock = mock(EsClientMock);
+
+            when(context.modelMock.get_es_client()).thenReturn(instance(esClientMock));
+
+            when(
+                esClientMock.count(
+                    deepEqual({
+                        index: 'ticket721_fake',
+                        type: 'fake',
+                        body: {},
+                    }),
+                ),
+            ).thenResolve({
+                count: 1,
+                _shards: {
+                    total: 2,
+                    successful: 2,
+                    skipped: 0,
+                    failed: 0,
+                },
+            });
+
+            const res = await crudext.countElastic(elasticSearchOptions);
+
+            expect(res.error).toEqual(null);
+            expect(res.response).toEqual({
+                count: 1,
+                _shards: {
+                    total: 2,
+                    successful: 2,
+                    skipped: 0,
+                    failed: 0,
+                },
+            });
+
+            verify(context.modelMock.get_es_client()).called();
+            verify(
+                esClientMock.count(
+                    deepEqual({
+                        index: 'ticket721_fake',
+                        type: 'fake',
+                        body: {},
+                    }),
+                ),
+            ).called();
+        });
+
+        it('should report errors', async function() {
+            when(context.modelMock._properties).thenReturn({
+                schema: {
+                    table_name: 'fake',
+                    keyspace: 't721',
+                    key: ['id'],
+                    fields: {
+                        id: {
+                            type: 'uuid',
+                        },
+                        name: {
+                            type: 'text',
+                        },
+                    },
+                },
+            });
+
+            const crudext: CRUDExtension<Repository<FakeEntity>, FakeEntity> = new CRUDExtension<
+                Repository<FakeEntity>,
+                FakeEntity
+            >(instance(context.modelMock), instance(context.repositoryMock), null, entityBuilder);
+
+            const elasticSearchOptions: ESSearchQuery<FakeEntity> = {
+                body: {},
+            };
+
+            const esClientMock = mock(EsClientMock);
+
+            when(context.modelMock.get_es_client()).thenReturn(instance(esClientMock));
+
+            when(
+                esClientMock.count(
+                    deepEqual({
+                        index: 'ticket721_fake',
+                        type: 'fake',
+                        body: {},
+                    }),
+                ),
+            ).thenReject(new Error('unexpected_error'));
+
+            const res = await crudext.countElastic(elasticSearchOptions);
+
+            expect(res.error).toEqual('unexpected_error');
+            expect(res.response).toEqual(null);
+
+            verify(context.modelMock.get_es_client()).called();
+            verify(
+                esClientMock.count(
+                    deepEqual({
+                        index: 'ticket721_fake',
+                        type: 'fake',
+                        body: {},
+                    }),
+                ),
+            ).called();
         });
     });
 });

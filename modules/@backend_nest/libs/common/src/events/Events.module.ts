@@ -16,12 +16,6 @@ import { EventsRightsConfig } from '@lib/common/events/Events.rights';
         EventsService,
         // RightsConfigs
         {
-            provide: '@metadata/event',
-            useValue: EventsService,
-        },
-
-        // RightsConfigs
-        {
             provide: '@rights/event',
             useValue: EventsRightsConfig,
         },

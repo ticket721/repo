@@ -44,6 +44,9 @@ import { GemOrdersModule } from '@lib/common/gemorders/GemOrders.module';
 import { DosojinRunnerModule, DosojinRunnerModuleBuildOptions } from '@app/worker/dosojinrunner/DosojinRunner.module';
 import { CategoriesModule } from '@lib/common/categories/Categories.module';
 import { RightsModule } from '@lib/common/rights/Rights.module';
+import { CartInputHandlers } from '@app/worker/actionhandlers/cart/Cart.input.handlers';
+import { AuthorizationsTasks } from '@app/worker/tasks/authorizations/Authorizations.tasks';
+import { AuthorizationsModule } from '@lib/common/authorizations/Authorizations.module';
 
 @Module({
     imports: [
@@ -72,6 +75,7 @@ import { RightsModule } from '@lib/common/rights/Rights.module';
         EventsModule,
         EVMEventSetsModule,
         GemOrdersModule,
+        AuthorizationsModule,
         CurrenciesModule.registerAsync({
             useFactory: (configService: ConfigService): string => configService.get('CURRENCIES_CONFIG_PATH'),
             inject: [ConfigService],
@@ -159,9 +163,11 @@ import { RightsModule } from '@lib/common/rights/Rights.module';
     providers: [
         // ActionSet Input Handlers
         EventsInputHandlers,
+        CartInputHandlers,
 
         // Bull Tasks
         ActionSetsTasks,
+        AuthorizationsTasks,
 
         // Schedulers
         ActionSetsScheduler,

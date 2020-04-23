@@ -165,19 +165,10 @@ export class ActionSet {
         this.entity.actions[this.entity.current_action].status = 'complete';
         this.entity.actions[this.entity.current_action].error = null;
 
-        let newIdx = this.entity.current_action;
-
-        while (newIdx < this.entity.actions.length) {
-            if (this.entity.actions[newIdx].status !== 'complete') {
-                break;
-            }
-            ++newIdx;
-        }
-
-        if (newIdx === this.entity.actions.length) {
+        if (this.entity.current_action === this.actions.length - 1) {
             this.setStatus('complete');
         } else {
-            this.entity.current_action = newIdx;
+            this.entity.current_action += 1;
             this.entity.actions[this.entity.current_action].status = 'in progress';
             this.setStatus(`${this.action.type}:in progress` as ActionSetStatus);
         }
