@@ -355,7 +355,7 @@ export class AuthenticationService {
             return {
                 response: null,
                 error: null,
-            }
+            };
         }
 
         const user: UserDto = emailUserResp.response;

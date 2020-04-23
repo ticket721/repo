@@ -1256,7 +1256,7 @@ describe('Authentication Controller', function() {
                 username: username,
             };
 
-            const res = await authenticationController.resetPassword(user)
+            const res = await authenticationController.resetPassword(user);
 
             expect(res).toEqual(null);
 
