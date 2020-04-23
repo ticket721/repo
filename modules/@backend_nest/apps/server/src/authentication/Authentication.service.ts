@@ -344,40 +344,23 @@ export class AuthenticationService {
     }
 
     /**
-     * Reset user password
+     * Returns true if email exists for given username
      *
      * @param email
      * @param username
      */
-    async resetUserPassword(email: string, username: string): Promise<ServiceResponse<PasswordlessUserDto>> {
+    async isEmailExist(email: string, username: string): Promise<boolean> {
         const emailUserResp: ServiceResponse<UserDto> = await this.usersService.findByEmail(email);
-        if (emailUserResp.error || emailUserResp.response.username !== username) {
-            return {
-                response: null,
-                error: null,
-            };
-        }
-
-        const user: UserDto = emailUserResp.response;
-        const updatedUser: ServiceResponse<UserDto> = {
-            response: user,
-            error: null,
-        };
-        delete updatedUser.response.password;
-
-        return {
-            response: updatedUser.response,
-            error: null,
-        };
+        return !(emailUserResp.error || emailUserResp.response.username !== username);
     }
 
     /**
      * Reset user password
      *
-     * @param id
+     * @param email
      * @param password
      */
-    async validateResetPassword(id: string, password: string): Promise<ServiceResponse<PasswordlessUserDto>> {
+    async validateResetPassword(email: string, password: string): Promise<ServiceResponse<PasswordlessUserDto>> {
         if (!isKeccak256(password)) {
             return {
                 response: null,
@@ -385,7 +368,7 @@ export class AuthenticationService {
             };
         }
         const updatedUserResp: ServiceResponse<UserDto> = await this.usersService.update({
-            id,
+            email,
             password: await hash(password, parseInt(this.configService.get('BCRYPT_SALT_ROUNDS'), 10)),
         });
 
@@ -395,9 +378,6 @@ export class AuthenticationService {
 
         delete updatedUserResp.response.password;
 
-        return {
-            error: null,
-            response: updatedUserResp.response,
-        };
+        return updatedUserResp;
     }
 }

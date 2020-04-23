@@ -319,24 +319,15 @@ export class AuthenticationController {
         StatusCodes.UnprocessableEntity,
         StatusCodes.InternalServerError,
     ])
-    async resetPassword(@Body() body: Partial<UserDto>): Promise<PasswordlessUserDto> {
-        const resp = await this.authenticationService.resetUserPassword(body.email, body.username);
-        if (resp.error) {
-            throw new HttpException(
-                {
-                    status: StatusCodes.InternalServerError,
-                    message: resp.error,
-                },
-                StatusCodes.InternalServerError,
-            );
-        } else if (resp.response != null) {
+    async resetPassword(@Body() body: Partial<UserDto>) {
+        const resp = await this.authenticationService.isEmailExist(body.email, body.username);
+        if (resp === true) {
             await this.mailingQueue.add(
                 '@@mailing/resetPasswordEmail',
                 {
-                    email: resp.response.email,
-                    username: resp.response.username,
-                    locale: resp.response.locale,
-                    id: resp.response.id,
+                    email: body.email,
+                    username: body.username,
+                    locale: body.locale,
                 } as ResetPasswordTaskDto,
                 {
                     attempts: 5,
@@ -344,7 +335,6 @@ export class AuthenticationController {
                 },
             );
         }
-        return resp.response;
     }
 
     /**
@@ -358,7 +348,7 @@ export class AuthenticationController {
         let validatedUserRes: ServiceResponse<PasswordlessUserDto>;
         try {
             const payload = await this.jwtService.verifyAsync<ResetPasswordTaskDto>(body.token);
-            validatedUserRes = await this.authenticationService.validateResetPassword(payload.id, body.password);
+            validatedUserRes = await this.authenticationService.validateResetPassword(payload.email, body.password);
         } catch (e) {
             switch (e.message) {
                 case 'jwt expired': {

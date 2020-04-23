@@ -16,9 +16,4 @@ export class ResetPasswordTaskDto {
      * Username
      */
     username: string;
-
-    /**
-     * User id
-     */
-    id: string;
 }
