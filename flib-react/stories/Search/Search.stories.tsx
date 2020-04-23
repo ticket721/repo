@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {action } from '@storybook/addon-actions';
-import { text, withKnobs, boolean } from '@storybook/addon-knobs';
+import { text, withKnobs } from '@storybook/addon-knobs';
 import SearchInput from '../../src/components/search/input';
 import LocationHeader from '../../src/components/location/header';
 import SearchTerms from '../../src/components/search/terms';
