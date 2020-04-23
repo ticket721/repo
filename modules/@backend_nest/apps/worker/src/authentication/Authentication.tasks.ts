@@ -90,7 +90,7 @@ export class AuthenticationTasks implements OnModuleInit {
         await job.progress(50);
         const validationLink = `${this.configService.get('RESET_PASSWORD_URL')}?token=${encodeURIComponent(signature)}`;
         const res = await this.emailService.send({
-            template: 'reset',
+            template: 'passwordReset',
             to: job.data.email,
             locale: job.data.locale,
             locals: {
