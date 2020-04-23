@@ -7,7 +7,6 @@ export interface WalletCreditCardProps extends React.ComponentProps<any> {
   user: UserInterface;
 }
 
-
 const Input = styled(TextInput)`
   padding: ${props => props.theme.regularSpacing};
   margin-bottom: ${props => props.theme.smallSpacing};
