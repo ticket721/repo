@@ -5,7 +5,7 @@ const Home: React.FC = () => {
     return (
         <div className='Home' style={{ color: 'white' }}>
           <NavBar />
-          Homme
+          Home
         </div>
     )
 };

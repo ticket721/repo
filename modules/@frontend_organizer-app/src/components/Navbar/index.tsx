@@ -1,7 +1,9 @@
-import React            from 'react';
-import styled           from 'styled-components';
-import { Button }       from '@frontend/flib-react/lib/components';
-import { Icon }         from '@frontend/flib-react/lib/components';
+import React        from 'react';
+import styled       from 'styled-components';
+import { Button }   from '@frontend/flib-react/lib/components';
+import { Icon }     from '@frontend/flib-react/lib/components';
+
+import { truncate } from '../../utils/style';
 
 const NavBar: React.FC = () => (
   <Container>
@@ -12,7 +14,7 @@ const NavBar: React.FC = () => (
         <ProfilePicture>PL</ProfilePicture>
         <Informations>
           <Name type='button' onClick={() => console.log('Show profile drawer')}>
-            <span>Pierre-Luc</span>
+            <span>Pierre-Luc AvecUnLongNom</span>
             <Icon icon='chevron' fill='#fff' width='7px' height='12px'/>
           </Name>
           <Amount>
@@ -39,6 +41,7 @@ const ActionContainer = styled.div`
   width: 300px;
   && button {
     outline: none;
+    font-size: 13px;
   }
 `;
 
@@ -62,6 +65,7 @@ const Informations = styled.div`
   flex-direction: column;
   min-width: 100px;
   padding-left: 10px;
+  font-size: 13px;
 `;
 
 const Name = styled.button`
@@ -69,13 +73,14 @@ const Name = styled.button`
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  text-overflow: ellipsis;
+  span {
+    ${ truncate('100px') }
+  }
   svg {
     transform: rotate(90deg);
   }
   cursor: pointer;
   color: ${(props) => props.theme.textColor};
-  font-size: 16px;
 `;
 
 const Amount = styled.div`
