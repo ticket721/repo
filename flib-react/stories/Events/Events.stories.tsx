@@ -95,13 +95,6 @@ const BgContainer = styled.div`
   margin-bottom: 24px;
 `
 
-const toggleText = () => {
-  store.set({
-    label: store.get('showText') ? 'Read more': 'Read less',
-    showText: !store.get('showText')
-  })
-}
-
 const toggleAll = () => {
   store.set({
     showAll: !store.get('showAll')
@@ -114,6 +107,7 @@ const store = new Store({
   showAll: false,
   showCta: false
 })
+
 const slides = [
   {
     id: 1,
@@ -169,12 +163,11 @@ export const showcase = () => (
           />
           <Border />
           <ReadMore
-            showText={state.showText}
-            toggleText={toggleText}
             readMoreColor={eventDetails.mainColor}
             title="About"
             text={eventDetails.about}
-            readMoreLabel={state.label}
+            showLabel="Read more"
+            hideLabel="Show less"
             removeBg
           />
           <Border />

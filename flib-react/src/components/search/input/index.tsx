@@ -55,7 +55,7 @@ const ClearButton = styled.button<SearchInputProps>`
   opacity: ${props => props.value? 1 : 0};
   position: absolute;
   right: ${props => props.theme.regularSpacing};
-  top: 20px;
+  top: 18px;
   transition: opacity 300ms ease;
 `
 

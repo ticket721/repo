@@ -6,11 +6,10 @@ import styled from '../../../config/styled';
 export interface ReadMoreProps extends React.ComponentProps<any> {
   removeBg?: boolean;
   readMoreColor?: string;
-  showText: boolean;
+  showLabel: string;
+  hideLabel: string;
   text: string;
-  toggleText: () => void;
   wSeparator?: boolean;
-  readMoreLabel: string;
 }
 
 const H3 = styled.h3`
@@ -33,12 +32,15 @@ const ReadMoreLabel = styled.span<ReadMoreProps>`
 `
 
 export const ReadMore: React.FunctionComponent<ReadMoreProps> = (props: ReadMoreProps): JSX.Element => {
+  const [show, setShow] = React.useState(false);
 
   return <CardContainer removeBg={props.removeBg}>
             <H3>{props.title}</H3>
-            <Text showText={props.showText}>{props.text}</Text>
+            <Text showText={show}>{props.text}</Text>
             {props.text.length > 180 &&
-              <ReadMoreLabel onClick={props.toggleText} readMoreColor={props.readMoreColor}>{props.readMoreLabel}</ReadMoreLabel>
+              <ReadMoreLabel onClick={() => setShow(!show)} readMoreColor={props.readMoreColor}>
+                {show ? props.hideLabel : props.showLabel}
+              </ReadMoreLabel>
             }
             {props.wSeparator &&
               <Separator />

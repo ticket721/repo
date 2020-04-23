@@ -5,10 +5,8 @@ import Flicking from "@egjs/react-flicking";
 
 export interface TagsListProps extends React.ComponentProps<any> {
   tags: Tag[];
-  handleToggle?: () => void;
   label?: string;
   removeBg?: boolean;
-  showAll?: boolean;
   hideLabel?: string;
   carousel?: boolean;
 }
@@ -54,7 +52,9 @@ const CarouselContainer = styled.div`
 `
 
 export const TagsList: React.FunctionComponent<TagsListProps> = (props:TagsListProps): JSX.Element => {
-  let maxItems = props.showAll ? props.tags.length : 3;
+  const [showAll, setShow] = React.useState(false);
+
+  let maxItems = showAll ? props.tags.length : 3;
 
   return <Container removeBg={props.removeBg} carousel={props.carousel}>
           {props.label &&
@@ -82,7 +82,7 @@ export const TagsList: React.FunctionComponent<TagsListProps> = (props:TagsListP
               })}
 
               {props.tags.length > 3 &&
-                <ToggleButton key="default" onClick={props.handleToggle}>{props.showAll ? props.hideLabel : `${props.tags.length - 3} +`}</ToggleButton>
+                <ToggleButton key="default" onClick={() => setShow(!showAll)}>{ showAll ? props.hideLabel : `${props.tags.length - 3} +`}</ToggleButton>
               }
             </List>
           )}

@@ -44,21 +44,25 @@ const featuredSlides = [
 
 const categoriesSlides = [
   {
+    id: 1,
     name: 'Concert',
     url: '#todo',
     icon: 'assets/images/concert.png'
   },
   {
+    id: 12,
     name: 'Esports',
     url: '#todo',
     icon: 'assets/images/esports.png',
   },
   {
+    id: 16,
     name: 'Sports',
     url: '#todo',
     icon: 'assets/images/sports.png'
   },
   {
+    id: 121,
     name: 'Sports',
     url: '#todo',
     icon: 'assets/images/sports.png'

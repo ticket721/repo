@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { withKnobs, text, boolean } from '@storybook/addon-knobs';
 import TagsListCard from '../../src/components/cards/tags-list';
-import { State, Store } from '@sambego/storybook-state';
 
 export default {
   title: 'Cards|Tags list',
@@ -40,15 +39,6 @@ const tags = [
     label: 'rock'
   }
 ]
-const toggleAll = () => {
-  store.set({
-    showAll: !store.get('showAll')
-  })
-}
-
-const store = new Store({
-  showAll: false
-})
 
 export const Carousel = () => (
   <TagsListCard
@@ -63,21 +53,14 @@ export const NoToggle = () => (
   <TagsListCard
     label={text ('Label', 'Tags')}
     tags={tags.slice(0, 3)}
-    handleToggle={toggleAll}
     hideLabel={text('Hide label', 'hide')}
   />
 );
 
 export const Toggle = () => (
-  <State store={store}>
-    {state => [
-      <TagsListCard
-        label={text ('Label', 'Tags')}
-        handleToggle={toggleAll}
-        showAll={state.showAll}
-        tags={tags}
-        hideLabel={text('Hide label', 'hide')}
-      />
-    ]}
-  </State>
+  <TagsListCard
+    label={text ('Label', 'Tags')}
+    tags={tags}
+    hideLabel={text('Hide label', 'hide')}
+  />
 );

@@ -53,11 +53,12 @@ const CtaContainer = styled.div<EventCtaProps>`
 
   button {
     margin: 0;
-  & * {
-    flex: 2;
+
+    & * {
+      flex: 2;
+    }
   }
 `
-
 export const EventCta: React.FunctionComponent<EventCtaProps> = (props: EventCtaProps): JSX.Element => {
   return <CtaContainer show={props.show}>
           <div>
