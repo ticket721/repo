@@ -2,7 +2,6 @@ import React            from 'react';
 import styled           from 'styled-components';
 import { Button }       from '@frontend/flib-react/lib/components';
 import { Icon }         from '@frontend/flib-react/lib/components';
-import { customThemes } from '@frontend/flib-react/lib/config/theme';
 
 const NavBar: React.FC = () => (
   <Container>
@@ -47,7 +46,7 @@ const Profile = styled.div`
   display: flex;
   width: 100%;
   background-color: rgba(255, 255, 255, 0.06);
-  border-radius: ${customThemes['t721'].defaultRadius};
+  border-radius: ${(props) => props.theme.defaultRadius};
   padding: 8px 16px;
 `;
 
@@ -75,7 +74,7 @@ const Name = styled.button`
     transform: rotate(90deg);
   }
   cursor: pointer;
-  color: ${customThemes['t721'].textColor};
+  color: ${(props) => props.theme.textColor};
   font-size: 16px;
 `;
 
