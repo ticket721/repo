@@ -14,9 +14,11 @@ import { DatesService } from '@lib/common/dates/Dates.service';
 import { EventsService } from '@lib/common/events/Events.service';
 import { EventEntity } from '@lib/common/events/entities/Event.entity';
 import { DateEntity } from '@lib/common/dates/entities/Date.entity';
-import * as Crypto from 'crypto';
 import { VaultereumService } from '@lib/common/vaultereum/Vaultereum.service';
 import { AuthorizedTicketMintingFormat, TicketMintingFormat } from '@lib/common/utils/Cart.type';
+import { EIP712Signature } from '@ticket721/e712/lib';
+import { BytesToolService } from '@lib/common/toolbox/Bytes.tool.service';
+import { TimeToolService } from '@lib/common/toolbox/Time.tool.service';
 
 /**
  * Service to CRUD AuthorizationEntities
@@ -34,6 +36,8 @@ export class AuthorizationsService extends CRUDExtension<AuthorizationsRepositor
      * @param currenciesService
      * @param web3Service
      * @param vaultereumService
+     * @param bytesToolService
+     * @param timeToolService
      */
     constructor(
         @InjectRepository(AuthorizationsRepository)
@@ -47,6 +51,8 @@ export class AuthorizationsService extends CRUDExtension<AuthorizationsRepositor
         private readonly currenciesService: CurrenciesService,
         private readonly web3Service: Web3Service,
         private readonly vaultereumService: VaultereumService,
+        private readonly bytesToolService: BytesToolService,
+        private readonly timeToolService: TimeToolService,
     ) {
         super(
             authorizationEntity,
@@ -137,7 +143,7 @@ export class AuthorizationsService extends CRUDExtension<AuthorizationsRepositor
         let randomBytes: string;
 
         do {
-            randomBytes = `0x${Crypto.randomBytes(31).toString('hex')}`;
+            randomBytes = `0x${this.bytesToolService.randomBytes(31)}`;
 
             isCodeConsummable = await instance.methods.isCodeConsummable(owner, randomBytes).call();
         } while (!isCodeConsummable);
@@ -185,8 +191,8 @@ export class AuthorizationsService extends CRUDExtension<AuthorizationsRepositor
         );
 
         for (const authorization of authorizations) {
-            const evmExpiration = Math.floor((Date.now() + expirationTime) / 1000);
-            const beExpiration = Math.floor((Date.now() + expirationTime + HOUR) / 1000);
+            const evmExpiration = Math.floor((this.timeToolService.now().getTime() + expirationTime) / 1000);
+            const beExpiration = Math.floor((this.timeToolService.now().getTime() + expirationTime + HOUR) / 1000);
 
             const categoryEntityRes = await this.categoriesService.search({
                 id: authorization.categoryId,
@@ -240,8 +246,16 @@ export class AuthorizationsService extends CRUDExtension<AuthorizationsRepositor
             );
 
             const vaultereumSigner = await this.vaultereumService.getSigner(controllerName);
+            let signature: EIP712Signature;
 
-            const signature = await signer.sign(vaultereumSigner, payload);
+            try {
+                signature = await signer.sign(vaultereumSigner, payload);
+            } catch (e) {
+                return {
+                    error: 'vaultereum_signature_failure',
+                    response: null,
+                };
+            }
 
             const authorizationCreationRes = await this.create({
                 grantee,
@@ -281,7 +295,7 @@ export class AuthorizationsService extends CRUDExtension<AuthorizationsRepositor
                 granter: controllerAddress,
                 grantee,
                 granterController: controllerName,
-                expiration: new Date(evmExpiration + 1000),
+                expiration: new Date(evmExpiration * 1000),
             });
         }
 

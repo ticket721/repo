@@ -8,6 +8,7 @@ import { BullModule, BullModuleOptions } from '@nestjs/bull';
 import { ConfigService } from '@lib/common/config/Config.service';
 import { EventsModule } from '@lib/common/events/Events.module';
 import { DatesModule } from '@lib/common/dates/Dates.module';
+import { ToolBoxModule } from '@lib/common/toolbox/ToolBox.module';
 
 @Module({
     imports: [
@@ -26,6 +27,7 @@ import { DatesModule } from '@lib/common/dates/Dates.module';
         CategoriesModule,
         EventsModule,
         DatesModule,
+        ToolBoxModule,
     ],
     providers: [AuthorizationsService],
     exports: [AuthorizationsService],
