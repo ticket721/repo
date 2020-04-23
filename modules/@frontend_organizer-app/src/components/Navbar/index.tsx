@@ -38,7 +38,7 @@ const ActionContainer = styled.div`
   display: flex;
   justify-content: space-evenly;
   align-items: center;
-  width: 300px;
+  width: 400px;
   && button {
     outline: none;
     font-size: 13px;
@@ -74,7 +74,8 @@ const Name = styled.button`
   align-items: center;
   justify-content: space-between;
   span {
-    ${ truncate('100px') }
+    ${ truncate('100px') };
+    padding-right: 10px;
   }
   svg {
     transform: rotate(90deg);
