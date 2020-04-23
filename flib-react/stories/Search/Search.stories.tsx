@@ -53,14 +53,11 @@ export const showcase = () => (
     <LocationHeader location={text('Current location', 'Quebec City, QC')} title={text('Title', 'Browsing events in')} />
     <SearchInput
       clearInput={action('clear')}
-      name="input--searcg"
+      name="input--search"
       onChange={action('typing...')}
       placeholder="Events, artists, venues..."
       cancelLabel="Cancel"
-      onFocus={action('focus')}
-      onBlur={action('blur')}
       cancel={action('cancel')}
-      focused={boolean('Focused ?', false)}
     />
     <SearchTerms
       clearAll={action('Clear all')}
