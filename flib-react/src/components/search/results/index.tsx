@@ -82,6 +82,10 @@ const SingleResult = styled.article<SearchResultsProps>`
     color: ${props => props.theme.textColorDark};
     display: block;
     margin-top: ${props => props.theme.smallSpacing};
+
+    &:first-of-type {
+      margin-top: 4px;
+    }
   }
 `
 
@@ -143,10 +147,10 @@ const CategoryResults = (props: any) => {
           <h2>{props.category.name}</h2>
           {props.category.results.map((result: EventOrLocation) => {
             if(isLocationOrEvent(result)) {
-              return <SingleEvent event={result} color={props.color} />
+              return <SingleEvent key={result.id} event={result} color={props.color} />
             }
 
-            return <SingleLocation location={result} />
+            return <SingleLocation key={result.id} location={result} />
           })}
           {/* update to use react-router Link */}
           <a href={props.category.url}>{props.resultsLabel}</a>
@@ -157,7 +161,7 @@ export const SearchResults: React.FunctionComponent<SearchResultsProps & {classN
   return <Container className={props.className} color={props.mainColor}>
           {props.searchResults.length ? (
             props.searchResults.map((category: SearchCategory) => {
-              return <CategoryResults category={category} resultsLabel={props.viewResultsLabel}/>
+              return <CategoryResults key={category.id} category={category} resultsLabel={props.viewResultsLabel}/>
             })
           ) : (
             <CategorySection>

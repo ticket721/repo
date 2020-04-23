@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { withKnobs, text } from '@storybook/addon-knobs';
-import LocationHeader from '../../src/components/location-header';
+import { text, withKnobs } from '@storybook/addon-knobs';
+import LocationHeader from '../../src/components/location/header';
 
 export default {
-  title: 'Home | Location header',
+  title: 'Location|Search Results',
   decorators: [
     withKnobs
   ],

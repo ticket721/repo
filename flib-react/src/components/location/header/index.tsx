@@ -1,6 +1,6 @@
 import * as React from 'react';
-import styled from '../../config/styled';
-import Icon from '../icon';
+import styled from '../../../config/styled';
+import Icon from '../../icon';
 
 export interface LocationHeaderProps extends React.ComponentProps<any> {
   title: string;

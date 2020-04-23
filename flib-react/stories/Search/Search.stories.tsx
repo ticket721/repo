@@ -2,7 +2,7 @@ import * as React from 'react';
 import {action } from '@storybook/addon-actions';
 import { text, withKnobs, boolean } from '@storybook/addon-knobs';
 import SearchInput from '../../src/components/search/input';
-import LocationHeader from '../../src/components/location-header';
+import LocationHeader from '../../src/components/location/header';
 import SearchTerms from '../../src/components/search/terms';
 import SearchCategory from '../../src/components/search/category';
 import styled from '../../src/config/styled';

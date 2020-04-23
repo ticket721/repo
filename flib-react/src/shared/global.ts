@@ -132,6 +132,7 @@ export const GlobalStyles = createGlobalStyle`
 
   .row {
     display: flex;
+    flex-wrap: wrap;
     width: 100%;
   }
 

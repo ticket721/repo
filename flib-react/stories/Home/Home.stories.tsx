@@ -3,7 +3,7 @@ import { withKnobs, text } from '@storybook/addon-knobs';
 import slugify from 'slugify';
 import styled from '../../src/config/styled';
 
-import LocationHeader from '../../src/components/location-header';
+import LocationHeader from '../../src/components/location/header';
 import FeaturedCarousel from '../../src/components/events/featured-carousel';
 import CategoriesCarousel from '../../src/components/events/categories-carousel';
 import SingleImage from '../../src/components/events/single-image';

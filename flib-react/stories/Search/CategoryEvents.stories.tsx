@@ -73,6 +73,7 @@ export const showcase = () => (
       <div className="margin--lr">
         {events.map(event => {
            return <SingleImage
+                    key={event.id}
                     src={event.src}
                     id={event.id}
                     price={event.price}

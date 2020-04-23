@@ -79,7 +79,7 @@ export const SearchInput: React.FunctionComponent<SearchInputProps> = (props: Se
 
   return <Container>
           <InputContainer>
-            <SearchIcon fill={props.mainColor} width="24" height="24" icon={props.icon} />
+            <SearchIcon fill={props.mainColor} width={props.icon === 'pin' ? "12" : "24"} height={props.icon === 'pin' ? "16" : "24"} icon={props.icon} />
             <input id={props.name} name={props.name} placeholder={props.placeholder} onFocus={() => setFocus(focused = true)} onChange={props.onChange} value={props.value} />
             <ClearButton value={props.value} onClick={props.clearInput}><ClearIcon icon="close" height="12" width="12" /></ClearButton>
           </InputContainer>

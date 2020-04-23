@@ -80,7 +80,7 @@ const store = new Store({
 export const withInput = () => (
   <State store={store}>
   {state => [
-    <div>
+    <div key="1">
       <SearchInput
         clearInput={clearInput}
         name={text('Input name', 'example')}
