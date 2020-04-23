@@ -179,10 +179,10 @@ export class AuthorizationsTasks implements OnModuleInit {
                     throw new Error(`Cannot cancel authorization ${authorization.authorizationId}`);
                 }
 
-                if (ret[authorizationEntity.id] !== undefined) {
-                    ret[authorizationEntity.id] += 1;
+                if (ret[authorization.categoryId] !== undefined) {
+                    ret[authorization.categoryId] += 1;
                 } else {
-                    ret[authorizationEntity.id] = 1;
+                    ret[authorization.categoryId] = 1;
                 }
             }
 
@@ -259,7 +259,7 @@ export class AuthorizationsTasks implements OnModuleInit {
             });
 
             if (countRes.error) {
-                throw new Error(`Cannot count authorizations`);
+                throw new Error(`Error while fetching authorizations count`);
             }
 
             let remainingSeats =
@@ -316,7 +316,7 @@ export class AuthorizationsTasks implements OnModuleInit {
             freeSeatsCounts = await this.generateFreeSeatsCounts(authorizationData.oldAuthorizations);
         }
 
-        if (!(await this.seatsCountChecker(job.data.authorizations, freeSeatsCounts, categories))) {
+        if (!(await this.seatsCountChecker(authorizationData.authorizations, freeSeatsCounts, categories))) {
             const errorUpdateStepRes = await this.actionSetsService.errorStep(
                 authorizationData.actionSetId,
                 'no_seats_left',
@@ -332,8 +332,8 @@ export class AuthorizationsTasks implements OnModuleInit {
         }
 
         const authorizationsCreationRes = await this.authorizationsService.validateTicketAuthorizations(
-            job.data.authorizations,
-            job.data.prices,
+            authorizationData.authorizations,
+            authorizationData.prices,
             authorizationData.expirationTime,
             authorizationData.grantee.address,
             authorizationData.signatureReadable,
