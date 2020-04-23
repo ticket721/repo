@@ -71,13 +71,19 @@ const SearchIcon = styled(Icon)`
 
 export const SearchInput: React.FunctionComponent<SearchInputProps> = (props: SearchInputProps): JSX.Element => {
   let [focused,  setFocus] = React.useState(false);
+
+  const test = () => {
+    props.clearInput();
+    setFocus(focused = false);
+  }
+
   return <Container>
           <InputContainer>
             <SearchIcon fill={props.mainColor} width="24" height="24" icon={props.icon} />
-            <input id={props.name} name={props.name} placeholder={props.placeholder} onFocus={() => setFocus(focused = true)} onBlur={() => setFocus(focused = false)} onChange={props.onChange} value={props.value} />
+            <input id={props.name} name={props.name} placeholder={props.placeholder} onFocus={() => setFocus(focused = true)} onChange={props.onChange} value={props.value} />
             <ClearButton value={props.value} onClick={props.clearInput}><ClearIcon icon="close" height="12" width="12" /></ClearButton>
           </InputContainer>
-          <CancelButton focused={focused} onClick={() => setFocus(focused = false)}>{props.cancelLabel}</CancelButton>
+          <CancelButton focused={focused} onClick={test}>{props.cancelLabel}</CancelButton>
         </Container>
 }
 

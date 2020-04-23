@@ -13,7 +13,6 @@ export default {
   }
 };
 
-
 const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
   const target = e.target as HTMLInputElement;
 
