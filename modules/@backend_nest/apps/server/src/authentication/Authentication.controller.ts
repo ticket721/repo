@@ -320,8 +320,8 @@ export class AuthenticationController {
         StatusCodes.InternalServerError,
     ])
     async resetPassword(@Body() body: Partial<UserDto>) {
-        const resp = await this.authenticationService.isEmailExist(body.email);
-        if (resp === true) {
+        const resp = await this.authenticationService.isEmailExisting(body.email);
+        if (resp.response === true) {
             await this.mailingQueue.add(
                 '@@mailing/resetPasswordEmail',
                 {
@@ -333,6 +333,14 @@ export class AuthenticationController {
                     attempts: 5,
                     backoff: 5000,
                 },
+            );
+        } else if (resp.error === 'unexpected_error') {
+            throw new HttpException(
+                {
+                    status: StatusCodes.InternalServerError,
+                    message: resp.error,
+                },
+                StatusCodes.InternalServerError,
             );
         }
     }

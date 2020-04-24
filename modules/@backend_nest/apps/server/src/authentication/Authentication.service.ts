@@ -348,9 +348,23 @@ export class AuthenticationService {
      *
      * @param email
      */
-    async isEmailExist(email: string): Promise<boolean> {
+    async isEmailExisting(email: string): Promise<ServiceResponse<boolean>> {
         const emailUserResp: ServiceResponse<UserDto> = await this.usersService.findByEmail(email);
-        return !emailUserResp.error;
+        if (emailUserResp.error)
+            return({
+                response: false,
+                error: emailUserResp.error,
+            })
+        else if (emailUserResp.response === null)
+            return({
+                response: false,
+                error: null,
+            })
+        else
+            return({
+                response: true,
+                error: null,
+            })
     }
 
     /**
