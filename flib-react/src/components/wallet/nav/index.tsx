@@ -1,42 +1,42 @@
 import * as React from 'react';
 import styled from '../../../config/styled';
-import Icon from '../../icon';
+import EventCta from '../../events/cta';
 
 export interface WalletNavProps extends React.ComponentProps<any> {
+  ctaLabel: string;
   title: string;
-  showPrev?: boolean;
+  subtitle: string;
+  show?: boolean;
+  gradients?: string[];
+  onClick: () => void;
 }
 
-const Container = styled.section`
-  align-items: center;
-  display: flex;
-  padding: ${props => props.theme.biggerSpacing} ${props => props.theme.biggerSpacing} 0;
-  width: 100%;
+const Container = styled(EventCta)`
+  background: none;
+  backdrop-filter: none;
+  border-radius: 0;
+  bottom: unset;
+  margin-top: ${props => props.theme.biggerSpacing};
+  opacity: 1;
+  position: relative;
+  transform: none;
 
-  h2 {
-    line-height: 1;
-  }
-
-  button {
-    margin-left: auto;
+  &::before {
+    background-color: rgba(255, 255, 255, 0.05);
+    content: "";
+    display: block;
+    height: 2px;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: calc(100% - 24px);
   }
 `
 
-const ArrowIcon = styled(Icon)`
-  margin-right: ${props => props.theme.regularSpacing};
-`
 
 export const WalletNav: React.FunctionComponent<WalletNavProps> = (props: WalletNavProps): JSX.Element => {
 
-  return <Container>
-          {props.showPrev &&
-            <ArrowIcon icon="arrow" height="16" width="16" fill="rgba(255, 255, 255, 0.9)" />
-          }
-          <h2>{props.title}</h2>
-          <button>
-            <Icon icon="close" height="14" width="14" fill="rgba(255, 255, 255, 0.6)" />
-          </button>
-        </Container>
+  return <Container ctaLabel={props.ctaLabel} onClick={props.onClick} title={props.title} subtitle={props.subtitle} gradients={props.gradients} />
 };
 
 export default WalletNav;

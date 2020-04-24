@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { withKnobs, text, boolean } from '@storybook/addon-knobs';
+import { action } from '@storybook/addon-actions';
+import { withKnobs, text } from '@storybook/addon-knobs';
 import WalletNav from '../../src/components/wallet/nav';
 
 export default {
@@ -11,5 +12,5 @@ export default {
 };
 
 export const showcase = () => (
-  <WalletNav title={text('Title', 'Buying tickets')} showPrev={boolean('Show back button ?', false)} />
+  <WalletNav ctaLabel="Continue" onClick={action('...next step')} title={text('Title', 'Total')} subtitle={text('Amount', '€450')} show />
 )

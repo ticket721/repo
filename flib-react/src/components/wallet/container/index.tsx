@@ -27,11 +27,11 @@ const Container = styled.section<WalletContainerProps>`
   flex-wrap: wrap;
   left: 0;
   opacity: ${props => props.toggle  ? 1 : 0};
-  padding-bottom: ${props => props.theme.biggerSpacing};
   position: fixed;
   right: 0;
-  transform: ${props => props.toggle ? 'translateY(-80px)' : 'translateY(100%)'};
+  transform: ${props => props.toggle ? 'translateY(0px)' : 'translateY(100%)'};
   transition: all 300ms ease;
+  z-index: 10000;
 `;
 
 const Nav = styled.nav`
