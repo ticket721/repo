@@ -13,3 +13,4 @@ export * from './organizers';
 export * from './tags';
 export * from './ticket';
 export * from './time-picker';
+export * from './wallet';
