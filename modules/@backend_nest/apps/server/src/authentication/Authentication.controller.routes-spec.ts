@@ -12,11 +12,11 @@ import {
     generateUserName,
     getSDK,
     getSDKAndUser,
-}                              from '../../test/utils';
-import { T721SDK }             from '@common/sdk';
+} from '../../test/utils';
+import { T721SDK } from '@common/sdk';
 import { PasswordlessUserDto } from '@app/server/authentication/dto/PasswordlessUser.dto';
-import { UserDto }             from '@lib/common/users/dto/User.dto';
-import { anyString }           from 'ts-mockito';
+import { UserDto } from '@lib/common/users/dto/User.dto';
+import { anyString } from 'ts-mockito';
 
 export default function(getCtx: () => { ready: Promise<void> }) {
     return function() {
@@ -827,9 +827,10 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 const res: AxiosResponse<Partial<UserDto>> = (await sdk.updatePassword(
                     token,
                     user.email,
-                    password)) as AxiosResponse<Partial<UserDto>>;
+                    password,
+                )) as AxiosResponse<Partial<UserDto>>;
 
-                expect (res.data).toEqual({
+                expect(res.data).toEqual({
                     id: expect.anything(),
                     email: user.email,
                     username: expect.anything(),
@@ -838,7 +839,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     role: 'authenticated',
                     valid: expect.anything(),
                     locale: expect.anything(),
-                })
+                });
             });
 
             test.concurrent('should fail unauthorizes (POST local/password/update)', async function() {
