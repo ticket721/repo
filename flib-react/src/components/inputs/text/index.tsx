@@ -1,5 +1,6 @@
 import * as React from 'react';
 import styled from '../../../config/styled';
+import Cleave from 'cleave.js/react';
 
 export interface InputProps extends React.ComponentProps<any> {
   error?:boolean;
@@ -8,6 +9,7 @@ export interface InputProps extends React.ComponentProps<any> {
   name:string;
   onChange: () => void;
   placeholder: string;
+  options?: any;
   value?:string;
 }
 
@@ -80,7 +82,13 @@ const StyledInputContainer = styled.div<InputProps>`
 export const TextInput: React.FunctionComponent<InputProps & {className?: string}> = (props: InputProps): JSX.Element => {
   return <StyledInputContainer error={props.error} className={props.className}>
       <StyledLabel htmlFor={props.name}>{props.label}</StyledLabel>
-      <input id={props.name} name={props.name} placeholder={props.placeholder} defaultValue={props.value}/>
+
+      {props.options ? (
+        <Cleave options={props.options} id={props.name} name={props.name} placeholder={props.placeholder} defaultValue={props.value} onChange={props.onChange} />
+      ) : (
+        <input id={props.name} name={props.name} placeholder={props.placeholder} defaultValue={props.value} onChange={props.onChange} />
+      )}
+
       {props.error && <Error>{ props.errorMessage }</Error> }
   </StyledInputContainer>
 }

@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { rgba } from 'polished';
-import breakpoint from 'styled-components-breakpoint';
 import styled from '../../config/styled';
 
 export interface ButtonProps extends React.ComponentProps<any> {
@@ -63,10 +62,6 @@ const StyledButton = styled.button<ButtonProps>`
   position: relative;
   width: 100%;
 
-  ${breakpoint('desktop')
-    `font-size: 15px;`
-  }
-
   &::before {
     content: '';
     display: block;
@@ -96,14 +91,14 @@ const StyledButton = styled.button<ButtonProps>`
 
 export const Button: React.FunctionComponent<ButtonProps> = (props: ButtonProps): JSX.Element => {
 
-  return <StyledButton
-      name={props.title}
-      onClick={props.onClick}
-      gradients={props.gradients}
-      type={props.type}
-    >
-      <span>{props.title}</span>
-    </StyledButton>
+  return  <StyledButton
+            name={props.title}
+            onClick={props.onClick}
+            gradients={props.gradients}
+            type={props.type}
+          >
+            <span>{props.title}</span>
+          </StyledButton>
 };
 
 Button.defaultProps = {

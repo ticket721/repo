@@ -9,6 +9,7 @@ export interface CategoriesCarouselProps extends React.ComponentProps<any> {
 }
 
 interface CategoryProps {
+  id: string | number;
   name: string;
   icon: string;
   url: string;
@@ -82,7 +83,7 @@ export const CategoriesCarousel: React.FunctionComponent<CategoriesCarouselProps
               gap={16}
             >
             {props.slides.map((slide: CategoryProps) => {
-                return <SlideItem slide={slide} />
+                return <SlideItem key={slide.id} slide={slide} />
               })}
             </Flicking>
           </CarouselContainer>

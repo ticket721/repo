@@ -20,6 +20,8 @@ export const showcase = () => (
     gradient={array('Gradient', gradientsValues)}
     description={text('Description', ' Sed ac mattis elit, aliquam lobortis puus dictumst. Suspendisse a ex et lorem mattis faucibus rhoncus at justo')}
     feesIncluded={boolean('Fees included ?', false)}
+    feeIncludedLabel={text('Fees included label', 'Fees included')}
+    feeNotIncludedLabel={text('Fees not included label', '+ fees')}
     selected={boolean('Selected ?', false)}
     price={text('Starting price', '55€')}
     typeName={text('Ticket type', '2 days VIP pass')}

@@ -14,21 +14,25 @@ export default {
 
 const slides = [
   {
+    id: 1,
     name: 'Concert',
     url: '#todo',
     icon: 'assets/images/concert.png'
   },
   {
+    id: 12,
     name: 'Esports',
     url: '#todo',
     icon: 'assets/images/esports.png',
   },
   {
+    id: 21,
     name: 'Sports',
     url: '#todo',
     icon: 'assets/images/sports.png'
   },
   {
+    id: 11,
     name: 'Sports',
     url: '#todo',
     icon: 'assets/images/sports.png'

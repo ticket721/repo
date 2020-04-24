@@ -55,7 +55,7 @@ const StyledInputContainer = styled.div`
     }
 
     .react-datepicker-wrapper::after {
-      transform: rotate(0deg);
+      transform: rotate(270deg);
     }
 
     ${StyledLabel} {
@@ -114,12 +114,12 @@ const StyledInputContainer = styled.div`
         bottom: ${props => props.theme.biggerSpacing};
         content: "";
         display: block;
-        height: 7px;
+        height: 12px;
         position: absolute;
         right: ${props => props.theme.biggerSpacing};
-        transform: rotate(-180deg);
+        transform: rotate(90deg);
         transition: transform 300ms ease;
-        width: 12px;
+        width: 7px;
       }
 
       input{

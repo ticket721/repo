@@ -12,6 +12,8 @@ export interface TicketQtyProps extends React.ComponentProps<any> {
   title?: string;
   ticketsLeft: number;
   typeName: string;
+  feeIncludedLabel: string;
+  feeNotIncludedLabel: string;
 }
 
 const Container = styled.article<TicketQtyProps>`
@@ -90,7 +92,7 @@ export const TicketQty: React.FunctionComponent<TicketQtyProps> = (props: Ticket
               />
             </div>
             <h4>{props.price} /each</h4>
-            <span>{props.feesIncluded ? 'Fees included' : '+ fees'}</span>
+            <span>{props.feesIncluded ? props.feeIncludedLabel : props.feeNotIncludedLabel}</span>
             <p>{props.description}</p>
           </Container>
 };

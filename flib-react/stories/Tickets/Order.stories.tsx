@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { withKnobs } from '@storybook/addon-knobs';
-import { Store, State } from '@sambego/storybook-state';
 import { action } from '@storybook/addon-actions'
 import styled from '../../src/config/styled';
 
@@ -89,16 +88,6 @@ const fees = [
   }
 ]
 
-const toggleFees = () => {
-  store.set({
-    showFees: !store.get('showFees')
-  })
-}
-
-const store = new Store({
-  showFees: false
-})
-
 const gradientsValues = ['#22c1c3', '#68bf93', '#8cbe7b', '#bdbd59', '#fdbb2d'];
 const Container = styled.section`
   margin-bottom: 148px;
@@ -109,68 +98,64 @@ const Header = styled.header`
 `
 
 export const showcase = () => (
-  <State store={store}>
-    {state => [
-      <div>
-          <TopNav label="Tall heights tour 2020" />
-          <Header>
-            <h1>Review your order</h1>
-            <SingleImage src='assets/images/ticket-1.jpg' id={1} />
-          </Header>
-        <Container>
-          <Gradient values={gradientsValues} blurOnly/>
+  <div>
+      <TopNav label="Tall heights tour 2020" />
+      <Header>
+        <h1>Review your order</h1>
+        <SingleImage src='assets/images/ticket-1.jpg' id={1} />
+      </Header>
+    <Container>
+      <Gradient values={gradientsValues} blurOnly/>
 
-          <EventInfos
-            event={event}
-            pullUp
-          />
-          <Border />
-          <TicketQty
-            color="#DB535B"
-            gradient={gradientsValues}
-            description="Sed ac mattis elit, aliquam lobortis puus dictumst. Suspendisse a ex et lorem mattis faucibus rhoncus at justo"
-            feesIncluded={false}
-            selected={false}
-            price="55€"
-            ticketsLeft={10}
-            title="Tickets"
-            typeName="2 days VIP pass"
-          />
-          <Border />
-          <AddOns
-            onChange={action('change')}
-            title="Add-ons"
-            addOns={addOns}
-            gradient={gradientsValues}
-          />
-          <Border />
-          <DescriptonLink
-            subtitle="Refund policy"
-            title="Hello"
-            text="ndisse a ex et lorem mattis faucibus rhoncus at just"
-            link="#todo"
-          />
-          <Border />
-          <PurchaseTotal
-            addOns={addOns}
-            label="Total"
-            tickets={ticket}
-            fees={fees}
-            taxes={20.00}
-            total={115.56}
-            toggleFees={toggleFees}
-            showFees={state.showFees}
-            subtotal={34.55}
-          />
-        </Container>
-        <EventCta
-          ctaLabel="Purchase tickets"
-          onClick={action('click')}
-          show
-          subtitle="150€"
-          title="Total"
-        />
-      </div>
-    ]}
-  </State>
+      <EventInfos
+        event={event}
+        pullUp
+      />
+      <Border />
+      <TicketQty
+        color="#DB535B"
+        gradient={gradientsValues}
+        description="Sed ac mattis elit, aliquam lobortis puus dictumst. Suspendisse a ex et lorem mattis faucibus rhoncus at justo"
+        feesIncluded={false}
+        feeIncludedLabel="Fees included"
+        feeNotIncludedLabel="+ fees"
+        selected={false}
+        price="55€"
+        ticketsLeft={10}
+        title="Tickets"
+        typeName="2 days VIP pass"
+      />
+      <Border />
+      <AddOns
+        onChange={action('change')}
+        title="Add-ons"
+        addOns={addOns}
+        gradient={gradientsValues}
+      />
+      <Border />
+      <DescriptonLink
+        subtitle="Refund policy"
+        title="Hello"
+        text="ndisse a ex et lorem mattis faucibus rhoncus at just"
+        link="#todo"
+      />
+      <Border />
+      <PurchaseTotal
+        addOns={addOns}
+        label="Total"
+        tickets={ticket}
+        fees={fees}
+        taxes={20.00}
+        total={115.56}
+        subtotal={34.55}
+      />
+    </Container>
+    <EventCta
+      ctaLabel="Purchase tickets"
+      onClick={action('click')}
+      show
+      subtitle="150€"
+      title="Total"
+    />
+  </div>
 );

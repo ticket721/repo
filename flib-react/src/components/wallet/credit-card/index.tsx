@@ -45,6 +45,7 @@ export const WalletCreditCard: React.FunctionComponent<WalletCreditCardProps> = 
           <Input
             label="Card number"
             placeholder="5555 5555 5555 5555"
+            options= {{creditCard: true}}
             onChange
           />
           <div className="row jcsb">
