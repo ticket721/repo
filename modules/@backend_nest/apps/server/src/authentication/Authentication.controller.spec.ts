@@ -1045,12 +1045,23 @@ describe('Authentication Controller', function() {
                 error: 'user_not_found',
             });
 
-            const user: Partial<UserDto> = {
-                email: email,
+            const body: Partial<UserDto> = {
                 password: hashedp,
             };
 
-            await expect(authenticationController.updatePassword(user)).rejects.toMatchObject({
+            const user: UserDto = {
+                id: anyString(),
+                email: email,
+                username: anyString(),
+                address: anyString(),
+                password: anyString(),
+                role: 'authenticated',
+                valid: true,
+                type: anyString(),
+                locale: anyString(),
+            };
+
+            await expect(authenticationController.updatePassword(body, user)).rejects.toMatchObject({
                 response: {
                     status: StatusCodes.Unauthorized,
                     message: 'user_not_found',
@@ -1061,8 +1072,6 @@ describe('Authentication Controller', function() {
                     message: 'user_not_found',
                 },
             });
-
-            verify(authenticationServiceMock.updateUserPassword(email, hashedp)).called();
         });
 
         test('invalid password format - should error with 422', async function() {
@@ -1079,12 +1088,23 @@ describe('Authentication Controller', function() {
                 }),
             );
 
-            const user: Partial<UserDto> = {
+            const body: Partial<UserDto> = {
                 password: hashedp,
-                email: email,
             };
 
-            await expect(authenticationController.updatePassword(user)).rejects.toMatchObject({
+            const user: UserDto = {
+                id: anyString(),
+                email: email,
+                username: anyString(),
+                address: anyString(),
+                password: anyString(),
+                role: 'authenticated',
+                valid: true,
+                type: anyString(),
+                locale: anyString(),
+            };
+
+            await expect(authenticationController.updatePassword(body, user)).rejects.toMatchObject({
                 response: {
                     status: StatusCodes.UnprocessableEntity,
                     message: 'password_should_be_keccak256',
@@ -1095,8 +1115,6 @@ describe('Authentication Controller', function() {
                     message: 'password_should_be_keccak256',
                 },
             });
-
-            verify(authenticationServiceMock.updateUserPassword(email, hashedp)).called();
         });
 
         test('internal error - should error 500', async function() {
@@ -1113,12 +1131,23 @@ describe('Authentication Controller', function() {
                 }),
             );
 
-            const user: Partial<UserDto> = {
+            const body: Partial<UserDto> = {
                 password: hashedp,
-                email: email,
             };
 
-            await expect(authenticationController.updatePassword(user)).rejects.toMatchObject({
+            const user: UserDto = {
+                id: anyString(),
+                email: email,
+                username: anyString(),
+                address: anyString(),
+                password: anyString(),
+                role: 'authenticated',
+                valid: true,
+                type: anyString(),
+                locale: anyString(),
+            };
+
+            await expect(authenticationController.updatePassword(body, user)).rejects.toMatchObject({
                 response: {
                     status: StatusCodes.InternalServerError,
                     message: 'unexpected_error',
@@ -1129,8 +1158,6 @@ describe('Authentication Controller', function() {
                     message: 'unexpected_error',
                 },
             });
-
-            verify(authenticationServiceMock.updateUserPassword(email, hashedp)).called();
         });
 
         test('should update user password', async function() {
@@ -1145,35 +1172,43 @@ describe('Authentication Controller', function() {
                     response: {
                         username: anyString(),
                         email,
-                        type: 't721',
+                        type: anyString(),
                         address: anyString(),
-                        id: '0',
+                        id: anyString(),
                         role: 'authenticated',
-                        locale: 'en',
-                        valid: false,
+                        locale: anyString(),
+                        valid: true,
                     },
                     error: null,
                 }),
             );
 
-            const user: Partial<UserDto> = {
+            const body: Partial<UserDto> = {
                 password: hashedp,
-                email: email,
             };
 
-            const res = await authenticationController.updatePassword(user);
-            expect(res).toEqual({
+            const user: UserDto = {
+                id: anyString(),
+                email: email,
+                username: anyString(),
+                address: anyString(),
+                password: anyString(),
+                role: 'authenticated',
+                valid: true,
+                type: anyString(),
+                locale: anyString(),
+            };
+
+            await expect(authenticationController.updatePassword(body, user)).resolves.toMatchObject({
                 username: anyString(),
                 email,
-                type: 't721',
+                type: anyString(),
                 address: anyString(),
-                id: '0',
+                id: anyString(),
                 role: 'authenticated',
-                locale: 'en',
-                valid: false,
+                locale: anyString(),
+                valid: true,
             });
-
-            verify(authenticationServiceMock.updateUserPassword(email, hashedp)).called();
         });
     });
 
