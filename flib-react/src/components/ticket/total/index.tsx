@@ -12,8 +12,6 @@ export interface PurchaseTotalProps extends React.ComponentProps<any> {
   subtotal: number;
   fees?: Fee[];
   addOns?: AddOn[];
-  showFees?: boolean;
-  toggleFees: () => void;
 }
 
 interface AddOn {
@@ -86,6 +84,8 @@ const CollapsedContainer = styled.section<PurchaseTotalProps>`
 `
 
 export const PurchaseTotal: React.FunctionComponent<PurchaseTotalProps> = (props:PurchaseTotalProps): JSX.Element => {
+  const [showFees, setShowFees] = React.useState(false);
+
  const feesTotal = () => {
    let amount = 0;
 
@@ -115,12 +115,12 @@ export const PurchaseTotal: React.FunctionComponent<PurchaseTotalProps> = (props
             <span>{props.subtotal.toFixed(2)}€</span>
           </Row>
           {props.fees &&
-            <CollapsedContainer showFees={props.showFees}>
+            <CollapsedContainer showFees={showFees}>
               <Row>
-                <span className="row" onClick={props.toggleFees}>Fees<Icon icon="chevron" height="10" width="6" fill="rgba( 255, 255, 255, 0.6)"/></span>
+                <span className="row" onClick={() => { setShowFees(!showFees) }}>Fees<Icon icon="chevron" height="10" width="6" fill="rgba( 255, 255, 255, 0.6)"/></span>
                 <span>{feesTotal()}€</span>
               </Row>
-              <Collapsed showFees={props.showFees}>
+              <Collapsed showFees={showFees}>
               {props.fees.map((fee:Fee) => {
                 return <Row key={fee.id}><span>{fee.name}</span><span>{fee.price.toFixed(2)}</span></Row>
               })}

@@ -82,6 +82,7 @@ const StyledInputContainer = styled.div<InputProps>`
 export const TextInput: React.FunctionComponent<InputProps & {className?: string}> = (props: InputProps): JSX.Element => {
   return <StyledInputContainer error={props.error} className={props.className}>
       <StyledLabel htmlFor={props.name}>{props.label}</StyledLabel>
+
       {props.options ? (
         <Cleave options={props.options} id={props.name} name={props.name} placeholder={props.placeholder} defaultValue={props.value} onChange={props.onChange} />
       ) : (

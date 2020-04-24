@@ -2,11 +2,9 @@ import * as React from 'react';
 import styled from '../../../config/styled';
 
 export interface TextareaProps extends React.ComponentProps<any> {
-  currentCount: string | number;
   error?:boolean;
   errorMessage?:string;
   label:string;
-  keyPress: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
   maxChar?: number;
   name:string;
   placeholder: string;
@@ -90,11 +88,19 @@ const LabelsContainer = styled.div`
 `;
 
 export const Textarea: React.FunctionComponent<TextareaProps> = (props: TextareaProps): JSX.Element => {
+  const [count, setCount ] = React.useState(0);
+
+  const keypress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    const target = e.target as HTMLTextAreaElement;
+
+    setCount(target.value.length);
+  };
+
   return <StyledTextarea error={props.error}>
       <LabelsContainer>
         <StyledLabel htmlFor={props.name}>{props.label}</StyledLabel>
         {props.maxChar &&
-          <span>{props.currentCount}/{props.maxChar}</span>
+          <span>{count}/{props.maxChar}</span>
         }
       </LabelsContainer>
 
@@ -103,7 +109,7 @@ export const Textarea: React.FunctionComponent<TextareaProps> = (props: Textarea
         name={props.name}
         placeholder={props.placeholder}
         defaultValue={props.value}
-        onKeyUp={props.keyPress}
+        onKeyUp={keypress}
         maxLength={props.maxChar}>
       </textarea>
 

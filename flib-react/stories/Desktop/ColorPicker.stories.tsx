@@ -18,15 +18,8 @@ const handleChange = (color: ColorResult) => {
   })
 }
 
-const handleClick = () => {
-  store.set({
-    showPicker: !store.get('showPicker')
-  })
-}
-
 const store = new Store({
-  color: '#00FBFF',
-  showPicker: false
+  color: '#00FBFF'
 })
 
 const colors = [] = [];
@@ -38,10 +31,8 @@ export const showcase = () => (
           label={text('Label', 'Primary Color')}
           color={state.color}
           handleChange={handleChange}
-          handleClick={handleClick}
           presetLabel={text('Preset colors label', 'Color from main image')}
           presetColors={array('Preset colors:', colors)}
-          showPicker={state.showPicker}
         />
       ]}
     </State>

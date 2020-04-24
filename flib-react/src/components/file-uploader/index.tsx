@@ -38,6 +38,10 @@ const InfosContainer = styled.div`
   }
 `
 
+const UploadIcon = styled(Icon)`
+  height: 64px;
+`
+
 const fadeIn = keyframes`
   0% { opacity:0; }
   66% { opacity:0; }
@@ -248,7 +252,7 @@ export const FilesUploader: React.FunctionComponent<FilesUploaderProps> = (props
       <StyledContainer>
         <div {...dropzoneProps}>
         <InfosContainer>
-          <Icon icon={props.multiple ? 'gallery' : 'upload'} height="62" width="72" fill={!props.hasErrors ? 'rgba(255, 255, 255, 0.38)' : '#C91D31' } />        
+          <UploadIcon icon={props.multiple ? 'gallery' : 'upload'} height="62" width="72" fill={!props.hasErrors ? 'rgba(255, 255, 255, 0.38)' : '#C91D31' } />
           <span>{props.dragDropLabel}</span>
           <span>{props.browseLabel}</span>
         </InfosContainer>

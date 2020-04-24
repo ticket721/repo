@@ -82,7 +82,7 @@ export const EventCarousel: React.FunctionComponent<EventCarouselProps> = (props
               gap={16}
             >
             {props.slides.map((slide: Slide) => {
-                return <SlideItem slide={slide} />
+                return <SlideItem key={slide.id} slide={slide} />
               })}
             </Flicking>
           </CarouselContainer>

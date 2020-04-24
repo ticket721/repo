@@ -55,6 +55,7 @@ const CtaContainer = styled.div<EventCtaProps>`
 
   button {
     margin: 0;
+
     width: 40%;
   }
 `

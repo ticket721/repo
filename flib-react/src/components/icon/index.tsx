@@ -9,19 +9,24 @@ export interface IconProps extends React.ComponentProps<any> {
   width?: string;
 }
 
-const Svg = styled.svg`
+const Svg = styled.svg<IconProps>`
   display: block;
   flex-shrink: 0;
-  height: ${props => props.height ? `${props.height}px` : '100%'};
+  fill: ${props => props.fill ? props.fill : props.theme.primaryColor};
+  height: 16px;
   transition: all 300ms ease;
-  width: ${props => props.width ? `${props.width}px` : '100%'};
+  width: auto;
 `;
 
-
 export const Icon: React.FunctionComponent<IconProps & {className?: string}> = (props: IconProps): JSX.Element => {
-  return <Svg height={props.height} width={props.width} className={props.className}>
+  return <Svg viewBox={`0 0 ${props.width} ${props.height}`} className={props.className}>
           <path d={icons[props.icon]} fill={props.fill}/>
         </Svg>
+}
+
+Icon.defaultProps = {
+  height: "24",
+  width: "24"
 }
 
 export default Icon;

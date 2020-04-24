@@ -6,10 +6,8 @@ export interface ColorPickerProps extends React.ComponentProps<any> {
   label: string;
   color: string;
   handleChange: (color: ColorResult) => void;
-  handleClick: () => void;
   presetColors: any[];
   presetLabel?: string;
-  showPicker: boolean;
 }
 
 const StyledLabel = styled.label`
@@ -148,15 +146,17 @@ const ColorLabel = styled.span`
 `;
 
 export const ColorPicker: React.FunctionComponent<ColorPickerProps> = (props: ColorPickerProps): JSX.Element => {
+  const [showPicker, setShowPicker] = React.useState(false);
+
   return <div>
-          <StyledContainer onClick={props.handleClick} className={props.showPicker ? 'active' : ''}>
+          <StyledContainer onClick={() => { setShowPicker(!showPicker) }} className={showPicker ? 'active' : ''}>
             <StyledLabel>{props.label}</StyledLabel>
             <div className="row aic">
               <ColorSwatch style={{ backgroundColor: `${props.color}` }} />
               <ColorLabel>{props.color}</ColorLabel>
             </div>
           </StyledContainer>
-          {props.showPicker &&
+          { showPicker &&
             <PickerContainer>
               <Cover onClick={props.handleClick}/>
               { props.presetColors.length > 0 && <label>{props.presetLabel}</label> }

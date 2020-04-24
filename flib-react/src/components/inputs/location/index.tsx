@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Select from 'react-select';
-import styled from '../../config/styled';
+import styled from '../../../config/styled';
 
 const components = {
   DropdownIndicator: null,
