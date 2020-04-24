@@ -21,6 +21,7 @@ const Container = styled.section`
     margin-left: auto;
   }
 `
+
 const ArrowIcon = styled(Icon)`
   margin-right: ${props => props.theme.regularSpacing};
 `
