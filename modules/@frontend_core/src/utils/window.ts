@@ -1,4 +1,4 @@
-import { AppState } from '../redux/store';
+import { AppState } from '../redux/ducks';
 import { Store }    from 'redux';
 
 export {};
