@@ -2,7 +2,7 @@ import * as React from 'react';
 import { action } from '@storybook/addon-actions';
 import { withKnobs } from '@storybook/addon-knobs';
 
-import WalletHeader from '../../src/components/wallet/header';
+import UserHeader from '../../src/components/elements/user-header';
 import WalletPaymentTypes from '../../src/components/wallet/payment-types';
 
 export default {
@@ -26,7 +26,7 @@ const user = {
 
 export const showcase = () => (
   <div>
-    <WalletHeader user={user} />
+    <UserHeader user={user} />
     <WalletPaymentTypes
       user={user}
       onChange={action('payment type changed')}
