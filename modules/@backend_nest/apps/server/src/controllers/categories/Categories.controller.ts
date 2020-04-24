@@ -161,6 +161,7 @@ export class CategoriesController extends ControllerBasics<CategoryEntity> {
             scope,
             prices: pricesResolverRes.response,
             seats: body.seats,
+            reserved: 0,
         });
 
         await this._serviceCall(

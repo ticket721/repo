@@ -17,6 +17,15 @@ import { ControllerBasics } from '@lib/common/utils/ControllerBasics.base';
 import { GemOrderEntity } from '@lib/common/gemorders/entities/GemOrder.entity';
 import { HttpExceptionFilter } from '@app/server/utils/HttpException.filter';
 import { ApiResponses } from '@app/server/utils/ApiResponses.controller.decorator';
+import { CheckoutCartCommitStripeInputDto } from '@app/server/controllers/checkout/dto/CheckoutCartCommitStripeInput.dto';
+import { CheckoutCartCommitStripeResponseDto } from '@app/server/controllers/checkout/dto/CheckoutCartCommitStripeResponse.dto';
+import { ActionSetsService } from '@lib/common/actionsets/ActionSets.service';
+import { RightsService } from '@lib/common/rights/Rights.service';
+import { ActionSet } from '@lib/common/actionsets/helper/ActionSet.class';
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
+import { CartAuthorizations, CartTicketSelections } from '@app/worker/actionhandlers/cart/Cart.input.handlers';
+import { DAY } from '@lib/common/utils/time';
 
 /**
  * Checkout controller to create, update and resolve carts
@@ -30,12 +39,66 @@ export class CheckoutController extends ControllerBasics<StripeResourceEntity> {
      *
      * @param stripeResourcesService
      * @param gemOrdersService
+     * @param actionSetsService
+     * @param rightsService
+     * @param authorizationQueue
      */
     constructor(
         private readonly stripeResourcesService: StripeResourcesService,
         private readonly gemOrdersService: GemOrdersService,
+        private readonly actionSetsService: ActionSetsService,
+        private readonly rightsService: RightsService,
+        @InjectQueue('authorization') private readonly authorizationQueue: Queue,
     ) {
         super();
+    }
+
+    /**
+     * Route to commit a cart to a stripe payment
+     *
+     * @param body
+     * @param user
+     */
+    @Post('/cart/commit/stripe')
+    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.OK)
+    @Roles('authenticated')
+    @ApiResponses([StatusCodes.OK, StatusCodes.InternalServerError, StatusCodes.Unauthorized])
+    async commitStripe(
+        @Body() body: CheckoutCartCommitStripeInputDto,
+        @User() user: UserDto,
+    ): Promise<CheckoutCartCommitStripeResponseDto> {
+        const cart = await this._authorizeOne(
+            this.rightsService,
+            this.actionSetsService,
+            user,
+            {
+                id: body.cart,
+            },
+            'id',
+            ['owner'],
+        );
+
+        const actionSet: ActionSet = new ActionSet().load(cart);
+
+        const ticketSelectionsData: CartTicketSelections = actionSet.actions[0].data;
+        const authorizationsData: CartAuthorizations = actionSet.actions[2].data;
+
+        await this.authorizationQueue.add('generateMintingAuthorizations', {
+            actionSetId: actionSet.id,
+            authorizations: ticketSelectionsData.tickets,
+            oldAuthorizations: authorizationsData ? authorizationsData.authorizations : null,
+            commitType: 'stripe',
+            expirationTime: 2 * DAY,
+            prices: ticketSelectionsData.total,
+            signatureReadable: false,
+            grantee: user,
+        });
+
+        return {
+            cart: body.cart,
+        };
     }
 
     /**
@@ -44,7 +107,7 @@ export class CheckoutController extends ControllerBasics<StripeResourceEntity> {
      * @param body
      * @param user
      */
-    @Post('/resolve/paymentintent')
+    @Post('/cart/resolve/paymentintent')
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @UseFilters(new HttpExceptionFilter())
     @HttpCode(StatusCodes.OK)

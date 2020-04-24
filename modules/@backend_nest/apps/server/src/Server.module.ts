@@ -55,6 +55,7 @@ import { RightsController } from '@app/server/controllers/rights/Rights.controll
 import { ServerController } from '@app/server/controllers/server/Server.controller';
 import { MetadatasController } from '@app/server/controllers/metadatas/Metadatas.controller';
 import { MetadatasModule } from '@lib/common/metadatas/Metadatas.module';
+import { AuthorizationsModule } from '@lib/common/authorizations/Authorizations.module';
 
 @Module({
     imports: [
@@ -89,6 +90,7 @@ import { MetadatasModule } from '@lib/common/metadatas/Metadatas.module';
         GemOrdersModule,
         StripeResourcesModule,
         MetadatasModule,
+        AuthorizationsModule,
         CurrenciesModule.registerAsync({
             useFactory: (configService: ConfigService): string => configService.get('CURRENCIES_CONFIG_PATH'),
             inject: [ConfigService],

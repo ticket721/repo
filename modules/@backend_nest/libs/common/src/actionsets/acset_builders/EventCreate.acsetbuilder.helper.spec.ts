@@ -36,6 +36,7 @@ describe('EventCreate AcSetBuilder Helper', function() {
                     data: '{"name":"event name"}',
                     error: null,
                     status: 'in progress',
+                    private: false,
                 },
                 {
                     type: 'input',
@@ -43,6 +44,7 @@ describe('EventCreate AcSetBuilder Helper', function() {
                     data: null,
                     error: null,
                     status: 'in progress',
+                    private: false,
                 },
                 {
                     type: 'input',
@@ -50,6 +52,7 @@ describe('EventCreate AcSetBuilder Helper', function() {
                     data: null,
                     error: null,
                     status: 'in progress',
+                    private: false,
                 },
                 {
                     type: 'input',
@@ -57,6 +60,7 @@ describe('EventCreate AcSetBuilder Helper', function() {
                     data: null,
                     error: null,
                     status: 'in progress',
+                    private: false,
                 },
                 {
                     type: 'input',
@@ -64,6 +68,7 @@ describe('EventCreate AcSetBuilder Helper', function() {
                     data: null,
                     error: null,
                     status: 'in progress',
+                    private: false,
                 },
                 {
                     type: 'input',
@@ -71,6 +76,7 @@ describe('EventCreate AcSetBuilder Helper', function() {
                     data: null,
                     error: null,
                     status: 'in progress',
+                    private: false,
                 },
             ],
             current_action: 0,

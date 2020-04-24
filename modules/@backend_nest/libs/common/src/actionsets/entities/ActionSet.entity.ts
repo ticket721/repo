@@ -59,6 +59,11 @@ export interface ActionEntity {
      * Non-null if error happened
      */
     error: string;
+
+    /**
+     * True if user cannot update this step
+     */
+    private: boolean;
 }
 
 /**
