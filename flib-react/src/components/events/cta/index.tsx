@@ -49,14 +49,13 @@ const CtaContainer = styled.div<EventCtaProps>`
   }
 
   div {
-    padding-right: 48px;
+    padding-right: 24px;
+    width: 60%;
   }
 
   button {
     margin: 0;
-    & * {
-      flex: 2;
-    }
+    width: 40%;
   }
 `
 
