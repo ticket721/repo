@@ -18,8 +18,8 @@ const Svg = styled.svg`
 `;
 
 
-export const Icon: React.FunctionComponent<IconProps> = (props: IconProps): JSX.Element => {
-  return <Svg height={props.height} width={props.width}>
+export const Icon: React.FunctionComponent<IconProps & {className?: string}> = (props: IconProps): JSX.Element => {
+  return <Svg height={props.height} width={props.width} className={props.className}>
           <path d={icons[props.icon]} fill={props.fill}/>
         </Svg>
 }

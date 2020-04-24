@@ -21,6 +21,7 @@ const CtaContainer = styled.div<EventCtaProps>`
   ${browser?.name !== 'firefox' &&`
     backdrop-filter: blur(40px);
   `}
+
   border-top-left-radius: ${props => props.theme.bigRadius};
   border-top-right-radius: ${props => props.theme.bigRadius};
   bottom: 0;
@@ -33,7 +34,7 @@ const CtaContainer = styled.div<EventCtaProps>`
   padding: ${props => props.theme.regularSpacing} ${props => props.theme.biggerSpacing};
   position: fixed;
   transform: translateY(100%);
-  transition: transform 300ms ease, opacity 450ms ease;
+  transition: all 300ms ease, opacity 450ms ease;
   width: 100%;
   z-index: 100;
 
@@ -48,18 +49,18 @@ const CtaContainer = styled.div<EventCtaProps>`
   }
 
   div {
-    padding-right: 48px;
+    padding-right: 24px;
+    width: 60%;
   }
 
   button {
     margin: 0;
-  & * {
-    flex: 2;
+    width: 40%;
   }
 `
 
-export const EventCta: React.FunctionComponent<EventCtaProps> = (props: EventCtaProps): JSX.Element => {
-  return <CtaContainer show={props.show}>
+export const EventCta: React.FunctionComponent<EventCtaProps & {className?: string}> = (props: EventCtaProps): JSX.Element => {
+  return <CtaContainer show={props.show} className={props.className}>
           <div>
             <h4 className="uppercase">{props.title}</h4>
             <span>{props.subtitle}</span>
