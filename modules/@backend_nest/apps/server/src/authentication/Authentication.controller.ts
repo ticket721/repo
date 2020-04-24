@@ -23,16 +23,17 @@ import { Web3RegisterResponseDto } from '@app/server/authentication/dto/Web3Regi
 import { Web3LoginResponseDto } from '@app/server/authentication/dto/Web3LoginResponse.dto';
 import { EmailValidationInputDto } from '@app/server/authentication/dto/EmailValidationInput.dto';
 import { EmailValidationResponseDto } from '@app/server/authentication/dto/EmailValidationResponse.dto';
-import { InjectQueue } from '@nestjs/bull';
-import { Queue } from 'bull';
-import { EmailValidationTaskDto } from '@app/server/authentication/dto/EmailValidationTask.dto';
-import { ConfigService } from '@lib/common/config/Config.service';
-import { StatusCodes } from '@lib/common/utils/codes.value';
-import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
-import { ApiResponses } from '@app/server/utils/ApiResponses.controller.decorator';
-import { UserDto } from '@lib/common/users/dto/User.dto';
-import { Roles, RolesGuard } from '@app/server/authentication/guards/RolesGuard.guard';
-import { UserTypes, UserTypesGuard } from '@app/server/authentication/guards/UserTypesGuard.guard';
+import { InjectQueue }                from '@nestjs/bull';
+import { Queue }                      from 'bull';
+import { EmailValidationTaskDto }     from '@app/server/authentication/dto/EmailValidationTask.dto';
+import { ConfigService }              from '@lib/common/config/Config.service';
+import { StatusCodes }                from '@lib/common/utils/codes.value';
+import { ServiceResponse }            from '@lib/common/utils/ServiceResponse.type';
+import { ApiResponses }               from '@app/server/utils/ApiResponses.controller.decorator';
+import { UserDto }                    from '@lib/common/users/dto/User.dto';
+import { Roles, RolesGuard }          from '@app/server/authentication/guards/RolesGuard.guard';
+import { UserTypes, UserTypesGuard }  from '@app/server/authentication/guards/UserTypesGuard.guard';
+import { User }                       from '@app/server/authentication/decorators/User.controller.decorator';
 
 /**
  * Controller exposing the authentication routes
@@ -321,8 +322,8 @@ export class AuthenticationController {
     @UseGuards(AuthGuard('jwt'), RolesGuard, UserTypesGuard)
     @Roles('authenticated')
     @UserTypes('t721')
-    async updatePassword(@Body() body: Partial<UserDto>): Promise<PasswordlessUserDto> {
-        const resp = await this.authenticationService.updateUserPassword(body.email, body.password);
+    async updatePassword(@Body() body: Partial<UserDto>, @User() user: UserDto): Promise<PasswordlessUserDto> {
+        const resp = await this.authenticationService.updateUserPassword(user.email, body.password);
         if (resp.error) {
             switch (resp.error) {
                 case 'user_not_found':
