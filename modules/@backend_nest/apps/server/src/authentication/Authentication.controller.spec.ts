@@ -1238,21 +1238,49 @@ describe('Authentication Controller', function() {
     });
 
     describe('resetPassword', function() {
-        test('user not found', async function() {
+        test('unexpected_error', async function() {
             const authenticationController: AuthenticationController = context.authenticationController;
             const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
 
             const email = 'test@test.com';
-            const username = 'salut';
 
             when(authenticationServiceMock.isEmailExisting(email)).thenResolve({
                 response: false,
-                error: 'user_not_found',
+                error: 'unexpected_error',
             });
 
             const user: Partial<UserDto> = {
                 email: email,
-                username: username,
+            };
+
+            await expect(authenticationController.resetPassword(user)).rejects.toMatchObject({
+                response: {
+                    status: 500,
+                    message: 'unexpected_error',
+                },
+                status: 500,
+                message: {
+                    status: 500,
+                    message: 'unexpected_error',
+                },
+            });
+
+            verify(authenticationServiceMock.isEmailExisting(email)).called();
+        });
+
+        test('user_not_found', async function() {
+            const authenticationController: AuthenticationController = context.authenticationController;
+            const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
+
+            const email = 'test@test.com';
+
+            when(authenticationServiceMock.isEmailExisting(email)).thenResolve({
+                response: false,
+                error: null,
+            });
+
+            const user: Partial<UserDto> = {
+                email: email,
             };
 
             await authenticationController.resetPassword(user);
@@ -1265,7 +1293,6 @@ describe('Authentication Controller', function() {
             const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
 
             const email = 'test@test.com';
-            const username = 'salut';
 
             when(authenticationServiceMock.isEmailExisting(email)).thenResolve({
                 response: true,
@@ -1274,7 +1301,6 @@ describe('Authentication Controller', function() {
 
             const user: Partial<UserDto> = {
                 email: email,
-                username: username,
             };
 
             await authenticationController.resetPassword(user);

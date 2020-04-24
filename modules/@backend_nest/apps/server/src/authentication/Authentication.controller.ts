@@ -326,7 +326,6 @@ export class AuthenticationController {
                 '@@mailing/resetPasswordEmail',
                 {
                     email: body.email,
-                    username: body.username,
                     locale: body.locale,
                 } as ResetPasswordTaskDto,
                 {

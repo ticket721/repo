@@ -10,6 +10,7 @@ export const Config: Joi.ObjectSchema = Joi.object({
 
     API_PORT: Joi.number().default(3000),
     VALIDATION_URL: Joi.string().required(),
+    RESET_PASSWORD_URL: Joi.string().required(),
 
     CASSANDRA_CONTACT_POINTS: Joi.string().required(),
     CASSANDRA_PORT: Joi.number().required(),
