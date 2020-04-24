@@ -18,6 +18,9 @@ import { Web3RegisterInputDto }       from '@app/server/authentication/dto/Web3R
 import { Web3LoginInputDto }          from '@app/server/authentication/dto/Web3LoginInput.dto';
 import { EmailValidationResponseDto } from '@app/server/authentication/dto/EmailValidationResponse.dto';
 import { EmailValidationInputDto }    from '@app/server/authentication/dto/EmailValidationInput.dto';
+import { UserDto }                    from '@lib/common/users/dto/User.dto';
+import { ResetPasswordResponseDto }   from '@app/server/authentication/dto/resetPasswordResponse.dto';
+import { ResetPasswordInputDto }      from '@app/server/authentication/dto/resetPasswordInput.dto';
 
 export interface FailedRegisterReport {
     report_status: 'weak';
@@ -129,6 +132,45 @@ export async function validateEmail(token: string): Promise<AxiosResponse<EmailV
     };
 
     return self.post<EmailValidationInputDto>('/authentication/validate', {
+        'Content-Type': 'application/json',
+    }, validationPayload);
+}
+
+export async function resetPassword(email: string) {
+    const self: T721SDK = this;
+
+    const updateUser: Partial<UserDto> = {
+        email,
+        locale: 'en',
+    };
+
+    await self.post<Partial<UserDto>>('/authentication/local/password/reset',
+        {
+            'Content-Type': 'application/json',
+        }, updateUser);
+}
+
+export async function validateResetPassword(
+    token: string,
+    password: string): Promise<AxiosResponse<ResetPasswordResponseDto> | FailedRegisterReport> {
+    const self: T721SDK = this;
+
+    const report = getPasswordStrength(password);
+
+    if (report.score < 3) {
+        return {
+            report_status: 'weak',
+            report,
+        };
+    }
+
+    const hashed = toAcceptedKeccak256Format(keccak256(password));
+    const validationPayload: ResetPasswordInputDto = {
+        token,
+        password: hashed,
+    };
+
+    return self.post<EmailValidationInputDto>('/authentication/validate/password/reset', {
         'Content-Type': 'application/json',
     }, validationPayload);
 }

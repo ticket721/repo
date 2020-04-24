@@ -7,7 +7,17 @@ import { getAPIInfos } from './app/app';
 import request         from 'supertest';
 
 // AUTHENTICATION
-import { localLogin, localRegister, web3Register, web3RegisterPayload, web3Login, web3LoginPayload, validateEmail } from './app/api/authentication';
+import {
+    localLogin,
+    localRegister,
+    web3Register,
+    web3RegisterPayload,
+    web3Login,
+    web3LoginPayload,
+    validateEmail,
+    resetPassword,
+    validateResetPassword,
+} from './app/api/authentication';
 
 // ACTIONS
 import { actionsCreate, actionsSearch, actionsUpdate } from './app/api/actions';
@@ -43,6 +53,7 @@ export class T721SDK {
     public protocol: 'http' | 'https';
     public axios: AxiosInstance;
 
+
     constructor() {
         this.getApiInfos = this.getApiInfos.bind(this);
 
@@ -51,6 +62,8 @@ export class T721SDK {
         this.web3Register = this.web3Register.bind(this);
         this.web3Login = this.web3Login.bind(this);
         this.validateEmail = this.validateEmail.bind(this);
+        this.resetPassword = this.resetPassword.bind(this);
+        this.validateResetPassword = this.validateResetPassword.bind(this);
 
         this.actions.search = this.actions.search.bind(this);
         this.actions.update = this.actions.update.bind(this);
@@ -184,6 +197,8 @@ export class T721SDK {
     public web3Login = web3Login;
     public web3LoginPayload = web3LoginPayload;
     public validateEmail = validateEmail;
+    public resetPassword = resetPassword;
+    public validateResetPassword = validateResetPassword;
 
     public actions = {
         search: actionsSearch,
