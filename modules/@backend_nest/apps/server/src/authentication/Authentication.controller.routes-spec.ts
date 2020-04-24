@@ -12,9 +12,11 @@ import {
     generateUserName,
     getSDK,
     getSDKAndUser,
-} from '../../test/utils';
-import { T721SDK } from '@common/sdk';
+}                              from '../../test/utils';
+import { T721SDK }             from '@common/sdk';
 import { PasswordlessUserDto } from '@app/server/authentication/dto/PasswordlessUser.dto';
+import { UserDto }             from '@lib/common/users/dto/User.dto';
+import { anyString }           from 'ts-mockito';
 
 export default function(getCtx: () => { ready: Promise<void> }) {
     return function() {
@@ -805,6 +807,70 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 };
 
                 await failWithCode(sdk.validateEmail(user.email), StatusCodes.Unauthorized);
+            });
+        });
+
+        describe('changePassword (POST local/password/update)', function() {
+            test.concurrent('should change password', async function() {
+                const {
+                    sdk,
+                    token,
+                    user,
+                    password,
+                }: {
+                    sdk: T721SDK;
+                    token: string;
+                    user: PasswordlessUserDto;
+                    password: string;
+                } = await getSDKAndUser(getCtx);
+
+                const res: AxiosResponse<Partial<UserDto>> = (await sdk.updatePassword(
+                    token,
+                    user.email,
+                    password)) as AxiosResponse<Partial<UserDto>>;
+
+                expect (res.data).toEqual({
+                    id: expect.anything(),
+                    email: user.email,
+                    username: expect.anything(),
+                    address: expect.anything(),
+                    type: 't721',
+                    role: 'authenticated',
+                    valid: expect.anything(),
+                    locale: expect.anything(),
+                })
+            });
+
+            test.concurrent('should fail unauthorizes (POST local/password/update)', async function() {
+                const sdk = await getSDK(getCtx);
+
+                const user = {
+                    email: generateEmail(),
+                    password: generatePassword(),
+                };
+
+                await failWithCode(sdk.updatePassword('badToken', user.email, user.password), StatusCodes.Unauthorized);
+            });
+
+            test.concurrent('should fail bad email', async function() {
+                const sdk = await getSDK(getCtx);
+
+                const user = {
+                    email: generateEmail(),
+                    username: generateUserName(),
+                    password: 'password',
+                };
+
+                await failWithCode(
+                    sdk.post(
+                        '/authentication/local/password/update',
+                        {
+                            'Content-Type': 'application/json',
+                        },
+                        user,
+                    ),
+                    StatusCodes.Unauthorized,
+                );
             });
         });
     };
