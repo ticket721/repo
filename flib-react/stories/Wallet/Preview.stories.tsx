@@ -47,9 +47,9 @@ export const showcase = () => (
         <WalletContainer title="Buying tickets" showWallet={state.showWallet} toggleWallet={showWallet} showPrev={boolean('Show previous', false)}>
           <UserHeader user={user} />
           <WalletOrder user={user} purchase={purchase} />
-          <WalletNav ctaLabel="Purchase Tickets" onClick={() => showWallet(true)} title="Total" subtitle={`€${purchase.amount}`} />
+          <WalletNav ctaLabel="Purchase" onClick={() => showWallet(true)} title="Total" subtitle={`€${purchase.amount}`} />
         </WalletContainer>
-        <EventCta ctaLabel="Purchase Tickets" onClick={() => showWallet(true)} title="Total" subtitle={`€${purchase.amount}`} show />
+        <EventCta ctaLabel="Purchase" onClick={() => showWallet(true)} title="Total" subtitle={`€${purchase.amount}`} show />
       </div>
     ]}
   </State>

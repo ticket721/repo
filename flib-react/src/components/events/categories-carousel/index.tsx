@@ -34,7 +34,6 @@ const ImgContainer = styled.div`
 
 const Infos = styled.div`
   font-size: 13px;
-  padding: 0 8px;
 
   h4 {
     margin: ${props => props.theme.regularSpacing} 0 0;

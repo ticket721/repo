@@ -95,6 +95,8 @@ const Container = styled.section`
 
 const Header = styled.header`
   margin: 64px 24px 0;
+  position: relative;
+  z-index: 1;
 `
 
 export const showcase = () => (
@@ -102,7 +104,7 @@ export const showcase = () => (
       <TopNav label="Tall heights tour 2020" />
       <Header>
         <h1>Review your order</h1>
-        <SingleImage src='assets/images/ticket-1.jpg' id={1} />
+        <SingleImage src='assets/images/ticket-1.jpg' id={1} imgOnly/>
       </Header>
     <Container>
       <Gradient values={gradientsValues} blurOnly/>
@@ -151,7 +153,7 @@ export const showcase = () => (
       />
     </Container>
     <EventCta
-      ctaLabel="Purchase tickets"
+      ctaLabel="Purchase"
       onClick={action('click')}
       show
       subtitle="150€"

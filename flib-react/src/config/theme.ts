@@ -27,7 +27,7 @@ export interface Themes {
 export const customThemes: Themes = {
     't721': {
         name: 'T721',
-        bigRadius: '32px',
+        bigRadius: '24px',
         biggerSpacing: '24px',
         componentColor: 'rgba(255, 255, 255, 0.04)',
         componentColorLight: 'rgba(255, 255, 255, 0.06)',

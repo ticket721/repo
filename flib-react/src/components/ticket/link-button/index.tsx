@@ -17,7 +17,7 @@ const LinkContainer = styled.div`
   display: inline-flex;
   justify-content: space-between;
   margin: 0 auto;
-  padding: 10px ${props => props.theme.regularSpacing};
+  padding: ${props => props.theme.regularSpacing} ${props => props.theme.regularSpacing} 12px;
   font-size: 15px;
   font-weight: 500;
   width: 100%;

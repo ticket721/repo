@@ -30,6 +30,7 @@ const customStyles = {
   indicatorsContainer: () => ({
     display: 'flex',
     position: 'relative' as 'relative',
+    top: '-1px',
 
     '& > div': {
       padding: 0

@@ -65,6 +65,7 @@ const ClearIcon = styled(Icon)`
 `
 
 const SearchIcon = styled(Icon)`
+  height: 18px;
   position: absolute;
   top: ${props => props.theme.regularSpacing};
 `

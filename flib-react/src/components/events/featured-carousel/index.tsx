@@ -11,6 +11,7 @@ const CarouselContainer = styled.section`
   padding: ${props => props.theme.biggerSpacing} 0 ${props => props.theme.biggerSpacing}  ${props => props.theme.biggerSpacing};
   z-index: 1;
 `
+
 const Slide = styled(SingleImage)`
   width: 90%;
 `
