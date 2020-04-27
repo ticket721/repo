@@ -12,7 +12,7 @@ const Container = styled.section<WalletHeaderProps>`
   align-items: center;
   display: flex;
   flex-direction: ${props => props.profileHeader ? 'row-reverse' : 'row'};
-  padding: ${props => props.theme.biggerSpacing} ${props => props.theme.biggerSpacing} 0;
+  padding: ${props => props.theme.biggerSpacing};
   width: 100%;
 
   ${props => props.profileHeader && `

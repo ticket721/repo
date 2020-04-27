@@ -15,7 +15,7 @@ const Container = styled.section`
   flex-wrap: wrap;
   font-size: 13px;
   font-weight: 500;
-  padding: ${props => props.theme.biggerSpacing} ${props => props.theme.biggerSpacing} 0;
+  padding: 0 ${props => props.theme.biggerSpacing};
   width: 100%;
 
   .row {
