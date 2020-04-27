@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { withKnobs } from '@storybook/addon-knobs';
+import { withKnobs, boolean } from '@storybook/addon-knobs';
 import UserHeader from '../../src/components/elements/user-header';
 
 export default {
@@ -22,5 +22,5 @@ const user = {
 }
 
 export const showcase = () => (
-  <UserHeader user={user} profileHeader/>
+  <UserHeader user={user} profileHeader={boolean('Profile header ?', false)} />
 )

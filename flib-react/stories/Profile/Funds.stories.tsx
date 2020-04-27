@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { action } from '@storybook/addon-actions';
 import { text, withKnobs } from '@storybook/addon-knobs';
-import FundsCard from '../../src/components/wallet/funds-card';
+import FundsCard from '../../src/components/profile/funds-card';
 
 export default {
   title: 'Profile|My Funds',

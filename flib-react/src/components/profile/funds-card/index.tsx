@@ -5,10 +5,16 @@ import Icon from '../../icon';
 
 export interface FundsCardProps extends React.ComponentProps<any> {
   user: UserInterface;
+  title?: string;
   onClick: () => void;
+  icon?: string;
   currentBalanceLabel: string;
   bankAccountLabel: string;
 }
+
+const Section = styled.section`
+  padding: ${props => props.theme.biggerSpacing};
+`
 
 const Container = styled.section<FundsCardProps>`
   background:  linear-gradient(222.61deg, #11A869 0%, #0D8251 100%);
@@ -16,6 +22,7 @@ const Container = styled.section<FundsCardProps>`
   font-weight: 500;
   display: flex;
   justify-content: space-between;
+  margin-top: ${props => props.theme.regularSpacing};
   padding: ${props => props.theme.biggerSpacing};
   position: relative;
 
@@ -46,6 +53,7 @@ const Amount = styled.span`
 
 const IconContainer = styled.div`
   background-color: rgba(19, 21, 35, 0.2);
+  border-top-left-radius: ${props => props.theme.defaultRadius};
   bottom: 0;
   padding: ${props => props.theme.regularSpacing};
   position: absolute;
@@ -59,22 +67,27 @@ const IconContainer = styled.div`
 
 export const FundsCard: React.FunctionComponent<FundsCardProps> = (props: FundsCardProps): JSX.Element => {
 
-  return <Container>
-          <div>
+  return <Section>
+          <h2>{props.title}</h2>
+          <Container>
             <div>
-              <h4 className="uppercase">{props.bankAccountLabel}</h4>
-              <CardNumber>************{props.user.creditCard}</CardNumber>
+              <div>
+                <h4 className="uppercase">{props.bankAccountLabel}</h4>
+                <CardNumber>************ {props.user.creditCard}</CardNumber>
+              </div>
+              <div className="space--top">
+                <h4 className="uppercase">{props.currentBalanceLabel}</h4>
+                <Amount>{props.user.creditBalance}<sup>€</sup> </Amount>
+              </div>
             </div>
-            <div className="space--top">
-              <h4 className="uppercase">{props.currentBalanceLabel}</h4>
-              <Amount>{props.user.creditBalance}<sup>€</sup> </Amount>
-            </div>
-          </div>
-          <h1>€</h1>
-          <IconContainer>
-            <Icon icon="arrow" height="16" width="16" fill="rgba(255, 255, 255, 0.9)" />
-          </IconContainer>
-        </Container>
+            {props.icon &&
+              <Icon className="icon--euro" icon={props.icon} height="24" width="22" fill="rgba(255, 255, 255, 0.9)" />
+            }
+            <IconContainer onClick={props.onClick}>
+              <Icon icon="arrow" height="16" width="16" fill="rgba(255, 255, 255, 0.9)" />
+            </IconContainer>
+          </Container>
+        </Section>
 };
 
 export default FundsCard;

@@ -14,7 +14,7 @@ export default {
 
 export const showcase = () => (
   <TitleTextCard
-    title={text('Title:', 'About')}
+    title={text('Title', 'About')}
     text={text('Description', 'Duis posuere dui ut arcu dictum pellentesque. Nunc ex nulla, dictum sed risus eget, tempus pretium ex. Mauris ornare tempor blandit. Cras et mollis quam, sit amet porttitor odio. Duis posuere dui ut arcu dictum pellentesque. Nunc ex nulla, dictum sed risus eget, tempus pretium ex. Mauris ornare tempor blandit. Cras et mollis quam, sit amet porttitor odio.')}
   />
 );
