@@ -17,10 +17,11 @@ const LinkContainer = styled.div`
   display: inline-flex;
   justify-content: space-between;
   margin: 0 auto;
-  padding: ${props => props.theme.regularSpacing} ${props => props.theme.regularSpacing} 12px;
+  padding: ${props => props.theme.regularSpacing};
   font-size: 15px;
   font-weight: 500;
   width: 100%;
+
   img {
     box-shadow: 0px 2px 28px rgba(0, 0, 0, 0.2);
     margin-right: ${props => props.theme.regularSpacing};

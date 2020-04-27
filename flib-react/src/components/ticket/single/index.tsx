@@ -11,6 +11,7 @@ export interface TicketSingleProps extends React.ComponentProps<any> {
   price: string;
   resale?: boolean;
   soldBy: string;
+  soldByLabel: string;
   ticketsLeft: number;
 }
 
@@ -78,7 +79,7 @@ const Resale = styled.span<TicketSingleProps>`
 export const TicketSingle: React.FunctionComponent<TicketSingleProps> = (props: TicketSingleProps): JSX.Element => {
   return <Container selected={props.selected} resale={props.resale} gradient={props.gradient}>
           <div className="row aic jcsb">
-            <h2>Sold by {props.soldBy}</h2>
+            <h3>{props.soldByLabel} {props.soldBy}</h3>
             <span>{props.price} /each</span>
           </div>
           <div className="row aic jcsb">

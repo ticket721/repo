@@ -24,6 +24,7 @@ export const showcase = () => (
     selected={boolean('Selected ?', false)}
     price={text('Starting price', '55€')}
     soldBy={text('Sold by', 'Astropolis')}
+    soldByLabel={text('Sold by label', 'Sold by')}
     ticketsLeft={number('Tickets left', 10)}
   />
 );
@@ -38,6 +39,7 @@ export const reseller = () => (
     selected={boolean('Selected ?', false)}
     price={text('Starting price', '55€')}
     soldBy={text('Sold by', 'Astropolis')}
+    soldByLabel={text('Sold by label', 'Sold by')}
     ticketsLeft={number('Tickets left', 1)}
   />
 );
@@ -45,6 +47,7 @@ export const reseller = () => (
 export const list = () => (
   <div>
     <TicketSingle
+      soldByLabel="Sold by"
       feesIncluded={true}
       selected={false}
       price="55€"
@@ -52,6 +55,7 @@ export const list = () => (
       ticketsLeft={1}
     />
     <TicketSingle
+      soldByLabel="Sold by"
        feesIncluded={false}
        selected={true}
        price="55€"

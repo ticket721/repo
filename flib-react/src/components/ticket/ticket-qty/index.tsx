@@ -19,6 +19,7 @@ export interface TicketQtyProps extends React.ComponentProps<any> {
 const Container = styled.article<TicketQtyProps>`
   background-color: ${props => props.theme.darkerBg};
   border-bottom: 2px solid #000;
+  font-size: 14px;
   font-weight: 500;
   padding: ${props => props.theme.biggerSpacing};
   position: relative;

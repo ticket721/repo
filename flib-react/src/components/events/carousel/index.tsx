@@ -43,8 +43,10 @@ const Infos = styled.div`
 
   span {
     color: ${props => props.theme.textColorDark};
+    display: block;
     font-weight: 500;
     overflow: hidden;
+    margin-top: 4px;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
@@ -66,6 +68,7 @@ const CarouselContainer = styled.section`
   padding: ${props => props.theme.biggerSpacing} 0 ${props => props.theme.biggerSpacing} ${props => props.theme.biggerSpacing};
   position: relative;
   z-index: 1;
+
   h2 {
     margin-bottom: ${props => props.theme.regularSpacing};
   }

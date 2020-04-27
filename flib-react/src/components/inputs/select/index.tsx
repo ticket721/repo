@@ -3,6 +3,17 @@ import Select from 'react-select';
 import styled from '../../../config/styled';
 
 const customStyles = {
+  container: () => ({
+    position: 'relative' as 'relative',
+
+    '& > div': {
+      paddingTop: '10px',
+      paddingRight: '9px',
+      paddingBottom:' 8.5px',
+      paddingLeft:' 12px'
+
+    }
+  }),
   option: () => ({
     backgroundColor: 'transparent',
     color: 'rgba(255, 255, 255, 0.6)',
@@ -127,12 +138,6 @@ const StyledInputContainer = styled.div<SelectProps>`
   [class*="dummyInput"] {
     display: none;
   }
-
-  ${props => !props.label &&`
-    [class*="Control"] {
-      padding: 10px 9px 8.5px 12px;
-    }
-  `}
 
   &:hover {
     background-color: ${props => props.theme.componentColorLight};
