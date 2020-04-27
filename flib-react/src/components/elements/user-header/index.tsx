@@ -5,21 +5,29 @@ import UserInterface from '../../../shared/userInterface';
 
 export interface WalletHeaderProps extends React.ComponentProps<any> {
   user: UserInterface;
+  profileHeader?: boolean;
 }
 
-const Container = styled.section`
+const Container = styled.section<WalletHeaderProps>`
   align-items: center;
   display: flex;
-  padding: ${props => props.theme.biggerSpacing} ${props => props.theme.biggerSpacing} 0;
+  flex-direction: ${props => props.profileHeader ? 'row-reverse' : 'row'};
+  padding: ${props => props.theme.biggerSpacing};
   width: 100%;
 
+  ${props => props.profileHeader && `
+    div:last-of-type {
+      margin-right: auto;
+      padding-right: ${props.theme.regularSpacing};
+    }
+  `}
 `
-const ImgContainer = styled.div`
+const ImgContainer = styled.div<WalletHeaderProps>`
   border-radius: 100%;
-  height: 48px;
-  margin-right: ${props => props.theme.regularSpacing};
+  height:  ${props => props.profileHeader ? '80px' : '48px'};
+  margin-right: ${props => props.profileHeader ? 0 : props.theme.regularSpacing};
   overflow: hidden;
-  width: 48px;
+  width:  ${props => props.profileHeader ? '80px' : '48px'};
 
   img {
     height: 100%;
@@ -46,12 +54,16 @@ const Amount = styled.h4`
 export const WalletHeader: React.FunctionComponent<WalletHeaderProps> = (props: WalletHeaderProps): JSX.Element => {
   const fullName = `${props.user.firstName} ${props.user.lastName}`;
 
-  return <Container>
-          <ImgContainer>
+  return <Container profileHeader={props.profileHeader}>
+          <ImgContainer profileHeader={props.profileHeader}>
             <img src={props.user.profilePicture} alt={fullName}/>
           </ImgContainer>
           <div>
-            <h3>{ fullName }</h3>
+            {props.profileHeader ? (
+              <h1>{ fullName }</h1>
+            ) : (
+              <h3>{ fullName }</h3>
+            )}
             <Amount><span>€</span> {props.user.creditBalance}</Amount>
           </div>
         </Container>

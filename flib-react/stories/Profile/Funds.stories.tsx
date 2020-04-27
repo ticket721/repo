@@ -1,12 +1,10 @@
 import * as React from 'react';
 import { action } from '@storybook/addon-actions';
-import { withKnobs } from '@storybook/addon-knobs';
-
-import UserHeader from '../../src/components/elements/user-header';
-import WalletPaymentTypes from '../../src/components/wallet/payment-types';
+import { text, withKnobs } from '@storybook/addon-knobs';
+import FundsCard from '../../src/components/profile/funds-card';
 
 export default {
-  title: 'Wallet | Select payment type',
+  title: 'Profile|My Funds',
   decorators: [
     withKnobs
   ],
@@ -14,6 +12,7 @@ export default {
     viewport: { defaultViewport: 'iphone6' },
   }
 };
+
 
 const user = {
   firstName: 'Pete',
@@ -25,11 +24,10 @@ const user = {
 }
 
 export const showcase = () => (
-  <div>
-    <UserHeader user={user} />
-    <WalletPaymentTypes
-      user={user}
-      onChange={action('payment type changed')}
-    />
-  </div>
+  <FundsCard
+    bankAccountLabel={text('Title', 'Bank account')}
+    currentBalanceLabel={text('Title', 'Current balance')}
+    onClick={action('..go to')}
+    user={user}
+  />
 )

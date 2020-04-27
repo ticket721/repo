@@ -1,12 +1,12 @@
 import * as React from 'react';
-import { withKnobs } from '@storybook/addon-knobs';
-
+import { withKnobs, boolean } from '@storybook/addon-knobs';
 import UserHeader from '../../src/components/elements/user-header';
-import WalletOrder from '../../src/components/wallet/order';
 
 export default {
-  title: 'Wallet | Order',
-  decorators: [ withKnobs ],
+  title: 'Global | User Header',
+  decorators: [
+    withKnobs
+  ],
   parameters: {
     viewport: { defaultViewport: 'iphone6' },
   }
@@ -21,14 +21,6 @@ const user = {
   currentLocation: 'New York City, NY'
 }
 
-const purchase = {
-  eventName: 'HellFest 2020',
-  amount: 325.21
-}
-
 export const showcase = () => (
-  <div>
-    <UserHeader user={user} />
-    <WalletOrder user={user} purchase={purchase} />
-  </div>
+  <UserHeader user={user} profileHeader={boolean('Profile header ?', false)} />
 )

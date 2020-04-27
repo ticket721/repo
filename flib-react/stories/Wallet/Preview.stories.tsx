@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { withKnobs, boolean } from '@storybook/addon-knobs';
-import WalletHeader from '../../src/components/wallet/header';
+import UserHeader from '../../src/components/elements/user-header';
 import WalletOrder from '../../src/components/wallet/order';
 import WalletContainer from '../../src/components/wallet/container';
 import WalletNav from '../../src/components/wallet/nav';
@@ -45,7 +45,7 @@ export const showcase = () => (
     {state => [
       <div>
         <WalletContainer title="Buying tickets" showWallet={state.showWallet} toggleWallet={showWallet} showPrev={boolean('Show previous', false)}>
-          <WalletHeader user={user} />
+          <UserHeader user={user} />
           <WalletOrder user={user} purchase={purchase} />
           <WalletNav ctaLabel="Purchase Tickets" onClick={() => showWallet(true)} title="Total" subtitle={`€${purchase.amount}`} />
         </WalletContainer>
