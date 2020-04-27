@@ -38,5 +38,5 @@ lerna-debug.log*
 documentation
 
 /images
-development.secret.env
+*.secret.env
 
