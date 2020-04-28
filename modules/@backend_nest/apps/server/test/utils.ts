@@ -16,6 +16,9 @@ import { EventDto } from '@app/server/controllers/events/dto/Event.dto';
 import FormData from 'form-data';
 import { ImagesUploadResponseDto } from '@app/server/controllers/images/dto/ImagesUploadResponse.dto';
 import { ActionSet } from '@lib/common/actionsets/helper/ActionSet.class';
+import { anything, instance, mock, when } from 'ts-mockito';
+import { Stripe } from 'stripe';
+import Crypto from 'crypto';
 
 let docker_compose_up_proc = null;
 
@@ -422,16 +425,24 @@ export const getSDK = async (getCtx: () => { ready: Promise<void> }): Promise<T7
 
 export const generatePassword = generateUserName;
 
-export const failWithCode = async (promise: Promise<any>, code: StatusCodes): Promise<void> => {
+export const failWithCode = async (promise: Promise<any>, code: StatusCodes, message?: string): Promise<void> => {
     let res;
 
     try {
         res = await promise;
     } catch (e) {
-        expect(e.response.data).toMatchObject({
-            statusCode: code,
-            name: StatusNames[code],
-        });
+        if (!message) {
+            expect(e.response.data).toMatchObject({
+                statusCode: code,
+                name: StatusNames[code],
+            });
+        } else {
+            expect(e.response.data).toMatchObject({
+                statusCode: code,
+                name: StatusNames[code],
+                message,
+            });
+        }
         return;
     }
 
@@ -863,4 +874,71 @@ export const createEvent = async (token: string, sdk: T721SDK): Promise<EventDto
     });
 
     return eventEntityRes.data.event;
+};
+
+let stripeMock: Stripe;
+let paymentIntentsResourceMock: Stripe.PaymentIntentsResource;
+let payoutsResourceMock: Stripe.PayoutsResource;
+let refundsResourceMock: Stripe.RefundsResource;
+
+export const setupStripeMock = (): Stripe => {
+    stripeMock = mock(Stripe);
+
+    paymentIntentsResourceMock = mock(Stripe.PaymentIntentsResource);
+    payoutsResourceMock = mock(Stripe.PayoutsResource);
+    refundsResourceMock = mock(Stripe.RefundsResource);
+
+    when(stripeMock.paymentIntents).thenReturn(instance(paymentIntentsResourceMock));
+    when(stripeMock.payouts).thenReturn(instance(payoutsResourceMock));
+    when(stripeMock.refunds).thenReturn(instance(refundsResourceMock));
+
+    return stripeMock;
+};
+
+export const createPaymentIntent = (content: Partial<Stripe.PaymentIntent>): string => {
+    const randomB64 = Crypto.randomBytes(32).toString('base64');
+
+    const id = `pi_${randomB64}`;
+
+    when(paymentIntentsResourceMock.retrieve(id, anything(), anything())).thenResolve({
+        ...content,
+        id,
+    } as Stripe.PaymentIntent);
+    when(paymentIntentsResourceMock.retrieve(id, anything())).thenResolve({
+        ...content,
+        id,
+    } as Stripe.PaymentIntent);
+
+    return id;
+};
+
+export const setPaymentIntent = (id: string, content: Partial<Stripe.PaymentIntent>): void => {
+    when(paymentIntentsResourceMock.retrieve(id, anything())).thenResolve({
+        ...content,
+        id,
+    } as Stripe.PaymentIntent);
+    when(paymentIntentsResourceMock.retrieve(id, anything(), anything())).thenResolve({
+        ...content,
+        id,
+    } as Stripe.PaymentIntent);
+};
+
+export const getMocks = (): [Stripe, Stripe.PaymentIntentsResource, Stripe.PayoutsResource, Stripe.RefundsResource] => {
+    return [stripeMock, paymentIntentsResourceMock, payoutsResourceMock, refundsResourceMock];
+};
+
+export const gemFail = async (sdk: T721SDK, token: string, id: string, body: any): Promise<void> => {
+    const gemReq = await sdk.dosojin.search(token, {
+        id: {
+            $eq: id,
+        },
+    });
+
+    if (gemReq.data.gemOrders.length === 0) {
+        throw new Error('Cannot find gem');
+    }
+
+    const gem = gemReq.data.gemOrders[0].gem;
+
+    expect(gem.error_info).toMatchObject(body);
 };

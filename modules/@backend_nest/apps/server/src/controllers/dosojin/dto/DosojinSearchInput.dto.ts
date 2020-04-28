@@ -6,7 +6,7 @@ import { SearchableField } from '@lib/common/utils/SearchableField.type';
 /**
  * Search Query Paramaters to fetch Gem Orders
  */
-export class GemOrdersSearchInputDto extends SortablePagedSearch {
+export class DosojinSearchInputDto extends SortablePagedSearch {
     /**
      * Query by ID
      */
@@ -14,7 +14,7 @@ export class GemOrdersSearchInputDto extends SortablePagedSearch {
         description: 'Unique ID of the Gem Order',
     })
     @IsOptional()
-    id?: SearchableField<number>;
+    id?: SearchableField<string>;
 
     /**
      * Query by creation date

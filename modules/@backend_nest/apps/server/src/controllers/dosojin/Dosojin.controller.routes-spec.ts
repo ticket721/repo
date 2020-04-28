@@ -1,5 +1,122 @@
-export default function() {
-    it('should hold place', function() {
-        console.log('hi');
-    });
+import { T721SDK } from '@common/sdk';
+import { PasswordlessUserDto } from '@app/server/authentication/dto/PasswordlessUser.dto';
+import {
+    createEvent,
+    createEventWithUltraVIP,
+    createPaymentIntent,
+    failWithCode,
+    gemFail,
+    getMocks,
+    getSDKAndUser,
+    getUser,
+    setPaymentIntent,
+    waitForActionSet,
+} from '../../../test/utils';
+import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
+import { Stripe } from 'stripe';
+
+export default function(getCtx: () => { ready: Promise<void> }) {
+    return function() {
+        describe('resolveCartWithPaymentIntent (POST /checkout/cart/resolve/paymentintent)', function() {
+            test.concurrent(
+                'should fail when create, fill and commit cart, then resolve with captured payment intent and total above required',
+                async function() {
+                    const {
+                        sdk,
+                        token,
+                        user,
+                        password,
+                    }: {
+                        sdk: T721SDK;
+                        token: string;
+                        user: PasswordlessUserDto;
+                        password: string;
+                    } = await getSDKAndUser(getCtx);
+
+                    const event = await createEvent(token, sdk);
+
+                    const validPaymentIntent: Partial<Stripe.PaymentIntent> = {
+                        charges: {
+                            data: [
+                                {
+                                    payment_method_details: {
+                                        type: 'card',
+                                        card: {
+                                            country: 'FR',
+                                        },
+                                    },
+                                },
+                            ],
+                        } as Stripe.ApiList<Stripe.Charge>,
+                        payment_method_types: ['card'],
+                        status: 'succeeded',
+                        currency: 'eur',
+                        amount_received: 331,
+                    };
+
+                    const validPaymentIntentId = createPaymentIntent(validPaymentIntent);
+
+                    const cartActionSetRes = await sdk.actions.create(token, {
+                        name: 'cart_create',
+                        arguments: {},
+                    });
+
+                    const actionSetId = cartActionSetRes.data.actionset.id;
+
+                    await sdk.cart.ticketSelections(token, actionSetId, {
+                        tickets: [
+                            ...[...Array(3)].map(() => ({
+                                categoryId: event.categories[0],
+                                price: {
+                                    currency: 'Fiat',
+                                    price: '100',
+                                },
+                            })),
+                        ],
+                    });
+
+                    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+                        return as.current_action === 1;
+                    });
+
+                    await sdk.cart.modulesConfiguration(token, actionSetId, {});
+
+                    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+                        return as.current_action === 2;
+                    });
+
+                    await sdk.checkout.cart.commit.stripe(token, {
+                        cart: actionSetId,
+                    });
+
+                    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+                        return as.current_status === 'complete';
+                    });
+
+                    const res = await sdk.checkout.cart.resolve.paymentIntent(token, {
+                        cart: actionSetId,
+                        paymentIntentId: validPaymentIntentId,
+                    });
+
+                    const checkoutActionSetId = res.data.checkoutActionSetId;
+
+                    await waitForActionSet(sdk, token, checkoutActionSetId, (as: ActionSetEntity): boolean => {
+                        return (
+                            as.current_status === 'event:error' &&
+                            as.actions[as.current_action].status === 'error' &&
+                            JSON.parse(as.actions[as.current_action].error).error === 'dosojin_circuit_failed'
+                        );
+                    });
+
+                    await gemFail(sdk, token, res.data.gemOrderId, {
+                        dosojin: 'StripeTokenMinter',
+                        entity_name: 'CardPaymentIntentReceptacle',
+                        entity_type: 'receptacle',
+                        layer: 0,
+                        message: 'Invalid Succeeded Payment Intent. Got Refunded.',
+                    });
+                },
+            );
+        });
+    };
 }

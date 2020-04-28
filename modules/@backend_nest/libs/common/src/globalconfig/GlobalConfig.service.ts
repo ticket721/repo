@@ -39,12 +39,12 @@ export class GlobalConfigService extends CRUDExtension<GlobalConfigRepository, G
             globalEntity,
             globalConfigRepository,
             /* istanbul ignore next */
-            (e: GlobalEntity) => {
-                return new globalEntity(e);
+            (ge: GlobalEntity) => {
+                return new globalEntity(ge);
             },
             /* istanbul ignore next */
-            () => {
-                return new GlobalEntity();
+            (ge: GlobalEntity) => {
+                return new GlobalEntity(ge);
             },
         );
     }

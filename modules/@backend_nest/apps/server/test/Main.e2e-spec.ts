@@ -2,7 +2,7 @@ jest.setTimeout(30000);
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { T721SDK } from '@common/sdk';
-import { prepare, runMigrations, startDocker, stopDocker } from './utils';
+import { createPaymentIntent, prepare, runMigrations, setupStripeMock, startDocker, stopDocker } from './utils';
 import { ServerModule } from '../src/Server.module';
 import ascii from './ascii';
 
@@ -23,6 +23,7 @@ import ImagesControllerTestSuite from '@app/server/controllers/images/Images.con
 import TxsControllerTestSuite from '@app/server/controllers/txs/Txs.controller.routes-spec';
 import RightsControllerTestSuite from '@app/server/controllers/rights/Rights.controller.routes-spec';
 import MetadatasControllerTestSuite from '@app/server/controllers/metadatas/Metadatas.controller.routes-spec';
+import { anything, deepEqual, instance, mock, spy, when } from 'ts-mockito';
 
 const cassandraPort = 32702;
 const elasticSearchPort = 32610;
@@ -77,7 +78,15 @@ describe('AppController (e2e)', () => {
         });
         await app.listen(3000);
 
+        const stripeMock = setupStripeMock();
+
         const workerFixture: TestingModule = await Test.createTestingModule({
+            providers: [
+                {
+                    provide: 'STRIPE_MOCK_INSTANCE',
+                    useValue: instance(stripeMock),
+                },
+            ],
             imports: [WorkerModule],
         }).compile();
         workerFixture.useLogger(new WinstonLoggerService('e2e-server'));
@@ -123,7 +132,6 @@ describe('AppController (e2e)', () => {
     describe('Events Controller', EventsControllerTestSuite(getCtx));
     describe('Txs Controller', TxsControllerTestSuite(getCtx));
     describe('Metadatas Controller', MetadatasControllerTestSuite(getCtx));
-
     describe('Checkout Controller', CheckoutControllerTestSuite(getCtx));
-    // describe('Dosojin Controller', DosojinControllerTestSuite);
+    describe('Dosojin Controller', DosojinControllerTestSuite(getCtx));
 });

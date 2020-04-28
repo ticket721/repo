@@ -3,18 +3,12 @@ import { Body, Controller, HttpCode, HttpException, Post, UseFilters, UseGuards 
 import { UserDto } from '@lib/common/users/dto/User.dto';
 import { User } from '@app/server/authentication/decorators/User.controller.decorator';
 import { StripeResourcesService } from '@lib/common/striperesources/StripeResources.service';
-import { ResolveCartWithPaymentIntentInputDto } from '@app/server/controllers/checkout/dto/ResolveCartWithPaymentIntentInput.dto';
-import { ResolveCartWithPaymentIntentResponseDto } from '@app/server/controllers/checkout/dto/ResolveCartWithPaymentIntentResponse.dto';
 import { StatusCodes } from '@lib/common/utils/codes.value';
 import { GemOrdersService } from '@lib/common/gemorders/GemOrders.service';
-import regionRestrictions from '@app/server/controllers/checkout/restrictions/regionRestrictions.value';
-import methodsRestrictions from '@app/server/controllers/checkout/restrictions/methodsRestrictions.value';
-import { keccak256 } from '@common/global';
 import { AuthGuard } from '@nestjs/passport';
 import { Roles, RolesGuard } from '@app/server/authentication/guards/RolesGuard.guard';
 import { StripeResourceEntity } from '@lib/common/striperesources/entities/StripeResource.entity';
 import { ControllerBasics } from '@lib/common/utils/ControllerBasics.base';
-import { GemOrderEntity } from '@lib/common/gemorders/entities/GemOrder.entity';
 import { HttpExceptionFilter } from '@app/server/utils/HttpException.filter';
 import { ApiResponses } from '@app/server/utils/ApiResponses.controller.decorator';
 import { CheckoutCartCommitStripeInputDto } from '@app/server/controllers/checkout/dto/CheckoutCartCommitStripeInput.dto';
@@ -26,6 +20,13 @@ import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
 import { CartAuthorizations, CartTicketSelections } from '@app/worker/actionhandlers/cart/Cart.input.handlers';
 import { DAY } from '@lib/common/utils/time';
+import { CheckoutResolveCartWithPaymentIntentInputDto } from '@app/server/controllers/checkout/dto/CheckoutResolveCartWithPaymentIntentInput.dto';
+import { CheckoutResolveCartWithPaymentIntentResponseDto } from '@app/server/controllers/checkout/dto/CheckoutResolveCartWithPaymentIntentResponse.dto';
+import { keccak256 } from '@common/global';
+import regionRestrictions from './restrictions/regionRestrictions.value';
+import methodsRestrictions from './restrictions/methodsRestrictions.value';
+import { GemOrderEntity } from '@lib/common/gemorders/entities/GemOrder.entity';
+import { CheckoutAcsetBuilderArgs } from '@lib/common/actionsets/acset_builders/Checkout.acsetbuilder.helper';
 
 /**
  * Checkout controller to create, update and resolve carts
@@ -82,6 +83,36 @@ export class CheckoutController extends ControllerBasics<StripeResourceEntity> {
 
         const actionSet: ActionSet = new ActionSet().load(cart);
 
+        if (actionSet.name !== '@cart/creation') {
+            throw new HttpException(
+                {
+                    status: StatusCodes.BadRequest,
+                    message: 'actionset_not_a_cart',
+                },
+                StatusCodes.BadRequest,
+            );
+        }
+
+        if (actionSet.actions[0].status !== 'complete') {
+            throw new HttpException(
+                {
+                    status: StatusCodes.BadRequest,
+                    message: 'ticket_selection_not_complete',
+                },
+                StatusCodes.BadRequest,
+            );
+        }
+
+        if (actionSet.actions[1].status !== 'complete') {
+            throw new HttpException(
+                {
+                    status: StatusCodes.BadRequest,
+                    message: 'modules_configuration_not_complete',
+                },
+                StatusCodes.BadRequest,
+            );
+        }
+
         const ticketSelectionsData: CartTicketSelections = actionSet.actions[0].data;
         const authorizationsData: CartAuthorizations = actionSet.actions[2].data;
 
@@ -101,6 +132,8 @@ export class CheckoutController extends ControllerBasics<StripeResourceEntity> {
         };
     }
 
+    private readonly allowedCurrenciesForStripeCheckout: string[] = ['T721Token'];
+
     /**
      * Resolves a cart with a stripe payment intent
      *
@@ -114,9 +147,58 @@ export class CheckoutController extends ControllerBasics<StripeResourceEntity> {
     @Roles('authenticated')
     @ApiResponses([StatusCodes.OK, StatusCodes.InternalServerError, StatusCodes.Conflict])
     async resolveCartWithPaymentIntent(
-        @Body() body: ResolveCartWithPaymentIntentInputDto,
+        @Body() body: CheckoutResolveCartWithPaymentIntentInputDto,
         @User() user: UserDto,
-    ): Promise<ResolveCartWithPaymentIntentResponseDto> {
+    ): Promise<CheckoutResolveCartWithPaymentIntentResponseDto> {
+        const cart = await this._authorizeOne(
+            this.rightsService,
+            this.actionSetsService,
+            user,
+            {
+                id: body.cart,
+            },
+            'id',
+            ['owner'],
+        );
+
+        const actionSet: ActionSet = new ActionSet().load(cart);
+
+        if (actionSet.name !== '@cart/creation') {
+            throw new HttpException(
+                {
+                    status: StatusCodes.BadRequest,
+                    message: 'actionset_not_a_cart',
+                },
+                StatusCodes.BadRequest,
+            );
+        }
+
+        if (actionSet.status !== 'complete') {
+            throw new HttpException(
+                {
+                    status: StatusCodes.BadRequest,
+                    message: 'cart_not_complete',
+                },
+                StatusCodes.BadRequest,
+            );
+        }
+
+        const authorizationData: CartAuthorizations = actionSet.actions[actionSet.actions.length - 1].data;
+
+        const prices = authorizationData.total;
+
+        // Not readlly testable with only one currency
+        /* istanbul ignore next */
+        if (prices.length !== 1 || this.allowedCurrenciesForStripeCheckout.indexOf(prices[0].currency)) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.BadRequest,
+                    message: 'invalid_currency',
+                },
+                StatusCodes.BadRequest,
+            );
+        }
+
         const stripeResourceEntities: StripeResourceEntity[] = await this._get<StripeResourceEntity>(
             this.stripeResourcesService,
             {
@@ -137,7 +219,7 @@ export class CheckoutController extends ControllerBasics<StripeResourceEntity> {
         await this._new<StripeResourceEntity>(
             this.stripeResourcesService,
             {
-                id: body.paymentIntentId.toString(),
+                id: body.paymentIntentId.toLowerCase(),
                 used_by: user.id,
             },
             {
@@ -149,36 +231,53 @@ export class CheckoutController extends ControllerBasics<StripeResourceEntity> {
             .slice(2)
             .toLowerCase();
 
-        const gemOrderCreationQuery = await this.gemOrdersService.startGemOrder(
-            'token_minting',
-            user.id,
-            {
-                paymentIntentId: body.paymentIntentId,
-                currency: 'eur',
-                amount: 10000,
-                regionRestrictions,
-                methodsRestrictions,
-                userId: user.id,
-            },
-            gemId,
-        );
+        const total: number = parseInt(prices[0].value, 10);
 
-        if (gemOrderCreationQuery.error) {
-            throw new HttpException(
+        await this._serviceCall(
+            this.gemOrdersService.startGemOrder(
+                'token_minting',
+                user.id,
                 {
-                    status: StatusCodes.InternalServerError,
-                    message: 'gem_order_creation_error',
+                    paymentIntentId: body.paymentIntentId,
+                    currency: 'eur',
+                    amount: total,
+                    regionRestrictions,
+                    methodsRestrictions,
+                    userId: user.id,
                 },
-                StatusCodes.InternalServerError,
-            );
-        }
+                gemId,
+            ),
+            StatusCodes.InternalServerError,
+            'gem_order_creation_error',
+        );
 
         const gemOrder = await this._getOne<GemOrderEntity>(this.gemOrdersService, {
             id: gemId,
         });
 
+        const checkoutActionSet = await this._serviceCall(
+            this.actionSetsService.build<CheckoutAcsetBuilderArgs>('checkout_create', user, {}),
+            StatusCodes.InternalServerError,
+            'checkout_acset_creation_error',
+        );
+
+        await this._serviceCall(
+            this.actionSetsService.updateAction(checkoutActionSet.id, 0, {
+                cartId: cart.id,
+                commitType: 'stripe',
+                buyer: user.address,
+                stripe: {
+                    paymentIntentId: body.paymentIntentId,
+                    gemOrderId: gemOrder.id,
+                },
+            }),
+            StatusCodes.InternalServerError,
+            'checkout_acset_update_error',
+        );
+
         return {
-            gemOrder,
+            checkoutActionSetId: checkoutActionSet.id,
+            gemOrderId: gemOrder.id,
         };
     }
 }

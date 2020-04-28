@@ -533,6 +533,7 @@ export class CRUDExtension<RepositoryType extends Repository, EntityType> {
                 error: null,
             };
         } catch (e) {
+            console.error(e);
             return {
                 response: null,
                 error: e.message,

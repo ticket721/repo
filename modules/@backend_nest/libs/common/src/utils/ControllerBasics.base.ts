@@ -109,19 +109,22 @@ export class ControllerBasics<EntityType> {
      *
      * @param promise
      * @param errorStatus
+     * @param errorMessage
      * @private
      */
     public async _serviceCall<ResType = any>(
         promise: Promise<ServiceResponse<ResType>>,
         errorStatus: StatusCodes,
+        errorMessage?: string,
     ): Promise<ResType> {
         const res = await promise;
 
         if (res.error) {
+            console.log('error', res.error);
             throw new HttpException(
                 {
                     status: errorStatus,
-                    message: res.error,
+                    message: errorMessage || res.error,
                 },
                 errorStatus,
             );
