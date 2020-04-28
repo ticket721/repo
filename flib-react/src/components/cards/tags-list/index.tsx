@@ -24,13 +24,11 @@ const Item = styled.span`
   font-size: 13px;
   font-weight: 500;
   justify-content: center;
+  margin: 0 8px 8px 0;
   padding: 12px ${props => props.theme.regularSpacing};
   text-align: center;
 `
 const List = styled.div`
-  display: grid;
-  gap: ${props => props.theme.smallSpacing};
-  grid-template-columns: repeat(4, auto);
   margin-top: ${props => props.theme.regularSpacing};
   width: 100%;
 `

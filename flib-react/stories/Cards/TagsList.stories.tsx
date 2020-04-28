@@ -28,7 +28,7 @@ const tags = [
   },
   {
     id: 41,
-    label: 'rock'
+    label: 'rk'
   },
   {
     id: 141,
