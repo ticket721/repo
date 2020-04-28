@@ -18,7 +18,6 @@ import { Web3RegisterInputDto }       from '@app/server/authentication/dto/Web3R
 import { Web3LoginInputDto }          from '@app/server/authentication/dto/Web3LoginInput.dto';
 import { EmailValidationResponseDto } from '@app/server/authentication/dto/EmailValidationResponse.dto';
 import { EmailValidationInputDto }    from '@app/server/authentication/dto/EmailValidationInput.dto';
-import { UserDto }                    from '@lib/common/users/dto/User.dto';
 
 export interface FailedRegisterReport {
     report_status: 'weak';
@@ -120,35 +119,6 @@ export function web3RegisterPayload(email: string, username: string, networkId: 
 export function web3LoginPayload(networkId: number): [number, EIP712Payload] {
     const web3LoginSigner: Web3LoginSigner = new Web3LoginSigner(networkId);
     return web3LoginSigner.generateAuthenticationProofPayload();
-}
-
-export async function updatePassword(
-    token: string,
-    email: string,
-    password: string): Promise<AxiosResponse<Partial<UserDto>> | FailedRegisterReport> {
-    const self: T721SDK = this;
-
-    const report = getPasswordStrength(password);
-
-    if (report.score < 3) {
-        return {
-            report_status: 'weak',
-            report,
-        };
-    }
-
-    const hashed = toAcceptedKeccak256Format(keccak256(password));
-
-    const updateUser: Partial<UserDto> = {
-        email,
-        password: hashed,
-    };
-
-    return self.post<Partial<UserDto>>('/authentication/local/password/update',
-        {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-        }, updateUser);
 }
 
 export async function validateEmail(token: string): Promise<AxiosResponse<EmailValidationResponseDto>> {
