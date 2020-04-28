@@ -47,12 +47,10 @@ export class ActionSetsTasks implements OnModuleInit {
                 throw error;
             }
 
-            let [updatedActionSet, update] = [null, null];
-
             const callIdx = actionSet.current_action;
 
             this.loggerService.log(`Calling ${actionSet.action.name} on ActionSet@${actionSet.id}`);
-            [updatedActionSet, update] = await this.actionSetsService.getInputHandler(actionSet.action.name)(
+            const [updatedActionSet, update] = await this.actionSetsService.getInputHandler(actionSet.action.name)(
                 actionSet,
                 job.progress.bind(job),
             );
