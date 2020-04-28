@@ -30,6 +30,10 @@ import { ConfigService } from '@lib/common/config/Config.service';
 import { StatusCodes } from '@lib/common/utils/codes.value';
 import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
 import { ApiResponses } from '@app/server/utils/ApiResponses.controller.decorator';
+import { UserDto } from '@lib/common/users/dto/User.dto';
+import { Roles, RolesGuard } from '@app/server/authentication/guards/RolesGuard.guard';
+import { UserTypes, UserTypesGuard } from '@app/server/authentication/guards/UserTypesGuard.guard';
+import { User } from '@app/server/authentication/decorators/User.controller.decorator';
 
 /**
  * Controller exposing the authentication routes
@@ -303,6 +307,55 @@ export class AuthenticationController {
         }
     }
 
+    /**
+     * [POST /authentication/local/password/update] : Updates user's password
+     */
+    @Post('local/password/update')
+    @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.OK)
+    @ApiResponses([
+        StatusCodes.OK,
+        StatusCodes.Unauthorized,
+        StatusCodes.UnprocessableEntity,
+        StatusCodes.InternalServerError,
+    ])
+    @UseGuards(AuthGuard('jwt'), RolesGuard, UserTypesGuard)
+    @Roles('authenticated')
+    @UserTypes('t721')
+    async updatePassword(@Body() body: Partial<UserDto>, @User() user: UserDto): Promise<PasswordlessUserDto> {
+        const resp = await this.authenticationService.updateUserPassword(user.email, body.password);
+        if (resp.error) {
+            switch (resp.error) {
+                case 'user_not_found':
+                    throw new HttpException(
+                        {
+                            status: StatusCodes.Unauthorized,
+                            message: resp.error,
+                        },
+                        StatusCodes.Unauthorized,
+                    );
+
+                case 'password_should_be_keccak256':
+                    throw new HttpException(
+                        {
+                            status: StatusCodes.UnprocessableEntity,
+                            message: resp.error,
+                        },
+                        StatusCodes.UnprocessableEntity,
+                    );
+                default:
+                    throw new HttpException(
+                        {
+                            status: StatusCodes.InternalServerError,
+                            message: resp.error,
+                        },
+                        StatusCodes.InternalServerError,
+                    );
+            }
+        } else {
+            return resp.response;
+        }
+    }
     /**
      * [POST /authentication/validate] : Validates a user's email address
      */
