@@ -49,6 +49,7 @@ import { AuthorizationsTasks } from '@app/worker/tasks/authorizations/Authorizat
 import { AuthorizationsModule } from '@lib/common/authorizations/Authorizations.module';
 import { CheckoutInputHandlers } from '@app/worker/actionhandlers/checkout/Checkout.input.handlers';
 import { CheckoutEventHandlers } from '@app/worker/actionhandlers/checkout/Checkout.event.handlers';
+import { ToolBoxModule } from '@lib/common/toolbox/ToolBox.module';
 
 @Module({
     imports: [
@@ -97,6 +98,7 @@ import { CheckoutEventHandlers } from '@app/worker/actionhandlers/checkout/Check
         // Utility Modules
         FSModule,
         ShutdownModule,
+        ToolBoxModule,
 
         // Notification Modules
         EmailModule,
