@@ -77,6 +77,7 @@ export class CheckoutInputHandlers implements OnModuleInit {
         const tokenContractInstance = await this.t721TokenService.get();
 
         if (
+            cart.name !== '@cart/creation' ||
             cart.status !== 'complete' ||
             cart.actions[cart.actions.length - 1].data.commitType !== commitType ||
             cart.actions[cart.actions.length - 1].data.total.length !== 1 ||
@@ -96,19 +97,22 @@ export class CheckoutInputHandlers implements OnModuleInit {
         }
 
         const price = parseInt(cart.actions[cart.actions.length - 1].data.total[0].value, 10);
+        try {
+            const onChainFunds = parseInt(await tokenContractInstance.methods.balanceOf(user).call(), 10);
 
-        const onChainFunds = parseInt(await tokenContractInstance.methods.balanceOf(user).call(), 10);
-
-        return [onChainFunds + credit >= price, null];
+            return [onChainFunds + credit >= price, null];
+        } catch (e) {
+            return [null, 'cannot_get_current_balance'];
+        }
     }
 
     /**
      * Data Validator for the Checkout Resolve step
      */
     checkoutResolveValidator = Joi.object<CheckoutResolve>({
-        cartId: Joi.string().required(),
-        commitType: Joi.string().required(),
-        buyer: Joi.string().required(),
+        cartId: Joi.string().optional(),
+        commitType: Joi.string().optional(),
+        buyer: Joi.string().optional(),
         stripe: Joi.object({
             paymentIntentId: Joi.string().required(),
             gemOrderId: Joi.string().required(),
@@ -118,7 +122,7 @@ export class CheckoutInputHandlers implements OnModuleInit {
     /**
      * Data Fields for the Checkout Resolve step
      */
-    checkoutResolveFields = ['cartId', 'commitType'];
+    checkoutResolveFields = ['cartId', 'commitType', 'buyer'];
 
     /**
      * Input Handler of the Ticket Selection Step
@@ -180,14 +184,12 @@ export class CheckoutInputHandlers implements OnModuleInit {
 
                 switch (data.commitType) {
                     case 'balance': {
-                        // check balance
-
                         const fundsCheck = await this.userHasEnoughFunds(data.buyer, data.commitType, cart);
 
                         if (fundsCheck[1]) {
                             actionset.action.setError({
                                 details: null,
-                                error: fundsCheck[0],
+                                error: fundsCheck[1],
                             });
                             actionset.action.setStatus('error');
                             actionset.setStatus('input:error');
@@ -240,7 +242,7 @@ export class CheckoutInputHandlers implements OnModuleInit {
                         if (fundsCheck[1]) {
                             actionset.action.setError({
                                 details: null,
-                                error: fundsCheck[0],
+                                error: fundsCheck[1],
                             });
                             actionset.action.setStatus('error');
                             actionset.setStatus('input:error');

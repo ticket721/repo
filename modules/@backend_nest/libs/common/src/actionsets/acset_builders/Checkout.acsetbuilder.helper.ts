@@ -8,14 +8,6 @@ import Joi from '@hapi/joi';
 /**
  * Input arguments for the Checkout AcSet Builder
  */
-// export interface CheckoutAcsetBuilderArgs {
-//     cartId: string;
-//     commitType: 'stripe';
-//     stripe?: {
-//         paymentIntentId: string;
-//         gemOrderId: string;
-//     }
-// }
 // tslint:disable-next-line:no-empty-interface
 export interface CheckoutAcsetBuilderArgs {}
 
