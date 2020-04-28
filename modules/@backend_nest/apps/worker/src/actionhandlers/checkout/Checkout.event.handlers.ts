@@ -72,6 +72,7 @@ export class CheckoutEventHandlers implements OnModuleInit {
                 break;
             }
 
+            /* istanbul ignore next */
             case 'incomplete': {
                 actionset.action.setIncomplete({
                     details: error_trace,
@@ -85,6 +86,7 @@ export class CheckoutEventHandlers implements OnModuleInit {
             case undefined: {
                 switch (inputData.commitType) {
                     case 'balance': {
+                        actionset.next();
                         break;
                     }
 
