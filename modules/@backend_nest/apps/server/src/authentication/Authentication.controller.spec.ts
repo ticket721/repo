@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthenticationController } from './Authentication.controller';
-import { anyString, instance, mock, verify, when } from 'ts-mockito';
+import { instance, mock, verify, when } from 'ts-mockito';
 import { AuthenticationService } from './Authentication.service';
 import {
     createWallet,
@@ -19,8 +19,6 @@ import { getQueueToken } from '@nestjs/bull';
 import { Job, JobOptions } from 'bull';
 import { PasswordlessUserDto } from '@app/server/authentication/dto/PasswordlessUser.dto';
 import { StatusCodes } from '@lib/common/utils/codes.value';
-import { UserDto } from '@lib/common/users/dto/User.dto';
-import has = Reflect.has;
 
 class QueueMock<T = any> {
     add(name: string, data: T, opts?: JobOptions): Promise<Job<T>> {
@@ -1029,186 +1027,6 @@ describe('Authentication Controller', function() {
             });
 
             verify(authenticationServiceMock.createT721User(email, hashedp, username, 'en')).called();
-        });
-    });
-
-    describe('updatePassword', function() {
-        test('Not existing user - Should error 401', async function() {
-            const authenticationController: AuthenticationController = context.authenticationController;
-            const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
-
-            const email = 'notExistingEmail@test.com';
-            const hashedp = toAcceptedKeccak256Format(keccak256('password'));
-
-            when(authenticationServiceMock.updateUserPassword(email, hashedp)).thenResolve({
-                response: null,
-                error: 'user_not_found',
-            });
-
-            const body: Partial<UserDto> = {
-                password: hashedp,
-            };
-
-            const user: UserDto = {
-                id: anyString(),
-                email: email,
-                username: anyString(),
-                address: anyString(),
-                password: anyString(),
-                role: 'authenticated',
-                valid: true,
-                type: anyString(),
-                locale: anyString(),
-            };
-
-            await expect(authenticationController.updatePassword(body, user)).rejects.toMatchObject({
-                response: {
-                    status: StatusCodes.Unauthorized,
-                    message: 'user_not_found',
-                },
-                status: StatusCodes.Unauthorized,
-                message: {
-                    status: StatusCodes.Unauthorized,
-                    message: 'user_not_found',
-                },
-            });
-        });
-
-        test('invalid password format - should error with 422', async function() {
-            const authenticationController: AuthenticationController = context.authenticationController;
-            const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
-
-            const email = 'test@test.com';
-            const hashedp = toAcceptedKeccak256Format(keccak256('password'));
-
-            when(authenticationServiceMock.updateUserPassword(email, hashedp)).thenReturn(
-                Promise.resolve({
-                    response: null,
-                    error: 'password_should_be_keccak256',
-                }),
-            );
-
-            const body: Partial<UserDto> = {
-                password: hashedp,
-            };
-
-            const user: UserDto = {
-                id: anyString(),
-                email: email,
-                username: anyString(),
-                address: anyString(),
-                password: anyString(),
-                role: 'authenticated',
-                valid: true,
-                type: anyString(),
-                locale: anyString(),
-            };
-
-            await expect(authenticationController.updatePassword(body, user)).rejects.toMatchObject({
-                response: {
-                    status: StatusCodes.UnprocessableEntity,
-                    message: 'password_should_be_keccak256',
-                },
-                status: StatusCodes.UnprocessableEntity,
-                message: {
-                    status: StatusCodes.UnprocessableEntity,
-                    message: 'password_should_be_keccak256',
-                },
-            });
-        });
-
-        test('internal error - should error 500', async function() {
-            const authenticationController: AuthenticationController = context.authenticationController;
-            const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
-
-            const email = 'test@test.com';
-            const hashedp = toAcceptedKeccak256Format(keccak256('password'));
-
-            when(authenticationServiceMock.updateUserPassword(email, hashedp)).thenReturn(
-                Promise.resolve({
-                    response: null,
-                    error: 'unexpected_error',
-                }),
-            );
-
-            const body: Partial<UserDto> = {
-                password: hashedp,
-            };
-
-            const user: UserDto = {
-                id: anyString(),
-                email: email,
-                username: anyString(),
-                address: anyString(),
-                password: anyString(),
-                role: 'authenticated',
-                valid: true,
-                type: anyString(),
-                locale: anyString(),
-            };
-
-            await expect(authenticationController.updatePassword(body, user)).rejects.toMatchObject({
-                response: {
-                    status: StatusCodes.InternalServerError,
-                    message: 'unexpected_error',
-                },
-                status: StatusCodes.InternalServerError,
-                message: {
-                    status: StatusCodes.InternalServerError,
-                    message: 'unexpected_error',
-                },
-            });
-        });
-
-        test('should update user password', async function() {
-            const authenticationController: AuthenticationController = context.authenticationController;
-            const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
-
-            const email = 'test@test.com';
-            const hashedp = toAcceptedKeccak256Format(keccak256('salut'));
-
-            when(authenticationServiceMock.updateUserPassword(email, hashedp)).thenReturn(
-                Promise.resolve({
-                    response: {
-                        username: anyString(),
-                        email,
-                        type: anyString(),
-                        address: anyString(),
-                        id: anyString(),
-                        role: 'authenticated',
-                        locale: anyString(),
-                        valid: true,
-                    },
-                    error: null,
-                }),
-            );
-
-            const body: Partial<UserDto> = {
-                password: hashedp,
-            };
-
-            const user: UserDto = {
-                id: anyString(),
-                email: email,
-                username: anyString(),
-                address: anyString(),
-                password: anyString(),
-                role: 'authenticated',
-                valid: true,
-                type: anyString(),
-                locale: anyString(),
-            };
-
-            await expect(authenticationController.updatePassword(body, user)).resolves.toMatchObject({
-                username: anyString(),
-                email,
-                type: anyString(),
-                address: anyString(),
-                id: anyString(),
-                role: 'authenticated',
-                locale: anyString(),
-                valid: true,
-            });
         });
     });
 

@@ -342,43 +342,4 @@ export class AuthenticationService {
             error: null,
         };
     }
-
-    /**
-     * Update user's password
-     *
-     * @param email
-     * @param password
-     */
-    async updateUserPassword(email: string, password: string): Promise<ServiceResponse<PasswordlessUserDto>> {
-        const emailUserResp: ServiceResponse<UserDto> = await this.usersService.findByEmail(email);
-        if (emailUserResp.error) {
-            return {
-                response: null,
-                error: 'user_not_found',
-            };
-        }
-        const user: UserDto = emailUserResp.response;
-
-        if (!isKeccak256(password)) {
-            return {
-                response: null,
-                error: 'password_should_be_keccak256',
-            };
-        }
-
-        const updatedUser: ServiceResponse<UserDto> = await this.usersService.update({
-            id: user.id,
-            password: await hash(password, parseInt(this.configService.get('BCRYPT_SALT_ROUNDS'), 10)),
-        });
-        if (updatedUser.error) {
-            return updatedUser;
-        }
-
-        delete updatedUser.response.password;
-
-        return {
-            response: updatedUser.response,
-            error: null,
-        };
-    }
 }
