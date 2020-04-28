@@ -11,6 +11,7 @@ import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entit
 import { uuidEq } from '@common/global';
 import { ActionSet } from '@lib/common/actionsets/helper/ActionSet.class';
 import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
+import { TimeToolService } from '@lib/common/toolbox/Time.tool.service';
 
 /**
  * Collection of scheduled tasks
@@ -27,6 +28,7 @@ export class ActionSetsScheduler implements OnModuleInit, OnModuleDestroy {
      * @param shutdownService
      * @param actionQueue
      * @param loggerService
+     * @param timeToolService
      */
     constructor(
         @InjectSchedule() private readonly schedule: Schedule,
@@ -36,6 +38,7 @@ export class ActionSetsScheduler implements OnModuleInit, OnModuleDestroy {
         private readonly shutdownService: ShutdownService,
         @InjectQueue('action') private readonly actionQueue: Queue,
         private readonly loggerService: WinstonLoggerService,
+        private readonly timeToolService: TimeToolService,
     ) {}
 
     /**
@@ -87,7 +90,7 @@ export class ActionSetsScheduler implements OnModuleInit, OnModuleDestroy {
             return this.shutdownService.shutdownWithError(new Error('Error while requesting action sets'));
         }
 
-        const dispatched = new Date(Date.now());
+        const dispatched = this.timeToolService.now();
         const currentJobs = await this.actionQueue.getJobs(['active', 'waiting']);
 
         let count = 0;
