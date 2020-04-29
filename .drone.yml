@@ -1,0 +1,30 @@
+kind: pipeline
+name: default
+
+steps:
+
+- name: restore-cache
+  image: drillster/drone-volume-cache
+  volumes:
+    -
+      name: cache
+      path: /cache
+  settings:
+    restore: true
+    mount:
+      - ./node_modules
+
+- name: test
+  image: node
+  commands:
+  - echo "test"
+
+- name: rebuild-cache
+  image: drillster/drone-volume-cache
+  volumes:
+    - name: cache
+      path: /cache
+  settings:
+    rebuild: true
+    mount:
+      - ./node_modules
