@@ -1,0 +1,8 @@
+image: "ruby:2.5"
+
+before_script:
+    - echo "before"
+
+testing:
+    script:
+        - echo "after"
