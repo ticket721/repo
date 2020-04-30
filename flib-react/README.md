@@ -34,12 +34,12 @@ export interface ButtonProps extends React.ComponentProps<any> {
     /**
      * Method called upon button click
      */
-    onClick: () => void;
+    onClick?: () => void;
 
     /**
-     * Type of the button
+     * Style type of the button
      */
-    type: 'primary' | 'warning' | 'error';
+    variant: 'primary' | 'warning' | 'error';
 }
 
 const colors = {
@@ -59,8 +59,8 @@ export const Button: React.FunctionComponent<ButtonProps> = (props: ButtonProps)
         style={{
             padding: 10,
             borderRadius: 7,
-            backgroundColor: colors[props.type],
-            borderColor: colors[props.type],
+            backgroundColor: colors[props.variant],
+            borderColor: colors[props.variant],
             cursor: 'pointer'
         }}
     >
@@ -69,7 +69,8 @@ export const Button: React.FunctionComponent<ButtonProps> = (props: ButtonProps)
 };
 
 Button.defaultProps = {
-    type: 'primary'
+    variant: 'primary',
+    onClick: () => {},
 };
 
 export default Button;
@@ -86,7 +87,7 @@ A global styling system should be used in order to minimize the amount of CSS wr
 Stories come from [Storybook](https://www.learnstorybook.com/intro-to-storybook/). They are pieces of code used to showcase the component. The goal behind them is to create a complete & interactive documentation for the library.
 Things to know about stories:
 
-- `knobs` are very powerful add-ons that will make the component props editable from the Storybook UI. Let's say we have a `Button` with 2 props: `title` & `type`. If we use `knobs` on both props, the Storybook UI will show two sections on the knob page where we will be able to manually edit the `title` & `type` props of the currently rendered component. [Usage info here](https://www.npmjs.com/package/@storybook/addon-knobs).
+- `knobs` are very powerful add-ons that will make the component props editable from the Storybook UI. Let's say we have a `Button` with 2 props: `title` & `variant`. If we use `knobs` on both props, the Storybook UI will show two sections on the knob page where we will be able to manually edit the `title` & `variant` props of the currently rendered component. [Usage info here](https://www.npmjs.com/package/@storybook/addon-knobs).
 
 - `actions` are add-ons that will log information upon a specific action triggered by the component. Let's say our `Button` component has a `onClick` prop. Giving an action to this prop will make the component interactive in the Storybook UI, and everytime you click the component, it will be logged. [Usage info here](https://www.npmjs.com/package/@storybook/addon-actions)
 
@@ -120,7 +121,7 @@ export const showcase = () => (
             <Button
                 title={text('Title', 'Button Title')}
                 onClick={action('clicked')}
-                type={select('Type', {
+                variant={select('Variant', {
                     Primary: 'primary',
                     Warning: 'warning',
                     Error: 'error'
@@ -147,7 +148,7 @@ export const types = () => (
                 <Button
                     title={text('Title', 'Button Title')}
                     onClick={action('clicked')}
-                    type={'primary'}
+                    variant={'primary'}
                 >
                 </Button>
             </div>
@@ -155,7 +156,7 @@ export const types = () => (
                 <Button
                     title={text('Title', 'Button Title')}
                     onClick={action('clicked')}
-                    type={'warning'}
+                    variant={'warning'}
                 >
                 </Button>
             </div>
@@ -163,7 +164,7 @@ export const types = () => (
                 <Button
                     title={text('Title', 'Button Title')}
                     onClick={action('clicked')}
-                    type={'error'}
+                    variant={'error'}
                 >
                 </Button>
             </div>
@@ -189,7 +190,7 @@ it('Button renders correctly', function () {
     const props: ButtonProps = {
         onClick: () => {
         },
-        type: 'primary',
+        variant: 'primary',
         title: 'test'
     };
 
@@ -214,7 +215,7 @@ it("Button click works", () => {
         onClick: () => {
             value = true;
         },
-        type: 'primary',
+        variant: 'primary',
         title: 'test'
     };
     const button = shallow(<Button {...props}/>);

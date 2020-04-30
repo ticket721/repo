@@ -49,7 +49,7 @@ export const EventHeader: React.FunctionComponent<EventHeaderProps> = (props: Ev
             <h4>Ticket from €49 to €100 each</h4>
             <VisibiltySensor onChange={props.onChange}>
               <Button
-                type="custom"
+                variant="custom"
                 title="Get tickets"
                 gradients={props.event.gradients}
                 onClick={props.onClick}

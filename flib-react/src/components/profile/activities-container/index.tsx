@@ -1,10 +1,10 @@
 import * as React from 'react';
-import styled from '../../../config/styled';
+import styled     from '../../../config/styled';
 
 export interface ActivitiesContainerProps extends React.ComponentProps<any> {
   title: string;
-  to: string;
   viewAllLabel: string;
+  viewAllAction: () => void;
 }
 
 const Section = styled.section`
@@ -20,13 +20,21 @@ const Section = styled.section`
   }
 `
 
+const Button = styled.button`
+  font-weight: 500;
+  font-size: 14px;
+  outline: none;
+  text-align: right;
+  color: ${props => props.theme.textColorDark};
+`;
+
 export const ActivitiesContainer: React.FunctionComponent<ActivitiesContainerProps> = (props: ActivitiesContainerProps): JSX.Element => {
 
   return  <Section>
             <div className="row aic jcsb">
               <h2>{props.title}</h2>
               {/* TODO -- Update to use link from react-router */}
-              <a href={props.to}>{props.viewAllLabel}</a>
+              <Button onClick={props.viewAllAction} type='button'>{props.viewAllLabel}</Button>
             </div>
             {props.children}
           </Section>

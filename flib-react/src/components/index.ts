@@ -8,6 +8,7 @@ export * from './file-uploader';
 export * from './icon';
 export * from './inputs';
 export * from './location';
+export * from './profile';
 export * from './navbar';
 export * from './organizers';
 export * from './tags';

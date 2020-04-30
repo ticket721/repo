@@ -65,7 +65,7 @@ export const EventCta: React.FunctionComponent<EventCtaProps & {className?: stri
             <h4 className="uppercase">{props.title}</h4>
             <span>{props.subtitle}</span>
           </div>
-          <Button title={props.ctaLabel} type="custom" gradients={props.gradients} onClick={props.onClick} />
+          <Button title={props.ctaLabel} variant="custom" gradients={props.gradients} onClick={props.onClick} />
         </CtaContainer>
 }
 

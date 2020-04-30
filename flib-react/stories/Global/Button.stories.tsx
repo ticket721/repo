@@ -17,7 +17,7 @@ export const showcase = () => (
   <Button
     title={text('Button Title', 'Click on me !')}
     onClick={action('clicked')}
-    type={select('Type', {
+    variant={select('Variant', {
       Primary: 'primary',
       Secondary: 'secondary',
       Custom: 'custom',
@@ -33,25 +33,25 @@ export const types = () => (
     <Button
       title={'Primary Button'}
       onClick={action('clicked')}
-      type={'primary'}
+      variant={'primary'}
     >
     </Button>
     <Button
       title={'Secondary Button'}
       onClick={action('clicked')}
-      type={'secondary'}
+      variant={'secondary'}
     >
     </Button>
     <Button
       title={'Warning Button'}
       onClick={action('clicked')}
-      type={'warning'}
+      variant={'warning'}
     >
     </Button>
     <Button
       title={'Custom Button'}
       onClick={action('clicked')}
-      type={'custom'}
+      variant={'custom'}
       gradients={array('Custom Gradient', gradientsValues)}
     >
     </Button>

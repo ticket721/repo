@@ -5,12 +5,12 @@ import styled from '../../config/styled';
 export interface ButtonProps extends React.ComponentProps<any> {
   title: string;
   gradients?: string[];
-  onClick: () => void;
-  type: 'primary' | 'secondary' | 'custom' | 'warning';
+  onClick?: () => void;
+  variant: 'primary' | 'secondary' | 'custom' | 'warning';
 }
 
 const StyledButton = styled.button<ButtonProps>`
-  ${props => props.type === 'primary' &&`
+  ${props => props.variant === 'primary' &&`
     background: linear-gradient(260deg, ${props.theme.primaryColor}, ${props.theme.primaryColorGradientEnd});
 
     &::before {
@@ -18,7 +18,7 @@ const StyledButton = styled.button<ButtonProps>`
     }
   `};
 
-  ${props => props.type === 'secondary' &&`
+  ${props => props.variant === 'secondary' &&`
     background-color: ${rgba('#FFFFFF', 0.1)};
     transition: background-color 300ms ease;
 
@@ -31,7 +31,7 @@ const StyledButton = styled.button<ButtonProps>`
     }
   `};
 
-  ${props => props.type === 'custom' &&`
+  ${props => props.variant === 'custom' &&`
     background: linear-gradient(260deg, ${props.gradients?.join(', ')});
 
     &::before {
@@ -39,7 +39,7 @@ const StyledButton = styled.button<ButtonProps>`
     }
   `};
 
-  ${props => props.type === 'warning' &&`
+  ${props => props.variant === 'warning' &&`
     background-color: ${rgba(props.theme.warningColor, 0.4)};
     transition: background-color 300ms ease;
 
@@ -95,14 +95,15 @@ export const Button: React.FunctionComponent<ButtonProps> = (props: ButtonProps)
             name={props.title}
             onClick={props.onClick}
             gradients={props.gradients}
-            type={props.type}
+            variant={props.variant}
+            {...props}
           >
             <span>{props.title}</span>
           </StyledButton>
 };
 
 Button.defaultProps = {
-  type: 'primary'
+  variant: 'primary'
 };
 
 export default Button;
