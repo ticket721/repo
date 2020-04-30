@@ -13,13 +13,13 @@ const Svg = styled.svg<IconProps>`
   display: block;
   flex-shrink: 0;
   fill: ${props => props.fill ? props.fill : props.theme.primaryColor};
-  height: ${props => props.iconHeight ? props.iconHeight : 16}px;
+  height: ${props => props.height};
   transition: all 300ms ease;
-  width: auto;
+  width:  ${props => props.width};
 `;
 
 export const Icon: React.FunctionComponent<IconProps & {className?: string}> = (props: IconProps): JSX.Element => {
-  return <Svg viewBox={`0 0 ${props.width} ${props.height}`} className={props.className}  iconHeight={props.height}>
+  return <Svg viewBox={`0 0 ${props.width} ${props.height}`} className={props.className}  height={props.height} width={props.width}>
           <path d={icons[props.icon]} fill={props.fill}/>
         </Svg>
 }
