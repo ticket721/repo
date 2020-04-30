@@ -19,7 +19,7 @@ export interface CacheSettings {
 export interface CachedItemProperties {
     lastFetch: number;
     lastResp: number;
-    mountedBy: Array<string>;
+    requestedBy: Array<string>;
     refreshRates: Array<number>;
     method: string;
     args: any;

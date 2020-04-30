@@ -42,8 +42,8 @@ export abstract class CacheCore {
     public static shouldFetch = (cache: CacheState, key: string): boolean => {
         // If there is no mounted component that need specified request => don't fetch
         if (
-            cache.properties[key].mountedBy === null
-            || cache.properties[key].mountedBy.length === 0
+            cache.properties[key].requestedBy === null
+            || cache.properties[key].requestedBy.length === 0
         ) {
             return false;
         }

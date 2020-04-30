@@ -54,7 +54,7 @@ const RegisterComponentReducer: Reducer<CacheState, IRegisterComponent> =
                         lastResp: null,
                         method: action.method,
                         args: action.args,
-                        mountedBy: [action.uid],
+                        requestedBy: [action.uid],
                         refreshRates: [action.rate],
                     }
                 }
@@ -67,7 +67,7 @@ const RegisterComponentReducer: Reducer<CacheState, IRegisterComponent> =
                 ...state.properties,
                 [action.key]: {
                     ...state.properties[action.key],
-                    mountedBy: state.properties[action.key].mountedBy.concat(action.uid),
+                    requestedBy: state.properties[action.key].requestedBy.concat(action.uid),
                     refreshRates: state.properties[action.key].refreshRates.concat(action.rate),
                 }
             }
@@ -77,7 +77,7 @@ const RegisterComponentReducer: Reducer<CacheState, IRegisterComponent> =
 const UnregisterComponentReducer: Reducer<CacheState, IUnregisterComponent> =
     (state: CacheState, action: IUnregisterComponent): CacheState => {
 
-        const removeIdx: number = state.properties[action.key].mountedBy.indexOf(action.uid);
+        const removeIdx: number = state.properties[action.key].requestedBy.indexOf(action.uid);
 
         return {
             ...state,
@@ -85,7 +85,7 @@ const UnregisterComponentReducer: Reducer<CacheState, IUnregisterComponent> =
                 ...state.properties,
                 [action.key]: {
                     ...state.properties[action.key],
-                    mountedBy: state.properties[action.key].mountedBy.filter((val, idx) => idx !== removeIdx),
+                    requestedBy: state.properties[action.key].requestedBy.filter((val, idx) => idx !== removeIdx),
                     refreshRates: state.properties[action.key].refreshRates.filter((val, idx) => idx !== removeIdx),
                 }
             }

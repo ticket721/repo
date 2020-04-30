@@ -58,7 +58,7 @@ export function should_fetch_tests(): void {
                     lastResp: 7,
                     method: 'method',
                     args: 'args',
-                    mountedBy: [],
+                    requestedBy: [],
                     refreshRates: [],
                 }
             }
@@ -81,7 +81,7 @@ export function should_fetch_tests(): void {
                     lastResp: 7,
                     method: 'method',
                     args: 'args',
-                    mountedBy: ['id1', 'id2', 'id3', 'id4'],
+                    requestedBy: ['id1', 'id2', 'id3', 'id4'],
                     refreshRates: [0, null, 0, 0],
                 }
             }
@@ -103,7 +103,7 @@ export function should_fetch_tests(): void {
                     lastResp: 4,
                     method: 'method',
                     args: 'args',
-                    mountedBy: ['id1', 'id2'],
+                    requestedBy: ['id1', 'id2'],
                     refreshRates: [1, 2],
                 }
             }
@@ -126,7 +126,7 @@ export function should_fetch_tests(): void {
                     lastResp: 7,
                     method: 'method',
                     args: 'args',
-                    mountedBy: ['id1', 'id2'],
+                    requestedBy: ['id1', 'id2'],
                     refreshRates: [2, 4],
                 }
             }
@@ -148,7 +148,7 @@ export function should_fetch_tests(): void {
                     lastResp: null,
                     method: 'method',
                     args: 'args',
-                    mountedBy: ['id1', 'id2'],
+                    requestedBy: ['id1', 'id2'],
                     refreshRates: [2, 4],
                 }
             }
@@ -170,7 +170,7 @@ export function should_fetch_tests(): void {
                     lastResp: 5,
                     method: 'method',
                     args: 'args',
-                    mountedBy: ['id1', 'id2'],
+                    requestedBy: ['id1', 'id2'],
                     refreshRates: [2, 4],
                 }
             }
