@@ -41,7 +41,7 @@ const NavBar: React.FC = () => {
             </NavLink>
             <ActionContainer>
                 <NavLink
-                to='/createevent'>
+                to='/create-event'>
                     Create Event
                 </NavLink>
                 <Profile

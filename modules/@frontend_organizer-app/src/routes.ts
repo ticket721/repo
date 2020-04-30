@@ -1,5 +1,6 @@
-import Home        from './screens/Home';
 import React       from 'react';
+
+import Home        from './screens/Home';
 import CreateEvent from './screens/CreateEvent';
 import { Login, Register }       from '@frontend/core/lib/components';
 
@@ -20,7 +21,7 @@ export interface RouteDatum {
 
 export const routes: RouteDatum[] = [
     {
-        path: '/createevent',
+        path: '/create-event',
         page: CreateEvent,
         protected: true,
     },
