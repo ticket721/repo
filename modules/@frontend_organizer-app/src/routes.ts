@@ -1,8 +1,8 @@
 import React       from 'react';
+import { Login, Register }       from '@frontend/core/lib/components';
 
 import Home        from './screens/Home';
 import CreateEvent from './screens/CreateEvent';
-import { Login, Register }       from '@frontend/core/lib/components';
 
 export interface LinkDatum {
     icon: string;
