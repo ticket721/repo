@@ -34,6 +34,7 @@ import { UserDto } from '@lib/common/users/dto/User.dto';
 import { Roles, RolesGuard } from '@app/server/authentication/guards/RolesGuard.guard';
 import { UserTypes, UserTypesGuard } from '@app/server/authentication/guards/UserTypesGuard.guard';
 import { User } from '@app/server/authentication/decorators/User.controller.decorator';
+import { PasswordChangeDto } from '@app/server/authentication/dto/PasswordChange.dto';
 
 /**
  * Controller exposing the authentication routes
@@ -322,7 +323,7 @@ export class AuthenticationController {
     @UseGuards(AuthGuard('jwt'), RolesGuard, UserTypesGuard)
     @Roles('authenticated')
     @UserTypes('t721')
-    async updatePassword(@Body() body: Partial<UserDto>, @User() user: UserDto): Promise<PasswordlessUserDto> {
+    async updatePassword(@Body() body: PasswordChangeDto, @User() user: UserDto): Promise<PasswordlessUserDto> {
         const resp = await this.authenticationService.updateUserPassword(user.email, body.password);
         if (resp.error) {
             switch (resp.error) {

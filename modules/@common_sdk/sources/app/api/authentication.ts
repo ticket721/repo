@@ -19,6 +19,7 @@ import { Web3LoginInputDto }          from '@app/server/authentication/dto/Web3L
 import { EmailValidationResponseDto } from '@app/server/authentication/dto/EmailValidationResponse.dto';
 import { EmailValidationInputDto }    from '@app/server/authentication/dto/EmailValidationInput.dto';
 import { UserDto }                    from '@lib/common/users/dto/User.dto';
+import { PasswordChangeDto }          from '@app/server/authentication/dto/PasswordChange.dto';
 
 export interface FailedRegisterReport {
     report_status: 'weak';
@@ -139,12 +140,11 @@ export async function updatePassword(
 
     const hashed = toAcceptedKeccak256Format(keccak256(password));
 
-    const updateUser: Partial<UserDto> = {
-        email,
+    const updateUser: PasswordChangeDto = {
         password: hashed,
     };
 
-    return self.post<Partial<UserDto>>('/authentication/local/password/update',
+    return self.post<PasswordChangeDto>('/authentication/local/password/update',
         {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',

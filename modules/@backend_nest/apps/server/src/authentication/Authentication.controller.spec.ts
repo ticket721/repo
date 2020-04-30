@@ -21,6 +21,7 @@ import { PasswordlessUserDto } from '@app/server/authentication/dto/Passwordless
 import { StatusCodes } from '@lib/common/utils/codes.value';
 import { UserDto } from '@lib/common/users/dto/User.dto';
 import has = Reflect.has;
+import { PasswordChangeDto } from '@app/server/authentication/dto/PasswordChange.dto';
 
 class QueueMock<T = any> {
     add(name: string, data: T, opts?: JobOptions): Promise<Job<T>> {
@@ -1045,7 +1046,7 @@ describe('Authentication Controller', function() {
                 error: 'user_not_found',
             });
 
-            const body: Partial<UserDto> = {
+            const body: PasswordChangeDto = {
                 password: hashedp,
             };
 
@@ -1088,7 +1089,7 @@ describe('Authentication Controller', function() {
                 }),
             );
 
-            const body: Partial<UserDto> = {
+            const body: PasswordChangeDto = {
                 password: hashedp,
             };
 
@@ -1131,7 +1132,7 @@ describe('Authentication Controller', function() {
                 }),
             );
 
-            const body: Partial<UserDto> = {
+            const body: PasswordChangeDto = {
                 password: hashedp,
             };
 
@@ -1183,7 +1184,7 @@ describe('Authentication Controller', function() {
                 }),
             );
 
-            const body: Partial<UserDto> = {
+            const body: PasswordChangeDto = {
                 password: hashedp,
             };
 
