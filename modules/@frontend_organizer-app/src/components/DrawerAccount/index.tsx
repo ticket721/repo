@@ -1,134 +1,80 @@
-import React, { useState }                                    from 'react';
-import styled                                                 from 'styled-components';
-import { Drawer as MUIDrawer, DrawerProps as MUIDrawerProps } from '@material-ui/core';
-import { Button, Icon, CardContainer, CardContainerProps }    from '@frontend/flib-react/lib/components';
-// import { blurAndDarkenBackground }                            from '@frontend/core/lib/utils/style';
+import React, { useState } from 'react';
+import styled              from 'styled-components';
 import { detect }                                             from 'detect-browser';
+import { Drawer as MUIDrawer, DrawerProps as MUIDrawerProps } from '@material-ui/core';
+import { blurAndDarkenBackground }                            from '@frontend/core/lib/utils/style';
+import {
+  WalletHeader,
+  ActivitiesContainer,
+  TitleText,
+  FundsCard,
+  LinksContainer,
+  ArrowLink
+} from '@frontend/flib-react/lib/components';
 
-const fakeData = {
-  activity: [
-    {
-      content: 'Donec tempus massa quis enim molestie finibus 0',
-    },
-    {
-      content: 'Donec tempus massa quis enim molestie finibus 1',
-    },
-    {
-      content: 'Donec tempus massa quis enim molestie finibus 2',
-    },
-    {
-      content: 'Donec tempus massa quis enim molestie finibus 3',
-    },
-    {
-      content: 'Donec tempus massa quis enim molestie finibus 4',
-    },
-  ],
-  balance: 35000,
-  currency: '€',
-  bankAccount: '**** **** **** 3636',
-  location: 'Paris, France'
+interface Props {
+  open: boolean,
+  onClose: () => void;
 }
 
-const categories = [
-  {
-    title: 'About',
-    content: [
-      {
-        title: 'Privacy Policy',
-        icon: 'arrow'
-      },
-      {
-        title: 'Terms & Conditions',
-        icon: 'arrow'
-      },
-      {
-        title: 'Refund Policy',
-        icon: 'arrow'
-      },
-      {
-        title: 'Partners',
-        icon: 'arrow'
-      }
-    ]
-  }
-];
+const user = {
+  firstName: 'Pierre',
+  lastName: 'Paul',
+  profilePicture: '/public/favicon.ico',
+  creditBalance: 3500,
+  creditCard: 5234,
+  currentLocation: 'Paris, France',
+};
 
-const DrawerAccount = (): JSX.Element => {
-  const [displayDrawer, setDisplayDrawer] = useState(false);
+const notif = ['notif0', 'notif1', 'notif2', 'notif3', 'notif4', 'notif5', 'notif6', 'notif7'];
+
+
+const DrawerAccount = ({open, onClose}: Props): JSX.Element => {
+  const [viewAll, setViewAll] = useState(false);
   const browser = detect();
 
+  const displayedNotif = viewAll ? notif : notif.slice(0, 3);
+
   return (
-    <>
-      <Button onClick={() => setDisplayDrawer(true)} title='Click me!' type='primary'/>
-      <Drawer anchor='right' open={displayDrawer} onClose={(): void => setDisplayDrawer(false)} browserName={browser?.name}>
-        {categories.map((c) => {
-          return (
-            <React.Fragment key={c.title}>
-              <Title>{c.title}</Title>
-              {c.content.map((e, idx) => DescriptionLink(e.title, idx === c.content.length - 1, idx === 0, e.icon))}
-            </React.Fragment>
-          );
-        })}
-      </Drawer>
-    </>
+    <Drawer anchor='right' open={open} onClose={onClose} browsername={browser?.name}>
+      <>
+        <WalletHeader user={user}/>
+        <ActivitiesContainer title='Recent activities' viewAllAction={() => setViewAll(!viewAll)} viewAllLabel={viewAll ? 'Show less' : 'View all'}>
+          {displayedNotif.map((e, i) => {
+            return (<TitleText text={e} key={e + i}/>);
+          })}
+        </ActivitiesContainer>
+        <FundsCard
+          title={'My funds'}
+          bankAccountLabel={'Bank account'}
+          currentBalanceLabel={'Current balance'}
+          onClick={() => console.log('FundsCard clicked')}
+          user={user}
+          icon='euro'
+        />
+        <LinksContainer title='Account'>
+          <ArrowLink to='#todo' label='General information'/>
+          <ArrowLink to='#todo' label='Payment information'/>
+          <ArrowLink to='#todo' label='Main city' location='Paris, France' />
+        </LinksContainer>
+      </>
+    </Drawer>
   );
 };
 
 interface DrawerProps extends MUIDrawerProps {
-  browserName: string | undefined;
+  browsername: string | undefined;
 }
 
 const Drawer = styled(MUIDrawer)<DrawerProps>`
   .MuiPaper-root {
     background: linear-gradient(91.44deg,#0A0812 0.31%,#120F1A 99.41%);
-    width: 300px;
+    width: 375px;
     color: ${props => props.theme.textColor};
   }
   .MuiBackdrop-root {
+    ${(props): string => blurAndDarkenBackground(props.browsername)};
   }
 `;
 
-
-const Title = styled.p`
-  font-weight: bold;
-  font-size: 18px;
-  padding: 48px 24px 16px 24px;
-`;
-
-const Text = styled.p`
-  color: ${props => props.theme.textColorDark};
-  width: 100%;
-`
-
-const Location = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  p {
-    padding: 0 8px;
-    color: ${props => props.theme.textColor};
-  }
-`;
-
-interface DescriptionCardContainerProps extends CardContainerProps {
-  isLast: boolean;
-  isFirst: boolean;
-}
-
-const DescriptionCardContainer = styled(CardContainer)<DescriptionCardContainerProps>`
-  border-bottom: ${({ isLast }): string => isLast ? 'none' : '1px solid rgba(255, 255, 255, 0.05)'};
-  justify-content: space-between;
-  align-items: center;
-`;
-
-const DescriptionLink = (text: string, last: boolean, first: boolean, icon: string | undefined): JSX.Element => {
-  return (
-    <DescriptionCardContainer key={text} isLast={last} isFirst={first}>
-      <div>
-        <Text>{text}</Text>
-      </div>
-      {icon && <Icon icon={icon} height='16' width='16' fill='#fff'/>}
-    </DescriptionCardContainer>
-  )
-};
 export default DrawerAccount;

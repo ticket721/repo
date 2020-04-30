@@ -12,6 +12,22 @@ import { Column, CreateDateColumn, Entity, UpdateDateColumn } from '@iaminfinity
 } as any)
 export class GlobalEntity {
     /**
+     * Entity Builder
+     *
+     * @param ge
+     */
+    constructor(ge?: GlobalEntity) {
+        if (ge) {
+            this.id = ge.id;
+            this.block_number = ge.block_number;
+            this.processed_block_number = ge.processed_block_number;
+            this.eth_eur_price = ge.eth_eur_price;
+            this.created_at = ge.created_at;
+            this.updated_at = ge.updated_at;
+        }
+    }
+
+    /**
      * Unique identifier of the global config (always 'global')
      */
     @Column({

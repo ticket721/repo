@@ -239,24 +239,28 @@ export class GemOrderEntity {
             this.distribution_id = go.distribution_id;
             this.circuit_name = go.circuit_name;
             this.initial_arguments = go.initial_arguments;
-            this.gem = go.gem;
-            this.gem.operation_status = this.gem.operation_status
-                ? {
-                      ...this.gem.operation_status,
-                      operation_list: ECAAG(this.gem.operation_status.operation_list),
-                  }
-                : this.gem.operation_status;
-            this.gem.route_history = ECAAG(this.gem.route_history);
-            this.gem.gem_payload = this.gem.gem_payload
-                ? {
-                      ...this.gem.gem_payload,
-                      costs: ECAAG(this.gem.gem_payload.costs),
-                  }
-                : this.gem.gem_payload;
             this.initialized = go.initialized;
             this.refresh_timer = go.refresh_timer;
             this.created_at = go.created_at;
             this.updated_at = go.updated_at;
+
+            this.gem = go.gem;
+
+            if (this.gem) {
+                this.gem.operation_status = this.gem.operation_status
+                    ? {
+                          ...this.gem.operation_status,
+                          operation_list: ECAAG(this.gem.operation_status.operation_list),
+                      }
+                    : this.gem.operation_status;
+                this.gem.route_history = ECAAG(this.gem.route_history);
+                this.gem.gem_payload = this.gem.gem_payload
+                    ? {
+                          ...this.gem.gem_payload,
+                          costs: ECAAG(this.gem.gem_payload.costs),
+                      }
+                    : this.gem.gem_payload;
+            }
         }
     }
 

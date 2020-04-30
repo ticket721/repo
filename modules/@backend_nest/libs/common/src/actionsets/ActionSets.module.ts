@@ -11,6 +11,7 @@ import { EventCreateAcsetbuilderHelper } from '@lib/common/actionsets/acset_buil
 import { ActionSetsRightsConfig } from '@lib/common/actionsets/ActionSets.rights';
 import { RightsModule } from '@lib/common/rights/Rights.module';
 import { CartAcsetbuilderHelper } from '@lib/common/actionsets/acset_builders/Cart.acsetbuilder.helper';
+import { CheckoutAcsetbuilderHelper } from '@lib/common/actionsets/acset_builders/Checkout.acsetbuilder.helper';
 
 @Module({
     imports: [
@@ -34,6 +35,11 @@ import { CartAcsetbuilderHelper } from '@lib/common/actionsets/acset_builders/Ca
         {
             provide: WinstonLoggerService,
             useValue: new WinstonLoggerService('actionset'),
+        },
+
+        {
+            provide: `ACTION_SET_BUILDER/checkout_create`,
+            useClass: CheckoutAcsetbuilderHelper,
         },
 
         {

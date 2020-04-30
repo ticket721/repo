@@ -288,7 +288,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     return as.current_action === 2;
                 });
 
-                await sdk.checkout.cart.commitStripe(token, {
+                await sdk.checkout.cart.commit.stripe(token, {
                     cart: actionSetId,
                 });
 

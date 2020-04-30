@@ -9,6 +9,7 @@ import { Stripe } from 'stripe';
 import { UsersModule } from '@lib/common/users/Users.module';
 import { TxsModule } from '@lib/common/txs/Txs.module';
 import { TxsServiceOptions } from '@lib/common/txs/Txs.service';
+import { ModuleRef } from '@nestjs/core';
 
 /**
  * Build options for the Dosojin Module
@@ -85,14 +86,21 @@ export class DosojinRunnerModule {
                 // Dosojins
                 {
                     provide: 'STRIPE_INSTANCE',
-                    useFactory: async (...args: any[]): Promise<Stripe> => {
+                    useFactory: async (moduleRef: ModuleRef, ...args: any[]): Promise<Stripe> => {
+                        try {
+                            return await moduleRef.get('STRIPE_MOCK_INSTANCE', { strict: false });
+                        } catch (
+                            e
+                            // tslint:disable-next-line:no-empty
+                        ) {}
+
                         const srmbuildOptions: DosojinRunnerModuleBuildOptions = await options.useFactory(...args);
 
                         return new Stripe(srmbuildOptions.stripePrivateKey, {
                             apiVersion: '2019-12-03',
                         });
                     },
-                    inject: options.inject,
+                    inject: [ModuleRef, ...options.inject],
                 },
                 StripeTokenMinterDosojin,
             ],

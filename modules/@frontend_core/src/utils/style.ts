@@ -9,4 +9,11 @@ browserName: string | undefined, blur = '3px', color = 'rgba(33, 29, 45, 0.6)', 
   `);
 }
 
-export default blurAndDarkenBackground;
+export function truncate(width: string): string {
+    return (`
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: ${width};
+    `);
+}
