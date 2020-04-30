@@ -32,7 +32,7 @@ const user = {
 export const showcase = () => (
   <div>
     <UserHeader user={user} profileHeader />
-    <ActivitiesContainer title="Recent activities" to="#todo" viewAllLabel="View all">
+    <ActivitiesContainer title="Recent activities" viewAllAction={() => console.log('clicked!')} viewAllLabel="View all">
       <TitleText small text="hello" />
       <TitleText small text="hello hello" />
     </ActivitiesContainer>
