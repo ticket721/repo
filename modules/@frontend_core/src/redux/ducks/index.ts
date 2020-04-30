@@ -19,7 +19,8 @@ import {
     StatusesState,
     StatusesReducer,
     statusesInitialState,
-} from './statuses';
+}                                          from './statuses';
+import { cacheInitialState, CacheReducer, CacheState } from './cache';
 
 export const history = createMemoryHistory();
 
@@ -27,6 +28,7 @@ export interface SpecificState {
     configs: ConfigsState;
     statuses: StatusesState;
     userProperties: UserPropertiesState;
+    cache: CacheState;
 }
 
 export type AppState = SpecificState & VtxState;
@@ -35,14 +37,16 @@ export const rootReducer = getReducers({
     configs: ConfigsReducer,
     router: connectRouter(history),
     statuses: StatusesReducer,
-    userProperties: UserPropertiesReducer
+    userProperties: UserPropertiesReducer,
+    cache: CacheReducer,
 });
 
 export const initialState: AppState = configureVtx<AppState>(getInitialState<SpecificState>(
     {
         userProperties: userPropertiesInitialState,
         configs: configsInitialState,
-        statuses: statusesInitialState
+        statuses: statusesInitialState,
+        cache: cacheInitialState,
     }) as AppState,
     {
         confirmation_threshold: 2,

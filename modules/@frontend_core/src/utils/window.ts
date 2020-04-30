@@ -1,9 +1,11 @@
-import { AppState } from '../redux/ducks';
-import { Store }    from 'redux';
+import { AppState }    from '../redux/ducks';
+import { Store }       from 'redux';
+import { T721SDK }     from '@common/sdk';
 
 export {};
 
 interface Window {
+    t721Sdk?: T721SDK;
     web3?: any;
     ethereum?: any;
     __REDUX_DEVTOOLS_EXTENSION_COMPOSE__?: any;

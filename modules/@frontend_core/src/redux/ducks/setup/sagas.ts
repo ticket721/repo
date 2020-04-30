@@ -9,11 +9,16 @@ import { IStart, IStartVtx }  from './actions';
 import { GetCity, GetDevice } from '../user_properties';
 import { SetupActionTypes }   from './types';
 
-import { EthConfig } from '../configs';
+import { EthConfig }            from '../configs';
+import { StartRefreshInterval } from '../cache';
+// import { T721SDK }              from '@common/sdk';
+import { T721SDKMock }          from '../../../cores/T721SDKMock';
 
 function* startSaga(action: IStart): SagaIterator {
+    global.window.t721Sdk = new T721SDKMock();
     yield put(GetDevice());
     yield put(GetCity());
+    yield put(StartRefreshInterval());
 }
 
 function* startVtxSaga(action: IStartVtx): SagaIterator {

@@ -1,36 +1,41 @@
 export enum CacheActionTypes {
-
+    SetTickInterval = '@@cache/settickinterval',
+    SetIntervalId = '@@cache/setintervalid',
+    FetchItem = '@@cache/fetchitem',
+    RegisterComponent = '@@cache/registercomponent',
+    UnregisterComponent = '@@cache/unregistercomponent',
+    UpdateItemData = '@@cache/updateitemdata',
+    UpdateItemError = '@@cache/updateitemerror',
+    UpdateLastResponse = '@@cache/updatelastresponse',
+    StartRefreshInterval = '@@cache/startrefreshinterval',
 }
-
-export interface EthConfig {
-    ethereumEndpointUrl: string;
-    ethereumNetworkId: number;
-    ethereumNetworkGenesisHash: string;
-}
-
-
-export type CachedResp = Error | any;
 
 export interface CacheSettings {
     intervalId: number;
     tickInterval: number;
+    startTimestamp: number;
 }
 
-export interface RefreshProperties {
-    refreshRate: number;
+export interface CachedItemProperties {
     lastFetch: number;
-    shouldFetch: boolean;
     lastResp: number;
+    mountedBy: Array<string>;
+    refreshRates: Array<number>;
     method: string;
     args: any;
 }
 
-export interface Cache {
-    requests: {
-        [key: string]: CachedResp
+export interface CachedItem {
+    data: any;
+    error: Error;
+}
+
+export interface CacheState {
+    settings: CacheSettings;
+    items: {
+        [key: string]: CachedItem;
     },
-    settings: CacheSettings,
-    refresh: {
-        [key: string]: RefreshProperties
-    },
+    properties: {
+        [key: string]: CachedItemProperties;
+    }
 }
