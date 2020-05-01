@@ -6,7 +6,7 @@ import { AppState }                     from '../../redux/ducks';
 import { v4 as uuid } from 'uuid';
 
 export interface RequestTemplate {
-    [key: string]: (...args: any) => any;
+    [key: string]: (...args: any[]) => any;
 }
 
 interface WithRequestsInjectedProp<DataType> {
@@ -56,52 +56,56 @@ export const withRequests = <TemplateInterfaceType extends RequestTemplate, Rest
                 & WithRequestsInjectedProps<TemplateInterfaceType>
                 & RestProps
     ): React.ReactElement<WithRequestsInjectedProps<TemplateInterfaceType> & RestProps> {
-          const entities: Array<[keyof TemplateInterfaceType, WithRequestsInputProp<any>]> = Object.entries(calls);
+        let methodTags: string = '';
+        Object.values(calls).forEach((entity) => methodTags = methodTags.concat(`(${entity.method})`));
+        f['displayName'] = `WithRequests${methodTags}(${WrappedComponent.name})`;
 
-          const uniqueId: string = uuid();
+        const entities: Array<[keyof TemplateInterfaceType, WithRequestsInputProp<any>]> = Object.entries(calls);
 
-          const dispatch = useDispatch();
+        f['uuid'] = `WithRequests(${WrappedComponent.name})@${uuid()}`;
 
-          const getResponses = () => {
-              const resps: Responses<TemplateInterfaceType> = {} as Responses<TemplateInterfaceType>;
+        const dispatch = useDispatch();
 
-              for (const [entityKey, entity] of entities) {
-                  resps[entityKey] = {
-                      ...useSelector((state: AppState) => state.cache.items[CacheCore.key(entity.method, entity.args)]),
-                      loading: !useSelector((state: AppState) => state.cache.items[CacheCore.key(entity.method, entity.args)]
-                      )
-                  }
-              }
+        const getResponses = () => {
+            const resps: Responses<TemplateInterfaceType> = {} as Responses<TemplateInterfaceType>;
 
-              return resps;
-          };
+            for (const [entityKey, entity] of entities) {
+                resps[entityKey] = {
+                    ...useSelector((state: AppState) => state.cache.items[CacheCore.key(entity.method, entity.args)]),
+                    loading: !useSelector((state: AppState) => state.cache.items[CacheCore.key(entity.method, entity.args)]
+                    )
+                }
+            }
 
-          const registerComponent = () => entities.forEach(
-                ([, entity]) => void dispatch(RegisterComponent(
-                    CacheCore.key(entity.method, entity.args),
-                    entity.method,
-                    entity.args,
-                    uniqueId,
-                    entity.refreshRate
-                ))
-          );
+            return resps;
+        };
 
-          const unregisterComponent = () => entities.forEach(
-              ([, entity]) => void dispatch(UnregisterComponent(
-                  CacheCore.key(entity.method, entity.args),
-                  uniqueId
-              ))
-          );
+        const registerComponent = () => entities.forEach(
+            ([, entity]) => void dispatch(RegisterComponent(
+                CacheCore.key(entity.method, entity.args),
+                entity.method,
+                entity.args,
+                f['uuid'],
+                entity.refreshRate
+            ))
+        );
 
-          useEffect(() => {
-              registerComponent();
+        const unregisterComponent = () => entities.forEach(
+            ([, entity]) => void dispatch(UnregisterComponent(
+                CacheCore.key(entity.method, entity.args),
+                f['uuid']
+            ))
+        );
 
-              return () => unregisterComponent();
-          }, []);
+        useEffect(() => {
+            registerComponent();
 
-          return (
-              <WrappedComponent responses={getResponses()} {...restProps as any as RestProps} />
-          );
+            return () => unregisterComponent();
+        }, []);
+
+        return (
+            <WrappedComponent responses={getResponses()} {...restProps as any as RestProps} />
+        );
     };
 
     return WrapperComponent;
