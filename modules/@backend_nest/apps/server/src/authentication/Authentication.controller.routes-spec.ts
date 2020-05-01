@@ -5,7 +5,16 @@ import { LocalLoginResponseDto } from '@app/server/authentication/dto/LocalLogin
 import { EmailValidationResponseDto } from '@app/server/authentication/dto/EmailValidationResponse.dto';
 import { createWallet, Web3LoginSigner, Web3RegisterSigner } from '@common/global';
 import { Web3LoginResponseDto } from '@app/server/authentication/dto/Web3LoginResponse.dto';
-import { failWithCode, generateEmail, generatePassword, generateUserName, getSDK } from '../../test/utils';
+import {
+    failWithCode,
+    generateEmail,
+    generatePassword,
+    generateUserName,
+    getSDK,
+    getSDKAndUser,
+} from '../../test/utils';
+import { PasswordlessUserDto } from './dto/PasswordlessUser.dto';
+import { T721SDK } from '@common/sdk';
 
 export default function(getCtx: () => { ready: Promise<void> }) {
     return function() {
@@ -796,6 +805,16 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 };
 
                 await failWithCode(sdk.validateEmail(user.email), StatusCodes.Unauthorized);
+            });
+        });
+
+        describe('resetPassword (POST /validate/password/reset', function() {
+            test.concurrent('should fail not existing user', async function() {
+                const sdk = await getSDK(getCtx);
+
+                const pass = generatePassword();
+
+                await failWithCode(sdk.validateResetPassword('badToken', pass), StatusCodes.Unauthorized);
             });
         });
     };
