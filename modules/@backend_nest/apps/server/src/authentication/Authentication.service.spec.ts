@@ -1434,12 +1434,12 @@ describe('Authentication Service', function() {
             when(usersServiceMock.findByEmail(email)).thenResolve({
                 error: null,
                 response: {
-                    id: anyString(),
+                    id: '123',
                     email: email,
                     password: toAcceptedKeccak256Format(keccak256('password')),
-                    username: anyString(),
+                    username: 'salut',
                     locale: 'fr',
-                    address: anyString(),
+                    address: 'blabla',
                     type: 't721',
                     role: 'authenticated',
                     valid: true,
@@ -1454,7 +1454,7 @@ describe('Authentication Service', function() {
             verify(usersServiceMock.findByEmail(email)).called();
         });
 
-        test('error_password_change', async function() {
+        test('error password change', async function() {
             const authenticationService: AuthenticationService = context.authenticationService;
             const usersServiceMock: UsersService = context.usersServiceMock;
 
@@ -1464,7 +1464,7 @@ describe('Authentication Service', function() {
             when(
                 usersServiceMock.update(
                     deepEqual({
-                        id: anything(),
+                        id: '123',
                         password: anyString(),
                     }),
                 ),
@@ -1478,12 +1478,12 @@ describe('Authentication Service', function() {
             when(usersServiceMock.findByEmail(email)).thenResolve({
                 error: null,
                 response: {
-                    id: anyString(),
+                    id: '123',
                     email: email,
                     password: toAcceptedKeccak256Format(keccak256('password')),
-                    username: anyString(),
+                    username: 'salut',
                     locale: 'fr',
-                    address: anyString(),
+                    address: 'blabla',
                     type: 't721',
                     role: 'authenticated',
                     valid: true,
@@ -1498,14 +1498,14 @@ describe('Authentication Service', function() {
             verify(
                 usersServiceMock.update(
                     deepEqual({
-                        id: anything(),
+                        id: '123',
                         password: anyString(),
                     }),
                 ),
             ).called();
         });
 
-        test('successful_password_change', async function() {
+        test('successful password change', async function() {
             const authenticationService: AuthenticationService = context.authenticationService;
             const usersServiceMock: UsersService = context.usersServiceMock;
 
@@ -1515,7 +1515,7 @@ describe('Authentication Service', function() {
             const serviceResponse: ServiceResponse<UserDto> = {
                 response: {
                     email,
-                    username: anyString(),
+                    username: 'salut',
                     address: resultAddress,
                     type: 't721',
                     password: hashedp,
@@ -1530,7 +1530,7 @@ describe('Authentication Service', function() {
             when(
                 usersServiceMock.update(
                     deepEqual({
-                        id: anything(),
+                        id: '123',
                         password: anyString(),
                     }),
                 ),
@@ -1539,12 +1539,12 @@ describe('Authentication Service', function() {
             when(usersServiceMock.findByEmail(email)).thenResolve({
                 error: null,
                 response: {
-                    id: anyString(),
+                    id: '123',
                     email: email,
                     password: toAcceptedKeccak256Format(keccak256('password')),
-                    username: anyString(),
+                    username: 'salut',
                     locale: 'fr',
-                    address: anyString(),
+                    address: 'blabla',
                     type: 't721',
                     role: 'authenticated',
                     valid: true,
@@ -1560,7 +1560,7 @@ describe('Authentication Service', function() {
             verify(
                 usersServiceMock.update(
                     deepEqual({
-                        id: anything(),
+                        id: '123',
                         password: anyString(),
                     }),
                 ),

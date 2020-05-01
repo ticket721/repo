@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthenticationController } from './Authentication.controller';
-import { anyString, instance, mock, verify, when } from 'ts-mockito';
+import { instance, mock, verify, when } from 'ts-mockito';
 import { AuthenticationService } from './Authentication.service';
 import {
     createWallet,
@@ -1051,15 +1051,15 @@ describe('Authentication Controller', function() {
             };
 
             const user: UserDto = {
-                id: anyString(),
+                id: '123',
                 email: email,
-                username: anyString(),
-                address: anyString(),
-                password: anyString(),
+                username: 'salut',
+                address: 'blabla',
+                password: 'Superpass',
                 role: 'authenticated',
                 valid: true,
-                type: anyString(),
-                locale: anyString(),
+                type: 't721',
+                locale: 'fr',
             };
 
             await expect(authenticationController.updatePassword(body, user)).rejects.toMatchObject({
@@ -1094,15 +1094,15 @@ describe('Authentication Controller', function() {
             };
 
             const user: UserDto = {
-                id: anyString(),
+                id: '123',
                 email: email,
-                username: anyString(),
-                address: anyString(),
-                password: anyString(),
+                username: 'salut',
+                address: 'blabla',
+                password: 'Superpass',
                 role: 'authenticated',
                 valid: true,
-                type: anyString(),
-                locale: anyString(),
+                type: 't721',
+                locale: 'fr',
             };
 
             await expect(authenticationController.updatePassword(body, user)).rejects.toMatchObject({
@@ -1137,15 +1137,15 @@ describe('Authentication Controller', function() {
             };
 
             const user: UserDto = {
-                id: anyString(),
+                id: '123',
                 email: email,
-                username: anyString(),
-                address: anyString(),
-                password: anyString(),
+                username: 'salut',
+                address: 'blabla',
+                password: 'Superpass',
                 role: 'authenticated',
                 valid: true,
-                type: anyString(),
-                locale: anyString(),
+                type: 't721',
+                locale: 'fr',
             };
 
             await expect(authenticationController.updatePassword(body, user)).rejects.toMatchObject({
@@ -1171,14 +1171,14 @@ describe('Authentication Controller', function() {
             when(authenticationServiceMock.updateUserPassword(email, hashedp)).thenReturn(
                 Promise.resolve({
                     response: {
-                        username: anyString(),
-                        email,
-                        type: anyString(),
-                        address: anyString(),
-                        id: anyString(),
+                        id: '123',
+                        email: email,
+                        username: 'salut',
+                        address: 'blabla',
                         role: 'authenticated',
-                        locale: anyString(),
                         valid: true,
+                        type: 't721',
+                        locale: 'fr',
                     },
                     error: null,
                 }),
@@ -1189,26 +1189,26 @@ describe('Authentication Controller', function() {
             };
 
             const user: UserDto = {
-                id: anyString(),
+                id: '123',
                 email: email,
-                username: anyString(),
-                address: anyString(),
-                password: anyString(),
+                username: 'salut',
+                address: 'blabla',
+                password: 'Superpass',
                 role: 'authenticated',
                 valid: true,
-                type: anyString(),
-                locale: anyString(),
+                type: 't721',
+                locale: 'fr',
             };
 
             await expect(authenticationController.updatePassword(body, user)).resolves.toMatchObject({
-                username: anyString(),
-                email,
-                type: anyString(),
-                address: anyString(),
-                id: anyString(),
+                id: '123',
+                email: email,
+                username: 'salut',
+                address: 'blabla',
                 role: 'authenticated',
-                locale: anyString(),
                 valid: true,
+                type: 't721',
+                locale: 'fr',
             });
         });
     });

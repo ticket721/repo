@@ -15,8 +15,6 @@ import {
 } from '../../test/utils';
 import { T721SDK } from '@common/sdk';
 import { PasswordlessUserDto } from '@app/server/authentication/dto/PasswordlessUser.dto';
-import { UserDto } from '@lib/common/users/dto/User.dto';
-import { anyString } from 'ts-mockito';
 
 export default function(getCtx: () => { ready: Promise<void> }) {
     return function() {
