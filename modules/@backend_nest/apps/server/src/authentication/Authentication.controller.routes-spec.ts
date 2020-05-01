@@ -824,11 +824,10 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const res: AxiosResponse<Partial<UserDto>> = (await sdk.updatePassword(
+                const res: AxiosResponse<PasswordlessUserDto> = (await sdk.updatePassword(
                     token,
-                    user.email,
                     password,
-                )) as AxiosResponse<Partial<UserDto>>;
+                )) as AxiosResponse<PasswordlessUserDto>;
 
                 expect(res.data).toEqual({
                     id: expect.anything(),
@@ -840,6 +839,22 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     valid: expect.anything(),
                     locale: expect.anything(),
                 });
+
+                const loginResponse: AxiosResponse<LocalLoginResponseDto> = await sdk.localLogin(user.email, password);
+
+                expect(loginResponse.data).toEqual({
+                    user: {
+                        valid: true,
+                        address: loginResponse.data.user.address,
+                        role: 'authenticated',
+                        id: loginResponse.data.user.id,
+                        locale: 'en',
+                        type: 't721',
+                        email: loginResponse.data.user.email,
+                        username: loginResponse.data.user.username,
+                    },
+                    token: loginResponse.data.token,
+                } as LocalLoginResponseDto);
             });
 
             test.concurrent('should fail unauthorizes (POST local/password/update)', async function() {
@@ -850,7 +865,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: generatePassword(),
                 };
 
-                await failWithCode(sdk.updatePassword('badToken', user.email, user.password), StatusCodes.Unauthorized);
+                await failWithCode(sdk.updatePassword('badToken', user.password), StatusCodes.Unauthorized);
             });
 
             test.concurrent('should fail bad email', async function() {
