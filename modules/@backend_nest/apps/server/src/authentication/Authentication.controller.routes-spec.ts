@@ -12,9 +12,11 @@ import {
     generateUserName,
     getSDK,
     getSDKAndUser,
-} from '../../test/utils';
-import { PasswordlessUserDto } from './dto/PasswordlessUser.dto';
-import { T721SDK } from '@common/sdk';
+}                                   from '../../test/utils';
+import { PasswordlessUserDto }      from './dto/PasswordlessUser.dto';
+import { T721SDK }                  from '@common/sdk';
+import { FailedRegisterReport }     from '../../../../../@common_sdk/lib/@common_sdk/sources';
+import { ResetPasswordResponseDto } from '@app/server/authentication/dto/resetPasswordResponse.dto';
 
 export default function(getCtx: () => { ready: Promise<void> }) {
     return function() {
@@ -815,6 +817,53 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 const pass = generatePassword();
 
                 await failWithCode(sdk.validateResetPassword('badToken', pass), StatusCodes.Unauthorized);
+            });
+
+            test.concurrent('should fail weak password', async function() {
+                const sdk = await getSDK(getCtx);
+
+                const pass = "";
+
+                const res: FailedRegisterReport = await sdk.validateResetPassword("token", pass) as FailedRegisterReport
+
+                expect(res.report_status).toBe('weak')
+            });
+
+            test.concurrent('should reset password', async function() {
+                const {
+                    sdk,
+                    token,
+                    user,
+                    password,
+                }: {
+                    sdk: T721SDK;
+                    token: string;
+                    user: PasswordlessUserDto;
+                    password: string;
+                } = await getSDKAndUser(getCtx);
+
+                const res = await sdk.validateResetPassword(token, password) as AxiosResponse<ResetPasswordResponseDto>;
+
+                expect(res.data).toEqual(user);
+
+                const loginResponse: AxiosResponse<LocalLoginResponseDto> = await sdk.localLogin(
+                    user.email,
+                    password
+                );
+
+                expect(loginResponse.data).toEqual({
+                    user: {
+                        valid: true,
+                        address: loginResponse.data.user.address,
+                        role: 'authenticated',
+                        id: loginResponse.data.user.id,
+                        locale: 'en',
+                        type: 't721',
+                        email: loginResponse.data.user.email,
+                        username: loginResponse.data.user.username,
+                    },
+                    token: loginResponse.data.token,
+                } as LocalLoginResponseDto);
             });
         });
     };

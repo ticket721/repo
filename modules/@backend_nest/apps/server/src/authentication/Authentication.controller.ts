@@ -345,7 +345,7 @@ export class AuthenticationController {
     }
 
     /**
-     * [POST /authentication/validate] : Validates a user's email address
+     * [POST /authentication/validate/pasword/reset] : Validates a password reset
      */
     @Post('/validate/password/reset')
     @UseFilters(new HttpExceptionFilter())

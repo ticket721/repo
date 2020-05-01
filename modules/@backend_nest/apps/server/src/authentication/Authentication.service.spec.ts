@@ -1450,15 +1450,15 @@ describe('Authentication Service', function() {
             const username = 'anonymous';
 
             const user: UserDto = {
-                id: anyString(),
+                id: '123',
                 email: email,
                 username: username,
-                role: anyString(),
-                address: anyString(),
-                valid: anyString(),
-                password: anyString(),
-                type: anyString(),
-                locale: anyString(),
+                role: 'authenticated',
+                address: 'blabla',
+                valid: true,
+                password: 'anypass',
+                type: 't721',
+                locale: 'fr',
             };
 
             when(usersServiceMock.findByEmail(email)).thenReturn(
@@ -1533,15 +1533,15 @@ describe('Authentication Service', function() {
 
             const serviceResponse: ServiceResponse<UserDto> = {
                 response: {
-                    email: anyString(),
-                    username: anyString(),
-                    address: anyString(),
-                    type: 't721',
-                    password: anyString(),
-                    id: id,
+                    id: '123',
+                    email: 'salut@test.com',
+                    username: 'salut',
                     role: 'authenticated',
-                    locale: 'en',
-                    valid: false,
+                    address: 'blabla',
+                    valid: true,
+                    password: 'anypass',
+                    type: 't721',
+                    locale: 'fr',
                 },
                 error: null,
             };

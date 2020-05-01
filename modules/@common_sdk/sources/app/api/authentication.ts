@@ -170,7 +170,7 @@ export async function validateResetPassword(
         password: hashed,
     };
 
-    return self.post<EmailValidationInputDto>('/authentication/validate/password/reset', {
+    return self.post<ResetPasswordInputDto>('/authentication/validate/password/reset', {
         'Content-Type': 'application/json',
     }, validationPayload);
 }

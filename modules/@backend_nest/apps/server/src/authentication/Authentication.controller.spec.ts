@@ -1456,7 +1456,7 @@ describe('Authentication Controller', function() {
 
             const user: PasswordlessUserDto = {
                 username,
-                id: anyString(),
+                id: '123',
                 email,
                 locale,
                 valid: true,
