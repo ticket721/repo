@@ -20,6 +20,7 @@ import { EmailValidationResponseDto } from '@app/server/authentication/dto/Email
 import { EmailValidationInputDto }    from '@app/server/authentication/dto/EmailValidationInput.dto';
 import { UserDto }                    from '@lib/common/users/dto/User.dto';
 import { PasswordChangeDto }          from '@app/server/authentication/dto/PasswordChange.dto';
+import { PasswordlessUserDto }        from '@app/server/authentication/dto/PasswordlessUser.dto';
 
 export interface FailedRegisterReport {
     report_status: 'weak';
@@ -125,8 +126,7 @@ export function web3LoginPayload(networkId: number): [number, EIP712Payload] {
 
 export async function updatePassword(
     token: string,
-    email: string,
-    password: string): Promise<AxiosResponse<Partial<UserDto>> | FailedRegisterReport> {
+    password: string): Promise<AxiosResponse<PasswordlessUserDto> | FailedRegisterReport> {
     const self: T721SDK = this;
 
     const report = getPasswordStrength(password);
