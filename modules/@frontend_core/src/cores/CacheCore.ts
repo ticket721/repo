@@ -75,7 +75,7 @@ export abstract class CacheCore {
      * @param method
      * @param args
      */
-    public static fetchItem = async ( method: any, args: any): Promise<any> => {
+    public static fetchItem = async ( method: any, args: any[]): Promise<any> => {
         const sdkMethod = get(global.window.t721Sdk, method, undefined);
 
         if (!sdkMethod) {

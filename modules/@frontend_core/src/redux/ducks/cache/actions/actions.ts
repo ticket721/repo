@@ -7,10 +7,10 @@ export interface IFetchItem extends Action<string> {
     type: CacheActionTypes.FetchItem;
     key: string;
     method: string;
-    args: any;
+    args: any[];
 }
 
-export const FetchItem = (key: string, method: string, args: any): IFetchItem => ({
+export const FetchItem = (key: string, method: string, args: any[]): IFetchItem => ({
     type: CacheActionTypes.FetchItem,
     key,
     method,
