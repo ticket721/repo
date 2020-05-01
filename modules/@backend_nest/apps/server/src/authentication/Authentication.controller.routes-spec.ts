@@ -15,6 +15,7 @@ import {
 } from '../../test/utils';
 import { T721SDK } from '@common/sdk';
 import { PasswordlessUserDto } from '@app/server/authentication/dto/PasswordlessUser.dto';
+import { generate } from 'rxjs';
 
 export default function(getCtx: () => { ready: Promise<void> }) {
     return function() {
@@ -822,9 +823,11 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
+                const pass = generatePassword();
+
                 const res: AxiosResponse<PasswordlessUserDto> = (await sdk.updatePassword(
                     token,
-                    password,
+                    pass,
                 )) as AxiosResponse<PasswordlessUserDto>;
 
                 expect(res.data).toEqual({
@@ -838,7 +841,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     locale: expect.anything(),
                 });
 
-                const loginResponse: AxiosResponse<LocalLoginResponseDto> = await sdk.localLogin(user.email, password);
+                const loginResponse: AxiosResponse<LocalLoginResponseDto> = await sdk.localLogin(user.email, pass);
 
                 expect(loginResponse.data).toEqual({
                     user: {
