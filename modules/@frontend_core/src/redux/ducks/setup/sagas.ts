@@ -11,11 +11,12 @@ import { SetupActionTypes }   from './types';
 
 import { EthConfig }            from '../configs';
 import { StartRefreshInterval } from '../cache';
-// import { T721SDK }              from '@common/sdk';
-import { T721SDKMock }          from '../../../cores/T721SDKMock';
+import { T721SDK }              from '@common/sdk';
 
 function* startSaga(action: IStart): SagaIterator {
-    global.window.t721Sdk = new T721SDKMock();
+    global.window.t721Sdk = new T721SDK();
+
+    global.window.t721Sdk.connect('localhost', 3000);
     yield put(GetDevice());
     yield put(GetCity());
     yield put(StartRefreshInterval());
