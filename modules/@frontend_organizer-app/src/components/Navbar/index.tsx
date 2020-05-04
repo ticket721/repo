@@ -8,7 +8,7 @@ import { truncate }  from '@frontend/core/lib/utils';
 const user = {
   firstName: 'Pierre',
   lastName: 'Paul',
-  profilePicture: '/public/favicon.ico',
+  profilePicture: '/favicon.ico',
   creditBalance: 3500,
   creditCard: 5234,
   currentLocation: 'Paris, France',
@@ -23,7 +23,7 @@ const NavBar: React.FC = () => {
         <Button title='Create Event' onClick={() => console.log('Create event')} variant='custom'/>
         <Profile onClick={() => setDrawer(true)}>
           <UserHeader user={user}/>
-          <Chevron icon='chevron' fill='#fff'/>
+          <Chevron icon='chevron' fill='#fff' width='12px' height='12px'/>
         </Profile>
       </ActionContainer>
       <DrawerAccount open={drawer} onClose={() => setDrawer(false)}/>
@@ -57,20 +57,23 @@ const Profile = styled.div`
   justify-content: space-between;
   background-color: rgba(255, 255, 255, 0.06);
   border-radius: ${(props) => props.theme.defaultRadius};
-  padding: 12px 0 12px 16px;
+  padding: 12px 16px;
 `;
 
 const UserHeader = styled(WalletHeader)`
+  padding: 0;
+  cursor: pointer;
+  img {
+    width: 40px;
+    height: 40px;
+  }
   h3 {
     ${ truncate('80px') };
-    padding-right: 8px;
     font-size: 13px;
   }
 `;
 
 const Chevron = styled(Icon)`
-  svg {
-    transform: rotate(90deg);
-  }
+  transform: rotate(90deg);
 `;
 export default NavBar;
