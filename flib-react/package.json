@@ -41,7 +41,7 @@
     "@types/react-select": "3.0.12",
     "@types/styled-components": "5.1.0",
     "cleave.js": "^1.5.10",
-    "detect-browser": "^5.0.0",
+    "detect-browser": "^5.1.0",
     "html5-file-selector": "2.1.0",
     "polished": "3.6.0",
     "react": "16.13.1",
