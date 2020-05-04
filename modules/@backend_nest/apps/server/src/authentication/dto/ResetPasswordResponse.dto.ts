@@ -5,12 +5,12 @@ import { PasswordlessUserDto } from './PasswordlessUser.dto';
  */
 export class ResetPasswordResponseDto {
     /**
-     * New account information
+     * User information
      */
     user: PasswordlessUserDto;
 
     /**
-     * JWT Token for email validation. Only returned when NODE_ENV=development
+     * JWT Token for reset password validation. Only returned when NODE_ENV=development
      */
     validationToken?: string;
 }

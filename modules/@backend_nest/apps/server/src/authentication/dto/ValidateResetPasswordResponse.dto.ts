@@ -6,7 +6,7 @@ import { PasswordlessUserDto } from '@app/server/authentication/dto/Passwordless
  */
 export class ValidateResetPasswordResponseDto {
     /**
-     * Error if any
+     * User information
      */
     @ApiProperty()
     user: PasswordlessUserDto;

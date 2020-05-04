@@ -7,12 +7,16 @@ import { IsString } from 'class-validator';
 /* istanbul ignore next */
 export class ValidateResetPasswordInputDto {
     /**
-     * User Email
+     * User Token
      */
     @ApiProperty({
-        description: 'Secret token proving email ownership',
+        description: 'User token',
     })
     @IsString()
     token: string;
+
+    /**
+     * User Password
+     */
     password: string;
 }

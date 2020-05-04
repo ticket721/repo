@@ -81,6 +81,10 @@ export class AuthenticationTasks implements OnModuleInit {
         await job.progress(100);
     }
 
+    /**
+     * Task called by bull when reset password email is sent
+     * @param job
+     */
     async resetPasswordEmail(job: Job<ResetPasswordTaskDto>): Promise<void> {
         await job.progress(10);
         const signature = await this.jwtService.signAsync(job.data, {
