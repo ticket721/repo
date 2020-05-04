@@ -10,17 +10,18 @@ import { T721SDK }                    from '../../index';
 import { AxiosResponse }              from 'axios';
 import { LocalRegisterInputDto }      from '@app/server/authentication/dto/LocalRegisterInput.dto';
 import { LocalRegisterResponseDto }   from '@app/server/authentication/dto/LocalRegisterResponse.dto';
-import { LocalLoginResponseDto }      from '@app/server/authentication/dto/LocalLoginResponse.dto';
-import { LocalLoginInputDto }         from '@app/server/authentication/dto/LocalLoginInput.dto';
-import { EIP712Payload }              from '@ticket721/e712';
-import { Web3RegisterResponseDto }    from '@app/server/authentication/dto/Web3RegisterResponse.dto';
-import { Web3RegisterInputDto }       from '@app/server/authentication/dto/Web3RegisterInput.dto';
-import { Web3LoginInputDto }          from '@app/server/authentication/dto/Web3LoginInput.dto';
-import { EmailValidationResponseDto } from '@app/server/authentication/dto/EmailValidationResponse.dto';
-import { EmailValidationInputDto }    from '@app/server/authentication/dto/EmailValidationInput.dto';
-import { UserDto }                    from '@lib/common/users/dto/User.dto';
-import { ResetPasswordResponseDto }   from '@app/server/authentication/dto/resetPasswordResponse.dto';
-import { ResetPasswordInputDto }      from '@app/server/authentication/dto/resetPasswordInput.dto';
+import { LocalLoginResponseDto }            from '@app/server/authentication/dto/LocalLoginResponse.dto';
+import { LocalLoginInputDto }               from '@app/server/authentication/dto/LocalLoginInput.dto';
+import { EIP712Payload }                    from '@ticket721/e712';
+import { Web3RegisterResponseDto }          from '@app/server/authentication/dto/Web3RegisterResponse.dto';
+import { Web3RegisterInputDto }             from '@app/server/authentication/dto/Web3RegisterInput.dto';
+import { Web3LoginInputDto }                from '@app/server/authentication/dto/Web3LoginInput.dto';
+import { EmailValidationResponseDto }       from '@app/server/authentication/dto/EmailValidationResponse.dto';
+import { EmailValidationInputDto }          from '@app/server/authentication/dto/EmailValidationInput.dto';
+import { UserDto }                          from '@lib/common/users/dto/User.dto';
+import { ValidateResetPasswordResponseDto } from '@app/server/authentication/dto/ValidateResetPasswordResponse.dto';
+import { ValidateResetPasswordInputDto }    from '@app/server/authentication/dto/ValidateResetPasswordInput.dto';
+import { ResetPasswordResponseDto }         from '@app/server/authentication/dto/ResetPasswordResponse.dto';
 
 export interface FailedRegisterReport {
     report_status: 'weak';
@@ -136,7 +137,7 @@ export async function validateEmail(token: string): Promise<AxiosResponse<EmailV
     }, validationPayload);
 }
 
-export async function resetPassword(email: string) {
+export async function resetPassword(email: string) : Promise<AxiosResponse<ResetPasswordResponseDto>> {
     const self: T721SDK = this;
 
     const updateUser: Partial<UserDto> = {
@@ -144,7 +145,7 @@ export async function resetPassword(email: string) {
         locale: 'en',
     };
 
-    await self.post<Partial<UserDto>>('/authentication/local/password/reset',
+    return await self.post<Partial<UserDto>>('/authentication/local/password/reset',
         {
             'Content-Type': 'application/json',
         }, updateUser);
@@ -152,7 +153,7 @@ export async function resetPassword(email: string) {
 
 export async function validateResetPassword(
     token: string,
-    password: string): Promise<AxiosResponse<ResetPasswordResponseDto> | FailedRegisterReport> {
+    password: string): Promise<AxiosResponse<ValidateResetPasswordResponseDto> | FailedRegisterReport> {
     const self: T721SDK = this;
 
     const report = getPasswordStrength(password);
@@ -165,12 +166,12 @@ export async function validateResetPassword(
     }
 
     const hashed = toAcceptedKeccak256Format(keccak256(password));
-    const validationPayload: ResetPasswordInputDto = {
+    const validationPayload: ValidateResetPasswordInputDto = {
         token,
         password: hashed,
     };
 
-    return self.post<ResetPasswordInputDto>('/authentication/validate/password/reset', {
+    return self.post<ValidateResetPasswordInputDto>('/authentication/validate/password/reset', {
         'Content-Type': 'application/json',
     }, validationPayload);
 }

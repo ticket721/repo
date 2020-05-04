@@ -1415,9 +1415,9 @@ describe('Authentication Service', function() {
                 }),
             );
 
-            const res = await authenticationService.isEmailExisting(email);
+            const res = await authenticationService.getUserIfEmailExists(email);
 
-            expect(res.response).toEqual(false);
+            expect(res.response).toEqual(null);
 
             verify(usersServiceMock.findByEmail(email)).called();
         });
@@ -1435,14 +1435,14 @@ describe('Authentication Service', function() {
                 }),
             );
 
-            const res = await authenticationService.isEmailExisting(email);
+            const res = await authenticationService.getUserIfEmailExists(email);
 
-            expect(res.response).toEqual(false);
+            expect(res.response).toEqual(null);
 
             verify(usersServiceMock.findByEmail(email)).called();
         });
 
-        test('User not found', async function() {
+        test('User found', async function() {
             const authenticationService: AuthenticationService = context.authenticationService;
             const usersServiceMock: UsersService = context.usersServiceMock;
 
@@ -1468,9 +1468,9 @@ describe('Authentication Service', function() {
                 }),
             );
 
-            const res = await authenticationService.isEmailExisting(email);
+            const res = await authenticationService.getUserIfEmailExists(email);
 
-            expect(res.response).toEqual(true);
+            expect(res.response).toEqual(user);
 
             verify(usersServiceMock.findByEmail(email)).called();
         });
@@ -1499,7 +1499,7 @@ describe('Authentication Service', function() {
             when(
                 usersServiceMock.update(
                     deepEqual({
-                        email: anything(),
+                        id: '0',
                         password: anyString(),
                     }),
                 ),
@@ -1517,7 +1517,7 @@ describe('Authentication Service', function() {
             verify(
                 usersServiceMock.update(
                     deepEqual({
-                        email: anything(),
+                        id: '0',
                         password: anyString(),
                     }),
                 ),
@@ -1533,7 +1533,7 @@ describe('Authentication Service', function() {
 
             const serviceResponse: ServiceResponse<UserDto> = {
                 response: {
-                    id: '123',
+                    id: '0',
                     email: 'salut@test.com',
                     username: 'salut',
                     role: 'authenticated',
@@ -1549,7 +1549,7 @@ describe('Authentication Service', function() {
             when(
                 usersServiceMock.update(
                     deepEqual({
-                        email: anything(),
+                        id: '0',
                         password: anyString(),
                     }),
                 ),
@@ -1563,7 +1563,7 @@ describe('Authentication Service', function() {
             verify(
                 usersServiceMock.update(
                     deepEqual({
-                        email: anything(),
+                        id: '0',
                         password: anyString(),
                     }),
                 ),

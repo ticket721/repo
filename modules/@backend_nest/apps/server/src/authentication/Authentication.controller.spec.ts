@@ -21,7 +21,8 @@ import { PasswordlessUserDto } from '@app/server/authentication/dto/Passwordless
 import { StatusCodes } from '@lib/common/utils/codes.value';
 import { UserDto } from '@lib/common/users/dto/User.dto';
 import { UnprocessableEntityException } from '@nestjs/common';
-import { ResetPasswordTaskDto } from '@app/server/authentication/dto/resetPasswordTask.dto';
+import { ResetPasswordTaskDto } from '@app/server/authentication/dto/ResetPasswordTask.dto';
+import { generatePassword } from '../../test/utils';
 
 class QueueMock<T = any> {
     add(name: string, data: T, opts?: JobOptions): Promise<Job<T>> {
@@ -1244,8 +1245,8 @@ describe('Authentication Controller', function() {
 
             const email = 'test@test.com';
 
-            when(authenticationServiceMock.isEmailExisting(email)).thenResolve({
-                response: false,
+            when(authenticationServiceMock.getUserIfEmailExists(email)).thenResolve({
+                response: null,
                 error: 'unexpected_error',
             });
 
@@ -1265,7 +1266,7 @@ describe('Authentication Controller', function() {
                 },
             });
 
-            verify(authenticationServiceMock.isEmailExisting(email)).called();
+            verify(authenticationServiceMock.getUserIfEmailExists(email)).called();
         });
 
         test('user_not_found', async function() {
@@ -1274,8 +1275,8 @@ describe('Authentication Controller', function() {
 
             const email = 'test@test.com';
 
-            when(authenticationServiceMock.isEmailExisting(email)).thenResolve({
-                response: false,
+            when(authenticationServiceMock.getUserIfEmailExists(email)).thenResolve({
+                response: null,
                 error: null,
             });
 
@@ -1285,7 +1286,7 @@ describe('Authentication Controller', function() {
 
             await authenticationController.resetPassword(user);
 
-            verify(authenticationServiceMock.isEmailExisting(email)).called();
+            verify(authenticationServiceMock.getUserIfEmailExists(email)).called();
         });
 
         test('reset password successful', async function() {
@@ -1294,18 +1295,29 @@ describe('Authentication Controller', function() {
 
             const email = 'test@test.com';
 
-            when(authenticationServiceMock.isEmailExisting(email)).thenResolve({
-                response: true,
+            const user: PasswordlessUserDto = {
+                username: 'salut',
+                id: '123',
+                email,
+                locale: 'fr',
+                valid: true,
+                type: 't721',
+                address: '0x...',
+                role: 'authenticated',
+            };
+
+            when(authenticationServiceMock.getUserIfEmailExists(email)).thenResolve({
+                response: user,
                 error: null,
             });
 
-            const user: Partial<UserDto> = {
+            const userEmail: Partial<UserDto> = {
                 email: email,
             };
 
-            await authenticationController.resetPassword(user);
+            await authenticationController.resetPassword(userEmail);
 
-            verify(authenticationServiceMock.isEmailExisting(email)).called();
+            verify(authenticationServiceMock.getUserIfEmailExists(email)).called();
         });
     });
 
@@ -1365,34 +1377,37 @@ describe('Authentication Controller', function() {
 
             const username = 'salut';
             const email = 'test@t721.com';
+            const id = '123';
             const locale = 'en';
+            const password = generatePassword();
 
             when(jwtServiceMock.verifyAsync('test_token')).thenReturn(
                 Promise.resolve({
+                    id,
                     username,
                     email,
                     locale,
                 }),
             );
 
-            when(authenticationServiceMock.validateResetPassword('test@t721.com', 'BofPass')).thenReturn(
+            when(authenticationServiceMock.validateResetPassword(id, password)).thenReturn(
                 Promise.resolve({
-                    error: 'unexpected_error',
+                    error: 'internal error',
                     response: null,
                 }),
             );
 
             await expect(
-                authenticationController.validateResetPassword({ token: 'test_token', password: 'BofPass' }),
+                authenticationController.validateResetPassword({ token: 'test_token', password: password }),
             ).rejects.toMatchObject({
                 response: {
                     status: StatusCodes.InternalServerError,
-                    message: 'unexpected_error',
+                    message: 'internal error',
                 },
                 status: StatusCodes.InternalServerError,
                 message: {
                     status: StatusCodes.InternalServerError,
-                    message: 'unexpected_error',
+                    message: 'internal error',
                 },
             });
         });
@@ -1409,13 +1424,14 @@ describe('Authentication Controller', function() {
 
             when(jwtServiceMock.verifyAsync('test_token')).thenReturn(
                 Promise.resolve({
+                    id,
                     username,
                     email,
                     locale,
                 }),
             );
 
-            when(authenticationServiceMock.validateResetPassword('test@t721.com', 'BofPass')).thenReturn(
+            when(authenticationServiceMock.validateResetPassword(id, 'BofPass')).thenReturn(
                 Promise.resolve({
                     error: 'password_should_be_keccak256',
                     response: null,
@@ -1448,6 +1464,7 @@ describe('Authentication Controller', function() {
 
             when(jwtServiceMock.verifyAsync('test_token')).thenReturn(
                 Promise.resolve({
+                    id: '123',
                     username,
                     email,
                     locale,
@@ -1465,7 +1482,7 @@ describe('Authentication Controller', function() {
                 role: 'authenticated',
             };
 
-            when(authenticationServiceMock.validateResetPassword('test@t721.com', 'password')).thenReturn(
+            when(authenticationServiceMock.validateResetPassword(user.id, 'password')).thenReturn(
                 Promise.resolve({
                     error: null,
                     response: user,
@@ -1480,7 +1497,7 @@ describe('Authentication Controller', function() {
                 user: user,
             });
 
-            verify(authenticationServiceMock.validateResetPassword('test@t721.com', 'password')).called();
+            verify(authenticationServiceMock.validateResetPassword('123', 'password')).called();
         });
     });
 });

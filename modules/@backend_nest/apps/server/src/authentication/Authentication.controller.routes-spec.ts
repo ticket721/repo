@@ -12,11 +12,12 @@ import {
     generateUserName,
     getSDK,
     getSDKAndUser,
-}                                   from '../../test/utils';
-import { PasswordlessUserDto }      from './dto/PasswordlessUser.dto';
-import { T721SDK }                  from '@common/sdk';
-import { FailedRegisterReport }     from '../../../../../@common_sdk/lib/@common_sdk/sources';
-import { ResetPasswordResponseDto } from '@app/server/authentication/dto/resetPasswordResponse.dto';
+} from '../../test/utils';
+import { PasswordlessUserDto } from './dto/PasswordlessUser.dto';
+import { T721SDK } from '@common/sdk';
+import { FailedRegisterReport } from '../../../../../@common_sdk/lib/@common_sdk/sources';
+import { ValidateResetPasswordResponseDto } from '@app/server/authentication/dto/ValidateResetPasswordResponse.dto';
+import { ResetPasswordResponseDto } from '@app/server/authentication/dto/ResetPasswordResponse.dto';
 
 export default function(getCtx: () => { ready: Promise<void> }) {
     return function() {
@@ -822,11 +823,14 @@ export default function(getCtx: () => { ready: Promise<void> }) {
             test.concurrent('should fail weak password', async function() {
                 const sdk = await getSDK(getCtx);
 
-                const pass = "";
+                const pass = '';
 
-                const res: FailedRegisterReport = await sdk.validateResetPassword("token", pass) as FailedRegisterReport
+                const res: FailedRegisterReport = (await sdk.validateResetPassword(
+                    'token',
+                    pass,
+                )) as FailedRegisterReport;
 
-                expect(res.report_status).toBe('weak')
+                expect(res.report_status).toBe('weak');
             });
 
             test.concurrent('should reset password', async function() {
@@ -842,14 +846,17 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const res = await sdk.validateResetPassword(token, password) as AxiosResponse<ResetPasswordResponseDto>;
+                const pass = generatePassword();
 
-                expect(res.data).toEqual(user);
+                const response: AxiosResponse<ResetPasswordResponseDto> = await sdk.resetPassword(user.email);
 
-                const loginResponse: AxiosResponse<LocalLoginResponseDto> = await sdk.localLogin(
-                    user.email,
-                    password
-                );
+                const res = (await sdk.validateResetPassword(response.data.validationToken, pass)) as AxiosResponse<
+                    ValidateResetPasswordResponseDto
+                >;
+
+                expect(res.data.user).toEqual(user);
+
+                const loginResponse: AxiosResponse<LocalLoginResponseDto> = await sdk.localLogin(user.email, pass);
 
                 expect(loginResponse.data).toEqual({
                     user: {

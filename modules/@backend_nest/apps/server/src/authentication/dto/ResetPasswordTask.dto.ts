@@ -11,4 +11,9 @@ export class ResetPasswordTaskDto {
      * Locale to use
      */
     locale: string;
+
+    /**
+     * id to use
+     */
+    id: string;
 }

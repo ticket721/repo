@@ -30,10 +30,11 @@ import { ConfigService } from '@lib/common/config/Config.service';
 import { StatusCodes } from '@lib/common/utils/codes.value';
 import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
 import { ApiResponses } from '@app/server/utils/ApiResponses.controller.decorator';
-import { ResetPasswordTaskDto } from '@app/server/authentication/dto/resetPasswordTask.dto';
+import { ResetPasswordTaskDto } from '@app/server/authentication/dto/ResetPasswordTask.dto';
 import { UserDto } from '@lib/common/users/dto/User.dto';
-import { ResetPasswordResponseDto } from '@app/server/authentication/dto/resetPasswordResponse.dto';
-import { ResetPasswordInputDto } from '@app/server/authentication/dto/resetPasswordInput.dto';
+import { ValidateResetPasswordResponseDto } from '@app/server/authentication/dto/ValidateResetPasswordResponse.dto';
+import { ValidateResetPasswordInputDto } from '@app/server/authentication/dto/ValidateResetPasswordInput.dto';
+import { ResetPasswordResponseDto } from '@app/server/authentication/dto/ResetPasswordResponse.dto';
 
 /**
  * Controller exposing the authentication routes
@@ -319,14 +320,15 @@ export class AuthenticationController {
         StatusCodes.UnprocessableEntity,
         StatusCodes.InternalServerError,
     ])
-    async resetPassword(@Body() body: Partial<UserDto>) {
-        const resp = await this.authenticationService.isEmailExisting(body.email);
-        if (resp.response === true) {
+    async resetPassword(@Body() body: Partial<UserDto>): Promise<ResetPasswordResponseDto> {
+        const resp = await this.authenticationService.getUserIfEmailExists(body.email);
+        if (resp.response !== null) {
             await this.mailingQueue.add(
                 '@@mailing/resetPasswordEmail',
                 {
-                    email: body.email,
-                    locale: body.locale,
+                    id: resp.response.id,
+                    email: resp.response.email,
+                    locale: resp.response.locale,
                 } as ResetPasswordTaskDto,
                 {
                     attempts: 5,
@@ -342,6 +344,23 @@ export class AuthenticationController {
                 StatusCodes.InternalServerError,
             );
         }
+        return {
+            user: this.configService.get('NODE_ENV') === 'development' ? resp.response : null,
+            validationToken:
+                this.configService.get('NODE_ENV') === 'development'
+                    ? this.jwtService.sign(
+                          {
+                              email: resp.response.email,
+                              username: resp.response.username,
+                              locale: resp.response.locale,
+                              id: resp.response.id,
+                          },
+                          {
+                              expiresIn: '1 day',
+                          },
+                      )
+                    : undefined,
+        };
     }
 
     /**
@@ -351,12 +370,15 @@ export class AuthenticationController {
     @UseFilters(new HttpExceptionFilter())
     @HttpCode(StatusCodes.OK)
     @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized, StatusCodes.InternalServerError])
-    async validateResetPassword(@Body() body: ResetPasswordInputDto): Promise<ResetPasswordResponseDto> {
+    async validateResetPassword(
+        @Body() body: ValidateResetPasswordInputDto,
+    ): Promise<ValidateResetPasswordResponseDto> {
         let validatedUserRes: ServiceResponse<PasswordlessUserDto>;
         try {
             const payload = await this.jwtService.verifyAsync<ResetPasswordTaskDto>(body.token);
-            validatedUserRes = await this.authenticationService.validateResetPassword(payload.email, body.password);
+            validatedUserRes = await this.authenticationService.validateResetPassword(payload.id, body.password);
         } catch (e) {
+            console.log(e.message);
             switch (e.message) {
                 case 'jwt expired': {
                     throw new HttpException(
@@ -398,7 +420,6 @@ export class AuthenticationController {
                 StatusCodes.InternalServerError,
             );
         }
-
         return {
             user: validatedUserRes.response,
         };

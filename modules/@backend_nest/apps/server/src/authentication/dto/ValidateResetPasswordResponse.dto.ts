@@ -4,7 +4,7 @@ import { PasswordlessUserDto } from '@app/server/authentication/dto/Passwordless
 /**
  * Response when reseting password
  */
-export class ResetPasswordResponseDto {
+export class ValidateResetPasswordResponseDto {
     /**
      * Error if any
      */

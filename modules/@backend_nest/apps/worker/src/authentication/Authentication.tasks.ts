@@ -7,7 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@lib/common/config/Config.service';
 import { InstanceSignature, OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
-import { ResetPasswordTaskDto } from '@app/server/authentication/dto/resetPasswordTask.dto';
+import { ResetPasswordTaskDto } from '@app/server/authentication/dto/ResetPasswordTask.dto';
 
 /**
  * Task collection for the Authentication module

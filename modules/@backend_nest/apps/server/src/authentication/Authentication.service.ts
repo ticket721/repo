@@ -348,32 +348,32 @@ export class AuthenticationService {
      *
      * @param email
      */
-    async isEmailExisting(email: string): Promise<ServiceResponse<boolean>> {
+    async getUserIfEmailExists(email: string): Promise<ServiceResponse<PasswordlessUserDto>> {
         const emailUserResp: ServiceResponse<UserDto> = await this.usersService.findByEmail(email);
         if (emailUserResp.error)
             return {
-                response: false,
+                response: null,
                 error: emailUserResp.error,
             };
         else if (emailUserResp.response === null)
             return {
-                response: false,
+                response: null,
                 error: null,
             };
-        else
-            return {
-                response: true,
-                error: null,
-            };
+        else delete emailUserResp.response.password;
+        return {
+            response: emailUserResp.response,
+            error: null,
+        };
     }
 
     /**
      * Reset user password
      *
-     * @param email
+     * @param id
      * @param password
      */
-    async validateResetPassword(email: string, password: string): Promise<ServiceResponse<PasswordlessUserDto>> {
+    async validateResetPassword(id: string, password: string): Promise<ServiceResponse<PasswordlessUserDto>> {
         if (!isKeccak256(password)) {
             return {
                 response: null,
@@ -381,15 +381,12 @@ export class AuthenticationService {
             };
         }
         const updatedUserResp: ServiceResponse<UserDto> = await this.usersService.update({
-            email,
+            id,
             password: await hash(password, parseInt(this.configService.get('BCRYPT_SALT_ROUNDS'), 10)),
         });
-
-        if (updatedUserResp.error) {
-            return updatedUserResp;
+        if (updatedUserResp.response) {
+            delete updatedUserResp.response.password;
         }
-
-        delete updatedUserResp.response.password;
 
         return updatedUserResp;
     }
