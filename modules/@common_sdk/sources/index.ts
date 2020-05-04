@@ -7,7 +7,7 @@ import { getAPIInfos } from './app/app';
 import request         from 'supertest';
 
 // AUTHENTICATION
-import { localLogin, localRegister, web3Register, web3RegisterPayload, web3Login, web3LoginPayload, validateEmail } from './app/api/authentication';
+import { localLogin, localRegister, web3Register, web3RegisterPayload, web3Login, web3LoginPayload, updatePassword, validateEmail } from './app/api/authentication';
 
 // ACTIONS
 import { actionsCreate, actionsSearch, actionsUpdate } from './app/api/actions';
@@ -54,6 +54,7 @@ export class T721SDK {
         this.localLogin = this.localLogin.bind(this);
         this.web3Register = this.web3Register.bind(this);
         this.web3Login = this.web3Login.bind(this);
+        this.updatePassword = this.updatePassword.bind(this);
         this.validateEmail = this.validateEmail.bind(this);
 
         this.actions.search = this.actions.search.bind(this);
@@ -197,6 +198,7 @@ export class T721SDK {
     public web3RegisterPayload = web3RegisterPayload;
     public web3Login = web3Login;
     public web3LoginPayload = web3LoginPayload;
+    public updatePassword = updatePassword;
     public validateEmail = validateEmail;
 
     public actions = {
