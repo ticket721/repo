@@ -24,10 +24,10 @@ const Container = styled.section<WalletHeaderProps>`
 `
 const ImgContainer = styled.div<WalletHeaderProps>`
   border-radius: 100%;
-  height:  ${props => props.profileHeader ? '80px' : '48px'};
+  height:  ${props => props.profileHeader ? '80px' : '40px'};
   margin-right: ${props => props.profileHeader ? 0 : props.theme.smallSpacing};
   overflow: hidden;
-  width:  ${props => props.profileHeader ? '80px' : '48px'};
+  width:  ${props => props.profileHeader ? '80px' : '40px'};
 
   img {
     height: 100%;
@@ -51,10 +51,10 @@ const Amount = styled.h4`
   }
 `
 
-export const WalletHeader: React.FunctionComponent<WalletHeaderProps> = (props: WalletHeaderProps): JSX.Element => {
+export const WalletHeader: React.FunctionComponent<WalletHeaderProps & {className?: string}> = (props: WalletHeaderProps): JSX.Element => {
   const fullName = `${props.user.firstName} ${props.user.lastName}`;
 
-  return <Container profileHeader={props.profileHeader}>
+  return <Container profileHeader={props.profileHeader} className={props.className}>
           <ImgContainer profileHeader={props.profileHeader}>
             <img src={props.user.profilePicture} alt={fullName}/>
           </ImgContainer>
