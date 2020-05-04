@@ -3,7 +3,7 @@ import { AppState }      from '../../redux';
 import { PageContainer } from './PageContainer';
 
 const mapStateToProps = (state: AppState) => ({
-  device: state.properties.device
+  device: state.userProperties.user.device
 });
 
 export const PageContainerConnected = connect(mapStateToProps)(PageContainer);
