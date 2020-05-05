@@ -31,7 +31,6 @@ import { StatusCodes } from '@lib/common/utils/codes.value';
 import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
 import { ApiResponses } from '@app/server/utils/ApiResponses.controller.decorator';
 import { ResetPasswordTaskDto } from '@app/server/authentication/dto/ResetPasswordTask.dto';
-import { UserDto } from '@lib/common/users/dto/User.dto';
 import { ValidateResetPasswordResponseDto } from '@app/server/authentication/dto/ValidateResetPasswordResponse.dto';
 import { ValidateResetPasswordInputDto } from '@app/server/authentication/dto/ValidateResetPasswordInput.dto';
 import { ResetPasswordResponseDto } from '@app/server/authentication/dto/ResetPasswordResponse.dto';
