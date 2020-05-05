@@ -66,6 +66,7 @@ export class RefractFactoryV0Service extends ContractsControllerBase {
         const code = await (await this.web3Service.get()).eth.getCode(refract);
 
         if (code === '0x') {
+
             const finalAddress: string = toAcceptedAddressFormat(
                 await (await this.get()).methods.predict(controller, salt).call(),
             );

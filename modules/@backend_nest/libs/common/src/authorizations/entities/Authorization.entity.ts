@@ -178,4 +178,16 @@ export class AuthorizationEntity {
     @UpdateDateColumn()
     // tslint:disable-next-line:variable-name
     updated_at: Date;
+
+    getArgs(): string[] {
+        return this.args.split('_').filter((value: string, index: number) => index % 2 !== 0);
+    }
+
+    getSelector(): string[] {
+        return this.selectors.split('_').filter((value: string, index: number) => index % 2 !== 0);
+    }
+
+    getCodes(): string[] {
+        return this.codes.split('_').filter((value: string, index: number) => index % 2 !== 0);
+    }
 }

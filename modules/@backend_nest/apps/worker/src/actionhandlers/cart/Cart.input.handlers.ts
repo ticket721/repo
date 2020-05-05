@@ -23,6 +23,11 @@ export interface CartTicketSelections {
      * Final total price that will get computed during the first step
      */
     total?: Price[];
+
+    /**
+     * Fees for given prices
+     */
+    fees?: string[];
 }
 
 /**
@@ -49,6 +54,11 @@ export interface CartAuthorizations {
      * Total price to pay
      */
     total: Price[];
+
+    /**
+     * Fee for each currency paid
+     */
+    fees: string[];
 }
 
 /**
@@ -83,7 +93,7 @@ export class CartInputHandlers implements OnModuleInit {
                     price: Joi.string().required(),
                 }).optional(),
             }),
-        ),
+        ).min(1),
     });
 
     /**
@@ -176,6 +186,8 @@ export class CartInputHandlers implements OnModuleInit {
                     break;
                 }
 
+                const groupIds: {[key: string]: boolean} = {};
+
                 for (const ticket of data.tickets) {
                     const categorySearchRes = await this.categoriesService.search({
                         id: ticket.categoryId,
@@ -192,6 +204,8 @@ export class CartInputHandlers implements OnModuleInit {
                         valid = false;
                         break;
                     }
+
+                    groupIds[categorySearchRes.response[0].group_id] = true;
 
                     const resolvedCurrencies = await this.priceChecks(
                         ticket.price,
@@ -230,10 +244,28 @@ export class CartInputHandlers implements OnModuleInit {
                         returnPrices.push(totalPrices[curr]);
                     }
 
+                    const fees: string[] = [];
+
+                    for (const returnPrice of returnPrices) {
+                        fees.push(await this.currenciesService.computeFee(returnPrice.currency, returnPrice.value))
+                    }
+
                     actionset.action.setData({
                         ...actionset.action.data,
                         total: returnPrices,
+                        fees,
                     });
+                }
+
+                if (Object.keys(groupIds).length > 1) {
+                    actionset.action.setError({
+                        details: Object.keys(groupIds),
+                        error: 'cannot_purchase_multiple_group_id',
+                    });
+                    actionset.action.setStatus('error');
+                    actionset.setStatus('input:error');
+
+                    break;
                 }
 
                 if (valid) {
@@ -338,12 +370,13 @@ export class CartInputHandlers implements OnModuleInit {
                 log_value: Joi.number().required(),
             }),
         ),
+        fees: Joi.array().items(Joi.string()).required(),
     });
 
     /**
      * Mandatory fields of the authorization steps
      */
-    authorizationsFields = ['authorizations', 'commitType', 'total'];
+    authorizationsFields = ['authorizations', 'commitType', 'total', 'fees'];
 
     /**
      * Input Handler of the Authorizations Step

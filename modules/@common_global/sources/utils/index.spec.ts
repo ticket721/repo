@@ -1,4 +1,4 @@
-import { isFutureDateRange, leftPad, serialize, toB32, uuidEq } from './index';
+import { isFutureDateRange, leftPad, serialize, toB32, toHex, uuidEq } from './index';
 
 describe('Utils', function () {
 
@@ -102,6 +102,16 @@ describe('Utils', function () {
             expect(isFutureDateRange(begin, end)).toBeFalsy();
 
         });
+
+    });
+
+    describe('toHex', function() {
+
+        it('should properly convert to hex', function () {
+            const input = 'test';
+
+            expect(toHex(input)).toEqual('0x74657374');
+        })
 
     });
 

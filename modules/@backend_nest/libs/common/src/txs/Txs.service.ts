@@ -3,10 +3,10 @@ import { CRUDExtension } from '@lib/common/crud/CRUDExtension.base';
 import { TxsRepository } from '@lib/common/txs/Txs.repository';
 import { TxEntity } from '@lib/common/txs/entities/Tx.entity';
 import { BaseModel, InjectModel, InjectRepository } from '@iaminfinity/express-cassandra';
-import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
-import { isAddress, keccak256, RefractMtx, isTransactionHash } from '@common/global';
-import { EIP712Payload } from '@ticket721/e712/lib';
-import { RefractFactoryV0Service } from '@lib/common/contracts/refract/RefractFactory.V0.service';
+import { ServiceResponse }                                                                                     from '@lib/common/utils/ServiceResponse.type';
+import { isAddress, keccak256, RefractMtx, isTransactionHash, TransactionParameters, toAcceptedAddressFormat } from '@common/global';
+import { EIP712Payload, EIP712Signature }                                                                      from '@ticket721/e712/lib';
+import { RefractFactoryV0Service }                                                    from '@lib/common/contracts/refract/RefractFactory.V0.service';
 import { UserDto } from '@lib/common/users/dto/User.dto';
 import { encodeMetaTransaction } from '@lib/common/txs/utils/encodeMetaTransaction.helper';
 import { T721AdminService } from '@lib/common/contracts/T721Admin.service';
@@ -74,13 +74,12 @@ export class TxsService extends CRUDExtension<TxsRepository, TxEntity> {
      */
     constructor(
         @InjectRepository(TxsRepository)
-        txsRepository: TxsRepository,
+            txsRepository: TxsRepository,
         @InjectModel(TxEntity)
-        txEntity: BaseModel<TxEntity>,
+            txEntity: BaseModel<TxEntity>,
         @Inject('TXS_MODULE_OPTIONS')
         private readonly txOptions: TxsServiceOptions,
         private readonly globalConfigService: GlobalConfigService,
-        private readonly vaultereumService: VaultereumService,
         private readonly web3Service: Web3Service,
         private readonly refractFactoryService: RefractFactoryV0Service,
         private readonly t721AdminService: T721AdminService,
@@ -199,170 +198,244 @@ export class TxsService extends CRUDExtension<TxsRepository, TxEntity> {
      * @param data
      */
     async estimateGasLimit(from: string, to: string, data: string): Promise<ServiceResponse<string>> {
-        if (!isAddress(from)) {
-            const vaultInfos = await this.vaultereumService.read(`ethereum/accounts/${from}`);
-
-            if (vaultInfos.error) {
-                return {
-                    error: vaultInfos.error,
-                    response: null,
-                };
-            }
-
-            from = vaultInfos.response.data.address;
-        }
         const web3 = await this.web3Service.get();
 
         const nonce = await web3.eth.getTransactionCount(from);
 
-        const gasLimitEstimation = await (await this.web3Service.get()).eth.estimateGas({
-            from,
-            nonce,
-            to,
-            data,
-        });
+        try {
 
-        return {
-            error: null,
-            response: typeof gasLimitEstimation === 'string' ? gasLimitEstimation : gasLimitEstimation.toString(),
-        };
+            const gasLimitEstimation = await (await this.web3Service.get()).eth.estimateGas({
+                from,
+                nonce,
+                to,
+                data,
+            });
+
+            return {
+                error: null,
+                response: typeof gasLimitEstimation === 'string' ? gasLimitEstimation : gasLimitEstimation.toString(),
+            };
+
+        } catch (e) {
+
+            return {
+                error: e.message,
+                response: null,
+            }
+
+        }
+
     }
 
-    /**
-     * Method to broadcast Meta Transaction
-     *
-     * @param payload
-     * @param signature
-     * @param user
-     */
-    async mtx(payload: EIP712Payload, signature: string, user: UserDto): Promise<ServiceResponse<TxEntity>> {
-        const rmtx: RefractMtx = new RefractMtx(
-            this.txOptions.ethereumNetworkId,
-            this.txOptions.ethereumMtxDomainName,
-            this.txOptions.ethereumMtxVersion,
-            user.address,
-        );
+    // async signMtx(user: UserDto, transactions: TransactionParameters[]): Promise<ServiceResponse<[EIP712Payload, EIP712Signature]>> {
 
-        const signer = await rmtx.verify(payload, signature);
+    //     const rmtx: RefractMtx = new RefractMtx(
+    //         this.txOptions.ethereumNetworkId,
+    //         this.txOptions.ethereumMtxDomainName,
+    //         this.txOptions.ethereumMtxVersion,
+    //         user.address,
+    //     );
 
-        const verification = await this.refractFactoryService.isController(user.address, signer, keccak256(user.email));
+    //     const userId = user.id.toString().toLowerCase();
+    //     const salt = keccak256(userId);
+    //     const controller = `user-${userId}`;
 
-        if (verification === false) {
-            return {
-                error: 'payload_not_signed_by_controller',
-                response: null,
-            };
-        }
+    //     const vaultAddressInfo = await this.vaultereumService.read(`ethereum/accounts/${controller}`);
+    //     if (vaultAddressInfo.error) {
+    //         return {
+    //             error: vaultAddressInfo.error,
+    //             response: null
+    //         }
+    //     }
 
-        const args: [number, string[], string[], string] = await encodeMetaTransaction(payload.message, signature);
+    //     const controllerAddress = toAcceptedAddressFormat(vaultAddressInfo.response.data.address);
 
-        const [target, encodedMtx] = await this.refractFactoryService.encodeCall(
-            user.address,
-            signer,
-            keccak256(user.email),
-            ...args,
-        );
+    //     const verification = await this.refractFactoryService.isController(user.address, controllerAddress, salt);
 
-        const t721Admin = await this.t721AdminService.get();
+    //     if (!verification) {
+    //         return {
+    //             error: 'invalid_controller_verification',
+    //             response: null,
+    //         }
+    //     }
 
-        const encodedT721AdminExecuteTx = await t721Admin.methods.refundedExecute(0, target, 0, encodedMtx).encodeABI();
+    //     const nonce = await this.refractFactoryService.getNonce(user.address);
 
-        const gasLimitEstimation = await this.estimateGasLimit(
-            this.txOptions.ethereumMtxRelayAdmin,
-            t721Admin._address,
-            encodedT721AdminExecuteTx,
-        );
+    //     const payload: EIP712Payload = rmtx.generatePayload({
+    //         nonce,
+    //         parameters: transactions
+    //     }, 'MetaTransaction');
 
-        if (gasLimitEstimation.error) {
-            return {
-                error: gasLimitEstimation.error,
-                response: null,
-            };
-        }
+    //     try {
 
-        const gasPriceEstimation = await this.estimateGasPrice(gasLimitEstimation.response);
+    //         const signature: EIP712Signature = await rmtx.sign(this.vaultereumService.getSigner(controller), payload);
+    //         return {
+    //             error: null,
+    //             response: [payload, signature]
+    //         }
 
-        if (gasPriceEstimation.error) {
-            return {
-                error: gasPriceEstimation.error,
-                response: null,
-            };
-        }
+    //     } catch (e) {
+    //         console.error(e);
+    //         return {
+    //             error: 'error_while_signing_with_vaultereum_signer',
+    //             response: null,
+    //         }
+    //     }
 
-        const txEntity = await this.sendRawTransaction(
-            this.txOptions.ethereumMtxRelayAdmin,
-            t721Admin._address,
-            '0',
-            encodedT721AdminExecuteTx,
-            gasPriceEstimation.response,
-            gasLimitEstimation.response,
-        );
+    // }
 
-        if (txEntity.error) {
-            return txEntity;
-        }
+    // /**
+    //  * Method to broadcast Meta Transaction
+    //  *
+    //  * @param payload
+    //  * @param signature
+    //  * @param user
+    //  */
+    // async mtx(payload: EIP712Payload, signature: string, user: UserDto): Promise<ServiceResponse<TxEntity>> {
 
-        return {
-            error: null,
-            response: txEntity.response,
-        };
-    }
+    //     const rmtx: RefractMtx = new RefractMtx(
+    //         this.txOptions.ethereumNetworkId,
+    //         this.txOptions.ethereumMtxDomainName,
+    //         this.txOptions.ethereumMtxVersion,
+    //         user.address,
+    //     );
 
-    /**
-     * Method to broadcast Raw Transaction
-     *
-     * @param from
-     * @param to
-     * @param value
-     * @param data
-     * @param gasPrice
-     * @param gasLimit
-     */
-    async sendRawTransaction(
-        from: string,
-        to: string,
-        value: string,
-        data: string,
-        gasPrice: string,
-        gasLimit: string,
-    ): Promise<ServiceResponse<TxEntity>> {
-        const accountCheck = await this.vaultereumService.read(`ethereum/accounts/${from}`);
+    //     const signer = await rmtx.verify(payload, signature);
 
-        if (accountCheck.error) {
-            return {
-                error: accountCheck.error,
-                response: null,
-            };
-        }
+    //     const salt = keccak256(user.id.toString().toLowerCase());
 
-        const signedTx = await this.vaultereumService.write(`ethereum/accounts/${from}/sign-tx`, {
-            address_to: to,
-            amount: value,
-            gas_price: gasPrice,
-            gas_limit: gasLimit,
-            data: data.slice(2),
-            encoding: 'hex',
-        });
+    //     const verification = await this.refractFactoryService.isController(user.address, signer, salt);
 
-        if (signedTx.error) {
-            return {
-                error: signedTx.error,
-                response: null,
-            };
-        }
+    //     if (verification === false) {
+    //         return {
+    //             error: 'payload_not_signed_by_controller',
+    //             response: null,
+    //         };
+    //     }
+    //     const args: [number, string[], string[], string] = await encodeMetaTransaction(payload.message, signature);
+    //     const [target, encodedMtx] = await this.refractFactoryService.encodeCall(
+    //         user.address,
+    //         signer,
+    //         salt,
+    //         ...args,
+    //     );
+    //     const t721Admin = await this.t721AdminService.get();
+    //     const encodedT721AdminExecuteTx = await t721Admin.methods.refundedExecute(0, target, 0, encodedMtx).encodeABI();
 
-        const tx = await (await this.web3Service.get()).eth.sendSignedTransaction(
-            signedTx.response.data.signed_transaction,
-        );
-        const subscriptionRes = await this.subscribe(tx.transactionHash);
+    //     // const gasLimitEstimation = await this.estimateGasLimit(
+    //     //     this.txOptions.ethereumMtxRelayAdmin,
+    //     //     t721Admin._address,
+    //     //     encodedT721AdminExecuteTx,
+    //     // );
+    //     // if (gasLimitEstimation.error) {
+    //     //     return {
+    //     //         error: gasLimitEstimation.error,
+    //     //         response: null,
+    //     //     };
+    //     // }
 
-        if (subscriptionRes.error) {
-            return {
-                error: subscriptionRes.error,
-                response: null,
-            };
-        }
+    //     const gasLimitEstimation = {
+    //         error: null,
+    //         response: '2000000'
+    //     };
 
-        return subscriptionRes;
-    }
+    //     const gasPriceEstimation = await this.estimateGasPrice(gasLimitEstimation.response);
+    //     if (gasPriceEstimation.error) {
+    //         return {
+    //             error: gasPriceEstimation.error,
+    //             response: null,
+    //         };
+    //     }
+
+    //     const txEntity = await this.sendRawTransaction(
+    //         this.txOptions.ethereumMtxRelayAdmin,
+    //         t721Admin._address,
+    //         '0',
+    //         encodedT721AdminExecuteTx,
+    //         gasPriceEstimation.response,
+    //         gasLimitEstimation.response,
+    //     );
+
+    //     if (txEntity.error) {
+    //         return txEntity;
+    //     }
+
+    //     return {
+    //         error: null,
+    //         response: txEntity.response,
+    //     };
+    // }
+
+    // /**
+    //  * Method to broadcast Raw Transaction
+    //  *
+    //  * @param from
+    //  * @param to
+    //  * @param value
+    //  * @param data
+    //  * @param gasPrice
+    //  * @param gasLimit
+    //  */
+    // async sendRawTransaction(
+    //     from: string,
+    //     to: string,
+    //     value: string,
+    //     data: string,
+    //     gasPrice: string,
+    //     gasLimit: string,
+    // ): Promise<ServiceResponse<TxEntity>> {
+
+    //     const accountCheck = await this.vaultereumService.read(`ethereum/accounts/${from}`);
+
+    //     if (accountCheck.error) {
+    //         return {
+    //             error: accountCheck.error,
+    //             response: null,
+    //         };
+    //     }
+
+    //     const signedTx = await this.vaultereumService.write(`ethereum/accounts/${from}/sign-tx`, {
+    //         address_to: to,
+    //         amount: value,
+    //         gas_price: gasPrice,
+    //         gas_limit: gasLimit,
+    //         data: data.slice(2),
+    //         encoding: 'hex',
+    //     });
+
+    //     if (signedTx.error) {
+    //         return {
+    //             error: signedTx.error,
+    //             response: null,
+    //         };
+    //     }
+
+    //     try {
+
+    //         const tx = await (await this.web3Service.get()).eth.sendSignedTransaction(
+    //             signedTx.response.data.signed_transaction,
+    //         );
+
+    //         const subscriptionRes = await this.subscribe(tx.transactionHash);
+
+    //         if (subscriptionRes.error) {
+    //             return {
+    //                 error: subscriptionRes.error,
+    //                 response: null,
+    //             };
+    //         }
+    //         return subscriptionRes;
+
+    //     } catch (e) {
+
+    //         console.error(e);
+
+    //         return {
+    //             error: e.message,
+    //             response: null,
+    //         }
+
+    //     }
+
+    // }
 }

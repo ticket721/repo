@@ -365,7 +365,7 @@ export class EVMAntennaMergerScheduler implements OnApplicationBootstrap {
         const signature: InstanceSignature = await this.outrospectionService.getInstanceSignature();
 
         if (signature.master === true && signature.name === 'worker') {
-            this.schedule.scheduleIntervalJob('evmEventMerger', 100, this.evmEventMergerPoller.bind(this));
+            this.schedule.scheduleIntervalJob('evmEventMerger', 500, this.evmEventMergerPoller.bind(this));
         }
 
         if (signature.name === 'worker') {

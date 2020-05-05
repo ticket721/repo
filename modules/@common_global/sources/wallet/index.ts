@@ -11,6 +11,10 @@ export const createWallet = async (): Promise<Wallet> => {
     return wallet;
 };
 
+export const loadWallet = (privateKey: string): Wallet => {
+    return new Wallet(privateKey)
+};
+
 export interface EncryptedWallet {
     address: string;
     id: string;

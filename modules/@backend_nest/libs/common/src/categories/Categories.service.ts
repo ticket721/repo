@@ -1,9 +1,9 @@
-import { CRUDExtension } from '@lib/common/crud/CRUDExtension.base';
+import { CRUDExtension }                            from '@lib/common/crud/CRUDExtension.base';
 import { BaseModel, InjectModel, InjectRepository } from '@iaminfinity/express-cassandra';
-import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
-import { CategoriesRepository } from '@lib/common/categories/Categories.repository';
-import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
-import { Boundable } from '@lib/common/utils/Boundable.type';
+import { CategoryEntity }                           from '@lib/common/categories/entities/Category.entity';
+import { CategoriesRepository }                     from '@lib/common/categories/Categories.repository';
+import { ServiceResponse }                          from '@lib/common/utils/ServiceResponse.type';
+import { Boundable }                                from '@lib/common/utils/Boundable.type';
 
 /**
  * Service to CRUD CategoryEntities
@@ -18,9 +18,10 @@ export class CategoriesService extends CRUDExtension<CategoriesRepository, Categ
      */
     constructor(
         @InjectRepository(CategoriesRepository)
-        categoriesRepository: CategoriesRepository,
+            categoriesRepository: CategoriesRepository,
         @InjectModel(CategoryEntity)
-        categoryEntity: BaseModel<CategoryEntity>,
+            categoryEntity: BaseModel<CategoryEntity>,
+
     ) {
         super(
             categoryEntity,

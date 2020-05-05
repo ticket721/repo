@@ -39,18 +39,29 @@ import { ActionSetsScheduler } from '@app/worker/schedulers/actionsets/ActionSet
 import { TxsScheduler } from '@app/worker/schedulers/txs/Txs.scheduler';
 import { EVMAntennaModule } from '@app/worker/evmantenna/EVMAntenna.module';
 import { GlobalConfigScheduler } from '@app/worker/schedulers/globalconfig/GlobalConfig.scheduler';
-import { EVMEventSetsModule } from '@lib/common/evmeventsets/EVMEventSets.module';
-import { GemOrdersModule } from '@lib/common/gemorders/GemOrders.module';
+import { EVMEventSetsModule }                                   from '@lib/common/evmeventsets/EVMEventSets.module';
+import { GemOrdersModule }                                      from '@lib/common/gemorders/GemOrders.module';
 import { DosojinRunnerModule, DosojinRunnerModuleBuildOptions } from '@app/worker/dosojinrunner/DosojinRunner.module';
-import { CategoriesModule } from '@lib/common/categories/Categories.module';
-import { RightsModule } from '@lib/common/rights/Rights.module';
-import { CartInputHandlers } from '@app/worker/actionhandlers/cart/Cart.input.handlers';
-import { AuthorizationsTasks } from '@app/worker/tasks/authorizations/Authorizations.tasks';
-import { AuthorizationsModule } from '@lib/common/authorizations/Authorizations.module';
+import { CategoriesModule }      from '@lib/common/categories/Categories.module';
+import { RightsModule }          from '@lib/common/rights/Rights.module';
+import { CartInputHandlers }     from '@app/worker/actionhandlers/cart/Cart.input.handlers';
+import { AuthorizationsTasks }   from '@app/worker/tasks/authorizations/Authorizations.tasks';
+import { AuthorizationsModule }  from '@lib/common/authorizations/Authorizations.module';
 import { CheckoutInputHandlers } from '@app/worker/actionhandlers/checkout/Checkout.input.handlers';
 import { CheckoutEventHandlers } from '@app/worker/actionhandlers/checkout/Checkout.event.handlers';
 import { ToolBoxModule } from '@lib/common/toolbox/ToolBox.module';
 import { AuthenticationModule } from '@app/worker/authentication/Authentication.module';
+import { ToolBoxModule }               from '@lib/common/toolbox/ToolBox.module';
+import { MintingModule }               from '@lib/common/minting/Minting.module';
+import { MintingTasks }                from '@app/worker/tasks/minting/Minting.tasks';
+import { CheckoutModule }              from '@lib/common/checkout/Checkout.module';
+import { CartModule }                  from '@lib/common/cart/Cart.module';
+import { TxSeqEventHandlers }          from '@app/worker/actionhandlers/txseq/TxSeq.event.handlers';
+import { GroupModule }                 from '@lib/common/group/Group.module';
+import { TicketsModule }               from '@lib/common/tickets/Tickets.module';
+import { RocksideModule }              from '@lib/common/rockside/Rockside.module';
+import { AuthenticationTasks }         from '@app/worker/authentication/Authentication.tasks';
+import { AuthenticationModule }        from '@app/worker/authentication/Authentication.module';
 
 @Module({
     imports: [
@@ -81,10 +92,15 @@ import { AuthenticationModule } from '@app/worker/authentication/Authentication.
         EVMEventSetsModule,
         GemOrdersModule,
         AuthorizationsModule,
-        CurrenciesModule.registerAsync({
-            useFactory: (configService: ConfigService): string => configService.get('CURRENCIES_CONFIG_PATH'),
-            inject: [ConfigService],
-        }),
+        TicketsModule,
+        CurrenciesModule,
+        GroupModule,
+
+        CheckoutModule,
+        CartModule,
+        MintingModule,
+
+        RocksideModule.register(),
 
         // Ethereum Listeners
         EVMAntennaModule,
@@ -174,10 +190,12 @@ import { AuthenticationModule } from '@app/worker/authentication/Authentication.
 
         // ActionSet Event Handlers
         CheckoutEventHandlers,
+        TxSeqEventHandlers,
 
         // Bull Tasks
         ActionSetsTasks,
         AuthorizationsTasks,
+        MintingTasks,
 
         // Schedulers
         ActionSetsScheduler,

@@ -40,6 +40,64 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 });
             });
 
+            test.concurrent('should fail on invalid action set type', async function() {
+                const {
+                    sdk,
+                    token,
+                    user,
+                    password,
+                }: {
+                    sdk: T721SDK;
+                    token: string;
+                    user: PasswordlessUserDto;
+                    password: string;
+                } = await getSDKAndUser(getCtx);
+
+                const initialArgument = {
+                    name: 'myEvent',
+                };
+
+                const actionSetName = 'invalid';
+
+                await failWithCode(
+                    sdk.actions.create(token, {
+                        name: actionSetName,
+                        arguments: initialArgument,
+                    }),
+                    StatusCodes.BadRequest,
+                );
+            });
+
+            test.concurrent('should fail on private acset initialization attempt', async function() {
+
+                const {
+                    sdk,
+                    token,
+                    user,
+                    password,
+                }: {
+                    sdk: T721SDK;
+                    token: string;
+                    user: PasswordlessUserDto;
+                    password: string;
+                } = await getSDKAndUser(getCtx);
+
+                const initialArgument = {
+                    name: 'myEvent',
+                };
+
+                const actionSetName = 'txseq_processor';
+
+                await failWithCode(
+                    sdk.actions.create(token, {
+                        name: actionSetName,
+                        arguments: initialArgument,
+                    }),
+                    StatusCodes.BadRequest,
+                    'cannot_create_private_actionset_in_public_context'
+                );
+            });
+
             test.concurrent('should fail for invalid initial arguments', async function() {
                 const {
                     sdk,

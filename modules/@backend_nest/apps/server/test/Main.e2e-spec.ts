@@ -1,4 +1,4 @@
-jest.setTimeout(30000);
+jest.setTimeout(process.env.JEST_GLOBAL_TIMEOUT ? parseInt(process.env.JEST_GLOBAL_TIMEOUT, 10) : 30000);
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { T721SDK } from '@common/sdk';
@@ -121,17 +121,17 @@ describe('AppController (e2e)', () => {
         console.log('FINISHED');
     }, 60000);
 
-    describe('Server Controller', ServerControllerTestSuite(getCtx));
-    describe('Authentication Controller', AuthenticationControllerTestSuite(getCtx));
-    describe('ActionSets Controller', ActionSetsControllerTestSuite(getCtx));
-    describe('Categories Controller', CategoriesControllerTestSuite(getCtx));
-    describe('Rights Controller', RightsControllerTestSuite(getCtx));
-    describe('Contracts Controller', ContractsControllerTestSuite(getCtx));
-    describe('Dates Controller', DatesControllerTestSuite(getCtx));
-    describe('Images Controller', ImagesControllerTestSuite(getCtx));
-    describe('Events Controller', EventsControllerTestSuite(getCtx));
-    describe('Txs Controller', TxsControllerTestSuite(getCtx));
-    describe('Metadatas Controller', MetadatasControllerTestSuite(getCtx));
+    // describe('Server Controller', ServerControllerTestSuite(getCtx));
+    // describe('Authentication Controller', AuthenticationControllerTestSuite(getCtx));
+    // describe('ActionSets Controller', ActionSetsControllerTestSuite(getCtx));
+    // describe('Categories Controller', CategoriesControllerTestSuite(getCtx));
+    // describe('Rights Controller', RightsControllerTestSuite(getCtx));
+    // describe('Contracts Controller', ContractsControllerTestSuite(getCtx));
+    // describe('Dates Controller', DatesControllerTestSuite(getCtx));
+    // describe('Images Controller', ImagesControllerTestSuite(getCtx));
+    // describe('Events Controller', EventsControllerTestSuite(getCtx));
+    // describe('Txs Controller', TxsControllerTestSuite(getCtx));
+    // describe('Metadatas Controller', MetadatasControllerTestSuite(getCtx));
     describe('Checkout Controller', CheckoutControllerTestSuite(getCtx));
-    describe('Dosojin Controller', DosojinControllerTestSuite(getCtx));
+    // describe('Dosojin Controller', DosojinControllerTestSuite(getCtx));
 });

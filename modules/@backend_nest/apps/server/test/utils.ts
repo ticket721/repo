@@ -528,7 +528,7 @@ export const waitForActionSet = async (
                 }
             }
         }
-        await pause(100);
+        await pause(10);
     } while (!checker(actionSet.data.actionsets[0]));
 
     return actionSet.data.actionsets[0];

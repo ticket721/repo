@@ -105,30 +105,32 @@ export class TokenMinterOperation extends Operation {
             return gem.error(this.dosojin, `Cannot estimate gas price`);
         }
 
-        const tx = await this.txsService.sendRawTransaction(
-            admin,
-            rawInstance._address,
-            '0',
-            encodedTransactionCall,
-            gasPriceEstimation.response,
-            gasLimitEstimation.response,
-        );
+        // const tx = await this.txsService.sendRawTransaction(
+        //     admin,
+        //     rawInstance._address,
+        //     '0',
+        //     encodedTransactionCall,
+        //     gasPriceEstimation.response,
+        //     gasLimitEstimation.response,
+        // );
 
-        if (tx.error) {
-            return gem.error(this.dosojin, `An error occured while trying to create transaction`);
-        }
+        // Here Rockside tx
 
-        gem.addCost(
-            this.dosojin,
-            new BN(gasPriceEstimation.response).mul(new BN(gasLimitEstimation.response)),
-            'crypto_eth',
-            `Token Minting Transaction Fees`,
-        );
+        // if (tx.error) {
+        //     return gem.error(this.dosojin, `An error occured while trying to create transaction`);
+        // }
 
-        gem.setState<TokenMinterArguments & TokenMinterTx>(this.dosojin, {
-            ...gem.getState<TokenMinterArguments>(this.dosojin),
-            txHash: tx.response.transaction_hash,
-        });
+        // gem.addCost(
+        //     this.dosojin,
+        //     new BN(gasPriceEstimation.response).mul(new BN(gasLimitEstimation.response)),
+        //     'crypto_eth',
+        //     `Token Minting Transaction Fees`,
+        // );
+
+        // gem.setState<TokenMinterArguments & TokenMinterTx>(this.dosojin, {
+        //     ...gem.getState<TokenMinterArguments>(this.dosojin),
+        //     txHash: tx.response.transaction_hash,
+        // });
 
         return gem.setOperationStatus(OperationStatusNames.OperationComplete);
     }

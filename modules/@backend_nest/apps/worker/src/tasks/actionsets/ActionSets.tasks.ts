@@ -30,6 +30,22 @@ export class ActionSetsTasks implements OnModuleInit {
         private readonly shutdownService: ShutdownService,
     ) {}
 
+    async onStatusChanged(actionSet: ActionSet): Promise<void> {
+        switch (actionSet.status) {
+            case 'complete': {
+                const completeLifecycleCallbackRes = await this.actionSetsService.onComplete(actionSet);
+
+                if (completeLifecycleCallbackRes.error) {
+                    throw new Error(`Error while running onComplete actionset lifecycle: ${completeLifecycleCallbackRes.error}`)
+                }
+                break ;
+            }
+            default: {
+                break ;
+            }
+        }
+    }
+
     /**
      * Process to handle the input actions
      *
@@ -48,18 +64,27 @@ export class ActionSetsTasks implements OnModuleInit {
             }
 
             const callIdx = actionSet.current_action;
+            const beforeStatus = actionSet.status;
 
             this.loggerService.log(`Calling ${actionSet.action.name} on ActionSet@${actionSet.id}`);
-            const [updatedActionSet, update] = await this.actionSetsService.getInputHandler(actionSet.action.name)(
+            const inputHandlerRes = await this.actionSetsService.getInputHandler(actionSet.action.name)(
                 actionSet,
                 job.progress.bind(job),
             );
+
+            const updatedActionSet = inputHandlerRes[0];
+            const update = inputHandlerRes[1];
+
 
             if (update) {
                 const query = updatedActionSet.getQuery();
                 const body = updatedActionSet.withoutQuery();
 
                 await this.actionSetsService.update(query, body);
+            }
+
+            if (updatedActionSet.status !== beforeStatus) {
+                await this.onStatusChanged(updatedActionSet);
             }
 
             if (
@@ -87,11 +112,16 @@ export class ActionSetsTasks implements OnModuleInit {
             throw error;
         }
 
+        const beforeStatus = actionSet.status;
+
         this.loggerService.log(`Calling ${actionSet.action.name} on ActionSet@${actionSet.id}`);
-        const [updatedActionSet, update] = await this.actionSetsService.getEventHandler(actionSet.action.name)(
+        const inputHandlerRes = await this.actionSetsService.getEventHandler(actionSet.action.name)(
             actionSet,
             job.progress.bind(job),
         );
+
+        const updatedActionSet = inputHandlerRes[0];
+        const update = inputHandlerRes[1];
 
         if (update) {
             const query = updatedActionSet.getQuery();
@@ -99,6 +129,11 @@ export class ActionSetsTasks implements OnModuleInit {
 
             await this.actionSetsService.update(query, body);
         }
+
+        if (updatedActionSet.status !== beforeStatus) {
+            await this.onStatusChanged(updatedActionSet);
+        }
+
     }
 
     /**
@@ -110,11 +145,11 @@ export class ActionSetsTasks implements OnModuleInit {
 
         if (signature.name === 'worker') {
             this.actionQueue
-                .process('input', 1, this.input.bind(this))
+                .process('input', 1000, this.input.bind(this))
                 .then(() => console.log(`Closing Bull Queue @@action`))
                 .catch(this.shutdownService.shutdownWithError);
             this.actionQueue
-                .process('event', 1, this.event.bind(this))
+                .process('event', 1000, this.event.bind(this))
                 .then(() => console.log(`Closing Bull Queue @@action`))
                 .catch(this.shutdownService.shutdownWithError);
         }

@@ -38,6 +38,11 @@ export interface GenerateMintingAuthorizationsTaskInput {
     prices: Price[];
 
     /**
+     * Fees for given prices
+     */
+    fees: string[];
+
+    /**
      * Commitment type
      */
     commitType: 'stripe';
@@ -334,6 +339,7 @@ export class AuthorizationsTasks implements OnModuleInit {
         const authorizationsCreationRes = await this.authorizationsService.validateTicketAuthorizations(
             authorizationData.authorizations,
             authorizationData.prices,
+            authorizationData.fees,
             authorizationData.expirationTime,
             authorizationData.grantee.address,
             authorizationData.signatureReadable,
@@ -346,6 +352,7 @@ export class AuthorizationsTasks implements OnModuleInit {
         const actionSetUpdate = await this.actionSetsService.updateAction(authorizationData.actionSetId, 2, {
             commitType: 'stripe',
             total: authorizationData.prices,
+            fees: authorizationData.fees,
             authorizations: authorizationsCreationRes.response,
         });
 

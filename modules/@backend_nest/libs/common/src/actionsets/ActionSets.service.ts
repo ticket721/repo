@@ -1,16 +1,17 @@
 import { CRUDExtension } from '@lib/common/crud/CRUDExtension.base';
 import { Injectable } from '@nestjs/common';
-import { ActionSetEntity, ActionSetStatus } from '@lib/common/actionsets/entities/ActionSet.entity';
+import { ActionSetEntity, ActionSetStatus }         from '@lib/common/actionsets/entities/ActionSet.entity';
 import { BaseModel, InjectModel, InjectRepository } from '@iaminfinity/express-cassandra';
-import { ActionSetsRepository } from '@lib/common/actionsets/ActionSets.repository';
-import { ActionSet } from '@lib/common/actionsets/helper/ActionSet.class';
-import { ActionSetBuilderBase } from '@lib/common/actionsets/helper/ActionSet.builder.base';
-import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
-import { ModuleRef } from '@nestjs/core';
-import { UserDto } from '@lib/common/users/dto/User.dto';
-import { RightsService } from '@lib/common/rights/Rights.service';
-import { InjectQueue } from '@nestjs/bull';
-import { Queue } from 'bull';
+import { ActionSetsRepository }                     from '@lib/common/actionsets/ActionSets.repository';
+import { ActionSet }                                from '@lib/common/actionsets/helper/ActionSet.class';
+import { ActionSetBuilderBase }                     from '@lib/common/actionsets/helper/ActionSet.builder.base';
+import { ServiceResponse }                          from '@lib/common/utils/ServiceResponse.type';
+import { ModuleRef }                                from '@nestjs/core';
+import { UserDto }                                  from '@lib/common/users/dto/User.dto';
+import { RightsService }                            from '@lib/common/rights/Rights.service';
+import { InjectQueue }                              from '@nestjs/bull';
+import { Queue }                                    from 'bull';
+import { ActionSetLifecyclesBase }                  from '@lib/common/actionsets/helper/ActionSet.lifecycles.base';
 
 /**
  * Progress Type
@@ -43,9 +44,9 @@ export class ActionSetsService extends CRUDExtension<ActionSetsRepository, Actio
      */
     constructor(
         @InjectRepository(ActionSetsRepository)
-        actionSetsRepository: ActionSetsRepository,
+            actionSetsRepository: ActionSetsRepository,
         @InjectModel(ActionSetEntity)
-        actionSetEntity: BaseModel<ActionSetEntity>,
+            actionSetEntity: BaseModel<ActionSetEntity>,
         private readonly moduleRef: ModuleRef,
         private readonly rightsService: RightsService,
         @InjectQueue('action') private readonly actionQueue: Queue,
@@ -122,19 +123,28 @@ export class ActionSetsService extends CRUDExtension<ActionSetsRepository, Actio
      * @param name
      * @param caller
      * @param args
+     * @param internal
      */
     async build<BuildArgs = any>(
         name: string,
         caller: UserDto,
         args: BuildArgs,
+        internal?: boolean,
     ): Promise<ServiceResponse<ActionSetEntity>> {
         let builder: ActionSetBuilderBase;
 
         try {
-            builder = await this.moduleRef.get(`ACTION_SET_BUILDER/${name}`);
+            builder = await this.moduleRef.get(`ACTION_SET_BUILDER/${name}`, {strict: false});
         } catch (e) {
             return {
                 error: 'unknown_builder',
+                response: null,
+            };
+        }
+
+        if (!internal && builder.isPrivate) {
+            return {
+                error: 'cannot_create_private_actionset_in_public_context',
                 response: null,
             };
         }
@@ -178,6 +188,21 @@ export class ActionSetsService extends CRUDExtension<ActionSetsRepository, Actio
             error: null,
             response: actionSetCreationRes.response,
         };
+    }
+
+    async onComplete(actionSet: ActionSet): Promise<ServiceResponse<void>> {
+        let lifecycles: ActionSetLifecyclesBase;
+
+        try {
+            lifecycles = await this.moduleRef.get(`ACTION_SET_LIFECYCLES/${actionSet.name}`, {strict: false});
+        } catch (e) {
+            return {
+                error: null,
+                response: null,
+            };
+        }
+
+        return lifecycles.onComplete(actionSet);
     }
 
     /**

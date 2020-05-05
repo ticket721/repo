@@ -41,17 +41,18 @@ import { EventsUpdateResponseDto } from '@app/server/controllers/events/dto/Even
 import { CategoriesService } from '@lib/common/categories/Categories.service';
 import { EventsAddDatesInputDto } from '@app/server/controllers/events/dto/EventsAddDatesInput.dto';
 import { EventsDeleteDatesInputDto } from '@app/server/controllers/events/dto/EventsDeleteDatesInput.dto';
-import { EventsAddCategoriesInputDto } from '@app/server/controllers/events/dto/EventsAddCategoriesInput.dto';
-import { EventsDeleteCategoriesInputDto } from '@app/server/controllers/events/dto/EventsDeleteCategoriesInput.dto';
+import { EventsAddCategoriesInputDto }       from '@app/server/controllers/events/dto/EventsAddCategoriesInput.dto';
+import { EventsDeleteCategoriesInputDto }    from '@app/server/controllers/events/dto/EventsDeleteCategoriesInput.dto';
 import { EventsDeleteCategoriesResponseDto } from '@app/server/controllers/events/dto/EventsDeleteCategoriesResponse.dto';
-import { EventsAddCategoriesResponseDto } from '@app/server/controllers/events/dto/EventsAddCategoriesResponse.dto';
-import { EventsAddDatesResponseDto } from '@app/server/controllers/events/dto/EventsAddDatesResponse.dto';
-import { EventsDeleteDatesResponseDto } from '@app/server/controllers/events/dto/EventsDeleteDatesResponse.dto';
-import { RightsService } from '@lib/common/rights/Rights.service';
-import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
-import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
-import { ApiResponses } from '@app/server/utils/ApiResponses.controller.decorator';
-import { MetadatasService } from '@lib/common/metadatas/Metadatas.service';
+import { EventsAddCategoriesResponseDto }    from '@app/server/controllers/events/dto/EventsAddCategoriesResponse.dto';
+import { EventsAddDatesResponseDto }         from '@app/server/controllers/events/dto/EventsAddDatesResponse.dto';
+import { EventsDeleteDatesResponseDto }      from '@app/server/controllers/events/dto/EventsDeleteDatesResponse.dto';
+import { RightsService }                     from '@lib/common/rights/Rights.service';
+import { CategoryEntity }                    from '@lib/common/categories/entities/Category.entity';
+import { ActionSetEntity }                   from '@lib/common/actionsets/entities/ActionSet.entity';
+import { ApiResponses }                      from '@app/server/utils/ApiResponses.controller.decorator';
+import { MetadatasService }                           from '@lib/common/metadatas/Metadatas.service';
+import { RocksideCreateEOAResponse, RocksideService } from '@lib/common/rockside/Rockside.service';
 
 /**
  * Events controller to create and fetch events
@@ -69,10 +70,10 @@ export class EventsController extends ControllerBasics<EventEntity> {
      * @param currenciesService
      * @param datesService
      * @param categoriesService
-     * @param vaultereumService
      * @param uuidToolService
      * @param rightsService
      * @param metadatasService
+     * @param rocksideService
      */
     constructor(
         private readonly eventsService: EventsService,
@@ -81,10 +82,10 @@ export class EventsController extends ControllerBasics<EventEntity> {
         private readonly currenciesService: CurrenciesService,
         private readonly datesService: DatesService,
         private readonly categoriesService: CategoriesService,
-        private readonly vaultereumService: VaultereumService,
         private readonly uuidToolService: UUIDToolService,
         private readonly rightsService: RightsService,
         private readonly metadatasService: MetadatasService,
+        private readonly rocksideService: RocksideService,
     ) {
         super();
     }
@@ -337,21 +338,19 @@ export class EventsController extends ControllerBasics<EventEntity> {
 
         // Verify very low probability collision
         do {
-            eventUUID = this.uuidToolService.generate();
+            eventUUID = this.uuidToolService.generate().toLowerCase();
             eventsCollision = await this._get<EventEntity>(this.eventsService, {
                 id: eventUUID,
             });
         } while (eventsCollision.length !== 0);
 
-        // Create Vault address
-
-        const validatingAddressName = `event-${eventUUID.toLowerCase()}`;
-        const validatingAddressRes = await this._serviceCall<any>(
-            this.vaultereumService.write(`ethereum/accounts/${validatingAddressName}`),
+        // Create Rockside EOA
+        const rocksideEOA = await this._serviceCall<RocksideCreateEOAResponse>(
+            this.rocksideService.createEOA(),
             StatusCodes.InternalServerError,
         );
 
-        const eventAddress = toAcceptedAddressFormat(validatingAddressRes.data.address);
+        const eventAddress = toAcceptedAddressFormat(rocksideEOA.address);
 
         // Generate Group ID
 
