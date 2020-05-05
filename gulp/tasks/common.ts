@@ -1,7 +1,7 @@
 /**
  * Checks if T721_CONFIG variable is set
  */
-import { repo_log } from '../utils/log';
+import { repo_log }           from '../utils/log';
 
 export async function required_config(): Promise<void> {
 

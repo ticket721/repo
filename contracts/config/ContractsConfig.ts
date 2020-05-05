@@ -4,8 +4,8 @@ import {
     HDWalletProviderConfig,
     HDWalletProviderGuard,
     HttpProviderConfig,
-    HttpProviderGuard
-}                                                            from './ProviderConfigs';
+    HttpProviderGuard, LedgerProviderGuard,
+} from './ProviderConfigs';
 import { PostMigrationConfigGuard, PostMigrationConfigs }    from './PostMigrationConfigs';
 import { MigrationConfig, MigrationConfigGuard }             from './MigrationConfig';
 
@@ -72,7 +72,7 @@ export interface ContractsConfig {
  */
 export const ContractsConfigGuard: Decoder<ContractsConfig> = object({
     modules: array(ContractsModuleConfigGuard),
-    provider: oneOf(HttpProviderGuard, HDWalletProviderGuard),
+    provider: oneOf(HttpProviderGuard, HDWalletProviderGuard, LedgerProviderGuard),
     post_migration: optional(PostMigrationConfigGuard),
     migrations: array(MigrationConfigGuard)
 });

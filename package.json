@@ -39,7 +39,7 @@
             "modules/@frontend_flib-react"
         ],
         "nohoist": ["**/jest"]
-},
+    },
     "dependencies": {
         "@commitlint/cli": "8.3.5",
         "@commitlint/config-conventional": "8.3.4",
@@ -63,8 +63,14 @@
         "typedoc": "0.16.11",
         "typedoc-plugin-markdown": "2.2.17",
         "typescript": "3.8.3",
-        "web3": "1.2.6",
-        "@types/jest": "25.1.3"
+        "web3": "1.2.7",
+        "@types/jest": "25.1.3",
+        "web3-provider-engine": "15.0.7",
+        "@ledgerhq/hw-transport-node-hid": "5.13.1",
+        "@ledgerhq/web3-subprovider": "5.14.0",
+        "@ledgerhq/hw-app-eth": "5.14.0",
+        "@ledgerhq/logs": "5.13.1",
+        "@0x/subproviders": "6.0.8"
     },
     "editorconfig-cli": [
         "gulpfile.ts",
