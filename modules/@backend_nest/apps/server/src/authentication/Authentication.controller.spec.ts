@@ -23,6 +23,7 @@ import { UserDto } from '@lib/common/users/dto/User.dto';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { ResetPasswordTaskDto } from '@app/server/authentication/dto/ResetPasswordTask.dto';
 import { generatePassword } from '../../test/utils';
+import { ResetPasswordInputDto } from '@app/server/authentication/dto/ResetPasswordInputDto';
 
 class QueueMock<T = any> {
     add(name: string, data: T, opts?: JobOptions): Promise<Job<T>> {
@@ -1250,7 +1251,7 @@ describe('Authentication Controller', function() {
                 error: 'unexpected_error',
             });
 
-            const user: Partial<UserDto> = {
+            const user: ResetPasswordInputDto = {
                 email: email,
             };
 
@@ -1280,7 +1281,7 @@ describe('Authentication Controller', function() {
                 error: null,
             });
 
-            const user: Partial<UserDto> = {
+            const user: ResetPasswordInputDto = {
                 email: email,
             };
 
@@ -1311,7 +1312,7 @@ describe('Authentication Controller', function() {
                 error: null,
             });
 
-            const userEmail: Partial<UserDto> = {
+            const userEmail: ResetPasswordInputDto = {
                 email: email,
             };
 

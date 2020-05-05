@@ -35,6 +35,7 @@ import { UserDto } from '@lib/common/users/dto/User.dto';
 import { ValidateResetPasswordResponseDto } from '@app/server/authentication/dto/ValidateResetPasswordResponse.dto';
 import { ValidateResetPasswordInputDto } from '@app/server/authentication/dto/ValidateResetPasswordInput.dto';
 import { ResetPasswordResponseDto } from '@app/server/authentication/dto/ResetPasswordResponse.dto';
+import { ResetPasswordInputDto } from '@app/server/authentication/dto/ResetPasswordInputDto';
 
 /**
  * Controller exposing the authentication routes
@@ -320,9 +321,17 @@ export class AuthenticationController {
         StatusCodes.UnprocessableEntity,
         StatusCodes.InternalServerError,
     ])
-    async resetPassword(@Body() body: Partial<UserDto>): Promise<ResetPasswordResponseDto> {
+    async resetPassword(@Body() body: ResetPasswordInputDto): Promise<ResetPasswordResponseDto> {
         const resp = await this.authenticationService.getUserIfEmailExists(body.email);
-        if (resp.response !== null) {
+        if (resp.error) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.InternalServerError,
+                    message: resp.error,
+                },
+                StatusCodes.InternalServerError,
+            );
+        } else if (resp.response !== null) {
             await this.mailingQueue.add(
                 '@@mailing/resetPasswordEmail',
                 {
@@ -334,14 +343,6 @@ export class AuthenticationController {
                     attempts: 5,
                     backoff: 5000,
                 },
-            );
-        } else if (resp.error === 'unexpected_error') {
-            throw new HttpException(
-                {
-                    status: StatusCodes.InternalServerError,
-                    message: resp.error,
-                },
-                StatusCodes.InternalServerError,
             );
         }
         return {
@@ -378,7 +379,6 @@ export class AuthenticationController {
             const payload = await this.jwtService.verifyAsync<ResetPasswordTaskDto>(body.token);
             validatedUserRes = await this.authenticationService.validateResetPassword(payload.id, body.password);
         } catch (e) {
-            console.log(e.message);
             switch (e.message) {
                 case 'jwt expired': {
                     throw new HttpException(

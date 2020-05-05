@@ -1401,7 +1401,7 @@ describe('Authentication Service', function() {
         });
     });
 
-    describe('isEmailExist', function() {
+    describe('getUserIfEmailExists', function() {
         test('User not found with error', async function() {
             const authenticationService: AuthenticationService = context.authenticationService;
             const usersServiceMock: UsersService = context.usersServiceMock;
@@ -1418,6 +1418,7 @@ describe('Authentication Service', function() {
             const res = await authenticationService.getUserIfEmailExists(email);
 
             expect(res.response).toEqual(null);
+            expect(res.error).toEqual('user_not_found');
 
             verify(usersServiceMock.findByEmail(email)).called();
         });
@@ -1438,6 +1439,7 @@ describe('Authentication Service', function() {
             const res = await authenticationService.getUserIfEmailExists(email);
 
             expect(res.response).toEqual(null);
+            expect(res.error).toEqual(null);
 
             verify(usersServiceMock.findByEmail(email)).called();
         });
@@ -1471,6 +1473,28 @@ describe('Authentication Service', function() {
             const res = await authenticationService.getUserIfEmailExists(email);
 
             expect(res.response).toEqual(user);
+            expect(res.error).toEqual(null);
+
+            verify(usersServiceMock.findByEmail(email)).called();
+        });
+
+        test('Internal error', async function() {
+            const authenticationService: AuthenticationService = context.authenticationService;
+            const usersServiceMock: UsersService = context.usersServiceMock;
+
+            const email = 'notexisting@test.com';
+
+            when(usersServiceMock.findByEmail(email)).thenReturn(
+                Promise.resolve({
+                    response: null,
+                    error: 'unexpected_error',
+                }),
+            );
+
+            const res = await authenticationService.getUserIfEmailExists(email);
+
+            expect(res.response).toEqual(null);
+            expect(res.error).toEqual('unexpected_error');
 
             verify(usersServiceMock.findByEmail(email)).called();
         });

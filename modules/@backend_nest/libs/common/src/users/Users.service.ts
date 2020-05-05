@@ -46,7 +46,6 @@ export class UsersService {
 
             return this.findById(id);
         } catch (e) {
-            console.log(e);
             return {
                 response: null,
                 error: 'unexpected_error',

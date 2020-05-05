@@ -275,7 +275,7 @@ describe('Authentication Tasks', function() {
                         expiresIn: '1 day',
                     }),
                 ),
-            ).thenReturn(Promise.resolve(signature));
+            ).thenResolve(signature);
 
             when(configServiceMock.get('RESET_PASSWORD_URL')).thenReturn(validationUrl);
 
