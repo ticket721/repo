@@ -43,7 +43,7 @@
     "cleave.js": "^1.5.10",
     "detect-browser": "^5.1.0",
     "html5-file-selector": "2.1.0",
-    "polished": "3.6.1",
+    "polished": "3.6.2",
     "react": "16.13.1",
     "react-color": "^2.18.1",
     "react-datepicker": "^2.14.1",
