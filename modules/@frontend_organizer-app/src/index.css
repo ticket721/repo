@@ -1,3 +1,24 @@
+@font-face {
+    font-family: 'Gordita';
+    src: url('~@frontend/flib-react/lib/assets/fonts/GorditaRegular.otf');
+    font-style: normal;
+    font-weight: 400;
+}
+
+@font-face {
+    font-family: 'Gordita';
+    src: url('~@frontend/flib-react/lib/assets/fonts/GorditaMedium.otf');
+    font-style: normal;
+    font-weight: 500;
+}
+
+@font-face {
+    font-family: 'Gordita';
+    src: url('~@frontend/flib-react/lib/assets/fonts/GorditaBold.otf');
+    font-style: normal;
+    font-weight: 700;
+}
+
 html {
     width: 100%;
     height: 100%;
@@ -7,9 +28,5 @@ html {
 
 body {
     overflow: hidden;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-    -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
