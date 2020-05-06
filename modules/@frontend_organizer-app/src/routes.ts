@@ -1,5 +1,6 @@
-import Home                   from './screens/Home';
-import React          from 'react';
+import Home        from './screens/Home';
+import React       from 'react';
+import CreateEvent from './screens/CreateEvent';
 
 export interface LinkDatum {
     icon: string;
@@ -17,7 +18,11 @@ export interface RouteDatum {
 
 export const routes: RouteDatum[] = [
     {
+        path: '/createevent',
+        page: CreateEvent,
+    },
+    {
         path: '/',
         page: Home,
-    }
+    },
 ];
