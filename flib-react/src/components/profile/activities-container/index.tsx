@@ -3,8 +3,8 @@ import styled     from '../../../config/styled';
 
 export interface ActivitiesContainerProps extends React.ComponentProps<any> {
   title: string;
-  viewAllLabel: string;
-  viewAllAction: () => void;
+  viewAllLabel?: string;
+  viewAllAction?: () => void;
 }
 
 const Section = styled.section`
@@ -31,10 +31,14 @@ const Button = styled.button`
 export const ActivitiesContainer: React.FunctionComponent<ActivitiesContainerProps> = (props: ActivitiesContainerProps): JSX.Element => {
 
   return  <Section>
-            <div className="row aic jcsb">
-              <h2>{props.title}</h2>
-              {/* TODO -- Update to use link from react-router */}
-              <Button onClick={props.viewAllAction} type='button'>{props.viewAllLabel}</Button>
+            <div className='row aic jcsb'>
+                <h2>{props.title}</h2>
+                {/* TODO -- Update to use link from react-router */}
+                {
+                    props.viewAllAction ?
+                      <Button onClick={props.viewAllAction} type='button'>{props.viewAllLabel}</Button> :
+                      null
+                }
             </div>
             {props.children}
           </Section>
