@@ -16,7 +16,7 @@ interface Props {
 const user = {
     firstName: 'Pierre',
     lastName: 'Paul',
-    profilePicture: '/public/favicon.ico',
+    profilePicture: '/favicon.ico',
     creditBalance: 3500,
     creditCard: 5234,
     currentLocation: 'Paris, France',
@@ -65,12 +65,12 @@ interface DrawerProps extends MUIDrawerProps {
 
 const Drawer = styled(MUIDrawer)<DrawerProps>`
     .MuiPaper-root {
-      background: linear-gradient(91.44deg,#0A0812 0.31%,#120F1A 99.41%);
-      width: 375px;
-      color: ${props => props.theme.textColor};
+        background: linear-gradient(91.44deg,#0A0812 0.31%,#120F1A 99.41%);
+        width: 375px;
+        color: ${props => props.theme.textColor};
     }
     .MuiBackdrop-root {
-      ${(props): string => blurAndDarkenBackground(props.browsername)};
+        ${(props): string => blurAndDarkenBackground(props.browsername)};
     }
 `;
 

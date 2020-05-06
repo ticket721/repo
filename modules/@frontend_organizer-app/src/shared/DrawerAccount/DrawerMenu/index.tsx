@@ -38,7 +38,7 @@ const DrawerMenu = (): JSX.Element => {
               })}
           </ActivitiesContainer>
           <FundsCard
-          title={'My funds'}
+          title={'Funds & Payment Method'}
           bankAccountLabel={'Bank account'}
           currentBalanceLabel={'Current balance'}
           onClick={
@@ -49,7 +49,6 @@ const DrawerMenu = (): JSX.Element => {
           />
           <LinksContainer title='Account'>
               <ArrowLink to='#todo' label='General information'/>
-              <ArrowLink to='#todo' label='Payment information'/>
               <ArrowLink to='#todo' label='Main city' location='Paris, France' />
           </LinksContainer>
       </>

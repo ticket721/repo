@@ -17,7 +17,7 @@ const App: React.FC = ({ location }: any) => (
                 routes.map((route, idx) => (
                     <Route key={idx} path={route.path}>
                         <PageContainer
-                        padding='166px 30px 30px'
+                        padding='50px 30px 30px'
                         topBar={route.topBar}
                         topBarHeight={route.topBarHeight}>
                             <route.page />

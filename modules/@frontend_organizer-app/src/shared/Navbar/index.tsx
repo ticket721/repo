@@ -10,8 +10,8 @@ import { computeDrawerPath } from '../DrawerAccount/drawerRoutes';
 
 const user = {
     firstName: 'Pierre',
-    lastName: 'Paulololo',
-    profilePicture: '/public/favicon.ico',
+    lastName: 'Paul',
+    profilePicture: '/favicon.ico',
     creditBalance: 3500,
     creditCard: 5234,
     currentLocation: 'Paris, France',
@@ -56,13 +56,10 @@ const NavBar: React.FC = () => {
 };
 
 const Container = styled.div`
-    position: fixed;
-    width: 100%;
-    z-index: 2;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 24px;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 24px;
     ${(props): string => blurAndDarkenBackground('chrome')};
 `;
 
@@ -85,13 +82,19 @@ const Profile = styled.div`
     justify-content: space-between;
     background-color: rgba(255, 255, 255, 0.06);
     border-radius: ${(props) => props.theme.defaultRadius};
-    padding: 12px 0 12px 16px;
+    padding: 12px 16px;
+
 `;
 
 const UserHeader = styled(WalletHeader)`
+    padding: 0;
+    cursor: pointer;
+    img {
+        width: 40px;
+        height: 40px;
+    }
     h3 {
         ${ truncate('80px') };
-        padding-right: 8px;
         font-size: 13px;
     }
 `;
