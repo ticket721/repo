@@ -3172,6 +3172,13 @@
     react-is "^16.8.0"
     react-transition-group "^4.3.0"
 
+"@material-ui/icons@4.9.1":
+  version "4.9.1"
+  resolved "https://registry.yarnpkg.com/@material-ui/icons/-/icons-4.9.1.tgz#fdeadf8cb3d89208945b33dbc50c7c616d0bd665"
+  integrity sha512-GBitL3oBWO0hzBhvA9KxqcowRUsA0qzwKkURyC8nppnC3fw54KPKZ+d4V1Eeg/UnDRSzDaI9nGCdel/eh9AQMg==
+  dependencies:
+    "@babel/runtime" "^7.4.4"
+
 "@material-ui/react-transition-group@^4.3.0":
   version "4.3.0"
   resolved "https://registry.yarnpkg.com/@material-ui/react-transition-group/-/react-transition-group-4.3.0.tgz#92529142addb5cc179dbf42d246c7e3fe4d6104b"
@@ -19421,10 +19428,10 @@ pnp-webpack-plugin@1.6.4:
   dependencies:
     ts-pnp "^1.1.6"
 
-polished@3.6.0:
-  version "3.6.0"
-  resolved "https://registry.yarnpkg.com/polished/-/polished-3.6.0.tgz#03eb2871c9bc4785d5199dd751cde7af6de42ff8"
-  integrity sha512-H7tsy9h5JVGXh7BdNzm/v/Q+zIasiwXnYflSmrLd+YpK+8dXKJTKl/kzCtB2kns2N5dyelRvjUtpOKK/nLCanA==
+polished@3.6.1:
+  version "3.6.1"
+  resolved "https://registry.yarnpkg.com/polished/-/polished-3.6.1.tgz#89561e6adfdb7e449015fb77c6768c64a7b6e5aa"
+  integrity sha512-nG/7fcBqdu2766AePajDFvJ6mj3Ma735/zm6ulMYLZI+Nbj74Po95+QN5p2nEGo6l3IMgaKvp6MN/9PIZkFwHA==
   dependencies:
     "@babel/runtime" "^7.9.2"
 

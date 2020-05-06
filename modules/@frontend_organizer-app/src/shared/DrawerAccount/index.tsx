@@ -6,7 +6,8 @@ import { blurAndDarkenBackground }                            from '@frontend/co
 import { Route, Switch }                                      from 'react-router-dom';
 import { computeDrawerPath, drawerRoutes } from './drawerRoutes';
 import { useHistory }         from 'react-router';
-import { Icon, WalletHeader }      from '@frontend/flib-react/lib/components';
+import { WalletHeader }      from '@frontend/flib-react/lib/components';
+import { ArrowBackIos } from '@material-ui/icons';
 
 interface Props {
   open: boolean,
@@ -32,7 +33,7 @@ const DrawerAccount = ({open, onClose}: Props): JSX.Element => {
         }
 
         return <BackArrow onClick={() => history.push(computeDrawerPath(history.location.pathname))}>
-            <Icon icon='chevron' fill='#fff' height='20' width='20' />
+            <ArrowBackIos />
             <span>Back</span>
         </BackArrow>
       };
@@ -76,15 +77,13 @@ const Drawer = styled(MUIDrawer)<DrawerProps>`
 
 const BackArrow = styled.div`
     display: flex;
-    align-items: flex-end;
+    align-items: center;
     width: fit-content;
     cursor: pointer;
+    margin-left: 22px;
 
-    svg {
-        transform: rotate(180deg);
-    }
     span {
-        margin-left: 10px;
+        margin-top: 3px;
     }
 `;
 
