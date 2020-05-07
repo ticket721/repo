@@ -1316,9 +1316,45 @@ describe('Authentication Controller', function() {
                 email: email,
             };
 
-            await authenticationController.resetPassword(userEmail);
+            const res = await authenticationController.resetPassword(userEmail);
+
+            expect(res.validationToken).toBeUndefined();
 
             verify(authenticationServiceMock.getUserIfEmailExists(email)).called();
+        });
+
+        test('should reset password and return token in developement', async function() {
+            const authenticationController: AuthenticationController = context.authenticationController;
+            const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
+            const configServiceMock: ConfigService = context.configServiceMock;
+
+            when(configServiceMock.get('NODE_ENV')).thenReturn('development');
+
+            const user: PasswordlessUserDto = {
+                username: 'salut',
+                id: '123',
+                email: 'test@test.com',
+                locale: 'fr',
+                valid: true,
+                type: 't721',
+                address: '0x...',
+                role: 'authenticated',
+            };
+
+            when(authenticationServiceMock.getUserIfEmailExists(user.email)).thenResolve({
+                response: user,
+                error: null,
+            });
+
+            const userEmail: ResetPasswordInputDto = {
+                email: user.email,
+            };
+
+            const res = await authenticationController.resetPassword(userEmail);
+
+            expect(res.validationToken).toBeDefined();
+
+            verify(authenticationServiceMock.getUserIfEmailExists(user.email)).called();
         });
     });
 
