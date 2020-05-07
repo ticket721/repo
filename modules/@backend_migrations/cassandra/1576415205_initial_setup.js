@@ -133,7 +133,8 @@ var migration1576415205 = {
                         name text,
                         description text,
                         tags list<text>,
-                        avatar text
+                        avatar text,
+                        signature_colors list<text>
                     );`,
             params: []
         };

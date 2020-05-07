@@ -20,9 +20,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const initialArgument = {
-                    name: 'myEvent',
-                };
+                const initialArgument = {};
 
                 const actionSetName = 'event_create';
 
@@ -56,7 +54,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 } = await getSDKAndUser(getCtx);
 
                 const initialArgument = {
-                    surname: 'myEvent',
+                    name: 'event name',
                 };
 
                 const actionSetName = 'event_create';
@@ -83,9 +81,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const initialArgument = {
-                    name: 'myEvent',
-                };
+                const initialArgument = {};
 
                 const actionSetName = 'event_create';
 
@@ -113,9 +109,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const initialArgument = {
-                    name: 'myEvent',
-                };
+                const initialArgument = {};
 
                 const actionSetName = 'event_create';
 
@@ -154,9 +148,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const initialArgument = {
-                    name: 'myEvent',
-                };
+                const initialArgument = {};
 
                 const actionSetName = 'event_create';
 
@@ -220,9 +212,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const initialArgument = {
-                    name: 'myEvent',
-                };
+                const initialArgument = {};
 
                 const actionSetName = 'event_create';
 
@@ -322,9 +312,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
 
                 const otherUser = await getUser(sdk);
 
-                const initialArgument = {
-                    name: 'myEvent',
-                };
+                const initialArgument = {};
 
                 const actionSetName = 'event_create';
 

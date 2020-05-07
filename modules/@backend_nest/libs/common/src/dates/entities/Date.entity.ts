@@ -6,7 +6,16 @@ import {
     UpdateDateColumn,
 } from '@iaminfinity/express-cassandra';
 import { ECAAG } from '@lib/common/utils/ECAAG.helper';
-import { IsDateString, IsNumber, IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
+import {
+    ArrayMinSize,
+    IsDateString,
+    IsHexColor,
+    IsNumber,
+    IsOptional,
+    IsString,
+    IsUUID,
+    ValidateNested,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 /**
@@ -37,6 +46,14 @@ export class DateMetadata {
      */
     @IsString({ each: true })
     tags: string[];
+
+    /**
+     * Date signature colors
+     */
+    @IsHexColor({ each: true })
+    @ArrayMinSize(2)
+    // tslint:disable-next-line:variable-name
+    signature_colors: string[];
 }
 
 /**

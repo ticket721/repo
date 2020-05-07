@@ -20,9 +20,7 @@ describe('EventCreate AcSetBuilder Helper', function() {
             id: 'user_id',
         } as UserDto;
 
-        const initialArguments: EventCreateAcsetBuilderArgs = {
-            name: 'event name',
-        };
+        const initialArguments: EventCreateAcsetBuilderArgs = {};
 
         const actionSet = await context.eventCreateAcsetBuilderHelper.buildActionSet(user, initialArguments);
 
@@ -33,7 +31,15 @@ describe('EventCreate AcSetBuilder Helper', function() {
                 {
                     type: 'input',
                     name: '@events/textMetadata',
-                    data: '{"name":"event name"}',
+                    data: '{}',
+                    error: null,
+                    status: 'in progress',
+                    private: false,
+                },
+                {
+                    type: 'input',
+                    name: '@events/imagesMetadata',
+                    data: null,
                     error: null,
                     status: 'in progress',
                     private: false,
@@ -64,14 +70,6 @@ describe('EventCreate AcSetBuilder Helper', function() {
                 },
                 {
                     type: 'input',
-                    name: '@events/imagesMetadata',
-                    data: null,
-                    error: null,
-                    status: 'in progress',
-                    private: false,
-                },
-                {
-                    type: 'input',
                     name: '@events/adminsConfiguration',
                     data: null,
                     error: null,
@@ -90,7 +88,9 @@ describe('EventCreate AcSetBuilder Helper', function() {
             id: 'user_id',
         } as UserDto;
 
-        const initialArguments: EventCreateAcsetBuilderArgs = {} as EventCreateAcsetBuilderArgs;
+        const initialArguments: EventCreateAcsetBuilderArgs = {
+            name: 'this is an invalid argument',
+        } as EventCreateAcsetBuilderArgs;
 
         const actionSet = await context.eventCreateAcsetBuilderHelper.buildActionSet(user, initialArguments);
 

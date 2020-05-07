@@ -5,6 +5,7 @@ import Joi from '@hapi/joi';
 import { closestCity, serialize } from '@common/global';
 import { ImagesService } from '@lib/common/images/Images.service';
 import { ChecksRunnerUtil } from '@lib/common/actionsets/helper/ChecksRunner.util';
+import { EventCreationActions } from '@lib/common/actionsets/acset_builders/EventCreate.acsetbuilder.helper';
 
 /**
  * events/textMetadata arguments
@@ -24,6 +25,21 @@ export interface EventsCreateTextMetadata {
      * Tags of the event
      */
     tags: string[];
+}
+
+/**
+ * events/imagesMetadata arguments
+ */
+export interface EventsCreateImagesMetadata {
+    /**
+     * Image ID to use as avatar
+     */
+    avatar: string;
+
+    /**
+     * Array of colors to use as signature colors for the event / dates
+     */
+    signatureColors: string[];
 }
 
 /**
@@ -182,16 +198,6 @@ export interface EventsCreateCategoriesConfiguration {
 }
 
 /**
- * events/imagesMetadata arguments
- */
-export interface EventsCreateImagesMetadata {
-    /**
-     * Image ID to use as avatar
-     */
-    avatar: string;
-}
-
-/**
  * events/adminsConfiguration arguments
  */
 export interface EventsCreateAdminsConfiguration {
@@ -287,6 +293,89 @@ export class EventsInputHandlers implements OnModuleInit {
     }
 
     /**
+     * events/imagesMetadata dynamic argument checker
+     */
+    imagesMetadataValidator = Joi.object<EventsCreateImagesMetadata>({
+        avatar: Joi.string()
+            .uuid()
+            .optional(),
+        signatureColors: Joi.array()
+            .items(Joi.string().regex(/^#[A-Fa-f0-9]{6}/))
+            .min(2)
+            .optional(),
+    });
+
+    /**
+     * events/imagesMetadata dynamic fields checker
+     */
+    imagesMetadataFields: string[] = ['avatar', 'signatureColors'];
+
+    /**
+     * events/imagesMetadata handler
+     */
+    async imagesMetadataHandler(
+        imagesMetadataFields: string[],
+        actionset: ActionSet,
+        progress: Progress,
+    ): Promise<[ActionSet, boolean]> {
+        const data = actionset.action.data;
+
+        const { error, error_trace } = ChecksRunnerUtil<EventsCreateImagesMetadata>(
+            data,
+            this.imagesMetadataValidator,
+            imagesMetadataFields,
+        );
+
+        switch (error) {
+            case 'error': {
+                actionset.action.setError({
+                    details: error_trace,
+                    error: 'validation_error',
+                });
+                actionset.action.setStatus('error');
+                actionset.setStatus('input:error');
+
+                break;
+            }
+
+            case 'incomplete': {
+                actionset.action.setIncomplete({
+                    details: error_trace,
+                    error: 'incomplete_error',
+                });
+                actionset.action.setStatus('incomplete');
+                actionset.setStatus('input:incomplete');
+
+                break;
+            }
+
+            case undefined: {
+                const avatarQuery = await this.imagesService.search({
+                    id: data.avatar,
+                });
+
+                if (avatarQuery.error || avatarQuery.response.length === 0) {
+                    actionset.action.setError({
+                        details: error,
+                        error: 'cannot_find_image',
+                    });
+                    actionset.action.setStatus('error');
+                    actionset.setStatus('input:error');
+                    await progress(100);
+                    return [actionset, true];
+                }
+
+                actionset.next();
+
+                break;
+            }
+        }
+
+        await progress(100);
+        return [actionset, true];
+    }
+
+    /**
      * events/modulesConfiguration dynamic argument checker
      */
     modulesConfigurationValidator = Joi.object<EventsCreateModulesConfiguration>({});
@@ -361,11 +450,10 @@ export class EventsInputHandlers implements OnModuleInit {
                         lat: Joi.number().required(),
                         lon: Joi.number().required(),
                         label: Joi.string().required(),
-                    })
-                        .min(1)
-                        .required(),
+                    }).required(),
                 }),
             )
+            .min(1)
             .optional(),
     });
 
@@ -622,7 +710,7 @@ export class EventsInputHandlers implements OnModuleInit {
             }
 
             case undefined: {
-                const dates = actionset.actions[actionset.current_action - 1].data;
+                const dates = actionset.actions[EventCreationActions.DatesConfiguration].data;
 
                 if (dates.dates.length !== data.dates.length) {
                     actionset.action.setError({
@@ -663,85 +751,6 @@ export class EventsInputHandlers implements OnModuleInit {
 
                 actionset.action.setData(data);
                 actionset.next();
-            }
-        }
-
-        await progress(100);
-        return [actionset, true];
-    }
-
-    /**
-     * events/imagesMetadata dynamic argument checker
-     */
-    imagesMetadataValidator = Joi.object<EventsCreateImagesMetadata>({
-        avatar: Joi.string()
-            .uuid()
-            .optional(),
-    });
-
-    /**
-     * events/imagesMetadata dynamic fields checker
-     */
-    imagesMetadataFields: string[] = ['avatar'];
-
-    /**
-     * events/imagesMetadata handler
-     */
-    async imagesMetadataHandler(
-        imagesMetadataFields: string[],
-        actionset: ActionSet,
-        progress: Progress,
-    ): Promise<[ActionSet, boolean]> {
-        const data = actionset.action.data;
-
-        const { error, error_trace } = ChecksRunnerUtil<EventsCreateImagesMetadata>(
-            data,
-            this.imagesMetadataValidator,
-            imagesMetadataFields,
-        );
-
-        switch (error) {
-            case 'error': {
-                actionset.action.setError({
-                    details: error_trace,
-                    error: 'validation_error',
-                });
-                actionset.action.setStatus('error');
-                actionset.setStatus('input:error');
-
-                break;
-            }
-
-            case 'incomplete': {
-                actionset.action.setIncomplete({
-                    details: error_trace,
-                    error: 'incomplete_error',
-                });
-                actionset.action.setStatus('incomplete');
-                actionset.setStatus('input:incomplete');
-
-                break;
-            }
-
-            case undefined: {
-                const avatarQuery = await this.imagesService.search({
-                    id: data.avatar,
-                });
-
-                if (avatarQuery.error || avatarQuery.response.length === 0) {
-                    actionset.action.setError({
-                        details: error,
-                        error: 'cannot_find_image',
-                    });
-                    actionset.action.setStatus('error');
-                    actionset.setStatus('input:error');
-                    await progress(100);
-                    return [actionset, true];
-                }
-
-                actionset.next();
-
-                break;
             }
         }
 

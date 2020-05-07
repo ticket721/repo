@@ -24,8 +24,6 @@ const waitForAction = async (sdk: T721SDK, token: string, actionset: string): Pr
                 return;
             }
 
-            console.log(res.data.actionsets);
-
             const actionSetEntity = res.data.actionsets[0];
             if (actionSetEntity.current_status !== 'input:waiting' && actionSetEntity.current_status !== 'event:waiting') {
                 clearInterval(intervalId);
@@ -65,9 +63,7 @@ export const createEvent = async (user: UserDto, sdk: T721SDK, token: string, ev
             token,
             {
                 name: 'event_create',
-                arguments: {
-                    name: infos.name
-                },
+                arguments: {},
             },
         );
         console.log('Create Event: OK.');
@@ -87,6 +83,39 @@ export const createEvent = async (user: UserDto, sdk: T721SDK, token: string, ev
     );
     await waitForAction(sdk, token, id);
     console.log('Create Event - Text Metadata: OK.');
+
+    let avatarId = null;
+
+    {
+        const form = new FormData();
+
+        form.append('images', fs.readFileSync(`${imagesPath}/${infos.images.avatar}`), {
+            filename: 'avatar.jpg',
+        });
+
+        console.log('Create Event - Avatar Upload: ...');
+        const res = await sdk.images.upload(
+            token,
+            form.getBuffer(),
+            form.getHeaders(),
+        );
+        console.log('Create Event - Avatar Upload: OK.');
+
+        avatarId = res.data.ids[0].id;
+
+    }
+
+    console.log('Create Event - Images Metadata: ...');
+    await sdk.events.create.imagesMetadata(
+        token,
+        id,
+        {
+            avatar: avatarId,
+            signatureColors: infos.images.signatureColors
+        },
+    );
+    await waitForAction(sdk, token, id);
+    console.log('Create Event - Images Metadata: OK.');
 
 
     console.log('Create Event - Modules Configuration: ...');
@@ -119,38 +148,6 @@ export const createEvent = async (user: UserDto, sdk: T721SDK, token: string, ev
     );
     await waitForAction(sdk, token, id);
     console.log('Create Event - Categories Configuration: OK.');
-
-    let avatarId = null;
-
-    {
-        const form = new FormData();
-
-        form.append('images', fs.readFileSync(`${imagesPath}/${infos.images.avatar}`), {
-            filename: 'avatar.jpg',
-        });
-
-        console.log('Create Event - Avatar Upload: ...');
-        const res = await sdk.images.upload(
-            token,
-            form.getBuffer(),
-            form.getHeaders(),
-        );
-        console.log('Create Event - Avatar Upload: OK.');
-
-        avatarId = res.data.ids[0].id;
-
-    }
-
-    console.log('Create Event - Images Metadata: ...');
-    await sdk.events.create.imagesMetadata(
-        token,
-        id,
-        {
-            avatar: avatarId
-        },
-    );
-    await waitForAction(sdk, token, id);
-    console.log('Create Event - Images Metadata: OK.');
 
 
     console.log('Create Event - Admins Configuration: ...');

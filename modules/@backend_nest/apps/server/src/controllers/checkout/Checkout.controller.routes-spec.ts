@@ -236,9 +236,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
 
                 const eventCreationActionSetRes = await sdk.actions.create(token, {
                     name: 'event_create',
-                    arguments: {
-                        name: 'made for testing',
-                    },
+                    arguments: {},
                 });
 
                 const cartActionSetRes = await sdk.actions.create(token, {
@@ -528,9 +526,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
 
                 const eventCreationActionSetRes = await sdk.actions.create(token, {
                     name: 'event_create',
-                    arguments: {
-                        name: 'fake event',
-                    },
+                    arguments: {},
                 });
 
                 await failWithCode(
