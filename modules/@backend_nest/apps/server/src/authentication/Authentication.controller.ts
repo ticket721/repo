@@ -345,7 +345,6 @@ export class AuthenticationController {
             );
         }
         return {
-            user: this.configService.get('NODE_ENV') === 'development' ? resp.response : null,
             validationToken:
                 this.configService.get('NODE_ENV') === 'development'
                     ? this.jwtService.sign(
