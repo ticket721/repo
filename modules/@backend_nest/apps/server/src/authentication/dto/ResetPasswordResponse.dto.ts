@@ -1,5 +1,3 @@
-import { PasswordlessUserDto } from './PasswordlessUser.dto';
-
 /**
  * Response after local account creation
  */

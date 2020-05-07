@@ -1,5 +1,3 @@
-import { PasswordlessUserDto } from '@app/server/authentication/dto/PasswordlessUser.dto';
-
 /**
  * Input for reset password
  */
