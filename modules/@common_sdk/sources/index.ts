@@ -17,6 +17,7 @@ import {
     validateEmail,
     resetPassword,
     validateResetPassword,
+    updatePassword,
 } from './app/api/authentication';
 
 // ACTIONS
@@ -53,7 +54,6 @@ export class T721SDK {
     public protocol: 'http' | 'https';
     public axios: AxiosInstance;
 
-
     constructor() {
         this.getApiInfos = this.getApiInfos.bind(this);
 
@@ -61,6 +61,7 @@ export class T721SDK {
         this.localLogin = this.localLogin.bind(this);
         this.web3Register = this.web3Register.bind(this);
         this.web3Login = this.web3Login.bind(this);
+        this.updatePassword = this.updatePassword.bind(this);
         this.validateEmail = this.validateEmail.bind(this);
         this.resetPassword = this.resetPassword.bind(this);
         this.validateResetPassword = this.validateResetPassword.bind(this);
@@ -196,6 +197,7 @@ export class T721SDK {
     public web3RegisterPayload = web3RegisterPayload;
     public web3Login = web3Login;
     public web3LoginPayload = web3LoginPayload;
+    public updatePassword = updatePassword;
     public validateEmail = validateEmail;
     public resetPassword = resetPassword;
     public validateResetPassword = validateResetPassword;

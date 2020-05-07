@@ -811,6 +811,88 @@ export default function(getCtx: () => { ready: Promise<void> }) {
             });
         });
 
+        describe('changePassword (POST local/password/update)', function() {
+            test.concurrent('should change password', async function() {
+                const {
+                    sdk,
+                    token,
+                    user,
+                    password,
+                }: {
+                    sdk: T721SDK;
+                    token: string;
+                    user: PasswordlessUserDto;
+                    password: string;
+                } = await getSDKAndUser(getCtx);
+
+                const pass = generatePassword();
+
+                const res: AxiosResponse<PasswordlessUserDto> = (await sdk.updatePassword(
+                    token,
+                    pass,
+                )) as AxiosResponse<PasswordlessUserDto>;
+
+                expect(res.data).toEqual({
+                    id: expect.anything(),
+                    email: user.email,
+                    username: expect.anything(),
+                    address: expect.anything(),
+                    type: 't721',
+                    role: 'authenticated',
+                    valid: expect.anything(),
+                    locale: expect.anything(),
+                });
+
+                const loginResponse: AxiosResponse<LocalLoginResponseDto> = await sdk.localLogin(user.email, pass);
+
+                expect(loginResponse.data).toEqual({
+                    user: {
+                        valid: true,
+                        address: loginResponse.data.user.address,
+                        role: 'authenticated',
+                        id: loginResponse.data.user.id,
+                        locale: 'en',
+                        type: 't721',
+                        email: loginResponse.data.user.email,
+                        username: loginResponse.data.user.username,
+                    },
+                    token: loginResponse.data.token,
+                } as LocalLoginResponseDto);
+            });
+
+            test.concurrent('should fail unauthorizes (POST local/password/update)', async function() {
+                const sdk = await getSDK(getCtx);
+
+                const user = {
+                    email: generateEmail(),
+                    password: generatePassword(),
+                };
+
+                await failWithCode(sdk.updatePassword('badToken', user.password), StatusCodes.Unauthorized);
+            });
+
+            test.concurrent('should fail bad email', async function() {
+                const sdk = await getSDK(getCtx);
+
+                const user = {
+                    email: generateEmail(),
+                    username: generateUserName(),
+                    password: 'password',
+                };
+
+                await failWithCode(
+                    sdk.post(
+                        '/authentication/local/password/update',
+                        {
+                            'Content-Type': 'application/json',
+                        },
+                        user,
+                    ),
+                    StatusCodes.Unauthorized,
+                );
+            });
+        });
+
         describe('resetPassword (POST /validate/password/reset', function() {
             test.concurrent('should fail not existing user', async function() {
                 const sdk = await getSDK(getCtx);
