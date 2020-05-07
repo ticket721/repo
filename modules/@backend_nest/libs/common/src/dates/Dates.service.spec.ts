@@ -566,6 +566,7 @@ describe('Dates Service', function() {
                     description: 'This is a date',
                     tags: ['hmm'],
                     avatar: 'abcd',
+                    signature_colors: ['#ff00ff', '#00ff00'],
                 },
                 location: {
                     location: {
@@ -690,6 +691,7 @@ describe('Dates Service', function() {
                     description: 'This is a date',
                     tags: ['hmm'],
                     avatar: 'abcd',
+                    signature_colors: ['#ff00ff', '#00ff00'],
                 },
                 location: {
                     location: {
@@ -746,6 +748,7 @@ describe('Dates Service', function() {
                     description: 'This is a date',
                     tags: ['hmm'],
                     avatar: 'abcd',
+                    signature_colors: ['#ff00ff', '#00ff00'],
                 },
                 location: {
                     location: {
@@ -816,6 +819,7 @@ describe('Dates Service', function() {
                     description: 'This is a date',
                     tags: ['hmm'],
                     avatar: 'abcd',
+                    signature_colors: ['#ff00ff', '#00ff00'],
                 },
                 location: {
                     location: {

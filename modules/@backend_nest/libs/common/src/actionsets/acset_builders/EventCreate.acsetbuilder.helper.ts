@@ -8,19 +8,25 @@ import Joi from '@hapi/joi';
 /**
  * Initial arguments to create the event creation
  */
-export interface EventCreateAcsetBuilderArgs {
-    /**
-     * Initial event name
-     */
-    name: string;
-}
+// tslint:disable-next-line:no-empty-interface
+export interface EventCreateAcsetBuilderArgs {}
 
 /**
  * Dynamic Validation Schema
  */
-const EventCreateAcsetBuilderChecker = Joi.object({
-    name: Joi.string().required(),
-});
+const EventCreateAcsetBuilderChecker = Joi.object({});
+
+/**
+ * Enum containing the indexes of all step for the Event Creation actionset
+ */
+export enum EventCreationActions {
+    TextMetadata,
+    ImagesMetadata,
+    ModulesConfiguration,
+    DatesConfiguration,
+    CategoriesConfiguration,
+    AdminsConfiguration,
+}
 
 /**
  * ActionSet builder class for the event creation process
@@ -51,6 +57,10 @@ export class EventCreateAcsetbuilderHelper implements ActionSetBuilderBase<Event
                 .setType('input')
                 .setStatus('in progress'),
             new Action()
+                .setName('@events/imagesMetadata')
+                .setType('input')
+                .setStatus('in progress'),
+            new Action()
                 .setName('@events/modulesConfiguration')
                 .setType('input')
                 .setStatus('in progress'),
@@ -60,10 +70,6 @@ export class EventCreateAcsetbuilderHelper implements ActionSetBuilderBase<Event
                 .setStatus('in progress'),
             new Action()
                 .setName('@events/categoriesConfiguration')
-                .setType('input')
-                .setStatus('in progress'),
-            new Action()
-                .setName('@events/imagesMetadata')
                 .setType('input')
                 .setStatus('in progress'),
             new Action()

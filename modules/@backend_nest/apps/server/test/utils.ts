@@ -557,9 +557,7 @@ export const admin_addRight = async (
 };
 
 export const createEventWithUltraVIP = async (token: string, sdk: T721SDK): Promise<EventDto> => {
-    const initialArgument = {
-        name: 'myEvent',
-    };
+    const initialArgument = {};
 
     const actionSetName = 'event_create';
 
@@ -580,10 +578,33 @@ export const createEventWithUltraVIP = async (token: string, sdk: T721SDK): Prom
         return as.current_action === 1;
     });
 
-    await sdk.events.create.modulesConfiguration(token, actionSetId, {});
+    const form = new FormData();
+
+    form.append('images', fs.readFileSync(__dirname + '/../src/controllers/events/test_resources/test_avatar.png'), {
+        filename: 'avatar.png',
+    });
+
+    const imageUploadRes: AxiosResponse<ImagesUploadResponseDto> = await sdk.images.upload(
+        token,
+        form.getBuffer(),
+        form.getHeaders(),
+    );
+
+    const avatarId = imageUploadRes.data.ids[0].id;
+
+    await sdk.events.create.imagesMetadata(token, actionSetId, {
+        avatar: avatarId,
+        signatureColors: ['#ff0000', '#00ff00'],
+    });
 
     await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
         return as.current_action === 2;
+    });
+
+    await sdk.events.create.modulesConfiguration(token, actionSetId, {});
+
+    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+        return as.current_action === 3;
     });
 
     await sdk.events.create.datesConfiguration(token, actionSetId, {
@@ -612,7 +633,7 @@ export const createEventWithUltraVIP = async (token: string, sdk: T721SDK): Prom
     });
 
     await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-        return as.current_action === 3;
+        return as.current_action === 4;
     });
 
     await sdk.events.create.categoriesConfiguration(token, actionSetId, {
@@ -683,28 +704,6 @@ export const createEventWithUltraVIP = async (token: string, sdk: T721SDK): Prom
     });
 
     await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-        return as.current_action === 4;
-    });
-
-    const form = new FormData();
-
-    form.append('images', fs.readFileSync(__dirname + '/../src/controllers/events/test_resources/test_avatar.png'), {
-        filename: 'avatar.png',
-    });
-
-    const imageUploadRes: AxiosResponse<ImagesUploadResponseDto> = await sdk.images.upload(
-        token,
-        form.getBuffer(),
-        form.getHeaders(),
-    );
-
-    const avatarId = imageUploadRes.data.ids[0].id;
-
-    await sdk.events.create.imagesMetadata(token, actionSetId, {
-        avatar: avatarId,
-    });
-
-    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
         return as.current_action === 5;
     });
 
@@ -724,9 +723,7 @@ export const createEventWithUltraVIP = async (token: string, sdk: T721SDK): Prom
 };
 
 export const createEvent = async (token: string, sdk: T721SDK): Promise<EventDto> => {
-    const initialArgument = {
-        name: 'myEvent',
-    };
+    const initialArgument = {};
 
     const actionSetName = 'event_create';
 
@@ -747,10 +744,33 @@ export const createEvent = async (token: string, sdk: T721SDK): Promise<EventDto
         return as.current_action === 1;
     });
 
-    await sdk.events.create.modulesConfiguration(token, actionSetId, {});
+    const form = new FormData();
+
+    form.append('images', fs.readFileSync(__dirname + '/../src/controllers/events/test_resources/test_avatar.png'), {
+        filename: 'avatar.png',
+    });
+
+    const imageUploadRes: AxiosResponse<ImagesUploadResponseDto> = await sdk.images.upload(
+        token,
+        form.getBuffer(),
+        form.getHeaders(),
+    );
+
+    const avatarId = imageUploadRes.data.ids[0].id;
+
+    await sdk.events.create.imagesMetadata(token, actionSetId, {
+        avatar: avatarId,
+        signatureColors: ['#ff0000', '#00ff00'],
+    });
 
     await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
         return as.current_action === 2;
+    });
+
+    await sdk.events.create.modulesConfiguration(token, actionSetId, {});
+
+    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+        return as.current_action === 3;
     });
 
     await sdk.events.create.datesConfiguration(token, actionSetId, {
@@ -779,7 +799,7 @@ export const createEvent = async (token: string, sdk: T721SDK): Promise<EventDto
     });
 
     await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-        return as.current_action === 3;
+        return as.current_action === 4;
     });
 
     await sdk.events.create.categoriesConfiguration(token, actionSetId, {
@@ -833,28 +853,6 @@ export const createEvent = async (token: string, sdk: T721SDK): Promise<EventDto
                 },
             ],
         ],
-    });
-
-    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-        return as.current_action === 4;
-    });
-
-    const form = new FormData();
-
-    form.append('images', fs.readFileSync(__dirname + '/../src/controllers/events/test_resources/test_avatar.png'), {
-        filename: 'avatar.png',
-    });
-
-    const imageUploadRes: AxiosResponse<ImagesUploadResponseDto> = await sdk.images.upload(
-        token,
-        form.getBuffer(),
-        form.getHeaders(),
-    );
-
-    const avatarId = imageUploadRes.data.ids[0].id;
-
-    await sdk.events.create.imagesMetadata(token, actionSetId, {
-        avatar: avatarId,
     });
 
     await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {

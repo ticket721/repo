@@ -6,6 +6,7 @@ import { ChecksRunnerUtil } from '@lib/common/actionsets/helper/ChecksRunner.uti
 import { T721TokenService } from '@lib/common/contracts/T721Token.service';
 import { GemOrdersService } from '@lib/common/gemorders/GemOrders.service';
 import { GemOrderEntity } from '@lib/common/gemorders/entities/GemOrder.entity';
+import { CartCreationActions } from '@lib/common/actionsets/acset_builders/Cart.acsetbuilder.helper';
 
 /**
  * Data Model for the Checkout Resolve step
@@ -79,9 +80,9 @@ export class CheckoutInputHandlers implements OnModuleInit {
         if (
             cart.name !== '@cart/creation' ||
             cart.status !== 'complete' ||
-            cart.actions[cart.actions.length - 1].data.commitType !== commitType ||
-            cart.actions[cart.actions.length - 1].data.total.length !== 1 ||
-            cart.actions[cart.actions.length - 1].data.total[0].currency !== 'T721Token'
+            cart.actions[CartCreationActions.Authorizations].data.commitType !== commitType ||
+            cart.actions[CartCreationActions.Authorizations].data.total.length !== 1 ||
+            cart.actions[CartCreationActions.Authorizations].data.total[0].currency !== 'T721Token'
         ) {
             return [null, 'invalid_provided_cart'];
         }
@@ -96,7 +97,7 @@ export class CheckoutInputHandlers implements OnModuleInit {
             }
         }
 
-        const price = parseInt(cart.actions[cart.actions.length - 1].data.total[0].value, 10);
+        const price = parseInt(cart.actions[CartCreationActions.Authorizations].data.total[0].value, 10);
         try {
             const onChainFunds = parseInt(await tokenContractInstance.methods.balanceOf(user).call(), 10);
 

@@ -7,6 +7,7 @@ import { CheckoutResolve } from '@app/worker/actionhandlers/checkout/Checkout.in
 import { GemOrdersService } from '@lib/common/gemorders/GemOrders.service';
 import { GemOrderEntity } from '@lib/common/gemorders/entities/GemOrder.entity';
 import { Gem } from 'dosojin';
+import { CheckoutCreationActions } from '@lib/common/actionsets/acset_builders/Checkout.acsetbuilder.helper';
 
 /**
  * Data model required for the Checkout Progress step
@@ -53,7 +54,7 @@ export class CheckoutEventHandlers implements OnModuleInit {
         progress: Progress,
     ): Promise<[ActionSet, boolean]> {
         const data: CheckoutProgress = actionset.action.data;
-        const inputData: CheckoutResolve = actionset.actions[0].data;
+        const inputData: CheckoutResolve = actionset.actions[CheckoutCreationActions.Resolve].data;
 
         const { error, error_trace } = ChecksRunnerUtil<CheckoutProgress>(
             data,

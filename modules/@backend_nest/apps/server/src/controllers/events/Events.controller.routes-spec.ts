@@ -113,9 +113,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const initialArgument = {
-                    name: 'myEvent',
-                };
+                const initialArgument = {};
 
                 const actionSetName = 'event_create';
 
@@ -136,10 +134,33 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     return as.current_action === 1;
                 });
 
-                await sdk.events.create.modulesConfiguration(token, actionSetId, {});
+                const form = new FormData();
+
+                form.append('images', fs.readFileSync(__dirname + '/test_resources/test_avatar.png'), {
+                    filename: 'avatar.png',
+                });
+
+                const imageUploadRes: AxiosResponse<ImagesUploadResponseDto> = await sdk.images.upload(
+                    token,
+                    form.getBuffer(),
+                    form.getHeaders(),
+                );
+
+                const avatarId = imageUploadRes.data.ids[0].id;
+
+                await sdk.events.create.imagesMetadata(token, actionSetId, {
+                    avatar: avatarId,
+                    signatureColors: ['#00ff00', '#ff0000'],
+                });
 
                 await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
                     return as.current_action === 2;
+                });
+
+                await sdk.events.create.modulesConfiguration(token, actionSetId, {});
+
+                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+                    return as.current_action === 3;
                 });
 
                 await sdk.events.create.datesConfiguration(token, actionSetId, {
@@ -168,7 +189,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 });
 
                 await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-                    return as.current_action === 3;
+                    return as.current_action === 4;
                 });
 
                 await sdk.events.create.categoriesConfiguration(token, actionSetId, {
@@ -225,28 +246,6 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 });
 
                 await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-                    return as.current_action === 4;
-                });
-
-                const form = new FormData();
-
-                form.append('images', fs.readFileSync(__dirname + '/test_resources/test_avatar.png'), {
-                    filename: 'avatar.png',
-                });
-
-                const imageUploadRes: AxiosResponse<ImagesUploadResponseDto> = await sdk.images.upload(
-                    token,
-                    form.getBuffer(),
-                    form.getHeaders(),
-                );
-
-                const avatarId = imageUploadRes.data.ids[0].id;
-
-                await sdk.events.create.imagesMetadata(token, actionSetId, {
-                    avatar: avatarId,
-                });
-
-                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
                     return as.current_action === 5;
                 });
 
@@ -279,9 +278,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const initialArgument = {
-                    name: 'myEvent',
-                };
+                const initialArgument = {};
 
                 const actionSetName = 'event_create';
 
@@ -953,6 +950,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                         description: 'This is a test date',
                         tags: ['wow'],
                         avatar: null,
+                        signature_colors: ['#00ff00', '#ff0000'],
                     },
                     timestamps: {
                         event_begin: new Date(Date.now() + 1000000),
@@ -996,6 +994,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                         description: 'This is a test date',
                         tags: ['wow'],
                         avatar: null,
+                        signature_colors: ['#00ff00', '#ff0000'],
                     },
                     timestamps: {
                         event_begin: new Date(Date.now() + 1000000),
@@ -1042,6 +1041,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                         description: 'This is a test date',
                         tags: ['wow'],
                         avatar: null,
+                        signature_colors: ['#00ff00', '#ff0000'],
                     },
                     timestamps: {
                         event_begin: new Date(Date.now() + 1000000),
@@ -1136,6 +1136,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                         description: 'This is a test date',
                         tags: ['wow'],
                         avatar: null,
+                        signature_colors: ['#00ff00', '#ff0000'],
                     },
                     timestamps: {
                         event_begin: new Date(Date.now() + 1000000),

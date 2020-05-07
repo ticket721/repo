@@ -17,6 +17,14 @@ export interface CheckoutAcsetBuilderArgs {}
 const CheckoutAcsetBuilderChecker = Joi.object({});
 
 /**
+ * Enum containing the indexes of all step for the Checkout Creation actionset
+ */
+export enum CheckoutCreationActions {
+    Resolve,
+    Progress,
+}
+
+/**
  * Helper class containing the build method for the cart acset
  */
 export class CheckoutAcsetbuilderHelper implements ActionSetBuilderBase<CheckoutAcsetBuilderArgs> {

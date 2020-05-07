@@ -17,6 +17,15 @@ export interface CartAcsetBuilderArgs {}
 const CartAcsetBuilderChecker = Joi.object({});
 
 /**
+ * Enum containing the indexes of all step for the Cart Creation actionset
+ */
+export enum CartCreationActions {
+    TicketSelections,
+    ModulesConfiguration,
+    Authorizations,
+}
+
+/**
  * Helper class containing the build method for the cart acset
  */
 export class CartAcsetbuilderHelper implements ActionSetBuilderBase<CartAcsetBuilderArgs> {
