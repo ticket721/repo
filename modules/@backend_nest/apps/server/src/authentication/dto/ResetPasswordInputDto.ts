@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString }    from 'class-validator';
+import { IsString } from 'class-validator';
 
 /**
  * Input for reset password
