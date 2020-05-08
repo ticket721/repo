@@ -50,6 +50,7 @@ import { AuthorizationsModule } from '@lib/common/authorizations/Authorizations.
 import { CheckoutInputHandlers } from '@app/worker/actionhandlers/checkout/Checkout.input.handlers';
 import { CheckoutEventHandlers } from '@app/worker/actionhandlers/checkout/Checkout.event.handlers';
 import { ToolBoxModule } from '@lib/common/toolbox/ToolBox.module';
+import { AuthenticationModule } from '@app/worker/authentication/Authentication.module';
 
 @Module({
     imports: [
@@ -67,6 +68,7 @@ import { ToolBoxModule } from '@lib/common/toolbox/ToolBox.module';
             inject: [ExpressCassandraConfigService],
         }),
         ExpressCassandraModule.forFeature([UserEntity, UsersRepository, ActionSetEntity, ActionSetsRepository]),
+        AuthenticationModule,
 
         // Cassandra Table Modules & Utils
         UsersModule,
