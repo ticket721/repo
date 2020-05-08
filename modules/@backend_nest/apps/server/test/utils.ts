@@ -12,6 +12,13 @@ import { PasswordlessUserDto } from '@app/server/authentication/dto/Passwordless
 import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
 import { ActionsSearchResponseDto } from '@app/server/controllers/actionsets/dto/ActionsSearchResponse.dto';
 import CassandraDriver from 'cassandra-driver';
+import { EventDto } from '@app/server/controllers/events/dto/Event.dto';
+import FormData from 'form-data';
+import { ImagesUploadResponseDto } from '@app/server/controllers/images/dto/ImagesUploadResponse.dto';
+import { ActionSet } from '@lib/common/actionsets/helper/ActionSet.class';
+import { anything, instance, mock, when } from 'ts-mockito';
+import { Stripe } from 'stripe';
+import Crypto from 'crypto';
 
 let docker_compose_up_proc = null;
 
@@ -418,16 +425,24 @@ export const getSDK = async (getCtx: () => { ready: Promise<void> }): Promise<T7
 
 export const generatePassword = generateUserName;
 
-export const failWithCode = async (promise: Promise<any>, code: StatusCodes): Promise<void> => {
+export const failWithCode = async (promise: Promise<any>, code: StatusCodes, message?: string): Promise<void> => {
     let res;
 
     try {
         res = await promise;
     } catch (e) {
-        expect(e.response.data).toMatchObject({
-            statusCode: code,
-            name: StatusNames[code],
-        });
+        if (!message) {
+            expect(e.response.data).toMatchObject({
+                statusCode: code,
+                name: StatusNames[code],
+            });
+        } else {
+            expect(e.response.data).toMatchObject({
+                statusCode: code,
+                name: StatusNames[code],
+                message,
+            });
+        }
         return;
     }
 
@@ -501,6 +516,19 @@ export const waitForActionSet = async (
                 $eq: id,
             },
         });
+        if (actionSet.data.actionsets[0]) {
+            const actionSetClass = new ActionSet().load(actionSet.data.actionsets[0]);
+
+            switch (actionSetClass.actions[actionSetClass.current_action].status) {
+                case 'error':
+                case 'input:error':
+                case 'event:error': {
+                    // console.log(`Received ActionSet with status ${actionSetClass.actions[actionSetClass.current_action].status}`);
+                    // console.log(`=> ${JSON.stringify(actionSetClass.actions[actionSetClass.current_action].error, null, 4)}`)
+                }
+            }
+        }
+        await pause(100);
     } while (!checker(actionSet.data.actionsets[0]));
 
     return actionSet.data.actionsets[0];
@@ -526,4 +554,389 @@ export const admin_addRight = async (
     const query = `INSERT INTO ticket721.right (grantee_id, entity_type, entity_value, rights) VALUES (${user}, '${entity}', '${entity_value}', ${rights});`;
 
     await client.execute(query);
+};
+
+export const createEventWithUltraVIP = async (token: string, sdk: T721SDK): Promise<EventDto> => {
+    const initialArgument = {};
+
+    const actionSetName = 'event_create';
+
+    const eventCreationActionSetRes = await sdk.actions.create(token, {
+        name: actionSetName,
+        arguments: initialArgument,
+    });
+
+    const actionSetId = eventCreationActionSetRes.data.actionset.id;
+
+    await sdk.events.create.textMetadata(token, actionSetId, {
+        name: 'myEvent',
+        description: 'This is my event',
+        tags: ['test', 'event'],
+    });
+
+    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+        return as.current_action === 1;
+    });
+
+    const form = new FormData();
+
+    form.append('images', fs.readFileSync(__dirname + '/../src/controllers/events/test_resources/test_avatar.png'), {
+        filename: 'avatar.png',
+    });
+
+    const imageUploadRes: AxiosResponse<ImagesUploadResponseDto> = await sdk.images.upload(
+        token,
+        form.getBuffer(),
+        form.getHeaders(),
+    );
+
+    const avatarId = imageUploadRes.data.ids[0].id;
+
+    await sdk.events.create.imagesMetadata(token, actionSetId, {
+        avatar: avatarId,
+        signatureColors: ['#ff0000', '#00ff00'],
+    });
+
+    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+        return as.current_action === 2;
+    });
+
+    await sdk.events.create.modulesConfiguration(token, actionSetId, {});
+
+    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+        return as.current_action === 3;
+    });
+
+    await sdk.events.create.datesConfiguration(token, actionSetId, {
+        dates: [
+            {
+                name: 'first date',
+                eventBegin: new Date(Date.now() + 1000000),
+                eventEnd: new Date(Date.now() + 2000000),
+                location: {
+                    lat: 40.75901,
+                    lon: -73.984474,
+                    label: 'Times Square',
+                },
+            },
+            {
+                name: 'second date',
+                eventBegin: new Date(Date.now() + 1000000),
+                eventEnd: new Date(Date.now() + 2000000),
+                location: {
+                    lat: 40.75901,
+                    lon: -73.984474,
+                    label: 'Times Square',
+                },
+            },
+        ],
+    });
+
+    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+        return as.current_action === 4;
+    });
+
+    await sdk.events.create.categoriesConfiguration(token, actionSetId, {
+        global: [
+            {
+                name: 'VIP Tickets',
+                saleBegin: new Date(Date.now() + 1000000),
+                saleEnd: new Date(Date.now() + 23 * 1000000),
+                resaleBegin: new Date(Date.now() + 1000000),
+                resaleEnd: new Date(Date.now() + 23 * 1000000),
+                seats: 100,
+                currencies: [
+                    {
+                        currency: 'Fiat',
+                        price: '100',
+                    },
+                ],
+            },
+            {
+                name: 'Ultra VIP Tickets',
+                saleBegin: new Date(Date.now() + 1000000),
+                saleEnd: new Date(Date.now() + 23 * 1000000),
+                resaleBegin: new Date(Date.now() + 1000000),
+                resaleEnd: new Date(Date.now() + 23 * 1000000),
+                seats: 2,
+                currencies: [
+                    {
+                        currency: 'Fiat',
+                        price: '100',
+                    },
+                ],
+            },
+        ],
+        dates: [
+            [
+                {
+                    name: 'Regular Tickets',
+                    saleBegin: new Date(Date.now() + 1000000),
+                    saleEnd: new Date(Date.now() + 23 * 1000000),
+                    resaleBegin: new Date(Date.now() + 1000000),
+                    resaleEnd: new Date(Date.now() + 23 * 1000000),
+                    seats: 200,
+                    currencies: [
+                        {
+                            currency: 'Fiat',
+                            price: '100',
+                        },
+                    ],
+                },
+            ],
+            [
+                {
+                    name: 'Regular Tickets',
+                    saleBegin: new Date(Date.now() + 1000000),
+                    saleEnd: new Date(Date.now() + 23 * 1000000),
+                    resaleBegin: new Date(Date.now() + 1000000),
+                    resaleEnd: new Date(Date.now() + 23 * 1000000),
+                    seats: 200,
+                    currencies: [
+                        {
+                            currency: 'Fiat',
+                            price: '100',
+                        },
+                    ],
+                },
+            ],
+        ],
+    });
+
+    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+        return as.current_action === 5;
+    });
+
+    await sdk.events.create.adminsConfiguration(token, actionSetId, {
+        admins: [],
+    });
+
+    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+        return as.current_status === 'complete';
+    });
+
+    const eventEntityRes = await sdk.events.create.create(token, {
+        completedActionSet: actionSetId,
+    });
+
+    return eventEntityRes.data.event;
+};
+
+export const createEvent = async (token: string, sdk: T721SDK): Promise<EventDto> => {
+    const initialArgument = {};
+
+    const actionSetName = 'event_create';
+
+    const eventCreationActionSetRes = await sdk.actions.create(token, {
+        name: actionSetName,
+        arguments: initialArgument,
+    });
+
+    const actionSetId = eventCreationActionSetRes.data.actionset.id;
+
+    await sdk.events.create.textMetadata(token, actionSetId, {
+        name: 'myEvent',
+        description: 'This is my event',
+        tags: ['test', 'event'],
+    });
+
+    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+        return as.current_action === 1;
+    });
+
+    const form = new FormData();
+
+    form.append('images', fs.readFileSync(__dirname + '/../src/controllers/events/test_resources/test_avatar.png'), {
+        filename: 'avatar.png',
+    });
+
+    const imageUploadRes: AxiosResponse<ImagesUploadResponseDto> = await sdk.images.upload(
+        token,
+        form.getBuffer(),
+        form.getHeaders(),
+    );
+
+    const avatarId = imageUploadRes.data.ids[0].id;
+
+    await sdk.events.create.imagesMetadata(token, actionSetId, {
+        avatar: avatarId,
+        signatureColors: ['#ff0000', '#00ff00'],
+    });
+
+    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+        return as.current_action === 2;
+    });
+
+    await sdk.events.create.modulesConfiguration(token, actionSetId, {});
+
+    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+        return as.current_action === 3;
+    });
+
+    await sdk.events.create.datesConfiguration(token, actionSetId, {
+        dates: [
+            {
+                name: 'first date',
+                eventBegin: new Date(Date.now() + 1000000),
+                eventEnd: new Date(Date.now() + 2000000),
+                location: {
+                    lat: 40.75901,
+                    lon: -73.984474,
+                    label: 'Times Square',
+                },
+            },
+            {
+                name: 'second date',
+                eventBegin: new Date(Date.now() + 1000000),
+                eventEnd: new Date(Date.now() + 2000000),
+                location: {
+                    lat: 40.75901,
+                    lon: -73.984474,
+                    label: 'Times Square',
+                },
+            },
+        ],
+    });
+
+    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+        return as.current_action === 4;
+    });
+
+    await sdk.events.create.categoriesConfiguration(token, actionSetId, {
+        global: [
+            {
+                name: 'VIP Tickets',
+                saleBegin: new Date(Date.now() + 1000000),
+                saleEnd: new Date(Date.now() + 23 * 1000000),
+                resaleBegin: new Date(Date.now() + 1000000),
+                resaleEnd: new Date(Date.now() + 23 * 1000000),
+                seats: 100,
+                currencies: [
+                    {
+                        currency: 'Fiat',
+                        price: '100',
+                    },
+                ],
+            },
+        ],
+        dates: [
+            [
+                {
+                    name: 'Regular Tickets',
+                    saleBegin: new Date(Date.now() + 1000000),
+                    saleEnd: new Date(Date.now() + 23 * 1000000),
+                    resaleBegin: new Date(Date.now() + 1000000),
+                    resaleEnd: new Date(Date.now() + 23 * 1000000),
+                    seats: 200,
+                    currencies: [
+                        {
+                            currency: 'Fiat',
+                            price: '100',
+                        },
+                    ],
+                },
+            ],
+            [
+                {
+                    name: 'Regular Tickets',
+                    saleBegin: new Date(Date.now() + 1000000),
+                    saleEnd: new Date(Date.now() + 23 * 1000000),
+                    resaleBegin: new Date(Date.now() + 1000000),
+                    resaleEnd: new Date(Date.now() + 23 * 1000000),
+                    seats: 200,
+                    currencies: [
+                        {
+                            currency: 'Fiat',
+                            price: '100',
+                        },
+                    ],
+                },
+            ],
+        ],
+    });
+
+    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+        return as.current_action === 5;
+    });
+
+    await sdk.events.create.adminsConfiguration(token, actionSetId, {
+        admins: [],
+    });
+
+    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+        return as.current_status === 'complete';
+    });
+
+    const eventEntityRes = await sdk.events.create.create(token, {
+        completedActionSet: actionSetId,
+    });
+
+    return eventEntityRes.data.event;
+};
+
+let stripeMock: Stripe;
+let paymentIntentsResourceMock: Stripe.PaymentIntentsResource;
+let payoutsResourceMock: Stripe.PayoutsResource;
+let refundsResourceMock: Stripe.RefundsResource;
+
+export const setupStripeMock = (): Stripe => {
+    stripeMock = mock(Stripe);
+
+    paymentIntentsResourceMock = mock(Stripe.PaymentIntentsResource);
+    payoutsResourceMock = mock(Stripe.PayoutsResource);
+    refundsResourceMock = mock(Stripe.RefundsResource);
+
+    when(stripeMock.paymentIntents).thenReturn(instance(paymentIntentsResourceMock));
+    when(stripeMock.payouts).thenReturn(instance(payoutsResourceMock));
+    when(stripeMock.refunds).thenReturn(instance(refundsResourceMock));
+
+    return stripeMock;
+};
+
+export const createPaymentIntent = (content: Partial<Stripe.PaymentIntent>): string => {
+    const randomB64 = Crypto.randomBytes(32).toString('base64');
+
+    const id = `pi_${randomB64}`;
+
+    when(paymentIntentsResourceMock.retrieve(id, anything(), anything())).thenResolve({
+        ...content,
+        id,
+    } as Stripe.PaymentIntent);
+    when(paymentIntentsResourceMock.retrieve(id, anything())).thenResolve({
+        ...content,
+        id,
+    } as Stripe.PaymentIntent);
+
+    return id;
+};
+
+export const setPaymentIntent = (id: string, content: Partial<Stripe.PaymentIntent>): void => {
+    when(paymentIntentsResourceMock.retrieve(id, anything())).thenResolve({
+        ...content,
+        id,
+    } as Stripe.PaymentIntent);
+    when(paymentIntentsResourceMock.retrieve(id, anything(), anything())).thenResolve({
+        ...content,
+        id,
+    } as Stripe.PaymentIntent);
+};
+
+export const getMocks = (): [Stripe, Stripe.PaymentIntentsResource, Stripe.PayoutsResource, Stripe.RefundsResource] => {
+    return [stripeMock, paymentIntentsResourceMock, payoutsResourceMock, refundsResourceMock];
+};
+
+export const gemFail = async (sdk: T721SDK, token: string, id: string, body: any): Promise<void> => {
+    const gemReq = await sdk.dosojin.search(token, {
+        id: {
+            $eq: id,
+        },
+    });
+
+    if (gemReq.data.gemOrders.length === 0) {
+        throw new Error('Cannot find gem');
+    }
+
+    const gem = gemReq.data.gemOrders[0].gem;
+
+    expect(gem.error_info).toMatchObject(body);
 };

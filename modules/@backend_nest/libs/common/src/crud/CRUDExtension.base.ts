@@ -13,6 +13,7 @@ import {
 import { ESSearchHit, ESSearchReturn } from '@lib/common/utils/ESSearchReturn.type';
 import { defined } from '@lib/common/utils/defined.helper';
 import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
+import { ESCountReturn } from '@lib/common/utils/ESCountReturn.type';
 
 /**
  * Response format of all methods
@@ -532,9 +533,35 @@ export class CRUDExtension<RepositoryType extends Repository, EntityType> {
                 error: null,
             };
         } catch (e) {
+            console.error(e);
             return {
                 response: null,
                 error: e.message,
+            };
+        }
+    }
+
+    /**
+     * Uses the ElasticSearch Driver to performant an efficient secondary index
+     * count
+     *
+     * @param options
+     */
+    async countElastic(options: ESSearchQuery<EntityType>): Promise<CRUDResponse<ESCountReturn>> {
+        try {
+            const client = this._model.get_es_client();
+            return {
+                error: null,
+                response: await client.count({
+                    ...options,
+                    index: `ticket721_${this.name}`,
+                    type: this.name,
+                }),
+            };
+        } catch (e) {
+            return {
+                error: e.message,
+                response: null,
             };
         }
     }

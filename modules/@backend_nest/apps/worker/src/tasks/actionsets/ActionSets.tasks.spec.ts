@@ -1,6 +1,6 @@
 import { ActionSetsTasks } from '@app/worker/tasks/actionsets/ActionSets.tasks';
 import { ActionSetsService } from '@lib/common/actionsets/ActionSets.service';
-import { deepEqual, instance, mock, verify, when } from 'ts-mockito';
+import { anything, capture, deepEqual, instance, mock, verify, when } from 'ts-mockito';
 import { Job, Queue } from 'bull';
 import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
 import { ActionSet } from '@lib/common/actionsets/helper/ActionSet.class';
@@ -63,13 +63,15 @@ describe('ActionSets Tasks', function() {
                         name: 'first',
                         data: '{"name":"hello"}',
                         status: 'in progress',
+                        private: false,
                     },
                     {
                         error: null,
-                        type: 'event',
+                        type: 'input',
                         name: 'second',
                         data: '{"name":"hello"}',
                         status: 'in progress',
+                        private: false,
                     },
                 ],
                 current_action: 0,
@@ -82,85 +84,23 @@ describe('ActionSets Tasks', function() {
                 entity: ActionSet,
                 progress: (p: number) => Promise<void>,
             ): Promise<[ActionSet, boolean]> => {
+                entity.next();
                 return [entity, true];
             };
 
             const job: Job = new JobMock(actionSet) as Job;
 
             when(context.actionSetsServiceMock.getInputHandler('first')).thenReturn(handler);
-            when(
-                context.actionSetsServiceMock.update(
-                    deepEqual({
-                        id: 'ccf2ef65-3632-4277-a061-dddfefac48da',
-                    }),
-                    deepEqual({
-                        name: 'test',
-                        current_status: 'input:in progress',
-                        links: [],
-                        actions: [
-                            {
-                                error: null,
-                                type: 'input',
-                                name: 'first',
-                                data: '{"name":"hello"}',
-                                status: 'in progress',
-                            },
-                            {
-                                error: null,
-                                type: 'event',
-                                name: 'second',
-                                data: '{"name":"hello"}',
-                                status: 'in progress',
-                            },
-                        ],
-                        current_action: 0,
-                        dispatched_at: dispatch,
-                        updated_at: update,
-                        created_at: create,
-                    }),
-                ),
-            ).thenResolve({
-                error: null,
-                response: {} as any,
-            });
+            when(context.actionSetsServiceMock.getInputHandler('second')).thenReturn(handler);
 
             await context.actionSetsTasks.input(job);
+
             verify(context.actionSetsServiceMock.getInputHandler('first')).twice();
-            verify(
-                context.actionSetsServiceMock.update(
-                    deepEqual({
-                        id: 'ccf2ef65-3632-4277-a061-dddfefac48da',
-                    }),
-                    deepEqual({
-                        name: 'test',
-                        current_status: 'input:in progress',
-                        links: [],
-                        actions: [
-                            {
-                                error: null,
-                                type: 'input',
-                                name: 'first',
-                                data: '{"name":"hello"}',
-                                status: 'in progress',
-                            },
-                            {
-                                error: null,
-                                type: 'event',
-                                name: 'second',
-                                data: '{"name":"hello"}',
-                                status: 'in progress',
-                            },
-                        ],
-                        current_action: 0,
-                        dispatched_at: dispatch,
-                        updated_at: update,
-                        created_at: create,
-                    }),
-                ),
-            ).called();
+            verify(context.actionSetsServiceMock.getInputHandler('second')).twice();
+            verify(context.actionSetsServiceMock.update(anything(), anything())).twice();
         });
 
-        it('no update required', async function() {
+        it('should not update', async function() {
             const dispatch = new Date(Date.now());
             const update = new Date(Date.now());
             const create = new Date(Date.now());
@@ -177,13 +117,15 @@ describe('ActionSets Tasks', function() {
                         name: 'first',
                         data: '{"name":"hello"}',
                         status: 'in progress',
+                        private: false,
                     },
                     {
                         error: null,
-                        type: 'event',
+                        type: 'input',
                         name: 'second',
                         data: '{"name":"hello"}',
                         status: 'in progress',
+                        private: false,
                     },
                 ],
                 current_action: 0,
@@ -196,50 +138,23 @@ describe('ActionSets Tasks', function() {
                 entity: ActionSet,
                 progress: (p: number) => Promise<void>,
             ): Promise<[ActionSet, boolean]> => {
+                entity.next();
                 return [entity, false];
             };
 
             const job: Job = new JobMock(actionSet) as Job;
 
             when(context.actionSetsServiceMock.getInputHandler('first')).thenReturn(handler);
+            when(context.actionSetsServiceMock.getInputHandler('second')).thenReturn(handler);
 
             await context.actionSetsTasks.input(job);
+
             verify(context.actionSetsServiceMock.getInputHandler('first')).twice();
-            verify(
-                context.actionSetsServiceMock.update(
-                    deepEqual({
-                        id: 'ccf2ef65-3632-4277-a061-dddfefac48da',
-                    }),
-                    deepEqual({
-                        name: 'test',
-                        current_status: 'input:in progress',
-                        links: [],
-                        actions: [
-                            {
-                                error: null,
-                                type: 'input',
-                                name: 'first',
-                                data: '{"name":"hello"}',
-                                status: 'in progress',
-                            },
-                            {
-                                error: null,
-                                type: 'event',
-                                name: 'second',
-                                data: '{"name":"hello"}',
-                                status: 'in progress',
-                            },
-                        ],
-                        current_action: 0,
-                        dispatched_at: dispatch,
-                        updated_at: update,
-                        created_at: create,
-                    }),
-                ),
-            ).never();
+            verify(context.actionSetsServiceMock.getInputHandler('second')).twice();
+            verify(context.actionSetsServiceMock.update(anything(), anything())).never();
         });
 
-        it('no handler found', async function() {
+        it('should fail on input fetch error', async function() {
             const dispatch = new Date(Date.now());
             const update = new Date(Date.now());
             const create = new Date(Date.now());
@@ -256,13 +171,150 @@ describe('ActionSets Tasks', function() {
                         name: 'first',
                         data: '{"name":"hello"}',
                         status: 'in progress',
+                        private: false,
                     },
                     {
                         error: null,
-                        type: 'event',
+                        type: 'input',
                         name: 'second',
                         data: '{"name":"hello"}',
                         status: 'in progress',
+                        private: false,
+                    },
+                ],
+                current_action: 0,
+                dispatched_at: dispatch,
+                updated_at: update,
+                created_at: create,
+            };
+
+            const handler = async (
+                entity: ActionSet,
+                progress: (p: number) => Promise<void>,
+            ): Promise<[ActionSet, boolean]> => {
+                entity.next();
+                return [entity, true];
+            };
+
+            const job: Job = new JobMock(actionSet) as Job;
+
+            when(context.actionSetsServiceMock.getInputHandler('first')).thenReturn(undefined);
+
+            await expect(context.actionSetsTasks.input(job)).rejects.toMatchObject(
+                new Error(`Cannot find input handler for action first in actionset ${actionSet.id}`),
+            );
+
+            verify(context.actionSetsServiceMock.getInputHandler('first')).called();
+        });
+    });
+
+    describe('input', function() {
+        it('should dispatch events', async function() {
+            const dispatch = new Date(Date.now());
+            const update = new Date(Date.now());
+            const create = new Date(Date.now());
+
+            const actionSet: ActionSetEntity = {
+                id: 'ccf2ef65-3632-4277-a061-dddfefac48da',
+                name: 'test',
+                current_status: 'input:in progress',
+                links: [],
+                actions: [
+                    {
+                        error: null,
+                        type: 'event',
+                        name: 'first',
+                        data: '{"name":"hello"}',
+                        status: 'in progress',
+                        private: false,
+                    },
+                ],
+                current_action: 0,
+                dispatched_at: dispatch,
+                updated_at: update,
+                created_at: create,
+            };
+
+            const handler = async (
+                entity: ActionSet,
+                progress: (p: number) => Promise<void>,
+            ): Promise<[ActionSet, boolean]> => {
+                entity.next();
+                return [entity, true];
+            };
+
+            const job: Job = new JobMock(actionSet) as Job;
+
+            when(context.actionSetsServiceMock.getEventHandler('first')).thenReturn(handler);
+
+            await context.actionSetsTasks.event(job);
+
+            verify(context.actionSetsServiceMock.getEventHandler('first')).twice();
+            verify(context.actionSetsServiceMock.update(anything(), anything())).once();
+        });
+
+        it('should dispatch events but no updates', async function() {
+            const dispatch = new Date(Date.now());
+            const update = new Date(Date.now());
+            const create = new Date(Date.now());
+
+            const actionSet: ActionSetEntity = {
+                id: 'ccf2ef65-3632-4277-a061-dddfefac48da',
+                name: 'test',
+                current_status: 'input:in progress',
+                links: [],
+                actions: [
+                    {
+                        error: null,
+                        type: 'event',
+                        name: 'first',
+                        data: '{"name":"hello"}',
+                        status: 'in progress',
+                        private: false,
+                    },
+                ],
+                current_action: 0,
+                dispatched_at: dispatch,
+                updated_at: update,
+                created_at: create,
+            };
+
+            const handler = async (
+                entity: ActionSet,
+                progress: (p: number) => Promise<void>,
+            ): Promise<[ActionSet, boolean]> => {
+                entity.next();
+                return [entity, false];
+            };
+
+            const job: Job = new JobMock(actionSet) as Job;
+
+            when(context.actionSetsServiceMock.getEventHandler('first')).thenReturn(handler);
+
+            await context.actionSetsTasks.event(job);
+
+            verify(context.actionSetsServiceMock.getEventHandler('first')).twice();
+            verify(context.actionSetsServiceMock.update(anything(), anything())).never();
+        });
+
+        it('should fail on handler not found', async function() {
+            const dispatch = new Date(Date.now());
+            const update = new Date(Date.now());
+            const create = new Date(Date.now());
+
+            const actionSet: ActionSetEntity = {
+                id: 'ccf2ef65-3632-4277-a061-dddfefac48da',
+                name: 'test',
+                current_status: 'input:in progress',
+                links: [],
+                actions: [
+                    {
+                        error: null,
+                        type: 'event',
+                        name: 'first',
+                        data: '{"name":"hello"}',
+                        status: 'in progress',
+                        private: false,
                     },
                 ],
                 current_action: 0,
@@ -273,45 +325,14 @@ describe('ActionSets Tasks', function() {
 
             const job: Job = new JobMock(actionSet) as Job;
 
-            when(context.actionSetsServiceMock.getInputHandler('first')).thenReturn(undefined);
+            when(context.actionSetsServiceMock.getEventHandler('first')).thenReturn(undefined);
 
-            await expect(context.actionSetsTasks.input(job)).rejects.toEqual(
-                new Error(`Cannot find input handler for action first in actionset ${actionSet.id}`),
+            await expect(context.actionSetsTasks.event(job)).rejects.toMatchObject(
+                new Error(`Cannot find event handler for action first in actionset ${actionSet.id}`),
             );
 
-            verify(context.actionSetsServiceMock.getInputHandler('first')).called();
-            verify(
-                context.actionSetsServiceMock.update(
-                    deepEqual({
-                        id: 'ccf2ef65-3632-4277-a061-dddfefac48da',
-                    }),
-                    deepEqual({
-                        name: 'test',
-                        current_status: 'input:in progress',
-                        links: [],
-                        actions: [
-                            {
-                                error: null,
-                                type: 'input',
-                                name: 'first',
-                                data: '{"name":"hello"}',
-                                status: 'in progress',
-                            },
-                            {
-                                error: null,
-                                type: 'event',
-                                name: 'second',
-                                data: '{"name":"hello"}',
-                                status: 'in progress',
-                            },
-                        ],
-                        current_action: 0,
-                        dispatched_at: dispatch,
-                        updated_at: update,
-                        created_at: create,
-                    }),
-                ),
-            ).never();
+            verify(context.actionSetsServiceMock.getEventHandler('first')).once();
+            verify(context.actionSetsServiceMock.update(anything(), anything())).never();
         });
     });
 });

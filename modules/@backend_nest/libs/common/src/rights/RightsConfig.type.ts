@@ -16,6 +16,11 @@ export interface Right {
      * If set to true, everyone can do it
      */
     public?: boolean;
+
+    /**
+     * Means that the current right also counts like the provided list of other rights
+     */
+    countAs?: string[];
 }
 
 /**

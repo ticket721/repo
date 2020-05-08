@@ -66,7 +66,10 @@ export class EventsService extends CRUDExtension<EventsRepository, EventEntity> 
             }
 
             // 3. Trigger creation
-            const categoryCreationRes = await this.categoriesService.create(category);
+            const categoryCreationRes = await this.categoriesService.create({
+                ...category,
+                reserved: 0,
+            });
 
             // 4. Throw on creation error
             if (categoryCreationRes.error) {

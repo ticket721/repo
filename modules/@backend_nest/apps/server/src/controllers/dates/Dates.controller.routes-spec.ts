@@ -21,7 +21,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const groupID = generateUserName();
+                const groupID = `0x${generateUserName()}`;
 
                 await admin_addRight(user.id, 'date', groupID, "{ 'owner' : true }");
                 const newDate = await sdk.dates.create(token, {
@@ -38,6 +38,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                         description: 'This is a test date',
                         tags: ['wow'],
                         avatar: null,
+                        signature_colors: ['#00ff00', '#ff0000'],
                     },
                     timestamps: {
                         event_begin: new Date(Date.now() + 1000000),
@@ -67,7 +68,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const groupID = generateUserName();
+                const groupID = `0x${generateUserName()}`;
 
                 await admin_addRight(user.id, 'date', groupID, "{ 'owner' : true }");
                 const newDate = await sdk.dates.create(token, {
@@ -84,6 +85,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                         description: 'This is a test date',
                         tags: ['wow'],
                         avatar: null,
+                        signature_colors: ['#00ff00', '#ff0000'],
                     },
                     timestamps: {
                         event_begin: new Date(Date.now() + 1000000),
@@ -115,7 +117,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const groupID = generateUserName();
+                const groupID = `0x${generateUserName()}`;
 
                 await admin_addRight(user.id, 'date', groupID, "{ 'owner' : true }");
                 const newDate = await sdk.dates.create(token, {
@@ -132,6 +134,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                         description: 'This is a test date',
                         tags: ['wow'],
                         avatar: null,
+                        signature_colors: ['#00ff00', '#ff0000'],
                     },
                     timestamps: {
                         event_begin: new Date(Date.now() + 1000000),
@@ -160,6 +163,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                         description: 'This is a test date',
                         tags: ['wow'],
                         avatar: null,
+                        signature_colors: ['#00ff00', '#ff0000'],
                     },
                 } as Partial<DateEntity>);
             });
@@ -177,7 +181,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const groupID = generateUserName();
+                const groupID = `0x${generateUserName()}`;
 
                 await admin_addRight(user.id, 'date', groupID, "{ 'owner' : true }");
                 await failWithCode(
@@ -195,6 +199,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                             description: 'This is a test date',
                             tags: ['wow'],
                             avatar: null,
+                            signature_colors: ['#00ff00', '#ff0000'],
                         },
                         timestamps: {
                             event_begin: new Date(Date.now() + 1000000),
@@ -218,7 +223,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const groupID = generateUserName();
+                const groupID = `0x${generateUserName()}`;
 
                 await failWithCode(
                     sdk.dates.create(token, {
@@ -235,6 +240,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                             description: 'This is a test date',
                             tags: ['wow'],
                             avatar: null,
+                            signature_colors: ['#00ff00', '#ff0000'],
                         },
                         timestamps: {
                             event_begin: new Date(Date.now() + 1000000),
@@ -258,7 +264,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const groupID = generateUserName();
+                const groupID = `0x${generateUserName()}`;
 
                 await admin_addRight(user.id, 'date', groupID, "{ 'owner' : true }");
 
@@ -277,6 +283,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                             description: 'This is a test date',
                             tags: ['wow'],
                             avatar: null,
+                            signature_colors: ['#00ff00', '#ff0000'],
                         },
                         timestamps: {
                             event_begin: new Date(Date.now() + 2000000),
@@ -302,7 +309,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const groupID = generateUserName();
+                const groupID = `0x${generateUserName()}`;
 
                 await admin_addRight(user.id, 'date', groupID, "{ 'owner' : true }");
                 await admin_addRight(user.id, 'category', groupID, "{ 'owner' : true }");
@@ -321,6 +328,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                         description: 'This is a test date',
                         tags: ['wow'],
                         avatar: null,
+                        signature_colors: ['#00ff00', '#ff0000'],
                     },
                     timestamps: {
                         event_begin: new Date(Date.now() + 1000000),
@@ -364,7 +372,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const groupID = generateUserName();
+                const groupID = `0x${generateUserName()}`;
 
                 await admin_addRight(user.id, 'date', groupID, "{ 'owner' : true }");
                 await admin_addRight(user.id, 'category', groupID, "{ 'owner' : true }");
@@ -383,6 +391,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                         description: 'This is a test date',
                         tags: ['wow'],
                         avatar: null,
+                        signature_colors: ['#00ff00', '#ff0000'],
                     },
                     timestamps: {
                         event_begin: new Date(Date.now() + 1000000),
@@ -427,7 +436,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const groupID = generateUserName();
+                const groupID = `0x${generateUserName()}`;
 
                 await admin_addRight(user.id, 'date', groupID, "{ 'owner' : true }");
                 await admin_addRight(user.id, 'category', groupID, "{ 'owner' : true }");
@@ -446,6 +455,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                         description: 'This is a test date',
                         tags: ['wow'],
                         avatar: null,
+                        signature_colors: ['#00ff00', '#ff0000'],
                     },
                     timestamps: {
                         event_begin: new Date(Date.now() + 1000000),
@@ -494,7 +504,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const groupID = generateUserName();
+                const groupID = `0x${generateUserName()}`;
 
                 await admin_addRight(user.id, 'date', groupID, "{ 'owner' : true }");
                 await admin_addRight(user.id, 'category', groupID, "{ 'owner' : true }");
@@ -513,6 +523,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                         description: 'This is a test date',
                         tags: ['wow'],
                         avatar: null,
+                        signature_colors: ['#00ff00', '#ff0000'],
                     },
                     timestamps: {
                         event_begin: new Date(Date.now() + 1000000),
@@ -534,6 +545,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                         description: 'This is a test date',
                         tags: ['wow'],
                         avatar: null,
+                        signature_colors: ['#00ff00', '#ff0000'],
                     },
                     timestamps: {
                         event_begin: new Date(Date.now() + 1000000),
@@ -582,8 +594,8 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const groupID = generateUserName();
-                const otherGroupID = generateUserName();
+                const groupID = `0x${generateUserName()}`;
+                const otherGroupID = `0x${generateUserName()}`;
 
                 await admin_addRight(user.id, 'date', groupID, "{ 'owner' : true }");
                 await admin_addRight(user.id, 'category', groupID, "{ 'owner' : true }");
@@ -605,6 +617,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                         description: 'This is a test date',
                         tags: ['wow'],
                         avatar: null,
+                        signature_colors: ['#00ff00', '#ff0000'],
                     },
                     timestamps: {
                         event_begin: new Date(Date.now() + 1000000),
@@ -651,7 +664,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const groupID = generateUserName();
+                const groupID = `0x${generateUserName()}`;
 
                 await admin_addRight(user.id, 'date', groupID, "{ 'owner' : true }");
                 await admin_addRight(user.id, 'category', groupID, "{ 'owner' : true }");
@@ -670,6 +683,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                         description: 'This is a test date',
                         tags: ['wow'],
                         avatar: null,
+                        signature_colors: ['#00ff00', '#ff0000'],
                     },
                     timestamps: {
                         event_begin: new Date(Date.now() + 1000000),
@@ -733,7 +747,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const groupID = generateUserName();
+                const groupID = `0x${generateUserName()}`;
 
                 await admin_addRight(user.id, 'date', groupID, "{ 'owner' : true }");
                 await admin_addRight(user.id, 'category', groupID, "{ 'owner' : true }");
@@ -752,6 +766,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                         description: 'This is a test date',
                         tags: ['wow'],
                         avatar: null,
+                        signature_colors: ['#00ff00', '#ff0000'],
                     },
                     timestamps: {
                         event_begin: new Date(Date.now() + 1000000),
@@ -800,7 +815,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const groupID = generateUserName();
+                const groupID = `0x${generateUserName()}`;
 
                 await admin_addRight(user.id, 'date', groupID, "{ 'owner' : true }");
                 await admin_addRight(user.id, 'category', groupID, "{ 'owner' : true }");
@@ -819,6 +834,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                         description: 'This is a test date',
                         tags: ['wow'],
                         avatar: null,
+                        signature_colors: ['#00ff00', '#ff0000'],
                     },
                     timestamps: {
                         event_begin: new Date(Date.now() + 1000000),
@@ -863,7 +879,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const groupID = generateUserName();
+                const groupID = `0x${generateUserName()}`;
 
                 await admin_addRight(user.id, 'date', groupID, "{ 'owner' : true }");
                 await admin_addRight(user.id, 'category', groupID, "{ 'owner' : true }");
@@ -882,6 +898,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                         description: 'This is a test date',
                         tags: ['wow'],
                         avatar: null,
+                        signature_colors: ['#00ff00', '#ff0000'],
                     },
                     timestamps: {
                         event_begin: new Date(Date.now() + 1000000),
@@ -928,7 +945,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const groupID = generateUserName();
+                const groupID = `0x${generateUserName()}`;
 
                 await admin_addRight(user.id, 'date', groupID, "{ 'owner' : true }");
                 const newDate = await sdk.dates.create(token, {
@@ -945,6 +962,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                         description: 'This is a test date',
                         tags: ['wow'],
                         avatar: null,
+                        signature_colors: ['#00ff00', '#ff0000'],
                     },
                     timestamps: {
                         event_begin: new Date(Date.now() + 1000000),
@@ -958,6 +976,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                         description: 'This is a test date',
                         tags: ['wow'],
                         avatar: null,
+                        signature_colors: ['#00ff00', '#ff0000'],
                     },
                 });
 
@@ -977,7 +996,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const groupID = generateUserName();
+                const groupID = `0x${generateUserName()}`;
 
                 await admin_addRight(user.id, 'date', groupID, "{ 'owner' : true }");
                 const newDate = await sdk.dates.create(token, {
@@ -994,6 +1013,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                         description: 'This is a test date',
                         tags: ['wow'],
                         avatar: null,
+                        signature_colors: ['#00ff00', '#ff0000'],
                     },
                     timestamps: {
                         event_begin: new Date(Date.now() + 1000000),
@@ -1034,7 +1054,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const groupID = generateUserName();
+                const groupID = `0x${generateUserName()}`;
 
                 await admin_addRight(user.id, 'date', groupID, "{ 'owner' : true }");
                 const newDate = await sdk.dates.create(token, {
@@ -1051,6 +1071,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                         description: 'This is a test date',
                         tags: ['wow'],
                         avatar: null,
+                        signature_colors: ['#00ff00', '#ff0000'],
                     },
                     timestamps: {
                         event_begin: new Date(Date.now() + 1000000),
@@ -1065,6 +1086,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                             description: 'This is a test date',
                             tags: ['wow'],
                             avatar: null,
+                            signature_colors: ['#00ff00', '#ff0000'],
                         },
                     }),
                     StatusCodes.Unauthorized,
@@ -1084,7 +1106,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const groupID = generateUserName();
+                const groupID = `0x${generateUserName()}`;
 
                 await admin_addRight(user.id, 'date', groupID, "{ 'owner' : true }");
                 const newDate = await sdk.dates.create(token, {
@@ -1101,6 +1123,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                         description: 'This is a test date',
                         tags: ['wow'],
                         avatar: null,
+                        signature_colors: ['#00ff00', '#ff0000'],
                     },
                     timestamps: {
                         event_begin: new Date(Date.now() + 1000000),
@@ -1113,6 +1136,110 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                         timestamps: {
                             event_begin: new Date(Date.now() + 2000000),
                             event_end: new Date(Date.now() + 1000000),
+                        },
+                    }),
+                    StatusCodes.BadRequest,
+                );
+            });
+
+            test.concurrent('should fail on color array length too small', async function() {
+                const {
+                    sdk,
+                    token,
+                    user,
+                    password,
+                }: {
+                    sdk: T721SDK;
+                    token: string;
+                    user: PasswordlessUserDto;
+                    password: string;
+                } = await getSDKAndUser(getCtx);
+
+                const groupID = `0x${generateUserName()}`;
+
+                await admin_addRight(user.id, 'date', groupID, "{ 'owner' : true }");
+                const newDate = await sdk.dates.create(token, {
+                    group_id: groupID,
+                    location: {
+                        location: {
+                            lat: 48.882301,
+                            lon: 2.34015,
+                        },
+                        location_label: '120 Boulevard de Rochechouart, 75018 Paris',
+                    },
+                    metadata: {
+                        name: 'Test Date',
+                        description: 'This is a test date',
+                        tags: ['wow'],
+                        avatar: null,
+                        signature_colors: ['#00ff00', '#ff0000'],
+                    },
+                    timestamps: {
+                        event_begin: new Date(Date.now() + 1000000),
+                        event_end: new Date(Date.now() + 2000000),
+                    },
+                });
+
+                await failWithCode(
+                    sdk.dates.update(token, newDate.data.date.id, {
+                        metadata: {
+                            name: 'Testing the Test Date',
+                            description: 'This is a test date',
+                            tags: ['wow'],
+                            avatar: null,
+                            signature_colors: ['#00ff00'],
+                        },
+                    }),
+                    StatusCodes.BadRequest,
+                );
+            });
+
+            test.concurrent('should fail on invalid color format', async function() {
+                const {
+                    sdk,
+                    token,
+                    user,
+                    password,
+                }: {
+                    sdk: T721SDK;
+                    token: string;
+                    user: PasswordlessUserDto;
+                    password: string;
+                } = await getSDKAndUser(getCtx);
+
+                const groupID = `0x${generateUserName()}`;
+
+                await admin_addRight(user.id, 'date', groupID, "{ 'owner' : true }");
+                const newDate = await sdk.dates.create(token, {
+                    group_id: groupID,
+                    location: {
+                        location: {
+                            lat: 48.882301,
+                            lon: 2.34015,
+                        },
+                        location_label: '120 Boulevard de Rochechouart, 75018 Paris',
+                    },
+                    metadata: {
+                        name: 'Test Date',
+                        description: 'This is a test date',
+                        tags: ['wow'],
+                        avatar: null,
+                        signature_colors: ['#00ff00', '#ff0000'],
+                    },
+                    timestamps: {
+                        event_begin: new Date(Date.now() + 1000000),
+                        event_end: new Date(Date.now() + 2000000),
+                    },
+                });
+
+                await failWithCode(
+                    sdk.dates.update(token, newDate.data.date.id, {
+                        metadata: {
+                            name: 'Testing the Test Date',
+                            description: 'This is a test date',
+                            tags: ['wow'],
+                            avatar: null,
+                            signature_colors: ['#00ff', '#ff0000'],
                         },
                     }),
                     StatusCodes.BadRequest,

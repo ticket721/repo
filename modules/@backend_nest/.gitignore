@@ -37,6 +37,7 @@ lerna-debug.log*
 # Documentation
 documentation
 
-/images
-development.secret.env
+/images/*
+!/images/.gitkeep
+*.secret.env
 

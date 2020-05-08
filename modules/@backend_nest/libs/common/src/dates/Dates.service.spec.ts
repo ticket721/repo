@@ -566,6 +566,7 @@ describe('Dates Service', function() {
                     description: 'This is a date',
                     tags: ['hmm'],
                     avatar: 'abcd',
+                    signature_colors: ['#ff00ff', '#00ff00'],
                 },
                 location: {
                     location: {
@@ -608,20 +609,27 @@ describe('Dates Service', function() {
                 },
             ];
 
+            const resultingCategories = categories.map(
+                (c: CategoryEntity): CategoryEntity => ({
+                    ...c,
+                    reserved: 0,
+                }),
+            );
+
             const serviceSpy = spy(context.datesService);
 
-            when(context.categoriesServiceMock.create(deepEqual(categories[0]))).thenResolve({
+            when(context.categoriesServiceMock.create(deepEqual(resultingCategories[0]))).thenResolve({
                 error: null,
                 response: {
-                    ...(categories[0] as CategoryEntity),
+                    ...(resultingCategories[0] as CategoryEntity),
                     id: 'cat0',
                 },
             });
 
-            when(context.categoriesServiceMock.create(deepEqual(categories[1]))).thenResolve({
+            when(context.categoriesServiceMock.create(deepEqual(resultingCategories[1]))).thenResolve({
                 error: null,
                 response: {
-                    ...(categories[1] as CategoryEntity),
+                    ...(resultingCategories[1] as CategoryEntity),
                     id: 'cat1',
                 },
             });
@@ -651,19 +659,19 @@ describe('Dates Service', function() {
                 },
                 [
                     {
-                        ...(categories[0] as CategoryEntity),
+                        ...(resultingCategories[0] as CategoryEntity),
                         id: 'cat0',
                     },
                     {
-                        ...(categories[1] as CategoryEntity),
+                        ...(resultingCategories[1] as CategoryEntity),
                         id: 'cat1',
                     },
                 ],
             ]);
 
-            verify(context.categoriesServiceMock.create(deepEqual(categories[0]))).called();
+            verify(context.categoriesServiceMock.create(deepEqual(resultingCategories[0]))).called();
 
-            verify(context.categoriesServiceMock.create(deepEqual(categories[1]))).called();
+            verify(context.categoriesServiceMock.create(deepEqual(resultingCategories[1]))).called();
 
             verify(
                 serviceSpy.create(
@@ -683,6 +691,7 @@ describe('Dates Service', function() {
                     description: 'This is a date',
                     tags: ['hmm'],
                     avatar: 'abcd',
+                    signature_colors: ['#ff00ff', '#00ff00'],
                 },
                 location: {
                     location: {
@@ -739,6 +748,7 @@ describe('Dates Service', function() {
                     description: 'This is a date',
                     tags: ['hmm'],
                     avatar: 'abcd',
+                    signature_colors: ['#ff00ff', '#00ff00'],
                 },
                 location: {
                     location: {
@@ -781,7 +791,14 @@ describe('Dates Service', function() {
                 },
             ];
 
-            when(context.categoriesServiceMock.create(deepEqual(categories[0]))).thenResolve({
+            const resultingCategories = categories.map(
+                (c: CategoryEntity): CategoryEntity => ({
+                    ...c,
+                    reserved: 0,
+                }),
+            );
+
+            when(context.categoriesServiceMock.create(deepEqual(resultingCategories[0]))).thenResolve({
                 error: 'unexpected_error',
                 response: null,
             });
@@ -791,7 +808,7 @@ describe('Dates Service', function() {
             expect(res.error).toEqual('unexpected_error');
             expect(res.response).toEqual(null);
 
-            verify(context.categoriesServiceMock.create(deepEqual(categories[0]))).called();
+            verify(context.categoriesServiceMock.create(deepEqual(resultingCategories[0]))).called();
         });
 
         it('should fail on date creation error', async function() {
@@ -802,6 +819,7 @@ describe('Dates Service', function() {
                     description: 'This is a date',
                     tags: ['hmm'],
                     avatar: 'abcd',
+                    signature_colors: ['#ff00ff', '#00ff00'],
                 },
                 location: {
                     location: {
@@ -844,20 +862,27 @@ describe('Dates Service', function() {
                 },
             ];
 
+            const resultingCategories = categories.map(
+                (c: CategoryEntity): CategoryEntity => ({
+                    ...c,
+                    reserved: 0,
+                }),
+            );
+
             const serviceSpy = spy(context.datesService);
 
-            when(context.categoriesServiceMock.create(deepEqual(categories[0]))).thenResolve({
+            when(context.categoriesServiceMock.create(deepEqual(resultingCategories[0]))).thenResolve({
                 error: null,
                 response: {
-                    ...(categories[0] as CategoryEntity),
+                    ...(resultingCategories[0] as CategoryEntity),
                     id: 'cat0',
                 },
             });
 
-            when(context.categoriesServiceMock.create(deepEqual(categories[1]))).thenResolve({
+            when(context.categoriesServiceMock.create(deepEqual(resultingCategories[1]))).thenResolve({
                 error: null,
                 response: {
-                    ...(categories[1] as CategoryEntity),
+                    ...(resultingCategories[1] as CategoryEntity),
                     id: 'cat1',
                 },
             });
@@ -879,9 +904,9 @@ describe('Dates Service', function() {
             expect(res.error).toEqual('unexpected_error');
             expect(res.response).toEqual(null);
 
-            verify(context.categoriesServiceMock.create(deepEqual(categories[0]))).called();
+            verify(context.categoriesServiceMock.create(deepEqual(resultingCategories[0]))).called();
 
-            verify(context.categoriesServiceMock.create(deepEqual(categories[1]))).called();
+            verify(context.categoriesServiceMock.create(deepEqual(resultingCategories[1]))).called();
 
             verify(
                 serviceSpy.create(

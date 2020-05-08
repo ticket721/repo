@@ -1,5 +1,5 @@
 import { DateEntity, DateMetadata, DateTimestamps, InputDateLocation } from '@lib/common/dates/entities/Date.entity';
-import { IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsHexadecimal, Length, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -13,8 +13,8 @@ export class DatesCreateInputDto implements Pick<DateEntity, 'group_id' | 'times
     @ApiProperty({
         description: 'Group ID to use',
     })
-    @IsString()
-    @IsOptional()
+    @IsHexadecimal()
+    @Length(66, 66)
     // tslint:disable-next-line:variable-name
     group_id: string;
 
@@ -26,7 +26,6 @@ export class DatesCreateInputDto implements Pick<DateEntity, 'group_id' | 'times
     })
     @ValidateNested()
     @Type(() => InputDateLocation)
-    @IsOptional()
     location: InputDateLocation;
 
     /**
@@ -37,7 +36,6 @@ export class DatesCreateInputDto implements Pick<DateEntity, 'group_id' | 'times
     })
     @ValidateNested()
     @Type(() => DateTimestamps)
-    @IsOptional()
     timestamps: DateTimestamps;
 
     /**
@@ -48,6 +46,5 @@ export class DatesCreateInputDto implements Pick<DateEntity, 'group_id' | 'times
     })
     @ValidateNested()
     @Type(() => DateMetadata)
-    @IsOptional()
     metadata: DateMetadata;
 }

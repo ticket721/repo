@@ -19,6 +19,7 @@ export class Action {
             data: null,
             error: null,
             status: null,
+            private: false,
         };
     }
 
@@ -29,6 +30,24 @@ export class Action {
      */
     load(entity: Partial<ActionEntity>): Action {
         this.entity = entity;
+
+        return this;
+    }
+
+    /**
+     * Get private flag
+     */
+    get private(): boolean {
+        return this.entity.private;
+    }
+
+    /**
+     * Set privacy value
+     *
+     * @param value
+     */
+    setPrivacy(value: boolean): Action {
+        this.entity.private = value;
 
         return this;
     }

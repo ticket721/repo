@@ -1,4 +1,4 @@
-import { DynamicModule, Module } from '@nestjs/common';
+import { DynamicModule, Global, Module } from '@nestjs/common';
 import { FSModule } from '@lib/common/fs/FS.module';
 import { CurrenciesService } from '@lib/common/currencies/Currencies.service';
 
@@ -18,6 +18,7 @@ export interface CurrenciesModuleAsyncOptions extends Pick<DynamicModule, 'impor
     inject?: any[];
 }
 
+@Global()
 @Module({})
 export class CurrenciesModule {
     /**

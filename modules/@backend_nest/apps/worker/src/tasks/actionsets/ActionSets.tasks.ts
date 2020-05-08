@@ -32,20 +32,63 @@ export class ActionSetsTasks implements OnModuleInit {
 
     /**
      * Process to handle the input actions
+     *
+     * @param job
      */
     async input(job: Job<ActionSetEntity>): Promise<void> {
         const actionSet: ActionSet = new ActionSet().load(job.data);
 
-        if (this.actionSetsService.getInputHandler(actionSet.action.name) === undefined) {
+        for (let idx = actionSet.current_action; idx < actionSet.actions.length; idx++) {
+            if (this.actionSetsService.getInputHandler(actionSet.action.name) === undefined) {
+                const error = Error(
+                    `Cannot find input handler for action ${actionSet.action.name} in actionset ${actionSet.id}`,
+                );
+                this.loggerService.error(error);
+                throw error;
+            }
+
+            const callIdx = actionSet.current_action;
+
+            this.loggerService.log(`Calling ${actionSet.action.name} on ActionSet@${actionSet.id}`);
+            const [updatedActionSet, update] = await this.actionSetsService.getInputHandler(actionSet.action.name)(
+                actionSet,
+                job.progress.bind(job),
+            );
+
+            if (update) {
+                const query = updatedActionSet.getQuery();
+                const body = updatedActionSet.withoutQuery();
+
+                await this.actionSetsService.update(query, body);
+            }
+
+            if (
+                updatedActionSet.actions[updatedActionSet.current_action].type === 'event' ||
+                !(updatedActionSet.current_action > callIdx && updatedActionSet.action.data !== null)
+            ) {
+                break;
+            }
+        }
+    }
+
+    /**
+     * Process to handle the event actions
+     *
+     * @param job
+     */
+    async event(job: Job<ActionSetEntity>): Promise<void> {
+        const actionSet: ActionSet = new ActionSet().load(job.data);
+
+        if (this.actionSetsService.getEventHandler(actionSet.action.name) === undefined) {
             const error = Error(
-                `Cannot find input handler for action ${actionSet.action.name} in actionset ${actionSet.id}`,
+                `Cannot find event handler for action ${actionSet.action.name} in actionset ${actionSet.id}`,
             );
             this.loggerService.error(error);
             throw error;
         }
 
         this.loggerService.log(`Calling ${actionSet.action.name} on ActionSet@${actionSet.id}`);
-        const [updatedActionSet, update] = await this.actionSetsService.getInputHandler(actionSet.action.name)(
+        const [updatedActionSet, update] = await this.actionSetsService.getEventHandler(actionSet.action.name)(
             actionSet,
             job.progress.bind(job),
         );
@@ -68,6 +111,10 @@ export class ActionSetsTasks implements OnModuleInit {
         if (signature.name === 'worker') {
             this.actionQueue
                 .process('input', 1, this.input.bind(this))
+                .then(() => console.log(`Closing Bull Queue @@action`))
+                .catch(this.shutdownService.shutdownWithError);
+            this.actionQueue
+                .process('event', 1, this.event.bind(this))
                 .then(() => console.log(`Closing Bull Queue @@action`))
                 .catch(this.shutdownService.shutdownWithError);
         }

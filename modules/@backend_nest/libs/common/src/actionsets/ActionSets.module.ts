@@ -10,6 +10,8 @@ import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
 import { EventCreateAcsetbuilderHelper } from '@lib/common/actionsets/acset_builders/EventCreate.acsetbuilder.helper';
 import { ActionSetsRightsConfig } from '@lib/common/actionsets/ActionSets.rights';
 import { RightsModule } from '@lib/common/rights/Rights.module';
+import { CartAcsetbuilderHelper } from '@lib/common/actionsets/acset_builders/Cart.acsetbuilder.helper';
+import { CheckoutAcsetbuilderHelper } from '@lib/common/actionsets/acset_builders/Checkout.acsetbuilder.helper';
 
 @Module({
     imports: [
@@ -36,8 +38,18 @@ import { RightsModule } from '@lib/common/rights/Rights.module';
         },
 
         {
+            provide: `ACTION_SET_BUILDER/checkout_create`,
+            useClass: CheckoutAcsetbuilderHelper,
+        },
+
+        {
             provide: `ACTION_SET_BUILDER/event_create`,
             useClass: EventCreateAcsetbuilderHelper,
+        },
+
+        {
+            provide: `ACTION_SET_BUILDER/cart_create`,
+            useClass: CartAcsetbuilderHelper,
         },
 
         {

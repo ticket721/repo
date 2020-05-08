@@ -7,10 +7,8 @@ import { server_dev_prepare }             from './gulp/tasks/server';
 module.exports = {
     'network::run': series(required_config, network_run),
     'network::clean': series(required_config, network_clean),
-
     'contracts::run': series(required_config, contracts_run),
     'contracts::clean': series(required_config, contracts_clean),
-
     'server::dev::prepare': series(server_dev_prepare)
 };
 

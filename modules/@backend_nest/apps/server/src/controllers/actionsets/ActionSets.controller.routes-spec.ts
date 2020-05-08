@@ -1,4 +1,4 @@
-import { failWithCode, getSDKAndUser, getUser, waitForActionSet } from '../../../test/utils';
+import { createEvent, failWithCode, getSDKAndUser, getUser, waitForActionSet } from '../../../test/utils';
 import { T721SDK } from '@common/sdk';
 import { PasswordlessUserDto } from '@app/server/authentication/dto/PasswordlessUser.dto';
 import { StatusCodes } from '@lib/common/utils/codes.value';
@@ -20,9 +20,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const initialArgument = {
-                    name: 'myEvent',
-                };
+                const initialArgument = {};
 
                 const actionSetName = 'event_create';
 
@@ -56,7 +54,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 } = await getSDKAndUser(getCtx);
 
                 const initialArgument = {
-                    surname: 'myEvent',
+                    name: 'event name',
                 };
 
                 const actionSetName = 'event_create';
@@ -83,9 +81,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const initialArgument = {
-                    name: 'myEvent',
-                };
+                const initialArgument = {};
 
                 const actionSetName = 'event_create';
 
@@ -113,9 +109,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const initialArgument = {
-                    name: 'myEvent',
-                };
+                const initialArgument = {};
 
                 const actionSetName = 'event_create';
 
@@ -154,9 +148,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const initialArgument = {
-                    name: 'myEvent',
-                };
+                const initialArgument = {};
 
                 const actionSetName = 'event_create';
 
@@ -220,9 +212,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const initialArgument = {
-                    name: 'myEvent',
-                };
+                const initialArgument = {};
 
                 const actionSetName = 'event_create';
 
@@ -243,6 +233,67 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     StatusCodes.BadRequest,
                 );
             });
+
+            test.concurrent('should fail on private action set update', async function() {
+                const {
+                    sdk,
+                    token,
+                    user,
+                    password,
+                }: {
+                    sdk: T721SDK;
+                    token: string;
+                    user: PasswordlessUserDto;
+                    password: string;
+                } = await getSDKAndUser(getCtx);
+
+                const event = await createEvent(token, sdk);
+
+                const cartActionSetRes = await sdk.actions.create(token, {
+                    name: 'cart_create',
+                    arguments: {},
+                });
+
+                const actionSetId = cartActionSetRes.data.actionset.id;
+
+                await sdk.cart.ticketSelections(token, actionSetId, {
+                    tickets: [
+                        ...[...Array(3)].map(() => ({
+                            categoryId: event.categories[0],
+                            price: {
+                                currency: 'Fiat',
+                                price: '100',
+                            },
+                        })),
+                    ],
+                });
+
+                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+                    return as.current_action === 1;
+                });
+
+                await sdk.cart.modulesConfiguration(token, actionSetId, {});
+
+                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+                    return as.current_action === 2;
+                });
+
+                await sdk.checkout.cart.commit.stripe(token, {
+                    cart: actionSetId,
+                });
+
+                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+                    return as.current_status === 'complete';
+                });
+
+                await failWithCode(
+                    sdk.actions.update(token, actionSetId, {
+                        action_idx: 2,
+                        data: {},
+                    }),
+                    StatusCodes.Unauthorized,
+                );
+            });
         });
 
         describe('search (GET /actions/search)', function() {
@@ -261,9 +312,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
 
                 const otherUser = await getUser(sdk);
 
-                const initialArgument = {
-                    name: 'myEvent',
-                };
+                const initialArgument = {};
 
                 const actionSetName = 'event_create';
 

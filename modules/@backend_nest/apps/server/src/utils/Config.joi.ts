@@ -86,4 +86,6 @@ export const Config: Joi.ObjectSchema = Joi.object({
     GLOBAL_CONFIG_BLOCK_NUMBER_FETCHING_RATE: Joi.number().required(),
     GLOBAL_CONFIG_ETHEREUM_PRICE_FETCHING_RATE: Joi.number().required(),
     GLOBAL_CONFIG_BINANCE_MOCK: Joi.boolean().default('true'),
+
+    CART_MAX_TICKET_PER_CART: Joi.number().required(),
 });

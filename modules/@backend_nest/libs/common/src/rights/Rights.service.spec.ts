@@ -510,8 +510,224 @@ describe('Rights Service', function() {
         });
     });
 
+    describe('getAllRights', function() {
+        it('should recover basic rights', async function() {
+            const right = ({
+                rights: {
+                    owner: true,
+                },
+            } as any) as RightEntity;
+
+            const rightsConfig = {
+                owner: {
+                    count: 1,
+                    can_edit_rights: true,
+                },
+                admin: {},
+                public: {
+                    public: true,
+                },
+                user: {},
+            };
+
+            expect(await context.rightsService.getAllRights(rightsConfig, right as RightEntity)).toEqual(['owner']);
+        });
+
+        it('should recover inherited rights', async function() {
+            const right = ({
+                rights: {
+                    owner: true,
+                },
+            } as any) as RightEntity;
+
+            const rightsConfig = {
+                owner: {
+                    count: 1,
+                    can_edit_rights: true,
+                    countAs: ['user'],
+                },
+                admin: {},
+                public: {
+                    public: true,
+                },
+                user: {},
+            };
+
+            expect(await context.rightsService.getAllRights(rightsConfig, right as RightEntity)).toEqual([
+                'owner',
+                'user',
+            ]);
+        });
+
+        it('should take into account duplicates', async function() {
+            const right = ({
+                rights: {
+                    user: true,
+                    owner: true,
+                },
+            } as any) as RightEntity;
+
+            const rightsConfig = {
+                owner: {
+                    count: 1,
+                    can_edit_rights: true,
+                    countAs: ['user'],
+                },
+                admin: {},
+                public: {
+                    public: true,
+                },
+                user: {},
+            };
+
+            expect(await context.rightsService.getAllRights(rightsConfig, right as RightEntity)).toEqual([
+                'user',
+                'owner',
+            ]);
+        });
+    });
+
+    describe('getRightsConfig', function() {
+        it('should properly retrieve entity rights config', async function() {
+            const entityName = 'entity';
+            const rights = {
+                owner: {
+                    count: 1,
+                    can_edit_rights: true,
+                    countAs: ['user'],
+                },
+                admin: {},
+                public: {
+                    public: true,
+                },
+                user: {},
+            };
+
+            when(context.moduleRefMock.get(`@rights/${entityName}`, deepEqual({ strict: false }))).thenResolve(rights);
+
+            expect(await context.rightsService.getRightsConfig(entityName)).toEqual({
+                error: null,
+                response: rights,
+            });
+        });
+
+        it('should fail on config not found', async function() {
+            const entityName = 'entity';
+            const rights = {
+                owner: {
+                    count: 1,
+                    can_edit_rights: true,
+                    countAs: ['user'],
+                },
+                admin: {},
+                public: {
+                    public: true,
+                },
+                user: {},
+            };
+
+            when(context.moduleRefMock.get(`@rights/${entityName}`, deepEqual({ strict: false }))).thenReject(
+                new Error('unexpected_error'),
+            );
+
+            expect(await context.rightsService.getRightsConfig(entityName)).toEqual({
+                error: 'cannot_find_config',
+                response: null,
+            });
+        });
+    });
+
     describe('hasRightsUpon', function() {
         it('should check rights upon specific entity', async function() {
+            const entityName = 'entity';
+
+            const query = {
+                id: 'entity_id',
+            };
+
+            const entity = {
+                id: 'entity_id',
+                field: 'entity_value',
+            };
+
+            const user = {
+                id: 'user_id',
+            } as UserDto;
+
+            const rights: Partial<RightEntity>[] = [
+                {
+                    rights: {
+                        user: true,
+                        owner: true,
+                    },
+                },
+            ];
+
+            const field = 'field';
+
+            when(context.crudServiceMock.name).thenReturn(entityName);
+
+            when(context.moduleRefMock.get(`@rights/${entityName}`, deepEqual({ strict: false }))).thenResolve({
+                owner: {
+                    count: 1,
+                    can_edit_rights: true,
+                    countAs: ['user'],
+                },
+                admin: {},
+                public: {
+                    public: true,
+                },
+                user: {},
+            });
+
+            when(context.crudServiceMock.search(deepEqual(query))).thenResolve({
+                error: null,
+                response: [entity],
+            });
+
+            const serviceSpy = spy(context.rightsService);
+            when(
+                serviceSpy.search(
+                    deepEqual({
+                        grantee_id: user.id,
+                        entity_type: entityName,
+                        entity_value: entity[field],
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: rights as RightEntity[],
+            });
+
+            const res = await context.rightsService.hasRightsUpon(
+                instance(context.crudServiceMock),
+                user,
+                query,
+                field,
+                ['admin', 'owner'],
+            );
+
+            expect(res.error).toEqual(null);
+            expect(res.response).toEqual([entity]);
+
+            verify(context.crudServiceMock.name).called();
+
+            verify(context.moduleRefMock.get(`@rights/${entityName}`, deepEqual({ strict: false }))).called();
+
+            verify(context.crudServiceMock.search(deepEqual(query))).called();
+
+            verify(
+                serviceSpy.search(
+                    deepEqual({
+                        grantee_id: user.id,
+                        entity_type: entityName,
+                        entity_value: entity[field],
+                    }),
+                ),
+            ).called();
+        });
+
+        it('should check rights with inherited rights', async function() {
             const entityName = 'entity';
 
             const query = {
@@ -543,10 +759,13 @@ describe('Rights Service', function() {
                 owner: {
                     count: 1,
                     can_edit_rights: true,
+                    countAs: ['user'],
                 },
+                admin: {},
                 public: {
                     public: true,
                 },
+                user: {},
             });
 
             when(context.crudServiceMock.search(deepEqual(query))).thenResolve({
@@ -573,7 +792,7 @@ describe('Rights Service', function() {
                 user,
                 query,
                 field,
-                ['owner'],
+                ['user'],
             );
 
             expect(res.error).toEqual(null);

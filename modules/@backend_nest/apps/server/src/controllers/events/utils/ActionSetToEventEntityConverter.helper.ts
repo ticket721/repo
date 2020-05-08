@@ -4,15 +4,7 @@ import { EventEntity } from '@lib/common/events/entities/Event.entity';
 import { CurrenciesService } from '@lib/common/currencies/Currencies.service';
 import { types } from '@iaminfinity/express-cassandra';
 import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
-
-enum EventCreationActions {
-    TextMetadata,
-    ModulesConfiguration,
-    DatesConfiguration,
-    CategoriesConfiguration,
-    ImagesMetadata,
-    AdminsConfiguration,
-}
+import { EventCreationActions } from '@lib/common/actionsets/acset_builders/EventCreate.acsetbuilder.helper';
 
 /**
  * Convert categories to saveable format
@@ -98,6 +90,7 @@ async function convertDates(
                 description: actionset.actions[EventCreationActions.TextMetadata].data.description,
                 avatar: actionset.actions[EventCreationActions.ImagesMetadata].data.avatar,
                 tags: actionset.actions[EventCreationActions.TextMetadata].data.tags,
+                signature_colors: actionset.actions[EventCreationActions.ImagesMetadata].data.signatureColors,
             },
             location: {
                 assigned_city: date.city.id,

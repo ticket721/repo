@@ -46,7 +46,8 @@ var migration1576415205 = {
                     name text,
                     data text,
                     type text,
-                    error text
+                    error text,
+                    private boolean
                     );`,
             params: []
         };
@@ -76,8 +77,9 @@ var migration1576415205 = {
 
         const link_type_creation = {
             query: `CREATE TYPE ticket721.link (
-                        id uuid,
-                        type text
+                        id text,
+                        type text,
+                        field text
                     );`,
             params: []
         };
@@ -117,6 +119,7 @@ var migration1576415205 = {
                         scope text,
                         prices list<frozen<ticket721.price>>,
                         seats int,
+                        reserved int,
                         parent_id uuid,
                         parent_type text,
                         created_at timestamp,
@@ -130,7 +133,8 @@ var migration1576415205 = {
                         name text,
                         description text,
                         tags list<text>,
-                        avatar text
+                        avatar text,
+                        signature_colors list<text>
                     );`,
             params: []
         };
@@ -331,7 +335,7 @@ var migration1576415205 = {
             );`,
             params: []
         };
-        
+
         const gem__payload_cost_type_creation = {
             query: `CREATE TYPE ticket721.gem__payload_cost (
                         value text,
@@ -352,7 +356,7 @@ var migration1576415205 = {
             );`,
             params: []
         };
-        
+
         const gem__error_info_type_creation = {
             query: `CREATE TYPE ticket721.gem__error_info (
                         dosojin text,
@@ -363,7 +367,7 @@ var migration1576415205 = {
             );`,
             params: []
         };
-        
+
         const gem__route_history_type_creation = {
             query: `CREATE TYPE ticket721.gem__route_history (
                         layer int,
@@ -374,7 +378,7 @@ var migration1576415205 = {
             );`,
             params: []
         };
-        
+
         const gem_type_creation = {
             query: `CREATE TYPE ticket721.gem (
                         action_type text,
@@ -410,7 +414,51 @@ var migration1576415205 = {
                         id text PRIMARY KEY,
                         used_by uuid,
                         created_at timestamp,
+                        updated_at timestamp
+                    );`,
+            params: []
+        };
+
+        const metadata_table_creation = {
+            query: `CREATE TABLE ticket721.metadata (
+                        id UUID PRIMARY KEY,
+                        class_name text,
+                        type_name text,
+                        links list<frozen<ticket721.link>>,
+                        readers list<frozen<ticket721.link>>,
+                        public_read boolean,
+                        writers list<frozen<ticket721.link>>,
+                        public_write boolean,
+                        bool_ map<text, boolean>,
+                        str_ map<text, text>,
+                        int_ map<text, int>,
+                        date_ map<text, timestamp>,
+                        double_ map<text, double>,
+                        created_at timestamp,
+                        updated_at timestamp
+                    );`,
+            params: []
+        };
+
+        const authorization_table_creation = {
+            query: `CREATE TABLE ticket721.authorization ( 
+                        id uuid,
+                        granter text,
+                        grantee text,
+                        mode text,
+                        codes text,
+                        selectors text,
+                        args text,
+                        signature text,
+                        readable_signature boolean,
+                        user_expiration timestamp,
+                        be_expiration timestamp,
+                        cancelled boolean,
+                        consumed boolean,
+                        dispatched boolean,
+                        created_at timestamp,
                         updated_at timestamp,
+                        PRIMARY KEY((id), granter, grantee, mode)
                     );`,
             params: []
         };
@@ -518,6 +566,11 @@ var migration1576415205 = {
             console.log('Stripe Resource Table Creation');
             await db.execute(stripe_resource_table_creation.query, stripe_resource_table_creation.params, { prepare: true });
 
+            console.log('Metadata Table Creation');
+            await db.execute(metadata_table_creation.query, metadata_table_creation.params, { prepare: true });
+
+            console.log('Authorization Table Creation');
+            await db.execute(authorization_table_creation.query, authorization_table_creation.params, { prepare: true });
         } catch (e) {
             return handler(e, false);
         }
@@ -686,6 +739,17 @@ var migration1576415205 = {
             params: []
         };
 
+        const metadata_table_creation = {
+            query: `DROP TABLE ticket721.metadata`,
+            params: []
+        };
+
+        const authorization_table_creation = {
+            query: `DROP TABLE ticket721.authorization`,
+            params: []
+        };
+
+
         try {
 
             // Tables first
@@ -730,6 +794,12 @@ var migration1576415205 = {
 
             console.log('Stripe Resource Table Creation');
             await db.execute(stripe_resource_table_creation.query, stripe_resource_table_creation.params, { prepare: true });
+
+            console.log('Metadata Table Creation');
+            await db.execute(metadata_table_creation.query, metadata_table_creation.params, { prepare: true });
+
+            console.log('Authorization Table Creation');
+            await db.execute(authorization_table_creation.query, authorization_table_creation.params, { prepare: true });
 
             // Then Types
             console.log('Action Type Deletion');

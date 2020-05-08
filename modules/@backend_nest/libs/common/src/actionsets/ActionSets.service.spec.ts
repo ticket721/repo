@@ -1,8 +1,14 @@
 import { ActionSetsService } from '@lib/common/actionsets/ActionSets.service';
 import { ActionSetsRepository } from '@lib/common/actionsets/ActionSets.repository';
-import { deepEqual, instance, mock, spy, verify, when } from 'ts-mockito';
+import { anyString, anything, capture, deepEqual, instance, mock, spy, verify, when } from 'ts-mockito';
 import { getModelToken, getRepositoryToken } from '@iaminfinity/express-cassandra/dist/utils/cassandra-orm.utils';
-import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
+import {
+    ActionEntity,
+    ActionSetEntity,
+    ActionSetStatus,
+    ActionStatus,
+    ActionType,
+} from '@lib/common/actionsets/entities/ActionSet.entity';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EsSearchOptionsStatic } from '@iaminfinity/express-cassandra/dist/orm/interfaces/externals/express-cassandra.interface';
 import { ConfigService } from '@lib/common/config/Config.service';
@@ -12,6 +18,8 @@ import { ActionSetBuilderBase } from '@lib/common/actionsets/helper/ActionSet.bu
 import { UserDto } from '@lib/common/users/dto/User.dto';
 import { ActionSet } from '@lib/common/actionsets/helper/ActionSet.class';
 import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
+import { Job, JobOptions } from 'bull';
+import { getQueueToken } from '@nestjs/bull';
 
 class EntityModelMock {
     search(options: EsSearchOptionsStatic, callback?: (err: any, ret: any) => void): void {
@@ -33,6 +41,12 @@ class AcSetBuilderBaseMock implements ActionSetBuilderBase {
     }
 }
 
+class QueueMock<T = any> {
+    add(name: string, data: T, opts?: JobOptions): Promise<Job<T>> {
+        return null;
+    }
+}
+
 describe('ActionSets Service', function() {
     const context: {
         actionSetsService: ActionSetsService;
@@ -41,6 +55,7 @@ describe('ActionSets Service', function() {
         configServiceMock: ConfigService;
         moduleRefMock: ModuleRefMock;
         rightsServiceMock: RightsService;
+        queueMock: QueueMock;
     } = {
         actionSetsService: null,
         actionSetsRepository: null,
@@ -48,6 +63,7 @@ describe('ActionSets Service', function() {
         configServiceMock: null,
         moduleRefMock: null,
         rightsServiceMock: null,
+        queueMock: null,
     };
 
     beforeEach(async function() {
@@ -65,6 +81,7 @@ describe('ActionSets Service', function() {
         });
         context.moduleRefMock = mock(ModuleRefMock);
         context.rightsServiceMock = mock(RightsService);
+        context.queueMock = mock(QueueMock);
 
         const ConfigServiceProvider = {
             provide: ConfigService,
@@ -91,6 +108,11 @@ describe('ActionSets Service', function() {
             useValue: instance(context.rightsServiceMock),
         };
 
+        const QueueProvider = {
+            provide: getQueueToken('action'),
+            useValue: instance(context.queueMock),
+        };
+
         const app: TestingModule = await Test.createTestingModule({
             providers: [
                 ActionSetEntityModelProvider,
@@ -98,6 +120,7 @@ describe('ActionSets Service', function() {
                 ConfigServiceProvider,
                 ModuleRefProvider,
                 RightsServiceProvider,
+                QueueProvider,
                 ActionSetsService,
             ],
         }).compile();
@@ -114,6 +137,18 @@ describe('ActionSets Service', function() {
 
         it('should recover undefined if no handler exists', async function() {
             expect(context.actionSetsService.getInputHandler('first')).toBeUndefined();
+        });
+    });
+
+    describe('getEventHandler', function() {
+        it('should recover the event handler', async function() {
+            expect(context.actionSetsService.getEventHandler('first')).toBeUndefined();
+            context.actionSetsService.setEventHandler('first', {} as any);
+            expect(context.actionSetsService.getEventHandler('first')).toBeDefined();
+        });
+
+        it('should recover undefined if no handler exists', async function() {
+            expect(context.actionSetsService.getEventHandler('first')).toBeUndefined();
         });
     });
 
@@ -341,6 +376,1209 @@ describe('ActionSets Service', function() {
                     ]),
                 ),
             ).called();
+        });
+    });
+
+    describe('errorStep', function() {
+        it('should set step in error mode', async function() {
+            const actionSetId = '00000000-0000-0000-0000-000000000000';
+
+            const actionSetEntity: ActionSetEntity = {
+                id: actionSetId,
+                actions: [
+                    {
+                        status: 'waiting',
+                        name: 'test',
+                        data: null,
+                        type: 'input',
+                        error: null,
+                        private: false,
+                    },
+                ],
+                links: [],
+                current_action: 0,
+                current_status: 'input:waiting',
+                name: 'test',
+                created_at: new Date(Date.now()),
+                updated_at: new Date(Date.now()),
+                dispatched_at: new Date(Date.now()),
+            };
+
+            const spiedService = spy(context.actionSetsService);
+
+            const error = 'an_error_occured';
+            const details = { error: 'happens' };
+
+            when(
+                spiedService.search(
+                    deepEqual({
+                        id: actionSetId,
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: [actionSetEntity],
+            });
+
+            when(
+                spiedService.update(
+                    deepEqual({
+                        id: actionSetId,
+                    }),
+                    deepEqual({
+                        actions: [
+                            {
+                                status: 'error',
+                                name: 'test',
+                                data: null,
+                                type: 'input',
+                                error: anyString(),
+                                private: false,
+                            },
+                        ],
+                        links: [],
+                        current_action: 0,
+                        current_status: 'input:error',
+                        name: 'test',
+                        created_at: anything(),
+                        updated_at: anything(),
+                        dispatched_at: anything(),
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: {
+                    id: actionSetId,
+                    actions: [
+                        {
+                            status: 'error',
+                            name: 'test',
+                            data: null,
+                            type: 'input',
+                            error: '{"details":{"error":"happens"},"error":"an_error_occured"}',
+                            private: false,
+                        },
+                    ],
+                    links: [],
+                    current_action: 0,
+                    current_status: 'input:error',
+                    name: 'test',
+                    created_at: new Date(Date.now()),
+                    updated_at: new Date(Date.now()),
+                    dispatched_at: new Date(Date.now()),
+                },
+            });
+
+            const res = await context.actionSetsService.errorStep(actionSetId, error, details, 0);
+
+            expect(res.error).toEqual(null);
+            expect(res.response).toEqual({
+                id: actionSetId,
+                actions: [
+                    {
+                        status: 'error',
+                        name: 'test',
+                        data: null,
+                        type: 'input',
+                        error: '{"details":{"error":"happens"},"error":"an_error_occured"}',
+                        private: false,
+                    },
+                ],
+                links: [],
+                current_action: 0,
+                current_status: 'input:error',
+                name: 'test',
+                created_at: res.response.created_at,
+                updated_at: res.response.updated_at,
+                dispatched_at: res.response.dispatched_at,
+            });
+
+            verify(
+                spiedService.search(
+                    deepEqual({
+                        id: actionSetId,
+                    }),
+                ),
+            ).called();
+
+            verify(
+                spiedService.update(
+                    deepEqual({
+                        id: actionSetId,
+                    }),
+                    deepEqual({
+                        actions: [
+                            {
+                                status: 'error',
+                                name: 'test',
+                                data: null,
+                                type: 'input',
+                                error: anyString(),
+                                private: false,
+                            },
+                        ],
+                        links: [],
+                        current_action: 0,
+                        current_status: 'input:error',
+                        name: 'test',
+                        created_at: anything(),
+                        updated_at: anything(),
+                        dispatched_at: anything(),
+                    }),
+                ),
+            ).called();
+        });
+
+        it('should fail on fetch error', async function() {
+            const actionSetId = '00000000-0000-0000-0000-000000000000';
+
+            const actionSetEntity: ActionSetEntity = {
+                id: actionSetId,
+                actions: [
+                    {
+                        status: 'waiting',
+                        name: 'test',
+                        data: null,
+                        type: 'input',
+                        error: null,
+                        private: false,
+                    },
+                ],
+                links: [],
+                current_action: 0,
+                current_status: 'input:waiting',
+                name: 'test',
+                created_at: new Date(Date.now()),
+                updated_at: new Date(Date.now()),
+                dispatched_at: new Date(Date.now()),
+            };
+
+            const spiedService = spy(context.actionSetsService);
+
+            const error = 'an_error_occured';
+            const details = { error: 'happens' };
+
+            when(
+                spiedService.search(
+                    deepEqual({
+                        id: actionSetId,
+                    }),
+                ),
+            ).thenResolve({
+                error: 'unexpected_error',
+                response: null,
+            });
+
+            const res = await context.actionSetsService.errorStep(actionSetId, error, details, 0);
+
+            expect(res.error).toEqual('unexpected_error');
+            expect(res.response).toEqual(null);
+
+            verify(
+                spiedService.search(
+                    deepEqual({
+                        id: actionSetId,
+                    }),
+                ),
+            ).called();
+        });
+
+        it('should fail on empty fetch', async function() {
+            const actionSetId = '00000000-0000-0000-0000-000000000000';
+
+            const actionSetEntity: ActionSetEntity = {
+                id: actionSetId,
+                actions: [
+                    {
+                        status: 'waiting',
+                        name: 'test',
+                        data: null,
+                        type: 'input',
+                        error: null,
+                        private: false,
+                    },
+                ],
+                links: [],
+                current_action: 0,
+                current_status: 'input:waiting',
+                name: 'test',
+                created_at: new Date(Date.now()),
+                updated_at: new Date(Date.now()),
+                dispatched_at: new Date(Date.now()),
+            };
+
+            const spiedService = spy(context.actionSetsService);
+
+            const error = 'an_error_occured';
+            const details = { error: 'happens' };
+
+            when(
+                spiedService.search(
+                    deepEqual({
+                        id: actionSetId,
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: [],
+            });
+
+            const res = await context.actionSetsService.errorStep(actionSetId, error, details, 0);
+
+            expect(res.error).toEqual('actionset_not_found');
+            expect(res.response).toEqual(null);
+
+            verify(
+                spiedService.search(
+                    deepEqual({
+                        id: actionSetId,
+                    }),
+                ),
+            ).called();
+        });
+
+        it('should fail on update error', async function() {
+            const actionSetId = '00000000-0000-0000-0000-000000000000';
+
+            const actionSetEntity: ActionSetEntity = {
+                id: actionSetId,
+                actions: [
+                    {
+                        status: 'waiting',
+                        name: 'test',
+                        data: null,
+                        type: 'input',
+                        error: null,
+                        private: false,
+                    },
+                ],
+                links: [],
+                current_action: 0,
+                current_status: 'input:waiting',
+                name: 'test',
+                created_at: new Date(Date.now()),
+                updated_at: new Date(Date.now()),
+                dispatched_at: new Date(Date.now()),
+            };
+
+            const spiedService = spy(context.actionSetsService);
+
+            const error = 'an_error_occured';
+            const details = { error: 'happens' };
+
+            when(
+                spiedService.search(
+                    deepEqual({
+                        id: actionSetId,
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: [actionSetEntity],
+            });
+
+            when(
+                spiedService.update(
+                    deepEqual({
+                        id: actionSetId,
+                    }),
+                    deepEqual({
+                        actions: [
+                            {
+                                status: 'error',
+                                name: 'test',
+                                data: null,
+                                type: 'input',
+                                error: anyString(),
+                                private: false,
+                            },
+                        ],
+                        links: [],
+                        current_action: 0,
+                        current_status: 'input:error',
+                        name: 'test',
+                        created_at: anything(),
+                        updated_at: anything(),
+                        dispatched_at: anything(),
+                    }),
+                ),
+            ).thenResolve({
+                error: 'unexpected_error',
+                response: null,
+            });
+
+            const res = await context.actionSetsService.errorStep(actionSetId, error, details, 0);
+
+            expect(res.error).toEqual('unexpected_error');
+            expect(res.response).toEqual(null);
+
+            verify(
+                spiedService.search(
+                    deepEqual({
+                        id: actionSetId,
+                    }),
+                ),
+            ).called();
+
+            verify(
+                spiedService.update(
+                    deepEqual({
+                        id: actionSetId,
+                    }),
+                    deepEqual({
+                        actions: [
+                            {
+                                status: 'error',
+                                name: 'test',
+                                data: null,
+                                type: 'input',
+                                error: anyString(),
+                                private: false,
+                            },
+                        ],
+                        links: [],
+                        current_action: 0,
+                        current_status: 'input:error',
+                        name: 'test',
+                        created_at: anything(),
+                        updated_at: anything(),
+                        dispatched_at: anything(),
+                    }),
+                ),
+            ).called();
+        });
+    });
+
+    describe('updateAction', function() {
+        it('should update the action', async function() {
+            const actionSetId = '00000000-0000-0000-0000-000000000000';
+
+            const actionSetEntity: ActionSetEntity = {
+                id: actionSetId,
+                actions: [
+                    {
+                        status: 'waiting',
+                        name: 'test',
+                        data: null,
+                        type: 'input',
+                        error: null,
+                        private: false,
+                    },
+                ],
+                links: [],
+                current_action: 0,
+                current_status: 'input:waiting',
+                name: 'test',
+                created_at: new Date(Date.now()),
+                updated_at: new Date(Date.now()),
+                dispatched_at: new Date(Date.now()),
+            };
+
+            const spiedService = spy(context.actionSetsService);
+
+            const data = { field: 'value' };
+            const idx = 0;
+
+            when(
+                spiedService.update(
+                    deepEqual({
+                        id: actionSetId,
+                    }),
+                    deepEqual({
+                        actions: [
+                            {
+                                status: 'waiting',
+                                name: 'test',
+                                data: JSON.stringify(data),
+                                type: 'input',
+                                error: null,
+                                private: false,
+                            },
+                        ],
+                        links: [],
+                        current_action: 0,
+                        current_status: 'input:waiting',
+                        name: 'test',
+                        created_at: anything(),
+                        updated_at: anything(),
+                        dispatched_at: anything(),
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: null,
+            });
+
+            let callIdx = 1;
+
+            when(
+                spiedService.search(
+                    deepEqual({
+                        id: actionSetId,
+                    }),
+                ),
+            ).thenCall(() => {
+                if (callIdx === 0) {
+                    callIdx += 1;
+                    return Promise.resolve({
+                        error: null,
+                        response: [actionSetEntity],
+                    });
+                } else {
+                    return Promise.resolve({
+                        error: null,
+                        response: [
+                            {
+                                id: actionSetId,
+                                actions: [
+                                    {
+                                        status: 'waiting',
+                                        name: 'test',
+                                        data: JSON.stringify(data),
+                                        type: 'input',
+                                        error: null,
+                                        private: false,
+                                    },
+                                ],
+                                links: [],
+                                current_action: 0,
+                                current_status: 'input:waiting',
+                                name: 'test',
+                                created_at: new Date(Date.now()),
+                                updated_at: new Date(Date.now()),
+                                dispatched_at: new Date(Date.now()),
+                            },
+                        ],
+                    });
+                }
+            });
+
+            const res = await context.actionSetsService.updateAction(new ActionSet().load(actionSetEntity), idx, data);
+
+            expect(res.error).toEqual(null);
+            expect(res.response).toEqual({
+                id: actionSetId,
+                actions: [
+                    {
+                        status: 'waiting',
+                        name: 'test',
+                        data: JSON.stringify(data),
+                        type: 'input',
+                        error: null,
+                        private: false,
+                    },
+                ],
+                links: [],
+                current_action: 0,
+                current_status: 'input:waiting',
+                name: 'test',
+                created_at: res.response.created_at,
+                updated_at: res.response.updated_at,
+                dispatched_at: res.response.dispatched_at,
+            });
+
+            verify(
+                spiedService.update(
+                    deepEqual({
+                        id: actionSetId,
+                    }),
+                    deepEqual({
+                        actions: [
+                            {
+                                status: 'waiting',
+                                name: 'test',
+                                data: JSON.stringify(data),
+                                type: 'input',
+                                error: null,
+                                private: false,
+                            },
+                        ],
+                        links: [],
+                        current_action: 0,
+                        current_status: 'input:waiting',
+                        name: 'test',
+                        created_at: anything(),
+                        updated_at: anything(),
+                        dispatched_at: anything(),
+                    }),
+                ),
+            ).called();
+
+            verify(
+                spiedService.search(
+                    deepEqual({
+                        id: actionSetId,
+                    }),
+                ),
+            ).called();
+
+            verify(context.queueMock.add('input', deepEqual(actionSetEntity))).called();
+        });
+
+        it('should update the action without provided entity', async function() {
+            const actionSetId = '00000000-0000-0000-0000-000000000000';
+
+            const actionSetEntity: ActionSetEntity = {
+                id: actionSetId,
+                actions: [
+                    {
+                        status: 'waiting',
+                        name: 'test',
+                        data: null,
+                        type: 'input',
+                        error: null,
+                        private: false,
+                    },
+                ],
+                links: [],
+                current_action: 0,
+                current_status: 'input:waiting',
+                name: 'test',
+                created_at: new Date(Date.now()),
+                updated_at: new Date(Date.now()),
+                dispatched_at: new Date(Date.now()),
+            };
+
+            const spiedService = spy(context.actionSetsService);
+
+            const data = { field: 'value' };
+            const idx = 0;
+
+            when(
+                spiedService.update(
+                    deepEqual({
+                        id: actionSetId,
+                    }),
+                    deepEqual({
+                        actions: [
+                            {
+                                status: 'waiting',
+                                name: 'test',
+                                data: JSON.stringify(data),
+                                type: 'input',
+                                error: null,
+                                private: false,
+                            },
+                        ],
+                        links: [],
+                        current_action: 0,
+                        current_status: 'input:waiting',
+                        name: 'test',
+                        created_at: anything(),
+                        updated_at: anything(),
+                        dispatched_at: anything(),
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: null,
+            });
+
+            let callIdx = 0;
+
+            when(
+                spiedService.search(
+                    deepEqual({
+                        id: actionSetId,
+                    }),
+                ),
+            ).thenCall(() => {
+                if (callIdx === 0) {
+                    callIdx += 1;
+                    return Promise.resolve({
+                        error: null,
+                        response: [actionSetEntity],
+                    });
+                } else {
+                    return Promise.resolve({
+                        error: null,
+                        response: [
+                            {
+                                id: actionSetId,
+                                actions: [
+                                    {
+                                        status: 'waiting',
+                                        name: 'test',
+                                        data: JSON.stringify(data),
+                                        type: 'input',
+                                        error: null,
+                                        private: false,
+                                    },
+                                ],
+                                links: [],
+                                current_action: 0,
+                                current_status: 'input:waiting',
+                                name: 'test',
+                                created_at: new Date(Date.now()),
+                                updated_at: new Date(Date.now()),
+                                dispatched_at: new Date(Date.now()),
+                            },
+                        ],
+                    });
+                }
+            });
+
+            const res = await context.actionSetsService.updateAction(actionSetId, idx, data);
+
+            expect(res.error).toEqual(null);
+            expect(res.response).toEqual({
+                id: actionSetId,
+                actions: [
+                    {
+                        status: 'waiting',
+                        name: 'test',
+                        data: JSON.stringify(data),
+                        type: 'input',
+                        error: null,
+                        private: false,
+                    },
+                ],
+                links: [],
+                current_action: 0,
+                current_status: 'input:waiting',
+                name: 'test',
+                created_at: res.response.created_at,
+                updated_at: res.response.updated_at,
+                dispatched_at: res.response.dispatched_at,
+            });
+
+            verify(
+                spiedService.update(
+                    deepEqual({
+                        id: actionSetId,
+                    }),
+                    deepEqual({
+                        actions: [
+                            {
+                                status: 'waiting',
+                                name: 'test',
+                                data: JSON.stringify(data),
+                                type: 'input',
+                                error: null,
+                                private: false,
+                            },
+                        ],
+                        links: [],
+                        current_action: 0,
+                        current_status: 'input:waiting',
+                        name: 'test',
+                        created_at: anything(),
+                        updated_at: anything(),
+                        dispatched_at: anything(),
+                    }),
+                ),
+            ).called();
+
+            verify(
+                spiedService.search(
+                    deepEqual({
+                        id: actionSetId,
+                    }),
+                ),
+            ).twice();
+
+            verify(context.queueMock.add('input', deepEqual(actionSetEntity))).called();
+        });
+
+        it('should fail on initial fetch error', async function() {
+            const actionSetId = '00000000-0000-0000-0000-000000000000';
+
+            const actionSetEntity: ActionSetEntity = {
+                id: actionSetId,
+                actions: [
+                    {
+                        status: 'waiting',
+                        name: 'test',
+                        data: null,
+                        type: 'input',
+                        error: null,
+                        private: false,
+                    },
+                ],
+                links: [],
+                current_action: 0,
+                current_status: 'input:waiting',
+                name: 'test',
+                created_at: new Date(Date.now()),
+                updated_at: new Date(Date.now()),
+                dispatched_at: new Date(Date.now()),
+            };
+
+            const spiedService = spy(context.actionSetsService);
+
+            const data = { field: 'value' };
+            const idx = 0;
+
+            when(
+                spiedService.update(
+                    deepEqual({
+                        id: actionSetId,
+                    }),
+                    deepEqual({
+                        actions: [
+                            {
+                                status: 'waiting',
+                                name: 'test',
+                                data: JSON.stringify(data),
+                                type: 'input',
+                                error: null,
+                                private: false,
+                            },
+                        ],
+                        links: [],
+                        current_action: 0,
+                        current_status: 'input:waiting',
+                        name: 'test',
+                        created_at: anything(),
+                        updated_at: anything(),
+                        dispatched_at: anything(),
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: null,
+            });
+
+            let callIdx = 0;
+
+            when(
+                spiedService.search(
+                    deepEqual({
+                        id: actionSetId,
+                    }),
+                ),
+            ).thenCall(() => {
+                if (callIdx === 0) {
+                    callIdx += 1;
+                    return Promise.resolve({
+                        error: 'unexpected_error',
+                        response: null,
+                    });
+                } else {
+                    return Promise.resolve({
+                        error: null,
+                        response: [
+                            {
+                                id: actionSetId,
+                                actions: [
+                                    {
+                                        status: 'waiting',
+                                        name: 'test',
+                                        data: JSON.stringify(data),
+                                        type: 'input',
+                                        error: null,
+                                        private: false,
+                                    },
+                                ],
+                                links: [],
+                                current_action: 0,
+                                current_status: 'input:waiting',
+                                name: 'test',
+                                created_at: new Date(Date.now()),
+                                updated_at: new Date(Date.now()),
+                                dispatched_at: new Date(Date.now()),
+                            },
+                        ],
+                    });
+                }
+            });
+
+            const res = await context.actionSetsService.updateAction(actionSetId, idx, data);
+
+            expect(res.error).toEqual('unexpected_error');
+            expect(res.response).toEqual(null);
+
+            verify(
+                spiedService.search(
+                    deepEqual({
+                        id: actionSetId,
+                    }),
+                ),
+            ).called();
+        });
+
+        it('should fail on initial empty fetch', async function() {
+            const actionSetId = '00000000-0000-0000-0000-000000000000';
+
+            const actionSetEntity: ActionSetEntity = {
+                id: actionSetId,
+                actions: [
+                    {
+                        status: 'waiting',
+                        name: 'test',
+                        data: null,
+                        type: 'input',
+                        error: null,
+                        private: false,
+                    },
+                ],
+                links: [],
+                current_action: 0,
+                current_status: 'input:waiting',
+                name: 'test',
+                created_at: new Date(Date.now()),
+                updated_at: new Date(Date.now()),
+                dispatched_at: new Date(Date.now()),
+            };
+
+            const spiedService = spy(context.actionSetsService);
+
+            const data = { field: 'value' };
+            const idx = 0;
+
+            when(
+                spiedService.update(
+                    deepEqual({
+                        id: actionSetId,
+                    }),
+                    deepEqual({
+                        actions: [
+                            {
+                                status: 'waiting',
+                                name: 'test',
+                                data: JSON.stringify(data),
+                                type: 'input',
+                                error: null,
+                                private: false,
+                            },
+                        ],
+                        links: [],
+                        current_action: 0,
+                        current_status: 'input:waiting',
+                        name: 'test',
+                        created_at: anything(),
+                        updated_at: anything(),
+                        dispatched_at: anything(),
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: null,
+            });
+
+            let callIdx = 0;
+
+            when(
+                spiedService.search(
+                    deepEqual({
+                        id: actionSetId,
+                    }),
+                ),
+            ).thenCall(() => {
+                if (callIdx === 0) {
+                    callIdx += 1;
+                    return Promise.resolve({
+                        error: null,
+                        response: [],
+                    });
+                } else {
+                    return Promise.resolve({
+                        error: null,
+                        response: [
+                            {
+                                id: actionSetId,
+                                actions: [
+                                    {
+                                        status: 'waiting',
+                                        name: 'test',
+                                        data: JSON.stringify(data),
+                                        type: 'input',
+                                        error: null,
+                                        private: false,
+                                    },
+                                ],
+                                links: [],
+                                current_action: 0,
+                                current_status: 'input:waiting',
+                                name: 'test',
+                                created_at: new Date(Date.now()),
+                                updated_at: new Date(Date.now()),
+                                dispatched_at: new Date(Date.now()),
+                            },
+                        ],
+                    });
+                }
+            });
+
+            const res = await context.actionSetsService.updateAction(actionSetId, idx, data);
+
+            expect(res.error).toEqual('actionset_not_found');
+            expect(res.response).toEqual(null);
+
+            verify(
+                spiedService.search(
+                    deepEqual({
+                        id: actionSetId,
+                    }),
+                ),
+            ).called();
+        });
+
+        it('should fail on update error', async function() {
+            const actionSetId = '00000000-0000-0000-0000-000000000000';
+
+            const actionSetEntity: ActionSetEntity = {
+                id: actionSetId,
+                actions: [
+                    {
+                        status: 'waiting',
+                        name: 'test',
+                        data: null,
+                        type: 'input',
+                        error: null,
+                        private: false,
+                    },
+                ],
+                links: [],
+                current_action: 0,
+                current_status: 'input:waiting',
+                name: 'test',
+                created_at: new Date(Date.now()),
+                updated_at: new Date(Date.now()),
+                dispatched_at: new Date(Date.now()),
+            };
+
+            const spiedService = spy(context.actionSetsService);
+
+            const data = { field: 'value' };
+            const idx = 0;
+
+            when(
+                spiedService.update(
+                    deepEqual({
+                        id: actionSetId,
+                    }),
+                    deepEqual({
+                        actions: [
+                            {
+                                status: 'waiting',
+                                name: 'test',
+                                data: JSON.stringify(data),
+                                type: 'input',
+                                error: null,
+                                private: false,
+                            },
+                        ],
+                        links: [],
+                        current_action: 0,
+                        current_status: 'input:waiting',
+                        name: 'test',
+                        created_at: anything(),
+                        updated_at: anything(),
+                        dispatched_at: anything(),
+                    }),
+                ),
+            ).thenResolve({
+                error: 'unexpected_error',
+                response: null,
+            });
+
+            let callIdx = 0;
+
+            when(
+                spiedService.search(
+                    deepEqual({
+                        id: actionSetId,
+                    }),
+                ),
+            ).thenCall(() => {
+                if (callIdx === 0) {
+                    callIdx += 1;
+                    return Promise.resolve({
+                        error: null,
+                        response: [actionSetEntity],
+                    });
+                } else {
+                    return Promise.resolve({
+                        error: null,
+                        response: [
+                            {
+                                id: actionSetId,
+                                actions: [
+                                    {
+                                        status: 'waiting',
+                                        name: 'test',
+                                        data: JSON.stringify(data),
+                                        type: 'input',
+                                        error: null,
+                                        private: false,
+                                    },
+                                ],
+                                links: [],
+                                current_action: 0,
+                                current_status: 'input:waiting',
+                                name: 'test',
+                                created_at: new Date(Date.now()),
+                                updated_at: new Date(Date.now()),
+                                dispatched_at: new Date(Date.now()),
+                            },
+                        ],
+                    });
+                }
+            });
+
+            const res = await context.actionSetsService.updateAction(actionSetId, idx, data);
+
+            expect(res.error).toEqual('unexpected_error');
+            expect(res.response).toEqual(null);
+
+            verify(
+                spiedService.update(
+                    deepEqual({
+                        id: actionSetId,
+                    }),
+                    deepEqual({
+                        actions: [
+                            {
+                                status: 'waiting',
+                                name: 'test',
+                                data: JSON.stringify(data),
+                                type: 'input',
+                                error: null,
+                                private: false,
+                            },
+                        ],
+                        links: [],
+                        current_action: 0,
+                        current_status: 'input:waiting',
+                        name: 'test',
+                        created_at: anything(),
+                        updated_at: anything(),
+                        dispatched_at: anything(),
+                    }),
+                ),
+            ).called();
+
+            verify(
+                spiedService.search(
+                    deepEqual({
+                        id: actionSetId,
+                    }),
+                ),
+            ).called();
+        });
+
+        it('should fail on second fetch error', async function() {
+            const actionSetId = '00000000-0000-0000-0000-000000000000';
+
+            const actionSetEntity: ActionSetEntity = {
+                id: actionSetId,
+                actions: [
+                    {
+                        status: 'waiting',
+                        name: 'test',
+                        data: null,
+                        type: 'input',
+                        error: null,
+                        private: false,
+                    },
+                ],
+                links: [],
+                current_action: 0,
+                current_status: 'input:waiting',
+                name: 'test',
+                created_at: new Date(Date.now()),
+                updated_at: new Date(Date.now()),
+                dispatched_at: new Date(Date.now()),
+            };
+
+            const spiedService = spy(context.actionSetsService);
+
+            const data = { field: 'value' };
+            const idx = 0;
+
+            when(
+                spiedService.update(
+                    deepEqual({
+                        id: actionSetId,
+                    }),
+                    deepEqual({
+                        actions: [
+                            {
+                                status: 'waiting',
+                                name: 'test',
+                                data: JSON.stringify(data),
+                                type: 'input',
+                                error: null,
+                                private: false,
+                            },
+                        ],
+                        links: [],
+                        current_action: 0,
+                        current_status: 'input:waiting',
+                        name: 'test',
+                        created_at: anything(),
+                        updated_at: anything(),
+                        dispatched_at: anything(),
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: null,
+            });
+
+            let callIdx = 0;
+
+            when(
+                spiedService.search(
+                    deepEqual({
+                        id: actionSetId,
+                    }),
+                ),
+            ).thenCall(() => {
+                if (callIdx === 0) {
+                    callIdx += 1;
+                    return Promise.resolve({
+                        error: null,
+                        response: [actionSetEntity],
+                    });
+                } else {
+                    return Promise.resolve({
+                        error: 'unexpected_error',
+                        response: null,
+                    });
+                }
+            });
+
+            const res = await context.actionSetsService.updateAction(actionSetId, idx, data);
+
+            expect(res.error).toEqual('unexpected_error');
+            expect(res.response).toEqual(null);
+
+            verify(
+                spiedService.update(
+                    deepEqual({
+                        id: actionSetId,
+                    }),
+                    deepEqual({
+                        actions: [
+                            {
+                                status: 'waiting',
+                                name: 'test',
+                                data: JSON.stringify(data),
+                                type: 'input',
+                                error: null,
+                                private: false,
+                            },
+                        ],
+                        links: [],
+                        current_action: 0,
+                        current_status: 'input:waiting',
+                        name: 'test',
+                        created_at: anything(),
+                        updated_at: anything(),
+                        dispatched_at: anything(),
+                    }),
+                ),
+            ).called();
+
+            verify(
+                spiedService.search(
+                    deepEqual({
+                        id: actionSetId,
+                    }),
+                ),
+            ).twice();
         });
     });
 });

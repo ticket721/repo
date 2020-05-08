@@ -14,7 +14,6 @@ import { EventsRightsConfig } from '@lib/common/events/Events.rights';
     imports: [DatesModule, CategoriesModule, ExpressCassandraModule.forFeature([EventEntity, EventsRepository])],
     providers: [
         EventsService,
-
         // RightsConfigs
         {
             provide: '@rights/event',

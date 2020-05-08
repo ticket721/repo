@@ -13,6 +13,7 @@ import { UserDto } from '@lib/common/users/dto/User.dto';
 import _ from 'lodash';
 import { ModuleRef } from '@nestjs/core';
 import { RightsConfig } from '@lib/common/rights/RightsConfig.type';
+import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
 
 /**
  * Service to CRUD RightEntities
@@ -106,19 +107,94 @@ export class RightsService extends CRUDExtension<RightsRepository, RightEntity> 
 
         const right: RightEntity = rightsQuery.response[0];
 
-        for (const rightKey of Object.keys(right.rights)) {
-            if (requiredRights.indexOf(rightKey) === -1) {
-                return {
-                    error: 'unauthorized',
-                    response: null,
-                };
+        const resolvedRights = await this.getAllRights(rightsConfig, right);
+
+        let found = false;
+
+        for (const rightKey of resolvedRights) {
+            if (requiredRights.indexOf(rightKey) !== -1) {
+                found = true;
             }
+        }
+
+        if (!found) {
+            return {
+                error: 'unauthorized',
+                response: null,
+            };
         }
 
         return {
             error: null,
             response: null,
         };
+    }
+
+    /**
+     * Recursively resolves the rights of the right entity
+     *
+     * @param right
+     * @param rightsConfig
+     * @param met
+     */
+    private async recursiveResolver(
+        right: string,
+        rightsConfig: RightsConfig,
+        met: { [key: string]: boolean },
+    ): Promise<string[]> {
+        if (met[right] === true) {
+            return [];
+        }
+
+        let ret = [right];
+
+        if (rightsConfig[right].countAs) {
+            for (const countAsRight of rightsConfig[right].countAs) {
+                ret = [...ret, ...(await this.recursiveResolver(countAsRight, rightsConfig, met))];
+            }
+        }
+
+        met[right] = true;
+
+        return ret;
+    }
+
+    /**
+     * Returns the right config for given entity
+     *
+     * @param entityName
+     */
+    async getRightsConfig(entityName: string): Promise<ServiceResponse<RightsConfig>> {
+        try {
+            return {
+                error: null,
+                response: await this.moduleRef.get(`@rights/${entityName}`, { strict: false }),
+            };
+        } catch (e) {
+            return {
+                error: 'cannot_find_config',
+                response: null,
+            };
+        }
+    }
+
+    /**
+     * Returns all rights of the right entity
+     *
+     * @param rightsConfig
+     * @param rightEntity
+     */
+    async getAllRights(rightsConfig: RightsConfig, rightEntity: RightEntity): Promise<string[]> {
+        let rights = [];
+        const met = {};
+
+        for (const right of Object.keys(rightEntity.rights)) {
+            rights = [...rights, ...(await this.recursiveResolver(right, rightsConfig, met))];
+        }
+
+        rights = rights.filter((val: string, idx: number): boolean => rights.indexOf(val) === idx);
+
+        return rights;
     }
 
     /**
@@ -200,13 +276,21 @@ export class RightsService extends CRUDExtension<RightsRepository, RightEntity> 
 
             const right: RightEntity = rightsQuery.response[0];
 
-            for (const rightKey of Object.keys(right.rights)) {
-                if (requiredRights.indexOf(rightKey) === -1) {
-                    return {
-                        error: 'unauthorized',
-                        response: null,
-                    };
+            const resolvedRights = await this.getAllRights(rightsConfig, right);
+
+            let found = false;
+
+            for (const rightKey of resolvedRights) {
+                if (requiredRights.indexOf(rightKey) !== -1) {
+                    found = true;
                 }
+            }
+
+            if (!found) {
+                return {
+                    error: 'unauthorized',
+                    response: null,
+                };
             }
         }
 

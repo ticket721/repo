@@ -83,7 +83,6 @@ typings/
 
 # gatsby files
 .cache/
-public
 
 # vuepress build output
 .vuepress/dist
@@ -106,6 +105,7 @@ public
 .idea/**/usage.statistics.xml
 .idea/**/dictionaries
 .idea/**/shelf
+.idea/codeStyles/Project.xml
 
 # Generated files
 .idea/**/contentModel.xml

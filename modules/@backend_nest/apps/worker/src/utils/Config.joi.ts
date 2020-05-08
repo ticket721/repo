@@ -88,4 +88,7 @@ export const Config: Joi.ObjectSchema = Joi.object({
     GLOBAL_CONFIG_BINANCE_MOCK: Joi.boolean().default('true'),
 
     DOSOJIN_STRIPE_PRIVATE_KEY: Joi.string().required(),
+    CART_MAX_TICKET_PER_CART: Joi.number().required(),
+
+    ACSET_EVENT_BATCH_SIZE: Joi.number().required(),
 });

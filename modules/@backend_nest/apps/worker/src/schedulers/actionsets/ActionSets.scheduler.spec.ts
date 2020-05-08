@@ -1,383 +1,377 @@
-import { ActionSetsScheduler } from '@app/worker/schedulers/actionsets/ActionSets.scheduler';
+import { Schedule } from 'nest-schedule';
+import { OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
+import { ConfigService } from '@lib/common/config/Config.service';
 import { ActionSetsService } from '@lib/common/actionsets/ActionSets.service';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
-import { Job, JobOptions, Queue } from 'bull';
-import { anything, capture, deepEqual, instance, mock, verify, when } from 'ts-mockito';
-import { Schedule } from 'nest-schedule';
-import { ActionSetStatus, ActionStatus, ActionType } from '@lib/common/actionsets/entities/ActionSet.entity';
+import { getQueueToken } from '@nestjs/bull';
+import { Job, JobOptions } from 'bull';
 import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
-import { OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
+import { ActionSetsScheduler } from '@app/worker/schedulers/actionsets/ActionSets.scheduler';
+import { deepEqual, instance, mock, verify, when } from 'ts-mockito';
+import { Test, TestingModule } from '@nestjs/testing';
+import { TimeToolService } from '@lib/common/toolbox/Time.tool.service';
+import { ESSearchReturn } from '@lib/common/utils/ESSearchReturn.type';
+import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
+
+class QueueMock<T = any> {
+    add(name: string, data: T, opts?: JobOptions): Promise<Job<T>> {
+        return null;
+    }
+    getJobs(...args: any[]): Promise<Job[]> {
+        return null;
+    }
+}
 
 describe('ActionSets Scheduler', function() {
     const context: {
         actionSetsScheduler: ActionSetsScheduler;
-        actionSetsServiceMock: ActionSetsService;
-        shutdownServiceMock: ShutdownService;
-        actionQueueMock: Queue;
         scheduleMock: Schedule;
         outrospectionServiceMock: OutrospectionService;
+        configServiceMock: ConfigService;
+        actionSetsServiceMock: ActionSetsService;
+        shutdownServiceMock: ShutdownService;
+        actionQueueMock: QueueMock;
+        loggerServiceMock: WinstonLoggerService;
+        timeToolServiceMock: TimeToolService;
     } = {
         actionSetsScheduler: null,
+        scheduleMock: null,
+        outrospectionServiceMock: null,
+        configServiceMock: null,
         actionSetsServiceMock: null,
         shutdownServiceMock: null,
         actionQueueMock: null,
-        scheduleMock: null,
-        outrospectionServiceMock: null,
+        loggerServiceMock: null,
+        timeToolServiceMock: null,
     };
 
     beforeEach(async function() {
-        context.actionSetsServiceMock = mock(ActionSetsService);
-        context.actionQueueMock = mock<Queue>();
-        context.shutdownServiceMock = mock(ShutdownService);
         context.scheduleMock = mock(Schedule);
         context.outrospectionServiceMock = mock(OutrospectionService);
-        context.actionSetsScheduler = new ActionSetsScheduler(
-            instance(context.actionSetsServiceMock),
-            instance(context.shutdownServiceMock),
-            instance(context.actionQueueMock),
-            instance(context.scheduleMock),
-            new WinstonLoggerService('actionset'),
-            instance(context.outrospectionServiceMock),
-        );
+        context.configServiceMock = mock(ConfigService);
+        context.actionSetsServiceMock = mock(ActionSetsService);
+        context.shutdownServiceMock = mock(ShutdownService);
+        context.actionQueueMock = mock(QueueMock);
+        context.loggerServiceMock = mock(WinstonLoggerService);
+        context.timeToolServiceMock = mock(TimeToolService);
+
+        const module: TestingModule = await Test.createTestingModule({
+            providers: [
+                {
+                    provide: 'NEST_SCHEDULE_PROVIDER',
+                    useValue: instance(context.scheduleMock),
+                },
+                {
+                    provide: OutrospectionService,
+                    useValue: instance(context.outrospectionServiceMock),
+                },
+                {
+                    provide: ConfigService,
+                    useValue: instance(context.configServiceMock),
+                },
+                {
+                    provide: ActionSetsService,
+                    useValue: instance(context.actionSetsServiceMock),
+                },
+                {
+                    provide: ShutdownService,
+                    useValue: instance(context.shutdownServiceMock),
+                },
+                {
+                    provide: getQueueToken('action'),
+                    useValue: instance(context.actionQueueMock),
+                },
+                {
+                    provide: WinstonLoggerService,
+                    useValue: instance(context.loggerServiceMock),
+                },
+                {
+                    provide: TimeToolService,
+                    useValue: instance(context.timeToolServiceMock),
+                },
+                ActionSetsScheduler,
+            ],
+        }).compile();
+
+        context.actionSetsScheduler = module.get<ActionSetsScheduler>(ActionSetsScheduler);
     });
 
-    describe('inputDispatcher', function() {
-        it('should fail fetching actionSets', async function() {
-            when(
-                context.actionSetsServiceMock.searchElastic(
-                    deepEqual({
-                        body: {
-                            size: 1000,
-                            query: {
-                                bool: {
-                                    must: [
-                                        {
-                                            term: {
-                                                current_status: 'input:waiting',
-                                            },
-                                        },
-                                        {
-                                            range: {
-                                                dispatched_at: {
-                                                    lt: 'now-5s',
-                                                },
-                                            },
-                                        },
-                                    ],
+    describe('eventDispatcher', function() {
+        it('should fetch several action sets and dispatch them to queue', async function() {
+            const batchSize = 1000;
+            const now = new Date(Date.now());
+
+            when(context.configServiceMock.get('ACSET_EVENT_BATCH_SIZE')).thenReturn(batchSize.toString());
+            when(context.timeToolServiceMock.now()).thenReturn(now);
+
+            const query = {
+                body: {
+                    size: 1000,
+                    query: {
+                        bool: {
+                            must: [
+                                {
+                                    term: {
+                                        current_status: 'event:in progress',
+                                    },
                                 },
-                            },
-                        },
-                    }),
-                ),
-            ).thenResolve({
-                response: null,
-                error: 'unexpected error',
-            });
-
-            await context.actionSetsScheduler.inputDispatcher();
-
-            verify(
-                context.shutdownServiceMock.shutdownWithError(
-                    deepEqual(new Error('Error while requesting action sets')),
-                ),
-            ).called();
-            verify(
-                context.actionSetsServiceMock.searchElastic(
-                    deepEqual({
-                        body: {
-                            size: 1000,
-                            query: {
-                                bool: {
-                                    must: [
-                                        {
-                                            term: {
-                                                current_status: 'input:waiting',
-                                            },
+                                {
+                                    range: {
+                                        dispatched_at: {
+                                            lt: 'now-5s',
                                         },
-                                        {
-                                            range: {
-                                                dispatched_at: {
-                                                    lt: 'now-5s',
-                                                },
-                                            },
-                                        },
-                                    ],
+                                    },
                                 },
-                            },
+                            ],
                         },
-                    }),
-                ),
-            ).called();
-        });
-
-        it('should dispatch only response', async function() {
-            const create = new Date(Date.now());
-            const update = new Date(Date.now());
-            const dispatch = new Date(Date.now());
-
-            const entity = {
-                id: 'ccf2ef65-3632-4277-a061-dddfefac48da',
-                name: 'test',
-                current_status: 'input:in progress' as ActionSetStatus,
-                owner: 'ccf2ef65-3632-4277-a061-dddfefac48da',
-                actions: [
-                    {
-                        error: null,
-                        type: 'input' as ActionType,
-                        name: 'first',
-                        data: '{"name":"hello"}',
-                        status: 'in progress' as ActionStatus,
                     },
-                    {
-                        error: null,
-                        type: 'event' as ActionType,
-                        name: 'second',
-                        data: '{"name":"hello"}',
-                        status: 'in progress' as ActionStatus,
-                    },
-                ],
-                current_action: 0,
-                dispatched_at: dispatch,
-                updated_at: update,
-                created_at: create,
+                },
             };
 
-            when(
-                context.actionSetsServiceMock.searchElastic(
-                    deepEqual({
-                        body: {
-                            size: 1000,
-                            query: {
-                                bool: {
-                                    must: [
-                                        {
-                                            term: {
-                                                current_status: 'input:waiting',
-                                            },
-                                        },
-                                        {
-                                            range: {
-                                                dispatched_at: {
-                                                    lt: 'now-5s',
-                                                },
-                                            },
-                                        },
-                                    ],
-                                },
-                            },
-                        },
-                    }),
-                ),
-            ).thenResolve({
+            const actionSets = [
+                {
+                    id: 'action_set_id',
+                },
+            ];
+
+            when(context.actionSetsServiceMock.searchElastic(deepEqual(query))).thenResolve({
+                error: null,
                 response: {
                     hits: {
-                        total: 2,
+                        total: 1,
                         hits: [
                             {
-                                _source: entity,
+                                _source: actionSets[0],
                             },
                         ],
                     },
-                } as any,
-                error: null,
+                } as ESSearchReturn<ActionSetEntity>,
             });
 
-            when(context.actionQueueMock.add('input', deepEqual(entity))).thenResolve(void 0);
             when(context.actionQueueMock.getJobs(deepEqual(['active', 'waiting']))).thenResolve([]);
+
             when(
                 context.actionSetsServiceMock.update(
                     deepEqual({
-                        id: 'ccf2ef65-3632-4277-a061-dddfefac48da',
+                        id: 'action_set_id',
                     }),
                     deepEqual({
-                        dispatched_at: anything(),
+                        dispatched_at: now,
                     }),
                 ),
-            ).thenResolve({} as any);
+            ).thenResolve({
+                error: null,
+                response: null,
+            });
 
-            await context.actionSetsScheduler.inputDispatcher();
+            await context.actionSetsScheduler.eventDispatcher();
 
+            verify(context.configServiceMock.get('ACSET_EVENT_BATCH_SIZE')).called();
+            verify(context.timeToolServiceMock.now()).called();
+            verify(context.actionSetsServiceMock.searchElastic(deepEqual(query))).called();
+            verify(context.actionQueueMock.getJobs(deepEqual(['active', 'waiting']))).called();
+            verify(
+                context.actionSetsServiceMock.update(
+                    deepEqual({
+                        id: 'action_set_id',
+                    }),
+                    deepEqual({
+                        dispatched_at: now,
+                    }),
+                ),
+            ).called();
+
+            verify(context.loggerServiceMock.log(`Dispatched 1 ActionSets on the event queue`)).called();
+            verify(context.actionQueueMock.add('event', deepEqual(actionSets[0]))).called();
+        });
+
+        it('should fetch nothing', async function() {
+            const batchSize = 1000;
+            const now = new Date(Date.now());
+
+            when(context.configServiceMock.get('ACSET_EVENT_BATCH_SIZE')).thenReturn(batchSize.toString());
+            when(context.timeToolServiceMock.now()).thenReturn(now);
+
+            const query = {
+                body: {
+                    size: 1000,
+                    query: {
+                        bool: {
+                            must: [
+                                {
+                                    term: {
+                                        current_status: 'event:in progress',
+                                    },
+                                },
+                                {
+                                    range: {
+                                        dispatched_at: {
+                                            lt: 'now-5s',
+                                        },
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                },
+            };
+
+            when(context.actionSetsServiceMock.searchElastic(deepEqual(query))).thenResolve({
+                error: null,
+                response: {
+                    hits: {
+                        total: 0,
+                        hits: [],
+                    },
+                } as ESSearchReturn<ActionSetEntity>,
+            });
+
+            await context.actionSetsScheduler.eventDispatcher();
+
+            verify(context.configServiceMock.get('ACSET_EVENT_BATCH_SIZE')).called();
+            verify(context.timeToolServiceMock.now()).called();
+            verify(context.actionSetsServiceMock.searchElastic(deepEqual(query))).called();
+        });
+
+        it('should fail on action sets fetch error', async function() {
+            const batchSize = 1000;
+            const now = new Date(Date.now());
+
+            when(context.configServiceMock.get('ACSET_EVENT_BATCH_SIZE')).thenReturn(batchSize.toString());
+            when(context.timeToolServiceMock.now()).thenReturn(now);
+
+            const query = {
+                body: {
+                    size: 1000,
+                    query: {
+                        bool: {
+                            must: [
+                                {
+                                    term: {
+                                        current_status: 'event:in progress',
+                                    },
+                                },
+                                {
+                                    range: {
+                                        dispatched_at: {
+                                            lt: 'now-5s',
+                                        },
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                },
+            };
+
+            when(context.actionSetsServiceMock.searchElastic(deepEqual(query))).thenResolve({
+                error: 'unexpected_error',
+                response: null,
+            });
+
+            await context.actionSetsScheduler.eventDispatcher();
+
+            verify(context.configServiceMock.get('ACSET_EVENT_BATCH_SIZE')).called();
+            verify(context.actionSetsServiceMock.searchElastic(deepEqual(query))).called();
             verify(
                 context.shutdownServiceMock.shutdownWithError(
                     deepEqual(new Error('Error while requesting action sets')),
                 ),
-            ).never();
-            verify(
-                context.actionSetsServiceMock.searchElastic(
-                    deepEqual({
-                        body: {
-                            size: 1000,
-                            query: {
-                                bool: {
-                                    must: [
-                                        {
-                                            term: {
-                                                current_status: 'input:waiting',
-                                            },
-                                        },
-                                        {
-                                            range: {
-                                                dispatched_at: {
-                                                    lt: 'now-5s',
-                                                },
-                                            },
-                                        },
-                                    ],
-                                },
-                            },
-                        },
-                    }),
-                ),
-            ).called();
-            verify(
-                context.actionSetsServiceMock.update(
-                    deepEqual({
-                        id: 'ccf2ef65-3632-4277-a061-dddfefac48da',
-                    }),
-                    deepEqual({
-                        dispatched_at: anything(),
-                    }),
-                ),
-            ).called();
-            verify(context.actionQueueMock.add('input', deepEqual(entity))).called();
-            verify(context.actionQueueMock.getJobs(deepEqual(['active', 'waiting']))).called();
+            );
         });
 
-        it('should skip only response', async function() {
-            const create = new Date(Date.now());
-            const update = new Date(Date.now());
-            const dispatch = new Date(Date.now());
+        it('should not redispatch if already in queue', async function() {
+            const batchSize = 1000;
+            const now = new Date(Date.now());
 
-            const entity = {
-                id: 'ccf2ef65-3632-4277-a061-dddfefac48da',
-                name: 'test',
-                current_status: 'input:in progress' as ActionSetStatus,
-                owner: 'ccf2ef65-3632-4277-a061-dddfefac48da',
-                actions: [
-                    {
-                        error: null,
-                        type: 'input' as ActionType,
-                        name: 'first',
-                        data: '{"name":"hello"}',
-                        status: 'in progress' as ActionStatus,
+            when(context.configServiceMock.get('ACSET_EVENT_BATCH_SIZE')).thenReturn(batchSize.toString());
+            when(context.timeToolServiceMock.now()).thenReturn(now);
+
+            const query = {
+                body: {
+                    size: 1000,
+                    query: {
+                        bool: {
+                            must: [
+                                {
+                                    term: {
+                                        current_status: 'event:in progress',
+                                    },
+                                },
+                                {
+                                    range: {
+                                        dispatched_at: {
+                                            lt: 'now-5s',
+                                        },
+                                    },
+                                },
+                            ],
+                        },
                     },
-                    {
-                        error: null,
-                        type: 'event' as ActionType,
-                        name: 'second',
-                        data: '{"name":"hello"}',
-                        status: 'in progress' as ActionStatus,
-                    },
-                ],
-                current_action: 0,
-                dispatched_at: dispatch,
-                updated_at: update,
-                created_at: create,
+                },
             };
 
-            when(
-                context.actionSetsServiceMock.searchElastic(
-                    deepEqual({
-                        body: {
-                            size: 1000,
-                            query: {
-                                bool: {
-                                    must: [
-                                        {
-                                            term: {
-                                                current_status: 'input:waiting',
-                                            },
-                                        },
-                                        {
-                                            range: {
-                                                dispatched_at: {
-                                                    lt: 'now-5s',
-                                                },
-                                            },
-                                        },
-                                    ],
-                                },
-                            },
-                        },
-                    }),
-                ),
-            ).thenResolve({
+            const actionSets = [
+                {
+                    id: 'action_set_id',
+                },
+            ];
+
+            when(context.actionSetsServiceMock.searchElastic(deepEqual(query))).thenResolve({
+                error: null,
                 response: {
                     hits: {
-                        total: 2,
+                        total: 1,
                         hits: [
                             {
-                                _source: entity,
+                                _source: actionSets[0],
                             },
                         ],
                     },
-                } as any,
-                error: null,
+                } as ESSearchReturn<ActionSetEntity>,
             });
 
-            when(context.actionQueueMock.add('input', deepEqual(entity))).thenResolve(void 0);
             when(context.actionQueueMock.getJobs(deepEqual(['active', 'waiting']))).thenResolve([
                 {
-                    data: entity,
-                } as any,
-            ]);
+                    data: {
+                        id: 'action_set_id',
+                    },
+                },
+            ] as any);
+
             when(
                 context.actionSetsServiceMock.update(
                     deepEqual({
-                        id: 'ccf2ef65-3632-4277-a061-dddfefac48da',
+                        id: 'action_set_id',
                     }),
                     deepEqual({
-                        dispatched_at: anything(),
+                        dispatched_at: now,
                     }),
                 ),
-            ).thenResolve({} as any);
+            ).thenResolve({
+                error: null,
+                response: null,
+            });
 
-            await context.actionSetsScheduler.inputDispatcher();
+            await context.actionSetsScheduler.eventDispatcher();
 
-            verify(
-                context.shutdownServiceMock.shutdownWithError(
-                    deepEqual(new Error('Error while requesting action sets')),
-                ),
-            ).never();
-            verify(
-                context.actionSetsServiceMock.searchElastic(
-                    deepEqual({
-                        body: {
-                            size: 1000,
-                            query: {
-                                bool: {
-                                    must: [
-                                        {
-                                            term: {
-                                                current_status: 'input:waiting',
-                                            },
-                                        },
-                                        {
-                                            range: {
-                                                dispatched_at: {
-                                                    lt: 'now-5s',
-                                                },
-                                            },
-                                        },
-                                    ],
-                                },
-                            },
-                        },
-                    }),
-                ),
-            ).called();
+            verify(context.configServiceMock.get('ACSET_EVENT_BATCH_SIZE')).called();
+            verify(context.timeToolServiceMock.now()).called();
+            verify(context.actionSetsServiceMock.searchElastic(deepEqual(query))).called();
+            verify(context.actionQueueMock.getJobs(deepEqual(['active', 'waiting']))).called();
             verify(
                 context.actionSetsServiceMock.update(
                     deepEqual({
-                        id: 'ccf2ef65-3632-4277-a061-dddfefac48da',
+                        id: 'action_set_id',
                     }),
                     deepEqual({
-                        dispatched_at: anything(),
+                        dispatched_at: now,
                     }),
                 ),
             ).never();
-            verify(context.actionQueueMock.add('input', deepEqual(entity))).never();
-            verify(context.actionQueueMock.getJobs(deepEqual(['active', 'waiting']))).called();
+
+            verify(context.loggerServiceMock.log(`Dispatched 1 ActionSets on the event queue`)).never();
+            verify(context.actionQueueMock.add('event', deepEqual(actionSets[0]))).never();
         });
     });
 });

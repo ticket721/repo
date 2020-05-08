@@ -1,0 +1,28 @@
+{
+  "projects": {
+    "t721-app": {
+      "name": "t721-app",
+      "integrations": {
+        "capacitor": {}
+      },
+      "type": "react",
+      "root": "modules/@frontend_t721-app"
+    },
+    "staff-app": {
+      "name": "staff-app",
+      "integrations": {
+        "capacitor": {}
+      },
+      "type": "react",
+      "root": "modules/@frontend_staff-app"
+    },
+    "organizer-app": {
+      "name": "organizer-app",
+      "integrations": {
+        "capacitor": {}
+      },
+      "type": "react",
+      "root": "modules/@frontend_organizer-app"
+    }
+  }
+}

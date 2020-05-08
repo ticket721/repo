@@ -67,6 +67,22 @@ export async function eventsCreateTextMetadata(
     );
 }
 
+export async function eventsCreateImagesMetadata(
+    token: string,
+    actionset: string,
+    query: EventsCreateImagesMetadata,
+): Promise<AxiosResponse<ActionsUpdateResponseDto>> {
+
+    return (actionsUpdate.bind(this))(
+        token,
+        actionset,
+        {
+            data: query,
+            action_idx: 1,
+        },
+    );
+}
+
 export async function eventsCreateModulesConfiguration(
     token: string,
     actionset: string,
@@ -78,7 +94,7 @@ export async function eventsCreateModulesConfiguration(
         actionset,
         {
             data: query,
-            action_idx: 1,
+            action_idx: 2,
         },
     );
 }
@@ -94,7 +110,7 @@ export async function eventsCreateDatesConfiguration(
         actionset,
         {
             data: query,
-            action_idx: 2,
+            action_idx: 3,
         },
     );
 }
@@ -103,22 +119,6 @@ export async function eventsCreateCategoriesConfiguration(
     token: string,
     actionset: string,
     query: EventsCreateCategoriesConfiguration,
-): Promise<AxiosResponse<ActionsUpdateResponseDto>> {
-
-    return (actionsUpdate.bind(this))(
-        token,
-        actionset,
-        {
-            data: query,
-            action_idx: 3,
-        },
-    );
-}
-
-export async function eventsCreateImagesMetadata(
-    token: string,
-    actionset: string,
-    query: EventsCreateImagesMetadata,
 ): Promise<AxiosResponse<ActionsUpdateResponseDto>> {
 
     return (actionsUpdate.bind(this))(
