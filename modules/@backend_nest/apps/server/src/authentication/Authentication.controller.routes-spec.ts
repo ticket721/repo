@@ -14,8 +14,7 @@ import {
     getSDKAndUser,
 } from '../../test/utils';
 import { PasswordlessUserDto } from './dto/PasswordlessUser.dto';
-import { T721SDK } from '@common/sdk';
-import { FailedRegisterReport } from '../../../../../@common_sdk/lib/@common_sdk/sources';
+import { FailedRegisterReport, T721SDK } from '@common/sdk';
 import { ValidateResetPasswordResponseDto } from '@app/server/authentication/dto/ValidateResetPasswordResponse.dto';
 import { ResetPasswordResponseDto } from '@app/server/authentication/dto/ResetPasswordResponse.dto';
 

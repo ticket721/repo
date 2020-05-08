@@ -20,8 +20,6 @@ import { Job, JobOptions } from 'bull';
 import { PasswordlessUserDto } from '@app/server/authentication/dto/PasswordlessUser.dto';
 import { StatusCodes } from '@lib/common/utils/codes.value';
 import { UserDto } from '@lib/common/users/dto/User.dto';
-import { UnprocessableEntityException } from '@nestjs/common';
-import { ResetPasswordTaskDto } from '@app/server/authentication/dto/ResetPasswordTask.dto';
 import { generatePassword } from '../../test/utils';
 import { ResetPasswordInputDto } from '@app/server/authentication/dto/ResetPasswordInputDto';
 import { PasswordChangeDto } from '@app/server/authentication/dto/PasswordChange.dto';
