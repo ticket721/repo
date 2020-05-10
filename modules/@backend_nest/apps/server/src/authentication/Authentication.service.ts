@@ -279,8 +279,6 @@ export class AuthenticationService {
 
         const rocksideFinalAddress = await this.rocksideService.createIdentity();
 
-        console.log(rocksideFinalAddress);
-
         if (rocksideFinalAddress.error) {
             return {
                 response: null,

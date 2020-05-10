@@ -31,7 +31,6 @@ import { ConfigService } from '@lib/common/config/Config.service';
 import { CurrenciesService } from '@lib/common/currencies/Currencies.service';
 import { DatesService } from '@lib/common/dates/Dates.service';
 import { DateEntity } from '@lib/common/dates/entities/Date.entity';
-import { VaultereumService } from '@lib/common/vaultereum/Vaultereum.service';
 import { HttpExceptionFilter } from '@app/server/utils/HttpException.filter';
 import { UUIDToolService } from '@lib/common/toolbox/UUID.tool.service';
 import { EventsStartInputDto } from '@app/server/controllers/events/dto/EventsStartInput.dto';

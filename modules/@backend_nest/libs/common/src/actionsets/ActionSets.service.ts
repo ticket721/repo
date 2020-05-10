@@ -315,7 +315,6 @@ export class ActionSetsService extends CRUDExtension<ActionSetsRepository, Actio
         });
 
         if (actionSetUpdateRes.error) {
-            console.log('update res', actionSetUpdateRes.error);
             return {
                 error: actionSetUpdateRes.error,
                 response: null,

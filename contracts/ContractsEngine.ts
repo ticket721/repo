@@ -10,17 +10,20 @@ import { save_build }                                                   from './
 import { recover_build }                                                from './utils/recover_build';
 import { truffle_test }                                                 from './utils/truffle_test';
 import * as path                                                        from 'path';
-import { portal_injection }                                            from './utils/portal_injection';
-import { clean_portal }                                                from './utils/clean_portal';
+import { portal_injection }                                                           from './utils/portal_injection';
+import { clean_portal }                                                               from './utils/clean_portal';
 import { clear_upgradeable_build }                                     from './utils/clear_upgradeable_build';
 import { save_upgradeable_build }                                      from './utils/save_upgradeable_build';
 import { recover_upgradeable_build }                                   from './utils/recover_upgreadable_build';
 import { check_artifacts_dir, RepoMigrationStatus, RepoMigrationStep } from './utils/check_artifacts_dir';
 import { update_migration }                                            from './utils/update_migration';
-import { MigrationStepConfig }                                         from './config/MigrationConfig';
+import { MigrationScriptStepConfig,  MigrationTruffleStepConfig }      from './config/MigrationConfig';
 import { check_build }                                                 from './utils/check_build';
 import { clear_run_args }                                              from './utils/clear_run_args';
 import { write_run_args }                                              from './utils/write_run_args';
+import { ScriptStepExportFormat }                                      from './config/ScriptStepExportFormat';
+import { save_artifacts }                                              from './utils/save_artifacts';
+import { portal_artifacts_injection }                                  from './utils/portal_artifacts_injection';
 
 /**
  * Contracts Engine, used to consume `ContractsConfiguration` objects and do the following:
@@ -55,6 +58,42 @@ export class ContractsEngine extends Engine<ContractsConfig> {
 
     }
 
+    private async process_script(mod: ContractsModuleConfig, step: MigrationScriptStepConfig, mig: string) {
+
+        const modlog = module_log(mig, mod.name);
+
+        modlog.info(`ContractsEngine::process_script | importing scripts`);
+        const importedModule: ScriptStepExportFormat = (await import(`../modules/@contracts_${mod.name}`)).default;
+        modlog.success(`ContractsEngine::process_script | finished importing scripts`);
+
+        modlog.info(`ContractsEngine::process_script | calling ${step.method} script`);
+        const response = await importedModule.methods[step.method](this.config, step.args);
+        modlog.success(`ContractsEngine::process_script | finished calling ${step.method} script`);
+
+        if (response.status) {
+            throw new Error(`Script step failed with status: ${response.status}`);
+        }
+
+        modlog.info(`ContractsEngine::process_script | saving artifacts`);
+        save_artifacts(mod.name, this.name, response.artifacts);
+        modlog.success(`ContractsEngine::process_script | saved artifacts`);
+        
+        const artifacts_dir = from_root(path.join('artifacts', this.name, mod.name, 'artifacts'));
+
+        // #8 Save build artifacts to portal
+        try {
+            modlog.info(`ContractsEngine::process_script | saving build & migration artifacts to portal`);
+            portal_artifacts_injection(artifacts_dir, mod.name);
+            modlog.success(`ContractsEngine::process_script | saved build & migration artifacts to portal`);
+        } catch (e) {
+            modlog.fatal(`ContractsEngine::process_script | error when saving build artifacts to portal`);
+            modlog.fatal(e);
+            process.exit(1);
+        }
+
+
+    }
+
     /**
      * Utility to execute a set of truffle migration files on a specified contract module.
      * Updates and saves all generated artifacts
@@ -63,49 +102,49 @@ export class ContractsEngine extends Engine<ContractsConfig> {
      * @param step
      * @param mig
      */
-    private async process_module(mod: ContractsModuleConfig, step: MigrationStepConfig, mig: string) {
+    private async process_truffle(mod: ContractsModuleConfig, step: MigrationTruffleStepConfig, mig: string) {
 
         const modlog = module_log(mig, mod.name);
 
         // #1 Clear previous builds from the contracts directory
         try {
-            modlog.info(`ContractsEngine::process_module | clearing any previous build artifacts`);
+            modlog.info(`ContractsEngine::process_truffle | clearing any previous build artifacts`);
             clear_build(mod.name);
             clear_run_args();
             if (mod.upgradeable) {
                 clear_upgradeable_build(mod.name);
             }
-            modlog.success(`ContractsEngine::process_module | finished clearing build artifacts`);
+            modlog.success(`ContractsEngine::process_truffle | finished clearing build artifacts`);
         } catch (e) {
-            modlog.fatal(`ContractsEngine::process_module | cannot clear build directory`);
+            modlog.fatal(`ContractsEngine::process_truffle | cannot clear build directory`);
             modlog.fatal(e);
             process.exit(1);
         }
 
         // #2 If any artifact exists, recover them into contract build directory
         if (check_build(mod.name, this.name)) {
-            modlog.info(`ContractsEngine::run | recovering previous build artifacts`);
+            modlog.info(`ContractsEngine::process_truffle | recovering previous build artifacts`);
             recover_build(mod.name, this.name);
             if (mod.upgradeable) {
                 recover_upgradeable_build(mod.name, this.name);
             }
-            modlog.success(`ContractsEngine::run | recovered previous build artifacts`);
+            modlog.success(`ContractsEngine::process_truffle | recovered previous build artifacts`);
         } else {
-            modlog.info(`ContractsEngine::run | no saved build artifacts`);
+            modlog.info(`ContractsEngine::process_truffle | no saved build artifacts`);
         }
 
         // #3 Inject arguments if they exist
         if (step.args) {
-            modlog.info(`ContractsEngine::run | write run specific arguments`);
+            modlog.info(`ContractsEngine::process_truffle | write run specific arguments`);
             write_run_args(step.args);
-            modlog.success(`ContractsEngine::run | written run specific arguments`);
+            modlog.success(`ContractsEngine::process_truffle | written run specific arguments`);
         }
 
         // #4 Change current directory to contract module directory
         try {
             process.chdir(from_root(`modules/@contracts_${mod.name}`));
         } catch (e) {
-            modlog.fatal(`ContractsEngine::run | cannot change directory to ${mod.name} module`);
+            modlog.fatal(`ContractsEngine::process_truffle | cannot change directory to ${mod.name} module`);
             modlog.fatal(e);
             process.exit(1);
         }
@@ -115,13 +154,13 @@ export class ContractsEngine extends Engine<ContractsConfig> {
 
             try {
 
-                modlog.info(`ContractsEngine::run | starting tests`);
+                modlog.info(`ContractsEngine::process_truffle | starting tests`);
                 await truffle_test(mod.name, mig);
-                modlog.success(`ContractsEngine::run | finished tests`);
+                modlog.success(`ContractsEngine::process_truffle | finished tests`);
 
             } catch (e) {
 
-                modlog.fatal(`ContractsEngine::run | command 'truffle test' exited with code ${e}`);
+                modlog.fatal(`ContractsEngine::process_truffle | command 'truffle test' exited with code ${e}`);
                 process.exit(1);
 
             }
@@ -130,17 +169,17 @@ export class ContractsEngine extends Engine<ContractsConfig> {
 
         // #6 Run migration range
         try {
-            modlog.info(`ContractsEngine::run | starting migration`);
+            modlog.info(`ContractsEngine::process_truffle | starting migration`);
             await truffle_migrate(mod.name, mig, this.name, step.range[0], step.range[1]);
-            modlog.success(`ContractsEngine::run | finished migration`);
+            modlog.success(`ContractsEngine::process_truffle | finished migration`);
         } catch (e) {
-            modlog.fatal(`ContractsEngine::run | command 'truffle migrate' exited with code ${e}`);
+            modlog.fatal(`ContractsEngine::process_truffle | command 'truffle migrate' exited with code ${e}`);
             process.exit(1);
         }
 
         //if (this.config.post_migration) {
         //    for (const post_migration_module of this.config.post_migration) {
-        //        modlog.info(`ContractsEngine::run | starting post migration module ${post_migration_module.type}`);
+        //        modlog.info(`ContractsEngine::process_truffle | starting post migration module ${post_migration_module.type}`);
         //        try {
         //            switch (post_migration_module.type) {
         //                case 'etherscan_verify': {
@@ -149,30 +188,30 @@ export class ContractsEngine extends Engine<ContractsConfig> {
         //                }
         //            }
         //        } catch (e) {
-        //            modlog.fatal(`ContractsEngine::run | post migration module ${post_migration_module.type} crashed`);
+        //            modlog.fatal(`ContractsEngine::process_truffle | post migration module ${post_migration_module.type} crashed`);
         //            process.exit(1);
         //        }
-        //        modlog.success(`ContractsEngine::run | finished post migration module ${post_migration_module.type}`);
+        //        modlog.success(`ContractsEngine::process_truffle | finished post migration module ${post_migration_module.type}`);
         //    }
         //}
 
         // #7 Save build artifacts to artifacts directory
-        modlog.info(`ContractsEngine::run | saving build artifacts`);
+        modlog.info(`ContractsEngine::process_truffle | saving build artifacts`);
         save_build(mod.name, this.name);
         if (mod.upgradeable) {
             save_upgradeable_build(mod.name, this.name);
         }
-        modlog.success(`ContractsEngine::run | saving build artifacts`);
+        modlog.success(`ContractsEngine::process_truffle | saving build artifacts`);
 
         const build_dir = from_root(path.join('modules', `@contracts_${mod.name}`, 'build'));
 
         // #8 Save build artifacts to portal
         try {
-            modlog.info(`ContractsEngine::run | saving build & migration artifacts to portal`);
+            modlog.info(`ContractsEngine::process_truffle | saving build & migration artifacts to portal`);
             portal_injection(build_dir, mod.name);
-            modlog.success(`ContractsEngine::run | saved build & migration artifacts to portal`);
+            modlog.success(`ContractsEngine::process_truffle | saved build & migration artifacts to portal`);
         } catch (e) {
-            modlog.fatal(`ContractsEngine::run | error when saving build artifacts to portal`);
+            modlog.fatal(`ContractsEngine::process_truffle | error when saving build artifacts to portal`);
             modlog.fatal(e);
             process.exit(1);
         }
@@ -223,18 +262,37 @@ export class ContractsEngine extends Engine<ContractsConfig> {
 
             const history: RepoMigrationStep[] = [];
 
-            for (const step of migration.serie) {
-                miglog.info(`ContractsEngine::run | starting step [ ${step_idx} / ${migration.serie.length} ] on ${step.name} from truffle migration ${step.range[0]} to ${step.range[1]}`);
+            for (const stepObject of migration.serie) {
 
-                await this.process_module(modules[step.name], step, migration.name);
+                switch(stepObject.type) {
+                    case 'truffle': {
 
-                for (let history_idx = step.range[0]; history_idx <= step.range[1]; ++history_idx) {
-                    history.push({
-                        name: step.name,
-                        args: step.args,
-                        migration_number: history_idx
-                    });
+                        const truffleStep: MigrationTruffleStepConfig = stepObject as any as MigrationTruffleStepConfig;
+
+                        miglog.info(`ContractsEngine::run | starting truffle step [ ${step_idx} / ${migration.serie.length} ] on ${truffleStep.name} from truffle migration ${truffleStep.range[0]} to ${truffleStep.range[1]}`);
+                        await this.process_truffle(modules[truffleStep.name], truffleStep, migration.name);
+                        for (let history_idx = truffleStep.range[0]; history_idx <= truffleStep.range[1]; ++history_idx) {
+                            history.push({
+                                name: truffleStep.name,
+                                args: truffleStep.args,
+                                migration_number: history_idx
+                            });
+                        }
+                        break ;
+                    }
+
+                    case 'script': {
+
+                        const scriptStep: MigrationScriptStepConfig = stepObject as any as MigrationScriptStepConfig;
+
+                        miglog.info(`ContractsEngine::run | starting script step [ ${step_idx} / ${migration.serie.length} ] on ${scriptStep.name}. Calling method ${scriptStep.method}`);
+
+                        await this.process_script(modules[scriptStep.name], scriptStep, migration.name);
+                        break ;
+                    }
                 }
+
+
 
                 ++step_idx;
             }

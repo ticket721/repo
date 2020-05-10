@@ -71,17 +71,6 @@ export const Config: Joi.ObjectSchema = Joi.object({
     IMAGE_MAX_SIZE: Joi.number().required(),
     IMAGE_SERVE_DIRECTORY: Joi.string().required(),
 
-    VAULT_HOST: Joi.string().required(),
-    VAULT_PORT: Joi.number().required(),
-    VAULT_PROTOCOL: Joi.string().default('http'),
-    VAULT_TOKEN: Joi.string().required(),
-
-    VAULT_ETHEREUM_NODE_HOST: Joi.string().required(),
-    VAULT_ETHEREUM_NODE_PORT: Joi.number().required(),
-    VAULT_ETHEREUM_NODE_PROTOCOL: Joi.string().default('http'),
-    VAULT_ETHEREUM_NODE_NETWORK_ID: Joi.number().required(),
-    VAULT_ETHEREUM_ASSIGNED_ADMIN: Joi.string().required(),
-
     GLOBAL_CONFIG_BLOCK_NUMBER_FETCHING_RATE: Joi.number().required(),
     GLOBAL_CONFIG_ETHEREUM_PRICE_FETCHING_RATE: Joi.number().required(),
     GLOBAL_CONFIG_BINANCE_MOCK: Joi.boolean().default('true'),
@@ -101,4 +90,6 @@ export const Config: Joi.ObjectSchema = Joi.object({
         then: Joi.required(),
         otherwise: Joi.optional()
     }),
+
+    MINTER_INDEX: Joi.string().required()
 });

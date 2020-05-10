@@ -147,7 +147,7 @@ async function convertEvent(
     eventEntity.name = actionset.actions[EventCreationActions.TextMetadata].data.name;
     eventEntity.address = address;
     eventEntity.dates = [];
-    eventEntity.controller = `event-${eventUUID.toLowerCase()}`;
+    eventEntity.controller = address;
     eventEntity.categories = [];
     eventEntity.group_id = groupID;
 

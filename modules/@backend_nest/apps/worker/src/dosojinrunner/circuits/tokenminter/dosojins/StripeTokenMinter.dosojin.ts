@@ -1,23 +1,14 @@
-import {
-    BN,
-    Connector,
-    Dosojin,
-    Gem,
-    GenericStripeDosojin,
-    Operation,
-    OperationStatusNames,
-    TransferConnectorStatusNames,
-} from 'dosojin';
-import { Inject, Injectable } from '@nestjs/common';
-import { Stripe } from 'stripe';
-import { T721AdminService } from '@lib/common/contracts/T721Admin.service';
-import { UsersService } from '@lib/common/users/Users.service';
-import { TokenMinterArguments } from '@app/worker/dosojinrunner/circuits/tokenminter/TokenMinter.circuit';
-import { UserEntity } from '@lib/common/users/entities/User.entity';
-import { TxsService } from '@lib/common/txs/Txs.service';
-import { ConfigService } from '@lib/common/config/Config.service';
-import { TxEntity } from '@lib/common/txs/entities/Tx.entity';
-import { T721TokenService } from '@lib/common/contracts/T721Token.service';
+import { BN, Connector, Dosojin, Gem, GenericStripeDosojin, Operation, OperationStatusNames, TransferConnectorStatusNames } from 'dosojin';
+import { Inject, Injectable }                                                                                                from '@nestjs/common';
+import { Stripe }                                                                                                            from 'stripe';
+import { T721AdminService }                                                                                                  from '@lib/common/contracts/T721Admin.service';
+import { UsersService }                                                                                                      from '@lib/common/users/Users.service';
+import { TokenMinterArguments }                                                                                              from '@app/worker/dosojinrunner/circuits/tokenminter/TokenMinter.circuit';
+import { UserEntity }                                                                                                        from '@lib/common/users/entities/User.entity';
+import { TxsService }                                                                                                        from '@lib/common/txs/Txs.service';
+import { ConfigService }                                                                                                     from '@lib/common/config/Config.service';
+import { TxEntity }                                                                                                          from '@lib/common/txs/entities/Tx.entity';
+import { T721TokenService }                                                                                                  from '@lib/common/contracts/T721Token.service';
 
 /**
  * Extra State Arguments added by the TokenMinter Operation
@@ -39,6 +30,7 @@ export class TokenMinterOperation extends Operation {
      * @param name
      * @param dosojin
      * @param t721AdminService
+     * @param t721TokenService
      * @param usersService
      * @param txsService
      * @param configService
@@ -47,6 +39,7 @@ export class TokenMinterOperation extends Operation {
         name: string,
         dosojin: Dosojin,
         private readonly t721AdminService: T721AdminService,
+        private readonly t721TokenService: T721TokenService,
         private readonly usersService: UsersService,
         private readonly txsService: TxsService,
         private readonly configService: ConfigService,
@@ -83,54 +76,62 @@ export class TokenMinterOperation extends Operation {
         const userAddress = user.address;
         const amount = gem.gemPayload.values['fiat_eur'].toString();
 
+        const authorizationCreationRes = await this.t721TokenService.generateAuthorization(userAddress, amount);
+
+        if (authorizationCreationRes.error) {
+            return gem.error(this.dosojin, `Cannot generate authorization: ${authorizationCreationRes.error}`);
+        }
+
+        const [authorization, code, sender, minter] = authorizationCreationRes.response;
+
         const rawInstance = await this.t721AdminService.get();
 
-        const encodedTransactionCall = rawInstance.methods.refundedMintFor(userAddress, amount).encodeABI();
-
-        const admin = this.configService.get('VAULT_ETHEREUM_ASSIGNED_ADMIN');
+        const encodedTransactionCall = rawInstance.methods.redeemTokens(
+            userAddress,
+            amount,
+            minter,
+            code,
+            authorization.signature,
+        ).encodeABI();
 
         const gasLimitEstimation = await this.txsService.estimateGasLimit(
-            admin,
+            sender,
             rawInstance._address,
             encodedTransactionCall,
         );
 
         if (gasLimitEstimation.error) {
-            return gem.error(this.dosojin, `Cannot estimate gas limit`);
+            return gem.error(this.dosojin, `Cannot estimate gas limit: ${gasLimitEstimation.error}`);
         }
 
         const gasPriceEstimation = await this.txsService.estimateGasPrice(gasLimitEstimation.response);
 
         if (gasPriceEstimation.error) {
-            return gem.error(this.dosojin, `Cannot estimate gas price`);
+            return gem.error(this.dosojin, `Cannot estimate gas price: ${gasPriceEstimation.error}`);
         }
 
-        // const tx = await this.txsService.sendRawTransaction(
-        //     admin,
-        //     rawInstance._address,
-        //     '0',
-        //     encodedTransactionCall,
-        //     gasPriceEstimation.response,
-        //     gasLimitEstimation.response,
-        // );
+        const tx = await this.txsService.sendRawTransaction(
+            sender,
+            rawInstance._address,
+            '0',
+            encodedTransactionCall
+        );
 
-        // Here Rockside tx
+        if (tx.error) {
+            return gem.error(this.dosojin, `An error occured while trying to create transaction`);
+        }
 
-        // if (tx.error) {
-        //     return gem.error(this.dosojin, `An error occured while trying to create transaction`);
-        // }
+        gem.addCost(
+            this.dosojin,
+            new BN(gasPriceEstimation.response).mul(new BN(gasLimitEstimation.response)),
+            'crypto_eth',
+            `Token Minting Transaction Fees`,
+        );
 
-        // gem.addCost(
-        //     this.dosojin,
-        //     new BN(gasPriceEstimation.response).mul(new BN(gasLimitEstimation.response)),
-        //     'crypto_eth',
-        //     `Token Minting Transaction Fees`,
-        // );
-
-        // gem.setState<TokenMinterArguments & TokenMinterTx>(this.dosojin, {
-        //     ...gem.getState<TokenMinterArguments>(this.dosojin),
-        //     txHash: tx.response.transaction_hash,
-        // });
+        gem.setState<TokenMinterArguments & TokenMinterTx>(this.dosojin, {
+            ...gem.getState<TokenMinterArguments>(this.dosojin),
+            txHash: tx.response.transaction_hash,
+        });
 
         return gem.setOperationStatus(OperationStatusNames.OperationComplete);
     }
@@ -443,6 +444,7 @@ export class StripeTokenMinterDosojin extends GenericStripeDosojin {
                 'TokenMinterOperation',
                 this,
                 t721AdminService,
+                t721TokenService,
                 usersService,
                 txsService,
                 configService,

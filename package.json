@@ -26,6 +26,8 @@
             "modules/@backend_simulation",
             "modules/@common_global",
             "modules/@common_sdk",
+            "modules/@contracts_dev",
+            "modules/@contracts_minter_management",
             "modules/@contracts_metamarketplace",
             "modules/@contracts_refract",
             "modules/@contracts_t721admin",

@@ -1,19 +1,16 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { CRUDExtension } from '@lib/common/crud/CRUDExtension.base';
-import { TxsRepository } from '@lib/common/txs/Txs.repository';
-import { TxEntity } from '@lib/common/txs/entities/Tx.entity';
+import { CRUDExtension }                            from '@lib/common/crud/CRUDExtension.base';
+import { TxsRepository }                            from '@lib/common/txs/Txs.repository';
+import { TxEntity }                                 from '@lib/common/txs/entities/Tx.entity';
 import { BaseModel, InjectModel, InjectRepository } from '@iaminfinity/express-cassandra';
-import { ServiceResponse }                                                                                     from '@lib/common/utils/ServiceResponse.type';
-import { isAddress, keccak256, RefractMtx, isTransactionHash, TransactionParameters, toAcceptedAddressFormat } from '@common/global';
-import { EIP712Payload, EIP712Signature }                                                                      from '@ticket721/e712/lib';
-import { RefractFactoryV0Service }                                                    from '@lib/common/contracts/refract/RefractFactory.V0.service';
-import { UserDto } from '@lib/common/users/dto/User.dto';
-import { encodeMetaTransaction } from '@lib/common/txs/utils/encodeMetaTransaction.helper';
-import { T721AdminService } from '@lib/common/contracts/T721Admin.service';
-import { VaultereumService } from '@lib/common/vaultereum/Vaultereum.service';
-import { Web3Service } from '@lib/common/web3/Web3.service';
-import { GlobalConfigService } from '@lib/common/globalconfig/GlobalConfig.service';
-import Decimal from 'decimal.js';
+import { ServiceResponse }                          from '@lib/common/utils/ServiceResponse.type';
+import { isTransactionHash }                        from '@common/global';
+import { T721AdminService }                         from '@lib/common/contracts/T721Admin.service';
+import { Web3Service }                              from '@lib/common/web3/Web3.service';
+import { GlobalConfigService }                      from '@lib/common/globalconfig/GlobalConfig.service';
+import Decimal                                      from 'decimal.js';
+import { RocksideService }                          from '@lib/common/rockside/Rockside.service';
+import BigNumber                                    from 'bignumber.js';
 
 /**
  * Configuration Options
@@ -67,10 +64,9 @@ export class TxsService extends CRUDExtension<TxsRepository, TxEntity> {
      * @param txEntity
      * @param txOptions
      * @param globalConfigService
-     * @param vaultereumService
      * @param web3Service
-     * @param refractFactoryService
      * @param t721AdminService
+     * @param rocksideService
      */
     constructor(
         @InjectRepository(TxsRepository)
@@ -81,8 +77,8 @@ export class TxsService extends CRUDExtension<TxsRepository, TxEntity> {
         private readonly txOptions: TxsServiceOptions,
         private readonly globalConfigService: GlobalConfigService,
         private readonly web3Service: Web3Service,
-        private readonly refractFactoryService: RefractFactoryV0Service,
         private readonly t721AdminService: T721AdminService,
+        private readonly rocksideService: RocksideService,
     ) {
         super(
             txEntity,
@@ -211,9 +207,11 @@ export class TxsService extends CRUDExtension<TxsRepository, TxEntity> {
                 data,
             });
 
+            const increasedGasLimitEstimation = (new Decimal(gasLimitEstimation).mul(5).floor()).toString();
+
             return {
                 error: null,
-                response: typeof gasLimitEstimation === 'string' ? gasLimitEstimation : gasLimitEstimation.toString(),
+                response: increasedGasLimitEstimation,
             };
 
         } catch (e) {
@@ -227,215 +225,72 @@ export class TxsService extends CRUDExtension<TxsRepository, TxEntity> {
 
     }
 
-    // async signMtx(user: UserDto, transactions: TransactionParameters[]): Promise<ServiceResponse<[EIP712Payload, EIP712Signature]>> {
+    /**
+     * Method to broadcast Raw Transaction
+     *
+     * @param from
+     * @param to
+     * @param value
+     * @param data
+     */
+    async sendRawTransaction(
+        from: string,
+        to: string,
+        value: string,
+        data: string,
+    ): Promise<ServiceResponse<TxEntity>> {
 
-    //     const rmtx: RefractMtx = new RefractMtx(
-    //         this.txOptions.ethereumNetworkId,
-    //         this.txOptions.ethereumMtxDomainName,
-    //         this.txOptions.ethereumMtxVersion,
-    //         user.address,
-    //     );
+        const gasLimitEstimationRes = await this.estimateGasLimit(
+            from,
+            to,
+            data
+        );
 
-    //     const userId = user.id.toString().toLowerCase();
-    //     const salt = keccak256(userId);
-    //     const controller = `user-${userId}`;
+        if (gasLimitEstimationRes.error) {
+            return {
+                error: gasLimitEstimationRes.error,
+                response: null,
+            }
+        }
 
-    //     const vaultAddressInfo = await this.vaultereumService.read(`ethereum/accounts/${controller}`);
-    //     if (vaultAddressInfo.error) {
-    //         return {
-    //             error: vaultAddressInfo.error,
-    //             response: null
-    //         }
-    //     }
+        const gasPriceEstimationRes = await this.estimateGasPrice(gasLimitEstimationRes.response);
 
-    //     const controllerAddress = toAcceptedAddressFormat(vaultAddressInfo.response.data.address);
+        if (gasPriceEstimationRes.error) {
+            return {
+                error: gasPriceEstimationRes.error,
+                response: null,
+            }
+        }
 
-    //     const verification = await this.refractFactoryService.isController(user.address, controllerAddress, salt);
+        const sentTransactionRes = await this.rocksideService.sendTransaction({
+            from,
+            to,
+            value,
+            data,
+            gasPrice: gasPriceEstimationRes.response,
+            gas: gasLimitEstimationRes.response
+        });
 
-    //     if (!verification) {
-    //         return {
-    //             error: 'invalid_controller_verification',
-    //             response: null,
-    //         }
-    //     }
+        if (sentTransactionRes.error) {
+            return {
+                error: sentTransactionRes.error,
+                response: null
+            }
+        }
 
-    //     const nonce = await this.refractFactoryService.getNonce(user.address);
+        const subscriptionRes = await this.subscribe(sentTransactionRes.response);
 
-    //     const payload: EIP712Payload = rmtx.generatePayload({
-    //         nonce,
-    //         parameters: transactions
-    //     }, 'MetaTransaction');
+        if (subscriptionRes.error) {
+            return {
+                error: subscriptionRes.error,
+                response: null,
+            }
+        }
 
-    //     try {
+        return {
+            error: null,
+            response: subscriptionRes.response
+        }
 
-    //         const signature: EIP712Signature = await rmtx.sign(this.vaultereumService.getSigner(controller), payload);
-    //         return {
-    //             error: null,
-    //             response: [payload, signature]
-    //         }
-
-    //     } catch (e) {
-    //         console.error(e);
-    //         return {
-    //             error: 'error_while_signing_with_vaultereum_signer',
-    //             response: null,
-    //         }
-    //     }
-
-    // }
-
-    // /**
-    //  * Method to broadcast Meta Transaction
-    //  *
-    //  * @param payload
-    //  * @param signature
-    //  * @param user
-    //  */
-    // async mtx(payload: EIP712Payload, signature: string, user: UserDto): Promise<ServiceResponse<TxEntity>> {
-
-    //     const rmtx: RefractMtx = new RefractMtx(
-    //         this.txOptions.ethereumNetworkId,
-    //         this.txOptions.ethereumMtxDomainName,
-    //         this.txOptions.ethereumMtxVersion,
-    //         user.address,
-    //     );
-
-    //     const signer = await rmtx.verify(payload, signature);
-
-    //     const salt = keccak256(user.id.toString().toLowerCase());
-
-    //     const verification = await this.refractFactoryService.isController(user.address, signer, salt);
-
-    //     if (verification === false) {
-    //         return {
-    //             error: 'payload_not_signed_by_controller',
-    //             response: null,
-    //         };
-    //     }
-    //     const args: [number, string[], string[], string] = await encodeMetaTransaction(payload.message, signature);
-    //     const [target, encodedMtx] = await this.refractFactoryService.encodeCall(
-    //         user.address,
-    //         signer,
-    //         salt,
-    //         ...args,
-    //     );
-    //     const t721Admin = await this.t721AdminService.get();
-    //     const encodedT721AdminExecuteTx = await t721Admin.methods.refundedExecute(0, target, 0, encodedMtx).encodeABI();
-
-    //     // const gasLimitEstimation = await this.estimateGasLimit(
-    //     //     this.txOptions.ethereumMtxRelayAdmin,
-    //     //     t721Admin._address,
-    //     //     encodedT721AdminExecuteTx,
-    //     // );
-    //     // if (gasLimitEstimation.error) {
-    //     //     return {
-    //     //         error: gasLimitEstimation.error,
-    //     //         response: null,
-    //     //     };
-    //     // }
-
-    //     const gasLimitEstimation = {
-    //         error: null,
-    //         response: '2000000'
-    //     };
-
-    //     const gasPriceEstimation = await this.estimateGasPrice(gasLimitEstimation.response);
-    //     if (gasPriceEstimation.error) {
-    //         return {
-    //             error: gasPriceEstimation.error,
-    //             response: null,
-    //         };
-    //     }
-
-    //     const txEntity = await this.sendRawTransaction(
-    //         this.txOptions.ethereumMtxRelayAdmin,
-    //         t721Admin._address,
-    //         '0',
-    //         encodedT721AdminExecuteTx,
-    //         gasPriceEstimation.response,
-    //         gasLimitEstimation.response,
-    //     );
-
-    //     if (txEntity.error) {
-    //         return txEntity;
-    //     }
-
-    //     return {
-    //         error: null,
-    //         response: txEntity.response,
-    //     };
-    // }
-
-    // /**
-    //  * Method to broadcast Raw Transaction
-    //  *
-    //  * @param from
-    //  * @param to
-    //  * @param value
-    //  * @param data
-    //  * @param gasPrice
-    //  * @param gasLimit
-    //  */
-    // async sendRawTransaction(
-    //     from: string,
-    //     to: string,
-    //     value: string,
-    //     data: string,
-    //     gasPrice: string,
-    //     gasLimit: string,
-    // ): Promise<ServiceResponse<TxEntity>> {
-
-    //     const accountCheck = await this.vaultereumService.read(`ethereum/accounts/${from}`);
-
-    //     if (accountCheck.error) {
-    //         return {
-    //             error: accountCheck.error,
-    //             response: null,
-    //         };
-    //     }
-
-    //     const signedTx = await this.vaultereumService.write(`ethereum/accounts/${from}/sign-tx`, {
-    //         address_to: to,
-    //         amount: value,
-    //         gas_price: gasPrice,
-    //         gas_limit: gasLimit,
-    //         data: data.slice(2),
-    //         encoding: 'hex',
-    //     });
-
-    //     if (signedTx.error) {
-    //         return {
-    //             error: signedTx.error,
-    //             response: null,
-    //         };
-    //     }
-
-    //     try {
-
-    //         const tx = await (await this.web3Service.get()).eth.sendSignedTransaction(
-    //             signedTx.response.data.signed_transaction,
-    //         );
-
-    //         const subscriptionRes = await this.subscribe(tx.transactionHash);
-
-    //         if (subscriptionRes.error) {
-    //             return {
-    //                 error: subscriptionRes.error,
-    //                 response: null,
-    //             };
-    //         }
-    //         return subscriptionRes;
-
-    //     } catch (e) {
-
-    //         console.error(e);
-
-    //         return {
-    //             error: e.message,
-    //             response: null,
-    //         }
-
-    //     }
-
-    // }
+    }
 }

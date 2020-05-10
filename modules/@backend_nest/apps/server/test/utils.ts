@@ -28,14 +28,6 @@ const readyLogs = [
         image: 'ganache',
     },
     {
-        line: '!!VAULTEREUM STARTED!!',
-        image: 'vaultereum',
-    },
-    {
-        line: '[DEBUG] agent: Service "vault:127.0.0.1:8200" in sync',
-        image: 'consul',
-    },
-    {
         line: 'Elassandra started',
         image: 'elassandra',
     },

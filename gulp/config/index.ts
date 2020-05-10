@@ -1,5 +1,5 @@
 import { NetworkConfig }   from '../../network/config';
-import { ContractsConfig } from '../../contracts/config';
+import { ContractsConfig }                        from '../../contracts/config';
 
 /**
  * Configuration required to use the T721 Monorepo

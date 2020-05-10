@@ -17,7 +17,7 @@ import { Queue }                                                                
  * Data model required for the TxSeq Progress step
  */
 export interface TxSeqTxHandler {
-    transactions: (TransactionParameters & TransactionLifecycles)[];
+    transaction: (TransactionParameters & TransactionLifecycles);
     caller: UserDto;
     broadcasted?: boolean;
     transactionHash?: string;
@@ -33,7 +33,6 @@ export class TxSeqEventHandlers implements OnModuleInit {
      *
      * @param actionSetsService
      * @param gemOrdersService
-     * @param vaultereumService
      * @param txsService
      * @param txQueue
      */
@@ -48,17 +47,14 @@ export class TxSeqEventHandlers implements OnModuleInit {
      * Data Validator for the TxSeq Progress step
      */
     txHandlerValidator = Joi.object<TxSeqTxHandler>({
-        transactions: Joi.array().items(
-            Joi.object({
-                from: Joi.string().required(),
-                to: Joi.string().required(),
-                relayer: Joi.string().required(),
-                value: Joi.string().required(),
-                data: Joi.string().required(),
-                onConfirm: TransactionLifecycleTaskArgumentsChecker.optional(),
-                onFailure: TransactionLifecycleTaskArgumentsChecker.optional()
-            })
-        ).min(1),
+        transaction: Joi.object({
+            from: Joi.string().required(),
+            to: Joi.string().required(),
+            value: Joi.string().required(),
+            data: Joi.string().required(),
+            onConfirm: TransactionLifecycleTaskArgumentsChecker.optional(),
+            onFailure: TransactionLifecycleTaskArgumentsChecker.optional()
+        }),
         caller: Joi.object({
             id: Joi.string().required(),
             email: Joi.string().required(),
@@ -76,27 +72,16 @@ export class TxSeqEventHandlers implements OnModuleInit {
     /**
      * Data Fields for the TxSeq Progress step
      */
-    txHandlerFields = ['transactions', 'caller'];
+    txHandlerFields = ['transaction', 'caller'];
 
-    private async broadcastTransaction(caller: UserDto, transactions: TransactionParameters[]): Promise<ServiceResponse<TxEntity>> {
+    private async broadcastTransaction(transaction: TransactionParameters): Promise<ServiceResponse<TxEntity>> {
 
-        // const signatureResponse = await this.txsService.signMtx(caller, transactions);
-
-        // if (signatureResponse.error) {
-        //     return {
-        //         error: signatureResponse.error,
-        //         response: null,
-        //     }
-        // }
-
-        // const [payload, signature]: [EIP712Payload, EIP712Signature] = signatureResponse.response;
-
-        // return this.txsService.mtx(
-        //     payload,
-        //     signature.hex,
-        //     caller
-        // );
-        throw new Error(`Here send tx with rockside`)
+        return this.txsService.sendRawTransaction(
+            transaction.from,
+            transaction.to,
+            transaction.value,
+            transaction.data
+        );
 
     }
 
@@ -145,7 +130,7 @@ export class TxSeqEventHandlers implements OnModuleInit {
             case undefined: {
                 if (!data.broadcasted) {
 
-                    const broadcastResponse = await this.broadcastTransaction(data.caller, data.transactions);
+                    const broadcastResponse = await this.broadcastTransaction(data.transaction);
 
                     actionset.action.setData({
                         ...actionset.action.data,
@@ -186,16 +171,14 @@ export class TxSeqEventHandlers implements OnModuleInit {
                         actionset.action.setStatus('error');
                         actionset.setStatus('event:error');
 
-                        for (const failedTx of data.transactions) {
-                            if (failedTx.onFailure) {
-                                await this.txQueue.add(
-                                    failedTx.onFailure.name,
-                                    {
-                                        transactionHash: data.transactionHash,
-                                        ...failedTx.onFailure.jobData
-                                    }
-                                );
-                            }
+                        if (data.transaction.onFailure) {
+                            await this.txQueue.add(
+                                data.transaction.onFailure.name,
+                                {
+                                    transactionHash: data.transactionHash,
+                                    ...data.transaction.onFailure.jobData
+                                }
+                            );
                         }
 
                         break ;
@@ -217,16 +200,14 @@ export class TxSeqEventHandlers implements OnModuleInit {
 
                         } else {
 
-                            for (const confirmedTx of data.transactions) {
-                                if (confirmedTx.onConfirm) {
-                                    await this.txQueue.add(
-                                        confirmedTx.onConfirm.name,
-                                        {
-                                            transactionHash: data.transactionHash,
-                                            ...confirmedTx.onConfirm.jobData
-                                        }
-                                    );
-                                }
+                            if (data.transaction.onConfirm) {
+                                await this.txQueue.add(
+                                    data.transaction.onConfirm.name,
+                                    {
+                                        transactionHash: data.transactionHash,
+                                        ...data.transaction.onConfirm.jobData
+                                    }
+                                );
                             }
 
                             actionset.next();

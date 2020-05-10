@@ -6,8 +6,9 @@ export { isKeccak256, toAcceptedKeccak256Format, keccak256, keccak256FromBuffer 
 export { Wallet }                                                                        from 'ethers';
 export { Web3LoginSigner }                                                               from './signers/Web3Login';
 export { Web3RegisterSigner }                                                            from './signers/Web3Register';
-export { RefractMtx, MetaTransaction, TransactionParameters }                            from './signers/RefractMtx';
+export { RefractMtx, MetaTransaction, TransactionParameters }                           from './signers/RefractMtx';
 export { MintAuthorization }                                                             from './signers/MintAuthorization';
+export { MintTokensAuthorization }                                                       from './signers/MintTokensAuthorization';
 export { Coordinates, closestCity, City }                                                from './geoloc';
 export { uuidEq, toB32, leftPad, serialize, toHex, decimalToHex }                        from './utils';
 export { isTransactionHash, toAcceptedTransactionHashFormat }                            from './transactions';

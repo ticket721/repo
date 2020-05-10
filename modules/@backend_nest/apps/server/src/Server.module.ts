@@ -32,8 +32,6 @@ import { ImagesController } from '@app/server/controllers/images/Images.controll
 import { ImagesModule } from '@lib/common/images/Images.module';
 import { FSModule } from '@lib/common/fs/FS.module';
 import { CurrenciesModule } from '@lib/common/currencies/Currencies.module';
-import { VaultereumModule } from '@lib/common/vaultereum/Vaultereum.module';
-import { VaultereumOptions } from '@lib/common/vaultereum/Vaultereum.service';
 import { TxsModule } from '@lib/common/txs/Txs.module';
 import { TxsServiceOptions } from '@lib/common/txs/Txs.service';
 import { GlobalConfigModule } from '@lib/common/globalconfig/GlobalConfig.module';
@@ -125,19 +123,6 @@ import { RocksideModule }       from '@lib/common/rockside/Rockside.module';
         ContractsModule.registerAsync({
             useFactory: (configService: ConfigService): ContractsServiceOptions => ({
                 artifact_path: configService.get('CONTRACTS_ARTIFACTS_PATH'),
-            }),
-            inject: [ConfigService],
-        }),
-        VaultereumModule.registerAsync({
-            useFactory: (configService: ConfigService): VaultereumOptions => ({
-                VAULT_HOST: configService.get('VAULT_HOST'),
-                VAULT_PORT: parseInt(configService.get('VAULT_PORT'), 10),
-                VAULT_PROTOCOL: configService.get('VAULT_PROTOCOL'),
-                VAULT_ETHEREUM_NODE_HOST: configService.get('VAULT_ETHEREUM_NODE_HOST'),
-                VAULT_ETHEREUM_NODE_PORT: parseInt(configService.get('VAULT_ETHEREUM_NODE_PORT'), 10),
-                VAULT_ETHEREUM_NODE_PROTOCOL: configService.get('VAULT_ETHEREUM_NODE_PROTOCOL'),
-                VAULT_ETHEREUM_NODE_NETWORK_ID: parseInt(configService.get('VAULT_ETHEREUM_NODE_NETWORK_ID'), 10),
-                VAULT_TOKEN: configService.get('VAULT_TOKEN'),
             }),
             inject: [ConfigService],
         }),

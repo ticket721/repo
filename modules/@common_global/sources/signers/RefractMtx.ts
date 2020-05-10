@@ -6,7 +6,6 @@ import { EIP712Signer } from '@ticket721/e712';
 export interface TransactionParameters {
     from: string;
     to: string;
-    relayer: string;
     value: string;
     data: string;
 }

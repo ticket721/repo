@@ -8,6 +8,7 @@ import { DatesModule }                   from '@lib/common/dates/Dates.module';
 import { EVMBlockRollbacksModule }       from '@lib/common/evmblockrollbacks/EVMBlockRollbacks.module';
 import { MintTicketForgeEVMAntenna }     from '@app/worker/evmantenna/events/ticketforge/Mint.evmantenna';
 import { ApprovalT721TokenEVMAntenna }   from '@app/worker/evmantenna/events/t721token/Approval.evmantenna';
+import { MintT721TokenEVMAntenna }       from '@app/worker/evmantenna/events/t721token/Mint.evmantenna';
 
 @Module({
     imports: [
@@ -31,6 +32,7 @@ import { ApprovalT721TokenEVMAntenna }   from '@app/worker/evmantenna/events/t72
 
         // T721Token
         ApprovalT721TokenEVMAntenna,
+        MintT721TokenEVMAntenna,
 
         // TicketForge
         MintTicketForgeEVMAntenna,

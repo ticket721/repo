@@ -22,7 +22,7 @@ export interface TransactionLifecycles {
  */
 // tslint:disable-next-line:no-empty-interface
 export interface TxSequenceAcsetBuilderArgs {
-    transactions: (TransactionParameters & Partial<TransactionLifecycles>)[][];
+    transactions: (TransactionParameters & Partial<TransactionLifecycles>)[];
 }
 
 export const TransactionLifecycleTaskArgumentsChecker = Joi.object({
@@ -35,17 +35,14 @@ export const TransactionLifecycleTaskArgumentsChecker = Joi.object({
  */
 const TxSequenceAcsetBuilderChecker = Joi.object({
     transactions: Joi.array().items(
-        Joi.array().items(
-            Joi.object({
-                from: Joi.string().required(),
-                to: Joi.string().required(),
-                relayer: Joi.string().required(),
-                data: Joi.string().required(),
-                value: Joi.string().required(),
-                onConfirm: TransactionLifecycleTaskArgumentsChecker.optional(),
-                onFailure: TransactionLifecycleTaskArgumentsChecker.optional(),
-            })
-        )
+        Joi.object({
+            from: Joi.string().required(),
+            to: Joi.string().required(),
+            data: Joi.string().required(),
+            value: Joi.string().required(),
+            onConfirm: TransactionLifecycleTaskArgumentsChecker.optional(),
+            onFailure: TransactionLifecycleTaskArgumentsChecker.optional(),
+        })
     ),
 });
 
@@ -67,10 +64,10 @@ export class TxSequenceAcsetbuilderHelper implements ActionSetBuilderBase<TxSequ
 
         delete caller.password;
 
-        const actions: Action[] = args.transactions.map((txs: (TransactionParameters & TransactionLifecycles)[]): Action => new Action()
+        const actions: Action[] = args.transactions.map((tx: (TransactionParameters & TransactionLifecycles)): Action => new Action()
             .setName('@txseq/txhandler')
             .setData<TxSeqTxHandler>({
-                transactions: txs,
+                transaction: tx,
                 caller,
             })
             .setType('event')

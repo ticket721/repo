@@ -29,8 +29,6 @@ const cassandraPort = 32702;
 const elasticSearchPort = 32610;
 const redisPort = 32412;
 const ganachePort = 38545;
-const vaultereumPorts = [8200, 8201];
-const consulPort = 8500;
 
 let global_ok;
 

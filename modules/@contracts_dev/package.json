@@ -1,0 +1,30 @@
+{
+    "name": "@contracts/dev",
+    "private": true,
+    "version": "1.0.0",
+    "description": "",
+    "directories": {
+        "test": "test"
+    },
+    "dependencies": {
+        "truffle": "5.1.6"
+    },
+    "devDependencies": {
+    },
+    "editorconfig-cli": [
+        "package.json",
+        "truffle-config.js",
+        "contracts/**/*.sol",
+        "migrations/**/*.js"
+    ],
+    "scripts": {
+        "@lerna/postinstall": "echo '@contracts/metamarketplace has no postinstall'",
+        "@lerna/postclean": "echo '@contracts/metamarketplace has no postclean'"
+    },
+    "author": "Iulian Rotaru",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/ticket721/ticketforge/issues"
+    },
+    "homepage": "https://github.com/ticket721/ticketforge#readme"
+}

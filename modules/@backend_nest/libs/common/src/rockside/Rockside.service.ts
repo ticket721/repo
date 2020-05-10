@@ -2,7 +2,8 @@ import { Injectable }                      from '@nestjs/common';
 import { ServiceResponse }                 from '@lib/common/utils/ServiceResponse.type';
 import { EIP712Signature, ExternalSigner } from '@ticket721/e712/lib';
 import { keccak256FromBuffer }             from '@common/global';
-import { RocksideApi }                     from '@rocksideio/rockside-wallet-sdk/lib/api';
+import { RocksideApi, TransactionOpts }    from '@rocksideio/rockside-wallet-sdk/lib/api';
+import { TxEntity }                        from '@lib/common/txs/entities/Tx.entity';
 
 export interface RocksideCreateEOAResponse {
     address: string;
@@ -61,7 +62,22 @@ export class RocksideService {
                 response: identityCreationResponse,
             }
         } catch (e) {
-            console.log(e);
+            return {
+                error: e.message,
+                response: null,
+            }
+        }
+    }
+
+    async sendTransaction(tx: Omit<TransactionOpts, 'nonce'>): Promise<ServiceResponse<string>> {
+        try {
+            const transactionCreationResponse = await (this.rockside as any).sendTransaction(tx);
+            return {
+                error: null,
+                response: transactionCreationResponse.transaction_hash
+            }
+        } catch (e) {
+            console.error('here', e);
             return {
                 error: e.message,
                 response: null,

@@ -128,7 +128,6 @@ export class MintingTasks implements OnModuleInit {
             const parameters: TransactionParameters = {
                 from: buyer,
                 to: (await this.t721TokenService.get())._address,
-                relayer: (await this.t721AdminService.get())._address,
                 data: (await this.t721TokenService.get()).methods.approve((await t721Controller.get())._address, amount).encodeABI(),
                 value: '0'
             };
@@ -226,8 +225,6 @@ export class MintingTasks implements OnModuleInit {
             scopeIndex.toString(),
         );
 
-        console.log(rawArgs);
-
         const generatedTicketsRes = await this.generateTickets(authorizations);
 
         if (generatedTicketsRes.error) {
@@ -237,7 +234,6 @@ export class MintingTasks implements OnModuleInit {
         return {
             from: authorizations[0].grantee,
             to: (await t721Controller.get())._address,
-            relayer: (await this.t721AdminService.get())._address,
             data: (await t721Controller.get()).methods.mint(
                 ...rawArgs
             ).encodeABI(),
@@ -330,7 +326,7 @@ export class MintingTasks implements OnModuleInit {
         await this.setAuthorizationsToDispatched(authorizationData);
 
         const txSeqHandler = await this.actionSetsService.build<TxSequenceAcsetBuilderArgs>('txseq_processor', user, {
-            transactions: transactions.map((tx: TransactionParameters) => [tx]),
+            transactions,
         }, true);
 
     }

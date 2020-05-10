@@ -8,12 +8,10 @@ import { Queue }                            from 'bull';
 import { EVMEventSetsService }              from '@lib/common/evmeventsets/EVMEventSets.service';
 import { EventsService }                    from '@lib/common/events/Events.service';
 import { EVMProcessableEvent }              from '@app/worker/evmantenna/EVMAntennaMerger.scheduler';
+import { TicketforgeService }               from '@lib/common/contracts/Ticketforge.service';
 import { T721TokenService }                 from '@lib/common/contracts/T721Token.service';
 
-/**
- * EVM Antenna to intercept NewCategory events emitted by the T721Controller
- */
-export class ApprovalT721TokenEVMAntenna extends EVMEventControllerBase {
+export class MintT721TokenEVMAntenna extends EVMEventControllerBase {
     /**
      * Dependency Injection
      *
@@ -24,7 +22,6 @@ export class ApprovalT721TokenEVMAntenna extends EVMEventControllerBase {
      * @param shutdownService
      * @param outrospectionService
      * @param evmEventSetsService
-     * @param eventsService
      */
     constructor(
         t721TokenService: T721TokenService,
@@ -33,8 +30,7 @@ export class ApprovalT721TokenEVMAntenna extends EVMEventControllerBase {
         globalConfigService: GlobalConfigService,
         shutdownService: ShutdownService,
         outrospectionService: OutrospectionService,
-        evmEventSetsService: EVMEventSetsService,
-        private readonly eventsService: EventsService,
+        evmEventSetsService: EVMEventSetsService
     ) {
         super(
             t721TokenService,
@@ -44,7 +40,7 @@ export class ApprovalT721TokenEVMAntenna extends EVMEventControllerBase {
             shutdownService,
             outrospectionService,
             evmEventSetsService,
-            'Approval',
+            'Mint',
         );
     }
 
@@ -55,6 +51,6 @@ export class ApprovalT721TokenEVMAntenna extends EVMEventControllerBase {
      * @param append
      */
     async convert(event: EVMProcessableEvent, append: Appender): Promise<any> {
-        console.log('Token Approval Event');
+        console.log('Token Mint Event');
     }
 }

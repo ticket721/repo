@@ -19,17 +19,30 @@
         "migrations": [
             {
                 "name": "development",
-                "serie": [{
-                    "name": "dev",
-                    "test": false,
-                    "range": [1, 2]
-                }]
+                "serie": [
+                    {
+                        "name": "dev",
+                        "type": "truffle",
+                        "test": false,
+                        "range": [1, 2]
+                    }
+                ]
             },
             {
                 "name": "initial_deployment",
                 "serie": [
                     {
+                        "name": "minter_management",
+                        "type": "script",
+                        "method": "test",
+                        "args": {
+                            "mode": "development",
+                            "count": 10
+                        }
+                    },
+                    {
                         "name": "ticketforge",
+                        "type": "truffle",
                         "test": false,
                         "range": [1, 2],
                         "args": {
@@ -41,34 +54,30 @@
                     },
                     {
                         "name": "t721token",
+                        "type": "truffle",
                         "test": false,
                         "range": [1, 2]
                     },
                     {
                         "name": "t721controller",
+                        "type": "truffle",
                         "test": false,
                         "range": [1, 2]
                     },
                     {
                         "name": "metamarketplace",
+                        "type": "truffle",
                         "test": false,
                         "range": [1, 2],
                         "args": {
                             "initialAdmins": [
-
-                            ],
-                            "initialMinters": [
 
                             ]
                         }
                     },
                     {
                         "name": "t721admin",
-                        "test": false,
-                        "range": [1, 2]
-                    },
-                    {
-                        "name": "refract",
+                        "type": "truffle",
                         "test": false,
                         "range": [1, 2]
                     }
@@ -79,11 +88,13 @@
                 "serie": [
                     {
                         "name": "ticketforge",
+                        "type": "truffle",
                         "test": false,
                         "range": [3, 3]
                     },
                     {
                         "name": "t721token",
+                        "type": "truffle",
                         "test": false,
                         "range": [3, 3]
                     }
@@ -117,6 +128,10 @@
             },
             {
                 "name": "dev",
+                "upgradeable": false
+            },
+            {
+                "name": "minter_management",
                 "upgradeable": false
             }
         ],

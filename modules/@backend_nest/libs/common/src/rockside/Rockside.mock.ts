@@ -2,25 +2,16 @@ import {
     EncryptedAccount,
     ExecuteTransaction,
     IdentityResponse,
-    RocksideApi,
     RocksideApiOpts,
-    EncryptedWallet,
+    EncryptedWallet, TransactionOpts,
 }                                                                                         from '@rocksideio/rockside-wallet-sdk/lib/api';
-import { ContractsControllerBase }                                                        from '@lib/common/contracts/ContractsController.base';
-import { createWallet, keccak256FromBuffer, toAcceptedAddressFormat, loadWallet, Wallet } from '@common/global';
-import { FSService }                                                                      from '@lib/common/fs/FS.service';
+import { ContractsControllerBase }                                                                      from '@lib/common/contracts/ContractsController.base';
+import { createWallet, keccak256FromBuffer, toAcceptedAddressFormat, loadWallet, Wallet, decimalToHex } from '@common/global';
+import { FSService }                                                                                    from '@lib/common/fs/FS.service';
 import { Web3Service }                                                                    from '@lib/common/web3/Web3.service';
 import { Web3Provider }                                                                   from 'ethers/providers';
-
-export type TransactionOpts = {
-    from: string;
-    to: string;
-    value?: string | number | BigInt;
-    gas?: string | number | BigInt;
-    gasPrice?: string | number | BigInt;
-    data?: string;
-    nonce?: number;
-}
+import { utils }                                                                          from 'ethers';
+import BN                                                                                 from 'bn.js';
 
 export type SignTransactionOpts = {
     from: string;
@@ -57,7 +48,8 @@ export class RocksideMock /* implements RocksideApi */ {
     constructor(
         private readonly opts: RocksideApiOpts,
         private readonly mockOpts: RocksideMockOpts,
-    ) {}
+    ) {
+    }
 
     private async generateWallet(): Promise<{ address: string; privateKey: string; }> {
         const wallet = await createWallet();
@@ -107,19 +99,43 @@ export class RocksideMock /* implements RocksideApi */ {
         throw new Error(`Un-mocked method`);
     }
 
+    private _fromSigned(num: string): BN {
+        return new BN(Buffer.from(num.slice(2), 'hex')).fromTwos(256);
+    }
+
+    private _padWithZeroes(toPad: string, length: number): string {
+        let myString = '' + toPad;
+        while (myString.length < length) {
+            myString = '0' + myString;
+        }
+        return myString;
+    }
+
+    private _toUnsigned(num: BN): Buffer {
+        return Buffer.from(num.toTwos(256).toArray());
+    }
+
     async signMessageWithEOA(eoa: string, hash: string): Promise<{ signed_message: string }> {
 
         const formattedEOA = toAcceptedAddressFormat(eoa);
 
         const privateKey = this.mockOpts.fsService.readFile(`/tmp/ROCKSIDE_MOCK_EOA_${formattedEOA}`);
 
-        const wallet = new Wallet(privateKey);
+        const sk = new utils.SigningKey(privateKey);
 
-        const signature = await wallet.signMessage(Buffer.from(hash.slice(2), 'hex'));
+        const signature = sk.signDigest(Buffer.from(hash.slice(2), 'hex'));
+
+        const rSig = this._fromSigned(signature.r);
+        const sSig = this._fromSigned(signature.s);
+        const vSig = signature.v;
+        const rStr = this._padWithZeroes(this._toUnsigned(rSig).toString('hex'), 64);
+        const sStr = this._padWithZeroes(this._toUnsigned(sSig).toString('hex'), 64);
+        const vStr = vSig.toString(16);
 
         return {
-            signed_message: signature
-        }
+            signed_message: `0x${rStr}${sStr}${vStr}`
+        };
+
     }
 
     async createIdentity(): Promise<IdentityResponse> {
@@ -143,24 +159,28 @@ export class RocksideMock /* implements RocksideApi */ {
 
         const web3Instance = await this.mockOpts.web3Service.get();
 
-        const web3Provider = new Web3Provider(web3Instance);
+        const web3Provider = new Web3Provider(web3Instance.currentProvider);
         const orchestratorWallet: Wallet = new Wallet(this.mockOpts.orchestratorPrivateKey, web3Provider);
-        const owner = tx.from;
-        const hash = keccak256FromBuffer(Buffer.from(tx.from.slice(2), 'hex'));
+        const owner = toAcceptedAddressFormat(tx.from);
+
+        const controllerAddress = this.mockOpts.fsService.readFile(`/tmp/ROCKSIDE_MOCK_IDENTITY_${owner}`);
+
+        const hash = keccak256FromBuffer(Buffer.from(controllerAddress.slice(2), 'hex'));
 
         const identitiesMockInstance = (await this.mockOpts.identitiesMockController.get());
 
-        const encodedCall = identitiesMockInstance.methods.dotx(owner, hash, tx.to, tx.value || '0', tx.data || '').encodeABI();
+        const encodedCall = identitiesMockInstance.methods.dotx(controllerAddress, hash, tx.to, tx.value || '0', tx.data || '').encodeABI();
 
         const sentTransaction = await orchestratorWallet.sendTransaction({
-            from: orchestratorWallet.address,
             to: identitiesMockInstance._address,
-            data: encodedCall
+            data: encodedCall,
+            gasLimit: decimalToHex(tx.gas as string),
+            gasPrice: decimalToHex(tx.gasPrice as string),
         });
 
         return {
             transaction_hash: sentTransaction.hash,
-            tracking_id: `tr_${sentTransaction.hash}`
+            tracking_id: `tr_${sentTransaction.hash}`,
         };
 
     }

@@ -346,6 +346,7 @@ export class AuthorizationsTasks implements OnModuleInit {
         );
 
         if (authorizationsCreationRes.error) {
+            console.error(authorizationsCreationRes.error);
             throw new Error(`Error while creating authorizations`);
         }
 

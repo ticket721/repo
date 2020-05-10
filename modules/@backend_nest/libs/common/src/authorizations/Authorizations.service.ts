@@ -1,16 +1,15 @@
-import { CRUDExtension } from '@lib/common/crud/CRUDExtension.base';
-import { BaseModel, InjectModel, InjectRepository } from '@iaminfinity/express-cassandra';
-import { AuthorizationsRepository } from '@lib/common/authorizations/Authorizations.repository';
-import { AuthorizationEntity } from '@lib/common/authorizations/entities/Authorization.entity';
-import { CurrenciesService, ERC20Currency, Price } from '@lib/common/currencies/Currencies.service';
-import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
-import { CategoriesService } from '@lib/common/categories/Categories.service';
+import { CRUDExtension }                                      from '@lib/common/crud/CRUDExtension.base';
+import { BaseModel, InjectModel, InjectRepository }           from '@iaminfinity/express-cassandra';
+import { AuthorizationsRepository }                           from '@lib/common/authorizations/Authorizations.repository';
+import { AuthorizationEntity }                                from '@lib/common/authorizations/entities/Authorization.entity';
+import { CurrenciesService, ERC20Currency, Price }            from '@lib/common/currencies/Currencies.service';
+import { ServiceResponse }                                    from '@lib/common/utils/ServiceResponse.type';
+import { CategoriesService }                                  from '@lib/common/categories/Categories.service';
 import { CategoryEntity }                                     from '@lib/common/categories/entities/Category.entity';
 import { T721ControllerV0Service }                            from '@lib/common/contracts/t721controller/T721Controller.V0.service';
 import { HOUR }                                               from '@lib/common/utils/time';
-import { encode, MintAuthorization, toB32 }                   from '@common/global';
+import { MintAuthorization, toB32 }                           from '@common/global';
 import { Web3Service }                                        from '@lib/common/web3/Web3.service';
-import { VaultereumService }                                  from '@lib/common/vaultereum/Vaultereum.service';
 import { AuthorizedTicketMintingFormat, TicketMintingFormat } from '@lib/common/utils/Cart.type';
 import { EIP712Signature }                                    from '@ticket721/e712/lib';
 import { BytesToolService }                                   from '@lib/common/toolbox/Bytes.tool.service';
@@ -31,7 +30,6 @@ export class AuthorizationsService extends CRUDExtension<AuthorizationsRepositor
      * @param t721ControllerV0Service
      * @param currenciesService
      * @param web3Service
-     * @param vaultereumService
      * @param bytesToolService
      * @param timeToolService
      * @param groupService
@@ -49,7 +47,7 @@ export class AuthorizationsService extends CRUDExtension<AuthorizationsRepositor
         private readonly bytesToolService: BytesToolService,
         private readonly timeToolService: TimeToolService,
         private readonly groupService: GroupService,
-        private readonly rocksideService: RocksideService
+        private readonly rocksideService: RocksideService,
     ) {
         super(
             authorizationEntity,
@@ -108,7 +106,7 @@ export class AuthorizationsService extends CRUDExtension<AuthorizationsRepositor
             return {
                 error: 'invalid_fee_price_lengths',
                 response: null,
-            }
+            };
         }
 
         const ret: AuthorizedTicketMintingFormat[] = [];
@@ -199,6 +197,7 @@ export class AuthorizationsService extends CRUDExtension<AuthorizationsRepositor
             try {
                 signature = await signer.sign(vaultereumSigner, payload);
             } catch (e) {
+                console.error(e);
                 return {
                     error: 'rockside_signature_failure',
                     response: null,
@@ -252,4 +251,5 @@ export class AuthorizationsService extends CRUDExtension<AuthorizationsRepositor
             response: ret,
         };
     }
+
 }

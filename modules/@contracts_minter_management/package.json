@@ -1,0 +1,15 @@
+{
+  "name": "@contracts/minter_management",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "@lerna/postinstall": "echo '@contracts/metamarketplace has no postinstall'",
+    "@lerna/postclean": "rm -rf node_modules"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+      "ethers": "4.0.45"
+  }
+}

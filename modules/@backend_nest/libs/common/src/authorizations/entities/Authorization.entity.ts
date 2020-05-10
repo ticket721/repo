@@ -9,7 +9,7 @@ import {
 /**
  * Authorization modes
  */
-export type AuthorizationModes = 'sealSale' | 'mint' | 'attach' | 'withdraw';
+export type AuthorizationModes = 'sealSale' | 'mint' | 'attach' | 'withdraw' | 'mintTokens';
 
 /**
  * Authorization entity holding a signature for a user to redeem a ticket

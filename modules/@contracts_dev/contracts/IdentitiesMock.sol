@@ -19,9 +19,6 @@ contract IdentitiesMock {
             }
         }
 
-        address[] memory controllers = new address[](1);
-        controllers[0] = _sender;
-
         return IdentityMock(addr);
     }
 
