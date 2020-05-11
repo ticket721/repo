@@ -344,6 +344,54 @@ export class AuthenticationService {
     }
 
     /**
+     * Returns true if email exists for given username
+     *
+     * @param email
+     */
+    async getUserIfEmailExists(email: string): Promise<ServiceResponse<PasswordlessUserDto>> {
+        const emailUserResp: ServiceResponse<UserDto> = await this.usersService.findByEmail(email);
+        if (emailUserResp.error)
+            return {
+                response: null,
+                error: emailUserResp.error,
+            };
+        else if (emailUserResp.response === null)
+            return {
+                response: null,
+                error: null,
+            };
+        else delete emailUserResp.response.password;
+        return {
+            response: emailUserResp.response,
+            error: null,
+        };
+    }
+
+    /**
+     * Reset user password
+     *
+     * @param id
+     * @param password
+     */
+    async validateResetPassword(id: string, password: string): Promise<ServiceResponse<PasswordlessUserDto>> {
+        if (!isKeccak256(password)) {
+            return {
+                response: null,
+                error: 'password_should_be_keccak256',
+            };
+        }
+        const updatedUserResp: ServiceResponse<UserDto> = await this.usersService.update({
+            id,
+            password: await hash(password, parseInt(this.configService.get('BCRYPT_SALT_ROUNDS'), 10)),
+        });
+        if (updatedUserResp.response) {
+            delete updatedUserResp.response.password;
+        }
+
+        return updatedUserResp;
+    }
+
+    /**
      * Update user's password
      *
      * @param email

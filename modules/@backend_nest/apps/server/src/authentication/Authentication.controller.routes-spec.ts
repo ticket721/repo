@@ -13,9 +13,10 @@ import {
     getSDK,
     getSDKAndUser,
 } from '../../test/utils';
-import { T721SDK } from '@common/sdk';
-import { PasswordlessUserDto } from '@app/server/authentication/dto/PasswordlessUser.dto';
-import { generate } from 'rxjs';
+import { PasswordlessUserDto } from './dto/PasswordlessUser.dto';
+import { FailedRegisterReport, T721SDK } from '@common/sdk';
+import { ValidateResetPasswordResponseDto } from '@app/server/authentication/dto/ValidateResetPasswordResponse.dto';
+import { ResetPasswordResponseDto } from '@app/server/authentication/dto/ResetPasswordResponse.dto';
 
 export default function(getCtx: () => { ready: Promise<void> }) {
     return function() {
@@ -888,6 +889,69 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     ),
                     StatusCodes.Unauthorized,
                 );
+            });
+        });
+
+        describe('resetPassword (POST /validate/password/reset', function() {
+            test.concurrent('should fail not existing user', async function() {
+                const sdk = await getSDK(getCtx);
+
+                const pass = generatePassword();
+
+                await failWithCode(sdk.validateResetPassword('badToken', pass), StatusCodes.Unauthorized);
+            });
+
+            test.concurrent('should fail weak password', async function() {
+                const sdk = await getSDK(getCtx);
+
+                const pass = '';
+
+                const res: FailedRegisterReport = (await sdk.validateResetPassword(
+                    'token',
+                    pass,
+                )) as FailedRegisterReport;
+
+                expect(res.report_status).toBe('weak');
+            });
+
+            test.concurrent('should reset password', async function() {
+                const {
+                    sdk,
+                    token,
+                    user,
+                    password,
+                }: {
+                    sdk: T721SDK;
+                    token: string;
+                    user: PasswordlessUserDto;
+                    password: string;
+                } = await getSDKAndUser(getCtx);
+
+                const pass = generatePassword();
+
+                const response: AxiosResponse<ResetPasswordResponseDto> = await sdk.resetPassword(user.email);
+
+                const res = (await sdk.validateResetPassword(response.data.validationToken, pass)) as AxiosResponse<
+                    ValidateResetPasswordResponseDto
+                >;
+
+                expect(res.data.user).toEqual(user);
+
+                const loginResponse: AxiosResponse<LocalLoginResponseDto> = await sdk.localLogin(user.email, pass);
+
+                expect(loginResponse.data).toEqual({
+                    user: {
+                        valid: true,
+                        address: loginResponse.data.user.address,
+                        role: 'authenticated',
+                        id: loginResponse.data.user.id,
+                        locale: 'en',
+                        type: 't721',
+                        email: loginResponse.data.user.email,
+                        username: loginResponse.data.user.username,
+                    },
+                    token: loginResponse.data.token,
+                } as LocalLoginResponseDto);
             });
         });
     };

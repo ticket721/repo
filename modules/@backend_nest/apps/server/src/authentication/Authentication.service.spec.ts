@@ -1401,6 +1401,200 @@ describe('Authentication Service', function() {
         });
     });
 
+    describe('getUserIfEmailExists', function() {
+        test('User not found with error', async function() {
+            const authenticationService: AuthenticationService = context.authenticationService;
+            const usersServiceMock: UsersService = context.usersServiceMock;
+
+            const email = 'notexisting@test.com';
+
+            when(usersServiceMock.findByEmail(email)).thenReturn(
+                Promise.resolve({
+                    response: null,
+                    error: 'user_not_found',
+                }),
+            );
+
+            const res = await authenticationService.getUserIfEmailExists(email);
+
+            expect(res.response).toEqual(null);
+            expect(res.error).toEqual('user_not_found');
+
+            verify(usersServiceMock.findByEmail(email)).called();
+        });
+
+        test('User not found without error', async function() {
+            const authenticationService: AuthenticationService = context.authenticationService;
+            const usersServiceMock: UsersService = context.usersServiceMock;
+
+            const email = 'notexisting@test.com';
+
+            when(usersServiceMock.findByEmail(email)).thenReturn(
+                Promise.resolve({
+                    response: null,
+                    error: null,
+                }),
+            );
+
+            const res = await authenticationService.getUserIfEmailExists(email);
+
+            expect(res.response).toEqual(null);
+            expect(res.error).toEqual(null);
+
+            verify(usersServiceMock.findByEmail(email)).called();
+        });
+
+        test('User found', async function() {
+            const authenticationService: AuthenticationService = context.authenticationService;
+            const usersServiceMock: UsersService = context.usersServiceMock;
+
+            const email = 'notexisting@test.com';
+            const username = 'anonymous';
+
+            const user: UserDto = {
+                id: '123',
+                email: email,
+                username: username,
+                role: 'authenticated',
+                address: 'blabla',
+                valid: true,
+                password: 'anypass',
+                type: 't721',
+                locale: 'fr',
+            };
+
+            when(usersServiceMock.findByEmail(email)).thenReturn(
+                Promise.resolve({
+                    response: user,
+                    error: null,
+                }),
+            );
+
+            const res = await authenticationService.getUserIfEmailExists(email);
+
+            expect(res.response).toEqual(user);
+            expect(res.error).toEqual(null);
+
+            verify(usersServiceMock.findByEmail(email)).called();
+        });
+
+        test('Internal error', async function() {
+            const authenticationService: AuthenticationService = context.authenticationService;
+            const usersServiceMock: UsersService = context.usersServiceMock;
+
+            const email = 'notexisting@test.com';
+
+            when(usersServiceMock.findByEmail(email)).thenReturn(
+                Promise.resolve({
+                    response: null,
+                    error: 'unexpected_error',
+                }),
+            );
+
+            const res = await authenticationService.getUserIfEmailExists(email);
+
+            expect(res.response).toEqual(null);
+            expect(res.error).toEqual('unexpected_error');
+
+            verify(usersServiceMock.findByEmail(email)).called();
+        });
+    });
+
+    describe('validateResetPassword', function() {
+        test('Bad password formating', async function() {
+            const authenticationService: AuthenticationService = context.authenticationService;
+
+            const id = '0';
+            const password = 'NotHashedPassword';
+
+            const res = await authenticationService.validateResetPassword(id, password);
+
+            expect(res.response).toEqual(null);
+            expect(res.error).toEqual('password_should_be_keccak256');
+        });
+
+        test('Password reset internal error', async function() {
+            const authenticationService: AuthenticationService = context.authenticationService;
+            const usersServiceMock: UsersService = context.usersServiceMock;
+
+            const id = '0';
+            const password = toAcceptedKeccak256Format(keccak256('password'));
+
+            when(
+                usersServiceMock.update(
+                    deepEqual({
+                        id: '0',
+                        password: anyString(),
+                    }),
+                ),
+            ).thenReturn(
+                Promise.resolve({
+                    response: null,
+                    error: 'unexpected_error',
+                }),
+            );
+
+            const res = await authenticationService.validateResetPassword(id, password);
+
+            expect(res.response).toEqual(null);
+            expect(res.error).toEqual('unexpected_error');
+            verify(
+                usersServiceMock.update(
+                    deepEqual({
+                        id: '0',
+                        password: anyString(),
+                    }),
+                ),
+            ).called();
+        });
+
+        test('Password reset successful', async function() {
+            const authenticationService: AuthenticationService = context.authenticationService;
+            const usersServiceMock: UsersService = context.usersServiceMock;
+
+            const id = '0';
+            const password = toAcceptedKeccak256Format(keccak256('password'));
+
+            const serviceResponse: ServiceResponse<UserDto> = {
+                response: {
+                    id: '0',
+                    email: 'salut@test.com',
+                    username: 'salut',
+                    role: 'authenticated',
+                    address: 'blabla',
+                    valid: true,
+                    password: 'anypass',
+                    type: 't721',
+                    locale: 'fr',
+                },
+                error: null,
+            };
+
+            when(
+                usersServiceMock.update(
+                    deepEqual({
+                        id: '0',
+                        password: anyString(),
+                    }),
+                ),
+            ).thenReturn(Promise.resolve(serviceResponse));
+
+            const res = await authenticationService.validateResetPassword(id, password);
+
+            delete serviceResponse.response.password;
+            expect(res.response).toEqual(serviceResponse.response);
+            expect(res.error).toEqual(null);
+            verify(
+                usersServiceMock.update(
+                    deepEqual({
+                        id: '0',
+                        password: anyString(),
+                    }),
+                ),
+            ).called();
+        });
+    });
+
     describe('updateUserPassword', function() {
         test('email query internal error', async function() {
             const authenticationService: AuthenticationService = context.authenticationService;

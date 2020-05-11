@@ -231,4 +231,154 @@ describe('Authentication Tasks', function() {
             verify(jobMock.progress(100)).never();
         });
     });
+
+    describe('resetPasswordEmail', function() {
+        it('should send an email', async function() {
+            const jobMock: JobMock = mock(JobMock);
+            const authenticationTasks: AuthenticationTasks = context.authenticationTasks;
+            const emailServiceMock: EmailService = context.emailServiceMock;
+            const jwtServiceMock: JwtService = context.jwtServiceMock;
+            const configServiceMock: ConfigService = context.configServiceMock;
+
+            const email = 'iulian@t721.com';
+            const locale = 'en';
+            const username = 'mortimr';
+            const id = '0';
+
+            const payload = {
+                email,
+                locale,
+                username,
+                id,
+            };
+
+            const signature = 'signature';
+
+            const validationUrl = 'https://ticket721.com';
+
+            const emailPayload = {
+                to: email,
+                template: 'passwordReset',
+                locale,
+                locals: {
+                    validationLink: `${validationUrl}?token=${encodeURIComponent(signature)}`,
+                    token: signature,
+                },
+            };
+
+            instance(jobMock).data = payload;
+
+            when(
+                jwtServiceMock.signAsync(
+                    deepEqual(payload),
+                    deepEqual({
+                        expiresIn: '1 day',
+                    }),
+                ),
+            ).thenResolve(signature);
+
+            when(configServiceMock.get('RESET_PASSWORD_URL')).thenReturn(validationUrl);
+
+            when(emailServiceMock.send(deepEqual(emailPayload))).thenReturn(
+                Promise.resolve({
+                    error: null,
+                    response: emailPayload,
+                }),
+            );
+
+            await authenticationTasks.resetPasswordEmail(instance(jobMock) as Job);
+
+            verify(emailServiceMock.send(deepEqual(emailPayload))).called();
+
+            verify(configServiceMock.get('RESET_PASSWORD_URL')).called();
+
+            verify(
+                jwtServiceMock.signAsync(
+                    deepEqual(payload),
+                    deepEqual({
+                        expiresIn: '1 day',
+                    }),
+                ),
+            ).called();
+
+            verify(jobMock.progress(10)).called();
+            verify(jobMock.progress(50)).called();
+            verify(jobMock.progress(100)).called();
+        });
+
+        it('should throw', async function() {
+            const jobMock: JobMock = mock(JobMock);
+            const authenticationTasks: AuthenticationTasks = context.authenticationTasks;
+            const emailServiceMock: EmailService = context.emailServiceMock;
+            const jwtServiceMock: JwtService = context.jwtServiceMock;
+            const configServiceMock: ConfigService = context.configServiceMock;
+
+            const email = 'iulian@t721.com';
+            const locale = 'en';
+            const username = 'mortimr';
+            const id = '0';
+
+            const payload = {
+                email,
+                locale,
+                username,
+                id,
+            };
+
+            const signature = 'signature';
+
+            const validationUrl = 'https://ticket721.com';
+
+            const emailPayload = {
+                to: email,
+                template: 'passwordReset',
+                locale,
+                locals: {
+                    validationLink: `${validationUrl}?token=${encodeURIComponent(signature)}`,
+                    token: signature,
+                },
+            };
+
+            instance(jobMock).data = payload;
+
+            when(
+                jwtServiceMock.signAsync(
+                    deepEqual(payload),
+                    deepEqual({
+                        expiresIn: '1 day',
+                    }),
+                ),
+            ).thenReturn(Promise.resolve(signature));
+
+            when(configServiceMock.get('RESET_PASSWORD_URL')).thenReturn(validationUrl);
+
+            when(emailServiceMock.send(deepEqual(emailPayload))).thenReturn(
+                Promise.resolve({
+                    error: 'unexpected_error',
+                    response: null,
+                }),
+            );
+
+            await expect(authenticationTasks.resetPasswordEmail(instance(jobMock) as Job)).rejects.toMatchObject({
+                message: 'unexpected_error',
+            });
+
+            verify(emailServiceMock.send(deepEqual(emailPayload))).called();
+
+            verify(configServiceMock.get('RESET_PASSWORD_URL')).called();
+
+            verify(
+                jwtServiceMock.signAsync(
+                    deepEqual(payload),
+                    deepEqual({
+                        expiresIn: '1 day',
+                    }),
+                ),
+            ).called();
+
+            verify(jobMock.progress(10)).called();
+            verify(jobMock.progress(50)).called();
+            verify(jobMock.progress(100)).never();
+        });
+    });
 });

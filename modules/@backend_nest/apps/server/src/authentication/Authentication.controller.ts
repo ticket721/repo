@@ -30,6 +30,11 @@ import { ConfigService } from '@lib/common/config/Config.service';
 import { StatusCodes } from '@lib/common/utils/codes.value';
 import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
 import { ApiResponses } from '@app/server/utils/ApiResponses.controller.decorator';
+import { ResetPasswordTaskDto } from '@app/server/authentication/dto/ResetPasswordTask.dto';
+import { ValidateResetPasswordResponseDto } from '@app/server/authentication/dto/ValidateResetPasswordResponse.dto';
+import { ValidateResetPasswordInputDto } from '@app/server/authentication/dto/ValidateResetPasswordInput.dto';
+import { ResetPasswordResponseDto } from '@app/server/authentication/dto/ResetPasswordResponse.dto';
+import { ResetPasswordInputDto } from '@app/server/authentication/dto/ResetPasswordInputDto';
 import { UserDto } from '@lib/common/users/dto/User.dto';
 import { Roles, RolesGuard } from '@app/server/authentication/guards/RolesGuard.guard';
 import { UserTypes, UserTypesGuard } from '@app/server/authentication/guards/UserTypesGuard.guard';
@@ -306,6 +311,121 @@ export class AuthenticationController {
                         : undefined,
             };
         }
+    }
+
+    /**
+     * [POST /authentication/local/password/update] : Updates user's password
+     */
+    @Post('local/password/reset')
+    @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.OK)
+    @ApiResponses([
+        StatusCodes.OK,
+        StatusCodes.Unauthorized,
+        StatusCodes.UnprocessableEntity,
+        StatusCodes.InternalServerError,
+    ])
+    async resetPassword(@Body() body: ResetPasswordInputDto): Promise<ResetPasswordResponseDto> {
+        const resp = await this.authenticationService.getUserIfEmailExists(body.email);
+        if (resp.error) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.InternalServerError,
+                    message: resp.error,
+                },
+                StatusCodes.InternalServerError,
+            );
+        } else if (resp.response !== null) {
+            await this.mailingQueue.add(
+                '@@mailing/resetPasswordEmail',
+                {
+                    id: resp.response.id,
+                    email: resp.response.email,
+                    locale: resp.response.locale,
+                } as ResetPasswordTaskDto,
+                {
+                    attempts: 5,
+                    backoff: 5000,
+                },
+            );
+        }
+        return {
+            validationToken:
+                this.configService.get('NODE_ENV') === 'development'
+                    ? this.jwtService.sign(
+                          {
+                              email: resp.response.email,
+                              username: resp.response.username,
+                              locale: resp.response.locale,
+                              id: resp.response.id,
+                          },
+                          {
+                              expiresIn: '1 day',
+                          },
+                      )
+                    : undefined,
+        };
+    }
+
+    /**
+     * [POST /authentication/validate/pasword/reset] : Validates a password reset
+     */
+    @Post('/validate/password/reset')
+    @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.OK)
+    @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized, StatusCodes.InternalServerError])
+    async validateResetPassword(
+        @Body() body: ValidateResetPasswordInputDto,
+    ): Promise<ValidateResetPasswordResponseDto> {
+        let validatedUserRes: ServiceResponse<PasswordlessUserDto>;
+        try {
+            const payload = await this.jwtService.verifyAsync<ResetPasswordTaskDto>(body.token);
+            validatedUserRes = await this.authenticationService.validateResetPassword(payload.id, body.password);
+        } catch (e) {
+            switch (e.message) {
+                case 'jwt expired': {
+                    throw new HttpException(
+                        {
+                            status: StatusCodes.Unauthorized,
+                            message: 'jwt_expired',
+                        },
+                        StatusCodes.Unauthorized,
+                    );
+                }
+
+                default:
+                case 'invalid signature': {
+                    throw new HttpException(
+                        {
+                            status: StatusCodes.Unauthorized,
+                            message: 'invalid_signature',
+                        },
+                        StatusCodes.Unauthorized,
+                    );
+                }
+            }
+        }
+
+        if (validatedUserRes.error === 'password_should_be_keccak256') {
+            throw new HttpException(
+                {
+                    status: StatusCodes.UnprocessableEntity,
+                    message: validatedUserRes.error,
+                },
+                StatusCodes.UnprocessableEntity,
+            );
+        } else if (validatedUserRes.error) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.InternalServerError,
+                    message: validatedUserRes.error,
+                },
+                StatusCodes.InternalServerError,
+            );
+        }
+        return {
+            user: validatedUserRes.response,
+        };
     }
 
     /**
