@@ -148,27 +148,6 @@ export async function run_contracts_migrations() {
         contracts_proc.on('close', () => (found ? ok() : ko()));
     });
 
-    const server_prepare_proc = spawn(`env`, [
-        ...`T721_CONFIG=./config.ganache.e2e.remote.json gulp server::dev::prepare`.split(' '),
-    ]);
-
-    await new Promise((ok, ko) => {
-        let found = false;
-
-        server_prepare_proc.stderr.on('data', data => {
-            process.stderr.write(data);
-        });
-
-        server_prepare_proc.stdout.on('data', data => {
-            process.stdout.write(data);
-            if (data.indexOf("Finished 'server::dev::prepare") !== -1) {
-                found = true;
-            }
-        });
-
-        server_prepare_proc.on('close', () => (found ? ok() : ko()));
-    });
-
     process.chdir(current_dir);
 
     console.log('FINISHED @utils/run_contracts_migrations');
