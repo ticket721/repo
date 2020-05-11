@@ -35,7 +35,7 @@
     "@sambego/storybook-state": "2.0.1",
     "@types/cleave.js": "^1.4.1",
     "@types/react-datepicker": "2.11.0",
-    "@types/react-dom": "16.9.7",
+    "@types/react-dom": "16.9.8",
     "@types/react-router": "5.1.7",
     "@types/react-router-dom": "5.1.5",
     "@types/react-select": "3.0.12",
