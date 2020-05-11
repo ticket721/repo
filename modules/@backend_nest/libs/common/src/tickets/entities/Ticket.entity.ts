@@ -1,5 +1,8 @@
 import { Column, CreateDateColumn, Entity, UpdateDateColumn } from '@iaminfinity/express-cassandra';
 
+/**
+ * Ticket Entity
+ */
 @Entity<TicketEntity>({
     table_name: 'ticket',
     key: ['id'],
@@ -16,7 +19,7 @@ export class TicketEntity {
     constructor(t?: TicketEntity) {
         if (t) {
             this.id = t.id;
-            this.authorization = t.authorization;
+            this.authorization = t.authorization ? t.authorization.toString() : t.authorization;
             this.owner = t.owner;
             this.env = t.env;
             this.status = t.status;
@@ -38,66 +41,93 @@ export class TicketEntity {
     })
     id: string;
 
+    /**
+     * Authorization ID given to produce this ticket
+     */
     @Column({
         type: 'uuid',
     })
     authorization: string;
 
+    /**
+     * Address of current ticket owner
+     */
     @Column({
-        type: 'text'
+        type: 'text',
     })
     owner: string;
 
+    /**
+     * Env type of the ticket
+     */
     @Column({
-        type: 'text'
+        type: 'text',
     })
     env: 'chain' | 'db';
 
+    /**
+     * Status of the ticket
+     */
     @Column({
-        type: 'text'
+        type: 'text',
     })
     status: 'minting' | 'ready' | 'canceled';
 
+    /**
+     * Transaction hash where the ticket has been created
+     */
     @Column({
-        type: 'text'
+        type: 'text',
     })
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     transaction_hash: string;
 
+    /**
+     * Category ID
+     */
     @Column({
-        type: 'uuid'
+        type: 'uuid',
     })
     category: string;
 
+    /**
+     * Group ID
+     */
     @Column({
-        type: 'text'
+        type: 'text',
     })
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     group_id: string;
 
+    /**
+     * ID of parent entity
+     */
     @Column({
-        type: 'uuid'
+        type: 'uuid',
     })
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     parent_id: string;
 
+    /**
+     * Type of parent entity
+     */
     @Column({
-        type: 'text'
+        type: 'text',
     })
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     parent_type: string;
 
     /**
      * Creation timestamp
      */
     @CreateDateColumn()
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     created_at: Date;
 
     /**
      * Update timestamp
      */
     @UpdateDateColumn()
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     updated_at: Date;
 }

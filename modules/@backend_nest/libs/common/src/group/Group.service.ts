@@ -1,23 +1,30 @@
-import { Injectable }        from '@nestjs/common';
-import { ServiceResponse }   from '@lib/common/utils/ServiceResponse.type';
-import { EventEntity }       from '@lib/common/events/entities/Event.entity';
-import { DateEntity }        from '@lib/common/dates/entities/Date.entity';
-import { CategoryEntity }    from '@lib/common/categories/entities/Category.entity';
-import { fromES }            from '@lib/common/utils/fromES.helper';
-import { EventsService }     from '@lib/common/events/Events.service';
-import { DatesService }      from '@lib/common/dates/Dates.service';
+import { Injectable } from '@nestjs/common';
+import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
+import { EventEntity } from '@lib/common/events/entities/Event.entity';
+import { DateEntity } from '@lib/common/dates/entities/Date.entity';
+import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
+import { fromES } from '@lib/common/utils/fromES.helper';
+import { EventsService } from '@lib/common/events/Events.service';
+import { DatesService } from '@lib/common/dates/Dates.service';
 import { CategoriesService } from '@lib/common/categories/Categories.service';
 
+/**
+ * Group Utilities
+ */
 @Injectable()
 export class GroupService {
-
+    /**
+     * Dependency injection
+     *
+     * @param eventsService
+     * @param datesService
+     * @param categoriesService
+     */
     constructor(
         private readonly eventsService: EventsService,
         private readonly datesService: DatesService,
         private readonly categoriesService: CategoriesService,
-    ) {
-
-    }
+    ) {}
 
     /**
      * Internal utility to get the event controller from an event
@@ -25,7 +32,10 @@ export class GroupService {
      * @param eventId
      * @param fields
      */
-    private async resolveEventControllerFields<ResultType>(eventId: string, fields: string[]): Promise<ServiceResponse<ResultType>> {
+    private async resolveEventControllerFields<ResultType>(
+        eventId: string,
+        fields: string[],
+    ): Promise<ServiceResponse<ResultType>> {
         const eventEntityRes = await this.eventsService.search({
             id: eventId,
         });
@@ -47,7 +57,7 @@ export class GroupService {
 
         return {
             error: null,
-            response: res as any as ResultType,
+            response: (res as any) as ResultType,
         };
     }
 
@@ -57,7 +67,10 @@ export class GroupService {
      * @param dateId
      * @param fields
      */
-    private async resolveDateControllerFields<ResultType>(dateId: string, fields: string[]): Promise<ServiceResponse<ResultType>> {
+    private async resolveDateControllerFields<ResultType>(
+        dateId: string,
+        fields: string[],
+    ): Promise<ServiceResponse<ResultType>> {
         const dateEntityRes = await this.datesService.search({
             id: dateId,
         });
@@ -80,7 +93,10 @@ export class GroupService {
      * @param category
      * @param fields
      */
-    async getCategoryControllerFields<ResultType>(category: CategoryEntity, fields: string[]): Promise<ServiceResponse<ResultType>> {
+    async getCategoryControllerFields<ResultType>(
+        category: CategoryEntity,
+        fields: string[],
+    ): Promise<ServiceResponse<ResultType>> {
         switch (category.parent_type) {
             case 'date': {
                 return this.resolveDateControllerFields<ResultType>(category.parent_id, fields);
@@ -97,32 +113,33 @@ export class GroupService {
      * @param groupId
      * @param fields
      */
-    async getGroupIDControllerFields<ResultType>(groupId: string, fields: string[]): Promise<ServiceResponse<ResultType>> {
-
+    async getGroupIDControllerFields<ResultType>(
+        groupId: string,
+        fields: string[],
+    ): Promise<ServiceResponse<ResultType>> {
         const categoriesQuery = await this.categoriesService.searchElastic({
             body: {
                 query: {
                     bool: {
                         must: {
                             term: {
-                                group_id: groupId
-                            }
-                        }
-                    }
-                }
-            }
+                                group_id: groupId,
+                            },
+                        },
+                    },
+                },
+            },
         });
 
         if (categoriesQuery.error || categoriesQuery.response.hits.total === 0) {
             return {
                 error: categoriesQuery.error || 'no_categories_for_group_id',
-                response: null
-            }
+                response: null,
+            };
         }
 
         const category: CategoryEntity = fromES(categoriesQuery.response.hits.hits[0]);
 
         return this.getCategoryControllerFields<ResultType>(category, fields);
     }
-
 }

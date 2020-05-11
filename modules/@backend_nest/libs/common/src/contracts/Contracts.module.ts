@@ -1,16 +1,16 @@
 import { DynamicModule, Global, Module } from '@nestjs/common';
 import { ContractsService, ContractsServiceOptions } from '@lib/common/contracts/Contracts.service';
-import { WinstonLoggerService }     from '@lib/common/logger/WinstonLogger.service';
-import { TicketforgeService }       from '@lib/common/contracts/Ticketforge.service';
-import { T721ControllerV0Service }  from '@lib/common/contracts/t721controller/T721Controller.V0.service';
+import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
+import { TicketforgeService } from '@lib/common/contracts/Ticketforge.service';
+import { T721ControllerV0Service } from '@lib/common/contracts/t721controller/T721Controller.V0.service';
 import { MetaMarketplaceV0Service } from '@lib/common/contracts/metamarketplace/MetaMarketplace.V0.service';
-import { FSModule }                 from '@lib/common/fs/FS.module';
-import { T721AdminService }         from '@lib/common/contracts/T721Admin.service';
-import { ContractsControllerBase }  from '@lib/common/contracts/ContractsController.base';
-import { GlobalConfigModule }       from '@lib/common/globalconfig/GlobalConfig.module';
-import { T721TokenService }         from '@lib/common/contracts/T721Token.service';
-import { ToolBoxModule }            from '@lib/common/toolbox/ToolBox.module';
-import { AuthorizationsModule }     from '@lib/common/authorizations/Authorizations.module';
+import { FSModule } from '@lib/common/fs/FS.module';
+import { T721AdminService } from '@lib/common/contracts/T721Admin.service';
+import { ContractsControllerBase } from '@lib/common/contracts/ContractsController.base';
+import { GlobalConfigModule } from '@lib/common/globalconfig/GlobalConfig.module';
+import { T721TokenService } from '@lib/common/contracts/T721Token.service';
+import { ToolBoxModule } from '@lib/common/toolbox/ToolBox.module';
+import { AuthorizationsModule } from '@lib/common/authorizations/Authorizations.module';
 
 /**
  * Build options for the Contracts Module

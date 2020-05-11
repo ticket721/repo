@@ -1,4 +1,4 @@
-import { UserDto }                                      from '@lib/common/users/dto/User.dto';
+import { UserDto } from '@lib/common/users/dto/User.dto';
 import { CartAcsetBuilderArgs, CartAcsetbuilderHelper } from '@lib/common/cart/acset_builders/Cart.acsetbuilder.helper';
 
 describe('Cart AcSetBuilder Helper', function() {

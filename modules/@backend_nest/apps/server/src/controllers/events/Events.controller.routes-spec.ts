@@ -13,7 +13,7 @@ import { uuidEq } from '@common/global';
 export default function(getCtx: () => { ready: Promise<void> }) {
     return function() {
         describe('search (GET /events/search)', function() {
-            test.concurrent('should properly search for events', async function() {
+            test('should properly search for events', async function() {
                 const {
                     sdk,
                     token,
@@ -37,7 +37,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 expect(eventsQuery.data.events.length).toEqual(1);
             });
 
-            test.concurrent('should properly search for events from unauthenticated', async function() {
+            test('should properly search for events from unauthenticated', async function() {
                 const {
                     sdk,
                     token,
@@ -63,7 +63,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
         });
 
         describe('create (POST /events)', function() {
-            test.concurrent('should convert action set to event', async function() {
+            test('should convert action set to event', async function() {
                 const {
                     sdk,
                     token,
@@ -79,7 +79,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 const event = await createEvent(token, sdk);
             });
 
-            test.concurrent('should fail by unauthenticated call', async function() {
+            test('should fail by unauthenticated call', async function() {
                 const {
                     sdk,
                     token,
@@ -100,7 +100,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 );
             });
 
-            test.concurrent('should fail by invalid price', async function() {
+            test('should fail by invalid price', async function() {
                 const {
                     sdk,
                     token,
@@ -265,7 +265,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 );
             });
 
-            test.concurrent('should fail by providing incomplete actionset', async function() {
+            test('should fail by providing incomplete actionset', async function() {
                 const {
                     sdk,
                     token,
@@ -299,7 +299,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
         });
 
         describe('start (POST /start)', function() {
-            test.concurrent('should start owned event and all dates', async function() {
+            test('should start owned event and all dates', async function() {
                 const {
                     sdk,
                     token,
@@ -331,7 +331,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 }
             });
 
-            test.concurrent('should start owned event and first date only', async function() {
+            test('should start owned event and first date only', async function() {
                 const {
                     sdk,
                     token,
@@ -368,7 +368,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 }
             });
 
-            test.concurrent('should fail on unauthenticated', async function() {
+            test('should fail on unauthenticated', async function() {
                 const {
                     sdk,
                     token,
@@ -391,7 +391,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 );
             });
 
-            test.concurrent('should fail on unauthorized', async function() {
+            test('should fail on unauthorized', async function() {
                 const {
                     sdk,
                     token,
@@ -416,7 +416,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 );
             });
 
-            test.concurrent('should fail on invalid event date for event', async function() {
+            test('should fail on invalid event date for event', async function() {
                 const {
                     sdk,
                     token,
@@ -442,7 +442,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
         });
 
         describe('update (PUT /events/:eventId)', function() {
-            test.concurrent('should update event metadata', async function() {
+            test('should update event metadata', async function() {
                 const {
                     sdk,
                     token,
@@ -464,7 +464,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 expect(editedEvent.data.event.name).toEqual('myEditedEventName');
             });
 
-            test.concurrent('should fail updating from unauthenticated', async function() {
+            test('should fail updating from unauthenticated', async function() {
                 const {
                     sdk,
                     token,
@@ -487,7 +487,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 );
             });
 
-            test.concurrent('should fail updating from unauthorized', async function() {
+            test('should fail updating from unauthorized', async function() {
                 const {
                     sdk,
                     token,
@@ -514,7 +514,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
         });
 
         describe('deleteCategories (DELETE /events/:eventId/categories)', function() {
-            test.concurrent('should unbind global category', async function() {
+            test('should unbind global category', async function() {
                 const {
                     sdk,
                     token,
@@ -538,7 +538,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 expect(updatedEvent.data.event.categories).toEqual([]);
             });
 
-            test.concurrent('should fail unbinding from unauthenticated', async function() {
+            test('should fail unbinding from unauthenticated', async function() {
                 const {
                     sdk,
                     token,
@@ -563,7 +563,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 );
             });
 
-            test.concurrent('should fail unbinding from unauthorized', async function() {
+            test('should fail unbinding from unauthorized', async function() {
                 const {
                     sdk,
                     token,
@@ -590,7 +590,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 );
             });
 
-            test.concurrent('should fail unbinding category not found', async function() {
+            test('should fail unbinding category not found', async function() {
                 const {
                     sdk,
                     token,
@@ -617,7 +617,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
         });
 
         describe('addCategories (POST /events/:eventId/categories)', function() {
-            test.concurrent('should add new global category', async function() {
+            test('should add new global category', async function() {
                 const {
                     sdk,
                     token,
@@ -655,7 +655,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 expect(editedEvent.data.event.categories).toEqual([event.categories[0], newCategory.data.category.id]);
             });
 
-            test.concurrent('should fail on unauthenticated call', async function() {
+            test('should fail on unauthenticated call', async function() {
                 const {
                     sdk,
                     token,
@@ -694,7 +694,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 );
             });
 
-            test.concurrent('should fail on unauthorized call', async function() {
+            test('should fail on unauthorized call', async function() {
                 const {
                     sdk,
                     token,
@@ -735,7 +735,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 );
             });
 
-            test.concurrent('should fail on duplicate category id', async function() {
+            test('should fail on duplicate category id', async function() {
                 const {
                     sdk,
                     token,
@@ -758,7 +758,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 );
             });
 
-            test.concurrent('should fail on already bound category', async function() {
+            test('should fail on already bound category', async function() {
                 const {
                     sdk,
                     token,
@@ -783,7 +783,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 );
             });
 
-            test.concurrent('should fail on invalid group id', async function() {
+            test('should fail on invalid group id', async function() {
                 const {
                     sdk,
                     token,
@@ -826,7 +826,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
         });
 
         describe('deleteDates (DELETE /events/:eventId/dates)', function() {
-            test.concurrent('should unbind both dates of the event', async function() {
+            test('should unbind both dates of the event', async function() {
                 const {
                     sdk,
                     token,
@@ -848,7 +848,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 expect(updatedEvent.data.event.dates).toEqual([]);
             });
 
-            test.concurrent('should fail for unauthenticated', async function() {
+            test('should fail for unauthenticated', async function() {
                 const {
                     sdk,
                     token,
@@ -871,7 +871,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 );
             });
 
-            test.concurrent('should fail for unauthorized', async function() {
+            test('should fail for unauthorized', async function() {
                 const {
                     sdk,
                     token,
@@ -896,7 +896,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 );
             });
 
-            test.concurrent('should fail for date not found', async function() {
+            test('should fail for date not found', async function() {
                 const {
                     sdk,
                     token,
@@ -921,7 +921,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
         });
 
         describe('addDates (POST /events/:eventId/dates)', function() {
-            test.concurrent('should add a new date to the event', async function() {
+            test('should add a new date to the event', async function() {
                 const {
                     sdk,
                     token,
@@ -965,7 +965,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 expect(updatedDate.data.event.dates).toEqual([...event.dates, newDate.data.date.id]);
             });
 
-            test.concurrent('should fail on unauthenticated user', async function() {
+            test('should fail on unauthenticated user', async function() {
                 const {
                     sdk,
                     token,
@@ -1010,7 +1010,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 );
             });
 
-            test.concurrent('should fail on unauthorized user', async function() {
+            test('should fail on unauthorized user', async function() {
                 const {
                     sdk,
                     token,
@@ -1057,7 +1057,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 );
             });
 
-            test.concurrent('should fail on date conflict', async function() {
+            test('should fail on date conflict', async function() {
                 const {
                     sdk,
                     token,
@@ -1080,7 +1080,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 );
             });
 
-            test.concurrent('should fail on binding conflict', async function() {
+            test('should fail on binding conflict', async function() {
                 const {
                     sdk,
                     token,
@@ -1105,7 +1105,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 );
             });
 
-            test.concurrent('should fail on invalid group id', async function() {
+            test('should fail on invalid group id', async function() {
                 const {
                     sdk,
                     token,

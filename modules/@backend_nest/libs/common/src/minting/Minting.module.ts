@@ -1,6 +1,6 @@
-import { Module }                        from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { BullModule, BullModuleOptions } from '@nestjs/bull';
-import { ConfigService }                 from '@lib/common/config/Config.service';
+import { ConfigService } from '@lib/common/config/Config.service';
 
 @Module({
     imports: [
@@ -15,6 +15,6 @@ import { ConfigService }                 from '@lib/common/config/Config.service
                 },
             }),
         }),
-    ]
+    ],
 })
 export class MintingModule {}

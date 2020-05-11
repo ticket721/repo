@@ -1,7 +1,7 @@
 import {
     EventCreateAcsetBuilderArgs,
     EventCreateAcsetbuilderHelper,
-} from '@lib/common/actionsets/acset_builders/EventCreate.acsetbuilder.helper';
+} from '@lib/common/events/acset_builders/EventCreate.acsetbuilder.helper';
 import { UserDto } from '@lib/common/users/dto/User.dto';
 
 describe('EventCreate AcSetBuilder Helper', function() {

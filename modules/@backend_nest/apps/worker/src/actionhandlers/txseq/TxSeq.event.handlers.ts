@@ -1,30 +1,39 @@
-import { ActionSetsService, Progress }                                                  from '@lib/common/actionsets/ActionSets.service';
-import { ActionSet }                                                                    from '@lib/common/actionsets/helper/ActionSet.class';
-import { Injectable, OnModuleInit }                                                     from '@nestjs/common';
-import Joi                                                                              from '@hapi/joi';
-import { ChecksRunnerUtil }                                                             from '@lib/common/actionsets/helper/ChecksRunner.util';
-import { GemOrdersService }                                                             from '@lib/common/gemorders/GemOrders.service';
-import { toAcceptedAddressFormat, toHex, TransactionParameters, keccak256, RefractMtx } from '@common/global';
-import { UserDto }                                                                      from '@lib/common/users/dto/User.dto';
-import { ServiceResponse }                                                              from '@lib/common/utils/ServiceResponse.type';
-import { TxsService }                                                                   from '@lib/common/txs/Txs.service';
-import { TxEntity }                                                                     from '@lib/common/txs/entities/Tx.entity';
-import { TransactionLifecycles, TransactionLifecycleTaskArgumentsChecker }              from '@lib/common/txs/acset_builders/TxSequence.acsetbuilder.helper';
-import { InjectQueue }                                                                  from '@nestjs/bull';
-import { Queue }                                                                        from 'bull';
+import { ActionSetsService, Progress } from '@lib/common/actionsets/ActionSets.service';
+import { ActionSet } from '@lib/common/actionsets/helper/ActionSet.class';
+import { Injectable, OnModuleInit } from '@nestjs/common';
+import Joi from '@hapi/joi';
+import { ChecksRunnerUtil } from '@lib/common/actionsets/helper/ChecksRunner.util';
+import { TransactionParameters } from '@common/global';
+import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
+import { TxsService } from '@lib/common/txs/Txs.service';
+import { TxEntity } from '@lib/common/txs/entities/Tx.entity';
+import {
+    TransactionLifecycles,
+    TransactionLifecycleTaskArgumentsChecker,
+} from '@lib/common/txs/acset_builders/TxSequence.acsetbuilder.helper';
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
 
 /**
  * Data model required for the TxSeq Progress step
  */
 export interface TxSeqTxHandler {
-    transaction: (TransactionParameters & TransactionLifecycles);
-    caller: UserDto;
+    /**
+     * Transaction arguments
+     */
+    transaction: TransactionParameters & TransactionLifecycles;
+    /**
+     * Flag to know if transaction has already been broadcasted
+     */
     broadcasted?: boolean;
+    /**
+     * Hash of the transaction to broadcast
+     */
     transactionHash?: string;
 }
 
 /**
- * Class containing all input handlers of the TxSeq action set
+ * Class containing all event handlers of the TxSeq action set
  */
 @Injectable()
 export class TxSeqEventHandlers implements OnModuleInit {
@@ -32,15 +41,13 @@ export class TxSeqEventHandlers implements OnModuleInit {
      * Dependency Injection
      *
      * @param actionSetsService
-     * @param gemOrdersService
      * @param txsService
      * @param txQueue
      */
     constructor(
         private readonly actionSetsService: ActionSetsService,
-        private readonly gemOrdersService: GemOrdersService,
         private readonly txsService: TxsService,
-        @InjectQueue('tx') private readonly txQueue: Queue
+        @InjectQueue('tx') private readonly txQueue: Queue,
     ) {}
 
     /**
@@ -53,17 +60,7 @@ export class TxSeqEventHandlers implements OnModuleInit {
             value: Joi.string().required(),
             data: Joi.string().required(),
             onConfirm: TransactionLifecycleTaskArgumentsChecker.optional(),
-            onFailure: TransactionLifecycleTaskArgumentsChecker.optional()
-        }),
-        caller: Joi.object({
-            id: Joi.string().required(),
-            email: Joi.string().required(),
-            username: Joi.string().required(),
-            type: Joi.string().required(),
-            address: Joi.string().required(),
-            role: Joi.string().required(),
-            valid: Joi.boolean().required(),
-            locale: Joi.string().required(),
+            onFailure: TransactionLifecycleTaskArgumentsChecker.optional(),
         }),
         broadcasted: Joi.boolean(),
         transactionHash: Joi.string(),
@@ -74,19 +71,22 @@ export class TxSeqEventHandlers implements OnModuleInit {
      */
     txHandlerFields = ['transaction', 'caller'];
 
+    /**
+     * Internal utility to broadcast the transaction using the tx service
+     *
+     * @param transaction
+     */
     private async broadcastTransaction(transaction: TransactionParameters): Promise<ServiceResponse<TxEntity>> {
-
         return this.txsService.sendRawTransaction(
             transaction.from,
             transaction.to,
             transaction.value,
-            transaction.data
+            transaction.data,
         );
-
     }
 
     /**
-     * Input Handler of the Ticket Selection Step
+     * Event Handler of the Transaction Step
      *
      * @param checkoutResolveFields
      * @param actionset
@@ -129,7 +129,6 @@ export class TxSeqEventHandlers implements OnModuleInit {
 
             case undefined: {
                 if (!data.broadcasted) {
-
                     const broadcastResponse = await this.broadcastTransaction(data.transaction);
 
                     actionset.action.setData({
@@ -138,7 +137,6 @@ export class TxSeqEventHandlers implements OnModuleInit {
                     });
 
                     if (broadcastResponse.error) {
-
                         console.log('broadcasting error', broadcastResponse.error);
 
                         actionset.action.setError({
@@ -148,22 +146,18 @@ export class TxSeqEventHandlers implements OnModuleInit {
                         actionset.action.setStatus('error');
                         actionset.setStatus('event:error');
                         break;
-
                     }
 
                     actionset.action.setData({
                         ...actionset.action.data,
-                        transactionHash: broadcastResponse.response.transaction_hash
+                        transactionHash: broadcastResponse.response.transaction_hash,
                     });
-
                 } else {
-
                     const transactionSearchRes = await this.txsService.search({
-                        transaction_hash: data.transactionHash
+                        transaction_hash: data.transactionHash,
                     });
 
                     if (transactionSearchRes.error) {
-
                         actionset.action.setError({
                             details: null,
                             error: transactionSearchRes.error,
@@ -172,50 +166,38 @@ export class TxSeqEventHandlers implements OnModuleInit {
                         actionset.setStatus('event:error');
 
                         if (data.transaction.onFailure) {
-                            await this.txQueue.add(
-                                data.transaction.onFailure.name,
-                                {
-                                    transactionHash: data.transactionHash,
-                                    ...data.transaction.onFailure.jobData
-                                }
-                            );
+                            await this.txQueue.add(data.transaction.onFailure.name, {
+                                transactionHash: data.transactionHash,
+                                ...data.transaction.onFailure.jobData,
+                            });
                         }
 
-                        break ;
-
+                        break;
                     }
 
                     const tx: TxEntity = transactionSearchRes.response[0];
 
                     if (tx.confirmed) {
-
                         if (tx.status === false) {
-
                             actionset.action.setError({
                                 details: null,
                                 error: 'transaction_failed',
                             });
                             actionset.action.setStatus('error');
                             actionset.setStatus('event:error');
-
                         } else {
-
                             if (data.transaction.onConfirm) {
-                                await this.txQueue.add(
-                                    data.transaction.onConfirm.name,
-                                    {
-                                        transactionHash: data.transactionHash,
-                                        ...data.transaction.onConfirm.jobData
-                                    }
-                                );
+                                await this.txQueue.add(data.transaction.onConfirm.name, {
+                                    transactionHash: data.transactionHash,
+                                    ...data.transaction.onConfirm.jobData,
+                                });
                             }
 
                             actionset.next();
                         }
 
-                        break ;
+                        break;
                     }
-
                 }
             }
         }

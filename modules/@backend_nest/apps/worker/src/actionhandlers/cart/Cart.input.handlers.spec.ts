@@ -5,12 +5,7 @@ import { ConfigService } from '@lib/common/config/Config.service';
 import { CartInputHandlers } from '@app/worker/actionhandlers/cart/Cart.input.handlers';
 import { deepEqual, instance, mock, verify, when } from 'ts-mockito';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ImagesService } from '@lib/common/images/Images.service';
-import { EventsInputHandlers } from '@app/worker/actionhandlers/events/Events.input.handlers';
-import { ActionEntity, ActionSetEntity, ActionSetStatus } from '@lib/common/actionsets/entities/ActionSet.entity';
-import { Column, CreateDateColumn, UpdateDateColumn } from '@iaminfinity/express-cassandra';
-import { Link } from '@lib/common/utils/Link.type';
-import { CartAcsetbuilderHelper } from '@lib/common/actionsets/acset_builders/Cart.acsetbuilder.helper';
+import { CartAcsetbuilderHelper } from '@lib/common/cart/acset_builders/Cart.acsetbuilder.helper';
 import { UserDto } from '@lib/common/users/dto/User.dto';
 import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
 
@@ -126,6 +121,8 @@ describe('Cart Input Handlers Spec', function() {
                 ],
             });
 
+            when(context.currenciesServiceMock.computeFee('T721Token', '100')).thenResolve('0');
+
             const handlerResult = await context.cartInputHandlers.ticketSelectionsHandler(
                 context.cartInputHandlers.ticketSelectionsFields,
                 actionSet,
@@ -140,7 +137,7 @@ describe('Cart Input Handlers Spec', function() {
                         type: 'input',
                         name: '@cart/ticketSelections',
                         data:
-                            '{"tickets":[{"categoryId":"category_id","price":{"currency":"Fiat","price":"100"}}],"total":[{"currency":"T721Token","value":"100","log_value":0}]}',
+                            '{"tickets":[{"categoryId":"category_id","price":{"currency":"Fiat","price":"100"}}],"total":[{"currency":"T721Token","value":"100","log_value":0}],"fees":["0"]}',
                         error: null,
                         status: 'complete',
                         private: false,
@@ -185,6 +182,8 @@ describe('Cart Input Handlers Spec', function() {
                     ]),
                 ),
             ).called();
+
+            verify(context.currenciesServiceMock.computeFee('T721Token', '100')).called();
         });
 
         it('should properly fulfill ticket selection step for 3 tickets', async function() {
@@ -265,6 +264,8 @@ describe('Cart Input Handlers Spec', function() {
                 ],
             });
 
+            when(context.currenciesServiceMock.computeFee('T721Token', '300')).thenResolve('0');
+
             const handlerResult = await context.cartInputHandlers.ticketSelectionsHandler(
                 context.cartInputHandlers.ticketSelectionsFields,
                 actionSet,
@@ -279,7 +280,7 @@ describe('Cart Input Handlers Spec', function() {
                         type: 'input',
                         name: '@cart/ticketSelections',
                         data:
-                            '{"tickets":[{"categoryId":"category_id","price":{"currency":"Fiat","price":"100"}},{"categoryId":"category_id","price":{"currency":"Fiat","price":"100"}},{"categoryId":"category_id","price":{"currency":"Fiat","price":"100"}}],"total":[{"currency":"T721Token","value":"300","log_value":0}]}',
+                            '{"tickets":[{"categoryId":"category_id","price":{"currency":"Fiat","price":"100"}},{"categoryId":"category_id","price":{"currency":"Fiat","price":"100"}},{"categoryId":"category_id","price":{"currency":"Fiat","price":"100"}}],"total":[{"currency":"T721Token","value":"300","log_value":0}],"fees":["0"]}',
                         error: null,
                         status: 'complete',
                         private: false,
@@ -324,6 +325,8 @@ describe('Cart Input Handlers Spec', function() {
                     ]),
                 ),
             ).called();
+
+            verify(context.currenciesServiceMock.computeFee('T721Token', '100')).called();
         });
 
         it('should fail on invalid input', async function() {
@@ -1093,6 +1096,7 @@ describe('Cart Input Handlers Spec', function() {
                     },
                 ],
                 commitType: 'stripe',
+                fees: ['0'],
                 total: [
                     {
                         currency: 'Fiat',
@@ -1131,7 +1135,7 @@ describe('Cart Input Handlers Spec', function() {
                     {
                         type: 'input',
                         name: '@cart/authorizations',
-                        data: `{\"authorizations\":[{\"categoryId\":\"category_id\",\"price\":{\"currency\":\"Fiat\",\"price\":\"100\"},\"authorizationId\":\"authorization_id\",\"groupId\":\"group_id\",\"categoryName\":\"category_name\",\"granter\":\"granter\",\"grantee\":\"grantee\",\"granterController\":\"granter_controller\",\"expiration\":\"${handlerResult[0].action.data.authorizations[0].expiration}\"}],\"commitType\":\"stripe\",\"total\":[{\"currency\":\"Fiat\",\"value\":\"100\",\"log_value\":0}]}`,
+                        data: `{\"authorizations\":[{\"categoryId\":\"category_id\",\"price\":{\"currency\":\"Fiat\",\"price\":\"100\"},\"authorizationId\":\"authorization_id\",\"groupId\":\"group_id\",\"categoryName\":\"category_name\",\"granter\":\"granter\",\"grantee\":\"grantee\",\"granterController\":\"granter_controller\",\"expiration\":\"${handlerResult[0].action.data.authorizations[0].expiration}\"}],\"commitType\":\"stripe\",\"fees\":[\"0\"],\"total\":[{\"currency\":\"Fiat\",\"value\":\"100\",\"log_value\":0}]}`,
                         error: null,
                         status: 'complete',
                         private: true,
@@ -1187,6 +1191,7 @@ describe('Cart Input Handlers Spec', function() {
                     },
                 ],
                 commitType: 'stripe',
+                fees: ['0'],
                 total: [
                     {
                         currency: 'Fiat',
@@ -1225,8 +1230,8 @@ describe('Cart Input Handlers Spec', function() {
                     {
                         type: 'input',
                         name: '@cart/authorizations',
-                        data: `{\"extra\":\"field\",\"authorizations\":[{\"categoryId\":\"category_id\",\"price\":{\"currency\":\"Fiat\",\"price\":\"100\"},\"authorizationId\":\"authorization_id\",\"groupId\":\"group_id\",\"categoryName\":\"category_name\",\"granter\":\"granter\",\"grantee\":\"grantee\",\"granterController\":\"granter_controller\",\"expiration\":\"${handlerResult[0].action.data.authorizations[0].expiration}\"}],\"commitType\":\"stripe\",\"total\":[{\"currency\":\"Fiat\",\"value\":\"100\",\"log_value\":0}]}`,
-                        error: `{\"details\":{\"_original\":{\"extra\":\"field\",\"authorizations\":[{\"categoryId\":\"category_id\",\"price\":{\"currency\":\"Fiat\",\"price\":\"100\"},\"authorizationId\":\"authorization_id\",\"groupId\":\"group_id\",\"categoryName\":\"category_name\",\"granter\":\"granter\",\"grantee\":\"grantee\",\"granterController\":\"granter_controller\",\"expiration\":\"${handlerResult[0].action.data.authorizations[0].expiration}\"}],\"commitType\":\"stripe\",\"total\":[{\"currency\":\"Fiat\",\"value\":\"100\",\"log_value\":0}]},\"details\":[{\"message\":\"\\\"extra\\\" is not allowed\",\"path\":[\"extra\"],\"type\":\"object.unknown\",\"context\":{\"child\":\"extra\",\"label\":\"extra\",\"value\":\"field\",\"key\":\"extra\"}}]},\"error\":\"validation_error\"}`,
+                        data: `{\"extra\":\"field\",\"authorizations\":[{\"categoryId\":\"category_id\",\"price\":{\"currency\":\"Fiat\",\"price\":\"100\"},\"authorizationId\":\"authorization_id\",\"groupId\":\"group_id\",\"categoryName\":\"category_name\",\"granter\":\"granter\",\"grantee\":\"grantee\",\"granterController\":\"granter_controller\",\"expiration\":\"${handlerResult[0].action.data.authorizations[0].expiration}\"}],\"commitType\":\"stripe\",\"fees\":[\"0\"],\"total\":[{\"currency\":\"Fiat\",\"value\":\"100\",\"log_value\":0}]}`,
+                        error: `{\"details\":{\"_original\":{\"extra\":\"field\",\"authorizations\":[{\"categoryId\":\"category_id\",\"price\":{\"currency\":\"Fiat\",\"price\":\"100\"},\"authorizationId\":\"authorization_id\",\"groupId\":\"group_id\",\"categoryName\":\"category_name\",\"granter\":\"granter\",\"grantee\":\"grantee\",\"granterController\":\"granter_controller\",\"expiration\":\"${handlerResult[0].action.data.authorizations[0].expiration}\"}],\"commitType\":\"stripe\",\"fees\":[\"0\"],\"total\":[{\"currency\":\"Fiat\",\"value\":\"100\",\"log_value\":0}]},\"details\":[{\"message\":\"\\\"extra\\\" is not allowed\",\"path\":[\"extra\"],\"type\":\"object.unknown\",\"context\":{\"child\":\"extra\",\"label\":\"extra\",\"value\":\"field\",\"key\":\"extra\"}}]},\"error\":\"validation_error\"}`,
                         status: 'error',
                         private: true,
                     },
@@ -1271,6 +1276,7 @@ describe('Cart Input Handlers Spec', function() {
                         log_value: 0,
                     },
                 ],
+                fees: ['0'],
             });
 
             const handlerResult = await context.cartInputHandlers.authorizationsHandler(
@@ -1302,7 +1308,8 @@ describe('Cart Input Handlers Spec', function() {
                     {
                         type: 'input',
                         name: '@cart/authorizations',
-                        data: '{"commitType":"stripe","total":[{"currency":"Fiat","value":"100","log_value":0}]}',
+                        data:
+                            '{"commitType":"stripe","total":[{"currency":"Fiat","value":"100","log_value":0}],"fees":["0"]}',
                         error: '{"details":["authorizations"],"error":"incomplete_error"}',
                         status: 'incomplete',
                         private: true,
@@ -1357,6 +1364,7 @@ describe('Cart Input Handlers Spec', function() {
                     },
                 ],
                 commitType: 'stripe',
+                fees: ['0'],
                 total: [
                     {
                         currency: 'Fiat',
@@ -1395,7 +1403,7 @@ describe('Cart Input Handlers Spec', function() {
                     {
                         type: 'input',
                         name: '@cart/authorizations',
-                        data: `{\"authorizations\":[{\"categoryId\":\"category_id\",\"price\":{\"currency\":\"Fiat\",\"price\":\"101\"},\"authorizationId\":\"authorization_id\",\"groupId\":\"group_id\",\"categoryName\":\"category_name\",\"granter\":\"granter\",\"grantee\":\"grantee\",\"granterController\":\"granter_controller\",\"expiration\":\"${handlerResult[0].action.data.authorizations[0].expiration}\"}],\"commitType\":\"stripe\",\"total\":[{\"currency\":\"Fiat\",\"value\":\"101\",\"log_value\":0}]}`,
+                        data: `{\"authorizations\":[{\"categoryId\":\"category_id\",\"price\":{\"currency\":\"Fiat\",\"price\":\"101\"},\"authorizationId\":\"authorization_id\",\"groupId\":\"group_id\",\"categoryName\":\"category_name\",\"granter\":\"granter\",\"grantee\":\"grantee\",\"granterController\":\"granter_controller\",\"expiration\":\"${handlerResult[0].action.data.authorizations[0].expiration}\"}],\"commitType\":\"stripe\",\"fees\":[\"0\"],\"total\":[{\"currency\":\"Fiat\",\"value\":\"101\",\"log_value\":0}]}`,
                         error: '{"error":"authorizations_not_matching"}',
                         status: 'error',
                         private: true,

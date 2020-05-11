@@ -43,20 +43,20 @@ import { OutrospectionModule } from '@lib/common/outrospection/Outrospection.mod
 import { EmailModule } from '@lib/common/email/Email.module';
 import { DosojinController } from '@app/server/controllers/dosojin/Dosojin.controller';
 import { GemOrdersModule } from '@lib/common/gemorders/GemOrders.module';
-import { CheckoutController }    from '@app/server/controllers/checkout/Checkout.controller';
+import { CheckoutController } from '@app/server/controllers/checkout/Checkout.controller';
 import { StripeResourcesModule } from '@lib/common/striperesources/StripeResources.module';
-import { ToolBoxModule }        from '@lib/common/toolbox/ToolBox.module';
-import { CategoriesModule }     from '@lib/common/categories/Categories.module';
-import { RightsModule }         from '@lib/common/rights/Rights.module';
+import { ToolBoxModule } from '@lib/common/toolbox/ToolBox.module';
+import { CategoriesModule } from '@lib/common/categories/Categories.module';
+import { RightsModule } from '@lib/common/rights/Rights.module';
 import { CategoriesController } from '@app/server/controllers/categories/Categories.controller';
-import { RightsController }     from '@app/server/controllers/rights/Rights.controller';
-import { ServerController }     from '@app/server/controllers/server/Server.controller';
-import { MetadatasController }  from '@app/server/controllers/metadatas/Metadatas.controller';
-import { MetadatasModule }      from '@lib/common/metadatas/Metadatas.module';
+import { RightsController } from '@app/server/controllers/rights/Rights.controller';
+import { ServerController } from '@app/server/controllers/server/Server.controller';
+import { MetadatasController } from '@app/server/controllers/metadatas/Metadatas.controller';
+import { MetadatasModule } from '@lib/common/metadatas/Metadatas.module';
 import { AuthorizationsModule } from '@lib/common/authorizations/Authorizations.module';
-import { CheckoutModule }       from '@lib/common/checkout/Checkout.module';
-import { CartModule }           from '@lib/common/cart/Cart.module';
-import { RocksideModule }       from '@lib/common/rockside/Rockside.module';
+import { CheckoutModule } from '@lib/common/checkout/Checkout.module';
+import { CartModule } from '@lib/common/cart/Cart.module';
+import { RocksideModule } from '@lib/common/rockside/Rockside.module';
 
 @Module({
     imports: [

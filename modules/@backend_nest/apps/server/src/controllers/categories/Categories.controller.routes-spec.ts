@@ -7,7 +7,7 @@ import { CategoryEntity } from '@lib/common/categories/entities/Category.entity'
 export default function(getCtx: () => { ready: Promise<void> }) {
     return function() {
         describe('create (POST /categories)', function() {
-            test.concurrent('should properly create category, from group ID owner', async function() {
+            test('should properly create category, from group ID owner', async function() {
                 const {
                     sdk,
                     token,
@@ -61,7 +61,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 });
             });
 
-            test.concurrent('should fail creating cateogory without rights', async function() {
+            test('should fail creating cateogory without rights', async function() {
                 const {
                     sdk,
                     token,
@@ -96,7 +96,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 );
             });
 
-            test.concurrent('should fail for category name conflict', async function() {
+            test('should fail for category name conflict', async function() {
                 const {
                     sdk,
                     token,
@@ -149,7 +149,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 );
             });
 
-            test.concurrent('should fail for invalid currency', async function() {
+            test('should fail for invalid currency', async function() {
                 const {
                     sdk,
                     token,
@@ -186,7 +186,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 );
             });
 
-            test.concurrent('should fail for sale dates', async function() {
+            test('should fail for sale dates', async function() {
                 const {
                     sdk,
                     token,
@@ -223,7 +223,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 );
             });
 
-            test.concurrent('should fail for resale dates', async function() {
+            test('should fail for resale dates', async function() {
                 const {
                     sdk,
                     token,
@@ -262,7 +262,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
         });
 
         describe('update (PUT /categories/:categoryId)', function() {
-            test.concurrent('should update category name', async function() {
+            test('should update category name', async function() {
                 const {
                     sdk,
                     token,
@@ -320,7 +320,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 });
             });
 
-            test.concurrent('should update price', async function() {
+            test('should update price', async function() {
                 const {
                     sdk,
                     token,
@@ -383,7 +383,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 });
             });
 
-            test.concurrent('should fail update from user without rights', async function() {
+            test('should fail update from user without rights', async function() {
                 const {
                     sdk,
                     token,
@@ -426,7 +426,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 );
             });
 
-            test.concurrent('should fail on invalid sale dates', async function() {
+            test('should fail on invalid sale dates', async function() {
                 const {
                     sdk,
                     token,
@@ -468,7 +468,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 );
             });
 
-            test.concurrent('should fail on invalid resale dates', async function() {
+            test('should fail on invalid resale dates', async function() {
                 const {
                     sdk,
                     token,
@@ -510,7 +510,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 );
             });
 
-            test.concurrent('should fail on invalid prices', async function() {
+            test('should fail on invalid prices', async function() {
                 const {
                     sdk,
                     token,
@@ -558,7 +558,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
         });
 
         describe('search (GET /categories/search)', function() {
-            test.concurrent('should search owned categories', async function() {
+            test('should search owned categories', async function() {
                 const {
                     sdk,
                     token,

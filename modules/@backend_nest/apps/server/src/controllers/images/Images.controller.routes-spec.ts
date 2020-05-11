@@ -25,7 +25,7 @@ const cleanImage = (image: string): void => {
 export default function(getCtx: () => { ready: Promise<void> }) {
     return function() {
         describe('upload (POST /images)', function() {
-            test.concurrent('should upload image', async function() {
+            test('should upload image', async function() {
                 const {
                     sdk,
                     token,
@@ -57,7 +57,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 cleanImage(image);
             });
 
-            test.concurrent('should upload image twice', async function() {
+            test('should upload image twice', async function() {
                 const {
                     sdk,
                     token,

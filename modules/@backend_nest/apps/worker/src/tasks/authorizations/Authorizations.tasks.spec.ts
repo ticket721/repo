@@ -159,6 +159,8 @@ describe('Authorization Tasks', function() {
                 address: '0xuseraddress',
             } as UserDto;
 
+            const fees = ['0'];
+
             const input: GenerateMintingAuthorizationsTaskInput = {
                 actionSetId,
                 authorizations,
@@ -168,6 +170,7 @@ describe('Authorization Tasks', function() {
                 expirationTime,
                 signatureReadable,
                 grantee,
+                fees,
             };
 
             const job: Job<GenerateMintingAuthorizationsTaskInput> = {
@@ -251,6 +254,7 @@ describe('Authorization Tasks', function() {
                 context.authorizationsServiceMock.validateTicketAuthorizations(
                     deepEqual(authorizations),
                     deepEqual(prices),
+                    fees,
                     expirationTime,
                     grantee.address,
                     signatureReadable,
@@ -268,6 +272,7 @@ describe('Authorization Tasks', function() {
                         commitType,
                         total: prices,
                         authorizations: validatedAuthorizations,
+                        fees,
                     }),
                 ),
             ).thenResolve({
@@ -331,6 +336,7 @@ describe('Authorization Tasks', function() {
                 context.authorizationsServiceMock.validateTicketAuthorizations(
                     deepEqual(authorizations),
                     deepEqual(prices),
+                    fees,
                     expirationTime,
                     grantee.address,
                     signatureReadable,
@@ -345,6 +351,7 @@ describe('Authorization Tasks', function() {
                         commitType,
                         total: prices,
                         authorizations: validatedAuthorizations,
+                        fees,
                     }),
                 ),
             ).called();
@@ -420,6 +427,8 @@ describe('Authorization Tasks', function() {
                 address: '0xuseraddress',
             } as UserDto;
 
+            const fees = ['0'];
+
             const input: GenerateMintingAuthorizationsTaskInput = {
                 actionSetId,
                 authorizations,
@@ -429,6 +438,7 @@ describe('Authorization Tasks', function() {
                 expirationTime,
                 signatureReadable,
                 grantee,
+                fees,
             };
 
             const job: Job<GenerateMintingAuthorizationsTaskInput> = {
@@ -556,6 +566,15 @@ describe('Authorization Tasks', function() {
                 },
             ];
 
+            const pricesWithFees = [
+                {
+                    currency: '0xEA674fdDe714fd979de3EdF0F56AA9716B898ec8',
+                    value: '100',
+                    log_value: 0,
+                    fee: '0',
+                },
+            ];
+
             const commitType = 'stripe';
 
             const expirationTime = 2 * DAY;
@@ -576,7 +595,7 @@ describe('Authorization Tasks', function() {
                     codes: MintAuthorization.toCodesFormat('123'),
                     selectors: MintAuthorization.toSelectorFormat('group_id', 'vip'),
                     args: MintAuthorization.toArgsFormat(
-                        MintAuthorization.encodePrices(prices),
+                        MintAuthorization.encodePrices(pricesWithFees),
                         'group_id',
                         'vip',
                         '123',
@@ -600,7 +619,7 @@ describe('Authorization Tasks', function() {
                     codes: MintAuthorization.toCodesFormat('124'),
                     selectors: MintAuthorization.toSelectorFormat('group_id', 'vip'),
                     args: MintAuthorization.toArgsFormat(
-                        MintAuthorization.encodePrices(prices),
+                        MintAuthorization.encodePrices(pricesWithFees),
                         'group_id',
                         'vip',
                         '124',
@@ -618,6 +637,8 @@ describe('Authorization Tasks', function() {
                 },
             };
 
+            const fees = ['0'];
+
             const input: GenerateMintingAuthorizationsTaskInput = {
                 actionSetId,
                 authorizations,
@@ -627,6 +648,7 @@ describe('Authorization Tasks', function() {
                 expirationTime,
                 signatureReadable,
                 grantee,
+                fees,
             };
 
             const job: Job<GenerateMintingAuthorizationsTaskInput> = {
@@ -793,6 +815,7 @@ describe('Authorization Tasks', function() {
                 context.authorizationsServiceMock.validateTicketAuthorizations(
                     deepEqual(authorizations),
                     deepEqual(prices),
+                    fees,
                     expirationTime,
                     grantee.address,
                     signatureReadable,
@@ -810,6 +833,7 @@ describe('Authorization Tasks', function() {
                         commitType,
                         total: prices,
                         authorizations: validatedAuthorizations,
+                        fees,
                     }),
                 ),
             ).thenResolve({
@@ -933,6 +957,7 @@ describe('Authorization Tasks', function() {
                 context.authorizationsServiceMock.validateTicketAuthorizations(
                     deepEqual(authorizations),
                     deepEqual(prices),
+                    fees,
                     expirationTime,
                     grantee.address,
                     signatureReadable,
@@ -947,6 +972,7 @@ describe('Authorization Tasks', function() {
                         commitType,
                         total: prices,
                         authorizations: validatedAuthorizations,
+                        fees,
                     }),
                 ),
             ).called();
@@ -1024,6 +1050,8 @@ describe('Authorization Tasks', function() {
                 address: '0xuseraddress',
             } as UserDto;
 
+            const fees = ['0'];
+
             const input: GenerateMintingAuthorizationsTaskInput = {
                 actionSetId,
                 authorizations,
@@ -1033,6 +1061,7 @@ describe('Authorization Tasks', function() {
                 expirationTime,
                 signatureReadable,
                 grantee,
+                fees,
             };
 
             const job: Job<GenerateMintingAuthorizationsTaskInput> = {
@@ -1136,6 +1165,8 @@ describe('Authorization Tasks', function() {
                 address: '0xuseraddress',
             } as UserDto;
 
+            const fees = ['0'];
+
             const input: GenerateMintingAuthorizationsTaskInput = {
                 actionSetId,
                 authorizations,
@@ -1145,6 +1176,7 @@ describe('Authorization Tasks', function() {
                 expirationTime,
                 signatureReadable,
                 grantee,
+                fees,
             };
 
             const job: Job<GenerateMintingAuthorizationsTaskInput> = {
@@ -1232,6 +1264,8 @@ describe('Authorization Tasks', function() {
                 address: '0xuseraddress',
             } as UserDto;
 
+            const fees = ['0'];
+
             const input: GenerateMintingAuthorizationsTaskInput = {
                 actionSetId,
                 authorizations,
@@ -1241,6 +1275,7 @@ describe('Authorization Tasks', function() {
                 expirationTime,
                 signatureReadable,
                 grantee,
+                fees,
             };
 
             const job: Job<GenerateMintingAuthorizationsTaskInput> = {
@@ -1355,6 +1390,8 @@ describe('Authorization Tasks', function() {
                 address: '0xuseraddress',
             } as UserDto;
 
+            const fees = ['0'];
+
             const input: GenerateMintingAuthorizationsTaskInput = {
                 actionSetId,
                 authorizations,
@@ -1364,6 +1401,7 @@ describe('Authorization Tasks', function() {
                 expirationTime,
                 signatureReadable,
                 grantee,
+                fees,
             };
 
             const job: Job<GenerateMintingAuthorizationsTaskInput> = {
@@ -1523,6 +1561,15 @@ describe('Authorization Tasks', function() {
                 address: '0xuseraddress',
             } as UserDto;
 
+            const pricesWithFees = [
+                {
+                    currency: '0xEA674fdDe714fd979de3EdF0F56AA9716B898ec8',
+                    value: '100',
+                    log_value: 0,
+                    fee: '0',
+                },
+            ];
+
             const authorizationEntities: { [key: string]: AuthorizationEntity } = {
                 authorization_one_id: {
                     id: 'authorization_one_id',
@@ -1532,7 +1579,7 @@ describe('Authorization Tasks', function() {
                     codes: MintAuthorization.toCodesFormat('123'),
                     selectors: MintAuthorization.toSelectorFormat('group_id', 'vip'),
                     args: MintAuthorization.toArgsFormat(
-                        MintAuthorization.encodePrices(prices),
+                        MintAuthorization.encodePrices(pricesWithFees),
                         'group_id',
                         'vip',
                         '123',
@@ -1556,7 +1603,7 @@ describe('Authorization Tasks', function() {
                     codes: MintAuthorization.toCodesFormat('124'),
                     selectors: MintAuthorization.toSelectorFormat('group_id', 'vip'),
                     args: MintAuthorization.toArgsFormat(
-                        MintAuthorization.encodePrices(prices),
+                        MintAuthorization.encodePrices(pricesWithFees),
                         'group_id',
                         'vip',
                         '124',
@@ -1574,6 +1621,8 @@ describe('Authorization Tasks', function() {
                 },
             };
 
+            const fees = ['0'];
+
             const input: GenerateMintingAuthorizationsTaskInput = {
                 actionSetId,
                 authorizations,
@@ -1583,6 +1632,7 @@ describe('Authorization Tasks', function() {
                 expirationTime,
                 signatureReadable,
                 grantee,
+                fees,
             };
 
             const job: Job<GenerateMintingAuthorizationsTaskInput> = {
@@ -1775,6 +1825,15 @@ describe('Authorization Tasks', function() {
                 address: '0xuseraddress',
             } as UserDto;
 
+            const pricesWithFees = [
+                {
+                    currency: '0xEA674fdDe714fd979de3EdF0F56AA9716B898ec8',
+                    value: '100',
+                    log_value: 0,
+                    fee: '0',
+                },
+            ];
+
             const authorizationEntities: { [key: string]: AuthorizationEntity } = {
                 authorization_one_id: {
                     id: 'authorization_one_id',
@@ -1784,7 +1843,7 @@ describe('Authorization Tasks', function() {
                     codes: MintAuthorization.toCodesFormat('123'),
                     selectors: MintAuthorization.toSelectorFormat('group_id', 'vip'),
                     args: MintAuthorization.toArgsFormat(
-                        MintAuthorization.encodePrices(prices),
+                        MintAuthorization.encodePrices(pricesWithFees),
                         'group_id',
                         'vip',
                         '123',
@@ -1808,7 +1867,7 @@ describe('Authorization Tasks', function() {
                     codes: MintAuthorization.toCodesFormat('124'),
                     selectors: MintAuthorization.toSelectorFormat('group_id', 'vip'),
                     args: MintAuthorization.toArgsFormat(
-                        MintAuthorization.encodePrices(prices),
+                        MintAuthorization.encodePrices(pricesWithFees),
                         'group_id',
                         'vip',
                         '124',
@@ -1826,6 +1885,8 @@ describe('Authorization Tasks', function() {
                 },
             };
 
+            const fees = ['0'];
+
             const input: GenerateMintingAuthorizationsTaskInput = {
                 actionSetId,
                 authorizations,
@@ -1835,6 +1896,7 @@ describe('Authorization Tasks', function() {
                 expirationTime,
                 signatureReadable,
                 grantee,
+                fees,
             };
 
             const job: Job<GenerateMintingAuthorizationsTaskInput> = {
@@ -2027,6 +2089,15 @@ describe('Authorization Tasks', function() {
                 address: '0xuseraddress',
             } as UserDto;
 
+            const pricesWithFees = [
+                {
+                    currency: '0xEA674fdDe714fd979de3EdF0F56AA9716B898ec8',
+                    value: '100',
+                    log_value: 0,
+                    fee: '0',
+                },
+            ];
+
             const authorizationEntities: { [key: string]: AuthorizationEntity } = {
                 authorization_one_id: {
                     id: 'authorization_one_id',
@@ -2036,7 +2107,7 @@ describe('Authorization Tasks', function() {
                     codes: MintAuthorization.toCodesFormat('123'),
                     selectors: MintAuthorization.toSelectorFormat('group_id', 'vip'),
                     args: MintAuthorization.toArgsFormat(
-                        MintAuthorization.encodePrices(prices),
+                        MintAuthorization.encodePrices(pricesWithFees),
                         'group_id',
                         'vip',
                         '123',
@@ -2060,7 +2131,7 @@ describe('Authorization Tasks', function() {
                     codes: MintAuthorization.toCodesFormat('124'),
                     selectors: MintAuthorization.toSelectorFormat('group_id', 'vip'),
                     args: MintAuthorization.toArgsFormat(
-                        MintAuthorization.encodePrices(prices),
+                        MintAuthorization.encodePrices(pricesWithFees),
                         'group_id',
                         'vip',
                         '124',
@@ -2078,6 +2149,8 @@ describe('Authorization Tasks', function() {
                 },
             };
 
+            const fees = ['0'];
+
             const input: GenerateMintingAuthorizationsTaskInput = {
                 actionSetId,
                 authorizations,
@@ -2087,6 +2160,7 @@ describe('Authorization Tasks', function() {
                 expirationTime,
                 signatureReadable,
                 grantee,
+                fees,
             };
 
             const job: Job<GenerateMintingAuthorizationsTaskInput> = {
@@ -2312,6 +2386,15 @@ describe('Authorization Tasks', function() {
                 address: '0xuseraddress',
             } as UserDto;
 
+            const pricesWithFees = [
+                {
+                    currency: '0xEA674fdDe714fd979de3EdF0F56AA9716B898ec8',
+                    value: '100',
+                    log_value: 0,
+                    fee: '0',
+                },
+            ];
+
             const authorizationEntities: { [key: string]: AuthorizationEntity } = {
                 authorization_one_id: {
                     id: 'authorization_one_id',
@@ -2321,7 +2404,7 @@ describe('Authorization Tasks', function() {
                     codes: MintAuthorization.toCodesFormat('123'),
                     selectors: MintAuthorization.toSelectorFormat('group_id', 'vip'),
                     args: MintAuthorization.toArgsFormat(
-                        MintAuthorization.encodePrices(prices),
+                        MintAuthorization.encodePrices(pricesWithFees),
                         'group_id',
                         'vip',
                         '123',
@@ -2345,7 +2428,7 @@ describe('Authorization Tasks', function() {
                     codes: MintAuthorization.toCodesFormat('124'),
                     selectors: MintAuthorization.toSelectorFormat('group_id', 'vip'),
                     args: MintAuthorization.toArgsFormat(
-                        MintAuthorization.encodePrices(prices),
+                        MintAuthorization.encodePrices(pricesWithFees),
                         'group_id',
                         'vip',
                         '124',
@@ -2363,6 +2446,8 @@ describe('Authorization Tasks', function() {
                 },
             };
 
+            const fees = ['0'];
+
             const input: GenerateMintingAuthorizationsTaskInput = {
                 actionSetId,
                 authorizations,
@@ -2372,6 +2457,7 @@ describe('Authorization Tasks', function() {
                 expirationTime,
                 signatureReadable,
                 grantee,
+                fees,
             };
 
             const job: Job<GenerateMintingAuthorizationsTaskInput> = {
@@ -2566,6 +2652,15 @@ describe('Authorization Tasks', function() {
                 address: '0xuseraddress',
             } as UserDto;
 
+            const pricesWithFees = [
+                {
+                    currency: '0xEA674fdDe714fd979de3EdF0F56AA9716B898ec8',
+                    value: '100',
+                    log_value: 0,
+                    fee: '0',
+                },
+            ];
+
             const authorizationEntities: { [key: string]: AuthorizationEntity } = {
                 authorization_one_id: {
                     id: 'authorization_one_id',
@@ -2575,7 +2670,7 @@ describe('Authorization Tasks', function() {
                     codes: MintAuthorization.toCodesFormat('123'),
                     selectors: MintAuthorization.toSelectorFormat('group_id', 'vip'),
                     args: MintAuthorization.toArgsFormat(
-                        MintAuthorization.encodePrices(prices),
+                        MintAuthorization.encodePrices(pricesWithFees),
                         'group_id',
                         'vip',
                         '123',
@@ -2599,7 +2694,7 @@ describe('Authorization Tasks', function() {
                     codes: MintAuthorization.toCodesFormat('124'),
                     selectors: MintAuthorization.toSelectorFormat('group_id', 'vip'),
                     args: MintAuthorization.toArgsFormat(
-                        MintAuthorization.encodePrices(prices),
+                        MintAuthorization.encodePrices(pricesWithFees),
                         'group_id',
                         'vip',
                         '124',
@@ -2617,6 +2712,8 @@ describe('Authorization Tasks', function() {
                 },
             };
 
+            const fees = ['0'];
+
             const input: GenerateMintingAuthorizationsTaskInput = {
                 actionSetId,
                 authorizations,
@@ -2626,6 +2723,7 @@ describe('Authorization Tasks', function() {
                 expirationTime,
                 signatureReadable,
                 grantee,
+                fees,
             };
 
             const job: Job<GenerateMintingAuthorizationsTaskInput> = {
@@ -2996,6 +3094,15 @@ describe('Authorization Tasks', function() {
                 address: '0xuseraddress',
             } as UserDto;
 
+            const pricesWithFees = [
+                {
+                    currency: '0xEA674fdDe714fd979de3EdF0F56AA9716B898ec8',
+                    value: '100',
+                    log_value: 0,
+                    fee: '0',
+                },
+            ];
+
             const authorizationEntities: { [key: string]: AuthorizationEntity } = {
                 authorization_one_id: {
                     id: 'authorization_one_id',
@@ -3005,7 +3112,7 @@ describe('Authorization Tasks', function() {
                     codes: MintAuthorization.toCodesFormat('123'),
                     selectors: MintAuthorization.toSelectorFormat('group_id', 'vip'),
                     args: MintAuthorization.toArgsFormat(
-                        MintAuthorization.encodePrices(prices),
+                        MintAuthorization.encodePrices(pricesWithFees),
                         'group_id',
                         'vip',
                         '123',
@@ -3029,7 +3136,7 @@ describe('Authorization Tasks', function() {
                     codes: MintAuthorization.toCodesFormat('124'),
                     selectors: MintAuthorization.toSelectorFormat('group_id', 'vip'),
                     args: MintAuthorization.toArgsFormat(
-                        MintAuthorization.encodePrices(prices),
+                        MintAuthorization.encodePrices(pricesWithFees),
                         'group_id',
                         'vip',
                         '124',
@@ -3047,6 +3154,8 @@ describe('Authorization Tasks', function() {
                 },
             };
 
+            const fees = ['0'];
+
             const input: GenerateMintingAuthorizationsTaskInput = {
                 actionSetId,
                 authorizations,
@@ -3056,6 +3165,7 @@ describe('Authorization Tasks', function() {
                 expirationTime,
                 signatureReadable,
                 grantee,
+                fees,
             };
 
             const job: Job<GenerateMintingAuthorizationsTaskInput> = {
@@ -3222,6 +3332,7 @@ describe('Authorization Tasks', function() {
                 context.authorizationsServiceMock.validateTicketAuthorizations(
                     deepEqual(authorizations),
                     deepEqual(prices),
+                    fees,
                     expirationTime,
                     grantee.address,
                     signatureReadable,
@@ -3349,6 +3460,7 @@ describe('Authorization Tasks', function() {
                 context.authorizationsServiceMock.validateTicketAuthorizations(
                     deepEqual(authorizations),
                     deepEqual(prices),
+                    fees,
                     expirationTime,
                     grantee.address,
                     signatureReadable,
@@ -3457,6 +3569,15 @@ describe('Authorization Tasks', function() {
                 address: '0xuseraddress',
             } as UserDto;
 
+            const pricesWithFees = [
+                {
+                    currency: '0xEA674fdDe714fd979de3EdF0F56AA9716B898ec8',
+                    value: '100',
+                    log_value: 0,
+                    fee: '0',
+                },
+            ];
+
             const authorizationEntities: { [key: string]: AuthorizationEntity } = {
                 authorization_one_id: {
                     id: 'authorization_one_id',
@@ -3466,7 +3587,7 @@ describe('Authorization Tasks', function() {
                     codes: MintAuthorization.toCodesFormat('123'),
                     selectors: MintAuthorization.toSelectorFormat('group_id', 'vip'),
                     args: MintAuthorization.toArgsFormat(
-                        MintAuthorization.encodePrices(prices),
+                        MintAuthorization.encodePrices(pricesWithFees),
                         'group_id',
                         'vip',
                         '123',
@@ -3490,7 +3611,7 @@ describe('Authorization Tasks', function() {
                     codes: MintAuthorization.toCodesFormat('124'),
                     selectors: MintAuthorization.toSelectorFormat('group_id', 'vip'),
                     args: MintAuthorization.toArgsFormat(
-                        MintAuthorization.encodePrices(prices),
+                        MintAuthorization.encodePrices(pricesWithFees),
                         'group_id',
                         'vip',
                         '124',
@@ -3508,6 +3629,8 @@ describe('Authorization Tasks', function() {
                 },
             };
 
+            const fees = ['0'];
+
             const input: GenerateMintingAuthorizationsTaskInput = {
                 actionSetId,
                 authorizations,
@@ -3517,6 +3640,7 @@ describe('Authorization Tasks', function() {
                 expirationTime,
                 signatureReadable,
                 grantee,
+                fees,
             };
 
             const job: Job<GenerateMintingAuthorizationsTaskInput> = {
@@ -3683,6 +3807,7 @@ describe('Authorization Tasks', function() {
                 context.authorizationsServiceMock.validateTicketAuthorizations(
                     deepEqual(authorizations),
                     deepEqual(prices),
+                    fees,
                     expirationTime,
                     grantee.address,
                     signatureReadable,
@@ -3700,6 +3825,7 @@ describe('Authorization Tasks', function() {
                         commitType,
                         total: prices,
                         authorizations: validatedAuthorizations,
+                        fees,
                     }),
                 ),
             ).thenResolve({
@@ -3825,6 +3951,7 @@ describe('Authorization Tasks', function() {
                 context.authorizationsServiceMock.validateTicketAuthorizations(
                     deepEqual(authorizations),
                     deepEqual(prices),
+                    fees,
                     expirationTime,
                     grantee.address,
                     signatureReadable,
@@ -3839,6 +3966,7 @@ describe('Authorization Tasks', function() {
                         commitType,
                         total: prices,
                         authorizations: validatedAuthorizations,
+                        fees,
                     }),
                 ),
             ).called();
@@ -3945,6 +4073,15 @@ describe('Authorization Tasks', function() {
                 address: '0xuseraddress',
             } as UserDto;
 
+            const pricesWithFees = [
+                {
+                    currency: '0xEA674fdDe714fd979de3EdF0F56AA9716B898ec8',
+                    value: '100',
+                    log_value: 0,
+                    fee: '0',
+                },
+            ];
+
             const authorizationEntities: { [key: string]: AuthorizationEntity } = {
                 authorization_one_id: {
                     id: 'authorization_one_id',
@@ -3954,7 +4091,7 @@ describe('Authorization Tasks', function() {
                     codes: MintAuthorization.toCodesFormat('123'),
                     selectors: MintAuthorization.toSelectorFormat('group_id', 'vip'),
                     args: MintAuthorization.toArgsFormat(
-                        MintAuthorization.encodePrices(prices),
+                        MintAuthorization.encodePrices(pricesWithFees),
                         'group_id',
                         'vip',
                         '123',
@@ -3978,7 +4115,7 @@ describe('Authorization Tasks', function() {
                     codes: MintAuthorization.toCodesFormat('124'),
                     selectors: MintAuthorization.toSelectorFormat('group_id', 'vip'),
                     args: MintAuthorization.toArgsFormat(
-                        MintAuthorization.encodePrices(prices),
+                        MintAuthorization.encodePrices(pricesWithFees),
                         'group_id',
                         'vip',
                         '124',
@@ -3996,6 +4133,8 @@ describe('Authorization Tasks', function() {
                 },
             };
 
+            const fees = ['0'];
+
             const input: GenerateMintingAuthorizationsTaskInput = {
                 actionSetId,
                 authorizations,
@@ -4005,6 +4144,7 @@ describe('Authorization Tasks', function() {
                 expirationTime,
                 signatureReadable,
                 grantee,
+                fees,
             };
 
             const job: Job<GenerateMintingAuthorizationsTaskInput> = {
@@ -4227,6 +4367,7 @@ describe('Authorization Tasks', function() {
                 context.authorizationsServiceMock.validateTicketAuthorizations(
                     deepEqual(authorizations),
                     deepEqual(prices),
+                    fees,
                     expirationTime,
                     grantee.address,
                     signatureReadable,
@@ -4244,6 +4385,7 @@ describe('Authorization Tasks', function() {
                         commitType,
                         total: prices,
                         authorizations: validatedAuthorizations,
+                        fees,
                     }),
                 ),
             ).thenResolve({
@@ -4412,6 +4554,7 @@ describe('Authorization Tasks', function() {
                 context.authorizationsServiceMock.validateTicketAuthorizations(
                     deepEqual(authorizations),
                     deepEqual(prices),
+                    fees,
                     expirationTime,
                     grantee.address,
                     signatureReadable,
@@ -4426,6 +4569,7 @@ describe('Authorization Tasks', function() {
                         commitType,
                         total: prices,
                         authorizations: validatedAuthorizations,
+                        fees,
                     }),
                 ),
             ).called();
@@ -4503,6 +4647,8 @@ describe('Authorization Tasks', function() {
                 address: '0xuseraddress',
             } as UserDto;
 
+            const fees = ['0'];
+
             const input: GenerateMintingAuthorizationsTaskInput = {
                 actionSetId,
                 authorizations,
@@ -4512,6 +4658,7 @@ describe('Authorization Tasks', function() {
                 expirationTime,
                 signatureReadable,
                 grantee,
+                fees,
             };
 
             const job: Job<GenerateMintingAuthorizationsTaskInput> = {
@@ -4723,6 +4870,8 @@ describe('Authorization Tasks', function() {
                 address: '0xuseraddress',
             } as UserDto;
 
+            const fees = ['0'];
+
             const input: GenerateMintingAuthorizationsTaskInput = {
                 actionSetId,
                 authorizations,
@@ -4732,6 +4881,7 @@ describe('Authorization Tasks', function() {
                 expirationTime,
                 signatureReadable,
                 grantee,
+                fees,
             };
 
             const job: Job<GenerateMintingAuthorizationsTaskInput> = {

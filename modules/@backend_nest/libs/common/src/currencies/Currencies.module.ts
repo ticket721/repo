@@ -3,10 +3,7 @@ import { CurrenciesService } from '@lib/common/currencies/Currencies.service';
 
 @Global()
 @Module({
-    providers: [
-        CurrenciesService,
-    ],
+    providers: [CurrenciesService],
     exports: [CurrenciesService],
 })
-export class CurrenciesModule {
-}
+export class CurrenciesModule {}

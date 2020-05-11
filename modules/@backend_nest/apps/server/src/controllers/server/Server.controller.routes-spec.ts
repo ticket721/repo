@@ -3,7 +3,7 @@ import { getSDK } from '../../../test/utils';
 export default function(getCtx: () => { ready: Promise<void> }) {
     return function() {
         describe('getApiInfos (GET /)', function() {
-            test.concurrent('should properly recover api infos', async function() {
+            test('should properly recover api infos', async function() {
                 const sdk = await getSDK(getCtx);
 
                 const apiInfos = await sdk.getApiInfos();

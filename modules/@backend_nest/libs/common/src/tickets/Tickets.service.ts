@@ -1,23 +1,41 @@
-import { Injectable }                               from '@nestjs/common';
-import { CRUDExtension }                            from '@lib/common/crud/CRUDExtension.base';
+import { Injectable } from '@nestjs/common';
+import { CRUDExtension } from '@lib/common/crud/CRUDExtension.base';
 import { BaseModel, InjectModel, InjectRepository } from '@iaminfinity/express-cassandra';
-import { TicketsRepository }                        from '@lib/common/tickets/Tickets.repository';
-import { TicketEntity }                             from '@lib/common/tickets/entities/Ticket.entity';
-import { ServiceResponse }                          from '@lib/common/utils/ServiceResponse.type';
-import { TicketforgeService }                       from '@lib/common/contracts/Ticketforge.service';
-import BigNumber                                    from 'bignumber.js';
-import { contractCallHelper }                       from '@lib/common/utils/contractCall.helper';
-import { CategoriesService }                        from '@lib/common/categories/Categories.service';
+import { TicketsRepository } from '@lib/common/tickets/Tickets.repository';
+import { TicketEntity } from '@lib/common/tickets/entities/Ticket.entity';
+import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
+import { TicketforgeService } from '@lib/common/contracts/Ticketforge.service';
+import BigNumber from 'bignumber.js';
+import { contractCallHelper } from '@lib/common/utils/contractCall.helper';
+import { CategoriesService } from '@lib/common/categories/Categories.service';
 
+/**
+ * Data model required when pre-generating the tickets
+ */
 export interface TicketsServicePredictionInput {
+    /**
+     * Buyer address
+     */
     buyer: string;
+
+    /**
+     * Category ID
+     */
     categoryId: string;
+
+    /**
+     * AUthorization ID
+     */
     authorizationId: string;
+
+    /**
+     * Group ID
+     */
     groupId: string;
 }
 
 /**
- * Service to CRUD the Strip Resources
+ * Service to CRUD the Tickets Resources
  */
 @Injectable()
 export class TicketsService extends CRUDExtension<TicketsRepository, TicketEntity> {
@@ -31,9 +49,9 @@ export class TicketsService extends CRUDExtension<TicketsRepository, TicketEntit
      */
     constructor(
         @InjectRepository(TicketsRepository)
-            ticketsRepository: TicketsRepository,
+        ticketsRepository: TicketsRepository,
         @InjectModel(TicketEntity)
-            ticketEntity: BaseModel<TicketEntity>,
+        ticketEntity: BaseModel<TicketEntity>,
         private readonly ticketforgeService: TicketforgeService,
         private readonly categoriesService: CategoriesService,
     ) {
@@ -51,62 +69,65 @@ export class TicketsService extends CRUDExtension<TicketsRepository, TicketEntit
         );
     }
 
+    /**
+     * Utility to pre-generate the ticket entities before the transaction is emitted by computing their deterministic IDs
+     *
+     * @param predictionInputs
+     */
     async predictTickets(predictionInputs: TicketsServicePredictionInput[]): Promise<ServiceResponse<TicketEntity[]>> {
+        const ticketforgeInstance = await this.ticketforgeService.get();
 
-        const ticketforgeInstance = (await this.ticketforgeService.get());
-
-        const registeredMintings: {[key: string]: number} = {};
+        const registeredMintings: { [key: string]: number } = {};
 
         for (const input of predictionInputs) {
-
             registeredMintings[input.buyer] = 0;
-
         }
 
         const res: TicketEntity[] = [];
 
         for (const input of predictionInputs) {
-
             const currentMintingNonceRes = await contractCallHelper(
                 ticketforgeInstance,
                 'getMintNonce',
                 {},
-                input.buyer
+                input.buyer,
             );
 
             if (currentMintingNonceRes.error) {
                 return {
                     error: currentMintingNonceRes.error,
                     response: null,
-                }
+                };
             }
 
-            const finalMintNonce: string = (new BigNumber(currentMintingNonceRes.response).plus(new BigNumber(registeredMintings[input.buyer]))).toString();
+            const finalMintNonce: string = new BigNumber(currentMintingNonceRes.response)
+                .plus(new BigNumber(registeredMintings[input.buyer]))
+                .toString();
 
             const ticketIDRes = await contractCallHelper(
                 ticketforgeInstance,
                 'getTokenID',
                 {},
                 input.buyer,
-                finalMintNonce
+                finalMintNonce,
             );
 
             if (ticketIDRes.error) {
                 return {
                     error: ticketIDRes.error,
                     response: null,
-                }
+                };
             }
 
             const categoryEntityRes = await this.categoriesService.search({
-                id: input.categoryId
+                id: input.categoryId,
             });
 
             if (categoryEntityRes.error || categoryEntityRes.response.length === 0) {
                 return {
                     error: categoryEntityRes.error || 'category_not_found',
                     response: null,
-                }
+                };
             }
 
             const ticketEntityCreationRes = await this.create({
@@ -126,20 +147,17 @@ export class TicketsService extends CRUDExtension<TicketsRepository, TicketEntit
                 return {
                     error: ticketEntityCreationRes.error,
                     response: null,
-                }
+                };
             }
 
             res.push(ticketEntityCreationRes.response);
 
             registeredMintings[input.buyer] += 1;
-
         }
 
         return {
             error: null,
             response: res,
         };
-
     }
-
 }

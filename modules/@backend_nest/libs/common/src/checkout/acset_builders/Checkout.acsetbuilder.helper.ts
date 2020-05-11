@@ -28,7 +28,9 @@ export enum CheckoutCreationActions {
  * Helper class containing the build method for the cart acset
  */
 export class CheckoutAcsetbuilderHelper implements ActionSetBuilderBase<CheckoutAcsetBuilderArgs> {
-
+    /**
+     * This acset cannot be publicly built
+     */
     public isPrivate: boolean = true;
 
     /**

@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common';
 import { ExpressCassandraModule } from '@iaminfinity/express-cassandra';
 import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
-import { ActionSetsService }             from '@lib/common/actionsets/ActionSets.service';
-import { ActionSetsRepository }          from '@lib/common/actionsets/ActionSets.repository';
+import { ActionSetsService } from '@lib/common/actionsets/ActionSets.service';
+import { ActionSetsRepository } from '@lib/common/actionsets/ActionSets.repository';
 import { BullModule, BullModuleOptions } from '@nestjs/bull';
-import { ConfigService }                 from '@lib/common/config/Config.service';
-import { ScheduleModule }                from 'nest-schedule';
-import { WinstonLoggerService }          from '@lib/common/logger/WinstonLogger.service';
-import { ActionSetsRightsConfig }        from '@lib/common/actionsets/ActionSets.rights';
-import { RightsModule }                  from '@lib/common/rights/Rights.module';
+import { ConfigService } from '@lib/common/config/Config.service';
+import { ScheduleModule } from 'nest-schedule';
+import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
+import { ActionSetsRightsConfig } from '@lib/common/actionsets/ActionSets.rights';
+import { RightsModule } from '@lib/common/rights/Rights.module';
 
 @Module({
     imports: [

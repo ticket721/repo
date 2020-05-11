@@ -1,14 +1,23 @@
-import { BN, Connector, Dosojin, Gem, GenericStripeDosojin, Operation, OperationStatusNames, TransferConnectorStatusNames } from 'dosojin';
-import { Inject, Injectable }                                                                                                from '@nestjs/common';
-import { Stripe }                                                                                                            from 'stripe';
-import { T721AdminService }                                                                                                  from '@lib/common/contracts/T721Admin.service';
-import { UsersService }                                                                                                      from '@lib/common/users/Users.service';
-import { TokenMinterArguments }                                                                                              from '@app/worker/dosojinrunner/circuits/tokenminter/TokenMinter.circuit';
-import { UserEntity }                                                                                                        from '@lib/common/users/entities/User.entity';
-import { TxsService }                                                                                                        from '@lib/common/txs/Txs.service';
-import { ConfigService }                                                                                                     from '@lib/common/config/Config.service';
-import { TxEntity }                                                                                                          from '@lib/common/txs/entities/Tx.entity';
-import { T721TokenService }                                                                                                  from '@lib/common/contracts/T721Token.service';
+import {
+    BN,
+    Connector,
+    Dosojin,
+    Gem,
+    GenericStripeDosojin,
+    Operation,
+    OperationStatusNames,
+    TransferConnectorStatusNames,
+} from 'dosojin';
+import { Inject, Injectable } from '@nestjs/common';
+import { Stripe } from 'stripe';
+import { T721AdminService } from '@lib/common/contracts/T721Admin.service';
+import { UsersService } from '@lib/common/users/Users.service';
+import { TokenMinterArguments } from '@app/worker/dosojinrunner/circuits/tokenminter/TokenMinter.circuit';
+import { UserEntity } from '@lib/common/users/entities/User.entity';
+import { TxsService } from '@lib/common/txs/Txs.service';
+import { ConfigService } from '@lib/common/config/Config.service';
+import { TxEntity } from '@lib/common/txs/entities/Tx.entity';
+import { T721TokenService } from '@lib/common/contracts/T721Token.service';
 
 /**
  * Extra State Arguments added by the TokenMinter Operation
@@ -86,13 +95,9 @@ export class TokenMinterOperation extends Operation {
 
         const rawInstance = await this.t721AdminService.get();
 
-        const encodedTransactionCall = rawInstance.methods.redeemTokens(
-            userAddress,
-            amount,
-            minter,
-            code,
-            authorization.signature,
-        ).encodeABI();
+        const encodedTransactionCall = rawInstance.methods
+            .redeemTokens(userAddress, amount, minter, code, authorization.signature)
+            .encodeABI();
 
         const gasLimitEstimation = await this.txsService.estimateGasLimit(
             sender,
@@ -110,12 +115,7 @@ export class TokenMinterOperation extends Operation {
             return gem.error(this.dosojin, `Cannot estimate gas price: ${gasPriceEstimation.error}`);
         }
 
-        const tx = await this.txsService.sendRawTransaction(
-            sender,
-            rawInstance._address,
-            '0',
-            encodedTransactionCall
-        );
+        const tx = await this.txsService.sendRawTransaction(sender, rawInstance._address, '0', encodedTransactionCall);
 
         if (tx.error) {
             return gem.error(this.dosojin, `An error occured while trying to create transaction`);

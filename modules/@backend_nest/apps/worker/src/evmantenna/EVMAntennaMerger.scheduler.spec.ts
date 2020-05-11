@@ -2270,7 +2270,7 @@ describe('EVMAntenna Merger Scheduler', function() {
 
             await context.evmAntennaMergerScheduler.onApplicationBootstrap();
 
-            verify(context.scheduleMock.scheduleIntervalJob('evmEventMerger', 100, anyFunction())).called();
+            verify(context.scheduleMock.scheduleIntervalJob('evmEventMerger', 500, anyFunction())).called();
             verify(context.queueMock.process(`@@evmeventset/evmEventMerger`, 1, anyFunction())).called();
         });
 
@@ -2285,7 +2285,7 @@ describe('EVMAntenna Merger Scheduler', function() {
 
             await context.evmAntennaMergerScheduler.onApplicationBootstrap();
 
-            verify(context.scheduleMock.scheduleIntervalJob('evmEventMerger', 100, anyFunction())).never();
+            verify(context.scheduleMock.scheduleIntervalJob('evmEventMerger', 500, anyFunction())).never();
             verify(context.queueMock.process(`@@evmeventset/evmEventMerger`, 1, anyFunction())).called();
         });
 
@@ -2300,7 +2300,7 @@ describe('EVMAntenna Merger Scheduler', function() {
 
             await context.evmAntennaMergerScheduler.onApplicationBootstrap();
 
-            verify(context.scheduleMock.scheduleIntervalJob('evmEventMerger', 100, anyFunction())).never();
+            verify(context.scheduleMock.scheduleIntervalJob('evmEventMerger', 500, anyFunction())).never();
             verify(context.queueMock.process(`@@evmeventset/evmEventMerger`, 1, anyFunction())).never();
         });
     });

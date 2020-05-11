@@ -1,16 +1,17 @@
 import { Appender, EVMEventControllerBase } from '@app/worker/evmantenna/EVMEvent.controller.base';
-import { GlobalConfigService }              from '@lib/common/globalconfig/GlobalConfig.service';
-import { InjectSchedule, Schedule }         from 'nest-schedule';
-import { ShutdownService }                  from '@lib/common/shutdown/Shutdown.service';
-import { OutrospectionService }             from '@lib/common/outrospection/Outrospection.service';
-import { InjectQueue }                      from '@nestjs/bull';
-import { Queue }                            from 'bull';
-import { EVMEventSetsService }              from '@lib/common/evmeventsets/EVMEventSets.service';
-import { EventsService }                    from '@lib/common/events/Events.service';
-import { EVMProcessableEvent }              from '@app/worker/evmantenna/EVMAntennaMerger.scheduler';
-import { TicketforgeService }               from '@lib/common/contracts/Ticketforge.service';
-import { T721TokenService }                 from '@lib/common/contracts/T721Token.service';
+import { GlobalConfigService } from '@lib/common/globalconfig/GlobalConfig.service';
+import { InjectSchedule, Schedule } from 'nest-schedule';
+import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
+import { OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
+import { EVMEventSetsService } from '@lib/common/evmeventsets/EVMEventSets.service';
+import { EVMProcessableEvent } from '@app/worker/evmantenna/EVMAntennaMerger.scheduler';
+import { T721TokenService } from '@lib/common/contracts/T721Token.service';
 
+/**
+ * EVM Event handler for the Mint event on the T721Token contract
+ */
 export class MintT721TokenEVMAntenna extends EVMEventControllerBase {
     /**
      * Dependency Injection
@@ -30,7 +31,7 @@ export class MintT721TokenEVMAntenna extends EVMEventControllerBase {
         globalConfigService: GlobalConfigService,
         shutdownService: ShutdownService,
         outrospectionService: OutrospectionService,
-        evmEventSetsService: EVMEventSetsService
+        evmEventSetsService: EVMEventSetsService,
     ) {
         super(
             t721TokenService,

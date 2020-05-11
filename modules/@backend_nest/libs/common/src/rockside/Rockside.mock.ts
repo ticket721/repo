@@ -3,25 +3,20 @@ import {
     ExecuteTransaction,
     IdentityResponse,
     RocksideApiOpts,
-    EncryptedWallet, TransactionOpts,
-}                                                                                         from '@rocksideio/rockside-wallet-sdk/lib/api';
-import { ContractsControllerBase }                                                                      from '@lib/common/contracts/ContractsController.base';
-import { createWallet, keccak256FromBuffer, toAcceptedAddressFormat, loadWallet, Wallet, decimalToHex } from '@common/global';
-import { FSService }                                                                                    from '@lib/common/fs/FS.service';
-import { Web3Service }                                                                    from '@lib/common/web3/Web3.service';
-import { Web3Provider }                                                                   from 'ethers/providers';
-import { utils }                                                                          from 'ethers';
-import BN                                                                                 from 'bn.js';
+    EncryptedWallet,
+    TransactionOpts,
+} from '@rocksideio/rockside-wallet-sdk/lib/api';
+import { ContractsControllerBase } from '@lib/common/contracts/ContractsController.base';
+import { createWallet, keccak256FromBuffer, toAcceptedAddressFormat, Wallet, decimalToHex } from '@common/global';
+import { FSService } from '@lib/common/fs/FS.service';
+import { Web3Service } from '@lib/common/web3/Web3.service';
+import { Web3Provider } from 'ethers/providers';
+import { utils } from 'ethers';
+import BN from 'bn.js';
 
-export type SignTransactionOpts = {
-    from: string;
-    to: string;
-    value?: string | number | BigInt;
-    data?: string;
-    gas?: string | number | BigInt;
-    gasPrice?: string | number | BigInt;
-}
-
+/**
+ * Mock Options for the Rockside api mock
+ */
 export interface RocksideMockOpts {
     /**
      * This is the private key of an account with a lot of eth to broadcast the transactions
@@ -44,14 +39,22 @@ export interface RocksideMockOpts {
     fsService: FSService;
 }
 
+/**
+ * Rockside SDK Mock
+ */
 export class RocksideMock /* implements RocksideApi */ {
-    constructor(
-        private readonly opts: RocksideApiOpts,
-        private readonly mockOpts: RocksideMockOpts,
-    ) {
-    }
+    /**
+     * Dependency Injection
+     * @param opts
+     * @param mockOpts
+     */
+    // tslint:disable-next-line
+    constructor(private readonly opts: RocksideApiOpts, private readonly mockOpts: RocksideMockOpts) {}
 
-    private async generateWallet(): Promise<{ address: string; privateKey: string; }> {
+    /**
+     * Internal utility to generate an EOA
+     */
+    private async generateWallet(): Promise<{ address: string; privateKey: string }> {
         const wallet = await createWallet();
         const address = toAcceptedAddressFormat(wallet.address);
         this.mockOpts.fsService.writeFile(`/tmp/ROCKSIDE_MOCK_EOA_${address}`, wallet.privateKey);
@@ -61,11 +64,19 @@ export class RocksideMock /* implements RocksideApi */ {
         };
     }
 
-    private async getWallet(address: string): Promise<string> {
+    /**
+     * Internal utility to recover an EOA
+     *
+     * @param address
+     */
+    private getWallet(address: string): string {
         const formattedAddress = toAcceptedAddressFormat(address);
         return this.mockOpts.fsService.readFile(`/tmp/ROCKSIDE_MOCK_EOA_${formattedAddress}`);
     }
 
+    /**
+     * Mock method
+     */
     async getIdentities(): Promise<string[]> {
         const ret: string[] = [];
         const tmpFiles = this.mockOpts.fsService.readDir(`/tmp`);
@@ -77,6 +88,9 @@ export class RocksideMock /* implements RocksideApi */ {
         return ret;
     }
 
+    /**
+     * Mock method
+     */
     async getEOAs(): Promise<string[]> {
         const ret: string[] = [];
         const tmpFiles = this.mockOpts.fsService.readDir(`/tmp`);
@@ -88,6 +102,9 @@ export class RocksideMock /* implements RocksideApi */ {
         return ret;
     }
 
+    /**
+     * Mock method
+     */
     async createEOA(): Promise<{ address: string }> {
         const newEOA = await this.generateWallet();
         return {
@@ -95,14 +112,30 @@ export class RocksideMock /* implements RocksideApi */ {
         };
     }
 
-    async signTransactionWithEOA(eoa: string, opts: SignTransactionOpts): Promise<{ signed_transaction: string }> {
+    /**
+     * Mock method
+     */
+    async signTransactionWithEOA(eoa: string, opts: any): Promise<{ signed_transaction: string }> {
         throw new Error(`Un-mocked method`);
     }
 
+    /**
+     * Internal utility to convert number to signed hex
+     *
+     * @param num
+     * @private
+     */
     private _fromSigned(num: string): BN {
         return new BN(Buffer.from(num.slice(2), 'hex')).fromTwos(256);
     }
 
+    /**
+     * Internal utility to pad
+     *
+     * @param toPad
+     * @param length
+     * @private
+     */
     private _padWithZeroes(toPad: string, length: number): string {
         let myString = '' + toPad;
         while (myString.length < length) {
@@ -111,15 +144,23 @@ export class RocksideMock /* implements RocksideApi */ {
         return myString;
     }
 
+    /**
+     * Internal utility to convert num to unsigned
+     *
+     * @param num
+     * @private
+     */
     private _toUnsigned(num: BN): Buffer {
         return Buffer.from(num.toTwos(256).toArray());
     }
 
+    /**
+     * Mock method
+     */
     async signMessageWithEOA(eoa: string, hash: string): Promise<{ signed_message: string }> {
-
         const formattedEOA = toAcceptedAddressFormat(eoa);
 
-        const privateKey = this.mockOpts.fsService.readFile(`/tmp/ROCKSIDE_MOCK_EOA_${formattedEOA}`);
+        const privateKey = this.getWallet(formattedEOA);
 
         const sk = new utils.SigningKey(privateKey);
 
@@ -133,19 +174,22 @@ export class RocksideMock /* implements RocksideApi */ {
         const vStr = vSig.toString(16);
 
         return {
-            signed_message: `0x${rStr}${sStr}${vStr}`
+            signed_message: `0x${rStr}${sStr}${vStr}`,
         };
-
     }
 
+    /**
+     * Mock method
+     */
     async createIdentity(): Promise<IdentityResponse> {
-
         const wallet = await this.generateWallet();
         const hash = keccak256FromBuffer(Buffer.from(wallet.address.slice(2), 'hex'));
 
         const identitiesContract = await this.mockOpts.identitiesMockController.get();
 
-        const predictedAddress = toAcceptedAddressFormat(await identitiesContract.methods.predict(wallet.address, hash).call());
+        const predictedAddress = toAcceptedAddressFormat(
+            await identitiesContract.methods.predict(wallet.address, hash).call(),
+        );
 
         this.mockOpts.fsService.writeFile(`/tmp/ROCKSIDE_MOCK_IDENTITY_${predictedAddress}`, wallet.address);
 
@@ -155,8 +199,10 @@ export class RocksideMock /* implements RocksideApi */ {
         };
     }
 
-    async sendTransaction(tx: TransactionOpts): Promise<{ transaction_hash: string, tracking_id: string }> {
-
+    /**
+     * Mock method
+     */
+    async sendTransaction(tx: TransactionOpts): Promise<{ transaction_hash: string; tracking_id: string }> {
         const web3Instance = await this.mockOpts.web3Service.get();
 
         const web3Provider = new Web3Provider(web3Instance.currentProvider);
@@ -167,14 +213,15 @@ export class RocksideMock /* implements RocksideApi */ {
 
         const hash = keccak256FromBuffer(Buffer.from(controllerAddress.slice(2), 'hex'));
 
-        const identitiesMockInstance = (await this.mockOpts.identitiesMockController.get());
+        const identitiesMockInstance = await this.mockOpts.identitiesMockController.get();
 
-        const encodedCall = identitiesMockInstance.methods.dotx(controllerAddress, hash, tx.to, tx.value || '0', tx.data || '').encodeABI();
+        const encodedCall = identitiesMockInstance.methods
+            .dotx(controllerAddress, hash, tx.to, tx.value || '0', tx.data || '')
+            .encodeABI();
 
         const sentTransaction = await orchestratorWallet.sendTransaction({
             to: identitiesMockInstance._address,
             data: encodedCall,
-            gasLimit: decimalToHex(tx.gas as string),
             gasPrice: decimalToHex(tx.gasPrice as string),
         });
 
@@ -182,41 +229,70 @@ export class RocksideMock /* implements RocksideApi */ {
             transaction_hash: sentTransaction.hash,
             tracking_id: `tr_${sentTransaction.hash}`,
         };
-
     }
 
+    /**
+     * Mock method
+     */
     async createEncryptedAccount(account: EncryptedAccount) {
         throw new Error(`Un-mocked method`);
     }
 
-    async connectEncryptedAccount(username: string, passwordHash: ArrayBuffer): Promise<{ data: ArrayBuffer, iv: ArrayBuffer }> {
+    /**
+     * Mock method
+     */
+    async connectEncryptedAccount(
+        username: string,
+        passwordHash: ArrayBuffer,
+    ): Promise<{ data: ArrayBuffer; iv: ArrayBuffer }> {
         throw new Error(`Un-mocked method`);
     }
 
+    /**
+     * Mock method
+     */
     async createEncryptedWallet(account: EncryptedAccount, wallet: EncryptedWallet) {
         throw new Error(`Un-mocked method`);
     }
 
+    /**
+     * Mock method
+     */
     async getEncryptedWallets(username: string, passwordHash: ArrayBuffer): Promise<Array<EncryptedWallet>> {
         throw new Error(`Un-mocked method`);
     }
 
-    async deployIdentityContract(address: string): Promise<{ address: string, txHash: string }> {
+    /**
+     * Mock method
+     */
+    async deployIdentityContract(address: string): Promise<{ address: string; txHash: string }> {
         throw new Error(`Un-mocked method`);
     }
 
+    /**
+     * Mock method
+     */
     async getRelayNonce(identity: string, account: string, channel: number): Promise<number> {
         throw new Error(`Un-mocked method`);
     }
 
+    /**
+     * Mock method
+     */
     async relayTransaction(identity: string, tx: ExecuteTransaction): Promise<string> {
         throw new Error(`Un-mocked method`);
     }
 
+    /**
+     * Mock method
+     */
     getRpcUrl(): string {
         throw new Error(`Un-mocked method`);
     }
 
+    /**
+     * Mock method
+     */
     getToken(): string {
         throw new Error(`Un-mocked method`);
     }

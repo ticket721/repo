@@ -179,15 +179,27 @@ export class AuthorizationEntity {
     // tslint:disable-next-line:variable-name
     updated_at: Date;
 
-    getArgs(): string[] {
-        return this.args.split('_').filter((value: string, index: number) => index % 2 !== 0);
+    /**
+     * Static utility to recover arguments
+     * @param ae
+     */
+    static getArgs(ae: AuthorizationEntity): string[] {
+        return ae.args.split('_').filter((value: string, index: number) => index % 2 !== 0);
     }
 
-    getSelector(): string[] {
-        return this.selectors.split('_').filter((value: string, index: number) => index % 2 !== 0);
+    /**
+     * Static utility to recover selectors
+     * @param ae
+     */
+    static getSelector(ae: AuthorizationEntity): string[] {
+        return ae.selectors.split('_').filter((value: string, index: number) => index % 2 !== 0);
     }
 
-    getCodes(): string[] {
-        return this.codes.split('_').filter((value: string, index: number) => index % 2 !== 0);
+    /**
+     * Static utility to recover codes
+     * @param ae
+     */
+    static getCodes(ae: AuthorizationEntity): string[] {
+        return ae.codes.split('_').filter((value: string, index: number) => index % 2 !== 0);
     }
 }

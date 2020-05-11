@@ -36,10 +36,18 @@ class ModuleRefMock {
 }
 
 class AcSetBuilderBaseMock implements ActionSetBuilderBase {
+    isPrivate = false;
+
     buildActionSet(caller: UserDto, args: any): Promise<ServiceResponse<ActionSet>> {
         return null;
     }
 }
+
+const getAcsetBuilderMock = (privateMode: boolean = false): AcSetBuilderBaseMock => {
+    const builder = mock(AcSetBuilderBaseMock);
+    when(builder.isPrivate).thenReturn(privateMode);
+    return builder;
+};
 
 class QueueMock<T = any> {
     add(name: string, data: T, opts?: JobOptions): Promise<Job<T>> {
@@ -154,7 +162,7 @@ describe('ActionSets Service', function() {
 
     describe('build', function() {
         it('should build a new action set', async function() {
-            const builderMock = mock(AcSetBuilderBaseMock);
+            const builderMock = getAcsetBuilderMock();
 
             const actionSetName = 'event_create';
             const user = {
@@ -165,7 +173,9 @@ describe('ActionSets Service', function() {
             };
             const actionSet: ActionSet = new ActionSet().setId('acset_id');
 
-            when(context.moduleRefMock.get(`ACTION_SET_BUILDER/${actionSetName}`)).thenResolve(instance(builderMock));
+            when(
+                context.moduleRefMock.get(`ACTION_SET_BUILDER/${actionSetName}`, deepEqual({ strict: false })),
+            ).thenResolve(instance(builderMock));
             when(builderMock.buildActionSet(deepEqual(user), deepEqual(args))).thenResolve({
                 error: null,
                 response: actionSet,
@@ -208,7 +218,9 @@ describe('ActionSets Service', function() {
                 id: 'acset_id',
             });
 
-            verify(context.moduleRefMock.get(`ACTION_SET_BUILDER/${actionSetName}`)).called();
+            verify(
+                context.moduleRefMock.get(`ACTION_SET_BUILDER/${actionSetName}`, deepEqual({ strict: false })),
+            ).called();
             verify(builderMock.buildActionSet(deepEqual(user), deepEqual(args))).called();
             verify(spiedService.create(deepEqual(actionSet.raw))).called();
             verify(
@@ -237,20 +249,22 @@ describe('ActionSets Service', function() {
             };
             const actionSet: ActionSet = new ActionSet().setId('acset_id');
 
-            when(context.moduleRefMock.get(`ACTION_SET_BUILDER/${actionSetName}`)).thenReject(
-                new Error('unexpected_error'),
-            );
+            when(
+                context.moduleRefMock.get(`ACTION_SET_BUILDER/${actionSetName}`, deepEqual({ strict: false })),
+            ).thenReject(new Error('unexpected_error'));
 
             const res = await context.actionSetsService.build<any>(actionSetName, user, args);
 
             expect(res.error).toEqual('unknown_builder');
             expect(res.response).toEqual(null);
 
-            verify(context.moduleRefMock.get(`ACTION_SET_BUILDER/${actionSetName}`)).called();
+            verify(
+                context.moduleRefMock.get(`ACTION_SET_BUILDER/${actionSetName}`, deepEqual({ strict: false })),
+            ).called();
         });
 
         it('should fail on build error', async function() {
-            const builderMock = mock(AcSetBuilderBaseMock);
+            const builderMock = getAcsetBuilderMock();
 
             const actionSetName = 'event_create';
             const user = {
@@ -261,7 +275,9 @@ describe('ActionSets Service', function() {
             };
             const actionSet: ActionSet = new ActionSet().setId('acset_id');
 
-            when(context.moduleRefMock.get(`ACTION_SET_BUILDER/${actionSetName}`)).thenResolve(instance(builderMock));
+            when(
+                context.moduleRefMock.get(`ACTION_SET_BUILDER/${actionSetName}`, deepEqual({ strict: false })),
+            ).thenResolve(instance(builderMock));
             when(builderMock.buildActionSet(deepEqual(user), deepEqual(args))).thenResolve({
                 error: 'unexpected_error',
                 response: actionSet,
@@ -272,12 +288,14 @@ describe('ActionSets Service', function() {
             expect(res.error).toEqual('unexpected_error');
             expect(res.response).toEqual(null);
 
-            verify(context.moduleRefMock.get(`ACTION_SET_BUILDER/${actionSetName}`)).called();
+            verify(
+                context.moduleRefMock.get(`ACTION_SET_BUILDER/${actionSetName}`, deepEqual({ strict: false })),
+            ).called();
             verify(builderMock.buildActionSet(deepEqual(user), deepEqual(args))).called();
         });
 
         it('should fail on actionset creation error', async function() {
-            const builderMock = mock(AcSetBuilderBaseMock);
+            const builderMock = getAcsetBuilderMock();
 
             const actionSetName = 'event_create';
             const user = {
@@ -288,7 +306,9 @@ describe('ActionSets Service', function() {
             };
             const actionSet: ActionSet = new ActionSet().setId('acset_id');
 
-            when(context.moduleRefMock.get(`ACTION_SET_BUILDER/${actionSetName}`)).thenResolve(instance(builderMock));
+            when(
+                context.moduleRefMock.get(`ACTION_SET_BUILDER/${actionSetName}`, deepEqual({ strict: false })),
+            ).thenResolve(instance(builderMock));
             when(builderMock.buildActionSet(deepEqual(user), deepEqual(args))).thenResolve({
                 error: null,
                 response: actionSet,
@@ -306,13 +326,15 @@ describe('ActionSets Service', function() {
             expect(res.error).toEqual('unexpected_error');
             expect(res.response).toEqual(null);
 
-            verify(context.moduleRefMock.get(`ACTION_SET_BUILDER/${actionSetName}`)).called();
+            verify(
+                context.moduleRefMock.get(`ACTION_SET_BUILDER/${actionSetName}`, deepEqual({ strict: false })),
+            ).called();
             verify(builderMock.buildActionSet(deepEqual(user), deepEqual(args))).called();
             verify(spiedService.create(deepEqual(actionSet.raw))).called();
         });
 
         it('should fail on right setter error', async function() {
-            const builderMock = mock(AcSetBuilderBaseMock);
+            const builderMock = getAcsetBuilderMock();
 
             const actionSetName = 'event_create';
             const user = {
@@ -323,7 +345,9 @@ describe('ActionSets Service', function() {
             };
             const actionSet: ActionSet = new ActionSet().setId('acset_id');
 
-            when(context.moduleRefMock.get(`ACTION_SET_BUILDER/${actionSetName}`)).thenResolve(instance(builderMock));
+            when(
+                context.moduleRefMock.get(`ACTION_SET_BUILDER/${actionSetName}`, deepEqual({ strict: false })),
+            ).thenResolve(instance(builderMock));
             when(builderMock.buildActionSet(deepEqual(user), deepEqual(args))).thenResolve({
                 error: null,
                 response: actionSet,
@@ -359,7 +383,9 @@ describe('ActionSets Service', function() {
             expect(res.error).toEqual('unexpected_error');
             expect(res.response).toEqual(null);
 
-            verify(context.moduleRefMock.get(`ACTION_SET_BUILDER/${actionSetName}`)).called();
+            verify(
+                context.moduleRefMock.get(`ACTION_SET_BUILDER/${actionSetName}`, deepEqual({ strict: false })),
+            ).called();
             verify(builderMock.buildActionSet(deepEqual(user), deepEqual(args))).called();
             verify(spiedService.create(deepEqual(actionSet.raw))).called();
             verify(

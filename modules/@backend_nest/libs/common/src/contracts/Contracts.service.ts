@@ -434,7 +434,7 @@ export class ContractsService implements OnModuleInit {
         if (globalConfigRes.error || globalConfigRes.response.length === 0) {
             const error = new Error(
                 `ContractsService::onModuleInit | error while fetching global config: ${globalConfigRes.error ||
-                'no initial config'}`,
+                    'no initial config'}`,
             );
             this.shutdownService.shutdownWithError(error);
             throw error;

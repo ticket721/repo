@@ -30,18 +30,25 @@ export class ActionSetsTasks implements OnModuleInit {
         private readonly shutdownService: ShutdownService,
     ) {}
 
-    async onStatusChanged(actionSet: ActionSet): Promise<void> {
+    /**
+     * Internal utility called when status of an actionset changes
+     *
+     * @param actionSet
+     */
+    private async onStatusChanged(actionSet: ActionSet): Promise<void> {
         switch (actionSet.status) {
             case 'complete': {
                 const completeLifecycleCallbackRes = await this.actionSetsService.onComplete(actionSet);
 
                 if (completeLifecycleCallbackRes.error) {
-                    throw new Error(`Error while running onComplete actionset lifecycle: ${completeLifecycleCallbackRes.error}`)
+                    throw new Error(
+                        `Error while running onComplete actionset lifecycle: ${completeLifecycleCallbackRes.error}`,
+                    );
                 }
-                break ;
+                break;
             }
             default: {
-                break ;
+                break;
             }
         }
     }
@@ -74,7 +81,6 @@ export class ActionSetsTasks implements OnModuleInit {
 
             const updatedActionSet = inputHandlerRes[0];
             const update = inputHandlerRes[1];
-
 
             if (update) {
                 const query = updatedActionSet.getQuery();
@@ -133,7 +139,6 @@ export class ActionSetsTasks implements OnModuleInit {
         if (updatedActionSet.status !== beforeStatus) {
             await this.onStatusChanged(updatedActionSet);
         }
-
     }
 
     /**

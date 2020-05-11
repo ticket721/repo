@@ -1,13 +1,13 @@
-import { DynamicModule, Module }         from '@nestjs/common';
+import { DynamicModule, Module } from '@nestjs/common';
 import { TxsService, TxsServiceOptions } from '@lib/common/txs/Txs.service';
-import { ExpressCassandraModule }        from '@iaminfinity/express-cassandra';
-import { TxEntity }                      from '@lib/common/txs/entities/Tx.entity';
-import { TxsRepository }                 from '@lib/common/txs/Txs.repository';
-import { ScheduleModule }                from 'nest-schedule';
-import { WinstonLoggerService }          from '@lib/common/logger/WinstonLogger.service';
-import { TxSequenceAcsetbuilderHelper }  from '@lib/common/txs/acset_builders/TxSequence.acsetbuilder.helper';
+import { ExpressCassandraModule } from '@iaminfinity/express-cassandra';
+import { TxEntity } from '@lib/common/txs/entities/Tx.entity';
+import { TxsRepository } from '@lib/common/txs/Txs.repository';
+import { ScheduleModule } from 'nest-schedule';
+import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
+import { TxSequenceAcsetbuilderHelper } from '@lib/common/txs/acset_builders/TxSequence.acsetbuilder.helper';
 import { BullModule, BullModuleOptions } from '@nestjs/bull';
-import { ConfigService }                 from '@lib/common/config/Config.service';
+import { ConfigService } from '@lib/common/config/Config.service';
 
 /**
  * Build options for the Txs Module

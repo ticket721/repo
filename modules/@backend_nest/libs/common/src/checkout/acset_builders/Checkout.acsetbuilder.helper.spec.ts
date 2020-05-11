@@ -1,7 +1,7 @@
 import {
     CheckoutAcsetBuilderArgs,
     CheckoutAcsetbuilderHelper,
-} from '@lib/common/actionsets/acset_builders/Checkout.acsetbuilder.helper';
+} from '@lib/common/checkout/acset_builders/Checkout.acsetbuilder.helper';
 import { UserDto } from '@lib/common/users/dto/User.dto';
 
 describe('Checkout AcSet Builder', function() {

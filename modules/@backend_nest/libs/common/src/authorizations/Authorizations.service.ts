@@ -1,21 +1,21 @@
-import { CRUDExtension }                                      from '@lib/common/crud/CRUDExtension.base';
-import { BaseModel, InjectModel, InjectRepository }           from '@iaminfinity/express-cassandra';
-import { AuthorizationsRepository }                           from '@lib/common/authorizations/Authorizations.repository';
-import { AuthorizationEntity }                                from '@lib/common/authorizations/entities/Authorization.entity';
-import { CurrenciesService, ERC20Currency, Price }            from '@lib/common/currencies/Currencies.service';
-import { ServiceResponse }                                    from '@lib/common/utils/ServiceResponse.type';
-import { CategoriesService }                                  from '@lib/common/categories/Categories.service';
-import { CategoryEntity }                                     from '@lib/common/categories/entities/Category.entity';
-import { T721ControllerV0Service }                            from '@lib/common/contracts/t721controller/T721Controller.V0.service';
-import { HOUR }                                               from '@lib/common/utils/time';
-import { MintAuthorization, toB32 }                           from '@common/global';
-import { Web3Service }                                        from '@lib/common/web3/Web3.service';
+import { CRUDExtension } from '@lib/common/crud/CRUDExtension.base';
+import { BaseModel, InjectModel, InjectRepository } from '@iaminfinity/express-cassandra';
+import { AuthorizationsRepository } from '@lib/common/authorizations/Authorizations.repository';
+import { AuthorizationEntity } from '@lib/common/authorizations/entities/Authorization.entity';
+import { CurrenciesService, ERC20Currency, Price } from '@lib/common/currencies/Currencies.service';
+import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
+import { CategoriesService } from '@lib/common/categories/Categories.service';
+import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
+import { T721ControllerV0Service } from '@lib/common/contracts/t721controller/T721Controller.V0.service';
+import { HOUR } from '@lib/common/utils/time';
+import { MintAuthorization, toB32 } from '@common/global';
+import { Web3Service } from '@lib/common/web3/Web3.service';
 import { AuthorizedTicketMintingFormat, TicketMintingFormat } from '@lib/common/utils/Cart.type';
-import { EIP712Signature }                                    from '@ticket721/e712/lib';
-import { BytesToolService }                                   from '@lib/common/toolbox/Bytes.tool.service';
-import { TimeToolService }                                    from '@lib/common/toolbox/Time.tool.service';
-import { GroupService }                                       from '@lib/common/group/Group.service';
-import { RocksideService }                                    from '@lib/common/rockside/Rockside.service';
+import { EIP712Signature } from '@ticket721/e712/lib';
+import { BytesToolService } from '@lib/common/toolbox/Bytes.tool.service';
+import { TimeToolService } from '@lib/common/toolbox/Time.tool.service';
+import { GroupService } from '@lib/common/group/Group.service';
+import { RocksideService } from '@lib/common/rockside/Rockside.service';
 
 /**
  * Service to CRUD AuthorizationEntities
@@ -37,9 +37,9 @@ export class AuthorizationsService extends CRUDExtension<AuthorizationsRepositor
      */
     constructor(
         @InjectRepository(AuthorizationsRepository)
-            authorizationsRepository: AuthorizationsRepository,
+        authorizationsRepository: AuthorizationsRepository,
         @InjectModel(AuthorizationEntity)
-            authorizationEntity: BaseModel<AuthorizationEntity>,
+        authorizationEntity: BaseModel<AuthorizationEntity>,
         private readonly categoriesService: CategoriesService,
         private readonly t721ControllerV0Service: T721ControllerV0Service,
         private readonly currenciesService: CurrenciesService,
@@ -101,7 +101,6 @@ export class AuthorizationsService extends CRUDExtension<AuthorizationsRepositor
         grantee: string,
         signatureReadable: boolean,
     ): Promise<ServiceResponse<AuthorizedTicketMintingFormat[]>> {
-
         if (prices.length !== fees.length) {
             return {
                 error: 'invalid_fee_price_lengths',
@@ -139,7 +138,6 @@ export class AuthorizationsService extends CRUDExtension<AuthorizationsRepositor
         const beExpiration = Math.floor((this.timeToolService.now().getTime() + expirationTime + HOUR) / 1000);
 
         for (const authorization of authorizations) {
-
             const categoryEntityRes = await this.categoriesService.search({
                 id: authorization.categoryId,
             });
@@ -160,7 +158,10 @@ export class AuthorizationsService extends CRUDExtension<AuthorizationsRepositor
 
             const category: CategoryEntity = categoryEntityRes.response[0];
 
-            const controllerInfos = await this.groupService.getCategoryControllerFields<[string, string]>(category, ['address', 'controller']);
+            const controllerInfos = await this.groupService.getCategoryControllerFields<[string, string]>(category, [
+                'address',
+                'controller',
+            ]);
 
             if (controllerInfos.error) {
                 return {
@@ -191,11 +192,11 @@ export class AuthorizationsService extends CRUDExtension<AuthorizationsRepositor
                 'Authorization',
             );
 
-            const vaultereumSigner = await this.rocksideService.getSigner(controllerName);
+            const rocksideSigner = await this.rocksideService.getSigner(controllerName);
             let signature: EIP712Signature;
 
             try {
-                signature = await signer.sign(vaultereumSigner, payload);
+                signature = await signer.sign(rocksideSigner, payload);
             } catch (e) {
                 console.error(e);
                 return {
@@ -251,5 +252,4 @@ export class AuthorizationsService extends CRUDExtension<AuthorizationsRepositor
             response: ret,
         };
     }
-
 }

@@ -88,8 +88,8 @@ export const Config: Joi.ObjectSchema = Joi.object({
     ROCKSIDE_MOCK_OPTS_ORCHESTRATOR_PRIVATE_KEY: Joi.string().when('NODE_ENV', {
         is: 'development',
         then: Joi.required(),
-        otherwise: Joi.optional()
+        otherwise: Joi.optional(),
     }),
 
-    MINTER_INDEX: Joi.string().required()
+    MINTER_INDEX: Joi.string().required(),
 });

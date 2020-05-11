@@ -1,14 +1,13 @@
-import { Injectable }                                                                                  from '@nestjs/common';
-import { PasswordlessUserDto }                                                                         from './dto/PasswordlessUser.dto';
-import { compare, hash }                                                                               from 'bcrypt';
-import { toAcceptedAddressFormat, isKeccak256, Web3LoginSigner, Web3RegisterSigner, keccak256, toHex } from '@common/global';
-import { UsersService }                                                                                from '@lib/common/users/Users.service';
-import { ConfigService }                                                                               from '@lib/common/config/Config.service';
-import { UserDto }                                                                                     from '@lib/common/users/dto/User.dto';
-import { ServiceResponse }                                                                             from '@lib/common/utils/ServiceResponse.type';
-import { uuid }                                                                                        from '@iaminfinity/express-cassandra';
-import { Web3Service }                                                                                 from '@lib/common/web3/Web3.service';
-import { RocksideService }                                                                             from '@lib/common/rockside/Rockside.service';
+import { Injectable } from '@nestjs/common';
+import { PasswordlessUserDto } from './dto/PasswordlessUser.dto';
+import { compare, hash } from 'bcrypt';
+import { toAcceptedAddressFormat, isKeccak256, Web3LoginSigner, Web3RegisterSigner } from '@common/global';
+import { UsersService } from '@lib/common/users/Users.service';
+import { ConfigService } from '@lib/common/config/Config.service';
+import { UserDto } from '@lib/common/users/dto/User.dto';
+import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
+import { Web3Service } from '@lib/common/web3/Web3.service';
+import { RocksideService } from '@lib/common/rockside/Rockside.service';
 
 /**
  * Authentication services and utilities
@@ -28,8 +27,7 @@ export class AuthenticationService {
         private readonly configService: ConfigService,
         private readonly web3Service: Web3Service,
         private readonly rocksideService: RocksideService,
-    ) {
-    }
+    ) {}
 
     /**
      * Utility to verify if provided signature is bound to an account and is valid
@@ -282,11 +280,13 @@ export class AuthenticationService {
         if (rocksideFinalAddress.error) {
             return {
                 response: null,
-                error: 'rockside_identity_creation_error'
-            }
+                error: 'rockside_identity_creation_error',
+            };
         }
 
-        const addressUserResp: ServiceResponse<UserDto> = await this.usersService.findByAddress(rocksideFinalAddress.response.address);
+        const addressUserResp: ServiceResponse<UserDto> = await this.usersService.findByAddress(
+            rocksideFinalAddress.response.address,
+        );
         if (addressUserResp.error) {
             return addressUserResp;
         }

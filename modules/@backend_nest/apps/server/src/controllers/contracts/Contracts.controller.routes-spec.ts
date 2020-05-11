@@ -5,7 +5,7 @@ import { getSDKAndUser } from '../../../test/utils';
 export default function(getCtx: () => { ready: Promise<void> }) {
     return function() {
         describe('search (GET /contracts)', function() {
-            test.concurrent('should recover artifacts', async function() {
+            test('should recover artifacts', async function() {
                 const {
                     sdk,
                     token,
@@ -21,6 +21,9 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 const contracts = await sdk.contracts.fetch();
 
                 const contractArtifactsNames = [
+                    'dev::IdentitiesMock',
+                    'dev::IdentityMock',
+                    'dev::Migrations',
                     'metamarketplace::Address',
                     'metamarketplace::BytesUtil_v0',
                     'metamarketplace::Counters',
@@ -45,20 +48,6 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     'metamarketplace::SafeMath',
                     'metamarketplace::SmartWalletMock_v0',
                     'metamarketplace::T721ControllerMock_v0',
-                    'refract::BytesUtil_v0',
-                    'refract::ERC165',
-                    'refract::ERC20',
-                    'refract::ERC20Detailed',
-                    'refract::ERC20Mock_v0',
-                    'refract::IERC165',
-                    'refract::IERC20',
-                    'refract::IRefractFactory_v0',
-                    'refract::IRefractWallet_v0',
-                    'refract::Migrations',
-                    'refract::RefractDomain_v0',
-                    'refract::RefractFactory_v0',
-                    'refract::RefractWallet_v0',
-                    'refract::SafeMath',
                     't721admin::Dummy',
                     't721admin::ERC20',
                     't721admin::ERC20Detailed',
@@ -67,7 +56,9 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     't721admin::Migrations',
                     't721admin::Ownable',
                     't721admin::SafeMath',
+                    't721admin::SigUtil_v0',
                     't721admin::T721Admin',
+                    't721admin::T721AdminDomain',
                     't721admin::T721TokenMock',
                     't721controller::Address',
                     't721controller::BytesUtil_v0',

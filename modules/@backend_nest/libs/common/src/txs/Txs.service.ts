@@ -1,16 +1,14 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { CRUDExtension }                            from '@lib/common/crud/CRUDExtension.base';
-import { TxsRepository }                            from '@lib/common/txs/Txs.repository';
-import { TxEntity }                                 from '@lib/common/txs/entities/Tx.entity';
+import { CRUDExtension } from '@lib/common/crud/CRUDExtension.base';
+import { TxsRepository } from '@lib/common/txs/Txs.repository';
+import { TxEntity } from '@lib/common/txs/entities/Tx.entity';
 import { BaseModel, InjectModel, InjectRepository } from '@iaminfinity/express-cassandra';
-import { ServiceResponse }                          from '@lib/common/utils/ServiceResponse.type';
-import { isTransactionHash }                        from '@common/global';
-import { T721AdminService }                         from '@lib/common/contracts/T721Admin.service';
-import { Web3Service }                              from '@lib/common/web3/Web3.service';
-import { GlobalConfigService }                      from '@lib/common/globalconfig/GlobalConfig.service';
-import Decimal                                      from 'decimal.js';
-import { RocksideService }                          from '@lib/common/rockside/Rockside.service';
-import BigNumber                                    from 'bignumber.js';
+import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
+import { isTransactionHash } from '@common/global';
+import { Web3Service } from '@lib/common/web3/Web3.service';
+import { GlobalConfigService } from '@lib/common/globalconfig/GlobalConfig.service';
+import Decimal from 'decimal.js';
+import { RocksideService } from '@lib/common/rockside/Rockside.service';
 
 /**
  * Configuration Options
@@ -65,19 +63,17 @@ export class TxsService extends CRUDExtension<TxsRepository, TxEntity> {
      * @param txOptions
      * @param globalConfigService
      * @param web3Service
-     * @param t721AdminService
      * @param rocksideService
      */
     constructor(
         @InjectRepository(TxsRepository)
-            txsRepository: TxsRepository,
+        txsRepository: TxsRepository,
         @InjectModel(TxEntity)
-            txEntity: BaseModel<TxEntity>,
+        txEntity: BaseModel<TxEntity>,
         @Inject('TXS_MODULE_OPTIONS')
         private readonly txOptions: TxsServiceOptions,
         private readonly globalConfigService: GlobalConfigService,
         private readonly web3Service: Web3Service,
-        private readonly t721AdminService: T721AdminService,
         private readonly rocksideService: RocksideService,
     ) {
         super(
@@ -199,7 +195,6 @@ export class TxsService extends CRUDExtension<TxsRepository, TxEntity> {
         const nonce = await web3.eth.getTransactionCount(from);
 
         try {
-
             const gasLimitEstimation = await (await this.web3Service.get()).eth.estimateGas({
                 from,
                 nonce,
@@ -207,22 +202,16 @@ export class TxsService extends CRUDExtension<TxsRepository, TxEntity> {
                 data,
             });
 
-            const increasedGasLimitEstimation = (new Decimal(gasLimitEstimation).mul(5).floor()).toString();
-
             return {
                 error: null,
-                response: increasedGasLimitEstimation,
+                response: gasLimitEstimation,
             };
-
         } catch (e) {
-
             return {
                 error: e.message,
                 response: null,
-            }
-
+            };
         }
-
     }
 
     /**
@@ -239,18 +228,13 @@ export class TxsService extends CRUDExtension<TxsRepository, TxEntity> {
         value: string,
         data: string,
     ): Promise<ServiceResponse<TxEntity>> {
-
-        const gasLimitEstimationRes = await this.estimateGasLimit(
-            from,
-            to,
-            data
-        );
+        const gasLimitEstimationRes = await this.estimateGasLimit(from, to, data);
 
         if (gasLimitEstimationRes.error) {
             return {
                 error: gasLimitEstimationRes.error,
                 response: null,
-            }
+            };
         }
 
         const gasPriceEstimationRes = await this.estimateGasPrice(gasLimitEstimationRes.response);
@@ -259,7 +243,7 @@ export class TxsService extends CRUDExtension<TxsRepository, TxEntity> {
             return {
                 error: gasPriceEstimationRes.error,
                 response: null,
-            }
+            };
         }
 
         const sentTransactionRes = await this.rocksideService.sendTransaction({
@@ -268,14 +252,13 @@ export class TxsService extends CRUDExtension<TxsRepository, TxEntity> {
             value,
             data,
             gasPrice: gasPriceEstimationRes.response,
-            gas: gasLimitEstimationRes.response
         });
 
         if (sentTransactionRes.error) {
             return {
                 error: sentTransactionRes.error,
-                response: null
-            }
+                response: null,
+            };
         }
 
         const subscriptionRes = await this.subscribe(sentTransactionRes.response);
@@ -284,13 +267,12 @@ export class TxsService extends CRUDExtension<TxsRepository, TxEntity> {
             return {
                 error: subscriptionRes.error,
                 response: null,
-            }
+            };
         }
 
         return {
             error: null,
-            response: subscriptionRes.response
-        }
-
+            response: subscriptionRes.response,
+        };
     }
 }

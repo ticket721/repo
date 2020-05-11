@@ -1,5 +1,5 @@
 import { EntityRepository, Repository } from '@iaminfinity/express-cassandra';
-import { TicketEntity }                 from '@lib/common/tickets/entities/Ticket.entity';
+import { TicketEntity } from '@lib/common/tickets/entities/Ticket.entity';
 
 /**
  * Repository to handle the Stripe Resources

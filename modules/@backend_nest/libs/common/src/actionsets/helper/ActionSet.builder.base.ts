@@ -13,5 +13,9 @@ export abstract class ActionSetBuilderBase<BuildArgs = any> {
      * @param args
      */
     public abstract buildActionSet(caller: UserDto, args: BuildArgs): Promise<ServiceResponse<ActionSet>>;
+
+    /**
+     * Flag to determine if actionset is publicly buildable
+     */
     public isPrivate: boolean;
 }

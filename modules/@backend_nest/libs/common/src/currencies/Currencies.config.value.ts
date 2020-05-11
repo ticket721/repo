@@ -8,13 +8,11 @@ export default [
         dollarPeg: 1,
         moduleName: 't721token',
         contractName: 'T721Token',
-        feeComputer: (amount: string) => '0'
+        feeComputer: (amount: string) => '0',
     },
     {
         name: 'Fiat',
         type: 'set',
-        contains: [
-            'T721Token',
-        ],
+        contains: ['T721Token'],
     },
 ] as CurrencyConfig[];

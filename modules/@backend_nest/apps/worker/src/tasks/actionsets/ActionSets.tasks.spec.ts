@@ -92,12 +92,17 @@ describe('ActionSets Tasks', function() {
 
             when(context.actionSetsServiceMock.getInputHandler('first')).thenReturn(handler);
             when(context.actionSetsServiceMock.getInputHandler('second')).thenReturn(handler);
+            when(context.actionSetsServiceMock.onComplete(anything())).thenResolve({
+                error: null,
+                response: null,
+            });
 
             await context.actionSetsTasks.input(job);
 
             verify(context.actionSetsServiceMock.getInputHandler('first')).twice();
             verify(context.actionSetsServiceMock.getInputHandler('second')).twice();
             verify(context.actionSetsServiceMock.update(anything(), anything())).twice();
+            verify(context.actionSetsServiceMock.onComplete(anything())).called();
         });
 
         it('should not update', async function() {
@@ -146,12 +151,17 @@ describe('ActionSets Tasks', function() {
 
             when(context.actionSetsServiceMock.getInputHandler('first')).thenReturn(handler);
             when(context.actionSetsServiceMock.getInputHandler('second')).thenReturn(handler);
+            when(context.actionSetsServiceMock.onComplete(anything())).thenResolve({
+                error: null,
+                response: null,
+            });
 
             await context.actionSetsTasks.input(job);
 
             verify(context.actionSetsServiceMock.getInputHandler('first')).twice();
             verify(context.actionSetsServiceMock.getInputHandler('second')).twice();
             verify(context.actionSetsServiceMock.update(anything(), anything())).never();
+            verify(context.actionSetsServiceMock.onComplete(anything())).called();
         });
 
         it('should fail on input fetch error', async function() {
@@ -246,11 +256,16 @@ describe('ActionSets Tasks', function() {
             const job: Job = new JobMock(actionSet) as Job;
 
             when(context.actionSetsServiceMock.getEventHandler('first')).thenReturn(handler);
+            when(context.actionSetsServiceMock.onComplete(anything())).thenResolve({
+                error: null,
+                response: null,
+            });
 
             await context.actionSetsTasks.event(job);
 
             verify(context.actionSetsServiceMock.getEventHandler('first')).twice();
             verify(context.actionSetsServiceMock.update(anything(), anything())).once();
+            verify(context.actionSetsServiceMock.onComplete(anything())).called();
         });
 
         it('should dispatch events but no updates', async function() {
@@ -290,11 +305,16 @@ describe('ActionSets Tasks', function() {
             const job: Job = new JobMock(actionSet) as Job;
 
             when(context.actionSetsServiceMock.getEventHandler('first')).thenReturn(handler);
+            when(context.actionSetsServiceMock.onComplete(anything())).thenResolve({
+                error: null,
+                response: null,
+            });
 
             await context.actionSetsTasks.event(job);
 
             verify(context.actionSetsServiceMock.getEventHandler('first')).twice();
             verify(context.actionSetsServiceMock.update(anything(), anything())).never();
+            verify(context.actionSetsServiceMock.onComplete(anything())).called();
         });
 
         it('should fail on handler not found', async function() {

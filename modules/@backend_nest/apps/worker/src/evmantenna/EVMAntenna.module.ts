@@ -1,14 +1,14 @@
-import { Module }                        from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { BullModule, BullModuleOptions } from '@nestjs/bull';
-import { ConfigService }                 from '@lib/common/config/Config.service';
-import { EVMEventSetsModule }            from '@lib/common/evmeventsets/EVMEventSets.module';
-import { EVMAntennaMergerScheduler }     from '@app/worker/evmantenna/EVMAntennaMerger.scheduler';
-import { EventsModule }                  from '@lib/common/events/Events.module';
-import { DatesModule }                   from '@lib/common/dates/Dates.module';
-import { EVMBlockRollbacksModule }       from '@lib/common/evmblockrollbacks/EVMBlockRollbacks.module';
-import { MintTicketForgeEVMAntenna }     from '@app/worker/evmantenna/events/ticketforge/Mint.evmantenna';
-import { ApprovalT721TokenEVMAntenna }   from '@app/worker/evmantenna/events/t721token/Approval.evmantenna';
-import { MintT721TokenEVMAntenna }       from '@app/worker/evmantenna/events/t721token/Mint.evmantenna';
+import { ConfigService } from '@lib/common/config/Config.service';
+import { EVMEventSetsModule } from '@lib/common/evmeventsets/EVMEventSets.module';
+import { EVMAntennaMergerScheduler } from '@app/worker/evmantenna/EVMAntennaMerger.scheduler';
+import { EventsModule } from '@lib/common/events/Events.module';
+import { DatesModule } from '@lib/common/dates/Dates.module';
+import { EVMBlockRollbacksModule } from '@lib/common/evmblockrollbacks/EVMBlockRollbacks.module';
+import { MintTicketForgeEVMAntenna } from '@app/worker/evmantenna/events/ticketforge/Mint.evmantenna';
+import { ApprovalT721TokenEVMAntenna } from '@app/worker/evmantenna/events/t721token/Approval.evmantenna';
+import { MintT721TokenEVMAntenna } from '@app/worker/evmantenna/events/t721token/Mint.evmantenna';
 
 @Module({
     imports: [
@@ -29,7 +29,6 @@ import { MintT721TokenEVMAntenna }       from '@app/worker/evmantenna/events/t72
         }),
     ],
     providers: [
-
         // T721Token
         ApprovalT721TokenEVMAntenna,
         MintT721TokenEVMAntenna,
@@ -37,7 +36,7 @@ import { MintT721TokenEVMAntenna }       from '@app/worker/evmantenna/events/t72
         // TicketForge
         MintTicketForgeEVMAntenna,
 
-        EVMAntennaMergerScheduler
+        EVMAntennaMergerScheduler,
     ],
 })
 export class EVMAntennaModule {}

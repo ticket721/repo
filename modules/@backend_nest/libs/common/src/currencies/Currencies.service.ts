@@ -407,11 +407,17 @@ export class CurrenciesService {
         };
     }
 
+    /**
+     * Computes the fee on the given currency for a specific amount
+     *
+     * @param currency
+     * @param amount
+     */
     public async computeFee(currency: string, amount: string): Promise<string> {
         const currencyInfo = await this.get(currency);
 
         if ((currencyInfo as ERC20Currency).feeComputer) {
-            return (currencyInfo as ERC20Currency).feeComputer(amount)
+            return (currencyInfo as ERC20Currency).feeComputer(amount);
         }
 
         return '0';

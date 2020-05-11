@@ -32,7 +32,9 @@ export enum EventCreationActions {
  * ActionSet builder class for the event creation process
  */
 export class EventCreateAcsetbuilderHelper implements ActionSetBuilderBase<EventCreateAcsetBuilderArgs> {
-
+    /**
+     * This acset can be build publicly
+     */
     public isPrivate: boolean = false;
 
     /**

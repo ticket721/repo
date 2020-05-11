@@ -85,15 +85,17 @@ export class CartInputHandlers implements OnModuleInit {
      * Data Model validator for the Ticket Selection step
      */
     ticketSelectionsValidator = Joi.object<CartTicketSelections>({
-        tickets: Joi.array().items(
-            Joi.object({
-                categoryId: Joi.string().required(),
-                price: Joi.object({
-                    currency: Joi.string().required(),
-                    price: Joi.string().required(),
-                }).optional(),
-            }),
-        ).min(1),
+        tickets: Joi.array()
+            .items(
+                Joi.object({
+                    categoryId: Joi.string().required(),
+                    price: Joi.object({
+                        currency: Joi.string().required(),
+                        price: Joi.string().required(),
+                    }).optional(),
+                }),
+            )
+            .min(1),
     });
 
     /**
@@ -186,7 +188,7 @@ export class CartInputHandlers implements OnModuleInit {
                     break;
                 }
 
-                const groupIds: {[key: string]: boolean} = {};
+                const groupIds: { [key: string]: boolean } = {};
 
                 for (const ticket of data.tickets) {
                     const categorySearchRes = await this.categoriesService.search({
@@ -247,7 +249,7 @@ export class CartInputHandlers implements OnModuleInit {
                     const fees: string[] = [];
 
                     for (const returnPrice of returnPrices) {
-                        fees.push(await this.currenciesService.computeFee(returnPrice.currency, returnPrice.value))
+                        fees.push(await this.currenciesService.computeFee(returnPrice.currency, returnPrice.value));
                     }
 
                     actionset.action.setData({
@@ -370,7 +372,7 @@ export class CartInputHandlers implements OnModuleInit {
                 log_value: Joi.number().required(),
             }),
         ),
-        fees: Joi.array().items(Joi.string()).required(),
+        fees: Joi.array().items(Joi.string()),
     });
 
     /**

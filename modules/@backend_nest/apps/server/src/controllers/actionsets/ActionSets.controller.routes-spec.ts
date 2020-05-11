@@ -7,7 +7,7 @@ import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entit
 export default function(getCtx: () => { ready: Promise<void> }) {
     return function() {
         describe('createActions (POST /actions)', function() {
-            test.concurrent('should properly create an event creation actionset', async function() {
+            test('should properly create an event creation actionset', async function() {
                 const {
                     sdk,
                     token,
@@ -40,7 +40,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 });
             });
 
-            test.concurrent('should fail on invalid action set type', async function() {
+            test('should fail on invalid action set type', async function() {
                 const {
                     sdk,
                     token,
@@ -68,8 +68,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 );
             });
 
-            test.concurrent('should fail on private acset initialization attempt', async function() {
-
+            test('should fail on private acset initialization attempt', async function() {
                 const {
                     sdk,
                     token,
@@ -94,11 +93,11 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                         arguments: initialArgument,
                     }),
                     StatusCodes.BadRequest,
-                    'cannot_create_private_actionset_in_public_context'
+                    'cannot_create_private_actionset_in_public_context',
                 );
             });
 
-            test.concurrent('should fail for invalid initial arguments', async function() {
+            test('should fail for invalid initial arguments', async function() {
                 const {
                     sdk,
                     token,
@@ -126,7 +125,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 );
             });
 
-            test.concurrent('should fail creating an actionset for unauthenticated user', async function() {
+            test('should fail creating an actionset for unauthenticated user', async function() {
                 const {
                     sdk,
                     token,
@@ -154,7 +153,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
         });
 
         describe('updateAction (POST /:actionSetId)', function() {
-            test.concurrent('should properly set data on action set first step', async function() {
+            test('should properly set data on action set first step', async function() {
                 const {
                     sdk,
                     token,
@@ -193,7 +192,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 });
             });
 
-            test.concurrent('should properly set data on action set first step even if complete', async function() {
+            test('should properly set data on action set first step even if complete', async function() {
                 const {
                     sdk,
                     token,
@@ -257,7 +256,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 });
             });
 
-            test.concurrent('should fail updating action above current index', async function() {
+            test('should fail updating action above current index', async function() {
                 const {
                     sdk,
                     token,
@@ -292,7 +291,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 );
             });
 
-            test.concurrent('should fail on private action set update', async function() {
+            test('should fail on private action set update', async function() {
                 const {
                     sdk,
                     token,
@@ -355,7 +354,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
         });
 
         describe('search (GET /actions/search)', function() {
-            test.concurrent('should search for my actionsets only', async function() {
+            test('should search for my actionsets only', async function() {
                 const {
                     sdk,
                     token,
