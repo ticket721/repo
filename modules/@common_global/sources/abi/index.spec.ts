@@ -19,7 +19,7 @@ describe('ABI', function() {
             const uuid = '116de99a-2cd0-4071-bd2a-4c1ab2b32d24';
             const address = '0x0618A298E7a1d15d251fb2a00056E4db74869d8A';
 
-            expect(getT721ControllerGroupID(uuid, address)).toEqual('0x7ed6592bcb17629ae5b9de488e1b8b543347a8e653843da8ccce812ebb9132f7')
+            expect(getT721ControllerGroupID(uuid, address)).toEqual('0xb8c355f144f9d530bcbb83f35822f4fc8235040263143b2ae2fd9c5d13c1affc')
 
         });
 
