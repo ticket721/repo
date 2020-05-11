@@ -106,7 +106,20 @@ export class MintAuthorization extends EIP712Signer {
 
     }
 
-    static getMethodArgs(eventId: string, controller: string, feeCollector: string, buyers: string[], categories: string[], currencies: string[], amounts: string[], fees: string[], codes: string[], signatures: string[], expiration: string, scopeIndex: string): [
+    static getMethodArgs(
+        eventId: string,
+        controller: string,
+        feeCollector: string,
+        buyers: string[],
+        categories: string[],
+        currencies: string[],
+        amounts: string[],
+        fees: string[],
+        codes: string[],
+        signatures: string[],
+        expiration: string,
+        scopeIndex: string
+    ): [
         string,
         string[],
         string[],

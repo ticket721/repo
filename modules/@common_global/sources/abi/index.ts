@@ -1,6 +1,6 @@
-import {utils}       from 'ethers';
-import { AbiCoder }                       from 'ethers/utils';
-import { keccak256, keccak256FromBuffer } from '../hash';
+import { utils }               from 'ethers';
+import { AbiCoder }            from 'ethers/utils';
+import { keccak256FromBuffer } from '../hash';
 
 export function encode(types: string[], values: any[]): string {
     const encoder: AbiCoder = utils.defaultAbiCoder;
