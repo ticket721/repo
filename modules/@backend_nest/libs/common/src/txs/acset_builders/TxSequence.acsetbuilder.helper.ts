@@ -99,8 +99,6 @@ export class TxSequenceAcsetbuilderHelper implements ActionSetBuilderBase<TxSequ
 
         args = value;
 
-        delete caller.password;
-
         const actions: Action[] = args.transactions.map(
             (tx: TransactionParameters & TransactionLifecycles): Action =>
                 new Action()
