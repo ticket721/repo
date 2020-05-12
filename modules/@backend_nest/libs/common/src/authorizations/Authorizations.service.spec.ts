@@ -218,15 +218,6 @@ describe('Authorizations Service', function() {
 
             when(context.bytesToolServiceMock.randomBytes(31)).thenReturn(randomNum);
 
-            const signer = async (...args: any[]) => ({
-                r: '0xr',
-                v: 1,
-                s: '0xs',
-                hex: '0xsignature',
-            });
-
-            // when(context.vaultereumServiceMock.getSigner('eventcontroller')).thenReturn(signer);
-
             const spiedService = spy(context.authorizationsService);
 
             when(
@@ -631,6 +622,48 @@ describe('Authorizations Service', function() {
             ).called();
         });
 
+        it('should fail on invalid fee length', async function() {
+            const authorizations: TicketMintingFormat[] = [
+                {
+                    categoryId: 'category_id',
+                    price: {
+                        currency: 'Fiat',
+                        price: '100',
+                    },
+                },
+            ];
+
+            const prices: Price[] = [
+                {
+                    currency: 'T721Token',
+                    value: '100',
+                    log_value: 0,
+                },
+            ];
+
+            const expirationTime = 2 * DAY;
+
+            const signatureReadable = false;
+
+            const userAddress = '0x686b0122d2b93f62e8553d59adec2593d47570d5';
+
+            const grantee = userAddress;
+
+            const fees = [];
+
+            const res = await context.authorizationsService.validateTicketAuthorizations(
+                authorizations,
+                prices,
+                fees,
+                expirationTime,
+                grantee,
+                signatureReadable,
+            );
+
+            expect(res.error).toEqual('invalid_fee_price_lengths');
+            expect(res.response).toEqual(null);
+        });
+
         it('should fail on categories fetch error', async function() {
             const authorizations: TicketMintingFormat[] = [
                 {
@@ -750,9 +783,7 @@ describe('Authorizations Service', function() {
 
             const tokenAddress = '0x686b0122d2b93f62e8553d59adec2593d47570d2';
             const t721controllerAddress = '0x686b0122d2b93f62e8553d59adec2593d47570d3';
-            const eventAddress = '0x686b0122d2b93f62e8553d59adec2593d47570d4';
             const userAddress = '0x686b0122d2b93f62e8553d59adec2593d47570d5';
-            const groupId = '0xabcdef1234abcdef1234abcdef1234abcdef1234abcdef1234abcdef1234abcd';
 
             const grantee = userAddress;
 
@@ -844,7 +875,6 @@ describe('Authorizations Service', function() {
 
             const tokenAddress = '0x686b0122d2b93f62e8553d59adec2593d47570d2';
             const t721controllerAddress = '0x686b0122d2b93f62e8553d59adec2593d47570d3';
-            const eventAddress = '0x686b0122d2b93f62e8553d59adec2593d47570d4';
             const userAddress = '0x686b0122d2b93f62e8553d59adec2593d47570d5';
             const groupId = '0xabcdef1234abcdef1234abcdef1234abcdef1234abcdef1234abcdef1234abcd';
 
