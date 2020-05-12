@@ -158,7 +158,6 @@ describe('ActionSets Tasks', function() {
             verify(context.actionSetsServiceMock.update(anything(), anything())).once();
         });
 
-
         it('should not update', async function() {
             const dispatch = new Date(Date.now());
             const update = new Date(Date.now());
@@ -322,10 +321,10 @@ describe('ActionSets Tasks', function() {
                 response: null,
             });
 
-            await expect(context.actionSetsTasks.input(job)).rejects.toMatchObject(new Error(`Error while running onComplete actionset lifecycle: unexpected_error`));
-
+            await expect(context.actionSetsTasks.input(job)).rejects.toMatchObject(
+                new Error(`Error while running onComplete actionset lifecycle: unexpected_error`),
+            );
         });
-
     });
 
     describe('input', function() {
