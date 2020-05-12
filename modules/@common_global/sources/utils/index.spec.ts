@@ -1,4 +1,4 @@
-import { isFutureDateRange, leftPad, serialize, toB32, toHex, uuidEq } from './index';
+import { decimalToHex, isFutureDateRange, leftPad, serialize, toB32, toHex, uuidEq } from './index';
 
 describe('Utils', function () {
 
@@ -112,6 +112,34 @@ describe('Utils', function () {
 
             expect(toHex(input)).toEqual('0x74657374');
         })
+
+    });
+
+    describe('decimalToHex', function() {
+
+        it('should properly convert 15 to 0x0f', function () {
+
+            const input = '15';
+
+            expect(decimalToHex(input)).toEqual('0x0f');
+
+        });
+
+        it('should properly convert 16 to 0x10', function () {
+
+            const input = '16';
+
+            expect(decimalToHex(input)).toEqual('0x10');
+
+        });
+
+        it('should properly convert 256 to 0xff', function () {
+
+            const input = '255';
+
+            expect(decimalToHex(input)).toEqual('0xff');
+
+        });
 
     });
 
