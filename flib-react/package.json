@@ -49,7 +49,7 @@
     "react-datepicker": "^2.15.0",
     "react-dom": "16.13.1",
     "react-dropzone-uploader": "^2.11.0",
-    "react-router": "^5.1.2",
+    "react-router": "^5.2.0",
     "react-router-dom": "^5.1.2",
     "react-visibility-sensor": "^5.1.1",
     "slugify": "^1.4.0",
