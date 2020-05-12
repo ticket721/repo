@@ -35,8 +35,14 @@ export class T721TokenService extends ContractsControllerBase {
      * @param contractsService
      * @param web3Service
      * @param shutdownService
+     * @param rocksideService
+     * @param authorizationsService
+     * @param t721AdminService
+     * @param contractsOptions
+     * @param configService
+     * @param fsService
+     * @param bytesToolService
      */
-    /* istanbul ignore next */
     constructor(
         contractsService: ContractsService,
         web3Service: Web3Service,
@@ -84,9 +90,9 @@ export class T721TokenService extends ContractsControllerBase {
                 this.minter = mintersList[minterAddressIndex];
                 this.identity = identitiesList[minterAddressIndex];
             } catch (e) {
-                this.shutdownService.shutdownWithError(
-                    new Error(`Unable to resolve minter address required to create tokens: ${e.message}`),
-                );
+                const error = new Error(`Unable to resolve minter address required to create tokens: ${e.message}`);
+                this.shutdownService.shutdownWithError(error);
+                throw error;
             }
         }
         return [this.minter, this.identity];
