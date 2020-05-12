@@ -7,12 +7,20 @@ import {
     TransactionOpts,
 } from '@rocksideio/rockside-wallet-sdk/lib/api';
 import { ContractsControllerBase } from '@lib/common/contracts/ContractsController.base';
-import { createWallet, keccak256FromBuffer, toAcceptedAddressFormat, Wallet, decimalToHex } from '@common/global';
+import {
+    createWallet,
+    keccak256FromBuffer,
+    toAcceptedAddressFormat,
+    Wallet,
+    decimalToHex,
+    encode,
+} from '@common/global';
 import { FSService } from '@lib/common/fs/FS.service';
 import { Web3Service } from '@lib/common/web3/Web3.service';
 import { Web3Provider } from 'ethers/providers';
 import { utils } from 'ethers';
 import BN from 'bn.js';
+import { ContractArtifact } from '@lib/common/contracts/Contracts.service';
 
 /**
  * Mock Options for the Rockside api mock
@@ -27,6 +35,11 @@ export interface RocksideMockOpts {
      * This is the Contract Controller able to generate the mock smart wallets
      */
     identitiesMockController: ContractsControllerBase;
+
+    /**
+     * This is the Contract artifact used to predict addresses
+     */
+    identityMockArtifact: ContractArtifact;
 
     /**
      * Service to connect to the ethereum network
@@ -188,8 +201,21 @@ export class RocksideMock /* implements RocksideApi */ {
 
         const identitiesContract = await this.mockOpts.identitiesMockController.get();
 
+        const realHash = keccak256FromBuffer(Buffer.from(`${hash.slice(2)}${wallet.address.slice(2)}`, 'hex'));
+
+        const encoded =
+            'ff' +
+            encode(
+                ['address', 'bytes32', 'bytes32'],
+                [
+                    identitiesContract._address,
+                    realHash,
+                    keccak256FromBuffer(Buffer.from(this.mockOpts.identityMockArtifact.bytecode.slice(2), 'hex')),
+                ],
+            ).slice(26);
+
         const predictedAddress = toAcceptedAddressFormat(
-            await identitiesContract.methods.predict(wallet.address, hash).call(),
+            '0x' + keccak256FromBuffer(Buffer.from(encoded, 'hex')).slice(26),
         );
 
         this.mockOpts.fsService.writeFile(`/tmp/ROCKSIDE_MOCK_IDENTITY_${predictedAddress}`, wallet.address);

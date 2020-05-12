@@ -41,13 +41,13 @@ export class RocksideModule {
 
                 {
                     provide: 'ROCKSIDE_MOCK_OPTS',
-                    useFactory: (
+                    useFactory: async (
                         configService: ConfigService,
                         web3Service: Web3Service,
                         fsService: FSService,
                         shutdownService: ShutdownService,
                         contractsService: ContractsService,
-                    ): RocksideModuleMockBuildOptions => {
+                    ): Promise<RocksideModuleMockBuildOptions> => {
                         if (configService.get('NODE_ENV') === 'development') {
                             const identitiesMockController = new ContractsControllerBase(
                                 contractsService,
@@ -57,11 +57,16 @@ export class RocksideModule {
                                 'IdentitiesMock',
                             );
 
+                            const identityMockArtifact = (await contractsService.getContractArtifacts())[
+                                'dev::IdentityMock'
+                            ];
+
                             return {
                                 orchestratorPrivateKey: configService.get(
                                     'ROCKSIDE_MOCK_OPTS_ORCHESTRATOR_PRIVATE_KEY',
                                 ),
                                 identitiesMockController,
+                                identityMockArtifact,
                                 web3Service,
                                 fsService,
                             };
