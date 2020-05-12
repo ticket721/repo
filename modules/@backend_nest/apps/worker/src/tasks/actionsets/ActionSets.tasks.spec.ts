@@ -105,6 +105,60 @@ describe('ActionSets Tasks', function() {
             verify(context.actionSetsServiceMock.onComplete(anything())).called();
         });
 
+        it('should dispatch inputs and set status to error', async function() {
+            const dispatch = new Date(Date.now());
+            const update = new Date(Date.now());
+            const create = new Date(Date.now());
+
+            const actionSet: ActionSetEntity = {
+                id: 'ccf2ef65-3632-4277-a061-dddfefac48da',
+                name: 'test',
+                current_status: 'input:in progress',
+                links: [],
+                actions: [
+                    {
+                        error: null,
+                        type: 'input',
+                        name: 'first',
+                        data: '{"name":"hello"}',
+                        status: 'in progress',
+                        private: false,
+                    },
+                    {
+                        error: null,
+                        type: 'input',
+                        name: 'second',
+                        data: '{"name":"hello"}',
+                        status: 'in progress',
+                        private: false,
+                    },
+                ],
+                current_action: 0,
+                dispatched_at: dispatch,
+                updated_at: update,
+                created_at: create,
+            };
+
+            const handler = async (
+                entity: ActionSet,
+                progress: (p: number) => Promise<void>,
+            ): Promise<[ActionSet, boolean]> => {
+                entity.setStatus('error');
+                entity.action.setError({});
+                return [entity, true];
+            };
+
+            const job: Job = new JobMock(actionSet) as Job;
+
+            when(context.actionSetsServiceMock.getInputHandler('first')).thenReturn(handler);
+
+            await context.actionSetsTasks.input(job);
+
+            verify(context.actionSetsServiceMock.getInputHandler('first')).twice();
+            verify(context.actionSetsServiceMock.update(anything(), anything())).once();
+        });
+
+
         it('should not update', async function() {
             const dispatch = new Date(Date.now());
             const update = new Date(Date.now());
@@ -216,6 +270,62 @@ describe('ActionSets Tasks', function() {
 
             verify(context.actionSetsServiceMock.getInputHandler('first')).called();
         });
+
+        it('should fail on complete lifecycle callback', async function() {
+            const dispatch = new Date(Date.now());
+            const update = new Date(Date.now());
+            const create = new Date(Date.now());
+
+            const actionSet: ActionSetEntity = {
+                id: 'ccf2ef65-3632-4277-a061-dddfefac48da',
+                name: 'test',
+                current_status: 'input:in progress',
+                links: [],
+                actions: [
+                    {
+                        error: null,
+                        type: 'input',
+                        name: 'first',
+                        data: '{"name":"hello"}',
+                        status: 'in progress',
+                        private: false,
+                    },
+                    {
+                        error: null,
+                        type: 'input',
+                        name: 'second',
+                        data: '{"name":"hello"}',
+                        status: 'in progress',
+                        private: false,
+                    },
+                ],
+                current_action: 0,
+                dispatched_at: dispatch,
+                updated_at: update,
+                created_at: create,
+            };
+
+            const handler = async (
+                entity: ActionSet,
+                progress: (p: number) => Promise<void>,
+            ): Promise<[ActionSet, boolean]> => {
+                entity.next();
+                return [entity, true];
+            };
+
+            const job: Job = new JobMock(actionSet) as Job;
+
+            when(context.actionSetsServiceMock.getInputHandler('first')).thenReturn(handler);
+            when(context.actionSetsServiceMock.getInputHandler('second')).thenReturn(handler);
+            when(context.actionSetsServiceMock.onComplete(anything())).thenResolve({
+                error: 'unexpected_error',
+                response: null,
+            });
+
+            await expect(context.actionSetsTasks.input(job)).rejects.toMatchObject(new Error(`Error while running onComplete actionset lifecycle: unexpected_error`));
+
+        });
+
     });
 
     describe('input', function() {
