@@ -188,14 +188,6 @@ export class AuthorizationEntity {
     }
 
     /**
-     * Static utility to recover selectors
-     * @param ae
-     */
-    static getSelector(ae: AuthorizationEntity): string[] {
-        return ae.selectors.split('_').filter((value: string, index: number) => index % 2 !== 0);
-    }
-
-    /**
      * Static utility to recover codes
      * @param ae
      */
