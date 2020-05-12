@@ -811,7 +811,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
         });
 
         describe('changePassword (POST local/password/update)', function() {
-            test.concurrent('should change password', async function() {
+            test('should change password', async function() {
                 const {
                     sdk,
                     token,
@@ -859,7 +859,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 } as LocalLoginResponseDto);
             });
 
-            test.concurrent('should fail unauthorizes (POST local/password/update)', async function() {
+            test('should fail unauthorizes (POST local/password/update)', async function() {
                 const sdk = await getSDK(getCtx);
 
                 const user = {
@@ -870,7 +870,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 await failWithCode(sdk.updatePassword('badToken', user.password), StatusCodes.Unauthorized);
             });
 
-            test.concurrent('should fail bad email', async function() {
+            test('should fail bad email', async function() {
                 const sdk = await getSDK(getCtx);
 
                 const user = {
@@ -893,7 +893,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
         });
 
         describe('resetPassword (POST /validate/password/reset', function() {
-            test.concurrent('should fail not existing user', async function() {
+            test('should fail not existing user', async function() {
                 const sdk = await getSDK(getCtx);
 
                 const pass = generatePassword();
@@ -901,7 +901,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 await failWithCode(sdk.validateResetPassword('badToken', pass), StatusCodes.Unauthorized);
             });
 
-            test.concurrent('should fail weak password', async function() {
+            test('should fail weak password', async function() {
                 const sdk = await getSDK(getCtx);
 
                 const pass = '';
@@ -914,7 +914,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 expect(res.report_status).toBe('weak');
             });
 
-            test.concurrent('should reset password', async function() {
+            test('should reset password', async function() {
                 const {
                     sdk,
                     token,

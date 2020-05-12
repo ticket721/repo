@@ -42,6 +42,7 @@ export interface RocksideMockOpts {
 /**
  * Rockside SDK Mock
  */
+/* istanbul ignore next */
 export class RocksideMock /* implements RocksideApi */ {
     /**
      * Dependency Injection

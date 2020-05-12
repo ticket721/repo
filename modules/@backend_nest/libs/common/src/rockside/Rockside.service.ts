@@ -49,6 +49,7 @@ export class RocksideService {
                 },
             };
         } catch (e) {
+            console.error(e);
             return {
                 error: e.message,
                 response: null,
@@ -90,6 +91,7 @@ export class RocksideService {
                 response: identityCreationResponse,
             };
         } catch (e) {
+            console.error(e);
             return {
                 error: e.message,
                 response: null,
@@ -110,6 +112,7 @@ export class RocksideService {
                 response: transactionCreationResponse.transaction_hash,
             };
         } catch (e) {
+            console.error(e);
             return {
                 error: e.message,
                 response: null,
