@@ -69,7 +69,7 @@ export class TxSeqEventHandlers implements OnModuleInit {
     /**
      * Data Fields for the TxSeq Progress step
      */
-    txHandlerFields = ['transaction', 'caller'];
+    txHandlerFields = ['transaction'];
 
     /**
      * Internal utility to broadcast the transaction using the tx service

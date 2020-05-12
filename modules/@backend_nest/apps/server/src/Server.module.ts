@@ -57,6 +57,8 @@ import { AuthorizationsModule } from '@lib/common/authorizations/Authorizations.
 import { CheckoutModule } from '@lib/common/checkout/Checkout.module';
 import { CartModule } from '@lib/common/cart/Cart.module';
 import { RocksideModule } from '@lib/common/rockside/Rockside.module';
+import { TicketsController } from '@app/server/controllers/tickets/Tickets.controller';
+import { TicketsModule } from '@lib/common/tickets/Tickets.module';
 
 @Module({
     imports: [
@@ -93,6 +95,7 @@ import { RocksideModule } from '@lib/common/rockside/Rockside.module';
         MetadatasModule,
         AuthorizationsModule,
         CurrenciesModule,
+        TicketsModule,
 
         CheckoutModule,
         CartModule,
@@ -171,6 +174,7 @@ import { RocksideModule } from '@lib/common/rockside/Rockside.module';
         CategoriesController,
         RightsController,
         MetadatasController,
+        TicketsController,
     ],
     providers: [
         ServerService,

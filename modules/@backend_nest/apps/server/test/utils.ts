@@ -19,6 +19,8 @@ import { ActionSet } from '@lib/common/actionsets/helper/ActionSet.class';
 import { anything, instance, mock, when } from 'ts-mockito';
 import { Stripe } from 'stripe';
 import Crypto from 'crypto';
+import { TicketEntity } from '@lib/common/tickets/entities/Ticket.entity';
+import { TicketsSearchResponseDto } from '@app/server/controllers/tickets/dto/TicketsSearchResponse.dto';
 
 let docker_compose_up_proc = null;
 
@@ -471,6 +473,26 @@ export const getSDKAndUser = async (
         user,
         password,
     };
+};
+
+export const waitForTickets = async (
+    sdk: T721SDK,
+    token: string,
+    address: string,
+    checker: (tickets: TicketEntity[]) => boolean,
+): Promise<TicketEntity[]> => {
+    let tickets: AxiosResponse<TicketsSearchResponseDto>;
+
+    do {
+        tickets = await sdk.tickets.search(token, {
+            owner: {
+                $eq: address,
+            },
+        });
+        await pause(10);
+    } while (!checker(tickets.data.tickets));
+
+    return tickets.data.tickets;
 };
 
 export const waitForActionSet = async (

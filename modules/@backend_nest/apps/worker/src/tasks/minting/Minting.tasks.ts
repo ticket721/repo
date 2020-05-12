@@ -501,24 +501,6 @@ export class MintingTasks implements OnModuleInit {
                 throw new Error(`Error while setting transaction hash on ticket`);
             }
         }
-
-        for (const authorization of job.data.authorizations) {
-            const authorizationConsumingRes = await this.authorizationsService.update(
-                {
-                    id: authorization[0],
-                    granter: authorization[1],
-                    grantee: authorization[2],
-                    mode: 'mint',
-                },
-                {
-                    consumed: true,
-                },
-            );
-
-            if (authorizationConsumingRes.error) {
-                throw new Error(`Error while setting authorizations to consumed`);
-            }
-        }
     }
 
     /**

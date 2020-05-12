@@ -6,9 +6,12 @@ import { EVMAntennaMergerScheduler } from '@app/worker/evmantenna/EVMAntennaMerg
 import { EventsModule } from '@lib/common/events/Events.module';
 import { DatesModule } from '@lib/common/dates/Dates.module';
 import { EVMBlockRollbacksModule } from '@lib/common/evmblockrollbacks/EVMBlockRollbacks.module';
-import { MintTicketForgeEVMAntenna } from '@app/worker/evmantenna/events/ticketforge/Mint.evmantenna';
-import { ApprovalT721TokenEVMAntenna } from '@app/worker/evmantenna/events/t721token/Approval.evmantenna';
-import { MintT721TokenEVMAntenna } from '@app/worker/evmantenna/events/t721token/Mint.evmantenna';
+import { MintT721ControllerEVMAntenna } from '@app/worker/evmantenna/events/t721controller/Mint.evmantenna';
+import { TicketsModule } from '@lib/common/tickets/Tickets.module';
+import { CategoriesModule } from '@lib/common/categories/Categories.module';
+import { AuthorizationsModule } from '@lib/common/authorizations/Authorizations.module';
+import { GroupModule } from '@lib/common/group/Group.module';
+import { WinstonLoggerModule } from '@lib/common/logger/WinstonLogger.module';
 
 @Module({
     imports: [
@@ -16,6 +19,11 @@ import { MintT721TokenEVMAntenna } from '@app/worker/evmantenna/events/t721token
         EVMBlockRollbacksModule,
         EventsModule,
         DatesModule,
+        TicketsModule,
+        CategoriesModule,
+        AuthorizationsModule,
+        GroupModule,
+        WinstonLoggerModule,
         BullModule.registerQueueAsync({
             inject: [ConfigService],
             name: 'evmantenna',
@@ -29,12 +37,8 @@ import { MintT721TokenEVMAntenna } from '@app/worker/evmantenna/events/t721token
         }),
     ],
     providers: [
-        // T721Token
-        ApprovalT721TokenEVMAntenna,
-        MintT721TokenEVMAntenna,
-
-        // TicketForge
-        MintTicketForgeEVMAntenna,
+        // T721Controller
+        MintT721ControllerEVMAntenna,
 
         EVMAntennaMergerScheduler,
     ],

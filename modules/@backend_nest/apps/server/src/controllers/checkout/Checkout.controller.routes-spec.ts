@@ -9,13 +9,16 @@ import {
     getMocks,
     getSDKAndUser,
     getUser,
+    pause,
     setPaymentIntent,
     waitForActionSet,
+    waitForTickets,
 } from '../../../test/utils';
 import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
 import { Stripe } from 'stripe';
 import { deepEqual, when } from 'ts-mockito';
 import { StatusCodes } from '@lib/common/utils/codes.value';
+import { TicketEntity } from '@lib/common/tickets/entities/Ticket.entity';
 
 export default function(getCtx: () => { ready: Promise<void> }) {
     return function() {
@@ -769,6 +772,10 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 await waitForActionSet(sdk, token, checkoutActionSetId, (as: ActionSetEntity): boolean => {
                     return as.current_status === 'complete';
                 });
+
+                await waitForTickets(sdk, token, user.address, (tickets: TicketEntity[]): boolean => {
+                    return tickets.length === 3;
+                });
             });
 
             test('should create, fill and commit cart, then resolve with uncaptured payment intent', async function() {
@@ -870,6 +877,10 @@ export default function(getCtx: () => { ready: Promise<void> }) {
 
                 await waitForActionSet(sdk, token, checkoutActionSetId, (as: ActionSetEntity): boolean => {
                     return as.current_status === 'complete';
+                });
+
+                await waitForTickets(sdk, token, user.address, (tickets: TicketEntity[]): boolean => {
+                    return tickets.length === 3;
                 });
             });
 
