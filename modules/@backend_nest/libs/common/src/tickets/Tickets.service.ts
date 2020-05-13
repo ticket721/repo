@@ -59,12 +59,12 @@ export class TicketsService extends CRUDExtension<TicketsRepository, TicketEntit
             ticketEntity,
             ticketsRepository,
             /* istanbul ignore next */
-            (e: TicketEntity) => {
-                return new ticketEntity(e);
+            (te: TicketEntity) => {
+                return new ticketEntity(te);
             },
             /* istanbul ignore next */
-            (sr: TicketEntity) => {
-                return new TicketEntity(sr);
+            (te: TicketEntity) => {
+                return new TicketEntity(te);
             },
         );
     }
@@ -131,7 +131,7 @@ export class TicketsService extends CRUDExtension<TicketsRepository, TicketEntit
             }
 
             const ticketEntityCreationRes = await this.create({
-                id: ticketIDRes.response,
+                id: ticketIDRes.response.toString(),
                 authorization: input.authorizationId,
                 owner: input.buyer,
                 env: 'chain',
