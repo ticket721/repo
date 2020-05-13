@@ -1152,10 +1152,10 @@
     "@egjs/component" "^2.1.2"
     "@egjs/hammerjs" "^2.0.15"
 
-"@egjs/children-differ@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@egjs/children-differ/-/children-differ-1.0.0.tgz#7f74d2aa47e9ae342cdc8e1e50c440391de1ec53"
-  integrity sha512-NxaJx+dzLUVqLb6iPcu7Mt5m2HDH55VqqZUxGKZ74DKAsL1jxbXSv0jeql0ShN6ZuocULLgr+fztz2bsaBBLkQ==
+"@egjs/children-differ@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@egjs/children-differ/-/children-differ-1.0.1.tgz#5465fa80671d5ca3564ebe912f48b05b3e8a14fd"
+  integrity sha512-DRvyqMf+CPCOzAopQKHtW+X8iN6Hy6SFol+/7zCUiE5y4P/OB8JP8FtU4NxtZwtafvSL4faD5KoQYPj3JHzPFQ==
   dependencies:
     "@egjs/list-differ" "^1.0.0"
 
@@ -1185,22 +1185,14 @@
   resolved "https://registry.yarnpkg.com/@egjs/list-differ/-/list-differ-1.0.0.tgz#2277aff52e3e4bd9318d5c30ffc3ba3b6216f05e"
   integrity sha512-HsbMKc0ZAQH+EUeCmI/2PvTYSybmkaWwakU8QGDYYgMVIg9BQ5sM0A0Nnombjxo2+JzXHxmH+jw//yGX+y6GYw==
 
-"@egjs/react-children-differ@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@egjs/react-children-differ/-/react-children-differ-1.0.0.tgz#646e90d15c51fce42b8746d1b1cae7bdab433536"
-  integrity sha512-ZWD0DQYvHs429Igo3eRsOK1Db5P+ldPwVWU2VHEAEZC7yVa1dCfp+NtxEOgmQGF/S2KQjsrJbVwBddG1PDbKhg==
+"@egjs/react-flicking@^3.2.2":
+  version "3.2.2"
+  resolved "https://registry.yarnpkg.com/@egjs/react-flicking/-/react-flicking-3.2.2.tgz#fe4c32d8676fc888604c4aa19a05c65b335b38a4"
+  integrity sha512-jyz1teDs+CBdSZQgnlaXB2JHaNO6NzdQZlEHBNHEj3YG3+8KZD/rzHZjOearh4iLk5NKGy+TDxYPFxvIdChKOA==
   dependencies:
-    "@egjs/children-differ" "^1.0.0"
-
-"@egjs/react-flicking@^3.2.1":
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/@egjs/react-flicking/-/react-flicking-3.2.1.tgz#56c6ed364940455b214e2a093ba7254279296750"
-  integrity sha512-IJQ6hC15ASO8JNByAQfZFa+fdGvcxkbb2E8UBQG2zsEcoP3hS0a4zmz+5JPwxK10SbTBrCygXmBAmW6eDoFwEg==
-  dependencies:
-    "@egjs/children-differ" "^1.0.0"
+    "@egjs/children-differ" "^1.0.1"
     "@egjs/flicking" "^3.4.7"
     "@egjs/list-differ" "^1.0.0"
-    "@egjs/react-children-differ" "^1.0.0"
 
 "@egoist/vue-to-react@^1.1.0":
   version "1.1.0"
