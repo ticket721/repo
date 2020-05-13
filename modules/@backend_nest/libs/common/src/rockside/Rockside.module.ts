@@ -83,7 +83,10 @@ export class RocksideModule {
                         configService: ConfigService,
                         rocksideOpts: RocksideModuleBuildOptions,
                         rocksideMockOpts: RocksideModuleMockBuildOptions,
-                    ): RocksideApi => {
+                    ): Omit<
+                        RocksideApi,
+                        'headers' | 'generateHeaders' | 'authenticationChecks' | 'extractError' | 'send'
+                    > => {
                         if (configService.get('NODE_ENV') === 'development') {
                             return new RocksideMock(rocksideOpts, rocksideMockOpts);
                         } else {

@@ -57,7 +57,8 @@ export interface RocksideMockOpts {
  * Rockside SDK Mock
  */
 /* istanbul ignore next */
-export class RocksideMock implements RocksideApi {
+export class RocksideMock
+    implements Omit<RocksideApi, 'headers' | 'generateHeaders' | 'authenticationChecks' | 'extractError' | 'send'> {
     /**
      * Dependency Injection
      * @param opts

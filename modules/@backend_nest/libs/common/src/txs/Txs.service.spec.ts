@@ -9,7 +9,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from '@iaminfinity/express-cassandra/dist/utils/cassandra-orm.utils';
 import { TxEntity } from '@lib/common/txs/entities/Tx.entity';
 import { GlobalEntity } from '@lib/common/globalconfig/entities/Global.entity';
-import { UserDto } from '@lib/common/users/dto/User.dto';
 import { RocksideService } from '@lib/common/rockside/Rockside.service';
 
 class TxEntityMock {
