@@ -192,10 +192,10 @@ export class TxsService extends CRUDExtension<TxsRepository, TxEntity> {
     async estimateGasLimit(from: string, to: string, data: string): Promise<ServiceResponse<string>> {
         const web3 = await this.web3Service.get();
 
-        const nonce = await web3.eth.getTransactionCount(from);
-
         try {
-            const gasLimitEstimation = await (await this.web3Service.get()).eth.estimateGas({
+            const nonce = await web3.eth.getTransactionCount(from);
+
+            const gasLimitEstimation = await web3.eth.estimateGas({
                 from,
                 nonce,
                 to,

@@ -461,4 +461,309 @@ describe('Txs Service', function() {
             ).called();
         });
     });
+
+    describe('estimateGasLimit', function() {
+        it('should should properly run a gas limit estimation', async function() {
+            // DECLARE
+            const nonce = '0';
+            const estimation = '1234';
+            const web3 = {
+                eth: {
+                    getTransactionCount: async () => nonce,
+                    estimateGas: async () => estimation,
+                },
+            };
+            const from = '0x03B9dd9247B45CCec8B8cE5b2fEC768D9D32936c';
+            const to = '0x0EB246b377E6E267EBC36b2cE5730b5cc3414c8a';
+            const data = '0x';
+
+            // MOCK
+            when(context.web3ServiceMock.get()).thenResolve(web3);
+
+            // TRIGGER
+            const res = await context.txsService.estimateGasLimit(from, to, data);
+
+            // CHECK RETURNs
+            expect(res.error).toEqual(null);
+            expect(res.response).toEqual('1234');
+
+            // CHECK CALLS
+            verify(context.web3ServiceMock.get()).once();
+        });
+
+        it('should should properly report failure', async function() {
+            // DECLARE
+            const estimation = '1234';
+            const web3 = {
+                eth: {
+                    getTransactionCount: async () => {
+                        throw new Error('an error occured');
+                    },
+                    estimateGas: async () => estimation,
+                },
+            };
+            const from = '0x03B9dd9247B45CCec8B8cE5b2fEC768D9D32936c';
+            const to = '0x0EB246b377E6E267EBC36b2cE5730b5cc3414c8a';
+            const data = '0x';
+
+            // MOCK
+            when(context.web3ServiceMock.get()).thenResolve(web3);
+
+            // TRIGGER
+            const res = await context.txsService.estimateGasLimit(from, to, data);
+
+            // CHECK RETURNs
+            expect(res.error).toEqual('an error occured');
+            expect(res.response).toEqual(null);
+
+            // CHECK CALLS
+            verify(context.web3ServiceMock.get()).once();
+        });
+    });
+
+    describe('sendRawTransaction', function() {
+        it('should properly relay raw transaction', async function() {
+            // DECLARE
+            const from = '0x03B9dd9247B45CCec8B8cE5b2fEC768D9D32936c';
+            const to = '0x0EB246b377E6E267EBC36b2cE5730b5cc3414c8a';
+            const data = '0x';
+            const value = '0';
+            const gasLimit = '1000000';
+            const gasPrice = '1234';
+            const transactionHash = '0x39647e8d441a5140e4c6776b59565c3aaab1087702b3256985d8c0200ca68021';
+            const spiedService = spy(context.txsService);
+
+            // MOCK
+            when(spiedService.estimateGasLimit(from, to, data)).thenResolve({
+                error: null,
+                response: gasLimit,
+            });
+            when(spiedService.estimateGasPrice(gasLimit)).thenResolve({
+                error: null,
+                response: gasPrice,
+            });
+            when(
+                context.rocksideService.sendTransaction(
+                    deepEqual({
+                        from,
+                        to,
+                        data,
+                        value,
+                        gasPrice,
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: transactionHash,
+            });
+            when(spiedService.subscribe(transactionHash)).thenResolve({
+                error: null,
+                response: {
+                    transaction_hash: transactionHash,
+                } as TxEntity,
+            });
+
+            // TRIGGER
+            const res = await context.txsService.sendRawTransaction(from, to, value, data);
+
+            // CHECK RETURNS
+            expect(res.error).toEqual(null);
+            expect(res.response).toEqual({
+                transaction_hash: transactionHash,
+            });
+
+            // CHECK CALLS
+            verify(spiedService.estimateGasLimit(from, to, data)).once();
+            verify(spiedService.estimateGasPrice(gasLimit)).once();
+            verify(
+                context.rocksideService.sendTransaction(
+                    deepEqual({
+                        from,
+                        to,
+                        data,
+                        value,
+                        gasPrice,
+                    }),
+                ),
+            ).once();
+            verify(spiedService.subscribe(transactionHash)).once();
+        });
+
+        it('should fail on limit estimation error', async function() {
+            // DECLARE
+            const from = '0x03B9dd9247B45CCec8B8cE5b2fEC768D9D32936c';
+            const to = '0x0EB246b377E6E267EBC36b2cE5730b5cc3414c8a';
+            const data = '0x';
+            const value = '0';
+            const spiedService = spy(context.txsService);
+
+            // MOCK
+            when(spiedService.estimateGasLimit(from, to, data)).thenResolve({
+                error: 'unexpected_error',
+                response: null,
+            });
+
+            // TRIGGER
+            const res = await context.txsService.sendRawTransaction(from, to, value, data);
+
+            // CHECK RETURNS
+            expect(res.error).toEqual('unexpected_error');
+            expect(res.response).toEqual(null);
+
+            // CHECK CALLS
+            verify(spiedService.estimateGasLimit(from, to, data)).once();
+        });
+
+        it('should fail on price estimation error', async function() {
+            // DECLARE
+            const from = '0x03B9dd9247B45CCec8B8cE5b2fEC768D9D32936c';
+            const to = '0x0EB246b377E6E267EBC36b2cE5730b5cc3414c8a';
+            const data = '0x';
+            const value = '0';
+            const gasLimit = '1000000';
+            const spiedService = spy(context.txsService);
+
+            // MOCK
+            when(spiedService.estimateGasLimit(from, to, data)).thenResolve({
+                error: null,
+                response: gasLimit,
+            });
+            when(spiedService.estimateGasPrice(gasLimit)).thenResolve({
+                error: 'unexpected_error',
+                response: null,
+            });
+
+            // TRIGGER
+            const res = await context.txsService.sendRawTransaction(from, to, value, data);
+
+            // CHECK RETURNS
+            expect(res.error).toEqual('unexpected_error');
+            expect(res.response).toEqual(null);
+
+            // CHECK CALLS
+            verify(spiedService.estimateGasLimit(from, to, data)).once();
+            verify(spiedService.estimateGasPrice(gasLimit)).once();
+        });
+
+        it('should fail on tx error', async function() {
+            // DECLARE
+            const from = '0x03B9dd9247B45CCec8B8cE5b2fEC768D9D32936c';
+            const to = '0x0EB246b377E6E267EBC36b2cE5730b5cc3414c8a';
+            const data = '0x';
+            const value = '0';
+            const gasLimit = '1000000';
+            const gasPrice = '1234';
+            const transactionHash = '0x39647e8d441a5140e4c6776b59565c3aaab1087702b3256985d8c0200ca68021';
+            const spiedService = spy(context.txsService);
+
+            // MOCK
+            when(spiedService.estimateGasLimit(from, to, data)).thenResolve({
+                error: null,
+                response: gasLimit,
+            });
+            when(spiedService.estimateGasPrice(gasLimit)).thenResolve({
+                error: null,
+                response: gasPrice,
+            });
+            when(
+                context.rocksideService.sendTransaction(
+                    deepEqual({
+                        from,
+                        to,
+                        data,
+                        value,
+                        gasPrice,
+                    }),
+                ),
+            ).thenResolve({
+                error: 'unexpected_error',
+                response: null,
+            });
+
+            // TRIGGER
+            const res = await context.txsService.sendRawTransaction(from, to, value, data);
+
+            // CHECK RETURNS
+            expect(res.error).toEqual('unexpected_error');
+            expect(res.response).toEqual(null);
+
+            // CHECK CALLS
+            verify(spiedService.estimateGasLimit(from, to, data)).once();
+            verify(spiedService.estimateGasPrice(gasLimit)).once();
+            verify(
+                context.rocksideService.sendTransaction(
+                    deepEqual({
+                        from,
+                        to,
+                        data,
+                        value,
+                        gasPrice,
+                    }),
+                ),
+            ).once();
+        });
+
+        it('should fail on subscription error', async function() {
+            // DECLARE
+            const from = '0x03B9dd9247B45CCec8B8cE5b2fEC768D9D32936c';
+            const to = '0x0EB246b377E6E267EBC36b2cE5730b5cc3414c8a';
+            const data = '0x';
+            const value = '0';
+            const gasLimit = '1000000';
+            const gasPrice = '1234';
+            const transactionHash = '0x39647e8d441a5140e4c6776b59565c3aaab1087702b3256985d8c0200ca68021';
+            const spiedService = spy(context.txsService);
+
+            // MOCK
+            when(spiedService.estimateGasLimit(from, to, data)).thenResolve({
+                error: null,
+                response: gasLimit,
+            });
+            when(spiedService.estimateGasPrice(gasLimit)).thenResolve({
+                error: null,
+                response: gasPrice,
+            });
+            when(
+                context.rocksideService.sendTransaction(
+                    deepEqual({
+                        from,
+                        to,
+                        data,
+                        value,
+                        gasPrice,
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: transactionHash,
+            });
+            when(spiedService.subscribe(transactionHash)).thenResolve({
+                error: 'unexpected_error',
+                response: null,
+            });
+
+            // TRIGGER
+            const res = await context.txsService.sendRawTransaction(from, to, value, data);
+
+            // CHECK RETURNS
+            expect(res.error).toEqual('unexpected_error');
+            expect(res.response).toEqual(null);
+
+            // CHECK CALLS
+            verify(spiedService.estimateGasLimit(from, to, data)).once();
+            verify(spiedService.estimateGasPrice(gasLimit)).once();
+            verify(
+                context.rocksideService.sendTransaction(
+                    deepEqual({
+                        from,
+                        to,
+                        data,
+                        value,
+                        gasPrice,
+                    }),
+                ),
+            ).once();
+            verify(spiedService.subscribe(transactionHash)).once();
+        });
+    });
 });
