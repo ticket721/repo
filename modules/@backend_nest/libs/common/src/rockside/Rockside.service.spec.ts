@@ -2,20 +2,19 @@ import { RocksideService } from '@lib/common/rockside/Rockside.service';
 import { RocksideApi } from '@rocksideio/rockside-wallet-sdk/lib/api';
 import { deepEqual, instance, mock, verify, when } from 'ts-mockito';
 import { Test } from '@nestjs/testing';
-import { RocksideMock } from '@lib/common/rockside/Rockside.mock';
 import { keccak256FromBuffer } from '@common/global';
 
 describe('Rockside Service', function() {
     const context: {
         rocksideService: RocksideService;
-        rocksideApiMock: RocksideMock;
+        rocksideApiMock: RocksideApi;
     } = {
         rocksideService: null,
         rocksideApiMock: null,
     };
 
     beforeEach(async function() {
-        context.rocksideApiMock = mock(RocksideMock);
+        context.rocksideApiMock = mock(RocksideApi);
 
         const app = await Test.createTestingModule({
             providers: [
@@ -224,8 +223,6 @@ describe('Rockside Service', function() {
             const from_address = '0x7485ac6d8534691993348D51ab0F131a19FfF763';
             const data = '0xabcd';
             const value = '0';
-            const transactionHash = '0x3fd04876718d6e5b376f63b13eaf239171f3de844508115ae3e91505658cfde7';
-            const trackingId = 'trALKSJHLKJFHSLKDJHFLKSF';
 
             // MOCK
             when(

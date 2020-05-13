@@ -375,12 +375,13 @@ export class CurrenciesService {
      */
     public async resolveInputPrices(inputPrices: InputPrice[]): Promise<ServiceResponse<Price[]>> {
         let ret: Price[] = [];
+        const met = {};
 
         try {
             for (const inputPrice of inputPrices) {
                 ret = [
                     ...ret,
-                    ...(await this.internalRecursiveResolver(inputPrice.currency, {})).map(
+                    ...(await this.internalRecursiveResolver(inputPrice.currency, met)).map(
                         (curr: string): Price => ({
                             currency: curr,
                             value: inputPrice.price,

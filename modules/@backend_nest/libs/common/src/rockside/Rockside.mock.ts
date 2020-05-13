@@ -5,6 +5,7 @@ import {
     RocksideApiOpts,
     EncryptedWallet,
     TransactionOpts,
+    RocksideApi,
 } from '@rocksideio/rockside-wallet-sdk/lib/api';
 import { ContractsControllerBase } from '@lib/common/contracts/ContractsController.base';
 import {
@@ -56,7 +57,7 @@ export interface RocksideMockOpts {
  * Rockside SDK Mock
  */
 /* istanbul ignore next */
-export class RocksideMock /* implements RocksideApi */ {
+export class RocksideMock implements RocksideApi {
     /**
      * Dependency Injection
      * @param opts

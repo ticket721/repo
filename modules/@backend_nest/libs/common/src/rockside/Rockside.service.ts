@@ -41,7 +41,7 @@ export class RocksideService {
      */
     async createEOA(): Promise<ServiceResponse<RocksideCreateEOAResponse>> {
         try {
-            const addressCreationResponse = await (this.rockside as any).createEOA();
+            const addressCreationResponse = await this.rockside.createEOA();
             return {
                 error: null,
                 response: {
@@ -64,8 +64,7 @@ export class RocksideService {
     getSigner(eoa: string): ExternalSigner {
         return async (encodedPayload: string): Promise<EIP712Signature> => {
             const hashedPayload = keccak256FromBuffer(Buffer.from(encodedPayload.slice(2), 'hex'));
-            const rocksideSignature = (await (this.rockside as any).signMessageWithEOA(eoa, hashedPayload))
-                .signed_message;
+            const rocksideSignature = (await this.rockside.signMessageWithEOA(eoa, hashedPayload)).signed_message;
 
             const v = parseInt(rocksideSignature.slice(130), 16);
             const r = `0x${rocksideSignature.slice(2, 2 + 64)}`;
@@ -85,7 +84,7 @@ export class RocksideService {
      */
     async createIdentity(): Promise<ServiceResponse<RocksideCreateIdentityResponse>> {
         try {
-            const identityCreationResponse = await (this.rockside as any).createIdentity();
+            const identityCreationResponse = await this.rockside.createIdentity();
             return {
                 error: null,
                 response: identityCreationResponse,
@@ -106,7 +105,7 @@ export class RocksideService {
      */
     async sendTransaction(tx: Omit<TransactionOpts, 'nonce' | 'gas'>): Promise<ServiceResponse<string>> {
         try {
-            const transactionCreationResponse = await (this.rockside as any).sendTransaction(tx);
+            const transactionCreationResponse = await this.rockside.sendTransaction(tx);
             return {
                 error: null,
                 response: transactionCreationResponse.transaction_hash,

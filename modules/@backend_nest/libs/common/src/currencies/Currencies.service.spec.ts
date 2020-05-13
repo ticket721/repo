@@ -1,6 +1,6 @@
-import { CurrenciesService } from '@lib/common/currencies/Currencies.service';
+import { CurrenciesService, ERC20Currency } from '@lib/common/currencies/Currencies.service';
 import { Contracts, ContractsService } from '@lib/common/contracts/Contracts.service';
-import { instance, mock, spy, when } from 'ts-mockito';
+import { instance, mock, spy, verify, when } from 'ts-mockito';
 import { Web3Service } from '@lib/common/web3/Web3.service';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 import { FSService } from '@lib/common/fs/FS.service';
@@ -354,6 +354,70 @@ describe('Currencies Service', function() {
             ]);
         });
 
+        it('should properly resolve currencies and ignore duplicates', async function() {
+            const Contract = class {
+                constructor(abi: any, address: string) {}
+            };
+
+            const web3 = {
+                eth: {
+                    Contract,
+                },
+            };
+
+            const address: string = '0x87c02dec6b33498b489e1698801fc2ef79d02eef';
+            const networkId: number = 2702;
+
+            const contractArtifact = {
+                [`t721token::IERC20`]: {
+                    abi: ERC20_ABI,
+                    networks: {
+                        [networkId]: {
+                            address: daiAddress,
+                        },
+                    },
+                },
+                [`t721token::T721Token`]: {
+                    abi: ERC20_ABI,
+                    networks: {
+                        [networkId]: {
+                            address,
+                        },
+                    },
+                },
+            };
+
+            when(context.web3ServiceMock.get()).thenResolve(web3);
+            when(context.web3ServiceMock.net()).thenResolve(networkId);
+            when(context.contractsServiceMock.getContractArtifacts()).thenResolve(
+                (contractArtifact as any) as Contracts,
+            );
+
+            const prices = await context.currenciesService.resolveInputPrices([
+                {
+                    currency: 'Fiat',
+                    price: '100',
+                },
+                {
+                    currency: 'Fiat',
+                    price: '100',
+                },
+                {
+                    currency: 'T721Token',
+                    price: '100',
+                },
+            ]);
+
+            expect(prices.error).toEqual(null);
+            expect(prices.response).toEqual([
+                {
+                    currency: 'T721Token',
+                    value: '100',
+                    log_value: 6.643856189774724,
+                },
+            ]);
+        });
+
         it('should fail on invalid currency', async function() {
             const Contract = class {
                 constructor(abi: any, address: string) {}
@@ -406,6 +470,48 @@ describe('Currencies Service', function() {
 
             expect(prices.error).toEqual('invalid_currencies');
             expect(prices.response).toEqual(null);
+        });
+    });
+
+    describe('computeFee', function() {
+        it('should compute fee for T721Token', async function() {
+            // DECLARE
+            const currency = 'T721Token';
+            const amount = '300';
+            const spiedService = spy(context.currenciesService);
+
+            // MOCK
+            when(spiedService.get(currency)).thenResolve({
+                feeComputer: (amount: string) => '0',
+            } as ERC20Currency);
+
+            // TRIGGER
+            const res = await context.currenciesService.computeFee(currency, amount);
+
+            // CHECK RETURNs
+            expect(res).toEqual('0');
+
+            // CHECK CALLS
+            verify(spiedService.get(currency)).once();
+        });
+
+        it('should return default fee for Fiat', async function() {
+            // DECLARE
+            const currency = 'Fiat';
+            const amount = '300';
+            const spiedService = spy(context.currenciesService);
+
+            // MOCK
+            when(spiedService.get(currency)).thenResolve({} as ERC20Currency);
+
+            // TRIGGER
+            const res = await context.currenciesService.computeFee(currency, amount);
+
+            // CHECK RETURNs
+            expect(res).toEqual('0');
+
+            // CHECK CALLS
+            verify(spiedService.get(currency)).once();
         });
     });
 });

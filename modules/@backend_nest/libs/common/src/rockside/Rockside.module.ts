@@ -85,7 +85,7 @@ export class RocksideModule {
                         rocksideMockOpts: RocksideModuleMockBuildOptions,
                     ): RocksideApi => {
                         if (configService.get('NODE_ENV') === 'development') {
-                            return (new RocksideMock(rocksideOpts, rocksideMockOpts) as any) as RocksideApi;
+                            return new RocksideMock(rocksideOpts, rocksideMockOpts);
                         } else {
                             return null;
                         }
