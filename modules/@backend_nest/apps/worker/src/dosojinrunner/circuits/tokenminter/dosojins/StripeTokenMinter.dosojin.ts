@@ -389,7 +389,6 @@ export class StripeTokenMinterDosojin extends GenericStripeDosojin {
                 t721TokenService,
                 usersService,
                 txsService,
-                configService,
             ),
         );
         this.addConnector(

@@ -26,7 +26,6 @@ describe('StripeTokenMinter Dosojin', function() {
             t721TokenServiceMock: T721TokenService;
             usersServiceMock: UsersService;
             txsServiceMock: TxsService;
-            configServiceMock: ConfigService;
         } = {
             tokenMinterOperation: null,
             stripeTokenMinterDosojinMock: null,
@@ -34,7 +33,6 @@ describe('StripeTokenMinter Dosojin', function() {
             t721TokenServiceMock: null,
             usersServiceMock: null,
             txsServiceMock: null,
-            configServiceMock: null,
         };
 
         beforeEach(async function() {
@@ -43,7 +41,6 @@ describe('StripeTokenMinter Dosojin', function() {
             context.t721TokenServiceMock = mock(T721TokenService);
             context.usersServiceMock = mock(UsersService);
             context.txsServiceMock = mock(TxsService);
-            context.configServiceMock = mock(ConfigService);
             when(context.stripeTokenMinterDosojinMock.name).thenReturn('StripeTokenMinter');
 
             context.tokenMinterOperation = new TokenMinterOperation(
@@ -53,7 +50,6 @@ describe('StripeTokenMinter Dosojin', function() {
                 instance(context.t721TokenServiceMock),
                 instance(context.usersServiceMock),
                 instance(context.txsServiceMock),
-                instance(context.configServiceMock),
             );
         });
 

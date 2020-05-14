@@ -139,7 +139,10 @@ export class MintingTasks implements OnModuleInit {
         });
 
         if (checkoutActionSetRes.error || checkoutActionSetRes.response.length === 0) {
-            throw new Error(`Unable to recover checkout for minting initialization`);
+            throw new Error(
+                `Unable to recover checkout for minting initialization: ${checkoutActionSetRes.error ||
+                    'checkout not found'}`,
+            );
         }
 
         return new ActionSet().load(checkoutActionSetRes.response[0]);
@@ -156,12 +159,12 @@ export class MintingTasks implements OnModuleInit {
         });
 
         if (cartActionSetRes.error || cartActionSetRes.response.length === 0) {
-            throw new Error(`Unable to recover cart for minting initialization`);
+            throw new Error(
+                `Unable to recover cart for minting initialization: ${cartActionSetRes.error || 'cart not found'}`,
+            );
         }
 
-        const cart: ActionSet = new ActionSet().load(cartActionSetRes.response[0]);
-
-        return cart;
+        return new ActionSet().load(cartActionSetRes.response[0]);
     }
 
     /**
@@ -396,7 +399,7 @@ export class MintingTasks implements OnModuleInit {
             );
 
             if (authorizationUpdateRes.error) {
-                throw new Error(authorizationUpdateRes.error);
+                throw new Error(`Authorization update failure: ${authorizationUpdateRes.error}`);
             }
         }
     }
@@ -463,9 +466,7 @@ export class MintingTasks implements OnModuleInit {
 
         const user: UserDto = userSearchRes.response;
 
-        const authorizationData: CartAuthorizations = cart.actions[cart.actions.length - 1].data;
-
-        await this.setAuthorizationsToDispatched(authorizationData);
+        await this.setAuthorizationsToDispatched(cartAuthorizations);
 
         const txSeqHandler = await this.actionSetsService.build<TxSequenceAcsetBuilderArgs>(
             'txseq_processor',
@@ -498,7 +499,7 @@ export class MintingTasks implements OnModuleInit {
             );
 
             if (ticketConfirmationRes.error) {
-                throw new Error(`Error while setting transaction hash on ticket`);
+                throw new Error(`Error while setting transaction hash on ticket: ${ticketConfirmationRes.error}`);
             }
         }
     }
@@ -521,7 +522,9 @@ export class MintingTasks implements OnModuleInit {
             );
 
             if (ticketConfirmationRes.error) {
-                throw new Error(`Error while setting transaction hash and canceled on ticket`);
+                throw new Error(
+                    `Error while setting transaction hash and canceled on ticket: ${ticketConfirmationRes.error}`,
+                );
             }
         }
 
@@ -539,7 +542,7 @@ export class MintingTasks implements OnModuleInit {
             );
 
             if (authorizationConsumingRes.error) {
-                throw new Error(`Error while setting authorizations to canceled`);
+                throw new Error(`Error while setting authorizations to canceled: ${authorizationConsumingRes.error}`);
             }
         }
     }
