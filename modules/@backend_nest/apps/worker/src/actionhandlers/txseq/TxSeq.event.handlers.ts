@@ -116,7 +116,6 @@ export class TxSeqEventHandlers implements OnModuleInit {
                 break;
             }
 
-            /* istanbul ignore next */
             case 'incomplete': {
                 actionset.action.setIncomplete({
                     details: error_trace,
@@ -131,14 +130,7 @@ export class TxSeqEventHandlers implements OnModuleInit {
                 if (!data.broadcasted) {
                     const broadcastResponse = await this.broadcastTransaction(data.transaction);
 
-                    actionset.action.setData({
-                        ...actionset.action.data,
-                        broadcasted: true,
-                    });
-
                     if (broadcastResponse.error) {
-                        console.log('broadcasting error', broadcastResponse.error);
-
                         actionset.action.setError({
                             details: null,
                             error: broadcastResponse.error,
@@ -150,6 +142,7 @@ export class TxSeqEventHandlers implements OnModuleInit {
 
                     actionset.action.setData({
                         ...actionset.action.data,
+                        broadcasted: true,
                         transactionHash: broadcastResponse.response.transaction_hash,
                     });
                 } else {
@@ -157,20 +150,13 @@ export class TxSeqEventHandlers implements OnModuleInit {
                         transaction_hash: data.transactionHash,
                     });
 
-                    if (transactionSearchRes.error) {
+                    if (transactionSearchRes.error || transactionSearchRes.response.length === 0) {
                         actionset.action.setError({
                             details: null,
-                            error: transactionSearchRes.error,
+                            error: transactionSearchRes.error || 'transaction_not_found',
                         });
                         actionset.action.setStatus('error');
                         actionset.setStatus('event:error');
-
-                        if (data.transaction.onFailure) {
-                            await this.txQueue.add(data.transaction.onFailure.name, {
-                                transactionHash: data.transactionHash,
-                                ...data.transaction.onFailure.jobData,
-                            });
-                        }
 
                         break;
                     }
@@ -179,6 +165,13 @@ export class TxSeqEventHandlers implements OnModuleInit {
 
                     if (tx.confirmed) {
                         if (tx.status === false) {
+                            if (data.transaction.onFailure) {
+                                await this.txQueue.add(data.transaction.onFailure.name, {
+                                    transactionHash: data.transactionHash,
+                                    ...data.transaction.onFailure.jobData,
+                                });
+                            }
+
                             actionset.action.setError({
                                 details: null,
                                 error: 'transaction_failed',
