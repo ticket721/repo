@@ -13,22 +13,4 @@ services:
         image: "trufflesuite/ganache-cli:v6.7.0"
         ports:
             - "8545:8545"
-        command: ganache-cli -i 2702 -m "cross uniform panic climb universe awful surprise list dutch ability label cat"
-    vaultereum:
-        image: "ticket721/vaultereum:go-1.12.7_vault-v1.3.2_ve-v0.2.11_ui"
-        environment:
-            - VAULT_DEV_LISTEN_ADDRESS=0.0.0.0:8200
-        ports:
-            - "8200:8200"
-            - "8201:8201"
-        volumes:
-            - ${PWD}/devconfig.hcl:/vault/config/devconfig.hcl
-            - ${PWD}/../../tasks/dev_admin_keystores:/dev_admin_keystores
-        command: server -dev -config /vault/config/devconfig.hcl -dev-root-token-id "dev_root_token"
-    consul:
-        image: "consul:1.6.3"
-        ports:
-            - "8500:8500"
-        environment:
-            - CONSUL_BIND_INTERFACE=eth0
-
+        command: ganache-cli -i 2702 -m "cross uniform panic climb universe awful surprise list dutch ability label cat" -l 8000000 -e 0xffffffffffffffff

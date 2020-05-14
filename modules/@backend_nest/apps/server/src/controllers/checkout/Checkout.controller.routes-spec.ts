@@ -9,18 +9,21 @@ import {
     getMocks,
     getSDKAndUser,
     getUser,
+    pause,
     setPaymentIntent,
     waitForActionSet,
+    waitForTickets,
 } from '../../../test/utils';
 import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
 import { Stripe } from 'stripe';
 import { deepEqual, when } from 'ts-mockito';
 import { StatusCodes } from '@lib/common/utils/codes.value';
+import { TicketEntity } from '@lib/common/tickets/entities/Ticket.entity';
 
 export default function(getCtx: () => { ready: Promise<void> }) {
     return function() {
         describe('commitStripe (POST /checkout/cart/commit/stripe)', function() {
-            test.concurrent('should create, fill and commit cart', async function() {
+            test('should create, fill and commit cart', async function() {
                 const {
                     sdk,
                     token,
@@ -73,76 +76,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 });
             });
 
-            test.concurrent('should create, fill, commit & update cart', async function() {
-                const {
-                    sdk,
-                    token,
-                    user,
-                    password,
-                }: {
-                    sdk: T721SDK;
-                    token: string;
-                    user: PasswordlessUserDto;
-                    password: string;
-                } = await getSDKAndUser(getCtx);
-
-                const event = await createEvent(token, sdk);
-
-                const cartActionSetRes = await sdk.actions.create(token, {
-                    name: 'cart_create',
-                    arguments: {},
-                });
-
-                const actionSetId = cartActionSetRes.data.actionset.id;
-
-                await sdk.cart.ticketSelections(token, actionSetId, {
-                    tickets: [
-                        ...[...Array(3)].map(() => ({
-                            categoryId: event.categories[0],
-                            price: {
-                                currency: 'Fiat',
-                                price: '100',
-                            },
-                        })),
-                    ],
-                });
-
-                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-                    return as.current_action === 1;
-                });
-
-                await sdk.cart.modulesConfiguration(token, actionSetId, {});
-
-                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-                    return as.current_action === 2;
-                });
-
-                await sdk.checkout.cart.commit.stripe(token, {
-                    cart: actionSetId,
-                });
-
-                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-                    return as.current_status === 'complete';
-                });
-
-                await sdk.cart.ticketSelections(token, actionSetId, {
-                    tickets: [
-                        ...[...Array(2)].map(() => ({
-                            categoryId: event.categories[0],
-                            price: {
-                                currency: 'Fiat',
-                                price: '100',
-                            },
-                        })),
-                    ],
-                });
-
-                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-                    return as.current_status === 'input:error';
-                });
-            });
-
-            test.concurrent('should create, fill, commit, update & re-commit cart', async function() {
+            test('should create, fill, commit & update cart', async function() {
                 const {
                     sdk,
                     token,
@@ -209,6 +143,75 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
                     return as.current_status === 'input:error';
                 });
+            });
+
+            test('should create, fill, commit, update & re-commit cart', async function() {
+                const {
+                    sdk,
+                    token,
+                    user,
+                    password,
+                }: {
+                    sdk: T721SDK;
+                    token: string;
+                    user: PasswordlessUserDto;
+                    password: string;
+                } = await getSDKAndUser(getCtx);
+
+                const event = await createEvent(token, sdk);
+
+                const cartActionSetRes = await sdk.actions.create(token, {
+                    name: 'cart_create',
+                    arguments: {},
+                });
+
+                const actionSetId = cartActionSetRes.data.actionset.id;
+
+                await sdk.cart.ticketSelections(token, actionSetId, {
+                    tickets: [
+                        ...[...Array(3)].map(() => ({
+                            categoryId: event.categories[0],
+                            price: {
+                                currency: 'Fiat',
+                                price: '100',
+                            },
+                        })),
+                    ],
+                });
+
+                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+                    return as.current_action === 1;
+                });
+
+                await sdk.cart.modulesConfiguration(token, actionSetId, {});
+
+                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+                    return as.current_action === 2;
+                });
+
+                await sdk.checkout.cart.commit.stripe(token, {
+                    cart: actionSetId,
+                });
+
+                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+                    return as.current_status === 'complete';
+                });
+
+                await sdk.cart.ticketSelections(token, actionSetId, {
+                    tickets: [
+                        ...[...Array(2)].map(() => ({
+                            categoryId: event.categories[0],
+                            price: {
+                                currency: 'Fiat',
+                                price: '100',
+                            },
+                        })),
+                    ],
+                });
+
+                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+                    return as.current_status === 'input:error';
+                });
 
                 await sdk.checkout.cart.commit.stripe(token, {
                     cart: actionSetId,
@@ -219,7 +222,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 });
             });
 
-            test.concurrent('should fail on invalid actionset type', async function() {
+            test('should fail on invalid actionset type', async function() {
                 const {
                     sdk,
                     token,
@@ -277,7 +280,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 );
             });
 
-            test.concurrent('should fail on ticket selection incomplete step', async function() {
+            test('should fail on ticket selection incomplete step', async function() {
                 const {
                     sdk,
                     token,
@@ -308,7 +311,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 );
             });
 
-            test.concurrent('should fail on modules configuration incomplete step', async function() {
+            test('should fail on modules configuration incomplete step', async function() {
                 const {
                     sdk,
                     token,
@@ -355,7 +358,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 );
             });
 
-            test.concurrent('should fail commit un-owned cart', async function() {
+            test('should fail commit un-owned cart', async function() {
                 const {
                     sdk,
                     token,
@@ -409,7 +412,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 );
             });
 
-            test.concurrent('should fail on invalid ticket count selection', async function() {
+            test('should fail on invalid ticket count selection', async function() {
                 const {
                     sdk,
                     token,
@@ -451,7 +454,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 });
             });
 
-            test.concurrent('should fail on no more seats left', async function() {
+            test('should fail on no more seats left', async function() {
                 const {
                     sdk,
                     token,
@@ -509,7 +512,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
         });
 
         describe('resolveCartWithPaymentIntent (POST /checkout/cart/resolve/paymentintent)', function() {
-            test.concurrent('should fail on invalid action set type', async function() {
+            test('should fail on invalid action set type', async function() {
                 const {
                     sdk,
                     token,
@@ -539,7 +542,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 );
             });
 
-            test.concurrent('should fail on incomplete action set', async function() {
+            test('should fail on incomplete action set', async function() {
                 const {
                     sdk,
                     token,
@@ -602,7 +605,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 );
             });
 
-            test.concurrent('should fail on duplicate payment intent usage', async function() {
+            test('should fail on duplicate payment intent usage', async function() {
                 const {
                     sdk,
                     token,
@@ -688,505 +691,498 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 );
             });
 
-            test.concurrent(
-                'should create, fill and commit cart, then resolve with captured payment intent',
-                async function() {
-                    const {
-                        sdk,
-                        token,
-                        user,
-                        password,
-                    }: {
-                        sdk: T721SDK;
-                        token: string;
-                        user: PasswordlessUserDto;
-                        password: string;
-                    } = await getSDKAndUser(getCtx);
+            test('should create, fill and commit cart, then resolve with captured payment intent', async function() {
+                const {
+                    sdk,
+                    token,
+                    user,
+                    password,
+                }: {
+                    sdk: T721SDK;
+                    token: string;
+                    user: PasswordlessUserDto;
+                    password: string;
+                } = await getSDKAndUser(getCtx);
 
-                    const event = await createEvent(token, sdk);
+                const event = await createEvent(token, sdk);
 
-                    const validPaymentIntentId = await createPaymentIntent({
-                        charges: {
-                            data: [
-                                {
-                                    payment_method_details: {
-                                        type: 'card',
-                                        card: {
-                                            country: 'FR',
-                                        },
+                const validPaymentIntentId = await createPaymentIntent({
+                    charges: {
+                        data: [
+                            {
+                                payment_method_details: {
+                                    type: 'card',
+                                    card: {
+                                        country: 'FR',
                                     },
                                 },
-                            ],
-                        } as Stripe.ApiList<Stripe.Charge>,
-                        payment_method_types: ['card'],
+                            },
+                        ],
+                    } as Stripe.ApiList<Stripe.Charge>,
+                    payment_method_types: ['card'],
+                    status: 'succeeded',
+                    currency: 'eur',
+                    amount_received: 330,
+                });
+
+                const cartActionSetRes = await sdk.actions.create(token, {
+                    name: 'cart_create',
+                    arguments: {},
+                });
+
+                const actionSetId = cartActionSetRes.data.actionset.id;
+
+                await sdk.cart.ticketSelections(token, actionSetId, {
+                    tickets: [
+                        ...[...Array(3)].map(() => ({
+                            categoryId: event.categories[0],
+                            price: {
+                                currency: 'Fiat',
+                                price: '100',
+                            },
+                        })),
+                    ],
+                });
+
+                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+                    return as.current_action === 1;
+                });
+
+                await sdk.cart.modulesConfiguration(token, actionSetId, {});
+
+                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+                    return as.current_action === 2;
+                });
+
+                await sdk.checkout.cart.commit.stripe(token, {
+                    cart: actionSetId,
+                });
+
+                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+                    return as.current_status === 'complete';
+                });
+
+                const res = await sdk.checkout.cart.resolve.paymentIntent(token, {
+                    cart: actionSetId,
+                    paymentIntentId: validPaymentIntentId,
+                });
+
+                const checkoutActionSetId = res.data.checkoutActionSetId;
+
+                await waitForActionSet(sdk, token, checkoutActionSetId, (as: ActionSetEntity): boolean => {
+                    return as.current_status === 'complete';
+                });
+
+                await waitForTickets(sdk, token, user.address, (tickets: TicketEntity[]): boolean => {
+                    return tickets.length === 3;
+                });
+            });
+
+            test('should create, fill and commit cart, then resolve with uncaptured payment intent', async function() {
+                const {
+                    sdk,
+                    token,
+                    user,
+                    password,
+                }: {
+                    sdk: T721SDK;
+                    token: string;
+                    user: PasswordlessUserDto;
+                    password: string;
+                } = await getSDKAndUser(getCtx);
+
+                const event = await createEvent(token, sdk);
+
+                const validPaymentIntent: Partial<Stripe.PaymentIntent> = {
+                    charges: {
+                        data: [
+                            {
+                                payment_method_details: {
+                                    type: 'card',
+                                    card: {
+                                        country: 'FR',
+                                    },
+                                },
+                            },
+                        ],
+                    } as Stripe.ApiList<Stripe.Charge>,
+                    payment_method_types: ['card'],
+                    status: 'requires_capture',
+                    currency: 'eur',
+                    amount_capturable: 500,
+                };
+
+                const validPaymentIntentId = createPaymentIntent(validPaymentIntent);
+
+                const mocks = getMocks();
+
+                when(
+                    mocks[1].capture(
+                        validPaymentIntentId,
+                        deepEqual({
+                            amount_to_capture: 330,
+                        }),
+                    ),
+                ).thenCall(() => {
+                    setPaymentIntent(validPaymentIntentId, {
+                        ...validPaymentIntent,
                         status: 'succeeded',
-                        currency: 'eur',
                         amount_received: 330,
                     });
+                });
 
-                    const cartActionSetRes = await sdk.actions.create(token, {
-                        name: 'cart_create',
-                        arguments: {},
-                    });
+                const cartActionSetRes = await sdk.actions.create(token, {
+                    name: 'cart_create',
+                    arguments: {},
+                });
 
-                    const actionSetId = cartActionSetRes.data.actionset.id;
+                const actionSetId = cartActionSetRes.data.actionset.id;
 
-                    await sdk.cart.ticketSelections(token, actionSetId, {
-                        tickets: [
-                            ...[...Array(3)].map(() => ({
-                                categoryId: event.categories[0],
-                                price: {
-                                    currency: 'Fiat',
-                                    price: '100',
-                                },
-                            })),
-                        ],
-                    });
+                await sdk.cart.ticketSelections(token, actionSetId, {
+                    tickets: [
+                        ...[...Array(3)].map(() => ({
+                            categoryId: event.categories[0],
+                            price: {
+                                currency: 'Fiat',
+                                price: '100',
+                            },
+                        })),
+                    ],
+                });
 
-                    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-                        return as.current_action === 1;
-                    });
+                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+                    return as.current_action === 1;
+                });
 
-                    await sdk.cart.modulesConfiguration(token, actionSetId, {});
+                await sdk.cart.modulesConfiguration(token, actionSetId, {});
 
-                    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-                        return as.current_action === 2;
-                    });
+                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+                    return as.current_action === 2;
+                });
 
-                    await sdk.checkout.cart.commit.stripe(token, {
-                        cart: actionSetId,
-                    });
+                await sdk.checkout.cart.commit.stripe(token, {
+                    cart: actionSetId,
+                });
 
-                    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-                        return as.current_status === 'complete';
-                    });
+                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+                    return as.current_status === 'complete';
+                });
 
-                    const res = await sdk.checkout.cart.resolve.paymentIntent(token, {
-                        cart: actionSetId,
-                        paymentIntentId: validPaymentIntentId,
-                    });
+                const res = await sdk.checkout.cart.resolve.paymentIntent(token, {
+                    cart: actionSetId,
+                    paymentIntentId: validPaymentIntentId,
+                });
 
-                    const checkoutActionSetId = res.data.checkoutActionSetId;
+                const checkoutActionSetId = res.data.checkoutActionSetId;
 
-                    await waitForActionSet(sdk, token, checkoutActionSetId, (as: ActionSetEntity): boolean => {
-                        return as.current_status === 'complete';
-                    });
-                },
-            );
+                await waitForActionSet(sdk, token, checkoutActionSetId, (as: ActionSetEntity): boolean => {
+                    return as.current_status === 'complete';
+                });
 
-            test.concurrent(
-                'should create, fill and commit cart, then resolve with uncaptured payment intent',
-                async function() {
-                    const {
-                        sdk,
-                        token,
-                        user,
-                        password,
-                    }: {
-                        sdk: T721SDK;
-                        token: string;
-                        user: PasswordlessUserDto;
-                        password: string;
-                    } = await getSDKAndUser(getCtx);
+                await waitForTickets(sdk, token, user.address, (tickets: TicketEntity[]): boolean => {
+                    return tickets.length === 3;
+                });
+            });
 
-                    const event = await createEvent(token, sdk);
+            test('should fail when create, fill and commit cart, then resolve with captured payment intent and total above required', async function() {
+                const {
+                    sdk,
+                    token,
+                    user,
+                    password,
+                }: {
+                    sdk: T721SDK;
+                    token: string;
+                    user: PasswordlessUserDto;
+                    password: string;
+                } = await getSDKAndUser(getCtx);
 
-                    const validPaymentIntent: Partial<Stripe.PaymentIntent> = {
-                        charges: {
-                            data: [
-                                {
-                                    payment_method_details: {
-                                        type: 'card',
-                                        card: {
-                                            country: 'FR',
-                                        },
+                const event = await createEvent(token, sdk);
+
+                const validPaymentIntent: Partial<Stripe.PaymentIntent> = {
+                    charges: {
+                        data: [
+                            {
+                                payment_method_details: {
+                                    type: 'card',
+                                    card: {
+                                        country: 'FR',
                                     },
                                 },
-                            ],
-                        } as Stripe.ApiList<Stripe.Charge>,
-                        payment_method_types: ['card'],
-                        status: 'requires_capture',
-                        currency: 'eur',
-                        amount_capturable: 500,
-                    };
-
-                    const validPaymentIntentId = createPaymentIntent(validPaymentIntent);
-
-                    const mocks = getMocks();
-
-                    when(
-                        mocks[1].capture(
-                            validPaymentIntentId,
-                            deepEqual({
-                                amount_to_capture: 330,
-                            }),
-                        ),
-                    ).thenCall(() => {
-                        setPaymentIntent(validPaymentIntentId, {
-                            ...validPaymentIntent,
-                            status: 'succeeded',
-                            amount_received: 330,
-                        });
-                    });
-
-                    const cartActionSetRes = await sdk.actions.create(token, {
-                        name: 'cart_create',
-                        arguments: {},
-                    });
-
-                    const actionSetId = cartActionSetRes.data.actionset.id;
-
-                    await sdk.cart.ticketSelections(token, actionSetId, {
-                        tickets: [
-                            ...[...Array(3)].map(() => ({
-                                categoryId: event.categories[0],
-                                price: {
-                                    currency: 'Fiat',
-                                    price: '100',
-                                },
-                            })),
+                            },
                         ],
-                    });
+                    } as Stripe.ApiList<Stripe.Charge>,
+                    payment_method_types: ['card'],
+                    status: 'succeeded',
+                    currency: 'eur',
+                    amount_received: 331,
+                };
 
-                    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-                        return as.current_action === 1;
-                    });
+                const validPaymentIntentId = createPaymentIntent(validPaymentIntent);
 
-                    await sdk.cart.modulesConfiguration(token, actionSetId, {});
+                const cartActionSetRes = await sdk.actions.create(token, {
+                    name: 'cart_create',
+                    arguments: {},
+                });
 
-                    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-                        return as.current_action === 2;
-                    });
+                const actionSetId = cartActionSetRes.data.actionset.id;
 
-                    await sdk.checkout.cart.commit.stripe(token, {
-                        cart: actionSetId,
-                    });
+                await sdk.cart.ticketSelections(token, actionSetId, {
+                    tickets: [
+                        ...[...Array(3)].map(() => ({
+                            categoryId: event.categories[0],
+                            price: {
+                                currency: 'Fiat',
+                                price: '100',
+                            },
+                        })),
+                    ],
+                });
 
-                    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-                        return as.current_status === 'complete';
-                    });
+                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+                    return as.current_action === 1;
+                });
 
-                    const res = await sdk.checkout.cart.resolve.paymentIntent(token, {
-                        cart: actionSetId,
-                        paymentIntentId: validPaymentIntentId,
-                    });
+                await sdk.cart.modulesConfiguration(token, actionSetId, {});
 
-                    const checkoutActionSetId = res.data.checkoutActionSetId;
+                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+                    return as.current_action === 2;
+                });
 
-                    await waitForActionSet(sdk, token, checkoutActionSetId, (as: ActionSetEntity): boolean => {
-                        return as.current_status === 'complete';
-                    });
-                },
-            );
+                await sdk.checkout.cart.commit.stripe(token, {
+                    cart: actionSetId,
+                });
 
-            test.concurrent(
-                'should fail when create, fill and commit cart, then resolve with captured payment intent and total above required',
-                async function() {
-                    const {
-                        sdk,
-                        token,
-                        user,
-                        password,
-                    }: {
-                        sdk: T721SDK;
-                        token: string;
-                        user: PasswordlessUserDto;
-                        password: string;
-                    } = await getSDKAndUser(getCtx);
+                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+                    return as.current_status === 'complete';
+                });
 
-                    const event = await createEvent(token, sdk);
+                const res = await sdk.checkout.cart.resolve.paymentIntent(token, {
+                    cart: actionSetId,
+                    paymentIntentId: validPaymentIntentId,
+                });
 
-                    const validPaymentIntent: Partial<Stripe.PaymentIntent> = {
-                        charges: {
-                            data: [
-                                {
-                                    payment_method_details: {
-                                        type: 'card',
-                                        card: {
-                                            country: 'FR',
-                                        },
+                const checkoutActionSetId = res.data.checkoutActionSetId;
+
+                await waitForActionSet(sdk, token, checkoutActionSetId, (as: ActionSetEntity): boolean => {
+                    return (
+                        as.current_status === 'event:error' &&
+                        as.actions[as.current_action].status === 'error' &&
+                        JSON.parse(as.actions[as.current_action].error).error === 'dosojin_circuit_failed'
+                    );
+                });
+
+                await gemFail(sdk, token, res.data.gemOrderId, {
+                    dosojin: 'StripeTokenMinter',
+                    entity_name: 'CardPaymentIntentReceptacle',
+                    entity_type: 'receptacle',
+                    layer: 0,
+                    message: 'Invalid Succeeded Payment Intent. Got Refunded.',
+                });
+            });
+
+            test('should fail when create, fill and commit cart, then resolve with captured payment intent and total under required', async function() {
+                const {
+                    sdk,
+                    token,
+                    user,
+                    password,
+                }: {
+                    sdk: T721SDK;
+                    token: string;
+                    user: PasswordlessUserDto;
+                    password: string;
+                } = await getSDKAndUser(getCtx);
+
+                const event = await createEvent(token, sdk);
+
+                const validPaymentIntent: Partial<Stripe.PaymentIntent> = {
+                    charges: {
+                        data: [
+                            {
+                                payment_method_details: {
+                                    type: 'card',
+                                    card: {
+                                        country: 'FR',
                                     },
                                 },
-                            ],
-                        } as Stripe.ApiList<Stripe.Charge>,
-                        payment_method_types: ['card'],
-                        status: 'succeeded',
-                        currency: 'eur',
-                        amount_received: 331,
-                    };
-
-                    const validPaymentIntentId = createPaymentIntent(validPaymentIntent);
-
-                    const cartActionSetRes = await sdk.actions.create(token, {
-                        name: 'cart_create',
-                        arguments: {},
-                    });
-
-                    const actionSetId = cartActionSetRes.data.actionset.id;
-
-                    await sdk.cart.ticketSelections(token, actionSetId, {
-                        tickets: [
-                            ...[...Array(3)].map(() => ({
-                                categoryId: event.categories[0],
-                                price: {
-                                    currency: 'Fiat',
-                                    price: '100',
-                                },
-                            })),
+                            },
                         ],
-                    });
+                    } as Stripe.ApiList<Stripe.Charge>,
+                    payment_method_types: ['card'],
+                    status: 'succeeded',
+                    currency: 'eur',
+                    amount_received: 329,
+                };
 
-                    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-                        return as.current_action === 1;
-                    });
+                const validPaymentIntentId = createPaymentIntent(validPaymentIntent);
 
-                    await sdk.cart.modulesConfiguration(token, actionSetId, {});
+                const cartActionSetRes = await sdk.actions.create(token, {
+                    name: 'cart_create',
+                    arguments: {},
+                });
 
-                    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-                        return as.current_action === 2;
-                    });
+                const actionSetId = cartActionSetRes.data.actionset.id;
 
-                    await sdk.checkout.cart.commit.stripe(token, {
-                        cart: actionSetId,
-                    });
+                await sdk.cart.ticketSelections(token, actionSetId, {
+                    tickets: [
+                        ...[...Array(3)].map(() => ({
+                            categoryId: event.categories[0],
+                            price: {
+                                currency: 'Fiat',
+                                price: '100',
+                            },
+                        })),
+                    ],
+                });
 
-                    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-                        return as.current_status === 'complete';
-                    });
+                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+                    return as.current_action === 1;
+                });
 
-                    const res = await sdk.checkout.cart.resolve.paymentIntent(token, {
-                        cart: actionSetId,
-                        paymentIntentId: validPaymentIntentId,
-                    });
+                await sdk.cart.modulesConfiguration(token, actionSetId, {});
 
-                    const checkoutActionSetId = res.data.checkoutActionSetId;
+                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+                    return as.current_action === 2;
+                });
 
-                    await waitForActionSet(sdk, token, checkoutActionSetId, (as: ActionSetEntity): boolean => {
-                        return (
-                            as.current_status === 'event:error' &&
-                            as.actions[as.current_action].status === 'error' &&
-                            JSON.parse(as.actions[as.current_action].error).error === 'dosojin_circuit_failed'
-                        );
-                    });
+                await sdk.checkout.cart.commit.stripe(token, {
+                    cart: actionSetId,
+                });
 
-                    await gemFail(sdk, token, res.data.gemOrderId, {
-                        dosojin: 'StripeTokenMinter',
-                        entity_name: 'CardPaymentIntentReceptacle',
-                        entity_type: 'receptacle',
-                        layer: 0,
-                        message: 'Invalid Succeeded Payment Intent. Got Refunded.',
-                    });
-                },
-            );
+                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+                    return as.current_status === 'complete';
+                });
 
-            test.concurrent(
-                'should fail when create, fill and commit cart, then resolve with captured payment intent and total under required',
-                async function() {
-                    const {
-                        sdk,
-                        token,
-                        user,
-                        password,
-                    }: {
-                        sdk: T721SDK;
-                        token: string;
-                        user: PasswordlessUserDto;
-                        password: string;
-                    } = await getSDKAndUser(getCtx);
+                const res = await sdk.checkout.cart.resolve.paymentIntent(token, {
+                    cart: actionSetId,
+                    paymentIntentId: validPaymentIntentId,
+                });
 
-                    const event = await createEvent(token, sdk);
+                const checkoutActionSetId = res.data.checkoutActionSetId;
 
-                    const validPaymentIntent: Partial<Stripe.PaymentIntent> = {
-                        charges: {
-                            data: [
-                                {
-                                    payment_method_details: {
-                                        type: 'card',
-                                        card: {
-                                            country: 'FR',
-                                        },
+                await waitForActionSet(sdk, token, checkoutActionSetId, (as: ActionSetEntity): boolean => {
+                    return (
+                        as.current_status === 'event:error' &&
+                        as.actions[as.current_action].status === 'error' &&
+                        JSON.parse(as.actions[as.current_action].error).error === 'dosojin_circuit_failed'
+                    );
+                });
+
+                await gemFail(sdk, token, res.data.gemOrderId, {
+                    dosojin: 'StripeTokenMinter',
+                    entity_name: 'CardPaymentIntentReceptacle',
+                    entity_type: 'receptacle',
+                    layer: 0,
+                    message: 'Invalid Succeeded Payment Intent. Got Refunded.',
+                });
+            });
+
+            test('should fail create, fill and commit cart, then resolve with uncaptured payment intent and total under required', async function() {
+                const {
+                    sdk,
+                    token,
+                    user,
+                    password,
+                }: {
+                    sdk: T721SDK;
+                    token: string;
+                    user: PasswordlessUserDto;
+                    password: string;
+                } = await getSDKAndUser(getCtx);
+
+                const event = await createEvent(token, sdk);
+
+                const validPaymentIntent: Partial<Stripe.PaymentIntent> = {
+                    charges: {
+                        data: [
+                            {
+                                payment_method_details: {
+                                    type: 'card',
+                                    card: {
+                                        country: 'FR',
                                     },
                                 },
-                            ],
-                        } as Stripe.ApiList<Stripe.Charge>,
-                        payment_method_types: ['card'],
-                        status: 'succeeded',
-                        currency: 'eur',
-                        amount_received: 329,
-                    };
-
-                    const validPaymentIntentId = createPaymentIntent(validPaymentIntent);
-
-                    const cartActionSetRes = await sdk.actions.create(token, {
-                        name: 'cart_create',
-                        arguments: {},
-                    });
-
-                    const actionSetId = cartActionSetRes.data.actionset.id;
-
-                    await sdk.cart.ticketSelections(token, actionSetId, {
-                        tickets: [
-                            ...[...Array(3)].map(() => ({
-                                categoryId: event.categories[0],
-                                price: {
-                                    currency: 'Fiat',
-                                    price: '100',
-                                },
-                            })),
+                            },
                         ],
+                    } as Stripe.ApiList<Stripe.Charge>,
+                    payment_method_types: ['card'],
+                    status: 'requires_capture',
+                    currency: 'eur',
+                    amount_capturable: 329,
+                };
+
+                const validPaymentIntentId = createPaymentIntent(validPaymentIntent);
+
+                const mocks = getMocks();
+
+                when(mocks[1].cancel(validPaymentIntentId)).thenCall(() => {
+                    setPaymentIntent(validPaymentIntentId, {
+                        ...validPaymentIntent,
+                        status: 'canceled',
                     });
+                });
 
-                    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-                        return as.current_action === 1;
-                    });
+                const cartActionSetRes = await sdk.actions.create(token, {
+                    name: 'cart_create',
+                    arguments: {},
+                });
 
-                    await sdk.cart.modulesConfiguration(token, actionSetId, {});
+                const actionSetId = cartActionSetRes.data.actionset.id;
 
-                    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-                        return as.current_action === 2;
-                    });
+                await sdk.cart.ticketSelections(token, actionSetId, {
+                    tickets: [
+                        ...[...Array(3)].map(() => ({
+                            categoryId: event.categories[0],
+                            price: {
+                                currency: 'Fiat',
+                                price: '100',
+                            },
+                        })),
+                    ],
+                });
 
-                    await sdk.checkout.cart.commit.stripe(token, {
-                        cart: actionSetId,
-                    });
+                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+                    return as.current_action === 1;
+                });
 
-                    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-                        return as.current_status === 'complete';
-                    });
+                await sdk.cart.modulesConfiguration(token, actionSetId, {});
 
-                    const res = await sdk.checkout.cart.resolve.paymentIntent(token, {
-                        cart: actionSetId,
-                        paymentIntentId: validPaymentIntentId,
-                    });
+                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+                    return as.current_action === 2;
+                });
 
-                    const checkoutActionSetId = res.data.checkoutActionSetId;
+                await sdk.checkout.cart.commit.stripe(token, {
+                    cart: actionSetId,
+                });
 
-                    await waitForActionSet(sdk, token, checkoutActionSetId, (as: ActionSetEntity): boolean => {
-                        return (
-                            as.current_status === 'event:error' &&
-                            as.actions[as.current_action].status === 'error' &&
-                            JSON.parse(as.actions[as.current_action].error).error === 'dosojin_circuit_failed'
-                        );
-                    });
+                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+                    return as.current_status === 'complete';
+                });
 
-                    await gemFail(sdk, token, res.data.gemOrderId, {
-                        dosojin: 'StripeTokenMinter',
-                        entity_name: 'CardPaymentIntentReceptacle',
-                        entity_type: 'receptacle',
-                        layer: 0,
-                        message: 'Invalid Succeeded Payment Intent. Got Refunded.',
-                    });
-                },
-            );
+                const res = await sdk.checkout.cart.resolve.paymentIntent(token, {
+                    cart: actionSetId,
+                    paymentIntentId: validPaymentIntentId,
+                });
 
-            test.concurrent(
-                'should fail create, fill and commit cart, then resolve with uncaptured payment intent and total under required',
-                async function() {
-                    const {
-                        sdk,
-                        token,
-                        user,
-                        password,
-                    }: {
-                        sdk: T721SDK;
-                        token: string;
-                        user: PasswordlessUserDto;
-                        password: string;
-                    } = await getSDKAndUser(getCtx);
+                const checkoutActionSetId = res.data.checkoutActionSetId;
 
-                    const event = await createEvent(token, sdk);
+                await waitForActionSet(sdk, token, checkoutActionSetId, (as: ActionSetEntity): boolean => {
+                    return (
+                        as.current_status === 'event:error' &&
+                        as.actions[as.current_action].status === 'error' &&
+                        JSON.parse(as.actions[as.current_action].error).error === 'dosojin_circuit_failed'
+                    );
+                });
 
-                    const validPaymentIntent: Partial<Stripe.PaymentIntent> = {
-                        charges: {
-                            data: [
-                                {
-                                    payment_method_details: {
-                                        type: 'card',
-                                        card: {
-                                            country: 'FR',
-                                        },
-                                    },
-                                },
-                            ],
-                        } as Stripe.ApiList<Stripe.Charge>,
-                        payment_method_types: ['card'],
-                        status: 'requires_capture',
-                        currency: 'eur',
-                        amount_capturable: 329,
-                    };
-
-                    const validPaymentIntentId = createPaymentIntent(validPaymentIntent);
-
-                    const mocks = getMocks();
-
-                    when(mocks[1].cancel(validPaymentIntentId)).thenCall(() => {
-                        setPaymentIntent(validPaymentIntentId, {
-                            ...validPaymentIntent,
-                            status: 'canceled',
-                        });
-                    });
-
-                    const cartActionSetRes = await sdk.actions.create(token, {
-                        name: 'cart_create',
-                        arguments: {},
-                    });
-
-                    const actionSetId = cartActionSetRes.data.actionset.id;
-
-                    await sdk.cart.ticketSelections(token, actionSetId, {
-                        tickets: [
-                            ...[...Array(3)].map(() => ({
-                                categoryId: event.categories[0],
-                                price: {
-                                    currency: 'Fiat',
-                                    price: '100',
-                                },
-                            })),
-                        ],
-                    });
-
-                    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-                        return as.current_action === 1;
-                    });
-
-                    await sdk.cart.modulesConfiguration(token, actionSetId, {});
-
-                    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-                        return as.current_action === 2;
-                    });
-
-                    await sdk.checkout.cart.commit.stripe(token, {
-                        cart: actionSetId,
-                    });
-
-                    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-                        return as.current_status === 'complete';
-                    });
-
-                    const res = await sdk.checkout.cart.resolve.paymentIntent(token, {
-                        cart: actionSetId,
-                        paymentIntentId: validPaymentIntentId,
-                    });
-
-                    const checkoutActionSetId = res.data.checkoutActionSetId;
-
-                    await waitForActionSet(sdk, token, checkoutActionSetId, (as: ActionSetEntity): boolean => {
-                        return (
-                            as.current_status === 'event:error' &&
-                            as.actions[as.current_action].status === 'error' &&
-                            JSON.parse(as.actions[as.current_action].error).error === 'dosojin_circuit_failed'
-                        );
-                    });
-
-                    await gemFail(sdk, token, res.data.gemOrderId, {
-                        dosojin: 'StripeTokenMinter',
-                        entity_name: 'CardPaymentIntentReceptacle',
-                        entity_type: 'receptacle',
-                        layer: 0,
-                        message: "Payment Intent's capturable amount is too low.",
-                    });
-                },
-            );
+                await gemFail(sdk, token, res.data.gemOrderId, {
+                    dosojin: 'StripeTokenMinter',
+                    entity_name: 'CardPaymentIntentReceptacle',
+                    entity_type: 'receptacle',
+                    layer: 0,
+                    message: "Payment Intent's capturable amount is too low.",
+                });
+            });
         });
     };
 }

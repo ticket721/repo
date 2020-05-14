@@ -6,7 +6,7 @@ import { StatusCodes } from '@lib/common/utils/codes.value';
 export default function(getCtx: () => { ready: Promise<void> }) {
     return function() {
         describe('fetch (GET /fetch)', function() {
-            test.concurrent('should fetch all metadatas from event creation', async function() {
+            test('should fetch all metadatas from event creation', async function() {
                 const {
                     sdk,
                     token,
@@ -48,7 +48,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
 
                 expect(metadataFetchRes.data.metadatas.length).toEqual(6);
             });
-            test.concurrent('should fetch event metadatas from event creation', async function() {
+            test('should fetch event metadatas from event creation', async function() {
                 const {
                     sdk,
                     token,
@@ -80,7 +80,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
 
                 expect(metadataFetchRes.data.metadatas.length).toEqual(1);
             });
-            test.concurrent('should fetch date metadatas from event creation', async function() {
+            test('should fetch date metadatas from event creation', async function() {
                 const {
                     sdk,
                     token,
@@ -112,7 +112,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
 
                 expect(metadataFetchRes.data.metadatas.length).toEqual(2);
             });
-            test.concurrent('should fetch category metadatas from event creation', async function() {
+            test('should fetch category metadatas from event creation', async function() {
                 const {
                     sdk,
                     token,
@@ -144,7 +144,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
 
                 expect(metadataFetchRes.data.metadatas.length).toEqual(3);
             });
-            test.concurrent('should fail fetching metadata from not owned event', async function() {
+            test('should fail fetching metadata from not owned event', async function() {
                 const {
                     sdk,
                     token,

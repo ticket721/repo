@@ -1,0 +1,110 @@
+{
+    "name": "live_ropsten",
+
+    "network": {
+        "type": "remote",
+        "host": "ropsten.infura.io",
+        "port": 443,
+        "protocol": "https",
+        "connector": "http",
+        "network_id": 3,
+        "path": "/v3/{{INFURA_PROJECT_ID}}",
+        "headers": [],
+
+        "config": {
+        }
+
+    },
+
+    "contracts": {
+        "migrations": [
+            {
+                "name": "initial_deployment",
+                "serie": [
+                    {
+                        "name": "ticketforge",
+                        "test": false,
+                        "range": [1, 2],
+                        "args": {
+                            "ERC721": {
+                                "name": "Ticket Forge",
+                                "symbol": "TKT"
+                            }
+                        }
+                    },
+                    {
+                        "name": "t721token",
+                        "test": false,
+                        "range": [1, 2]
+                    },
+                    {
+                        "name": "t721controller",
+                        "test": false,
+                        "range": [1, 2]
+                    },
+                    {
+                        "name": "metamarketplace",
+                        "test": false,
+                        "range": [1, 2]
+                    },
+                    {
+                        "name": "t721admin",
+                        "test": false,
+                        "range": [1, 2]
+                    },
+                    {
+                        "name": "refract",
+                        "test": false,
+                        "range": [1, 2]
+                    }
+                ]
+            },
+            {
+                "name": "configuration",
+                "serie": [
+                    {
+                        "name": "ticketforge",
+                        "test": false,
+                        "range": [3, 3]
+                    },
+                    {
+                        "name": "t721token",
+                        "test": false,
+                        "range": [3, 3]
+                    }
+                ]
+            }
+        ],
+        "modules": [
+            {
+                "name": "ticketforge",
+                "upgradeable": false
+            },
+            {
+                "name": "metamarketplace",
+                "upgradeable": false
+            },
+            {
+                "name": "refract",
+                "upgradeable": false
+            },
+            {
+                "name": "t721controller",
+                "upgradeable": false
+            },
+            {
+                "name": "t721token",
+                "upgradeable": false
+            },
+            {
+                "name": "t721admin",
+                "upgradeable": false
+            }
+        ],
+        "provider": {
+            "type": "ledger",
+            "derivation_path": "44'/1'/0'"
+        }
+    }
+
+}

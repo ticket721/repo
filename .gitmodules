@@ -22,9 +22,6 @@
 [submodule "contracts/contracts_modules/t721controller"]
 	path = modules/@contracts_t721controller
 	url = git@github.com:ticket721/t721controller
-[submodule "contracts/contracts_modules/refract"]
-	path = modules/@contracts_refract
-	url = git@github.com:ticket721/refract
 [submodule "contracts/contracts_modules/t721token"]
 	path = modules/@contracts_t721token
 	url = git@github.com:ticket721/t721token

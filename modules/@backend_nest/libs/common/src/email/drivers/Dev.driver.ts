@@ -56,8 +56,8 @@ export class DevDriver implements EmailDriver {
         const email = new EmailTemplates({
             send: false,
             i18n: {
-                logDebugFn: console.log,
-                logger: console,
+                // logDebugFn: console.log,
+                // logger: console,
                 directory: path.join(templatePath, 'locales'),
                 locales: ['en', 'fr'],
             },
@@ -85,9 +85,6 @@ export class DevDriver implements EmailDriver {
                 },
             });
         }
-
-        console.log(`Written mail with following locals`);
-        console.log(options.locals);
 
         return {
             options,

@@ -463,6 +463,24 @@ var migration1576415205 = {
             params: []
         };
 
+        const ticket_table_creation = {
+            query: `CREATE TABLE ticket721.ticket ( 
+                        id text PRIMARY KEY,
+                        authorization uuid,
+                        owner text,
+                        env text,
+                        status text,
+                        transaction_hash text,
+                        category uuid,
+                        group_id text,
+                        parent_id uuid,
+                        parent_type text,
+                        created_at timestamp,
+                        updated_at timestamp
+                    );`,
+            params: []
+        };
+
         try {
 
             // Types first
@@ -571,6 +589,10 @@ var migration1576415205 = {
 
             console.log('Authorization Table Creation');
             await db.execute(authorization_table_creation.query, authorization_table_creation.params, { prepare: true });
+
+            console.log('Ticket Table Creation');
+            await db.execute(ticket_table_creation.query, ticket_table_creation.params, { prepare: true });
+
         } catch (e) {
             return handler(e, false);
         }
@@ -749,6 +771,11 @@ var migration1576415205 = {
             params: []
         };
 
+        const ticket_table_creation = {
+            query: `DROP TABLE ticket721.ticket`,
+            params: []
+        };
+
 
         try {
 
@@ -800,6 +827,9 @@ var migration1576415205 = {
 
             console.log('Authorization Table Creation');
             await db.execute(authorization_table_creation.query, authorization_table_creation.params, { prepare: true });
+
+            console.log('Ticket Table Creation');
+            await db.execute(ticket_table_creation.query, ticket_table_creation.params, { prepare: true });
 
             // Then Types
             console.log('Action Type Deletion');

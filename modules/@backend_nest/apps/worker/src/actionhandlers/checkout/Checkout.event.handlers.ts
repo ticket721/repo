@@ -7,7 +7,7 @@ import { CheckoutResolve } from '@app/worker/actionhandlers/checkout/Checkout.in
 import { GemOrdersService } from '@lib/common/gemorders/GemOrders.service';
 import { GemOrderEntity } from '@lib/common/gemorders/entities/GemOrder.entity';
 import { Gem } from 'dosojin';
-import { CheckoutCreationActions } from '@lib/common/actionsets/acset_builders/Checkout.acsetbuilder.helper';
+import { CheckoutCreationActions } from '@lib/common/checkout/acset_builders/Checkout.acsetbuilder.helper';
 
 /**
  * Data model required for the Checkout Progress step

@@ -1,3 +1,4 @@
-export { configureStore } from './store.configureStore';
-export { AppState, initialState, history } from './ducks';
+export * from './setup';
+export * from './states';
+export { AppState, initialState, configureStore, history } from './store';
 export { entryPoint } from './entryPoint';

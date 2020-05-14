@@ -9,7 +9,7 @@ import {
 /**
  * Authorization modes
  */
-export type AuthorizationModes = 'sealSale' | 'mint' | 'attach' | 'withdraw';
+export type AuthorizationModes = 'sealSale' | 'mint' | 'attach' | 'withdraw' | 'mintTokens';
 
 /**
  * Authorization entity holding a signature for a user to redeem a ticket
@@ -178,4 +178,20 @@ export class AuthorizationEntity {
     @UpdateDateColumn()
     // tslint:disable-next-line:variable-name
     updated_at: Date;
+
+    /**
+     * Static utility to recover arguments
+     * @param ae
+     */
+    static getArgs(ae: AuthorizationEntity): string[] {
+        return ae.args.split('_').filter((value: string, index: number) => index % 2 !== 0);
+    }
+
+    /**
+     * Static utility to recover codes
+     * @param ae
+     */
+    static getCodes(ae: AuthorizationEntity): string[] {
+        return ae.codes.split('_').filter((value: string, index: number) => index % 2 !== 0);
+    }
 }

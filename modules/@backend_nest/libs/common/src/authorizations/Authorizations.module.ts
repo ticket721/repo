@@ -6,9 +6,8 @@ import { AuthorizationEntity } from '@lib/common/authorizations/entities/Authori
 import { CategoriesModule } from '@lib/common/categories/Categories.module';
 import { BullModule, BullModuleOptions } from '@nestjs/bull';
 import { ConfigService } from '@lib/common/config/Config.service';
-import { EventsModule } from '@lib/common/events/Events.module';
-import { DatesModule } from '@lib/common/dates/Dates.module';
 import { ToolBoxModule } from '@lib/common/toolbox/ToolBox.module';
+import { GroupModule } from '@lib/common/group/Group.module';
 
 @Module({
     imports: [
@@ -25,9 +24,8 @@ import { ToolBoxModule } from '@lib/common/toolbox/ToolBox.module';
             }),
         }),
         CategoriesModule,
-        EventsModule,
-        DatesModule,
         ToolBoxModule,
+        GroupModule,
     ],
     providers: [AuthorizationsService],
     exports: [AuthorizationsService],

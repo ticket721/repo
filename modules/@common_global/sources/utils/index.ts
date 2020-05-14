@@ -1,4 +1,4 @@
-import { formatBytes32String } from 'ethers/utils';
+import { BigNumber, formatBytes32String } from 'ethers/utils';
 
 /**
  * Performs an equality check on two uuid strings
@@ -46,4 +46,14 @@ export function serialize(text: string): string {
 
 export function isFutureDateRange(begin: Date, end: Date): boolean {
     return ((end.getTime() > begin.getTime()) && (begin.getTime() > Date.now()));
+}
+
+export function toHex(data: string): string {
+    return '0x' + Buffer.from(data, 'utf8').toString('hex')
+}
+
+export function decimalToHex(num: string): string {
+
+    return new BigNumber(num).toHexString()
+
 }

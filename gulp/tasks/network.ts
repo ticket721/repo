@@ -1,6 +1,7 @@
-import { NetworkEngine } from '../../network';
-import { get_config }    from '../utils/get_config';
-import { repo_log }      from '../utils/log';
+import { NetworkEngine }      from '../../network';
+import { get_config }         from '../utils/get_config';
+import { repo_log }           from '../utils/log';
+import { check_dependencies } from '../utils/check_dependencies';
 
 /**
  * Gulp task that calls the `run` method on the NetworkEngine
@@ -8,6 +9,8 @@ import { repo_log }      from '../utils/log';
 export async function network_run(): Promise<void> {
     repo_log.info(`Starting task network::run`);
     console.log();
+
+    await check_dependencies();
 
     const config = await get_config();
 
@@ -25,6 +28,8 @@ export async function network_run(): Promise<void> {
 export async function network_clean(): Promise<void> {
     repo_log.info(`Starting task network::clean`);
     console.log();
+
+    await check_dependencies();
 
     const config = await get_config();
 

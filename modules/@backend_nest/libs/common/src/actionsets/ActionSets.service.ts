@@ -11,6 +11,7 @@ import { UserDto } from '@lib/common/users/dto/User.dto';
 import { RightsService } from '@lib/common/rights/Rights.service';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
+import { ActionSetLifecyclesBase } from '@lib/common/actionsets/helper/ActionSet.lifecycles.base';
 
 /**
  * Progress Type
@@ -122,19 +123,28 @@ export class ActionSetsService extends CRUDExtension<ActionSetsRepository, Actio
      * @param name
      * @param caller
      * @param args
+     * @param internal
      */
     async build<BuildArgs = any>(
         name: string,
         caller: UserDto,
         args: BuildArgs,
+        internal?: boolean,
     ): Promise<ServiceResponse<ActionSetEntity>> {
         let builder: ActionSetBuilderBase;
 
         try {
-            builder = await this.moduleRef.get(`ACTION_SET_BUILDER/${name}`);
+            builder = await this.moduleRef.get(`ACTION_SET_BUILDER/${name}`, { strict: false });
         } catch (e) {
             return {
                 error: 'unknown_builder',
+                response: null,
+            };
+        }
+
+        if (!internal && builder.isPrivate) {
+            return {
+                error: 'cannot_create_private_actionset_in_public_context',
                 response: null,
             };
         }
@@ -178,6 +188,26 @@ export class ActionSetsService extends CRUDExtension<ActionSetsRepository, Actio
             error: null,
             response: actionSetCreationRes.response,
         };
+    }
+
+    /**
+     * Utility to extract the lifecycle callback from the provider if it exists, or do nothing
+     *
+     * @param actionSet
+     */
+    async onComplete(actionSet: ActionSet): Promise<ServiceResponse<void>> {
+        let lifecycles: ActionSetLifecyclesBase;
+
+        try {
+            lifecycles = await this.moduleRef.get(`ACTION_SET_LIFECYCLES/${actionSet.name}`, { strict: false });
+        } catch (e) {
+            return {
+                error: null,
+                response: null,
+            };
+        }
+
+        return lifecycles.onComplete(actionSet);
     }
 
     /**
@@ -290,7 +320,6 @@ export class ActionSetsService extends CRUDExtension<ActionSetsRepository, Actio
         });
 
         if (actionSetUpdateRes.error) {
-            console.log('update res', actionSetUpdateRes.error);
             return {
                 error: actionSetUpdateRes.error,
                 response: null,

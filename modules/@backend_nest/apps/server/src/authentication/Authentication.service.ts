@@ -1,15 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { PasswordlessUserDto } from './dto/PasswordlessUser.dto';
 import { compare, hash } from 'bcrypt';
-import { toAcceptedAddressFormat, isKeccak256, Web3LoginSigner, Web3RegisterSigner, keccak256 } from '@common/global';
+import { toAcceptedAddressFormat, isKeccak256, Web3LoginSigner, Web3RegisterSigner } from '@common/global';
 import { UsersService } from '@lib/common/users/Users.service';
 import { ConfigService } from '@lib/common/config/Config.service';
 import { UserDto } from '@lib/common/users/dto/User.dto';
-import { RefractFactoryV0Service } from '@lib/common/contracts/refract/RefractFactory.V0.service';
 import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
-import { VaultereumService } from '@lib/common/vaultereum/Vaultereum.service';
-import { uuid } from '@iaminfinity/express-cassandra';
 import { Web3Service } from '@lib/common/web3/Web3.service';
+import { RocksideService } from '@lib/common/rockside/Rockside.service';
 
 /**
  * Authentication services and utilities
@@ -21,16 +19,14 @@ export class AuthenticationService {
      *
      * @param usersService
      * @param configService
-     * @param refractFactoryService
-     * @param vaultereumService
      * @param web3Service
+     * @param rocksideService
      */
     constructor /* instanbul ignore next */(
         private readonly usersService: UsersService,
         private readonly configService: ConfigService,
-        private readonly refractFactoryService: RefractFactoryV0Service,
-        private readonly vaultereumService: VaultereumService,
         private readonly web3Service: Web3Service,
+        private readonly rocksideService: RocksideService,
     ) {}
 
     /**
@@ -245,7 +241,6 @@ export class AuthenticationService {
      * @param email
      * @param password
      * @param username
-     * @param wallet
      * @param locale
      */
     async createT721User(
@@ -280,32 +275,24 @@ export class AuthenticationService {
             };
         }
 
-        const userId = uuid()
-            .toString()
-            .toLowerCase();
-        const controllerAddressRes = await this.vaultereumService.write(`ethereum/accounts/user-${userId}`);
+        const rocksideFinalAddress = await this.rocksideService.createIdentity();
 
-        if (controllerAddressRes.error) {
+        if (rocksideFinalAddress.error) {
             return {
                 response: null,
-                error: 'user_wallet_creation_error',
+                error: 'rockside_identity_creation_error',
             };
         }
 
-        const address = toAcceptedAddressFormat(controllerAddressRes.response.data.address);
-
-        const refractFactoryV0 = await this.refractFactoryService.get();
-        const salt = keccak256(email);
-        const finalAddress: string = toAcceptedAddressFormat(
-            await refractFactoryV0.methods.predict(address, salt).call(),
+        const addressUserResp: ServiceResponse<UserDto> = await this.usersService.findByAddress(
+            rocksideFinalAddress.response.address,
         );
-
-        const addressUserResp: ServiceResponse<UserDto> = await this.usersService.findByAddress(finalAddress);
         if (addressUserResp.error) {
             return addressUserResp;
         }
 
         const addressUser: UserDto = addressUserResp.response;
+
         if (addressUser !== null) {
             return {
                 response: null,
@@ -321,11 +308,10 @@ export class AuthenticationService {
         }
 
         const newUser: ServiceResponse<UserDto> = await this.usersService.create({
-            id: uuid(userId),
             email,
             password: await hash(password, parseInt(this.configService.get('BCRYPT_SALT_ROUNDS'), 10)),
             username,
-            address: finalAddress,
+            address: rocksideFinalAddress.response.address,
             type: 't721',
             role: 'authenticated',
             locale,

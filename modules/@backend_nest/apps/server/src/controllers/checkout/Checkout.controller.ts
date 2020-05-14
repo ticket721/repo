@@ -26,7 +26,7 @@ import { keccak256 } from '@common/global';
 import regionRestrictions from './restrictions/regionRestrictions.value';
 import methodsRestrictions from './restrictions/methodsRestrictions.value';
 import { GemOrderEntity } from '@lib/common/gemorders/entities/GemOrder.entity';
-import { CheckoutAcsetBuilderArgs } from '@lib/common/actionsets/acset_builders/Checkout.acsetbuilder.helper';
+import { CheckoutAcsetBuilderArgs } from '@lib/common/checkout/acset_builders/Checkout.acsetbuilder.helper';
 
 /**
  * Checkout controller to create, update and resolve carts
@@ -123,6 +123,7 @@ export class CheckoutController extends ControllerBasics<StripeResourceEntity> {
             commitType: 'stripe',
             expirationTime: 2 * DAY,
             prices: ticketSelectionsData.total,
+            fees: ticketSelectionsData.fees,
             signatureReadable: false,
             grantee: user,
         });
@@ -256,7 +257,7 @@ export class CheckoutController extends ControllerBasics<StripeResourceEntity> {
         });
 
         const checkoutActionSet = await this._serviceCall(
-            this.actionSetsService.build<CheckoutAcsetBuilderArgs>('checkout_create', user, {}),
+            this.actionSetsService.build<CheckoutAcsetBuilderArgs>('checkout_create', user, {}, true),
             StatusCodes.InternalServerError,
             'checkout_acset_creation_error',
         );

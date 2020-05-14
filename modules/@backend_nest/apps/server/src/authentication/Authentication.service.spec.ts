@@ -15,25 +15,22 @@ import { hash } from 'bcrypt';
 import { UsersService } from '@lib/common/users/Users.service';
 import { ConfigService } from '@lib/common/config/Config.service';
 import { UserDto } from '@lib/common/users/dto/User.dto';
-import { RefractFactoryV0Service } from '@lib/common/contracts/refract/RefractFactory.V0.service';
 import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
-import { VaultereumService } from '@lib/common/vaultereum/Vaultereum.service';
 import { Web3Service } from '@lib/common/web3/Web3.service';
+import { RocksideService } from '@lib/common/rockside/Rockside.service';
 
 const context: {
     authenticationService: AuthenticationService;
     usersServiceMock: UsersService;
     configServiceMock: ConfigService;
-    refractFactoryV0ServiceMock: RefractFactoryV0Service;
-    vaultereumServiceMock: VaultereumService;
     web3ServiceMock: Web3Service;
+    rocksideServiceMock: RocksideService;
 } = {
     authenticationService: null,
     usersServiceMock: null,
     configServiceMock: null,
-    refractFactoryV0ServiceMock: null,
-    vaultereumServiceMock: null,
     web3ServiceMock: null,
+    rocksideServiceMock: null,
 };
 
 const resultAddress = toAcceptedAddressFormat('0x87c02dec6b33498b489e1698801fc2ef79d02eef');
@@ -42,9 +39,8 @@ describe('Authentication Service', function() {
     beforeEach(async function() {
         context.usersServiceMock = mock(UsersService);
         context.configServiceMock = mock(ConfigService);
-        context.refractFactoryV0ServiceMock = mock(RefractFactoryV0Service);
-        context.vaultereumServiceMock = mock(VaultereumService);
         context.web3ServiceMock = mock(Web3Service);
+        context.rocksideServiceMock = mock(RocksideService);
 
         when(context.configServiceMock.get('AUTH_SIGNATURE_TIMEOUT')).thenReturn('30');
         when(context.web3ServiceMock.net()).thenResolve(1);
@@ -63,13 +59,8 @@ describe('Authentication Service', function() {
                 },
 
                 {
-                    provide: RefractFactoryV0Service,
-                    useValue: instance(context.refractFactoryV0ServiceMock),
-                },
-
-                {
-                    provide: VaultereumService,
-                    useValue: instance(context.vaultereumServiceMock),
+                    provide: RocksideService,
+                    useValue: instance(context.rocksideServiceMock),
                 },
 
                 {
@@ -78,15 +69,6 @@ describe('Authentication Service', function() {
                 },
             ],
         }).compile();
-
-        const contract_instance = {
-            methods: {
-                predict: (...args: any[]) => ({
-                    call: async () => resultAddress,
-                }),
-            },
-        };
-        when(context.refractFactoryV0ServiceMock.get()).thenReturn(Promise.resolve(contract_instance));
 
         context.authenticationService = module.get<AuthenticationService>(AuthenticationService);
     });
@@ -810,7 +792,6 @@ describe('Authentication Service', function() {
             when(
                 usersServiceMock.create(
                     deepEqual({
-                        id: anything(),
                         email,
                         username,
                         address: anyString(),
@@ -825,13 +806,11 @@ describe('Authentication Service', function() {
             when(usersServiceMock.findByAddress(resultAddress)).thenReturn(emptyServiceResponse);
             when(usersServiceMock.findByEmail(email)).thenReturn(emptyServiceResponse);
             when(usersServiceMock.findByUsername(username)).thenReturn(emptyServiceResponse);
-            when(context.vaultereumServiceMock.write(anyString())).thenResolve({
-                error: null,
+            when(context.rocksideServiceMock.createIdentity()).thenResolve({
                 response: {
-                    data: {
-                        address: resultAddress,
-                    },
+                    address: resultAddress,
                 },
+                error: null,
             });
 
             const res = await authenticationService.createT721User(email, hashedp, username, 'en');
@@ -852,7 +831,6 @@ describe('Authentication Service', function() {
             verify(
                 usersServiceMock.create(
                     deepEqual({
-                        id: anything(),
                         email,
                         username,
                         address: anyString(),
@@ -867,9 +845,10 @@ describe('Authentication Service', function() {
             verify(usersServiceMock.findByAddress(resultAddress)).called();
             verify(usersServiceMock.findByEmail(email)).called();
             verify(usersServiceMock.findByUsername(username)).called();
+            verify(context.rocksideServiceMock.createIdentity()).called();
         });
 
-        test('should fail on vaul account creation', async function() {
+        test('should fail on rockside account creation error', async function() {
             const authenticationService: AuthenticationService = context.authenticationService;
             const usersServiceMock: UsersService = context.usersServiceMock;
 
@@ -899,19 +878,22 @@ describe('Authentication Service', function() {
 
             when(usersServiceMock.findByEmail(email)).thenReturn(emptyServiceResponse);
             when(usersServiceMock.findByUsername(username)).thenReturn(emptyServiceResponse);
-            when(context.vaultereumServiceMock.write(anyString())).thenResolve({
+            when(context.rocksideServiceMock.createIdentity()).thenResolve({
+                response: {
+                    address: resultAddress,
+                },
                 error: 'unexpected_error',
-                response: null,
             });
 
             const res = await authenticationService.createT721User(email, hashedp, username, 'en');
 
             expect(res.response).toBeDefined();
-            expect(res.error).toEqual('user_wallet_creation_error');
+            expect(res.error).toEqual('rockside_identity_creation_error');
             expect(res.response).toEqual(null);
 
             verify(usersServiceMock.findByEmail(email)).called();
             verify(usersServiceMock.findByUsername(username)).called();
+            verify(context.rocksideServiceMock.createIdentity()).called();
         });
 
         test('email already in use', async function() {
@@ -1023,13 +1005,11 @@ describe('Authentication Service', function() {
             when(usersServiceMock.findByEmail(email)).thenReturn(emptyServiceResponse);
             when(usersServiceMock.findByUsername(username)).thenReturn(emptyServiceResponse);
             when(usersServiceMock.findByAddress(resultAddress)).thenReturn(Promise.resolve(serviceResponse));
-            when(context.vaultereumServiceMock.write(anyString())).thenResolve({
-                error: null,
+            when(context.rocksideServiceMock.createIdentity()).thenResolve({
                 response: {
-                    data: {
-                        address: resultAddress,
-                    },
+                    address: resultAddress,
                 },
+                error: null,
             });
 
             const res = await authenticationService.createT721User(email, hashedp, username, 'en');
@@ -1039,6 +1019,7 @@ describe('Authentication Service', function() {
             verify(usersServiceMock.findByUsername(username)).called();
             verify(usersServiceMock.findByEmail(email)).called();
             verify(usersServiceMock.findByAddress(resultAddress)).called();
+            verify(context.rocksideServiceMock.createIdentity()).called();
         });
 
         test('invalid password', async function() {
@@ -1057,13 +1038,11 @@ describe('Authentication Service', function() {
             when(usersServiceMock.findByEmail(email)).thenReturn(emptyServiceResponse);
             when(usersServiceMock.findByUsername(username)).thenReturn(emptyServiceResponse);
             when(usersServiceMock.findByAddress(resultAddress)).thenReturn(emptyServiceResponse);
-            when(context.vaultereumServiceMock.write(anyString())).thenResolve({
-                error: null,
+            when(context.rocksideServiceMock.createIdentity()).thenResolve({
                 response: {
-                    data: {
-                        address: resultAddress,
-                    },
+                    address: resultAddress,
                 },
+                error: null,
             });
 
             const res = await authenticationService.createT721User(email, hashedp.slice(4), username, 'en');
@@ -1073,7 +1052,7 @@ describe('Authentication Service', function() {
             verify(usersServiceMock.findByUsername(username)).called();
             verify(usersServiceMock.findByEmail(email)).called();
             verify(usersServiceMock.findByAddress(resultAddress)).called();
-            verify(context.vaultereumServiceMock.write(anyString())).called();
+            verify(context.rocksideServiceMock.createIdentity()).called();
         });
 
         test('email query internal error', async function() {
@@ -1148,13 +1127,11 @@ describe('Authentication Service', function() {
                     error: 'unexpected_error',
                 }),
             );
-            when(context.vaultereumServiceMock.write(anyString())).thenResolve({
-                error: null,
+            when(context.rocksideServiceMock.createIdentity()).thenResolve({
                 response: {
-                    data: {
-                        address: resultAddress,
-                    },
+                    address: resultAddress,
                 },
+                error: null,
             });
 
             const res = await authenticationService.createT721User(email, hashedp.slice(4), username, 'en');
@@ -1164,7 +1141,7 @@ describe('Authentication Service', function() {
             verify(usersServiceMock.findByEmail(email)).called();
             verify(usersServiceMock.findByUsername(username)).called();
             verify(usersServiceMock.findByAddress(resultAddress)).called();
-            verify(context.vaultereumServiceMock.write(anyString())).called();
+            verify(context.rocksideServiceMock.createIdentity()).called();
         });
 
         test('create user internal error', async function() {
@@ -1183,7 +1160,6 @@ describe('Authentication Service', function() {
             when(
                 usersServiceMock.create(
                     deepEqual({
-                        id: anything(),
                         email,
                         username,
                         address: anyString(),
@@ -1203,13 +1179,11 @@ describe('Authentication Service', function() {
             when(usersServiceMock.findByAddress(resultAddress)).thenReturn(emptyServiceResponse);
             when(usersServiceMock.findByEmail(email)).thenReturn(emptyServiceResponse);
             when(usersServiceMock.findByUsername(username)).thenReturn(emptyServiceResponse);
-            when(context.vaultereumServiceMock.write(anyString())).thenResolve({
-                error: null,
+            when(context.rocksideServiceMock.createIdentity()).thenResolve({
                 response: {
-                    data: {
-                        address: resultAddress,
-                    },
+                    address: resultAddress,
                 },
+                error: null,
             });
 
             const res = await authenticationService.createT721User(email, hashedp, username, 'en');
@@ -1219,11 +1193,9 @@ describe('Authentication Service', function() {
             verify(usersServiceMock.findByEmail(email)).called();
             verify(usersServiceMock.findByUsername(username)).called();
             verify(usersServiceMock.findByAddress(resultAddress)).called();
-            verify(context.vaultereumServiceMock.write(anyString())).called();
             verify(
                 usersServiceMock.create(
                     deepEqual({
-                        id: anything(),
                         email,
                         username,
                         address: anyString(),
@@ -1234,6 +1206,7 @@ describe('Authentication Service', function() {
                     }),
                 ),
             ).called();
+            verify(context.rocksideServiceMock.createIdentity()).called();
         });
     });
 

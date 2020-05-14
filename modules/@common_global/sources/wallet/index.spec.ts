@@ -1,6 +1,6 @@
-import {setVerbosity}                                                        from '../log';
-import { createWallet, EncryptedWallet, encryptWallet, isV3EncryptedWallet } from './index';
-import { isAddress }                                                         from '../address';
+import {setVerbosity}                                                                    from '../log';
+import { createWallet, EncryptedWallet, encryptWallet, isV3EncryptedWallet, loadWallet } from './index';
+import { isAddress }                                                                     from '../address';
 import { Wallet } from 'ethers';
 
 setVerbosity(true);
@@ -10,6 +10,14 @@ describe('Wallet', function() {
     test('generate wallet', async function() {
         const wallet: Wallet = await createWallet();
         expect(isAddress(wallet.address)).toBeTruthy();
+    });
+
+    test('load wallet', async function() {
+        const wallet: Wallet = await createWallet();
+        console.log(wallet.address, wallet.privateKey);
+        const address = wallet.address;
+        const loadedWallet = loadWallet(wallet.privateKey);
+        expect(address).toEqual(loadedWallet.address);
     });
 
     test('encrypt wallet', async function() {

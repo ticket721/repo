@@ -15,6 +15,7 @@ import { UserDto } from '@lib/common/users/dto/User.dto';
 import { TxEntity } from '@lib/common/txs/entities/Tx.entity';
 import { T721TokenService } from '@lib/common/contracts/T721Token.service';
 import Stripe from 'stripe';
+import { AuthorizationEntity } from '@lib/common/authorizations/entities/Authorization.entity';
 
 describe('StripeTokenMinter Dosojin', function() {
     describe('TokenMinterOperation', function() {
@@ -22,48 +23,61 @@ describe('StripeTokenMinter Dosojin', function() {
             tokenMinterOperation: TokenMinterOperation;
             stripeTokenMinterDosojinMock: StripeTokenMinterDosojin;
             t721AdminServiceMock: T721AdminService;
+            t721TokenServiceMock: T721TokenService;
             usersServiceMock: UsersService;
             txsServiceMock: TxsService;
-            configServiceMock: ConfigService;
         } = {
             tokenMinterOperation: null,
             stripeTokenMinterDosojinMock: null,
             t721AdminServiceMock: null,
+            t721TokenServiceMock: null,
             usersServiceMock: null,
             txsServiceMock: null,
-            configServiceMock: null,
         };
 
         beforeEach(async function() {
             context.stripeTokenMinterDosojinMock = mock(StripeTokenMinterDosojin);
             context.t721AdminServiceMock = mock(T721AdminService);
+            context.t721TokenServiceMock = mock(T721TokenService);
             context.usersServiceMock = mock(UsersService);
             context.txsServiceMock = mock(TxsService);
-            context.configServiceMock = mock(ConfigService);
             when(context.stripeTokenMinterDosojinMock.name).thenReturn('StripeTokenMinter');
 
             context.tokenMinterOperation = new TokenMinterOperation(
                 'TokenMinterOperation',
                 instance(context.stripeTokenMinterDosojinMock),
                 instance(context.t721AdminServiceMock),
+                instance(context.t721TokenServiceMock),
                 instance(context.usersServiceMock),
                 instance(context.txsServiceMock),
-                instance(context.configServiceMock),
             );
         });
 
         describe('run/dryRun', function() {
-            it('should mint token amount matching gem payload', async function() {
-                const user: UserDto = ({
-                    id: 'userid',
-                    address: '0x32Be343B94f860124dC4fEe278FDCBD38C102D88',
-                } as any) as UserDto;
-
+            it('should properly run dosojin', async function() {
+                // DECLARE
+                const name = 'StripeTokenMinter';
+                const userId = 'userid';
+                const address = '0xC32654455D666614215E207834BC9F4A0281E4d2';
+                const sender = '0xDa022Ca91DF99413e8CB0CAAB4d1CbA4e9018bea';
+                const minter = '0x108Fb8C18DD3Ce3A0eC957533A63ECE39750e7d2';
+                const adminAddress = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
+                const user: Partial<UserDto> = {
+                    id: userId,
+                    address,
+                };
+                const amount = '300';
+                const authorization: Partial<AuthorizationEntity> = {
+                    id: 'authorization_id',
+                    signature: '0xsignature',
+                };
+                const code = '1234';
+                const gemMock = mock(Gem);
                 const gemState: TokenMinterArguments = {
                     paymentIntentId: 'pi_abcd',
                     currency: 'eur',
-                    amount: 10000,
-                    userId: user.id,
+                    amount: 300,
+                    userId,
                     regionRestrictions: {
                         FR: {
                             fix_fee: 25,
@@ -76,140 +90,159 @@ describe('StripeTokenMinter Dosojin', function() {
                         },
                     },
                 };
-
-                const gemMock = mock(Gem);
-                when(gemMock.gemPayload).thenReturn({
+                const gemPayload = {
                     values: {
-                        fiat_eur: new BN(10000),
+                        fiat_eur: new BN(300),
                     },
                     costs: [],
-                });
+                };
+                const t721adminInstance = {
+                    _address: adminAddress,
+                    methods: {
+                        redeemTokens: () => ({
+                            encodeABI: () => '0xencoded',
+                        }),
+                    },
+                };
+                const gasLimit = '12345';
+                const gasPrice = '12345';
+                const txHash = '0x12cf175d36b70cc0f5e545fa6f518e29426f7c0ddf8254e9fa036038b100bfb3';
+                const tx: Partial<TxEntity> = {
+                    transaction_hash: txHash,
+                };
+
+                // MOCK
                 when(gemMock.getState<TokenMinterArguments>(instance(context.stripeTokenMinterDosojinMock))).thenReturn(
                     gemState,
                 );
-
-                const encodedCall = '0xabcdef';
-
-                const t721AdminInstance = {
-                    methods: {
-                        refundedMintFor: () => ({
-                            encodeABI: () => encodedCall,
-                        }),
-                    },
-                    _address: '0x32Be343B94f860124dC4fEe278FDCBD38C102D99',
-                };
-
-                const admin = 'admin_0';
-                const gasLimit = '12345654321';
-                const gasPrice = '17654321';
-                const txHash = '0x1694f8213153d1c803b81ec576341075dfdad7f8b7abf6860568e0b807b2bc92';
-
-                when(context.usersServiceMock.findById(user.id)).thenResolve({
+                when(context.usersServiceMock.findById(userId)).thenResolve({
+                    response: user as UserDto,
                     error: null,
-                    response: user,
                 });
-                when(context.t721AdminServiceMock.get()).thenResolve(t721AdminInstance);
-
-                when(context.configServiceMock.get('VAULT_ETHEREUM_ASSIGNED_ADMIN')).thenReturn(admin);
-
-                when(
-                    context.txsServiceMock.estimateGasLimit(admin, t721AdminInstance._address, encodedCall),
-                ).thenResolve({
+                when(gemMock.gemPayload).thenReturn(gemPayload);
+                when(context.t721TokenServiceMock.generateAuthorization(address, amount)).thenResolve({
+                    error: null,
+                    response: [authorization as AuthorizationEntity, code, sender, minter],
+                });
+                when(context.t721AdminServiceMock.get()).thenResolve(t721adminInstance);
+                when(context.txsServiceMock.estimateGasLimit(sender, adminAddress, '0xencoded')).thenResolve({
                     error: null,
                     response: gasLimit,
                 });
-
                 when(context.txsServiceMock.estimateGasPrice(gasLimit)).thenResolve({
                     error: null,
                     response: gasPrice,
                 });
-
-                when(
-                    context.txsServiceMock.sendRawTransaction(
-                        admin,
-                        t721AdminInstance._address,
-                        '0',
-                        encodedCall,
-                        gasPrice,
-                        gasLimit,
-                    ),
-                ).thenResolve({
+                when(context.txsServiceMock.sendRawTransaction(sender, adminAddress, '0', '0xencoded')).thenResolve({
                     error: null,
-                    response: {
-                        transaction_hash: txHash,
-                        block_number: 0,
-                    } as TxEntity,
+                    response: tx as TxEntity,
                 });
+                when(gemMock.setOperationStatus(OperationStatusNames.OperationComplete)).thenReturn(instance(gemMock));
 
-                await context.tokenMinterOperation.run(instance(gemMock));
-                await context.tokenMinterOperation.dryRun(instance(gemMock));
+                // TRIGGER
+                const res = await context.tokenMinterOperation.run(instance(gemMock));
 
-                verify(gemMock.setRefreshTimer(1000)).twice();
-                verify(gemMock.gemPayload).twice();
+                // CHECK RETURNs
+                expect(res).toEqual(instance(gemMock));
 
-                verify(context.usersServiceMock.findById(user.id)).twice();
-                verify(context.t721AdminServiceMock.get()).twice();
-
-                verify(context.configServiceMock.get('VAULT_ETHEREUM_ASSIGNED_ADMIN')).twice();
-
-                verify(context.txsServiceMock.estimateGasLimit(admin, t721AdminInstance._address, encodedCall)).twice();
-
-                verify(context.txsServiceMock.estimateGasPrice(gasLimit)).twice();
-
-                verify(
-                    context.txsServiceMock.sendRawTransaction(
-                        admin,
-                        t721AdminInstance._address,
-                        '0',
-                        encodedCall,
-                        gasPrice,
-                        gasLimit,
-                    ),
-                ).once();
-
-                verify(gemMock.setOperationStatus(OperationStatusNames.OperationComplete)).twice();
-
-                verify(
-                    gemMock.addCost(
-                        instance(context.stripeTokenMinterDosojinMock),
-                        deepEqual(new BN(gasPrice).mul(new BN(gasLimit))),
-                        `crypto_eth`,
-                        `Token Minting Transaction Fees`,
-                    ),
-                ).twice();
-
-                verify(
-                    gemMock.setState<TokenMinterArguments & TokenMinterTx>(
-                        instance(context.stripeTokenMinterDosojinMock),
-                        deepEqual({
-                            ...gemState,
-                            txHash,
-                        }),
-                    ),
-                ).once();
-
-                verify(
-                    gemMock.setState<TokenMinterArguments & TokenMinterTx>(
-                        instance(context.stripeTokenMinterDosojinMock),
-                        deepEqual({
-                            ...gemState,
-                            txHash: '0xabcd',
-                        }),
-                    ),
-                ).once();
+                // CHECK CALLS
+                verify(gemMock.getState<TokenMinterArguments>(instance(context.stripeTokenMinterDosojinMock))).once();
+                verify(context.usersServiceMock.findById(userId)).once();
+                verify(gemMock.gemPayload).once();
+                verify(context.t721TokenServiceMock.generateAuthorization(address, amount)).once();
+                verify(context.t721AdminServiceMock.get()).once();
+                verify(context.txsServiceMock.estimateGasLimit(sender, adminAddress, '0xencoded')).once();
+                verify(context.txsServiceMock.estimateGasPrice(gasLimit)).once();
+                verify(context.txsServiceMock.sendRawTransaction(sender, adminAddress, '0', '0xencoded')).once();
+                verify(gemMock.setOperationStatus(OperationStatusNames.OperationComplete)).once();
             });
 
-            it('should fail on user query error', async function() {
-                const user: UserDto = ({
-                    id: 'userid',
-                    address: '0x32Be343B94f860124dC4fEe278FDCBD38C102D88',
-                } as any) as UserDto;
-
+            it('should fail on invalid user', async function() {
+                // DECLARE
+                const userId = 'userid';
+                const address = '0xC32654455D666614215E207834BC9F4A0281E4d2';
+                const sender = '0xDa022Ca91DF99413e8CB0CAAB4d1CbA4e9018bea';
+                const minter = '0x108Fb8C18DD3Ce3A0eC957533A63ECE39750e7d2';
+                const adminAddress = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
+                const user: Partial<UserDto> = {
+                    id: userId,
+                    address,
+                    valid: false,
+                };
+                const amount = '300';
+                const authorization: Partial<AuthorizationEntity> = {
+                    id: 'authorization_id',
+                    signature: '0xsignature',
+                };
+                const code = '1234';
+                const gemMock = mock(Gem);
                 const gemState: TokenMinterArguments = {
                     paymentIntentId: 'pi_abcd',
                     currency: 'eur',
-                    amount: 10000,
-                    userId: user.id,
+                    amount: 300,
+                    userId,
+                    regionRestrictions: {
+                        FR: {
+                            fix_fee: 25,
+                            variable_fee: 1.4,
+                        },
+                    },
+                    methodsRestrictions: {
+                        card: {
+                            country_resolution_path: 'country',
+                        },
+                    },
+                };
+                const gemPayload = {
+                    values: {
+                        fiat_eur: new BN(300),
+                    },
+                    costs: [],
+                };
+                const t721adminInstance = {
+                    _address: adminAddress,
+                    methods: {
+                        redeemTokens: () => ({
+                            encodeABI: () => '0xencoded',
+                        }),
+                    },
+                };
+                const gasLimit = '12345';
+                const gasPrice = '12345';
+                const txHash = '0x12cf175d36b70cc0f5e545fa6f518e29426f7c0ddf8254e9fa036038b100bfb3';
+                const tx: Partial<TxEntity> = {
+                    transaction_hash: txHash,
+                };
+
+                // MOCK
+                when(gemMock.getState<TokenMinterArguments>(instance(context.stripeTokenMinterDosojinMock))).thenReturn(
+                    gemState,
+                );
+                when(context.usersServiceMock.findById(userId)).thenResolve({
+                    response: user as UserDto,
+                    error: null,
+                });
+
+                // TRIGGER
+                const res = await context.tokenMinterOperation.run(instance(gemMock));
+
+                // CHECK RETURNs
+                expect(res).toEqual(instance(gemMock));
+
+                // CHECK CALLS
+                verify(gemMock.getState<TokenMinterArguments>(instance(context.stripeTokenMinterDosojinMock))).once();
+                verify(context.usersServiceMock.findById(userId)).once();
+            });
+
+            it('should fail on user fetch error', async function() {
+                // DECLARE
+                const userId = 'userid';
+                const gemMock = mock(Gem);
+                const gemState: TokenMinterArguments = {
+                    paymentIntentId: 'pi_abcd',
+                    currency: 'eur',
+                    amount: 300,
+                    userId,
                     regionRestrictions: {
                         FR: {
                             fix_fee: 25,
@@ -223,48 +256,62 @@ describe('StripeTokenMinter Dosojin', function() {
                     },
                 };
 
-                const gemMock = mock(Gem);
-                when(gemMock.gemPayload).thenReturn({
-                    values: {
-                        fiat_eur: new BN(10000),
-                    },
-                    costs: [],
-                });
+                // MOCK
                 when(gemMock.getState<TokenMinterArguments>(instance(context.stripeTokenMinterDosojinMock))).thenReturn(
                     gemState,
                 );
-
-                when(context.usersServiceMock.findById(user.id)).thenResolve({
-                    error: 'unexpected_error',
+                when(context.usersServiceMock.findById(userId)).thenResolve({
                     response: null,
+                    error: 'unexpected_error',
                 });
+                when(
+                    gemMock.error(
+                        instance(context.stripeTokenMinterDosojinMock),
+                        `An error occured while fetching the credited user`,
+                    ),
+                ).thenReturn(instance(gemMock));
 
-                await context.tokenMinterOperation.run(instance(gemMock));
-                await context.tokenMinterOperation.dryRun(instance(gemMock));
+                // TRIGGER
+                const res = await context.tokenMinterOperation.run(instance(gemMock));
 
-                verify(gemMock.setRefreshTimer(1000)).twice();
+                // CHECK RETURNs
+                expect(res).toEqual(instance(gemMock));
 
-                verify(context.usersServiceMock.findById(user.id)).twice();
-
+                // CHECK CALLS
+                verify(gemMock.getState<TokenMinterArguments>(instance(context.stripeTokenMinterDosojinMock))).once();
+                verify(context.usersServiceMock.findById(userId)).once();
                 verify(
                     gemMock.error(
                         instance(context.stripeTokenMinterDosojinMock),
-                        'An error occured while fetching the credited user',
+                        `An error occured while fetching the credited user`,
                     ),
-                ).twice();
+                ).once();
             });
 
-            it('should fail on empty user query', async function() {
-                const user: UserDto = ({
-                    id: 'userid',
-                    address: '0x32Be343B94f860124dC4fEe278FDCBD38C102D88',
-                } as any) as UserDto;
-
+            it('should fail on user not found', async function() {
+                // DECLARE
+                const name = 'StripeTokenMinter';
+                const userId = 'userid';
+                const address = '0xC32654455D666614215E207834BC9F4A0281E4d2';
+                const sender = '0xDa022Ca91DF99413e8CB0CAAB4d1CbA4e9018bea';
+                const minter = '0x108Fb8C18DD3Ce3A0eC957533A63ECE39750e7d2';
+                const adminAddress = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
+                const user: Partial<UserDto> = {
+                    id: userId,
+                    address,
+                };
+                const amount = '300';
+                const authorization: Partial<AuthorizationEntity> = {
+                    id: 'authorization_id',
+                    signature: '0xsignature',
+                };
+                const code = '1234';
+                const gemMock = mock(Gem);
                 const gemState: TokenMinterArguments = {
                     paymentIntentId: 'pi_abcd',
                     currency: 'eur',
-                    amount: 10000,
-                    userId: user.id,
+                    amount: 300,
+                    userId,
                     regionRestrictions: {
                         FR: {
                             fix_fee: 25,
@@ -277,95 +324,151 @@ describe('StripeTokenMinter Dosojin', function() {
                         },
                     },
                 };
-
-                const gemMock = mock(Gem);
-                when(gemMock.gemPayload).thenReturn({
+                const gemPayload = {
                     values: {
-                        fiat_eur: new BN(10000),
+                        fiat_eur: new BN(300),
                     },
                     costs: [],
-                });
+                };
+                const t721adminInstance = {
+                    _address: adminAddress,
+                    methods: {
+                        redeemTokens: () => ({
+                            encodeABI: () => '0xencoded',
+                        }),
+                    },
+                };
+                const gasLimit = '12345';
+                const gasPrice = '12345';
+                const txHash = '0x12cf175d36b70cc0f5e545fa6f518e29426f7c0ddf8254e9fa036038b100bfb3';
+                const tx: Partial<TxEntity> = {
+                    transaction_hash: txHash,
+                };
+
+                // MOCK
                 when(gemMock.getState<TokenMinterArguments>(instance(context.stripeTokenMinterDosojinMock))).thenReturn(
                     gemState,
                 );
-
-                when(context.usersServiceMock.findById(user.id)).thenResolve({
+                when(context.usersServiceMock.findById(userId)).thenResolve({
+                    response: null,
                     error: null,
+                });
+                when(
+                    gemMock.error(instance(context.stripeTokenMinterDosojinMock), `Cannot find user to credit`),
+                ).thenReturn(instance(gemMock));
+
+                // TRIGGER
+                const res = await context.tokenMinterOperation.run(instance(gemMock));
+
+                // CHECK RETURNs
+                expect(res).toEqual(instance(gemMock));
+
+                // CHECK CALLS
+                verify(gemMock.getState<TokenMinterArguments>(instance(context.stripeTokenMinterDosojinMock))).once();
+                verify(context.usersServiceMock.findById(userId)).once();
+                verify(
+                    gemMock.error(instance(context.stripeTokenMinterDosojinMock), `Cannot find user to credit`),
+                ).once();
+            });
+
+            it('should fail on authorization creation error', async function() {
+                // DECLARE
+                const userId = 'userid';
+                const address = '0xC32654455D666614215E207834BC9F4A0281E4d2';
+                const adminAddress = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
+                const user: Partial<UserDto> = {
+                    id: userId,
+                    address,
+                };
+                const amount = '300';
+                const gemMock = mock(Gem);
+                const gemState: TokenMinterArguments = {
+                    paymentIntentId: 'pi_abcd',
+                    currency: 'eur',
+                    amount: 300,
+                    userId,
+                    regionRestrictions: {
+                        FR: {
+                            fix_fee: 25,
+                            variable_fee: 1.4,
+                        },
+                    },
+                    methodsRestrictions: {
+                        card: {
+                            country_resolution_path: 'country',
+                        },
+                    },
+                };
+                const gemPayload = {
+                    values: {
+                        fiat_eur: new BN(300),
+                    },
+                    costs: [],
+                };
+
+                // MOCK
+                when(gemMock.getState<TokenMinterArguments>(instance(context.stripeTokenMinterDosojinMock))).thenReturn(
+                    gemState,
+                );
+                when(context.usersServiceMock.findById(userId)).thenResolve({
+                    response: user as UserDto,
+                    error: null,
+                });
+                when(gemMock.gemPayload).thenReturn(gemPayload);
+                when(context.t721TokenServiceMock.generateAuthorization(address, amount)).thenResolve({
+                    error: 'unexpected_error',
                     response: null,
                 });
+                when(
+                    gemMock.error(
+                        instance(context.stripeTokenMinterDosojinMock),
+                        `Cannot generate authorization: unexpected_error`,
+                    ),
+                ).thenReturn(instance(gemMock));
 
-                await context.tokenMinterOperation.run(instance(gemMock));
-                await context.tokenMinterOperation.dryRun(instance(gemMock));
+                // TRIGGER
+                const res = await context.tokenMinterOperation.run(instance(gemMock));
 
-                verify(gemMock.setRefreshTimer(1000)).twice();
+                // CHECK RETURNs
+                expect(res).toEqual(instance(gemMock));
 
-                verify(context.usersServiceMock.findById(user.id)).twice();
-
+                // CHECK CALLS
+                verify(gemMock.getState<TokenMinterArguments>(instance(context.stripeTokenMinterDosojinMock))).once();
+                verify(context.usersServiceMock.findById(userId)).once();
+                verify(gemMock.gemPayload).once();
+                verify(context.t721TokenServiceMock.generateAuthorization(address, amount)).once();
                 verify(
-                    gemMock.error(instance(context.stripeTokenMinterDosojinMock), 'Cannot find user to credit'),
-                ).twice();
-            });
-
-            it('should interrupt on invalid user', async function() {
-                const user: UserDto = ({
-                    id: 'userid',
-                    address: '0x32Be343B94f860124dC4fEe278FDCBD38C102D88',
-                    valid: false,
-                } as any) as UserDto;
-
-                const gemState: TokenMinterArguments = {
-                    paymentIntentId: 'pi_abcd',
-                    currency: 'eur',
-                    amount: 10000,
-                    userId: user.id,
-                    regionRestrictions: {
-                        FR: {
-                            fix_fee: 25,
-                            variable_fee: 1.4,
-                        },
-                    },
-                    methodsRestrictions: {
-                        card: {
-                            country_resolution_path: 'country',
-                        },
-                    },
-                };
-
-                const gemMock = mock(Gem);
-                when(gemMock.gemPayload).thenReturn({
-                    values: {
-                        fiat_eur: new BN(10000),
-                    },
-                    costs: [],
-                });
-                when(gemMock.getState<TokenMinterArguments>(instance(context.stripeTokenMinterDosojinMock))).thenReturn(
-                    gemState,
-                );
-
-                when(context.usersServiceMock.findById(user.id)).thenResolve({
-                    error: null,
-                    response: user,
-                });
-
-                await context.tokenMinterOperation.run(instance(gemMock));
-                await context.tokenMinterOperation.dryRun(instance(gemMock));
-
-                verify(gemMock.setRefreshTimer(1000)).twice();
-
-                verify(context.usersServiceMock.findById(user.id)).twice();
+                    gemMock.error(
+                        instance(context.stripeTokenMinterDosojinMock),
+                        `Cannot generate authorization: unexpected_error`,
+                    ),
+                ).once();
             });
 
             it('should fail on gas limit estimation error', async function() {
-                const user: UserDto = ({
-                    id: 'userid',
-                    address: '0x32Be343B94f860124dC4fEe278FDCBD38C102D88',
-                } as any) as UserDto;
-
+                // DECLARE
+                const name = 'StripeTokenMinter';
+                const userId = 'userid';
+                const address = '0xC32654455D666614215E207834BC9F4A0281E4d2';
+                const sender = '0xDa022Ca91DF99413e8CB0CAAB4d1CbA4e9018bea';
+                const minter = '0x108Fb8C18DD3Ce3A0eC957533A63ECE39750e7d2';
+                const adminAddress = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
+                const user: Partial<UserDto> = {
+                    id: userId,
+                    address,
+                };
+                const amount = '300';
+                const authorization: Partial<AuthorizationEntity> = {
+                    id: 'authorization_id',
+                    signature: '0xsignature',
+                };
+                const code = '1234';
+                const gemMock = mock(Gem);
                 const gemState: TokenMinterArguments = {
                     paymentIntentId: 'pi_abcd',
                     currency: 'eur',
-                    amount: 10000,
-                    userId: user.id,
+                    amount: 300,
+                    userId,
                     regionRestrictions: {
                         FR: {
                             fix_fee: 25,
@@ -378,76 +481,97 @@ describe('StripeTokenMinter Dosojin', function() {
                         },
                     },
                 };
-
-                const gemMock = mock(Gem);
-                when(gemMock.gemPayload).thenReturn({
+                const gemPayload = {
                     values: {
-                        fiat_eur: new BN(10000),
+                        fiat_eur: new BN(300),
                     },
                     costs: [],
-                });
+                };
+                const t721adminInstance = {
+                    _address: adminAddress,
+                    methods: {
+                        redeemTokens: () => ({
+                            encodeABI: () => '0xencoded',
+                        }),
+                    },
+                };
+                const gasLimit = '12345';
+                const gasPrice = '12345';
+                const txHash = '0x12cf175d36b70cc0f5e545fa6f518e29426f7c0ddf8254e9fa036038b100bfb3';
+                const tx: Partial<TxEntity> = {
+                    transaction_hash: txHash,
+                };
+
+                // MOCK
                 when(gemMock.getState<TokenMinterArguments>(instance(context.stripeTokenMinterDosojinMock))).thenReturn(
                     gemState,
                 );
-
-                const encodedCall = '0xabcdef';
-
-                const t721AdminInstance = {
-                    methods: {
-                        refundedMintFor: () => ({
-                            encodeABI: () => encodedCall,
-                        }),
-                    },
-                    _address: '0x32Be343B94f860124dC4fEe278FDCBD38C102D99',
-                };
-
-                const admin = 'admin_0';
-                const gasLimit = '12345654321';
-
-                when(context.usersServiceMock.findById(user.id)).thenResolve({
+                when(context.usersServiceMock.findById(userId)).thenResolve({
+                    response: user as UserDto,
                     error: null,
-                    response: user,
                 });
-                when(context.t721AdminServiceMock.get()).thenResolve(t721AdminInstance);
-
-                when(context.configServiceMock.get('VAULT_ETHEREUM_ASSIGNED_ADMIN')).thenReturn(admin);
-
-                when(
-                    context.txsServiceMock.estimateGasLimit(admin, t721AdminInstance._address, encodedCall),
-                ).thenResolve({
+                when(gemMock.gemPayload).thenReturn(gemPayload);
+                when(context.t721TokenServiceMock.generateAuthorization(address, amount)).thenResolve({
+                    error: null,
+                    response: [authorization as AuthorizationEntity, code, sender, minter],
+                });
+                when(context.t721AdminServiceMock.get()).thenResolve(t721adminInstance);
+                when(context.txsServiceMock.estimateGasLimit(sender, adminAddress, '0xencoded')).thenResolve({
                     error: 'unexpected_error',
                     response: null,
                 });
+                when(
+                    gemMock.error(
+                        instance(context.stripeTokenMinterDosojinMock),
+                        `Cannot estimate gas limit: unexpected_error`,
+                    ),
+                ).thenReturn(instance(gemMock));
 
-                await context.tokenMinterOperation.run(instance(gemMock));
-                await context.tokenMinterOperation.dryRun(instance(gemMock));
+                // TRIGGER
+                const res = await context.tokenMinterOperation.run(instance(gemMock));
 
-                verify(gemMock.setRefreshTimer(1000)).twice();
-                verify(gemMock.gemPayload).twice();
+                // CHECK RETURNs
+                expect(res).toEqual(instance(gemMock));
 
-                verify(context.usersServiceMock.findById(user.id)).twice();
-                verify(context.t721AdminServiceMock.get()).twice();
-
-                verify(context.configServiceMock.get('VAULT_ETHEREUM_ASSIGNED_ADMIN')).twice();
-
-                verify(context.txsServiceMock.estimateGasLimit(admin, t721AdminInstance._address, encodedCall)).twice();
-
+                // CHECK CALLS
+                verify(gemMock.getState<TokenMinterArguments>(instance(context.stripeTokenMinterDosojinMock))).once();
+                verify(context.usersServiceMock.findById(userId)).once();
+                verify(gemMock.gemPayload).once();
+                verify(context.t721TokenServiceMock.generateAuthorization(address, amount)).once();
+                verify(context.t721AdminServiceMock.get()).once();
+                verify(context.txsServiceMock.estimateGasLimit(sender, adminAddress, '0xencoded')).once();
                 verify(
-                    gemMock.error(instance(context.stripeTokenMinterDosojinMock), `Cannot estimate gas limit`),
-                ).twice();
+                    gemMock.error(
+                        instance(context.stripeTokenMinterDosojinMock),
+                        `Cannot estimate gas limit: unexpected_error`,
+                    ),
+                ).once();
             });
 
             it('should fail on gas price estimation error', async function() {
-                const user: UserDto = ({
-                    id: 'userid',
-                    address: '0x32Be343B94f860124dC4fEe278FDCBD38C102D88',
-                } as any) as UserDto;
-
+                // DECLARE
+                const name = 'StripeTokenMinter';
+                const userId = 'userid';
+                const address = '0xC32654455D666614215E207834BC9F4A0281E4d2';
+                const sender = '0xDa022Ca91DF99413e8CB0CAAB4d1CbA4e9018bea';
+                const minter = '0x108Fb8C18DD3Ce3A0eC957533A63ECE39750e7d2';
+                const adminAddress = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
+                const user: Partial<UserDto> = {
+                    id: userId,
+                    address,
+                };
+                const amount = '300';
+                const authorization: Partial<AuthorizationEntity> = {
+                    id: 'authorization_id',
+                    signature: '0xsignature',
+                };
+                const code = '1234';
+                const gemMock = mock(Gem);
                 const gemState: TokenMinterArguments = {
                     paymentIntentId: 'pi_abcd',
                     currency: 'eur',
-                    amount: 10000,
-                    userId: user.id,
+                    amount: 300,
+                    userId,
                     regionRestrictions: {
                         FR: {
                             fix_fee: 25,
@@ -460,85 +584,101 @@ describe('StripeTokenMinter Dosojin', function() {
                         },
                     },
                 };
-
-                const gemMock = mock(Gem);
-                when(gemMock.gemPayload).thenReturn({
+                const gemPayload = {
                     values: {
-                        fiat_eur: new BN(10000),
+                        fiat_eur: new BN(300),
                     },
                     costs: [],
-                });
+                };
+                const t721adminInstance = {
+                    _address: adminAddress,
+                    methods: {
+                        redeemTokens: () => ({
+                            encodeABI: () => '0xencoded',
+                        }),
+                    },
+                };
+                const gasLimit = '12345';
+                const gasPrice = '12345';
+                const txHash = '0x12cf175d36b70cc0f5e545fa6f518e29426f7c0ddf8254e9fa036038b100bfb3';
+                const tx: Partial<TxEntity> = {
+                    transaction_hash: txHash,
+                };
+
+                // MOCK
                 when(gemMock.getState<TokenMinterArguments>(instance(context.stripeTokenMinterDosojinMock))).thenReturn(
                     gemState,
                 );
-
-                const encodedCall = '0xabcdef';
-
-                const t721AdminInstance = {
-                    methods: {
-                        refundedMintFor: () => ({
-                            encodeABI: () => encodedCall,
-                        }),
-                    },
-                    _address: '0x32Be343B94f860124dC4fEe278FDCBD38C102D99',
-                };
-
-                const admin = 'admin_0';
-                const gasLimit = '12345654321';
-                const gasPrice = '17654321';
-                const txHash = '0x1694f8213153d1c803b81ec576341075dfdad7f8b7abf6860568e0b807b2bc92';
-
-                when(context.usersServiceMock.findById(user.id)).thenResolve({
+                when(context.usersServiceMock.findById(userId)).thenResolve({
+                    response: user as UserDto,
                     error: null,
-                    response: user,
                 });
-                when(context.t721AdminServiceMock.get()).thenResolve(t721AdminInstance);
-
-                when(context.configServiceMock.get('VAULT_ETHEREUM_ASSIGNED_ADMIN')).thenReturn(admin);
-
-                when(
-                    context.txsServiceMock.estimateGasLimit(admin, t721AdminInstance._address, encodedCall),
-                ).thenResolve({
+                when(gemMock.gemPayload).thenReturn(gemPayload);
+                when(context.t721TokenServiceMock.generateAuthorization(address, amount)).thenResolve({
+                    error: null,
+                    response: [authorization as AuthorizationEntity, code, sender, minter],
+                });
+                when(context.t721AdminServiceMock.get()).thenResolve(t721adminInstance);
+                when(context.txsServiceMock.estimateGasLimit(sender, adminAddress, '0xencoded')).thenResolve({
                     error: null,
                     response: gasLimit,
                 });
-
                 when(context.txsServiceMock.estimateGasPrice(gasLimit)).thenResolve({
                     error: 'unexpected_error',
                     response: null,
                 });
+                when(
+                    gemMock.error(
+                        instance(context.stripeTokenMinterDosojinMock),
+                        `Cannot estimate gas price: unexpected_error`,
+                    ),
+                ).thenReturn(instance(gemMock));
 
-                await context.tokenMinterOperation.run(instance(gemMock));
-                await context.tokenMinterOperation.dryRun(instance(gemMock));
+                // TRIGGER
+                const res = await context.tokenMinterOperation.run(instance(gemMock));
 
-                verify(gemMock.setRefreshTimer(1000)).twice();
-                verify(gemMock.gemPayload).twice();
+                // CHECK RETURNs
+                expect(res).toEqual(instance(gemMock));
 
-                verify(context.usersServiceMock.findById(user.id)).twice();
-                verify(context.t721AdminServiceMock.get()).twice();
-
-                verify(context.configServiceMock.get('VAULT_ETHEREUM_ASSIGNED_ADMIN')).twice();
-
-                verify(context.txsServiceMock.estimateGasLimit(admin, t721AdminInstance._address, encodedCall)).twice();
-
-                verify(context.txsServiceMock.estimateGasPrice(gasLimit)).twice();
-
+                // CHECK CALLS
+                verify(gemMock.getState<TokenMinterArguments>(instance(context.stripeTokenMinterDosojinMock))).once();
+                verify(context.usersServiceMock.findById(userId)).once();
+                verify(gemMock.gemPayload).once();
+                verify(context.t721TokenServiceMock.generateAuthorization(address, amount)).once();
+                verify(context.t721AdminServiceMock.get()).once();
+                verify(context.txsServiceMock.estimateGasLimit(sender, adminAddress, '0xencoded')).once();
+                verify(context.txsServiceMock.estimateGasPrice(gasLimit)).once();
                 verify(
-                    gemMock.error(instance(context.stripeTokenMinterDosojinMock), `Cannot estimate gas price`),
-                ).twice();
+                    gemMock.error(
+                        instance(context.stripeTokenMinterDosojinMock),
+                        `Cannot estimate gas price: unexpected_error`,
+                    ),
+                ).once();
             });
 
-            it('should fail on transaction error', async function() {
-                const user: UserDto = ({
-                    id: 'userid',
-                    address: '0x32Be343B94f860124dC4fEe278FDCBD38C102D88',
-                } as any) as UserDto;
-
+            it('should fail on tx broadcast error', async function() {
+                // DECLARE
+                const userId = 'userid';
+                const address = '0xC32654455D666614215E207834BC9F4A0281E4d2';
+                const sender = '0xDa022Ca91DF99413e8CB0CAAB4d1CbA4e9018bea';
+                const minter = '0x108Fb8C18DD3Ce3A0eC957533A63ECE39750e7d2';
+                const adminAddress = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
+                const user: Partial<UserDto> = {
+                    id: userId,
+                    address,
+                };
+                const amount = '300';
+                const authorization: Partial<AuthorizationEntity> = {
+                    id: 'authorization_id',
+                    signature: '0xsignature',
+                };
+                const code = '1234';
+                const gemMock = mock(Gem);
                 const gemState: TokenMinterArguments = {
                     paymentIntentId: 'pi_abcd',
                     currency: 'eur',
-                    amount: 10000,
-                    userId: user.id,
+                    amount: 300,
+                    userId,
                     regionRestrictions: {
                         FR: {
                             fix_fee: 25,
@@ -551,101 +691,81 @@ describe('StripeTokenMinter Dosojin', function() {
                         },
                     },
                 };
-
-                const gemMock = mock(Gem);
-                when(gemMock.gemPayload).thenReturn({
+                const gemPayload = {
                     values: {
-                        fiat_eur: new BN(10000),
+                        fiat_eur: new BN(300),
                     },
                     costs: [],
-                });
+                };
+                const t721adminInstance = {
+                    _address: adminAddress,
+                    methods: {
+                        redeemTokens: () => ({
+                            encodeABI: () => '0xencoded',
+                        }),
+                    },
+                };
+                const gasLimit = '12345';
+                const gasPrice = '12345';
+                const txHash = '0x12cf175d36b70cc0f5e545fa6f518e29426f7c0ddf8254e9fa036038b100bfb3';
+                const tx: Partial<TxEntity> = {
+                    transaction_hash: txHash,
+                };
+
+                // MOCK
                 when(gemMock.getState<TokenMinterArguments>(instance(context.stripeTokenMinterDosojinMock))).thenReturn(
                     gemState,
                 );
-
-                const encodedCall = '0xabcdef';
-
-                const t721AdminInstance = {
-                    methods: {
-                        refundedMintFor: () => ({
-                            encodeABI: () => encodedCall,
-                        }),
-                    },
-                    _address: '0x32Be343B94f860124dC4fEe278FDCBD38C102D99',
-                };
-
-                const admin = 'admin_0';
-                const gasLimit = '12345654321';
-                const gasPrice = '17654321';
-                const txHash = '0x1694f8213153d1c803b81ec576341075dfdad7f8b7abf6860568e0b807b2bc92';
-
-                when(context.usersServiceMock.findById(user.id)).thenResolve({
+                when(context.usersServiceMock.findById(userId)).thenResolve({
+                    response: user as UserDto,
                     error: null,
-                    response: user,
                 });
-                when(context.t721AdminServiceMock.get()).thenResolve(t721AdminInstance);
-
-                when(context.configServiceMock.get('VAULT_ETHEREUM_ASSIGNED_ADMIN')).thenReturn(admin);
-
-                when(
-                    context.txsServiceMock.estimateGasLimit(admin, t721AdminInstance._address, encodedCall),
-                ).thenResolve({
+                when(gemMock.gemPayload).thenReturn(gemPayload);
+                when(context.t721TokenServiceMock.generateAuthorization(address, amount)).thenResolve({
+                    error: null,
+                    response: [authorization as AuthorizationEntity, code, sender, minter],
+                });
+                when(context.t721AdminServiceMock.get()).thenResolve(t721adminInstance);
+                when(context.txsServiceMock.estimateGasLimit(sender, adminAddress, '0xencoded')).thenResolve({
                     error: null,
                     response: gasLimit,
                 });
-
                 when(context.txsServiceMock.estimateGasPrice(gasLimit)).thenResolve({
                     error: null,
                     response: gasPrice,
                 });
-
-                when(
-                    context.txsServiceMock.sendRawTransaction(
-                        admin,
-                        t721AdminInstance._address,
-                        '0',
-                        encodedCall,
-                        gasPrice,
-                        gasLimit,
-                    ),
-                ).thenResolve({
+                when(context.txsServiceMock.sendRawTransaction(sender, adminAddress, '0', '0xencoded')).thenResolve({
                     error: 'unexpected_error',
                     response: null,
                 });
-
-                await context.tokenMinterOperation.run(instance(gemMock));
-
-                verify(gemMock.setRefreshTimer(1000)).called();
-                verify(gemMock.gemPayload).called();
-
-                verify(context.usersServiceMock.findById(user.id)).called();
-                verify(context.t721AdminServiceMock.get()).called();
-
-                verify(context.configServiceMock.get('VAULT_ETHEREUM_ASSIGNED_ADMIN')).called();
-
-                verify(
-                    context.txsServiceMock.estimateGasLimit(admin, t721AdminInstance._address, encodedCall),
-                ).called();
-
-                verify(context.txsServiceMock.estimateGasPrice(gasLimit)).called();
-
-                verify(
-                    context.txsServiceMock.sendRawTransaction(
-                        admin,
-                        t721AdminInstance._address,
-                        '0',
-                        encodedCall,
-                        gasPrice,
-                        gasLimit,
+                when(
+                    gemMock.error(
+                        instance(context.stripeTokenMinterDosojinMock),
+                        `An error occured while trying to create transaction: unexpected_error`,
                     ),
-                ).called();
+                ).thenReturn(instance(gemMock));
 
+                // TRIGGER
+                const res = await context.tokenMinterOperation.run(instance(gemMock));
+
+                // CHECK RETURNs
+                expect(res).toEqual(instance(gemMock));
+
+                // CHECK CALLS
+                verify(gemMock.getState<TokenMinterArguments>(instance(context.stripeTokenMinterDosojinMock))).once();
+                verify(context.usersServiceMock.findById(userId)).once();
+                verify(gemMock.gemPayload).once();
+                verify(context.t721TokenServiceMock.generateAuthorization(address, amount)).once();
+                verify(context.t721AdminServiceMock.get()).once();
+                verify(context.txsServiceMock.estimateGasLimit(sender, adminAddress, '0xencoded')).once();
+                verify(context.txsServiceMock.estimateGasPrice(gasLimit)).once();
+                verify(context.txsServiceMock.sendRawTransaction(sender, adminAddress, '0', '0xencoded')).once();
                 verify(
                     gemMock.error(
                         instance(context.stripeTokenMinterDosojinMock),
-                        `An error occured while trying to create transaction`,
+                        `An error occured while trying to create transaction: unexpected_error`,
                     ),
-                ).called();
+                ).once();
             });
         });
 

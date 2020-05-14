@@ -18,7 +18,7 @@ export async function truffle_migrate(module_name: string, mig: string, net_name
         const modlog = module_log(mig, module_name);
 
         try {
-            truffle = spawn('truffle', ['migrate', '--network', net_name, '--from', start.toString(), '--to', end.toString()]);
+            truffle = spawn('truffle', ['migrate', '--network', net_name, '--f', start.toString(), '--to', end.toString(), '--verbose-rpc']);
             modlog.info(`Spawning command: ${truffle.spawnargs.join(' ')}`);
         } catch (e) {
             modlog.fatal(`Could not run command 'truffle migrate'`);

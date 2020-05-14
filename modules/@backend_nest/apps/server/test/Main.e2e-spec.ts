@@ -1,4 +1,4 @@
-jest.setTimeout(30000);
+jest.setTimeout(process.env.JEST_GLOBAL_TIMEOUT ? parseInt(process.env.JEST_GLOBAL_TIMEOUT, 10) : 30000);
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { T721SDK } from '@common/sdk';
@@ -29,8 +29,6 @@ const cassandraPort = 32702;
 const elasticSearchPort = 32610;
 const redisPort = 32412;
 const ganachePort = 38545;
-const vaultereumPorts = [8200, 8201];
-const consulPort = 8500;
 
 let global_ok;
 

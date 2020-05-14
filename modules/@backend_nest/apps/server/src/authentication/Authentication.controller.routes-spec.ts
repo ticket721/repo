@@ -21,7 +21,7 @@ import { ResetPasswordResponseDto } from '@app/server/authentication/dto/ResetPa
 export default function(getCtx: () => { ready: Promise<void> }) {
     return function() {
         describe('web3Register (POST /web3/register)', function() {
-            test.concurrent('should create a new web3 account', async function() {
+            test('should create a new web3 account', async function() {
                 const sdk = await getSDK(getCtx);
 
                 const user = {
@@ -63,7 +63,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 } as LocalRegisterResponseDto);
             });
 
-            test.concurrent('should create a new web3 account with fr locale', async function() {
+            test('should create a new web3 account with fr locale', async function() {
                 const sdk = await getSDK(getCtx);
 
                 const user = {
@@ -106,7 +106,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 } as LocalRegisterResponseDto);
             });
 
-            test.concurrent('should fail creating web3 account for invalid arguments', async function() {
+            test('should fail creating web3 account for invalid arguments', async function() {
                 const sdk = await getSDK(getCtx);
 
                 const user = {
@@ -130,7 +130,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 );
             });
 
-            test.concurrent('should fail creating web3 account for email conflict', async function() {
+            test('should fail creating web3 account for email conflict', async function() {
                 const sdk = await getSDK(getCtx);
 
                 const user = {
@@ -186,7 +186,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 }
             });
 
-            test.concurrent('should fail creating web3 account for username conflict', async function() {
+            test('should fail creating web3 account for username conflict', async function() {
                 const sdk = await getSDK(getCtx);
 
                 const user = {
@@ -242,7 +242,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 }
             });
 
-            test.concurrent('should fail creating web3 account for address conflict', async function() {
+            test('should fail creating web3 account for address conflict', async function() {
                 const sdk = await getSDK(getCtx);
 
                 const user = {
@@ -298,7 +298,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 }
             });
 
-            test.concurrent('should fail creating web3 account for invalid signature', async function() {
+            test('should fail creating web3 account for invalid signature', async function() {
                 const sdk = await getSDK(getCtx);
 
                 const user = {
@@ -322,7 +322,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 );
             });
 
-            test.concurrent('should fail creating web3 account for expired timestamp', async function() {
+            test('should fail creating web3 account for expired timestamp', async function() {
                 const sdk = await getSDK(getCtx);
 
                 const user = {
@@ -353,7 +353,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 );
             });
 
-            test.concurrent('should fail creating web3 account for timestamp in the future', async function() {
+            test('should fail creating web3 account for timestamp in the future', async function() {
                 const sdk = await getSDK(getCtx);
 
                 const user = {
@@ -386,7 +386,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
         });
 
         describe('web3Login (POST /web3/login)', function() {
-            test.concurrent('should login properly on created & validated account', async function() {
+            test('should login properly on created & validated account', async function() {
                 const sdk = await getSDK(getCtx);
 
                 const user = {
@@ -442,7 +442,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 }
             });
 
-            test.concurrent('should fail login with invalid signature', async function() {
+            test('should fail login with invalid signature', async function() {
                 const sdk = await getSDK(getCtx);
 
                 const user = {
@@ -462,7 +462,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 }
             });
 
-            test.concurrent('should fail login for signature in the past', async function() {
+            test('should fail login for signature in the past', async function() {
                 const sdk = await getSDK(getCtx);
 
                 const user = {
@@ -509,7 +509,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 }
             });
 
-            test.concurrent('should fail login for signature in the future', async function() {
+            test('should fail login for signature in the future', async function() {
                 const sdk = await getSDK(getCtx);
 
                 const user = {
@@ -558,7 +558,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
         });
 
         describe('localRegister (POST /local/register)', function() {
-            test.concurrent('should create a new t721 account', async function() {
+            test('should create a new t721 account', async function() {
                 const sdk = await getSDK(getCtx);
 
                 const user = {
@@ -589,7 +589,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 } as LocalRegisterResponseDto);
             });
 
-            test.concurrent('should create a new t721 account with fr locale', async function() {
+            test('should create a new t721 account with fr locale', async function() {
                 const sdk = await getSDK(getCtx);
 
                 const user = {
@@ -621,7 +621,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 } as LocalRegisterResponseDto);
             });
 
-            test.concurrent('should fail creating a new t721 account for invalid arguments', async function() {
+            test('should fail creating a new t721 account for invalid arguments', async function() {
                 const sdk = await getSDK(getCtx);
 
                 const user = {
@@ -636,7 +636,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 );
             });
 
-            test.concurrent('should fail creating a new t721 account for email conflict', async function() {
+            test('should fail creating a new t721 account for email conflict', async function() {
                 const sdk = await getSDK(getCtx);
 
                 const user = {
@@ -653,7 +653,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 );
             });
 
-            test.concurrent('should fail creating a new t721 account for username conflict', async function() {
+            test('should fail creating a new t721 account for username conflict', async function() {
                 const sdk = await getSDK(getCtx);
 
                 const user = {
@@ -670,7 +670,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 );
             });
 
-            test.concurrent('should fail creating a new t721 account for invalid password format', async function() {
+            test('should fail creating a new t721 account for invalid password format', async function() {
                 const sdk = await getSDK(getCtx);
 
                 const user = {
@@ -693,7 +693,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
         });
 
         describe('localLogin (POST /local/login)', function() {
-            test.concurrent('should login properly on created & validated account', async function() {
+            test('should login properly on created & validated account', async function() {
                 const sdk = await getSDK(getCtx);
 
                 const user = {
@@ -730,7 +730,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 } as LocalLoginResponseDto);
             });
 
-            test.concurrent('should fail login on invalid password', async function() {
+            test('should fail login on invalid password', async function() {
                 const sdk = await getSDK(getCtx);
 
                 const user = {
@@ -750,7 +750,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 await failWithCode(sdk.localLogin(user.email, user.username), StatusCodes.Unauthorized);
             });
 
-            test.concurrent('should fail login on unknown user', async function() {
+            test('should fail login on unknown user', async function() {
                 const sdk = await getSDK(getCtx);
 
                 const user = {
@@ -764,7 +764,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
         });
 
         describe('validateEmail (POST /validate)', function() {
-            test.concurrent('should validate created account', async function() {
+            test('should validate created account', async function() {
                 const sdk = await getSDK(getCtx);
 
                 const user = {
@@ -797,7 +797,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 } as EmailValidationResponseDto);
             });
 
-            test.concurrent('should fail validating', async function() {
+            test('should fail validating', async function() {
                 const sdk = await getSDK(getCtx);
 
                 const user = {
@@ -811,7 +811,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
         });
 
         describe('changePassword (POST local/password/update)', function() {
-            test.concurrent('should change password', async function() {
+            test('should change password', async function() {
                 const {
                     sdk,
                     token,
@@ -859,7 +859,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 } as LocalLoginResponseDto);
             });
 
-            test.concurrent('should fail unauthorizes (POST local/password/update)', async function() {
+            test('should fail unauthorizes (POST local/password/update)', async function() {
                 const sdk = await getSDK(getCtx);
 
                 const user = {
@@ -870,7 +870,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 await failWithCode(sdk.updatePassword('badToken', user.password), StatusCodes.Unauthorized);
             });
 
-            test.concurrent('should fail bad email', async function() {
+            test('should fail bad email', async function() {
                 const sdk = await getSDK(getCtx);
 
                 const user = {
@@ -893,7 +893,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
         });
 
         describe('resetPassword (POST /validate/password/reset', function() {
-            test.concurrent('should fail not existing user', async function() {
+            test('should fail not existing user', async function() {
                 const sdk = await getSDK(getCtx);
 
                 const pass = generatePassword();
@@ -901,7 +901,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 await failWithCode(sdk.validateResetPassword('badToken', pass), StatusCodes.Unauthorized);
             });
 
-            test.concurrent('should fail weak password', async function() {
+            test('should fail weak password', async function() {
                 const sdk = await getSDK(getCtx);
 
                 const pass = '';
@@ -914,7 +914,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 expect(res.report_status).toBe('weak');
             });
 
-            test.concurrent('should reset password', async function() {
+            test('should reset password', async function() {
                 const {
                     sdk,
                     token,

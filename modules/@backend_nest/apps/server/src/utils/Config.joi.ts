@@ -29,6 +29,7 @@ export const Config: Joi.ObjectSchema = Joi.object({
     TXS_BLOCK_THRESHOLD: Joi.number().required(),
     TXS_BLOCK_POLLING_REFRESH_RATE: Joi.number().required(),
     TXS_TARGET_GAS_PRICE: Joi.number().required(),
+    TXS_GAS_LIMIT: Joi.number().required(),
 
     TICKETFORGE_SCOPE: Joi.string().required(),
 
@@ -70,22 +71,22 @@ export const Config: Joi.ObjectSchema = Joi.object({
     IMAGE_MAX_SIZE: Joi.number().required(),
     IMAGE_SERVE_DIRECTORY: Joi.string().required(),
 
-    CURRENCIES_CONFIG_PATH: Joi.string().required(),
-
-    VAULT_HOST: Joi.string().required(),
-    VAULT_PORT: Joi.number().required(),
-    VAULT_PROTOCOL: Joi.string().default('http'),
-    VAULT_TOKEN: Joi.string().required(),
-
-    VAULT_ETHEREUM_NODE_HOST: Joi.string().required(),
-    VAULT_ETHEREUM_NODE_PORT: Joi.number().required(),
-    VAULT_ETHEREUM_NODE_PROTOCOL: Joi.string().default('http'),
-    VAULT_ETHEREUM_NODE_NETWORK_ID: Joi.number().required(),
-    VAULT_ETHEREUM_ASSIGNED_ADMIN: Joi.string().required(),
-
     GLOBAL_CONFIG_BLOCK_NUMBER_FETCHING_RATE: Joi.number().required(),
     GLOBAL_CONFIG_ETHEREUM_PRICE_FETCHING_RATE: Joi.number().required(),
     GLOBAL_CONFIG_BINANCE_MOCK: Joi.boolean().default('true'),
 
     CART_MAX_TICKET_PER_CART: Joi.number().required(),
+
+    ROCKSIDE_OPTS_BASE_URL: Joi.string().required(),
+    ROCKSIDE_OPTS_API_KEY: Joi.string().required(),
+    ROCKSIDE_OPTS_NETWORK_ID: Joi.number().required(),
+    ROCKSIDE_OPTS_NETWORK_NAME: Joi.string().required(),
+
+    ROCKSIDE_MOCK_OPTS_ORCHESTRATOR_PRIVATE_KEY: Joi.string().when('NODE_ENV', {
+        is: 'development',
+        then: Joi.required(),
+        otherwise: Joi.optional(),
+    }),
+
+    MINTER_INDEX: Joi.string().required(),
 });

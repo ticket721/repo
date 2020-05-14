@@ -19,6 +19,8 @@ import { ActionSet } from '@lib/common/actionsets/helper/ActionSet.class';
 import { anything, instance, mock, when } from 'ts-mockito';
 import { Stripe } from 'stripe';
 import Crypto from 'crypto';
+import { TicketEntity } from '@lib/common/tickets/entities/Ticket.entity';
+import { TicketsSearchResponseDto } from '@app/server/controllers/tickets/dto/TicketsSearchResponse.dto';
 
 let docker_compose_up_proc = null;
 
@@ -26,14 +28,6 @@ const readyLogs = [
     {
         line: 'Listening on 0.0.0.0:8545',
         image: 'ganache',
-    },
-    {
-        line: '!!VAULTEREUM STARTED!!',
-        image: 'vaultereum',
-    },
-    {
-        line: '[DEBUG] agent: Service "vault:127.0.0.1:8200" in sync',
-        image: 'consul',
     },
     {
         line: 'Elassandra started',
@@ -154,27 +148,6 @@ export async function run_contracts_migrations() {
         });
 
         contracts_proc.on('close', () => (found ? ok() : ko()));
-    });
-
-    const server_prepare_proc = spawn(`env`, [
-        ...`T721_CONFIG=./config.ganache.e2e.remote.json gulp server::dev::prepare`.split(' '),
-    ]);
-
-    await new Promise((ok, ko) => {
-        let found = false;
-
-        server_prepare_proc.stderr.on('data', data => {
-            process.stderr.write(data);
-        });
-
-        server_prepare_proc.stdout.on('data', data => {
-            process.stdout.write(data);
-            if (data.indexOf("Finished 'server::dev::prepare") !== -1) {
-                found = true;
-            }
-        });
-
-        server_prepare_proc.on('close', () => (found ? ok() : ko()));
     });
 
     process.chdir(current_dir);
@@ -502,6 +475,26 @@ export const getSDKAndUser = async (
     };
 };
 
+export const waitForTickets = async (
+    sdk: T721SDK,
+    token: string,
+    address: string,
+    checker: (tickets: TicketEntity[]) => boolean,
+): Promise<TicketEntity[]> => {
+    let tickets: AxiosResponse<TicketsSearchResponseDto>;
+
+    do {
+        tickets = await sdk.tickets.search(token, {
+            owner: {
+                $eq: address,
+            },
+        });
+        await pause(10);
+    } while (!checker(tickets.data.tickets));
+
+    return tickets.data.tickets;
+};
+
 export const waitForActionSet = async (
     sdk: T721SDK,
     token: string,
@@ -528,7 +521,7 @@ export const waitForActionSet = async (
                 }
             }
         }
-        await pause(100);
+        await pause(10);
     } while (!checker(actionSet.data.actionsets[0]));
 
     return actionSet.data.actionsets[0];

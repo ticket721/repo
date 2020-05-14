@@ -1,6 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { FSService } from '@lib/common/fs/FS.service';
-import { Currencies } from '@lib/common/utils/Currencies.joi';
+import { Injectable } from '@nestjs/common';
 import { ContractsService } from '@lib/common/contracts/Contracts.service';
 import { ContractsControllerBase } from '@lib/common/contracts/ContractsController.base';
 import { Web3Service } from '@lib/common/web3/Web3.service';
@@ -8,6 +6,7 @@ import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 import { IsNumber, IsNumberString, IsString } from 'class-validator';
 import { Decimal } from 'decimal.js';
 import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
+import currenciesConfig from '@lib/common/currencies/Currencies.config.value';
 
 /**
  * Price of the Category
@@ -93,6 +92,13 @@ export interface CurrencyConfig {
      * Address of the Contract
      */
     contractAddress?: string;
+
+    /**
+     * Helper to compute required fee for given currency
+     *
+     * @param amount
+     */
+    feeComputer?: (amount: string) => string;
 }
 
 /**
@@ -148,6 +154,13 @@ export interface ERC20Currency {
      * Smart Contract Controller Instance
      */
     controller: ContractsControllerBase;
+
+    /**
+     * Helper to compute required fee for given currency
+     *
+     * @param amount
+     */
+    feeComputer: (amount: string) => string;
 }
 
 /**
@@ -158,7 +171,7 @@ export class CurrenciesService {
     /**
      * Loaded Currency Configs
      */
-    private readonly currencyConfigs: CurrencyConfig[];
+    private readonly currencyConfigs: CurrencyConfig[] = currenciesConfig;
 
     /**
      * Transformed Currencies Configs
@@ -175,30 +188,15 @@ export class CurrenciesService {
     /**
      * Dependency Injection
      *
-     * @param configPath
-     * @param fsService
      * @param contractsService
      * @param web3Service
      * @param shutdownService
      */
     constructor(
-        @Inject('CURRENCIES_MODULE_OPTIONS')
-        configPath: string,
-        fsService: FSService,
         private readonly contractsService: ContractsService,
         private readonly web3Service: Web3Service,
         private readonly shutdownService: ShutdownService,
-    ) {
-        const data: any = JSON.parse(fsService.readFile(configPath));
-
-        const { error, value: validatedEnvConfig } = Currencies.validate(data);
-
-        if (error) {
-            throw new Error(`Currencies validation error: ${error.message}`);
-        }
-
-        this.currencyConfigs = validatedEnvConfig;
-    }
+    ) {}
 
     /**
      * Load Currency in contract mode
@@ -227,6 +225,7 @@ export class CurrenciesService {
             address: currencyConfig.contractAddress,
             dollarPeg: currencyConfig.dollarPeg,
             controller,
+            feeComputer: currencyConfig.feeComputer,
         };
     }
 
@@ -258,6 +257,7 @@ export class CurrenciesService {
             address,
             dollarPeg: currencyConfig.dollarPeg,
             controller,
+            feeComputer: currencyConfig.feeComputer,
         };
     }
 
@@ -375,12 +375,13 @@ export class CurrenciesService {
      */
     public async resolveInputPrices(inputPrices: InputPrice[]): Promise<ServiceResponse<Price[]>> {
         let ret: Price[] = [];
+        const met = {};
 
         try {
             for (const inputPrice of inputPrices) {
                 ret = [
                     ...ret,
-                    ...(await this.internalRecursiveResolver(inputPrice.currency, {})).map(
+                    ...(await this.internalRecursiveResolver(inputPrice.currency, met)).map(
                         (curr: string): Price => ({
                             currency: curr,
                             value: inputPrice.price,
@@ -405,5 +406,21 @@ export class CurrenciesService {
             error: null,
             response: ret,
         };
+    }
+
+    /**
+     * Computes the fee on the given currency for a specific amount
+     *
+     * @param currency
+     * @param amount
+     */
+    public async computeFee(currency: string, amount: string): Promise<string> {
+        const currencyInfo = await this.get(currency);
+
+        if ((currencyInfo as ERC20Currency).feeComputer) {
+            return (currencyInfo as ERC20Currency).feeComputer(amount);
+        }
+
+        return '0';
     }
 }

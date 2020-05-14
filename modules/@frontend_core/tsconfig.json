@@ -1,9 +1,9 @@
 {
     "compilerOptions": {
-        "outDir": "./lib",
+        "baseUrl": ".",
+        "outDir": "lib",
         "module": "esnext",
         "target": "es5",
-        "rootDir": "./src",
         "lib": [
             "es2015",
             "es2017",
@@ -17,6 +17,7 @@
         "skipLibCheck": true,
         "esModuleInterop": true,
         "moduleResolution": "node",
+        "rootDir": "src",
         "experimentalDecorators": true,
         "forceConsistentCasingInFileNames": true,
         "noImplicitReturns": true,
@@ -27,12 +28,13 @@
         "allowSyntheticDefaultImports": true,
         "typeRoots": [
             "./node_modules/@types"
-        ]
+        ],
+        "paths": {
+            "@components/*": ["lib/components/*"]
+        }
     },
     "exclude": [
         "node_modules",
-        "lib",
-        "**/*spec.ts",
-        "jest.config.js"
+        "lib"
     ]
 }

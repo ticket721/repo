@@ -5,7 +5,7 @@ import { admin_addRight, generateUserName, getSDKAndUser, getUser } from '../../
 export default function(getCtx: () => { ready: Promise<void> }) {
     return function() {
         describe('search (GET /rights)', function() {
-            test.concurrent('should properly search for own rights', async function() {
+            test('should properly search for own rights', async function() {
                 const {
                     sdk,
                     token,
@@ -35,7 +35,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 expect(rights.data.rights.length).toEqual(3);
             });
 
-            test.concurrent('should properly search for own rights by entity type', async function() {
+            test('should properly search for own rights by entity type', async function() {
                 const {
                     sdk,
                     token,

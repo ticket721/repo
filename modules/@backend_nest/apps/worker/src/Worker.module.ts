@@ -23,8 +23,6 @@ import { Web3ServiceOptions } from '@lib/common/web3/Web3.service';
 import Web3 from 'web3';
 import { ContractsModule } from '@lib/common/contracts/Contracts.module';
 import { ContractsServiceOptions } from '@lib/common/contracts/Contracts.service';
-import { VaultereumModule } from '@lib/common/vaultereum/Vaultereum.module';
-import { VaultereumOptions } from '@lib/common/vaultereum/Vaultereum.service';
 import { TxsModule } from '@lib/common/txs/Txs.module';
 import { TxsServiceOptions } from '@lib/common/txs/Txs.service';
 import { BinanceModule, BinanceModuleBuildOptions } from '@lib/common/binance/Binance.module';
@@ -50,6 +48,14 @@ import { AuthorizationsModule } from '@lib/common/authorizations/Authorizations.
 import { CheckoutInputHandlers } from '@app/worker/actionhandlers/checkout/Checkout.input.handlers';
 import { CheckoutEventHandlers } from '@app/worker/actionhandlers/checkout/Checkout.event.handlers';
 import { ToolBoxModule } from '@lib/common/toolbox/ToolBox.module';
+import { MintingModule } from '@lib/common/minting/Minting.module';
+import { MintingTasks } from '@app/worker/tasks/minting/Minting.tasks';
+import { CheckoutModule } from '@lib/common/checkout/Checkout.module';
+import { CartModule } from '@lib/common/cart/Cart.module';
+import { TxSeqEventHandlers } from '@app/worker/actionhandlers/txseq/TxSeq.event.handlers';
+import { GroupModule } from '@lib/common/group/Group.module';
+import { TicketsModule } from '@lib/common/tickets/Tickets.module';
+import { RocksideModule } from '@lib/common/rockside/Rockside.module';
 import { AuthenticationModule } from '@app/worker/authentication/Authentication.module';
 
 @Module({
@@ -81,10 +87,15 @@ import { AuthenticationModule } from '@app/worker/authentication/Authentication.
         EVMEventSetsModule,
         GemOrdersModule,
         AuthorizationsModule,
-        CurrenciesModule.registerAsync({
-            useFactory: (configService: ConfigService): string => configService.get('CURRENCIES_CONFIG_PATH'),
-            inject: [ConfigService],
-        }),
+        TicketsModule,
+        CurrenciesModule,
+        GroupModule,
+
+        CheckoutModule,
+        CartModule,
+        MintingModule,
+
+        RocksideModule.register(),
 
         // Ethereum Listeners
         EVMAntennaModule,
@@ -118,19 +129,6 @@ import { AuthenticationModule } from '@app/worker/authentication/Authentication.
         ContractsModule.registerAsync({
             useFactory: (configService: ConfigService): ContractsServiceOptions => ({
                 artifact_path: configService.get('CONTRACTS_ARTIFACTS_PATH'),
-            }),
-            inject: [ConfigService],
-        }),
-        VaultereumModule.registerAsync({
-            useFactory: (configService: ConfigService): VaultereumOptions => ({
-                VAULT_HOST: configService.get('VAULT_HOST'),
-                VAULT_PORT: parseInt(configService.get('VAULT_PORT'), 10),
-                VAULT_PROTOCOL: configService.get('VAULT_PROTOCOL'),
-                VAULT_ETHEREUM_NODE_HOST: configService.get('VAULT_ETHEREUM_NODE_HOST'),
-                VAULT_ETHEREUM_NODE_PORT: parseInt(configService.get('VAULT_ETHEREUM_NODE_PORT'), 10),
-                VAULT_ETHEREUM_NODE_PROTOCOL: configService.get('VAULT_ETHEREUM_NODE_PROTOCOL'),
-                VAULT_ETHEREUM_NODE_NETWORK_ID: parseInt(configService.get('VAULT_ETHEREUM_NODE_NETWORK_ID'), 10),
-                VAULT_TOKEN: configService.get('VAULT_TOKEN'),
             }),
             inject: [ConfigService],
         }),
@@ -174,10 +172,12 @@ import { AuthenticationModule } from '@app/worker/authentication/Authentication.
 
         // ActionSet Event Handlers
         CheckoutEventHandlers,
+        TxSeqEventHandlers,
 
         // Bull Tasks
         ActionSetsTasks,
         AuthorizationsTasks,
+        MintingTasks,
 
         // Schedulers
         ActionSetsScheduler,

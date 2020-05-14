@@ -1,4 +1,4 @@
-import { constant, Decoder, number, object, oneOf, optional, string } from '@mojotech/json-type-validation';
+import { array, constant, Decoder, number, object, oneOf, optional, string } from '@mojotech/json-type-validation';
 
 import { GanacheConfig, GanacheConfigGuard } from './GanacheConfig';
 import { GethConfig, GethConfigGuard }       from './GethConfig';
@@ -52,12 +52,19 @@ export interface NetworkConfig {
     /**
      * Communication procotol
      */
-    protocol: 'http' | 'https';
+    protocol: 'http' | 'https' | 'ws' | 'wss';
+
+    connector: 'http' | 'ws';
 
     /**
      * Network ID of the node
      */
     network_id: number;
+
+    headers: {
+        name: string;
+        value: string;
+    }[]
 
     /**
      * In-depth configuration depending on provided `type`
@@ -71,9 +78,14 @@ export interface NetworkConfig {
 export const NetworkConfigGuard: Decoder<NetworkConfig> = object({
     config: oneOf<GanacheConfig | GethConfig | RemoteConfig>(GanacheConfigGuard, GethConfigGuard, RemoteConfigGuard),
     type: oneOf(constant('ganache'), constant('geth'), constant('remote')),
-    protocol: oneOf(constant('http'), constant('https')),
+    protocol: oneOf(constant('http'), constant('https'), constant('ws'), constant('wss')),
+    connector: oneOf(constant('http'), constant('ws')),
     host: string(),
     port: number(),
     path: optional(string()),
     network_id: number(),
+    headers: array(object({
+        name: string(),
+        value: string(),
+    }))
 });

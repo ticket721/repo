@@ -6,7 +6,7 @@ import { StatusCodes } from '@lib/common/utils/codes.value';
 export default function(getCtx: () => { ready: Promise<void> }) {
     return function() {
         describe('subscribe (POST /txs/subscribe)', function() {
-            test.concurrent('should subscribe to tx', async function() {
+            test('should subscribe to tx', async function() {
                 const {
                     sdk,
                     token,
@@ -33,7 +33,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 });
             });
 
-            test.concurrent('should on invalid tx hash', async function() {
+            test('should on invalid tx hash', async function() {
                 const {
                     sdk,
                     token,
@@ -59,7 +59,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 );
             });
 
-            test.concurrent('should fail on unauthenticated user', async function() {
+            test('should fail on unauthenticated user', async function() {
                 const {
                     sdk,
                     token,
@@ -87,7 +87,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
         });
 
         describe('search (POST /txs/search)', function() {
-            test.concurrent('should search for transactions', async function() {
+            test('should search for transactions', async function() {
                 const {
                     sdk,
                     token,
@@ -118,7 +118,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 expect(searchedEvents.data.txs.length).toEqual(1);
             });
 
-            test.concurrent('should search from unauthenticated', async function() {
+            test('should search from unauthenticated', async function() {
                 const {
                     sdk,
                     token,
@@ -151,7 +151,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
         });
 
         describe('infos (GET /txs/infos)', function() {
-            test.concurrent('should recover relayer info', async function() {
+            test('should recover relayer info', async function() {
                 const {
                     sdk,
                     token,

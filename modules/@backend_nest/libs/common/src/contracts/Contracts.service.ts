@@ -348,7 +348,10 @@ export class ContractsService implements OnModuleInit {
             this.contracts = {};
             const artifactContent: string[] = this.fsService.readDir(this.options.artifact_path);
             for (const artifact of artifactContent) {
-                if (!this.fsService.isDir(path.join(this.options.artifact_path, artifact))) {
+                if (
+                    !this.fsService.isDir(path.join(this.options.artifact_path, artifact)) ||
+                    !this.fsService.isDir(path.join(this.options.artifact_path, artifact, 'build'))
+                ) {
                     continue;
                 }
 

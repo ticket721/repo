@@ -12,7 +12,6 @@
 | [`@backend/migrations`](./@backend_migrations) | Contains all cassandra and elasticsearch migrations | No |
 | [`@backend/nest`](./@backend_nest) | Contains all NestJS code and apps | No |
 | [`@backend/simulation`](./@backend_simulation) | Contains simulation scripts | No |
-| [`@backend/tasks`](./@backend_tasks) | Contains all gulp tasks related to the backend, and used in @repo | No |
 
 ## Tutorials
 
@@ -54,8 +53,7 @@ In order to run the smart contracts migrations locally, you will need to use the
 rm -rf ./artifacts/remote_ganache/ && \
 env T721_CONFIG=./config.ganache.remote.json gulp network::clean contracts::clean && \
 env T721_CONFIG=./config.ganache.remote.json gulp network::run && \
-env T721_CONFIG=./config.ganache.remote.json gulp contracts::run && \
-env T721_CONFIG=./config.ganache.remote.json gulp server::dev::prepare
+env T721_CONFIG=./config.ganache.remote.json gulp contracts::run
 ```
 
 The smart contracts are now live, and all the required artifacts are now stored inside `artifacts/remote_ganache`.
@@ -108,8 +106,7 @@ ________________________________________________________________________________
 | $> rm -rf ./artifacts/remote_ganache/ && \                                                 |
 |    env T721_CONFIG=./config.ganache.remote.json gulp network::clean contracts::clean && \  |
 |    env T721_CONFIG=./config.ganache.remote.json gulp network::run && \                     |
-|    env T721_CONFIG=./config.ganache.remote.json gulp contracts::run && \                   |
-|    env T721_CONFIG=./config.ganache.remote.json gulp server::dev::prepare                  |
+|    env T721_CONFIG=./config.ganache.remote.json gulp contracts::run                        |
 |                                                                                            |
 |                                                                                            |
 |                                                                                            |

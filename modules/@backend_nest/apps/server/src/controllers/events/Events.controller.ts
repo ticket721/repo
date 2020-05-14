@@ -31,7 +31,6 @@ import { ConfigService } from '@lib/common/config/Config.service';
 import { CurrenciesService } from '@lib/common/currencies/Currencies.service';
 import { DatesService } from '@lib/common/dates/Dates.service';
 import { DateEntity } from '@lib/common/dates/entities/Date.entity';
-import { VaultereumService } from '@lib/common/vaultereum/Vaultereum.service';
 import { HttpExceptionFilter } from '@app/server/utils/HttpException.filter';
 import { UUIDToolService } from '@lib/common/toolbox/UUID.tool.service';
 import { EventsStartInputDto } from '@app/server/controllers/events/dto/EventsStartInput.dto';
@@ -52,6 +51,7 @@ import { CategoryEntity } from '@lib/common/categories/entities/Category.entity'
 import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
 import { ApiResponses } from '@app/server/utils/ApiResponses.controller.decorator';
 import { MetadatasService } from '@lib/common/metadatas/Metadatas.service';
+import { RocksideCreateEOAResponse, RocksideService } from '@lib/common/rockside/Rockside.service';
 
 /**
  * Events controller to create and fetch events
@@ -69,10 +69,10 @@ export class EventsController extends ControllerBasics<EventEntity> {
      * @param currenciesService
      * @param datesService
      * @param categoriesService
-     * @param vaultereumService
      * @param uuidToolService
      * @param rightsService
      * @param metadatasService
+     * @param rocksideService
      */
     constructor(
         private readonly eventsService: EventsService,
@@ -81,10 +81,10 @@ export class EventsController extends ControllerBasics<EventEntity> {
         private readonly currenciesService: CurrenciesService,
         private readonly datesService: DatesService,
         private readonly categoriesService: CategoriesService,
-        private readonly vaultereumService: VaultereumService,
         private readonly uuidToolService: UUIDToolService,
         private readonly rightsService: RightsService,
         private readonly metadatasService: MetadatasService,
+        private readonly rocksideService: RocksideService,
     ) {
         super();
     }
@@ -337,21 +337,19 @@ export class EventsController extends ControllerBasics<EventEntity> {
 
         // Verify very low probability collision
         do {
-            eventUUID = this.uuidToolService.generate();
+            eventUUID = this.uuidToolService.generate().toLowerCase();
             eventsCollision = await this._get<EventEntity>(this.eventsService, {
                 id: eventUUID,
             });
         } while (eventsCollision.length !== 0);
 
-        // Create Vault address
-
-        const validatingAddressName = `event-${eventUUID.toLowerCase()}`;
-        const validatingAddressRes = await this._serviceCall<any>(
-            this.vaultereumService.write(`ethereum/accounts/${validatingAddressName}`),
+        // Create Rockside EOA
+        const rocksideEOA = await this._serviceCall<RocksideCreateEOAResponse>(
+            this.rocksideService.createEOA(),
             StatusCodes.InternalServerError,
         );
 
-        const eventAddress = toAcceptedAddressFormat(validatingAddressRes.data.address);
+        const eventAddress = toAcceptedAddressFormat(rocksideEOA.address);
 
         // Generate Group ID
 

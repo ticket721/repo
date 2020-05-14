@@ -8,17 +8,14 @@ import { CategoriesService } from '@lib/common/categories/Categories.service';
 import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
 import { T721ControllerV0Service } from '@lib/common/contracts/t721controller/T721Controller.V0.service';
 import { HOUR } from '@lib/common/utils/time';
-import { encode, MintAuthorization, toB32 } from '@common/global';
+import { MintAuthorization, toB32 } from '@common/global';
 import { Web3Service } from '@lib/common/web3/Web3.service';
-import { DatesService } from '@lib/common/dates/Dates.service';
-import { EventsService } from '@lib/common/events/Events.service';
-import { EventEntity } from '@lib/common/events/entities/Event.entity';
-import { DateEntity } from '@lib/common/dates/entities/Date.entity';
-import { VaultereumService } from '@lib/common/vaultereum/Vaultereum.service';
 import { AuthorizedTicketMintingFormat, TicketMintingFormat } from '@lib/common/utils/Cart.type';
 import { EIP712Signature } from '@ticket721/e712/lib';
 import { BytesToolService } from '@lib/common/toolbox/Bytes.tool.service';
 import { TimeToolService } from '@lib/common/toolbox/Time.tool.service';
+import { GroupService } from '@lib/common/group/Group.service';
+import { RocksideService } from '@lib/common/rockside/Rockside.service';
 
 /**
  * Service to CRUD AuthorizationEntities
@@ -30,14 +27,13 @@ export class AuthorizationsService extends CRUDExtension<AuthorizationsRepositor
      * @param authorizationsRepository
      * @param authorizationEntity
      * @param categoriesService
-     * @param datesService
-     * @param eventsService
      * @param t721ControllerV0Service
      * @param currenciesService
      * @param web3Service
-     * @param vaultereumService
      * @param bytesToolService
      * @param timeToolService
+     * @param groupService
+     * @param rocksideService
      */
     constructor(
         @InjectRepository(AuthorizationsRepository)
@@ -45,14 +41,13 @@ export class AuthorizationsService extends CRUDExtension<AuthorizationsRepositor
         @InjectModel(AuthorizationEntity)
         authorizationEntity: BaseModel<AuthorizationEntity>,
         private readonly categoriesService: CategoriesService,
-        private readonly datesService: DatesService,
-        private readonly eventsService: EventsService,
         private readonly t721ControllerV0Service: T721ControllerV0Service,
         private readonly currenciesService: CurrenciesService,
         private readonly web3Service: Web3Service,
-        private readonly vaultereumService: VaultereumService,
         private readonly bytesToolService: BytesToolService,
         private readonly timeToolService: TimeToolService,
+        private readonly groupService: GroupService,
+        private readonly rocksideService: RocksideService,
     ) {
         super(
             authorizationEntity,
@@ -66,69 +61,6 @@ export class AuthorizationsService extends CRUDExtension<AuthorizationsRepositor
                 return new AuthorizationEntity(c);
             },
         );
-    }
-
-    /**
-     * Internal utility to get the event controller from an event
-     *
-     * @param eventId
-     */
-    private async resolveEventControllerAddress(eventId: string): Promise<ServiceResponse<[string, string]>> {
-        const eventEntityRes = await this.eventsService.search({
-            id: eventId,
-        });
-
-        if (eventEntityRes.error || eventEntityRes.response.length === 0) {
-            return {
-                error: 'cannot_resolve_event',
-                response: null,
-            };
-        }
-
-        const eventEntity: EventEntity = eventEntityRes.response[0];
-
-        return {
-            error: null,
-            response: [eventEntity.address, eventEntity.controller],
-        };
-    }
-
-    /**
-     * Internal utility to get the event controller from a date
-     *
-     * @param dateId
-     */
-    private async resolveDateControllerAddress(dateId: string): Promise<ServiceResponse<[string, string]>> {
-        const dateEntityRes = await this.datesService.search({
-            id: dateId,
-        });
-
-        if (dateEntityRes.error || dateEntityRes.response.length === 0) {
-            return {
-                error: 'cannot_resolve_date',
-                response: null,
-            };
-        }
-
-        const dateEntity: DateEntity = dateEntityRes.response[0];
-
-        return this.resolveEventControllerAddress(dateEntity.parent_id);
-    }
-
-    /**
-     * Internal utility to get the event controller from a category
-     *
-     * @param category
-     */
-    private async getControllerAddress(category: CategoryEntity): Promise<ServiceResponse<[string, string]>> {
-        switch (category.parent_type) {
-            case 'date': {
-                return this.resolveDateControllerAddress(category.parent_id);
-            }
-            case 'event': {
-                return this.resolveEventControllerAddress(category.parent_id);
-            }
-        }
     }
 
     /**
@@ -156,6 +88,7 @@ export class AuthorizationsService extends CRUDExtension<AuthorizationsRepositor
      *
      * @param authorizations
      * @param prices
+     * @param fees
      * @param expirationTime
      * @param grantee
      * @param signatureReadable
@@ -163,23 +96,34 @@ export class AuthorizationsService extends CRUDExtension<AuthorizationsRepositor
     async validateTicketAuthorizations(
         authorizations: TicketMintingFormat[],
         prices: Price[],
+        fees: string[],
         expirationTime: number,
         grantee: string,
         signatureReadable: boolean,
     ): Promise<ServiceResponse<AuthorizedTicketMintingFormat[]>> {
+        if (prices.length !== fees.length) {
+            return {
+                error: 'invalid_fee_price_lengths',
+                response: null,
+            };
+        }
+
         const ret: AuthorizedTicketMintingFormat[] = [];
 
         const resolvedPrices: {
             currency: string;
             value: string;
+            fee: string;
         }[] = [];
 
-        for (const price of prices) {
+        for (let idx = 0; idx < prices.length; ++idx) {
+            const price = prices[idx];
             const currency = (await this.currenciesService.get(price.currency)) as ERC20Currency;
 
             resolvedPrices.push({
                 currency: currency.address,
-                value: encode(['uint256'], [price.value]),
+                value: price.value,
+                fee: fees[idx],
             });
         }
 
@@ -190,10 +134,10 @@ export class AuthorizationsService extends CRUDExtension<AuthorizationsRepositor
             await this.web3Service.net(),
         );
 
-        for (const authorization of authorizations) {
-            const evmExpiration = Math.floor((this.timeToolService.now().getTime() + expirationTime) / 1000);
-            const beExpiration = Math.floor((this.timeToolService.now().getTime() + expirationTime + HOUR) / 1000);
+        const evmExpiration = Math.floor((this.timeToolService.now().getTime() + expirationTime) / 1000);
+        const beExpiration = Math.floor((this.timeToolService.now().getTime() + expirationTime + HOUR) / 1000);
 
+        for (const authorization of authorizations) {
             const categoryEntityRes = await this.categoriesService.search({
                 id: authorization.categoryId,
             });
@@ -214,7 +158,10 @@ export class AuthorizationsService extends CRUDExtension<AuthorizationsRepositor
 
             const category: CategoryEntity = categoryEntityRes.response[0];
 
-            const controllerInfos = await this.getControllerAddress(category);
+            const controllerInfos = await this.groupService.getCategoryControllerFields<[string, string]>(category, [
+                'address',
+                'controller',
+            ]);
 
             if (controllerInfos.error) {
                 return {
@@ -245,14 +192,15 @@ export class AuthorizationsService extends CRUDExtension<AuthorizationsRepositor
                 'Authorization',
             );
 
-            const vaultereumSigner = await this.vaultereumService.getSigner(controllerName);
+            const rocksideSigner = await this.rocksideService.getSigner(controllerName);
             let signature: EIP712Signature;
 
             try {
-                signature = await signer.sign(vaultereumSigner, payload);
+                signature = await signer.sign(rocksideSigner, payload);
             } catch (e) {
+                console.error(e);
                 return {
-                    error: 'vaultereum_signature_failure',
+                    error: 'rockside_signature_failure',
                     response: null,
                 };
             }

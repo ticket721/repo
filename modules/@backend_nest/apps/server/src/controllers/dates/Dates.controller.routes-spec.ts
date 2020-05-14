@@ -8,7 +8,7 @@ import { SortablePagedSearch } from '@lib/common/utils/SortablePagedSearch.type'
 export default function(getCtx: () => { ready: Promise<void> }) {
     return function() {
         describe('search (POST /dates/search)', function() {
-            test.concurrent('should search for created date', async function() {
+            test('should search for created date', async function() {
                 const {
                     sdk,
                     token,
@@ -55,7 +55,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 expect(datesSearch.data.dates.length).toEqual(1);
             });
 
-            test.concurrent('should search for created date from unauthenticated', async function() {
+            test('should search for created date from unauthenticated', async function() {
                 const {
                     sdk,
                     token,
@@ -104,7 +104,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
         });
 
         describe('create (POST /dates)', function() {
-            test.concurrent('should create a date', async function() {
+            test('should create a date', async function() {
                 const {
                     sdk,
                     token,
@@ -168,7 +168,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 } as Partial<DateEntity>);
             });
 
-            test.concurrent('should fail for unauthenticated', async function() {
+            test('should fail for unauthenticated', async function() {
                 const {
                     sdk,
                     token,
@@ -210,7 +210,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 );
             });
 
-            test.concurrent('should fail for authorization reasons', async function() {
+            test('should fail for authorization reasons', async function() {
                 const {
                     sdk,
                     token,
@@ -251,7 +251,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 );
             });
 
-            test.concurrent('should fail for invalid date range', async function() {
+            test('should fail for invalid date range', async function() {
                 const {
                     sdk,
                     token,
@@ -296,7 +296,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
         });
 
         describe('addCategories (POST /:dateId/categories', function() {
-            test.concurrent('should create a date, a category, and add it to the date', async function() {
+            test('should create a date, a category, and add it to the date', async function() {
                 const {
                     sdk,
                     token,
@@ -359,7 +359,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 expect(updatedDate.data.date.categories).toEqual([newCategory.data.category.id]);
             });
 
-            test.concurrent('should fail for unauthenticated', async function() {
+            test('should fail for unauthenticated', async function() {
                 const {
                     sdk,
                     token,
@@ -423,7 +423,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 );
             });
 
-            test.concurrent('should fail adding category already present', async function() {
+            test('should fail adding category already present', async function() {
                 const {
                     sdk,
                     token,
@@ -491,7 +491,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 );
             });
 
-            test.concurrent('should fail adding a category already bound', async function() {
+            test('should fail adding a category already bound', async function() {
                 const {
                     sdk,
                     token,
@@ -581,7 +581,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 );
             });
 
-            test.concurrent('should fail adding a category with wrong group_id', async function() {
+            test('should fail adding a category with wrong group_id', async function() {
                 const {
                     sdk,
                     token,
@@ -651,7 +651,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
         });
 
         describe('deleteCategories (DELETE /:dateId/categories)', function() {
-            test.concurrent('should create a date, a category, add it to the date then remove it', async function() {
+            test('should create a date, a category, add it to the date then remove it', async function() {
                 const {
                     sdk,
                     token,
@@ -734,7 +734,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 expect(updatedDate.data.date.categories).toEqual([newCategoryTwo.data.category.id]);
             });
 
-            test.concurrent('should fail for unauthenticated', async function() {
+            test('should fail for unauthenticated', async function() {
                 const {
                     sdk,
                     token,
@@ -802,7 +802,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 );
             });
 
-            test.concurrent('should fail by removing category not in date', async function() {
+            test('should fail by removing category not in date', async function() {
                 const {
                     sdk,
                     token,
@@ -866,7 +866,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 );
             });
 
-            test.concurrent('should fail by removing category not in date', async function() {
+            test('should fail by removing category not in date', async function() {
                 const {
                     sdk,
                     token,
@@ -932,7 +932,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
         });
 
         describe('update (PUT /:dateId)', function() {
-            test.concurrent('should update date', async function() {
+            test('should update date', async function() {
                 const {
                     sdk,
                     token,
@@ -983,7 +983,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 expect(updatedDate.data.date.metadata.name).toEqual('Testing the Test Date');
             });
 
-            test.concurrent('should update date location', async function() {
+            test('should update date location', async function() {
                 const {
                     sdk,
                     token,
@@ -1041,7 +1041,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 });
             });
 
-            test.concurrent('should fail on unauthenticated', async function() {
+            test('should fail on unauthenticated', async function() {
                 const {
                     sdk,
                     token,
@@ -1093,7 +1093,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 );
             });
 
-            test.concurrent('should fail on invalid date range', async function() {
+            test('should fail on invalid date range', async function() {
                 const {
                     sdk,
                     token,
@@ -1142,7 +1142,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 );
             });
 
-            test.concurrent('should fail on color array length too small', async function() {
+            test('should fail on color array length too small', async function() {
                 const {
                     sdk,
                     token,
@@ -1194,7 +1194,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 );
             });
 
-            test.concurrent('should fail on invalid color format', async function() {
+            test('should fail on invalid color format', async function() {
                 const {
                     sdk,
                     token,

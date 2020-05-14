@@ -44,6 +44,7 @@ import { metadatasFetch }                                                 from '
 import { cartModulesConfiguration, cartTicketSelections }                 from './app/api/cart';
 import { checkoutCartCommitStripe, checkoutResolveCartWithPaymentIntent } from './app/api/checkout';
 import { dosojinSearch }                                                  from './app/api/dosojin';
+import { ticketsSearch }                                                  from './app/api/tickets';
 
 export { FailedRegisterReport } from './app/api/authentication';
 
@@ -118,6 +119,8 @@ export class T721SDK {
         this.checkout.cart.resolve.paymentIntent = this.checkout.cart.resolve.paymentIntent.bind(this);
 
         this.dosojin.search = this.dosojin.search.bind(this);
+
+        this.tickets.search = this.tickets.search.bind(this);
     }
 
     connect(host: string, port: number, protocol: 'http' | 'https' = 'http') {
@@ -296,4 +299,8 @@ export class T721SDK {
     public dosojin = {
         search: dosojinSearch,
     };
+
+    public tickets = {
+        search: ticketsSearch,
+    }
 }

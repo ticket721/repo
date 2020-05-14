@@ -1,4 +1,4 @@
-import {Decoder, object, string, number} from '@mojotech/json-type-validation'
+import { Decoder, object, string, number, array } from '@mojotech/json-type-validation';
 
 /**
  * Interface used to configure Remote networks.

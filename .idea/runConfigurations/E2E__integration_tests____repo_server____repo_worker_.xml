@@ -8,6 +8,7 @@
     <jest-options value="--expand --verbose" />
     <envs>
       <env name="NODE_ENV" value="test-e2e" />
+      <env name="JEST_GLOBAL_TIMEOUT" value="60000" />
     </envs>
     <scope-kind value="ALL" />
     <method v="2" />

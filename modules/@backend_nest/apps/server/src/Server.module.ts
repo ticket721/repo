@@ -32,8 +32,6 @@ import { ImagesController } from '@app/server/controllers/images/Images.controll
 import { ImagesModule } from '@lib/common/images/Images.module';
 import { FSModule } from '@lib/common/fs/FS.module';
 import { CurrenciesModule } from '@lib/common/currencies/Currencies.module';
-import { VaultereumModule } from '@lib/common/vaultereum/Vaultereum.module';
-import { VaultereumOptions } from '@lib/common/vaultereum/Vaultereum.service';
 import { TxsModule } from '@lib/common/txs/Txs.module';
 import { TxsServiceOptions } from '@lib/common/txs/Txs.service';
 import { GlobalConfigModule } from '@lib/common/globalconfig/GlobalConfig.module';
@@ -56,6 +54,11 @@ import { ServerController } from '@app/server/controllers/server/Server.controll
 import { MetadatasController } from '@app/server/controllers/metadatas/Metadatas.controller';
 import { MetadatasModule } from '@lib/common/metadatas/Metadatas.module';
 import { AuthorizationsModule } from '@lib/common/authorizations/Authorizations.module';
+import { CheckoutModule } from '@lib/common/checkout/Checkout.module';
+import { CartModule } from '@lib/common/cart/Cart.module';
+import { RocksideModule } from '@lib/common/rockside/Rockside.module';
+import { TicketsController } from '@app/server/controllers/tickets/Tickets.controller';
+import { TicketsModule } from '@lib/common/tickets/Tickets.module';
 
 @Module({
     imports: [
@@ -91,10 +94,11 @@ import { AuthorizationsModule } from '@lib/common/authorizations/Authorizations.
         StripeResourcesModule,
         MetadatasModule,
         AuthorizationsModule,
-        CurrenciesModule.registerAsync({
-            useFactory: (configService: ConfigService): string => configService.get('CURRENCIES_CONFIG_PATH'),
-            inject: [ConfigService],
-        }),
+        CurrenciesModule,
+        TicketsModule,
+
+        CheckoutModule,
+        CartModule,
 
         // User Management Modules
         AuthenticationModule,
@@ -106,6 +110,8 @@ import { AuthorizationsModule } from '@lib/common/authorizations/Authorizations.
 
         // Notification Modules
         EmailModule,
+
+        RocksideModule.register(),
 
         // Web3 & Ethereum Modules
         Web3Module.registerAsync({
@@ -120,19 +126,6 @@ import { AuthorizationsModule } from '@lib/common/authorizations/Authorizations.
         ContractsModule.registerAsync({
             useFactory: (configService: ConfigService): ContractsServiceOptions => ({
                 artifact_path: configService.get('CONTRACTS_ARTIFACTS_PATH'),
-            }),
-            inject: [ConfigService],
-        }),
-        VaultereumModule.registerAsync({
-            useFactory: (configService: ConfigService): VaultereumOptions => ({
-                VAULT_HOST: configService.get('VAULT_HOST'),
-                VAULT_PORT: parseInt(configService.get('VAULT_PORT'), 10),
-                VAULT_PROTOCOL: configService.get('VAULT_PROTOCOL'),
-                VAULT_ETHEREUM_NODE_HOST: configService.get('VAULT_ETHEREUM_NODE_HOST'),
-                VAULT_ETHEREUM_NODE_PORT: parseInt(configService.get('VAULT_ETHEREUM_NODE_PORT'), 10),
-                VAULT_ETHEREUM_NODE_PROTOCOL: configService.get('VAULT_ETHEREUM_NODE_PROTOCOL'),
-                VAULT_ETHEREUM_NODE_NETWORK_ID: parseInt(configService.get('VAULT_ETHEREUM_NODE_NETWORK_ID'), 10),
-                VAULT_TOKEN: configService.get('VAULT_TOKEN'),
             }),
             inject: [ConfigService],
         }),
@@ -181,6 +174,7 @@ import { AuthorizationsModule } from '@lib/common/authorizations/Authorizations.
         CategoriesController,
         RightsController,
         MetadatasController,
+        TicketsController,
     ],
     providers: [
         ServerService,

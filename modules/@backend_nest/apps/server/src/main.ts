@@ -23,7 +23,6 @@ const logger = new WinstonLoggerService('server');
 async function main() {
     const app = await NestFactory.create<NestExpressApplication>(ServerModule, {
         logger,
-        cors: true,
     });
 
     const configService: ConfigService = app.get<ConfigService>(ConfigService);
