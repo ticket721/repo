@@ -103,8 +103,7 @@ export class MintT721ControllerEVMAntenna extends EVMEventControllerBase {
                 ).toLowerCase()} and event gives ${returnValues.category.toLowerCase()}`,
             );
         }
-
-        if (toAcceptedAddressFormat(ticketEntity.owner) !== returnValues.owner) {
+        if (toAcceptedAddressFormat(ticketEntity.owner) !== toAcceptedAddressFormat(returnValues.owner)) {
             throw new Error(
                 `Invalid owner address received from event: ticket got ${ticketEntity.owner} and event gives ${returnValues.owner}`,
             );
@@ -174,7 +173,7 @@ export class MintT721ControllerEVMAntenna extends EVMEventControllerBase {
                 mode: 'mint',
             },
             {
-                consumed: true,
+                consumed: false,
             },
         );
 
@@ -183,7 +182,7 @@ export class MintT721ControllerEVMAntenna extends EVMEventControllerBase {
                 id: ticketEntity.id,
             },
             {
-                status: 'ready',
+                status: 'minting',
             },
         );
 
