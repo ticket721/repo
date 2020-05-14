@@ -42,7 +42,6 @@ export class TokenMinterOperation extends Operation {
      * @param t721TokenService
      * @param usersService
      * @param txsService
-     * @param configService
      */
     constructor(
         name: string,
@@ -51,7 +50,6 @@ export class TokenMinterOperation extends Operation {
         private readonly t721TokenService: T721TokenService,
         private readonly usersService: UsersService,
         private readonly txsService: TxsService,
-        private readonly configService: ConfigService,
     ) {
         super(name, dosojin);
     }
@@ -64,9 +62,9 @@ export class TokenMinterOperation extends Operation {
     public async run(gem: Gem): Promise<Gem> {
         gem.setRefreshTimer(1000);
 
-        const { userId } = gem.getState<TokenMinterArguments>(this.dosojin);
+        const state: TokenMinterArguments = gem.getState<TokenMinterArguments>(this.dosojin);
 
-        const creditedUser = await this.usersService.findById(userId);
+        const creditedUser = await this.usersService.findById(state.userId);
 
         if (creditedUser.error) {
             return gem.error(this.dosojin, `An error occured while fetching the credited user`);
@@ -118,7 +116,7 @@ export class TokenMinterOperation extends Operation {
         const tx = await this.txsService.sendRawTransaction(sender, rawInstance._address, '0', encodedTransactionCall);
 
         if (tx.error) {
-            return gem.error(this.dosojin, `An error occured while trying to create transaction`);
+            return gem.error(this.dosojin, `An error occured while trying to create transaction: ${tx.error}`);
         }
 
         gem.addCost(
@@ -129,7 +127,7 @@ export class TokenMinterOperation extends Operation {
         );
 
         gem.setState<TokenMinterArguments & TokenMinterTx>(this.dosojin, {
-            ...gem.getState<TokenMinterArguments>(this.dosojin),
+            ...state,
             txHash: tx.response.transaction_hash,
         });
 
@@ -141,65 +139,9 @@ export class TokenMinterOperation extends Operation {
      *
      * @param gem
      */
+    /* istanbul ignore next */
     public async dryRun(gem: Gem): Promise<Gem> {
-        gem.setRefreshTimer(1000);
-
-        const { userId } = gem.getState<TokenMinterArguments>(this.dosojin);
-
-        const creditedUser = await this.usersService.findById(userId);
-
-        if (creditedUser.error) {
-            return gem.error(this.dosojin, `An error occured while fetching the credited user`);
-        }
-
-        if (creditedUser.response === null) {
-            return gem.error(this.dosojin, `Cannot find user to credit`);
-        }
-
-        if (creditedUser.response.valid === false) {
-            return gem;
-        }
-
-        const user: UserEntity = creditedUser.response;
-
-        const userAddress = user.address;
-        const amount = gem.gemPayload.values['fiat_eur'].toString();
-
-        const rawInstance = await this.t721AdminService.get();
-
-        const encodedTransactionCall = rawInstance.methods.refundedMintFor(userAddress, amount).encodeABI();
-
-        const admin = this.configService.get('VAULT_ETHEREUM_ASSIGNED_ADMIN');
-
-        const gasLimitEstimation = await this.txsService.estimateGasLimit(
-            admin,
-            rawInstance._address,
-            encodedTransactionCall,
-        );
-
-        if (gasLimitEstimation.error) {
-            return gem.error(this.dosojin, `Cannot estimate gas limit`);
-        }
-
-        const gasPriceEstimation = await this.txsService.estimateGasPrice(gasLimitEstimation.response);
-
-        if (gasPriceEstimation.error) {
-            return gem.error(this.dosojin, `Cannot estimate gas price`);
-        }
-
-        gem.addCost(
-            this.dosojin,
-            new BN(gasPriceEstimation.response).mul(new BN(gasLimitEstimation.response)),
-            'crypto_eth',
-            `Token Minting Transaction Fees`,
-        );
-
-        gem.setState<TokenMinterArguments & TokenMinterTx>(this.dosojin, {
-            ...gem.getState<TokenMinterArguments>(this.dosojin),
-            txHash: '0xabcd',
-        });
-
-        return gem.setOperationStatus(OperationStatusNames.OperationComplete);
+        throw new Error('unimplemented dry run');
     }
 
     /**

@@ -502,18 +502,6 @@ describe('Tickets Service', function() {
                 parent_id: parentId,
                 parent_type: parentType,
             };
-            const ticketEntityTwo: Partial<TicketEntity> = {
-                id: '1',
-                authorization: authorizationIdTwo,
-                owner: buyer,
-                env: 'chain',
-                status: 'minting',
-                transaction_hash: null,
-                category: categoryIdTwo,
-                group_id: groupId,
-                parent_id: parentId,
-                parent_type: parentType,
-            };
             const spiedService = spy(context.ticketsService);
 
             // MOCK
