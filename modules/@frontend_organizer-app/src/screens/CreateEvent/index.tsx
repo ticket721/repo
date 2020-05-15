@@ -1,17 +1,27 @@
-import React  from 'react';
-import styled from 'styled-components';
-import NavBar          from '../../components/Navbar';
+import React, { useState } from 'react';
+import styled              from 'styled-components';
+
 import GeneralInfoForm from '../../components/GeneralInfoForm';
+import DatesForm from '../../components/DatesForm';
+import STEPS     from './enums';
 
 const CreateEvent: React.FC = () => {
+  const [step, setStep] = useState(STEPS.generalInfo);
   return (
-    <div className='CreateEvent' style={{ color: 'white' }}>
-      <NavBar />
-      <Container>
-        <Title>General Informations</Title>
-        <GeneralInfoForm />
-      </Container>
-    </div>
+    <Container>
+      {step >= STEPS.generalInfo && (
+        <>
+          <Title>General Informations</Title>
+          <GeneralInfoForm setStep={setStep}/>
+        </>)
+      }
+      {step >= STEPS.dates && (
+        <>
+          <Title>Event Dates</Title>
+          <DatesForm  setStep={setStep}/>
+        </>)
+      }
+    </Container>
   )
 };
 
