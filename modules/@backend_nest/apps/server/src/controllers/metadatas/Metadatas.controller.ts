@@ -12,6 +12,7 @@ import { MetadataEntity } from '@lib/common/metadatas/entities/Metadata.entity';
 import { MetadatasFetchResponseDto } from '@app/server/controllers/metadatas/dto/MetadatasFetchResponse.dto';
 import { ControllerBasics } from '@lib/common/utils/ControllerBasics.base';
 import { MetadatasService } from '@lib/common/metadatas/Metadatas.service';
+import { ValidGuard } from '@app/server/authentication/guards/ValidGuard.guard';
 
 /**
  * Controller Handling Metadatas
@@ -38,7 +39,7 @@ export class MetadatasController extends ControllerBasics<MetadataEntity> {
      * @param user
      */
     @Post('/fetch')
-    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
     @UseFilters(new HttpExceptionFilter())
     @HttpCode(StatusCodes.OK)
     @Roles('authenticated')

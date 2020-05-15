@@ -45,6 +45,7 @@ import { cartModulesConfiguration, cartTicketSelections }                 from '
 import { checkoutCartCommitStripe, checkoutResolveCartWithPaymentIntent } from './app/api/checkout';
 import { dosojinSearch }                                                  from './app/api/dosojin';
 import { ticketsSearch }                                                  from './app/api/tickets';
+import { usersMe }                                                        from './app/api/users';
 
 export { FailedRegisterReport } from './app/api/authentication';
 
@@ -70,6 +71,8 @@ export class T721SDK {
         this.validateEmail = this.validateEmail.bind(this);
         this.resetPassword = this.resetPassword.bind(this);
         this.validateResetPassword = this.validateResetPassword.bind(this);
+
+        this.users.me = this.users.me.bind(this);
 
         this.actions.search = this.actions.search.bind(this);
         this.actions.update = this.actions.update.bind(this);
@@ -218,6 +221,10 @@ export class T721SDK {
     public validateEmail = validateEmail;
     public resetPassword = resetPassword;
     public validateResetPassword = validateResetPassword;
+
+    public users = {
+        me: usersMe
+    };
 
     public actions = {
         search: actionsSearch,

@@ -28,6 +28,7 @@ import { HttpExceptionFilter } from '@app/server/utils/HttpException.filter';
 import { ControllerBasics } from '@lib/common/utils/ControllerBasics.base';
 import { UUIDToolService } from '@lib/common/toolbox/UUID.tool.service';
 import { ApiResponses } from '@app/server/utils/ApiResponses.controller.decorator';
+import { ValidGuard } from '@app/server/authentication/guards/ValidGuard.guard';
 
 /**
  * Accepted Mimetypes
@@ -71,7 +72,7 @@ export class ImagesController extends ControllerBasics<ImageEntity> {
      * @param user
      */
     @Post('/')
-    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
     @UseFilters(new HttpExceptionFilter())
     @UseInterceptors(FilesInterceptor('images'))
     @HttpCode(StatusCodes.Created)

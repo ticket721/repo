@@ -12,6 +12,7 @@ import { TicketEntity } from '@lib/common/tickets/entities/Ticket.entity';
 import { TicketsService } from '@lib/common/tickets/Tickets.service';
 import { TicketsSearchInputDto } from '@app/server/controllers/tickets/dto/TicketsSearchInput.dto';
 import { TicketsSearchResponseDto } from '@app/server/controllers/tickets/dto/TicketsSearchResponse.dto';
+import { ValidGuard } from '@app/server/authentication/guards/ValidGuard.guard';
 
 /**
  * Controller Handling Tickets
@@ -37,7 +38,7 @@ export class TicketsController extends ControllerBasics<TicketEntity> {
      * @param user
      */
     @Post('/search')
-    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
     @UseFilters(new HttpExceptionFilter())
     @HttpCode(StatusCodes.OK)
     @Roles('authenticated')

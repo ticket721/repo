@@ -52,6 +52,7 @@ describe('Authentication Controller', function() {
         const jwtServiceMock: JwtService = mock(JwtService);
 
         when(configServiceMock.get('NODE_ENV')).thenReturn('production');
+        when(configServiceMock.get('JWT_EXPIRATION')).thenReturn('12h');
 
         const AuthenticationServiceProvider = {
             provide: AuthenticationService,
@@ -144,6 +145,7 @@ describe('Authentication Controller', function() {
             const res = await authenticationController.web3Register(user);
             expect(res.user).toBeDefined();
             expect(res.token).toBeDefined();
+            expect(res.expiration.getTime()).toBeGreaterThan(Date.now());
             expect(res.validationToken).toBeUndefined();
             expect(res.user).toEqual({
                 username,
@@ -221,6 +223,7 @@ describe('Authentication Controller', function() {
             expect(res.user).toBeDefined();
             expect(res.token).toBeDefined();
             expect(res.validationToken).toBeDefined();
+            expect(res.expiration.getTime()).toBeGreaterThan(Date.now());
             expect(res.user).toEqual({
                 username,
                 email,
@@ -765,6 +768,7 @@ describe('Authentication Controller', function() {
             expect(res.user).toBeDefined();
             expect(res.validationToken).toBeUndefined();
             expect(res.token).toBeDefined();
+            expect(res.expiration.getTime()).toBeGreaterThan(Date.now());
             expect(res.user).toEqual({
                 username,
                 email,
@@ -822,6 +826,7 @@ describe('Authentication Controller', function() {
             expect(res.user).toBeDefined();
             expect(res.token).toBeDefined();
             expect(res.validationToken).toBeDefined();
+            expect(res.expiration.getTime()).toBeGreaterThan(Date.now());
             expect(res.user).toEqual({
                 username,
                 email,

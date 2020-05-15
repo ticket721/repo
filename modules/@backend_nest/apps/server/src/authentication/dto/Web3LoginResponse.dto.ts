@@ -13,4 +13,9 @@ export class Web3LoginResponseDto {
      * JWT Token to use for further authentication
      */
     token: string;
+
+    /**
+     * Expiration date of the token
+     */
+    expiration: Date;
 }

@@ -13,6 +13,7 @@ import { SortablePagedSearch } from '@lib/common/utils/SortablePagedSearch.type'
 import { RightEntity } from '@lib/common/rights/entities/Right.entity';
 import { RightsSearchInputDto } from '@app/server/controllers/rights/dto/RightsSearchInput.dto';
 import { RightsSearchResponseDto } from '@app/server/controllers/rights/dto/RightsSearchResponse.dto';
+import { ValidGuard } from '@app/server/authentication/guards/ValidGuard.guard';
 
 /**
  * Controller Handling Gem Orders
@@ -39,7 +40,7 @@ export class RightsController extends ControllerBasics<RightEntity> {
      * @param user
      */
     @Post('/search')
-    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
     @UseFilters(new HttpExceptionFilter())
     @HttpCode(StatusCodes.OK)
     @Roles('authenticated')

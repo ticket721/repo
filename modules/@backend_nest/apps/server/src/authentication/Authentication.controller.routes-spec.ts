@@ -60,6 +60,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                         valid: false,
                     },
                     validationToken: response.data.validationToken,
+                    expiration: expect.anything(),
                 } as LocalRegisterResponseDto);
             });
 
@@ -102,6 +103,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                         username: user.username,
                         valid: false,
                     },
+                    expiration: expect.anything(),
                     validationToken: response.data.validationToken,
                 } as LocalRegisterResponseDto);
             });
@@ -438,6 +440,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                             username: user.username,
                             valid: true,
                         },
+                        expiration: expect.anything(),
                     } as LocalRegisterResponseDto);
                 }
             });
@@ -585,6 +588,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                         username: user.username,
                         valid: false,
                     },
+                    expiration: expect.anything(),
                     validationToken: response.data.validationToken,
                 } as LocalRegisterResponseDto);
             });
@@ -617,6 +621,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                         username: user.username,
                         valid: false,
                     },
+                    expiration: expect.anything(),
                     validationToken: response.data.validationToken,
                 } as LocalRegisterResponseDto);
             });
@@ -726,6 +731,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                         email: loginResponse.data.user.email,
                         username: loginResponse.data.user.username,
                     },
+                    expiration: expect.anything(),
                     token: loginResponse.data.token,
                 } as LocalLoginResponseDto);
             });
@@ -855,6 +861,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                         email: loginResponse.data.user.email,
                         username: loginResponse.data.user.username,
                     },
+                    expiration: expect.anything(),
                     token: loginResponse.data.token,
                 } as LocalLoginResponseDto);
             });
@@ -950,6 +957,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                         email: loginResponse.data.user.email,
                         username: loginResponse.data.user.username,
                     },
+                    expiration: expect.anything(),
                     token: loginResponse.data.token,
                 } as LocalLoginResponseDto);
             });

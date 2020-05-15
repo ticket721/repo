@@ -13,6 +13,7 @@ import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
 import AuthenticationControllerTestSuite from '@app/server/authentication/Authentication.controller.routes-spec';
 import ServerControllerTestSuite from '@app/server/controllers/server/Server.controller.routes-spec';
 import ActionSetsControllerTestSuite from '@app/server/controllers/actionsets/ActionSets.controller.routes-spec';
+import UsersControllerTestSuite from '@app/server/controllers/users/Users.controller.routes-spec';
 import CategoriesControllerTestSuite from '@app/server/controllers/categories/Categories.controller.routes-spec';
 import CheckoutControllerTestSuite from '@app/server/controllers/checkout/Checkout.controller.routes-spec';
 import ContractsControllerTestSuite from '@app/server/controllers/contracts/Contracts.controller.routes-spec';
@@ -23,12 +24,11 @@ import ImagesControllerTestSuite from '@app/server/controllers/images/Images.con
 import TxsControllerTestSuite from '@app/server/controllers/txs/Txs.controller.routes-spec';
 import RightsControllerTestSuite from '@app/server/controllers/rights/Rights.controller.routes-spec';
 import MetadatasControllerTestSuite from '@app/server/controllers/metadatas/Metadatas.controller.routes-spec';
-import { anything, deepEqual, instance, mock, spy, when } from 'ts-mockito';
+
+import { instance } from 'ts-mockito';
 
 const cassandraPort = 32702;
 const elasticSearchPort = 32610;
-const redisPort = 32412;
-const ganachePort = 38545;
 
 let global_ok;
 
@@ -45,7 +45,6 @@ const context: {
 };
 
 const getCtx = (): { ready: Promise<void> } => context;
-let snap_id = null;
 
 const shouldDeploy = () => process.env.DEPLOY === 'true';
 
@@ -120,6 +119,7 @@ describe('AppController (e2e)', () => {
     }, 60000);
 
     describe('Server Controller', ServerControllerTestSuite(getCtx));
+    describe('Users Controller', UsersControllerTestSuite(getCtx));
     describe('Authentication Controller', AuthenticationControllerTestSuite(getCtx));
     describe('ActionSets Controller', ActionSetsControllerTestSuite(getCtx));
     describe('Categories Controller', CategoriesControllerTestSuite(getCtx));

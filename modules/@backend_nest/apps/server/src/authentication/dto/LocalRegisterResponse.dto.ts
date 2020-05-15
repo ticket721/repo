@@ -15,6 +15,11 @@ export class LocalRegisterResponseDto {
     token: string;
 
     /**
+     * Token expiration
+     */
+    expiration: Date;
+
+    /**
      * JWT Token for email validation. Only returned when NODE_ENV=development
      */
     validationToken?: string;

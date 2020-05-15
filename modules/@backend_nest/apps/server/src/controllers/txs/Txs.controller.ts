@@ -18,6 +18,7 @@ import { TxsInfosResponseDto } from '@app/server/controllers/txs/dto/TxsInfosRes
 import { isTransactionHash } from '@common/global';
 import { HttpExceptionFilter } from '@app/server/utils/HttpException.filter';
 import { ApiResponses } from '@app/server/utils/ApiResponses.controller.decorator';
+import { ValidGuard } from '@app/server/authentication/guards/ValidGuard.guard';
 
 /**
  * Transaction Controller. Fetch and recover transactions
@@ -80,7 +81,7 @@ export class TxsController extends ControllerBasics<TxEntity> {
      * @param user
      */
     @Post('/subscribe')
-    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
     @UseFilters(new HttpExceptionFilter())
     @HttpCode(StatusCodes.OK)
     @Roles('authenticated')
