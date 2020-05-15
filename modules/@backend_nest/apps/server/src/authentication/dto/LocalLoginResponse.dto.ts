@@ -13,4 +13,9 @@ export class LocalLoginResponseDto {
      * JWT Token to use for further authentication
      */
     token: string;
+
+    /**
+     * Token expiration
+     */
+    expiration: Date;
 }

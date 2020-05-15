@@ -5,7 +5,7 @@
     <node-options value="" />
     <jest-package value="$PROJECT_DIR$/node_modules/jest-cli" />
     <working-dir value="$PROJECT_DIR$/modules/@backend_nest" />
-    <jest-options value="--expand --verbose" />
+    <jest-options value="--expand --verbose --testTimeout=10000" />
     <envs />
     <scope-kind value="ALL" />
     <method v="2" />

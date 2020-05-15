@@ -41,6 +41,7 @@ import { UserTypes, UserTypesGuard } from '@app/server/authentication/guards/Use
 import { User } from '@app/server/authentication/decorators/User.controller.decorator';
 import { PasswordChangeDto } from '@app/server/authentication/dto/PasswordChange.dto';
 import { ValidGuard } from '@app/server/authentication/guards/ValidGuard.guard';
+import parse from 'parse-duration';
 
 /**
  * Controller exposing the authentication routes
@@ -81,6 +82,7 @@ export class AuthenticationController {
                     username: req.user.username,
                     sub: req.user.id,
                 }),
+                expiration: new Date(Date.now() + parse(this.configService.get('JWT_EXPIRATION'))),
             };
         } catch (e) {
             throw new HttpException(
@@ -110,6 +112,7 @@ export class AuthenticationController {
                     username: req.user.username,
                     sub: req.user.id,
                 }),
+                expiration: new Date(Date.now() + parse(this.configService.get('JWT_EXPIRATION'))),
             };
         } catch (e) {
             throw new HttpException(
@@ -193,6 +196,7 @@ export class AuthenticationController {
                     username: resp.response.username,
                     sub: resp.response.id,
                 }),
+                expiration: new Date(Date.now() + parse(this.configService.get('JWT_EXPIRATION'))),
                 validationToken:
                     this.configService.get('NODE_ENV') === 'development'
                         ? this.jwtService.sign(
@@ -296,6 +300,7 @@ export class AuthenticationController {
                     username: resp.response.username,
                     sub: resp.response.id,
                 }),
+                expiration: new Date(Date.now() + parse(this.configService.get('JWT_EXPIRATION'))),
                 validationToken:
                     this.configService.get('NODE_ENV') === 'development'
                         ? this.jwtService.sign(
