@@ -422,6 +422,32 @@ export const failWithCode = async (promise: Promise<any>, code: StatusCodes, mes
     throw new Error(`Expected request to fail with status ${code}, but succeeded with status ${res.status}`);
 };
 
+export const getInvalidUser = async (
+    sdk: T721SDK,
+): Promise<{
+    token: string;
+    user: PasswordlessUserDto;
+    password: string;
+}> => {
+    const user = {
+        email: generateEmail(),
+        username: generateUserName(),
+        password: generatePassword(),
+    };
+
+    const response: AxiosResponse<LocalRegisterResponseDto> = (await sdk.localRegister(
+        user.email,
+        user.password,
+        user.username,
+    )) as AxiosResponse<LocalRegisterResponseDto>;
+
+    return {
+        token: response.data.token,
+        user: response.data.user,
+        password: user.password,
+    };
+};
+
 export const getUser = async (
     sdk: T721SDK,
 ): Promise<{
@@ -454,6 +480,25 @@ export const getUser = async (
 
 export const pause = async (time: number): Promise<void> => {
     return new Promise(ok => setTimeout(ok, time));
+};
+
+export const getSDKAndInvalidUser = async (
+    getCtx: () => { ready: Promise<void> },
+): Promise<{
+    sdk: T721SDK;
+    token: string;
+    user: PasswordlessUserDto;
+    password: string;
+}> => {
+    const sdk = await getSDK(getCtx);
+    const { token, user, password } = await getInvalidUser(sdk);
+
+    return {
+        sdk,
+        token,
+        user,
+        password,
+    };
 };
 
 export const getSDKAndUser = async (

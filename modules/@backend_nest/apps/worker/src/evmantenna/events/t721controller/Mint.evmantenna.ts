@@ -12,7 +12,7 @@ import { T721ControllerV0Service } from '@lib/common/contracts/t721controller/T7
 import { CategoriesService } from '@lib/common/categories/Categories.service';
 import { TicketEntity } from '@lib/common/tickets/entities/Ticket.entity';
 import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
-import { decimalToHex, toAcceptedAddressFormat, toB32 } from '@common/global';
+import { decimalToHex, encode, toAcceptedAddressFormat, toB32 } from '@common/global';
 import { GroupService } from '@lib/common/group/Group.service';
 import { AuthorizationsService } from '@lib/common/authorizations/Authorizations.service';
 import { AuthorizationEntity } from '@lib/common/authorizations/entities/Authorization.entity';
@@ -134,14 +134,11 @@ export class MintT721ControllerEVMAntenna extends EVMEventControllerBase {
 
         const authorizationEntity: AuthorizationEntity = authorizationEntityRes.response[0];
 
-        const code = AuthorizationEntity.getCodes(authorizationEntity)[0];
+        const code = encode(['uint256'], [AuthorizationEntity.getCodes(authorizationEntity)[0]]).toLowerCase();
+        const receivedCode = encode(['uint256'], [decimalToHex(returnValues.code)]).toLowerCase();
 
-        if (code.toLowerCase() !== decimalToHex(returnValues.code).toLowerCase()) {
-            throw new Error(
-                `Invalid broadcasted authorization code: got ${decimalToHex(
-                    returnValues.code,
-                ).toLowerCase()} but was expecting ${code.toLowerCase()}`,
-            );
+        if (code !== receivedCode) {
+            throw new Error(`Invalid broadcasted authorization code: got ${receivedCode} but was expecting ${code}`);
         }
 
         const authorizationDryUpdateRes = await this.authorizationsService.dryUpdate(

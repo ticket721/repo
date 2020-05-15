@@ -52,6 +52,7 @@ import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entit
 import { ApiResponses } from '@app/server/utils/ApiResponses.controller.decorator';
 import { MetadatasService } from '@lib/common/metadatas/Metadatas.service';
 import { RocksideCreateEOAResponse, RocksideService } from '@lib/common/rockside/Rockside.service';
+import { ValidGuard } from '@app/server/authentication/guards/ValidGuard.guard';
 
 /**
  * Events controller to create and fetch events
@@ -115,7 +116,7 @@ export class EventsController extends ControllerBasics<EventEntity> {
      * @param user
      */
     @Post('/start')
-    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
     @UseFilters(new HttpExceptionFilter())
     @HttpCode(StatusCodes.OK)
     @Roles('authenticated')
@@ -297,7 +298,7 @@ export class EventsController extends ControllerBasics<EventEntity> {
      * @param user
      */
     @Post('/')
-    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
     @UseFilters(new HttpExceptionFilter())
     @HttpCode(StatusCodes.Created)
     @Roles('authenticated')
@@ -444,7 +445,7 @@ export class EventsController extends ControllerBasics<EventEntity> {
      * @param user
      */
     @Put('/:eventId')
-    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
     @UseFilters(new HttpExceptionFilter())
     @HttpCode(StatusCodes.OK)
     @Roles('authenticated')
@@ -521,7 +522,7 @@ export class EventsController extends ControllerBasics<EventEntity> {
      * @param user
      */
     @Delete('/:eventId/categories')
-    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
     @UseFilters(new HttpExceptionFilter())
     @HttpCode(StatusCodes.OK)
     @Roles('authenticated')
@@ -622,7 +623,7 @@ export class EventsController extends ControllerBasics<EventEntity> {
      * @param user
      */
     @Post('/:eventId/categories')
-    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
     @UseFilters(new HttpExceptionFilter())
     @HttpCode(StatusCodes.Created)
     @Roles('authenticated')
@@ -745,7 +746,7 @@ export class EventsController extends ControllerBasics<EventEntity> {
      * @param user
      */
     @Delete('/:eventId/dates')
-    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
     @UseFilters(new HttpExceptionFilter())
     @HttpCode(StatusCodes.OK)
     @Roles('authenticated')
@@ -846,7 +847,7 @@ export class EventsController extends ControllerBasics<EventEntity> {
      * @param user
      */
     @Post('/:eventId/dates')
-    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
     @UseFilters(new HttpExceptionFilter())
     @HttpCode(StatusCodes.Created)
     @Roles('authenticated')

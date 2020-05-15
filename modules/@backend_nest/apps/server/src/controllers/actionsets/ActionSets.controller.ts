@@ -22,6 +22,7 @@ import { ActionsCreateResponseDto } from '@app/server/controllers/actionsets/dto
 import { RightsService } from '@lib/common/rights/Rights.service';
 import { ApiResponses } from '@app/server/utils/ApiResponses.controller.decorator';
 import { EventCreateAcsetBuilderArgs } from '@lib/common/events/acset_builders/EventCreate.acsetbuilder.helper';
+import { ValidGuard } from '@app/server/authentication/guards/ValidGuard.guard';
 
 /**
  * Generic Actions controller. Recover / delete action sets generated across the app
@@ -46,7 +47,7 @@ export class ActionSetsController extends ControllerBasics<ActionSetEntity> {
      * @param user
      */
     @Post('/search')
-    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
     @UseFilters(new HttpExceptionFilter())
     @HttpCode(StatusCodes.OK)
     @Roles('authenticated')

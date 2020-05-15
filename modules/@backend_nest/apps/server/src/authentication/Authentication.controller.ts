@@ -40,6 +40,7 @@ import { Roles, RolesGuard } from '@app/server/authentication/guards/RolesGuard.
 import { UserTypes, UserTypesGuard } from '@app/server/authentication/guards/UserTypesGuard.guard';
 import { User } from '@app/server/authentication/decorators/User.controller.decorator';
 import { PasswordChangeDto } from '@app/server/authentication/dto/PasswordChange.dto';
+import { ValidGuard } from '@app/server/authentication/guards/ValidGuard.guard';
 
 /**
  * Controller exposing the authentication routes
@@ -440,7 +441,7 @@ export class AuthenticationController {
         StatusCodes.UnprocessableEntity,
         StatusCodes.InternalServerError,
     ])
-    @UseGuards(AuthGuard('jwt'), RolesGuard, UserTypesGuard)
+    @UseGuards(AuthGuard('jwt'), RolesGuard, UserTypesGuard, ValidGuard)
     @Roles('authenticated')
     @UserTypes('t721')
     async updatePassword(@Body() body: PasswordChangeDto, @User() user: UserDto): Promise<PasswordlessUserDto> {

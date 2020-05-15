@@ -37,6 +37,7 @@ import { CategoriesService } from '@lib/common/categories/Categories.service';
 import { isFutureDateRange } from '@common/global/lib/utils';
 import { ApiResponses } from '@app/server/utils/ApiResponses.controller.decorator';
 import { MetadatasService } from '@lib/common/metadatas/Metadatas.service';
+import { ValidGuard } from '@app/server/authentication/guards/ValidGuard.guard';
 
 /**
  * Generic Dates controller. Recover Dates linked to all types of events
@@ -88,7 +89,7 @@ export class DatesController extends ControllerBasics<DateEntity> {
      * @param user
      */
     @Post('/')
-    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
     @UseFilters(new HttpExceptionFilter())
     @HttpCode(StatusCodes.Created)
     @Roles('authenticated')
@@ -165,7 +166,7 @@ export class DatesController extends ControllerBasics<DateEntity> {
      * @param user
      */
     @Post('/:dateId/categories')
-    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
     @UseFilters(new HttpExceptionFilter())
     @HttpCode(StatusCodes.Created)
     @Roles('authenticated')
@@ -288,7 +289,7 @@ export class DatesController extends ControllerBasics<DateEntity> {
      * @param user
      */
     @Delete('/:dateId/categories')
-    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
     @UseFilters(new HttpExceptionFilter())
     @HttpCode(StatusCodes.OK)
     @Roles('authenticated')
@@ -389,7 +390,7 @@ export class DatesController extends ControllerBasics<DateEntity> {
      * @param user
      */
     @Put('/:dateId')
-    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
     @UseFilters(new HttpExceptionFilter())
     @HttpCode(StatusCodes.OK)
     @Roles('authenticated')

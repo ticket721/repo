@@ -14,6 +14,7 @@ import { RightsService } from '@lib/common/rights/Rights.service';
 import { ApiResponses } from '@app/server/utils/ApiResponses.controller.decorator';
 import { DosojinSearchInputDto } from '@app/server/controllers/dosojin/dto/DosojinSearchInput.dto';
 import { DosojinSearchResponseDto } from '@app/server/controllers/dosojin/dto/DosojinSearchResponse.dto';
+import { ValidGuard } from '@app/server/authentication/guards/ValidGuard.guard';
 
 /**
  * Controller Handling Gem Orders
@@ -40,7 +41,7 @@ export class DosojinController extends ControllerBasics<GemOrderEntity> {
      * @param user
      */
     @Post('/search')
-    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
     @UseFilters(new HttpExceptionFilter())
     @HttpCode(StatusCodes.OK)
     @Roles('authenticated')

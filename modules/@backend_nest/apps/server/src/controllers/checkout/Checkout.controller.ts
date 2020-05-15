@@ -27,6 +27,7 @@ import regionRestrictions from './restrictions/regionRestrictions.value';
 import methodsRestrictions from './restrictions/methodsRestrictions.value';
 import { GemOrderEntity } from '@lib/common/gemorders/entities/GemOrder.entity';
 import { CheckoutAcsetBuilderArgs } from '@lib/common/checkout/acset_builders/Checkout.acsetbuilder.helper';
+import { ValidGuard } from '@app/server/authentication/guards/ValidGuard.guard';
 
 /**
  * Checkout controller to create, update and resolve carts
@@ -61,7 +62,7 @@ export class CheckoutController extends ControllerBasics<StripeResourceEntity> {
      * @param user
      */
     @Post('/cart/commit/stripe')
-    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
     @UseFilters(new HttpExceptionFilter())
     @HttpCode(StatusCodes.OK)
     @Roles('authenticated')
@@ -142,7 +143,7 @@ export class CheckoutController extends ControllerBasics<StripeResourceEntity> {
      * @param user
      */
     @Post('/cart/resolve/paymentintent')
-    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
     @UseFilters(new HttpExceptionFilter())
     @HttpCode(StatusCodes.OK)
     @Roles('authenticated')

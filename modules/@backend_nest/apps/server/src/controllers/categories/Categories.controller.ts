@@ -34,6 +34,7 @@ import { Roles, RolesGuard } from '@app/server/authentication/guards/RolesGuard.
 import { isFutureDateRange } from '@common/global/lib/utils';
 import { ApiResponses } from '@app/server/utils/ApiResponses.controller.decorator';
 import { MetadatasService } from '@lib/common/metadatas/Metadatas.service';
+import { ValidGuard } from '@app/server/authentication/guards/ValidGuard.guard';
 
 /**
  * Generic Categories controller. Recover Categories linked to all types of events
@@ -88,7 +89,7 @@ export class CategoriesController extends ControllerBasics<CategoryEntity> {
      * @param user
      */
     @Post('/')
-    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
     @UseFilters(new HttpExceptionFilter())
     @HttpCode(StatusCodes.Created)
     @Roles('authenticated')
@@ -209,7 +210,7 @@ export class CategoriesController extends ControllerBasics<CategoryEntity> {
      * @param user
      */
     @Put('/:categoryId')
-    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
     @UseFilters(new HttpExceptionFilter())
     @HttpCode(StatusCodes.OK)
     @Roles('authenticated')
