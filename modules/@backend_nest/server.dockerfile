@@ -8,5 +8,8 @@ COPY --from=DEPENDENCIES "/repo/modules/@common_global/node_modules" "/repo/modu
 
 WORKDIR "/repo/modules/@backend_nest"
 
-RUN yarn build:server
+RUN cd ../@common_global\
+ && yarn build\
+ && cd ../@backend_nest\
+ && yarn build:server
 
