@@ -24,10 +24,7 @@
         "noImplicitAny": true,
         "suppressImplicitAnyIndexErrors": true,
         "noUnusedLocals": true,
-        "allowSyntheticDefaultImports": true,
-        "typeRoots": [
-            "./node_modules/@types"
-        ]
+        "allowSyntheticDefaultImports": true
     },
     "exclude": [
         "node_modules",

@@ -1,0 +1,35 @@
+name: T721 Monorepo CI
+
+on: [push]
+
+jobs:
+
+    docker:
+        name: "[S1] docker"
+        runs-on: ubuntu-latest
+        steps:
+
+            #
+            # Initial Setup
+            #
+
+            - uses: actions/checkout@v1
+            - name: "Use Node.js 12.x"
+              uses: actions/setup-node@v1.2.0
+              with:
+                  node-version: 12.x
+
+            - name: "Setup SSH Agent"
+              uses: webfactory/ssh-agent@v0.1.1
+              with:
+                  ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+            - name: "Install required tools globally (npm install -g lerna lcov-result-merger yarn)"
+              run: npm install -g lerna@3.16.4 lcov-result-merger@3.1.0 yarn@1.22.4
+
+            - name: "Recover submodules (yarn setup:submodules:clone)"
+              run: yarn setup:submodules:clone
+
+            - name: "Build all docker images"
+              run: yarn @docker:build:github
+
