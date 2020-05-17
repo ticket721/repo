@@ -19,7 +19,8 @@
         "postinstall": "lerna exec 'yarn @lerna/postinstall' && yarn setup:portals",
         "@install:prod": "yarn @install/public/install && yarn @install/public/postinstall && yarn install --prod",
         "@docker:build": "docker-compose build",
-        "@docker:build:github": "env TAG=$GITHUB_SHA yarn @docker:build"
+        "@docker:build:github": "env TAG=$GITHUB_SHA yarn @docker:build",
+        "@docker:deploy:github": "env TAG=$GITHUB_SHA ./docker-push.sh"
     },
     "workspaces": {
 
