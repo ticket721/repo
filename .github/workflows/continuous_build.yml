@@ -1,4 +1,4 @@
-name: T721 Monorepo CI
+name: T721 Monorepo CB
 
 on: [push]
 
