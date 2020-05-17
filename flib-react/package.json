@@ -40,6 +40,7 @@
     "@types/react-router-dom": "5.1.5",
     "@types/react-select": "3.0.13",
     "@types/styled-components": "5.1.0",
+    "@types/react-color": "3.0.1",
     "cleave.js": "1.5.10",
     "detect-browser": "5.1.0",
     "html5-file-selector": "2.1.0",
