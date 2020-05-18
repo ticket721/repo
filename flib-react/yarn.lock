@@ -2584,7 +2584,7 @@
     "@types/history" "*"
     "@types/react" "*"
 
-"@types/react-color@^3.0.1":
+"@types/react-color@3.0.1", "@types/react-color@^3.0.1":
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/@types/react-color/-/react-color-3.0.1.tgz#5433e2f503ea0e0831cbc6fd0c20f8157d93add0"
   integrity sha512-J6mYm43Sid9y+OjZ7NDfJ2VVkeeuTPNVImNFITgQNXodHteKfl/t/5pAR5Z9buodZ2tCctsZjgiMlQOpfntakw==
@@ -2600,10 +2600,17 @@
     date-fns "^2.0.1"
     popper.js "^1.14.1"
 
-"@types/react-dom@*", "@types/react-dom@16.9.8":
+"@types/react-dom@*":
   version "16.9.8"
   resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-16.9.8.tgz#fe4c1e11dfc67155733dfa6aa65108b4971cb423"
   integrity sha512-ykkPQ+5nFknnlU6lDd947WbQ6TE3NNzbQAkInC2EKY1qeYdTKp7onFusmYZb+ityzx2YviqT6BXSu+LyWWJwcA==
+  dependencies:
+    "@types/react" "*"
+
+"@types/react-dom@16.9.6":
+  version "16.9.6"
+  resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-16.9.6.tgz#9e7f83d90566521cc2083be2277c6712dcaf754c"
+  integrity sha512-S6ihtlPMDotrlCJE9ST1fRmYrQNNwfgL61UB4I1W7M6kPulUKx9fXAleW5zpdIjUQ4fTaaog8uERezjsGUj9HQ==
   dependencies:
     "@types/react" "*"
 
@@ -11346,10 +11353,10 @@ react-color@2.18.1, react-color@^2.17.0:
     reactcss "^1.2.0"
     tinycolor2 "^1.4.1"
 
-react-datepicker@2.15.0:
-  version "2.15.0"
-  resolved "https://registry.yarnpkg.com/react-datepicker/-/react-datepicker-2.15.0.tgz#1e182699f1fd96b96080d0b6c294c6dc383117a0"
-  integrity sha512-IZU3izNcP7UFFsaKGpPW1bej6CVF0oL/wgisjDiuy8FZk9wdcFDcrk1/FFY2UinrYSGzgafc4jdOmgVj/7YrJA==
+react-datepicker@2.16.0:
+  version "2.16.0"
+  resolved "https://registry.yarnpkg.com/react-datepicker/-/react-datepicker-2.16.0.tgz#6bd68de94f5fb38c8f6a4370f3c612837c700e4e"
+  integrity sha512-TvcmSY27rn0JKvuJuIXNNS+niGQNdgtuG/CsBttVYhPOA9KmSw7c2PvQBPVEvzkyV+QPNJ8jN/KVJNj9uvopqA==
   dependencies:
     classnames "^2.2.6"
     date-fns "^2.0.1"
