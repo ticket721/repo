@@ -1,6 +1,6 @@
 apiVersion: v2
 name: redis
-description: A Helm chart for Kubernetes
+description: Helm Chart for the Redis instance
 
 # A chart can be either an 'application' or a 'library' chart.
 #
