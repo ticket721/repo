@@ -1,13 +1,13 @@
 # Login
-docker login docker.pkg.github.com --username mortimr --password ${GITHUB_TOKEN}
+gcloud auth configure-docker
 
 # Tags
-docker tag server:${TAG} docker.pkg.github.com/ticket721/repo/server:${TAG}
-docker tag worker:${TAG} docker.pkg.github.com/ticket721/repo/worker:${TAG}
+docker tag server:${TAG} ${GCP_REGISTRY_HOSTNAME}/${GCP_PROJECT_ID}/server:${TAG}
+docker tag worker:${TAG} ${GCP_REGISTRY_HOSTNAME}/${GCP_PROJECT_ID}/worker:${TAG}
 
 # Push
-docker push docker.pkg.github.com/ticket721/repo/server:${TAG}
-docker push docker.pkg.github.com/ticket721/repo/worker:${TAG}
+docker push ${GCP_REGISTRY_HOSTNAME}/${GCP_PROJECT_ID}/server:${TAG}
+docker push ${GCP_REGISTRY_HOSTNAME}/${GCP_PROJECT_ID}/worker:${TAG}
 
 
 

@@ -30,11 +30,20 @@ jobs:
             - name: "Recover submodules (yarn setup:submodules:clone)"
               run: yarn setup:submodules:clone
 
+            - name: "Setup gcloud CLI"
+              uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+              with:
+                project_id: ${{ secrets.GCP_PROJECT_ID }}
+                service_account_key: ${{ secrets.GCP_SA_KEY }}
+                export_default_credentials: true
+
             - name: "Build all docker images"
               run: yarn @docker:build:github
 
             - name: "Publish to Github Packages"
               env:
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                GCP_REGISTRY_HOSTNAME: "eu.gcr.io"
+                GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
               run: yarn @docker:deploy:github
 
