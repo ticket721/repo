@@ -1,0 +1,8 @@
+**/node_modules
+**/node_modules/**/*
+**/.git
+**/.git/**/*
+**/Dockerfile
+**/docker-compose.yaml
+**/.DS_Store
+

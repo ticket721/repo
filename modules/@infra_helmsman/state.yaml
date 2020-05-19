@@ -1,0 +1,29 @@
+settings:
+  kubeContext: main
+
+namespaces:
+  staging:
+
+apps:
+  elassandra-staging:
+    name: "elassandra"
+    description: "Storage Layer"
+    namespace: "staging"
+    enabled: true
+    group: "critical"
+    chart: "../@infra_elassandra/elassandra"
+    version: "0.1.0"
+    valuesFile: "../@infra_elassandra/elassandra/values.yaml"
+    protected: false
+    wait: true
+  redis-staging:
+    name: "redis"
+    description: "Tasks Orchestrator & Storage Layer"
+    namespace: "staging"
+    enabled: true
+    group: "critical"
+    chart: "../@infra_redis/redis"
+    version: "0.1.0"
+    valuesFile: "../@infra_redis/redis/values.yaml"
+    protected: false
+    wait: true
