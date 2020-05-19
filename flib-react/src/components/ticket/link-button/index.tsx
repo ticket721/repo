@@ -31,13 +31,13 @@ const LinkContainer = styled.div`
 export const LinkButton: React.FunctionComponent<LinkProps> = (props:LinkProps, className): JSX.Element => {
   // TODO -- Update to use link from react-router
   return <LinkContainer>
-            <div className="row aic">
+            <div className='row aic'>
               {props.image &&
                 <img src={props.image} />
               }
               <span>{props.label}</span>
             </div>
-            <Icon icon="chevron" height="12" width="8" fill="rgba(255, 255, 2555, 0.9)" />
+            <Icon icon='chevron' size='12px' color='rgba(255, 255, 2555, 0.9)' />
           </LinkContainer>
 };
 

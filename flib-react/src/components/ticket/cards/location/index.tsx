@@ -51,14 +51,14 @@ const IconContainer = styled.div`
 export const LocationCard: React.FunctionComponent<LocationCardProps & {className?: string}> = (props: LocationCardProps): JSX.Element => {
   return <CardContainer className={props.className} removeBg={props.removeBg}>
           <IconContainer>
-            <Icon icon='pin' fill={props.iconColor} width='12' height='16' />
+            <Icon icon='pin' size='16px' color={props.iconColor} />
           </IconContainer>
           <Column iconColor={props.iconColor}>
             <Info>{props.location}</Info>
             <Info>{props.address}</Info>
             {/* TODO - Update to use react-router if necessary */}
             {props.link &&
-              <a href={props.link}>{props.linkLabel} <Icon icon="chevron" height="12" width="8" fill={props.iconColor} /> </a>
+              <a href={props.link}>{props.linkLabel} <Icon icon='chevron' size='12px' color={props.iconColor} /> </a>
             }
           </Column>
           {props.wSeparator &&

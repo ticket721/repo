@@ -102,9 +102,12 @@ export interface LocationProps extends React.ComponentProps<any> {
   error?:boolean;
   errorMessage?:string;
   label:string;
-  options: Array<object>,
+  options?: Array<object>,
   placeholder: string;
   value?:string;
+  name:string;
+  onChange: (e: any) => void;
+  className?: string;
 }
 
 const StyledLabel = styled.label`
@@ -153,17 +156,19 @@ const StyledInputContainer = styled.div<LocationProps>`
 `;
 
 export const Location: React.FunctionComponent<LocationProps> = (props: LocationProps): JSX.Element => {
-  return  <StyledInputContainer>
+  return  <StyledInputContainer className={props.className}>
     <StyledLabel>{props.label}</StyledLabel>
     <Select
       components={components}
       defaultValue={props.defaultValue}
       dropdownIndicator={false}
       isClearable
-      noOptionsMessage={() => "No values available"}
+      noOptionsMessage={() => 'No values available'}
       options={props.options}
       placeholder={props.placeholder}
       styles={customStyles}
+      name={props.name}
+      onChange={props.onChange}
     />
   </StyledInputContainer>
 };

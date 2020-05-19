@@ -112,3 +112,6 @@ dist
 # Storybook
 storybook-static
 lib
+
+# Generated icons
+static/t721-icons

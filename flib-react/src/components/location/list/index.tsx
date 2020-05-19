@@ -58,12 +58,15 @@ const Item = styled.li`
 export const LocationList: React.FunctionComponent<LocationListProps> = (props: LocationListProps): JSX.Element => {
   return <Container>
             <h2>{props.title}</h2>
-            <ul className="row">
+            <ul className='row'>
               {props.locations.map(location => {
-                return  <Item key={slugify(location)} className={location === props.selectedLocation ? 'selected': ''} onClick={() =>{ return props.updateLocation(location) }}>
-                          <LocationIcon icon="pin" height="16" width="16" fill="rgba(255, 255, 255, 0.38)" />
+                return  <Item
+                        key={slugify(location)}
+                        className={location === props.selectedLocation ? 'selected': ''}
+                        onClick={() =>{ return props.updateLocation(location) }}>
+                          <LocationIcon icon='pin' size='16px' color='rgba(255, 255, 255, 0.38)' />
                           {location}
-                          <CheckIcon icon="check" height="12" width="16" fill="rgba(255, 255, 255, 0.38)" />
+                          <CheckIcon icon='check' size='16px' color='rgba(255, 255, 255, 0.38)' />
                         </Item>
               })}
             </ul>

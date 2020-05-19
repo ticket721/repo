@@ -78,16 +78,16 @@ const Resale = styled.span<TicketSingleProps>`
 
 export const TicketSingle: React.FunctionComponent<TicketSingleProps> = (props: TicketSingleProps): JSX.Element => {
   return <Container selected={props.selected} resale={props.resale} gradient={props.gradient}>
-          <div className="row aic jcsb">
+          <div className='row aic jcsb'>
             <h3>{props.soldByLabel} {props.soldBy}</h3>
             <span>{props.price} /each</span>
           </div>
-          <div className="row aic jcsb">
+          <div className='row aic jcsb'>
           {props.resale ? (
               <Resale addOns={props.addOns}>{props.addOns ? props.addOns.join(', ') : 'No add-ons'}</Resale>
           ) : (
             <TicketCount ticketsLeft={props.ticketsLeft}>
-              <Icon icon="ticket" fill={props.color} width="18" height="18" />
+              <Icon icon='ticket' size='18px' color={props.color} />
               {props.ticketsLeft < 1 ? 'Sold out' : `${props.ticketsLeft} left`}
             </TicketCount>
           )}

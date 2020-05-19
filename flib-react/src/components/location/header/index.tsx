@@ -30,9 +30,9 @@ export const LocationHeader: React.FunctionComponent<LocationHeaderProps> = (pro
   return <Container>
           <div>
             <h4>{props.title}</h4>
-            <h3 className="row"><LocationIcon fill={props.mainColor} icon="location" height="16" width="16" />{props.location}</h3>
+            <h3 className='row'><LocationIcon icon='location' size='16px' color={props.mainColor} />{props.location}</h3>
           </div>
-          <button type="button"><Icon icon="filter" height="16" width="16" fill="rgba(255, 255, 255, 0.9)" /></button>
+          <button type='button'><Icon icon='filter' size='16px' color='rgba(255, 255, 255, 0.9)' /></button>
         </Container>
 };
 

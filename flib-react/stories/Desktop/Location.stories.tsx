@@ -18,6 +18,8 @@ export default {
 
 export const showcase = () => (
   <Location
+    name='locationName'
+    onChange={(value) => {console.log('has changed with value: ', value)}}
     label={text('Label', 'Location')}
     placeholder={text('Placeholder', 'Type an address')}
     options={object('Values', selectValues)}

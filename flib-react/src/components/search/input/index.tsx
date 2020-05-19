@@ -18,7 +18,7 @@ const Container  = styled.div`
   align-items: center;
   display: flex;
   margin: ${props => props.theme.regularSpacing} ${props => props.theme.biggerSpacing};
-`
+`;
 
 const InputContainer = styled.div`
   background-color: ${props => props.theme.componentColorLight};
@@ -37,7 +37,7 @@ const InputContainer = styled.div`
       color: ${props => props.theme.textColorDark};
     }
   }
-`
+`;
 
 const CancelButton = styled.button<SearchInputProps>`
   color: ${props => props.theme.textColorDark};
@@ -49,7 +49,7 @@ const CancelButton = styled.button<SearchInputProps>`
   padding-left: ${props => props.focused ? '12px' : '0'};
   text-transform: uppercase;
   transition: all 300ms ease;
-`
+`;
 
 const ClearButton = styled.button<SearchInputProps>`
   opacity: ${props => props.value? 1 : 0};
@@ -57,32 +57,44 @@ const ClearButton = styled.button<SearchInputProps>`
   right: ${props => props.theme.regularSpacing};
   top: 18px;
   transition: opacity 300ms ease;
-`
+`;
 
 const ClearIcon = styled(Icon)`
   fill: ${props => props.theme.textColorDark};
   height: 12px;
-`
+`;
 
 const SearchIcon = styled(Icon)`
   height: 18px;
   position: absolute;
   top: ${props => props.theme.regularSpacing};
-`
+`;
 
 export const SearchInput: React.FunctionComponent<SearchInputProps> = (props: SearchInputProps): JSX.Element => {
-  let [focused,  setFocus] = React.useState(false);
+  const [focused,  setFocus] = React.useState(false);
 
   const test = () => {
     props.clearInput();
-    setFocus(focused = false);
-  }
+    setFocus(false);
+  };
 
   return <Container>
           <InputContainer>
-            <SearchIcon fill={props.mainColor} width={props.icon === 'pin' ? "12" : "24"} height={props.icon === 'pin' ? "16" : "24"} icon={props.icon} />
-            <input id={props.name} name={props.name} placeholder={props.placeholder} onFocus={() => setFocus(focused = true)} onChange={props.onChange} value={props.value} />
-            <ClearButton value={props.value} onClick={props.clearInput}><ClearIcon icon="close" height="12" width="12" /></ClearButton>
+            <SearchIcon
+              icon={props.icon}
+              size={props.icon === 'pin' ? '16px' : '24px'}
+              color={props.mainColor}
+               />
+            <input
+              id={props.name}
+              name={props.name}
+              placeholder={props.placeholder}
+              onFocus={() => setFocus(true)}
+              onChange={props.onChange}
+              value={props.value} />
+            <ClearButton value={props.value} onClick={props.clearInput}>
+              <ClearIcon icon='close' size='12px' />
+            </ClearButton>
           </InputContainer>
           <CancelButton focused={focused} onClick={test}>{props.cancelLabel}</CancelButton>
         </Container>
@@ -91,6 +103,6 @@ export const SearchInput: React.FunctionComponent<SearchInputProps> = (props: Se
 SearchInput.defaultProps = {
   mainColor: '#079CF0',
   icon: 'search'
-}
+};
 
 export default SearchInput;

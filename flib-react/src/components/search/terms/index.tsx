@@ -40,7 +40,7 @@ const Term = styled.li`
 
 export const SearchTerms: React.FunctionComponent<SearchTermsProps> = (props: SearchTermsProps): JSX.Element => {
   return <Container>
-          <div className="row aic jcsb">
+          <div className='row aic jcsb'>
             <h3>{props.title}</h3>
             {props.terms.length > 0 &&
               <ClearButton onClick={props.clearAll}>{props.clearLabel}</ClearButton>
@@ -50,10 +50,10 @@ export const SearchTerms: React.FunctionComponent<SearchTermsProps> = (props: Se
             <TermList>
               {props.terms.length ? (
                 props.terms.map((term: string) => {
-                  return <Term key={slugify(term)}><Icon icon="search" height="24" width="24" fill="rgba(255, 255, 255, 0.38)" />{term}</Term>
+                  return <Term key={slugify(term)}><Icon icon='search' size='24px' color='rgba(255, 255, 255, 0.38)' />{term}</Term>
                 })
               ) : (
-                <Term><Icon icon="search" height="24" width="24" fill="rgba(255, 255, 255, 0.38)" />{props.noTerms}</Term>
+                <Term><Icon icon='search' size='24px' color='rgba(255, 255, 255, 0.38)' />{props.noTerms}</Term>
               )}
             </TermList>
         </Container>

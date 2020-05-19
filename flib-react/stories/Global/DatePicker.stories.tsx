@@ -15,7 +15,7 @@ interface StoreObject {
   selectedDate: Date | undefined;
 }
 
-let storeObject: StoreObject = {
+const storeObject: StoreObject = {
   selectedDate: undefined
 };
 
@@ -27,7 +27,7 @@ const onChange = (date: Date) => {
   })
 };
 
-//optionnal: used to prevent manual input
+// optionnal: used to prevent manual input
 const onChangeRaw = (e: React.FocusEvent<HTMLInputElement>) => {
   e.preventDefault();
 }
@@ -50,7 +50,7 @@ export const singleDate = () => (
         onChangeRaw={onChangeRaw}
         placeholderText={text('Placeholder', 'Pick a date')}
         selected={state.selectedDate}
-      />
+        name='DatePickerName'/>
     ]}
   </State>
 );

@@ -11,14 +11,15 @@
     }
   },
   "scripts": {
-    "build": "rm -rf lib && tsc && mkdir -p lib/assets && cp -r static/assets/fonts lib/assets/fonts",
+    "build": "rm -rf lib && tsc && echo \"Components compiled !\" && mkdir -p lib/assets && cp -r static/assets/fonts lib/assets/fonts && yarn gen-icons",
     "watch": "watch 'yarn build && echo \"Done !\"' src",
+    "gen-icons": "rm -rf static/t721-icons && node scripts/svgtofont.js",
     "storybook": "start-storybook -p 6007 -s ./static",
     "build-storybook": "build-storybook -c .storybook -o dist -s ./static",
     "test": "jest --coverage",
     "test:update-snapshots": "jest --coverage -u",
     "@lerna/postinstall": "yarn build",
-    "@lerna/postclean": "rm -rf lib"
+    "@lerna/postclean": "rm -rf lib && rm -rf static/t721-icons"
   },
   "repository": {
     "type": "git",
@@ -97,8 +98,11 @@
     "cpx": "1.5.0",
     "enzyme": "3.11.0",
     "enzyme-adapter-react-16": "1.15.2",
+    "file-loader": "6.0.0",
+    "http-server": "0.12.3",
     "husky": "4.2.5",
     "jest": "25.5.4",
+    "svgtofont": "1.6.0",
     "themeprovider-storybook": "1.5.1",
     "ts-jest": "25.5.1",
     "ts-node": "8.10.1",

@@ -97,7 +97,7 @@ export const PurchaseTotal: React.FunctionComponent<PurchaseTotalProps> = (props
   }
 
   return <CardContainer>
-          <Title className="uppercase">{props.label}</Title>
+          <Title className='uppercase'>{props.label}</Title>
           <h2>{props.total}€</h2>
           <Row>
             <span>Tickets x{props.tickets.quantity}</span>
@@ -117,7 +117,10 @@ export const PurchaseTotal: React.FunctionComponent<PurchaseTotalProps> = (props
           {props.fees &&
             <CollapsedContainer showFees={showFees}>
               <Row>
-                <span className="row" onClick={() => { setShowFees(!showFees) }}>Fees<Icon icon="chevron" height="10" width="6" fill="rgba( 255, 255, 255, 0.6)"/></span>
+                <span className='row' onClick={() => { setShowFees(!showFees) }}>
+                  Fees
+                  <Icon icon='chevron' size='10px' color='rgba( 255, 255, 255, 0.6)'/>
+                </span>
                 <span>{feesTotal()}€</span>
               </Row>
               <Collapsed showFees={showFees}>
@@ -132,7 +135,7 @@ export const PurchaseTotal: React.FunctionComponent<PurchaseTotalProps> = (props
             <span>{props.taxes.toFixed(2)}€</span>
           </Row>
           <Separator />
-          <Row className="highlight">
+          <Row className='highlight'>
             <span>Total</span>
             <span>{props.total.toFixed(2)}€</span>
           </Row>

@@ -35,7 +35,7 @@ export const PurchaseInfosCard: React.FunctionComponent<PurchaseInfosCardProps> 
 
   return <CardContainer removeBg={props.removeBg}>
             <IconContainer>
-              <Icon icon='ticket' fill={props.iconColor} width='18' height='18' />
+              <Icon icon='ticket' size='18px' color={props.iconColor} />
             </IconContainer>
             <div>
               <Label>Date purchased</Label>

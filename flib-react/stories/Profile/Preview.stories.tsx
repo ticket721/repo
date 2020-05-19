@@ -42,7 +42,7 @@ export const showcase = () => (
       currentBalanceLabel={text('Current balance label', 'Current balance')}
       onClick={action('..go to')}
       user={user}
-      icon="euro"
+      icon='euro'
     />
     <LinksContainer title="Account">
       <ArrowLink to="#todo" label="General information"/>

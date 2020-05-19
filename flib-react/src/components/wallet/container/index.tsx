@@ -58,11 +58,11 @@ export const WalletContainer: React.FunctionComponent<WalletContainerProps & {cl
   return <Container className={props.className} toggle={props.showWallet}>
           <Nav>
             {props.showPrev &&
-              <ArrowIcon icon="arrow" height="16" width="16" fill="rgba(255, 255, 255, 0.9)" />
+              <ArrowIcon icon='arrow' size='16px' color='rgba(255, 255, 255, 0.9)' />
             }
             <h2>{props.title}</h2>
             <button onClick={() => props.toggleWallet(false)}>
-              <Icon icon="close" height="14" width="14" fill="rgba(255, 255, 255, 0.6)" />
+              <Icon icon='close' size='14px' color='rgba(255, 255, 255, 0.6)' />
             </button>
           </Nav>
           {props.children}

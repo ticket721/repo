@@ -31,17 +31,17 @@ const Content = styled.div`
 export const DescriptonLink: React.FunctionComponent<DescriptionLinkProps> = (props: DescriptionLinkProps): JSX.Element => {
 
   return <CardContainer removeBg={props.removeBg}>
-              <div className="row aic jcsb">
+              <div className='row aic jcsb'>
               <Content>
                 {props.subtitle &&
-                  <Subtitle className="uppercase">{props.subtitle}</Subtitle>
+                  <Subtitle className='uppercase'>{props.subtitle}</Subtitle>
                 }
                 <H3>{props.title}</H3>
                 <Text>{props.text}</Text>
               </Content>
                  {/* UPDATE TO USE router-link */}
               {props.link &&
-                <a href={props.link}><Icon icon="rightArrow" height="16" width="16" fill="rgba(255, 255, 255, 0.9)" /></a>
+                <a href={props.link}><Icon icon='rightArrow' size='16px' color='rgba(255, 255, 255, 0.9)' /></a>
               }
             </div>
         </CardContainer>

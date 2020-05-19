@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { action } from '@storybook/addon-actions';
-import { boolean, text, withKnobs } from '@storybook/addon-knobs';
+import { text, withKnobs } from '@storybook/addon-knobs';
 import TextInput from '../../src/components/inputs/text';
 
 export default {
@@ -13,8 +13,7 @@ export default {
 
 export const Text = () => (
   <TextInput
-    error={boolean('Error', false)}
-    errorMessage={text('Error message', 'Error')}
+    error={text('Error message', 'Error')}
     label={text('Label', 'Label')}
     name={text('Input name', 'example')}
     onChange={action('typing...')}

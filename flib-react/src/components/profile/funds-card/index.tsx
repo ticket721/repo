@@ -72,19 +72,19 @@ export const FundsCard: React.FunctionComponent<FundsCardProps> = (props: FundsC
           <Container>
             <div>
               <div>
-                <h4 className="uppercase">{props.bankAccountLabel}</h4>
+                <h4 className='uppercase'>{props.bankAccountLabel}</h4>
                 <CardNumber>************ {props.user.creditCard}</CardNumber>
               </div>
-              <div className="space--top">
-                <h4 className="uppercase">{props.currentBalanceLabel}</h4>
+              <div className='space--top'>
+                <h4 className='uppercase'>{props.currentBalanceLabel}</h4>
                 <Amount>{props.user.creditBalance}<sup>€</sup> </Amount>
               </div>
             </div>
             {props.icon &&
-              <Icon className="icon--euro" icon={props.icon} height="24" width="22" fill="rgba(255, 255, 255, 0.9)" />
+              <Icon className='icon--euro' icon={props.icon} size='24px' color='rgba(255, 255, 255, 0.9)' />
             }
             <IconContainer onClick={props.onClick}>
-              <Icon icon="arrow" height="16" width="16" fill="rgba(255, 255, 255, 0.9)" />
+              <Icon icon='arrow' size='16px' color='rgba(255, 255, 255, 0.9)' />
             </IconContainer>
           </Container>
         </Section>

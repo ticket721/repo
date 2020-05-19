@@ -68,12 +68,12 @@ export const ArrowLink: React.FunctionComponent<ArrowLinkProps & {className?: st
             <span>{props.label}</span>
             {props.location ? (
               <LocationContainer>
-                <Icon icon="location" height="16" width="16" />
+                <Icon icon='location' size='16px' />
                 <span>{props.location}</span>
-                <Icon icon="chevron" height="12" width="8" fill="rgba(255, 255, 255, 0.9)" />
+                <Icon icon='chevron' size='12px' color='rgba(255, 255, 255, 0.9)' />
               </LocationContainer>
             ) : (
-              <Arrow icon="arrow" height="16" width="16" />
+              <Arrow icon='arrow' size='16px' />
             )}
           </LinkContainer>
 };

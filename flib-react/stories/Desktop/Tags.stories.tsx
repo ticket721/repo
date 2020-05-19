@@ -17,7 +17,7 @@ interface Tag {
 }
 
 const createTags = (label: string) => ({
-  label: label,
+  label,
   value: label
 });
 
@@ -31,7 +31,7 @@ const onChange = (value: any) => {
 };
 
 const onInputChange = (inputValue: string) => {
-  store.set({inputValue: inputValue})
+  store.set({inputValue})
 };
 
 const onKeyDown = (e: React.KeyboardEvent<HTMLElement>, value: string) => {
@@ -70,10 +70,10 @@ export default {
   title: 'Desktop|Tags'
 };
 
-let storeObject: StoreObject = {
+const storeObject: StoreObject = {
   tags: [],
   items: 0,
-  inputValue: ""
+  inputValue: ''
 };
 
 const store = new Store(storeObject);
@@ -91,7 +91,8 @@ export const showcase = () => (
         onChange={onChange}
         onKeyDown={onKeyDown}
         onInputChange={onInputChange}
-      />
+        name='tagsName'
+        onBlur={() => {console.log('onBlur')}}/>
     ]}
   </State>
 );

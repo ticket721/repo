@@ -1,16 +1,18 @@
 import * as React from 'react';
 import DatePicker from 'react-datepicker';
 import styled from '../../config/styled';
-import "react-datepicker/dist/react-datepicker.css";
+import 'react-datepicker/dist/react-datepicker.css';
 
 export interface CustomTimePickerProps extends React.ComponentProps<any> {
   dateFormat?: string;
   label: string;
+  name: string;
   onChange: (date: Date) => void;
   onChangeRaw?: (e: React.FocusEvent<HTMLInputElement>) => void;
   open?: boolean;
   placeholder?: string;
   selected?: Date;
+  className?: string;
 }
 
 const StyledLabel = styled.label`
@@ -131,9 +133,10 @@ const StyledInputContainer = styled.div`
 `;
 
 export const CustomTimePicker: React.FunctionComponent<CustomTimePickerProps> = (props: CustomTimePickerProps): JSX.Element => {
-  return <StyledInputContainer>
+  return <StyledInputContainer className={props.className}>
       <StyledLabel>{props.label}</StyledLabel>
       <DatePicker
+        name={props.name}
         dateFormat={props.dateFormat}
         onChange={props.onChange}
         onChangeRaw={props.onChangeRaw}

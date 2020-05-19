@@ -153,15 +153,15 @@ const Organizer = (props: OrganizerProp) => {
         }
       </div>
       {props.removable &&
-        <button type="button" onClick={() => props.removeUser(props.organizer)}>
-          <Icon icon='close' height='12' width='12' fill='rgba(255,255,255, 0.6)' />
+        <button type='button' onClick={() => props.removeUser(props.organizer)}>
+          <Icon icon='close' size='12px' color='rgba(255,255,255, 0.6)' />
         </button>
       }
     </ListItem>
 };
 
 const InviteOrganizers: React.FunctionComponent<InviteOrganizersProps> = (props: InviteOrganizersProps): JSX.Element => {
-  return <div className="container">
+  return <div className='container'>
     <StyledContainer>
       <label>{props.label}</label>
       <OrganizersList>
@@ -173,11 +173,11 @@ const InviteOrganizers: React.FunctionComponent<InviteOrganizersProps> = (props:
     </StyledContainer>
     <StyledInputContainer>
       <StyledLabel>{props.inputLabel}</StyledLabel>
-      <div className="row jcsb">
-        <StyledInput type="text" placeholder={props.placeholder} value={props.inputValue} onChange={props.handleChange} />
+      <div className='row jcsb'>
+        <StyledInput type='text' placeholder={props.placeholder} value={props.inputValue} onChange={props.handleChange} />
         {props.inputValue  &&
-          <RoundedButton type="button" onClick={props.sendInvite}>
-            <Icon icon='arrow' height='14' width='14' fill='rgba(255, 255, 255, 0.9)' />
+          <RoundedButton type='button' onClick={props.sendInvite}>
+            <Icon icon='arrow' size='14px' color='rgba(255, 255, 255, 0.9)' />
           </RoundedButton>
         }
       </div>

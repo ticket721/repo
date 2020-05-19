@@ -1,6 +1,7 @@
-import * as React from 'react';
+import * as React      from 'react';
 import CreatableSelect from 'react-select/creatable';
-import styled from '../../config/styled';
+import styled          from '../../config/styled';
+import { ChangeEvent } from 'react';
 
 const components = {
   DropdownIndicator: null,
@@ -104,20 +105,36 @@ const customStyles = {
   })
 }
 
+export interface ITag {
+  label: string;
+  value: string;
+}
+
 export interface TagsProps extends React.ComponentProps<any> {
   defaultValue?:object;
-  error?:boolean;
-  errorMessage?:string;
+  error?:string;
   inputValue:string;
+  name:string;
   label:string;
   currentTagsNumber?:number;
   maxTags?:number;
   placeholder: string;
-  value?:Array<object>;
+  value?:Array<ITag>;
   onInputChange: (inputValue: string) => void;
   onKeyDown: (e: React.KeyboardEvent<HTMLElement>, value: string ) => void;
   onChange: (value: any) => void;
+  onFocus?: (eventOrPath: string | ChangeEvent<any>) => void | ((eventOrTextValue: string | ChangeEvent<any>) => void);
+  onBlur: (value: any) => void;
 }
+
+const Error = styled.span`
+  bottom: -24px;
+  color: ${props => props.theme.warningColor};
+  font-size: 13px;
+  font-weight: 500;
+  left: 10px;
+  position: absolute;
+`;
 
 const StyledLabel = styled.label`
   display: inline-flex;
@@ -139,21 +156,26 @@ const StyledLabel = styled.label`
   }
 `;
 
-const Counter = styled.span`
-  color: ${props => props.theme.textColorDarker};
-  font-size: 11px;
-  font-weight: 700;
-  position: absolute;
-  right: ${props => props.theme.biggerSpacing};
-`;
-
 const StyledInputContainer = styled.div<TagsProps>`
+  position: relative;
   background-color: ${props => props.theme.componentColor};
   border-radius: ${props => props.theme.defaultRadius};
   display: flex;
   flex-direction: column;
   padding-top: ${props => props.theme.biggerSpacing};
   transition: background-color 300ms ease;
+
+  ${props => props.error &&`
+    ${StyledLabel}{
+      color: ${props.theme.warningColor};
+      transform: translateX(0px);
+
+      &::before {
+        background-color: ${props.theme.warningColor};
+        opacity: 1;
+      }
+    }
+  `}
 
   &:hover {
     background-color: ${props => props.theme.componentColorLight};
@@ -173,43 +195,55 @@ const StyledInputContainer = styled.div<TagsProps>`
   }
 `;
 
+const LabelsContainer = styled.div`
+  color: ${props => props.theme.textColorDarker};
+  display: flex;
+  font-size: 11px;
+  font-weight: 700;
+  justify-content: space-between;
+  padding: 0 ${props => props.theme.biggerSpacing};
+`;
+
+const TagsContainer = styled.div`
+  margin: 1rem 0 1rem -2.2rem;
+`;
+
 export const Tags: React.FunctionComponent<TagsProps> = (props: TagsProps): JSX.Element => {
-  return  <StyledInputContainer>
-            <StyledLabel>{props.label}</StyledLabel>
-
-            { props.maxTags &&
-              <Counter>{props.currentTagsNumber}/{props.maxTags}</Counter>
-            }
-
-            <CreatableSelect
-              components={components}
-              onChange={e => {
-                props.onChange(e);
-              }}
-              onKeyDown={e => {
-                const target = e.target as HTMLInputElement;
-                props.onKeyDown(e, target.value)
-              }}
-              onInputChange={e => {
-                props.onInputChange(e);
-              }}
-              defaultValue={props.defaultValue}
-              inputValue={props.inputValue}
-              menuIsOpen={false}
-              isClearable={false}
-              isMulti
-              placeholder={props.placeholder}
-              styles={customStyles}
-              value={props.value}
-            />
-          </StyledInputContainer>
-
-}
-
-Tags.defaultProps = {
-  onKeyDown: () => {},
-  onInputChange: () => {},
-  onChange: () => {}
+  return  <StyledInputContainer error={props.error}>
+      <LabelsContainer>
+          <StyledLabel htmlFor={props.name}>{props.label}</StyledLabel>
+          {props.maxTags &&
+              <span>{props.currentTagsNumber}/{props.maxTags}</span>
+          }
+      </LabelsContainer>
+      <TagsContainer>
+        <CreatableSelect
+          id={props.name}
+          components={components}
+          onChange={e => {
+            props.onChange(e);
+          }}
+          onKeyDown={e => {
+            const target = e.target as HTMLInputElement;
+            props.onKeyDown(e, target.value)
+          }}
+          onInputChange={e => {
+            props.onInputChange(e);
+          }}
+          onBlur={props.onBlur}
+          onFocus={props.onFocus}
+          defaultValue={props.defaultValue}
+          inputValue={props.inputValue}
+          menuIsOpen={false}
+          isClearable={false}
+          isMulti
+          placeholder={props.placeholder}
+          styles={customStyles}
+          value={props.value}
+        />
+      </TagsContainer>
+      {props.error && <Error>{props.errormessage}</Error> }
+  </StyledInputContainer>
 };
 
 export default Tags;

@@ -53,14 +53,14 @@ export const DateTimeCard: React.FunctionComponent<DateTimeCardProps & {classNam
 
   return <CardContainer removeBg={props.removeBg} className={props.className}>
           <IconContainer>
-            <Icon icon='calendar' fill={props.iconColor} width='16' height='18' />
+            <Icon icon='calendar' size='18px' color={props.iconColor} />
           </IconContainer>
           <Column iconColor={props.iconColor}>
             <Info>{props.startDate} - {props.endDate}</Info>
             <Info>{props.startTime} - {props.endTime}</Info>
              {/* TODO - Update to use react-router if necessary */}
              {props.link &&
-              <a href={props.link}>{props.linkLabel} <Icon icon="chevron" height="12" width="8" fill={props.iconColor} /> </a>
+              <a href={props.link}>{props.linkLabel} <Icon icon='chevron' size='8px' color={props.iconColor} /> </a>
             }
           </Column>
 

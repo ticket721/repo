@@ -18,7 +18,7 @@ export const singleFile = () => (
     hasErrors={boolean('Has errors ?', false)}
     uploadRecommandations={text('Upload recommandation', 'Image only')}
     multiple={false}
-  />
+    setCover={(cover) => console.log(cover)}/>
 );
 
 export const multipleFiles = () => (
@@ -31,5 +31,6 @@ export const multipleFiles = () => (
     uploadRecommandations={text('Upload recommandation', 'Image only')}
     maxFiles={number('Max files', 5)}
     multiple
+    setCover={(cover) => console.log(cover)}
   />
 );

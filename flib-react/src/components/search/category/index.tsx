@@ -61,7 +61,7 @@ const CategoryIcon = styled(Icon)`
 
 export const SearchCategory: React.FunctionComponent<SearchCategoryProps & {className?: string}> = (props: SearchCategoryProps): JSX.Element => {
   return <Container className={props.className} gradient={props.gradient}>
-          <CategoryIcon icon={props.icon} height="32" width="32" fill="rgba(255, 255, 255, 0.25)" />
+          <CategoryIcon icon={props.icon} size='32px' color='rgba(255, 255, 255, 0.25)' />
           <img src={props.src} />
           {!props.imgOnly &&
             <Details mainColor={props.mainColor} smaller={props.smaller}>

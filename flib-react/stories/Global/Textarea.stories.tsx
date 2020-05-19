@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { action } from '@storybook/addon-actions';
-import { boolean, number, text, withKnobs } from '@storybook/addon-knobs';
+import { number, text, withKnobs } from '@storybook/addon-knobs';
 import Textarea from '../../src/components/inputs/textarea';
 
 export default {
@@ -13,8 +13,7 @@ export default {
 
 export const Text = () => (
   <Textarea
-    error={boolean('Error', false)}
-    errorMessage={text('Error message', 'Error')}
+    error={text('Error message', 'Error')}
     label={text('Label', 'Label')}
     name={text('Input name', 'example')}
     onChange={action('typing...')}

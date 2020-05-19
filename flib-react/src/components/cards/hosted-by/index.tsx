@@ -54,9 +54,9 @@ const Infos = styled.div`
 export const HostedBy: React.FunctionComponent<HostedByProps> = (props:HostedByProps): JSX.Element => {
 
   return <CardContainer removeBg={props.removeBg}>
-          <Title className="uppercase">{props.title}</Title>
-          <Infos className="aic">
-            <div className="row aic">
+          <Title className='uppercase'>{props.title}</Title>
+          <Infos className='aic'>
+            <div className='row aic'>
               <ImgContainer>
                 <img src={props.hostedBy.image} />
               </ImgContainer>
@@ -69,14 +69,14 @@ export const HostedBy: React.FunctionComponent<HostedByProps> = (props:HostedByP
             </div>
             {/* UPDATE TO USE router-link */}
             {props.hostedBy.eventsLink &&
-              <a href={props.hostedBy.eventsLink}><Icon icon="rightArrow" height="16" width="16" fill="rgba(255, 255, 255, 0.9)" /></a>
+              <a href={props.hostedBy.eventsLink}><Icon icon='rightArrow' size='16px' color='rgba(255, 255, 255, 0.9)' /></a>
             }
           </Infos>
 
           {props.hostedBy.spotifyUrl &&
 
             <LinkButton
-              image="assets/images/spotify--logo.svg"
+              image='assets/images/spotify--logo.svg'
               label='Listen on spotify'
               to={props.hostedBy.spotifyUrl}
             />

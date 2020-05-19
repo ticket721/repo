@@ -41,12 +41,12 @@ const Container = styled.div`
     background-color: rgba(33, 29, 45, 0.6);
     backdrop-filter: blur(40px);
   }
-`
+`;
 
 const SubnavContainer = styled.div`
   cursor: pointer;
   position: relative;
-`
+`;
 
 const Subnav = styled.nav`
   background-color: ${props => props.theme.componentColor};
@@ -65,21 +65,21 @@ const Subnav = styled.nav`
       margin: 0 0 0;
     }
   }
-`
+`;
 
 const IconDots = styled(Icon)`
   height: 4px;
-`
+`;
 
 export const TopNav: React.FunctionComponent<TopNavProps> = (props: TopNavProps): JSX.Element => {
   const [showSub, setshowSub] = React.useState(false);
 
   return <Container className={props.scrolled ? 'scrolled' : ''}>
-          <Icon icon="arrow" fill="rgba(255, 255, 255, 0.9)" height="16" width="16" />
+          <Icon icon='arrow' size='16px' color='rgba(255, 255, 255, 0.9)' />
           <span>{props.label}</span>
           {props.subNav?.length &&
             <SubnavContainer onClick={() => { setshowSub(!showSub) }}>
-              <IconDots icon="dots" fill="rgba(255, 255, 255, 0.9)" height="4" width="18" />
+              <IconDots icon='dots' size='4px' color='rgba(255, 255, 255, 0.9)' />
               {showSub &&
                 <Subnav>
                   {props.subNav.map(el => {

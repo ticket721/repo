@@ -42,7 +42,7 @@ export const showcase = () => (
         onChangeRaw={onChangeRaw}
         placeholderText={text('Placeholder', 'Pick start time')}
         selected={state.selectedTime}
-      />
+        name='timePickerName'/>
     ]}
   </State>
 );

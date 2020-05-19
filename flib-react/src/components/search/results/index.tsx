@@ -123,17 +123,17 @@ const SingleEvent = (props: any) => {
             <img src={props.event.image} />
           </ImgContainer>
           <div>
-            <h4 className="uppercase">{props.event.name}</h4>
+            <h4 className='uppercase'>{props.event.name}</h4>
             <span>{props.event.date}</span>
-            <span className="price">{props.event.price}€</span>
+            <span className='price'>{props.event.price}€</span>
           </div>
         </SingleResult>
 }
 
 const SingleLocation = (props: any) => {
   return  <SingleResult>
-            <ImgContainer className="icon">
-              <Icon icon="pin" height="16" width="12" fill="rgba(255, 255, 255, 0.6)"/>
+            <ImgContainer className='icon'>
+              <Icon icon='pin' size='16px' color='rgba(255, 255, 255, 0.6)'/>
             </ImgContainer>
             <div>
               <h4>{props.location.name}</h4>

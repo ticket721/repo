@@ -24,7 +24,7 @@ const updateLocation = (location: string) => {
   })
 };
 
-const locations = ['Quebec City, CA', 'San Diego, USA', 'Paris, FR']
+const locations = ['Quebec City, CA', 'San Diego, USA', 'Paris, FR'];
 
 
 const store = new Store({
@@ -34,22 +34,22 @@ const store = new Store({
 export const showcase = () => (
   <State store={store}>
     {state => [
-    <div key="1">
+    <div key='1'>
       <SearchInput
         clearInput={action('clear')}
-        name="input--search"
+        name='input--search'
         onChange={action('typing...')}
-        placeholder="Search city"
-        cancelLabel="Cancel"
+        placeholder='Search city'
+        cancelLabel='Cancel'
         cancel={action('cancel')}
-        icon="pin"
+        icon='pin'
       />
       <CurrentLocation
         label={text('Use current location label', 'Use current my location')}
         getCurrentLocation={action('...fetch location')}
       />
       <LocationList
-        title="Current location"
+        title='Current location'
         locations={['Quebec City']}
         selectedLocation={'Quebec City'}
         updateLocation={updateLocation}

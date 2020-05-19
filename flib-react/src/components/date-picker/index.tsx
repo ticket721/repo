@@ -1,10 +1,10 @@
 import * as React from 'react';
 import DatePicker, { registerLocale } from 'react-datepicker';
 import styled from '../../config/styled';
-import "react-datepicker/dist/react-datepicker.css";
-import fr from "date-fns/locale/fr";
-import es from "date-fns/locale/es";
-import it from "date-fns/locale/it";
+import 'react-datepicker/dist/react-datepicker.css';
+import fr from 'date-fns/locale/fr';
+import es from 'date-fns/locale/es';
+import it from 'date-fns/locale/it';
 
 registerLocale('es', es);
 registerLocale('fr', fr);
@@ -13,6 +13,7 @@ registerLocale('it', it);
 export interface CustomDatePickerProps extends React.ComponentProps<any> {
   dateFormat: string;
   label: string;
+  name: string;
   locale?:string;
   minDate?: Date;
   onChange: (date: Date) => void;
@@ -20,6 +21,7 @@ export interface CustomDatePickerProps extends React.ComponentProps<any> {
   open?: boolean;
   placeholderText?: string;
   selected?: Date;
+  className?: string;
 }
 
 const StyledLabel = styled.label`
@@ -177,9 +179,10 @@ const StyledInputContainer = styled.div`
 `;
 
 export const CustomDatePicker: React.FunctionComponent<CustomDatePickerProps> = (props: CustomDatePickerProps): JSX.Element => {
-  return <StyledInputContainer>
+  return <StyledInputContainer className={props.className}>
       <StyledLabel>{props.label}</StyledLabel>
       <DatePicker
+        name={props.name}
         dateFormat={props.dateFormat}
         locale={props.locale}
         minDate={props.minDate}

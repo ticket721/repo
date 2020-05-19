@@ -105,7 +105,7 @@ export const TicketInfosCard: React.FunctionComponent<TicketInfosCardProps> = (p
             <TicketId>{props.ticketID}</TicketId>
             <h2>{props.eventName}</h2>
             <h3>{props.ticketType}</h3>
-            <Icon fill='rgba(255, 255, 255, 0.38)' height='20' width='48.5' icon='t721' />
+            <Icon icon='t721' size='48px' color='rgba(255, 255, 255, 0.38)' />
           </TopInfo>
           {props.seatInfo &&
             <BottomInfos>

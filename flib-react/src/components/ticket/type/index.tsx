@@ -74,9 +74,12 @@ const TicketCount = styled.span<TicketTypeProps>`
 export const TicketType: React.FunctionComponent<TicketTypeProps> = (props: TicketTypeProps): JSX.Element => {
 
   return <Container selected={props.selected} gradient={props.gradient}>
-            <div className="row aic jcsb">
+            <div className='row aic jcsb'>
               <h3>{props.title}</h3>
-              <TicketCount ticketsLeft={props.ticketsLeft}><Icon icon="ticket" fill={props.color} width="18" height="18" />{props.ticketsLeft < 1 ? props.soldOutLabel : `${props.ticketsLeft} ${props.ticketsLeftLabel}`}</TicketCount>
+              <TicketCount ticketsLeft={props.ticketsLeft}>
+                <Icon icon='ticket' size='18px' color={props.color} />
+                {props.ticketsLeft < 1 ? props.soldOutLabel : `${props.ticketsLeft} ${props.ticketsLeftLabel}`}
+              </TicketCount>
             </div>
             <h4>{props.startingPriceLabel} {props.startingPrice}</h4>
 

@@ -14,6 +14,7 @@ export interface FilesUploaderProps extends React.ComponentProps<any> {
   maxFiles?: number;
   multiple?: boolean;
   uploadRecommandations?: string;
+  setCover: (cover: any) => void;
 }
 
 const InfosContainer = styled.div`
@@ -53,6 +54,7 @@ const StyledContainer = styled.div`
 
   .dzu {
     &-dropzone {
+      overflow: hidden;
       border: none;
       z-index: 1;
       align-items: center;
@@ -157,7 +159,6 @@ const StyledContainer = styled.div`
       }
 
       &Button {
-        background-image: url('assets/icons/icon--close.svg') !important;
         margin: 0 auto;
       }
 
@@ -252,7 +253,7 @@ export const FilesUploader: React.FunctionComponent<FilesUploaderProps> = (props
       <StyledContainer>
         <div {...dropzoneProps}>
         <InfosContainer>
-          <UploadIcon icon={props.multiple ? 'gallery' : 'upload'} height="62" width="72" fill={!props.hasErrors ? 'rgba(255, 255, 255, 0.38)' : '#C91D31' } />
+          <UploadIcon icon='upload-img' size='62px' color={!props.hasErrors ? 'rgba(255, 255, 255, 0.38)' : '#C91D31' } />
           <span>{props.dragDropLabel}</span>
           <span>{props.browseLabel}</span>
         </InfosContainer>
@@ -291,6 +292,11 @@ export const FilesUploader: React.FunctionComponent<FilesUploaderProps> = (props
   // todo: manage error here 👇
   const handleChangeStatus: IDropzoneProps['onChangeStatus'] = ({ meta }, status) => {
     console.log(status, meta)
+    if (status === 'done') {
+      props.setCover(
+        { name: meta.name, size: meta.size, previewUrl: meta.previewUrl, wifht: meta.width, height: meta.height }
+      );
+    }
   }
 
   return <div>

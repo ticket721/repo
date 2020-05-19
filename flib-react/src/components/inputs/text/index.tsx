@@ -1,24 +1,28 @@
 import * as React from 'react';
-import styled from '../../../config/styled';
-import Cleave from 'cleave.js/react';
+
+import Cleave          from 'cleave.js/react';
+import styled          from '../../../config/styled';
+import { ChangeEvent } from 'react';
 
 export interface InputProps extends React.ComponentProps<any> {
-  error?:boolean;
-  errorMessage?:string;
+  error?:string;
   label:string;
   name:string;
-  onChange: () => void;
+  onChange: (eventOrPath: string | ChangeEvent<any>) => void | ((eventOrTextValue: string | ChangeEvent<any>) => void);
+  onFocus?: (eventOrPath: string | ChangeEvent<any>) => void | ((eventOrTextValue: string | ChangeEvent<any>) => void);
+  onBlur?: (eventOrPath: string | ChangeEvent<any>) => void | ((eventOrTextValue: string | ChangeEvent<any>) => void);
   placeholder: string;
   options?: any;
   value?:string;
+  className?: string;
 }
 
 const Error = styled.span`
-  bottom: -24px;
+  bottom: -16px;
   color: ${props => props.theme.warningColor};
   font-size: 13px;
   font-weight: 500;
-  left: 0;
+  left: 10px;
   position: absolute;
 `;
 
@@ -43,6 +47,7 @@ const StyledLabel = styled.label`
 `;
 
 const StyledInputContainer = styled.div<InputProps>`
+  position: relative;
   background-color: ${props => props.theme.componentColor};
   border-radius: ${props => props.theme.defaultRadius};
   display: flex;
@@ -80,17 +85,36 @@ const StyledInputContainer = styled.div<InputProps>`
 `;
 
 export const TextInput: React.FunctionComponent<InputProps & {className?: string}> = (props: InputProps): JSX.Element => {
+
   return <StyledInputContainer error={props.error} className={props.className}>
       <StyledLabel htmlFor={props.name}>{props.label}</StyledLabel>
 
       {props.options ? (
-        <Cleave options={props.options} id={props.name} name={props.name} placeholder={props.placeholder} defaultValue={props.value} onChange={props.onChange} />
+        <Cleave
+        options={props.options}
+        id={props.name}
+        name={props.name}
+        placeholder={props.placeholder}
+        defaultValue={props.value}
+        onChange={props.onChange}
+        onFocus={props.onFocus}
+        onBlur={props.onBlur}
+        />
       ) : (
-        <input id={props.name} name={props.name} placeholder={props.placeholder} defaultValue={props.value} onChange={props.onChange} />
+        <input
+        id={props.name}
+        name={props.name}
+        placeholder={props.placeholder}
+        onFocus={props.onFocus}
+        value={props.value}
+        type={props.type || 'text'}
+        onChange={props.onChange}
+        onBlur={props.onBlur}
+        />
       )}
 
-      {props.error && <Error>{ props.errorMessage }</Error> }
+      {props.error && <Error>{props.error}</Error> }
   </StyledInputContainer>
-}
+};
 
 export default TextInput;

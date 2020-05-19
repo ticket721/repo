@@ -15,20 +15,20 @@ export default {
 export const showcase = () => (
   <MemoryRouter>
     <Navbar>
-      <NavLink to="/home">
-        <Icon icon="home" fill="#fff"  height="22" width="24" />
+      <NavLink to='/home'>
+        <Icon icon='home' size='24px' color='#fff' />
       </NavLink>
-      <NavLink to="/search">
-        <Icon icon="search" fill="#fff"  height="22" width="22" />
+      <NavLink to='/search'>
+        <Icon icon='search' size='22px' color='#fff' />
       </NavLink>
-      <NavLink to="/">
-        <Icon icon="t721" height="20" width="49" fill="#fff" />
+      <NavLink to='/'>
+        <Icon icon='t721' size='22px' color='#fff' />
       </NavLink>
-      <NavLink to="/tags">
-        <Icon icon="tag" fill="#fff" height="24" width="24" />
+      <NavLink to='/tags'>
+        <Icon icon='tag' size='22px' color='#fff' />
       </NavLink>
-      <NavLink to="/profile">
-        <Icon icon="profile" fill="#fff"  height="21" width="24" />
+      <NavLink to='/profile'>
+        <Icon icon='profile' size='22px' color='#fff' />
       </NavLink>
     </Navbar>
   </MemoryRouter>

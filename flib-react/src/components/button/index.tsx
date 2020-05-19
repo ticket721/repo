@@ -7,6 +7,7 @@ export interface ButtonProps extends React.ComponentProps<any> {
   gradients?: string[];
   onClick?: () => void;
   variant: 'primary' | 'secondary' | 'custom' | 'warning';
+  type?: string;
 }
 
 const StyledButton = styled.button<ButtonProps>`
@@ -96,6 +97,7 @@ export const Button: React.FunctionComponent<ButtonProps> = (props: ButtonProps)
             onClick={props.onClick}
             gradients={props.gradients}
             variant={props.variant}
+            type={props.type}
             {...props}
           >
             <span>{props.title}</span>
@@ -103,7 +105,8 @@ export const Button: React.FunctionComponent<ButtonProps> = (props: ButtonProps)
 };
 
 Button.defaultProps = {
-  variant: 'primary'
+  variant: 'primary',
+  type: 'button'
 };
 
 export default Button;
