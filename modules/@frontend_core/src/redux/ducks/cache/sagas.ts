@@ -1,9 +1,10 @@
-import { SagaIterator } from '@redux-saga/types';
-import { put, select, takeEvery, call, take } from 'redux-saga/effects';
-import { eventChannel } from 'redux-saga';
-import { CacheActionTypes, CacheState } from './types';
-import { AppState } from '../index';
-import { CacheCore } from '../../../cores/CacheCore';
+
+import { SagaIterator }                                         from '@redux-saga/types';
+import { put, select, takeEvery, call, take }                   from 'redux-saga/effects';
+import { eventChannel }                                         from 'redux-saga';
+import { CacheActionTypes, CacheState }                         from './types';
+import { AppState }                                             from '../index';
+import { CacheCore }                                              from '../../../cores/cache/CacheCore';
 import { FetchItem, IFetchItem, UpdateItemData, UpdateItemError } from './actions/actions';
 import { IRegisterComponent, UpdateLastResponse } from './actions/properties.actions';
 import { SetIntervalId } from './actions/settings.actions';

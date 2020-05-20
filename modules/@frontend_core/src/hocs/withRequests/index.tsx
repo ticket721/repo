@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RegisterComponent, UnregisterComponent } from '../../redux/ducks/cache';
-import { CacheCore } from '../../cores/CacheCore';
-import { AppState } from '../../redux/ducks';
+import { CacheCore }                              from '../../cores/cache/CacheCore';
+import { AppState }                     from '../../redux/ducks';
 import { v4 as uuid } from 'uuid';
 
 export interface RequestTemplate {

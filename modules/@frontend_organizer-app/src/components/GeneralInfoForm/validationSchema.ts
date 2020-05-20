@@ -1,19 +1,15 @@
 import * as yup from 'yup';
 
 const name = yup.string().required('name is required');
-const description = yup.string().max(1000);
+const description = yup.string().max(1000).required('description is required');
 
-const tags = yup.array()
-    .min(1, 'please select at least 1 tag')
-    .of(yup.object().shape({
-        label: yup.string().required(),
-        value: yup.string().required(),
-    }));
-const inputTag = yup.string().required();
-// const tags = yup.object().shape({
-//     values: yup.array().min(1, 'please select at least 1 tag').of(yup.string()),
-//     inputValue: yup.string().required(),
-//     tagsLength: yup.number().required(),
-// });
+const tags = yup.array().of(yup.object().shape({
+    label: yup.string().required(),
+    value: yup.string().required(),
+})).min(1, 'please select at least 1 tag');
 
-export { name, description, tags, inputTag };
+export const textMetadataValidationSchema = yup.object().shape({
+    name,
+    description,
+    tags,
+});
