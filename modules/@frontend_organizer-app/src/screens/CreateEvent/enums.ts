@@ -1,7 +1,7 @@
 enum STEPS {
+  ticketCategories,
   generalInfo,
   dates,
-  ticketCategories,
 }
 
 export default STEPS;

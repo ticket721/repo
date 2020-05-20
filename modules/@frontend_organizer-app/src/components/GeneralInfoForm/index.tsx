@@ -57,8 +57,9 @@ const GeneralInfoForm = ({ setStep }: Props) => {
         type='text'
         onChange={formik.handleChange}
         value={formik.values.name}
-        error={!!(formik.getFieldMeta('name').touched && formik.getFieldMeta('name').error) ? true : undefined}
-        errormessage={formik.getFieldMeta('name').error}
+        error={!!(formik.getFieldMeta('name').touched && formik.getFieldMeta('name').error) ?
+          formik.getFieldMeta('name').error : undefined
+        }
       />
       <Textarea
         className='field'
@@ -68,8 +69,9 @@ const GeneralInfoForm = ({ setStep }: Props) => {
         maxChar={1000}
         onChange={formik.handleChange}
         value={formik.values.description}
-        error={!!(formik.getFieldMeta('description').touched && formik.getFieldMeta('description').error) ? true : undefined}
-        errormessage={formik.getFieldMeta('description').error}
+        error={!!(formik.getFieldMeta('description').touched && formik.getFieldMeta('description').error) ?
+          formik.getFieldMeta('description').error : undefined
+        }
       />
       <FilesUploader
         browseLabel='or Browse to choose a file'
@@ -81,6 +83,7 @@ const GeneralInfoForm = ({ setStep }: Props) => {
         errorMessage={formik.values.cover.previewUrl === '' ? 'Cover is required' : "Can't upload your file"}
       />
       <Tags
+        name='Tags'
         label='Tags'
         placeholder='Add a tag, then press enter'
         onInputChange={(v) => setCurrentTag(v)}
@@ -93,8 +96,9 @@ const GeneralInfoForm = ({ setStep }: Props) => {
             setCurrentTag('');
           }
         }}
-        error={!!(formik.getFieldMeta('tags').touched && formik.getFieldMeta('tags').error) ? true : undefined}
-        errormessage={formik.getFieldMeta('tags').error}
+        error={!!(formik.getFieldMeta('tags').touched && formik.getFieldMeta('tags').error) ?
+          formik.getFieldMeta('tags').error : undefined
+        }
         onChange={(v, e) => {
           if (e.action === 'remove-value') {
             const newTags = v.map((c: {value: string, label: string}) => c.value);
@@ -106,8 +110,9 @@ const GeneralInfoForm = ({ setStep }: Props) => {
             setCurrentTag('');
           }
         }}
+        onBlur={(value) => {}}
       />
-      <Button variant='primary' type='submit' title='Validate'/>
+      <Button variant='primary' type='submit' title='Continue'/>
     </StyledForm>
   );
 };

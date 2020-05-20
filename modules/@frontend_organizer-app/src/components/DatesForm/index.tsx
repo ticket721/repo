@@ -84,14 +84,15 @@ const DatesForm = ({ setStep }: Props) => {
         className='field'
         label='Location'
         placeholder='Type an address'
-        error={!!(formik.getFieldMeta('location').touched && formik.getFieldMeta('location').error) ? true : undefined}
-        errormessage={formik.getFieldMeta('location').error}
+        error={!!(formik.getFieldMeta('location').touched && formik.getFieldMeta('location').error) ?
+          formik.getFieldMeta('location').error : undefined
+        }
         value={formik.values.location}
         onChange={formik.handleChange}
         name='location'
       />
 
-      <Button variant='primary' type='submit' title='Validate'/>
+      <Button variant='primary' type='submit' title='Continue'/>
     </StyledForm>
   );
 };
