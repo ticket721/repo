@@ -8,7 +8,7 @@ import { SetDeviceInfos }   from './actions';
 import { UserPropertiesActionTypes } from './types';
 
 
-function* getDevice(): SagaIterator {
+function* getDevice():  IterableIterator<any> {
     const deviceInfos = deviceDetect();
 
     console.log(deviceInfos);
@@ -22,7 +22,7 @@ function* getCity(): SagaIterator {
     console.log();
 }
 
-export function* userPropertiesSaga(): SagaIterator {
+export function* userPropertiesSaga():  IterableIterator<any> {
     yield takeEvery(UserPropertiesActionTypes.GetDevice, getDevice);
     yield takeEvery(UserPropertiesActionTypes.GetCity, getCity);
 }

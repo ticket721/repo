@@ -6,7 +6,9 @@ import DrawerAccount                         from '../DrawerAccount';
 import { blurAndDarkenBackground, truncate } from '@frontend/core/lib/utils';
 import { useHistory }                        from 'react-router';
 import { NavLink }                           from 'react-router-dom';
-import { computeDrawerPath } from '../DrawerAccount/drawerRoutes';
+import { computeDrawerPath }                 from '../DrawerAccount/drawerRoutes';
+import { useDispatch }                       from 'react-redux';
+import { Logout }                            from '@frontend/core/lib/redux/ducks/auth';
 
 const user = {
     firstName: 'Pierre',
@@ -19,6 +21,7 @@ const user = {
 
 const NavBar: React.FC = () => {
     const history = useHistory();
+    const dispatch = useDispatch();
 
     const drawerOnClose = () => {
         if (computeDrawerPath(history.location.pathname).startsWith('/drawer')) {
@@ -31,9 +34,10 @@ const NavBar: React.FC = () => {
 
     return (
         <Container>
+            <div onClick={() => dispatch(Logout())}>signout</div>
             <NavLink
             to='/'>
-                <Icon icon='t721' fill='#fff' width='70px' height='24px'/>
+                <Icon icon='t721' color='#fff' size='30px' />
             </NavLink>
             <ActionContainer>
                 <NavLink
@@ -44,8 +48,8 @@ const NavBar: React.FC = () => {
                 onClick={
                     () => history.push((history.location.pathname === '/' ? '' : history.location.pathname) + '/drawer')
                 }>
-                    <UserHeader user={user}/>
-                    <Chevron icon='chevron' fill='#fff'/>
+                    <UserHeader user={user} />
+                    <Chevron icon='chevron' color='#fff' size='7px' />
                 </Profile>
             </ActionContainer>
             <DrawerAccount

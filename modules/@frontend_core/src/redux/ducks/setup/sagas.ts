@@ -1,6 +1,6 @@
 import { AppState }           from '../';
 import { SagaIterator }         from '@redux-saga/types';
-import { select, takeEvery, put }         from 'redux-saga/effects';
+import { select, takeEvery, put, call }         from 'redux-saga/effects';
 
 import Web3                                                         from 'web3';
 import { VtxconfigReset, VtxconfigSetAllowedNet, VtxconfigSetWeb3 } from 'ethvtx/lib/vtxconfig/actions/actions';
@@ -10,19 +10,22 @@ import { GetCity, GetDevice } from '../user_properties';
 import { SetupActionTypes }   from './types';
 
 import { EthConfig }            from '../configs';
-import { StartRefreshInterval } from '../cache';
-import { T721SDK }              from '@common/sdk';
+import { StartRefreshInterval }                 from '../cache';
+import { GetUser, SetToken }                    from '../auth';
+import { isExpired, isValidFormat, parseToken } from '../../../utils/token';
+import { T721SDK }                              from '@common/sdk';
 
-function* startSaga(action: IStart): SagaIterator {
+function* startSaga(action: IStart):  IterableIterator<any> {
     global.window.t721Sdk = new T721SDK();
-
     global.window.t721Sdk.connect('localhost', 3000);
+
+    yield call(handleUser);
     yield put(GetDevice());
     yield put(GetCity());
     yield put(StartRefreshInterval());
 }
 
-function* startVtxSaga(action: IStartVtx): SagaIterator {
+function* startVtxSaga(action: IStartVtx):  IterableIterator<any> {
     const getEthConfig = (state: AppState) => state.configs.eth;
 
     const config: EthConfig = yield select(getEthConfig);
@@ -34,6 +37,26 @@ function* startVtxSaga(action: IStartVtx): SagaIterator {
     yield put(VtxconfigSetAllowedNet(config.ethereumNetworkId, config.ethereumNetworkGenesisHash));
 
     yield put(VtxconfigReset());
+}
+
+function* handleUser():  IterableIterator<any> {
+    if (localStorage.getItem('token')) {
+        const token = parseToken(localStorage.getItem('token'));
+
+        if (isValidFormat(token) && !isExpired(token)) {
+            try {
+                yield global.window.t721Sdk.users.me(token.value);
+                yield put(SetToken(token));
+                yield put(GetUser());
+            } catch (e) {
+                if (e.response.data.statusCode === 401) {
+                    localStorage.removeItem('token');
+                }
+            }
+        } else {
+            localStorage.removeItem('token');
+        }
+    }
 }
 
 export function* setupSaga(): SagaIterator {

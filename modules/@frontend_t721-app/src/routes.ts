@@ -9,8 +9,7 @@ import React          from 'react';
 export interface LinkDatum {
     icon: string;
     to: string;
-    height?: string;
-    width?: string;
+    size: string;
 }
 
 export interface RouteDatum {
@@ -52,31 +51,26 @@ export const links: LinkDatum[] = [
     {
         icon: 'home',
         to: '/home',
-        height: '22',
-        width: '24',
+        size: '22px',
     },
     {
         icon: 'search',
         to: '/search',
-        height: '22',
-        width: '24',
+        size: '22px',
     },
     {
         icon: 't721',
         to: '/',
-        height: '20',
-        width: '49',
+        size: '20px',
     },
     {
-        icon: 'tag',
+        icon: 'tags',
         to: '/tags',
-        height: '22',
-        width: '24',
+        size: '22px',
     },
     {
         icon: 'profile',
         to: '/profile',
-        height: '22',
-        width: '24',
+        size: '22px',
     },
 ];

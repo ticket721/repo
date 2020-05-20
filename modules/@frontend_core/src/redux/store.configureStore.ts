@@ -9,9 +9,7 @@ import { userPropertiesSaga }                           from './ducks/user_prope
 import { setupSaga }                                    from './ducks/setup/sagas';
 import { history }                                      from './ducks';
 import { cacheSaga }                                    from './ducks/cache/sagas';
-
-
-
+import { authSaga }                                     from './ducks/auth/sagas';
 
 const sagaMiddleware = createSagaMiddleware();
 
@@ -29,6 +27,7 @@ export function configureStore(): Store<AppState> {
         userPropertiesSaga,
         setupSaga,
         cacheSaga,
+        authSaga,
     ]);
 
     sagaMiddleware.run(rootSaga);

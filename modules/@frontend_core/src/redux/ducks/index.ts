@@ -4,11 +4,13 @@ import { configureVtx, getInitialState, getReducers } from 'ethvtx/lib';
 import { createMemoryHistory } from 'history';
 
 import { connectRouter }   from 'connected-react-router';
+
 import {
     ConfigsState,
     ConfigsReducer,
     configsInitialState,
 } from './configs';
+
 import {
     UserPropertiesState,
     UserPropertiesReducer,
@@ -19,8 +21,19 @@ import {
     StatusesState,
     StatusesReducer,
     statusesInitialState,
-}                                          from './statuses';
-import { cacheInitialState, CacheReducer, CacheState } from './cache';
+} from './statuses';
+
+import {
+    cacheInitialState,
+    CacheReducer,
+    CacheState
+} from './cache';
+
+import {
+    authInitialState,
+    AuthReducer,
+    AuthState,
+} from './auth';
 
 export const history = createMemoryHistory();
 
@@ -29,6 +42,7 @@ export interface SpecificState {
     statuses: StatusesState;
     userProperties: UserPropertiesState;
     cache: CacheState;
+    auth: AuthState;
 }
 
 export type AppState = SpecificState & VtxState;
@@ -39,6 +53,7 @@ export const rootReducer = getReducers({
     statuses: StatusesReducer,
     userProperties: UserPropertiesReducer,
     cache: CacheReducer,
+    auth: AuthReducer,
 });
 
 export const initialState: AppState = configureVtx<AppState>(getInitialState<SpecificState>(
@@ -47,6 +62,7 @@ export const initialState: AppState = configureVtx<AppState>(getInitialState<Spe
         configs: configsInitialState,
         statuses: statusesInitialState,
         cache: cacheInitialState,
+        auth: authInitialState,
     }) as AppState,
     {
         confirmation_threshold: 2,
