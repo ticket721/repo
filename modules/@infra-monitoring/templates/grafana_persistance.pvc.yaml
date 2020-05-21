@@ -1,0 +1,14 @@
+{{- if .Values.monitoring.prometheus.enabled -}}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+    name: "{{ .Values.prometheus.grafana.persistence.existingClaim }}"
+spec:
+    volumeName: "{{ .Release.Name }}--grafana-persistence--pv"
+    storageClassName: "standard"
+    accessModes:
+        - {{ .Values.prometheus.grafana.persistence.accessMode | quote }}
+    resources:
+        requests:
+            storage: {{ .Values.prometheus.grafana.persistence.size | quote }}
+{{- end -}}
