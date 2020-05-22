@@ -21,7 +21,7 @@
     "dependencies": {
         "cassandra-driver": "3.6.0",
         "js-sha3": "0.8.0",
-        "zxcvbn": "4.4.2",
+        "zxcvbn": "https://github.com/Goldiggy/zxcvbn",
         "@ticket721/e712": "0.4.1",
         "ethereum-address": "0.0.4",
         "ethers": "4.0.45",
@@ -31,6 +31,7 @@
         "@types/node": "13.7.7"
     },
     "devDependencies": {
+        "@types/zxcvbn": "4.4.0",
         "watch": "^1.0.2",
         "jest": "25.1.0",
         "ts-jest": "25.2.1",

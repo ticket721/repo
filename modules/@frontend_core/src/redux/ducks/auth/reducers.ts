@@ -76,6 +76,7 @@ const ResetSubmissionReducer: Reducer<AuthState, IResetSubmission> =
     (state: AuthState, action: IResetSubmission): AuthState => ({
         ...state,
         submit: false,
+        errors: null,
     });
 
 export const AuthReducer: Reducer<AuthState, AuthAction> =

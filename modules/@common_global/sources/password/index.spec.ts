@@ -8,11 +8,11 @@ describe('Password', function() {
     describe('getPasswordStrength', function() {
 
         test('check "test" password', async function() {
-            const report: PasswordStrengthReport = getPasswordStrength('test');
+            const report: PasswordStrengthReport = getPasswordStrength('computer');
             expect(report.score).toEqual(0);
-            expect(report.feedback.warning).toEqual('This is a top-100 common password');
+            expect(report.feedback.warning).toEqual('warning_top_100_common_password');
             expect(report.feedback.suggestions).toEqual([
-                'Add another word or two. Uncommon words are better.'
+                'suggestion_too_weak'
             ]);
         });
 
@@ -26,9 +26,9 @@ describe('Password', function() {
         test('check "password123"', async function() {
             const report: PasswordStrengthReport = getPasswordStrength('password123');
             expect(report.score).toEqual(0);
-            expect(report.feedback.warning).toEqual('This is a very common password');
+            expect(report.feedback.warning).toEqual('warning_common_password');
             expect(report.feedback.suggestions).toEqual([
-                'Add another word or two. Uncommon words are better.'
+                'suggestion_too_weak'
             ]);
         });
 

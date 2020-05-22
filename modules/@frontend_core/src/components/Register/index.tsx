@@ -1,6 +1,5 @@
-import React, { useEffect }                          from 'react';
+import React, { useEffect } from 'react';
 import { useFormik }                                 from 'formik';
-import * as yup                                      from 'yup';
 import { Button, TextInput, Icon, PasswordInput }    from '@frontend/flib-react/lib/components';
 import { useDispatch, useSelector }                  from 'react-redux';
 import { AuthState, LocalRegister, ResetSubmission } from '../../redux/ducks/auth';
@@ -8,23 +7,10 @@ import { useHistory }                                from 'react-router';
 import { AppState }                                  from '../../redux/ducks';
 import styled                                        from 'styled-components';
 import { ValidateEmail }                             from '../ValidateEmail';
-
-const registerValidationSchema = yup.object().shape({
-  email: yup.string()
-    .email()
-    .required('email required'),
-  password: yup.string()
-    .min(8, 'password is to short')
-    .matches(/[a-z]/, 'you need to use at least one lowercase character')
-    .matches(/[A-Z]/, 'you need to use at least one uppercase character')
-    .matches(/[0-9]/, 'you need to use at least one numeric character')
-    .matches(/[^A-Za-z0-9]/, 'you need to use at least one special character')
-    .required('password is required'),
-  username: yup.string()
-    .min(4, 'username is to short (min. 4 characters)')
-    .max(20, 'username is to long (max. 20 characters)')
-    .required('username is required'),
-});
+import { useTranslation }                            from 'react-i18next';
+import { registerValidationSchema }                  from './validation';
+import './locales';
+import { getPasswordStrength }                       from '@common/global';
 
 export const Register: React.FC = () => {
     const auth = useSelector((state: AppState): AuthState => state.auth);
@@ -50,11 +36,12 @@ export const Register: React.FC = () => {
         if (!auth.loading) {
             if (auth.submit && auth.errors) {
                 formik.setErrors(auth.errors);
-                dispatch(ResetSubmission());
             }
         }
 
     }, [ auth.loading ]);
+
+    const [ t ] = useTranslation(['registration', 'password-feedback']);
 
     return (
         <RegisterWrapper>
@@ -69,47 +56,56 @@ export const Register: React.FC = () => {
                             color='#fff' />
                       </IconContainer>
                       <Form onSubmit={formik.handleSubmit}>
-                          <Inputs>
-                              <TextInput
-                                name='email'
-                                label='Email'
-                                placeholder='Email address'
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                value={formik.values.email}
-                                error={formik.touched['email'] ? formik.errors['email'] : undefined}
-                              />
-                              <PasswordInput
-                                name='password'
-                                label='Password'
-                                placeholder='Password'
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                value={formik.values.password}
-                                error={formik.touched['password'] ? formik.errors['password'] : undefined}
-                              />
-                              <TextInput
-                                name='username'
-                                label='Username'
-                                placeholder='Username'
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                value={formik.values.username}
-                                error={formik.touched['username'] ? formik.errors['username'] : undefined}
-                              />
-                          </Inputs>
                           {
                               auth.errors?.global ?
                                 <Error>
+                                    <CrossIcon
+                                      icon='cross'
+                                      color='#fff'
+                                      size='20px' />
                                     {auth.errors.global}
                                 </Error> :
                                 null
                           }
+                          <Inputs>
+                              <TextInput
+                                name='email'
+                                label={t('email_label')}
+                                placeholder={t('email_placeholder')}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                value={formik.values.email}
+                                error={formik.touched['email'] ? t(formik.errors['email']) : undefined}
+                              />
+                              {
+                                  console.log(formik.errors['password'])
+                              }
+                              <PasswordInput
+                                name='password'
+                                label={t('password_label')}
+                                placeholder={t('password_placeholder')}
+                                score={getPasswordStrength(formik.values.password).score}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                value={formik.values.password}
+                                error={formik.touched['password'] && formik.errors['password'] ?
+                                  t('password-feedback:' + formik.errors['password']) : undefined}
+                              />
+                              <TextInput
+                                name='username'
+                                label={t('username_label')}
+                                placeholder={t('username_placeholder')}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                value={formik.values.username}
+                                error={formik.touched['username'] ? t(formik.errors['username']) : undefined}
+                              />
+                          </Inputs>
                           <ActionsContainer>
-                              <Button variant='primary' type='submit' title='Register'/>
+                              <Button variant='primary' type='submit' title={t('register')}/>
                               <SwitchToLogin
                                 onClick={() => {history.push('/login')}}>
-                                  Already registered ? Login here !
+                                  {t('login_switch')}
                               </SwitchToLogin>
                           </ActionsContainer>
                       </Form>
@@ -156,18 +152,24 @@ const Inputs = styled.div`
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    height: 310px;
+    height: 345px;
 `;
 
 const Error = styled.div`
-    background-color: #F99;
+    display: flex;
+    align-items: center;
+    background-color: #C91D31;
     color: #FFF;
-    padding: 15px;
+    padding: 10px 15px 8px;
     font-size: 15px;
-    text-align: center;
-    width: 100%;
+    line-height: 20px;
+    font-weight: 500;
     border-radius: 5px;
-    margin-top: 35px;
+    margin-bottom: 30px;
+`;
+
+const CrossIcon = styled(Icon)`
+    margin: 0 15px 5px 0;
 `;
 
 const ActionsContainer = styled.div`
@@ -182,6 +184,7 @@ const SwitchToLogin = styled.span`
     font-size: 10px;
     margin-top: 5px;
     text-decoration: underline;
+    white-space: nowrap;
     cursor: pointer;
     color: #CCC;
 `;

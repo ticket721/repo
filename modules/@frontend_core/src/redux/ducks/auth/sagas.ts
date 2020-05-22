@@ -45,21 +45,15 @@ function* localRegister(action: ILocalRegister): IterableIterator<any> {
             }
         }
     } catch (e) {
-        const errorData = e.response.data;
-        if (errorData.statusCode === 409) {
-            switch (errorData.message) {
-                case 'email_already_in_use':
-                    yield put(SetErrors({ email: 'this email is already in use' }));
-                    break;
-                case 'username_already_in_use':
-                    yield put(SetErrors({ username: 'this username is already in use' }));
-                    break;
-                case 'address_already_in_use':
-                    yield put(SetErrors({ email: 'this address is already in use' }));
-                    break;
-            }
+        if (e.message === 'Network Error') {
+            yield put(SetErrors({ global: 'Cannot reach server' }));
         } else {
-            yield put(SetErrors({ global: 'Internal Server Error' }));
+            const errorData = e.response.data;
+            if (errorData.statusCode === 409) {
+                yield put(SetErrors({ email: errorData.message }));
+            } else {
+                yield put(SetErrors({ global: 'Internal Server Error' }));
+            }
         }
     }
 
@@ -93,11 +87,15 @@ function* localLogin(action: ILocalRegister): IterableIterator<any> {
             loginData.user.valid,
         ));
     } catch (e) {
-        const errorData = e.response.data;
-        if (errorData.message === 'invalid_credentials') {
-            yield put(SetErrors({ email: ' ', password: ' ', global: 'wrong email or password' }));
+        if (e.message === 'Network Error') {
+            yield put(SetErrors({ global: 'Cannot reach server' }));
         } else {
-            yield put(SetErrors({ global: 'Internal Server Error' }));
+            const errorData = e.response.data;
+            if (errorData.message === 'invalid_credentials') {
+                yield put(SetErrors({ email: ' ', password: ' ', global: 'invalid_credentials' }));
+            } else {
+                yield put(SetErrors({ global: 'Internal Server Error' }));
+            }
         }
     }
 

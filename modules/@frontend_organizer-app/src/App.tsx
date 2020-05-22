@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import {
     PageContainer
-}                                     from '@frontend/core/lib/components';
+}                                               from '@frontend/core/lib/components';
 
 import { Route, Switch, withRouter } from 'react-router-dom';
 
@@ -27,6 +27,7 @@ const App: React.FC = () => {
     }, [ authState ]);
 
     return (
+      <Suspense fallback='loading'>
         <AppContainer>
             {
                 authenticated && validated ?
@@ -54,6 +55,7 @@ const App: React.FC = () => {
                 }
             </Switch>
         </AppContainer>
+      </Suspense>
     )
 };
 

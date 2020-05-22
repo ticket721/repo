@@ -1,17 +1,14 @@
-import React, { useEffect } from 'react';
-import { useFormik }                  from 'formik';
-import * as yup                       from 'yup';
-import { Button, TextInput, Icon, PasswordInput }          from '@frontend/flib-react/lib/components';
-import { useDispatch, useSelector }   from 'react-redux';
-import { useHistory }                 from 'react-router';
+import React, { useEffect }                       from 'react';
+import { useFormik }                              from 'formik';
+import { Button, TextInput, Icon, PasswordInput } from '@frontend/flib-react/lib/components';
+import { useDispatch, useSelector }               from 'react-redux';
+import { useHistory }                             from 'react-router';
 import { AppState }                               from '../../redux/ducks';
 import { AuthState, LocalLogin, ResetSubmission } from '../../redux/ducks/auth';
 import styled                                     from 'styled-components';
-
-const loginValidationSchema = yup.object().shape({
-    email: yup.string().email().required('email required'),
-    password: yup.string().required('password is required'),
-});
+import { loginValidationSchema }                  from './validation';
+import { useTranslation }                         from 'react-i18next';
+import './locales';
 
 export const Login: React.FC = () => {
     const auth = useSelector((state: AppState): AuthState => state.auth);
@@ -39,10 +36,14 @@ export const Login: React.FC = () => {
           if (auth.submit && !auth.errors) {
               history.push(from);
           } else {
-              formik.setErrors(auth.errors);
+              if (auth.errors) {
+                  formik.setErrors(auth.errors);
+              }
           }
       }
     }, [ auth.loading ]);
+
+    const [ t ] = useTranslation(['login', 'login-errors']);
 
     return (
           <LoginWrapper>
@@ -54,38 +55,42 @@ export const Login: React.FC = () => {
                         color='#fff' />
                   </IconContainer>
                   <Form onSubmit={formik.handleSubmit}>
-                      <Inputs>
-                          <TextInput
-                            name='email'
-                            label='Email'
-                            placeholder='Email address'
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            value={formik.values.email}
-                            error={formik.touched['email'] ? formik.errors['email'] : undefined}
-                          />
-                          <PasswordInput
-                            name='password'
-                            label='Password'
-                            placeholder='Password'
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            value={formik.values.password}
-                            error={formik.touched['password'] ? formik.errors['password'] : undefined}
-                          />
-                      </Inputs>
                       {
                           auth.errors?.global ?
                             <Error>
+                                <CrossIcon
+                                  icon='cross'
+                                  color='#fff'
+                                  size='20px' />
                                 {auth.errors.global}
                             </Error> :
                             null
                       }
+                      <Inputs>
+                          <TextInput
+                            name='email'
+                            label={t('email_label')}
+                            placeholder={t('email_placeholder')}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            value={formik.values.email}
+                            error={formik.touched['email'] ? t(formik.errors['email']) : undefined}
+                          />
+                          <PasswordInput
+                            name='password'
+                            label={t('password_label')}
+                            placeholder={t('password_placeholder')}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            value={formik.values.password}
+                            error={formik.touched['password'] ? t(formik.errors['password']) : undefined}
+                          />
+                      </Inputs>
                       <ActionsContainer>
-                          <Button variant='primary' type='submit' title='Login'/>
+                          <Button variant='primary' type='submit' title={t('login')}/>
                           <SwitchToRegister
                             onClick={() => {history.push('/register')}}>
-                              First time using the app ? Register here !
+                              {t('register_switch')}
                           </SwitchToRegister>
                       </ActionsContainer>
                   </Form>
@@ -135,14 +140,20 @@ const Inputs = styled.div`
 `;
 
 const Error = styled.div`
-    background-color: #F99;
+    display: flex;
+    align-items: center;
+    background-color: #C91D31;
     color: #FFF;
-    padding: 15px;
+    padding: 10px 15px 8px;
     font-size: 15px;
-    text-align: center;
-    width: 100%;
+    line-height: 20px;
+    font-weight: 500;
     border-radius: 5px;
-    margin-top: 35px;
+    margin-bottom: 30px;
+`;
+
+const CrossIcon = styled(Icon)`
+    margin: 0 15px 5px 0;
 `;
 
 const ActionsContainer = styled.div`
@@ -154,9 +165,11 @@ const ActionsContainer = styled.div`
 `;
 
 const SwitchToRegister = styled.span`
-    font-size: 10px;
+    font-size: 11px;
+    line-height: 15px;
     margin-top: 5px;
     text-decoration: underline;
+    text-align: center;
     cursor: pointer;
     color: #CCC;
 `;
