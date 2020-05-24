@@ -15,10 +15,11 @@ export interface InputProps extends React.ComponentProps<any> {
   options?: any;
   value?:string;
   className?: string;
+  type?: string;
 }
 
 const Error = styled.span`
-  bottom: -16px;
+  top: 110%;
   color: ${props => props.theme.warningColor};
   font-size: 13px;
   font-weight: 500;
@@ -52,6 +53,7 @@ const StyledInputContainer = styled.div<InputProps>`
   border-radius: ${props => props.theme.defaultRadius};
   display: flex;
   flex-direction: column;
+  width: 100%;
   padding-top: ${props => props.theme.biggerSpacing};
   transition: background-color 300ms ease;
 

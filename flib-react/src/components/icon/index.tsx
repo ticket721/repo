@@ -9,7 +9,6 @@ export interface IconProps extends React.ComponentProps<any> {
 }
 
 export const Icon: React.FunctionComponent<IconProps & {className?: string}> = (props: IconProps): JSX.Element => {
-  console.log(props.color);
   return <IconSpan
     className={`
     t721-icons-${props.icon}
