@@ -1,4 +1,4 @@
-import zxcvbn from 'zxcvbn';
+import zxcvbn from 'zxcvbn-i18n';
 
 export interface PasswordStrengthReport {
     guesses: number;

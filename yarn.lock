@@ -30653,6 +30653,7 @@ zwitch@^1.0.0:
   resolved "https://registry.yarnpkg.com/zwitch/-/zwitch-1.0.5.tgz#d11d7381ffed16b742f6af7b3f223d5cd9fe9920"
   integrity sha512-V50KMwwzqJV0NpZIZFwfOD5/lyny3WlSzRiXgA0G7VUnRlqttta1L6UQIHzd6EuBY/cHGfwTIck7w1yH6Q5zUw==
 
-"zxcvbn@https://github.com/Goldiggy/zxcvbn":
-  version "4.4.2"
-  resolved "https://github.com/Goldiggy/zxcvbn#e1c8a7635416cf20b9e72c606facedb3233ef381"
+zxcvbn-i18n@1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/zxcvbn-i18n/-/zxcvbn-i18n-1.0.0.tgz#ad3d0e84f651ad51b920b6e8e23c4c4ea2f4e925"
+  integrity sha512-P3taDtkZ7pM57dn8+vBBln1fzUop5bM7CfniqK0/Ahy0R9kmr605/SDPez8uHa/fUi5QnHV0qeRAy4XKt0FSvQ==
