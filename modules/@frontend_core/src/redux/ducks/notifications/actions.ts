@@ -5,14 +5,12 @@ export interface IPushNotification extends Action<string> {
     type: NotificationsActionTypes.PushNotification;
     message: string;
     kind: NotificationKind;
-    temporizer?: number;
 }
 
-export const PushNotification = (message: string, kind: NotificationKind, temporizer?: number): IPushNotification => ({
+export const PushNotification = (message: string, kind: NotificationKind): IPushNotification => ({
     type: NotificationsActionTypes.PushNotification,
     message,
     kind,
-    temporizer,
 });
 
 export interface IPopNotification extends Action<string> {
@@ -21,16 +19,6 @@ export interface IPopNotification extends Action<string> {
 
 export const PopNotification = (): IPopNotification => ({
     type: NotificationsActionTypes.PopNotification,
-});
-
-export interface IToggleVisibility extends Action<string> {
-    type: NotificationsActionTypes.ToggleVisibility;
-    idx: number;
-}
-
-export const ToggleVisibility = (idx: number): IToggleVisibility => ({
-    type: NotificationsActionTypes.ToggleVisibility,
-    idx,
 });
 
 export interface IResetNotifications extends Action<string> {
@@ -44,5 +32,4 @@ export const ResetNotifications = (): IResetNotifications => ({
 export type NotificationsAction =
     IPushNotification
     & IPopNotification
-    & IToggleVisibility
     & IResetNotifications;

@@ -12,8 +12,8 @@ import { AppState }         from '@frontend/core/lib/redux';
 import ProtectedRoute       from '@frontend/core/lib/components/ProtectedRoute';
 import { useSelector }      from 'react-redux';
 import styled               from 'styled-components';
-import NotificationsStacker from '@frontend/core/lib/components/NotificationsStacker';
 import { AppStatus }        from '@frontend/core/lib/redux/ducks/statuses';
+import ToastStacker from '@frontend/core/lib/components/ToastStacker';
 
 const App: React.FC = () => {
     const [ validated, setValidated ] = useState(true);
@@ -53,7 +53,7 @@ const App: React.FC = () => {
                     })
                 }
             </Switch>
-            <NotificationsStacker />
+            <ToastStacker />
         </AppContainer>
       </Suspense>
     )

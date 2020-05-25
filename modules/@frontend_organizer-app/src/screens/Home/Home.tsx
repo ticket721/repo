@@ -7,10 +7,10 @@ const Home: React.FC = () => {
     return (
         <div className='Home' style={{ color: 'white' }}>
           Home
-          <div onClick={() => dispatch(PushNotification('success message', 'success', 3000))}>Success</div>
-          <div onClick={() => dispatch(PushNotification('error message', 'error', 3000))}>Error</div>
-          <div onClick={() => dispatch(PushNotification('warning message', 'warning', 3000))}>Warning</div>
-          <div onClick={() => dispatch(PushNotification('info message', 'info', 3000))}>Info</div>
+          <div onClick={() => dispatch(PushNotification('success message', 'success'))}>Success</div>
+          <div onClick={() => dispatch(PushNotification('error message', 'error'))}>Error</div>
+          <div onClick={() => dispatch(PushNotification('warning message', 'warning'))}>Warning</div>
+          <div onClick={() => dispatch(PushNotification('info message', 'info'))}>Info</div>
         </div>
     )
 };

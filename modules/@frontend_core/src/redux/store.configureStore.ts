@@ -10,7 +10,6 @@ import { setupSaga }                           from './ducks/setup/sagas';
 import { history }                             from './ducks';
 import { cacheSaga }                           from './ducks/cache/sagas';
 import { authSaga }                            from './ducks/auth/sagas';
-import { notificationsSaga }                   from './ducks/notifications/sagas';
 
 const sagaMiddleware = createSagaMiddleware();
 
@@ -29,7 +28,6 @@ export function configureStore(): Store<AppState> {
         setupSaga,
         cacheSaga,
         authSaga,
-        notificationsSaga,
     ]);
 
     sagaMiddleware.run(rootSaga);

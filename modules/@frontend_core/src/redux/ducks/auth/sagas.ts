@@ -30,7 +30,7 @@ function* localRegister(action: ILocalRegister): IterableIterator<any> {
 
         localStorage.setItem('token', JSON.stringify(token));
         yield put(SetToken(token));
-        yield put(PushNotification('successfully_registered', 'success', 2000));
+        yield put(PushNotification('successfully_registered', 'success'));
         yield put(SetUser(
             registerData.user.username,
             registerData.user.type,
@@ -44,13 +44,13 @@ function* localRegister(action: ILocalRegister): IterableIterator<any> {
         }
     } catch (e) {
         if (e.message === 'Network Error') {
-            yield put(PushNotification('cannot_reach_server', 'error', 2000));
+            yield put(PushNotification('cannot_reach_server', 'error'));
         } else {
             const errorData = e.response.data;
             if (errorData.statusCode === 409) {
                 yield put(SetErrors({ email: errorData.message }));
             } else {
-                yield put(PushNotification('internal_server_error', 'error', 2000));
+                yield put(PushNotification('internal_server_error', 'error'));
             }
         }
     }
@@ -86,14 +86,14 @@ function* localLogin(action: ILocalRegister): IterableIterator<any> {
         ));
     } catch (e) {
         if (e.message === 'Network Error') {
-            yield put(PushNotification('cannot_reach_server', 'error', 2000));
+            yield put(PushNotification('cannot_reach_server', 'error'));
         } else {
             const errorData = e.response.data;
             if (errorData.message === 'invalid_credentials') {
-                yield put(PushNotification('invalid_credentials', 'error', 2000));
+                yield put(PushNotification('invalid_credentials', 'error'));
                 yield put(SetErrors({ email: ' ', password: ' ' }));
             } else {
-                yield put(PushNotification('internal_server_error', 'error', 2000));
+                yield put(PushNotification('internal_server_error', 'error'));
             }
         }
     }

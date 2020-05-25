@@ -53,21 +53,21 @@ function* handleUser():  IterableIterator<any> {
                 yield put(GetUser());
             } catch (e) {
                 if (e.message === 'Network Error') {
-                    yield put(PushNotification('cannot_reach_server', 'error', 2000));
+                    yield put(PushNotification('cannot_reach_server', 'error'));
                 } else {
                     const errorData = e.response.data;
                     if (errorData.statusCode === 401) {
                         localStorage.removeItem('token');
-                        yield put(PushNotification('unauthorized_error', 'error', 2000));
+                        yield put(PushNotification('unauthorized_error', 'error'));
                     } else {
-                        yield put(PushNotification('internal_server_error', 'error', 2000));
+                        yield put(PushNotification('internal_server_error', 'error'));
                     }
                 }
             }
         } else {
             localStorage.removeItem('token');
             if (isExpired(token)) {
-                yield put(PushNotification('session_expired', 'warning', 2000));
+                yield put(PushNotification('session_expired', 'warning'));
             }
         }
     }
