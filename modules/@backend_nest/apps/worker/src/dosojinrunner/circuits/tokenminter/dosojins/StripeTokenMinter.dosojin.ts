@@ -7,17 +7,18 @@ import {
     Operation,
     OperationStatusNames,
     TransferConnectorStatusNames,
-} from 'dosojin';
-import { Inject, Injectable } from '@nestjs/common';
-import { Stripe } from 'stripe';
-import { T721AdminService } from '@lib/common/contracts/T721Admin.service';
-import { UsersService } from '@lib/common/users/Users.service';
+}                               from 'dosojin';
+import { Inject, Injectable }   from '@nestjs/common';
+import { Stripe }               from 'stripe';
+import { T721AdminService }     from '@lib/common/contracts/T721Admin.service';
+import { UsersService }         from '@lib/common/users/Users.service';
 import { TokenMinterArguments } from '@app/worker/dosojinrunner/circuits/tokenminter/TokenMinter.circuit';
-import { UserEntity } from '@lib/common/users/entities/User.entity';
-import { TxsService } from '@lib/common/txs/Txs.service';
-import { ConfigService } from '@lib/common/config/Config.service';
-import { TxEntity } from '@lib/common/txs/entities/Tx.entity';
-import { T721TokenService } from '@lib/common/contracts/T721Token.service';
+import { UserEntity }           from '@lib/common/users/entities/User.entity';
+import { TxsService }           from '@lib/common/txs/Txs.service';
+import { ConfigService }        from '@lib/common/config/Config.service';
+import { TxEntity }             from '@lib/common/txs/entities/Tx.entity';
+import { T721TokenService }     from '@lib/common/contracts/T721Token.service';
+import { NestError }            from '@lib/common/utils/NestError';
 
 /**
  * Extra State Arguments added by the TokenMinter Operation
@@ -141,7 +142,7 @@ export class TokenMinterOperation extends Operation {
      */
     /* istanbul ignore next */
     public async dryRun(gem: Gem): Promise<Gem> {
-        throw new Error('unimplemented dry run');
+        throw new NestError('unimplemented dry run');
     }
 
     /**

@@ -3,17 +3,18 @@ import {
     EVMEventFetcherJob,
     EVMEventRawResult,
 } from '@app/worker/evmantenna/EVMEvent.controller.base';
-import { ContractsControllerBase } from '@lib/common/contracts/ContractsController.base';
-import { Schedule } from 'nest-schedule';
-import { Job, Queue } from 'bull';
-import { GlobalConfigService } from '@lib/common/globalconfig/GlobalConfig.service';
-import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
-import { InstanceSignature, OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
-import { EVMEventSetsService } from '@lib/common/evmeventsets/EVMEventSets.service';
+import { ContractsControllerBase }                                             from '@lib/common/contracts/ContractsController.base';
+import { Schedule }                                                            from 'nest-schedule';
+import { Job, Queue }                                                          from 'bull';
+import { GlobalConfigService }                                                 from '@lib/common/globalconfig/GlobalConfig.service';
+import { ShutdownService }                                                     from '@lib/common/shutdown/Shutdown.service';
+import { InstanceSignature, OutrospectionService }                             from '@lib/common/outrospection/Outrospection.service';
+import { EVMEventSetsService }                                                 from '@lib/common/evmeventsets/EVMEventSets.service';
 import { anyFunction, anything, deepEqual, instance, mock, spy, verify, when } from 'ts-mockito';
-import { GlobalEntity } from '@lib/common/globalconfig/entities/Global.entity';
-import { EVMEvent, EVMEventSetEntity } from '@lib/common/evmeventsets/entities/EVMEventSet.entity';
-import { CRUDExtension } from '@lib/common/crud/CRUDExtension.base';
+import { GlobalEntity }                                                        from '@lib/common/globalconfig/entities/Global.entity';
+import { EVMEvent, EVMEventSetEntity }                                         from '@lib/common/evmeventsets/entities/EVMEventSet.entity';
+import { CRUDExtension }                                                       from '@lib/common/crud/CRUDExtension.base';
+import { NestError }                                                           from '@lib/common/utils/NestError';
 
 describe('EVMEvent Controller Base', function() {
     const context: {
@@ -64,7 +65,7 @@ describe('EVMEvent Controller Base', function() {
     describe('rollbackableDelete', function() {
         it('should throw on unimplemented call', async function() {
             await expect(EVMEventControllerBase.rollbackableDelete(null, null, null)).rejects.toMatchObject(
-                new Error(`implement rollbackableDelete`),
+                new NestError(`implement rollbackableDelete`),
             );
         });
     });
@@ -72,7 +73,7 @@ describe('EVMEvent Controller Base', function() {
     describe('rollbackableCreate', function() {
         it('should throw on unimplemented call', async function() {
             await expect(EVMEventControllerBase.rollbackableCreate(null, null, null)).rejects.toMatchObject(
-                new Error(`implement rollbackableCreate`),
+                new NestError(`implement rollbackableCreate`),
             );
         });
     });
@@ -302,10 +303,10 @@ describe('EVMEvent Controller Base', function() {
 
             when(context.contractsControllerMock.getArtifactName()).thenReturn(artifactName);
 
-            await expect(context.evmEventControllerBase.convert(null, null)).rejects.toMatchObject(new Error(errorMsg));
+            await expect(context.evmEventControllerBase.convert(null, null)).rejects.toMatchObject(new NestError(errorMsg));
 
             verify(context.contractsControllerMock.getArtifactName()).called();
-            verify(context.shutdownServiceMock.shutdownWithError(deepEqual(new Error(errorMsg)))).called();
+            verify(context.shutdownServiceMock.shutdownWithError(deepEqual(new NestError(errorMsg)))).called();
         });
     });
 
@@ -555,7 +556,7 @@ describe('EVMEvent Controller Base', function() {
 
             verify(
                 context.shutdownServiceMock.shutdownWithError(
-                    deepEqual(new Error(`Unable to recover global config: unexpected_error`)),
+                    deepEqual(new NestError(`Unable to recover global config: unexpected_error`)),
                 ),
             );
         });
@@ -584,7 +585,7 @@ describe('EVMEvent Controller Base', function() {
 
             verify(
                 context.shutdownServiceMock.shutdownWithError(
-                    deepEqual(new Error(`Unable to recover global config: no global config`)),
+                    deepEqual(new NestError(`Unable to recover global config: no global config`)),
                 ),
             );
         });
@@ -636,7 +637,7 @@ describe('EVMEvent Controller Base', function() {
             verify(
                 context.shutdownServiceMock.shutdownWithError(
                     deepEqual(
-                        new Error(
+                        new NestError(
                             `EVMEventControllerBase::eventsBackgroundFetcher | error while fetching EVMEvent Sets`,
                         ),
                     ),
@@ -1144,7 +1145,7 @@ describe('EVMEvent Controller Base', function() {
             });
 
             await expect(context.evmEventControllerBase.fetchEVMEventsForBlock(job as Job)).rejects.toMatchObject(
-                new Error(
+                new NestError(
                     `EVMEvemtControllerBase::fetchEVMEventsForBlock | Unable to create evmeventset: unexpected_error`,
                 ),
             );
@@ -1212,7 +1213,7 @@ describe('EVMEvent Controller Base', function() {
 
             when(context.outrospectionServiceMock.getInstanceSignature()).thenResolve(signature as InstanceSignature);
             when(context.scheduleMock.scheduleIntervalJob(`${artifactName}::NewGroup`, 1000, anything())).thenReturn();
-            when(context.queueMock.process(fetchJobName, 1, anyFunction())).thenReject(new Error('unexpected error'));
+            when(context.queueMock.process(fetchJobName, 1, anyFunction())).thenReject(new NestError('unexpected error'));
 
             await context.evmEventControllerBase.onModuleInit();
             await new Promise(ok => setTimeout(ok, 5000));

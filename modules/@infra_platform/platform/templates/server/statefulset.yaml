@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "platform.fullname" . }}--server--sfs
+  labels:
+    name: {{ include "platform.fullname" . }}--server--sfs
+    chart: {{ .Chart.Name }}
+spec:
+  replicas: 2
+  serviceName: {{ include "platform.fullname" . }}--server--svc
+  selector:
+    matchLabels:
+      name: {{ include "platform.fullname" . }}--server
+      chart: {{ .Chart.Name }}
+  template:
+    metadata:
+      labels:
+        name: {{ include "platform.fullname" . }}--server
+        chart: {{ .Chart.Name }}
+    spec:
+      volumes:
+        - name: server-config
+          configMap:
+            name: {{ template "platform.fullname" . }}--server-config--cfmp
+        - name: server-secret
+          secret:
+            secretName: {{ template "platform.fullname" . }}--server-secret--sec
+      initContainers:
+        - name: {{ include "platform.fullname" . }}--server-migrations
+          env:
+            - name: CASSANDRA_HOSTS
+              value: "{{ .Values.config.cassandra.host }}"
+            - name: CASSANDRA_PORT
+              value: "{{ .Values.config.cassandra.port }}"
+            - name: ELASTICSEARCH_HOST
+              value: "{{ .Values.config.elasticsearch.host }}:{{ .Values.config.elasticsearch.port }}"
+          image: "{{ .Values.migrations.image.repository }}:{{ .Values.migrations.image.tag }}"
+          imagePullPolicy: {{ .Values.migrations.image.pullPolicy }}
+      containers:
+        - name: {{ template  "platform.fullname" . }}--server
+          image: "{{ .Values.server.image.repository }}:{{ .Values.server.image.tag }}"
+          imagePullPolicy: {{ .Values.server.image.pullPolicy }}
+          resources:
+            limits:
+              memory: "1024Mi"
+              cpu: "250m"
+          volumeMounts:
+            - name: server-config
+              mountPath: /config/production.env
+              subPath: production.env
+            - name: server-secret
+              mountPath: /config/production.secret.env
+              subPath: production.secret.env
+          env:
+            - name: CONFIG_PATH
+              value: /config/
+            - name: NODE_ENV
+              value: production
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http

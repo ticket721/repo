@@ -13,3 +13,5 @@ RUN cd ../@common_global\
  && cd ../@backend_nest\
  && yarn build:worker
 
+CMD ["node", "dist/apps/worker/apps/worker/src/main.js"]
+

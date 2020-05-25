@@ -1,17 +1,18 @@
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { InjectSchedule, Schedule } from 'nest-schedule';
 import { OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
-import { ConfigService } from '@lib/common/config/Config.service';
-import { ActionSetsService } from '@lib/common/actionsets/ActionSets.service';
-import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
-import { Job, Queue } from 'bull';
-import { InjectQueue } from '@nestjs/bull';
-import { fromES } from '@lib/common/utils/fromES.helper';
-import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
-import { uuidEq } from '@common/global';
-import { ActionSet } from '@lib/common/actionsets/helper/ActionSet.class';
+import { ConfigService }        from '@lib/common/config/Config.service';
+import { ActionSetsService }    from '@lib/common/actionsets/ActionSets.service';
+import { ShutdownService }      from '@lib/common/shutdown/Shutdown.service';
+import { Job, Queue }           from 'bull';
+import { InjectQueue }          from '@nestjs/bull';
+import { fromES }               from '@lib/common/utils/fromES.helper';
+import { ActionSetEntity }      from '@lib/common/actionsets/entities/ActionSet.entity';
+import { uuidEq }               from '@common/global';
+import { ActionSet }            from '@lib/common/actionsets/helper/ActionSet.class';
 import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
-import { TimeToolService } from '@lib/common/toolbox/Time.tool.service';
+import { TimeToolService }      from '@lib/common/toolbox/Time.tool.service';
+import { NestError }            from '@lib/common/utils/NestError';
 
 /**
  * Collection of scheduled tasks
@@ -87,7 +88,7 @@ export class ActionSetsScheduler implements OnModuleInit, OnModuleDestroy {
         const actionSetsSearchRes = await this.actionSetsService.searchElastic(query);
 
         if (actionSetsSearchRes.error) {
-            return this.shutdownService.shutdownWithError(new Error('Error while requesting action sets'));
+            return this.shutdownService.shutdownWithError(new NestError('Error while requesting action sets'));
         }
 
         const dispatched = this.timeToolService.now();

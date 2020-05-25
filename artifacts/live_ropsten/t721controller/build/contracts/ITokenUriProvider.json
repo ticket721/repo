@@ -1,0 +1,288 @@
+{
+  "contractName": "ITokenUriProvider",
+  "abi": [
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        }
+      ],
+      "name": "tokenURI",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "uri",
+          "type": "string"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.5.15+commit.6a57276f\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"constant\":true,\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"}],\"name\":\"tokenURI\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"uri\",\"type\":\"string\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/Users/mortimr/projects/repo/modules/@contracts_t721controller/contracts/v0/mocks/ITokenUriProvider.sol\":\"ITokenUriProvider\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/Users/mortimr/projects/repo/modules/@contracts_t721controller/contracts/v0/mocks/ITokenUriProvider.sol\":{\"keccak256\":\"0xcc7085b1139f04ecff58f41f47106f499f9f30dc6df2a2601b1ae9f18490968f\",\"urls\":[\"bzz-raw://44253d7ff9f102cc0a23620f0a9909968b2e7bcda5ed18cfc62d262f86567403\",\"dweb:/ipfs/QmSL9QLAR89GsRxToLAiHGcLMknmMqRoKXGZ5KtnhnktXP\"]}},\"version\":1}",
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "source": "pragma solidity 0.5.15;\n\ncontract ITokenUriProvider {\n\n    function tokenURI(uint256 id) external view returns (string memory uri);\n\n}\n",
+  "sourcePath": "/Users/mortimr/projects/repo/modules/@contracts_t721controller/contracts/v0/mocks/ITokenUriProvider.sol",
+  "ast": {
+    "absolutePath": "/Users/mortimr/projects/repo/modules/@contracts_t721controller/contracts/v0/mocks/ITokenUriProvider.sol",
+    "exportedSymbols": {
+      "ITokenUriProvider": [
+        2423
+      ]
+    },
+    "id": 2424,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 2415,
+        "literals": [
+          "solidity",
+          "0.5",
+          ".15"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:9"
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": false,
+        "id": 2423,
+        "linearizedBaseContracts": [
+          2423
+        ],
+        "name": "ITokenUriProvider",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": null,
+            "documentation": null,
+            "id": 2422,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "tokenURI",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 2418,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2417,
+                  "name": "id",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2422,
+                  "src": "77:10:9",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2416,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "77:7:9",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "76:12:9"
+            },
+            "returnParameters": {
+              "id": 2421,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2420,
+                  "name": "uri",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2422,
+                  "src": "112:17:9",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 2419,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "112:6:9",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "111:19:9"
+            },
+            "scope": 2423,
+            "src": "59:72:9",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "external"
+          }
+        ],
+        "scope": 2424,
+        "src": "25:109:9"
+      }
+    ],
+    "src": "0:135:9"
+  },
+  "legacyAST": {
+    "absolutePath": "/Users/mortimr/projects/repo/modules/@contracts_t721controller/contracts/v0/mocks/ITokenUriProvider.sol",
+    "exportedSymbols": {
+      "ITokenUriProvider": [
+        2423
+      ]
+    },
+    "id": 2424,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 2415,
+        "literals": [
+          "solidity",
+          "0.5",
+          ".15"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:9"
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": false,
+        "id": 2423,
+        "linearizedBaseContracts": [
+          2423
+        ],
+        "name": "ITokenUriProvider",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": null,
+            "documentation": null,
+            "id": 2422,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "tokenURI",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 2418,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2417,
+                  "name": "id",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2422,
+                  "src": "77:10:9",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2416,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "77:7:9",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "76:12:9"
+            },
+            "returnParameters": {
+              "id": 2421,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2420,
+                  "name": "uri",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2422,
+                  "src": "112:17:9",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 2419,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "112:6:9",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "111:19:9"
+            },
+            "scope": 2423,
+            "src": "59:72:9",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "external"
+          }
+        ],
+        "scope": 2424,
+        "src": "25:109:9"
+      }
+    ],
+    "src": "0:135:9"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.5.15+commit.6a57276f.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.0.9",
+  "updatedAt": "2020-05-20T14:03:29.782Z",
+  "devdoc": {
+    "methods": {}
+  },
+  "userdoc": {
+    "methods": {}
+  }
+}

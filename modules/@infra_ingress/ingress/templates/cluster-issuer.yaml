@@ -1,0 +1,21 @@
+apiVersion: cert-manager.io/v1alpha2
+kind: ClusterIssuer
+metadata:
+  name: {{ include "ingress.fullname" . }}--cluster-issuer--issuer
+  labels:
+    name: {{ include "ingress.fullname" . }}--cluster-issuer--issuer
+    chart: {{ .Chart.Name }}
+spec:
+  acme:
+    server: {{ .Values.issuer.server }}
+    email: {{ .Values.issuer.email }}
+    privateKeySecretRef:
+      name: {{ include "ingress.fullname" . }}--issuer-key--secret
+    solvers:
+    - dns01:
+        clouddns:
+          project: {{ .Values.clouddns.project }}
+          serviceAccountSecretRef:
+            name: {{ include "ingress.fullname" . }}--clouddns-service-account-key--sec
+            key: key.json
+

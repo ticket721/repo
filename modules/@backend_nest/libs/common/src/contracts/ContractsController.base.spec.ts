@@ -1,8 +1,9 @@
-import { Contracts, ContractsService } from '@lib/common/contracts/Contracts.service';
-import { Web3Service } from '@lib/common/web3/Web3.service';
-import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
+import { Contracts, ContractsService }                       from '@lib/common/contracts/Contracts.service';
+import { Web3Service }                                       from '@lib/common/web3/Web3.service';
+import { ShutdownService }                                   from '@lib/common/shutdown/Shutdown.service';
 import { anything, deepEqual, instance, mock, verify, when } from 'ts-mockito';
-import { ContractsControllerBase } from '@lib/common/contracts/ContractsController.base';
+import { ContractsControllerBase }                           from '@lib/common/contracts/ContractsController.base';
+import { NestError }                                         from '@lib/common/utils/NestError';
 
 const context: {
     contractsService: ContractsService;
@@ -422,7 +423,7 @@ describe('Contracts Controller Base', function() {
         when(context.web3Service.net()).thenReturn(Promise.resolve(networkId));
         when(context.web3Service.get()).thenReturn(Promise.resolve(web3));
 
-        const error = new Error(
+        const error = new NestError(
             `On-Chain code does not match for dynamically loaded contract address (${moduleName}::${contractName}@${contractAddress})`,
         );
 
@@ -452,7 +453,7 @@ describe('Contracts Controller Base', function() {
             Promise.resolve((contractArtifact as any) as Contracts),
         );
 
-        const error = new Error(`Cannot recover artifact for instance called ${contractName}`);
+        const error = new NestError(`Cannot recover artifact for instance called ${contractName}`);
 
         await expect(contractsController.get()).rejects.toMatchObject(error);
 
@@ -494,7 +495,7 @@ describe('Contracts Controller Base', function() {
         when(context.web3Service.net()).thenReturn(Promise.resolve(networkId));
         when(context.web3Service.get()).thenReturn(Promise.resolve(web3));
 
-        const error = new Error(`Unable to recover web3 instance or data for contract ${contractName}`);
+        const error = new NestError(`Unable to recover web3 instance or data for contract ${contractName}`);
 
         await expect(contractsController.get()).rejects.toMatchObject(error);
 
@@ -544,7 +545,7 @@ describe('Contracts Controller Base', function() {
         when(context.web3Service.net()).thenReturn(Promise.resolve(null));
         when(context.web3Service.get()).thenReturn(Promise.resolve(web3));
 
-        const error = new Error(`Unable to recover web3 instance or data for contract ${contractName}`);
+        const error = new NestError(`Unable to recover web3 instance or data for contract ${contractName}`);
 
         await expect(contractsController.get()).rejects.toMatchObject(error);
 

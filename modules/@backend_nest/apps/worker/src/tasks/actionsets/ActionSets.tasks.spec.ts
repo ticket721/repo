@@ -1,12 +1,13 @@
-import { ActionSetsTasks } from '@app/worker/tasks/actionsets/ActionSets.tasks';
-import { ActionSetsService } from '@lib/common/actionsets/ActionSets.service';
+import { ActionSetsTasks }                                            from '@app/worker/tasks/actionsets/ActionSets.tasks';
+import { ActionSetsService }                                          from '@lib/common/actionsets/ActionSets.service';
 import { anything, capture, deepEqual, instance, mock, verify, when } from 'ts-mockito';
-import { Job, Queue } from 'bull';
-import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
-import { ActionSet } from '@lib/common/actionsets/helper/ActionSet.class';
-import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
-import { OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
-import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
+import { Job, Queue }                                                 from 'bull';
+import { ActionSetEntity }                                            from '@lib/common/actionsets/entities/ActionSet.entity';
+import { ActionSet }                                                  from '@lib/common/actionsets/helper/ActionSet.class';
+import { WinstonLoggerService }                                       from '@lib/common/logger/WinstonLogger.service';
+import { OutrospectionService }                                       from '@lib/common/outrospection/Outrospection.service';
+import { ShutdownService }                                            from '@lib/common/shutdown/Shutdown.service';
+import { NestError }                                                  from '@lib/common/utils/NestError';
 
 class QueueMock {}
 
@@ -264,7 +265,7 @@ describe('ActionSets Tasks', function() {
             when(context.actionSetsServiceMock.getInputHandler('first')).thenReturn(undefined);
 
             await expect(context.actionSetsTasks.input(job)).rejects.toMatchObject(
-                new Error(`Cannot find input handler for action first in actionset ${actionSet.id}`),
+                new NestError(`Cannot find input handler for action first in actionset ${actionSet.id}`),
             );
 
             verify(context.actionSetsServiceMock.getInputHandler('first')).called();
@@ -322,7 +323,7 @@ describe('ActionSets Tasks', function() {
             });
 
             await expect(context.actionSetsTasks.input(job)).rejects.toMatchObject(
-                new Error(`Error while running onComplete actionset lifecycle: unexpected_error`),
+                new NestError(`Error while running onComplete actionset lifecycle: unexpected_error`),
             );
         });
     });
@@ -457,7 +458,7 @@ describe('ActionSets Tasks', function() {
             when(context.actionSetsServiceMock.getEventHandler('first')).thenReturn(undefined);
 
             await expect(context.actionSetsTasks.event(job)).rejects.toMatchObject(
-                new Error(`Cannot find event handler for action first in actionset ${actionSet.id}`),
+                new NestError(`Cannot find event handler for action first in actionset ${actionSet.id}`),
             );
 
             verify(context.actionSetsServiceMock.getEventHandler('first')).once();

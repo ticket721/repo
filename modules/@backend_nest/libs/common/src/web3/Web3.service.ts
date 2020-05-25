@@ -1,4 +1,5 @@
-import { Inject } from '@nestjs/common';
+import { Inject }    from '@nestjs/common';
+import { NestError } from '@lib/common/utils/NestError';
 
 /**
  * Build options for the Web3 Service
@@ -23,6 +24,16 @@ export interface Web3ServiceOptions {
      * Ethereum node communication protocol
      */
     protocol: string;
+
+    /**
+     * Http headers to add
+     */
+    headers: {name: string; value: string;}[];
+
+    /**
+     * Http Path
+     */
+    path?: string;
 }
 
 /**
@@ -53,14 +64,15 @@ export class Web3Service {
             case 'https': {
                 this.web3 = new this.options.Web3(
                     new this.options.Web3.providers.HttpProvider(
-                        `${this.options.protocol}://${this.options.host}:${this.options.port}`,
+                        `${this.options.protocol}://${this.options.host}:${this.options.port}${this.options.path || ''}`,
+                        {headers: this.options.headers}
                     ),
                 );
                 break;
             }
 
             default:
-                throw new Error(`Unknown protocol ${this.options.protocol} to build web3 instance`);
+                throw new NestError(`Unknown protocol ${this.options.protocol} to build web3 instance`);
         }
     }
 

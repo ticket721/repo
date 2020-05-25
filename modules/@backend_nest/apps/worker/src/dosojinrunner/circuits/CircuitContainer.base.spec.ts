@@ -1,17 +1,18 @@
 import { BN, Circuit, Gem } from 'dosojin';
 import Joi, { ObjectSchema, string } from '@hapi/joi';
 import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
-import { InstanceSignature, OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
-import { Job, JobOptions, Queue } from 'bull';
-import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
-import { GemOrdersService } from '@lib/common/gemorders/GemOrders.service';
+import { InstanceSignature, OutrospectionService }                             from '@lib/common/outrospection/Outrospection.service';
+import { Job, JobOptions, Queue }                                              from 'bull';
+import { ShutdownService }                                                     from '@lib/common/shutdown/Shutdown.service';
+import { GemOrdersService }                                                    from '@lib/common/gemorders/GemOrders.service';
 import {
     CircuitContainerBase,
     GemInitializationJob,
     GemRunJob,
-} from '@app/worker/dosojinrunner/circuits/CircuitContainer.base';
+}                                                                              from '@app/worker/dosojinrunner/circuits/CircuitContainer.base';
 import { anyFunction, anything, deepEqual, instance, mock, spy, verify, when } from 'ts-mockito';
-import { GemOrderEntity } from '@lib/common/gemorders/entities/GemOrder.entity';
+import { GemOrderEntity }                                                      from '@lib/common/gemorders/entities/GemOrder.entity';
+import { NestError }                                                           from '@lib/common/utils/NestError';
 
 class QueueMock<T = any> {
     add(name: string, data: T, opts?: JobOptions): Promise<Job<T>> {
@@ -83,7 +84,7 @@ describe('CircuitContainer Controller Base', function() {
     describe('initialize', function() {
         it('should try to initialize', async function() {
             await expect(context.circuitContainerBase.initialize(null)).rejects.toMatchObject(
-                new Error(
+                new NestError(
                     `CircuitContainerBase::initialize | token_minter has no custom initialization, each cicuit should implement its unique gem initialization`,
                 ),
             );
@@ -239,7 +240,7 @@ describe('CircuitContainer Controller Base', function() {
 
             verify(
                 context.shutdownServiceMock.shutdownWithError(
-                    deepEqual(new Error(`Unable to fetch / find gem order ${orderId}: unexpected_error`)),
+                    deepEqual(new NestError(`Unable to fetch / find gem order ${orderId}: unexpected_error`)),
                 ),
             ).called();
         });
@@ -293,7 +294,7 @@ describe('CircuitContainer Controller Base', function() {
 
             verify(
                 context.shutdownServiceMock.shutdownWithError(
-                    deepEqual(new Error(`Unable to fetch / find gem order ${orderId}: empty result`)),
+                    deepEqual(new NestError(`Unable to fetch / find gem order ${orderId}: empty result`)),
                 ),
             ).called();
         });
@@ -336,7 +337,7 @@ describe('CircuitContainer Controller Base', function() {
             });
 
             await expect(context.circuitContainerBase.runTask(job)).rejects.toMatchObject(
-                new Error(`Invalid gem for circuit token_minter set to circuit token_minter_bis`),
+                new NestError(`Invalid gem for circuit token_minter set to circuit token_minter_bis`),
             );
 
             verify(
@@ -387,7 +388,7 @@ describe('CircuitContainer Controller Base', function() {
             });
 
             await expect(context.circuitContainerBase.runTask(job)).rejects.toMatchObject(
-                new Error(`Invalid gem for circuit token_minter set to circuit token_minter`),
+                new NestError(`Invalid gem for circuit token_minter set to circuit token_minter`),
             );
 
             verify(
@@ -485,7 +486,7 @@ describe('CircuitContainer Controller Base', function() {
             });
 
             await expect(context.circuitContainerBase.runTask(job)).rejects.toMatchObject(
-                new Error(`Cannot process uninitialized gem order: ${orderId}`),
+                new NestError(`Cannot process uninitialized gem order: ${orderId}`),
             );
 
             verify(
@@ -534,7 +535,7 @@ describe('CircuitContainer Controller Base', function() {
                 response: [gemOrderEntity],
             });
 
-            when(context.circuitMock.run(anything())).thenReject(new Error('intended error'));
+            when(context.circuitMock.run(anything())).thenReject(new NestError('intended error'));
 
             when(
                 context.gemOrdersServiceMock.update(
@@ -656,7 +657,7 @@ describe('CircuitContainer Controller Base', function() {
 
             verify(
                 context.shutdownServiceMock.shutdownWithError(
-                    deepEqual(new Error(`Error while updating gem after run: unexpected_error`)),
+                    deepEqual(new NestError(`Error while updating gem after run: unexpected_error`)),
                 ),
             ).called();
         });
@@ -806,7 +807,7 @@ describe('CircuitContainer Controller Base', function() {
                 },
             } as Job;
 
-            when(spiedCircuitContainer.initialize(deepEqual(job.data.args))).thenReject(new Error('init error'));
+            when(spiedCircuitContainer.initialize(deepEqual(job.data.args))).thenReject(new NestError('init error'));
             when(
                 context.gemOrdersServiceMock.update(
                     deepEqual({
@@ -890,7 +891,7 @@ describe('CircuitContainer Controller Base', function() {
             ).called();
             verify(
                 context.shutdownServiceMock.shutdownWithError(
-                    deepEqual(new Error(`Error while initializing gem order ${orderId}: unexpected_error`)),
+                    deepEqual(new NestError(`Error while initializing gem order ${orderId}: unexpected_error`)),
                 ),
             ).called();
         });

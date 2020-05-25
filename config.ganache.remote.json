@@ -34,7 +34,7 @@
                     {
                         "name": "minter_management",
                         "type": "script",
-                        "method": "test",
+                        "method": "prepare_minters",
                         "args": {
                             "mode": "development",
                             "count": 10

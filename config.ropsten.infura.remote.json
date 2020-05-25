@@ -22,7 +22,21 @@
                 "name": "initial_deployment",
                 "serie": [
                     {
+                        "name": "minter_management",
+                        "type": "script",
+                        "method": "prepare_minters",
+                        "args": {
+                            "mode": "production",
+                            "endpoint": "https://api.rockside.io",
+                            "network_id": 3,
+                            "network_name": "ropsten",
+                            "token_var_name": "ROCKSIDE_API_TOKEN",
+                            "count": 1
+                        }
+                    },
+                    {
                         "name": "ticketforge",
+                        "type": "truffle",
                         "test": false,
                         "range": [1, 2],
                         "args": {
@@ -34,26 +48,25 @@
                     },
                     {
                         "name": "t721token",
+                        "type": "truffle",
                         "test": false,
                         "range": [1, 2]
                     },
                     {
                         "name": "t721controller",
+                        "type": "truffle",
                         "test": false,
                         "range": [1, 2]
                     },
                     {
                         "name": "metamarketplace",
+                        "type": "truffle",
                         "test": false,
                         "range": [1, 2]
                     },
                     {
                         "name": "t721admin",
-                        "test": false,
-                        "range": [1, 2]
-                    },
-                    {
-                        "name": "refract",
+                        "type": "truffle",
                         "test": false,
                         "range": [1, 2]
                     }
@@ -64,11 +77,13 @@
                 "serie": [
                     {
                         "name": "ticketforge",
+                        "type": "truffle",
                         "test": false,
                         "range": [3, 3]
                     },
                     {
                         "name": "t721token",
+                        "type": "truffle",
                         "test": false,
                         "range": [3, 3]
                     }
@@ -98,6 +113,10 @@
             },
             {
                 "name": "t721admin",
+                "upgradeable": false
+            },
+            {
+                "name": "minter_management",
                 "upgradeable": false
             }
         ],

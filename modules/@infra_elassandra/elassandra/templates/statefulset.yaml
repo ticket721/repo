@@ -9,17 +9,14 @@ metadata:
     heritage: {{ .Release.Service }}
 spec:
   serviceName: {{ template "elassandra.fullname" . }}
-  replicas: {{ .Values.config.cluster_size }}
-  podManagementPolicy: {{ .Values.podManagementPolicy }}
-  updateStrategy:
-    type: RollingUpdate
   selector:
     matchLabels:
       app: {{ template "elassandra.name" . }}
       release: {{ .Release.Name }}
-            {{- if .Values.podLabels }}
-            {{ toYaml .Values.podLabels | indent 8 }}
-        {{- end }}
+  replicas: {{ .Values.config.cluster_size }}
+  podManagementPolicy: {{ .Values.podManagementPolicy }}
+  updateStrategy:
+    type: RollingUpdate
   template:
     metadata:
       labels:
@@ -154,20 +151,14 @@ spec:
         volumeMounts:
           - name: data
             mountPath: /var/lib/cassandra
-{{- range $key, $val := .Values.inits }}
-          - name: inits-volume
-            mountPath: /docker-entrypoint-init.d/{{ $key }}
-            subPath: {{ $key }}
-{{- end }}
-          - name: cassandra-yaml
-            mountPath: /configfiles/cassandra.yaml
-            subPath: cassandra.yaml
-          - name: cassandra-env-sh
-            mountPath: /configfiles/cassandra-env.sh
-            subPath: cassandra-env.sh
 {{- range $key, $val := .Values.scripts }}
           - name: scripts-volume
             mountPath: /usr/share/cassandra/scripts/{{ $key }}
+            subPath: {{ $key }}
+{{- end }}
+{{- range $key, $val := .Values.configs }}
+          - name: configs-volume
+            mountPath: /usr/share/cassandra/conf/{{ $key }}
             subPath: {{ $key }}
 {{- end }}
 {{- if .Values.extraVolumeMounts }}
@@ -189,17 +180,11 @@ spec:
         - name: scripts-volume
           configMap:
             name: {{ template "elassandra.fullname" . }}-scripts
-{{- if .Values.inits }}
-        - name: inits-volume
+{{- if .Values.configs }}
+        - name: configs-volume
           configMap:
-            name: {{ template "elassandra.fullname" . }}-inits
+            name: {{ template "elassandra.fullname" . }}-configs
 {{- end }}
-        - name: cassandra-yaml
-          configMap:
-            name: {{ template "elassandra.fullname" . }}-cassandra-yaml
-        - name: cassandra-env-sh
-          configMap:
-            name: {{ template "elassandra.fullname" . }}-cassandra-env-sh
 {{- if not .Values.persistence.enabled }}
         - name: data
           emptyDir: {}

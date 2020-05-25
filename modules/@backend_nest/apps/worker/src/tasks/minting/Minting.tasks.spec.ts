@@ -25,15 +25,16 @@ import {
     ActionSetEntity,
     ActionStatus,
     ActionType,
-} from '@lib/common/actionsets/entities/ActionSet.entity';
-import { CheckoutResolve } from '@app/worker/actionhandlers/checkout/Checkout.input.handlers';
-import { CartAuthorizations } from '@app/worker/actionhandlers/cart/Cart.input.handlers';
+}                                        from '@lib/common/actionsets/entities/ActionSet.entity';
+import { CheckoutResolve }               from '@app/worker/actionhandlers/checkout/Checkout.input.handlers';
+import { CartAuthorizations }            from '@app/worker/actionhandlers/cart/Cart.input.handlers';
 import { AuthorizedTicketMintingFormat } from '@lib/common/utils/Cart.type';
-import { DAY } from '@lib/common/utils/time';
-import { AuthorizationEntity } from '@lib/common/authorizations/entities/Authorization.entity';
-import { MintAuthorization, toB32 } from '@common/global';
-import { TicketEntity } from '@lib/common/tickets/entities/Ticket.entity';
-import { UserDto } from '@lib/common/users/dto/User.dto';
+import { DAY }                           from '@lib/common/utils/time';
+import { AuthorizationEntity }           from '@lib/common/authorizations/entities/Authorization.entity';
+import { MintAuthorization, toB32 }      from '@common/global';
+import { TicketEntity }                  from '@lib/common/tickets/entities/Ticket.entity';
+import { UserDto }                       from '@lib/common/users/dto/User.dto';
+import { NestError }                     from '@lib/common/utils/NestError';
 
 class QueueMock<T = any> {
     add(name: string, data: T, opts?: JobOptions): Promise<Job<T>> {
@@ -1998,7 +1999,7 @@ describe('Minting Tasks', function() {
                 context.mintingTasks.ticketMintingTransactionSequenceBuilderTask({
                     data: input,
                 } as Job<TicketMintingTransactionSequenceBuilderTaskInput>),
-            ).rejects.toMatchObject(new Error(`Multiple currencies not allowed`));
+            ).rejects.toMatchObject(new NestError(`Multiple currencies not allowed`));
 
             // CHECK RETURNs
 
@@ -2268,7 +2269,7 @@ describe('Minting Tasks', function() {
                 context.mintingTasks.ticketMintingTransactionSequenceBuilderTask({
                     data: input,
                 } as Job<TicketMintingTransactionSequenceBuilderTaskInput>),
-            ).rejects.toMatchObject(new Error(`Only T721Token allowed`));
+            ).rejects.toMatchObject(new NestError(`Only T721Token allowed`));
 
             // CHECK RETURNs
 
@@ -2330,7 +2331,7 @@ describe('Minting Tasks', function() {
                 context.mintingTasks.ticketMintingTransactionSequenceBuilderTask({
                     data: input,
                 } as Job<TicketMintingTransactionSequenceBuilderTaskInput>),
-            ).rejects.toMatchObject(new Error(`Unable to recover cart for minting initialization: unexpected_error`));
+            ).rejects.toMatchObject(new NestError(`Unable to recover cart for minting initialization: unexpected_error`));
 
             // CHECK RETURNs
 
@@ -2384,7 +2385,7 @@ describe('Minting Tasks', function() {
                 context.mintingTasks.ticketMintingTransactionSequenceBuilderTask({
                     data: input,
                 } as Job<TicketMintingTransactionSequenceBuilderTaskInput>),
-            ).rejects.toMatchObject(new Error(`Unable to recover cart for minting initialization: cart not found`));
+            ).rejects.toMatchObject(new NestError(`Unable to recover cart for minting initialization: cart not found`));
 
             // CHECK RETURNs
 
@@ -2525,7 +2526,7 @@ describe('Minting Tasks', function() {
                     data: input,
                 } as Job<TicketMintingTransactionSequenceBuilderTaskInput>),
             ).rejects.toMatchObject(
-                new Error(`Unable to recover checkout for minting initialization: unexpected_error`),
+                new NestError(`Unable to recover checkout for minting initialization: unexpected_error`),
             );
 
             // CHECK RETURNs
@@ -2650,7 +2651,7 @@ describe('Minting Tasks', function() {
                     data: input,
                 } as Job<TicketMintingTransactionSequenceBuilderTaskInput>),
             ).rejects.toMatchObject(
-                new Error(`Unable to recover checkout for minting initialization: checkout not found`),
+                new NestError(`Unable to recover checkout for minting initialization: checkout not found`),
             );
 
             // CHECK RETURNs
@@ -2710,7 +2711,7 @@ describe('Minting Tasks', function() {
                     }),
                     approve: () => ({
                         encodeABI: () => {
-                            throw new Error(`reverted`);
+                            throw new NestError(`reverted`);
                         },
                     }),
                 },
@@ -2827,7 +2828,7 @@ describe('Minting Tasks', function() {
                 context.mintingTasks.ticketMintingTransactionSequenceBuilderTask({
                     data: input,
                 } as Job<TicketMintingTransactionSequenceBuilderTaskInput>),
-            ).rejects.toMatchObject(new Error(`Unable to create token approval call: reverted`));
+            ).rejects.toMatchObject(new NestError(`Unable to create token approval call: reverted`));
 
             // CHECK RETURNs
 
@@ -3104,7 +3105,7 @@ describe('Minting Tasks', function() {
                 context.mintingTasks.ticketMintingTransactionSequenceBuilderTask({
                     data: input,
                 } as Job<TicketMintingTransactionSequenceBuilderTaskInput>),
-            ).rejects.toMatchObject(new Error(`Invalid currency type on final step: set`));
+            ).rejects.toMatchObject(new NestError(`Invalid currency type on final step: set`));
 
             // CHECK RETURNs
 
@@ -3397,7 +3398,7 @@ describe('Minting Tasks', function() {
                     data: input,
                 } as Job<TicketMintingTransactionSequenceBuilderTaskInput>),
             ).rejects.toMatchObject(
-                new Error(`Cannot fetch or find authorization entity ${authorizationOneId}: unexpected_error`),
+                new NestError(`Cannot fetch or find authorization entity ${authorizationOneId}: unexpected_error`),
             );
 
             // CHECK RETURNs
@@ -3701,7 +3702,7 @@ describe('Minting Tasks', function() {
                     data: input,
                 } as Job<TicketMintingTransactionSequenceBuilderTaskInput>),
             ).rejects.toMatchObject(
-                new Error(`Cannot fetch or find authorization entity ${authorizationOneId}: authorization not found`),
+                new NestError(`Cannot fetch or find authorization entity ${authorizationOneId}: authorization not found`),
             );
 
             // CHECK RETURNs
@@ -4051,7 +4052,7 @@ describe('Minting Tasks', function() {
                 context.mintingTasks.ticketMintingTransactionSequenceBuilderTask({
                     data: input,
                 } as Job<TicketMintingTransactionSequenceBuilderTaskInput>),
-            ).rejects.toMatchObject(new Error(`Cannot proceed with authorizations with different expirations`));
+            ).rejects.toMatchObject(new NestError(`Cannot proceed with authorizations with different expirations`));
 
             // CHECK RETURNs
 
@@ -4365,7 +4366,7 @@ describe('Minting Tasks', function() {
                 context.mintingTasks.ticketMintingTransactionSequenceBuilderTask({
                     data: input,
                 } as Job<TicketMintingTransactionSequenceBuilderTaskInput>),
-            ).rejects.toMatchObject(new Error(`Current server ticketforge scope does not exist`));
+            ).rejects.toMatchObject(new NestError(`Current server ticketforge scope does not exist`));
 
             // CHECK RETURNs
 
@@ -4675,7 +4676,7 @@ describe('Minting Tasks', function() {
                 context.mintingTasks.ticketMintingTransactionSequenceBuilderTask({
                     data: input,
                 } as Job<TicketMintingTransactionSequenceBuilderTaskInput>),
-            ).rejects.toMatchObject(new Error(`Unable to recover controller id used for the group_id generation`));
+            ).rejects.toMatchObject(new NestError(`Unable to recover controller id used for the group_id generation`));
 
             // CHECK RETURNs
 
@@ -4991,7 +4992,7 @@ describe('Minting Tasks', function() {
                 context.mintingTasks.ticketMintingTransactionSequenceBuilderTask({
                     data: input,
                 } as Job<TicketMintingTransactionSequenceBuilderTaskInput>),
-            ).rejects.toMatchObject(new Error(`Unable to generate ticket before minting: unexpected_error`));
+            ).rejects.toMatchObject(new NestError(`Unable to generate ticket before minting: unexpected_error`));
 
             // CHECK RETURNs
 
@@ -5314,7 +5315,7 @@ describe('Minting Tasks', function() {
                 context.mintingTasks.ticketMintingTransactionSequenceBuilderTask({
                     data: input,
                 } as Job<TicketMintingTransactionSequenceBuilderTaskInput>),
-            ).rejects.toMatchObject(new Error(`User linked to address ${buyerAddress} not found`));
+            ).rejects.toMatchObject(new NestError(`User linked to address ${buyerAddress} not found`));
 
             // CHECK RETURNs
 
@@ -5639,7 +5640,7 @@ describe('Minting Tasks', function() {
                 context.mintingTasks.ticketMintingTransactionSequenceBuilderTask({
                     data: input,
                 } as Job<TicketMintingTransactionSequenceBuilderTaskInput>),
-            ).rejects.toMatchObject(new Error(`User linked to address ${buyerAddress} not found`));
+            ).rejects.toMatchObject(new NestError(`User linked to address ${buyerAddress} not found`));
 
             // CHECK RETURNs
 
@@ -5981,7 +5982,7 @@ describe('Minting Tasks', function() {
                 context.mintingTasks.ticketMintingTransactionSequenceBuilderTask({
                     data: input,
                 } as Job<TicketMintingTransactionSequenceBuilderTaskInput>),
-            ).rejects.toMatchObject(new Error(`Authorization update failure: unexpected_error`));
+            ).rejects.toMatchObject(new NestError(`Authorization update failure: unexpected_error`));
 
             // CHECK RETURNs
 
@@ -6351,7 +6352,7 @@ describe('Minting Tasks', function() {
                 context.mintingTasks.ticketMintingTransactionSequenceBuilderTask({
                     data: input,
                 } as Job<TicketMintingTransactionSequenceBuilderTaskInput>),
-            ).rejects.toMatchObject(new Error(`Unable to create tx sequence actionset: unexpected_error`));
+            ).rejects.toMatchObject(new NestError(`Unable to create tx sequence actionset: unexpected_error`));
 
             // CHECK RETURNs
 
@@ -6540,7 +6541,7 @@ describe('Minting Tasks', function() {
                     TicketMintingTransactionFailure
                 >),
             ).rejects.toMatchObject(
-                new Error(`Error while setting transaction hash and canceled on ticket: unexpected_error`),
+                new NestError(`Error while setting transaction hash and canceled on ticket: unexpected_error`),
             );
 
             // CHECK RETURNs
@@ -6609,7 +6610,7 @@ describe('Minting Tasks', function() {
                 context.mintingTasks.onTicketMintingTransactionFailure({ data: input } as Job<
                     TicketMintingTransactionFailure
                 >),
-            ).rejects.toMatchObject(new Error(`Error while setting authorizations to canceled: unexpected_error`));
+            ).rejects.toMatchObject(new NestError(`Error while setting authorizations to canceled: unexpected_error`));
 
             // CHECK RETURNs
 
@@ -6723,7 +6724,7 @@ describe('Minting Tasks', function() {
                 context.mintingTasks.onTicketMintingTransactionConfirmation({ data: input } as Job<
                     TicketMintingTransactionFailure
                 >),
-            ).rejects.toMatchObject(new Error(`Error while setting transaction hash on ticket: unexpected_error`));
+            ).rejects.toMatchObject(new NestError(`Error while setting transaction hash on ticket: unexpected_error`));
 
             // CHECK RETURNs
 

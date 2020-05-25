@@ -1,0 +1,287 @@
+{
+  "contractName": "IT721Token",
+  "abi": [
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_recipient",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "mintFor",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.5.15+commit.6a57276f\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"constant\":false,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_recipient\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_amount\",\"type\":\"uint256\"}],\"name\":\"mintFor\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/Users/mortimr/projects/repo/modules/@contracts_t721admin/contracts/IT721Token.sol\":\"IT721Token\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/Users/mortimr/projects/repo/modules/@contracts_t721admin/contracts/IT721Token.sol\":{\"keccak256\":\"0xb5d1dc3b3c2268575a4e6696bd5572c59f98fb7826ba3627711fac4ff6df179b\",\"urls\":[\"bzz-raw://97a1cdfb69818b1c29513fe80ef75764aa07254e394224156e6b3256b2e8c237\",\"dweb:/ipfs/QmPZCrJmYaHTZVVbhTdmKuvLz2u29yNDfHMPgNACa2eGia\"]}},\"version\":1}",
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "source": "pragma solidity 0.5.15;\n\ncontract IT721Token {\n\n    function mintFor(address _recipient, uint256 _amount) public;\n\n}\n",
+  "sourcePath": "/Users/mortimr/projects/repo/modules/@contracts_t721admin/contracts/IT721Token.sol",
+  "ast": {
+    "absolutePath": "/Users/mortimr/projects/repo/modules/@contracts_t721admin/contracts/IT721Token.sol",
+    "exportedSymbols": {
+      "IT721Token": [
+        31
+      ]
+    },
+    "id": 32,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 23,
+        "literals": [
+          "solidity",
+          "0.5",
+          ".15"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:1"
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": false,
+        "id": 31,
+        "linearizedBaseContracts": [
+          31
+        ],
+        "name": "IT721Token",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": null,
+            "documentation": null,
+            "id": 30,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "mintFor",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 28,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 25,
+                  "name": "_recipient",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 30,
+                  "src": "69:18:1",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 24,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "69:7:1",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 27,
+                  "name": "_amount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 30,
+                  "src": "89:15:1",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 26,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "89:7:1",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "68:37:1"
+            },
+            "returnParameters": {
+              "id": 29,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "112:0:1"
+            },
+            "scope": 31,
+            "src": "52:61:1",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "public"
+          }
+        ],
+        "scope": 32,
+        "src": "25:91:1"
+      }
+    ],
+    "src": "0:117:1"
+  },
+  "legacyAST": {
+    "absolutePath": "/Users/mortimr/projects/repo/modules/@contracts_t721admin/contracts/IT721Token.sol",
+    "exportedSymbols": {
+      "IT721Token": [
+        31
+      ]
+    },
+    "id": 32,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 23,
+        "literals": [
+          "solidity",
+          "0.5",
+          ".15"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:1"
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": false,
+        "id": 31,
+        "linearizedBaseContracts": [
+          31
+        ],
+        "name": "IT721Token",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": null,
+            "documentation": null,
+            "id": 30,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "mintFor",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 28,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 25,
+                  "name": "_recipient",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 30,
+                  "src": "69:18:1",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 24,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "69:7:1",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 27,
+                  "name": "_amount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 30,
+                  "src": "89:15:1",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 26,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "89:7:1",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "68:37:1"
+            },
+            "returnParameters": {
+              "id": 29,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "112:0:1"
+            },
+            "scope": 31,
+            "src": "52:61:1",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "public"
+          }
+        ],
+        "scope": 32,
+        "src": "25:91:1"
+      }
+    ],
+    "src": "0:117:1"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.5.15+commit.6a57276f.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.0.9",
+  "updatedAt": "2020-05-20T14:16:18.113Z",
+  "devdoc": {
+    "methods": {}
+  },
+  "userdoc": {
+    "methods": {}
+  }
+}

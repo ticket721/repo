@@ -1,22 +1,40 @@
 settings:
-  kubeContext: main
+  kubeContext: gke_ticket721_europe-west1-b_euw
 
 namespaces:
   staging:
 
 apps:
+  cert-manager-staging:
+    timeout: 1200
+    name: "cert-manager"
+    description: "Certificate Manager"
+    namespace: "staging"
+    enabled: true
+    group: "critical"
+    chart: "../@infra_cert-manager/cert-manager"
+    version: "0.1.0"
+    valuesFile: "../@infra_cert-manager/cert-manager/values.yaml"
+    protected: false
+    wait: true
+    priority: -4
+
   elassandra-staging:
+    timeout: 1200
     name: "elassandra"
     description: "Storage Layer"
     namespace: "staging"
     enabled: true
     group: "critical"
     chart: "../@infra_elassandra/elassandra"
-    version: "0.1.0"
+    version: "1.0.0"
     valuesFile: "../@infra_elassandra/elassandra/values.yaml"
     protected: false
     wait: true
+    priority: -3
+
   redis-staging:
+    timeout: 1200
     name: "redis"
     description: "Tasks Orchestrator & Storage Layer"
     namespace: "staging"
@@ -27,3 +45,90 @@ apps:
     valuesFile: "../@infra_redis/redis/values.yaml"
     protected: false
     wait: true
+    priority: -2
+
+  platform-staging:
+    timeout: 1200
+    name: "platform"
+    description: "Platform elements"
+    namespace: "staging"
+    enabled: true
+    group: "critical"
+    chart: "../@infra_platform/platform"
+    version: "0.1.0"
+    valuesFile: "../@infra_platform/platform/values.yaml"
+    protected: false
+    wait: true
+    priority: -1
+    setString:
+      config.ticketScope: "ticket721_0"
+      config.artifact: "live_ropsten"
+
+      config.stripe.apiKey: "${CONFIG_STRIPE_APIKEY}"
+
+      config.cassandra.host: "elassandra-cassandra"
+      config.cassandra.port: "9042"
+
+      config.redirections.emailValidationUrl: "http://localhost:3000/validate"
+      config.redirections.passwordResetUrl: "http://localhost:3000/validate/password/reset"
+
+      config.elasticsearch.host: "elassandra-elasticsearch"
+      config.elasticsearch.port: "9200"
+      config.elasticsearch.protocol: "http"
+
+      config.ethereumNode.host: "api.rockside.io"
+      config.ethereumNode.port: "443"
+      config.ethereumNode.protocol: "https"
+      config.ethereumNode.network_id: "3"
+      config.ethereumNode.path: "/ethereum/ropsten/jsonrpc"
+      config.ethereumNode.headers: '\{"apikey": "${CONFIG_ROCKSIDE_APIKEY}"\}'
+
+      config.redis.host: "redis-master"
+      config.redis.port: "6379"
+
+      config.jwt.rounds: "9"
+      config.jwt.secret: "${CONFIG_JWT_SECRET}"
+      config.jwt.expiration: "12h"
+
+      config.txs.blockThreshold: "2"
+      config.txs.blockPollingRate: "1000"
+      config.txs.targetGasPrice: "15"
+      config.txs.gasLimit: "1000000"
+
+      config.globalConfig.blockNumberFetchingRate: "1000"
+      config.globalConfig.ethereumPriceFetchingRate: "1000"
+      config.globalConfig.binanceMock: "false"
+
+      config.bull.board: "true"
+
+      config.mailjet.apiKey: "${CONFIG_MAILJET_APIKEY}"
+      config.mailjet.apiSecret: "${CONFIG_MAILJET_APISECRET}"
+
+      config.rockside.baseUrl: "https://api.rockside.io"
+      config.rockside.apiKey: "${CONFIG_ROCKSIDE_APIKEY}"
+      config.rockside.network_id: "3"
+      config.rockside.network_name: "ropsten"
+
+      server.image.repository: "ticket721/test-server"
+      server.image.tag: "latest"
+
+      worker.image.repository: "ticket721/test-worker"
+      worker.image.tag: "latest"
+
+      migrations.image.repository: "ticket721/test-migrations"
+      migrations.image.tag: "latest"
+
+  ingress-staging:
+    timeout: 1200
+    name: "ingress"
+    description: "Global Ingress"
+    namespace: "staging"
+    enabled: true
+    group: "critical"
+    chart: "../@infra_ingress/ingress"
+    version: "0.1.0"
+    valuesFile: "../@infra_ingress/ingress/values.yaml"
+    protected: false
+    wait: true
+    priority: 0
+

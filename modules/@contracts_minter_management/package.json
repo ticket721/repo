@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+      "@rocksideio/rockside-wallet-sdk": "0.3.4",
       "ethers": "4.0.45"
   }
 }

@@ -7,17 +7,18 @@ import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 import { OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
 import { EVMEventSetsService } from '@lib/common/evmeventsets/EVMEventSets.service';
 import { TicketsService } from '@lib/common/tickets/Tickets.service';
-import { CategoriesService } from '@lib/common/categories/Categories.service';
-import { GroupService } from '@lib/common/group/Group.service';
-import { AuthorizationsService } from '@lib/common/authorizations/Authorizations.service';
-import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
-import { MintT721ControllerEVMAntenna } from '@app/worker/evmantenna/events/t721controller/Mint.evmantenna';
-import { deepEqual, instance, mock, verify, when } from 'ts-mockito';
-import { TicketEntity } from '@lib/common/tickets/entities/Ticket.entity';
-import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
-import { AuthorizationEntity } from '@lib/common/authorizations/entities/Authorization.entity';
-import { Test } from '@nestjs/testing';
+import { CategoriesService }                              from '@lib/common/categories/Categories.service';
+import { GroupService }                                   from '@lib/common/group/Group.service';
+import { AuthorizationsService }                          from '@lib/common/authorizations/Authorizations.service';
+import { WinstonLoggerService }                           from '@lib/common/logger/WinstonLogger.service';
+import { MintT721ControllerEVMAntenna }                   from '@app/worker/evmantenna/events/t721controller/Mint.evmantenna';
+import { deepEqual, instance, mock, verify, when }        from 'ts-mockito';
+import { TicketEntity }                                   from '@lib/common/tickets/entities/Ticket.entity';
+import { CategoryEntity }                                 from '@lib/common/categories/entities/Category.entity';
+import { AuthorizationEntity }                            from '@lib/common/authorizations/entities/Authorization.entity';
+import { Test }                                           from '@nestjs/testing';
 import { decimalToHex, encode, MintAuthorization, toB32 } from '@common/global';
+import { NestError }                                      from '@lib/common/utils/NestError';
 
 class QueueMock<T = any> {
     add(name: string, data: T, opts?: JobOptions): Promise<Job<T>> {
@@ -469,7 +470,7 @@ describe('Mint EVMAntenna', function() {
             // TRIGGER
 
             await expect(context.mintEVMAntenna.convert(event, () => {})).rejects.toMatchObject(
-                new Error(`Error while fetching tickets: unexpected_error`),
+                new NestError(`Error while fetching tickets: unexpected_error`),
             );
 
             // CHECK RETURNs
@@ -544,7 +545,7 @@ describe('Mint EVMAntenna', function() {
             // TRIGGER
 
             await expect(context.mintEVMAntenna.convert(event, () => {})).rejects.toMatchObject(
-                new Error(
+                new NestError(
                     `Invalid group id received from event: ticket got ${groupId} and event gives 0xinvalidgroupid`,
                 ),
             );
@@ -631,7 +632,7 @@ describe('Mint EVMAntenna', function() {
             // TRIGGER
 
             await expect(context.mintEVMAntenna.convert(event, () => {})).rejects.toMatchObject(
-                new Error(`Cannot find category linked to existing ticket: unexpected_error`),
+                new NestError(`Cannot find category linked to existing ticket: unexpected_error`),
             );
 
             // CHECK RETURNs
@@ -723,7 +724,7 @@ describe('Mint EVMAntenna', function() {
             // TRIGGER
 
             await expect(context.mintEVMAntenna.convert(event, () => {})).rejects.toMatchObject(
-                new Error(`Cannot find category linked to existing ticket: category not found`),
+                new NestError(`Cannot find category linked to existing ticket: category not found`),
             );
 
             // CHECK RETURNs
@@ -815,7 +816,7 @@ describe('Mint EVMAntenna', function() {
             // TRIGGER
 
             await expect(context.mintEVMAntenna.convert(event, () => {})).rejects.toMatchObject(
-                new Error(
+                new NestError(
                     `Invalid category name received from event: ticket got ${toB32(
                         categoryName,
                     ).toLowerCase()} and event gives ${toB32('not the same').toLowerCase()}`,
@@ -912,7 +913,7 @@ describe('Mint EVMAntenna', function() {
             // TRIGGER
 
             await expect(context.mintEVMAntenna.convert(event, () => {})).rejects.toMatchObject(
-                new Error(
+                new NestError(
                     `Invalid owner address received from event: ticket got ${ownerAddress} and event gives ${invalidOwnerAddress}`,
                 ),
             );
@@ -1015,7 +1016,7 @@ describe('Mint EVMAntenna', function() {
             // TRIGGER
 
             await expect(context.mintEVMAntenna.convert(event, () => {})).rejects.toMatchObject(
-                new Error(`Unable to retrieve group controller`),
+                new NestError(`Unable to retrieve group controller`),
             );
 
             // CHECK RETURNs
@@ -1135,7 +1136,7 @@ describe('Mint EVMAntenna', function() {
             // TRIGGER
 
             await expect(context.mintEVMAntenna.convert(event, () => {})).rejects.toMatchObject(
-                new Error(`Unable to retrieve linked authorization: unexpected_error`),
+                new NestError(`Unable to retrieve linked authorization: unexpected_error`),
             );
 
             // CHECK RETURNs
@@ -1265,7 +1266,7 @@ describe('Mint EVMAntenna', function() {
             // TRIGGER
 
             await expect(context.mintEVMAntenna.convert(event, () => {})).rejects.toMatchObject(
-                new Error(`Unable to retrieve linked authorization: authorization not found`),
+                new NestError(`Unable to retrieve linked authorization: authorization not found`),
             );
 
             // CHECK RETURNs
@@ -1396,7 +1397,7 @@ describe('Mint EVMAntenna', function() {
             // TRIGGER
 
             await expect(context.mintEVMAntenna.convert(event, () => {})).rejects.toMatchObject(
-                new Error(
+                new NestError(
                     `Invalid broadcasted authorization code: got ${invalidCode.toLowerCase()} but was expecting ${code.toLowerCase()}`,
                 ),
             );
@@ -1598,7 +1599,7 @@ describe('Mint EVMAntenna', function() {
             // TRIGGER
 
             await expect(context.mintEVMAntenna.convert(event, () => {})).rejects.toMatchObject(
-                new Error(`Cannot create dry update payloads`),
+                new NestError(`Cannot create dry update payloads`),
             );
 
             // CHECK RETURNs

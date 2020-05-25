@@ -1,13 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import pack from '../../../package.json';
-import branch from 'git-branch';
 import { APIInfos } from './Server.types';
 import { ConfigService } from '@lib/common/config/Config.service';
-
-/**
- * Stores current branch to prevent spam requests
- */
-const currentBranch = branch.sync();
 
 /**
  * Utility to recover the APIInfos
@@ -27,7 +21,7 @@ export class ServerService {
         return {
             version: pack.version,
             name: 't721api',
-            env: `${this.configService.get('NODE_ENV')}@${currentBranch}`,
+            env: `${this.configService.get('NODE_ENV')}@${process.env['TAG'] || 'bare'}`,
         };
     }
 }

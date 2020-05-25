@@ -1,12 +1,13 @@
-import { GlobalConfigScheduler } from '@app/worker/schedulers/globalconfig/GlobalConfig.scheduler';
-import { Web3Service } from '@lib/common/web3/Web3.service';
+import { GlobalConfigScheduler }                    from '@app/worker/schedulers/globalconfig/GlobalConfig.scheduler';
+import { Web3Service }                              from '@lib/common/web3/Web3.service';
 import { GlobalConfigOptions, GlobalConfigService } from '@lib/common/globalconfig/GlobalConfig.service';
-import { Schedule } from 'nest-schedule';
-import { BinanceService } from '@lib/common/binance/Binance.service';
-import { deepEqual, instance, mock, verify, when } from 'ts-mockito';
-import { Test, TestingModule } from '@nestjs/testing';
-import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
-import { OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
+import { Schedule }                                 from 'nest-schedule';
+import { BinanceService }                           from '@lib/common/binance/Binance.service';
+import { deepEqual, instance, mock, verify, when }  from 'ts-mockito';
+import { Test, TestingModule }                      from '@nestjs/testing';
+import { ShutdownService }                          from '@lib/common/shutdown/Shutdown.service';
+import { OutrospectionService }                     from '@lib/common/outrospection/Outrospection.service';
+import { NestError }                                from '@lib/common/utils/NestError';
 
 describe('GlobalConfig Scheduler', function() {
     const context: {
@@ -280,12 +281,12 @@ describe('GlobalConfig Scheduler', function() {
 
             when(
                 context.shutdownServiceMock.shutdownWithError(
-                    deepEqual(new Error('GlobalConfigScheduler::global_document_fetch_error')),
+                    deepEqual(new NestError('GlobalConfigScheduler::global_document_fetch_error')),
                 ),
             ).thenReturn();
 
             await expect(context.globalConfigScheduler.fetchBlockNumber()).rejects.toEqual(
-                new Error('GlobalConfigScheduler::global_document_fetch_error'),
+                new NestError('GlobalConfigScheduler::global_document_fetch_error'),
             );
 
             verify(
@@ -298,7 +299,7 @@ describe('GlobalConfig Scheduler', function() {
 
             verify(
                 context.shutdownServiceMock.shutdownWithError(
-                    deepEqual(new Error('GlobalConfigScheduler::global_document_fetch_error')),
+                    deepEqual(new NestError('GlobalConfigScheduler::global_document_fetch_error')),
                 ),
             ).called();
         });
@@ -317,12 +318,12 @@ describe('GlobalConfig Scheduler', function() {
 
             when(
                 context.shutdownServiceMock.shutdownWithError(
-                    deepEqual(new Error('GlobalConfigScheduler::global_document_fetch_error')),
+                    deepEqual(new NestError('GlobalConfigScheduler::global_document_fetch_error')),
                 ),
             ).thenReturn();
 
             await expect(context.globalConfigScheduler.fetchBlockNumber()).rejects.toEqual(
-                new Error('GlobalConfigScheduler::global_document_fetch_error'),
+                new NestError('GlobalConfigScheduler::global_document_fetch_error'),
             );
 
             verify(
@@ -335,7 +336,7 @@ describe('GlobalConfig Scheduler', function() {
 
             verify(
                 context.shutdownServiceMock.shutdownWithError(
-                    deepEqual(new Error('GlobalConfigScheduler::global_document_fetch_error')),
+                    deepEqual(new NestError('GlobalConfigScheduler::global_document_fetch_error')),
                 ),
             ).called();
         });

@@ -1,0 +1,31 @@
+# Default values for platform.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+migrations:
+  image:
+    repository: migrations
+    pullPolicy: IfNotPresent
+    tag: "DEVELOPMENT"
+
+server:
+  image:
+    repository: server
+    pullPolicy: IfNotPresent
+    tag: "DEVELOPMENT"
+
+  service:
+    type: LoadBalancer
+    port: 80
+
+worker:
+  image:
+    repository: worker
+    pullPolicy: IfNotPresent
+    tag: "DEVELOPMENT"
+
+  service:
+    type: ClusterIP
+    port: 80
+
+

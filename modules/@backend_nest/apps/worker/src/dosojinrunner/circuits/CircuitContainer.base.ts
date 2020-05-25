@@ -1,14 +1,15 @@
-import { Circuit, Gem, RawGem } from 'dosojin';
-import { ObjectSchema } from '@hapi/joi';
-import { OnModuleInit } from '@nestjs/common';
-import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
-import { DosojinRunnerScheduler } from '@app/worker/dosojinrunner/DosojinRunner.scheduler';
-import { Job, Queue } from 'bull';
+import { Circuit, Gem, RawGem }                    from 'dosojin';
+import { ObjectSchema }                            from '@hapi/joi';
+import { OnModuleInit }                            from '@nestjs/common';
+import { WinstonLoggerService }                    from '@lib/common/logger/WinstonLogger.service';
+import { DosojinRunnerScheduler }                  from '@app/worker/dosojinrunner/DosojinRunner.scheduler';
+import { Job, Queue }                              from 'bull';
 import { InstanceSignature, OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
-import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
-import { GemOrdersService } from '@lib/common/gemorders/GemOrders.service';
-import { GemOrderEntity, RawGemEntity } from '@lib/common/gemorders/entities/GemOrder.entity';
-import { leftPad } from '@common/global';
+import { ShutdownService }                         from '@lib/common/shutdown/Shutdown.service';
+import { GemOrdersService }                        from '@lib/common/gemorders/GemOrders.service';
+import { GemOrderEntity, RawGemEntity }            from '@lib/common/gemorders/entities/GemOrder.entity';
+import { leftPad }                                 from '@common/global';
+import { NestError }                               from '@lib/common/utils/NestError';
 
 /**
  * Job Data Format for the Gem Order initializations
@@ -73,7 +74,7 @@ export class CircuitContainerBase<InitialArguments = any> implements OnModuleIni
      * @param args
      */
     public async initialize(args: InitialArguments): Promise<Gem> {
-        throw new Error(
+        throw new NestError(
             `CircuitContainerBase::initialize | ${this.circuit.name} has no custom initialization, each cicuit should implement its unique gem initialization`,
         );
     }
@@ -108,20 +109,20 @@ export class CircuitContainerBase<InitialArguments = any> implements OnModuleIni
 
         if (orderRes.error || orderRes.response.length === 0) {
             return this.shutdownService.shutdownWithError(
-                new Error(`Unable to fetch / find gem order ${job.data.orderId}: ${orderRes.error || 'empty result'}`),
+                new NestError(`Unable to fetch / find gem order ${job.data.orderId}: ${orderRes.error || 'empty result'}`),
             );
         }
 
         const gemOrder: GemOrderEntity = orderRes.response[0];
 
         if (gemOrder.circuit_name !== this.circuit.name || gemOrder.initialized === false) {
-            throw new Error(`Invalid gem for circuit ${this.circuit.name} set to circuit ${gemOrder.circuit_name}`);
+            throw new NestError(`Invalid gem for circuit ${this.circuit.name} set to circuit ${gemOrder.circuit_name}`);
         }
 
         const rawGemEntity: RawGemEntity = gemOrder.gem;
 
         if (!rawGemEntity) {
-            throw new Error(`Cannot process uninitialized gem order: ${job.data.orderId}`);
+            throw new NestError(`Cannot process uninitialized gem order: ${job.data.orderId}`);
         }
 
         if (rawGemEntity.gem_status !== 'Running') {
@@ -155,7 +156,7 @@ export class CircuitContainerBase<InitialArguments = any> implements OnModuleIni
 
         if (updateRes.error) {
             return this.shutdownService.shutdownWithError(
-                new Error(`Error while updating gem after run: ${updateRes.error}`),
+                new NestError(`Error while updating gem after run: ${updateRes.error}`),
             );
         }
 
@@ -226,7 +227,7 @@ export class CircuitContainerBase<InitialArguments = any> implements OnModuleIni
 
         if (updateRes.error) {
             return this.shutdownService.shutdownWithError(
-                new Error(`Error while initializing gem order ${job.data.orderId}: ${updateRes.error}`),
+                new NestError(`Error while initializing gem order ${job.data.orderId}: ${updateRes.error}`),
             );
         }
 

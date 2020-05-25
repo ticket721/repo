@@ -1,8 +1,9 @@
-import { RocksideService } from '@lib/common/rockside/Rockside.service';
-import { RocksideApi } from '@rocksideio/rockside-wallet-sdk/lib/api';
+import { RocksideService }                         from '@lib/common/rockside/Rockside.service';
+import { RocksideApi }                             from '@rocksideio/rockside-wallet-sdk/lib/api';
 import { deepEqual, instance, mock, verify, when } from 'ts-mockito';
-import { Test } from '@nestjs/testing';
-import { keccak256FromBuffer } from '@common/global';
+import { Test }                                    from '@nestjs/testing';
+import { keccak256FromBuffer }                     from '@common/global';
+import { NestError }                               from '@lib/common/utils/NestError';
 
 describe('Rockside Service', function() {
     const context: {
@@ -56,7 +57,7 @@ describe('Rockside Service', function() {
             // DECLARE
 
             // MOCK
-            when(context.rocksideApiMock.createEOA()).thenThrow(new Error('an error occured'));
+            when(context.rocksideApiMock.createEOA()).thenThrow(new NestError('an error occured'));
 
             // TRIGGER
             const res = await context.rocksideService.createEOA();
@@ -109,12 +110,12 @@ describe('Rockside Service', function() {
 
             // MOCK
             when(context.rocksideApiMock.signMessageWithEOA(address, hashedPayload)).thenThrow(
-                new Error('an error occured'),
+                new NestError('an error occured'),
             );
 
             // TRIGGER
             const signer = await context.rocksideService.getSigner(address);
-            await expect(signer(encodedPayload)).rejects.toMatchObject(new Error('an error occured'));
+            await expect(signer(encodedPayload)).rejects.toMatchObject(new NestError('an error occured'));
 
             // CHECK RETURNs
 
@@ -153,7 +154,7 @@ describe('Rockside Service', function() {
             // DECLARE
 
             // MOCK
-            when(context.rocksideApiMock.createIdentity()).thenThrow(new Error('an error occured'));
+            when(context.rocksideApiMock.createIdentity()).thenThrow(new NestError('an error occured'));
 
             // TRIGGER
             const res = await context.rocksideService.createIdentity();
@@ -234,7 +235,7 @@ describe('Rockside Service', function() {
                         value,
                     }),
                 ),
-            ).thenThrow(new Error('an error occured'));
+            ).thenThrow(new NestError('an error occured'));
 
             // TRIGGER
             const res = await context.rocksideService.sendTransaction({

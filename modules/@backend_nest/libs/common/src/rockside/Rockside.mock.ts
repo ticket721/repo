@@ -15,13 +15,14 @@ import {
     Wallet,
     decimalToHex,
     encode,
-} from '@common/global';
-import { FSService } from '@lib/common/fs/FS.service';
-import { Web3Service } from '@lib/common/web3/Web3.service';
-import { Web3Provider } from 'ethers/providers';
-import { utils } from 'ethers';
-import BN from 'bn.js';
+}                           from '@common/global';
+import { FSService }        from '@lib/common/fs/FS.service';
+import { Web3Service }      from '@lib/common/web3/Web3.service';
+import { Web3Provider }     from 'ethers/providers';
+import { utils }            from 'ethers';
+import BN                   from 'bn.js';
 import { ContractArtifact } from '@lib/common/contracts/Contracts.service';
+import { NestError }        from '@lib/common/utils/NestError';
 
 /**
  * Mock Options for the Rockside api mock
@@ -132,7 +133,7 @@ export class RocksideMock
      * Mock method
      */
     async signTransactionWithEOA(eoa: string, opts: any): Promise<{ signed_transaction: string }> {
-        throw new Error(`Un-mocked method`);
+        throw new NestError(`Un-mocked method`);
     }
 
     /**
@@ -264,7 +265,7 @@ export class RocksideMock
      * Mock method
      */
     async createEncryptedAccount(account: EncryptedAccount) {
-        throw new Error(`Un-mocked method`);
+        throw new NestError(`Un-mocked method`);
     }
 
     /**
@@ -274,55 +275,55 @@ export class RocksideMock
         username: string,
         passwordHash: ArrayBuffer,
     ): Promise<{ data: ArrayBuffer; iv: ArrayBuffer }> {
-        throw new Error(`Un-mocked method`);
+        throw new NestError(`Un-mocked method`);
     }
 
     /**
      * Mock method
      */
     async createEncryptedWallet(account: EncryptedAccount, wallet: EncryptedWallet) {
-        throw new Error(`Un-mocked method`);
+        throw new NestError(`Un-mocked method`);
     }
 
     /**
      * Mock method
      */
     async getEncryptedWallets(username: string, passwordHash: ArrayBuffer): Promise<Array<EncryptedWallet>> {
-        throw new Error(`Un-mocked method`);
+        throw new NestError(`Un-mocked method`);
     }
 
     /**
      * Mock method
      */
     async deployIdentityContract(address: string): Promise<{ address: string; txHash: string }> {
-        throw new Error(`Un-mocked method`);
+        throw new NestError(`Un-mocked method`);
     }
 
     /**
      * Mock method
      */
     async getRelayNonce(identity: string, account: string, channel: number): Promise<number> {
-        throw new Error(`Un-mocked method`);
+        throw new NestError(`Un-mocked method`);
     }
 
     /**
      * Mock method
      */
     async relayTransaction(identity: string, tx: ExecuteTransaction): Promise<string> {
-        throw new Error(`Un-mocked method`);
+        throw new NestError(`Un-mocked method`);
     }
 
     /**
      * Mock method
      */
     getRpcUrl(): string {
-        throw new Error(`Un-mocked method`);
+        throw new NestError(`Un-mocked method`);
     }
 
     /**
      * Mock method
      */
     getToken(): string {
-        throw new Error(`Un-mocked method`);
+        throw new NestError(`Un-mocked method`);
     }
 }

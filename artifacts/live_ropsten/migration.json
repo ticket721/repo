@@ -1,0 +1,74 @@
+[
+    {
+        "name": "initial_deployment",
+        "status": true,
+        "history": [
+            {
+                "name": "ticketforge",
+                "args": {
+                    "ERC721": {
+                        "name": "Ticket Forge",
+                        "symbol": "TKT"
+                    }
+                },
+                "migration_number": 1
+            },
+            {
+                "name": "ticketforge",
+                "args": {
+                    "ERC721": {
+                        "name": "Ticket Forge",
+                        "symbol": "TKT"
+                    }
+                },
+                "migration_number": 2
+            },
+            {
+                "name": "t721token",
+                "migration_number": 1
+            },
+            {
+                "name": "t721token",
+                "migration_number": 2
+            },
+            {
+                "name": "t721controller",
+                "migration_number": 1
+            },
+            {
+                "name": "t721controller",
+                "migration_number": 2
+            },
+            {
+                "name": "metamarketplace",
+                "migration_number": 1
+            },
+            {
+                "name": "metamarketplace",
+                "migration_number": 2
+            },
+            {
+                "name": "t721admin",
+                "migration_number": 1
+            },
+            {
+                "name": "t721admin",
+                "migration_number": 2
+            }
+        ]
+    },
+    {
+        "name": "configuration",
+        "status": true,
+        "history": [
+            {
+                "name": "ticketforge",
+                "migration_number": 3
+            },
+            {
+                "name": "t721token",
+                "migration_number": 3
+            }
+        ]
+    }
+]

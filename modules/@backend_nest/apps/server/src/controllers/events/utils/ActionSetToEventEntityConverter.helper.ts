@@ -1,10 +1,11 @@
-import { ActionSet } from '@lib/common/actionsets/helper/ActionSet.class';
-import { DateEntity } from '@lib/common/dates/entities/Date.entity';
-import { EventEntity } from '@lib/common/events/entities/Event.entity';
-import { CurrenciesService } from '@lib/common/currencies/Currencies.service';
-import { types } from '@iaminfinity/express-cassandra';
-import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
+import { ActionSet }            from '@lib/common/actionsets/helper/ActionSet.class';
+import { DateEntity }           from '@lib/common/dates/entities/Date.entity';
+import { EventEntity }          from '@lib/common/events/entities/Event.entity';
+import { CurrenciesService }    from '@lib/common/currencies/Currencies.service';
+import { types }                from '@iaminfinity/express-cassandra';
+import { CategoryEntity }       from '@lib/common/categories/entities/Category.entity';
 import { EventCreationActions } from '@lib/common/events/acset_builders/EventCreate.acsetbuilder.helper';
+import { NestError }            from '@lib/common/utils/NestError';
 
 /**
  * Convert categories to saveable format
@@ -30,7 +31,7 @@ async function convertCategories(
         const pricesResolverRes = await currenciesService.resolveInputPrices(category.currencies);
 
         if (pricesResolverRes.error) {
-            throw new Error(`Invalid input prices`);
+            throw new NestError(`Invalid input prices`);
         }
 
         catret.push({

@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "platform.fullname" . }}--worker--svc
+  labels:
+    name: {{ include "platform.fullname" . }}--worker--svc
+    chart: {{ .Chart.Name }}
+spec:
+  type: {{ .Values.worker.service.type }}
+  ports:
+    - port: {{ .Values.worker.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    name: {{ include "platform.fullname" . }}--worker
+    chart: {{ .Chart.Name }}

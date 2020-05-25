@@ -1,0 +1,4303 @@
+{
+  "contractName": "T721AdminDomain",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_domain_name",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_version",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_chainId",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.5.15+commit.6a57276f\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"string\",\"name\":\"_domain_name\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"_version\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"_chainId\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/Users/mortimr/projects/repo/modules/@contracts_t721admin/contracts/T721AdminDomain.sol\":\"T721AdminDomain\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/Users/mortimr/projects/repo/modules/@contracts_t721admin/contracts/SigUtil_v0.sol\":{\"keccak256\":\"0x0ab32d17c17167024f9c04d6574ba8a7c4abd46627bbaf71f785f2072a0023c6\",\"urls\":[\"bzz-raw://28c355a41731846884daef996192c35872f1121cc544d2c2f6ca529668842f42\",\"dweb:/ipfs/QmfXWWD6mCxbFkcPE9tKw9fbjcbjQkmsf1fswJ3WZeiPi3\"]},\"/Users/mortimr/projects/repo/modules/@contracts_t721admin/contracts/T721AdminDomain.sol\":{\"keccak256\":\"0x9a61f4698ea33552cd6dd37be215ba517c1787ae456a57537d92156adfcc5ab0\",\"urls\":[\"bzz-raw://2d7dc25abb037306e94368579439a9a7650bb7b050f448c100836ac0616ed025\",\"dweb:/ipfs/QmZUa7RUpQRrUNjDceD1YXbrLbgytFDQNNnUhFVDhKLm9b\"]}},\"version\":1}",
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "source": "pragma solidity 0.5.15;\nimport \"./SigUtil_v0.sol\";\n\ncontract T721AdminDomain {\n\n    struct EIP712Domain {\n        string  name;\n        string  version;\n        uint256 chainId;\n        address verifyingContract;\n    }\n\n    bytes32 constant EIP712DOMAIN_TYPEHASH = keccak256(\n        \"EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)\"\n    );\n\n    function hash(EIP712Domain memory eip712Domain) internal pure returns (bytes32) {\n        return keccak256(abi.encode(\n                EIP712DOMAIN_TYPEHASH,\n                keccak256(bytes(eip712Domain.name)),\n                keccak256(bytes(eip712Domain.version)),\n                eip712Domain.chainId,\n                eip712Domain.verifyingContract\n            ));\n    }\n\n    bytes32 DOMAIN_SEPARATOR;\n\n    struct Authorization {\n        address emitter;\n        address grantee;\n        bytes32 hash;\n    }\n\n    bytes32 constant AUTHORIZATION_TYPEHASH = keccak256(\n        \"Authorization(address emitter,address grantee,bytes32 hash)\"\n    );\n\n    function hash(Authorization memory auth) internal pure returns (bytes32) {\n        return keccak256(abi.encode(\n                AUTHORIZATION_TYPEHASH,\n                auth.emitter,\n                auth.grantee,\n                auth.hash\n            ));\n    }\n\n    function verify(Authorization memory auth, bytes memory raw_signature) internal view returns (address) {\n        SigUtil_v0.Signature memory signature = SigUtil_v0._splitSignature(raw_signature);\n        bytes32 digest = keccak256(abi.encodePacked(\n                \"\\x19\\x01\",\n                DOMAIN_SEPARATOR,\n                hash(auth)\n            ));\n\n        return ecrecover(digest, signature.v, signature.r, signature.s);\n    }\n\n    constructor(string memory _domain_name, string memory _version, uint256 _chainId) internal {\n        DOMAIN_SEPARATOR = hash(EIP712Domain({\n            name: _domain_name,\n            version: _version,\n            chainId: _chainId,\n            verifyingContract: address(this)\n            }));\n    }\n\n\n}\n",
+  "sourcePath": "/Users/mortimr/projects/repo/modules/@contracts_t721admin/contracts/T721AdminDomain.sol",
+  "ast": {
+    "absolutePath": "/Users/mortimr/projects/repo/modules/@contracts_t721admin/contracts/T721AdminDomain.sol",
+    "exportedSymbols": {
+      "T721AdminDomain": [
+        997
+      ]
+    },
+    "id": 998,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 850,
+        "literals": [
+          "solidity",
+          "0.5",
+          ".15"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:6"
+      },
+      {
+        "absolutePath": "/Users/mortimr/projects/repo/modules/@contracts_t721admin/contracts/SigUtil_v0.sol",
+        "file": "./SigUtil_v0.sol",
+        "id": 851,
+        "nodeType": "ImportDirective",
+        "scope": 998,
+        "sourceUnit": 206,
+        "src": "24:26:6",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 997,
+        "linearizedBaseContracts": [
+          997
+        ],
+        "name": "T721AdminDomain",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "canonicalName": "T721AdminDomain.EIP712Domain",
+            "id": 860,
+            "members": [
+              {
+                "constant": false,
+                "id": 853,
+                "name": "name",
+                "nodeType": "VariableDeclaration",
+                "scope": 860,
+                "src": "114:12:6",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_string_storage_ptr",
+                  "typeString": "string"
+                },
+                "typeName": {
+                  "id": 852,
+                  "name": "string",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "114:6:6",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_storage_ptr",
+                    "typeString": "string"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 855,
+                "name": "version",
+                "nodeType": "VariableDeclaration",
+                "scope": 860,
+                "src": "136:15:6",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_string_storage_ptr",
+                  "typeString": "string"
+                },
+                "typeName": {
+                  "id": 854,
+                  "name": "string",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "136:6:6",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_storage_ptr",
+                    "typeString": "string"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 857,
+                "name": "chainId",
+                "nodeType": "VariableDeclaration",
+                "scope": 860,
+                "src": "161:15:6",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                },
+                "typeName": {
+                  "id": 856,
+                  "name": "uint256",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "161:7:6",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 859,
+                "name": "verifyingContract",
+                "nodeType": "VariableDeclaration",
+                "scope": 860,
+                "src": "186:25:6",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                },
+                "typeName": {
+                  "id": 858,
+                  "name": "address",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "186:7:6",
+                  "stateMutability": "nonpayable",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              }
+            ],
+            "name": "EIP712Domain",
+            "nodeType": "StructDefinition",
+            "scope": 997,
+            "src": "84:134:6",
+            "visibility": "public"
+          },
+          {
+            "constant": true,
+            "id": 865,
+            "name": "EIP712DOMAIN_TYPEHASH",
+            "nodeType": "VariableDeclaration",
+            "scope": 997,
+            "src": "224:150:6",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_bytes32",
+              "typeString": "bytes32"
+            },
+            "typeName": {
+              "id": 861,
+              "name": "bytes32",
+              "nodeType": "ElementaryTypeName",
+              "src": "224:7:6",
+              "typeDescriptions": {
+                "typeIdentifier": "t_bytes32",
+                "typeString": "bytes32"
+              }
+            },
+            "value": {
+              "argumentTypes": null,
+              "arguments": [
+                {
+                  "argumentTypes": null,
+                  "hexValue": "454950373132446f6d61696e28737472696e67206e616d652c737472696e672076657273696f6e2c75696e7432353620636861696e49642c6164647265737320766572696679696e67436f6e747261637429",
+                  "id": 863,
+                  "isConstant": false,
+                  "isLValue": false,
+                  "isPure": true,
+                  "kind": "string",
+                  "lValueRequested": false,
+                  "nodeType": "Literal",
+                  "src": "284:84:6",
+                  "subdenomination": null,
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_stringliteral_8b73c3c69bb8fe3d512ecc4cf759cc79239f7b179b0ffacaa9a75d522b39400f",
+                    "typeString": "literal_string \"EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)\""
+                  },
+                  "value": "EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"
+                }
+              ],
+              "expression": {
+                "argumentTypes": [
+                  {
+                    "typeIdentifier": "t_stringliteral_8b73c3c69bb8fe3d512ecc4cf759cc79239f7b179b0ffacaa9a75d522b39400f",
+                    "typeString": "literal_string \"EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)\""
+                  }
+                ],
+                "id": 862,
+                "name": "keccak256",
+                "nodeType": "Identifier",
+                "overloadedDeclarations": [],
+                "referencedDeclaration": 1729,
+                "src": "265:9:6",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_function_keccak256_pure$_t_bytes_memory_ptr_$returns$_t_bytes32_$",
+                  "typeString": "function (bytes memory) pure returns (bytes32)"
+                }
+              },
+              "id": 864,
+              "isConstant": false,
+              "isLValue": false,
+              "isPure": true,
+              "kind": "functionCall",
+              "lValueRequested": false,
+              "names": [],
+              "nodeType": "FunctionCall",
+              "src": "265:109:6",
+              "typeDescriptions": {
+                "typeIdentifier": "t_bytes32",
+                "typeString": "bytes32"
+              }
+            },
+            "visibility": "internal"
+          },
+          {
+            "body": {
+              "id": 895,
+              "nodeType": "Block",
+              "src": "461:293:6",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "arguments": [
+                      {
+                        "argumentTypes": null,
+                        "arguments": [
+                          {
+                            "argumentTypes": null,
+                            "id": 875,
+                            "name": "EIP712DOMAIN_TYPEHASH",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 865,
+                            "src": "516:21:6",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_bytes32",
+                              "typeString": "bytes32"
+                            }
+                          },
+                          {
+                            "argumentTypes": null,
+                            "arguments": [
+                              {
+                                "argumentTypes": null,
+                                "arguments": [
+                                  {
+                                    "argumentTypes": null,
+                                    "expression": {
+                                      "argumentTypes": null,
+                                      "id": 878,
+                                      "name": "eip712Domain",
+                                      "nodeType": "Identifier",
+                                      "overloadedDeclarations": [],
+                                      "referencedDeclaration": 867,
+                                      "src": "571:12:6",
+                                      "typeDescriptions": {
+                                        "typeIdentifier": "t_struct$_EIP712Domain_$860_memory_ptr",
+                                        "typeString": "struct T721AdminDomain.EIP712Domain memory"
+                                      }
+                                    },
+                                    "id": 879,
+                                    "isConstant": false,
+                                    "isLValue": true,
+                                    "isPure": false,
+                                    "lValueRequested": false,
+                                    "memberName": "name",
+                                    "nodeType": "MemberAccess",
+                                    "referencedDeclaration": 853,
+                                    "src": "571:17:6",
+                                    "typeDescriptions": {
+                                      "typeIdentifier": "t_string_memory",
+                                      "typeString": "string memory"
+                                    }
+                                  }
+                                ],
+                                "expression": {
+                                  "argumentTypes": [
+                                    {
+                                      "typeIdentifier": "t_string_memory",
+                                      "typeString": "string memory"
+                                    }
+                                  ],
+                                  "id": 877,
+                                  "isConstant": false,
+                                  "isLValue": false,
+                                  "isPure": true,
+                                  "lValueRequested": false,
+                                  "nodeType": "ElementaryTypeNameExpression",
+                                  "src": "565:5:6",
+                                  "typeDescriptions": {
+                                    "typeIdentifier": "t_type$_t_bytes_storage_ptr_$",
+                                    "typeString": "type(bytes storage pointer)"
+                                  },
+                                  "typeName": "bytes"
+                                },
+                                "id": 880,
+                                "isConstant": false,
+                                "isLValue": false,
+                                "isPure": false,
+                                "kind": "typeConversion",
+                                "lValueRequested": false,
+                                "names": [],
+                                "nodeType": "FunctionCall",
+                                "src": "565:24:6",
+                                "typeDescriptions": {
+                                  "typeIdentifier": "t_bytes_memory_ptr",
+                                  "typeString": "bytes memory"
+                                }
+                              }
+                            ],
+                            "expression": {
+                              "argumentTypes": [
+                                {
+                                  "typeIdentifier": "t_bytes_memory_ptr",
+                                  "typeString": "bytes memory"
+                                }
+                              ],
+                              "id": 876,
+                              "name": "keccak256",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": 1729,
+                              "src": "555:9:6",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_function_keccak256_pure$_t_bytes_memory_ptr_$returns$_t_bytes32_$",
+                                "typeString": "function (bytes memory) pure returns (bytes32)"
+                              }
+                            },
+                            "id": 881,
+                            "isConstant": false,
+                            "isLValue": false,
+                            "isPure": false,
+                            "kind": "functionCall",
+                            "lValueRequested": false,
+                            "names": [],
+                            "nodeType": "FunctionCall",
+                            "src": "555:35:6",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_bytes32",
+                              "typeString": "bytes32"
+                            }
+                          },
+                          {
+                            "argumentTypes": null,
+                            "arguments": [
+                              {
+                                "argumentTypes": null,
+                                "arguments": [
+                                  {
+                                    "argumentTypes": null,
+                                    "expression": {
+                                      "argumentTypes": null,
+                                      "id": 884,
+                                      "name": "eip712Domain",
+                                      "nodeType": "Identifier",
+                                      "overloadedDeclarations": [],
+                                      "referencedDeclaration": 867,
+                                      "src": "624:12:6",
+                                      "typeDescriptions": {
+                                        "typeIdentifier": "t_struct$_EIP712Domain_$860_memory_ptr",
+                                        "typeString": "struct T721AdminDomain.EIP712Domain memory"
+                                      }
+                                    },
+                                    "id": 885,
+                                    "isConstant": false,
+                                    "isLValue": true,
+                                    "isPure": false,
+                                    "lValueRequested": false,
+                                    "memberName": "version",
+                                    "nodeType": "MemberAccess",
+                                    "referencedDeclaration": 855,
+                                    "src": "624:20:6",
+                                    "typeDescriptions": {
+                                      "typeIdentifier": "t_string_memory",
+                                      "typeString": "string memory"
+                                    }
+                                  }
+                                ],
+                                "expression": {
+                                  "argumentTypes": [
+                                    {
+                                      "typeIdentifier": "t_string_memory",
+                                      "typeString": "string memory"
+                                    }
+                                  ],
+                                  "id": 883,
+                                  "isConstant": false,
+                                  "isLValue": false,
+                                  "isPure": true,
+                                  "lValueRequested": false,
+                                  "nodeType": "ElementaryTypeNameExpression",
+                                  "src": "618:5:6",
+                                  "typeDescriptions": {
+                                    "typeIdentifier": "t_type$_t_bytes_storage_ptr_$",
+                                    "typeString": "type(bytes storage pointer)"
+                                  },
+                                  "typeName": "bytes"
+                                },
+                                "id": 886,
+                                "isConstant": false,
+                                "isLValue": false,
+                                "isPure": false,
+                                "kind": "typeConversion",
+                                "lValueRequested": false,
+                                "names": [],
+                                "nodeType": "FunctionCall",
+                                "src": "618:27:6",
+                                "typeDescriptions": {
+                                  "typeIdentifier": "t_bytes_memory_ptr",
+                                  "typeString": "bytes memory"
+                                }
+                              }
+                            ],
+                            "expression": {
+                              "argumentTypes": [
+                                {
+                                  "typeIdentifier": "t_bytes_memory_ptr",
+                                  "typeString": "bytes memory"
+                                }
+                              ],
+                              "id": 882,
+                              "name": "keccak256",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": 1729,
+                              "src": "608:9:6",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_function_keccak256_pure$_t_bytes_memory_ptr_$returns$_t_bytes32_$",
+                                "typeString": "function (bytes memory) pure returns (bytes32)"
+                              }
+                            },
+                            "id": 887,
+                            "isConstant": false,
+                            "isLValue": false,
+                            "isPure": false,
+                            "kind": "functionCall",
+                            "lValueRequested": false,
+                            "names": [],
+                            "nodeType": "FunctionCall",
+                            "src": "608:38:6",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_bytes32",
+                              "typeString": "bytes32"
+                            }
+                          },
+                          {
+                            "argumentTypes": null,
+                            "expression": {
+                              "argumentTypes": null,
+                              "id": 888,
+                              "name": "eip712Domain",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": 867,
+                              "src": "664:12:6",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_struct$_EIP712Domain_$860_memory_ptr",
+                                "typeString": "struct T721AdminDomain.EIP712Domain memory"
+                              }
+                            },
+                            "id": 889,
+                            "isConstant": false,
+                            "isLValue": true,
+                            "isPure": false,
+                            "lValueRequested": false,
+                            "memberName": "chainId",
+                            "nodeType": "MemberAccess",
+                            "referencedDeclaration": 857,
+                            "src": "664:20:6",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_uint256",
+                              "typeString": "uint256"
+                            }
+                          },
+                          {
+                            "argumentTypes": null,
+                            "expression": {
+                              "argumentTypes": null,
+                              "id": 890,
+                              "name": "eip712Domain",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": 867,
+                              "src": "702:12:6",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_struct$_EIP712Domain_$860_memory_ptr",
+                                "typeString": "struct T721AdminDomain.EIP712Domain memory"
+                              }
+                            },
+                            "id": 891,
+                            "isConstant": false,
+                            "isLValue": true,
+                            "isPure": false,
+                            "lValueRequested": false,
+                            "memberName": "verifyingContract",
+                            "nodeType": "MemberAccess",
+                            "referencedDeclaration": 859,
+                            "src": "702:30:6",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_address",
+                              "typeString": "address"
+                            }
+                          }
+                        ],
+                        "expression": {
+                          "argumentTypes": [
+                            {
+                              "typeIdentifier": "t_bytes32",
+                              "typeString": "bytes32"
+                            },
+                            {
+                              "typeIdentifier": "t_bytes32",
+                              "typeString": "bytes32"
+                            },
+                            {
+                              "typeIdentifier": "t_bytes32",
+                              "typeString": "bytes32"
+                            },
+                            {
+                              "typeIdentifier": "t_uint256",
+                              "typeString": "uint256"
+                            },
+                            {
+                              "typeIdentifier": "t_address",
+                              "typeString": "address"
+                            }
+                          ],
+                          "expression": {
+                            "argumentTypes": null,
+                            "id": 873,
+                            "name": "abi",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 1722,
+                            "src": "488:3:6",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_magic_abi",
+                              "typeString": "abi"
+                            }
+                          },
+                          "id": 874,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": true,
+                          "lValueRequested": false,
+                          "memberName": "encode",
+                          "nodeType": "MemberAccess",
+                          "referencedDeclaration": null,
+                          "src": "488:10:6",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_function_abiencode_pure$__$returns$_t_bytes_memory_ptr_$",
+                            "typeString": "function () pure returns (bytes memory)"
+                          }
+                        },
+                        "id": 892,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "kind": "functionCall",
+                        "lValueRequested": false,
+                        "names": [],
+                        "nodeType": "FunctionCall",
+                        "src": "488:258:6",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bytes_memory_ptr",
+                          "typeString": "bytes memory"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_bytes_memory_ptr",
+                          "typeString": "bytes memory"
+                        }
+                      ],
+                      "id": 872,
+                      "name": "keccak256",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 1729,
+                      "src": "478:9:6",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_keccak256_pure$_t_bytes_memory_ptr_$returns$_t_bytes32_$",
+                        "typeString": "function (bytes memory) pure returns (bytes32)"
+                      }
+                    },
+                    "id": 893,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "478:269:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "functionReturnParameters": 871,
+                  "id": 894,
+                  "nodeType": "Return",
+                  "src": "471:276:6"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 896,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "hash",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 868,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 867,
+                  "name": "eip712Domain",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 896,
+                  "src": "395:32:6",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_EIP712Domain_$860_memory_ptr",
+                    "typeString": "struct T721AdminDomain.EIP712Domain"
+                  },
+                  "typeName": {
+                    "contractScope": null,
+                    "id": 866,
+                    "name": "EIP712Domain",
+                    "nodeType": "UserDefinedTypeName",
+                    "referencedDeclaration": 860,
+                    "src": "395:12:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_EIP712Domain_$860_storage_ptr",
+                      "typeString": "struct T721AdminDomain.EIP712Domain"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "394:34:6"
+            },
+            "returnParameters": {
+              "id": 871,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 870,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 896,
+                  "src": "452:7:6",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 869,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "452:7:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "451:9:6"
+            },
+            "scope": 997,
+            "src": "381:373:6",
+            "stateMutability": "pure",
+            "superFunction": null,
+            "visibility": "internal"
+          },
+          {
+            "constant": false,
+            "id": 898,
+            "name": "DOMAIN_SEPARATOR",
+            "nodeType": "VariableDeclaration",
+            "scope": 997,
+            "src": "760:24:6",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_bytes32",
+              "typeString": "bytes32"
+            },
+            "typeName": {
+              "id": 897,
+              "name": "bytes32",
+              "nodeType": "ElementaryTypeName",
+              "src": "760:7:6",
+              "typeDescriptions": {
+                "typeIdentifier": "t_bytes32",
+                "typeString": "bytes32"
+              }
+            },
+            "value": null,
+            "visibility": "internal"
+          },
+          {
+            "canonicalName": "T721AdminDomain.Authorization",
+            "id": 905,
+            "members": [
+              {
+                "constant": false,
+                "id": 900,
+                "name": "emitter",
+                "nodeType": "VariableDeclaration",
+                "scope": 905,
+                "src": "822:15:6",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                },
+                "typeName": {
+                  "id": 899,
+                  "name": "address",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "822:7:6",
+                  "stateMutability": "nonpayable",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 902,
+                "name": "grantee",
+                "nodeType": "VariableDeclaration",
+                "scope": 905,
+                "src": "847:15:6",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                },
+                "typeName": {
+                  "id": 901,
+                  "name": "address",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "847:7:6",
+                  "stateMutability": "nonpayable",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 904,
+                "name": "hash",
+                "nodeType": "VariableDeclaration",
+                "scope": 905,
+                "src": "872:12:6",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_bytes32",
+                  "typeString": "bytes32"
+                },
+                "typeName": {
+                  "id": 903,
+                  "name": "bytes32",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "872:7:6",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              }
+            ],
+            "name": "Authorization",
+            "nodeType": "StructDefinition",
+            "scope": 997,
+            "src": "791:100:6",
+            "visibility": "public"
+          },
+          {
+            "constant": true,
+            "id": 910,
+            "name": "AUTHORIZATION_TYPEHASH",
+            "nodeType": "VariableDeclaration",
+            "scope": 997,
+            "src": "897:128:6",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_bytes32",
+              "typeString": "bytes32"
+            },
+            "typeName": {
+              "id": 906,
+              "name": "bytes32",
+              "nodeType": "ElementaryTypeName",
+              "src": "897:7:6",
+              "typeDescriptions": {
+                "typeIdentifier": "t_bytes32",
+                "typeString": "bytes32"
+              }
+            },
+            "value": {
+              "argumentTypes": null,
+              "arguments": [
+                {
+                  "argumentTypes": null,
+                  "hexValue": "417574686f72697a6174696f6e286164647265737320656d69747465722c61646472657373206772616e7465652c62797465733332206861736829",
+                  "id": 908,
+                  "isConstant": false,
+                  "isLValue": false,
+                  "isPure": true,
+                  "kind": "string",
+                  "lValueRequested": false,
+                  "nodeType": "Literal",
+                  "src": "958:61:6",
+                  "subdenomination": null,
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_stringliteral_7c49a29fd53ca89f53498c34d17a4c4e762ff6c8a312e310b29876f35d025aea",
+                    "typeString": "literal_string \"Authorization(address emitter,address grantee,bytes32 hash)\""
+                  },
+                  "value": "Authorization(address emitter,address grantee,bytes32 hash)"
+                }
+              ],
+              "expression": {
+                "argumentTypes": [
+                  {
+                    "typeIdentifier": "t_stringliteral_7c49a29fd53ca89f53498c34d17a4c4e762ff6c8a312e310b29876f35d025aea",
+                    "typeString": "literal_string \"Authorization(address emitter,address grantee,bytes32 hash)\""
+                  }
+                ],
+                "id": 907,
+                "name": "keccak256",
+                "nodeType": "Identifier",
+                "overloadedDeclarations": [],
+                "referencedDeclaration": 1729,
+                "src": "939:9:6",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_function_keccak256_pure$_t_bytes_memory_ptr_$returns$_t_bytes32_$",
+                  "typeString": "function (bytes memory) pure returns (bytes32)"
+                }
+              },
+              "id": 909,
+              "isConstant": false,
+              "isLValue": false,
+              "isPure": true,
+              "kind": "functionCall",
+              "lValueRequested": false,
+              "names": [],
+              "nodeType": "FunctionCall",
+              "src": "939:86:6",
+              "typeDescriptions": {
+                "typeIdentifier": "t_bytes32",
+                "typeString": "bytes32"
+              }
+            },
+            "visibility": "internal"
+          },
+          {
+            "body": {
+              "id": 930,
+              "nodeType": "Block",
+              "src": "1105:186:6",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "arguments": [
+                      {
+                        "argumentTypes": null,
+                        "arguments": [
+                          {
+                            "argumentTypes": null,
+                            "id": 920,
+                            "name": "AUTHORIZATION_TYPEHASH",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 910,
+                            "src": "1160:22:6",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_bytes32",
+                              "typeString": "bytes32"
+                            }
+                          },
+                          {
+                            "argumentTypes": null,
+                            "expression": {
+                              "argumentTypes": null,
+                              "id": 921,
+                              "name": "auth",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": 912,
+                              "src": "1200:4:6",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_struct$_Authorization_$905_memory_ptr",
+                                "typeString": "struct T721AdminDomain.Authorization memory"
+                              }
+                            },
+                            "id": 922,
+                            "isConstant": false,
+                            "isLValue": true,
+                            "isPure": false,
+                            "lValueRequested": false,
+                            "memberName": "emitter",
+                            "nodeType": "MemberAccess",
+                            "referencedDeclaration": 900,
+                            "src": "1200:12:6",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_address",
+                              "typeString": "address"
+                            }
+                          },
+                          {
+                            "argumentTypes": null,
+                            "expression": {
+                              "argumentTypes": null,
+                              "id": 923,
+                              "name": "auth",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": 912,
+                              "src": "1230:4:6",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_struct$_Authorization_$905_memory_ptr",
+                                "typeString": "struct T721AdminDomain.Authorization memory"
+                              }
+                            },
+                            "id": 924,
+                            "isConstant": false,
+                            "isLValue": true,
+                            "isPure": false,
+                            "lValueRequested": false,
+                            "memberName": "grantee",
+                            "nodeType": "MemberAccess",
+                            "referencedDeclaration": 902,
+                            "src": "1230:12:6",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_address",
+                              "typeString": "address"
+                            }
+                          },
+                          {
+                            "argumentTypes": null,
+                            "expression": {
+                              "argumentTypes": null,
+                              "id": 925,
+                              "name": "auth",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": 912,
+                              "src": "1260:4:6",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_struct$_Authorization_$905_memory_ptr",
+                                "typeString": "struct T721AdminDomain.Authorization memory"
+                              }
+                            },
+                            "id": 926,
+                            "isConstant": false,
+                            "isLValue": true,
+                            "isPure": false,
+                            "lValueRequested": false,
+                            "memberName": "hash",
+                            "nodeType": "MemberAccess",
+                            "referencedDeclaration": 904,
+                            "src": "1260:9:6",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_bytes32",
+                              "typeString": "bytes32"
+                            }
+                          }
+                        ],
+                        "expression": {
+                          "argumentTypes": [
+                            {
+                              "typeIdentifier": "t_bytes32",
+                              "typeString": "bytes32"
+                            },
+                            {
+                              "typeIdentifier": "t_address",
+                              "typeString": "address"
+                            },
+                            {
+                              "typeIdentifier": "t_address",
+                              "typeString": "address"
+                            },
+                            {
+                              "typeIdentifier": "t_bytes32",
+                              "typeString": "bytes32"
+                            }
+                          ],
+                          "expression": {
+                            "argumentTypes": null,
+                            "id": 918,
+                            "name": "abi",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 1722,
+                            "src": "1132:3:6",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_magic_abi",
+                              "typeString": "abi"
+                            }
+                          },
+                          "id": 919,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": true,
+                          "lValueRequested": false,
+                          "memberName": "encode",
+                          "nodeType": "MemberAccess",
+                          "referencedDeclaration": null,
+                          "src": "1132:10:6",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_function_abiencode_pure$__$returns$_t_bytes_memory_ptr_$",
+                            "typeString": "function () pure returns (bytes memory)"
+                          }
+                        },
+                        "id": 927,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "kind": "functionCall",
+                        "lValueRequested": false,
+                        "names": [],
+                        "nodeType": "FunctionCall",
+                        "src": "1132:151:6",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bytes_memory_ptr",
+                          "typeString": "bytes memory"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_bytes_memory_ptr",
+                          "typeString": "bytes memory"
+                        }
+                      ],
+                      "id": 917,
+                      "name": "keccak256",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 1729,
+                      "src": "1122:9:6",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_keccak256_pure$_t_bytes_memory_ptr_$returns$_t_bytes32_$",
+                        "typeString": "function (bytes memory) pure returns (bytes32)"
+                      }
+                    },
+                    "id": 928,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "1122:162:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "functionReturnParameters": 916,
+                  "id": 929,
+                  "nodeType": "Return",
+                  "src": "1115:169:6"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 931,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "hash",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 913,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 912,
+                  "name": "auth",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 931,
+                  "src": "1046:25:6",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_Authorization_$905_memory_ptr",
+                    "typeString": "struct T721AdminDomain.Authorization"
+                  },
+                  "typeName": {
+                    "contractScope": null,
+                    "id": 911,
+                    "name": "Authorization",
+                    "nodeType": "UserDefinedTypeName",
+                    "referencedDeclaration": 905,
+                    "src": "1046:13:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_Authorization_$905_storage_ptr",
+                      "typeString": "struct T721AdminDomain.Authorization"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1045:27:6"
+            },
+            "returnParameters": {
+              "id": 916,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 915,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 931,
+                  "src": "1096:7:6",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 914,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1096:7:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1095:9:6"
+            },
+            "scope": 997,
+            "src": "1032:259:6",
+            "stateMutability": "pure",
+            "superFunction": null,
+            "visibility": "internal"
+          },
+          {
+            "body": {
+              "id": 972,
+              "nodeType": "Block",
+              "src": "1400:330:6",
+              "statements": [
+                {
+                  "assignments": [
+                    943
+                  ],
+                  "declarations": [
+                    {
+                      "constant": false,
+                      "id": 943,
+                      "name": "signature",
+                      "nodeType": "VariableDeclaration",
+                      "scope": 972,
+                      "src": "1410:37:6",
+                      "stateVariable": false,
+                      "storageLocation": "memory",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_struct$_Signature_$152_memory_ptr",
+                        "typeString": "struct SigUtil_v0.Signature"
+                      },
+                      "typeName": {
+                        "contractScope": null,
+                        "id": 942,
+                        "name": "SigUtil_v0.Signature",
+                        "nodeType": "UserDefinedTypeName",
+                        "referencedDeclaration": 152,
+                        "src": "1410:20:6",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_struct$_Signature_$152_storage_ptr",
+                          "typeString": "struct SigUtil_v0.Signature"
+                        }
+                      },
+                      "value": null,
+                      "visibility": "internal"
+                    }
+                  ],
+                  "id": 948,
+                  "initialValue": {
+                    "argumentTypes": null,
+                    "arguments": [
+                      {
+                        "argumentTypes": null,
+                        "id": 946,
+                        "name": "raw_signature",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 935,
+                        "src": "1477:13:6",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bytes_memory_ptr",
+                          "typeString": "bytes memory"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_bytes_memory_ptr",
+                          "typeString": "bytes memory"
+                        }
+                      ],
+                      "expression": {
+                        "argumentTypes": null,
+                        "id": 944,
+                        "name": "SigUtil_v0",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 205,
+                        "src": "1450:10:6",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_type$_t_contract$_SigUtil_v0_$205_$",
+                          "typeString": "type(library SigUtil_v0)"
+                        }
+                      },
+                      "id": 945,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "memberName": "_splitSignature",
+                      "nodeType": "MemberAccess",
+                      "referencedDeclaration": 204,
+                      "src": "1450:26:6",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_internal_pure$_t_bytes_memory_ptr_$returns$_t_struct$_Signature_$152_memory_ptr_$",
+                        "typeString": "function (bytes memory) pure returns (struct SigUtil_v0.Signature memory)"
+                      }
+                    },
+                    "id": 947,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "1450:41:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_Signature_$152_memory_ptr",
+                      "typeString": "struct SigUtil_v0.Signature memory"
+                    }
+                  },
+                  "nodeType": "VariableDeclarationStatement",
+                  "src": "1410:81:6"
+                },
+                {
+                  "assignments": [
+                    950
+                  ],
+                  "declarations": [
+                    {
+                      "constant": false,
+                      "id": 950,
+                      "name": "digest",
+                      "nodeType": "VariableDeclaration",
+                      "scope": 972,
+                      "src": "1501:14:6",
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bytes32",
+                        "typeString": "bytes32"
+                      },
+                      "typeName": {
+                        "id": 949,
+                        "name": "bytes32",
+                        "nodeType": "ElementaryTypeName",
+                        "src": "1501:7:6",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bytes32",
+                          "typeString": "bytes32"
+                        }
+                      },
+                      "value": null,
+                      "visibility": "internal"
+                    }
+                  ],
+                  "id": 961,
+                  "initialValue": {
+                    "argumentTypes": null,
+                    "arguments": [
+                      {
+                        "argumentTypes": null,
+                        "arguments": [
+                          {
+                            "argumentTypes": null,
+                            "hexValue": "1901",
+                            "id": 954,
+                            "isConstant": false,
+                            "isLValue": false,
+                            "isPure": true,
+                            "kind": "string",
+                            "lValueRequested": false,
+                            "nodeType": "Literal",
+                            "src": "1562:10:6",
+                            "subdenomination": null,
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_stringliteral_301a50b291d33ce1e8e9064e3f6a6c51d902ec22892b50d58abf6357c6a45541",
+                              "typeString": "literal_string \"\u0019\u0001\""
+                            },
+                            "value": "\u0019\u0001"
+                          },
+                          {
+                            "argumentTypes": null,
+                            "id": 955,
+                            "name": "DOMAIN_SEPARATOR",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 898,
+                            "src": "1590:16:6",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_bytes32",
+                              "typeString": "bytes32"
+                            }
+                          },
+                          {
+                            "argumentTypes": null,
+                            "arguments": [
+                              {
+                                "argumentTypes": null,
+                                "id": 957,
+                                "name": "auth",
+                                "nodeType": "Identifier",
+                                "overloadedDeclarations": [],
+                                "referencedDeclaration": 933,
+                                "src": "1629:4:6",
+                                "typeDescriptions": {
+                                  "typeIdentifier": "t_struct$_Authorization_$905_memory_ptr",
+                                  "typeString": "struct T721AdminDomain.Authorization memory"
+                                }
+                              }
+                            ],
+                            "expression": {
+                              "argumentTypes": [
+                                {
+                                  "typeIdentifier": "t_struct$_Authorization_$905_memory_ptr",
+                                  "typeString": "struct T721AdminDomain.Authorization memory"
+                                }
+                              ],
+                              "id": 956,
+                              "name": "hash",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [
+                                896,
+                                931
+                              ],
+                              "referencedDeclaration": 931,
+                              "src": "1624:4:6",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_function_internal_pure$_t_struct$_Authorization_$905_memory_ptr_$returns$_t_bytes32_$",
+                                "typeString": "function (struct T721AdminDomain.Authorization memory) pure returns (bytes32)"
+                              }
+                            },
+                            "id": 958,
+                            "isConstant": false,
+                            "isLValue": false,
+                            "isPure": false,
+                            "kind": "functionCall",
+                            "lValueRequested": false,
+                            "names": [],
+                            "nodeType": "FunctionCall",
+                            "src": "1624:10:6",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_bytes32",
+                              "typeString": "bytes32"
+                            }
+                          }
+                        ],
+                        "expression": {
+                          "argumentTypes": [
+                            {
+                              "typeIdentifier": "t_stringliteral_301a50b291d33ce1e8e9064e3f6a6c51d902ec22892b50d58abf6357c6a45541",
+                              "typeString": "literal_string \"\u0019\u0001\""
+                            },
+                            {
+                              "typeIdentifier": "t_bytes32",
+                              "typeString": "bytes32"
+                            },
+                            {
+                              "typeIdentifier": "t_bytes32",
+                              "typeString": "bytes32"
+                            }
+                          ],
+                          "expression": {
+                            "argumentTypes": null,
+                            "id": 952,
+                            "name": "abi",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 1722,
+                            "src": "1528:3:6",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_magic_abi",
+                              "typeString": "abi"
+                            }
+                          },
+                          "id": 953,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": true,
+                          "lValueRequested": false,
+                          "memberName": "encodePacked",
+                          "nodeType": "MemberAccess",
+                          "referencedDeclaration": null,
+                          "src": "1528:16:6",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_function_abiencodepacked_pure$__$returns$_t_bytes_memory_ptr_$",
+                            "typeString": "function () pure returns (bytes memory)"
+                          }
+                        },
+                        "id": 959,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "kind": "functionCall",
+                        "lValueRequested": false,
+                        "names": [],
+                        "nodeType": "FunctionCall",
+                        "src": "1528:120:6",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bytes_memory_ptr",
+                          "typeString": "bytes memory"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_bytes_memory_ptr",
+                          "typeString": "bytes memory"
+                        }
+                      ],
+                      "id": 951,
+                      "name": "keccak256",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 1729,
+                      "src": "1518:9:6",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_keccak256_pure$_t_bytes_memory_ptr_$returns$_t_bytes32_$",
+                        "typeString": "function (bytes memory) pure returns (bytes32)"
+                      }
+                    },
+                    "id": 960,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "1518:131:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "nodeType": "VariableDeclarationStatement",
+                  "src": "1501:148:6"
+                },
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "arguments": [
+                      {
+                        "argumentTypes": null,
+                        "id": 963,
+                        "name": "digest",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 950,
+                        "src": "1677:6:6",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bytes32",
+                          "typeString": "bytes32"
+                        }
+                      },
+                      {
+                        "argumentTypes": null,
+                        "expression": {
+                          "argumentTypes": null,
+                          "id": 964,
+                          "name": "signature",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 943,
+                          "src": "1685:9:6",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_struct$_Signature_$152_memory_ptr",
+                            "typeString": "struct SigUtil_v0.Signature memory"
+                          }
+                        },
+                        "id": 965,
+                        "isConstant": false,
+                        "isLValue": true,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "memberName": "v",
+                        "nodeType": "MemberAccess",
+                        "referencedDeclaration": 147,
+                        "src": "1685:11:6",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint8",
+                          "typeString": "uint8"
+                        }
+                      },
+                      {
+                        "argumentTypes": null,
+                        "expression": {
+                          "argumentTypes": null,
+                          "id": 966,
+                          "name": "signature",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 943,
+                          "src": "1698:9:6",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_struct$_Signature_$152_memory_ptr",
+                            "typeString": "struct SigUtil_v0.Signature memory"
+                          }
+                        },
+                        "id": 967,
+                        "isConstant": false,
+                        "isLValue": true,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "memberName": "r",
+                        "nodeType": "MemberAccess",
+                        "referencedDeclaration": 149,
+                        "src": "1698:11:6",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bytes32",
+                          "typeString": "bytes32"
+                        }
+                      },
+                      {
+                        "argumentTypes": null,
+                        "expression": {
+                          "argumentTypes": null,
+                          "id": 968,
+                          "name": "signature",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 943,
+                          "src": "1711:9:6",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_struct$_Signature_$152_memory_ptr",
+                            "typeString": "struct SigUtil_v0.Signature memory"
+                          }
+                        },
+                        "id": 969,
+                        "isConstant": false,
+                        "isLValue": true,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "memberName": "s",
+                        "nodeType": "MemberAccess",
+                        "referencedDeclaration": 151,
+                        "src": "1711:11:6",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bytes32",
+                          "typeString": "bytes32"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_bytes32",
+                          "typeString": "bytes32"
+                        },
+                        {
+                          "typeIdentifier": "t_uint8",
+                          "typeString": "uint8"
+                        },
+                        {
+                          "typeIdentifier": "t_bytes32",
+                          "typeString": "bytes32"
+                        },
+                        {
+                          "typeIdentifier": "t_bytes32",
+                          "typeString": "bytes32"
+                        }
+                      ],
+                      "id": 962,
+                      "name": "ecrecover",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 1727,
+                      "src": "1667:9:6",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_ecrecover_pure$_t_bytes32_$_t_uint8_$_t_bytes32_$_t_bytes32_$returns$_t_address_$",
+                        "typeString": "function (bytes32,uint8,bytes32,bytes32) pure returns (address)"
+                      }
+                    },
+                    "id": 970,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "1667:56:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "functionReturnParameters": 939,
+                  "id": 971,
+                  "nodeType": "Return",
+                  "src": "1660:63:6"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 973,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "verify",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 936,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 933,
+                  "name": "auth",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 973,
+                  "src": "1313:25:6",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_Authorization_$905_memory_ptr",
+                    "typeString": "struct T721AdminDomain.Authorization"
+                  },
+                  "typeName": {
+                    "contractScope": null,
+                    "id": 932,
+                    "name": "Authorization",
+                    "nodeType": "UserDefinedTypeName",
+                    "referencedDeclaration": 905,
+                    "src": "1313:13:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_Authorization_$905_storage_ptr",
+                      "typeString": "struct T721AdminDomain.Authorization"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 935,
+                  "name": "raw_signature",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 973,
+                  "src": "1340:26:6",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_memory_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 934,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1340:5:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1312:55:6"
+            },
+            "returnParameters": {
+              "id": 939,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 938,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 973,
+                  "src": "1391:7:6",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 937,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1391:7:6",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1390:9:6"
+            },
+            "scope": 997,
+            "src": "1297:433:6",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "internal"
+          },
+          {
+            "body": {
+              "id": 995,
+              "nodeType": "Block",
+              "src": "1827:210:6",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 993,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "argumentTypes": null,
+                      "id": 982,
+                      "name": "DOMAIN_SEPARATOR",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 898,
+                      "src": "1837:16:6",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bytes32",
+                        "typeString": "bytes32"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "argumentTypes": null,
+                      "arguments": [
+                        {
+                          "argumentTypes": null,
+                          "arguments": [
+                            {
+                              "argumentTypes": null,
+                              "id": 985,
+                              "name": "_domain_name",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": 975,
+                              "src": "1894:12:6",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_string_memory_ptr",
+                                "typeString": "string memory"
+                              }
+                            },
+                            {
+                              "argumentTypes": null,
+                              "id": 986,
+                              "name": "_version",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": 977,
+                              "src": "1929:8:6",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_string_memory_ptr",
+                                "typeString": "string memory"
+                              }
+                            },
+                            {
+                              "argumentTypes": null,
+                              "id": 987,
+                              "name": "_chainId",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": 979,
+                              "src": "1960:8:6",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_uint256",
+                                "typeString": "uint256"
+                              }
+                            },
+                            {
+                              "argumentTypes": null,
+                              "arguments": [
+                                {
+                                  "argumentTypes": null,
+                                  "id": 989,
+                                  "name": "this",
+                                  "nodeType": "Identifier",
+                                  "overloadedDeclarations": [],
+                                  "referencedDeclaration": 1759,
+                                  "src": "2009:4:6",
+                                  "typeDescriptions": {
+                                    "typeIdentifier": "t_contract$_T721AdminDomain_$997",
+                                    "typeString": "contract T721AdminDomain"
+                                  }
+                                }
+                              ],
+                              "expression": {
+                                "argumentTypes": [
+                                  {
+                                    "typeIdentifier": "t_contract$_T721AdminDomain_$997",
+                                    "typeString": "contract T721AdminDomain"
+                                  }
+                                ],
+                                "id": 988,
+                                "isConstant": false,
+                                "isLValue": false,
+                                "isPure": true,
+                                "lValueRequested": false,
+                                "nodeType": "ElementaryTypeNameExpression",
+                                "src": "2001:7:6",
+                                "typeDescriptions": {
+                                  "typeIdentifier": "t_type$_t_address_$",
+                                  "typeString": "type(address)"
+                                },
+                                "typeName": "address"
+                              },
+                              "id": 990,
+                              "isConstant": false,
+                              "isLValue": false,
+                              "isPure": false,
+                              "kind": "typeConversion",
+                              "lValueRequested": false,
+                              "names": [],
+                              "nodeType": "FunctionCall",
+                              "src": "2001:13:6",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_address",
+                                "typeString": "address"
+                              }
+                            }
+                          ],
+                          "expression": {
+                            "argumentTypes": [
+                              {
+                                "typeIdentifier": "t_string_memory_ptr",
+                                "typeString": "string memory"
+                              },
+                              {
+                                "typeIdentifier": "t_string_memory_ptr",
+                                "typeString": "string memory"
+                              },
+                              {
+                                "typeIdentifier": "t_uint256",
+                                "typeString": "uint256"
+                              },
+                              {
+                                "typeIdentifier": "t_address",
+                                "typeString": "address"
+                              }
+                            ],
+                            "id": 984,
+                            "name": "EIP712Domain",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 860,
+                            "src": "1861:12:6",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_type$_t_struct$_EIP712Domain_$860_storage_ptr_$",
+                              "typeString": "type(struct T721AdminDomain.EIP712Domain storage pointer)"
+                            }
+                          },
+                          "id": 991,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "kind": "structConstructorCall",
+                          "lValueRequested": false,
+                          "names": [
+                            "name",
+                            "version",
+                            "chainId",
+                            "verifyingContract"
+                          ],
+                          "nodeType": "FunctionCall",
+                          "src": "1861:168:6",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_struct$_EIP712Domain_$860_memory",
+                            "typeString": "struct T721AdminDomain.EIP712Domain memory"
+                          }
+                        }
+                      ],
+                      "expression": {
+                        "argumentTypes": [
+                          {
+                            "typeIdentifier": "t_struct$_EIP712Domain_$860_memory",
+                            "typeString": "struct T721AdminDomain.EIP712Domain memory"
+                          }
+                        ],
+                        "id": 983,
+                        "name": "hash",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [
+                          896,
+                          931
+                        ],
+                        "referencedDeclaration": 896,
+                        "src": "1856:4:6",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_function_internal_pure$_t_struct$_EIP712Domain_$860_memory_ptr_$returns$_t_bytes32_$",
+                          "typeString": "function (struct T721AdminDomain.EIP712Domain memory) pure returns (bytes32)"
+                        }
+                      },
+                      "id": 992,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "kind": "functionCall",
+                      "lValueRequested": false,
+                      "names": [],
+                      "nodeType": "FunctionCall",
+                      "src": "1856:174:6",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bytes32",
+                        "typeString": "bytes32"
+                      }
+                    },
+                    "src": "1837:193:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "id": 994,
+                  "nodeType": "ExpressionStatement",
+                  "src": "1837:193:6"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 996,
+            "implemented": true,
+            "kind": "constructor",
+            "modifiers": [],
+            "name": "",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 980,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 975,
+                  "name": "_domain_name",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 996,
+                  "src": "1748:26:6",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 974,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1748:6:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 977,
+                  "name": "_version",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 996,
+                  "src": "1776:22:6",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 976,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1776:6:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 979,
+                  "name": "_chainId",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 996,
+                  "src": "1800:16:6",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 978,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1800:7:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1747:70:6"
+            },
+            "returnParameters": {
+              "id": 981,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1827:0:6"
+            },
+            "scope": 997,
+            "src": "1736:301:6",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "internal"
+          }
+        ],
+        "scope": 998,
+        "src": "52:1989:6"
+      }
+    ],
+    "src": "0:2042:6"
+  },
+  "legacyAST": {
+    "absolutePath": "/Users/mortimr/projects/repo/modules/@contracts_t721admin/contracts/T721AdminDomain.sol",
+    "exportedSymbols": {
+      "T721AdminDomain": [
+        997
+      ]
+    },
+    "id": 998,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 850,
+        "literals": [
+          "solidity",
+          "0.5",
+          ".15"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:6"
+      },
+      {
+        "absolutePath": "/Users/mortimr/projects/repo/modules/@contracts_t721admin/contracts/SigUtil_v0.sol",
+        "file": "./SigUtil_v0.sol",
+        "id": 851,
+        "nodeType": "ImportDirective",
+        "scope": 998,
+        "sourceUnit": 206,
+        "src": "24:26:6",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 997,
+        "linearizedBaseContracts": [
+          997
+        ],
+        "name": "T721AdminDomain",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "canonicalName": "T721AdminDomain.EIP712Domain",
+            "id": 860,
+            "members": [
+              {
+                "constant": false,
+                "id": 853,
+                "name": "name",
+                "nodeType": "VariableDeclaration",
+                "scope": 860,
+                "src": "114:12:6",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_string_storage_ptr",
+                  "typeString": "string"
+                },
+                "typeName": {
+                  "id": 852,
+                  "name": "string",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "114:6:6",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_storage_ptr",
+                    "typeString": "string"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 855,
+                "name": "version",
+                "nodeType": "VariableDeclaration",
+                "scope": 860,
+                "src": "136:15:6",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_string_storage_ptr",
+                  "typeString": "string"
+                },
+                "typeName": {
+                  "id": 854,
+                  "name": "string",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "136:6:6",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_storage_ptr",
+                    "typeString": "string"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 857,
+                "name": "chainId",
+                "nodeType": "VariableDeclaration",
+                "scope": 860,
+                "src": "161:15:6",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                },
+                "typeName": {
+                  "id": 856,
+                  "name": "uint256",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "161:7:6",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 859,
+                "name": "verifyingContract",
+                "nodeType": "VariableDeclaration",
+                "scope": 860,
+                "src": "186:25:6",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                },
+                "typeName": {
+                  "id": 858,
+                  "name": "address",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "186:7:6",
+                  "stateMutability": "nonpayable",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              }
+            ],
+            "name": "EIP712Domain",
+            "nodeType": "StructDefinition",
+            "scope": 997,
+            "src": "84:134:6",
+            "visibility": "public"
+          },
+          {
+            "constant": true,
+            "id": 865,
+            "name": "EIP712DOMAIN_TYPEHASH",
+            "nodeType": "VariableDeclaration",
+            "scope": 997,
+            "src": "224:150:6",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_bytes32",
+              "typeString": "bytes32"
+            },
+            "typeName": {
+              "id": 861,
+              "name": "bytes32",
+              "nodeType": "ElementaryTypeName",
+              "src": "224:7:6",
+              "typeDescriptions": {
+                "typeIdentifier": "t_bytes32",
+                "typeString": "bytes32"
+              }
+            },
+            "value": {
+              "argumentTypes": null,
+              "arguments": [
+                {
+                  "argumentTypes": null,
+                  "hexValue": "454950373132446f6d61696e28737472696e67206e616d652c737472696e672076657273696f6e2c75696e7432353620636861696e49642c6164647265737320766572696679696e67436f6e747261637429",
+                  "id": 863,
+                  "isConstant": false,
+                  "isLValue": false,
+                  "isPure": true,
+                  "kind": "string",
+                  "lValueRequested": false,
+                  "nodeType": "Literal",
+                  "src": "284:84:6",
+                  "subdenomination": null,
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_stringliteral_8b73c3c69bb8fe3d512ecc4cf759cc79239f7b179b0ffacaa9a75d522b39400f",
+                    "typeString": "literal_string \"EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)\""
+                  },
+                  "value": "EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"
+                }
+              ],
+              "expression": {
+                "argumentTypes": [
+                  {
+                    "typeIdentifier": "t_stringliteral_8b73c3c69bb8fe3d512ecc4cf759cc79239f7b179b0ffacaa9a75d522b39400f",
+                    "typeString": "literal_string \"EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)\""
+                  }
+                ],
+                "id": 862,
+                "name": "keccak256",
+                "nodeType": "Identifier",
+                "overloadedDeclarations": [],
+                "referencedDeclaration": 1729,
+                "src": "265:9:6",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_function_keccak256_pure$_t_bytes_memory_ptr_$returns$_t_bytes32_$",
+                  "typeString": "function (bytes memory) pure returns (bytes32)"
+                }
+              },
+              "id": 864,
+              "isConstant": false,
+              "isLValue": false,
+              "isPure": true,
+              "kind": "functionCall",
+              "lValueRequested": false,
+              "names": [],
+              "nodeType": "FunctionCall",
+              "src": "265:109:6",
+              "typeDescriptions": {
+                "typeIdentifier": "t_bytes32",
+                "typeString": "bytes32"
+              }
+            },
+            "visibility": "internal"
+          },
+          {
+            "body": {
+              "id": 895,
+              "nodeType": "Block",
+              "src": "461:293:6",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "arguments": [
+                      {
+                        "argumentTypes": null,
+                        "arguments": [
+                          {
+                            "argumentTypes": null,
+                            "id": 875,
+                            "name": "EIP712DOMAIN_TYPEHASH",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 865,
+                            "src": "516:21:6",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_bytes32",
+                              "typeString": "bytes32"
+                            }
+                          },
+                          {
+                            "argumentTypes": null,
+                            "arguments": [
+                              {
+                                "argumentTypes": null,
+                                "arguments": [
+                                  {
+                                    "argumentTypes": null,
+                                    "expression": {
+                                      "argumentTypes": null,
+                                      "id": 878,
+                                      "name": "eip712Domain",
+                                      "nodeType": "Identifier",
+                                      "overloadedDeclarations": [],
+                                      "referencedDeclaration": 867,
+                                      "src": "571:12:6",
+                                      "typeDescriptions": {
+                                        "typeIdentifier": "t_struct$_EIP712Domain_$860_memory_ptr",
+                                        "typeString": "struct T721AdminDomain.EIP712Domain memory"
+                                      }
+                                    },
+                                    "id": 879,
+                                    "isConstant": false,
+                                    "isLValue": true,
+                                    "isPure": false,
+                                    "lValueRequested": false,
+                                    "memberName": "name",
+                                    "nodeType": "MemberAccess",
+                                    "referencedDeclaration": 853,
+                                    "src": "571:17:6",
+                                    "typeDescriptions": {
+                                      "typeIdentifier": "t_string_memory",
+                                      "typeString": "string memory"
+                                    }
+                                  }
+                                ],
+                                "expression": {
+                                  "argumentTypes": [
+                                    {
+                                      "typeIdentifier": "t_string_memory",
+                                      "typeString": "string memory"
+                                    }
+                                  ],
+                                  "id": 877,
+                                  "isConstant": false,
+                                  "isLValue": false,
+                                  "isPure": true,
+                                  "lValueRequested": false,
+                                  "nodeType": "ElementaryTypeNameExpression",
+                                  "src": "565:5:6",
+                                  "typeDescriptions": {
+                                    "typeIdentifier": "t_type$_t_bytes_storage_ptr_$",
+                                    "typeString": "type(bytes storage pointer)"
+                                  },
+                                  "typeName": "bytes"
+                                },
+                                "id": 880,
+                                "isConstant": false,
+                                "isLValue": false,
+                                "isPure": false,
+                                "kind": "typeConversion",
+                                "lValueRequested": false,
+                                "names": [],
+                                "nodeType": "FunctionCall",
+                                "src": "565:24:6",
+                                "typeDescriptions": {
+                                  "typeIdentifier": "t_bytes_memory_ptr",
+                                  "typeString": "bytes memory"
+                                }
+                              }
+                            ],
+                            "expression": {
+                              "argumentTypes": [
+                                {
+                                  "typeIdentifier": "t_bytes_memory_ptr",
+                                  "typeString": "bytes memory"
+                                }
+                              ],
+                              "id": 876,
+                              "name": "keccak256",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": 1729,
+                              "src": "555:9:6",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_function_keccak256_pure$_t_bytes_memory_ptr_$returns$_t_bytes32_$",
+                                "typeString": "function (bytes memory) pure returns (bytes32)"
+                              }
+                            },
+                            "id": 881,
+                            "isConstant": false,
+                            "isLValue": false,
+                            "isPure": false,
+                            "kind": "functionCall",
+                            "lValueRequested": false,
+                            "names": [],
+                            "nodeType": "FunctionCall",
+                            "src": "555:35:6",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_bytes32",
+                              "typeString": "bytes32"
+                            }
+                          },
+                          {
+                            "argumentTypes": null,
+                            "arguments": [
+                              {
+                                "argumentTypes": null,
+                                "arguments": [
+                                  {
+                                    "argumentTypes": null,
+                                    "expression": {
+                                      "argumentTypes": null,
+                                      "id": 884,
+                                      "name": "eip712Domain",
+                                      "nodeType": "Identifier",
+                                      "overloadedDeclarations": [],
+                                      "referencedDeclaration": 867,
+                                      "src": "624:12:6",
+                                      "typeDescriptions": {
+                                        "typeIdentifier": "t_struct$_EIP712Domain_$860_memory_ptr",
+                                        "typeString": "struct T721AdminDomain.EIP712Domain memory"
+                                      }
+                                    },
+                                    "id": 885,
+                                    "isConstant": false,
+                                    "isLValue": true,
+                                    "isPure": false,
+                                    "lValueRequested": false,
+                                    "memberName": "version",
+                                    "nodeType": "MemberAccess",
+                                    "referencedDeclaration": 855,
+                                    "src": "624:20:6",
+                                    "typeDescriptions": {
+                                      "typeIdentifier": "t_string_memory",
+                                      "typeString": "string memory"
+                                    }
+                                  }
+                                ],
+                                "expression": {
+                                  "argumentTypes": [
+                                    {
+                                      "typeIdentifier": "t_string_memory",
+                                      "typeString": "string memory"
+                                    }
+                                  ],
+                                  "id": 883,
+                                  "isConstant": false,
+                                  "isLValue": false,
+                                  "isPure": true,
+                                  "lValueRequested": false,
+                                  "nodeType": "ElementaryTypeNameExpression",
+                                  "src": "618:5:6",
+                                  "typeDescriptions": {
+                                    "typeIdentifier": "t_type$_t_bytes_storage_ptr_$",
+                                    "typeString": "type(bytes storage pointer)"
+                                  },
+                                  "typeName": "bytes"
+                                },
+                                "id": 886,
+                                "isConstant": false,
+                                "isLValue": false,
+                                "isPure": false,
+                                "kind": "typeConversion",
+                                "lValueRequested": false,
+                                "names": [],
+                                "nodeType": "FunctionCall",
+                                "src": "618:27:6",
+                                "typeDescriptions": {
+                                  "typeIdentifier": "t_bytes_memory_ptr",
+                                  "typeString": "bytes memory"
+                                }
+                              }
+                            ],
+                            "expression": {
+                              "argumentTypes": [
+                                {
+                                  "typeIdentifier": "t_bytes_memory_ptr",
+                                  "typeString": "bytes memory"
+                                }
+                              ],
+                              "id": 882,
+                              "name": "keccak256",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": 1729,
+                              "src": "608:9:6",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_function_keccak256_pure$_t_bytes_memory_ptr_$returns$_t_bytes32_$",
+                                "typeString": "function (bytes memory) pure returns (bytes32)"
+                              }
+                            },
+                            "id": 887,
+                            "isConstant": false,
+                            "isLValue": false,
+                            "isPure": false,
+                            "kind": "functionCall",
+                            "lValueRequested": false,
+                            "names": [],
+                            "nodeType": "FunctionCall",
+                            "src": "608:38:6",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_bytes32",
+                              "typeString": "bytes32"
+                            }
+                          },
+                          {
+                            "argumentTypes": null,
+                            "expression": {
+                              "argumentTypes": null,
+                              "id": 888,
+                              "name": "eip712Domain",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": 867,
+                              "src": "664:12:6",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_struct$_EIP712Domain_$860_memory_ptr",
+                                "typeString": "struct T721AdminDomain.EIP712Domain memory"
+                              }
+                            },
+                            "id": 889,
+                            "isConstant": false,
+                            "isLValue": true,
+                            "isPure": false,
+                            "lValueRequested": false,
+                            "memberName": "chainId",
+                            "nodeType": "MemberAccess",
+                            "referencedDeclaration": 857,
+                            "src": "664:20:6",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_uint256",
+                              "typeString": "uint256"
+                            }
+                          },
+                          {
+                            "argumentTypes": null,
+                            "expression": {
+                              "argumentTypes": null,
+                              "id": 890,
+                              "name": "eip712Domain",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": 867,
+                              "src": "702:12:6",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_struct$_EIP712Domain_$860_memory_ptr",
+                                "typeString": "struct T721AdminDomain.EIP712Domain memory"
+                              }
+                            },
+                            "id": 891,
+                            "isConstant": false,
+                            "isLValue": true,
+                            "isPure": false,
+                            "lValueRequested": false,
+                            "memberName": "verifyingContract",
+                            "nodeType": "MemberAccess",
+                            "referencedDeclaration": 859,
+                            "src": "702:30:6",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_address",
+                              "typeString": "address"
+                            }
+                          }
+                        ],
+                        "expression": {
+                          "argumentTypes": [
+                            {
+                              "typeIdentifier": "t_bytes32",
+                              "typeString": "bytes32"
+                            },
+                            {
+                              "typeIdentifier": "t_bytes32",
+                              "typeString": "bytes32"
+                            },
+                            {
+                              "typeIdentifier": "t_bytes32",
+                              "typeString": "bytes32"
+                            },
+                            {
+                              "typeIdentifier": "t_uint256",
+                              "typeString": "uint256"
+                            },
+                            {
+                              "typeIdentifier": "t_address",
+                              "typeString": "address"
+                            }
+                          ],
+                          "expression": {
+                            "argumentTypes": null,
+                            "id": 873,
+                            "name": "abi",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 1722,
+                            "src": "488:3:6",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_magic_abi",
+                              "typeString": "abi"
+                            }
+                          },
+                          "id": 874,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": true,
+                          "lValueRequested": false,
+                          "memberName": "encode",
+                          "nodeType": "MemberAccess",
+                          "referencedDeclaration": null,
+                          "src": "488:10:6",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_function_abiencode_pure$__$returns$_t_bytes_memory_ptr_$",
+                            "typeString": "function () pure returns (bytes memory)"
+                          }
+                        },
+                        "id": 892,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "kind": "functionCall",
+                        "lValueRequested": false,
+                        "names": [],
+                        "nodeType": "FunctionCall",
+                        "src": "488:258:6",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bytes_memory_ptr",
+                          "typeString": "bytes memory"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_bytes_memory_ptr",
+                          "typeString": "bytes memory"
+                        }
+                      ],
+                      "id": 872,
+                      "name": "keccak256",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 1729,
+                      "src": "478:9:6",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_keccak256_pure$_t_bytes_memory_ptr_$returns$_t_bytes32_$",
+                        "typeString": "function (bytes memory) pure returns (bytes32)"
+                      }
+                    },
+                    "id": 893,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "478:269:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "functionReturnParameters": 871,
+                  "id": 894,
+                  "nodeType": "Return",
+                  "src": "471:276:6"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 896,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "hash",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 868,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 867,
+                  "name": "eip712Domain",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 896,
+                  "src": "395:32:6",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_EIP712Domain_$860_memory_ptr",
+                    "typeString": "struct T721AdminDomain.EIP712Domain"
+                  },
+                  "typeName": {
+                    "contractScope": null,
+                    "id": 866,
+                    "name": "EIP712Domain",
+                    "nodeType": "UserDefinedTypeName",
+                    "referencedDeclaration": 860,
+                    "src": "395:12:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_EIP712Domain_$860_storage_ptr",
+                      "typeString": "struct T721AdminDomain.EIP712Domain"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "394:34:6"
+            },
+            "returnParameters": {
+              "id": 871,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 870,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 896,
+                  "src": "452:7:6",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 869,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "452:7:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "451:9:6"
+            },
+            "scope": 997,
+            "src": "381:373:6",
+            "stateMutability": "pure",
+            "superFunction": null,
+            "visibility": "internal"
+          },
+          {
+            "constant": false,
+            "id": 898,
+            "name": "DOMAIN_SEPARATOR",
+            "nodeType": "VariableDeclaration",
+            "scope": 997,
+            "src": "760:24:6",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_bytes32",
+              "typeString": "bytes32"
+            },
+            "typeName": {
+              "id": 897,
+              "name": "bytes32",
+              "nodeType": "ElementaryTypeName",
+              "src": "760:7:6",
+              "typeDescriptions": {
+                "typeIdentifier": "t_bytes32",
+                "typeString": "bytes32"
+              }
+            },
+            "value": null,
+            "visibility": "internal"
+          },
+          {
+            "canonicalName": "T721AdminDomain.Authorization",
+            "id": 905,
+            "members": [
+              {
+                "constant": false,
+                "id": 900,
+                "name": "emitter",
+                "nodeType": "VariableDeclaration",
+                "scope": 905,
+                "src": "822:15:6",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                },
+                "typeName": {
+                  "id": 899,
+                  "name": "address",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "822:7:6",
+                  "stateMutability": "nonpayable",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 902,
+                "name": "grantee",
+                "nodeType": "VariableDeclaration",
+                "scope": 905,
+                "src": "847:15:6",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                },
+                "typeName": {
+                  "id": 901,
+                  "name": "address",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "847:7:6",
+                  "stateMutability": "nonpayable",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 904,
+                "name": "hash",
+                "nodeType": "VariableDeclaration",
+                "scope": 905,
+                "src": "872:12:6",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_bytes32",
+                  "typeString": "bytes32"
+                },
+                "typeName": {
+                  "id": 903,
+                  "name": "bytes32",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "872:7:6",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              }
+            ],
+            "name": "Authorization",
+            "nodeType": "StructDefinition",
+            "scope": 997,
+            "src": "791:100:6",
+            "visibility": "public"
+          },
+          {
+            "constant": true,
+            "id": 910,
+            "name": "AUTHORIZATION_TYPEHASH",
+            "nodeType": "VariableDeclaration",
+            "scope": 997,
+            "src": "897:128:6",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_bytes32",
+              "typeString": "bytes32"
+            },
+            "typeName": {
+              "id": 906,
+              "name": "bytes32",
+              "nodeType": "ElementaryTypeName",
+              "src": "897:7:6",
+              "typeDescriptions": {
+                "typeIdentifier": "t_bytes32",
+                "typeString": "bytes32"
+              }
+            },
+            "value": {
+              "argumentTypes": null,
+              "arguments": [
+                {
+                  "argumentTypes": null,
+                  "hexValue": "417574686f72697a6174696f6e286164647265737320656d69747465722c61646472657373206772616e7465652c62797465733332206861736829",
+                  "id": 908,
+                  "isConstant": false,
+                  "isLValue": false,
+                  "isPure": true,
+                  "kind": "string",
+                  "lValueRequested": false,
+                  "nodeType": "Literal",
+                  "src": "958:61:6",
+                  "subdenomination": null,
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_stringliteral_7c49a29fd53ca89f53498c34d17a4c4e762ff6c8a312e310b29876f35d025aea",
+                    "typeString": "literal_string \"Authorization(address emitter,address grantee,bytes32 hash)\""
+                  },
+                  "value": "Authorization(address emitter,address grantee,bytes32 hash)"
+                }
+              ],
+              "expression": {
+                "argumentTypes": [
+                  {
+                    "typeIdentifier": "t_stringliteral_7c49a29fd53ca89f53498c34d17a4c4e762ff6c8a312e310b29876f35d025aea",
+                    "typeString": "literal_string \"Authorization(address emitter,address grantee,bytes32 hash)\""
+                  }
+                ],
+                "id": 907,
+                "name": "keccak256",
+                "nodeType": "Identifier",
+                "overloadedDeclarations": [],
+                "referencedDeclaration": 1729,
+                "src": "939:9:6",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_function_keccak256_pure$_t_bytes_memory_ptr_$returns$_t_bytes32_$",
+                  "typeString": "function (bytes memory) pure returns (bytes32)"
+                }
+              },
+              "id": 909,
+              "isConstant": false,
+              "isLValue": false,
+              "isPure": true,
+              "kind": "functionCall",
+              "lValueRequested": false,
+              "names": [],
+              "nodeType": "FunctionCall",
+              "src": "939:86:6",
+              "typeDescriptions": {
+                "typeIdentifier": "t_bytes32",
+                "typeString": "bytes32"
+              }
+            },
+            "visibility": "internal"
+          },
+          {
+            "body": {
+              "id": 930,
+              "nodeType": "Block",
+              "src": "1105:186:6",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "arguments": [
+                      {
+                        "argumentTypes": null,
+                        "arguments": [
+                          {
+                            "argumentTypes": null,
+                            "id": 920,
+                            "name": "AUTHORIZATION_TYPEHASH",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 910,
+                            "src": "1160:22:6",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_bytes32",
+                              "typeString": "bytes32"
+                            }
+                          },
+                          {
+                            "argumentTypes": null,
+                            "expression": {
+                              "argumentTypes": null,
+                              "id": 921,
+                              "name": "auth",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": 912,
+                              "src": "1200:4:6",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_struct$_Authorization_$905_memory_ptr",
+                                "typeString": "struct T721AdminDomain.Authorization memory"
+                              }
+                            },
+                            "id": 922,
+                            "isConstant": false,
+                            "isLValue": true,
+                            "isPure": false,
+                            "lValueRequested": false,
+                            "memberName": "emitter",
+                            "nodeType": "MemberAccess",
+                            "referencedDeclaration": 900,
+                            "src": "1200:12:6",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_address",
+                              "typeString": "address"
+                            }
+                          },
+                          {
+                            "argumentTypes": null,
+                            "expression": {
+                              "argumentTypes": null,
+                              "id": 923,
+                              "name": "auth",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": 912,
+                              "src": "1230:4:6",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_struct$_Authorization_$905_memory_ptr",
+                                "typeString": "struct T721AdminDomain.Authorization memory"
+                              }
+                            },
+                            "id": 924,
+                            "isConstant": false,
+                            "isLValue": true,
+                            "isPure": false,
+                            "lValueRequested": false,
+                            "memberName": "grantee",
+                            "nodeType": "MemberAccess",
+                            "referencedDeclaration": 902,
+                            "src": "1230:12:6",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_address",
+                              "typeString": "address"
+                            }
+                          },
+                          {
+                            "argumentTypes": null,
+                            "expression": {
+                              "argumentTypes": null,
+                              "id": 925,
+                              "name": "auth",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": 912,
+                              "src": "1260:4:6",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_struct$_Authorization_$905_memory_ptr",
+                                "typeString": "struct T721AdminDomain.Authorization memory"
+                              }
+                            },
+                            "id": 926,
+                            "isConstant": false,
+                            "isLValue": true,
+                            "isPure": false,
+                            "lValueRequested": false,
+                            "memberName": "hash",
+                            "nodeType": "MemberAccess",
+                            "referencedDeclaration": 904,
+                            "src": "1260:9:6",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_bytes32",
+                              "typeString": "bytes32"
+                            }
+                          }
+                        ],
+                        "expression": {
+                          "argumentTypes": [
+                            {
+                              "typeIdentifier": "t_bytes32",
+                              "typeString": "bytes32"
+                            },
+                            {
+                              "typeIdentifier": "t_address",
+                              "typeString": "address"
+                            },
+                            {
+                              "typeIdentifier": "t_address",
+                              "typeString": "address"
+                            },
+                            {
+                              "typeIdentifier": "t_bytes32",
+                              "typeString": "bytes32"
+                            }
+                          ],
+                          "expression": {
+                            "argumentTypes": null,
+                            "id": 918,
+                            "name": "abi",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 1722,
+                            "src": "1132:3:6",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_magic_abi",
+                              "typeString": "abi"
+                            }
+                          },
+                          "id": 919,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": true,
+                          "lValueRequested": false,
+                          "memberName": "encode",
+                          "nodeType": "MemberAccess",
+                          "referencedDeclaration": null,
+                          "src": "1132:10:6",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_function_abiencode_pure$__$returns$_t_bytes_memory_ptr_$",
+                            "typeString": "function () pure returns (bytes memory)"
+                          }
+                        },
+                        "id": 927,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "kind": "functionCall",
+                        "lValueRequested": false,
+                        "names": [],
+                        "nodeType": "FunctionCall",
+                        "src": "1132:151:6",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bytes_memory_ptr",
+                          "typeString": "bytes memory"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_bytes_memory_ptr",
+                          "typeString": "bytes memory"
+                        }
+                      ],
+                      "id": 917,
+                      "name": "keccak256",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 1729,
+                      "src": "1122:9:6",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_keccak256_pure$_t_bytes_memory_ptr_$returns$_t_bytes32_$",
+                        "typeString": "function (bytes memory) pure returns (bytes32)"
+                      }
+                    },
+                    "id": 928,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "1122:162:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "functionReturnParameters": 916,
+                  "id": 929,
+                  "nodeType": "Return",
+                  "src": "1115:169:6"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 931,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "hash",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 913,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 912,
+                  "name": "auth",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 931,
+                  "src": "1046:25:6",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_Authorization_$905_memory_ptr",
+                    "typeString": "struct T721AdminDomain.Authorization"
+                  },
+                  "typeName": {
+                    "contractScope": null,
+                    "id": 911,
+                    "name": "Authorization",
+                    "nodeType": "UserDefinedTypeName",
+                    "referencedDeclaration": 905,
+                    "src": "1046:13:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_Authorization_$905_storage_ptr",
+                      "typeString": "struct T721AdminDomain.Authorization"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1045:27:6"
+            },
+            "returnParameters": {
+              "id": 916,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 915,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 931,
+                  "src": "1096:7:6",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 914,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1096:7:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1095:9:6"
+            },
+            "scope": 997,
+            "src": "1032:259:6",
+            "stateMutability": "pure",
+            "superFunction": null,
+            "visibility": "internal"
+          },
+          {
+            "body": {
+              "id": 972,
+              "nodeType": "Block",
+              "src": "1400:330:6",
+              "statements": [
+                {
+                  "assignments": [
+                    943
+                  ],
+                  "declarations": [
+                    {
+                      "constant": false,
+                      "id": 943,
+                      "name": "signature",
+                      "nodeType": "VariableDeclaration",
+                      "scope": 972,
+                      "src": "1410:37:6",
+                      "stateVariable": false,
+                      "storageLocation": "memory",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_struct$_Signature_$152_memory_ptr",
+                        "typeString": "struct SigUtil_v0.Signature"
+                      },
+                      "typeName": {
+                        "contractScope": null,
+                        "id": 942,
+                        "name": "SigUtil_v0.Signature",
+                        "nodeType": "UserDefinedTypeName",
+                        "referencedDeclaration": 152,
+                        "src": "1410:20:6",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_struct$_Signature_$152_storage_ptr",
+                          "typeString": "struct SigUtil_v0.Signature"
+                        }
+                      },
+                      "value": null,
+                      "visibility": "internal"
+                    }
+                  ],
+                  "id": 948,
+                  "initialValue": {
+                    "argumentTypes": null,
+                    "arguments": [
+                      {
+                        "argumentTypes": null,
+                        "id": 946,
+                        "name": "raw_signature",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 935,
+                        "src": "1477:13:6",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bytes_memory_ptr",
+                          "typeString": "bytes memory"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_bytes_memory_ptr",
+                          "typeString": "bytes memory"
+                        }
+                      ],
+                      "expression": {
+                        "argumentTypes": null,
+                        "id": 944,
+                        "name": "SigUtil_v0",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 205,
+                        "src": "1450:10:6",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_type$_t_contract$_SigUtil_v0_$205_$",
+                          "typeString": "type(library SigUtil_v0)"
+                        }
+                      },
+                      "id": 945,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "memberName": "_splitSignature",
+                      "nodeType": "MemberAccess",
+                      "referencedDeclaration": 204,
+                      "src": "1450:26:6",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_internal_pure$_t_bytes_memory_ptr_$returns$_t_struct$_Signature_$152_memory_ptr_$",
+                        "typeString": "function (bytes memory) pure returns (struct SigUtil_v0.Signature memory)"
+                      }
+                    },
+                    "id": 947,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "1450:41:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_Signature_$152_memory_ptr",
+                      "typeString": "struct SigUtil_v0.Signature memory"
+                    }
+                  },
+                  "nodeType": "VariableDeclarationStatement",
+                  "src": "1410:81:6"
+                },
+                {
+                  "assignments": [
+                    950
+                  ],
+                  "declarations": [
+                    {
+                      "constant": false,
+                      "id": 950,
+                      "name": "digest",
+                      "nodeType": "VariableDeclaration",
+                      "scope": 972,
+                      "src": "1501:14:6",
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bytes32",
+                        "typeString": "bytes32"
+                      },
+                      "typeName": {
+                        "id": 949,
+                        "name": "bytes32",
+                        "nodeType": "ElementaryTypeName",
+                        "src": "1501:7:6",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bytes32",
+                          "typeString": "bytes32"
+                        }
+                      },
+                      "value": null,
+                      "visibility": "internal"
+                    }
+                  ],
+                  "id": 961,
+                  "initialValue": {
+                    "argumentTypes": null,
+                    "arguments": [
+                      {
+                        "argumentTypes": null,
+                        "arguments": [
+                          {
+                            "argumentTypes": null,
+                            "hexValue": "1901",
+                            "id": 954,
+                            "isConstant": false,
+                            "isLValue": false,
+                            "isPure": true,
+                            "kind": "string",
+                            "lValueRequested": false,
+                            "nodeType": "Literal",
+                            "src": "1562:10:6",
+                            "subdenomination": null,
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_stringliteral_301a50b291d33ce1e8e9064e3f6a6c51d902ec22892b50d58abf6357c6a45541",
+                              "typeString": "literal_string \"\u0019\u0001\""
+                            },
+                            "value": "\u0019\u0001"
+                          },
+                          {
+                            "argumentTypes": null,
+                            "id": 955,
+                            "name": "DOMAIN_SEPARATOR",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 898,
+                            "src": "1590:16:6",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_bytes32",
+                              "typeString": "bytes32"
+                            }
+                          },
+                          {
+                            "argumentTypes": null,
+                            "arguments": [
+                              {
+                                "argumentTypes": null,
+                                "id": 957,
+                                "name": "auth",
+                                "nodeType": "Identifier",
+                                "overloadedDeclarations": [],
+                                "referencedDeclaration": 933,
+                                "src": "1629:4:6",
+                                "typeDescriptions": {
+                                  "typeIdentifier": "t_struct$_Authorization_$905_memory_ptr",
+                                  "typeString": "struct T721AdminDomain.Authorization memory"
+                                }
+                              }
+                            ],
+                            "expression": {
+                              "argumentTypes": [
+                                {
+                                  "typeIdentifier": "t_struct$_Authorization_$905_memory_ptr",
+                                  "typeString": "struct T721AdminDomain.Authorization memory"
+                                }
+                              ],
+                              "id": 956,
+                              "name": "hash",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [
+                                896,
+                                931
+                              ],
+                              "referencedDeclaration": 931,
+                              "src": "1624:4:6",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_function_internal_pure$_t_struct$_Authorization_$905_memory_ptr_$returns$_t_bytes32_$",
+                                "typeString": "function (struct T721AdminDomain.Authorization memory) pure returns (bytes32)"
+                              }
+                            },
+                            "id": 958,
+                            "isConstant": false,
+                            "isLValue": false,
+                            "isPure": false,
+                            "kind": "functionCall",
+                            "lValueRequested": false,
+                            "names": [],
+                            "nodeType": "FunctionCall",
+                            "src": "1624:10:6",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_bytes32",
+                              "typeString": "bytes32"
+                            }
+                          }
+                        ],
+                        "expression": {
+                          "argumentTypes": [
+                            {
+                              "typeIdentifier": "t_stringliteral_301a50b291d33ce1e8e9064e3f6a6c51d902ec22892b50d58abf6357c6a45541",
+                              "typeString": "literal_string \"\u0019\u0001\""
+                            },
+                            {
+                              "typeIdentifier": "t_bytes32",
+                              "typeString": "bytes32"
+                            },
+                            {
+                              "typeIdentifier": "t_bytes32",
+                              "typeString": "bytes32"
+                            }
+                          ],
+                          "expression": {
+                            "argumentTypes": null,
+                            "id": 952,
+                            "name": "abi",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 1722,
+                            "src": "1528:3:6",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_magic_abi",
+                              "typeString": "abi"
+                            }
+                          },
+                          "id": 953,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": true,
+                          "lValueRequested": false,
+                          "memberName": "encodePacked",
+                          "nodeType": "MemberAccess",
+                          "referencedDeclaration": null,
+                          "src": "1528:16:6",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_function_abiencodepacked_pure$__$returns$_t_bytes_memory_ptr_$",
+                            "typeString": "function () pure returns (bytes memory)"
+                          }
+                        },
+                        "id": 959,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "kind": "functionCall",
+                        "lValueRequested": false,
+                        "names": [],
+                        "nodeType": "FunctionCall",
+                        "src": "1528:120:6",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bytes_memory_ptr",
+                          "typeString": "bytes memory"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_bytes_memory_ptr",
+                          "typeString": "bytes memory"
+                        }
+                      ],
+                      "id": 951,
+                      "name": "keccak256",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 1729,
+                      "src": "1518:9:6",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_keccak256_pure$_t_bytes_memory_ptr_$returns$_t_bytes32_$",
+                        "typeString": "function (bytes memory) pure returns (bytes32)"
+                      }
+                    },
+                    "id": 960,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "1518:131:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "nodeType": "VariableDeclarationStatement",
+                  "src": "1501:148:6"
+                },
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "arguments": [
+                      {
+                        "argumentTypes": null,
+                        "id": 963,
+                        "name": "digest",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 950,
+                        "src": "1677:6:6",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bytes32",
+                          "typeString": "bytes32"
+                        }
+                      },
+                      {
+                        "argumentTypes": null,
+                        "expression": {
+                          "argumentTypes": null,
+                          "id": 964,
+                          "name": "signature",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 943,
+                          "src": "1685:9:6",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_struct$_Signature_$152_memory_ptr",
+                            "typeString": "struct SigUtil_v0.Signature memory"
+                          }
+                        },
+                        "id": 965,
+                        "isConstant": false,
+                        "isLValue": true,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "memberName": "v",
+                        "nodeType": "MemberAccess",
+                        "referencedDeclaration": 147,
+                        "src": "1685:11:6",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint8",
+                          "typeString": "uint8"
+                        }
+                      },
+                      {
+                        "argumentTypes": null,
+                        "expression": {
+                          "argumentTypes": null,
+                          "id": 966,
+                          "name": "signature",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 943,
+                          "src": "1698:9:6",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_struct$_Signature_$152_memory_ptr",
+                            "typeString": "struct SigUtil_v0.Signature memory"
+                          }
+                        },
+                        "id": 967,
+                        "isConstant": false,
+                        "isLValue": true,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "memberName": "r",
+                        "nodeType": "MemberAccess",
+                        "referencedDeclaration": 149,
+                        "src": "1698:11:6",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bytes32",
+                          "typeString": "bytes32"
+                        }
+                      },
+                      {
+                        "argumentTypes": null,
+                        "expression": {
+                          "argumentTypes": null,
+                          "id": 968,
+                          "name": "signature",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 943,
+                          "src": "1711:9:6",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_struct$_Signature_$152_memory_ptr",
+                            "typeString": "struct SigUtil_v0.Signature memory"
+                          }
+                        },
+                        "id": 969,
+                        "isConstant": false,
+                        "isLValue": true,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "memberName": "s",
+                        "nodeType": "MemberAccess",
+                        "referencedDeclaration": 151,
+                        "src": "1711:11:6",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bytes32",
+                          "typeString": "bytes32"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_bytes32",
+                          "typeString": "bytes32"
+                        },
+                        {
+                          "typeIdentifier": "t_uint8",
+                          "typeString": "uint8"
+                        },
+                        {
+                          "typeIdentifier": "t_bytes32",
+                          "typeString": "bytes32"
+                        },
+                        {
+                          "typeIdentifier": "t_bytes32",
+                          "typeString": "bytes32"
+                        }
+                      ],
+                      "id": 962,
+                      "name": "ecrecover",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 1727,
+                      "src": "1667:9:6",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_ecrecover_pure$_t_bytes32_$_t_uint8_$_t_bytes32_$_t_bytes32_$returns$_t_address_$",
+                        "typeString": "function (bytes32,uint8,bytes32,bytes32) pure returns (address)"
+                      }
+                    },
+                    "id": 970,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "1667:56:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "functionReturnParameters": 939,
+                  "id": 971,
+                  "nodeType": "Return",
+                  "src": "1660:63:6"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 973,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "verify",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 936,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 933,
+                  "name": "auth",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 973,
+                  "src": "1313:25:6",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_Authorization_$905_memory_ptr",
+                    "typeString": "struct T721AdminDomain.Authorization"
+                  },
+                  "typeName": {
+                    "contractScope": null,
+                    "id": 932,
+                    "name": "Authorization",
+                    "nodeType": "UserDefinedTypeName",
+                    "referencedDeclaration": 905,
+                    "src": "1313:13:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_Authorization_$905_storage_ptr",
+                      "typeString": "struct T721AdminDomain.Authorization"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 935,
+                  "name": "raw_signature",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 973,
+                  "src": "1340:26:6",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_memory_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 934,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1340:5:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1312:55:6"
+            },
+            "returnParameters": {
+              "id": 939,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 938,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 973,
+                  "src": "1391:7:6",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 937,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1391:7:6",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1390:9:6"
+            },
+            "scope": 997,
+            "src": "1297:433:6",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "internal"
+          },
+          {
+            "body": {
+              "id": 995,
+              "nodeType": "Block",
+              "src": "1827:210:6",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 993,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "argumentTypes": null,
+                      "id": 982,
+                      "name": "DOMAIN_SEPARATOR",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 898,
+                      "src": "1837:16:6",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bytes32",
+                        "typeString": "bytes32"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "argumentTypes": null,
+                      "arguments": [
+                        {
+                          "argumentTypes": null,
+                          "arguments": [
+                            {
+                              "argumentTypes": null,
+                              "id": 985,
+                              "name": "_domain_name",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": 975,
+                              "src": "1894:12:6",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_string_memory_ptr",
+                                "typeString": "string memory"
+                              }
+                            },
+                            {
+                              "argumentTypes": null,
+                              "id": 986,
+                              "name": "_version",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": 977,
+                              "src": "1929:8:6",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_string_memory_ptr",
+                                "typeString": "string memory"
+                              }
+                            },
+                            {
+                              "argumentTypes": null,
+                              "id": 987,
+                              "name": "_chainId",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": 979,
+                              "src": "1960:8:6",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_uint256",
+                                "typeString": "uint256"
+                              }
+                            },
+                            {
+                              "argumentTypes": null,
+                              "arguments": [
+                                {
+                                  "argumentTypes": null,
+                                  "id": 989,
+                                  "name": "this",
+                                  "nodeType": "Identifier",
+                                  "overloadedDeclarations": [],
+                                  "referencedDeclaration": 1759,
+                                  "src": "2009:4:6",
+                                  "typeDescriptions": {
+                                    "typeIdentifier": "t_contract$_T721AdminDomain_$997",
+                                    "typeString": "contract T721AdminDomain"
+                                  }
+                                }
+                              ],
+                              "expression": {
+                                "argumentTypes": [
+                                  {
+                                    "typeIdentifier": "t_contract$_T721AdminDomain_$997",
+                                    "typeString": "contract T721AdminDomain"
+                                  }
+                                ],
+                                "id": 988,
+                                "isConstant": false,
+                                "isLValue": false,
+                                "isPure": true,
+                                "lValueRequested": false,
+                                "nodeType": "ElementaryTypeNameExpression",
+                                "src": "2001:7:6",
+                                "typeDescriptions": {
+                                  "typeIdentifier": "t_type$_t_address_$",
+                                  "typeString": "type(address)"
+                                },
+                                "typeName": "address"
+                              },
+                              "id": 990,
+                              "isConstant": false,
+                              "isLValue": false,
+                              "isPure": false,
+                              "kind": "typeConversion",
+                              "lValueRequested": false,
+                              "names": [],
+                              "nodeType": "FunctionCall",
+                              "src": "2001:13:6",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_address",
+                                "typeString": "address"
+                              }
+                            }
+                          ],
+                          "expression": {
+                            "argumentTypes": [
+                              {
+                                "typeIdentifier": "t_string_memory_ptr",
+                                "typeString": "string memory"
+                              },
+                              {
+                                "typeIdentifier": "t_string_memory_ptr",
+                                "typeString": "string memory"
+                              },
+                              {
+                                "typeIdentifier": "t_uint256",
+                                "typeString": "uint256"
+                              },
+                              {
+                                "typeIdentifier": "t_address",
+                                "typeString": "address"
+                              }
+                            ],
+                            "id": 984,
+                            "name": "EIP712Domain",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 860,
+                            "src": "1861:12:6",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_type$_t_struct$_EIP712Domain_$860_storage_ptr_$",
+                              "typeString": "type(struct T721AdminDomain.EIP712Domain storage pointer)"
+                            }
+                          },
+                          "id": 991,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "kind": "structConstructorCall",
+                          "lValueRequested": false,
+                          "names": [
+                            "name",
+                            "version",
+                            "chainId",
+                            "verifyingContract"
+                          ],
+                          "nodeType": "FunctionCall",
+                          "src": "1861:168:6",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_struct$_EIP712Domain_$860_memory",
+                            "typeString": "struct T721AdminDomain.EIP712Domain memory"
+                          }
+                        }
+                      ],
+                      "expression": {
+                        "argumentTypes": [
+                          {
+                            "typeIdentifier": "t_struct$_EIP712Domain_$860_memory",
+                            "typeString": "struct T721AdminDomain.EIP712Domain memory"
+                          }
+                        ],
+                        "id": 983,
+                        "name": "hash",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [
+                          896,
+                          931
+                        ],
+                        "referencedDeclaration": 896,
+                        "src": "1856:4:6",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_function_internal_pure$_t_struct$_EIP712Domain_$860_memory_ptr_$returns$_t_bytes32_$",
+                          "typeString": "function (struct T721AdminDomain.EIP712Domain memory) pure returns (bytes32)"
+                        }
+                      },
+                      "id": 992,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "kind": "functionCall",
+                      "lValueRequested": false,
+                      "names": [],
+                      "nodeType": "FunctionCall",
+                      "src": "1856:174:6",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bytes32",
+                        "typeString": "bytes32"
+                      }
+                    },
+                    "src": "1837:193:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "id": 994,
+                  "nodeType": "ExpressionStatement",
+                  "src": "1837:193:6"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 996,
+            "implemented": true,
+            "kind": "constructor",
+            "modifiers": [],
+            "name": "",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 980,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 975,
+                  "name": "_domain_name",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 996,
+                  "src": "1748:26:6",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 974,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1748:6:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 977,
+                  "name": "_version",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 996,
+                  "src": "1776:22:6",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 976,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1776:6:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 979,
+                  "name": "_chainId",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 996,
+                  "src": "1800:16:6",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 978,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1800:7:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1747:70:6"
+            },
+            "returnParameters": {
+              "id": 981,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1827:0:6"
+            },
+            "scope": 997,
+            "src": "1736:301:6",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "internal"
+          }
+        ],
+        "scope": 998,
+        "src": "52:1989:6"
+      }
+    ],
+    "src": "0:2042:6"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.5.15+commit.6a57276f.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.0.9",
+  "updatedAt": "2020-05-20T14:16:18.122Z",
+  "devdoc": {
+    "methods": {}
+  },
+  "userdoc": {
+    "methods": {}
+  }
+}

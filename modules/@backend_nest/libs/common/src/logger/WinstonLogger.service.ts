@@ -40,13 +40,11 @@ export class WinstonLoggerService implements LoggerService {
             return `[ ${data.timestamp} | ${data.section ? data.section + ' | ' : ''}${data.level} ] ${data.message}`;
         });
 
-        if (process.env.NODE_ENV !== 'production') {
-            this.logger.add(
-                new transports.Console({
-                    format: combine(timestamp(), myFormat),
-                }),
-            );
-        }
+        this.logger.add(
+            new transports.Console({
+                format: combine(timestamp(), myFormat),
+            }),
+        );
     }
 
     /**

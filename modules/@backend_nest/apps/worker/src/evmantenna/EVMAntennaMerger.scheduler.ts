@@ -4,17 +4,19 @@ import { InjectSchedule, Schedule } from 'nest-schedule';
 import { EVMEventControllerBase } from '@app/worker/evmantenna/EVMEvent.controller.base';
 import { GlobalConfigService } from '@lib/common/globalconfig/GlobalConfig.service';
 import { EVMEventSetsService } from '@lib/common/evmeventsets/EVMEventSets.service';
-import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
-import { GlobalEntity } from '@lib/common/globalconfig/entities/Global.entity';
-import { Job, Queue } from 'bull';
-import { InjectQueue } from '@nestjs/bull';
-import { ESSearchHit } from '@lib/common/utils/ESSearchReturn.type';
-import { EVMEvent, EVMEventSetEntity } from '@lib/common/evmeventsets/entities/EVMEventSet.entity';
-import { DryResponse } from '@lib/common/crud/CRUDExtension.base';
+import { ShutdownService }              from '@lib/common/shutdown/Shutdown.service';
+import { GlobalEntity }                 from '@lib/common/globalconfig/entities/Global.entity';
+import { Job, Queue }                   from 'bull';
+import { InjectQueue }                  from '@nestjs/bull';
+import { ESSearchHit }                  from '@lib/common/utils/ESSearchReturn.type';
+import { EVMEvent, EVMEventSetEntity }  from '@lib/common/evmeventsets/entities/EVMEventSet.entity';
+import { DryResponse }                  from '@lib/common/crud/CRUDExtension.base';
 import { Connection, InjectConnection } from '@iaminfinity/express-cassandra';
-import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
-import { EVMBlockRollbacksService } from '@lib/common/evmblockrollbacks/EVMBlockRollbacks.service';
-import { cassandraArrayResultHelper } from '@lib/common/utils/cassandraArrayResult.helper';
+import { WinstonLoggerService }         from '@lib/common/logger/WinstonLogger.service';
+import { EVMBlockRollbacksService }     from '@lib/common/evmblockrollbacks/EVMBlockRollbacks.service';
+import { cassandraArrayResultHelper }   from '@lib/common/utils/cassandraArrayResult.helper';
+import { NestError }                    from '@lib/common/utils/NestError';
+import { fromES }                       from '@lib/common/utils/fromES.helper';
 
 /**
  * Data Model contained inside the merge jobs
@@ -92,9 +94,9 @@ export class EVMAntennaMergerScheduler implements OnApplicationBootstrap {
         });
 
         if (globalConfigRes.error || globalConfigRes.response.length === 0) {
-            const error = new Error(
+            const error = new NestError(
                 `EVMAntennaMergerScheduler::evmEventMergerPoller | Unable to recover global config: ${globalConfigRes.error ||
-                    'no document found'}`,
+                'no document found'}`,
             );
             this.shutdownService.shutdownWithError(error);
             throw error;
@@ -102,24 +104,37 @@ export class EVMAntennaMergerScheduler implements OnApplicationBootstrap {
 
         const globalConfig: GlobalEntity = globalConfigRes.response[0];
 
-        const processedHeight = globalConfig.processed_block_number;
+        let processedHeight = globalConfig.processed_block_number;
         const currentHeight = globalConfig.block_number;
 
         if (processedHeight === currentHeight) {
             return;
         }
 
-        const toProcess = processedHeight + 1;
+        if (processedHeight < currentHeight) {
+            this.logger.log(`Starting sync loop at block ${processedHeight + 1}`);
 
-        const currentJob = (await this.queue.getJobs(['waiting', 'active'])).filter(
-            (job: Job): boolean => job.name === `@@evmeventset/evmEventMerger`,
-        );
+            const amountToMerge = currentHeight - processedHeight > 100 ? 100 : currentHeight - processedHeight;
 
-        if (currentJob.length === 0) {
-            await this.queue.add(`@@evmeventset/evmEventMerger`, {
-                blockNumber: toProcess,
-            });
+            while (processedHeight < currentHeight) {
+                try {
+                    const res = await this.evmEventMerger(processedHeight + 1, processedHeight + amountToMerge);
+
+                    if (res === null) {
+                        this.logger.log(`Stopped syncing at block ${processedHeight} (missing events)`);
+                        return;
+                    }
+
+                    processedHeight += res;
+                } catch (e) {
+                    this.logger.error(e);
+                    return;
+                }
+            }
+
+            this.logger.log(`Finished sync loop at block ${currentHeight}`);
         }
+
     }
 
     /**
@@ -132,7 +147,7 @@ export class EVMAntennaMergerScheduler implements OnApplicationBootstrap {
      */
     appender(querries: DryResponse[], rollbacks: DryResponse[], query: DryResponse, rollback: DryResponse): void {
         if (!query || !rollback) {
-            throw new Error(`Cannot have asymmetric updates: each query must have its rollback !`);
+            throw new NestError(`Cannot have asymmetric updates: each query must have its rollback !`);
         }
 
         querries.push(query);
@@ -142,17 +157,21 @@ export class EVMAntennaMergerScheduler implements OnApplicationBootstrap {
     /**
      * Internal utility to fetch all evm event sets for a specific block
      *
-     * @param blockNumber
+     * @param from
+     * @param to
      */
-    private async fetchEvmEventSets(blockNumber: number): Promise<ESSearchHit<EVMEventSetEntity>[]> {
+    private async fetchEvmEventSets(from: number, to: number): Promise<ESSearchHit<EVMEventSetEntity>[][]> {
         const esQuery = {
             body: {
                 query: {
                     bool: {
                         must: {
-                            term: {
-                                block_number: blockNumber,
-                            },
+                            range : {
+                                block_number : {
+                                    gte : from,
+                                    lte : to
+                                }
+                            }
                         },
                     },
                 },
@@ -162,16 +181,29 @@ export class EVMAntennaMergerScheduler implements OnApplicationBootstrap {
         const EVMEventSets = await this.evmEventSetsService.searchElastic(esQuery);
 
         if (EVMEventSets.error) {
-            throw new Error(
-                `EVMAntennaMergerScheduler::fetchEvmEventSets | Error while fetching events for block ${blockNumber}: ${EVMEventSets.error}`,
+            throw new NestError(
+                `EVMAntennaMergerScheduler::fetchEvmEventSets | Error while fetching events for blocks ${from} => ${to}: ${EVMEventSets.error}`,
             );
         }
 
-        if (EVMEventSets.response.hits.total !== EVMAntennaMergerScheduler.controllers.length) {
-            return null;
+        const events = EVMEventSets.response.hits.hits;
+
+        const ret: ESSearchHit<EVMEventSetEntity>[][] = [];
+
+        for (let currentBlock = from; currentBlock <= to; ++currentBlock) {
+
+            const currentBlockEvents = events.filter((evmes: ESSearchHit<EVMEventSetEntity>): boolean => evmes._source.block_number === currentBlock);
+
+            if (currentBlockEvents.length !== EVMAntennaMergerScheduler.controllers.length) {
+                return ret;
+            }
+
+            ret.push(currentBlockEvents);
+
         }
 
-        return EVMEventSets.response.hits.hits;
+        return ret;
+
     }
 
     /**
@@ -218,7 +250,7 @@ export class EVMAntennaMergerScheduler implements OnApplicationBootstrap {
             );
 
             if (controllerIdx === -1) {
-                throw new Error(
+                throw new NestError(
                     `EVMAntennaMergerScheduler::convertEventsToQueries | event ${event.event} from ${event.artifact_name} has no matching controller`,
                 );
             }
@@ -245,7 +277,7 @@ export class EVMAntennaMergerScheduler implements OnApplicationBootstrap {
             });
 
             if (evmEventSetsRemoval.error) {
-                throw new Error(
+                throw new NestError(
                     `EVMAntennaMergerScheduler::injectEventSetDeletionQueries | error while creating evmeventset removal on event ${controller.eventName} on controller ${controller.artifactName}`,
                 );
             }
@@ -271,7 +303,7 @@ export class EVMAntennaMergerScheduler implements OnApplicationBootstrap {
         );
 
         if (globalConfigRes.error) {
-            throw new Error(
+            throw new NestError(
                 `EVMAntennaMergerScheduler::evmEventMerger | error while creating global config update query: ${globalConfigRes.error}`,
             );
         }
@@ -297,7 +329,7 @@ export class EVMAntennaMergerScheduler implements OnApplicationBootstrap {
         });
 
         if (rollbackRes.error) {
-            throw new Error(
+            throw new NestError(
                 `EVMAntennaMergerScheduler::injectBlockRollbackCreationQuery | error while creating block rollback query: ${rollbackRes.error}`,
             );
         }
@@ -326,36 +358,72 @@ export class EVMAntennaMergerScheduler implements OnApplicationBootstrap {
     /**
      * Bull Task to merge a specific job
      *
-     * @param job
+     * @param from
+     * @param to
      */
-    async evmEventMerger(job: Job<EVMAntennaMergerJob>): Promise<void> {
-        const esQueryResult = await this.fetchEvmEventSets(job.data.blockNumber);
-
-        if (esQueryResult === null) {
-            return;
-        }
-
-        const rawEvents = this.sortAndMergeEvents(esQueryResult);
+    async evmEventMerger(from: number, to: number): Promise<number> {
+        const esQueryResult = await this.fetchEvmEventSets(from, to);
 
         const queryBatch: DryResponse[] = [];
         const rollbackBatch: DryResponse[] = [];
 
-        await this.convertEventsToQueries(queryBatch, rollbackBatch, rawEvents);
-        await this.injectEventSetDeletionQueries(queryBatch, job.data.blockNumber);
-        await this.injectProcessedHeightUpdateQuery(queryBatch, job.data.blockNumber);
-        await this.injectBlockRollbackCreationQuery(queryBatch, rollbackBatch, job.data.blockNumber);
+        for (const blocksEvents of esQueryResult) {
 
-        try {
-            await this.connection.doBatchAsync((queryBatch as any) as string[]);
-        } catch (e) {
-            this.logger.error(
-                `Error when broadcasting event fusion batched transaction for block ${job.data.blockNumber}`,
-            );
-            this.logger.error(e);
-            throw e;
+            const blockNumber = blocksEvents[0]._source.block_number;
+
+            const rawEvents = this.sortAndMergeEvents(blocksEvents);
+
+            if (rawEvents.length) {
+                await this.convertEventsToQueries(queryBatch, rollbackBatch, rawEvents);
+            }
+
+            await this.injectEventSetDeletionQueries(queryBatch, blockNumber);
+            await this.injectProcessedHeightUpdateQuery(queryBatch, blockNumber);
+
+            if (rawEvents.length) {
+                await this.injectBlockRollbackCreationQuery(queryBatch, rollbackBatch, blockNumber);
+            }
         }
 
-        this.logger.log(`Successful block ${job.data.blockNumber} event fusion`);
+        if (queryBatch.length) {
+
+            try {
+                await this.connection.doBatchAsync((queryBatch as any) as string[]);
+                this.logger.log(`Successful batch block event fusion for blocks ${from} => ${from + esQueryResult.length - 1}`);
+            } catch (e) {
+                this.logger.error(
+                    `Error when broadcasting event fusion batched transaction for blocks ${from} => ${from + esQueryResult.length - 1}`,
+                );
+                this.logger.error(e);
+                throw e;
+            }
+
+        }
+
+        return esQueryResult.length;
+
+    }
+
+    running = false;
+
+    private async NoConcurrentRun(fn: () => Promise<void>): Promise<void> {
+        if (!this.running) {
+            this.running = true;
+            let error = null;
+
+            try {
+                await fn();
+            } catch (e) {
+                console.error('error occurred while running noConcurrentRun', e);
+                error = e;
+            }
+
+            this.running = false;
+
+            if (error) {
+                throw error;
+            }
+        }
     }
 
     /**
@@ -365,14 +433,18 @@ export class EVMAntennaMergerScheduler implements OnApplicationBootstrap {
         const signature: InstanceSignature = await this.outrospectionService.getInstanceSignature();
 
         if (signature.master === true && signature.name === 'worker') {
-            this.schedule.scheduleIntervalJob('evmEventMerger', 500, this.evmEventMergerPoller.bind(this));
+            this.schedule.scheduleIntervalJob('evmEventMerger', 500,
+                this.NoConcurrentRun.bind(this,
+                    this.evmEventMergerPoller.bind(this)
+                )
+            );
         }
 
         if (signature.name === 'worker') {
-            this.queue
-                .process(`@@evmeventset/evmEventMerger`, 1, this.evmEventMerger.bind(this))
-                .then(() => console.log(`Closing Bull Queue @@evmeventset/evmEventMerger`))
-                .catch(this.shutdownService.shutdownWithError);
+            // this.queue
+            //     .process(`@@evmeventset/evmEventMerger`, 1, this.evmEventMerger.bind(this))
+            //     .then(() => console.log(`Closing Bull Queue @@evmeventset/evmEventMerger`))
+            //     .catch(this.shutdownService.shutdownWithError);
         }
     }
 }

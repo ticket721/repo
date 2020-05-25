@@ -1,0 +1,14 @@
+apiVersion: cert-manager.io/v1alpha2
+kind: Certificate
+metadata:
+  name: {{ include "ingress.fullname" . }}--wildcard-certificate--cert
+  labels:
+    name: {{ include "ingress.fullname" . }}--wildcard-certificate--cert
+    chart: {{ .Chart.Name }}
+spec:
+  secretName: {{ include "ingress.fullname" . }}--wildcard-certificate--sec
+  issuerRef:
+    name: {{ include "ingress.fullname" . }}--cluster-issuer--issuer
+    kind: ClusterIssuer
+  dnsNames:
+    - '*.{{ .Values.certificates.baseName }}'

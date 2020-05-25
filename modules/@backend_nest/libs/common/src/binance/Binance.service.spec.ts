@@ -1,11 +1,12 @@
-import { BinanceService } from '@lib/common/binance/Binance.service';
-import { BinanceModuleBuildOptions } from '@lib/common/binance/Binance.module';
+import { BinanceService }                          from '@lib/common/binance/Binance.service';
+import { BinanceModuleBuildOptions }               from '@lib/common/binance/Binance.module';
 import { deepEqual, instance, mock, verify, when } from 'ts-mockito';
-import { Test, TestingModule } from '@nestjs/testing';
-import { TxsService } from '@lib/common/txs/Txs.service';
-import { ConfigService } from '@lib/common/config/Config.service';
-import { ContractsService } from '@lib/common/contracts/Contracts.service';
-import { TxsController } from '@app/server/controllers/txs/Txs.controller';
+import { Test, TestingModule }                     from '@nestjs/testing';
+import { TxsService }                              from '@lib/common/txs/Txs.service';
+import { ConfigService }                           from '@lib/common/config/Config.service';
+import { ContractsService }                        from '@lib/common/contracts/Contracts.service';
+import { TxsController }                           from '@app/server/controllers/txs/Txs.controller';
+import { NestError }                               from '@lib/common/utils/NestError';
 
 class BinanceSDKMock {
     async avgPrice(arg: any): Promise<any> {
@@ -82,7 +83,7 @@ describe('Binance Service', function() {
                             symbol: 'ETHEUR',
                         }),
                     ),
-                ).thenReject(new Error('Unable to fetch from binance'));
+                ).thenReject(new NestError('Unable to fetch from binance'));
 
                 const res = await context.binanceService.getETHEURPrice();
 

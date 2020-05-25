@@ -58,7 +58,7 @@ In order for you to properly use the monorepo, you will have to install `lerna` 
 Simply run the following command to get started
 
 ```
-npm install --global lerna yarn truffle
+npm install --global lerna yarn truffle@5.0.18
 ```
 
 ### First time cloning ?

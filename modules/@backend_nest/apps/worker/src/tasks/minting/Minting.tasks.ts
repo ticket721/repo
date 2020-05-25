@@ -17,17 +17,18 @@ import { T721AdminService } from '@lib/common/contracts/T721Admin.service';
 import { AuthorizedTicketMintingFormat } from '@lib/common/utils/Cart.type';
 import { AuthorizationsService } from '@lib/common/authorizations/Authorizations.service';
 import { AuthorizationEntity } from '@lib/common/authorizations/entities/Authorization.entity';
-import { CurrenciesService, ERC20Currency, Price } from '@lib/common/currencies/Currencies.service';
+import { CurrenciesService, ERC20Currency, Price }       from '@lib/common/currencies/Currencies.service';
 import {
     TransactionLifecycles,
     TxSequenceAcsetBuilderArgs,
-} from '@lib/common/txs/acset_builders/TxSequence.acsetbuilder.helper';
-import { UsersService } from '@lib/common/users/Users.service';
-import { UserDto } from '@lib/common/users/dto/User.dto';
-import { GroupService } from '@lib/common/group/Group.service';
+}                                                        from '@lib/common/txs/acset_builders/TxSequence.acsetbuilder.helper';
+import { UsersService }                                  from '@lib/common/users/Users.service';
+import { UserDto }                                       from '@lib/common/users/dto/User.dto';
+import { GroupService }                                  from '@lib/common/group/Group.service';
 import { TicketsService, TicketsServicePredictionInput } from '@lib/common/tickets/Tickets.service';
-import { TicketEntity } from '@lib/common/tickets/entities/Ticket.entity';
-import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
+import { TicketEntity }                                  from '@lib/common/tickets/entities/Ticket.entity';
+import { ServiceResponse }                               from '@lib/common/utils/ServiceResponse.type';
+import { NestError }                                     from '@lib/common/utils/NestError';
 
 /**
  * Data Model used for the transaction sequence builder
@@ -139,7 +140,7 @@ export class MintingTasks implements OnModuleInit {
         });
 
         if (checkoutActionSetRes.error || checkoutActionSetRes.response.length === 0) {
-            throw new Error(
+            throw new NestError(
                 `Unable to recover checkout for minting initialization: ${checkoutActionSetRes.error ||
                     'checkout not found'}`,
             );
@@ -159,7 +160,7 @@ export class MintingTasks implements OnModuleInit {
         });
 
         if (cartActionSetRes.error || cartActionSetRes.response.length === 0) {
-            throw new Error(
+            throw new NestError(
                 `Unable to recover cart for minting initialization: ${cartActionSetRes.error || 'cart not found'}`,
             );
         }
@@ -188,11 +189,11 @@ export class MintingTasks implements OnModuleInit {
         }
 
         if (cartAuthorizations.total.length > 1) {
-            throw new Error('Multiple currencies not allowed');
+            throw new NestError('Multiple currencies not allowed');
         }
 
         if (cartAuthorizations.total[0].currency !== 'T721Token') {
-            throw new Error('Only T721Token allowed');
+            throw new NestError('Only T721Token allowed');
         }
 
         const currentlyAuthorizedAmount = (
@@ -234,7 +235,7 @@ export class MintingTasks implements OnModuleInit {
 
             return parameters;
         } catch (e) {
-            throw new Error(`Unable to create token approval call: ${e.message}`);
+            throw new NestError(`Unable to create token approval call: ${e.message}`);
         }
     }
 
@@ -262,7 +263,7 @@ export class MintingTasks implements OnModuleInit {
             const currency = await this.currenciesService.get(price.currency);
 
             if (currency.type !== 'erc20') {
-                throw new Error(`Invalid currency type on final step: ${currency.type}`);
+                throw new NestError(`Invalid currency type on final step: ${currency.type}`);
             }
 
             const erc20Currency: ERC20Currency = currency as ERC20Currency;
@@ -283,7 +284,7 @@ export class MintingTasks implements OnModuleInit {
             });
 
             if (authorizationEntityRes.error || authorizationEntityRes.response.length === 0) {
-                throw new Error(
+                throw new NestError(
                     `Cannot fetch or find authorization entity ${
                         authorization.authorizationId
                     }: ${authorizationEntityRes.error || 'authorization not found'}`,
@@ -301,7 +302,7 @@ export class MintingTasks implements OnModuleInit {
                 expiration = args[args.length - 1];
             } else {
                 if (expiration !== args[args.length - 1]) {
-                    throw new Error(`Cannot proceed with authorizations with different expirations`);
+                    throw new NestError(`Cannot proceed with authorizations with different expirations`);
                 }
             }
         }
@@ -312,7 +313,7 @@ export class MintingTasks implements OnModuleInit {
         const scopeInfos = await (await this.ticketforgeService.get()).methods.getScope(scopeName).call();
 
         if (scopeInfos.exists === false) {
-            throw new Error(`Current server ticketforge scope does not exist`);
+            throw new NestError(`Current server ticketforge scope does not exist`);
         }
 
         const scopeIndex = scopeInfos.scope_index;
@@ -323,7 +324,7 @@ export class MintingTasks implements OnModuleInit {
         );
 
         if (controllerIdRes.error) {
-            throw new Error(`Unable to recover controller id used for the group_id generation`);
+            throw new NestError(`Unable to recover controller id used for the group_id generation`);
         }
 
         const controllerId = controllerIdRes.response[0].toLowerCase();
@@ -346,7 +347,7 @@ export class MintingTasks implements OnModuleInit {
         const generatedTicketsRes = await this.generateTickets(authorizations);
 
         if (generatedTicketsRes.error) {
-            throw new Error(`Unable to generate ticket before minting: ${generatedTicketsRes.error}`);
+            throw new NestError(`Unable to generate ticket before minting: ${generatedTicketsRes.error}`);
         }
 
         return {
@@ -399,7 +400,7 @@ export class MintingTasks implements OnModuleInit {
             );
 
             if (authorizationUpdateRes.error) {
-                throw new Error(`Authorization update failure: ${authorizationUpdateRes.error}`);
+                throw new NestError(`Authorization update failure: ${authorizationUpdateRes.error}`);
             }
         }
     }
@@ -461,7 +462,7 @@ export class MintingTasks implements OnModuleInit {
         const userSearchRes = await this.usersService.findByAddress(buyer);
 
         if (userSearchRes.error || userSearchRes.response === null) {
-            throw new Error(`User linked to address ${buyer} not found`);
+            throw new NestError(`User linked to address ${buyer} not found`);
         }
 
         const user: UserDto = userSearchRes.response;
@@ -478,7 +479,7 @@ export class MintingTasks implements OnModuleInit {
         );
 
         if (txSeqHandler.error) {
-            throw new Error(`Unable to create tx sequence actionset: ${txSeqHandler.error}`);
+            throw new NestError(`Unable to create tx sequence actionset: ${txSeqHandler.error}`);
         }
     }
 
@@ -499,7 +500,7 @@ export class MintingTasks implements OnModuleInit {
             );
 
             if (ticketConfirmationRes.error) {
-                throw new Error(`Error while setting transaction hash on ticket: ${ticketConfirmationRes.error}`);
+                throw new NestError(`Error while setting transaction hash on ticket: ${ticketConfirmationRes.error}`);
             }
         }
     }
@@ -522,7 +523,7 @@ export class MintingTasks implements OnModuleInit {
             );
 
             if (ticketConfirmationRes.error) {
-                throw new Error(
+                throw new NestError(
                     `Error while setting transaction hash and canceled on ticket: ${ticketConfirmationRes.error}`,
                 );
             }
@@ -542,7 +543,7 @@ export class MintingTasks implements OnModuleInit {
             );
 
             if (authorizationConsumingRes.error) {
-                throw new Error(`Error while setting authorizations to canceled: ${authorizationConsumingRes.error}`);
+                throw new NestError(`Error while setting authorizations to canceled: ${authorizationConsumingRes.error}`);
             }
         }
     }

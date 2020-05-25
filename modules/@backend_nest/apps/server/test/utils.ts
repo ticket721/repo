@@ -10,17 +10,18 @@ import { LocalRegisterResponseDto } from '@app/server/authentication/dto/LocalRe
 import { EmailValidationResponseDto } from '@app/server/authentication/dto/EmailValidationResponse.dto';
 import { PasswordlessUserDto } from '@app/server/authentication/dto/PasswordlessUser.dto';
 import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
-import { ActionsSearchResponseDto } from '@app/server/controllers/actionsets/dto/ActionsSearchResponse.dto';
-import CassandraDriver from 'cassandra-driver';
-import { EventDto } from '@app/server/controllers/events/dto/Event.dto';
-import FormData from 'form-data';
-import { ImagesUploadResponseDto } from '@app/server/controllers/images/dto/ImagesUploadResponse.dto';
-import { ActionSet } from '@lib/common/actionsets/helper/ActionSet.class';
+import { ActionsSearchResponseDto }       from '@app/server/controllers/actionsets/dto/ActionsSearchResponse.dto';
+import CassandraDriver                    from 'cassandra-driver';
+import { EventDto }                       from '@app/server/controllers/events/dto/Event.dto';
+import FormData                           from 'form-data';
+import { ImagesUploadResponseDto }        from '@app/server/controllers/images/dto/ImagesUploadResponse.dto';
+import { ActionSet }                      from '@lib/common/actionsets/helper/ActionSet.class';
 import { anything, instance, mock, when } from 'ts-mockito';
-import { Stripe } from 'stripe';
-import Crypto from 'crypto';
-import { TicketEntity } from '@lib/common/tickets/entities/Ticket.entity';
-import { TicketsSearchResponseDto } from '@app/server/controllers/tickets/dto/TicketsSearchResponse.dto';
+import { Stripe }                         from 'stripe';
+import Crypto                             from 'crypto';
+import { TicketEntity }                   from '@lib/common/tickets/entities/Ticket.entity';
+import { TicketsSearchResponseDto }       from '@app/server/controllers/tickets/dto/TicketsSearchResponse.dto';
+import { NestError }                      from '@lib/common/utils/NestError';
 
 let docker_compose_up_proc = null;
 
@@ -419,7 +420,7 @@ export const failWithCode = async (promise: Promise<any>, code: StatusCodes, mes
         return;
     }
 
-    throw new Error(`Expected request to fail with status ${code}, but succeeded with status ${res.status}`);
+    throw new NestError(`Expected request to fail with status ${code}, but succeeded with status ${res.status}`);
 };
 
 export const getInvalidUser = async (
@@ -971,7 +972,7 @@ export const gemFail = async (sdk: T721SDK, token: string, id: string, body: any
     });
 
     if (gemReq.data.gemOrders.length === 0) {
-        throw new Error('Cannot find gem');
+        throw new NestError('Cannot find gem');
     }
 
     const gem = gemReq.data.gemOrders[0].gem;

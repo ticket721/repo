@@ -1,17 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
-import { ConfigService } from '@lib/common/config/Config.service';
-// import { GlobalConfigService } from '@lib/common/globalconfig/GlobalConfig.service';
-
-/**
- * Outrospection options to properly fetch position infos
- */
-export interface OutrospectionOptions {
-    /**
-     * Instance type name
-     */
-    name: string;
-}
+import { ShutdownService }    from '@lib/common/shutdown/Shutdown.service';
+import { ConfigService }      from '@lib/common/config/Config.service';
+import { NestError }          from '@lib/common/utils/NestError';
 
 /**
  * Unique identifier of the instance
@@ -68,19 +58,20 @@ export class OutrospectionService {
     /**
      * Dependency Injection and position retrieval
      *
-     * @param outrospectionOptions
+     * @param name
      * @param configService
      * @param shutdownService
      * @param hostnameGetter
      */
     constructor(
-        @Inject('OUTROSPECTION_MODULE_OPTIONS')
-        private readonly outrospectionOptions: OutrospectionOptions,
+        @Inject('OUTROSPECTION_INSTANCE_NAME') private readonly name,
         configService: ConfigService,
         shutdownService: ShutdownService,
-        @Inject('OUTROSPECTION_HOSTNAME_GETTER') hostnameGetter: () => string,
-        // private readonly globalConfigService: GlobalConfigService,
+        @Inject('OUTROSPECTION_HOSTNAME_GETTER') hostnameGetter: () => string
     ) {
+
+        const hostNamePattern = configService.get('HOSTNAME_PATTERN');
+
         if (configService.get('NODE_ENV') === 'development') {
             this.master = true;
             this.position = 1;
@@ -88,17 +79,17 @@ export class OutrospectionService {
             const hostname: string = hostnameGetter();
 
             if (
-                hostname.indexOf(outrospectionOptions.name) !== 0 ||
-                !this.positionRegexp.test(hostname.slice(outrospectionOptions.name.length))
+                hostname.indexOf(hostNamePattern) !== 0 ||
+                !this.positionRegexp.test(hostname.slice(hostNamePattern.length))
             ) {
-                const error = new Error(
-                    `Invalid instance name '${outrospectionOptions.name}', cannot extract position in hostname '${hostname}'`,
+                const error = new NestError(
+                    `Invalid instance name '${hostNamePattern}', cannot extract position in hostname '${hostname}'`,
                 );
                 shutdownService.shutdownWithError(error);
                 throw error;
             }
 
-            this.position = parseInt(hostname.slice(outrospectionOptions.name.length + 1), 10) + 1;
+            this.position = parseInt(hostname.slice(hostNamePattern.length + 1), 10) + 1;
 
             if (this.position === 1) {
                 this.master = true;
@@ -113,9 +104,9 @@ export class OutrospectionService {
         const total = 1;
 
         return {
-            signature: `${this.outrospectionOptions.name} [${this.position} / ${total}]${this.master ? ' MASTER' : ''}`,
+            signature: `${this.name} [${this.position} / ${total}]${this.master ? ' MASTER' : ''}`,
             master: this.master,
-            name: this.outrospectionOptions.name,
+            name: this.name,
             position: this.position,
             total,
         };

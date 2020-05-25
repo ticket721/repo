@@ -1,6 +1,5 @@
 import { mock, when, instance, verify } from 'ts-mockito';
 import * as pack from '../../../package.json';
-import * as branch from 'git-branch';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ServerService } from './Server.service';
 import { APIInfos } from './Server.types';
@@ -39,6 +38,14 @@ describe('Server Service', () => {
         context.serverService = serverService;
     });
 
+    afterEach(async function() {
+
+        if (process.env.TAG) {
+            delete process.env.TAG;
+        }
+
+    });
+
     it('build and get info with NODE_ENV=development', async function() {
         const {
             serverService,
@@ -50,10 +57,12 @@ describe('Server Service', () => {
 
         when(configServiceMock.get('NODE_ENV')).thenReturn('development');
 
+        process.env.TAG = 'test';
+
         const res: APIInfos = serverService.getAPIInfos();
         expect(res.name).toEqual('t721api');
         expect(res.version).toEqual(pack.version);
-        expect(res.env).toEqual(`development@${branch.sync()}`);
+        expect(res.env).toEqual(`development@test`);
 
         verify(configServiceMock.get('NODE_ENV')).called();
     });
@@ -72,7 +81,7 @@ describe('Server Service', () => {
         const res: APIInfos = serverService.getAPIInfos();
         expect(res.name).toEqual('t721api');
         expect(res.version).toEqual(pack.version);
-        expect(res.env).toEqual(`production@${branch.sync()}`);
+        expect(res.env).toEqual(`production@bare`);
 
         verify(configServiceMock.get('NODE_ENV')).called();
     });

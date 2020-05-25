@@ -28,4 +28,12 @@ services:
       args:
         - "TAG=$TAG"
     image: "worker:$TAG"
+  migrations:
+    build:
+      context: ./modules/@backend_migrations
+      dockerfile: migrations.dockerfile
+      args:
+        - "TAG=$TAG"
+    image: "migrations:$TAG"
+
 

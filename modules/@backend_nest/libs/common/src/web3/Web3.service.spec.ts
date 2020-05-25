@@ -23,6 +23,7 @@ describe('Web3 Service', function() {
             host: '127.0.0.1',
             protocol: 'http',
             port: '8545',
+            headers: [],
         });
 
         const instance = web3Service.get();
@@ -41,6 +42,7 @@ describe('Web3 Service', function() {
             host: '127.0.0.1',
             protocol: 'https',
             port: '8545',
+            headers: [],
         });
 
         const instance = web3Service.get();
@@ -57,6 +59,7 @@ describe('Web3 Service', function() {
                 host: '127.0.0.1',
                 protocol: 'ptth',
                 port: '8545',
+                headers: [],
             });
         }).toThrowError('Unknown protocol ptth to build web3 instance');
     });

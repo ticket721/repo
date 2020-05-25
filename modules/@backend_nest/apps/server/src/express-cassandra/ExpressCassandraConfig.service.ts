@@ -36,7 +36,7 @@ export class ExpressCassandraConfigService {
                         'ELASTICSEARCH_HOST',
                     )}:${this.config.get('ELASTICSEARCH_PORT')}`,
                     apiVersion: '6.8',
-                    sniffOnStart: false,
+                    sniffOnStart: false
                 },
             },
             ormOptions: {

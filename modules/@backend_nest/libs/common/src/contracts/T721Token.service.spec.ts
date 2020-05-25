@@ -7,17 +7,18 @@ import { T721AdminService } from '@lib/common/contracts/T721Admin.service';
 import { Inject } from '@nestjs/common';
 import { ConfigService } from '@lib/common/config/Config.service';
 import { FSService } from '@lib/common/fs/FS.service';
-import { BytesToolService } from '@lib/common/toolbox/Bytes.tool.service';
-import { T721TokenService } from '@lib/common/contracts/T721Token.service';
+import { BytesToolService }                             from '@lib/common/toolbox/Bytes.tool.service';
+import { T721TokenService }                             from '@lib/common/contracts/T721Token.service';
 import { deepEqual, instance, mock, spy, verify, when } from 'ts-mockito';
-import { Test } from '@nestjs/testing';
-import { T721ControllerV0Service } from '@lib/common/contracts/t721controller/T721Controller.V0.service';
-import { MetaMarketplaceV0Service } from '@lib/common/contracts/metamarketplace/MetaMarketplace.V0.service';
-import { TicketforgeService } from '@lib/common/contracts/Ticketforge.service';
-import path from 'path';
-import { MintTokensAuthorization } from '@common/global';
-import { EIP712Signature } from '@ticket721/e712/lib';
-import { AuthorizationEntity } from '@lib/common/authorizations/entities/Authorization.entity';
+import { Test }                                         from '@nestjs/testing';
+import { T721ControllerV0Service }                      from '@lib/common/contracts/t721controller/T721Controller.V0.service';
+import { MetaMarketplaceV0Service }                     from '@lib/common/contracts/metamarketplace/MetaMarketplace.V0.service';
+import { TicketforgeService }                           from '@lib/common/contracts/Ticketforge.service';
+import path                                             from 'path';
+import { MintTokensAuthorization }                      from '@common/global';
+import { EIP712Signature }                              from '@ticket721/e712/lib';
+import { AuthorizationEntity }                          from '@lib/common/authorizations/entities/Authorization.entity';
+import { NestError }                                    from '@lib/common/utils/NestError';
 
 describe('T721Token Service', function() {
     const context: {
@@ -194,18 +195,18 @@ describe('T721Token Service', function() {
                 context.fsServiceMock.readFile(
                     path.join('/artifact/path', 'minter_management', 'artifacts', 'minters.json'),
                 ),
-            ).thenThrow(new Error('error while reading file'));
+            ).thenThrow(new NestError('error while reading file'));
 
             when(context.configServiceMock.get('MINTER_INDEX')).thenReturn('0');
 
             await expect(context.t721tokenService.getMinter()).rejects.toMatchObject(
-                new Error(`Unable to resolve minter address required to create tokens: error while reading file`),
+                new NestError(`Unable to resolve minter address required to create tokens: error while reading file`),
             );
 
             verify(
                 context.shutdownServiceMock.shutdownWithError(
                     deepEqual(
-                        new Error(
+                        new NestError(
                             `Unable to resolve minter address required to create tokens: error while reading file`,
                         ),
                     ),
@@ -313,7 +314,7 @@ describe('T721Token Service', function() {
                 methods: {
                     isCodeConsumable: () => ({
                         call: () => {
-                            throw new Error(`Error occured`);
+                            throw new NestError(`Error occured`);
                         },
                     }),
                 },

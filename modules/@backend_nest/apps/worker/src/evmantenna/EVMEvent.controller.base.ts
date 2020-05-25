@@ -1,17 +1,18 @@
 import { ContractsControllerBase } from '@lib/common/contracts/ContractsController.base';
 import { Schedule } from 'nest-schedule';
 import { GlobalConfigService } from '@lib/common/globalconfig/GlobalConfig.service';
-import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
-import { InstanceSignature, OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
-import { Job, Queue } from 'bull';
-import { EVMEventSetsService } from '@lib/common/evmeventsets/EVMEventSets.service';
-import { Repository } from '@iaminfinity/express-cassandra';
-import { EVMEvent } from '@lib/common/evmeventsets/entities/EVMEventSet.entity';
-import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
+import { ShutdownService }                                from '@lib/common/shutdown/Shutdown.service';
+import { InstanceSignature, OutrospectionService }        from '@lib/common/outrospection/Outrospection.service';
+import { Job, Queue }                                     from 'bull';
+import { EVMEventSetsService }                            from '@lib/common/evmeventsets/EVMEventSets.service';
+import { Repository }                                     from '@iaminfinity/express-cassandra';
+import { EVMEvent }                                       from '@lib/common/evmeventsets/entities/EVMEventSet.entity';
+import { WinstonLoggerService }                           from '@lib/common/logger/WinstonLogger.service';
 import { EVMAntennaMergerScheduler, EVMProcessableEvent } from '@app/worker/evmantenna/EVMAntennaMerger.scheduler';
-import { CRUDExtension, DryResponse } from '@lib/common/crud/CRUDExtension.base';
-import { OnModuleInit } from '@nestjs/common';
-import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
+import { CRUDExtension, DryResponse }                     from '@lib/common/crud/CRUDExtension.base';
+import { OnModuleInit }                                   from '@nestjs/common';
+import { ServiceResponse }                                from '@lib/common/utils/ServiceResponse.type';
+import { NestError }                                      from '@lib/common/utils/NestError';
 
 /**
  * Configuration for an EVM Event fetching function
@@ -205,7 +206,7 @@ export class EVMEventControllerBase implements OnModuleInit {
         entity: Entity,
         append: Appender,
     ): Promise<ServiceResponse<RollbackableQuery>> {
-        throw new Error('implement rollbackableDelete');
+        throw new NestError('implement rollbackableDelete');
     }
 
     /**
@@ -220,7 +221,7 @@ export class EVMEventControllerBase implements OnModuleInit {
         entity: Entity,
         append: Appender,
     ): Promise<ServiceResponse<RollbackableQuery>> {
-        throw new Error('implement rollbackableCreate');
+        throw new NestError('implement rollbackableCreate');
     }
 
     /**
@@ -284,7 +285,7 @@ export class EVMEventControllerBase implements OnModuleInit {
      * @param append
      */
     async convert(event: EVMProcessableEvent, append: Appender): Promise<any> {
-        const error = new Error(
+        const error = new NestError(
             `Error in ${this.contractsController.getArtifactName()}/${this.eventName} | convert should be overriden`,
         );
         this.shutdownService.shutdownWithError(error);
@@ -337,7 +338,7 @@ export class EVMEventControllerBase implements OnModuleInit {
 
         if (globalConfigRes.error || globalConfigRes.response.length === 0) {
             return this.shutdownService.shutdownWithError(
-                new Error(`Unable to recover global config: ${globalConfigRes.error || 'no global config'}`),
+                new NestError(`Unable to recover global config: ${globalConfigRes.error || 'no global config'}`),
             );
         }
 
@@ -355,96 +356,96 @@ export class EVMEventControllerBase implements OnModuleInit {
             this.currentDispatchHeight = globalConfig.processed_block_number;
         }
 
-        if (this.currentDispatchHeight < globalConfig.block_number) {
-            for (let idx = this.currentDispatchHeight + 1; idx <= globalConfig.block_number; ++idx) {
-                await this.queue.add(this.fetchJobName, {
-                    blockNumber: idx,
-                });
-                this.currentDispatchHeight = idx;
+        while (this.currentDispatchHeight < globalConfig.block_number) {
+
+            const amount = globalConfig.block_number - this.currentDispatchHeight < 1000 ? globalConfig.block_number - this.currentDispatchHeight : 1000;
+
+            try {
+                await this.fetchEVMEventsForBlock(this.currentDispatchHeight + 1, this.currentDispatchHeight + amount);
+                this.logger.log(`Fetched ${this.artifactName}::${this.eventName} for blocks: ${this.currentDispatchHeight + 1} => ${this.currentDispatchHeight + amount}`);
+                this.currentDispatchHeight += amount;
+            } catch (e) {
+                this.logger.error(e);
             }
-            return;
+
         }
 
-        const currentJobs = (await this.queue.getJobs(['active', 'waiting'])).filter(
-            (job: Job<EVMEventFetcherJob>): boolean => job.name === this.fetchJobName,
-        );
-
-        if (this.currentFetchHeight < globalConfig.block_number) {
-            for (let idx = this.currentFetchHeight + 1; idx <= globalConfig.block_number; ++idx) {
-                const res = await this.evmEventSetsService.search({
-                    block_number: idx,
-                    event_name: this.eventName,
-                    artifact_name: this.contractsController.getArtifactName(),
-                });
-
-                if (res.error) {
-                    const error = new Error(
-                        `EVMEventControllerBase::eventsBackgroundFetcher | error while fetching EVMEvent Sets`,
-                    );
-                    return this.shutdownService.shutdownWithError(error);
-                }
-
-                if (res.response.length === 0) {
-                    if (
-                        currentJobs.findIndex(
-                            (job: Job<EVMEventFetcherJob>): boolean => job.data.blockNumber === idx,
-                        ) === -1
-                    ) {
-                        await this.queue.add(this.fetchJobName, {
-                            blockNumber: idx,
-                        });
-                    }
-                } else {
-                    this.currentFetchHeight = idx;
-                }
-            }
-        }
     }
 
     /**
      * Bull Job to fetch events for a specific block
      *
-     * @param job
+     * @param from
+     * @param to
      */
-    async fetchEVMEventsForBlock(job: Job<EVMEventFetcherJob>): Promise<void> {
-        const events = await this.fetch(job.data.blockNumber, job.data.blockNumber);
+    async fetchEVMEventsForBlock(from: number, to: number): Promise<void> {
+        const events = await this.fetch(from, to);
 
-        const createRes = await this.evmEventSetsService.create({
-            artifact_name: this.contractsController.getArtifactName(),
-            event_name: this.eventName,
-            block_number: job.data.blockNumber,
-            events: events.map(
-                (ev: EVMEventRawResult): EVMEvent => ({
-                    return_values: JSON.stringify(ev.returnValues),
-                    raw_data: ev.raw.data,
-                    raw_topics: ev.raw.topics,
-                    event: ev.event,
-                    signature: ev.signature,
-                    log_index: ev.logIndex,
-                    transaction_index: ev.transactionIndex,
-                    transaction_hash: ev.transactionHash,
-                    block_hash: ev.blockHash,
-                    block_number: ev.blockNumber,
-                    address: ev.address,
-                }),
-            ),
-        });
+        for (let fetchedBlock = from; fetchedBlock <= to; ++fetchedBlock) {
 
-        if (createRes.error) {
-            throw new Error(
-                `EVMEvemtControllerBase::fetchEVMEventsForBlock | Unable to create evmeventset: ${createRes.error}`,
-            );
+            const currentBlockEvents = events.filter((ev: EVMEventRawResult): boolean => ev.blockNumber === fetchedBlock);
+
+            const createRes = await this.evmEventSetsService.create({
+                artifact_name: this.contractsController.getArtifactName(),
+                event_name: this.eventName,
+                block_number: fetchedBlock,
+                events: currentBlockEvents.map(
+                    (ev: EVMEventRawResult): EVMEvent => ({
+                        return_values: JSON.stringify(ev.returnValues),
+                        raw_data: ev.raw.data,
+                        raw_topics: ev.raw.topics,
+                        event: ev.event,
+                        signature: ev.signature,
+                        log_index: ev.logIndex,
+                        transaction_index: ev.transactionIndex,
+                        transaction_hash: ev.transactionHash,
+                        block_hash: ev.blockHash,
+                        block_number: ev.blockNumber,
+                        address: ev.address,
+                    }),
+                ),
+            });
+
+            if (createRes.error) {
+                throw new NestError(
+                    `EVMEvemtControllerBase::fetchEVMEventsForBlock | Unable to create evmeventset: ${createRes.error}`,
+                );
+            }
+
+            if (events.length) {
+                this.logger.log(
+                    `Caught ${events.length} ${
+                        this.eventName
+                    } from ${this.contractsController.getArtifactName()} at block ${fetchedBlock}`,
+                );
+            }
+
         }
 
-        if (events.length) {
-            this.logger.log(
-                `Caught ${events.length} ${
-                    this.eventName
-                } from ${this.contractsController.getArtifactName()} at block ${job.data.blockNumber}`,
-            );
-        }
 
-        await job.progress(100);
+        // await job.progress(100);
+    }
+
+    running = false;
+
+    private async NoConcurrentRun(fn: () => Promise<void>): Promise<void> {
+        if (!this.running) {
+            this.running = true;
+            let error = null;
+
+            try {
+                await fn();
+            } catch (e) {
+                console.error('error occurred while running noConcurrentRun', e);
+                error = e;
+            }
+
+            this.running = false;
+
+            if (error) {
+                throw error;
+            }
+        }
     }
 
     /**
@@ -459,7 +460,7 @@ export class EVMEventControllerBase implements OnModuleInit {
             this.schedule.scheduleIntervalJob(
                 `${this.contractsController.getArtifactName()}::${this.eventName}`,
                 1000,
-                this.eventBackgroundFetcher.bind(this),
+                this.NoConcurrentRun.bind(this, this.eventBackgroundFetcher.bind(this))
             );
         }
 

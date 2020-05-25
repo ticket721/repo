@@ -2,17 +2,18 @@ import { ContractsControllerBase } from '@lib/common/contracts/ContractsControll
 import { ContractsService, ContractsServiceOptions } from '@lib/common/contracts/Contracts.service';
 import { Inject, Injectable } from '@nestjs/common';
 import { Web3Service } from '@lib/common/web3/Web3.service';
-import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
-import { ConfigService } from '@lib/common/config/Config.service';
-import { FSService } from '@lib/common/fs/FS.service';
-import path from 'path';
-import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
-import { AuthorizationEntity } from '@lib/common/authorizations/entities/Authorization.entity';
-import { BytesToolService } from '@lib/common/toolbox/Bytes.tool.service';
-import { T721AdminService } from '@lib/common/contracts/T721Admin.service';
+import { ShutdownService }         from '@lib/common/shutdown/Shutdown.service';
+import { ConfigService }           from '@lib/common/config/Config.service';
+import { FSService }               from '@lib/common/fs/FS.service';
+import path                        from 'path';
+import { ServiceResponse }         from '@lib/common/utils/ServiceResponse.type';
+import { AuthorizationEntity }     from '@lib/common/authorizations/entities/Authorization.entity';
+import { BytesToolService }        from '@lib/common/toolbox/Bytes.tool.service';
+import { T721AdminService }        from '@lib/common/contracts/T721Admin.service';
 import { MintTokensAuthorization } from '@common/global';
-import { RocksideService } from '@lib/common/rockside/Rockside.service';
-import { AuthorizationsService } from '@lib/common/authorizations/Authorizations.service';
+import { RocksideService }         from '@lib/common/rockside/Rockside.service';
+import { AuthorizationsService }   from '@lib/common/authorizations/Authorizations.service';
+import { NestError }               from '@lib/common/utils/NestError';
 
 /**
  * Smart Contract Controller for the T721Token contract
@@ -90,7 +91,7 @@ export class T721TokenService extends ContractsControllerBase {
                 this.minter = mintersList[minterAddressIndex];
                 this.identity = identitiesList[minterAddressIndex];
             } catch (e) {
-                const error = new Error(`Unable to resolve minter address required to create tokens: ${e.message}`);
+                const error = new NestError(`Unable to resolve minter address required to create tokens: ${e.message}`);
                 this.shutdownService.shutdownWithError(error);
                 throw error;
             }

@@ -3,8 +3,9 @@ import { ContractsConfig }                                  from '../../contract
 import { Wallet, utils }                                    from 'ethers';
 import * as fs                                              from 'fs';
 import { contracts_log }                                    from '../../contracts/utils/contracts_log';
+import { RocksideApi }                                      from '@rocksideio/rockside-wallet-sdk/lib/api';
 
-async function test(config: ContractsConfig, args?: any): Promise<ScriptStepResponseFormat> {
+async function prepare_minters(config: ContractsConfig, args?: any): Promise<ScriptStepResponseFormat> {
     const minterRet: string[] = [];
     const identityRet: string[] = [];
 
@@ -29,7 +30,27 @@ async function test(config: ContractsConfig, args?: any): Promise<ScriptStepResp
         }
 
         case 'production': {
-            throw new Error(`minter management production mode not implemented`);
+            const endpoint = args.endpoint;
+            const networkId = parseInt(args.network_id, 10);
+            const networkName = args.network_name;
+            const tokenEnvName = args.token_var_name;
+
+            const api = new RocksideApi({
+                apikey: process.env[tokenEnvName],
+                baseUrl: endpoint,
+                network: [networkId, networkName] as any
+            });
+
+            for (let idx = 0; idx < args.count; ++idx) {
+                const identity = await api.createIdentity();
+                identityRet.push(utils.getAddress(identity.address));
+                contracts_log.success(`MinterManagement | generated identity => ${identity.address}`);
+
+                const eoa = await api.createEOA();
+                minterRet.push(utils.getAddress(eoa.address));
+                contracts_log.success(`MinterManagement | generated eoa => ${eoa.address}`);
+            }
+
         }
 
     }
@@ -51,6 +72,6 @@ async function test(config: ContractsConfig, args?: any): Promise<ScriptStepResp
 
 export default {
     methods: {
-        test,
+        prepare_minters,
     },
 } as ScriptStepExportFormat;

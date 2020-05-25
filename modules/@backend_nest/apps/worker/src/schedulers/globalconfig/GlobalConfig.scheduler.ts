@@ -1,11 +1,13 @@
-import { Inject, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
-import { InjectSchedule, Schedule } from 'nest-schedule';
+import { Inject, OnModuleDestroy, OnModuleInit }    from '@nestjs/common';
+import { InjectSchedule, Schedule }                 from 'nest-schedule';
 import { GlobalConfigOptions, GlobalConfigService } from '@lib/common/globalconfig/GlobalConfig.service';
-import { Web3Service } from '@lib/common/web3/Web3.service';
-import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
-import { GlobalEntity } from '@lib/common/globalconfig/entities/Global.entity';
-import { BinanceService } from '@lib/common/binance/Binance.service';
-import { OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
+import { Web3Service }                              from '@lib/common/web3/Web3.service';
+import { ShutdownService }                          from '@lib/common/shutdown/Shutdown.service';
+import { GlobalEntity }                             from '@lib/common/globalconfig/entities/Global.entity';
+import { BinanceService }                           from '@lib/common/binance/Binance.service';
+import { OutrospectionService }                     from '@lib/common/outrospection/Outrospection.service';
+import { NestError }                                from '@lib/common/utils/NestError';
+import { WinstonLoggerService }                     from '@lib/common/logger/WinstonLogger.service';
 
 /**
  * Global Config task scheduler
@@ -21,6 +23,7 @@ export class GlobalConfigScheduler implements OnModuleInit, OnModuleDestroy {
      * @param globalConfigOptions
      * @param binanceService
      * @param outrospectionService
+     * @param winstonLoggerService
      */
     constructor(
         private readonly web3Service: Web3Service,
@@ -31,6 +34,7 @@ export class GlobalConfigScheduler implements OnModuleInit, OnModuleDestroy {
         private readonly globalConfigOptions: GlobalConfigOptions,
         private readonly binanceService: BinanceService,
         private readonly outrospectionService: OutrospectionService,
+        private readonly logger: WinstonLoggerService
     ) {}
 
     /**
@@ -62,7 +66,7 @@ export class GlobalConfigScheduler implements OnModuleInit, OnModuleDestroy {
         });
 
         if (currentGlobalConfig.error || currentGlobalConfig.response.length === 0) {
-            const error = new Error('GlobalConfigScheduler::global_document_fetch_error');
+            const error = new NestError('GlobalConfigScheduler::global_document_fetch_error');
             this.shutdownService.shutdownWithError(error);
             throw error;
         }
@@ -81,6 +85,7 @@ export class GlobalConfigScheduler implements OnModuleInit, OnModuleDestroy {
                     block_number: currentBlockNumber,
                 },
             );
+            this.logger.log(`New block_number set to ${currentBlockNumber}`);
         }
     }
 

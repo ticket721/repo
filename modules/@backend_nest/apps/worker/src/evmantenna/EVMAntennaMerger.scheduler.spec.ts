@@ -4,17 +4,18 @@ import { Schedule } from 'nest-schedule';
 import { GlobalConfigService } from '@lib/common/globalconfig/GlobalConfig.service';
 import { EVMEventSetsService } from '@lib/common/evmeventsets/EVMEventSets.service';
 import { EVMBlockRollbacksService } from '@lib/common/evmblockrollbacks/EVMBlockRollbacks.service';
-import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
-import { Job, JobOptions } from 'bull';
+import { ShutdownService }                                      from '@lib/common/shutdown/Shutdown.service';
+import { Job, JobOptions }                                      from 'bull';
 import { anyFunction, deepEqual, instance, mock, verify, when } from 'ts-mockito';
-import { Test, TestingModule } from '@nestjs/testing';
-import { getQueueToken } from '@nestjs/bull';
-import { getConnectionToken } from '@iaminfinity/express-cassandra/dist/utils/cassandra-orm.utils';
-import { Appender, EVMEventControllerBase } from '@app/worker/evmantenna/EVMEvent.controller.base';
-import { GlobalEntity } from '@lib/common/globalconfig/entities/Global.entity';
-import { DryResponse } from '@lib/common/crud/CRUDExtension.base';
-import { ESSearchReturn } from '@lib/common/utils/ESSearchReturn.type';
-import { EVMEvent, EVMEventSetEntity } from '@lib/common/evmeventsets/entities/EVMEventSet.entity';
+import { Test, TestingModule }                                  from '@nestjs/testing';
+import { getQueueToken }                                        from '@nestjs/bull';
+import { getConnectionToken }                                   from '@iaminfinity/express-cassandra/dist/utils/cassandra-orm.utils';
+import { Appender, EVMEventControllerBase }                     from '@app/worker/evmantenna/EVMEvent.controller.base';
+import { GlobalEntity }                                         from '@lib/common/globalconfig/entities/Global.entity';
+import { DryResponse }                                          from '@lib/common/crud/CRUDExtension.base';
+import { ESSearchReturn }                                       from '@lib/common/utils/ESSearchReturn.type';
+import { EVMEvent, EVMEventSetEntity }                          from '@lib/common/evmeventsets/entities/EVMEventSet.entity';
+import { NestError }                                            from '@lib/common/utils/NestError';
 
 class QueueMock<T = any> {
     add(name: string, data: T, opts?: JobOptions): Promise<Job<T>> {
@@ -257,7 +258,7 @@ describe('EVMAntenna Merger Scheduler', function() {
             });
 
             await expect(context.evmAntennaMergerScheduler.evmEventMergerPoller()).rejects.toMatchObject(
-                new Error(
+                new NestError(
                     `EVMAntennaMergerScheduler::evmEventMergerPoller | Unable to recover global config: unexpected_error`,
                 ),
             );
@@ -265,7 +266,7 @@ describe('EVMAntenna Merger Scheduler', function() {
             verify(
                 context.shutdownServiceMock.shutdownWithError(
                     deepEqual(
-                        new Error(
+                        new NestError(
                             `EVMAntennaMergerScheduler::evmEventMergerPoller | Unable to recover global config: unexpected_error`,
                         ),
                     ),
@@ -294,7 +295,7 @@ describe('EVMAntenna Merger Scheduler', function() {
             });
 
             await expect(context.evmAntennaMergerScheduler.evmEventMergerPoller()).rejects.toMatchObject(
-                new Error(
+                new NestError(
                     `EVMAntennaMergerScheduler::evmEventMergerPoller | Unable to recover global config: no document found`,
                 ),
             );
@@ -302,7 +303,7 @@ describe('EVMAntenna Merger Scheduler', function() {
             verify(
                 context.shutdownServiceMock.shutdownWithError(
                     deepEqual(
-                        new Error(
+                        new NestError(
                             `EVMAntennaMergerScheduler::evmEventMergerPoller | Unable to recover global config: no document found`,
                         ),
                     ),
@@ -367,7 +368,7 @@ describe('EVMAntenna Merger Scheduler', function() {
             };
 
             expect(() => context.evmAntennaMergerScheduler.appender(queries, rollbacks, query, rollback)).toThrow(
-                new Error(`Cannot have asymmetric updates: each query must have its rollback !`),
+                new NestError(`Cannot have asymmetric updates: each query must have its rollback !`),
             );
         });
 
@@ -384,7 +385,7 @@ describe('EVMAntenna Merger Scheduler', function() {
             const rollback = null;
 
             expect(() => context.evmAntennaMergerScheduler.appender(queries, rollbacks, query, rollback)).toThrow(
-                new Error(`Cannot have asymmetric updates: each query must have its rollback !`),
+                new NestError(`Cannot have asymmetric updates: each query must have its rollback !`),
             );
         });
     });
@@ -1055,7 +1056,7 @@ describe('EVMAntenna Merger Scheduler', function() {
                     },
                 } as Job),
             ).rejects.toMatchObject(
-                new Error(
+                new NestError(
                     `EVMAntennaMergerScheduler::fetchEvmEventSets | Error while fetching events for block 99: unexpected_error`,
                 ),
             );
@@ -1178,7 +1179,7 @@ describe('EVMAntenna Merger Scheduler', function() {
                     },
                 } as Job),
             ).rejects.toMatchObject(
-                new Error(
+                new NestError(
                     `EVMAntennaMergerScheduler::convertEventsToQueries | event NewGroup from T721Controller_v1 has no matching controller`,
                 ),
             );
@@ -1339,7 +1340,7 @@ describe('EVMAntenna Merger Scheduler', function() {
                     },
                 } as Job),
             ).rejects.toMatchObject(
-                new Error(
+                new NestError(
                     `EVMAntennaMergerScheduler::injectEventSetDeletionQueries | error while creating evmeventset removal on event NewGroup on controller T721Controller_v0`,
                 ),
             );
@@ -1552,7 +1553,7 @@ describe('EVMAntenna Merger Scheduler', function() {
                     },
                 } as Job),
             ).rejects.toMatchObject(
-                new Error(
+                new NestError(
                     `EVMAntennaMergerScheduler::evmEventMerger | error while creating global config update query: unexpected_error`,
                 ),
             );
@@ -1808,7 +1809,7 @@ describe('EVMAntenna Merger Scheduler', function() {
                     },
                 } as Job),
             ).rejects.toMatchObject(
-                new Error(
+                new NestError(
                     `EVMAntennaMergerScheduler::injectBlockRollbackCreationQuery | error while creating block rollback query: unexpected_error`,
                 ),
             );
@@ -2129,7 +2130,7 @@ describe('EVMAntenna Merger Scheduler', function() {
                         },
                     ]),
                 ),
-            ).thenReject(new Error('insertion error'));
+            ).thenReject(new NestError('insertion error'));
 
             // Call
 
@@ -2139,7 +2140,7 @@ describe('EVMAntenna Merger Scheduler', function() {
                         blockNumber,
                     },
                 } as Job),
-            ).rejects.toMatchObject(new Error('insertion error'));
+            ).rejects.toMatchObject(new NestError('insertion error'));
 
             // Verifications
 

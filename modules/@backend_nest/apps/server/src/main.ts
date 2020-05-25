@@ -6,9 +6,6 @@ import { ServerModule } from './Server.module';
 import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
 import { ConfigService } from '@lib/common/config/Config.service';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
-import { Queue } from 'bull';
-import { getQueueToken } from '@nestjs/bull';
-import { setQueues, UI } from 'bull-board';
 import * as express from 'express';
 import { InstanceSignature, OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
 
@@ -55,13 +52,6 @@ async function main() {
 
     const document = SwaggerModule.createDocument(app, options);
     SwaggerModule.setup('api', app, document);
-
-    if (configService.get('BULL_BOARD') === 'true') {
-        const mailing = app.get<Queue>(getQueueToken('mailing'));
-        const action = app.get<Queue>(getQueueToken('action'));
-        setQueues([mailing, action]);
-        app.use('/admin/queues', UI);
-    }
 
     app.enableShutdownHooks();
     app.get(ShutdownService).subscribeToShutdown(() => app.close());
