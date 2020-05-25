@@ -1,18 +1,24 @@
 import React, { useEffect } from 'react';
 import { useFormik }                                 from 'formik';
-import { Button, TextInput, Icon, PasswordInput }    from '@frontend/flib-react/lib/components';
+import {
+    Button,
+    TextInput,
+    Icon,
+    PasswordInput
+}                                                    from '@frontend/flib-react/lib/components';
 import { useDispatch, useSelector }                  from 'react-redux';
 import { AuthState, LocalRegister, ResetSubmission } from '../../redux/ducks/auth';
 import { useHistory }                                from 'react-router';
 import { AppState }                                  from '../../redux/ducks';
 import styled                                        from 'styled-components';
-import { ValidateEmail }                             from '../ValidateEmail';
+import { ValidateEmail }                             from './ValidateEmail';
 import { useTranslation }                            from 'react-i18next';
 import { registerValidationSchema }                  from './validation';
 import './locales';
 import { getPasswordStrength }                       from '@common/global';
 
 export const Register: React.FC = () => {
+    const [ t ] = useTranslation(['registration', 'password_feedback']);
     const auth = useSelector((state: AppState): AuthState => state.auth);
     const dispatch = useDispatch();
     const formik = useFormik({
@@ -37,79 +43,67 @@ export const Register: React.FC = () => {
             if (auth.submit && auth.errors) {
                 formik.setErrors(auth.errors);
             }
+
+            if (auth.user?.validated) {
+                history.push('/');
+            }
         }
 
-    }, [ auth.loading ]);
-
-    const [ t ] = useTranslation(['registration', 'password-feedback']);
+    }, [ auth.loading, auth.user ]);
 
     return (
         <RegisterWrapper>
             {
-                !auth.loading && auth.submit && !auth.errors ?
-                  <ValidateEmail /> :
-                  <RegisterContainer>
-                      <IconContainer>
-                          <Icon
-                            icon='ticket721'
-                            size='40px'
-                            color='#fff' />
-                      </IconContainer>
-                      <Form onSubmit={formik.handleSubmit}>
-                          {
-                              auth.errors?.global ?
-                                <Error>
-                                    <CrossIcon
-                                      icon='cross'
-                                      color='#fff'
-                                      size='20px' />
-                                    {auth.errors.global}
-                                </Error> :
-                                null
-                          }
-                          <Inputs>
-                              <TextInput
-                                name='email'
-                                label={t('email_label')}
-                                placeholder={t('email_placeholder')}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                value={formik.values.email}
-                                error={formik.touched['email'] ? t(formik.errors['email']) : undefined}
-                              />
-                              {
-                                  console.log(formik.errors['password'])
-                              }
-                              <PasswordInput
-                                name='password'
-                                label={t('password_label')}
-                                placeholder={t('password_placeholder')}
-                                score={getPasswordStrength(formik.values.password).score}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                value={formik.values.password}
-                                error={formik.touched['password'] && formik.errors['password'] ?
-                                  t('password-feedback:' + formik.errors['password']) : undefined}
-                              />
-                              <TextInput
-                                name='username'
-                                label={t('username_label')}
-                                placeholder={t('username_placeholder')}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                value={formik.values.username}
-                                error={formik.touched['username'] ? t(formik.errors['username']) : undefined}
-                              />
-                          </Inputs>
-                          <ActionsContainer>
-                              <Button variant='primary' type='submit' title={t('register')}/>
-                              <SwitchToLogin
-                                onClick={() => {history.push('/login')}}>
-                                  {t('login_switch')}
-                              </SwitchToLogin>
-                          </ActionsContainer>
-                      </Form>
-                  </RegisterContainer>
+                !auth.loading && auth.submit && auth.token ?
+                <ValidateEmail /> :
+                <RegisterContainer>
+                    <IconContainer>
+                        <Icon
+                        icon='ticket721'
+                        size='40px'
+                        color='#fff' />
+                    </IconContainer>
+                    <Form onSubmit={formik.handleSubmit}>
+                        <Inputs>
+                            <TextInput
+                            name='email'
+                            label={t('email_label')}
+                            placeholder={t('email_placeholder')}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            value={formik.values.email}
+                            error={formik.touched['email'] ? t(formik.errors['email']) : undefined}
+                            />
+                            <PasswordInput
+                            name='password'
+                            label={t('password_label')}
+                            placeholder={t('password_placeholder')}
+                            score={getPasswordStrength(formik.values.password).score}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            value={formik.values.password}
+                            error={formik.touched['password'] && formik.errors['password'] ?
+                              t('password_feedback:' + formik.errors['password']) : undefined}
+                            />
+                            <TextInput
+                            name='username'
+                            label={t('username_label')}
+                            placeholder={t('username_placeholder')}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            value={formik.values.username}
+                            error={formik.touched['username'] ? t(formik.errors['username']) : undefined}
+                            />
+                        </Inputs>
+                        <ActionsContainer>
+                            <Button variant='primary' type='submit' title={t('register')}/>
+                            <SwitchToLogin
+                            onClick={() => {history.push('/login')}}>
+                                {t('login_switch')}
+                            </SwitchToLogin>
+                        </ActionsContainer>
+                    </Form>
+                </RegisterContainer>
             }
         </RegisterWrapper>
     )
@@ -153,23 +147,6 @@ const Inputs = styled.div`
     flex-direction: column;
     justify-content: space-between;
     height: 345px;
-`;
-
-const Error = styled.div`
-    display: flex;
-    align-items: center;
-    background-color: #C91D31;
-    color: #FFF;
-    padding: 10px 15px 8px;
-    font-size: 15px;
-    line-height: 20px;
-    font-weight: 500;
-    border-radius: 5px;
-    margin-bottom: 30px;
-`;
-
-const CrossIcon = styled(Icon)`
-    margin: 0 15px 5px 0;
 `;
 
 const ActionsContainer = styled.div`

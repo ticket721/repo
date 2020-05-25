@@ -1,6 +1,6 @@
 import i18n from '../../utils/i18n';
-import feedbackEn from 'zxcvbn/dist/i18n/en.json';
-import feedbackFr from 'zxcvbn/dist/i18n/fr.json';
+import feedbackEn from 'zxcvbn-i18n/dist/i18n/en.json';
+import feedbackFr from 'zxcvbn-i18n/dist/i18n/fr.json';
 
 i18n.addResourceBundle('en', 'registration', {
     email_label: 'email',
@@ -45,11 +45,11 @@ i18n.addResourceBundle('fr', 'registration', {
     address_already_in_use: 'cette addresse est déjà utilisée',
 });
 
-i18n.addResourceBundle('en', 'password-feedback', {
+i18n.addResourceBundle('en', 'password_feedback', {
     ...feedbackEn,
     password_required: 'password is required',
 });
-i18n.addResourceBundle('fr', 'password-feedback', {
+i18n.addResourceBundle('fr', 'password_feedback', {
     ...feedbackFr,
     password_required: 'mot de passe requis',
 });

@@ -11,7 +11,6 @@ export const registerValidationSchema = yup.object().shape({
 
             if (password !== undefined) {
                 const report: PasswordStrengthReport = getPasswordStrength(password);
-                console.log(report.score);
                 if (report.score < 3) {
                     return createError({
                         path,

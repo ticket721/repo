@@ -7,6 +7,10 @@ i18n.addResourceBundle('en', 'login', {
     password_placeholder: 'Password',
     login: 'Login',
     register_switch: 'First time using the app ? Register here !',
+
+    // errors
+    email_required: 'email is required',
+    password_required: 'password is required',
 });
 i18n.addResourceBundle('fr', 'login', {
     email_label: 'email',
@@ -15,15 +19,8 @@ i18n.addResourceBundle('fr', 'login', {
     password_placeholder: 'Mot de passe',
     login: 'Connexion',
     register_switch: 'Première fois que vous utilisez l\'app ? Inscrivez vous ici !',
-});
 
-i18n.addResourceBundle('en', 'login-errors', {
-    email_required: 'email is required',
-    password_required: 'password is required',
-    invalid_credentials: 'wrong email or password',
-});
-i18n.addResourceBundle('fr', 'login-errors', {
+    // errors
     email_required: 'email requis',
     password_required: 'mot de passe requis',
-    invalid_credentials: 'addresse email ou mot de passe incorrect',
 });
