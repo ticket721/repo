@@ -15,3 +15,4 @@ export * from './tags';
 export * from './ticket';
 export * from './time-picker';
 export * from './wallet';
+export * from './notification';
