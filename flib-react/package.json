@@ -89,7 +89,7 @@
     "@storybook/addon-viewport": "5.3.18",
     "@storybook/addons": "5.3.18",
     "@storybook/client-api": "5.3.19",
-    "@storybook/react": "5.3.18",
+    "@storybook/react": "5.3.19",
     "@storybook/theming": "5.3.18",
     "@types/enzyme": "3.10.5",
     "@types/enzyme-adapter-react-16": "1.0.6",
