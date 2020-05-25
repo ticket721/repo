@@ -30,7 +30,7 @@ const StyledLabel = styled.label`
   transition: all 300ms ease;
 
   &::before {
-    background-color: ${ props => props.theme.primaryColor};
+    background-color: ${ props => props.theme.primaryColor.hex};
     border-radius: 100%;
     content: "";
     display: inline-block;
@@ -135,7 +135,7 @@ const StyledInputContainer = styled.div`
       }
 
       &--selected {
-        background: linear-gradient(265deg, ${props => props.theme.primaryColor}, ${props => props.theme.primaryColorGradientEnd});
+        background: linear-gradient(265deg, ${props => props.theme.primaryColor.hex}, ${props => props.theme.primaryColorGradientEnd.hex});
       }
 
       &--today {

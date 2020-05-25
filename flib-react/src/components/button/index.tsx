@@ -6,16 +6,16 @@ export interface ButtonProps extends React.ComponentProps<any> {
   title: string;
   gradients?: string[];
   onClick?: () => void;
-  variant: 'primary' | 'secondary' | 'custom' | 'warning';
+  variant: 'primary' | 'secondary' | 'custom' | 'warning' | 'error';
   type?: string;
 }
 
 const StyledButton = styled.button<ButtonProps>`
   ${props => props.variant === 'primary' &&`
-    background: linear-gradient(260deg, ${props.theme.primaryColor}, ${props.theme.primaryColorGradientEnd});
+    background: linear-gradient(260deg, ${props.theme.primaryColor.hex}, ${props.theme.primaryColorGradientEnd.hex});
 
     &::before {
-      background: linear-gradient(0deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.15)), linear-gradient(260deg, ${props.theme.primaryColor}, ${props.theme.primaryColorGradientEnd});
+      background: linear-gradient(0deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.15)), linear-gradient(260deg, ${props.theme.primaryColor.hex}, ${props.theme.primaryColorGradientEnd.hex});
     }
   `};
 
@@ -41,13 +41,22 @@ const StyledButton = styled.button<ButtonProps>`
   `};
 
   ${props => props.variant === 'warning' &&`
-    background-color: ${rgba(props.theme.warningColor, 0.4)};
+    background-color: ${rgba(props.theme.warningColor.hex, 0.4)};
     transition: background-color 300ms ease;
 
     &::before {
-      background-color: ${rgba(props.theme.warningColor, 0.9)};
+      background-color: ${rgba(props.theme.warningColor.hex, 0.9)};
     }
 `};
+
+  ${props => props.variant === 'error' &&`
+      background-color: ${rgba(props.theme.errorColor.hex, 0.4)};
+      transition: background-color 300ms ease;
+
+      &::before {
+        background-color: ${rgba(props.theme.errorColor.hex, 0.9)};
+      }
+  `};
 
   align-items: center;
   border-radius: ${props => props.theme.defaultRadius};

@@ -1,3 +1,10 @@
+export interface ColorDefinition {
+    hex: string;
+    r: number;
+    g: number;
+    b: number;
+}
+
 export interface Theme {
   name: string;
   bigRadius: string;
@@ -10,14 +17,16 @@ export interface Theme {
   defaultRadius: string;
   doubleSpacing: string;
   fontStack: string;
-  primaryColor: string;
-  primaryColorGradientEnd: string;
+  primaryColor: ColorDefinition;
+  primaryColorGradientEnd: ColorDefinition;
   regularSpacing: string;
   smallSpacing: string;
   textColor: string;
   textColorDark: string;
   textColorDarker: string;
-  warningColor: string;
+  warningColor: ColorDefinition;
+  errorColor: ColorDefinition;
+  successColor: ColorDefinition;
 }
 
 export interface Themes {
@@ -37,13 +46,40 @@ export const customThemes: Themes = {
         defaultRadius: '8px',
         doubleSpacing: '32px',
         fontStack: `'Gordita', Arial, Helvetica, sans-serif`,
-        primaryColor: '#079CF0',
-        primaryColorGradientEnd: '#2143AB',
+        primaryColor: {
+            hex: '#079CF0',
+            r: 7,
+            g: 156,
+            b: 240,
+        },
+        primaryColorGradientEnd: {
+            hex: '#2143AB',
+            r: 33,
+            g: 67,
+            b: 171,
+        },
         regularSpacing: '16px',
         smallSpacing: '8px',
         textColor: 'rgba(255, 255, 255, 0.9)',
         textColorDark: 'rgba(255, 255, 255, 0.6)',
         textColorDarker: 'rgba(255, 255, 255, 0.38)',
-        warningColor: '#C91D31'
+        warningColor: {
+            hex: '#C9941D',
+            r: 201,
+            g: 148,
+            b: 29,
+        },
+        errorColor: {
+            hex: '#C91D31',
+            r: 201,
+            g: 29,
+            b: 49,
+        },
+        successColor: {
+            hex: '#1DC96A',
+            r: 29,
+            g: 201,
+            b: 106,
+        },
     }
 };

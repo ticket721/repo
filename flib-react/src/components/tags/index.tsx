@@ -129,7 +129,7 @@ export interface TagsProps extends React.ComponentProps<any> {
 
 const Error = styled.span`
   bottom: -24px;
-  color: ${props => props.theme.warningColor};
+  color: ${props => props.theme.errorColor.hex};
   font-size: 13px;
   font-weight: 500;
   left: 10px;
@@ -142,7 +142,7 @@ const StyledLabel = styled.label`
   transition: all 300ms ease;
 
   &::before {
-    background-color: ${ props => props.theme.primaryColor};
+    background-color: ${ props => props.theme.primaryColor.hex};
     border-radius: 100%;
     content: "";
     display: inline-block;
@@ -167,11 +167,11 @@ const StyledInputContainer = styled.div<TagsProps>`
 
   ${props => props.error &&`
     ${StyledLabel}{
-      color: ${props.theme.warningColor};
+      color: ${props.theme.errorColor.hex};
       transform: translateX(0px);
 
       &::before {
-        background-color: ${props.theme.warningColor};
+        background-color: ${props.theme.errorColor.hex};
         opacity: 1;
       }
     }

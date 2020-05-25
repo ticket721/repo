@@ -16,7 +16,7 @@ const StyledLabel = styled.label`
   transition: all 300ms ease;
 
   &::before {
-    background-color: ${ props => props.theme.primaryColor};
+    background-color: ${ props => props.theme.primaryColor.hex};
     border-radius: 100%;
     content: "";
     display: inline-block;
@@ -31,7 +31,7 @@ const StyledLabel = styled.label`
 `;
 
 const ColorSwatch = styled.div`
-  background-color: ${props => props.theme.primaryColor};
+  background-color: ${props => props.theme.primaryColor.hex};
   border-radius: ${props => props.theme.defaultRadius};
   content: '';
   display: inline-block;

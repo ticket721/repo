@@ -68,7 +68,7 @@ const StyledCheckboxContainer = styled.div`
       color: ${props => props.theme.textColor};
 
       &::before {
-        background: linear-gradient(260deg, ${props => props.theme.primaryColor}, ${props => props.theme.primaryColorGradientEnd});
+        background: linear-gradient(260deg, ${props => props.theme.primaryColor.hex}, ${props => props.theme.primaryColorGradientEnd.hex});
       }
 
       &::after {

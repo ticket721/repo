@@ -25,7 +25,7 @@ const Text = styled.p<ReadMoreProps>`
 `
 
 const ReadMoreLabel = styled.span<ReadMoreProps>`
-  color: ${props => props.readMoreColor ? props.readMoreColor : props.theme.primaryColor};
+  color: ${props => props.readMoreColor ? props.readMoreColor : props.theme.primaryColor.hex};
   cursor: pointer;
   font-weight: 500;
   margin-top: ${props => props.theme.regularSpacing};

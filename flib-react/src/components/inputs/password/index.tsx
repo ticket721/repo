@@ -67,7 +67,7 @@ const Score = styled.div<{ score: number }>`
 `;
 
 const Gauge = styled.div`
-    background: linear-gradient(260deg, ${(props) => props.theme.primaryColor}, ${(props) => props.theme.primaryColorGradientEnd});
+    background: linear-gradient(260deg, ${(props) => props.theme.primaryColor.hex}, ${(props) => props.theme.primaryColorGradientEnd.hex});
     height: 100%;
     width: 100%;
 `;

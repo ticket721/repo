@@ -243,7 +243,7 @@ const Disclaimer = styled.p`
 `
 
 const ErrorMsg = styled(Disclaimer)`
-  color: ${props => props.theme.warningColor};
+  color: ${props => props.theme.errorColor.hex};
   font-size: 13px;
 `
 

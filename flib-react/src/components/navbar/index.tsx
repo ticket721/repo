@@ -34,7 +34,7 @@ const StyledNavbar = styled.nav`
       opacity: 1;
 
       &::after {
-        background-color: ${props => props.theme.primaryColor};
+        background-color: ${props => props.theme.primaryColor.hex};
         border-radius: 100%;
         bottom: -1rem;
         content: "";
