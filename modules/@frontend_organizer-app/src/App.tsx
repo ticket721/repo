@@ -3,40 +3,39 @@ import {
     PageContainer
 }                                               from '@frontend/core/lib/components';
 
-import { Route, Switch, withRouter } from 'react-router-dom';
+import { Route, Switch, useLocation, withRouter } from 'react-router-dom';
 
 import { routes }       from './routes';
 
-import Navbar          from './shared/Navbar';
-import { AppState }    from '@frontend/core/lib/redux';
-import ProtectedRoute  from '@frontend/core/lib/components/ProtectedRoute';
-import { useSelector } from 'react-redux';
-import styled          from 'styled-components';
+import Navbar               from './shared/Navbar';
+import { AppState }         from '@frontend/core/lib/redux';
+import ProtectedRoute       from '@frontend/core/lib/components/ProtectedRoute';
+import { useSelector }      from 'react-redux';
+import styled               from 'styled-components';
+import NotificationsStacker from '@frontend/core/lib/components/NotificationsStacker';
+import { AppStatus }        from '@frontend/core/lib/redux/ducks/statuses';
 
 const App: React.FC = () => {
-    const [ authenticated, setAuthenticated ] = useState(true);
     const [ validated, setValidated ] = useState(true);
     const authState = useSelector(((state: AppState) => state.auth));
+    const appStatus = useSelector(((state: AppState) => state.statuses.appStatus));
+    const location = useLocation();
 
     useEffect(() => {
-        if (!authState.token) {
-            setAuthenticated(false);
-        }
-
         setValidated(authState.user?.validated);
-    }, [ authState ]);
+    }, [ authState.user ]);
 
     return (
       <Suspense fallback='loading'>
         <AppContainer>
             {
-                authenticated && validated ?
-                <Navbar/> :
-                null
+                validated &&
+                location.pathname !== '/register' && location.pathname !== '/login' &&
+                <Navbar/>
             }
             <Switch>
                 {
-                    routes.map((route, idx) => {
+                    appStatus === AppStatus.Ready && routes.map((route, idx) => {
                         const page = <PageContainer
                           padding='50px 30px 30px'
                           topBar={route.topBar}
@@ -54,6 +53,7 @@ const App: React.FC = () => {
                     })
                 }
             </Switch>
+            <NotificationsStacker />
         </AppContainer>
       </Suspense>
     )

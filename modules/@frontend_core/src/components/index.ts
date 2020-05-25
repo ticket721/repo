@@ -4,4 +4,4 @@ export * from './TopBarContainer';
 export * from './ProtectedRoute';
 export * from './Login';
 export * from './Register';
-export * from './ValidateEmail';
+export * from './NotificationsStacker';

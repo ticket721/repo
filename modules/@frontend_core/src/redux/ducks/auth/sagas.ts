@@ -7,6 +7,7 @@ import { LocalLoginResponseDto }                                                
 import { UsersMeResponseDto }                                                          from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/users/dto/UsersMeResponse.dto';
 import { AxiosResponse }                                                               from 'axios';
 import { AppState }                                                                    from '../index';
+import { PushNotification }                                                            from '../notifications';
 
 const getAuthState = (state: AppState): AuthState => state.auth;
 
@@ -21,38 +22,35 @@ function* localRegister(action: ILocalRegister): IterableIterator<any> {
             action.locale,
         );
 
-        if (registerResponse['report']) {
-            yield put(SetErrors({ password: 'Password is too weak' }));
-        } else {
-            const registerData: LocalRegisterResponseDto = registerResponse.data;
-            const token: Token = {
-                value: registerData.token,
-                expiration: new Date(registerData.expiration)
-            };
+        const registerData: LocalRegisterResponseDto = registerResponse.data;
+        const token: Token = {
+            value: registerData.token,
+            expiration: new Date(registerData.expiration)
+        };
 
-            localStorage.setItem('token', JSON.stringify(token));
-            yield put(SetToken(token));
-            yield put(SetUser(
-                registerData.user.username,
-                registerData.user.type,
-                registerData.user.locale,
-                registerData.user.valid,
-            ));
+        localStorage.setItem('token', JSON.stringify(token));
+        yield put(SetToken(token));
+        yield put(PushNotification('successfully_registered', 'success', 2000));
+        yield put(SetUser(
+            registerData.user.username,
+            registerData.user.type,
+            registerData.user.locale,
+            registerData.user.valid,
+        ));
 
-            if (process.env.REACT_APP_ENV === 'dev') {
-                const validateEmail = yield global.window.t721Sdk.validateEmail(registerData.validationToken);
-                console.log(validateEmail);
-            }
+        if (process.env.REACT_APP_ENV === 'dev') {
+            const validateEmail = yield global.window.t721Sdk.validateEmail(registerData.validationToken);
+            console.log(validateEmail);
         }
     } catch (e) {
         if (e.message === 'Network Error') {
-            yield put(SetErrors({ global: 'Cannot reach server' }));
+            yield put(PushNotification('cannot_reach_server', 'error', 2000));
         } else {
             const errorData = e.response.data;
             if (errorData.statusCode === 409) {
                 yield put(SetErrors({ email: errorData.message }));
             } else {
-                yield put(SetErrors({ global: 'Internal Server Error' }));
+                yield put(PushNotification('internal_server_error', 'error', 2000));
             }
         }
     }
@@ -88,13 +86,14 @@ function* localLogin(action: ILocalRegister): IterableIterator<any> {
         ));
     } catch (e) {
         if (e.message === 'Network Error') {
-            yield put(SetErrors({ global: 'Cannot reach server' }));
+            yield put(PushNotification('cannot_reach_server', 'error', 2000));
         } else {
             const errorData = e.response.data;
             if (errorData.message === 'invalid_credentials') {
-                yield put(SetErrors({ email: ' ', password: ' ', global: 'invalid_credentials' }));
+                yield put(PushNotification('invalid_credentials', 'error', 2000));
+                yield put(SetErrors({ email: ' ', password: ' ' }));
             } else {
-                yield put(SetErrors({ global: 'Internal Server Error' }));
+                yield put(PushNotification('internal_server_error', 'error', 2000));
             }
         }
     }

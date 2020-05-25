@@ -1,15 +1,16 @@
 import { createStore, applyMiddleware, Store, compose } from 'redux';
-import createSagaMiddleware                             from 'redux-saga';
+import createSagaMiddleware                    from 'redux-saga';
 import '../utils/window';
-import { entryPoint }                                   from './entryPoint';
-import { getSagas }                                     from 'ethvtx/lib';
-import { routerMiddleware }                             from 'connected-react-router';
-import { AppState, initialState, rootReducer }          from './ducks';
-import { userPropertiesSaga }                           from './ducks/user_properties/sagas';
-import { setupSaga }                                    from './ducks/setup/sagas';
-import { history }                                      from './ducks';
-import { cacheSaga }                                    from './ducks/cache/sagas';
-import { authSaga }                                     from './ducks/auth/sagas';
+import { entryPoint }                          from './entryPoint';
+import { getSagas }                            from 'ethvtx/lib';
+import { routerMiddleware }                    from 'connected-react-router';
+import { AppState, initialState, rootReducer } from './ducks';
+import { userPropertiesSaga }                  from './ducks/user_properties/sagas';
+import { setupSaga }                           from './ducks/setup/sagas';
+import { history }                             from './ducks';
+import { cacheSaga }                           from './ducks/cache/sagas';
+import { authSaga }                            from './ducks/auth/sagas';
+import { notificationsSaga }                   from './ducks/notifications/sagas';
 
 const sagaMiddleware = createSagaMiddleware();
 
@@ -28,6 +29,7 @@ export function configureStore(): Store<AppState> {
         setupSaga,
         cacheSaga,
         authSaga,
+        notificationsSaga,
     ]);
 
     sagaMiddleware.run(rootSaga);

@@ -1,5 +1,6 @@
 export enum StatusesActionTypes {
-    ToggleOnlineStatus = '@@statuses/TOGGLE_ONLINE_STATUS',
+    ToggleOnlineStatus = '@@statuses/toggleonlinestatus',
+    SetAppStatus = '@@statuses/setappstatus',
 }
 
 export enum AppStatus {

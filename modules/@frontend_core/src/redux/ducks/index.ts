@@ -35,6 +35,12 @@ import {
     AuthState,
 } from './auth';
 
+import {
+    notificationsInitialState,
+    NotificationsReducer,
+    NotificationsState
+} from './notifications';
+
 export const history = createMemoryHistory();
 
 export interface SpecificState {
@@ -43,6 +49,7 @@ export interface SpecificState {
     userProperties: UserPropertiesState;
     cache: CacheState;
     auth: AuthState;
+    notifications: NotificationsState;
 }
 
 export type AppState = SpecificState & VtxState;
@@ -54,6 +61,7 @@ export const rootReducer = getReducers({
     userProperties: UserPropertiesReducer,
     cache: CacheReducer,
     auth: AuthReducer,
+    notifications: NotificationsReducer,
 });
 
 export const initialState: AppState = configureVtx<AppState>(getInitialState<SpecificState>(
@@ -63,6 +71,7 @@ export const initialState: AppState = configureVtx<AppState>(getInitialState<Spe
         statuses: statusesInitialState,
         cache: cacheInitialState,
         auth: authInitialState,
+        notifications: notificationsInitialState,
     }) as AppState,
     {
         confirmation_threshold: 2,
