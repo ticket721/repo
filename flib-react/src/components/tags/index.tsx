@@ -122,7 +122,7 @@ export interface TagsProps extends React.ComponentProps<any> {
   value?:Array<ITag>;
   onInputChange: (inputValue: string) => void;
   onKeyDown: (e: React.KeyboardEvent<HTMLElement>, value: string ) => void;
-  onChange: (value: any) => void;
+  onChange: (value: any, event: any) => void;
   onFocus?: (eventOrPath: string | ChangeEvent<any>) => void | ((eventOrTextValue: string | ChangeEvent<any>) => void);
   onBlur: (value: any) => void;
 }
@@ -220,8 +220,8 @@ export const Tags: React.FunctionComponent<TagsProps> = (props: TagsProps): JSX.
         <CreatableSelect
           id={props.name}
           components={components}
-          onChange={e => {
-            props.onChange(e);
+          onChange={(v, e)=> {
+            props.onChange(v, e);
           }}
           onKeyDown={e => {
             const target = e.target as HTMLInputElement;

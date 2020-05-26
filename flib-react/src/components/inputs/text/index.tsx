@@ -13,9 +13,9 @@ export interface InputProps extends React.ComponentProps<any> {
   onBlur?: (eventOrPath: string | ChangeEvent<any>) => void | ((eventOrTextValue: string | ChangeEvent<any>) => void);
   placeholder: string;
   options?: any;
-  value?:string;
+  value?:string | number;
   className?: string;
-  type?: string;
+  type?: string | undefined;
 }
 
 const Error = styled.span`
