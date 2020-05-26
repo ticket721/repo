@@ -34,9 +34,8 @@ const App: React.FC = ({ location }: any) => (
                         to={link.to}>
                             <Icon
                             icon={link.icon}
-                            fill='#fff'
-                            height={link.height ? link.height : undefined}
-                            width={link.width ? link.width : undefined} />
+                            color='#FFFFFF'
+                            size={link.size} />
                         </NavLink>
                     ))
                 }

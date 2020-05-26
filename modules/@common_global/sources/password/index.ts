@@ -1,7 +1,6 @@
-import zxcvbn from 'zxcvbn';
+import zxcvbn from 'zxcvbn-i18n';
 
 export interface PasswordStrengthReport {
-    password: string;
     guesses: number;
     guesses_log10: number;
     sequence: {

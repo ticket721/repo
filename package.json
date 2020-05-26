@@ -44,7 +44,7 @@
             "modules/@frontend_t721-app",
             "modules/@frontend_flib-react"
         ],
-        "nohoist": ["**/jest"]
+        "nohoist": ["**/jest", "**/webpack"]
     },
     "devDependencies": {
         "@commitlint/cli": "8.3.5",
