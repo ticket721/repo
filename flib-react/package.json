@@ -54,7 +54,7 @@
     "react-router-dom": "5.2.0",
     "react-visibility-sensor": "5.1.1",
     "slugify": "1.4.0",
-    "styled-components": "5.1.0",
+    "styled-components": "5.1.1",
     "styled-components-breakpoint": "3.0.0-preview.20",
     "@types/node": "14.0.5",
     "@types/react": "16.9.35",
