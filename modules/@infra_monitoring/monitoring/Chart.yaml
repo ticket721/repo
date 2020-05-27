@@ -28,3 +28,8 @@ dependencies:
     version: 8.13.8
     repository: https://kubernetes-charts.storage.googleapis.com/
     condition: monitoring.enabled
+  - name: sentry
+    alias: sentry
+    version: 4.2.1
+    repository: https://kubernetes-charts.storage.googleapis.com/
+    condition: monitoring.enabled
