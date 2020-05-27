@@ -1,23 +1,23 @@
-import { AppState }                     from '../';
-import { SagaIterator }                 from '@redux-saga/types';
+import { AppState } from '../';
+import { SagaIterator } from '@redux-saga/types';
 import { call, put, select, takeEvery } from 'redux-saga/effects';
 
-import Web3                                                         from 'web3';
+import Web3 from 'web3';
 import { VtxconfigReset, VtxconfigSetAllowedNet, VtxconfigSetWeb3 } from 'ethvtx/lib/vtxconfig/actions/actions';
 
-import { IStart, IStartVtx }  from './actions';
+import { IStart, IStartVtx } from './actions';
 import { GetCity, GetDevice } from '../user_properties';
-import { SetupActionTypes }   from './types';
+import { SetupActionTypes } from './types';
 
-import { EthConfig }                            from '../configs';
-import { StartRefreshInterval }                 from '../cache';
-import { GetUser, SetToken }         from '../auth';
+import { EthConfig } from '../configs';
+import { StartRefreshInterval } from '../cache';
+import { GetUser, SetToken } from '../auth';
 import { isExpired, isValidFormat, parseToken } from '../../../utils/token';
-import { T721SDK }                              from '@common/sdk';
-import { AppStatus, SetAppStatus }              from '../statuses';
-import { PushNotification }                     from '../notifications';
+import { T721SDK } from '@common/sdk';
+import { AppStatus, SetAppStatus } from '../statuses';
+import { PushNotification } from '../notifications';
 
-function* startSaga(action: IStart):  IterableIterator<any> {
+function* startSaga(action: IStart): IterableIterator<any> {
     global.window.t721Sdk = new T721SDK();
     global.window.t721Sdk.connect('localhost', 3000);
 
@@ -28,7 +28,7 @@ function* startSaga(action: IStart):  IterableIterator<any> {
     yield put(StartRefreshInterval());
 }
 
-function* startVtxSaga(action: IStartVtx):  IterableIterator<any> {
+function* startVtxSaga(action: IStartVtx): IterableIterator<any> {
     const getEthConfig = (state: AppState) => state.configs.eth;
 
     const config: EthConfig = yield select(getEthConfig);
@@ -42,7 +42,7 @@ function* startVtxSaga(action: IStartVtx):  IterableIterator<any> {
     yield put(VtxconfigReset());
 }
 
-function* handleUser():  IterableIterator<any> {
+function* handleUser(): IterableIterator<any> {
     if (localStorage.getItem('token')) {
         const token = parseToken(localStorage.getItem('token'));
         console.log(token, isValidFormat(token) && !isExpired(token));

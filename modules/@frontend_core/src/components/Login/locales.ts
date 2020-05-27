@@ -18,7 +18,7 @@ i18n.addResourceBundle('fr', 'login', {
     password_label: 'mot de passe',
     password_placeholder: 'Mot de passe',
     login: 'Connexion',
-    register_switch: 'Première fois que vous utilisez l\'app ? Inscrivez vous ici !',
+    register_switch: "Première fois que vous utilisez l'app ? Inscrivez vous ici !",
 
     // errors
     email_required: 'email requis',

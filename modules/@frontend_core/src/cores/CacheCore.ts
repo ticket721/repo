@@ -1,12 +1,11 @@
-import { keccak256 }                 from '@common/global';
+import { keccak256 } from '@common/global';
 import { CacheSettings, CacheState } from '../redux/ducks/cache';
-import { default as get }            from 'lodash.get';
-import { T721SDK }                   from '@common/sdk';
+import { default as get } from 'lodash.get';
+import { T721SDK } from '@common/sdk';
 
 export type SDKCall = InstanceType<typeof T721SDK>;
 
 export abstract class CacheCore {
-
     /**
      * @return key as a hash of {route, args}
      * @param method
@@ -21,7 +20,7 @@ export abstract class CacheCore {
             JSON.stringify({
                 method,
                 args,
-            })
+            }),
         );
     };
 
@@ -30,9 +29,7 @@ export abstract class CacheCore {
      * @param cacheSettings
      */
     public static elapsedTicks = (cacheSettings: CacheSettings): number =>
-        Math.floor((
-            Date.now() - cacheSettings.startTimestamp
-        ) / cacheSettings.tickInterval);
+        Math.floor((Date.now() - cacheSettings.startTimestamp) / cacheSettings.tickInterval);
 
     /**
      * Evaluate if request with specified key should be fetched
@@ -41,16 +38,11 @@ export abstract class CacheCore {
      */
     public static shouldFetch = (cache: CacheState, key: string): boolean => {
         // If there is no mounted component that need specified request => don't fetch
-        if (
-            cache.properties[key].requestedBy === null
-            || cache.properties[key].requestedBy.length === 0
-        ) {
+        if (cache.properties[key].requestedBy === null || cache.properties[key].requestedBy.length === 0) {
             return false;
         }
 
-        const filteredRates = cache.properties[key].refreshRates.filter(
-            (rate: number) => rate !== null && rate > 0
-        );
+        const filteredRates = cache.properties[key].refreshRates.filter((rate: number) => rate !== null && rate > 0);
 
         // If refreshRates has default value 0 or null and already fetched => don't fetch
         if (filteredRates.length === 0 && cache.properties[key].lastFetch) {
@@ -64,9 +56,8 @@ export abstract class CacheCore {
 
         // If now - lastResp is greater or equal to refreshRate or lastFetch is null/undefined => fetch
         return (
-            CacheCore.elapsedTicks(cache.settings) - cache.properties[key].lastResp
-            >= Math.min(...filteredRates)
-            || !cache.properties[key].lastFetch
+            CacheCore.elapsedTicks(cache.settings) - cache.properties[key].lastResp >= Math.min(...filteredRates) ||
+            !cache.properties[key].lastFetch
         );
     };
 
@@ -75,7 +66,7 @@ export abstract class CacheCore {
      * @param method
      * @param args
      */
-    public static fetchItem = async ( method: any, args: any[]): Promise<any> => {
+    public static fetchItem = async (method: any, args: any[]): Promise<any> => {
         const sdkMethod = get(global.window.t721Sdk, method, undefined);
 
         if (!sdkMethod) {
@@ -84,7 +75,7 @@ export abstract class CacheCore {
 
         try {
             return await sdkMethod(...args);
-        } catch(e) {
+        } catch (e) {
             console.log('bad arguments');
             throw e;
         }

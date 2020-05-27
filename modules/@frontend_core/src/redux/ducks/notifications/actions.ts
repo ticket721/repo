@@ -1,4 +1,4 @@
-import { Action }                                     from 'redux';
+import { Action } from 'redux';
 import { NotificationKind, NotificationsActionTypes } from './types';
 
 export interface IPushNotification extends Action<string> {
@@ -29,7 +29,4 @@ export const ResetNotifications = (): IResetNotifications => ({
     type: NotificationsActionTypes.ResetNotifications,
 });
 
-export type NotificationsAction =
-    IPushNotification
-    & IPopNotification
-    & IResetNotifications;
+export type NotificationsAction = IPushNotification & IPopNotification & IResetNotifications;

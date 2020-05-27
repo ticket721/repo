@@ -43,6 +43,7 @@
     "devDependencies": {
         "@types/jest": "25.2.1",
         "jest": "25.4.0",
+        "prettier": "2.0.5",
         "tslint": "6.0.0",
         "ts-jest": "25.4.0",
         "ts-loader": "^7.0.0",
@@ -51,8 +52,10 @@
     "scripts": {
         "build": "rm -rf lib && tsc",
         "watch": "watch 'yarn build && echo \"Done !\"' src",
-        "test:jest": "jest --expand --verbose",
+        "test": "jest --expand --verbose",
         "lint": "tslint --project .",
+        "format": "prettier --write \"src/**/*.ts\" \"src/**/*.tsx\"",
+        "format:check": "prettier --check \"src/**/*.ts\" \"src/**/*.tsx\"",
         "@lerna/postinstall": "yarn build",
         "@lerna/postclean": "rm -rf lib"
     },

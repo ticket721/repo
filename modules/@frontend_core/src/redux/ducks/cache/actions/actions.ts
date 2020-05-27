@@ -1,6 +1,6 @@
 import { CacheActionTypes } from '../types';
-import { Action }                                             from 'redux';
-import { CachePropertiesAction }  from './properties.actions';
+import { Action } from 'redux';
+import { CachePropertiesAction } from './properties.actions';
 import { CacheSettingsAction } from './settings.actions';
 
 export interface IFetchItem extends Action<string> {
@@ -49,10 +49,9 @@ export const StartRefreshInterval = (): IStartRefreshInterval => ({
     type: CacheActionTypes.StartRefreshInterval,
 });
 
-export type CacheAction =
-    IFetchItem
-    & IUpdateItemData
-    & IUpdateItemError
-    & IStartRefreshInterval
-    & CachePropertiesAction
-    & CacheSettingsAction
+export type CacheAction = IFetchItem &
+    IUpdateItemData &
+    IUpdateItemError &
+    IStartRefreshInterval &
+    CachePropertiesAction &
+    CacheSettingsAction;

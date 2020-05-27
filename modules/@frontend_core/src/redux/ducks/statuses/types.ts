@@ -5,7 +5,7 @@ export enum StatusesActionTypes {
 
 export enum AppStatus {
     Loading,
-    Ready
+    Ready,
 }
 
 export enum OnlineStatus {

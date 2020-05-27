@@ -1,12 +1,12 @@
 import { AppStatus, StatusesActionTypes } from './types';
-import { Action }                         from 'redux';
+import { Action } from 'redux';
 
 export interface IToggleOnlineStatus extends Action<string> {
     type: StatusesActionTypes.ToggleOnlineStatus;
 }
 
 export const ToggleOnlineStatus = (): IToggleOnlineStatus => ({
-    type: StatusesActionTypes.ToggleOnlineStatus
+    type: StatusesActionTypes.ToggleOnlineStatus,
 });
 
 export interface ISetAppStatus extends Action<string> {
@@ -19,6 +19,4 @@ export const SetAppStatus = (status: AppStatus): ISetAppStatus => ({
     status,
 });
 
-export type StatusesAction =
-    IToggleOnlineStatus
-    & ISetAppStatus;
+export type StatusesAction = IToggleOnlineStatus & ISetAppStatus;
