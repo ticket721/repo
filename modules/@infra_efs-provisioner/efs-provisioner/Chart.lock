@@ -1,0 +1,6 @@
+dependencies:
+- name: efs-provisioner
+  repository: https://kubernetes-charts.storage.googleapis.com/
+  version: 0.11.1
+digest: sha256:b359cb66514af3c5085f77e201f3ff981b44fe62e9f70df4ae9e51f67fd99cfa
+generated: "2020-05-28T11:14:12.824283+02:00"

@@ -9,6 +9,9 @@ migrations:
     tag: "DEVELOPMENT"
 
 server:
+
+  fsName: ""
+
   image:
     repository: server
     pullPolicy: IfNotPresent

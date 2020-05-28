@@ -54,6 +54,7 @@ spec:
         command: [ "sh","-c","ulimit -l unlimited" ]
         securityContext:
           privileged: true
+      priorityClassName: elassandra--priority
       containers:
       - name: {{ template "elassandra.fullname" . }}
         image: "{{ .Values.image.repo }}:{{ .Values.image.tag }}"

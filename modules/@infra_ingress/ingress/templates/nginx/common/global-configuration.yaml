@@ -1,0 +1,8 @@
+apiVersion: k8s.nginx.org/v1alpha1
+kind: GlobalConfiguration
+metadata:
+  name: {{ include "ingress.fullname" . }}--nginx-configuration--gc
+  labels:
+    name: {{ include "ingress.fullname" . }}--nginx-configuration--gc
+    chart: {{ .Chart.Name }}
+

@@ -18,6 +18,7 @@ spec:
         name: {{ include "platform.fullname" . }}--server
         chart: {{ .Chart.Name }}
     spec:
+      serviceAccountName: {{ include "platform.fullname" . }}--platform--sa
       volumes:
         - name: server-config
           configMap:
@@ -25,6 +26,9 @@ spec:
         - name: server-secret
           secret:
             secretName: {{ template "platform.fullname" . }}--server-secret--sec
+        - name: images-folder
+          persistentVolumeClaim:
+            claimName: {{ include "platform.fullname" . }}--server--pvc
       initContainers:
         - name: {{ include "platform.fullname" . }}--server-migrations
           env:
@@ -41,7 +45,7 @@ spec:
           image: "{{ .Values.server.image.repository }}:{{ .Values.server.image.tag }}"
           imagePullPolicy: {{ .Values.server.image.pullPolicy }}
           resources:
-            limits:
+            requests:
               memory: "1024Mi"
               cpu: "250m"
           volumeMounts:
@@ -51,6 +55,8 @@ spec:
             - name: server-secret
               mountPath: /config/production.secret.env
               subPath: production.secret.env
+            - name: images-folder
+              mountPath: /repo/modules/@backend_nest/images
           env:
             - name: CONFIG_PATH
               value: /config/

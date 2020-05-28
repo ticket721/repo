@@ -28,8 +28,8 @@ persistence:
 ## Minimum memory for production is 8GB and 4 CPU cores
 ## ref: http://docs.datastax.com/en/archived/cassandra/2.0/cassandra/architecture/architecturePlanningHardware_c.html
 resources:
-  rquests:
-      memory: 4Gi
+  requests:
+      memory: 3Gi
       cpu: 1500m
 
 ## Change cassandra configuration parameters below:
@@ -160,7 +160,7 @@ annotations: {}
 ## ref: https://kubernetes.io/docs/user-guide/node-selection/
 selector:
   nodeSelector:
-    beta.kubernetes.io/instance-type: "custom-2-6144"
+    beta.kubernetes.io/instance-type: "t2.medium"
 
 ## Affinity for pod assignment
 ## Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity

@@ -1,0 +1,90 @@
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ include "ingress.fullname" . }}--nginx-ingress--cr
+  labels:
+    name: {{ include "ingress.fullname" . }}--nginx-ingress--cr
+    chart: {{ .Chart.Name }}
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - services
+  - endpoints
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - get
+  - list
+  - watch
+  - update
+  - create
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  verbs:
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - events
+  verbs:
+  - create
+  - patch
+- apiGroups:
+  - extensions
+  resources:
+  - ingresses
+  verbs:
+  - list
+  - watch
+  - get
+- apiGroups:
+  - "extensions"
+  resources:
+  - ingresses/status
+  verbs:
+  - update
+- apiGroups:
+  - k8s.nginx.org
+  resources:
+  - virtualservers
+  - virtualserverroutes
+  - globalconfigurations
+  - transportservers
+  verbs:
+  - list
+  - watch
+  - get
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ include "ingress.fullname" . }}--nginx-ingress--crb
+  labels:
+    name: {{ include "ingress.fullname" . }}--nginx-ingress--crb
+    chart: {{ .Chart.Name }}
+subjects:
+- kind: ServiceAccount
+  name: {{ include "ingress.fullname" . }}--nginx-ingress--sa
+  namespace: staging
+roleRef:
+  kind: ClusterRole
+  name: {{ include "ingress.fullname" . }}--nginx-ingress--cr
+  apiGroup: rbac.authorization.k8s.io

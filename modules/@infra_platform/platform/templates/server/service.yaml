@@ -5,6 +5,9 @@ metadata:
   labels:
     name: {{ include "platform.fullname" . }}--server--svc
     chart: {{ .Chart.Name }}
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "tcp"
+    service.beta.kubernetes.io/aws-load-balancer-proxy-protocol: "*"
 spec:
   type: {{ .Values.server.service.type }}
   ports:

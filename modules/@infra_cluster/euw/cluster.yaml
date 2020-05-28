@@ -1,0 +1,36 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: euw
+  region: eu-west-3
+
+cloudWatch:
+  clusterLogging:
+    enableTypes: ["*"]
+
+managedNodeGroups:
+  - name: elassandra
+    instanceType: t2.medium
+    minSize: 1
+    maxSize: 2
+    privateNetworking: true
+    iam:
+      withAddonPolicies:
+        autoScaler: true
+        externalDNS: true
+        certManager: true
+        albIngress: true
+        efs: true
+  - name: core
+    instanceType: t2.small
+    minSize: 1
+    maxSize: 6
+    privateNetworking: true
+    iam:
+      withAddonPolicies:
+        autoScaler: true
+        externalDNS: true
+        certManager: true
+        albIngress: true
+        efs: true

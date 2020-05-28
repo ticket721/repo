@@ -1,0 +1,11 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: {{ include "ingress.fullname" . }}--nginx-config--cfmp
+  labels:
+    name: {{ include "ingress.fullname" . }}--nginx-config--cfmp
+    chart: {{ .Chart.Name }}
+data:
+  proxy-protocol: "True"
+  real-ip-header: "proxy_protocol"
+  set-real-ip-from: "0.0.0.0/0"

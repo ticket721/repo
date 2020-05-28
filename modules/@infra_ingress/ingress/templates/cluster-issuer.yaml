@@ -1,10 +1,7 @@
 apiVersion: cert-manager.io/v1alpha2
 kind: ClusterIssuer
 metadata:
-  name: {{ include "ingress.fullname" . }}--cluster-issuer--issuer
-  labels:
-    name: {{ include "ingress.fullname" . }}--cluster-issuer--issuer
-    chart: {{ .Chart.Name }}
+  name: letsencrypt-prod
 spec:
   acme:
     server: {{ .Values.issuer.server }}
@@ -12,10 +9,18 @@ spec:
     privateKeySecretRef:
       name: {{ include "ingress.fullname" . }}--issuer-key--secret
     solvers:
-    - dns01:
-        clouddns:
-          project: {{ .Values.clouddns.project }}
-          serviceAccountSecretRef:
-            name: {{ include "ingress.fullname" . }}--clouddns-service-account-key--sec
-            key: key.json
 
+      # example: cross-account zone management for example.com
+      # this solver uses ambient credentials (i.e. inferred from the environment or EC2 Metadata Service)
+      # to assume a role in a different account
+      - selector:
+          dnsZones:
+            - "{{ .Values.domainExtension }}.{{ .Values.baseDomain }}"
+            - "*.{{ .Values.domainExtension }}.{{ .Values.baseDomain }}"
+        dns01:
+          route53:
+            region: {{ .Values.route53.region }}
+            accessKeyID: {{ .Values.route53.keyId }}
+            secretAccessKeySecretRef:
+              name: {{ include "ingress.fullname" . }}--route53-credentials--sec
+              key: password.txt

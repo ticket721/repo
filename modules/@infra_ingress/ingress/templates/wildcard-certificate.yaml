@@ -8,7 +8,7 @@ metadata:
 spec:
   secretName: {{ include "ingress.fullname" . }}--wildcard-certificate--sec
   issuerRef:
-    name: {{ include "ingress.fullname" . }}--cluster-issuer--issuer
+    name: letsencrypt-prod
     kind: ClusterIssuer
   dnsNames:
-    - '*.{{ .Values.certificates.baseName }}'
+    - "*.{{ .Values.domainExtension }}.{{ .Values.baseDomain }}"

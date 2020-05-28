@@ -1,5 +1,6 @@
 settings:
-  kubeContext: gke_ticket721_europe-west1-b_euw
+  kubeContext: "${CONTEXT}"
+  reverseDelete: true
 
 namespaces:
   staging:
@@ -17,7 +18,27 @@ apps:
     valuesFile: "../@infra_cert-manager/cert-manager/values.yaml"
     protected: false
     wait: true
-    priority: -4
+    priority: -6
+    setString:
+      _global.namespace: "staging"
+
+  efs-provisioner-staging:
+    timeout: 1200
+    name: "efs-provisioner"
+    description: "Certificate Manager"
+    namespace: "staging"
+    enabled: true
+    group: "critical"
+    chart: "../@infra_efs-provisioner/efs-provisioner"
+    version: "0.1.0"
+    valuesFile: "../@infra_efs-provisioner/efs-provisioner/values.yaml"
+    protected: false
+    wait: true
+    priority: -5
+    setString:
+      _global.namespace: "staging"
+      "efs-provisioner.efsProvisioner.efsFileSystemId": "${CONFIG_EFS_ID}"
+      "efs-provisioner.efsProvisioner.awsRegion": "eu-west-3"
 
   elassandra-staging:
     timeout: 1200
@@ -31,7 +52,9 @@ apps:
     valuesFile: "../@infra_elassandra/elassandra/values.yaml"
     protected: false
     wait: true
-    priority: -3
+    priority: -4
+    setString:
+      _global.namespace: "staging"
 
   redis-staging:
     timeout: 1200
@@ -45,7 +68,9 @@ apps:
     valuesFile: "../@infra_redis/redis/values.yaml"
     protected: false
     wait: true
-    priority: -2
+    priority: -3
+    setString:
+      _global.namespace: "staging"
 
   platform-staging:
     timeout: 1200
@@ -59,8 +84,12 @@ apps:
     valuesFile: "../@infra_platform/platform/values.yaml"
     protected: false
     wait: true
-    priority: -1
+    priority: -2
     setString:
+      _global.namespace: "staging"
+
+      server.fsName: "${CONFIG_EFS_ID}"
+
       config.ticketScope: "ticket721_0"
       config.artifact: "live_ropsten"
 
@@ -130,5 +159,23 @@ apps:
     valuesFile: "../@infra_ingress/ingress/values.yaml"
     protected: false
     wait: true
-    priority: 0
+    priority: -1
+    setString:
+      _global.namespace: "staging"
+
+      issuer.server: "https://acme-staging-v02.api.letsencrypt.org/directory"
+
+      baseDomain: "ticket721.com"
+      domainExtension: "staging"
+
+      hosts[0].name: "api.staging.ticket721.com"
+      hosts[0].paths[0].route: "/"
+      hosts[0].paths[0].serviceName: "platform--server--svc"
+      hosts[0].paths[0].servicePort: "80"
+
+      route53.keyId: "${CONFIG_ROUTE53_KEY}"
+      route53.keySecret: "${CONFIG_ROUTE53_SECRET}"
+      route53.hostedzone: "${CONFIG_ROUTE53_HOSTEDZONE}"
+      route53.region: "eu-west-3"
+
 
