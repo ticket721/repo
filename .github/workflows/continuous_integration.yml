@@ -85,6 +85,18 @@ jobs:
                   path: ./modules/@common_sdk/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_sdk
 
+            - name: "CACHE @frontend_flib-react"
+              uses: actions/cache@v1
+              with:
+                  path: ./modules/@frontend_flib-react/node_modules
+                  key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-frontend_flib-react
+
+            - name: "CACHE @frontend_core"
+              uses: actions/cache@v1
+              with:
+                  path: ./modules/@frontend_core/node_modules
+                  key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-frontend_core
+
             #
             # Cache Public Modules
             #
@@ -636,6 +648,193 @@ jobs:
               run: sudo sysctl -w vm.max_map_count=262144 && cd modules/@backend_nest && yarn test:server:e2e:cov
               env:
                   DEPLOY: true
+
+#     /$$$$  /$$$$$$   /$$$$$$  /$$$$
+#    | $$_/ /$$__  $$ /$$__  $$|_  $$
+#    | $$  | $$  \__/|__/  \ $$  | $$
+#    | $$  |  $$$$$$   /$$$$$$/  | $$
+#    | $$   \____  $$ /$$____/   | $$
+#    | $$   /$$  \ $$| $$        | $$
+#    | $$$$|  $$$$$$/| $$$$$$$$ /$$$$
+#    |____/ \______/ |________/|____/
+#
+#    @frontend_flib-react - build, build-storybook, lint & format check
+#
+#    Recovers required dependencies from cache
+#    Builds sources to verify everything still transpiles properly
+#    Builds storybook to verify that components can be imported properly
+#    Lints sources to verify everything is formatted properly
+#    Runs prettier norm checker to verify everything is formatted properly
+#
+
+    flib-react:
+        name: "[S2] [@frontend/flib-react] build, build-storybook & format check"
+        needs: install
+        runs-on: ubuntu-latest
+        steps:
+
+            #
+            # Initial Setup
+            #
+
+            - uses: actions/checkout@v1
+            - name: "Use Node.js 12.x"
+              uses: actions/setup-node@v1.2.0
+              with:
+                  node-version: 12.x
+
+            - name: "Install required tools globally (npm install -g yarn)"
+              run: npm install -g yarn@1.22.4
+
+            #
+            # Cache Yarn Workspaces
+            #
+
+            - name: "CACHE root"
+              uses: actions/cache@v1
+              with:
+                  path: ./node_modules
+                  key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-root
+
+            - name: "CACHE @frontend_flib-react"
+              uses: actions/cache@v1
+              with:
+                  path: ./modules/@frontend_flib-react/node_modules
+                  key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-frontend_flib-react
+
+            #
+            # Build & Build Storybook, Lint & Format check @frontend_flib-react
+            #
+
+            - name: "Build @frontend/flib-react (yarn build in modules/@frontend_flib-react)"
+              working-directory: modules/@frontend_flib-react
+              run: yarn build
+
+            - name: "Build Storybook @frontend/flib-react (yarn build-storybook in modules/@frontend_flib-react)"
+              working-directory: modules/@frontend_flib-react
+              run: yarn build-storybook
+
+            - name: "Lint @frontend/flib-react (yarn lint in modules/@frontend_flib-react)"
+              working-directory: modules/@frontend_flib-react
+              run: yarn lint
+
+            - name: "Format check @frontend/flib-react (yarn format:check in modules/@frontend_flib-react)"
+              working-directory: modules/@frontend_flib-react
+              run: yarn format:check
+
+#     /$$$$  /$$$$$$   /$$$$$$  /$$$$
+#    | $$_/ /$$__  $$ /$$__  $$|_  $$
+#    | $$  | $$  \__/|__/  \ $$  | $$
+#    | $$  |  $$$$$$   /$$$$$$/  | $$
+#    | $$   \____  $$ /$$____/   | $$
+#    | $$   /$$  \ $$| $$        | $$
+#    | $$$$|  $$$$$$/| $$$$$$$$ /$$$$
+#    |____/ \______/ |________/|____/
+#
+#    @frontend_core - build, lint, format check & tests
+#
+#    Recovers required dependencies from cache
+#    Builds sources to verify everything still transpiles properly
+#    Lints sources to verify everything is formatted properly
+#    Runs prettier norm checker to verify everything is formatted properly
+#    Runs unitary tests to verify logic is kept
+#
+
+    frontend-core:
+        name: "[S2] [@frontend/core] build, lint, format check & tests"
+        needs: install
+        runs-on: ubuntu-latest
+        steps:
+
+            #
+            # Initial Setup
+            #
+
+            - uses: actions/checkout@v1
+            - name: "Use Node.js 12.x"
+              uses: actions/setup-node@v1.2.0
+              with:
+                  node-version: 12.x
+
+            - name: "Install required tools globally (npm install -g yarn)"
+              run: npm install -g yarn@1.22.4
+
+            #
+            # Cache Yarn Workspaces
+            #
+
+            - name: "CACHE root"
+              uses: actions/cache@v1
+              with:
+                  path: ./node_modules
+                  key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-root
+
+            - name: "CACHE @common_global"
+              uses: actions/cache@v1
+              with:
+                  path: ./modules/@common_global/node_modules
+                  key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_global
+
+            - name: "CACHE @common_sdk"
+              uses: actions/cache@v1
+              with:
+                  path: ./modules/@common_sdk/node_modules
+                  key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_sdk
+
+            - name: "CACHE @frontend_flib-react"
+              uses: actions/cache@v1
+              with:
+                  path: ./modules/@frontend_flib-react/node_modules
+                  key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-frontend_flib-react
+
+            - name: "CACHE @frontend_core"
+              uses: actions/cache@v1
+              with:
+                  path: ./modules/@frontend_core/node_modules
+                  key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-frontend_core
+
+            - name: "CACHE @backend_nest"
+              uses: actions/cache@v1
+              with:
+                  path: ./modules/@backend_nest/node_modules
+                  key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-backend_nest
+
+
+          #
+          # Build dependencies
+          #
+
+            - name: "Build @common_global (yarn build in modules/@common_global)"
+              working-directory: modules/@common_global
+              run: yarn build
+
+            - name: "Build @common_sdk (yarn build in modules/@common_sdk)"
+              working-directory: modules/@common_sdk
+              run: yarn build
+
+            - name: "Build @frontend_flib-react (yarn build in modules/@frontend_flib-react)"
+              working-directory: modules/@frontend_flib-react
+              run: yarn build
+
+            #
+            # Build, Lint, Format check & Tests @frontend_core
+            #
+
+            - name: "Build @frontend/core (yarn build in modules/@frontend_core)"
+              working-directory: modules/@frontend_core
+              run: yarn build
+
+            - name: "Lint @frontend/core (yarn lint in modules/@frontend_core)"
+              working-directory: modules/@frontend_core
+              run: yarn lint
+
+            - name: "Format check @frontend/core (yarn format:check in modules/@frontend_core)"
+              working-directory: modules/@frontend_core
+              run: yarn format:check
+
+            - name: "Tests @frontend/core (yarn test in modules/@frontend_core)"
+              working-directory: modules/@frontend_core
+              run: yarn test
 
 #     /$$$$  /$$$$$$   /$$$$$$  /$$$$
 #    | $$_/ /$$__  $$ /$$__  $$|_  $$

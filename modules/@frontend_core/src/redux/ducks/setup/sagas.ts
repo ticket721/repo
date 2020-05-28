@@ -1,28 +1,34 @@
-import { AppState }           from '../';
-import { SagaIterator }         from '@redux-saga/types';
-import { select, takeEvery, put }         from 'redux-saga/effects';
+import { AppState } from '../';
+import { SagaIterator } from '@redux-saga/types';
+import { call, put, select, takeEvery } from 'redux-saga/effects';
 
-import Web3                                                         from 'web3';
+import Web3 from 'web3';
 import { VtxconfigReset, VtxconfigSetAllowedNet, VtxconfigSetWeb3 } from 'ethvtx/lib/vtxconfig/actions/actions';
 
-import { IStart, IStartVtx }  from './actions';
+import { IStart, IStartVtx } from './actions';
 import { GetCity, GetDevice } from '../user_properties';
-import { SetupActionTypes }   from './types';
+import { SetupActionTypes } from './types';
 
-import { EthConfig }            from '../configs';
+import { EthConfig } from '../configs';
 import { StartRefreshInterval } from '../cache';
-import { T721SDK }              from '@common/sdk';
+import { GetUser, SetToken } from '../auth';
+import { isExpired, isValidFormat, parseToken } from '../../../utils/token';
+import { T721SDK } from '@common/sdk';
+import { AppStatus, SetAppStatus } from '../statuses';
+import { PushNotification } from '../notifications';
 
-function* startSaga(action: IStart): SagaIterator {
+function* startSaga(action: IStart): IterableIterator<any> {
     global.window.t721Sdk = new T721SDK();
-
     global.window.t721Sdk.connect('localhost', 3000);
+
+    yield call(handleUser);
     yield put(GetDevice());
     yield put(GetCity());
+    yield put(SetAppStatus(AppStatus.Ready));
     yield put(StartRefreshInterval());
 }
 
-function* startVtxSaga(action: IStartVtx): SagaIterator {
+function* startVtxSaga(action: IStartVtx): IterableIterator<any> {
     const getEthConfig = (state: AppState) => state.configs.eth;
 
     const config: EthConfig = yield select(getEthConfig);
@@ -34,6 +40,37 @@ function* startVtxSaga(action: IStartVtx): SagaIterator {
     yield put(VtxconfigSetAllowedNet(config.ethereumNetworkId, config.ethereumNetworkGenesisHash));
 
     yield put(VtxconfigReset());
+}
+
+function* handleUser(): IterableIterator<any> {
+    if (localStorage.getItem('token')) {
+        const token = parseToken(localStorage.getItem('token'));
+        console.log(token, isValidFormat(token) && !isExpired(token));
+        if (isValidFormat(token) && !isExpired(token)) {
+            try {
+                yield global.window.t721Sdk.users.me(token.value);
+                yield put(SetToken(token));
+                yield put(GetUser());
+            } catch (e) {
+                if (e.message === 'Network Error') {
+                    yield put(PushNotification('cannot_reach_server', 'error'));
+                } else {
+                    const errorData = e.response.data;
+                    if (errorData.statusCode === 401) {
+                        localStorage.removeItem('token');
+                        yield put(PushNotification('unauthorized_error', 'error'));
+                    } else {
+                        yield put(PushNotification('internal_server_error', 'error'));
+                    }
+                }
+            }
+        } else {
+            localStorage.removeItem('token');
+            if (isExpired(token)) {
+                yield put(PushNotification('session_expired', 'warning'));
+            }
+        }
+    }
 }
 
 export function* setupSaga(): SagaIterator {

@@ -34,8 +34,8 @@ export interface CacheState {
     settings: CacheSettings;
     items: {
         [key: string]: CachedItem;
-    },
+    };
     properties: {
         [key: string]: CachedItemProperties;
-    }
+    };
 }

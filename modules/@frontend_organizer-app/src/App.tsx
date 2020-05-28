@@ -1,32 +1,68 @@
-import React from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import {
     PageContainer
-} from '@frontend/core/lib/components';
+}                                               from '@frontend/core/lib/components';
 
-import { Route, Switch, withRouter } from 'react-router-dom';
+import { Route, Switch, useLocation, withRouter } from 'react-router-dom';
 
 import { routes }       from './routes';
 
-import Navbar from './shared/Navbar';
+import Navbar               from './shared/Navbar';
+import { AppState }         from '@frontend/core/lib/redux';
 
-const App: React.FC = ({ location }: any) => (
-    <div id='App'>
-        <Navbar />
-        <Switch>
+import ProtectedRoute       from '@frontend/core/lib/components/ProtectedRoute';
+import { useSelector }      from 'react-redux';
+import styled               from 'styled-components';
+import { AppStatus }        from '@frontend/core/lib/redux/ducks/statuses';
+import ToastStacker from '@frontend/core/lib/components/ToastStacker';
+
+const App: React.FC = () => {
+    const [ validated, setValidated ] = useState(true);
+    const authState = useSelector(((state: AppState) => state.auth));
+    const appStatus = useSelector(((state: AppState) => state.statuses.appStatus));
+    const location = useLocation();
+
+    useEffect(() => {
+        setValidated(authState.user?.validated);
+    }, [ authState.user ]);
+
+    return (
+      <Suspense fallback='loading'>
+        <AppContainer>
             {
-                routes.map((route, idx) => (
-                    <Route key={idx} path={route.path}>
-                        <PageContainer
-                        padding='50px 30px 30px'
-                        topBar={route.topBar}
-                        topBarHeight={route.topBarHeight}>
-                            <route.page />
-                        </PageContainer>
-                    </Route>
-                ))
+                validated &&
+                location.pathname !== '/register' && location.pathname !== '/login' &&
+                <Navbar/>
             }
-        </Switch>
-    </div>
-);
+            <Switch>
+                {
+                    appStatus === AppStatus.Ready && routes.map((route, idx) => {
+                        const page = <PageContainer
+                          padding='50px 30px 30px'
+                          topBar={route.topBar}
+                          topBarHeight={route.topBarHeight}>
+                            <route.page />
+                        </PageContainer>;
+
+                        if (route.protected) {
+                            return <ProtectedRoute path={route.path} key={idx} page={page} />
+                        }
+
+                        return <Route key={idx} path={route.path}>
+                            <route.page />
+                        </Route>
+                    })
+                }
+            </Switch>
+            <ToastStacker />
+        </AppContainer>
+      </Suspense>
+    )
+};
+
+const AppContainer = styled.div`
+    position: absolute;
+    width: 100%;
+`;
 
 export default withRouter(App);
