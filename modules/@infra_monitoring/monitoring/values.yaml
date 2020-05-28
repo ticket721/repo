@@ -14,6 +14,10 @@ monitoring:
         persistence:
             gceVolume: grafana-disk
             gceVolumeType: ext4
+    sentry:
+        persistence:
+            gceVolume: sentry-disk
+            gceVolumeType: ext4
 
 prometheus:
     prometheusOperator:
@@ -27,3 +31,10 @@ prometheus:
             accessMode: ReadWriteOnce
             existingClaim: grafana-persistence--pvc
             size: 10Gi
+
+sentry:
+    persistence:
+        enabled: true
+        accessMode: ReadWriteOnce
+        existingClaim: sentry-persistence--pvc
+        size: 10Gi

@@ -1,0 +1,14 @@
+{{- if .Values.monitoring.prometheus.enabled -}}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+    name: "{{ .Values.sentry.persistence.existingClaim }}"
+spec:
+    volumeName: "{{ .Release.Name }}--sentry-persistence--pv"
+    storageClassName: "standard"
+    accessModes:
+        - {{ .Values.sentry.persistence.accessMode | quote }}
+    resources:
+        requests:
+            storage: {{ .Values.sentry.persistence.size | quote }}
+{{- end -}}
