@@ -8,6 +8,7 @@ import { AuthState, LocalLogin, ResetSubmission } from '../../redux/ducks/auth';
 import styled from 'styled-components';
 import { loginValidationSchema } from './validation';
 import { useTranslation } from 'react-i18next';
+
 import './locales';
 
 export const Login: React.FC = () => {
