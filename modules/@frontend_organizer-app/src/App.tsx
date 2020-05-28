@@ -9,6 +9,7 @@ import { routes }       from './routes';
 
 import Navbar               from './shared/Navbar';
 import { AppState }         from '@frontend/core/lib/redux';
+
 import ProtectedRoute       from '@frontend/core/lib/components/ProtectedRoute';
 import { useSelector }      from 'react-redux';
 import styled               from 'styled-components';
