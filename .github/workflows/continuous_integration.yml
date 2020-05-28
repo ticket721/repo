@@ -793,6 +793,12 @@ jobs:
                   path: ./modules/@frontend_core/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-frontend_core
 
+            - name: "CACHE @backend_nest"
+              uses: actions/cache@v1
+              with:
+                  path: ./modules/@backend_nest/node_modules
+                  key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-backend_nest
+
 
           #
           # Build dependencies
