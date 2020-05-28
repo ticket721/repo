@@ -10,7 +10,7 @@ export enum UserPropertiesActionTypes {
     GetDevice = '@@userproperties/getdevice',
     GetCity = '@@userproperties/getcity',
     SetDeviceInfos = '@@userproperties/setdeviceinfos',
-    SetCity = '@@userproperties/setcity'
+    SetCity = '@@userproperties/setcity',
 }
 
 export interface UserPropertiesState {

@@ -1,4 +1,4 @@
-import { Action }           from 'redux';
+import { Action } from 'redux';
 import { CacheActionTypes } from '../types';
 
 export interface ISetTickInterval extends Action<string> {

@@ -9,5 +9,5 @@ export interface EthConfig {
 }
 
 export interface ConfigsState {
-    eth: EthConfig
+    eth: EthConfig;
 }

@@ -28,7 +28,7 @@ export interface AuthErrors {
 }
 
 export interface AuthState {
-    user: User
+    user: User;
     token: Token;
     errors: AuthErrors;
     loading: boolean;

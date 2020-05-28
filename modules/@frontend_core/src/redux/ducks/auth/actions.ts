@@ -1,5 +1,5 @@
 import { AuthActionTypes, AuthErrors, Token } from './types';
-import { Action }                             from 'redux';
+import { Action } from 'redux';
 
 export interface ILocalRegister extends Action<string> {
     type: AuthActionTypes.LocalRegister;
@@ -14,7 +14,7 @@ export const LocalRegister = (email: string, password: string, username: string,
     email,
     password,
     username,
-    locale
+    locale,
 });
 
 export interface ILocalLogin extends Action<string> {
@@ -107,14 +107,13 @@ export const ResetSubmission = (): IResetSubmission => ({
     type: AuthActionTypes.ResetSubmission,
 });
 
-export type AuthAction =
-    ILocalRegister
-    & ILocalLogin
-    & ILogout
-    & ISetToken
-    & ISetUser
-    & IGetUser
-    & ISetErrors
-    & IResetErrors
-    & ISetLoading
-    & IResetSubmission;
+export type AuthAction = ILocalRegister &
+    ILocalLogin &
+    ILogout &
+    ISetToken &
+    ISetUser &
+    IGetUser &
+    ISetErrors &
+    IResetErrors &
+    ISetLoading &
+    IResetSubmission;

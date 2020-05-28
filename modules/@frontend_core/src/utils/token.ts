@@ -11,6 +11,6 @@ export const isValidFormat = (token: Token): boolean => {
 };
 
 export const parseToken = (token: string): Token => ({
-        value: JSON.parse(token).value,
-        expiration: new Date(JSON.parse(token).expiration),
+    value: JSON.parse(token).value,
+    expiration: new Date(JSON.parse(token).expiration),
 });

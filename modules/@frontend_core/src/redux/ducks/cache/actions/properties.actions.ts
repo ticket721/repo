@@ -1,4 +1,4 @@
-import { Action }           from 'redux';
+import { Action } from 'redux';
 import { CacheActionTypes } from '../types';
 
 export interface IRegisterComponent extends Action<string> {
@@ -10,7 +10,13 @@ export interface IRegisterComponent extends Action<string> {
     rate: number;
 }
 
-export const RegisterComponent = (key: string, method: string, args: any, uid: string, rate: number): IRegisterComponent => ({
+export const RegisterComponent = (
+    key: string,
+    method: string,
+    args: any,
+    uid: string,
+    rate: number,
+): IRegisterComponent => ({
     type: CacheActionTypes.RegisterComponent,
     key,
     method,
@@ -41,7 +47,4 @@ export const UpdateLastResponse = (key: string): IUpdateLastResponse => ({
     key,
 });
 
-export type CachePropertiesAction =
-    & IRegisterComponent
-    & IUnregisterComponent
-    & IUpdateLastResponse;
+export type CachePropertiesAction = IRegisterComponent & IUnregisterComponent & IUpdateLastResponse;

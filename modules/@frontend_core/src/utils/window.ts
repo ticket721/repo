@@ -1,6 +1,6 @@
-import { AppState }    from '../redux/ducks';
-import { Store }       from 'redux';
-import { T721SDK }     from '@common/sdk';
+import { AppState } from '../redux/ducks';
+import { Store } from 'redux';
+import { T721SDK } from '@common/sdk';
 
 export {};
 

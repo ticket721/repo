@@ -1,13 +1,13 @@
 import { UserPropertiesActionTypes } from './types';
-import { City }                      from '@common/global';
-import { Action }                    from 'redux';
+import { City } from '@common/global';
+import { Action } from 'redux';
 
 export interface IGetDevice extends Action<string> {
-    type: UserPropertiesActionTypes.GetDevice
+    type: UserPropertiesActionTypes.GetDevice;
 }
 
 export const GetDevice = (): IGetDevice => ({
-    type: UserPropertiesActionTypes.GetDevice
+    type: UserPropertiesActionTypes.GetDevice,
 });
 
 export interface ISetDeviceInfos extends Action<string> {
@@ -19,15 +19,15 @@ export interface ISetDeviceInfos extends Action<string> {
 export const SetDeviceInfos = (device: string, browser: string): ISetDeviceInfos => ({
     type: UserPropertiesActionTypes.SetDeviceInfos,
     device,
-    browser
+    browser,
 });
 
 export interface IGetCity extends Action<string> {
-    type: UserPropertiesActionTypes.GetCity
+    type: UserPropertiesActionTypes.GetCity;
 }
 
 export const GetCity = (): IGetCity => ({
-    type: UserPropertiesActionTypes.GetCity
+    type: UserPropertiesActionTypes.GetCity,
 });
 
 export interface ISetCity extends Action<string> {
@@ -37,11 +37,7 @@ export interface ISetCity extends Action<string> {
 
 export const SetCity = (city: City): ISetCity => ({
     type: UserPropertiesActionTypes.SetCity,
-    city
+    city,
 });
 
-export type UserPropertiesAction =
-    ISetDeviceInfos
-    & ISetCity
-    & IGetDevice
-    & IGetCity;
+export type UserPropertiesAction = ISetDeviceInfos & ISetCity & IGetDevice & IGetCity;

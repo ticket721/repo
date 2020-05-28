@@ -1,7 +1,7 @@
 import { Route, Redirect } from 'react-router-dom';
-import React               from 'react';
-import { connect }         from 'react-redux';
-import { AppState }        from '../../redux/ducks';
+import React from 'react';
+import { connect } from 'react-redux';
+import { AppState } from '../../redux/ducks';
 
 export interface ProtectedRouteProps {
     path: string;
@@ -21,15 +21,18 @@ const ProtectedRoute: React.FC<MergedProps> = (props: MergedProps) => {
 
     return (
         <Route key={key} path={path}>
-            {
-                (!authenticated || ( validated !== undefined && !validated) ?
-                <Redirect to={{
-                    pathname: '/login',
-                    state: {
-                        from: path
-                    }}} /> :
-                  page)
-            }
+            {!authenticated || (validated !== undefined && !validated) ? (
+                <Redirect
+                    to={{
+                        pathname: '/login',
+                        state: {
+                            from: path,
+                        },
+                    }}
+                />
+            ) : (
+                page
+            )}
         </Route>
     );
 };

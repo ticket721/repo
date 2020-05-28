@@ -28,20 +28,20 @@ i18n.addResourceBundle('fr', 'registration', {
     email_placeholder: 'Addresse email',
     password_label: 'mot de passe',
     password_placeholder: 'Mot de passe',
-    username_label: 'nom d\'utilisateur',
-    username_placeholder: 'Nom d\'utilisateur',
+    username_label: "nom d'utilisateur",
+    username_placeholder: "Nom d'utilisateur",
     register: 'Inscription',
     login_switch: 'Déjà un compte ? Connectez vous ici !',
 
     // errors
     email_required: 'email requis',
-    invalid_email: 'le format de l\'adresse email est incorrect',
+    invalid_email: "le format de l'adresse email est incorrect",
     email_already_in_use: 'cette addresse email est déjà utilisée',
     password_required: 'mot de passe requis',
-    username_required: 'nom d\'utilisateur requis',
-    username_too_short: 'nom d\'utilisateur trop court (min. 4 caractères)',
-    username_too_long: 'nom d\'utilisateur trop long (max. 20 caractères)',
-    username_already_in_use: 'ce nom d\'utilisateur est déjà utilisé',
+    username_required: "nom d'utilisateur requis",
+    username_too_short: "nom d'utilisateur trop court (min. 4 caractères)",
+    username_too_long: "nom d'utilisateur trop long (max. 20 caractères)",
+    username_already_in_use: "ce nom d'utilisateur est déjà utilisé",
     address_already_in_use: 'cette addresse est déjà utilisée',
 });
 
