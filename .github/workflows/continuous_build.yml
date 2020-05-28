@@ -1,9 +1,11 @@
 name: T721 Monorepo CB
 
-on:
-  push:
-    branches:
-      - develop
+on: [push]
+
+# on:
+#   push:
+#     branches:
+#       - develop
 
 jobs:
 
@@ -33,20 +35,24 @@ jobs:
             - name: "Recover submodules (yarn setup:submodules:clone)"
               run: yarn setup:submodules:clone
 
-            - name: "Setup gcloud CLI"
-              uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
-              with:
-                project_id: ${{ secrets.GCP_PROJECT_ID }}
-                service_account_key: ${{ secrets.GCP_SA_KEY }}
-                export_default_credentials: true
+            - name: "Setup aws CLI"
+              uses: chrislennon/action-aws-cli@v1.1
+
+            - name: "Authenticate Docker"
+              run: ./aws-ecr-login.sh
+              env:
+                AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                AWS_USER_ID: ${{ secrets.AWS_USER_ID }}
+                AWS_REGION: ${{ secrets.AWS_REGION }}
 
             - name: "Build all docker images"
               run: yarn @docker:build:github
 
-            - name: "Publish to Google Containers Registry"
+            - name: "Publish to Elastic Container Registry"
               env:
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                GCP_REGISTRY_HOSTNAME: "eu.gcr.io"
-                GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+                AWS_USER_ID: ${{ secrets.AWS_USER_ID }}
+                AWS_REGION: ${{ secrets.AWS_REGION }}
               run: yarn @docker:deploy:github
 
