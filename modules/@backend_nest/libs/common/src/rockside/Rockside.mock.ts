@@ -15,14 +15,14 @@ import {
     Wallet,
     decimalToHex,
     encode,
-}                           from '@common/global';
-import { FSService }        from '@lib/common/fs/FS.service';
-import { Web3Service }      from '@lib/common/web3/Web3.service';
-import { Web3Provider }     from 'ethers/providers';
-import { utils }            from 'ethers';
-import BN                   from 'bn.js';
+} from '@common/global';
+import { FSService } from '@lib/common/fs/FS.service';
+import { Web3Service } from '@lib/common/web3/Web3.service';
+import { Web3Provider } from 'ethers/providers';
+import { utils } from 'ethers';
+import BN from 'bn.js';
 import { ContractArtifact } from '@lib/common/contracts/Contracts.service';
-import { NestError }        from '@lib/common/utils/NestError';
+import { NestError } from '@lib/common/utils/NestError';
 
 /**
  * Mock Options for the Rockside api mock

@@ -6,18 +6,18 @@ import { OutrospectionService } from '@lib/common/outrospection/Outrospection.se
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
 import { EVMEventSetsService } from '@lib/common/evmeventsets/EVMEventSets.service';
-import { EVMProcessableEvent }                                  from '@app/worker/evmantenna/EVMAntennaMerger.scheduler';
-import { TicketsService }                                       from '@lib/common/tickets/Tickets.service';
-import { T721ControllerV0Service }                              from '@lib/common/contracts/t721controller/T721Controller.V0.service';
-import { CategoriesService }                                    from '@lib/common/categories/Categories.service';
-import { TicketEntity }                                         from '@lib/common/tickets/entities/Ticket.entity';
-import { CategoryEntity }                                       from '@lib/common/categories/entities/Category.entity';
+import { EVMProcessableEvent } from '@app/worker/evmantenna/EVMAntennaMerger.scheduler';
+import { TicketsService } from '@lib/common/tickets/Tickets.service';
+import { T721ControllerV0Service } from '@lib/common/contracts/t721controller/T721Controller.V0.service';
+import { CategoriesService } from '@lib/common/categories/Categories.service';
+import { TicketEntity } from '@lib/common/tickets/entities/Ticket.entity';
+import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
 import { decimalToHex, encode, toAcceptedAddressFormat, toB32 } from '@common/global';
-import { GroupService }                                         from '@lib/common/group/Group.service';
-import { AuthorizationsService }                                from '@lib/common/authorizations/Authorizations.service';
-import { AuthorizationEntity }                                  from '@lib/common/authorizations/entities/Authorization.entity';
-import { WinstonLoggerService }                                 from '@lib/common/logger/WinstonLogger.service';
-import { NestError }                                            from '@lib/common/utils/NestError';
+import { GroupService } from '@lib/common/group/Group.service';
+import { AuthorizationsService } from '@lib/common/authorizations/Authorizations.service';
+import { AuthorizationEntity } from '@lib/common/authorizations/entities/Authorization.entity';
+import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
+import { NestError } from '@lib/common/utils/NestError';
 
 /**
  * EVM Antenna to intercept NewCategory events emitted by the T721Controller
@@ -139,7 +139,9 @@ export class MintT721ControllerEVMAntenna extends EVMEventControllerBase {
         const receivedCode = encode(['uint256'], [decimalToHex(returnValues.code)]).toLowerCase();
 
         if (code !== receivedCode) {
-            throw new NestError(`Invalid broadcasted authorization code: got ${receivedCode} but was expecting ${code}`);
+            throw new NestError(
+                `Invalid broadcasted authorization code: got ${receivedCode} but was expecting ${code}`,
+            );
         }
 
         const authorizationDryUpdateRes = await this.authorizationsService.dryUpdate(

@@ -9,18 +9,18 @@ import {
     ActionStatus,
     ActionType,
 } from '@lib/common/actionsets/entities/ActionSet.entity';
-import { Test, TestingModule }   from '@nestjs/testing';
+import { Test, TestingModule } from '@nestjs/testing';
 import { EsSearchOptionsStatic } from '@iaminfinity/express-cassandra/dist/orm/interfaces/externals/express-cassandra.interface';
-import { ConfigService }         from '@lib/common/config/Config.service';
-import { ModuleRef }             from '@nestjs/core';
-import { RightsService }         from '@lib/common/rights/Rights.service';
-import { ActionSetBuilderBase }  from '@lib/common/actionsets/helper/ActionSet.builder.base';
-import { UserDto }               from '@lib/common/users/dto/User.dto';
-import { ActionSet }             from '@lib/common/actionsets/helper/ActionSet.class';
-import { ServiceResponse }       from '@lib/common/utils/ServiceResponse.type';
-import { Job, JobOptions }       from 'bull';
-import { getQueueToken }         from '@nestjs/bull';
-import { NestError }             from '@lib/common/utils/NestError';
+import { ConfigService } from '@lib/common/config/Config.service';
+import { ModuleRef } from '@nestjs/core';
+import { RightsService } from '@lib/common/rights/Rights.service';
+import { ActionSetBuilderBase } from '@lib/common/actionsets/helper/ActionSet.builder.base';
+import { UserDto } from '@lib/common/users/dto/User.dto';
+import { ActionSet } from '@lib/common/actionsets/helper/ActionSet.class';
+import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
+import { Job, JobOptions } from 'bull';
+import { getQueueToken } from '@nestjs/bull';
+import { NestError } from '@lib/common/utils/NestError';
 
 class EntityModelMock {
     search(options: EsSearchOptionsStatic, callback?: (err: any, ret: any) => void): void {

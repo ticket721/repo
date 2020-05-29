@@ -4,19 +4,19 @@ import { InjectSchedule, Schedule } from 'nest-schedule';
 import { EVMEventControllerBase } from '@app/worker/evmantenna/EVMEvent.controller.base';
 import { GlobalConfigService } from '@lib/common/globalconfig/GlobalConfig.service';
 import { EVMEventSetsService } from '@lib/common/evmeventsets/EVMEventSets.service';
-import { ShutdownService }              from '@lib/common/shutdown/Shutdown.service';
-import { GlobalEntity }                 from '@lib/common/globalconfig/entities/Global.entity';
-import { Job, Queue }                   from 'bull';
-import { InjectQueue }                  from '@nestjs/bull';
-import { ESSearchHit }                  from '@lib/common/utils/ESSearchReturn.type';
-import { EVMEvent, EVMEventSetEntity }  from '@lib/common/evmeventsets/entities/EVMEventSet.entity';
-import { DryResponse }                  from '@lib/common/crud/CRUDExtension.base';
+import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
+import { GlobalEntity } from '@lib/common/globalconfig/entities/Global.entity';
+import { Job, Queue } from 'bull';
+import { InjectQueue } from '@nestjs/bull';
+import { ESSearchHit } from '@lib/common/utils/ESSearchReturn.type';
+import { EVMEvent, EVMEventSetEntity } from '@lib/common/evmeventsets/entities/EVMEventSet.entity';
+import { DryResponse } from '@lib/common/crud/CRUDExtension.base';
 import { Connection, InjectConnection } from '@iaminfinity/express-cassandra';
-import { WinstonLoggerService }         from '@lib/common/logger/WinstonLogger.service';
-import { EVMBlockRollbacksService }     from '@lib/common/evmblockrollbacks/EVMBlockRollbacks.service';
-import { cassandraArrayResultHelper }   from '@lib/common/utils/cassandraArrayResult.helper';
-import { NestError }                    from '@lib/common/utils/NestError';
-import { noConcurrentRun }              from '@app/worker/utils/noConcurrentRun';
+import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
+import { EVMBlockRollbacksService } from '@lib/common/evmblockrollbacks/EVMBlockRollbacks.service';
+import { cassandraArrayResultHelper } from '@lib/common/utils/cassandraArrayResult.helper';
+import { NestError } from '@lib/common/utils/NestError';
+import { noConcurrentRun } from '@app/worker/utils/noConcurrentRun';
 
 /**
  * Data Model contained inside the merge jobs
@@ -96,7 +96,7 @@ export class EVMAntennaMergerScheduler implements OnApplicationBootstrap {
         if (globalConfigRes.error || globalConfigRes.response.length === 0) {
             const error = new NestError(
                 `EVMAntennaMergerScheduler::evmEventMergerPoller | Unable to recover global config: ${globalConfigRes.error ||
-                'no document found'}`,
+                    'no document found'}`,
             );
             this.shutdownService.shutdownWithError(error);
             throw error;
@@ -123,7 +123,6 @@ export class EVMAntennaMergerScheduler implements OnApplicationBootstrap {
         }
 
         this.logger.log(`Finished sync loop at block ${currentHeight}`);
-
     }
 
     /**
@@ -155,12 +154,12 @@ export class EVMAntennaMergerScheduler implements OnApplicationBootstrap {
                 query: {
                     bool: {
                         must: {
-                            range : {
-                                block_number : {
-                                    gte : from,
-                                    lte : to
-                                }
-                            }
+                            range: {
+                                block_number: {
+                                    gte: from,
+                                    lte: to,
+                                },
+                            },
                         },
                     },
                 },
@@ -180,19 +179,18 @@ export class EVMAntennaMergerScheduler implements OnApplicationBootstrap {
         const ret: ESSearchHit<EVMEventSetEntity>[][] = [];
 
         for (let currentBlock = from; currentBlock <= to; ++currentBlock) {
-
-            const currentBlockEvents = events.filter((evmes: ESSearchHit<EVMEventSetEntity>): boolean => evmes._source.block_number === currentBlock);
+            const currentBlockEvents = events.filter(
+                (evmes: ESSearchHit<EVMEventSetEntity>): boolean => evmes._source.block_number === currentBlock,
+            );
 
             if (currentBlockEvents.length !== EVMAntennaMergerScheduler.controllers.length) {
                 return ret;
             }
 
             ret.push(currentBlockEvents);
-
         }
 
         return ret;
-
     }
 
     /**
@@ -354,13 +352,12 @@ export class EVMAntennaMergerScheduler implements OnApplicationBootstrap {
         const esQueryResult = await this.fetchEvmEventSets(from, to);
 
         if (esQueryResult.length === 0) {
-            return 0
+            return 0;
         }
 
         const queryBatch: DryResponse[] = [];
 
         for (const blocksEvents of esQueryResult) {
-
             const rollbackBatch: DryResponse[] = [];
             const blockNumber = blocksEvents[0]._source.block_number;
 
@@ -380,17 +377,20 @@ export class EVMAntennaMergerScheduler implements OnApplicationBootstrap {
 
         try {
             await this.connection.doBatchAsync((queryBatch as any) as string[]);
-            this.logger.log(`Successful batch block event fusion for blocks ${from} => ${from + esQueryResult.length - 1}`);
+            this.logger.log(
+                `Successful batch block event fusion for blocks ${from} => ${from + esQueryResult.length - 1}`,
+            );
         } catch (e) {
             this.logger.error(
-                `Error when broadcasting event fusion batched transaction for blocks ${from} => ${from + esQueryResult.length - 1}`,
+                `Error when broadcasting event fusion batched transaction for blocks ${from} => ${from +
+                    esQueryResult.length -
+                    1}`,
             );
             this.logger.error(e);
             throw e;
         }
 
         return esQueryResult.length;
-
     }
 
     /**
@@ -400,13 +400,15 @@ export class EVMAntennaMergerScheduler implements OnApplicationBootstrap {
         const signature: InstanceSignature = await this.outrospectionService.getInstanceSignature();
 
         if (signature.master === true && signature.name === 'worker') {
-            this.schedule.scheduleIntervalJob('evmEventMerger', 500,
-                noConcurrentRun.bind(this,
+            this.schedule.scheduleIntervalJob(
+                'evmEventMerger',
+                500,
+                noConcurrentRun.bind(
+                    this,
                     'EVMAntennaMerger.scheduler.ts/evmEventMergerPoller',
-                    this.evmEventMergerPoller.bind(this)
-                )
+                    this.evmEventMergerPoller.bind(this),
+                ),
             );
         }
-
     }
 }

@@ -1,5 +1,5 @@
 import { contractCallHelper } from '@lib/common/utils/contractCall.helper';
-import { NestError }          from '@lib/common/utils/NestError';
+import { NestError } from '@lib/common/utils/NestError';
 
 describe('contractCall Helper', function() {
     it('should properly call the appropriate method', async function() {

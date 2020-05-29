@@ -1,9 +1,9 @@
-import { RocksideService }                         from '@lib/common/rockside/Rockside.service';
-import { RocksideApi }                             from '@rocksideio/rockside-wallet-sdk/lib/api';
+import { RocksideService } from '@lib/common/rockside/Rockside.service';
+import { RocksideApi } from '@rocksideio/rockside-wallet-sdk/lib/api';
 import { deepEqual, instance, mock, verify, when } from 'ts-mockito';
-import { Test }                                    from '@nestjs/testing';
-import { keccak256FromBuffer }                     from '@common/global';
-import { NestError }                               from '@lib/common/utils/NestError';
+import { Test } from '@nestjs/testing';
+import { keccak256FromBuffer } from '@common/global';
+import { NestError } from '@lib/common/utils/NestError';
 
 describe('Rockside Service', function() {
     const context: {

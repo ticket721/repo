@@ -1,13 +1,13 @@
-import { ActionSetsTasks }                                            from '@app/worker/tasks/actionsets/ActionSets.tasks';
-import { ActionSetsService }                                          from '@lib/common/actionsets/ActionSets.service';
+import { ActionSetsTasks } from '@app/worker/tasks/actionsets/ActionSets.tasks';
+import { ActionSetsService } from '@lib/common/actionsets/ActionSets.service';
 import { anything, capture, deepEqual, instance, mock, verify, when } from 'ts-mockito';
-import { Job, Queue }                                                 from 'bull';
-import { ActionSetEntity }                                            from '@lib/common/actionsets/entities/ActionSet.entity';
-import { ActionSet }                                                  from '@lib/common/actionsets/helper/ActionSet.class';
-import { WinstonLoggerService }                                       from '@lib/common/logger/WinstonLogger.service';
-import { OutrospectionService }                                       from '@lib/common/outrospection/Outrospection.service';
-import { ShutdownService }                                            from '@lib/common/shutdown/Shutdown.service';
-import { NestError }                                                  from '@lib/common/utils/NestError';
+import { Job, Queue } from 'bull';
+import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
+import { ActionSet } from '@lib/common/actionsets/helper/ActionSet.class';
+import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
+import { OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
+import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
+import { NestError } from '@lib/common/utils/NestError';
 
 class QueueMock {}
 

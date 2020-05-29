@@ -49,18 +49,18 @@ import { ToolBoxModule } from '@lib/common/toolbox/ToolBox.module';
 import { CategoriesModule } from '@lib/common/categories/Categories.module';
 import { RightsModule } from '@lib/common/rights/Rights.module';
 import { CategoriesController } from '@app/server/controllers/categories/Categories.controller';
-import { RightsController }     from '@app/server/controllers/rights/Rights.controller';
-import { ServerController }     from '@app/server/controllers/server/Server.controller';
-import { MetadatasController }  from '@app/server/controllers/metadatas/Metadatas.controller';
-import { MetadatasModule }      from '@lib/common/metadatas/Metadatas.module';
+import { RightsController } from '@app/server/controllers/rights/Rights.controller';
+import { ServerController } from '@app/server/controllers/server/Server.controller';
+import { MetadatasController } from '@app/server/controllers/metadatas/Metadatas.controller';
+import { MetadatasModule } from '@lib/common/metadatas/Metadatas.module';
 import { AuthorizationsModule } from '@lib/common/authorizations/Authorizations.module';
-import { CheckoutModule }       from '@lib/common/checkout/Checkout.module';
-import { CartModule }           from '@lib/common/cart/Cart.module';
-import { RocksideModule }       from '@lib/common/rockside/Rockside.module';
-import { TicketsController }    from '@app/server/controllers/tickets/Tickets.controller';
-import { TicketsModule }        from '@lib/common/tickets/Tickets.module';
-import { UsersController }      from '@app/server/controllers/users/Users.controller';
-import { toHeaderFormat }       from '@lib/common/utils/toHeaderFormat';
+import { CheckoutModule } from '@lib/common/checkout/Checkout.module';
+import { CartModule } from '@lib/common/cart/Cart.module';
+import { RocksideModule } from '@lib/common/rockside/Rockside.module';
+import { TicketsController } from '@app/server/controllers/tickets/Tickets.controller';
+import { TicketsModule } from '@lib/common/tickets/Tickets.module';
+import { UsersController } from '@app/server/controllers/users/Users.controller';
+import { toHeaderFormat } from '@lib/common/utils/toHeaderFormat';
 
 @Module({
     imports: [
@@ -123,7 +123,7 @@ import { toHeaderFormat }       from '@lib/common/utils/toHeaderFormat';
                 port: configService.get('ETHEREUM_NODE_PORT'),
                 protocol: configService.get('ETHEREUM_NODE_PROTOCOL'),
                 headers: toHeaderFormat(JSON.parse(configService.get('ETHEREUM_NODE_HEADERS') || '{}')),
-                path: configService.get('ETHEREUM_NODE_PATH')
+                path: configService.get('ETHEREUM_NODE_PATH'),
             }),
             inject: [ConfigService],
         }),

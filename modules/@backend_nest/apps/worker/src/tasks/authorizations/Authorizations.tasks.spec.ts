@@ -7,18 +7,18 @@ import { AuthorizationsService } from '@lib/common/authorizations/Authorizations
 import {
     AuthorizationsTasks,
     GenerateMintingAuthorizationsTaskInput,
-}                                                             from '@app/worker/tasks/authorizations/Authorizations.tasks';
-import { deepEqual, instance, mock, verify, when }            from 'ts-mockito';
-import { Test, TestingModule }                                from '@nestjs/testing';
-import { getQueueToken }                                      from '@nestjs/bull';
+} from '@app/worker/tasks/authorizations/Authorizations.tasks';
+import { deepEqual, instance, mock, verify, when } from 'ts-mockito';
+import { Test, TestingModule } from '@nestjs/testing';
+import { getQueueToken } from '@nestjs/bull';
 import { AuthorizedTicketMintingFormat, TicketMintingFormat } from '@lib/common/utils/Cart.type';
-import { Price }                                              from '@lib/common/currencies/Currencies.service';
-import { DAY, HOUR }                                          from '@lib/common/utils/time';
-import { UserDto }                                            from '@lib/common/users/dto/User.dto';
-import { CategoryEntity }                                     from '@lib/common/categories/entities/Category.entity';
-import { MintAuthorization, toB32 }                           from '@common/global';
-import { AuthorizationEntity }                                from '@lib/common/authorizations/entities/Authorization.entity';
-import { NestError }                                          from '@lib/common/utils/NestError';
+import { Price } from '@lib/common/currencies/Currencies.service';
+import { DAY, HOUR } from '@lib/common/utils/time';
+import { UserDto } from '@lib/common/users/dto/User.dto';
+import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
+import { MintAuthorization, toB32 } from '@common/global';
+import { AuthorizationEntity } from '@lib/common/authorizations/entities/Authorization.entity';
+import { NestError } from '@lib/common/utils/NestError';
 
 class QueueMock<T = any> {
     add(name: string, data: T, opts?: JobOptions): Promise<Job<T>> {

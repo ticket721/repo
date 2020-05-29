@@ -5,15 +5,15 @@ import {
     CircuitContainerBase,
     GemInitializationJob,
     GemRunJob,
-}                           from '@app/worker/dosojinrunner/circuits/CircuitContainer.base';
+} from '@app/worker/dosojinrunner/circuits/CircuitContainer.base';
 import { GemOrdersService } from '@lib/common/gemorders/GemOrders.service';
-import { InjectQueue }      from '@nestjs/bull';
-import { Job, Queue }       from 'bull';
-import { ShutdownService }  from '@lib/common/shutdown/Shutdown.service';
-import { ESSearchHit }      from '@lib/common/utils/ESSearchReturn.type';
-import { GemOrderEntity }   from '@lib/common/gemorders/entities/GemOrder.entity';
-import { Gem }              from 'dosojin';
-import { NestError }        from '@lib/common/utils/NestError';
+import { InjectQueue } from '@nestjs/bull';
+import { Job, Queue } from 'bull';
+import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
+import { ESSearchHit } from '@lib/common/utils/ESSearchReturn.type';
+import { GemOrderEntity } from '@lib/common/gemorders/entities/GemOrder.entity';
+import { Gem } from 'dosojin';
+import { NestError } from '@lib/common/utils/NestError';
 
 /**
  * Service Handling all background Gem Resolutions

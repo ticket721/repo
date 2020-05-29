@@ -1,15 +1,15 @@
-import { RightsService }                                from '@lib/common/rights/Rights.service';
-import { RightsRepository }                             from '@lib/common/rights/Rights.repository';
-import { EsSearchOptionsStatic }                        from '@iaminfinity/express-cassandra/dist/orm/interfaces/externals/express-cassandra.interface';
-import { ModuleRef }                                    from '@nestjs/core';
+import { RightsService } from '@lib/common/rights/Rights.service';
+import { RightsRepository } from '@lib/common/rights/Rights.repository';
+import { EsSearchOptionsStatic } from '@iaminfinity/express-cassandra/dist/orm/interfaces/externals/express-cassandra.interface';
+import { ModuleRef } from '@nestjs/core';
 import { deepEqual, instance, mock, spy, verify, when } from 'ts-mockito';
-import { Test }                                         from '@nestjs/testing';
-import { getConnectionToken, getModelToken }            from '@iaminfinity/express-cassandra/dist/utils/cassandra-orm.utils';
-import { RightEntity }                                  from '@lib/common/rights/entities/Right.entity';
-import { CRUDExtension }                                from '@lib/common/crud/CRUDExtension.base';
-import { UserDto }                                      from '@lib/common/users/dto/User.dto';
-import { ESSearchReturn }                               from '@lib/common/utils/ESSearchReturn.type';
-import { NestError }                                    from '@lib/common/utils/NestError';
+import { Test } from '@nestjs/testing';
+import { getConnectionToken, getModelToken } from '@iaminfinity/express-cassandra/dist/utils/cassandra-orm.utils';
+import { RightEntity } from '@lib/common/rights/entities/Right.entity';
+import { CRUDExtension } from '@lib/common/crud/CRUDExtension.base';
+import { UserDto } from '@lib/common/users/dto/User.dto';
+import { ESSearchReturn } from '@lib/common/utils/ESSearchReturn.type';
+import { NestError } from '@lib/common/utils/NestError';
 
 class RightEntityMock {
     public _properties = null;

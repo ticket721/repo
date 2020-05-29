@@ -25,16 +25,16 @@ import {
     ActionSetEntity,
     ActionStatus,
     ActionType,
-}                                        from '@lib/common/actionsets/entities/ActionSet.entity';
-import { CheckoutResolve }               from '@app/worker/actionhandlers/checkout/Checkout.input.handlers';
-import { CartAuthorizations }            from '@app/worker/actionhandlers/cart/Cart.input.handlers';
+} from '@lib/common/actionsets/entities/ActionSet.entity';
+import { CheckoutResolve } from '@app/worker/actionhandlers/checkout/Checkout.input.handlers';
+import { CartAuthorizations } from '@app/worker/actionhandlers/cart/Cart.input.handlers';
 import { AuthorizedTicketMintingFormat } from '@lib/common/utils/Cart.type';
-import { DAY }                           from '@lib/common/utils/time';
-import { AuthorizationEntity }           from '@lib/common/authorizations/entities/Authorization.entity';
-import { MintAuthorization, toB32 }      from '@common/global';
-import { TicketEntity }                  from '@lib/common/tickets/entities/Ticket.entity';
-import { UserDto }                       from '@lib/common/users/dto/User.dto';
-import { NestError }                     from '@lib/common/utils/NestError';
+import { DAY } from '@lib/common/utils/time';
+import { AuthorizationEntity } from '@lib/common/authorizations/entities/Authorization.entity';
+import { MintAuthorization, toB32 } from '@common/global';
+import { TicketEntity } from '@lib/common/tickets/entities/Ticket.entity';
+import { UserDto } from '@lib/common/users/dto/User.dto';
+import { NestError } from '@lib/common/utils/NestError';
 
 class QueueMock<T = any> {
     add(name: string, data: T, opts?: JobOptions): Promise<Job<T>> {
@@ -2331,7 +2331,9 @@ describe('Minting Tasks', function() {
                 context.mintingTasks.ticketMintingTransactionSequenceBuilderTask({
                     data: input,
                 } as Job<TicketMintingTransactionSequenceBuilderTaskInput>),
-            ).rejects.toMatchObject(new NestError(`Unable to recover cart for minting initialization: unexpected_error`));
+            ).rejects.toMatchObject(
+                new NestError(`Unable to recover cart for minting initialization: unexpected_error`),
+            );
 
             // CHECK RETURNs
 
@@ -3702,7 +3704,9 @@ describe('Minting Tasks', function() {
                     data: input,
                 } as Job<TicketMintingTransactionSequenceBuilderTaskInput>),
             ).rejects.toMatchObject(
-                new NestError(`Cannot fetch or find authorization entity ${authorizationOneId}: authorization not found`),
+                new NestError(
+                    `Cannot fetch or find authorization entity ${authorizationOneId}: authorization not found`,
+                ),
             );
 
             // CHECK RETURNs

@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { ShutdownService }    from '@lib/common/shutdown/Shutdown.service';
-import { ConfigService }      from '@lib/common/config/Config.service';
-import { NestError }          from '@lib/common/utils/NestError';
+import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
+import { ConfigService } from '@lib/common/config/Config.service';
+import { NestError } from '@lib/common/utils/NestError';
 
 /**
  * Unique identifier of the instance
@@ -67,9 +67,8 @@ export class OutrospectionService {
         @Inject('OUTROSPECTION_INSTANCE_NAME') private readonly name,
         configService: ConfigService,
         shutdownService: ShutdownService,
-        @Inject('OUTROSPECTION_HOSTNAME_GETTER') hostnameGetter: () => string
+        @Inject('OUTROSPECTION_HOSTNAME_GETTER') hostnameGetter: () => string,
     ) {
-
         const hostNamePattern = configService.get('HOSTNAME_PATTERN');
 
         if (configService.get('NODE_ENV') === 'development') {

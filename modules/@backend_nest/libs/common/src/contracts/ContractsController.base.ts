@@ -1,9 +1,9 @@
 import { ContractArtifact, ContractsService } from '@lib/common/contracts/Contracts.service';
-import { Web3Service }                        from '@lib/common/web3/Web3.service';
-import { ShutdownService }                    from '@lib/common/shutdown/Shutdown.service';
-import Web3                                   from 'web3';
-import { WinstonLoggerService }               from '@lib/common/logger/WinstonLogger.service';
-import { NestError }                          from '@lib/common/utils/NestError';
+import { Web3Service } from '@lib/common/web3/Web3.service';
+import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
+import Web3 from 'web3';
+import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
+import { NestError } from '@lib/common/utils/NestError';
 
 /**
  * Extra Configuration
@@ -100,7 +100,9 @@ export class ContractsControllerBase {
         const networkId: number = await this.web3Service.net();
 
         if (!web3 || (!networkId && networkId !== 0)) {
-            const error: Error = new NestError(`Unable to recover web3 instance or data for contract ${this.contractName}`);
+            const error: Error = new NestError(
+                `Unable to recover web3 instance or data for contract ${this.contractName}`,
+            );
             this.shutdownService.shutdownWithError(error);
             throw error;
         }

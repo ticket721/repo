@@ -1,9 +1,9 @@
-import { Contracts, ContractsService }                       from '@lib/common/contracts/Contracts.service';
-import { Web3Service }                                       from '@lib/common/web3/Web3.service';
-import { ShutdownService }                                   from '@lib/common/shutdown/Shutdown.service';
+import { Contracts, ContractsService } from '@lib/common/contracts/Contracts.service';
+import { Web3Service } from '@lib/common/web3/Web3.service';
+import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 import { anything, deepEqual, instance, mock, verify, when } from 'ts-mockito';
-import { ContractsControllerBase }                           from '@lib/common/contracts/ContractsController.base';
-import { NestError }                                         from '@lib/common/utils/NestError';
+import { ContractsControllerBase } from '@lib/common/contracts/ContractsController.base';
+import { NestError } from '@lib/common/utils/NestError';
 
 const context: {
     contractsService: ContractsService;

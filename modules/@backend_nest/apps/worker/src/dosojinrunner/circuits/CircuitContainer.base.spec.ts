@@ -1,18 +1,18 @@
 import { BN, Circuit, Gem } from 'dosojin';
 import Joi, { ObjectSchema, string } from '@hapi/joi';
 import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
-import { InstanceSignature, OutrospectionService }                             from '@lib/common/outrospection/Outrospection.service';
-import { Job, JobOptions, Queue }                                              from 'bull';
-import { ShutdownService }                                                     from '@lib/common/shutdown/Shutdown.service';
-import { GemOrdersService }                                                    from '@lib/common/gemorders/GemOrders.service';
+import { InstanceSignature, OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
+import { Job, JobOptions, Queue } from 'bull';
+import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
+import { GemOrdersService } from '@lib/common/gemorders/GemOrders.service';
 import {
     CircuitContainerBase,
     GemInitializationJob,
     GemRunJob,
-}                                                                              from '@app/worker/dosojinrunner/circuits/CircuitContainer.base';
+} from '@app/worker/dosojinrunner/circuits/CircuitContainer.base';
 import { anyFunction, anything, deepEqual, instance, mock, spy, verify, when } from 'ts-mockito';
-import { GemOrderEntity }                                                      from '@lib/common/gemorders/entities/GemOrder.entity';
-import { NestError }                                                           from '@lib/common/utils/NestError';
+import { GemOrderEntity } from '@lib/common/gemorders/entities/GemOrder.entity';
+import { NestError } from '@lib/common/utils/NestError';
 
 class QueueMock<T = any> {
     add(name: string, data: T, opts?: JobOptions): Promise<Job<T>> {

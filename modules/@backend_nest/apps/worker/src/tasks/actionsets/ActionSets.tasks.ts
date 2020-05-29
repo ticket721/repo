@@ -1,13 +1,13 @@
-import { InjectQueue }                             from '@nestjs/bull';
-import { Job, Queue }                              from 'bull';
-import { ActionSetEntity }                         from '@lib/common/actionsets/entities/ActionSet.entity';
-import { Injectable, OnModuleInit }                from '@nestjs/common';
-import { ActionSetsService }                       from '@lib/common/actionsets/ActionSets.service';
-import { ActionSet }                               from '@lib/common/actionsets/helper/ActionSet.class';
-import { WinstonLoggerService }                    from '@lib/common/logger/WinstonLogger.service';
+import { InjectQueue } from '@nestjs/bull';
+import { Job, Queue } from 'bull';
+import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
+import { Injectable, OnModuleInit } from '@nestjs/common';
+import { ActionSetsService } from '@lib/common/actionsets/ActionSets.service';
+import { ActionSet } from '@lib/common/actionsets/helper/ActionSet.class';
+import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
 import { InstanceSignature, OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
-import { ShutdownService }                         from '@lib/common/shutdown/Shutdown.service';
-import { NestError }                               from '@lib/common/utils/NestError';
+import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
+import { NestError } from '@lib/common/utils/NestError';
 
 /**
  * Collection of Bull Tasks for the ActionSets

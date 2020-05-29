@@ -1,9 +1,9 @@
-import { ShutdownService }                        from '@lib/common/shutdown/Shutdown.service';
-import { WinstonLoggerService }                   from '@lib/common/logger/WinstonLogger.service';
-import { Test, TestingModule }                    from '@nestjs/testing';
-import { ServerService }                          from '@app/server/Server.service';
+import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
+import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
+import { Test, TestingModule } from '@nestjs/testing';
+import { ServerService } from '@app/server/Server.service';
 import { anything, instance, mock, verify, when } from 'ts-mockito';
-import { NestError }                              from '@lib/common/utils/NestError';
+import { NestError } from '@lib/common/utils/NestError';
 
 const context: {
     shutdownService: ShutdownService;

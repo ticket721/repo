@@ -1,11 +1,11 @@
 import { mock, when, instance, verify } from 'ts-mockito';
-import * as pack                        from '../../../package.json';
-import { Test, TestingModule }          from '@nestjs/testing';
-import { ServerService }                from './Server.service';
-import { APIInfos }                     from './Server.types';
-import { ConfigService }                from '@lib/common/config/Config.service';
-import { WinstonLoggerService }         from '@lib/common/logger/WinstonLogger.service';
-import { OutrospectionService }         from '@lib/common/outrospection/Outrospection.service';
+import * as pack from '../../../package.json';
+import { Test, TestingModule } from '@nestjs/testing';
+import { ServerService } from './Server.service';
+import { APIInfos } from './Server.types';
+import { ConfigService } from '@lib/common/config/Config.service';
+import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
+import { OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
 
 const context: {
     serverService: ServerService;
@@ -36,22 +36,19 @@ describe('Server Service', () => {
 
                 {
                     provide: OutrospectionService,
-                    useValue: instance(context.outrospectionServiceMock)
+                    useValue: instance(context.outrospectionServiceMock),
                 },
                 ServerService,
             ],
         }).compile();
 
         context.serverService = app.get<ServerService>(ServerService);
-
     });
 
     afterEach(async function() {
-
         if (process.env.TAG) {
             delete process.env.TAG;
         }
-
     });
 
     it('build and get info with NODE_ENV=development', async function() {
@@ -115,5 +112,4 @@ describe('Server Service', () => {
         verify(configServiceMock.get('NODE_ENV')).called();
         verify(outrospectionServiceMock.getInstanceSignature()).called();
     });
-
 });

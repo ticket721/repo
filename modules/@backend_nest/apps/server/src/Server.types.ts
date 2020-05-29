@@ -20,5 +20,5 @@ export interface APIInfos {
     /**
      * Position of the API on the replica set
      */
-    position: number
+    position: number;
 }

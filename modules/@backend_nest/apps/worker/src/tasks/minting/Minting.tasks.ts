@@ -17,18 +17,18 @@ import { T721AdminService } from '@lib/common/contracts/T721Admin.service';
 import { AuthorizedTicketMintingFormat } from '@lib/common/utils/Cart.type';
 import { AuthorizationsService } from '@lib/common/authorizations/Authorizations.service';
 import { AuthorizationEntity } from '@lib/common/authorizations/entities/Authorization.entity';
-import { CurrenciesService, ERC20Currency, Price }       from '@lib/common/currencies/Currencies.service';
+import { CurrenciesService, ERC20Currency, Price } from '@lib/common/currencies/Currencies.service';
 import {
     TransactionLifecycles,
     TxSequenceAcsetBuilderArgs,
-}                                                        from '@lib/common/txs/acset_builders/TxSequence.acsetbuilder.helper';
-import { UsersService }                                  from '@lib/common/users/Users.service';
-import { UserDto }                                       from '@lib/common/users/dto/User.dto';
-import { GroupService }                                  from '@lib/common/group/Group.service';
+} from '@lib/common/txs/acset_builders/TxSequence.acsetbuilder.helper';
+import { UsersService } from '@lib/common/users/Users.service';
+import { UserDto } from '@lib/common/users/dto/User.dto';
+import { GroupService } from '@lib/common/group/Group.service';
 import { TicketsService, TicketsServicePredictionInput } from '@lib/common/tickets/Tickets.service';
-import { TicketEntity }                                  from '@lib/common/tickets/entities/Ticket.entity';
-import { ServiceResponse }                               from '@lib/common/utils/ServiceResponse.type';
-import { NestError }                                     from '@lib/common/utils/NestError';
+import { TicketEntity } from '@lib/common/tickets/entities/Ticket.entity';
+import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
+import { NestError } from '@lib/common/utils/NestError';
 
 /**
  * Data Model used for the transaction sequence builder
@@ -543,7 +543,9 @@ export class MintingTasks implements OnModuleInit {
             );
 
             if (authorizationConsumingRes.error) {
-                throw new NestError(`Error while setting authorizations to canceled: ${authorizationConsumingRes.error}`);
+                throw new NestError(
+                    `Error while setting authorizations to canceled: ${authorizationConsumingRes.error}`,
+                );
             }
         }
     }

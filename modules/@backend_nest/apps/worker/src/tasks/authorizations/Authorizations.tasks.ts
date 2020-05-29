@@ -1,18 +1,18 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bull';
 import { Job, Queue } from 'bull';
-import { InstanceSignature, OutrospectionService }            from '@lib/common/outrospection/Outrospection.service';
-import { ShutdownService }                                    from '@lib/common/shutdown/Shutdown.service';
-import { AuthorizationsService }                              from '@lib/common/authorizations/Authorizations.service';
-import { CategoriesService }                                  from '@lib/common/categories/Categories.service';
-import { Price }                                              from '@lib/common/currencies/Currencies.service';
+import { InstanceSignature, OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
+import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
+import { AuthorizationsService } from '@lib/common/authorizations/Authorizations.service';
+import { CategoriesService } from '@lib/common/categories/Categories.service';
+import { Price } from '@lib/common/currencies/Currencies.service';
 import { AuthorizedTicketMintingFormat, TicketMintingFormat } from '@lib/common/utils/Cart.type';
-import { detectAuthorizationStackDifferences }                from '@lib/common/utils/detectTicketAuthorizationStackDifferences.helper';
-import { UserDto }                                            from '@lib/common/users/dto/User.dto';
-import { CategoryEntity }                                     from '@lib/common/categories/entities/Category.entity';
-import { MintAuthorization, toB32 }                           from '@common/global';
-import { ActionSetsService }                                  from '@lib/common/actionsets/ActionSets.service';
-import { NestError }                                          from '@lib/common/utils/NestError';
+import { detectAuthorizationStackDifferences } from '@lib/common/utils/detectTicketAuthorizationStackDifferences.helper';
+import { UserDto } from '@lib/common/users/dto/User.dto';
+import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
+import { MintAuthorization, toB32 } from '@common/global';
+import { ActionSetsService } from '@lib/common/actionsets/ActionSets.service';
+import { NestError } from '@lib/common/utils/NestError';
 
 /**
  * Input for the authorization generation task

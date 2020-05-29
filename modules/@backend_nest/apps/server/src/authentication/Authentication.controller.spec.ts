@@ -13,17 +13,17 @@ import {
 } from '@common/global';
 import { LocalRegisterInputDto } from './dto/LocalRegisterInput.dto';
 import { JwtModule, JwtService } from '@nestjs/jwt';
-import { ConfigService }         from '@lib/common/config/Config.service';
-import { Web3RegisterInputDto }  from '@app/server/authentication/dto/Web3RegisterInput.dto';
-import { getQueueToken }         from '@nestjs/bull';
-import { Job, JobOptions }       from 'bull';
-import { PasswordlessUserDto }   from '@app/server/authentication/dto/PasswordlessUser.dto';
-import { StatusCodes }           from '@lib/common/utils/codes.value';
-import { UserDto }               from '@lib/common/users/dto/User.dto';
-import { generatePassword }      from '../../test/utils';
+import { ConfigService } from '@lib/common/config/Config.service';
+import { Web3RegisterInputDto } from '@app/server/authentication/dto/Web3RegisterInput.dto';
+import { getQueueToken } from '@nestjs/bull';
+import { Job, JobOptions } from 'bull';
+import { PasswordlessUserDto } from '@app/server/authentication/dto/PasswordlessUser.dto';
+import { StatusCodes } from '@lib/common/utils/codes.value';
+import { UserDto } from '@lib/common/users/dto/User.dto';
+import { generatePassword } from '../../test/utils';
 import { ResetPasswordInputDto } from '@app/server/authentication/dto/ResetPasswordInputDto';
-import { PasswordChangeDto }     from '@app/server/authentication/dto/PasswordChange.dto';
-import { NestError }             from '@lib/common/utils/NestError';
+import { PasswordChangeDto } from '@app/server/authentication/dto/PasswordChange.dto';
+import { NestError } from '@lib/common/utils/NestError';
 
 class QueueMock<T = any> {
     add(name: string, data: T, opts?: JobOptions): Promise<Job<T>> {

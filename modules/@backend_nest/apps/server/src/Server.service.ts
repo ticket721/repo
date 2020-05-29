@@ -1,7 +1,7 @@
-import { Injectable }           from '@nestjs/common';
-import pack                     from '../../../package.json';
-import { APIInfos }             from './Server.types';
-import { ConfigService }        from '@lib/common/config/Config.service';
+import { Injectable } from '@nestjs/common';
+import pack from '../../../package.json';
+import { APIInfos } from './Server.types';
+import { ConfigService } from '@lib/common/config/Config.service';
 import { OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
 
 /**
@@ -23,14 +23,13 @@ export class ServerService {
      * Utility to get the API Information
      */
     async getAPIInfos(): Promise<APIInfos> {
-
         const instanceSignature = await this.outrospectionService.getInstanceSignature();
 
         return {
             version: pack.version,
             name: 't721api',
             env: `${this.configService.get('NODE_ENV')}@${process.env['TAG'] || 'bare'}`,
-            position: instanceSignature.position
+            position: instanceSignature.position,
         };
     }
 }

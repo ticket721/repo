@@ -14,10 +14,10 @@ import {
     SearchOptions,
     SearchQuery,
     UpdateOptions,
-}                                      from '@lib/common/crud/CRUDExtension.base';
-import { ESCountReturn }               from '@lib/common/utils/ESCountReturn.type';
+} from '@lib/common/crud/CRUDExtension.base';
+import { ESCountReturn } from '@lib/common/utils/ESCountReturn.type';
 import { ESSearchHit, ESSearchReturn } from '@lib/common/utils/ESSearchReturn.type';
-import { NestError }                   from '@lib/common/utils/NestError';
+import { NestError } from '@lib/common/utils/NestError';
 
 class FakeEntity {
     id: string;

@@ -1,4 +1,4 @@
-import { Inject }    from '@nestjs/common';
+import { Inject } from '@nestjs/common';
 import { NestError } from '@lib/common/utils/NestError';
 
 /**
@@ -28,7 +28,7 @@ export interface Web3ServiceOptions {
     /**
      * Http headers to add
      */
-    headers: {name: string; value: string;}[];
+    headers: { name: string; value: string }[];
 
     /**
      * Http Path
@@ -64,8 +64,9 @@ export class Web3Service {
             case 'https': {
                 this.web3 = new this.options.Web3(
                     new this.options.Web3.providers.HttpProvider(
-                        `${this.options.protocol}://${this.options.host}:${this.options.port}${this.options.path || ''}`,
-                        {headers: this.options.headers}
+                        `${this.options.protocol}://${this.options.host}:${this.options.port}${this.options.path ||
+                            ''}`,
+                        { headers: this.options.headers },
                     ),
                 );
                 break;

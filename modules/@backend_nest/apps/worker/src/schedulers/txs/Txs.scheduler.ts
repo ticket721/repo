@@ -1,18 +1,18 @@
 import { Inject, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { InjectSchedule, Schedule } from 'nest-schedule';
 import { TxsService, TxsServiceOptions } from '@lib/common/txs/Txs.service';
-import { GlobalConfigService }     from '@lib/common/globalconfig/GlobalConfig.service';
-import { ESSearchBodyBuilder }     from '@lib/common/utils/ESSearchBodyBuilder.helper';
-import { SortablePagedSearch }     from '@lib/common/utils/SortablePagedSearch.type';
-import { fromES }                  from '@lib/common/utils/fromES.helper';
-import { Log, TxEntity }           from '@lib/common/txs/entities/Tx.entity';
-import { Web3Service }             from '@lib/common/web3/Web3.service';
+import { GlobalConfigService } from '@lib/common/globalconfig/GlobalConfig.service';
+import { ESSearchBodyBuilder } from '@lib/common/utils/ESSearchBodyBuilder.helper';
+import { SortablePagedSearch } from '@lib/common/utils/SortablePagedSearch.type';
+import { fromES } from '@lib/common/utils/fromES.helper';
+import { Log, TxEntity } from '@lib/common/txs/entities/Tx.entity';
+import { Web3Service } from '@lib/common/web3/Web3.service';
 import { toAcceptedAddressFormat } from '@common/global';
-import { Decimal }                 from 'decimal.js';
-import { WinstonLoggerService }    from '@lib/common/logger/WinstonLogger.service';
-import { ShutdownService }         from '@lib/common/shutdown/Shutdown.service';
-import { OutrospectionService }    from '@lib/common/outrospection/Outrospection.service';
-import { NestError }               from '@lib/common/utils/NestError';
+import { Decimal } from 'decimal.js';
+import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
+import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
+import { OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
+import { NestError } from '@lib/common/utils/NestError';
 
 /**
  * Txs task scheduler

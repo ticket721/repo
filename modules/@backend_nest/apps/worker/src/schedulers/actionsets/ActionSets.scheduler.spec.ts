@@ -1,18 +1,18 @@
 import { Schedule } from 'nest-schedule';
 import { OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
 import { ConfigService } from '@lib/common/config/Config.service';
-import { ActionSetsService }                       from '@lib/common/actionsets/ActionSets.service';
-import { ShutdownService }                         from '@lib/common/shutdown/Shutdown.service';
-import { getQueueToken }                           from '@nestjs/bull';
-import { Job, JobOptions }                         from 'bull';
-import { WinstonLoggerService }                    from '@lib/common/logger/WinstonLogger.service';
-import { ActionSetsScheduler }                     from '@app/worker/schedulers/actionsets/ActionSets.scheduler';
+import { ActionSetsService } from '@lib/common/actionsets/ActionSets.service';
+import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
+import { getQueueToken } from '@nestjs/bull';
+import { Job, JobOptions } from 'bull';
+import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
+import { ActionSetsScheduler } from '@app/worker/schedulers/actionsets/ActionSets.scheduler';
 import { deepEqual, instance, mock, verify, when } from 'ts-mockito';
-import { Test, TestingModule }                     from '@nestjs/testing';
-import { TimeToolService }                         from '@lib/common/toolbox/Time.tool.service';
-import { ESSearchReturn }                          from '@lib/common/utils/ESSearchReturn.type';
-import { ActionSetEntity }                         from '@lib/common/actionsets/entities/ActionSet.entity';
-import { NestError }                               from '@lib/common/utils/NestError';
+import { Test, TestingModule } from '@nestjs/testing';
+import { TimeToolService } from '@lib/common/toolbox/Time.tool.service';
+import { ESSearchReturn } from '@lib/common/utils/ESSearchReturn.type';
+import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
+import { NestError } from '@lib/common/utils/NestError';
 
 class QueueMock<T = any> {
     add(name: string, data: T, opts?: JobOptions): Promise<Job<T>> {

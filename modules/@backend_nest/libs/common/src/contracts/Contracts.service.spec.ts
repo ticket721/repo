@@ -1,15 +1,15 @@
 import { ContractArtifact, ContractsService, ContractsServiceOptions } from '@lib/common/contracts/Contracts.service';
-import * as path                                                       from 'path';
-import { Web3Service }                                                 from '@lib/common/web3/Web3.service';
-import { anything, deepEqual, instance, mock, spy, verify, when }      from 'ts-mockito';
-import { WinstonLoggerService }                                        from '@lib/common/logger/WinstonLogger.service';
-import { ShutdownService }                                             from '@lib/common/shutdown/Shutdown.service';
-import * as fs                                                         from 'fs';
-import { FSService }                                                   from '@lib/common/fs/FS.service';
-import { GlobalConfigService }                                         from '@lib/common/globalconfig/GlobalConfig.service';
-import { GlobalEntity }                                                from '@lib/common/globalconfig/entities/Global.entity';
+import * as path from 'path';
+import { Web3Service } from '@lib/common/web3/Web3.service';
+import { anything, deepEqual, instance, mock, spy, verify, when } from 'ts-mockito';
+import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
+import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
+import * as fs from 'fs';
+import { FSService } from '@lib/common/fs/FS.service';
+import { GlobalConfigService } from '@lib/common/globalconfig/GlobalConfig.service';
+import { GlobalEntity } from '@lib/common/globalconfig/entities/Global.entity';
 import DoneCallback = jest.DoneCallback;
-import { NestError }                                                   from '@lib/common/utils/NestError';
+import { NestError } from '@lib/common/utils/NestError';
 
 const configureWeb3ServiceAndProvideThrowCallback = (
     web3Service: Web3Service,

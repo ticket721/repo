@@ -1,15 +1,15 @@
-import { Circuit, Gem, RawGem }                    from 'dosojin';
-import { ObjectSchema }                            from '@hapi/joi';
-import { OnModuleInit }                            from '@nestjs/common';
-import { WinstonLoggerService }                    from '@lib/common/logger/WinstonLogger.service';
-import { DosojinRunnerScheduler }                  from '@app/worker/dosojinrunner/DosojinRunner.scheduler';
-import { Job, Queue }                              from 'bull';
+import { Circuit, Gem, RawGem } from 'dosojin';
+import { ObjectSchema } from '@hapi/joi';
+import { OnModuleInit } from '@nestjs/common';
+import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
+import { DosojinRunnerScheduler } from '@app/worker/dosojinrunner/DosojinRunner.scheduler';
+import { Job, Queue } from 'bull';
 import { InstanceSignature, OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
-import { ShutdownService }                         from '@lib/common/shutdown/Shutdown.service';
-import { GemOrdersService }                        from '@lib/common/gemorders/GemOrders.service';
-import { GemOrderEntity, RawGemEntity }            from '@lib/common/gemorders/entities/GemOrder.entity';
-import { leftPad }                                 from '@common/global';
-import { NestError }                               from '@lib/common/utils/NestError';
+import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
+import { GemOrdersService } from '@lib/common/gemorders/GemOrders.service';
+import { GemOrderEntity, RawGemEntity } from '@lib/common/gemorders/entities/GemOrder.entity';
+import { leftPad } from '@common/global';
+import { NestError } from '@lib/common/utils/NestError';
 
 /**
  * Job Data Format for the Gem Order initializations
@@ -109,7 +109,9 @@ export class CircuitContainerBase<InitialArguments = any> implements OnModuleIni
 
         if (orderRes.error || orderRes.response.length === 0) {
             return this.shutdownService.shutdownWithError(
-                new NestError(`Unable to fetch / find gem order ${job.data.orderId}: ${orderRes.error || 'empty result'}`),
+                new NestError(
+                    `Unable to fetch / find gem order ${job.data.orderId}: ${orderRes.error || 'empty result'}`,
+                ),
             );
         }
 

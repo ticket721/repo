@@ -1,14 +1,14 @@
-import { GlobalConfigScheduler }                    from '@app/worker/schedulers/globalconfig/GlobalConfig.scheduler';
-import { Web3Service }                              from '@lib/common/web3/Web3.service';
+import { GlobalConfigScheduler } from '@app/worker/schedulers/globalconfig/GlobalConfig.scheduler';
+import { Web3Service } from '@lib/common/web3/Web3.service';
 import { GlobalConfigOptions, GlobalConfigService } from '@lib/common/globalconfig/GlobalConfig.service';
-import { Schedule }                                 from 'nest-schedule';
-import { BinanceService }                           from '@lib/common/binance/Binance.service';
-import { deepEqual, instance, mock, verify, when }  from 'ts-mockito';
-import { Test, TestingModule }                      from '@nestjs/testing';
-import { ShutdownService }                          from '@lib/common/shutdown/Shutdown.service';
-import { OutrospectionService }                     from '@lib/common/outrospection/Outrospection.service';
-import { NestError }                                from '@lib/common/utils/NestError';
-import { WinstonLoggerService }                     from '@lib/common/logger/WinstonLogger.service';
+import { Schedule } from 'nest-schedule';
+import { BinanceService } from '@lib/common/binance/Binance.service';
+import { deepEqual, instance, mock, verify, when } from 'ts-mockito';
+import { Test, TestingModule } from '@nestjs/testing';
+import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
+import { OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
+import { NestError } from '@lib/common/utils/NestError';
+import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
 
 describe('GlobalConfig Scheduler', function() {
     const context: {
@@ -30,7 +30,7 @@ describe('GlobalConfig Scheduler', function() {
         globalConfigOptionsMock: null,
         binanceServiceMock: null,
         outrospectionServiceMock: null,
-        winstonLoggerServiceMock: null
+        winstonLoggerServiceMock: null,
     };
 
     beforeAll(async function() {

@@ -6,17 +6,17 @@ import { CategoriesService } from '@lib/common/categories/Categories.service';
 import { EsSearchOptionsStatic } from '@iaminfinity/express-cassandra/dist/orm/interfaces/externals/express-cassandra.interface';
 import { TicketsService, TicketsServicePredictionInput } from '@lib/common/tickets/Tickets.service';
 import { deepEqual, instance, mock, spy, verify, when } from 'ts-mockito';
-import { Test, TestingModule }                          from '@nestjs/testing';
-import { TxsRepository }                                from '@lib/common/txs/Txs.repository';
-import { getModelToken }                                from '@iaminfinity/express-cassandra/dist/utils/cassandra-orm.utils';
-import { TxEntity }                                     from '@lib/common/txs/entities/Tx.entity';
-import { GlobalConfigService }                          from '@lib/common/globalconfig/GlobalConfig.service';
-import { Web3Service }                                  from '@lib/common/web3/Web3.service';
-import { T721AdminService }                             from '@lib/common/contracts/T721Admin.service';
-import { RocksideService }                              from '@lib/common/rockside/Rockside.service';
-import { TxsService }                                   from '@lib/common/txs/Txs.service';
-import { CategoryEntity }                               from '@lib/common/categories/entities/Category.entity';
-import { NestError }                                    from '@lib/common/utils/NestError';
+import { Test, TestingModule } from '@nestjs/testing';
+import { TxsRepository } from '@lib/common/txs/Txs.repository';
+import { getModelToken } from '@iaminfinity/express-cassandra/dist/utils/cassandra-orm.utils';
+import { TxEntity } from '@lib/common/txs/entities/Tx.entity';
+import { GlobalConfigService } from '@lib/common/globalconfig/GlobalConfig.service';
+import { Web3Service } from '@lib/common/web3/Web3.service';
+import { T721AdminService } from '@lib/common/contracts/T721Admin.service';
+import { RocksideService } from '@lib/common/rockside/Rockside.service';
+import { TxsService } from '@lib/common/txs/Txs.service';
+import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
+import { NestError } from '@lib/common/utils/NestError';
 
 class TicketEntityMock {
     public _properties = null;

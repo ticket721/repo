@@ -1,18 +1,19 @@
 import { ContractsControllerBase } from '@lib/common/contracts/ContractsController.base';
 import { Schedule } from 'nest-schedule';
 import { GlobalConfigService } from '@lib/common/globalconfig/GlobalConfig.service';
-import { ShutdownService }                                from '@lib/common/shutdown/Shutdown.service';
-import { InstanceSignature, OutrospectionService }        from '@lib/common/outrospection/Outrospection.service';
-import { Job, Queue }                                     from 'bull';
-import { EVMEventSetsService }                            from '@lib/common/evmeventsets/EVMEventSets.service';
-import { Repository }                                     from '@iaminfinity/express-cassandra';
-import { EVMEvent }                                       from '@lib/common/evmeventsets/entities/EVMEventSet.entity';
-import { WinstonLoggerService }                           from '@lib/common/logger/WinstonLogger.service';
+import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
+import { InstanceSignature, OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
+import { Job, Queue } from 'bull';
+import { EVMEventSetsService } from '@lib/common/evmeventsets/EVMEventSets.service';
+import { Repository } from '@iaminfinity/express-cassandra';
+import { EVMEvent } from '@lib/common/evmeventsets/entities/EVMEventSet.entity';
+import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
 import { EVMAntennaMergerScheduler, EVMProcessableEvent } from '@app/worker/evmantenna/EVMAntennaMerger.scheduler';
-import { CRUDExtension, DryResponse }                     from '@lib/common/crud/CRUDExtension.base';
-import { OnModuleInit }                                   from '@nestjs/common';
-import { ServiceResponse }                                from '@lib/common/utils/ServiceResponse.type';
-import { NestError }                                      from '@lib/common/utils/NestError';
+import { CRUDExtension, DryResponse } from '@lib/common/crud/CRUDExtension.base';
+import { OnModuleInit } from '@nestjs/common';
+import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
+import { NestError } from '@lib/common/utils/NestError';
+import { noConcurrentRun } from '@app/worker/utils/noConcurrentRun';
 
 /**
  * Configuration for an EVM Event fetching function
@@ -357,19 +358,22 @@ export class EVMEventControllerBase implements OnModuleInit {
         }
 
         while (this.currentDispatchHeight < globalConfig.block_number) {
-
-            const amount = globalConfig.block_number - this.currentDispatchHeight < 1000 ? globalConfig.block_number - this.currentDispatchHeight : 1000;
+            const amount =
+                globalConfig.block_number - this.currentDispatchHeight < 1000
+                    ? globalConfig.block_number - this.currentDispatchHeight
+                    : 1000;
 
             try {
                 await this.fetchEVMEventsForBlock(this.currentDispatchHeight + 1, this.currentDispatchHeight + amount);
-                this.logger.log(`Fetched ${this.artifactName}::${this.eventName} for blocks: ${this.currentDispatchHeight + 1} => ${this.currentDispatchHeight + amount}`);
+                this.logger.log(
+                    `Fetched ${this.artifactName}::${this.eventName} for blocks: ${this.currentDispatchHeight +
+                        1} => ${this.currentDispatchHeight + amount}`,
+                );
                 this.currentDispatchHeight += amount;
             } catch (e) {
                 this.logger.error(e);
             }
-
         }
-
     }
 
     /**
@@ -382,8 +386,9 @@ export class EVMEventControllerBase implements OnModuleInit {
         const events = await this.fetch(from, to);
 
         for (let fetchedBlock = from; fetchedBlock <= to; ++fetchedBlock) {
-
-            const currentBlockEvents = events.filter((ev: EVMEventRawResult): boolean => ev.blockNumber === fetchedBlock);
+            const currentBlockEvents = events.filter(
+                (ev: EVMEventRawResult): boolean => ev.blockNumber === fetchedBlock,
+            );
 
             const createRes = await this.evmEventSetsService.create({
                 artifact_name: this.contractsController.getArtifactName(),
@@ -419,32 +424,6 @@ export class EVMEventControllerBase implements OnModuleInit {
                     } from ${this.contractsController.getArtifactName()} at block ${fetchedBlock}`,
                 );
             }
-
-        }
-
-
-        // await job.progress(100);
-    }
-
-    running = false;
-
-    private async NoConcurrentRun(fn: () => Promise<void>): Promise<void> {
-        if (!this.running) {
-            this.running = true;
-            let error = null;
-
-            try {
-                await fn();
-            } catch (e) {
-                console.error('error occurred while running noConcurrentRun', e);
-                error = e;
-            }
-
-            this.running = false;
-
-            if (error) {
-                throw error;
-            }
         }
     }
 
@@ -460,15 +439,8 @@ export class EVMEventControllerBase implements OnModuleInit {
             this.schedule.scheduleIntervalJob(
                 `${this.contractsController.getArtifactName()}::${this.eventName}`,
                 1000,
-                this.NoConcurrentRun.bind(this, this.eventBackgroundFetcher.bind(this))
+                noConcurrentRun.bind(this, this.fetchJobName, this.eventBackgroundFetcher.bind(this)),
             );
-        }
-
-        if (signature.name === 'worker') {
-            this.queue
-                .process(this.fetchJobName, 1, this.fetchEVMEventsForBlock.bind(this))
-                .then(() => console.log(`Closing Bull Queue ${this.fetchJobName}`))
-                .catch(this.shutdownService.shutdownWithError);
         }
     }
 }

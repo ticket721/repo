@@ -1,12 +1,12 @@
 import { Global, Inject, Injectable, OnModuleInit } from '@nestjs/common';
-import { Web3Service }                              from '@lib/common/web3/Web3.service';
-import * as path                                    from 'path';
-import { WinstonLoggerService }                     from '@lib/common/logger/WinstonLogger.service';
-import { ShutdownService }                          from '@lib/common/shutdown/Shutdown.service';
-import { FSService }                                from '@lib/common/fs/FS.service';
-import { GlobalConfigService }                      from '@lib/common/globalconfig/GlobalConfig.service';
-import EventEmitter                                 from 'events';
-import { NestError }                                from '@lib/common/utils/NestError';
+import { Web3Service } from '@lib/common/web3/Web3.service';
+import * as path from 'path';
+import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
+import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
+import { FSService } from '@lib/common/fs/FS.service';
+import { GlobalConfigService } from '@lib/common/globalconfig/GlobalConfig.service';
+import EventEmitter from 'events';
+import { NestError } from '@lib/common/utils/NestError';
 
 /**
  * Build option for the Contracts Service

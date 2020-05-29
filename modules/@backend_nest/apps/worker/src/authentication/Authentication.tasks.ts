@@ -1,14 +1,14 @@
-import { InjectQueue }                             from '@nestjs/bull';
-import { Job, Queue }                              from 'bull';
-import { EmailValidationTaskDto }                  from '@app/server/authentication/dto/EmailValidationTask.dto';
-import { EmailService }                            from '@lib/common/email/Email.service';
-import { Injectable, OnModuleInit }                from '@nestjs/common';
-import { JwtService }                              from '@nestjs/jwt';
-import { ConfigService }                           from '@lib/common/config/Config.service';
+import { InjectQueue } from '@nestjs/bull';
+import { Job, Queue } from 'bull';
+import { EmailValidationTaskDto } from '@app/server/authentication/dto/EmailValidationTask.dto';
+import { EmailService } from '@lib/common/email/Email.service';
+import { Injectable, OnModuleInit } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@lib/common/config/Config.service';
 import { InstanceSignature, OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
-import { ShutdownService }                         from '@lib/common/shutdown/Shutdown.service';
-import { ResetPasswordTaskDto }                    from '@app/server/authentication/dto/ResetPasswordTask.dto';
-import { NestError }                               from '@lib/common/utils/NestError';
+import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
+import { ResetPasswordTaskDto } from '@app/server/authentication/dto/ResetPasswordTask.dto';
+import { NestError } from '@lib/common/utils/NestError';
 
 /**
  * Task collection for the Authentication module

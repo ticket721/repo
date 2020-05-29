@@ -44,15 +44,14 @@ async function main() {
     logger.log(`Started instance with signature ${instanceSignature.signature}`);
 
     if (configService.get('BULL_BOARD') === 'true') {
-
         setQueues(
-            ['mailing', 'action', 'dosojin', 'evmantenna', 'authorization', 'minting', 'tx']
-                .map((name: string) => app.get<Queue>(getQueueToken(name)))
+            ['mailing', 'action', 'dosojin', 'evmantenna', 'authorization', 'minting', 'tx'].map((name: string) =>
+                app.get<Queue>(getQueueToken(name)),
+            ),
         );
 
         app.use('/admin/queues', UI);
     }
-
 
     await app.listen(configService.get('WORKER_PORT'));
 }

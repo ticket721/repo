@@ -6,15 +6,15 @@ import {
     InjectModel,
     InjectRepository,
     Repository,
-}                           from '@iaminfinity/express-cassandra';
-import { RightEntity }      from '@lib/common/rights/entities/Right.entity';
+} from '@iaminfinity/express-cassandra';
+import { RightEntity } from '@lib/common/rights/entities/Right.entity';
 import { RightsRepository } from '@lib/common/rights/Rights.repository';
-import { UserDto }          from '@lib/common/users/dto/User.dto';
-import _                    from 'lodash';
-import { ModuleRef }        from '@nestjs/core';
-import { RightsConfig }     from '@lib/common/rights/RightsConfig.type';
-import { ServiceResponse }  from '@lib/common/utils/ServiceResponse.type';
-import { NestError }        from '@lib/common/utils/NestError';
+import { UserDto } from '@lib/common/users/dto/User.dto';
+import _ from 'lodash';
+import { ModuleRef } from '@nestjs/core';
+import { RightsConfig } from '@lib/common/rights/RightsConfig.type';
+import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
+import { NestError } from '@lib/common/utils/NestError';
 
 /**
  * Service to CRUD RightEntities

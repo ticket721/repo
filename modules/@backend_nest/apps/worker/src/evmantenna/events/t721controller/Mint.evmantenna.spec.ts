@@ -7,18 +7,18 @@ import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 import { OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
 import { EVMEventSetsService } from '@lib/common/evmeventsets/EVMEventSets.service';
 import { TicketsService } from '@lib/common/tickets/Tickets.service';
-import { CategoriesService }                              from '@lib/common/categories/Categories.service';
-import { GroupService }                                   from '@lib/common/group/Group.service';
-import { AuthorizationsService }                          from '@lib/common/authorizations/Authorizations.service';
-import { WinstonLoggerService }                           from '@lib/common/logger/WinstonLogger.service';
-import { MintT721ControllerEVMAntenna }                   from '@app/worker/evmantenna/events/t721controller/Mint.evmantenna';
-import { deepEqual, instance, mock, verify, when }        from 'ts-mockito';
-import { TicketEntity }                                   from '@lib/common/tickets/entities/Ticket.entity';
-import { CategoryEntity }                                 from '@lib/common/categories/entities/Category.entity';
-import { AuthorizationEntity }                            from '@lib/common/authorizations/entities/Authorization.entity';
-import { Test }                                           from '@nestjs/testing';
+import { CategoriesService } from '@lib/common/categories/Categories.service';
+import { GroupService } from '@lib/common/group/Group.service';
+import { AuthorizationsService } from '@lib/common/authorizations/Authorizations.service';
+import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
+import { MintT721ControllerEVMAntenna } from '@app/worker/evmantenna/events/t721controller/Mint.evmantenna';
+import { deepEqual, instance, mock, verify, when } from 'ts-mockito';
+import { TicketEntity } from '@lib/common/tickets/entities/Ticket.entity';
+import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
+import { AuthorizationEntity } from '@lib/common/authorizations/entities/Authorization.entity';
+import { Test } from '@nestjs/testing';
 import { decimalToHex, encode, MintAuthorization, toB32 } from '@common/global';
-import { NestError }                                      from '@lib/common/utils/NestError';
+import { NestError } from '@lib/common/utils/NestError';
 
 class QueueMock<T = any> {
     add(name: string, data: T, opts?: JobOptions): Promise<Job<T>> {

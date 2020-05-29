@@ -1,11 +1,8 @@
-import {
-    InstanceSignature,
-    OutrospectionService,
-}                                                           from '@lib/common/outrospection/Outrospection.service';
-import { ConfigService }                                    from '@lib/common/config/Config.service';
-import { ShutdownService }                                  from '@lib/common/shutdown/Shutdown.service';
+import { InstanceSignature, OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
+import { ConfigService } from '@lib/common/config/Config.service';
+import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 import { capture, deepEqual, instance, mock, verify, when } from 'ts-mockito';
-import { NestError }                                        from '@lib/common/utils/NestError';
+import { NestError } from '@lib/common/utils/NestError';
 
 describe('Outrospection Service', function() {
     const context: {
@@ -121,12 +118,16 @@ describe('Outrospection Service', function() {
                     instance(context.shutdownServiceMock),
                     () => 'server--0',
                 );
-            }).toThrow(new NestError(`Invalid instance name 'worker', cannot extract position in hostname 'server--0'`));
+            }).toThrow(
+                new NestError(`Invalid instance name 'worker', cannot extract position in hostname 'server--0'`),
+            );
 
             verify(
                 context.shutdownServiceMock.shutdownWithError(
                     deepEqual(
-                        new NestError(`Invalid instance name 'worker', cannot extract position in hostname 'server--0'`),
+                        new NestError(
+                            `Invalid instance name 'worker', cannot extract position in hostname 'server--0'`,
+                        ),
                     ),
                 ),
             ).called();

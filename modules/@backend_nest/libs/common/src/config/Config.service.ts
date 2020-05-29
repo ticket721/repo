@@ -1,6 +1,6 @@
-import * as dotenv   from 'dotenv';
-import * as Joi      from '@hapi/joi';
-import * as fs       from 'fs';
+import * as dotenv from 'dotenv';
+import * as Joi from '@hapi/joi';
+import * as fs from 'fs';
 import { NestError } from '@lib/common/utils/NestError';
 
 /**

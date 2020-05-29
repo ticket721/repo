@@ -7,18 +7,18 @@ import { T721AdminService } from '@lib/common/contracts/T721Admin.service';
 import { Inject } from '@nestjs/common';
 import { ConfigService } from '@lib/common/config/Config.service';
 import { FSService } from '@lib/common/fs/FS.service';
-import { BytesToolService }                             from '@lib/common/toolbox/Bytes.tool.service';
-import { T721TokenService }                             from '@lib/common/contracts/T721Token.service';
+import { BytesToolService } from '@lib/common/toolbox/Bytes.tool.service';
+import { T721TokenService } from '@lib/common/contracts/T721Token.service';
 import { deepEqual, instance, mock, spy, verify, when } from 'ts-mockito';
-import { Test }                                         from '@nestjs/testing';
-import { T721ControllerV0Service }                      from '@lib/common/contracts/t721controller/T721Controller.V0.service';
-import { MetaMarketplaceV0Service }                     from '@lib/common/contracts/metamarketplace/MetaMarketplace.V0.service';
-import { TicketforgeService }                           from '@lib/common/contracts/Ticketforge.service';
-import path                                             from 'path';
-import { MintTokensAuthorization }                      from '@common/global';
-import { EIP712Signature }                              from '@ticket721/e712/lib';
-import { AuthorizationEntity }                          from '@lib/common/authorizations/entities/Authorization.entity';
-import { NestError }                                    from '@lib/common/utils/NestError';
+import { Test } from '@nestjs/testing';
+import { T721ControllerV0Service } from '@lib/common/contracts/t721controller/T721Controller.V0.service';
+import { MetaMarketplaceV0Service } from '@lib/common/contracts/metamarketplace/MetaMarketplace.V0.service';
+import { TicketforgeService } from '@lib/common/contracts/Ticketforge.service';
+import path from 'path';
+import { MintTokensAuthorization } from '@common/global';
+import { EIP712Signature } from '@ticket721/e712/lib';
+import { AuthorizationEntity } from '@lib/common/authorizations/entities/Authorization.entity';
+import { NestError } from '@lib/common/utils/NestError';
 
 describe('T721Token Service', function() {
     const context: {

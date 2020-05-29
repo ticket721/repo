@@ -22,7 +22,7 @@ export class OutrospectionModule {
                 },
                 {
                     provide: 'OUTROSPECTION_INSTANCE_NAME',
-                    useValue: name
+                    useValue: name,
                 },
                 {
                     provide: 'OUTROSPECTION_HOSTNAME_GETTER',
