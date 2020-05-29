@@ -38,7 +38,7 @@
         "@types/react-dom": "16.9.6",
         "@types/styled-components": "5.1.0",
         "device-detect": "1.0.7",
-        "typescript": "3.7.5"
+        "typescript": "3.9.3"
     },
     "devDependencies": {
         "@types/jest": "25.2.1",
