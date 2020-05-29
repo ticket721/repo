@@ -3,8 +3,6 @@ import { GlobalConfigService } from '@lib/common/globalconfig/GlobalConfig.servi
 import { InjectSchedule, Schedule } from 'nest-schedule';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 import { OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
-import { InjectQueue } from '@nestjs/bull';
-import { Queue } from 'bull';
 import { EVMEventSetsService } from '@lib/common/evmeventsets/EVMEventSets.service';
 import { EVMProcessableEvent } from '@app/worker/evmantenna/EVMAntennaMerger.scheduler';
 import { TicketsService } from '@lib/common/tickets/Tickets.service';
@@ -28,7 +26,6 @@ export class MintT721ControllerEVMAntenna extends EVMEventControllerBase {
      *
      * @param t721controllerService
      * @param scheduler
-     * @param queue
      * @param globalConfigService
      * @param shutdownService
      * @param outrospectionService
@@ -42,7 +39,6 @@ export class MintT721ControllerEVMAntenna extends EVMEventControllerBase {
     constructor(
         t721controllerService: T721ControllerV0Service,
         @InjectSchedule() scheduler: Schedule,
-        @InjectQueue('evmantenna') queue: Queue,
         globalConfigService: GlobalConfigService,
         shutdownService: ShutdownService,
         outrospectionService: OutrospectionService,
@@ -56,7 +52,6 @@ export class MintT721ControllerEVMAntenna extends EVMEventControllerBase {
         super(
             t721controllerService,
             scheduler,
-            queue,
             globalConfigService,
             shutdownService,
             outrospectionService,

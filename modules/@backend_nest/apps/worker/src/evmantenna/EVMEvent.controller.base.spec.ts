@@ -1,18 +1,11 @@
-import {
-    EVMEventControllerBase,
-    EVMEventFetcherJob,
-    EVMEventRawResult,
-} from '@app/worker/evmantenna/EVMEvent.controller.base';
+import { EVMEventControllerBase, EVMEventRawResult } from '@app/worker/evmantenna/EVMEvent.controller.base';
 import { ContractsControllerBase } from '@lib/common/contracts/ContractsController.base';
 import { Schedule } from 'nest-schedule';
-import { Job, Queue } from 'bull';
 import { GlobalConfigService } from '@lib/common/globalconfig/GlobalConfig.service';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 import { InstanceSignature, OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
 import { EVMEventSetsService } from '@lib/common/evmeventsets/EVMEventSets.service';
-import { anyFunction, anything, deepEqual, instance, mock, spy, verify, when } from 'ts-mockito';
-import { GlobalEntity } from '@lib/common/globalconfig/entities/Global.entity';
-import { EVMEvent, EVMEventSetEntity } from '@lib/common/evmeventsets/entities/EVMEventSet.entity';
+import { anything, deepEqual, instance, mock, verify, when } from 'ts-mockito';
 import { CRUDExtension } from '@lib/common/crud/CRUDExtension.base';
 import { NestError } from '@lib/common/utils/NestError';
 
@@ -21,7 +14,6 @@ describe('EVMEvent Controller Base', function() {
         evmEventControllerBase: EVMEventControllerBase;
         contractsControllerMock: ContractsControllerBase;
         scheduleMock: Schedule;
-        queueMock: Queue<EVMEventFetcherJob>;
         globalConfigServiceMock: GlobalConfigService;
         shutdownServiceMock: ShutdownService;
         outrospectionServiceMock: OutrospectionService;
@@ -30,7 +22,6 @@ describe('EVMEvent Controller Base', function() {
         evmEventControllerBase: null,
         contractsControllerMock: null,
         scheduleMock: null,
-        queueMock: null,
         globalConfigServiceMock: null,
         shutdownServiceMock: null,
         outrospectionServiceMock: null,
@@ -40,7 +31,6 @@ describe('EVMEvent Controller Base', function() {
     beforeEach(async function() {
         context.contractsControllerMock = mock(ContractsControllerBase);
         context.scheduleMock = mock(Schedule);
-        context.queueMock = mock<Queue<EVMEventFetcherJob>>();
         context.globalConfigServiceMock = mock(GlobalConfigService);
         context.shutdownServiceMock = mock(ShutdownService);
         context.outrospectionServiceMock = mock(OutrospectionService);
@@ -53,7 +43,6 @@ describe('EVMEvent Controller Base', function() {
         context.evmEventControllerBase = new EVMEventControllerBase(
             instance(context.contractsControllerMock),
             instance(context.scheduleMock),
-            instance(context.queueMock),
             instance(context.globalConfigServiceMock),
             instance(context.shutdownServiceMock),
             instance(context.outrospectionServiceMock),

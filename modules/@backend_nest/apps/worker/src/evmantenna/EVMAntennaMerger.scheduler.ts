@@ -6,8 +6,6 @@ import { GlobalConfigService } from '@lib/common/globalconfig/GlobalConfig.servi
 import { EVMEventSetsService } from '@lib/common/evmeventsets/EVMEventSets.service';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 import { GlobalEntity } from '@lib/common/globalconfig/entities/Global.entity';
-import { Job, Queue } from 'bull';
-import { InjectQueue } from '@nestjs/bull';
 import { ESSearchHit } from '@lib/common/utils/ESSearchReturn.type';
 import { EVMEvent, EVMEventSetEntity } from '@lib/common/evmeventsets/entities/EVMEventSet.entity';
 import { DryResponse } from '@lib/common/crud/CRUDExtension.base';
@@ -57,7 +55,6 @@ export class EVMAntennaMergerScheduler implements OnApplicationBootstrap {
      * @param evmEventSetsService
      * @param evmBlockRollbacksService
      * @param shutdownService
-     * @param queue
      * @param connection
      */
     constructor(
@@ -67,8 +64,6 @@ export class EVMAntennaMergerScheduler implements OnApplicationBootstrap {
         private readonly evmEventSetsService: EVMEventSetsService,
         private readonly evmBlockRollbacksService: EVMBlockRollbacksService,
         private readonly shutdownService: ShutdownService,
-        @InjectQueue('evmantenna')
-        private readonly queue: Queue<EVMAntennaMergerJob>,
         @InjectConnection() private readonly connection: Connection,
     ) {}
 

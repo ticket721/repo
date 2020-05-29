@@ -3,7 +3,6 @@ import { Schedule } from 'nest-schedule';
 import { GlobalConfigService } from '@lib/common/globalconfig/GlobalConfig.service';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 import { InstanceSignature, OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
-import { Job, Queue } from 'bull';
 import { EVMEventSetsService } from '@lib/common/evmeventsets/EVMEventSets.service';
 import { Repository } from '@iaminfinity/express-cassandra';
 import { EVMEvent } from '@lib/common/evmeventsets/entities/EVMEventSet.entity';
@@ -169,7 +168,6 @@ export class EVMEventControllerBase implements OnModuleInit {
      *
      * @param contractsController
      * @param schedule
-     * @param queue
      * @param globalConfigService
      * @param shutdownService
      * @param outrospectionService
@@ -180,7 +178,6 @@ export class EVMEventControllerBase implements OnModuleInit {
     constructor(
         private readonly contractsController: ContractsControllerBase,
         private readonly schedule: Schedule,
-        private readonly queue: Queue<EVMEventFetcherJob>,
         private readonly globalConfigService: GlobalConfigService,
         private readonly shutdownService: ShutdownService,
         private readonly outrospectionService: OutrospectionService,
