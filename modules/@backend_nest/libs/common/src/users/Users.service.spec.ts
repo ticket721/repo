@@ -8,6 +8,7 @@ import { EsSearchOptionsStatic } from '@iaminfinity/express-cassandra/dist/orm/i
 import { CreateUserServiceInputDto } from './dto/CreateUserServiceInput.dto';
 import { uuid } from '@iaminfinity/express-cassandra';
 import { ESSearchHit, ESSearchReturn } from '@lib/common/utils/ESSearchReturn.type';
+import { NestError } from '@lib/common/utils/NestError';
 
 class UserEntityModelMock {
     search(options: EsSearchOptionsStatic, callback?: (err: any, ret: any) => void): void {
@@ -823,7 +824,7 @@ describe('Users Service', function() {
             } as UserEntity;
 
             const injected_cb = (): any => {
-                throw new Error('Unexpected internal error');
+                throw new NestError('Unexpected internal error');
             };
 
             when(usersRepositoryMock.create(deepEqual(create_args))).thenReturn(entity);
@@ -918,7 +919,7 @@ describe('Users Service', function() {
                         valid: true,
                     }),
                 ),
-            ).thenThrow(new Error('an error'));
+            ).thenThrow(new NestError('an error'));
 
             const res = await usersService.update({
                 id,

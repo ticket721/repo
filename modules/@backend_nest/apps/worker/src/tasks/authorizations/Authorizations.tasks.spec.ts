@@ -18,6 +18,7 @@ import { UserDto } from '@lib/common/users/dto/User.dto';
 import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
 import { MintAuthorization, toB32 } from '@common/global';
 import { AuthorizationEntity } from '@lib/common/authorizations/entities/Authorization.entity';
+import { NestError } from '@lib/common/utils/NestError';
 
 class QueueMock<T = any> {
     add(name: string, data: T, opts?: JobOptions): Promise<Job<T>> {
@@ -1081,7 +1082,7 @@ describe('Authorization Tasks', function() {
             });
 
             await expect(context.authorizationTasks.generateMintingAuthorizationsTask(job)).rejects.toMatchObject(
-                new Error(`Cannot find category category_one_id`),
+                new NestError(`Cannot find category category_one_id`),
             );
 
             verify(
@@ -1196,7 +1197,7 @@ describe('Authorization Tasks', function() {
             });
 
             await expect(context.authorizationTasks.generateMintingAuthorizationsTask(job)).rejects.toMatchObject(
-                new Error(`Cannot find category category_one_id`),
+                new NestError(`Cannot find category category_one_id`),
             );
 
             verify(
@@ -1314,7 +1315,7 @@ describe('Authorization Tasks', function() {
             });
 
             await expect(context.authorizationTasks.generateMintingAuthorizationsTask(job)).rejects.toMatchObject(
-                new Error(`Cannot find category category_two_id`),
+                new NestError(`Cannot find category category_two_id`),
             );
 
             verify(
@@ -1440,7 +1441,7 @@ describe('Authorization Tasks', function() {
             });
 
             await expect(context.authorizationTasks.generateMintingAuthorizationsTask(job)).rejects.toMatchObject(
-                new Error(`Cannot find category category_two_id`),
+                new NestError(`Cannot find category category_two_id`),
             );
 
             verify(
@@ -1693,7 +1694,7 @@ describe('Authorization Tasks', function() {
             });
 
             await expect(context.authorizationTasks.generateMintingAuthorizationsTask(job)).rejects.toMatchObject(
-                new Error(`Cannot find authorization authorization_one_id`),
+                new NestError(`Cannot find authorization authorization_one_id`),
             );
 
             verify(
@@ -1957,7 +1958,7 @@ describe('Authorization Tasks', function() {
             });
 
             await expect(context.authorizationTasks.generateMintingAuthorizationsTask(job)).rejects.toMatchObject(
-                new Error(`Cannot find authorization authorization_one_id`),
+                new NestError(`Cannot find authorization authorization_one_id`),
             );
 
             verify(
@@ -2239,7 +2240,7 @@ describe('Authorization Tasks', function() {
             });
 
             await expect(context.authorizationTasks.generateMintingAuthorizationsTask(job)).rejects.toMatchObject(
-                new Error('Cannot cancel authorization authorization_one_id'),
+                new NestError('Cannot cancel authorization authorization_one_id'),
             );
 
             verify(
@@ -2518,7 +2519,7 @@ describe('Authorization Tasks', function() {
             });
 
             await expect(context.authorizationTasks.generateMintingAuthorizationsTask(job)).rejects.toMatchObject(
-                new Error(
+                new NestError(
                     'Cannot cancel authorization authorization_one_id with public signature: wait for natural expiration',
                 ),
             );
@@ -2879,7 +2880,7 @@ describe('Authorization Tasks', function() {
             });
 
             await expect(context.authorizationTasks.generateMintingAuthorizationsTask(job)).rejects.toMatchObject(
-                new Error('Error while fetching authorizations count'),
+                new NestError('Error while fetching authorizations count'),
             );
 
             verify(
@@ -3343,7 +3344,7 @@ describe('Authorization Tasks', function() {
             });
 
             await expect(context.authorizationTasks.generateMintingAuthorizationsTask(job)).rejects.toMatchObject(
-                new Error('Error while creating authorizations'),
+                new NestError('Error while creating authorizations'),
             );
 
             verify(
@@ -3834,7 +3835,7 @@ describe('Authorization Tasks', function() {
             });
 
             await expect(context.authorizationTasks.generateMintingAuthorizationsTask(job)).rejects.toMatchObject(
-                new Error('Error while updating actionSet'),
+                new NestError('Error while updating actionSet'),
             );
 
             verify(
@@ -4967,7 +4968,7 @@ describe('Authorization Tasks', function() {
             });
 
             await expect(context.authorizationTasks.generateMintingAuthorizationsTask(job)).rejects.toMatchObject(
-                new Error(`Error while detecting error on actionset ${actionSetId}`),
+                new NestError(`Error while detecting error on actionset ${actionSetId}`),
             );
 
             verify(

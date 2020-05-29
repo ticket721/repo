@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "platform.fullname" . }}--server--svc
+  labels:
+    name: {{ include "platform.fullname" . }}--server--svc
+    chart: {{ .Chart.Name }}
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "tcp"
+    service.beta.kubernetes.io/aws-load-balancer-proxy-protocol: "*"
+spec:
+  type: {{ .Values.server.service.type }}
+  ports:
+    - port: {{ .Values.server.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    name: {{ include "platform.fullname" . }}--server
+    chart: {{ .Chart.Name }}

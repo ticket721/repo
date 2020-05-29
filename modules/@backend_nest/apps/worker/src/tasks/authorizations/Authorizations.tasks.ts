@@ -12,6 +12,7 @@ import { UserDto } from '@lib/common/users/dto/User.dto';
 import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
 import { MintAuthorization, toB32 } from '@common/global';
 import { ActionSetsService } from '@lib/common/actionsets/ActionSets.service';
+import { NestError } from '@lib/common/utils/NestError';
 
 /**
  * Input for the authorization generation task
@@ -109,7 +110,7 @@ export class AuthorizationsTasks implements OnModuleInit {
             });
 
             if (categoryReq.error || categoryReq.response.length === 0) {
-                throw new Error(`Cannot find category ${authorization.categoryId}`);
+                throw new NestError(`Cannot find category ${authorization.categoryId}`);
             }
 
             ret[categoryReq.response[0].id] = categoryReq.response[0];
@@ -126,7 +127,7 @@ export class AuthorizationsTasks implements OnModuleInit {
                 });
 
                 if (categoryReq.error || categoryReq.response.length === 0) {
-                    throw new Error(`Cannot find category ${authorization.categoryId}`);
+                    throw new NestError(`Cannot find category ${authorization.categoryId}`);
                 }
 
                 ret[categoryReq.response[0].id] = categoryReq.response[0];
@@ -155,7 +156,7 @@ export class AuthorizationsTasks implements OnModuleInit {
             });
 
             if (authorizationEntityRes.error || authorizationEntityRes.response.length === 0) {
-                throw new Error(`Cannot find authorization ${authorization.authorizationId}`);
+                throw new NestError(`Cannot find authorization ${authorization.authorizationId}`);
             }
 
             const authorizationEntity = authorizationEntityRes.response[0];
@@ -181,7 +182,7 @@ export class AuthorizationsTasks implements OnModuleInit {
                 );
 
                 if (cancellationRes.error) {
-                    throw new Error(`Cannot cancel authorization ${authorization.authorizationId}`);
+                    throw new NestError(`Cannot cancel authorization ${authorization.authorizationId}`);
                 }
 
                 if (ret[authorization.categoryId] !== undefined) {
@@ -198,7 +199,7 @@ export class AuthorizationsTasks implements OnModuleInit {
                 authorizationEntity.readable_signature &&
                 Date.now() < authorizationEntity.be_expiration.getTime()
             ) {
-                throw new Error(
+                throw new NestError(
                     `Cannot cancel authorization ${authorizationEntity.id} with public signature: wait for natural expiration`,
                 );
             }
@@ -264,7 +265,7 @@ export class AuthorizationsTasks implements OnModuleInit {
             });
 
             if (countRes.error) {
-                throw new Error(`Error while fetching authorizations count`);
+                throw new NestError(`Error while fetching authorizations count`);
             }
 
             let remainingSeats =
@@ -330,7 +331,7 @@ export class AuthorizationsTasks implements OnModuleInit {
             );
 
             if (errorUpdateStepRes.error) {
-                throw new Error(`Error while detecting error on actionset ${authorizationData.actionSetId}`);
+                throw new NestError(`Error while detecting error on actionset ${authorizationData.actionSetId}`);
             }
 
             return;
@@ -347,7 +348,7 @@ export class AuthorizationsTasks implements OnModuleInit {
 
         if (authorizationsCreationRes.error) {
             console.error(authorizationsCreationRes.error);
-            throw new Error(`Error while creating authorizations`);
+            throw new NestError(`Error while creating authorizations`);
         }
 
         const actionSetUpdate = await this.actionSetsService.updateAction(authorizationData.actionSetId, 2, {
@@ -358,7 +359,7 @@ export class AuthorizationsTasks implements OnModuleInit {
         });
 
         if (actionSetUpdate.error) {
-            throw new Error(`Error while updating actionSet`);
+            throw new NestError(`Error while updating actionSet`);
         }
 
         await job.progress(100);

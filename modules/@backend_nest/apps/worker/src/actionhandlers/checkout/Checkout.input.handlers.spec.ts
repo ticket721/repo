@@ -9,6 +9,7 @@ import { ActionSet } from '@lib/common/actionsets/helper/ActionSet.class';
 import { GemOrderEntity } from '@lib/common/gemorders/entities/GemOrder.entity';
 import regionRestrictions from '@app/server/controllers/checkout/restrictions/regionRestrictions.value';
 import methodsRestrictions from '@app/server/controllers/checkout/restrictions/methodsRestrictions.value';
+import { NestError } from '@lib/common/utils/NestError';
 
 describe('Checkout Input Handlers', function() {
     const context: {
@@ -2004,7 +2005,7 @@ describe('Checkout Input Handlers', function() {
                 methods: {
                     balanceOf: (...args: any[]) => ({
                         call: async () => {
-                            throw new Error('cannot contact ethereum');
+                            throw new NestError('cannot contact ethereum');
                         },
                     }),
                 },

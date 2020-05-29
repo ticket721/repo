@@ -3,6 +3,7 @@ import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ServerService } from '@app/server/Server.service';
 import { anything, instance, mock, verify, when } from 'ts-mockito';
+import { NestError } from '@lib/common/utils/NestError';
 
 const context: {
     shutdownService: ShutdownService;
@@ -76,7 +77,7 @@ describe('Shutdown Service', function() {
         };
         const shutdownService: ShutdownService = context.shutdownService;
         const winstonLogger: WinstonLoggerService = context.winstonLoggerServiceMock;
-        const error = new Error('hi');
+        const error = new NestError('hi');
 
         shutdownService.subscribeToShutdown(fn.call.bind(fn));
         shutdownService.shutdownWithError(error);

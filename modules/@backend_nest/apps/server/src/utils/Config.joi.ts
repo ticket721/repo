@@ -8,6 +8,8 @@ export const Config: Joi.ObjectSchema = Joi.object({
         .valid('development', 'production', 'test', 'test-e2e', 'provision')
         .default('development'),
 
+    HOSTNAME_PATTERN: Joi.string().required(),
+
     API_PORT: Joi.number().default(3000),
     VALIDATION_URL: Joi.string().required(),
     RESET_PASSWORD_URL: Joi.string().required(),
@@ -23,8 +25,8 @@ export const Config: Joi.ObjectSchema = Joi.object({
     ETHEREUM_NODE_PORT: Joi.number().required(),
     ETHEREUM_NODE_PROTOCOL: Joi.string().default('http'),
     ETHEREUM_NODE_NETWORK_ID: Joi.number().required(),
-    ETHEREUM_MTX_DOMAIN_NAME: Joi.string().required(),
-    ETHEREUM_MTX_VERSION: Joi.string().required(),
+    ETHEREUM_NODE_HEADERS: Joi.string().optional(),
+    ETHEREUM_NODE_PATH: Joi.string().optional(),
 
     TXS_BLOCK_THRESHOLD: Joi.number().required(),
     TXS_BLOCK_POLLING_REFRESH_RATE: Joi.number().required(),
@@ -41,7 +43,6 @@ export const Config: Joi.ObjectSchema = Joi.object({
 
     BULL_REDIS_HOST: Joi.string().required(),
     BULL_REDIS_PORT: Joi.number().required(),
-    BULL_BOARD: Joi.bool().default(false),
 
     AUTH_SIGNATURE_TIMEOUT: Joi.number().default(30),
 

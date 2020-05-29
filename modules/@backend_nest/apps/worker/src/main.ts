@@ -7,6 +7,7 @@ import { Queue } from 'bull';
 import { getQueueToken } from '@nestjs/bull';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 import { setQueues, UI } from 'bull-board';
+
 import { InstanceSignature, OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
 
 /**
@@ -33,6 +34,7 @@ async function main() {
         app.use('/admin/queues', UI);
     }
 
+    app.enableShutdownHooks();
     app.get(ShutdownService).subscribeToShutdown(() => {
         app.close();
     });
@@ -40,6 +42,16 @@ async function main() {
     const instanceSignature: InstanceSignature = await app.get(OutrospectionService).getInstanceSignature();
 
     logger.log(`Started instance with signature ${instanceSignature.signature}`);
+
+    if (configService.get('BULL_BOARD') === 'true') {
+        setQueues(
+            ['mailing', 'action', 'dosojin', 'evmantenna', 'authorization', 'minting', 'tx'].map((name: string) =>
+                app.get<Queue>(getQueueToken(name)),
+            ),
+        );
+
+        app.use('/admin/queues', UI);
+    }
 
     await app.listen(configService.get('WORKER_PORT'));
 }

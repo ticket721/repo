@@ -9,6 +9,7 @@ import { RightEntity } from '@lib/common/rights/entities/Right.entity';
 import { CRUDExtension } from '@lib/common/crud/CRUDExtension.base';
 import { UserDto } from '@lib/common/users/dto/User.dto';
 import { ESSearchReturn } from '@lib/common/utils/ESSearchReturn.type';
+import { NestError } from '@lib/common/utils/NestError';
 
 class RightEntityMock {
     public _properties = null;
@@ -194,7 +195,7 @@ describe('Rights Service', function() {
                         strict: false,
                     }),
                 ),
-            ).thenThrow(new Error('unexpected_error'));
+            ).thenThrow(new NestError('unexpected_error'));
 
             const res = await context.rightsService.hasGlobalRightsUpon(
                 instance(context.crudServiceMock),
@@ -627,7 +628,7 @@ describe('Rights Service', function() {
             };
 
             when(context.moduleRefMock.get(`@rights/${entityName}`, deepEqual({ strict: false }))).thenReject(
-                new Error('unexpected_error'),
+                new NestError('unexpected_error'),
             );
 
             expect(await context.rightsService.getRightsConfig(entityName)).toEqual({
@@ -898,7 +899,7 @@ describe('Rights Service', function() {
             when(context.crudServiceMock.name).thenReturn(entityName);
 
             when(context.moduleRefMock.get(`@rights/${entityName}`, deepEqual({ strict: false }))).thenThrow(
-                new Error('unexpected_error'),
+                new NestError('unexpected_error'),
             );
 
             const res = await context.rightsService.hasRightsUpon(
@@ -1602,7 +1603,7 @@ describe('Rights Service', function() {
             };
 
             when(context.moduleRefMock.get(`@rights/${entityName}`, deepEqual({ strict: false }))).thenReject(
-                new Error('unexpected_error'),
+                new NestError('unexpected_error'),
             );
 
             const res = await context.rightsService.addRights(user, [
@@ -2126,7 +2127,7 @@ describe('Rights Service', function() {
                         },
                     ]),
                 ),
-            ).thenReject(new Error('unexpected_error'));
+            ).thenReject(new NestError('unexpected_error'));
 
             const res = await context.rightsService.addRights(user, [
                 {

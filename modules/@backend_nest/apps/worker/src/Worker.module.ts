@@ -57,11 +57,13 @@ import { GroupModule } from '@lib/common/group/Group.module';
 import { TicketsModule } from '@lib/common/tickets/Tickets.module';
 import { RocksideModule } from '@lib/common/rockside/Rockside.module';
 import { AuthenticationModule } from '@app/worker/authentication/Authentication.module';
+import { toHeaderFormat } from '@lib/common/utils/toHeaderFormat';
+import { StatusController } from '@app/worker/utils/Status.controller';
 
 @Module({
     imports: [
         // Global configuration reading .env file
-        ConfigModule.register(Config, './apps/worker/env/'),
+        ConfigModule.register(Config, process.env.CONFIG_PATH || './apps/worker/env/'),
 
         // Scheduler to run background tasks
         ScheduleModule.register(),
@@ -123,6 +125,8 @@ import { AuthenticationModule } from '@app/worker/authentication/Authentication.
                 host: configService.get('ETHEREUM_NODE_HOST'),
                 port: configService.get('ETHEREUM_NODE_PORT'),
                 protocol: configService.get('ETHEREUM_NODE_PROTOCOL'),
+                headers: toHeaderFormat(JSON.parse(configService.get('ETHEREUM_NODE_HEADERS') || '{}')),
+                path: configService.get('ETHEREUM_NODE_PATH'),
             }),
             inject: [ConfigService],
         }),
@@ -160,10 +164,9 @@ import { AuthenticationModule } from '@app/worker/authentication/Authentication.
             }),
             inject: [ConfigService],
         }),
-        OutrospectionModule.register({
-            name: 'worker',
-        }),
+        OutrospectionModule.register('worker'),
     ],
+    controllers: [StatusController],
     providers: [
         // ActionSet Input Handlers
         EventsInputHandlers,

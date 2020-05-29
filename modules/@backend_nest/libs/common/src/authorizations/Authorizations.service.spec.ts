@@ -17,6 +17,7 @@ import { TimeToolService } from '@lib/common/toolbox/Time.tool.service';
 import { EsSearchOptionsStatic } from '@iaminfinity/express-cassandra/dist/orm/interfaces/externals/express-cassandra.interface';
 import { GroupService } from '@lib/common/group/Group.service';
 import { RocksideService } from '@lib/common/rockside/Rockside.service';
+import { NestError } from '@lib/common/utils/NestError';
 
 class AuthorizationEntityModelMock {
     _properties;
@@ -1054,7 +1055,7 @@ describe('Authorizations Service', function() {
             });
 
             when(context.rocksideServiceMock.getSigner(eventAddress)).thenReturn(async () => {
-                throw new Error('signature error');
+                throw new NestError('signature error');
             });
 
             const randomNum = '012345678901234567890123456789012345678901234567890123456789ff';

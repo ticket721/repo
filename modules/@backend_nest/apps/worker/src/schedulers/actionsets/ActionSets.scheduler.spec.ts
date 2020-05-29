@@ -12,6 +12,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TimeToolService } from '@lib/common/toolbox/Time.tool.service';
 import { ESSearchReturn } from '@lib/common/utils/ESSearchReturn.type';
 import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
+import { NestError } from '@lib/common/utils/NestError';
 
 class QueueMock<T = any> {
     add(name: string, data: T, opts?: JobOptions): Promise<Job<T>> {
@@ -275,7 +276,7 @@ describe('ActionSets Scheduler', function() {
             verify(context.actionSetsServiceMock.searchElastic(deepEqual(query))).called();
             verify(
                 context.shutdownServiceMock.shutdownWithError(
-                    deepEqual(new Error('Error while requesting action sets')),
+                    deepEqual(new NestError('Error while requesting action sets')),
                 ),
             );
         });

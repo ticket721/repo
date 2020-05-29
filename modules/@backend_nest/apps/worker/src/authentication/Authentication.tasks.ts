@@ -8,6 +8,7 @@ import { ConfigService } from '@lib/common/config/Config.service';
 import { InstanceSignature, OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 import { ResetPasswordTaskDto } from '@app/server/authentication/dto/ResetPasswordTask.dto';
+import { NestError } from '@lib/common/utils/NestError';
 
 /**
  * Task collection for the Authentication module
@@ -75,7 +76,7 @@ export class AuthenticationTasks implements OnModuleInit {
         });
 
         if (res.error) {
-            throw new Error(res.error);
+            throw new NestError(res.error);
         }
 
         await job.progress(100);
@@ -104,7 +105,7 @@ export class AuthenticationTasks implements OnModuleInit {
         });
 
         if (res.error) {
-            throw new Error(res.error);
+            throw new NestError(res.error);
         }
 
         await job.progress(100);

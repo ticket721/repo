@@ -12,6 +12,7 @@ import { uuidEq } from '@common/global';
 import { ActionSet } from '@lib/common/actionsets/helper/ActionSet.class';
 import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
 import { TimeToolService } from '@lib/common/toolbox/Time.tool.service';
+import { NestError } from '@lib/common/utils/NestError';
 
 /**
  * Collection of scheduled tasks
@@ -87,7 +88,7 @@ export class ActionSetsScheduler implements OnModuleInit, OnModuleDestroy {
         const actionSetsSearchRes = await this.actionSetsService.searchElastic(query);
 
         if (actionSetsSearchRes.error) {
-            return this.shutdownService.shutdownWithError(new Error('Error while requesting action sets'));
+            return this.shutdownService.shutdownWithError(new NestError('Error while requesting action sets'));
         }
 
         const dispatched = this.timeToolService.now();

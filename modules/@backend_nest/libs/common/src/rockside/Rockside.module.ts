@@ -90,7 +90,7 @@ export class RocksideModule {
                         if (configService.get('NODE_ENV') === 'development') {
                             return new RocksideMock(rocksideOpts, rocksideMockOpts);
                         } else {
-                            return null;
+                            return new RocksideApi(rocksideOpts);
                         }
                     },
                     inject: [ConfigService, 'ROCKSIDE_OPTS', 'ROCKSIDE_MOCK_OPTS'],

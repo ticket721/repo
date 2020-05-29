@@ -13,3 +13,5 @@ RUN cd ../@common_global\
  && cd ../@backend_nest\
  && yarn build:server
 
+CMD ["node", "dist/apps/server/apps/server/src/main.js"]
+

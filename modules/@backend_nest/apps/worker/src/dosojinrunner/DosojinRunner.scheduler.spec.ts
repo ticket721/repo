@@ -12,6 +12,7 @@ import { GemOrderEntity } from '@lib/common/gemorders/entities/GemOrder.entity';
 import { UserDto } from '@lib/common/users/dto/User.dto';
 import { Gem } from 'dosojin';
 import { ESSearchReturn } from '@lib/common/utils/ESSearchReturn.type';
+import { NestError } from '@lib/common/utils/NestError';
 
 class QueueMock<T = any> {
     add(name: string, data: T, opts?: JobOptions): Promise<Job<T>> {
@@ -240,7 +241,7 @@ describe('DosojinRunner Scheduler', function() {
 
             verify(
                 context.shutdownServiceMock.shutdownWithError(
-                    deepEqual(new Error(`Error while recovering gems to dispatch: unexpected_error`)),
+                    deepEqual(new NestError(`Error while recovering gems to dispatch: unexpected_error`)),
                 ),
             ).called();
         });
@@ -458,7 +459,7 @@ describe('DosojinRunner Scheduler', function() {
 
             verify(
                 context.shutdownServiceMock.shutdownWithError(
-                    deepEqual(new Error(`Unable to fetch gem orders for initialization: unexpected_error`)),
+                    deepEqual(new NestError(`Unable to fetch gem orders for initialization: unexpected_error`)),
                 ),
             );
         });
@@ -668,7 +669,7 @@ describe('DosojinRunner Scheduler', function() {
 
             verify(
                 context.shutdownServiceMock.shutdownWithError(
-                    deepEqual(new Error(`Unable to signal gem initialization error: unexpected_error`)),
+                    deepEqual(new NestError(`Unable to signal gem initialization error: unexpected_error`)),
                 ),
             ).called();
 

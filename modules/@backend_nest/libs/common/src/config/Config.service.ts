@@ -1,6 +1,7 @@
 import * as dotenv from 'dotenv';
 import * as Joi from '@hapi/joi';
 import * as fs from 'fs';
+import { NestError } from '@lib/common/utils/NestError';
 
 /**
  * Environment type
@@ -65,7 +66,7 @@ export class ConfigService {
         const { error, value: validatedEnvConfig } = this.joiConfig.validate(envConfig);
 
         if (error) {
-            throw new Error(`Config validation error: ${error.message}`);
+            throw new NestError(`Config validation error: ${error.message}`);
         }
 
         return validatedEnvConfig;

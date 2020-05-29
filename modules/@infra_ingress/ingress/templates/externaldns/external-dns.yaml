@@ -1,0 +1,74 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ include "ingress.fullname" . }}--external-dns--sa
+  labels:
+    name: {{ include "ingress.fullname" . }}--external-dns--sa
+    chart: {{ .Chart.Name }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "ingress.fullname" . }}--external-dns--role
+  labels:
+    name: {{ include "ingress.fullname" . }}--external-dns--role
+    chart: {{ .Chart.Name }}
+rules:
+  - apiGroups: [""]
+    resources: ["services"]
+    verbs: ["get","watch","list"]
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get","watch","list"]
+  - apiGroups: ["extensions"]
+    resources: ["ingresses"]
+    verbs: ["get","watch","list"]
+  - apiGroups: [""]
+    resources: ["nodes"]
+    verbs: ["list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ include "ingress.fullname" . }}--external-dns--rlbnd
+  labels:
+    name: {{ include "ingress.fullname" . }}--external-dns--rlbnd
+    chart: {{ .Chart.Name }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ include "ingress.fullname" . }}--external-dns--role
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "ingress.fullname" . }}--external-dns--sa
+    namespace: {{ .Values._global.namespace }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "ingress.fullname" . }}--external-dns--d
+spec:
+  selector:
+    matchLabels:
+      app: {{ include "ingress.fullname" . }}--external-dns--app
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: {{ include "ingress.fullname" . }}--external-dns--app
+    spec:
+      serviceAccountName: {{ include "ingress.fullname" . }}--external-dns--sa
+      containers:
+        - name: {{ include "ingress.fullname" . }}--external-dns
+          image: registry.opensource.zalan.do/teapot/external-dns:v0.5.9
+          args:
+            - --source=service
+            - --source=ingress
+            - --domain-filter={{ .Values.baseDomain }} # will make ExternalDNS see only the hosted zones matching provided domain, omit to process all available hosted zones
+            - --provider=aws
+            - --policy=upsert-only # would prevent ExternalDNS from deleting any records, omit to enable full synchronization
+            - --aws-zone-type=public # only look at public hosted zones (valid values are public, private or no value for both)
+            - --registry=txt
+            - --txt-owner-id=/hostedzone/{{ .Values.route53.hostedzone }}
+            - --log-level=debug

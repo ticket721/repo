@@ -17,6 +17,7 @@ import {
 } from '@lib/common/crud/CRUDExtension.base';
 import { ESCountReturn } from '@lib/common/utils/ESCountReturn.type';
 import { ESSearchHit, ESSearchReturn } from '@lib/common/utils/ESSearchReturn.type';
+import { NestError } from '@lib/common/utils/NestError';
 
 class FakeEntity {
     id: string;
@@ -199,7 +200,7 @@ describe('CRUD Extension', function() {
             when(context.repositoryMock.create(deepEqual(newEntityProcessed))).thenReturn(newEntityProcessed);
             when(context.repositoryMock.save(deepEqual(newEntityProcessed), undefined)).thenCall(() => {
                 return {
-                    toPromise: () => Promise.reject(new Error('unexpected error')),
+                    toPromise: () => Promise.reject(new NestError('unexpected error')),
                 };
             });
 
@@ -386,7 +387,7 @@ describe('CRUD Extension', function() {
             const modelBuilderMock = mock<any>();
             const newModelMock = mock<BaseModelStatic<FakeEntity>>();
 
-            when(modelBuilderMock.build(anything())).thenThrow(new Error('query creation error'));
+            when(modelBuilderMock.build(anything())).thenThrow(new NestError('query creation error'));
 
             const crudext: CRUDExtension<Repository<FakeEntity>, FakeEntity> = new CRUDExtension<
                 Repository<FakeEntity>,
@@ -670,7 +671,7 @@ describe('CRUD Extension', function() {
 
             when(context.repositoryMock.find(deepEqual(searchEntityProcessed), undefined)).thenCall(() => {
                 return {
-                    toPromise: () => Promise.reject(new Error('unexpected error')),
+                    toPromise: () => Promise.reject(new NestError('unexpected error')),
                 };
             });
 
@@ -876,7 +877,7 @@ describe('CRUD Extension', function() {
                         return_query: true,
                     }),
                 ),
-            ).thenThrow(new Error(`query creation error`));
+            ).thenThrow(new NestError(`query creation error`));
 
             const res = await crudext.drySearch(searchEntity, searchOptions);
 
@@ -1084,7 +1085,7 @@ describe('CRUD Extension', function() {
                 ),
             ).thenCall(() => {
                 return {
-                    toPromise: () => Promise.reject(new Error('unexpected error')),
+                    toPromise: () => Promise.reject(new NestError('unexpected error')),
                 };
             });
 
@@ -1310,7 +1311,7 @@ describe('CRUD Extension', function() {
                         return_query: true,
                     }),
                 ),
-            ).thenThrow(new Error('error while creating query'));
+            ).thenThrow(new NestError('error while creating query'));
 
             const res = await crudext.dryUpdate(searchEntity, newEntity, updateOptions);
 
@@ -1460,7 +1461,7 @@ describe('CRUD Extension', function() {
             when(context.repositoryMock.delete(deepEqual(searchEntityProcessed), deepEqual(deleteOptions))).thenCall(
                 () => {
                     return {
-                        toPromise: () => Promise.reject(new Error('unexpected error')),
+                        toPromise: () => Promise.reject(new NestError('unexpected error')),
                     };
                 },
             );
@@ -1643,7 +1644,7 @@ describe('CRUD Extension', function() {
                         return_query: true,
                     }),
                 ),
-            ).thenThrow(new Error('unable to build query'));
+            ).thenThrow(new NestError('unable to build query'));
 
             const res = await crudext.dryDelete(searchEntity, deleteOptions);
 
@@ -1806,7 +1807,7 @@ describe('CRUD Extension', function() {
                 const [osef, cb] = capture<ESSearchQuery<FakeEntity>, (...args: any[]) => void>(
                     context.modelMock.search,
                 ).last();
-                cb(new Error('unexpected error'), null);
+                cb(new NestError('unexpected error'), null);
             });
 
             const res = await crudext.searchElastic(elasticSearchOptions);
@@ -1930,7 +1931,7 @@ describe('CRUD Extension', function() {
                         body: {},
                     }),
                 ),
-            ).thenReject(new Error('unexpected_error'));
+            ).thenReject(new NestError('unexpected_error'));
 
             const res = await crudext.countElastic(elasticSearchOptions);
 

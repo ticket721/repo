@@ -16,4 +16,9 @@ export interface APIInfos {
      * Environment name
      */
     env: string;
+
+    /**
+     * Position of the API on the replica set
+     */
+    position: number;
 }

@@ -6,6 +6,7 @@ import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 import { FSService } from '@lib/common/fs/FS.service';
 import { GlobalConfigService } from '@lib/common/globalconfig/GlobalConfig.service';
 import EventEmitter from 'events';
+import { NestError } from '@lib/common/utils/NestError';
 
 /**
  * Build option for the Contracts Service
@@ -328,7 +329,7 @@ export class ContractsService implements OnModuleInit {
             const code = (await web3.eth.getCode(address)).toLowerCase();
             const registeredCode = this.contracts[contract].deployedBytecode.toLowerCase();
             if (code !== registeredCode) {
-                const error = new Error(
+                const error = new NestError(
                     `Failed contract instance verification for ${contract}: network and artifact code do not match !`,
                 );
                 this.shutdownService.shutdownWithError(error);
@@ -432,7 +433,7 @@ export class ContractsService implements OnModuleInit {
         });
 
         if (globalConfigRes.error || globalConfigRes.response.length === 0) {
-            const error = new Error(
+            const error = new NestError(
                 `ContractsService::onModuleInit | error while fetching global config: ${globalConfigRes.error ||
                     'no initial config'}`,
             );
@@ -477,7 +478,7 @@ export class ContractsService implements OnModuleInit {
             );
 
             if (res.error) {
-                const error = new Error(
+                const error = new NestError(
                     `ContractsService::onModuleInit | error while updating global config: ${res.error}`,
                 );
                 this.shutdownService.shutdownWithError(error);

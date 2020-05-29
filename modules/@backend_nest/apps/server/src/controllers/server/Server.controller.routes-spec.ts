@@ -11,6 +11,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 expect(apiInfos.data).toMatchObject({
                     version: '1.0.0',
                     name: 't721api',
+                    position: 1,
                 });
             });
         });

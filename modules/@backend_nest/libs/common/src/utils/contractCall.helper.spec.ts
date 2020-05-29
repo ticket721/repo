@@ -1,4 +1,5 @@
 import { contractCallHelper } from '@lib/common/utils/contractCall.helper';
+import { NestError } from '@lib/common/utils/NestError';
 
 describe('contractCall Helper', function() {
     it('should properly call the appropriate method', async function() {
@@ -33,7 +34,7 @@ describe('contractCall Helper', function() {
             methods: {
                 myMethod: (arg: string) => ({
                     call: () => {
-                        throw new Error('this method reverted');
+                        throw new NestError('this method reverted');
                     },
                 }),
             },

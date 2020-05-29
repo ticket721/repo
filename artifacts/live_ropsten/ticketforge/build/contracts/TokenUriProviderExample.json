@@ -1,0 +1,450 @@
+{
+  "contractName": "TokenUriProviderExample",
+  "abi": [
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        }
+      ],
+      "name": "tokenURI",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "uri",
+          "type": "string"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.5.15+commit.6a57276f\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"constant\":true,\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"}],\"name\":\"tokenURI\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"uri\",\"type\":\"string\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/Users/mortimr/projects/repo/modules/@contracts_ticketforge/contracts/TokenUriProviderExample.sol\":\"TokenUriProviderExample\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/Users/mortimr/projects/repo/modules/@contracts_ticketforge/contracts/ITokenUriProvider.sol\":{\"keccak256\":\"0xcc7085b1139f04ecff58f41f47106f499f9f30dc6df2a2601b1ae9f18490968f\",\"urls\":[\"bzz-raw://44253d7ff9f102cc0a23620f0a9909968b2e7bcda5ed18cfc62d262f86567403\",\"dweb:/ipfs/QmSL9QLAR89GsRxToLAiHGcLMknmMqRoKXGZ5KtnhnktXP\"]},\"/Users/mortimr/projects/repo/modules/@contracts_ticketforge/contracts/TokenUriProviderExample.sol\":{\"keccak256\":\"0x2fbfe60aa0ba30b2f905f1ad22d6b98c9406f4c5d5e7e623b84e65b37fe2edaf\",\"urls\":[\"bzz-raw://c27a3f849aacbdc1926c91b8987056827d54ae4a6fa41cba94c926b5b15ed87e\",\"dweb:/ipfs/QmaTefFYzX1djTkm1VJkqyXJLexghjjfzhXWR65fKTNT8x\"]}},\"version\":1}",
+  "bytecode": "0x608060405234801561001057600080fd5b5061010e806100206000396000f3fe6080604052348015600f57600080fd5b506004361060285760003560e01c8063c87b56dd14602d575b600080fd5b604760048036036020811015604157600080fd5b503560b9565b6040805160208082528351818301528351919283929083019185019080838360005b83811015607f5781810151838201526020016069565b50505050905090810190601f16801560ab5780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b506040805180820190915260058152641cd85b1d5d60da1b60208201529056fea265627a7a72315820538d470b26bd074391351bda37bd2ab31ffadf2dde2c36363f63bf3caa9927fe64736f6c634300050f0032",
+  "deployedBytecode": "0x6080604052348015600f57600080fd5b506004361060285760003560e01c8063c87b56dd14602d575b600080fd5b604760048036036020811015604157600080fd5b503560b9565b6040805160208082528351818301528351919283929083019185019080838360005b83811015607f5781810151838201526020016069565b50505050905090810190601f16801560ab5780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b506040805180820190915260058152641cd85b1d5d60da1b60208201529056fea265627a7a72315820538d470b26bd074391351bda37bd2ab31ffadf2dde2c36363f63bf3caa9927fe64736f6c634300050f0032",
+  "sourceMap": "60:179:4:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;60:179:4;;;;;;;",
+  "deployedSourceMap": "60:179:4:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;60:179:4;;;;;;;;;;;;;;;;;;;121:115;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;-1:-1;121:115:4;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;8:100:-1;33:3;30:1;27:10;8:100;;;90:11;;;84:18;71:11;;;64:39;52:2;45:10;8:100;;;12:14;121:115:4;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;215:14:4;;;;;;;;;;;;-1:-1:-1;;;215:14:4;;;;;121:115::o",
+  "source": "pragma solidity 0.5.15;\n\nimport \"./ITokenUriProvider.sol\";\n\ncontract TokenUriProviderExample is ITokenUriProvider {\n\n    function tokenURI(uint256 id) external view returns (string memory uri) {\n        id;\n        return \"salut\";\n    }\n\n}\n",
+  "sourcePath": "/Users/mortimr/projects/repo/modules/@contracts_ticketforge/contracts/TokenUriProviderExample.sol",
+  "ast": {
+    "absolutePath": "/Users/mortimr/projects/repo/modules/@contracts_ticketforge/contracts/TokenUriProviderExample.sol",
+    "exportedSymbols": {
+      "TokenUriProviderExample": [
+        909
+      ]
+    },
+    "id": 910,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 893,
+        "literals": [
+          "solidity",
+          "0.5",
+          ".15"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:4"
+      },
+      {
+        "absolutePath": "/Users/mortimr/projects/repo/modules/@contracts_ticketforge/contracts/ITokenUriProvider.sol",
+        "file": "./ITokenUriProvider.sol",
+        "id": 894,
+        "nodeType": "ImportDirective",
+        "scope": 910,
+        "sourceUnit": 10,
+        "src": "25:33:4",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "baseContracts": [
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 895,
+              "name": "ITokenUriProvider",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 9,
+              "src": "96:17:4",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_ITokenUriProvider_$9",
+                "typeString": "contract ITokenUriProvider"
+              }
+            },
+            "id": 896,
+            "nodeType": "InheritanceSpecifier",
+            "src": "96:17:4"
+          }
+        ],
+        "contractDependencies": [
+          9
+        ],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 909,
+        "linearizedBaseContracts": [
+          909,
+          9
+        ],
+        "name": "TokenUriProviderExample",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": {
+              "id": 907,
+              "nodeType": "Block",
+              "src": "193:43:4",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 903,
+                    "name": "id",
+                    "nodeType": "Identifier",
+                    "overloadedDeclarations": [],
+                    "referencedDeclaration": 898,
+                    "src": "203:2:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "id": 904,
+                  "nodeType": "ExpressionStatement",
+                  "src": "203:2:4"
+                },
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "hexValue": "73616c7574",
+                    "id": 905,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": true,
+                    "kind": "string",
+                    "lValueRequested": false,
+                    "nodeType": "Literal",
+                    "src": "222:7:4",
+                    "subdenomination": null,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_stringliteral_680ffed756997a30b00925b6b087d2239430495cadfd71b388bd3df0db520c69",
+                      "typeString": "literal_string \"salut\""
+                    },
+                    "value": "salut"
+                  },
+                  "functionReturnParameters": 902,
+                  "id": 906,
+                  "nodeType": "Return",
+                  "src": "215:14:4"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 908,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "tokenURI",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 899,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 898,
+                  "name": "id",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 908,
+                  "src": "139:10:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 897,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "139:7:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "138:12:4"
+            },
+            "returnParameters": {
+              "id": 902,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 901,
+                  "name": "uri",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 908,
+                  "src": "174:17:4",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 900,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "174:6:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "173:19:4"
+            },
+            "scope": 909,
+            "src": "121:115:4",
+            "stateMutability": "view",
+            "superFunction": 8,
+            "visibility": "external"
+          }
+        ],
+        "scope": 910,
+        "src": "60:179:4"
+      }
+    ],
+    "src": "0:240:4"
+  },
+  "legacyAST": {
+    "absolutePath": "/Users/mortimr/projects/repo/modules/@contracts_ticketforge/contracts/TokenUriProviderExample.sol",
+    "exportedSymbols": {
+      "TokenUriProviderExample": [
+        909
+      ]
+    },
+    "id": 910,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 893,
+        "literals": [
+          "solidity",
+          "0.5",
+          ".15"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:4"
+      },
+      {
+        "absolutePath": "/Users/mortimr/projects/repo/modules/@contracts_ticketforge/contracts/ITokenUriProvider.sol",
+        "file": "./ITokenUriProvider.sol",
+        "id": 894,
+        "nodeType": "ImportDirective",
+        "scope": 910,
+        "sourceUnit": 10,
+        "src": "25:33:4",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "baseContracts": [
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 895,
+              "name": "ITokenUriProvider",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 9,
+              "src": "96:17:4",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_ITokenUriProvider_$9",
+                "typeString": "contract ITokenUriProvider"
+              }
+            },
+            "id": 896,
+            "nodeType": "InheritanceSpecifier",
+            "src": "96:17:4"
+          }
+        ],
+        "contractDependencies": [
+          9
+        ],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 909,
+        "linearizedBaseContracts": [
+          909,
+          9
+        ],
+        "name": "TokenUriProviderExample",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": {
+              "id": 907,
+              "nodeType": "Block",
+              "src": "193:43:4",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 903,
+                    "name": "id",
+                    "nodeType": "Identifier",
+                    "overloadedDeclarations": [],
+                    "referencedDeclaration": 898,
+                    "src": "203:2:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "id": 904,
+                  "nodeType": "ExpressionStatement",
+                  "src": "203:2:4"
+                },
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "hexValue": "73616c7574",
+                    "id": 905,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": true,
+                    "kind": "string",
+                    "lValueRequested": false,
+                    "nodeType": "Literal",
+                    "src": "222:7:4",
+                    "subdenomination": null,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_stringliteral_680ffed756997a30b00925b6b087d2239430495cadfd71b388bd3df0db520c69",
+                      "typeString": "literal_string \"salut\""
+                    },
+                    "value": "salut"
+                  },
+                  "functionReturnParameters": 902,
+                  "id": 906,
+                  "nodeType": "Return",
+                  "src": "215:14:4"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 908,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "tokenURI",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 899,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 898,
+                  "name": "id",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 908,
+                  "src": "139:10:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 897,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "139:7:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "138:12:4"
+            },
+            "returnParameters": {
+              "id": 902,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 901,
+                  "name": "uri",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 908,
+                  "src": "174:17:4",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 900,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "174:6:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "173:19:4"
+            },
+            "scope": 909,
+            "src": "121:115:4",
+            "stateMutability": "view",
+            "superFunction": 8,
+            "visibility": "external"
+          }
+        ],
+        "scope": 910,
+        "src": "60:179:4"
+      }
+    ],
+    "src": "0:240:4"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.5.15+commit.6a57276f.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.0.9",
+  "updatedAt": "2020-05-20T13:54:58.190Z",
+  "devdoc": {
+    "methods": {}
+  },
+  "userdoc": {
+    "methods": {}
+  }
+}

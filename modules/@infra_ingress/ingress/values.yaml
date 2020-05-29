@@ -1,0 +1,15 @@
+
+baseDomain: ticket721.com
+domainExtension: staging
+
+issuer:
+  server: https://acme-staging-v02.api.letsencrypt.org/directory
+  email: tech@ticket721.com
+
+route53:
+  keyId: ""
+  keySecret: ""
+  region: ""
+  hostedzone: ""
+
+

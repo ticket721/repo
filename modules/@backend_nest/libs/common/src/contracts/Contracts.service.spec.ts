@@ -9,6 +9,7 @@ import { FSService } from '@lib/common/fs/FS.service';
 import { GlobalConfigService } from '@lib/common/globalconfig/GlobalConfig.service';
 import { GlobalEntity } from '@lib/common/globalconfig/entities/Global.entity';
 import DoneCallback = jest.DoneCallback;
+import { NestError } from '@lib/common/utils/NestError';
 
 const configureWeb3ServiceAndProvideThrowCallback = (
     web3Service: Web3Service,
@@ -26,7 +27,7 @@ const configureWeb3ServiceAndProvideThrowCallback = (
     const promise = address => {
         return new Promise<string>((ok, ko) => {
             cb.call = () => {
-                ko(new Error('intended error'));
+                ko(new NestError('intended error'));
                 return true;
             };
         });
@@ -465,7 +466,7 @@ describe('Contracts Service', function() {
         });
 
         await expect(contractsService.onModuleInit()).rejects.toMatchObject(
-            new Error(`ContractsService::onModuleInit | error while fetching global config: unexpected_error`),
+            new NestError(`ContractsService::onModuleInit | error while fetching global config: unexpected_error`),
         );
 
         verify(
@@ -517,7 +518,7 @@ describe('Contracts Service', function() {
         });
 
         await expect(contractsService.onModuleInit()).rejects.toMatchObject(
-            new Error(`ContractsService::onModuleInit | error while fetching global config: no initial config`),
+            new NestError(`ContractsService::onModuleInit | error while fetching global config: no initial config`),
         );
 
         verify(
@@ -583,7 +584,7 @@ describe('Contracts Service', function() {
         });
 
         await expect(contractsService.onModuleInit()).rejects.toMatchObject(
-            new Error(`ContractsService::onModuleInit | error while updating global config: unexpected_error`),
+            new NestError(`ContractsService::onModuleInit | error while updating global config: unexpected_error`),
         );
 
         verify(

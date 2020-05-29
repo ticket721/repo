@@ -3,8 +3,6 @@ import { GlobalConfigService } from '@lib/common/globalconfig/GlobalConfig.servi
 import { InjectSchedule, Schedule } from 'nest-schedule';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 import { OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
-import { InjectQueue } from '@nestjs/bull';
-import { Queue } from 'bull';
 import { EVMEventSetsService } from '@lib/common/evmeventsets/EVMEventSets.service';
 import { EVMProcessableEvent } from '@app/worker/evmantenna/EVMAntennaMerger.scheduler';
 import { TicketsService } from '@lib/common/tickets/Tickets.service';
@@ -17,6 +15,7 @@ import { GroupService } from '@lib/common/group/Group.service';
 import { AuthorizationsService } from '@lib/common/authorizations/Authorizations.service';
 import { AuthorizationEntity } from '@lib/common/authorizations/entities/Authorization.entity';
 import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
+import { NestError } from '@lib/common/utils/NestError';
 
 /**
  * EVM Antenna to intercept NewCategory events emitted by the T721Controller
@@ -27,7 +26,6 @@ export class MintT721ControllerEVMAntenna extends EVMEventControllerBase {
      *
      * @param t721controllerService
      * @param scheduler
-     * @param queue
      * @param globalConfigService
      * @param shutdownService
      * @param outrospectionService
@@ -41,7 +39,6 @@ export class MintT721ControllerEVMAntenna extends EVMEventControllerBase {
     constructor(
         t721controllerService: T721ControllerV0Service,
         @InjectSchedule() scheduler: Schedule,
-        @InjectQueue('evmantenna') queue: Queue,
         globalConfigService: GlobalConfigService,
         shutdownService: ShutdownService,
         outrospectionService: OutrospectionService,
@@ -55,7 +52,6 @@ export class MintT721ControllerEVMAntenna extends EVMEventControllerBase {
         super(
             t721controllerService,
             scheduler,
-            queue,
             globalConfigService,
             shutdownService,
             outrospectionService,
@@ -79,7 +75,7 @@ export class MintT721ControllerEVMAntenna extends EVMEventControllerBase {
         const returnValues = JSON.parse(event.return_values);
 
         if (ticketEntity.group_id !== returnValues.group) {
-            throw new Error(
+            throw new NestError(
                 `Invalid group id received from event: ticket got ${ticketEntity.group_id} and event gives ${returnValues.group}`,
             );
         }
@@ -89,7 +85,7 @@ export class MintT721ControllerEVMAntenna extends EVMEventControllerBase {
         });
 
         if (categoryEntityRes.error || categoryEntityRes.response.length === 0) {
-            throw new Error(
+            throw new NestError(
                 `Cannot find category linked to existing ticket: ${categoryEntityRes.error || 'category not found'}`,
             );
         }
@@ -97,14 +93,14 @@ export class MintT721ControllerEVMAntenna extends EVMEventControllerBase {
         const category: CategoryEntity = categoryEntityRes.response[0];
 
         if (toB32(category.category_name).toLowerCase() !== returnValues.category.toLowerCase()) {
-            throw new Error(
+            throw new NestError(
                 `Invalid category name received from event: ticket got ${toB32(
                     category.category_name,
                 ).toLowerCase()} and event gives ${returnValues.category.toLowerCase()}`,
             );
         }
         if (toAcceptedAddressFormat(ticketEntity.owner) !== toAcceptedAddressFormat(returnValues.owner)) {
-            throw new Error(
+            throw new NestError(
                 `Invalid owner address received from event: ticket got ${ticketEntity.owner} and event gives ${returnValues.owner}`,
             );
         }
@@ -114,7 +110,7 @@ export class MintT721ControllerEVMAntenna extends EVMEventControllerBase {
         ]);
 
         if (controllerFieldsRes.error) {
-            throw new Error(`Unable to retrieve group controller`);
+            throw new NestError(`Unable to retrieve group controller`);
         }
 
         const [granter]: [string] = controllerFieldsRes.response;
@@ -127,7 +123,7 @@ export class MintT721ControllerEVMAntenna extends EVMEventControllerBase {
         });
 
         if (authorizationEntityRes.error || authorizationEntityRes.response.length === 0) {
-            throw new Error(
+            throw new NestError(
                 `Unable to retrieve linked authorization: ${authorizationEntityRes.error || 'authorization not found'}`,
             );
         }
@@ -138,7 +134,9 @@ export class MintT721ControllerEVMAntenna extends EVMEventControllerBase {
         const receivedCode = encode(['uint256'], [decimalToHex(returnValues.code)]).toLowerCase();
 
         if (code !== receivedCode) {
-            throw new Error(`Invalid broadcasted authorization code: got ${receivedCode} but was expecting ${code}`);
+            throw new NestError(
+                `Invalid broadcasted authorization code: got ${receivedCode} but was expecting ${code}`,
+            );
         }
 
         const authorizationDryUpdateRes = await this.authorizationsService.dryUpdate(
@@ -189,7 +187,7 @@ export class MintT721ControllerEVMAntenna extends EVMEventControllerBase {
             authorizationRollbackDryUpdateRes.error ||
             ticketRollbackDryUpdateRes.error
         ) {
-            throw new Error(`Cannot create dry update payloads`);
+            throw new NestError(`Cannot create dry update payloads`);
         }
 
         append(authorizationDryUpdateRes.response, authorizationRollbackDryUpdateRes.response);
@@ -213,7 +211,7 @@ export class MintT721ControllerEVMAntenna extends EVMEventControllerBase {
         });
 
         if (ticketEntityRes.error) {
-            throw new Error(`Error while fetching tickets: ${ticketEntityRes.error}`);
+            throw new NestError(`Error while fetching tickets: ${ticketEntityRes.error}`);
         }
 
         if (ticketEntityRes.response.length !== 0) {

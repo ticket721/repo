@@ -1,0 +1,33 @@
+# This is a dockerfile version that does not trigger complete reinstall
+version: "3.3"
+services:
+  raw:
+    build:
+      context: ./
+      dockerfile: raw.dockerfile
+      args:
+        - "TAG=$TAG"
+    image: "raw:$TAG"
+  server:
+    build:
+      context: ./modules/@backend_nest
+      dockerfile: server.dockerfile
+      args:
+        - "TAG=$TAG"
+    image: "server:$TAG"
+  worker:
+    build:
+      context: ./modules/@backend_nest
+      dockerfile: worker.dockerfile
+      args:
+        - "TAG=$TAG"
+    image: "worker:$TAG"
+  migrations:
+    build:
+      context: ./modules/@backend_migrations
+      dockerfile: migrations.dockerfile
+      args:
+        - "TAG=$TAG"
+    image: "migrations:$TAG"
+
+

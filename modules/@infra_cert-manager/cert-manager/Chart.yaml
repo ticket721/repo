@@ -1,0 +1,11 @@
+apiVersion: v2
+name: cert-manager
+description: Certifacte Manager, able to create valid certificates on-demand
+type: application
+version: 0.1.0
+appVersion: 1.16.0
+
+dependencies:
+  - name: cert-manager
+    version: v0.15.0
+    repository: https://charts.jetstack.io

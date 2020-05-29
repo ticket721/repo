@@ -2,16 +2,11 @@
 ## ref: https://hub.docker.com/r/strapdata/
 image:
   repo: "strapdata/elassandra"
-  tag: "6.8.4.0"
+  tag: "6.8.4.5"
   pullPolicy: IfNotPresent
   ## Specify ImagePullSecrets for Pods
   ## ref: https://kubernetes.io/docs/concepts/containers/images/#specifying-imagepullsecrets-on-a-pod
   # pullSecrets: myregistrykey
-service:
-  cassandra:
-    type: ClusterIP
-  elasticsearch:
-    type: ClusterIP
 
 ## Persist data to a persistent volume
 persistence:
@@ -32,13 +27,10 @@ persistence:
 ## Minimum memory for development is 4GB and 2 CPU cores
 ## Minimum memory for production is 8GB and 4 CPU cores
 ## ref: http://docs.datastax.com/en/archived/cassandra/2.0/cassandra/architecture/architecturePlanningHardware_c.html
-resources: {}
-  # requests:
-  #   memory: 4Gi
-  #   cpu: 2
-  # limits:
-#   memory: 4Gi
-#   cpu: 2
+resources:
+  requests:
+      memory: 3Gi
+      cpu: 1500m
 
 ## Change cassandra configuration parameters below:
 ## ref: http://docs.datastax.com/en/cassandra/3.0/cassandra/configuration/configCassandra_yaml.html
@@ -105,26 +97,21 @@ securityContext:
 
 # Additional env variables
 env:
-  LOCAL_JMX: "yes"
-  JVM_OPTS: "-Dcassandra.ring_delay_ms=60000 \
-            -XX:+ExitOnOutOfMemoryError \
-            -XX:+UnlockExperimentalVMOptions \
-            -XX:+UseCGroupMemoryLimitForHeap \
-            -XX:MaxRAMFraction=2"
+  JVM_OPTS: "-Dcassandra.ring_delay_ms=60000 -XX:+ExitOnOutOfMemoryError -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:MaxRAMFraction=2"
 
+## Extra config files mounted in /etc/cassandra.
+configs: []
 
-inits:
-  preStart.sh: |-
-    #!/bin/bash
-    cp --verbose /configfiles/* /etc/cassandra/
+## Extra scripts mounted in /usr/share/cassandra/scripts
 scripts:
   postStart.sh: |-
     #!/bin/bash
-    echo "Elassandra started - creating keyspaces"
+    echo "Elassandra started"
     exit 0
   preStop.sh: |-
     #!/bin/sh
     set -x
+    
     gracefull_stop() {
       nodetool disablethrift
       nodetool disablebinary
@@ -134,16 +121,18 @@ scripts:
       nodetool stop
       nodetool stopdaemon
     }
+    
     while [ $(nodetool status | awk "/$CASSANDRA_RACK/{ print \$1,\$2 }" | grep -v $POD_IP | awk '{ print $1 }' | grep -v UN) -eq 0 ] ; do
       echo "Waiting all nodes to recover a NORMAL status"
       sleep 5
       pidof java || exit 1
     done
+
     if [ "$PERSISTENCE_ENABLED" == "true" ]; then
        gracefull_stop
-    else
+    else 
        nodetool decommission
-    fi
+    fi 
     exit 0
 ## Extra volumes containing additional files mounted in /usr/share/cassandra/conf.
 ## (eg. CA certificates)
@@ -164,17 +153,14 @@ podLabels: {}
 ## https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
 annotations: {}
 
-  ## Name of Priority Class to assign pods
-  # priorityClassName: ""
+## Name of Priority Class to assign pods
+# priorityClassName: ""
 
-  ## Configure node selector. Edit code below for adding selector to pods
-  ## ref: https://kubernetes.io/docs/user-guide/node-selection/
-  # selector:
-# nodeSelector:
-# cloud.google.com/gke-nodepool: pool-db
-# selector:
-#   nodeSelector:
-#     node-role.kubernetes.io/node: "true"
+## Configure node selector. Edit code below for adding selector to pods
+## ref: https://kubernetes.io/docs/user-guide/node-selection/
+selector:
+  nodeSelector:
+    beta.kubernetes.io/instance-type: "t2.medium"
 
 ## Affinity for pod assignment
 ## Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity

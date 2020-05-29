@@ -12,6 +12,7 @@ import { TxEntity } from '@lib/common/txs/entities/Tx.entity';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 import { toAcceptedAddressFormat } from '@common/global';
 import { OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
+import { NestError } from '@lib/common/utils/NestError';
 
 describe('Txs Scheduler', function() {
     const context: {
@@ -1137,7 +1138,7 @@ describe('Txs Scheduler', function() {
 
             verify(
                 context.shutdownServiceMock.shutdownWithError(
-                    deepEqual(new Error('TxsScheduler::blockPolling unable to recover global config')),
+                    deepEqual(new NestError('TxsScheduler::blockPolling unable to recover global config')),
                 ),
             ).called();
         });
@@ -1362,7 +1363,7 @@ describe('Txs Scheduler', function() {
 
             verify(
                 context.shutdownServiceMock.shutdownWithError(
-                    deepEqual(new Error('TxsScheduler::blockPolling unable to recover global config')),
+                    deepEqual(new NestError('TxsScheduler::blockPolling unable to recover global config')),
                 ),
             ).called();
         });
@@ -1595,7 +1596,7 @@ describe('Txs Scheduler', function() {
             verify(context.txsServiceMock.searchElastic(deepEqual(esquery))).called();
             verify(
                 context.shutdownServiceMock.shutdownWithError(
-                    deepEqual(new Error('TxsScheduler::blockPolling error while fetching txs')),
+                    deepEqual(new NestError('TxsScheduler::blockPolling error while fetching txs')),
                 ),
             ).called();
         });
@@ -1853,7 +1854,7 @@ describe('Txs Scheduler', function() {
             ).called();
             verify(
                 context.shutdownServiceMock.shutdownWithError(
-                    deepEqual(new Error('TxsScheduler::blockPolling error while updating tx: unexpected_error')),
+                    deepEqual(new NestError('TxsScheduler::blockPolling error while updating tx: unexpected_error')),
                 ),
             ).called();
         });
@@ -3932,7 +3933,7 @@ describe('Txs Scheduler', function() {
             verify(context.globalConfigServiceMock.search(deepEqual({ id: 'global' }))).called();
             verify(
                 context.shutdownServiceMock.shutdownWithError(
-                    deepEqual(new Error('TxsScheduler::transactionInitialization unable to recover global config')),
+                    deepEqual(new NestError('TxsScheduler::transactionInitialization unable to recover global config')),
                 ),
             ).called();
         });
@@ -3954,7 +3955,7 @@ describe('Txs Scheduler', function() {
             verify(context.globalConfigServiceMock.search(deepEqual({ id: 'global' }))).called();
             verify(
                 context.shutdownServiceMock.shutdownWithError(
-                    deepEqual(new Error('TxsScheduler::transactionInitialization unable to recover global config')),
+                    deepEqual(new NestError('TxsScheduler::transactionInitialization unable to recover global config')),
                 ),
             ).called();
         });
@@ -4010,7 +4011,9 @@ describe('Txs Scheduler', function() {
             verify(
                 context.shutdownServiceMock.shutdownWithError(
                     deepEqual(
-                        new Error('TxsScheduler::transactionInitialization error while fetching txs: unexpected_error'),
+                        new NestError(
+                            'TxsScheduler::transactionInitialization error while fetching txs: unexpected_error',
+                        ),
                     ),
                 ),
             ).called();
@@ -4392,7 +4395,9 @@ describe('Txs Scheduler', function() {
             verify(
                 context.shutdownServiceMock.shutdownWithError(
                     deepEqual(
-                        new Error('TxsScheduler::transactionInitialization error while updating tx: unexpected_error'),
+                        new NestError(
+                            'TxsScheduler::transactionInitialization error while updating tx: unexpected_error',
+                        ),
                     ),
                 ),
             ).called();

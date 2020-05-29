@@ -7,6 +7,7 @@ import { ActionSet } from '@lib/common/actionsets/helper/ActionSet.class';
 import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
 import { InstanceSignature, OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
+import { NestError } from '@lib/common/utils/NestError';
 
 /**
  * Collection of Bull Tasks for the ActionSets
@@ -41,7 +42,7 @@ export class ActionSetsTasks implements OnModuleInit {
                 const completeLifecycleCallbackRes = await this.actionSetsService.onComplete(actionSet);
 
                 if (completeLifecycleCallbackRes.error) {
-                    throw new Error(
+                    throw new NestError(
                         `Error while running onComplete actionset lifecycle: ${completeLifecycleCallbackRes.error}`,
                     );
                 }

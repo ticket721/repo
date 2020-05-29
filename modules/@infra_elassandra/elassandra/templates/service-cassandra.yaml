@@ -9,14 +9,11 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
-  type: {{ .Values.service.cassandra.type }}
+  type: ClusterIP
   ports:
   - name: cql
     port: {{ default 9042 .Values.config.ports.cql }}
     targetPort: {{ default 9042 .Values.config.ports.cql }}
-  - name: jmx
-    port: {{ default 7199 .Values.config.ports.jmx }}
-    targetPort: {{ default 7199 .Values.config.ports.jmx }}
   - name: thrift
     port: {{ default 9160 .Values.config.ports.thrift }}
     targetPort: {{ default 9160 .Values.config.ports.thrift }}

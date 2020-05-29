@@ -16,6 +16,7 @@ import { T721AdminService } from '@lib/common/contracts/T721Admin.service';
 import { RocksideService } from '@lib/common/rockside/Rockside.service';
 import { TxsService } from '@lib/common/txs/Txs.service';
 import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
+import { NestError } from '@lib/common/utils/NestError';
 
 class TicketEntityMock {
     public _properties = null;
@@ -235,7 +236,7 @@ describe('Tickets Service', function() {
                 methods: {
                     getMintNonce: () => ({
                         call: () => {
-                            throw new Error('revert');
+                            throw new NestError('revert');
                         },
                     }),
                     getTokenID: () => ({
@@ -289,7 +290,7 @@ describe('Tickets Service', function() {
                     }),
                     getTokenID: () => ({
                         call: () => {
-                            throw new Error('revert');
+                            throw new NestError('revert');
                         },
                     }),
                 },

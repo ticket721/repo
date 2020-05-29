@@ -60,11 +60,12 @@ import { RocksideModule } from '@lib/common/rockside/Rockside.module';
 import { TicketsController } from '@app/server/controllers/tickets/Tickets.controller';
 import { TicketsModule } from '@lib/common/tickets/Tickets.module';
 import { UsersController } from '@app/server/controllers/users/Users.controller';
+import { toHeaderFormat } from '@lib/common/utils/toHeaderFormat';
 
 @Module({
     imports: [
         // Global configuration reading .env file
-        ConfigModule.register(Config, './apps/server/env/'),
+        ConfigModule.register(Config, process.env.CONFIG_PATH || './apps/server/env/'),
 
         // Cassandra ORM setup
         ExpressCassandraModule.forRootAsync({
@@ -121,6 +122,8 @@ import { UsersController } from '@app/server/controllers/users/Users.controller'
                 host: configService.get('ETHEREUM_NODE_HOST'),
                 port: configService.get('ETHEREUM_NODE_PORT'),
                 protocol: configService.get('ETHEREUM_NODE_PROTOCOL'),
+                headers: toHeaderFormat(JSON.parse(configService.get('ETHEREUM_NODE_HEADERS') || '{}')),
+                path: configService.get('ETHEREUM_NODE_PATH'),
             }),
             inject: [ConfigService],
         }),
@@ -158,9 +161,7 @@ import { UsersController } from '@app/server/controllers/users/Users.controller'
             }),
             inject: [ConfigService],
         }),
-        OutrospectionModule.register({
-            name: 'server',
-        }),
+        OutrospectionModule.register('server'),
     ],
     controllers: [
         ServerController,

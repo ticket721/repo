@@ -13,6 +13,7 @@ import { T721AdminService } from '@lib/common/contracts/T721Admin.service';
 import { MintTokensAuthorization } from '@common/global';
 import { RocksideService } from '@lib/common/rockside/Rockside.service';
 import { AuthorizationsService } from '@lib/common/authorizations/Authorizations.service';
+import { NestError } from '@lib/common/utils/NestError';
 
 /**
  * Smart Contract Controller for the T721Token contract
@@ -90,7 +91,7 @@ export class T721TokenService extends ContractsControllerBase {
                 this.minter = mintersList[minterAddressIndex];
                 this.identity = identitiesList[minterAddressIndex];
             } catch (e) {
-                const error = new Error(`Unable to resolve minter address required to create tokens: ${e.message}`);
+                const error = new NestError(`Unable to resolve minter address required to create tokens: ${e.message}`);
                 this.shutdownService.shutdownWithError(error);
                 throw error;
             }

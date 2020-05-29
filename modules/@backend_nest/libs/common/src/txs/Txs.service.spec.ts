@@ -10,6 +10,7 @@ import { getModelToken } from '@iaminfinity/express-cassandra/dist/utils/cassand
 import { TxEntity } from '@lib/common/txs/entities/Tx.entity';
 import { GlobalEntity } from '@lib/common/globalconfig/entities/Global.entity';
 import { RocksideService } from '@lib/common/rockside/Rockside.service';
+import { NestError } from '@lib/common/utils/NestError';
 
 class TxEntityMock {
     public _properties = null;
@@ -496,7 +497,7 @@ describe('Txs Service', function() {
             const web3 = {
                 eth: {
                     getTransactionCount: async () => {
-                        throw new Error('an error occured');
+                        throw new NestError('an error occured');
                     },
                     estimateGas: async () => estimation,
                 },

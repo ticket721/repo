@@ -1,9 +1,10 @@
-# Scripts files mounted in /usr/share/cassandra/scripts
-{{- if .Values.inits }}
+# Config files mounted in /usr/share/cassandra/conf
+# (it cannot be mounted in /etc/cassandra because chowned to cassandra in the docker-entrypoint.sh)
+{{- if .Values.configs }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "elassandra.fullname" . }}-inits
+  name: {{ template "elassandra.fullname" . }}-configs
   namespace: {{ .Release.Namespace }}
   labels:
     app: {{ template "elassandra.name" . }}
@@ -14,7 +15,7 @@ metadata:
 {{ toYaml .Values.extraLabels | indent 4 }}
 {{- end }}
 data:
-{{- range $key, $val := .Values.inits }}
+{{- range $key, $val := .Values.configs }}
   {{ $key }}: |-
 {{  $val | indent 4 }}
 {{- end }}

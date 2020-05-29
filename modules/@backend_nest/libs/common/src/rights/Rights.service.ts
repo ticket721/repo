@@ -14,6 +14,7 @@ import _ from 'lodash';
 import { ModuleRef } from '@nestjs/core';
 import { RightsConfig } from '@lib/common/rights/RightsConfig.type';
 import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
+import { NestError } from '@lib/common/utils/NestError';
 
 /**
  * Service to CRUD RightEntities
@@ -346,7 +347,7 @@ export class RightsService extends CRUDExtension<RightsRepository, RightEntity> 
         const query = await this.searchElastic(esQuery);
 
         if (query.error) {
-            throw new Error(`internal_fetch_error`);
+            throw new NestError(`internal_fetch_error`);
         }
 
         return query.response.hits.total;
@@ -370,7 +371,7 @@ export class RightsService extends CRUDExtension<RightsRepository, RightEntity> 
             // 1 Check that the right actually exists
 
             if (rightsConfig[right] === undefined) {
-                throw new Error(`unknown_right`);
+                throw new NestError(`unknown_right`);
             }
 
             // 2 Check if count restriction
@@ -379,7 +380,7 @@ export class RightsService extends CRUDExtension<RightsRepository, RightEntity> 
                 const count = await this.getRightCount(entity, entityValue, right);
 
                 if (count >= rightsConfig[right].count) {
-                    throw new Error(`maximum_right_count_reached`);
+                    throw new NestError(`maximum_right_count_reached`);
                 }
             }
         }
@@ -408,7 +409,7 @@ export class RightsService extends CRUDExtension<RightsRepository, RightEntity> 
                 try {
                     rightsConfig = await this.moduleRef.get(`@rights/${right.entity}`, { strict: false });
                 } catch (e) {
-                    throw new Error('cannot_find_config');
+                    throw new NestError('cannot_find_config');
                 }
                 await this.verifyRights(right.entity, right.entityValue, right.rights, rightsConfig);
             } catch (e) {

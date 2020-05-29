@@ -7,6 +7,7 @@ import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 import { ShutdownModule } from '@lib/common/shutdown/Shutdown.module';
 import { EmailService } from '@lib/common/email/Email.service';
 import { BullModule, BullModuleOptions } from '@nestjs/bull';
+import { NestError } from '@lib/common/utils/NestError';
 
 /**
  * Module to load the EmailService and its EmailDriver
@@ -47,7 +48,7 @@ import { BullModule, BullModuleOptions } from '@nestjs/bull';
                     }
 
                     default: {
-                        const error = new Error(`Unknown mail engine ${emailEngine}`);
+                        const error = new NestError(`Unknown mail engine ${emailEngine}`);
                         shutdownService.shutdownWithError(error);
                         throw error;
                     }

@@ -4,16 +4,6 @@ import { OutrospectionService } from '@lib/common/outrospection/Outrospection.se
 import * as os from 'os';
 
 /**
- * Outrospection options to properly fetch position infos
- */
-export interface OutrospectionModuleAsyncOptions {
-    /**
-     * Instance type name
-     */
-    name: string;
-}
-
-/**
  * Outrospection module for instances to properly know their position
  */
 @Global()
@@ -21,22 +11,18 @@ export interface OutrospectionModuleAsyncOptions {
 export class OutrospectionModule {
     /**
      * Async Registration
-     *
-     * @param options
      */
-    static register(options: OutrospectionModuleAsyncOptions): DynamicModule {
+    static register(name: string): DynamicModule {
         return {
             module: OutrospectionModule,
             providers: [
                 {
-                    provide: 'OUTROSPECTION_MODULE_OPTIONS',
-                    useValue: {
-                        name: options.name,
-                    },
-                },
-                {
                     provide: WinstonLoggerService,
                     useValue: new WinstonLoggerService('outro'),
+                },
+                {
+                    provide: 'OUTROSPECTION_INSTANCE_NAME',
+                    useValue: name,
                 },
                 {
                     provide: 'OUTROSPECTION_HOSTNAME_GETTER',

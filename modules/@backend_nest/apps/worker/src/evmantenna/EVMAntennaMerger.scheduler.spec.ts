@@ -6,15 +6,16 @@ import { EVMEventSetsService } from '@lib/common/evmeventsets/EVMEventSets.servi
 import { EVMBlockRollbacksService } from '@lib/common/evmblockrollbacks/EVMBlockRollbacks.service';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 import { Job, JobOptions } from 'bull';
-import { anyFunction, deepEqual, instance, mock, verify, when } from 'ts-mockito';
+import { anyFunction, anyNumber, anything, deepEqual, instance, mock, reset, verify, when } from 'ts-mockito';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getQueueToken } from '@nestjs/bull';
 import { getConnectionToken } from '@iaminfinity/express-cassandra/dist/utils/cassandra-orm.utils';
 import { Appender, EVMEventControllerBase } from '@app/worker/evmantenna/EVMEvent.controller.base';
 import { GlobalEntity } from '@lib/common/globalconfig/entities/Global.entity';
 import { DryResponse } from '@lib/common/crud/CRUDExtension.base';
-import { ESSearchReturn } from '@lib/common/utils/ESSearchReturn.type';
+import { ESSearchHit, ESSearchReturn } from '@lib/common/utils/ESSearchReturn.type';
 import { EVMEvent, EVMEventSetEntity } from '@lib/common/evmeventsets/entities/EVMEventSet.entity';
+import { NestError } from '@lib/common/utils/NestError';
 
 class QueueMock<T = any> {
     add(name: string, data: T, opts?: JobOptions): Promise<Job<T>> {
@@ -62,10 +63,6 @@ describe('EVMAntenna Merger Scheduler', function() {
     beforeAll(async function() {
         context.newGroupEventControllerMock = mock(EVMEventControllerBase);
 
-        when(context.newGroupEventControllerMock.eventName).thenReturn('NewGroup');
-        when(context.newGroupEventControllerMock.artifactName).thenReturn('T721Controller_v0');
-        when(context.newGroupEventControllerMock.isHandler('NewGroup', 'T721Controller_v0')).thenReturn(true);
-
         EVMAntennaMergerScheduler.registerEVMEventsController(instance(context.newGroupEventControllerMock));
     });
 
@@ -78,6 +75,11 @@ describe('EVMAntenna Merger Scheduler', function() {
         context.shutdownServiceMock = mock(ShutdownService);
         context.queueMock = mock(QueueMock);
         context.connectionMock = mock(ConnectionMock);
+
+        reset(context.newGroupEventControllerMock);
+        when(context.newGroupEventControllerMock.eventName).thenReturn('NewGroup');
+        when(context.newGroupEventControllerMock.artifactName).thenReturn('T721Controller_v0');
+        when(context.newGroupEventControllerMock.isHandler('NewGroup', 'T721Controller_v0')).thenReturn(true);
 
         const module: TestingModule = await Test.createTestingModule({
             providers: [
@@ -129,196 +131,6 @@ describe('EVMAntenna Merger Scheduler', function() {
         });
     });
 
-    describe('evmEventMergerPoller', function() {
-        it('should add block merging task to queue', async function() {
-            const globalEntity: GlobalEntity = {
-                processed_block_number: 99,
-                block_number: 100,
-            } as GlobalEntity;
-
-            when(
-                context.globalConfigServiceMock.search(
-                    deepEqual({
-                        id: 'global',
-                    }),
-                ),
-            ).thenResolve({
-                error: null,
-                response: [globalEntity],
-            });
-
-            when(context.queueMock.getJobs(deepEqual(['waiting', 'active']))).thenResolve([]);
-
-            await context.evmAntennaMergerScheduler.evmEventMergerPoller();
-
-            verify(
-                context.globalConfigServiceMock.search(
-                    deepEqual({
-                        id: 'global',
-                    }),
-                ),
-            ).called();
-
-            verify(context.queueMock.getJobs(deepEqual(['waiting', 'active']))).called();
-
-            verify(
-                context.queueMock.add(
-                    `@@evmeventset/evmEventMerger`,
-                    deepEqual({
-                        blockNumber: 100,
-                    }),
-                ),
-            ).called();
-        });
-
-        it('should not add task as processing is up to date', async function() {
-            const globalEntity: GlobalEntity = {
-                processed_block_number: 100,
-                block_number: 100,
-            } as GlobalEntity;
-
-            when(
-                context.globalConfigServiceMock.search(
-                    deepEqual({
-                        id: 'global',
-                    }),
-                ),
-            ).thenResolve({
-                error: null,
-                response: [globalEntity],
-            });
-
-            await context.evmAntennaMergerScheduler.evmEventMergerPoller();
-
-            verify(
-                context.globalConfigServiceMock.search(
-                    deepEqual({
-                        id: 'global',
-                    }),
-                ),
-            ).called();
-        });
-
-        it('should not add task as job already running', async function() {
-            const globalEntity: GlobalEntity = {
-                processed_block_number: 99,
-                block_number: 100,
-            } as GlobalEntity;
-
-            when(
-                context.globalConfigServiceMock.search(
-                    deepEqual({
-                        id: 'global',
-                    }),
-                ),
-            ).thenResolve({
-                error: null,
-                response: [globalEntity],
-            });
-
-            when(context.queueMock.getJobs(deepEqual(['waiting', 'active']))).thenResolve([
-                {
-                    name: `@@evmeventset/evmEventMerger`,
-                },
-            ]);
-
-            await context.evmAntennaMergerScheduler.evmEventMergerPoller();
-
-            verify(
-                context.globalConfigServiceMock.search(
-                    deepEqual({
-                        id: 'global',
-                    }),
-                ),
-            ).called();
-
-            verify(context.queueMock.getJobs(deepEqual(['waiting', 'active']))).called();
-
-            verify(
-                context.queueMock.add(
-                    `@@evmeventset/evmEventMerger`,
-                    deepEqual({
-                        blockNumber: 100,
-                    }),
-                ),
-            ).never();
-        });
-
-        it('should fail and shutdown on global config fetch error', async function() {
-            when(
-                context.globalConfigServiceMock.search(
-                    deepEqual({
-                        id: 'global',
-                    }),
-                ),
-            ).thenResolve({
-                error: 'unexpected_error',
-                response: null,
-            });
-
-            await expect(context.evmAntennaMergerScheduler.evmEventMergerPoller()).rejects.toMatchObject(
-                new Error(
-                    `EVMAntennaMergerScheduler::evmEventMergerPoller | Unable to recover global config: unexpected_error`,
-                ),
-            );
-
-            verify(
-                context.shutdownServiceMock.shutdownWithError(
-                    deepEqual(
-                        new Error(
-                            `EVMAntennaMergerScheduler::evmEventMergerPoller | Unable to recover global config: unexpected_error`,
-                        ),
-                    ),
-                ),
-            ).called();
-
-            verify(
-                context.globalConfigServiceMock.search(
-                    deepEqual({
-                        id: 'global',
-                    }),
-                ),
-            ).called();
-        });
-
-        it('should fail and shutdown on global config empty fetch', async function() {
-            when(
-                context.globalConfigServiceMock.search(
-                    deepEqual({
-                        id: 'global',
-                    }),
-                ),
-            ).thenResolve({
-                error: null,
-                response: [],
-            });
-
-            await expect(context.evmAntennaMergerScheduler.evmEventMergerPoller()).rejects.toMatchObject(
-                new Error(
-                    `EVMAntennaMergerScheduler::evmEventMergerPoller | Unable to recover global config: no document found`,
-                ),
-            );
-
-            verify(
-                context.shutdownServiceMock.shutdownWithError(
-                    deepEqual(
-                        new Error(
-                            `EVMAntennaMergerScheduler::evmEventMergerPoller | Unable to recover global config: no document found`,
-                        ),
-                    ),
-                ),
-            ).called();
-
-            verify(
-                context.globalConfigServiceMock.search(
-                    deepEqual({
-                        id: 'global',
-                    }),
-                ),
-            ).called();
-        });
-    });
-
     describe('appender', function() {
         it('should append/unshift in both arrays', function() {
             const queries = ([1] as any) as DryResponse[];
@@ -367,7 +179,7 @@ describe('EVMAntenna Merger Scheduler', function() {
             };
 
             expect(() => context.evmAntennaMergerScheduler.appender(queries, rollbacks, query, rollback)).toThrow(
-                new Error(`Cannot have asymmetric updates: each query must have its rollback !`),
+                new NestError(`Cannot have asymmetric updates: each query must have its rollback !`),
             );
         });
 
@@ -384,100 +196,159 @@ describe('EVMAntenna Merger Scheduler', function() {
             const rollback = null;
 
             expect(() => context.evmAntennaMergerScheduler.appender(queries, rollbacks, query, rollback)).toThrow(
-                new Error(`Cannot have asymmetric updates: each query must have its rollback !`),
+                new NestError(`Cannot have asymmetric updates: each query must have its rollback !`),
             );
         });
     });
 
-    describe('evmEventMerger', function() {
-        it('should properly emit batched query. One event, no sorting.', async function() {
-            const blockNumber = 99;
-            const artifactName = 'T721Controller_v0';
-            const eventName = 'NewGroup';
-
-            const events = [
-                ({
-                    id: 'abcd',
-                    artifact_name: artifactName,
-                    event: eventName,
-                } as any) as EVMEvent,
-            ];
-
-            // fetchEvmEventSets
-
-            const esQuery = {
+    describe('evmEventMergerPoller', function() {
+        it('should properly merge events', async function() {
+            const globalConfigEntity: GlobalEntity = {
+                id: 'global',
+                block_number: 12,
+                processed_block_number: 10,
+                eth_eur_price: 10000,
+                created_at: new Date(Date.now()),
+                updated_at: new Date(Date.now()),
+            };
+            const evmEventSetsQuery = {
                 body: {
                     query: {
                         bool: {
                             must: {
-                                term: {
-                                    block_number: blockNumber,
+                                range: {
+                                    block_number: {
+                                        gte: 11,
+                                        lte: 12,
+                                    },
                                 },
                             },
                         },
                     },
                 },
             };
-
-            when(context.evmEventSetsServiceMock.searchElastic(deepEqual(esQuery))).thenResolve({
-                error: null,
-                response: {
-                    hits: {
-                        total: 1,
-                        hits: [
-                            {
-                                _source: {
-                                    artifact_name: artifactName,
-                                    events,
-                                },
+            const evmEventSetsResponse: ESSearchReturn<EVMEventSetEntity> = {
+                took: 12,
+                timed_out: false,
+                _shards: {
+                    total: 1,
+                    successful: 1,
+                    skipped: 0,
+                    failed: 0,
+                },
+                hits: {
+                    max_score: 1,
+                    total: 2,
+                    hits: [...Array(2).keys()].map(
+                        (idx: number): ESSearchHit<EVMEventSetEntity> => ({
+                            _index: 'idx',
+                            _id: 'id',
+                            _type: 'type',
+                            _score: 1,
+                            _source: {
+                                artifact_name: 'T721Controller_v0',
+                                event_name: 'NewGroup',
+                                block_number: 11 + idx,
+                                events: [
+                                    {
+                                        return_values: JSON.stringify({}),
+                                        raw_data: 'raw_data',
+                                        block_number: 11 + idx,
+                                        raw_topics: ['raw_topics'],
+                                        event: 'NewGroup',
+                                        signature: 'signature',
+                                        log_index: 0,
+                                        transaction_index: 0,
+                                        transaction_hash: 'transaction_hash',
+                                        block_hash: 'block_hash',
+                                        address: 'address',
+                                    },
+                                ],
+                                created_at: new Date(Date.now()),
+                                updated_at: new Date(Date.now()),
                             },
+                        }),
+                    ),
+                },
+            };
+            const finalqueries = [
+                { query: 'create event', params: [] },
+                { query: 'rm this event', params: [] },
+                { query: 'increase block number', params: [] },
+                {
+                    query: 'rollback query',
+                    params: [
+                        'hi',
+                        [
+                            { query: 'string', params: ['hi'] },
+                            { query: 'number', params: ['12'] },
+                            { query: 'object', params: ['{"hi":12}'] },
                         ],
-                    },
-                } as ESSearchReturn<EVMEventSetEntity>,
-            });
-
-            // convertEventsToQueries
+                    ],
+                },
+                { query: 'create event', params: [] },
+                { query: 'rm this event', params: [] },
+                { query: 'increase block number', params: [] },
+                {
+                    query: 'rollback query',
+                    params: [
+                        'hi',
+                        [
+                            { query: 'string', params: ['hi'] },
+                            { query: 'number', params: ['12'] },
+                            { query: 'object', params: ['{"hi":12}'] },
+                        ],
+                    ],
+                },
+            ];
 
             when(
-                context.newGroupEventControllerMock.convert(
-                    deepEqual((events[0] as any) as EVMProcessableEvent),
-                    anyFunction(),
+                context.globalConfigServiceMock.search(
+                    deepEqual({
+                        id: 'global',
+                    }),
                 ),
-            ).thenCall(
-                async (event: EVMProcessableEvent, appender: Appender): Promise<void> => {
-                    const query = {
-                        query: 'forward 0',
-                        params: [42],
-                    };
+            ).thenResolve({
+                error: null,
+                response: [globalConfigEntity],
+            });
 
-                    const rollback = {
-                        query: 'rollback 0',
-                        params: [24],
-                    };
+            when(context.evmEventSetsServiceMock.searchElastic(deepEqual(evmEventSetsQuery))).thenResolve({
+                error: null,
+                response: evmEventSetsResponse,
+            });
 
-                    appender(query, rollback);
+            when(context.newGroupEventControllerMock.convert(anything(), anyFunction())).thenCall(
+                async (event: EVMProcessableEvent, append: Appender): Promise<void> => {
+                    append(
+                        {
+                            query: `create event`,
+                            params: [],
+                        },
+
+                        {
+                            query: `delete event`,
+                            params: [],
+                        },
+                    );
                 },
             );
-
-            // injectEventSetDeletionQueries
 
             when(
                 context.evmEventSetsServiceMock.dryDelete(
                     deepEqual({
-                        artifact_name: artifactName,
-                        event_name: eventName,
-                        block_number: blockNumber,
+                        artifact_name: 'T721Controller_v0',
+                        event_name: 'NewGroup',
+                        block_number: anyNumber(),
                     }),
                 ),
             ).thenResolve({
                 error: null,
                 response: {
-                    query: 'delete block events',
-                    params: [123],
+                    query: 'rm this event',
+                    params: [],
                 },
             });
-
-            // injectProcessedHeightUpdateQuery
 
             when(
                 context.globalConfigServiceMock.dryUpdate(
@@ -485,27 +356,25 @@ describe('EVMAntenna Merger Scheduler', function() {
                         id: 'global',
                     }),
                     deepEqual({
-                        processed_block_number: blockNumber,
+                        processed_block_number: anyNumber(),
                     }),
                 ),
             ).thenResolve({
                 error: null,
                 response: {
-                    query: 'processed height update',
-                    params: [321],
+                    query: 'increase block number',
+                    params: [],
                 },
             });
-
-            // injectBlockRollbackCreationQuery
 
             when(
                 context.evmBlockRollbacksServiceMock.dryCreate(
                     deepEqual({
-                        block_number: blockNumber,
+                        block_number: anyNumber(),
                         rollback_queries: [
                             {
-                                query: 'rollback 0',
-                                params: [24],
+                                query: `delete event`,
+                                params: [],
                             },
                         ],
                     }),
@@ -513,294 +382,192 @@ describe('EVMAntenna Merger Scheduler', function() {
             ).thenResolve({
                 error: null,
                 response: {
-                    query: 'rollback pack',
+                    query: 'rollback query',
                     params: [
-                        42,
+                        'hi',
                         [
                             {
-                                query: 'rollback packed',
-                                params: ['pack', 123, { packed: true }],
+                                query: 'string',
+                                params: ['hi'],
+                            },
+                            {
+                                query: 'number',
+                                params: [12],
+                            },
+                            {
+                                query: 'object',
+                                params: [{ hi: 12 }],
                             },
                         ],
                     ],
                 },
             });
 
-            // Atomic batched insert
+            when(context.connectionMock.doBatchAsync(deepEqual(finalqueries))).thenResolve();
 
-            when(
-                context.connectionMock.doBatchAsync(
-                    deepEqual([
-                        {
-                            query: 'forward 0',
-                            params: [42],
-                        },
-                        {
-                            query: 'delete block events',
-                            params: [123],
-                        },
-                        {
-                            query: 'processed height update',
-                            params: [321],
-                        },
-                        {
-                            query: 'rollback pack',
-                            params: [
-                                42,
-                                [
-                                    {
-                                        query: 'rollback packed',
-                                        params: ['pack', 123, { packed: true }],
-                                    },
-                                ],
-                            ],
-                        },
-                    ]),
-                ),
-            ).thenResolve();
-
-            // Call
-
-            await context.evmAntennaMergerScheduler.evmEventMerger({
-                data: {
-                    blockNumber,
-                },
-            } as Job);
-
-            // Verifications
-
-            verify(context.evmEventSetsServiceMock.searchElastic(deepEqual(esQuery))).called();
-
-            // convertEventsToQueries
+            await context.evmAntennaMergerScheduler.evmEventMergerPoller();
 
             verify(
-                context.newGroupEventControllerMock.convert(
-                    deepEqual((events[0] as any) as EVMProcessableEvent),
-                    anyFunction(),
+                context.globalConfigServiceMock.search(
+                    deepEqual({
+                        id: 'global',
+                    }),
                 ),
-            ).called();
-
-            // injectEventSetDeletionQueries
-
+            ).times(1);
+            verify(context.evmEventSetsServiceMock.searchElastic(deepEqual(evmEventSetsQuery))).times(1);
+            verify(context.newGroupEventControllerMock.convert(anything(), anyFunction())).times(2);
             verify(
                 context.evmEventSetsServiceMock.dryDelete(
                     deepEqual({
-                        artifact_name: artifactName,
-                        event_name: eventName,
-                        block_number: blockNumber,
+                        artifact_name: 'T721Controller_v0',
+                        event_name: 'NewGroup',
+                        block_number: anyNumber(),
                     }),
                 ),
-            ).called();
-
-            // injectProcessedHeightUpdateQuery
-
+            ).times(2);
             verify(
                 context.globalConfigServiceMock.dryUpdate(
                     deepEqual({
                         id: 'global',
                     }),
                     deepEqual({
-                        processed_block_number: blockNumber,
+                        processed_block_number: anyNumber(),
                     }),
                 ),
-            ).called();
-
-            // injectBlockRollbackCreationQuery
-
+            ).times(2);
             verify(
                 context.evmBlockRollbacksServiceMock.dryCreate(
                     deepEqual({
-                        block_number: blockNumber,
+                        block_number: anyNumber(),
                         rollback_queries: [
                             {
-                                query: 'rollback 0',
-                                params: [24],
+                                query: `delete event`,
+                                params: [],
                             },
                         ],
                     }),
                 ),
-            ).called();
-
-            // Atomic batched insert
-
-            verify(
-                context.connectionMock.doBatchAsync(
-                    deepEqual([
-                        {
-                            query: 'forward 0',
-                            params: [42],
-                        },
-                        {
-                            query: 'delete block events',
-                            params: [123],
-                        },
-                        {
-                            query: 'processed height update',
-                            params: [321],
-                        },
-                        {
-                            query: 'rollback pack',
-                            params: [
-                                42,
-                                [
-                                    {
-                                        query: 'rollback packed',
-                                        params: ['pack', '123', JSON.stringify({ packed: true })],
-                                    },
-                                ],
-                            ],
-                        },
-                    ]),
-                ),
-            ).called();
+            ).times(2);
+            verify(context.connectionMock.doBatchAsync(deepEqual(finalqueries))).times(1);
         });
 
-        it('should properly emit batched query. Three events, tx and log sorting.', async function() {
-            const blockNumber = 99;
-            const artifactName = 'T721Controller_v0';
-            const eventName = 'NewGroup';
-
-            const events = [
-                ({
-                    id: 'abcd1',
-                    artifact_name: artifactName,
-                    event: eventName,
-                    transaction_index: 1,
-                    log_index: 1,
-                } as any) as EVMEvent,
-                ({
-                    id: 'abcd2',
-                    artifact_name: artifactName,
-                    event: eventName,
-                    transaction_index: 1,
-                    log_index: 0,
-                } as any) as EVMEvent,
-                ({
-                    id: 'abcd3',
-                    artifact_name: artifactName,
-                    event: eventName,
-                    transaction_index: 0,
-                    log_index: 0,
-                } as any) as EVMEvent,
-            ];
-
-            // fetchEvmEventSets
-
-            const esQuery = {
+        it('should properly merge 10 events', async function() {
+            const globalConfigEntity: GlobalEntity = {
+                id: 'global',
+                block_number: 21,
+                processed_block_number: 10,
+                eth_eur_price: 10000,
+                created_at: new Date(Date.now()),
+                updated_at: new Date(Date.now()),
+            };
+            const evmEventSetsQuery = {
                 body: {
                     query: {
                         bool: {
                             must: {
-                                term: {
-                                    block_number: blockNumber,
+                                range: {
+                                    block_number: {
+                                        gte: 11,
+                                        lte: 20,
+                                    },
                                 },
                             },
                         },
                     },
                 },
             };
-
-            when(context.evmEventSetsServiceMock.searchElastic(deepEqual(esQuery))).thenResolve({
-                error: null,
-                response: {
-                    hits: {
-                        total: 1,
-                        hits: [
-                            {
-                                _source: {
-                                    artifact_name: artifactName,
-                                    events,
-                                },
+            const evmEventSetsResponse: ESSearchReturn<EVMEventSetEntity> = {
+                took: 12,
+                timed_out: false,
+                _shards: {
+                    total: 1,
+                    successful: 1,
+                    skipped: 0,
+                    failed: 0,
+                },
+                hits: {
+                    max_score: 1,
+                    total: 2,
+                    hits: [...Array(10).keys()].map(
+                        (idx: number): ESSearchHit<EVMEventSetEntity> => ({
+                            _index: 'idx',
+                            _id: 'id',
+                            _type: 'type',
+                            _score: 1,
+                            _source: {
+                                artifact_name: 'T721Controller_v0',
+                                event_name: 'NewGroup',
+                                block_number: 11 + idx,
+                                events: [
+                                    {
+                                        return_values: JSON.stringify({}),
+                                        raw_data: 'raw_data',
+                                        block_number: 11 + idx,
+                                        raw_topics: ['raw_topics'],
+                                        event: 'NewGroup',
+                                        signature: 'signature',
+                                        log_index: 0,
+                                        transaction_index: 0,
+                                        transaction_hash: 'transaction_hash',
+                                        block_hash: 'block_hash',
+                                        address: 'address',
+                                    },
+                                ],
+                                created_at: new Date(Date.now()),
+                                updated_at: new Date(Date.now()),
                             },
-                        ],
-                    },
-                } as ESSearchReturn<EVMEventSetEntity>,
+                        }),
+                    ),
+                },
+            };
+
+            when(
+                context.globalConfigServiceMock.search(
+                    deepEqual({
+                        id: 'global',
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: [globalConfigEntity],
             });
 
-            // convertEventsToQueries
+            when(context.evmEventSetsServiceMock.searchElastic(deepEqual(evmEventSetsQuery))).thenResolve({
+                error: null,
+                response: evmEventSetsResponse,
+            });
 
-            when(
-                context.newGroupEventControllerMock.convert(
-                    deepEqual((events[0] as any) as EVMProcessableEvent),
-                    anyFunction(),
-                ),
-            ).thenCall(
-                async (event: EVMProcessableEvent, appender: Appender): Promise<void> => {
-                    const query = {
-                        query: 'forward 0',
-                        params: [42],
-                    };
+            when(context.newGroupEventControllerMock.convert(anything(), anyFunction())).thenCall(
+                async (event: EVMProcessableEvent, append: Appender): Promise<void> => {
+                    append(
+                        {
+                            query: `create event`,
+                            params: [],
+                        },
 
-                    const rollback = {
-                        query: 'rollback 0',
-                        params: [24],
-                    };
-
-                    appender(query, rollback);
+                        {
+                            query: `delete event`,
+                            params: [],
+                        },
+                    );
                 },
             );
-
-            when(
-                context.newGroupEventControllerMock.convert(
-                    deepEqual((events[1] as any) as EVMProcessableEvent),
-                    anyFunction(),
-                ),
-            ).thenCall(
-                async (event: EVMProcessableEvent, appender: Appender): Promise<void> => {
-                    const query = {
-                        query: 'forward 1',
-                        params: [42],
-                    };
-
-                    const rollback = {
-                        query: 'rollback 1',
-                        params: [24],
-                    };
-
-                    appender(query, rollback);
-                },
-            );
-
-            when(
-                context.newGroupEventControllerMock.convert(
-                    deepEqual((events[2] as any) as EVMProcessableEvent),
-                    anyFunction(),
-                ),
-            ).thenCall(
-                async (event: EVMProcessableEvent, appender: Appender): Promise<void> => {
-                    const query = {
-                        query: 'forward 2',
-                        params: [42],
-                    };
-
-                    const rollback = {
-                        query: 'rollback 2',
-                        params: [24],
-                    };
-
-                    appender(query, rollback);
-                },
-            );
-
-            // injectEventSetDeletionQueries
 
             when(
                 context.evmEventSetsServiceMock.dryDelete(
                     deepEqual({
-                        artifact_name: artifactName,
-                        event_name: eventName,
-                        block_number: blockNumber,
+                        artifact_name: 'T721Controller_v0',
+                        event_name: 'NewGroup',
+                        block_number: anyNumber(),
                     }),
                 ),
             ).thenResolve({
                 error: null,
                 response: {
-                    query: 'delete block events',
-                    params: [123],
+                    query: 'rm this event',
+                    params: [],
                 },
             });
-
-            // injectProcessedHeightUpdateQuery
 
             when(
                 context.globalConfigServiceMock.dryUpdate(
@@ -808,35 +575,25 @@ describe('EVMAntenna Merger Scheduler', function() {
                         id: 'global',
                     }),
                     deepEqual({
-                        processed_block_number: blockNumber,
+                        processed_block_number: anyNumber(),
                     }),
                 ),
             ).thenResolve({
                 error: null,
                 response: {
-                    query: 'processed height update',
-                    params: [321],
+                    query: 'increase block number',
+                    params: [],
                 },
             });
-
-            // injectBlockRollbackCreationQuery
 
             when(
                 context.evmBlockRollbacksServiceMock.dryCreate(
                     deepEqual({
-                        block_number: blockNumber,
+                        block_number: anyNumber(),
                         rollback_queries: [
                             {
-                                query: 'rollback 0',
-                                params: [24],
-                            },
-                            {
-                                query: 'rollback 1',
-                                params: [24],
-                            },
-                            {
-                                query: 'rollback 2',
-                                params: [24],
+                                query: `delete event`,
+                                params: [],
                             },
                         ],
                     }),
@@ -844,1417 +601,2102 @@ describe('EVMAntenna Merger Scheduler', function() {
             ).thenResolve({
                 error: null,
                 response: {
-                    query: 'rollback pack',
+                    query: 'rollback query',
                     params: [
-                        42,
+                        'hi',
                         [
                             {
-                                query: 'rollback packed',
-                                params: ['pack', 123, { packed: true }],
+                                query: 'string',
+                                params: ['hi'],
+                            },
+                            {
+                                query: 'number',
+                                params: [12],
+                            },
+                            {
+                                query: 'object',
+                                params: [{ hi: 12 }],
                             },
                         ],
                     ],
                 },
             });
 
-            // Atomic batched insert
+            when(context.connectionMock.doBatchAsync(anything())).thenResolve();
+
+            await context.evmAntennaMergerScheduler.evmEventMergerPoller();
+
+            verify(
+                context.globalConfigServiceMock.search(
+                    deepEqual({
+                        id: 'global',
+                    }),
+                ),
+            ).times(1);
+            verify(context.evmEventSetsServiceMock.searchElastic(deepEqual(evmEventSetsQuery))).times(1);
+            verify(context.newGroupEventControllerMock.convert(anything(), anyFunction())).times(10);
+            verify(
+                context.evmEventSetsServiceMock.dryDelete(
+                    deepEqual({
+                        artifact_name: 'T721Controller_v0',
+                        event_name: 'NewGroup',
+                        block_number: anyNumber(),
+                    }),
+                ),
+            ).times(10);
+            verify(
+                context.globalConfigServiceMock.dryUpdate(
+                    deepEqual({
+                        id: 'global',
+                    }),
+                    deepEqual({
+                        processed_block_number: anyNumber(),
+                    }),
+                ),
+            ).times(10);
+            verify(
+                context.evmBlockRollbacksServiceMock.dryCreate(
+                    deepEqual({
+                        block_number: anyNumber(),
+                        rollback_queries: [
+                            {
+                                query: `delete event`,
+                                params: [],
+                            },
+                        ],
+                    }),
+                ),
+            ).times(10);
+            verify(context.connectionMock.doBatchAsync(anything())).times(1);
+        });
+
+        it('should return 0 when no sets to process', async function() {
+            const globalConfigEntity: GlobalEntity = {
+                id: 'global',
+                block_number: 12,
+                processed_block_number: 10,
+                eth_eur_price: 10000,
+                created_at: new Date(Date.now()),
+                updated_at: new Date(Date.now()),
+            };
+            const evmEventSetsQuery = {
+                body: {
+                    query: {
+                        bool: {
+                            must: {
+                                range: {
+                                    block_number: {
+                                        gte: 11,
+                                        lte: 12,
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            };
+            const evmEventSetsResponse: ESSearchReturn<EVMEventSetEntity> = {
+                took: 12,
+                timed_out: false,
+                _shards: {
+                    total: 1,
+                    successful: 1,
+                    skipped: 0,
+                    failed: 0,
+                },
+                hits: {
+                    max_score: 1,
+                    total: 0,
+                    hits: [],
+                },
+            };
 
             when(
-                context.connectionMock.doBatchAsync(
-                    deepEqual([
-                        {
-                            query: 'forward 2',
-                            params: [42],
+                context.globalConfigServiceMock.search(
+                    deepEqual({
+                        id: 'global',
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: [globalConfigEntity],
+            });
+
+            when(context.evmEventSetsServiceMock.searchElastic(deepEqual(evmEventSetsQuery))).thenResolve({
+                error: null,
+                response: evmEventSetsResponse,
+            });
+
+            await context.evmAntennaMergerScheduler.evmEventMergerPoller();
+
+            verify(
+                context.globalConfigServiceMock.search(
+                    deepEqual({
+                        id: 'global',
+                    }),
+                ),
+            ).times(1);
+            verify(context.evmEventSetsServiceMock.searchElastic(deepEqual(evmEventSetsQuery))).times(1);
+            verify(context.connectionMock.doBatchAsync(anything())).never();
+        });
+
+        it('should skip steps when no events', async function() {
+            const globalConfigEntity: GlobalEntity = {
+                id: 'global',
+                block_number: 12,
+                processed_block_number: 10,
+                eth_eur_price: 10000,
+                created_at: new Date(Date.now()),
+                updated_at: new Date(Date.now()),
+            };
+            const evmEventSetsQuery = {
+                body: {
+                    query: {
+                        bool: {
+                            must: {
+                                range: {
+                                    block_number: {
+                                        gte: 11,
+                                        lte: 12,
+                                    },
+                                },
+                            },
                         },
-                        {
-                            query: 'forward 1',
-                            params: [42],
+                    },
+                },
+            };
+            const evmEventSetsResponse: ESSearchReturn<EVMEventSetEntity> = {
+                took: 12,
+                timed_out: false,
+                _shards: {
+                    total: 1,
+                    successful: 1,
+                    skipped: 0,
+                    failed: 0,
+                },
+                hits: {
+                    max_score: 1,
+                    total: 2,
+                    hits: [...Array(2).keys()].map(
+                        (idx: number): ESSearchHit<EVMEventSetEntity> => ({
+                            _index: 'idx',
+                            _id: 'id',
+                            _type: 'type',
+                            _score: 1,
+                            _source: {
+                                artifact_name: 'T721Controller_v0',
+                                event_name: 'NewGroup',
+                                block_number: 11 + idx,
+                                events: [],
+                                created_at: new Date(Date.now()),
+                                updated_at: new Date(Date.now()),
+                            },
+                        }),
+                    ),
+                },
+            };
+            const finalqueries = [
+                { query: 'rm this event', params: [] },
+                { query: 'increase block number', params: [] },
+                { query: 'rm this event', params: [] },
+                { query: 'increase block number', params: [] },
+            ];
+
+            when(
+                context.globalConfigServiceMock.search(
+                    deepEqual({
+                        id: 'global',
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: [globalConfigEntity],
+            });
+
+            when(context.evmEventSetsServiceMock.searchElastic(deepEqual(evmEventSetsQuery))).thenResolve({
+                error: null,
+                response: evmEventSetsResponse,
+            });
+
+            when(
+                context.evmEventSetsServiceMock.dryDelete(
+                    deepEqual({
+                        artifact_name: 'T721Controller_v0',
+                        event_name: 'NewGroup',
+                        block_number: anyNumber(),
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: {
+                    query: 'rm this event',
+                    params: [],
+                },
+            });
+
+            when(
+                context.globalConfigServiceMock.dryUpdate(
+                    deepEqual({
+                        id: 'global',
+                    }),
+                    deepEqual({
+                        processed_block_number: anyNumber(),
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: {
+                    query: 'increase block number',
+                    params: [],
+                },
+            });
+
+            when(context.connectionMock.doBatchAsync(deepEqual(finalqueries))).thenResolve();
+
+            await context.evmAntennaMergerScheduler.evmEventMergerPoller();
+
+            verify(
+                context.globalConfigServiceMock.search(
+                    deepEqual({
+                        id: 'global',
+                    }),
+                ),
+            ).times(1);
+            verify(context.evmEventSetsServiceMock.searchElastic(deepEqual(evmEventSetsQuery))).times(1);
+            verify(
+                context.evmEventSetsServiceMock.dryDelete(
+                    deepEqual({
+                        artifact_name: 'T721Controller_v0',
+                        event_name: 'NewGroup',
+                        block_number: anyNumber(),
+                    }),
+                ),
+            ).times(2);
+            verify(
+                context.globalConfigServiceMock.dryUpdate(
+                    deepEqual({
+                        id: 'global',
+                    }),
+                    deepEqual({
+                        processed_block_number: anyNumber(),
+                    }),
+                ),
+            ).times(2);
+            verify(context.connectionMock.doBatchAsync(deepEqual(finalqueries))).times(1);
+        });
+
+        it('should skip as synchronized', async function() {
+            const globalConfigEntity: GlobalEntity = {
+                id: 'global',
+                block_number: 12,
+                processed_block_number: 12,
+                eth_eur_price: 10000,
+                created_at: new Date(Date.now()),
+                updated_at: new Date(Date.now()),
+            };
+
+            when(
+                context.globalConfigServiceMock.search(
+                    deepEqual({
+                        id: 'global',
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: [globalConfigEntity],
+            });
+
+            await context.evmAntennaMergerScheduler.evmEventMergerPoller();
+
+            verify(
+                context.globalConfigServiceMock.search(
+                    deepEqual({
+                        id: 'global',
+                    }),
+                ),
+            ).times(1);
+        });
+
+        it('should interrupt for missing event set', async function() {
+            const globalConfigEntity: GlobalEntity = {
+                id: 'global',
+                block_number: 12,
+                processed_block_number: 10,
+                eth_eur_price: 10000,
+                created_at: new Date(Date.now()),
+                updated_at: new Date(Date.now()),
+            };
+            const evmEventSetsQuery = {
+                body: {
+                    query: {
+                        bool: {
+                            must: {
+                                range: {
+                                    block_number: {
+                                        gte: 11,
+                                        lte: 12,
+                                    },
+                                },
+                            },
                         },
-                        {
-                            query: 'forward 0',
-                            params: [42],
-                        },
-                        {
-                            query: 'delete block events',
-                            params: [123],
-                        },
-                        {
-                            query: 'processed height update',
-                            params: [321],
-                        },
-                        {
-                            query: 'rollback pack',
-                            params: [
-                                42,
-                                [
+                    },
+                },
+            };
+            const evmEventSetsResponse: ESSearchReturn<EVMEventSetEntity> = {
+                took: 12,
+                timed_out: false,
+                _shards: {
+                    total: 1,
+                    successful: 1,
+                    skipped: 0,
+                    failed: 0,
+                },
+                hits: {
+                    max_score: 1,
+                    total: 1,
+                    hits: [...Array(1).keys()].map(
+                        (idx: number): ESSearchHit<EVMEventSetEntity> => ({
+                            _index: 'idx',
+                            _id: 'id',
+                            _type: 'type',
+                            _score: 1,
+                            _source: {
+                                artifact_name: 'T721Controller_v0',
+                                event_name: 'NewGroup',
+                                block_number: 11 + idx,
+                                events: [
                                     {
-                                        query: 'rollback packed',
-                                        params: ['pack', 123, { packed: true }],
+                                        return_values: JSON.stringify({}),
+                                        raw_data: 'raw_data',
+                                        block_number: 11 + idx,
+                                        raw_topics: ['raw_topics'],
+                                        event: 'NewGroup',
+                                        signature: 'signature',
+                                        log_index: 0,
+                                        transaction_index: 0,
+                                        transaction_hash: 'transaction_hash',
+                                        block_hash: 'block_hash',
+                                        address: 'address',
                                     },
                                 ],
-                            ],
-                        },
-                    ]),
-                ),
-            ).thenResolve();
-
-            // Call
-
-            await context.evmAntennaMergerScheduler.evmEventMerger({
-                data: {
-                    blockNumber,
-                },
-            } as Job);
-
-            // Verifications
-
-            verify(context.evmEventSetsServiceMock.searchElastic(deepEqual(esQuery))).called();
-
-            // convertEventsToQueries
-
-            verify(
-                context.newGroupEventControllerMock.convert(
-                    deepEqual((events[0] as any) as EVMProcessableEvent),
-                    anyFunction(),
-                ),
-            ).called();
-            verify(
-                context.newGroupEventControllerMock.convert(
-                    deepEqual((events[1] as any) as EVMProcessableEvent),
-                    anyFunction(),
-                ),
-            ).called();
-            verify(
-                context.newGroupEventControllerMock.convert(
-                    deepEqual((events[2] as any) as EVMProcessableEvent),
-                    anyFunction(),
-                ),
-            ).called();
-
-            // injectEventSetDeletionQueries
-
-            verify(
-                context.evmEventSetsServiceMock.dryDelete(
-                    deepEqual({
-                        artifact_name: artifactName,
-                        event_name: eventName,
-                        block_number: blockNumber,
-                    }),
-                ),
-            ).called();
-
-            // injectProcessedHeightUpdateQuery
-
-            verify(
-                context.globalConfigServiceMock.dryUpdate(
-                    deepEqual({
-                        id: 'global',
-                    }),
-                    deepEqual({
-                        processed_block_number: blockNumber,
-                    }),
-                ),
-            ).called();
-
-            // injectBlockRollbackCreationQuery
-
-            verify(
-                context.evmBlockRollbacksServiceMock.dryCreate(
-                    deepEqual({
-                        block_number: blockNumber,
-                        rollback_queries: [
-                            {
-                                query: 'rollback 0',
-                                params: [24],
+                                created_at: new Date(Date.now()),
+                                updated_at: new Date(Date.now()),
                             },
-                            {
-                                query: 'rollback 1',
-                                params: [24],
-                            },
-                            {
-                                query: 'rollback 2',
-                                params: [24],
-                            },
-                        ],
-                    }),
-                ),
-            ).called();
-
-            // Atomic batched insert
-
-            verify(
-                context.connectionMock.doBatchAsync(
-                    deepEqual([
-                        {
-                            query: 'forward 2',
-                            params: [42],
-                        },
-                        {
-                            query: 'forward 1',
-                            params: [42],
-                        },
-                        {
-                            query: 'forward 0',
-                            params: [42],
-                        },
-                        {
-                            query: 'delete block events',
-                            params: [123],
-                        },
-                        {
-                            query: 'processed height update',
-                            params: [321],
-                        },
-                        {
-                            query: 'rollback pack',
-                            params: [
-                                42,
-                                [
-                                    {
-                                        query: 'rollback packed',
-                                        params: ['pack', '123', JSON.stringify({ packed: true })],
-                                    },
-                                ],
-                            ],
-                        },
-                    ]),
-                ),
-            ).called();
-        });
-
-        it('should fail on evm event set fatch error', async function() {
-            const blockNumber = 99;
-
-            // fetchEvmEventSets
-
-            const esQuery = {
-                body: {
-                    query: {
-                        bool: {
-                            must: {
-                                term: {
-                                    block_number: blockNumber,
-                                },
-                            },
-                        },
-                    },
+                        }),
+                    ),
                 },
             };
-
-            when(context.evmEventSetsServiceMock.searchElastic(deepEqual(esQuery))).thenResolve({
-                error: 'unexpected_error',
-                response: null,
-            });
-
-            // Call
-
-            await expect(
-                context.evmAntennaMergerScheduler.evmEventMerger({
-                    data: {
-                        blockNumber,
-                    },
-                } as Job),
-            ).rejects.toMatchObject(
-                new Error(
-                    `EVMAntennaMergerScheduler::fetchEvmEventSets | Error while fetching events for block 99: unexpected_error`,
-                ),
-            );
-
-            // Verifications
-
-            verify(context.evmEventSetsServiceMock.searchElastic(deepEqual(esQuery))).called();
-        });
-
-        it('should interupt on invalid evm event set count', async function() {
-            const blockNumber = 99;
-
-            // fetchEvmEventSets
-
-            const esQuery = {
-                body: {
-                    query: {
-                        bool: {
-                            must: {
-                                term: {
-                                    block_number: blockNumber,
-                                },
-                            },
-                        },
-                    },
-                },
-            };
-
-            when(context.evmEventSetsServiceMock.searchElastic(deepEqual(esQuery))).thenResolve({
-                error: null,
-                response: {
-                    hits: {
-                        total: 0,
-                        hits: [],
-                    },
-                } as ESSearchReturn<EVMEventSetEntity>,
-            });
-
-            // Call
-
-            await context.evmAntennaMergerScheduler.evmEventMerger({
-                data: {
-                    blockNumber,
-                },
-            } as Job);
-
-            // Verifications
-
-            verify(context.evmEventSetsServiceMock.searchElastic(deepEqual(esQuery))).called();
-        });
-
-        it('should fail for unmatching controllers', async function() {
-            const blockNumber = 99;
-            const artifactName = 'T721Controller_v1';
-            const eventName = 'NewGroup';
-
-            const events = [
-                ({
-                    id: 'abcd1',
-                    artifact_name: artifactName,
-                    event: eventName,
-                    transaction_index: 1,
-                    log_index: 1,
-                } as any) as EVMEvent,
-                ({
-                    id: 'abcd2',
-                    artifact_name: artifactName,
-                    event: eventName,
-                    transaction_index: 1,
-                    log_index: 0,
-                } as any) as EVMEvent,
-                ({
-                    id: 'abcd3',
-                    artifact_name: artifactName,
-                    event: eventName,
-                    transaction_index: 0,
-                    log_index: 0,
-                } as any) as EVMEvent,
-            ];
-
-            // fetchEvmEventSets
-
-            const esQuery = {
-                body: {
-                    query: {
-                        bool: {
-                            must: {
-                                term: {
-                                    block_number: blockNumber,
-                                },
-                            },
-                        },
-                    },
-                },
-            };
-
-            when(context.evmEventSetsServiceMock.searchElastic(deepEqual(esQuery))).thenResolve({
-                error: null,
-                response: {
-                    hits: {
-                        total: 1,
-                        hits: [
-                            {
-                                _source: {
-                                    artifact_name: artifactName,
-                                    events,
-                                },
-                            },
-                        ],
-                    },
-                } as ESSearchReturn<EVMEventSetEntity>,
-            });
-
-            // Call
-
-            await expect(
-                context.evmAntennaMergerScheduler.evmEventMerger({
-                    data: {
-                        blockNumber,
-                    },
-                } as Job),
-            ).rejects.toMatchObject(
-                new Error(
-                    `EVMAntennaMergerScheduler::convertEventsToQueries | event NewGroup from T721Controller_v1 has no matching controller`,
-                ),
-            );
-
-            // Verifications
-
-            verify(context.evmEventSetsServiceMock.searchElastic(deepEqual(esQuery))).called();
-        });
-
-        it('should fail on eventset deletion query generation error', async function() {
-            const blockNumber = 99;
-            const artifactName = 'T721Controller_v0';
-            const eventName = 'NewGroup';
-
-            const events = [
-                ({
-                    id: 'abcd1',
-                    artifact_name: artifactName,
-                    event: eventName,
-                    transaction_index: 1,
-                    log_index: 1,
-                } as any) as EVMEvent,
-                ({
-                    id: 'abcd2',
-                    artifact_name: artifactName,
-                    event: eventName,
-                    transaction_index: 1,
-                    log_index: 0,
-                } as any) as EVMEvent,
-                ({
-                    id: 'abcd3',
-                    artifact_name: artifactName,
-                    event: eventName,
-                    transaction_index: 0,
-                    log_index: 0,
-                } as any) as EVMEvent,
-            ];
-
-            // fetchEvmEventSets
-
-            const esQuery = {
-                body: {
-                    query: {
-                        bool: {
-                            must: {
-                                term: {
-                                    block_number: blockNumber,
-                                },
-                            },
-                        },
-                    },
-                },
-            };
-
-            when(context.evmEventSetsServiceMock.searchElastic(deepEqual(esQuery))).thenResolve({
-                error: null,
-                response: {
-                    hits: {
-                        total: 1,
-                        hits: [
-                            {
-                                _source: {
-                                    artifact_name: artifactName,
-                                    events,
-                                },
-                            },
-                        ],
-                    },
-                } as ESSearchReturn<EVMEventSetEntity>,
-            });
-
-            // convertEventsToQueries
-
-            when(
-                context.newGroupEventControllerMock.convert(
-                    deepEqual((events[0] as any) as EVMProcessableEvent),
-                    anyFunction(),
-                ),
-            ).thenCall(
-                async (event: EVMProcessableEvent, appender: Appender): Promise<void> => {
-                    const query = {
-                        query: 'forward 0',
-                        params: [42],
-                    };
-
-                    const rollback = {
-                        query: 'rollback 0',
-                        params: [24],
-                    };
-
-                    appender(query, rollback);
-                },
-            );
-
-            when(
-                context.newGroupEventControllerMock.convert(
-                    deepEqual((events[1] as any) as EVMProcessableEvent),
-                    anyFunction(),
-                ),
-            ).thenCall(
-                async (event: EVMProcessableEvent, appender: Appender): Promise<void> => {
-                    const query = {
-                        query: 'forward 1',
-                        params: [42],
-                    };
-
-                    const rollback = {
-                        query: 'rollback 1',
-                        params: [24],
-                    };
-
-                    appender(query, rollback);
-                },
-            );
-
-            when(
-                context.newGroupEventControllerMock.convert(
-                    deepEqual((events[2] as any) as EVMProcessableEvent),
-                    anyFunction(),
-                ),
-            ).thenCall(
-                async (event: EVMProcessableEvent, appender: Appender): Promise<void> => {
-                    const query = {
-                        query: 'forward 2',
-                        params: [42],
-                    };
-
-                    const rollback = {
-                        query: 'rollback 2',
-                        params: [24],
-                    };
-
-                    appender(query, rollback);
-                },
-            );
-
-            // injectEventSetDeletionQueries
-
-            when(
-                context.evmEventSetsServiceMock.dryDelete(
-                    deepEqual({
-                        artifact_name: artifactName,
-                        event_name: eventName,
-                        block_number: blockNumber,
-                    }),
-                ),
-            ).thenResolve({
-                error: 'unexpected_error',
-                response: null,
-            });
-
-            // Call
-
-            await expect(
-                context.evmAntennaMergerScheduler.evmEventMerger({
-                    data: {
-                        blockNumber,
-                    },
-                } as Job),
-            ).rejects.toMatchObject(
-                new Error(
-                    `EVMAntennaMergerScheduler::injectEventSetDeletionQueries | error while creating evmeventset removal on event NewGroup on controller T721Controller_v0`,
-                ),
-            );
-
-            // Verifications
-
-            verify(context.evmEventSetsServiceMock.searchElastic(deepEqual(esQuery))).called();
-
-            // convertEventsToQueries
-
-            verify(
-                context.newGroupEventControllerMock.convert(
-                    deepEqual((events[0] as any) as EVMProcessableEvent),
-                    anyFunction(),
-                ),
-            ).called();
-            verify(
-                context.newGroupEventControllerMock.convert(
-                    deepEqual((events[1] as any) as EVMProcessableEvent),
-                    anyFunction(),
-                ),
-            ).called();
-            verify(
-                context.newGroupEventControllerMock.convert(
-                    deepEqual((events[2] as any) as EVMProcessableEvent),
-                    anyFunction(),
-                ),
-            ).called();
-
-            // injectEventSetDeletionQueries
-
-            verify(
-                context.evmEventSetsServiceMock.dryDelete(
-                    deepEqual({
-                        artifact_name: artifactName,
-                        event_name: eventName,
-                        block_number: blockNumber,
-                    }),
-                ),
-            ).called();
-        });
-
-        it('should fail on processed height update query generation error', async function() {
-            const blockNumber = 99;
-            const artifactName = 'T721Controller_v0';
-            const eventName = 'NewGroup';
-
-            const events = [
-                ({
-                    id: 'abcd1',
-                    artifact_name: artifactName,
-                    event: eventName,
-                    transaction_index: 1,
-                    log_index: 1,
-                } as any) as EVMEvent,
-                ({
-                    id: 'abcd2',
-                    artifact_name: artifactName,
-                    event: eventName,
-                    transaction_index: 1,
-                    log_index: 0,
-                } as any) as EVMEvent,
-                ({
-                    id: 'abcd3',
-                    artifact_name: artifactName,
-                    event: eventName,
-                    transaction_index: 0,
-                    log_index: 0,
-                } as any) as EVMEvent,
-            ];
-
-            // fetchEvmEventSets
-
-            const esQuery = {
-                body: {
-                    query: {
-                        bool: {
-                            must: {
-                                term: {
-                                    block_number: blockNumber,
-                                },
-                            },
-                        },
-                    },
-                },
-            };
-
-            when(context.evmEventSetsServiceMock.searchElastic(deepEqual(esQuery))).thenResolve({
-                error: null,
-                response: {
-                    hits: {
-                        total: 1,
-                        hits: [
-                            {
-                                _source: {
-                                    artifact_name: artifactName,
-                                    events,
-                                },
-                            },
-                        ],
-                    },
-                } as ESSearchReturn<EVMEventSetEntity>,
-            });
-
-            // convertEventsToQueries
-
-            when(
-                context.newGroupEventControllerMock.convert(
-                    deepEqual((events[0] as any) as EVMProcessableEvent),
-                    anyFunction(),
-                ),
-            ).thenCall(
-                async (event: EVMProcessableEvent, appender: Appender): Promise<void> => {
-                    const query = {
-                        query: 'forward 0',
-                        params: [42],
-                    };
-
-                    const rollback = {
-                        query: 'rollback 0',
-                        params: [24],
-                    };
-
-                    appender(query, rollback);
-                },
-            );
-
-            when(
-                context.newGroupEventControllerMock.convert(
-                    deepEqual((events[1] as any) as EVMProcessableEvent),
-                    anyFunction(),
-                ),
-            ).thenCall(
-                async (event: EVMProcessableEvent, appender: Appender): Promise<void> => {
-                    const query = {
-                        query: 'forward 1',
-                        params: [42],
-                    };
-
-                    const rollback = {
-                        query: 'rollback 1',
-                        params: [24],
-                    };
-
-                    appender(query, rollback);
-                },
-            );
-
-            when(
-                context.newGroupEventControllerMock.convert(
-                    deepEqual((events[2] as any) as EVMProcessableEvent),
-                    anyFunction(),
-                ),
-            ).thenCall(
-                async (event: EVMProcessableEvent, appender: Appender): Promise<void> => {
-                    const query = {
-                        query: 'forward 2',
-                        params: [42],
-                    };
-
-                    const rollback = {
-                        query: 'rollback 2',
-                        params: [24],
-                    };
-
-                    appender(query, rollback);
-                },
-            );
-
-            // injectEventSetDeletionQueries
-
-            when(
-                context.evmEventSetsServiceMock.dryDelete(
-                    deepEqual({
-                        artifact_name: artifactName,
-                        event_name: eventName,
-                        block_number: blockNumber,
-                    }),
-                ),
-            ).thenResolve({
-                error: null,
-                response: {
-                    query: 'delete block events',
-                    params: [123],
-                },
-            });
-
-            // injectProcessedHeightUpdateQuery
-
-            when(
-                context.globalConfigServiceMock.dryUpdate(
-                    deepEqual({
-                        id: 'global',
-                    }),
-                    deepEqual({
-                        processed_block_number: blockNumber,
-                    }),
-                ),
-            ).thenResolve({
-                error: 'unexpected_error',
-                response: null,
-            });
-
-            // Call
-
-            await expect(
-                context.evmAntennaMergerScheduler.evmEventMerger({
-                    data: {
-                        blockNumber,
-                    },
-                } as Job),
-            ).rejects.toMatchObject(
-                new Error(
-                    `EVMAntennaMergerScheduler::evmEventMerger | error while creating global config update query: unexpected_error`,
-                ),
-            );
-
-            // Verifications
-
-            verify(context.evmEventSetsServiceMock.searchElastic(deepEqual(esQuery))).called();
-
-            // convertEventsToQueries
-
-            verify(
-                context.newGroupEventControllerMock.convert(
-                    deepEqual((events[0] as any) as EVMProcessableEvent),
-                    anyFunction(),
-                ),
-            ).called();
-            verify(
-                context.newGroupEventControllerMock.convert(
-                    deepEqual((events[1] as any) as EVMProcessableEvent),
-                    anyFunction(),
-                ),
-            ).called();
-            verify(
-                context.newGroupEventControllerMock.convert(
-                    deepEqual((events[2] as any) as EVMProcessableEvent),
-                    anyFunction(),
-                ),
-            ).called();
-
-            // injectEventSetDeletionQueries
-
-            verify(
-                context.evmEventSetsServiceMock.dryDelete(
-                    deepEqual({
-                        artifact_name: artifactName,
-                        event_name: eventName,
-                        block_number: blockNumber,
-                    }),
-                ),
-            ).called();
-
-            // injectProcessedHeightUpdateQuery
-
-            verify(
-                context.globalConfigServiceMock.dryUpdate(
-                    deepEqual({
-                        id: 'global',
-                    }),
-                    deepEqual({
-                        processed_block_number: blockNumber,
-                    }),
-                ),
-            ).called();
-        });
-
-        it('should fail on block rollback creation query generation error', async function() {
-            const blockNumber = 99;
-            const artifactName = 'T721Controller_v0';
-            const eventName = 'NewGroup';
-
-            const events = [
-                ({
-                    id: 'abcd1',
-                    artifact_name: artifactName,
-                    event: eventName,
-                    transaction_index: 1,
-                    log_index: 1,
-                } as any) as EVMEvent,
-                ({
-                    id: 'abcd2',
-                    artifact_name: artifactName,
-                    event: eventName,
-                    transaction_index: 1,
-                    log_index: 0,
-                } as any) as EVMEvent,
-                ({
-                    id: 'abcd3',
-                    artifact_name: artifactName,
-                    event: eventName,
-                    transaction_index: 0,
-                    log_index: 0,
-                } as any) as EVMEvent,
-            ];
-
-            // fetchEvmEventSets
-
-            const esQuery = {
-                body: {
-                    query: {
-                        bool: {
-                            must: {
-                                term: {
-                                    block_number: blockNumber,
-                                },
-                            },
-                        },
-                    },
-                },
-            };
-
-            when(context.evmEventSetsServiceMock.searchElastic(deepEqual(esQuery))).thenResolve({
-                error: null,
-                response: {
-                    hits: {
-                        total: 1,
-                        hits: [
-                            {
-                                _source: {
-                                    artifact_name: artifactName,
-                                    events,
-                                },
-                            },
-                        ],
-                    },
-                } as ESSearchReturn<EVMEventSetEntity>,
-            });
-
-            // convertEventsToQueries
-
-            when(
-                context.newGroupEventControllerMock.convert(
-                    deepEqual((events[0] as any) as EVMProcessableEvent),
-                    anyFunction(),
-                ),
-            ).thenCall(
-                async (event: EVMProcessableEvent, appender: Appender): Promise<void> => {
-                    const query = {
-                        query: 'forward 0',
-                        params: [42],
-                    };
-
-                    const rollback = {
-                        query: 'rollback 0',
-                        params: [24],
-                    };
-
-                    appender(query, rollback);
-                },
-            );
-
-            when(
-                context.newGroupEventControllerMock.convert(
-                    deepEqual((events[1] as any) as EVMProcessableEvent),
-                    anyFunction(),
-                ),
-            ).thenCall(
-                async (event: EVMProcessableEvent, appender: Appender): Promise<void> => {
-                    const query = {
-                        query: 'forward 1',
-                        params: [42],
-                    };
-
-                    const rollback = {
-                        query: 'rollback 1',
-                        params: [24],
-                    };
-
-                    appender(query, rollback);
-                },
-            );
-
-            when(
-                context.newGroupEventControllerMock.convert(
-                    deepEqual((events[2] as any) as EVMProcessableEvent),
-                    anyFunction(),
-                ),
-            ).thenCall(
-                async (event: EVMProcessableEvent, appender: Appender): Promise<void> => {
-                    const query = {
-                        query: 'forward 2',
-                        params: [42],
-                    };
-
-                    const rollback = {
-                        query: 'rollback 2',
-                        params: [24],
-                    };
-
-                    appender(query, rollback);
-                },
-            );
-
-            // injectEventSetDeletionQueries
-
-            when(
-                context.evmEventSetsServiceMock.dryDelete(
-                    deepEqual({
-                        artifact_name: artifactName,
-                        event_name: eventName,
-                        block_number: blockNumber,
-                    }),
-                ),
-            ).thenResolve({
-                error: null,
-                response: {
-                    query: 'delete block events',
-                    params: [123],
-                },
-            });
-
-            // injectProcessedHeightUpdateQuery
-
-            when(
-                context.globalConfigServiceMock.dryUpdate(
-                    deepEqual({
-                        id: 'global',
-                    }),
-                    deepEqual({
-                        processed_block_number: blockNumber,
-                    }),
-                ),
-            ).thenResolve({
-                error: null,
-                response: {
-                    query: 'processed height update',
-                    params: [321],
-                },
-            });
-
-            // injectBlockRollbackCreationQuery
-
-            when(
-                context.evmBlockRollbacksServiceMock.dryCreate(
-                    deepEqual({
-                        block_number: blockNumber,
-                        rollback_queries: [
-                            {
-                                query: 'rollback 0',
-                                params: [24],
-                            },
-                            {
-                                query: 'rollback 1',
-                                params: [24],
-                            },
-                            {
-                                query: 'rollback 2',
-                                params: [24],
-                            },
-                        ],
-                    }),
-                ),
-            ).thenResolve({
-                error: 'unexpected_error',
-                response: null,
-            });
-
-            // Call
-
-            await expect(
-                context.evmAntennaMergerScheduler.evmEventMerger({
-                    data: {
-                        blockNumber,
-                    },
-                } as Job),
-            ).rejects.toMatchObject(
-                new Error(
-                    `EVMAntennaMergerScheduler::injectBlockRollbackCreationQuery | error while creating block rollback query: unexpected_error`,
-                ),
-            );
-
-            // Verifications
-
-            verify(context.evmEventSetsServiceMock.searchElastic(deepEqual(esQuery))).called();
-
-            // convertEventsToQueries
-
-            verify(
-                context.newGroupEventControllerMock.convert(
-                    deepEqual((events[0] as any) as EVMProcessableEvent),
-                    anyFunction(),
-                ),
-            ).called();
-            verify(
-                context.newGroupEventControllerMock.convert(
-                    deepEqual((events[1] as any) as EVMProcessableEvent),
-                    anyFunction(),
-                ),
-            ).called();
-            verify(
-                context.newGroupEventControllerMock.convert(
-                    deepEqual((events[2] as any) as EVMProcessableEvent),
-                    anyFunction(),
-                ),
-            ).called();
-
-            // injectEventSetDeletionQueries
-
-            verify(
-                context.evmEventSetsServiceMock.dryDelete(
-                    deepEqual({
-                        artifact_name: artifactName,
-                        event_name: eventName,
-                        block_number: blockNumber,
-                    }),
-                ),
-            ).called();
-
-            // injectProcessedHeightUpdateQuery
-
-            verify(
-                context.globalConfigServiceMock.dryUpdate(
-                    deepEqual({
-                        id: 'global',
-                    }),
-                    deepEqual({
-                        processed_block_number: blockNumber,
-                    }),
-                ),
-            ).called();
-
-            // injectBlockRollbackCreationQuery
-
-            verify(
-                context.evmBlockRollbacksServiceMock.dryCreate(
-                    deepEqual({
-                        block_number: blockNumber,
-                        rollback_queries: [
-                            {
-                                query: 'rollback 0',
-                                params: [24],
-                            },
-                            {
-                                query: 'rollback 1',
-                                params: [24],
-                            },
-                            {
-                                query: 'rollback 2',
-                                params: [24],
-                            },
-                        ],
-                    }),
-                ),
-            ).called();
-        });
-
-        it('should fail on batched insert throw', async function() {
-            const blockNumber = 99;
-            const artifactName = 'T721Controller_v0';
-            const eventName = 'NewGroup';
-
-            const events = [
-                ({
-                    id: 'abcd1',
-                    artifact_name: artifactName,
-                    event: eventName,
-                    transaction_index: 1,
-                    log_index: 1,
-                } as any) as EVMEvent,
-                ({
-                    id: 'abcd2',
-                    artifact_name: artifactName,
-                    event: eventName,
-                    transaction_index: 1,
-                    log_index: 0,
-                } as any) as EVMEvent,
-                ({
-                    id: 'abcd3',
-                    artifact_name: artifactName,
-                    event: eventName,
-                    transaction_index: 0,
-                    log_index: 0,
-                } as any) as EVMEvent,
-            ];
-
-            // fetchEvmEventSets
-
-            const esQuery = {
-                body: {
-                    query: {
-                        bool: {
-                            must: {
-                                term: {
-                                    block_number: blockNumber,
-                                },
-                            },
-                        },
-                    },
-                },
-            };
-
-            when(context.evmEventSetsServiceMock.searchElastic(deepEqual(esQuery))).thenResolve({
-                error: null,
-                response: {
-                    hits: {
-                        total: 1,
-                        hits: [
-                            {
-                                _source: {
-                                    artifact_name: artifactName,
-                                    events,
-                                },
-                            },
-                        ],
-                    },
-                } as ESSearchReturn<EVMEventSetEntity>,
-            });
-
-            // convertEventsToQueries
-
-            when(
-                context.newGroupEventControllerMock.convert(
-                    deepEqual((events[0] as any) as EVMProcessableEvent),
-                    anyFunction(),
-                ),
-            ).thenCall(
-                async (event: EVMProcessableEvent, appender: Appender): Promise<void> => {
-                    const query = {
-                        query: 'forward 0',
-                        params: [42],
-                    };
-
-                    const rollback = {
-                        query: 'rollback 0',
-                        params: [24],
-                    };
-
-                    appender(query, rollback);
-                },
-            );
-
-            when(
-                context.newGroupEventControllerMock.convert(
-                    deepEqual((events[1] as any) as EVMProcessableEvent),
-                    anyFunction(),
-                ),
-            ).thenCall(
-                async (event: EVMProcessableEvent, appender: Appender): Promise<void> => {
-                    const query = {
-                        query: 'forward 1',
-                        params: [42],
-                    };
-
-                    const rollback = {
-                        query: 'rollback 1',
-                        params: [24],
-                    };
-
-                    appender(query, rollback);
-                },
-            );
-
-            when(
-                context.newGroupEventControllerMock.convert(
-                    deepEqual((events[2] as any) as EVMProcessableEvent),
-                    anyFunction(),
-                ),
-            ).thenCall(
-                async (event: EVMProcessableEvent, appender: Appender): Promise<void> => {
-                    const query = {
-                        query: 'forward 2',
-                        params: [42],
-                    };
-
-                    const rollback = {
-                        query: 'rollback 2',
-                        params: [24],
-                    };
-
-                    appender(query, rollback);
-                },
-            );
-
-            // injectEventSetDeletionQueries
-
-            when(
-                context.evmEventSetsServiceMock.dryDelete(
-                    deepEqual({
-                        artifact_name: artifactName,
-                        event_name: eventName,
-                        block_number: blockNumber,
-                    }),
-                ),
-            ).thenResolve({
-                error: null,
-                response: {
-                    query: 'delete block events',
-                    params: [123],
-                },
-            });
-
-            // injectProcessedHeightUpdateQuery
-
-            when(
-                context.globalConfigServiceMock.dryUpdate(
-                    deepEqual({
-                        id: 'global',
-                    }),
-                    deepEqual({
-                        processed_block_number: blockNumber,
-                    }),
-                ),
-            ).thenResolve({
-                error: null,
-                response: {
-                    query: 'processed height update',
-                    params: [321],
-                },
-            });
-
-            // injectBlockRollbackCreationQuery
-
-            when(
-                context.evmBlockRollbacksServiceMock.dryCreate(
-                    deepEqual({
-                        block_number: blockNumber,
-                        rollback_queries: [
-                            {
-                                query: 'rollback 0',
-                                params: [24],
-                            },
-                            {
-                                query: 'rollback 1',
-                                params: [24],
-                            },
-                            {
-                                query: 'rollback 2',
-                                params: [24],
-                            },
-                        ],
-                    }),
-                ),
-            ).thenResolve({
-                error: null,
-                response: {
-                    query: 'rollback pack',
+            const finalqueries = [
+                { query: 'create event', params: [] },
+                { query: 'rm this event', params: [] },
+                { query: 'increase block number', params: [] },
+                {
+                    query: 'rollback query',
                     params: [
-                        42,
+                        'hi',
+                        [
+                            { query: 'string', params: ['hi'] },
+                            { query: 'number', params: ['12'] },
+                            { query: 'object', params: ['{"hi":12}'] },
+                        ],
+                    ],
+                },
+                { query: 'create event', params: [] },
+                { query: 'rm this event', params: [] },
+                { query: 'increase block number', params: [] },
+                {
+                    query: 'rollback query',
+                    params: [
+                        'hi',
+                        [
+                            { query: 'string', params: ['hi'] },
+                            { query: 'number', params: ['12'] },
+                            { query: 'object', params: ['{"hi":12}'] },
+                        ],
+                    ],
+                },
+            ];
+
+            when(
+                context.globalConfigServiceMock.search(
+                    deepEqual({
+                        id: 'global',
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: [globalConfigEntity],
+            });
+
+            when(context.evmEventSetsServiceMock.searchElastic(deepEqual(evmEventSetsQuery))).thenResolve({
+                error: null,
+                response: evmEventSetsResponse,
+            });
+
+            when(context.newGroupEventControllerMock.convert(anything(), anyFunction())).thenCall(
+                async (event: EVMProcessableEvent, append: Appender): Promise<void> => {
+                    append(
+                        {
+                            query: `create event`,
+                            params: [],
+                        },
+
+                        {
+                            query: `delete event`,
+                            params: [],
+                        },
+                    );
+                },
+            );
+
+            when(
+                context.evmEventSetsServiceMock.dryDelete(
+                    deepEqual({
+                        artifact_name: 'T721Controller_v0',
+                        event_name: 'NewGroup',
+                        block_number: anyNumber(),
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: {
+                    query: 'rm this event',
+                    params: [],
+                },
+            });
+
+            when(
+                context.globalConfigServiceMock.dryUpdate(
+                    deepEqual({
+                        id: 'global',
+                    }),
+                    deepEqual({
+                        processed_block_number: anyNumber(),
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: {
+                    query: 'increase block number',
+                    params: [],
+                },
+            });
+
+            when(
+                context.evmBlockRollbacksServiceMock.dryCreate(
+                    deepEqual({
+                        block_number: anyNumber(),
+                        rollback_queries: [
+                            {
+                                query: `delete event`,
+                                params: [],
+                            },
+                        ],
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: {
+                    query: 'rollback query',
+                    params: [
+                        'hi',
                         [
                             {
-                                query: 'rollback packed',
-                                params: ['pack', 123, { packed: true }],
+                                query: 'string',
+                                params: ['hi'],
+                            },
+                            {
+                                query: 'number',
+                                params: [12],
+                            },
+                            {
+                                query: 'object',
+                                params: [{ hi: 12 }],
                             },
                         ],
                     ],
                 },
             });
 
-            // Atomic batched insert
+            when(context.connectionMock.doBatchAsync(anything())).thenResolve();
 
-            when(
-                context.connectionMock.doBatchAsync(
-                    deepEqual([
-                        {
-                            query: 'forward 2',
-                            params: [42],
-                        },
-                        {
-                            query: 'forward 1',
-                            params: [42],
-                        },
-                        {
-                            query: 'forward 0',
-                            params: [42],
-                        },
-                        {
-                            query: 'delete block events',
-                            params: [123],
-                        },
-                        {
-                            query: 'processed height update',
-                            params: [321],
-                        },
-                        {
-                            query: 'rollback pack',
-                            params: [
-                                42,
-                                [
-                                    {
-                                        query: 'rollback packed',
-                                        params: ['pack', '123', JSON.stringify({ packed: true })],
-                                    },
-                                ],
-                            ],
-                        },
-                    ]),
-                ),
-            ).thenReject(new Error('insertion error'));
-
-            // Call
-
-            await expect(
-                context.evmAntennaMergerScheduler.evmEventMerger({
-                    data: {
-                        blockNumber,
-                    },
-                } as Job),
-            ).rejects.toMatchObject(new Error('insertion error'));
-
-            // Verifications
-
-            verify(context.evmEventSetsServiceMock.searchElastic(deepEqual(esQuery))).called();
-
-            // convertEventsToQueries
+            await context.evmAntennaMergerScheduler.evmEventMergerPoller();
 
             verify(
-                context.newGroupEventControllerMock.convert(
-                    deepEqual((events[0] as any) as EVMProcessableEvent),
-                    anyFunction(),
+                context.globalConfigServiceMock.search(
+                    deepEqual({
+                        id: 'global',
+                    }),
                 ),
-            ).called();
-            verify(
-                context.newGroupEventControllerMock.convert(
-                    deepEqual((events[1] as any) as EVMProcessableEvent),
-                    anyFunction(),
-                ),
-            ).called();
-            verify(
-                context.newGroupEventControllerMock.convert(
-                    deepEqual((events[2] as any) as EVMProcessableEvent),
-                    anyFunction(),
-                ),
-            ).called();
-
-            // injectEventSetDeletionQueries
-
+            ).times(1);
+            verify(context.evmEventSetsServiceMock.searchElastic(deepEqual(evmEventSetsQuery))).times(1);
+            verify(context.newGroupEventControllerMock.convert(anything(), anyFunction())).times(1);
             verify(
                 context.evmEventSetsServiceMock.dryDelete(
                     deepEqual({
-                        artifact_name: artifactName,
-                        event_name: eventName,
-                        block_number: blockNumber,
+                        artifact_name: 'T721Controller_v0',
+                        event_name: 'NewGroup',
+                        block_number: anyNumber(),
                     }),
                 ),
-            ).called();
-
-            // injectProcessedHeightUpdateQuery
-
+            ).times(1);
             verify(
                 context.globalConfigServiceMock.dryUpdate(
                     deepEqual({
                         id: 'global',
                     }),
                     deepEqual({
-                        processed_block_number: blockNumber,
+                        processed_block_number: anyNumber(),
                     }),
                 ),
-            ).called();
-
-            // injectBlockRollbackCreationQuery
-
+            ).times(1);
             verify(
                 context.evmBlockRollbacksServiceMock.dryCreate(
                     deepEqual({
-                        block_number: blockNumber,
+                        block_number: anyNumber(),
                         rollback_queries: [
                             {
-                                query: 'rollback 0',
-                                params: [24],
-                            },
-                            {
-                                query: 'rollback 1',
-                                params: [24],
-                            },
-                            {
-                                query: 'rollback 2',
-                                params: [24],
+                                query: `delete event`,
+                                params: [],
                             },
                         ],
                     }),
                 ),
-            ).called();
+            ).times(1);
+            verify(context.connectionMock.doBatchAsync(anything())).times(1);
+        });
 
-            // Atomic batched insert
+        it('should fail on config fetch error', async function() {
+            when(
+                context.globalConfigServiceMock.search(
+                    deepEqual({
+                        id: 'global',
+                    }),
+                ),
+            ).thenResolve({
+                error: 'unexpected_error',
+                response: null,
+            });
+
+            const error = new NestError(
+                `EVMAntennaMergerScheduler::evmEventMergerPoller | Unable to recover global config: unexpected_error`,
+            );
+
+            await expect(context.evmAntennaMergerScheduler.evmEventMergerPoller()).rejects.toMatchObject(error);
+
+            verify(context.shutdownServiceMock.shutdownWithError(deepEqual(error))).called();
+            verify(
+                context.globalConfigServiceMock.search(
+                    deepEqual({
+                        id: 'global',
+                    }),
+                ),
+            ).times(1);
+        });
+
+        it('should fail on empty config fetch error', async function() {
+            when(
+                context.globalConfigServiceMock.search(
+                    deepEqual({
+                        id: 'global',
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: [],
+            });
+
+            const error = new NestError(
+                `EVMAntennaMergerScheduler::evmEventMergerPoller | Unable to recover global config: no document found`,
+            );
+
+            await expect(context.evmAntennaMergerScheduler.evmEventMergerPoller()).rejects.toMatchObject(error);
+
+            verify(context.shutdownServiceMock.shutdownWithError(deepEqual(error))).called();
+            verify(
+                context.globalConfigServiceMock.search(
+                    deepEqual({
+                        id: 'global',
+                    }),
+                ),
+            ).times(1);
+        });
+
+        it('should fail on event set merge error', async function() {
+            const globalConfigEntity: GlobalEntity = {
+                id: 'global',
+                block_number: 12,
+                processed_block_number: 10,
+                eth_eur_price: 10000,
+                created_at: new Date(Date.now()),
+                updated_at: new Date(Date.now()),
+            };
+            const evmEventSetsQuery = {
+                body: {
+                    query: {
+                        bool: {
+                            must: {
+                                range: {
+                                    block_number: {
+                                        gte: 11,
+                                        lte: 12,
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            };
+
+            when(
+                context.globalConfigServiceMock.search(
+                    deepEqual({
+                        id: 'global',
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: [globalConfigEntity],
+            });
+
+            when(context.evmEventSetsServiceMock.searchElastic(deepEqual(evmEventSetsQuery))).thenResolve({
+                error: 'unexpected_error',
+                response: null,
+            });
+
+            const error = new NestError(
+                'EVMAntennaMergerScheduler::fetchEvmEventSets | Error while fetching events for blocks 11 => 12: unexpected_error',
+            );
+
+            await expect(context.evmAntennaMergerScheduler.evmEventMergerPoller()).rejects.toMatchObject(error);
+
+            verify(context.shutdownServiceMock.shutdownWithError(deepEqual(error))).times(1);
+            verify(
+                context.globalConfigServiceMock.search(
+                    deepEqual({
+                        id: 'global',
+                    }),
+                ),
+            ).times(1);
+            verify(context.evmEventSetsServiceMock.searchElastic(deepEqual(evmEventSetsQuery))).times(1);
+        });
+
+        it('should properly merge events from same block', async function() {
+            const globalConfigEntity: GlobalEntity = {
+                id: 'global',
+                block_number: 12,
+                processed_block_number: 10,
+                eth_eur_price: 10000,
+                created_at: new Date(Date.now()),
+                updated_at: new Date(Date.now()),
+            };
+            const evmEventSetsQuery = {
+                body: {
+                    query: {
+                        bool: {
+                            must: {
+                                range: {
+                                    block_number: {
+                                        gte: 11,
+                                        lte: 12,
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            };
+            const evmEventSetsResponse: ESSearchReturn<EVMEventSetEntity> = {
+                took: 12,
+                timed_out: false,
+                _shards: {
+                    total: 1,
+                    successful: 1,
+                    skipped: 0,
+                    failed: 0,
+                },
+                hits: {
+                    max_score: 1,
+                    total: 1,
+                    hits: [
+                        {
+                            _index: 'idx',
+                            _id: 'id',
+                            _type: 'type',
+                            _score: 1,
+                            _source: {
+                                artifact_name: 'T721Controller_v0',
+                                event_name: 'NewGroup',
+                                block_number: 11,
+                                events: [...Array(2).keys()].map(
+                                    (idx: number): EVMEvent => ({
+                                        return_values: JSON.stringify({}),
+                                        raw_data: 'raw_data',
+                                        block_number: 11,
+                                        raw_topics: ['raw_topics'],
+                                        event: 'NewGroup',
+                                        signature: 'signature',
+                                        log_index: 0,
+                                        transaction_index: idx,
+                                        transaction_hash: 'transaction_hash',
+                                        block_hash: 'block_hash',
+                                        address: 'address',
+                                    }),
+                                ),
+                                created_at: new Date(Date.now()),
+                                updated_at: new Date(Date.now()),
+                            },
+                        },
+                    ],
+                },
+            };
+
+            when(
+                context.globalConfigServiceMock.search(
+                    deepEqual({
+                        id: 'global',
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: [globalConfigEntity],
+            });
+
+            when(context.evmEventSetsServiceMock.searchElastic(deepEqual(evmEventSetsQuery))).thenResolve({
+                error: null,
+                response: evmEventSetsResponse,
+            });
+
+            when(context.newGroupEventControllerMock.convert(anything(), anyFunction())).thenCall(
+                async (event: EVMProcessableEvent, append: Appender): Promise<void> => {
+                    append(
+                        {
+                            query: `create event`,
+                            params: [],
+                        },
+
+                        {
+                            query: `delete event`,
+                            params: [],
+                        },
+                    );
+                },
+            );
+
+            when(
+                context.evmEventSetsServiceMock.dryDelete(
+                    deepEqual({
+                        artifact_name: 'T721Controller_v0',
+                        event_name: 'NewGroup',
+                        block_number: anyNumber(),
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: {
+                    query: 'rm this event',
+                    params: [],
+                },
+            });
+
+            when(
+                context.globalConfigServiceMock.dryUpdate(
+                    deepEqual({
+                        id: 'global',
+                    }),
+                    deepEqual({
+                        processed_block_number: anyNumber(),
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: {
+                    query: 'increase block number',
+                    params: [],
+                },
+            });
+
+            when(
+                context.evmBlockRollbacksServiceMock.dryCreate(
+                    deepEqual({
+                        block_number: anyNumber(),
+                        rollback_queries: [
+                            {
+                                query: `delete event`,
+                                params: [],
+                            },
+                            {
+                                query: `delete event`,
+                                params: [],
+                            },
+                        ],
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: {
+                    query: 'rollback query',
+                    params: [
+                        'hi',
+                        [
+                            {
+                                query: 'string',
+                                params: ['hi'],
+                            },
+                            {
+                                query: 'number',
+                                params: [12],
+                            },
+                            {
+                                query: 'object',
+                                params: [{ hi: 12 }],
+                            },
+                        ],
+                    ],
+                },
+            });
+
+            when(context.connectionMock.doBatchAsync(anything())).thenResolve();
+
+            await context.evmAntennaMergerScheduler.evmEventMergerPoller();
 
             verify(
-                context.connectionMock.doBatchAsync(
-                    deepEqual([
-                        {
-                            query: 'forward 2',
-                            params: [42],
+                context.globalConfigServiceMock.search(
+                    deepEqual({
+                        id: 'global',
+                    }),
+                ),
+            ).times(1);
+            verify(context.evmEventSetsServiceMock.searchElastic(deepEqual(evmEventSetsQuery))).times(1);
+            verify(context.newGroupEventControllerMock.convert(anything(), anyFunction())).times(2);
+            verify(
+                context.evmEventSetsServiceMock.dryDelete(
+                    deepEqual({
+                        artifact_name: 'T721Controller_v0',
+                        event_name: 'NewGroup',
+                        block_number: anyNumber(),
+                    }),
+                ),
+            ).times(1);
+            verify(
+                context.globalConfigServiceMock.dryUpdate(
+                    deepEqual({
+                        id: 'global',
+                    }),
+                    deepEqual({
+                        processed_block_number: anyNumber(),
+                    }),
+                ),
+            ).times(1);
+            verify(
+                context.evmBlockRollbacksServiceMock.dryCreate(
+                    deepEqual({
+                        block_number: anyNumber(),
+                        rollback_queries: [
+                            {
+                                query: `delete event`,
+                                params: [],
+                            },
+                            {
+                                query: `delete event`,
+                                params: [],
+                            },
+                        ],
+                    }),
+                ),
+            ).times(1);
+            verify(context.connectionMock.doBatchAsync(anything())).times(1);
+        });
+
+        it('should properly merge events from same block and same tx', async function() {
+            const globalConfigEntity: GlobalEntity = {
+                id: 'global',
+                block_number: 12,
+                processed_block_number: 10,
+                eth_eur_price: 10000,
+                created_at: new Date(Date.now()),
+                updated_at: new Date(Date.now()),
+            };
+            const evmEventSetsQuery = {
+                body: {
+                    query: {
+                        bool: {
+                            must: {
+                                range: {
+                                    block_number: {
+                                        gte: 11,
+                                        lte: 12,
+                                    },
+                                },
+                            },
                         },
+                    },
+                },
+            };
+            const evmEventSetsResponse: ESSearchReturn<EVMEventSetEntity> = {
+                took: 12,
+                timed_out: false,
+                _shards: {
+                    total: 1,
+                    successful: 1,
+                    skipped: 0,
+                    failed: 0,
+                },
+                hits: {
+                    max_score: 1,
+                    total: 1,
+                    hits: [
                         {
-                            query: 'forward 1',
-                            params: [42],
+                            _index: 'idx',
+                            _id: 'id',
+                            _type: 'type',
+                            _score: 1,
+                            _source: {
+                                artifact_name: 'T721Controller_v0',
+                                event_name: 'NewGroup',
+                                block_number: 11,
+                                events: [...Array(2).keys()].map(
+                                    (idx: number): EVMEvent => ({
+                                        return_values: JSON.stringify({}),
+                                        raw_data: 'raw_data',
+                                        block_number: 11,
+                                        raw_topics: ['raw_topics'],
+                                        event: 'NewGroup',
+                                        signature: 'signature',
+                                        log_index: idx,
+                                        transaction_index: 0,
+                                        transaction_hash: 'transaction_hash',
+                                        block_hash: 'block_hash',
+                                        address: 'address',
+                                    }),
+                                ),
+                                created_at: new Date(Date.now()),
+                                updated_at: new Date(Date.now()),
+                            },
                         },
+                    ],
+                },
+            };
+
+            when(
+                context.globalConfigServiceMock.search(
+                    deepEqual({
+                        id: 'global',
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: [globalConfigEntity],
+            });
+
+            when(context.evmEventSetsServiceMock.searchElastic(deepEqual(evmEventSetsQuery))).thenResolve({
+                error: null,
+                response: evmEventSetsResponse,
+            });
+
+            when(context.newGroupEventControllerMock.convert(anything(), anyFunction())).thenCall(
+                async (event: EVMProcessableEvent, append: Appender): Promise<void> => {
+                    append(
                         {
-                            query: 'forward 0',
-                            params: [42],
+                            query: `create event`,
+                            params: [],
                         },
+
                         {
-                            query: 'delete block events',
-                            params: [123],
+                            query: `delete event`,
+                            params: [],
                         },
-                        {
-                            query: 'processed height update',
-                            params: [321],
+                    );
+                },
+            );
+
+            when(
+                context.evmEventSetsServiceMock.dryDelete(
+                    deepEqual({
+                        artifact_name: 'T721Controller_v0',
+                        event_name: 'NewGroup',
+                        block_number: anyNumber(),
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: {
+                    query: 'rm this event',
+                    params: [],
+                },
+            });
+
+            when(
+                context.globalConfigServiceMock.dryUpdate(
+                    deepEqual({
+                        id: 'global',
+                    }),
+                    deepEqual({
+                        processed_block_number: anyNumber(),
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: {
+                    query: 'increase block number',
+                    params: [],
+                },
+            });
+
+            when(
+                context.evmBlockRollbacksServiceMock.dryCreate(
+                    deepEqual({
+                        block_number: anyNumber(),
+                        rollback_queries: [
+                            {
+                                query: `delete event`,
+                                params: [],
+                            },
+                            {
+                                query: `delete event`,
+                                params: [],
+                            },
+                        ],
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: {
+                    query: 'rollback query',
+                    params: [
+                        'hi',
+                        [
+                            {
+                                query: 'string',
+                                params: ['hi'],
+                            },
+                            {
+                                query: 'number',
+                                params: [12],
+                            },
+                            {
+                                query: 'object',
+                                params: [{ hi: 12 }],
+                            },
+                        ],
+                    ],
+                },
+            });
+
+            when(context.connectionMock.doBatchAsync(anything())).thenResolve();
+
+            await context.evmAntennaMergerScheduler.evmEventMergerPoller();
+
+            verify(
+                context.globalConfigServiceMock.search(
+                    deepEqual({
+                        id: 'global',
+                    }),
+                ),
+            ).times(1);
+            verify(context.evmEventSetsServiceMock.searchElastic(deepEqual(evmEventSetsQuery))).times(1);
+            verify(context.newGroupEventControllerMock.convert(anything(), anyFunction())).times(2);
+            verify(
+                context.evmEventSetsServiceMock.dryDelete(
+                    deepEqual({
+                        artifact_name: 'T721Controller_v0',
+                        event_name: 'NewGroup',
+                        block_number: anyNumber(),
+                    }),
+                ),
+            ).times(1);
+            verify(
+                context.globalConfigServiceMock.dryUpdate(
+                    deepEqual({
+                        id: 'global',
+                    }),
+                    deepEqual({
+                        processed_block_number: anyNumber(),
+                    }),
+                ),
+            ).times(1);
+            verify(
+                context.evmBlockRollbacksServiceMock.dryCreate(
+                    deepEqual({
+                        block_number: anyNumber(),
+                        rollback_queries: [
+                            {
+                                query: `delete event`,
+                                params: [],
+                            },
+                            {
+                                query: `delete event`,
+                                params: [],
+                            },
+                        ],
+                    }),
+                ),
+            ).times(1);
+            verify(context.connectionMock.doBatchAsync(anything())).times(1);
+        });
+
+        it('should fail on no matching controller', async function() {
+            reset(context.newGroupEventControllerMock);
+            when(context.newGroupEventControllerMock.eventName).thenReturn('NewGroup');
+            when(context.newGroupEventControllerMock.artifactName).thenReturn('T721Controller_v0');
+            when(context.newGroupEventControllerMock.isHandler('NewGroup', 'T721Controller_v0')).thenReturn(false);
+
+            const globalConfigEntity: GlobalEntity = {
+                id: 'global',
+                block_number: 12,
+                processed_block_number: 10,
+                eth_eur_price: 10000,
+                created_at: new Date(Date.now()),
+                updated_at: new Date(Date.now()),
+            };
+            const evmEventSetsQuery = {
+                body: {
+                    query: {
+                        bool: {
+                            must: {
+                                range: {
+                                    block_number: {
+                                        gte: 11,
+                                        lte: 12,
+                                    },
+                                },
+                            },
                         },
-                        {
-                            query: 'rollback pack',
-                            params: [
-                                42,
-                                [
+                    },
+                },
+            };
+            const evmEventSetsResponse: ESSearchReturn<EVMEventSetEntity> = {
+                took: 12,
+                timed_out: false,
+                _shards: {
+                    total: 1,
+                    successful: 1,
+                    skipped: 0,
+                    failed: 0,
+                },
+                hits: {
+                    max_score: 1,
+                    total: 2,
+                    hits: [...Array(2).keys()].map(
+                        (idx: number): ESSearchHit<EVMEventSetEntity> => ({
+                            _index: 'idx',
+                            _id: 'id',
+                            _type: 'type',
+                            _score: 1,
+                            _source: {
+                                artifact_name: 'T721Controller_v0',
+                                event_name: 'NewGroup',
+                                block_number: 11 + idx,
+                                events: [
                                     {
-                                        query: 'rollback packed',
-                                        params: ['pack', '123', JSON.stringify({ packed: true })],
+                                        return_values: JSON.stringify({}),
+                                        raw_data: 'raw_data',
+                                        block_number: 11 + idx,
+                                        raw_topics: ['raw_topics'],
+                                        event: 'NewGroup',
+                                        signature: 'signature',
+                                        log_index: 0,
+                                        transaction_index: 0,
+                                        transaction_hash: 'transaction_hash',
+                                        block_hash: 'block_hash',
+                                        address: 'address',
                                     },
                                 ],
-                            ],
-                        },
-                    ]),
+                                created_at: new Date(Date.now()),
+                                updated_at: new Date(Date.now()),
+                            },
+                        }),
+                    ),
+                },
+            };
+
+            when(
+                context.globalConfigServiceMock.search(
+                    deepEqual({
+                        id: 'global',
+                    }),
                 ),
-            ).called();
+            ).thenResolve({
+                error: null,
+                response: [globalConfigEntity],
+            });
+
+            when(context.evmEventSetsServiceMock.searchElastic(deepEqual(evmEventSetsQuery))).thenResolve({
+                error: null,
+                response: evmEventSetsResponse,
+            });
+
+            const error = new NestError(
+                'EVMAntennaMergerScheduler::convertEventsToQueries | event NewGroup from T721Controller_v0 has no matching controller',
+            );
+
+            await expect(context.evmAntennaMergerScheduler.evmEventMergerPoller()).rejects.toMatchObject(error);
+
+            verify(context.shutdownServiceMock.shutdownWithError(deepEqual(error))).times(1);
+            verify(
+                context.globalConfigServiceMock.search(
+                    deepEqual({
+                        id: 'global',
+                    }),
+                ),
+            ).times(1);
+            verify(context.evmEventSetsServiceMock.searchElastic(deepEqual(evmEventSetsQuery))).times(1);
+        });
+
+        it('should fail on delete query error', async function() {
+            const globalConfigEntity: GlobalEntity = {
+                id: 'global',
+                block_number: 12,
+                processed_block_number: 10,
+                eth_eur_price: 10000,
+                created_at: new Date(Date.now()),
+                updated_at: new Date(Date.now()),
+            };
+            const evmEventSetsQuery = {
+                body: {
+                    query: {
+                        bool: {
+                            must: {
+                                range: {
+                                    block_number: {
+                                        gte: 11,
+                                        lte: 12,
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            };
+            const evmEventSetsResponse: ESSearchReturn<EVMEventSetEntity> = {
+                took: 12,
+                timed_out: false,
+                _shards: {
+                    total: 1,
+                    successful: 1,
+                    skipped: 0,
+                    failed: 0,
+                },
+                hits: {
+                    max_score: 1,
+                    total: 2,
+                    hits: [...Array(2).keys()].map(
+                        (idx: number): ESSearchHit<EVMEventSetEntity> => ({
+                            _index: 'idx',
+                            _id: 'id',
+                            _type: 'type',
+                            _score: 1,
+                            _source: {
+                                artifact_name: 'T721Controller_v0',
+                                event_name: 'NewGroup',
+                                block_number: 11 + idx,
+                                events: [
+                                    {
+                                        return_values: JSON.stringify({}),
+                                        raw_data: 'raw_data',
+                                        block_number: 11 + idx,
+                                        raw_topics: ['raw_topics'],
+                                        event: 'NewGroup',
+                                        signature: 'signature',
+                                        log_index: 0,
+                                        transaction_index: 0,
+                                        transaction_hash: 'transaction_hash',
+                                        block_hash: 'block_hash',
+                                        address: 'address',
+                                    },
+                                ],
+                                created_at: new Date(Date.now()),
+                                updated_at: new Date(Date.now()),
+                            },
+                        }),
+                    ),
+                },
+            };
+            const finalqueries = [
+                { query: 'create event', params: [] },
+                { query: 'rm this event', params: [] },
+                { query: 'increase block number', params: [] },
+                {
+                    query: 'rollback query',
+                    params: [
+                        'hi',
+                        [
+                            { query: 'string', params: ['hi'] },
+                            { query: 'number', params: ['12'] },
+                            { query: 'object', params: ['{"hi":12}'] },
+                        ],
+                    ],
+                },
+                { query: 'create event', params: [] },
+                { query: 'rm this event', params: [] },
+                { query: 'increase block number', params: [] },
+                {
+                    query: 'rollback query',
+                    params: [
+                        'hi',
+                        [
+                            { query: 'string', params: ['hi'] },
+                            { query: 'number', params: ['12'] },
+                            { query: 'object', params: ['{"hi":12}'] },
+                        ],
+                    ],
+                },
+            ];
+
+            when(
+                context.globalConfigServiceMock.search(
+                    deepEqual({
+                        id: 'global',
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: [globalConfigEntity],
+            });
+
+            when(context.evmEventSetsServiceMock.searchElastic(deepEqual(evmEventSetsQuery))).thenResolve({
+                error: null,
+                response: evmEventSetsResponse,
+            });
+
+            when(context.newGroupEventControllerMock.convert(anything(), anyFunction())).thenCall(
+                async (event: EVMProcessableEvent, append: Appender): Promise<void> => {
+                    append(
+                        {
+                            query: `create event`,
+                            params: [],
+                        },
+
+                        {
+                            query: `delete event`,
+                            params: [],
+                        },
+                    );
+                },
+            );
+
+            when(
+                context.evmEventSetsServiceMock.dryDelete(
+                    deepEqual({
+                        artifact_name: 'T721Controller_v0',
+                        event_name: 'NewGroup',
+                        block_number: anyNumber(),
+                    }),
+                ),
+            ).thenResolve({
+                error: 'unexpected_error',
+                response: null,
+            });
+
+            const error = new NestError(
+                'EVMAntennaMergerScheduler::injectEventSetDeletionQueries | error while creating evmeventset removal on event NewGroup on controller T721Controller_v0',
+            );
+
+            await expect(context.evmAntennaMergerScheduler.evmEventMergerPoller()).rejects.toMatchObject(error);
+
+            verify(context.shutdownServiceMock.shutdownWithError(deepEqual(error))).times(1);
+            verify(
+                context.globalConfigServiceMock.search(
+                    deepEqual({
+                        id: 'global',
+                    }),
+                ),
+            ).times(1);
+            verify(context.evmEventSetsServiceMock.searchElastic(deepEqual(evmEventSetsQuery))).times(1);
+            verify(context.newGroupEventControllerMock.convert(anything(), anyFunction())).times(1);
+            verify(
+                context.evmEventSetsServiceMock.dryDelete(
+                    deepEqual({
+                        artifact_name: 'T721Controller_v0',
+                        event_name: 'NewGroup',
+                        block_number: anyNumber(),
+                    }),
+                ),
+            ).times(1);
+        });
+
+        it('should fail on processed height update error', async function() {
+            const globalConfigEntity: GlobalEntity = {
+                id: 'global',
+                block_number: 12,
+                processed_block_number: 10,
+                eth_eur_price: 10000,
+                created_at: new Date(Date.now()),
+                updated_at: new Date(Date.now()),
+            };
+            const evmEventSetsQuery = {
+                body: {
+                    query: {
+                        bool: {
+                            must: {
+                                range: {
+                                    block_number: {
+                                        gte: 11,
+                                        lte: 12,
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            };
+            const evmEventSetsResponse: ESSearchReturn<EVMEventSetEntity> = {
+                took: 12,
+                timed_out: false,
+                _shards: {
+                    total: 1,
+                    successful: 1,
+                    skipped: 0,
+                    failed: 0,
+                },
+                hits: {
+                    max_score: 1,
+                    total: 2,
+                    hits: [...Array(2).keys()].map(
+                        (idx: number): ESSearchHit<EVMEventSetEntity> => ({
+                            _index: 'idx',
+                            _id: 'id',
+                            _type: 'type',
+                            _score: 1,
+                            _source: {
+                                artifact_name: 'T721Controller_v0',
+                                event_name: 'NewGroup',
+                                block_number: 11 + idx,
+                                events: [
+                                    {
+                                        return_values: JSON.stringify({}),
+                                        raw_data: 'raw_data',
+                                        block_number: 11 + idx,
+                                        raw_topics: ['raw_topics'],
+                                        event: 'NewGroup',
+                                        signature: 'signature',
+                                        log_index: 0,
+                                        transaction_index: 0,
+                                        transaction_hash: 'transaction_hash',
+                                        block_hash: 'block_hash',
+                                        address: 'address',
+                                    },
+                                ],
+                                created_at: new Date(Date.now()),
+                                updated_at: new Date(Date.now()),
+                            },
+                        }),
+                    ),
+                },
+            };
+            const finalqueries = [
+                { query: 'create event', params: [] },
+                { query: 'rm this event', params: [] },
+                { query: 'increase block number', params: [] },
+                {
+                    query: 'rollback query',
+                    params: [
+                        'hi',
+                        [
+                            { query: 'string', params: ['hi'] },
+                            { query: 'number', params: ['12'] },
+                            { query: 'object', params: ['{"hi":12}'] },
+                        ],
+                    ],
+                },
+                { query: 'create event', params: [] },
+                { query: 'rm this event', params: [] },
+                { query: 'increase block number', params: [] },
+                {
+                    query: 'rollback query',
+                    params: [
+                        'hi',
+                        [
+                            { query: 'string', params: ['hi'] },
+                            { query: 'number', params: ['12'] },
+                            { query: 'object', params: ['{"hi":12}'] },
+                        ],
+                    ],
+                },
+            ];
+
+            when(
+                context.globalConfigServiceMock.search(
+                    deepEqual({
+                        id: 'global',
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: [globalConfigEntity],
+            });
+
+            when(context.evmEventSetsServiceMock.searchElastic(deepEqual(evmEventSetsQuery))).thenResolve({
+                error: null,
+                response: evmEventSetsResponse,
+            });
+
+            when(context.newGroupEventControllerMock.convert(anything(), anyFunction())).thenCall(
+                async (event: EVMProcessableEvent, append: Appender): Promise<void> => {
+                    append(
+                        {
+                            query: `create event`,
+                            params: [],
+                        },
+
+                        {
+                            query: `delete event`,
+                            params: [],
+                        },
+                    );
+                },
+            );
+
+            when(
+                context.evmEventSetsServiceMock.dryDelete(
+                    deepEqual({
+                        artifact_name: 'T721Controller_v0',
+                        event_name: 'NewGroup',
+                        block_number: anyNumber(),
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: {
+                    query: 'rm this event',
+                    params: [],
+                },
+            });
+
+            when(
+                context.globalConfigServiceMock.dryUpdate(
+                    deepEqual({
+                        id: 'global',
+                    }),
+                    deepEqual({
+                        processed_block_number: anyNumber(),
+                    }),
+                ),
+            ).thenResolve({
+                error: 'unexpected_error',
+                response: null,
+            });
+
+            const error = new NestError(
+                'EVMAntennaMergerScheduler::evmEventMerger | error while creating global config update query: unexpected_error',
+            );
+
+            await expect(context.evmAntennaMergerScheduler.evmEventMergerPoller()).rejects.toMatchObject(error);
+
+            verify(context.shutdownServiceMock.shutdownWithError(deepEqual(error))).times(1);
+
+            verify(
+                context.globalConfigServiceMock.search(
+                    deepEqual({
+                        id: 'global',
+                    }),
+                ),
+            ).times(1);
+            verify(context.evmEventSetsServiceMock.searchElastic(deepEqual(evmEventSetsQuery))).times(1);
+            verify(context.newGroupEventControllerMock.convert(anything(), anyFunction())).times(1);
+            verify(
+                context.evmEventSetsServiceMock.dryDelete(
+                    deepEqual({
+                        artifact_name: 'T721Controller_v0',
+                        event_name: 'NewGroup',
+                        block_number: anyNumber(),
+                    }),
+                ),
+            ).times(1);
+            verify(
+                context.globalConfigServiceMock.dryUpdate(
+                    deepEqual({
+                        id: 'global',
+                    }),
+                    deepEqual({
+                        processed_block_number: anyNumber(),
+                    }),
+                ),
+            ).times(1);
+        });
+
+        it('should fail on rollback query creation errors', async function() {
+            const globalConfigEntity: GlobalEntity = {
+                id: 'global',
+                block_number: 12,
+                processed_block_number: 10,
+                eth_eur_price: 10000,
+                created_at: new Date(Date.now()),
+                updated_at: new Date(Date.now()),
+            };
+            const evmEventSetsQuery = {
+                body: {
+                    query: {
+                        bool: {
+                            must: {
+                                range: {
+                                    block_number: {
+                                        gte: 11,
+                                        lte: 12,
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            };
+            const evmEventSetsResponse: ESSearchReturn<EVMEventSetEntity> = {
+                took: 12,
+                timed_out: false,
+                _shards: {
+                    total: 1,
+                    successful: 1,
+                    skipped: 0,
+                    failed: 0,
+                },
+                hits: {
+                    max_score: 1,
+                    total: 2,
+                    hits: [...Array(2).keys()].map(
+                        (idx: number): ESSearchHit<EVMEventSetEntity> => ({
+                            _index: 'idx',
+                            _id: 'id',
+                            _type: 'type',
+                            _score: 1,
+                            _source: {
+                                artifact_name: 'T721Controller_v0',
+                                event_name: 'NewGroup',
+                                block_number: 11 + idx,
+                                events: [
+                                    {
+                                        return_values: JSON.stringify({}),
+                                        raw_data: 'raw_data',
+                                        block_number: 11 + idx,
+                                        raw_topics: ['raw_topics'],
+                                        event: 'NewGroup',
+                                        signature: 'signature',
+                                        log_index: 0,
+                                        transaction_index: 0,
+                                        transaction_hash: 'transaction_hash',
+                                        block_hash: 'block_hash',
+                                        address: 'address',
+                                    },
+                                ],
+                                created_at: new Date(Date.now()),
+                                updated_at: new Date(Date.now()),
+                            },
+                        }),
+                    ),
+                },
+            };
+            const finalqueries = [
+                { query: 'create event', params: [] },
+                { query: 'rm this event', params: [] },
+                { query: 'increase block number', params: [] },
+                {
+                    query: 'rollback query',
+                    params: [
+                        'hi',
+                        [
+                            { query: 'string', params: ['hi'] },
+                            { query: 'number', params: ['12'] },
+                            { query: 'object', params: ['{"hi":12}'] },
+                        ],
+                    ],
+                },
+                { query: 'create event', params: [] },
+                { query: 'rm this event', params: [] },
+                { query: 'increase block number', params: [] },
+                {
+                    query: 'rollback query',
+                    params: [
+                        'hi',
+                        [
+                            { query: 'string', params: ['hi'] },
+                            { query: 'number', params: ['12'] },
+                            { query: 'object', params: ['{"hi":12}'] },
+                        ],
+                    ],
+                },
+            ];
+
+            when(
+                context.globalConfigServiceMock.search(
+                    deepEqual({
+                        id: 'global',
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: [globalConfigEntity],
+            });
+
+            when(context.evmEventSetsServiceMock.searchElastic(deepEqual(evmEventSetsQuery))).thenResolve({
+                error: null,
+                response: evmEventSetsResponse,
+            });
+
+            when(context.newGroupEventControllerMock.convert(anything(), anyFunction())).thenCall(
+                async (event: EVMProcessableEvent, append: Appender): Promise<void> => {
+                    append(
+                        {
+                            query: `create event`,
+                            params: [],
+                        },
+
+                        {
+                            query: `delete event`,
+                            params: [],
+                        },
+                    );
+                },
+            );
+
+            when(
+                context.evmEventSetsServiceMock.dryDelete(
+                    deepEqual({
+                        artifact_name: 'T721Controller_v0',
+                        event_name: 'NewGroup',
+                        block_number: anyNumber(),
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: {
+                    query: 'rm this event',
+                    params: [],
+                },
+            });
+
+            when(
+                context.globalConfigServiceMock.dryUpdate(
+                    deepEqual({
+                        id: 'global',
+                    }),
+                    deepEqual({
+                        processed_block_number: anyNumber(),
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: {
+                    query: 'increase block number',
+                    params: [],
+                },
+            });
+
+            when(
+                context.evmBlockRollbacksServiceMock.dryCreate(
+                    deepEqual({
+                        block_number: anyNumber(),
+                        rollback_queries: [
+                            {
+                                query: `delete event`,
+                                params: [],
+                            },
+                        ],
+                    }),
+                ),
+            ).thenResolve({
+                error: 'unexpected_error',
+                response: null,
+            });
+
+            const error = new NestError(
+                'EVMAntennaMergerScheduler::injectBlockRollbackCreationQuery | error while creating block rollback query: unexpected_error',
+            );
+
+            await expect(context.evmAntennaMergerScheduler.evmEventMergerPoller()).rejects.toMatchObject(error);
+
+            verify(context.shutdownServiceMock.shutdownWithError(deepEqual(error))).times(1);
+            verify(
+                context.globalConfigServiceMock.search(
+                    deepEqual({
+                        id: 'global',
+                    }),
+                ),
+            ).times(1);
+            verify(context.evmEventSetsServiceMock.searchElastic(deepEqual(evmEventSetsQuery))).times(1);
+            verify(context.newGroupEventControllerMock.convert(anything(), anyFunction())).times(1);
+            verify(
+                context.evmEventSetsServiceMock.dryDelete(
+                    deepEqual({
+                        artifact_name: 'T721Controller_v0',
+                        event_name: 'NewGroup',
+                        block_number: anyNumber(),
+                    }),
+                ),
+            ).times(1);
+            verify(
+                context.globalConfigServiceMock.dryUpdate(
+                    deepEqual({
+                        id: 'global',
+                    }),
+                    deepEqual({
+                        processed_block_number: anyNumber(),
+                    }),
+                ),
+            ).times(1);
+            verify(
+                context.evmBlockRollbacksServiceMock.dryCreate(
+                    deepEqual({
+                        block_number: anyNumber(),
+                        rollback_queries: [
+                            {
+                                query: `delete event`,
+                                params: [],
+                            },
+                        ],
+                    }),
+                ),
+            ).times(1);
+        });
+
+        it('should fail on batch error', async function() {
+            const globalConfigEntity: GlobalEntity = {
+                id: 'global',
+                block_number: 12,
+                processed_block_number: 10,
+                eth_eur_price: 10000,
+                created_at: new Date(Date.now()),
+                updated_at: new Date(Date.now()),
+            };
+            const evmEventSetsQuery = {
+                body: {
+                    query: {
+                        bool: {
+                            must: {
+                                range: {
+                                    block_number: {
+                                        gte: 11,
+                                        lte: 12,
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            };
+            const evmEventSetsResponse: ESSearchReturn<EVMEventSetEntity> = {
+                took: 12,
+                timed_out: false,
+                _shards: {
+                    total: 1,
+                    successful: 1,
+                    skipped: 0,
+                    failed: 0,
+                },
+                hits: {
+                    max_score: 1,
+                    total: 2,
+                    hits: [...Array(2).keys()].map(
+                        (idx: number): ESSearchHit<EVMEventSetEntity> => ({
+                            _index: 'idx',
+                            _id: 'id',
+                            _type: 'type',
+                            _score: 1,
+                            _source: {
+                                artifact_name: 'T721Controller_v0',
+                                event_name: 'NewGroup',
+                                block_number: 11 + idx,
+                                events: [
+                                    {
+                                        return_values: JSON.stringify({}),
+                                        raw_data: 'raw_data',
+                                        block_number: 11 + idx,
+                                        raw_topics: ['raw_topics'],
+                                        event: 'NewGroup',
+                                        signature: 'signature',
+                                        log_index: 0,
+                                        transaction_index: 0,
+                                        transaction_hash: 'transaction_hash',
+                                        block_hash: 'block_hash',
+                                        address: 'address',
+                                    },
+                                ],
+                                created_at: new Date(Date.now()),
+                                updated_at: new Date(Date.now()),
+                            },
+                        }),
+                    ),
+                },
+            };
+            const finalqueries = [
+                { query: 'create event', params: [] },
+                { query: 'rm this event', params: [] },
+                { query: 'increase block number', params: [] },
+                {
+                    query: 'rollback query',
+                    params: [
+                        'hi',
+                        [
+                            { query: 'string', params: ['hi'] },
+                            { query: 'number', params: ['12'] },
+                            { query: 'object', params: ['{"hi":12}'] },
+                        ],
+                    ],
+                },
+                { query: 'create event', params: [] },
+                { query: 'rm this event', params: [] },
+                { query: 'increase block number', params: [] },
+                {
+                    query: 'rollback query',
+                    params: [
+                        'hi',
+                        [
+                            { query: 'string', params: ['hi'] },
+                            { query: 'number', params: ['12'] },
+                            { query: 'object', params: ['{"hi":12}'] },
+                        ],
+                    ],
+                },
+            ];
+
+            when(
+                context.globalConfigServiceMock.search(
+                    deepEqual({
+                        id: 'global',
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: [globalConfigEntity],
+            });
+
+            when(context.evmEventSetsServiceMock.searchElastic(deepEqual(evmEventSetsQuery))).thenResolve({
+                error: null,
+                response: evmEventSetsResponse,
+            });
+
+            when(context.newGroupEventControllerMock.convert(anything(), anyFunction())).thenCall(
+                async (event: EVMProcessableEvent, append: Appender): Promise<void> => {
+                    append(
+                        {
+                            query: `create event`,
+                            params: [],
+                        },
+
+                        {
+                            query: `delete event`,
+                            params: [],
+                        },
+                    );
+                },
+            );
+
+            when(
+                context.evmEventSetsServiceMock.dryDelete(
+                    deepEqual({
+                        artifact_name: 'T721Controller_v0',
+                        event_name: 'NewGroup',
+                        block_number: anyNumber(),
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: {
+                    query: 'rm this event',
+                    params: [],
+                },
+            });
+
+            when(
+                context.globalConfigServiceMock.dryUpdate(
+                    deepEqual({
+                        id: 'global',
+                    }),
+                    deepEqual({
+                        processed_block_number: anyNumber(),
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: {
+                    query: 'increase block number',
+                    params: [],
+                },
+            });
+
+            when(
+                context.evmBlockRollbacksServiceMock.dryCreate(
+                    deepEqual({
+                        block_number: anyNumber(),
+                        rollback_queries: [
+                            {
+                                query: `delete event`,
+                                params: [],
+                            },
+                        ],
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: {
+                    query: 'rollback query',
+                    params: [
+                        'hi',
+                        [
+                            {
+                                query: 'string',
+                                params: ['hi'],
+                            },
+                            {
+                                query: 'number',
+                                params: [12],
+                            },
+                            {
+                                query: 'object',
+                                params: [{ hi: 12 }],
+                            },
+                        ],
+                    ],
+                },
+            });
+
+            const error = new Error('unexpected error');
+
+            when(context.connectionMock.doBatchAsync(deepEqual(finalqueries))).thenReject(error);
+
+            await expect(context.evmAntennaMergerScheduler.evmEventMergerPoller()).rejects.toMatchObject(error);
+
+            verify(context.shutdownServiceMock.shutdownWithError(deepEqual(error))).times(1);
+            verify(
+                context.globalConfigServiceMock.search(
+                    deepEqual({
+                        id: 'global',
+                    }),
+                ),
+            ).times(1);
+            verify(context.evmEventSetsServiceMock.searchElastic(deepEqual(evmEventSetsQuery))).times(1);
+            verify(context.newGroupEventControllerMock.convert(anything(), anyFunction())).times(2);
+            verify(
+                context.evmEventSetsServiceMock.dryDelete(
+                    deepEqual({
+                        artifact_name: 'T721Controller_v0',
+                        event_name: 'NewGroup',
+                        block_number: anyNumber(),
+                    }),
+                ),
+            ).times(2);
+            verify(
+                context.globalConfigServiceMock.dryUpdate(
+                    deepEqual({
+                        id: 'global',
+                    }),
+                    deepEqual({
+                        processed_block_number: anyNumber(),
+                    }),
+                ),
+            ).times(2);
+            verify(
+                context.evmBlockRollbacksServiceMock.dryCreate(
+                    deepEqual({
+                        block_number: anyNumber(),
+                        rollback_queries: [
+                            {
+                                query: `delete event`,
+                                params: [],
+                            },
+                        ],
+                    }),
+                ),
+            ).times(2);
+            verify(context.connectionMock.doBatchAsync(deepEqual(finalqueries))).times(1);
         });
     });
 
@@ -2266,12 +2708,10 @@ describe('EVMAntenna Merger Scheduler', function() {
             } as InstanceSignature;
 
             when(context.outrospectionServiceMock.getInstanceSignature()).thenResolve(signature);
-            when(context.queueMock.process(`@@evmeventset/evmEventMerger`, 1, anyFunction())).thenResolve();
 
             await context.evmAntennaMergerScheduler.onApplicationBootstrap();
 
             verify(context.scheduleMock.scheduleIntervalJob('evmEventMerger', 500, anyFunction())).called();
-            verify(context.queueMock.process(`@@evmeventset/evmEventMerger`, 1, anyFunction())).called();
         });
 
         it('should subscribe to bull only as worker non master', async function() {
@@ -2281,12 +2721,10 @@ describe('EVMAntenna Merger Scheduler', function() {
             } as InstanceSignature;
 
             when(context.outrospectionServiceMock.getInstanceSignature()).thenResolve(signature);
-            when(context.queueMock.process(`@@evmeventset/evmEventMerger`, 1, anyFunction())).thenResolve();
 
             await context.evmAntennaMergerScheduler.onApplicationBootstrap();
 
             verify(context.scheduleMock.scheduleIntervalJob('evmEventMerger', 500, anyFunction())).never();
-            verify(context.queueMock.process(`@@evmeventset/evmEventMerger`, 1, anyFunction())).called();
         });
 
         it('should subscribe to none as server non master', async function() {
@@ -2296,12 +2734,10 @@ describe('EVMAntenna Merger Scheduler', function() {
             } as InstanceSignature;
 
             when(context.outrospectionServiceMock.getInstanceSignature()).thenResolve(signature);
-            when(context.queueMock.process(`@@evmeventset/evmEventMerger`, 1, anyFunction())).thenResolve();
 
             await context.evmAntennaMergerScheduler.onApplicationBootstrap();
 
             verify(context.scheduleMock.scheduleIntervalJob('evmEventMerger', 500, anyFunction())).never();
-            verify(context.queueMock.process(`@@evmeventset/evmEventMerger`, 1, anyFunction())).never();
         });
     });
 });

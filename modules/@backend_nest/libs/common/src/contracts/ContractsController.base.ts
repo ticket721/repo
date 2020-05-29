@@ -3,6 +3,7 @@ import { Web3Service } from '@lib/common/web3/Web3.service';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 import Web3 from 'web3';
 import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
+import { NestError } from '@lib/common/utils/NestError';
 
 /**
  * Extra Configuration
@@ -90,7 +91,7 @@ export class ContractsControllerBase {
         ];
 
         if (!this._contractData) {
-            const error: Error = new Error(`Cannot recover artifact for instance called ${this.contractName}`);
+            const error: Error = new NestError(`Cannot recover artifact for instance called ${this.contractName}`);
             this.shutdownService.shutdownWithError(error);
             throw error;
         }
@@ -99,7 +100,9 @@ export class ContractsControllerBase {
         const networkId: number = await this.web3Service.net();
 
         if (!web3 || (!networkId && networkId !== 0)) {
-            const error: Error = new Error(`Unable to recover web3 instance or data for contract ${this.contractName}`);
+            const error: Error = new NestError(
+                `Unable to recover web3 instance or data for contract ${this.contractName}`,
+            );
             this.shutdownService.shutdownWithError(error);
             throw error;
         }
@@ -109,7 +112,7 @@ export class ContractsControllerBase {
                 this._contractData.deployedBytecode &&
                 !(await this.verifyContract(this._contractData.deployedBytecode, this.options.address))
             ) {
-                throw new Error(
+                throw new NestError(
                     `On-Chain code does not match for dynamically loaded contract address (${this.moduleName}::${this.contractName}@${this.options.address})`,
                 );
             }

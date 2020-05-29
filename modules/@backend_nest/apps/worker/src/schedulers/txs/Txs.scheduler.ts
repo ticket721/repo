@@ -12,6 +12,7 @@ import { Decimal } from 'decimal.js';
 import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 import { OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
+import { NestError } from '@lib/common/utils/NestError';
 
 /**
  * Txs task scheduler
@@ -56,7 +57,7 @@ export class TxsScheduler implements OnModuleInit, OnModuleDestroy {
 
         if (currentGlobalConfig.error || currentGlobalConfig.response.length === 0) {
             return this.shutdownService.shutdownWithError(
-                new Error('TxsScheduler::blockPolling unable to recover global config'),
+                new NestError('TxsScheduler::blockPolling unable to recover global config'),
             );
         }
 
@@ -77,7 +78,7 @@ export class TxsScheduler implements OnModuleInit, OnModuleDestroy {
 
             if (pendingTransactions.error) {
                 return this.shutdownService.shutdownWithError(
-                    new Error('TxsScheduler::blockPolling error while fetching txs'),
+                    new NestError('TxsScheduler::blockPolling error while fetching txs'),
                 );
             }
 
@@ -96,7 +97,7 @@ export class TxsScheduler implements OnModuleInit, OnModuleDestroy {
 
                     if (updateStatus.error) {
                         return this.shutdownService.shutdownWithError(
-                            new Error(`TxsScheduler::blockPolling error while updating tx: ${updateStatus.error}`),
+                            new NestError(`TxsScheduler::blockPolling error while updating tx: ${updateStatus.error}`),
                         );
                     }
 
@@ -116,7 +117,7 @@ export class TxsScheduler implements OnModuleInit, OnModuleDestroy {
 
         if (currentGlobalConfig.error || currentGlobalConfig.response.length === 0) {
             return this.shutdownService.shutdownWithError(
-                new Error('TxsScheduler::transactionInitialization unable to recover global config'),
+                new NestError('TxsScheduler::transactionInitialization unable to recover global config'),
             );
         }
 
@@ -135,7 +136,7 @@ export class TxsScheduler implements OnModuleInit, OnModuleDestroy {
 
         if (pendingTransactions.error) {
             return this.shutdownService.shutdownWithError(
-                new Error(
+                new NestError(
                     `TxsScheduler::transactionInitialization error while fetching txs: ${pendingTransactions.error}`,
                 ),
             );
@@ -203,7 +204,7 @@ export class TxsScheduler implements OnModuleInit, OnModuleDestroy {
 
                 if (updateStatus.error) {
                     return this.shutdownService.shutdownWithError(
-                        new Error(
+                        new NestError(
                             `TxsScheduler::transactionInitialization error while updating tx: ${updateStatus.error}`,
                         ),
                     );

@@ -25,7 +25,7 @@ export class ServerController {
         status: StatusCodes.OK,
         description: StatusNames[StatusCodes.OK],
     })
-    getAPIInfos(): APIInfos {
+    async getAPIInfos(): Promise<APIInfos> {
         return this.appService.getAPIInfos();
     }
 }

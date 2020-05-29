@@ -7,6 +7,7 @@ import { IsNumber, IsNumberString, IsString } from 'class-validator';
 import { Decimal } from 'decimal.js';
 import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
 import currenciesConfig from '@lib/common/currencies/Currencies.config.value';
+import { NestError } from '@lib/common/utils/NestError';
 
 /**
  * Price of the Category
@@ -331,7 +332,7 @@ export class CurrenciesService {
         const currency: ERC20Currency | SetCurrency = await this.get(inputPrice);
 
         if (currency === undefined) {
-            throw new Error(`Cannot find currency ${inputPrice}`);
+            throw new NestError(`Cannot find currency ${inputPrice}`);
         }
 
         switch (currency.type) {

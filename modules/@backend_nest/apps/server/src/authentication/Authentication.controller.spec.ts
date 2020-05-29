@@ -23,6 +23,7 @@ import { UserDto } from '@lib/common/users/dto/User.dto';
 import { generatePassword } from '../../test/utils';
 import { ResetPasswordInputDto } from '@app/server/authentication/dto/ResetPasswordInputDto';
 import { PasswordChangeDto } from '@app/server/authentication/dto/PasswordChange.dto';
+import { NestError } from '@lib/common/utils/NestError';
 
 class QueueMock<T = any> {
     add(name: string, data: T, opts?: JobOptions): Promise<Job<T>> {
@@ -1285,7 +1286,7 @@ describe('Authentication Controller', function() {
                 role: 'authenticated',
             };
 
-            when(jwtServiceMock.verifyAsync('test_token')).thenThrow(new Error('jwt expired'));
+            when(jwtServiceMock.verifyAsync('test_token')).thenThrow(new NestError('jwt expired'));
 
             await expect(authenticationController.validateEmail({ token: 'test_token' })).rejects.toMatchObject({
                 response: {
@@ -1321,7 +1322,7 @@ describe('Authentication Controller', function() {
                 role: 'authenticated',
             };
 
-            when(jwtServiceMock.verifyAsync('test_token')).thenThrow(new Error('invalid signature'));
+            when(jwtServiceMock.verifyAsync('test_token')).thenThrow(new NestError('invalid signature'));
 
             await expect(authenticationController.validateEmail({ token: 'test_token' })).rejects.toMatchObject({
                 response: {
@@ -1357,7 +1358,7 @@ describe('Authentication Controller', function() {
                 role: 'authenticated',
             };
 
-            when(jwtServiceMock.verifyAsync('test_token')).thenThrow(new Error('unknown error'));
+            when(jwtServiceMock.verifyAsync('test_token')).thenThrow(new NestError('unknown error'));
 
             await expect(authenticationController.validateEmail({ token: 'test_token' })).rejects.toMatchObject({
                 response: {
@@ -1547,7 +1548,7 @@ describe('Authentication Controller', function() {
             const authenticationController: AuthenticationController = context.authenticationController;
             const jwtServiceMock: JwtService = context.jwtServiceMock;
 
-            when(jwtServiceMock.verifyAsync('test_token')).thenThrow(new Error('unknown error'));
+            when(jwtServiceMock.verifyAsync('test_token')).thenThrow(new NestError('unknown error'));
 
             await expect(
                 authenticationController.validateResetPassword({
@@ -1571,7 +1572,7 @@ describe('Authentication Controller', function() {
             const authenticationController: AuthenticationController = context.authenticationController;
             const jwtServiceMock: JwtService = context.jwtServiceMock;
 
-            when(jwtServiceMock.verifyAsync('test_token')).thenThrow(new Error('jwt expired'));
+            when(jwtServiceMock.verifyAsync('test_token')).thenThrow(new NestError('jwt expired'));
 
             await expect(
                 authenticationController.validateResetPassword({
