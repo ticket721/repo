@@ -307,11 +307,6 @@ export class EVMEventControllerBase implements OnModuleInit {
     }
 
     /**
-     * Current block number properly fetched
-     */
-    private currentFetchHeight = null;
-
-    /**
      * Current block number properly dispatched to be fetched
      */
     private currentDispatchHeight = null;
@@ -346,15 +341,12 @@ export class EVMEventControllerBase implements OnModuleInit {
             return;
         }
 
-        if (this.currentFetchHeight === null || this.currentFetchHeight < globalConfig.processed_block_number) {
-            this.currentFetchHeight = globalConfig.processed_block_number;
-        }
-
         if (this.currentDispatchHeight === null || this.currentDispatchHeight < globalConfig.processed_block_number) {
             this.currentDispatchHeight = globalConfig.processed_block_number;
         }
 
         while (this.currentDispatchHeight < globalConfig.block_number) {
+            /* istanbul ignore next */
             const amount =
                 globalConfig.block_number - this.currentDispatchHeight < 1000
                     ? globalConfig.block_number - this.currentDispatchHeight
@@ -369,6 +361,7 @@ export class EVMEventControllerBase implements OnModuleInit {
                 this.currentDispatchHeight += amount;
             } catch (e) {
                 this.logger.error(e);
+                throw e;
             }
         }
     }
@@ -414,9 +407,9 @@ export class EVMEventControllerBase implements OnModuleInit {
                 );
             }
 
-            if (events.length) {
+            if (currentBlockEvents.length) {
                 this.logger.log(
-                    `Caught ${events.length} ${
+                    `Caught ${currentBlockEvents.length} ${
                         this.eventName
                     } from ${this.contractsController.getArtifactName()} at block ${fetchedBlock}`,
                 );
