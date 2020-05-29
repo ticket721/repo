@@ -8,6 +8,7 @@ import { Test, TestingModule }                      from '@nestjs/testing';
 import { ShutdownService }                          from '@lib/common/shutdown/Shutdown.service';
 import { OutrospectionService }                     from '@lib/common/outrospection/Outrospection.service';
 import { NestError }                                from '@lib/common/utils/NestError';
+import { WinstonLoggerService }                     from '@lib/common/logger/WinstonLogger.service';
 
 describe('GlobalConfig Scheduler', function() {
     const context: {
@@ -19,6 +20,7 @@ describe('GlobalConfig Scheduler', function() {
         globalConfigOptionsMock: GlobalConfigOptions;
         binanceServiceMock: BinanceService;
         outrospectionServiceMock: OutrospectionService;
+        winstonLoggerServiceMock: WinstonLoggerService;
     } = {
         globalConfigScheduler: null,
         web3ServiceMock: null,
@@ -28,6 +30,7 @@ describe('GlobalConfig Scheduler', function() {
         globalConfigOptionsMock: null,
         binanceServiceMock: null,
         outrospectionServiceMock: null,
+        winstonLoggerServiceMock: null
     };
 
     beforeAll(async function() {
@@ -41,6 +44,7 @@ describe('GlobalConfig Scheduler', function() {
         };
         context.binanceServiceMock = mock(BinanceService);
         context.outrospectionServiceMock = mock(OutrospectionService);
+        context.winstonLoggerServiceMock = mock(WinstonLoggerService);
 
         const app: TestingModule = await Test.createTestingModule({
             providers: [
@@ -75,6 +79,10 @@ describe('GlobalConfig Scheduler', function() {
                 {
                     provide: OutrospectionService,
                     useValue: instance(context.outrospectionServiceMock),
+                },
+                {
+                    provide: WinstonLoggerService,
+                    useValue: instance(context.winstonLoggerServiceMock),
                 },
                 GlobalConfigScheduler,
             ],

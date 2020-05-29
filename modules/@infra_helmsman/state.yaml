@@ -9,7 +9,7 @@ apps:
   cert-manager-staging:
     timeout: 1200
     name: "cert-manager"
-    description: "Certificate Manager"
+    description: "Certifacte Manager, able to create valid certificates on-demand"
     namespace: "staging"
     enabled: true
     group: "critical"
@@ -25,7 +25,7 @@ apps:
   efs-provisioner-staging:
     timeout: 1200
     name: "efs-provisioner"
-    description: "Certificate Manager"
+    description: "EFS Storage Provider, allowing pods to mount EFS volumes in the filesystem"
     namespace: "staging"
     enabled: true
     group: "critical"
@@ -43,7 +43,7 @@ apps:
   elassandra-staging:
     timeout: 1200
     name: "elassandra"
-    description: "Storage Layer"
+    description: "Elassandra, storage layer of the infrastructure"
     namespace: "staging"
     enabled: true
     group: "critical"
@@ -59,7 +59,7 @@ apps:
   redis-staging:
     timeout: 1200
     name: "redis"
-    description: "Tasks Orchestrator & Storage Layer"
+    description: "Redis, Storage layer for the distributed tasks"
     namespace: "staging"
     enabled: true
     group: "critical"
@@ -75,7 +75,7 @@ apps:
   platform-staging:
     timeout: 1200
     name: "platform"
-    description: "Platform elements"
+    description: "The Ticket721 Platform"
     namespace: "staging"
     enabled: true
     group: "critical"
@@ -150,7 +150,7 @@ apps:
   ingress-staging:
     timeout: 1200
     name: "ingress"
-    description: "Global Ingress"
+    description: "Ingress, managing all incoming traffic and properly redirecting on services"
     namespace: "staging"
     enabled: true
     group: "critical"

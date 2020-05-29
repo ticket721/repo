@@ -1,6 +1,0 @@
-dependencies:
-- name: openvpn
-  repository: http://storage.googleapis.com/kubernetes-charts
-  version: 4.2.2
-digest: sha256:89b15cf3f435083bd54bf84ab49fa955104083ecda826ec364feb6b96edb0f01
-generated: "2020-05-24T13:12:54.305569+02:00"

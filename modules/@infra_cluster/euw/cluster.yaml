@@ -5,10 +5,6 @@ metadata:
   name: euw
   region: eu-west-3
 
-cloudWatch:
-  clusterLogging:
-    enableTypes: ["*"]
-
 managedNodeGroups:
   - name: elassandra
     instanceType: t2.medium

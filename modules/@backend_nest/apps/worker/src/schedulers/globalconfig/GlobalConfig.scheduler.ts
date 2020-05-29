@@ -23,7 +23,7 @@ export class GlobalConfigScheduler implements OnModuleInit, OnModuleDestroy {
      * @param globalConfigOptions
      * @param binanceService
      * @param outrospectionService
-     * @param winstonLoggerService
+     * @param logger
      */
     constructor(
         private readonly web3Service: Web3Service,
