@@ -1,13 +1,10 @@
-# Login
-gcloud auth configure-docker
-
 # Tags
-docker tag server:${TAG} ${GCP_REGISTRY_HOSTNAME}/${GCP_PROJECT_ID}/server:${TAG}
-docker tag worker:${TAG} ${GCP_REGISTRY_HOSTNAME}/${GCP_PROJECT_ID}/worker:${TAG}
+docker tag server:${TAG} ${AWS_USER_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/ticket721/server:${TAG}
+docker tag worker:${TAG} ${AWS_USER_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/ticket721/worker:${TAG}
 
 # Push
-docker push ${GCP_REGISTRY_HOSTNAME}/${GCP_PROJECT_ID}/server:${TAG}
-docker push ${GCP_REGISTRY_HOSTNAME}/${GCP_PROJECT_ID}/worker:${TAG}
+docker push ${AWS_USER_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/ticket721/server:${TAG}
+docker push ${AWS_USER_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/ticket721/worker:${TAG}
 
 
 
