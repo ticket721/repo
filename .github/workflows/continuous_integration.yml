@@ -906,3 +906,113 @@ jobs:
               run: yarn codecov:upload
               env:
                   CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+    docker:
+      name: "[S3] docker"
+      needs: [global, sdk, server, server-e2e]
+      if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+      runs-on: ubuntu-latest
+      steps:
+
+        #
+        # Initial Setup
+        #
+
+        - uses: actions/checkout@v1
+        - name: "Use Node.js 12.x"
+          uses: actions/setup-node@v1.2.0
+          with:
+            node-version: 12.x
+
+        - name: "Setup SSH Agent"
+          uses: webfactory/ssh-agent@v0.1.1
+          with:
+            ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+        - name: "Install required tools globally (npm install -g lerna lcov-result-merger yarn)"
+          run: npm install -g lerna@3.16.4 lcov-result-merger@3.1.0 yarn@1.22.4
+
+        - name: "Recover submodules (yarn setup:submodules:clone)"
+          run: yarn setup:submodules:clone
+
+        - name: "Setup aws CLI"
+          uses: chrislennon/action-aws-cli@v1.1
+
+        - name: "Authenticate Docker"
+          run: ./aws-ecr-login.sh
+          env:
+            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            AWS_USER_ID: ${{ secrets.AWS_USER_ID }}
+            AWS_REGION: ${{ secrets.AWS_REGION }}
+
+        - name: "Build all docker images"
+          run: yarn @docker:build:github
+
+        - name: "Publish to Elastic Container Registry"
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            AWS_USER_ID: ${{ secrets.AWS_USER_ID }}
+            AWS_REGION: ${{ secrets.AWS_REGION }}
+          run: yarn @docker:deploy:github
+
+    infra:
+      name: "[S5] infra (staging)"
+      if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+      needs: docker
+      runs-on: ubuntu-latest
+      steps:
+
+        #
+        # Initial Setup
+        #
+
+        - uses: actions/checkout@v1
+        - name: "Use Node.js 12.x"
+          uses: actions/setup-node@v1.2.0
+          with:
+            node-version: 12.x
+
+        - name: "Setup SSH Agent"
+          uses: webfactory/ssh-agent@v0.1.1
+          with:
+            ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+        - name: "Install required tools globally (npm install -g lerna lcov-result-merger yarn)"
+          run: npm install -g lerna@3.16.4 lcov-result-merger@3.1.0 yarn@1.22.4
+
+        - name: "Recover submodules (yarn setup:submodules:clone)"
+          run: yarn setup:submodules:clone
+
+        - name: "Setup aws CLI"
+          uses: chrislennon/action-aws-cli@v1.1
+
+        - name: "Setup kubectl"
+          run: curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.18.0/bin/linux/amd64/kubectl && chmod +x kubectl && sudo mv ./kubectl /usr/local/bin/kubectl
+
+        - name: "Setup kubeconfig"
+          run: aws eks --region ${AWS_REGION} update-kubeconfig --name ${CONFIG_STAGING_CLUSTER_NAME}
+          env:
+            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            AWS_USER_ID: ${{ secrets.AWS_USER_ID }}
+            AWS_REGION: ${{ secrets.AWS_REGION }}
+            CONFIG_STAGING_CLUSTER_NAME: ${{ secrets.CONFIG_STAGING_CLUSTER_NAME }}
+
+        - name: "Test"
+          run: ./helmsman.apply.staging.sh
+          env:
+            CONFIG_STAGING_STRIPE_API_KEY: ${{ secrets.CONFIG_STAGING_STRIPE_API_KEY }}
+            CONFIG_STAGING_ROCKSIDE_API_KEY: ${{ secrets.CONFIG_STAGING_ROCKSIDE_API_KEY }}
+            CONFIG_STAGING_MAILJET_APIKEY: ${{ secrets.CONFIG_STAGING_MAILJET_APIKEY }}
+            CONFIG_STAGING_MAILJET_APISECRET: ${{ secrets.CONFIG_STAGING_MAILJET_APISECRET }}
+            CONFIG_STAGING_JWT_SECRET: ${{ secrets.CONFIG_STAGING_JWT_SECRET }}
+            CONFIG_STAGING_ROUTE53_KEY: ${{ secrets.CONFIG_STAGING_ROUTE53_KEY }}
+            CONFIG_STAGING_ROUTE53_SECRET: ${{ secrets.CONFIG_STAGING_ROUTE53_SECRET }}
+            CONFIG_STAGING_ROUTE53_HOSTEDZONE: ${{ secrets.CONFIG_STAGING_ROUTE53_HOSTEDZONE }}
+
+            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            AWS_USER_ID: ${{ secrets.AWS_USER_ID }}
+            AWS_REGION: ${{ secrets.AWS_REGION }}
+
