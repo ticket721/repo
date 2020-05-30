@@ -46,7 +46,10 @@ spec:
           imagePullPolicy: {{ .Values.server.image.pullPolicy }}
           resources:
             requests:
-              memory: "1024Mi"
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
               cpu: "250m"
           volumeMounts:
             - name: server-config

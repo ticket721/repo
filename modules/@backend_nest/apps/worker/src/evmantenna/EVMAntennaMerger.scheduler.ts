@@ -99,7 +99,7 @@ export class EVMAntennaMergerScheduler implements OnApplicationBootstrap {
 
         const globalConfig: GlobalEntity = globalConfigRes.response[0];
 
-        const processedHeight = globalConfig.processed_block_number;
+        let processedHeight = globalConfig.processed_block_number;
         const currentHeight = globalConfig.block_number;
 
         if (processedHeight === currentHeight) {
@@ -108,13 +108,20 @@ export class EVMAntennaMergerScheduler implements OnApplicationBootstrap {
 
         this.logger.log(`Starting sync loop at block ${processedHeight + 1}`);
 
-        const amountToMerge = currentHeight - processedHeight > 10 ? 10 : currentHeight - processedHeight;
+        while (processedHeight < currentHeight) {
+            const amountToMerge = currentHeight - processedHeight > 10 ? 10 : currentHeight - processedHeight;
 
-        try {
-            await this.evmEventMerger(processedHeight + 1, processedHeight + amountToMerge);
-        } catch (e) {
-            this.shutdownService.shutdownWithError(e);
-            throw e;
+            try {
+                const amountMerged = await this.evmEventMerger(processedHeight + 1, processedHeight + amountToMerge);
+                this.logger.log(`Merged ${amountMerged} blocks`);
+                if (amountMerged !== amountToMerge) {
+                    break;
+                }
+                processedHeight += amountMerged;
+            } catch (e) {
+                this.shutdownService.shutdownWithError(e);
+                throw e;
+            }
         }
 
         this.logger.log(`Finished sync loop at block ${currentHeight}`);

@@ -8,23 +8,25 @@ metadata:
 managedNodeGroups:
   - name: elassandra
     instanceType: t2.medium
-    minSize: 1
+    minSize: 2
     maxSize: 2
     privateNetworking: true
     iam:
       withAddonPolicies:
+        imageBuilder: true
         autoScaler: true
         externalDNS: true
         certManager: true
         albIngress: true
         efs: true
   - name: core
-    instanceType: t2.small
+    instanceType: t2.micro
     minSize: 1
-    maxSize: 6
+    maxSize: 12
     privateNetworking: true
     iam:
       withAddonPolicies:
+        imageBuilder: true
         autoScaler: true
         externalDNS: true
         certManager: true
