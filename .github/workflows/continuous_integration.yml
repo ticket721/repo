@@ -957,7 +957,7 @@ jobs:
           run: yarn @docker:deploy:github
 
     infra:
-      name: "[S5] infra (staging)"
+      name: "[S4] infra (staging)"
       if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
       needs: docker
       runs-on: ubuntu-latest
@@ -999,7 +999,7 @@ jobs:
             AWS_REGION: ${{ secrets.AWS_REGION }}
             CONFIG_STAGING_CLUSTER_NAME: ${{ secrets.CONFIG_STAGING_CLUSTER_NAME }}
 
-        - name: "Test"
+        - name: "Helmsman on staging infra"
           run: ./helmsman.apply.staging.sh
           env:
             CONFIG_STAGING_STRIPE_API_KEY: ${{ secrets.CONFIG_STAGING_STRIPE_API_KEY }}
