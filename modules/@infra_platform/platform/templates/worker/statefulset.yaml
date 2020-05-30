@@ -41,8 +41,11 @@ spec:
           image: "{{ .Values.worker.image.repository }}:{{ .Values.worker.image.tag }}"
           imagePullPolicy: {{ .Values.worker.image.pullPolicy }}
           resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
             limits:
-              memory: "1024Mi"
+              memory: "512Mi"
               cpu: "250m"
           volumeMounts:
             - name: worker-config

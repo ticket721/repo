@@ -6,6 +6,16 @@ namespaces:
   staging:
 
 apps:
+
+#   ________  _________  ________  ________  ___  ________   ________
+#  |\   ____\|\___   ___\\   __  \|\   ____\|\  \|\   ___  \|\   ____\
+#  \ \  \___|\|___ \  \_\ \  \|\  \ \  \___|\ \  \ \  \\ \  \ \  \___|
+#   \ \_____  \   \ \  \ \ \   __  \ \  \  __\ \  \ \  \\ \  \ \  \  ___
+#    \|____|\  \   \ \  \ \ \  \ \  \ \  \|\  \ \  \ \  \\ \  \ \  \|\  \
+#      ____\_\  \   \ \__\ \ \__\ \__\ \_______\ \__\ \__\\ \__\ \_______\
+#     |\_________\   \|__|  \|__|\|__|\|_______|\|__|\|__| \|__|\|_______|
+#     \|_________|
+
   cert-manager-staging:
     timeout: 1200
     name: "cert-manager"
@@ -16,7 +26,7 @@ apps:
     chart: "../@infra_cert-manager/cert-manager"
     version: "0.1.0"
     valuesFile: "../@infra_cert-manager/cert-manager/values.yaml"
-    protected: false
+    protected: true
     wait: true
     priority: -6
     setString:
@@ -32,12 +42,12 @@ apps:
     chart: "../@infra_efs-provisioner/efs-provisioner"
     version: "0.1.0"
     valuesFile: "../@infra_efs-provisioner/efs-provisioner/values.yaml"
-    protected: false
+    protected: true
     wait: true
     priority: -5
     setString:
       _global.namespace: "staging"
-      "efs-provisioner.efsProvisioner.efsFileSystemId": "${CONFIG_EFS_ID}"
+      "efs-provisioner.efsProvisioner.efsFileSystemId": "${CONFIG_STAGING_EFS_ID}"
       "efs-provisioner.efsProvisioner.awsRegion": "eu-west-3"
 
   elassandra-staging:
@@ -50,7 +60,7 @@ apps:
     chart: "../@infra_elassandra/elassandra"
     version: "1.0.0"
     valuesFile: "../@infra_elassandra/elassandra/values.yaml"
-    protected: false
+    protected: true
     wait: true
     priority: -4
     setString:
@@ -66,7 +76,7 @@ apps:
     chart: "../@infra_redis/redis"
     version: "0.1.0"
     valuesFile: "../@infra_redis/redis/values.yaml"
-    protected: false
+    protected: true
     wait: true
     priority: -3
     setString:
@@ -88,12 +98,12 @@ apps:
     setString:
       _global.namespace: "staging"
 
-      server.fsName: "${CONFIG_EFS_ID}"
+      server.fsName: "${CONFIG_STAGING_EFS_ID}"
 
       config.ticketScope: "ticket721_0"
       config.artifact: "live_ropsten"
 
-      config.stripe.apiKey: "${CONFIG_STRIPE_APIKEY}"
+      config.stripe.apiKey: "${CONFIG_STAGING_STRIPE_APIKEY}"
 
       config.cassandra.host: "elassandra-cassandra"
       config.cassandra.port: "9042"
@@ -110,13 +120,13 @@ apps:
       config.ethereumNode.protocol: "https"
       config.ethereumNode.network_id: "3"
       config.ethereumNode.path: "/ethereum/ropsten/jsonrpc"
-      config.ethereumNode.headers: '\{"apikey": "${CONFIG_ROCKSIDE_APIKEY}"\}'
+      config.ethereumNode.headers: '\{"apikey": "${CONFIG_STAGING_ROCKSIDE_APIKEY}"\}'
 
       config.redis.host: "redis-master"
       config.redis.port: "6379"
 
       config.jwt.rounds: "9"
-      config.jwt.secret: "${CONFIG_JWT_SECRET}"
+      config.jwt.secret: "${CONFIG_STAGING_JWT_SECRET}"
       config.jwt.expiration: "12h"
 
       config.txs.blockThreshold: "2"
@@ -130,21 +140,21 @@ apps:
 
       config.bull.board: "true"
 
-      config.mailjet.apiKey: "${CONFIG_MAILJET_APIKEY}"
-      config.mailjet.apiSecret: "${CONFIG_MAILJET_APISECRET}"
+      config.mailjet.apiKey: "${CONFIG_STAGING_MAILJET_APIKEY}"
+      config.mailjet.apiSecret: "${CONFIG_STAGING_MAILJET_APISECRET}"
 
       config.rockside.baseUrl: "https://api.rockside.io"
-      config.rockside.apiKey: "${CONFIG_ROCKSIDE_APIKEY}"
+      config.rockside.apiKey: "${CONFIG_STAGING_ROCKSIDE_APIKEY}"
       config.rockside.network_id: "3"
       config.rockside.network_name: "ropsten"
 
-      server.image.repository: "ticket721/test-server"
-      server.image.tag: "latest"
+      server.image.repository: "097558125954.dkr.ecr.eu-west-3.amazonaws.com/ticket721/server"
+      server.image.tag: "${TAG}"
 
-      worker.image.repository: "ticket721/test-worker"
+      worker.image.repository: "097558125954.dkr.ecr.eu-west-3.amazonaws.com/ticket721/worker"
       worker.image.tag: "latest"
 
-      migrations.image.repository: "ticket721/test-migrations"
+      migrations.image.repository: "097558125954.dkr.ecr.eu-west-3.amazonaws.com/ticket721/migrations"
       migrations.image.tag: "latest"
 
   ingress-staging:
@@ -163,7 +173,7 @@ apps:
     setString:
       _global.namespace: "staging"
 
-      issuer.server: "https://acme-staging-v02.api.letsencrypt.org/directory"
+      issuer.server: "${CONFIG_STAGING_ACME_SERVER}"
 
       baseDomain: "ticket721.com"
       domainExtension: "staging"
@@ -173,9 +183,9 @@ apps:
       hosts[0].paths[0].serviceName: "platform--server--svc"
       hosts[0].paths[0].servicePort: "80"
 
-      route53.keyId: "${CONFIG_ROUTE53_KEY}"
-      route53.keySecret: "${CONFIG_ROUTE53_SECRET}"
-      route53.hostedzone: "${CONFIG_ROUTE53_HOSTEDZONE}"
+      route53.keyId: "${CONFIG_STAGING_ROUTE53_KEY}"
+      route53.keySecret: "${CONFIG_STAGING_ROUTE53_SECRET}"
+      route53.hostedzone: "${CONFIG_STAGING_ROUTE53_HOSTEDZONE}"
       route53.region: "eu-west-3"
 
 

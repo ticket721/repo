@@ -451,7 +451,7 @@ describe('EVMAntenna Merger Scheduler', function() {
             verify(context.connectionMock.doBatchAsync(deepEqual(finalqueries))).times(1);
         });
 
-        it('should properly merge 10 events', async function() {
+        it('should properly merge 11 events', async function() {
             const globalConfigEntity: GlobalEntity = {
                 id: 'global',
                 block_number: 21,
@@ -520,6 +520,66 @@ describe('EVMAntenna Merger Scheduler', function() {
                     ),
                 },
             };
+            const evmEventSetsQuerySecondRound = {
+                body: {
+                    query: {
+                        bool: {
+                            must: {
+                                range: {
+                                    block_number: {
+                                        gte: 21,
+                                        lte: 21,
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            };
+            const evmEventSetsResponseSecondRound: ESSearchReturn<EVMEventSetEntity> = {
+                took: 12,
+                timed_out: false,
+                _shards: {
+                    total: 1,
+                    successful: 1,
+                    skipped: 0,
+                    failed: 0,
+                },
+                hits: {
+                    max_score: 1,
+                    total: 2,
+                    hits: [...Array(1).keys()].map(
+                        (idx: number): ESSearchHit<EVMEventSetEntity> => ({
+                            _index: 'idx',
+                            _id: 'id',
+                            _type: 'type',
+                            _score: 1,
+                            _source: {
+                                artifact_name: 'T721Controller_v0',
+                                event_name: 'NewGroup',
+                                block_number: 21 + idx,
+                                events: [
+                                    {
+                                        return_values: JSON.stringify({}),
+                                        raw_data: 'raw_data',
+                                        block_number: 21 + idx,
+                                        raw_topics: ['raw_topics'],
+                                        event: 'NewGroup',
+                                        signature: 'signature',
+                                        log_index: 0,
+                                        transaction_index: 0,
+                                        transaction_hash: 'transaction_hash',
+                                        block_hash: 'block_hash',
+                                        address: 'address',
+                                    },
+                                ],
+                                created_at: new Date(Date.now()),
+                                updated_at: new Date(Date.now()),
+                            },
+                        }),
+                    ),
+                },
+            };
 
             when(
                 context.globalConfigServiceMock.search(
@@ -535,6 +595,11 @@ describe('EVMAntenna Merger Scheduler', function() {
             when(context.evmEventSetsServiceMock.searchElastic(deepEqual(evmEventSetsQuery))).thenResolve({
                 error: null,
                 response: evmEventSetsResponse,
+            });
+
+            when(context.evmEventSetsServiceMock.searchElastic(deepEqual(evmEventSetsQuerySecondRound))).thenResolve({
+                error: null,
+                response: evmEventSetsResponseSecondRound,
             });
 
             when(context.newGroupEventControllerMock.convert(anything(), anyFunction())).thenCall(
@@ -634,7 +699,7 @@ describe('EVMAntenna Merger Scheduler', function() {
                 ),
             ).times(1);
             verify(context.evmEventSetsServiceMock.searchElastic(deepEqual(evmEventSetsQuery))).times(1);
-            verify(context.newGroupEventControllerMock.convert(anything(), anyFunction())).times(10);
+            verify(context.newGroupEventControllerMock.convert(anything(), anyFunction())).times(11);
             verify(
                 context.evmEventSetsServiceMock.dryDelete(
                     deepEqual({
@@ -643,7 +708,7 @@ describe('EVMAntenna Merger Scheduler', function() {
                         block_number: anyNumber(),
                     }),
                 ),
-            ).times(10);
+            ).times(11);
             verify(
                 context.globalConfigServiceMock.dryUpdate(
                     deepEqual({
@@ -653,7 +718,7 @@ describe('EVMAntenna Merger Scheduler', function() {
                         processed_block_number: anyNumber(),
                     }),
                 ),
-            ).times(10);
+            ).times(11);
             verify(
                 context.evmBlockRollbacksServiceMock.dryCreate(
                     deepEqual({
@@ -666,8 +731,8 @@ describe('EVMAntenna Merger Scheduler', function() {
                         ],
                     }),
                 ),
-            ).times(10);
-            verify(context.connectionMock.doBatchAsync(anything())).times(1);
+            ).times(11);
+            verify(context.connectionMock.doBatchAsync(anything())).times(2);
         });
 
         it('should return 0 when no sets to process', async function() {
