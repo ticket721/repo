@@ -991,12 +991,12 @@ jobs:
           run: curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.18.0/bin/linux/amd64/kubectl && chmod +x kubectl && sudo mv ./kubectl /usr/local/bin/kubectl
 
         - name: "Setup kubeconfig"
-          run: aws eks --region ${AWS_REGION} update-kubeconfig --name ${CONFIG_STAGING_CLUSTER_NAME}
+          run: aws eks update-kubeconfig --name ${CONFIG_STAGING_CLUSTER_NAME}
           env:
             AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
             AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
             AWS_USER_ID: ${{ secrets.AWS_USER_ID }}
-            AWS_REGION: ${{ secrets.AWS_REGION }}
+            AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
             CONFIG_STAGING_CLUSTER_NAME: ${{ secrets.CONFIG_STAGING_CLUSTER_NAME }}
 
         - name: "Setup Helm + Helm Diff"
@@ -1021,5 +1021,5 @@ jobs:
             AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
             AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
             AWS_USER_ID: ${{ secrets.AWS_USER_ID }}
-            AWS_REGION: ${{ secrets.AWS_REGION }}
+            AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
 
