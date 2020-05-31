@@ -999,6 +999,9 @@ jobs:
             AWS_REGION: ${{ secrets.AWS_REGION }}
             CONFIG_STAGING_CLUSTER_NAME: ${{ secrets.CONFIG_STAGING_CLUSTER_NAME }}
 
+        - name: "Setup Helm + Helm Diff"
+          run: curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash && helm plugin install https://github.com/databus23/helm-diff --version master
+
         - name: "Setup Helmsman"
           run: curl -L https://github.com/Praqma/helmsman/releases/download/v3.4.2/helmsman_3.4.2_linux_amd64.tar.gz | tar zx && chmod +x helmsman && sudo mv ./helmsman /usr/local/bin/helmsman
 
