@@ -1008,7 +1008,7 @@ jobs:
         - name: "Helmsman on staging infra"
           run: ./helmsman.apply.staging.sh
           env:
-            CONFIG_STAGING_STRIPE_API_KEY: ${{ secrets.CONFIG_STAGING_STRIPE_API_KEY }}
+            CONFIG_STAGING_STRIPE_APIKEY: ${{ secrets.CONFIG_STAGING_STRIPE_APIKEY }}
             CONFIG_STAGING_ROCKSIDE_API_KEY: ${{ secrets.CONFIG_STAGING_ROCKSIDE_API_KEY }}
             CONFIG_STAGING_MAILJET_APIKEY: ${{ secrets.CONFIG_STAGING_MAILJET_APIKEY }}
             CONFIG_STAGING_MAILJET_APISECRET: ${{ secrets.CONFIG_STAGING_MAILJET_APISECRET }}
@@ -1016,6 +1016,7 @@ jobs:
             CONFIG_STAGING_ROUTE53_KEY: ${{ secrets.CONFIG_STAGING_ROUTE53_KEY }}
             CONFIG_STAGING_ROUTE53_SECRET: ${{ secrets.CONFIG_STAGING_ROUTE53_SECRET }}
             CONFIG_STAGING_ROUTE53_HOSTEDZONE: ${{ secrets.CONFIG_STAGING_ROUTE53_HOSTEDZONE }}
+            CONFIG_STAGING_ACME_SERVER: ${{ secrets.CONFIG_STAGING_ACME_SERVER }}
 
             AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
             AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
