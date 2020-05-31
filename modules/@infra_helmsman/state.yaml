@@ -152,10 +152,10 @@ apps:
       server.image.tag: "${TAG}"
 
       worker.image.repository: "097558125954.dkr.ecr.eu-west-3.amazonaws.com/ticket721/worker"
-      worker.image.tag: "latest"
+      worker.image.tag: "${TAG}"
 
       migrations.image.repository: "097558125954.dkr.ecr.eu-west-3.amazonaws.com/ticket721/migrations"
-      migrations.image.tag: "latest"
+      migrations.image.tag: "${TAG}"
 
   ingress-staging:
     timeout: 1200
