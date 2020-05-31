@@ -169,6 +169,9 @@ jobs:
             # Run Complete install
             #
 
+            - name: "Test jq"
+              run: "echo '{\"name\":\"test\"}' | jq '.name'"
+
             - name: "Install all dependencies (yarn @install)"
               run: "yarn @install"
 
