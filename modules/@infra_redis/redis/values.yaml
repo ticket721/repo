@@ -1,2 +1,8 @@
 redis:
   usePassword: false
+  master:
+    persistence:
+      size: 100Gi
+  slave:
+    persistence:
+      size: 100Gi
