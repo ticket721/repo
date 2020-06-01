@@ -1005,6 +1005,9 @@ jobs:
         - name: "Setup Helmsman"
           run: curl -L https://github.com/Praqma/helmsman/releases/download/v3.4.2/helmsman_3.4.2_linux_amd64.tar.gz | tar zx && chmod +x helmsman && sudo mv ./helmsman /usr/local/bin/helmsman
 
+        - name: "Fetch Helm Repos and Dependencies"
+          run: ./helm_prepare.sh
+
         - name: "Helmsman on staging infra (dry-run)"
           run: ./helmsman.dryrun.staging.sh
           env:
