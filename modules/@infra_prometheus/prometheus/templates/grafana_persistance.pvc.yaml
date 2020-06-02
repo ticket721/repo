@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+    name: "{{ .Values.prometheus.grafana.persistence.existingClaim }}"
+spec:
+    accessModes:
+        - {{ .Values.prometheus.grafana.persistence.accessMode | quote }}
+    resources:
+        requests:
+            storage: {{ .Values.prometheus.grafana.persistence.size | quote }}

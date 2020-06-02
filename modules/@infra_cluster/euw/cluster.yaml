@@ -20,7 +20,7 @@ managedNodeGroups:
         albIngress: true
         efs: true
   - name: core
-    instanceType: t2.micro
+    instanceType: t2.small
     minSize: 1
     maxSize: 12
     privateNetworking: true

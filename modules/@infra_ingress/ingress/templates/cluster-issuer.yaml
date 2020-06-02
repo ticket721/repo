@@ -1,7 +1,10 @@
 apiVersion: cert-manager.io/v1alpha2
 kind: ClusterIssuer
 metadata:
-  name: letsencrypt-prod
+  name: {{ include "ingress.fullname" . }}--cluster-issuer
+  labels:
+    name: {{ include "ingress.fullname" . }}--ingress
+    chart: {{ .Chart.Name }}
 spec:
   acme:
     server: {{ .Values.issuer.server }}
@@ -22,5 +25,5 @@ spec:
             region: {{ .Values.route53.region }}
             accessKeyID: {{ .Values.route53.keyId }}
             secretAccessKeySecretRef:
-              name: {{ include "ingress.fullname" . }}--route53-credentials--sec
+              name: route53-credentials--sec
               key: password.txt

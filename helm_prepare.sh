@@ -1,6 +1,6 @@
 #! /bin/bash
 
-HELM_DIRS="cert-manager efs-provisioner elassandra ingress platform redis"
+HELM_DIRS="cert-manager efs-provisioner elassandra ingress platform redis prometheus"
 
 helm repo add stable https://kubernetes-charts.storage.googleapis.com
 helm repo add common https://kubernetes-charts-incubator.storage.googleapis.com/

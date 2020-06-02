@@ -83,7 +83,7 @@ metadata:
 subjects:
 - kind: ServiceAccount
   name: {{ include "ingress.fullname" . }}--nginx-ingress--sa
-  namespace: staging
+  namespace: {{ .Values._global.namespace }}
 roleRef:
   kind: ClusterRole
   name: {{ include "ingress.fullname" . }}--nginx-ingress--cr

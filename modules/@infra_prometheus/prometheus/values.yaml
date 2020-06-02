@@ -1,0 +1,15 @@
+prometheus:
+  prometheusOperator:
+    createCustomResource: false
+  grafana:
+    adminPassword: admin
+    service:
+      type: LoadBalancer
+      annotations:
+        service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "tcp"
+        service.beta.kubernetes.io/aws-load-balancer-proxy-protocol: "*"
+    persistence:
+      enabled: true
+      accessMode: ReadWriteOnce
+      existingClaim: grafana-persistence--pvc
+      size: 10Gi
