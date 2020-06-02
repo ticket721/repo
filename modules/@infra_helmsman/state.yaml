@@ -2,39 +2,149 @@ settings:
   kubeContext: "${CONTEXT}"
   reverseDelete: true
 
+helmRepos:
+  stable: https://kubernetes-charts.storage.googleapis.com
+  common: https://kubernetes-charts-incubator.storage.googleapis.com/
+  incubator: https://kubernetes-charts-incubator.storage.googleapis.com/
+  jetstack: https://charts.jetstack.io
+
 namespaces:
   staging:
+  monitoring:
+  default:
 
 apps:
 
-#   ________  _________  ________  ________  ___  ________   ________
-#  |\   ____\|\___   ___\\   __  \|\   ____\|\  \|\   ___  \|\   ____\
-#  \ \  \___|\|___ \  \_\ \  \|\  \ \  \___|\ \  \ \  \\ \  \ \  \___|
-#   \ \_____  \   \ \  \ \ \   __  \ \  \  __\ \  \ \  \\ \  \ \  \  ___
-#    \|____|\  \   \ \  \ \ \  \ \  \ \  \|\  \ \  \ \  \\ \  \ \  \|\  \
-#      ____\_\  \   \ \__\ \ \__\ \__\ \_______\ \__\ \__\\ \__\ \_______\
-#     |\_________\   \|__|  \|__|\|__|\|_______|\|__|\|__| \|__|\|_______|
-#     \|_________|
+#   ██████  ███████ ███████  █████  ██    ██ ██   ████████ 
+#   ██   ██ ██      ██      ██   ██ ██    ██ ██      ██    
+#   ██   ██ █████   █████   ███████ ██    ██ ██      ██ 
+#   ██   ██ ██      ██      ██   ██ ██    ██ ██      ██ 
+#   ██████  ███████ ██      ██   ██  ██████  ███████ ██ 
 
-  cert-manager-staging:
+  crds:
+    timeout: 1200
+    name: "crds"
+    description: "CRDs, collection of custom ressource definitions to install globally"
+    namespace: "default"
+    enabled: true
+    group: "critical"
+    chart: "../@infra_crds/crds"
+    version: "0.1.0"
+    valuesFile: "../@infra_crds/crds/values.yaml"
+    protected: false
+    wait: true
+    priority: -9
+    setString:
+      _global.namespace: "default"
+
+  cert-manager:
     timeout: 1200
     name: "cert-manager"
     description: "Certifacte Manager, able to create valid certificates on-demand"
-    namespace: "staging"
+    namespace: "default"
     enabled: true
     group: "critical"
     chart: "../@infra_cert-manager/cert-manager"
     version: "0.1.0"
     valuesFile: "../@infra_cert-manager/cert-manager/values.yaml"
-    protected: true
+    protected: false
     wait: true
-    priority: -6
+    priority: -8
+    setString:
+      _global.namespace: "default"
+      route53.keySecret: "${CONFIG_STAGING_ROUTE53_SECRET}"
+
+#   ███    ███  ██████  ███    ██ ██ ████████  ██████  ██████  ██ ███    ██  ██████ 
+#   ████  ████ ██    ██ ████   ██ ██    ██    ██    ██ ██   ██ ██ ████   ██ ██      
+#   ██ ████ ██ ██    ██ ██ ██  ██ ██    ██    ██    ██ ██████  ██ ██ ██  ██ ██   ███ 
+#   ██  ██  ██ ██    ██ ██  ██ ██ ██    ██    ██    ██ ██   ██ ██ ██  ██ ██ ██    ██ 
+#   ██      ██  ██████  ██   ████ ██    ██     ██████  ██   ██ ██ ██   ████  ██████  
+
+  ingress-monitoring:
+    timeout: 1200
+    name: "ingress-monitoring"
+    description: "Ingress, managing all incoming traffic and properly redirecting on services for the monitoring namespace"
+    namespace: "monitoring"
+    enabled: true
+    group: "critical"
+    chart: "../@infra_ingress/ingress"
+    version: "0.1.0"
+    valuesFile: "../@infra_ingress/ingress/values.yaml"
+    protected: false
+    wait: true
+    priority: 0
+    setString:
+      _global.namespace: "monitoring"
+
+      issuer.server: "${CONFIG_STAGING_ACME_SERVER}"
+
+      baseDomain: "ticket721.com"
+      domainExtension: "monitoring"
+
+      hosts[0].name: "grafana.monitoring.ticket721.com"
+      hosts[0].paths[0].route: "/"
+      hosts[0].paths[0].serviceName: "prometheus-monitoring-grafana"
+      hosts[0].paths[0].servicePort: "80"
+
+      route53.keyId: "${CONFIG_STAGING_ROUTE53_KEY}"
+      route53.hostedzone: "${CONFIG_STAGING_ROUTE53_HOSTEDZONE}"
+      route53.region: "eu-west-3"
+
+  prometheus-monitoring:
+    timeout: 1200
+    name: "prometheus-monitoring"
+    description: "Prometheus gathers metrics about the cluster"
+    namespace: "monitoring"
+    enabled: true
+    group: "critical"
+    chart: "../@infra_prometheus/prometheus"
+    version: "0.1.0"
+    valuesFile: "../@infra_prometheus/prometheus/values.yaml"
+    protected: false
+    wait: true
+    priority: -1
+    setString:
+      _global.namespace: "monitoring"
+
+#   ███████ ████████  █████   ██████  ██ ███    ██  ██████ 
+#   ██         ██    ██   ██ ██       ██ ████   ██ ██      
+#   ███████    ██    ███████ ██   ███ ██ ██ ██  ██ ██   ███ 
+#        ██    ██    ██   ██ ██    ██ ██ ██  ██ ██ ██    ██ 
+#   ███████    ██    ██   ██  ██████  ██ ██   ████  ██████  
+
+  ingress-staging:
+    timeout: 1200
+    name: "ingress-staging"
+    description: "Ingress, managing all incoming traffic and properly redirecting on services for the staging namespace"
+    namespace: "staging"
+    enabled: true
+    group: "critical"
+    chart: "../@infra_ingress/ingress"
+    version: "0.1.0"
+    valuesFile: "../@infra_ingress/ingress/values.yaml"
+    protected: false
+    wait: true
+    priority: 0
     setString:
       _global.namespace: "staging"
 
+      issuer.server: "${CONFIG_STAGING_ACME_SERVER}"
+
+      baseDomain: "ticket721.com"
+      domainExtension: "staging"
+
+      hosts[0].name: "api.staging.ticket721.com"
+      hosts[0].paths[0].route: "/"
+      hosts[0].paths[0].serviceName: "platform-staging--server--svc"
+      hosts[0].paths[0].servicePort: "80"
+
+      route53.keyId: "${CONFIG_STAGING_ROUTE53_KEY}"
+      route53.hostedzone: "${CONFIG_STAGING_ROUTE53_HOSTEDZONE}"
+      route53.region: "eu-west-3"
+
   efs-provisioner-staging:
     timeout: 1200
-    name: "efs-provisioner"
+    name: "efs-provisioner-staging"
     description: "EFS Storage Provider, allowing pods to mount EFS volumes in the filesystem"
     namespace: "staging"
     enabled: true
@@ -42,9 +152,9 @@ apps:
     chart: "../@infra_efs-provisioner/efs-provisioner"
     version: "0.1.0"
     valuesFile: "../@infra_efs-provisioner/efs-provisioner/values.yaml"
-    protected: true
+    protected: false
     wait: true
-    priority: -5
+    priority: -4
     setString:
       _global.namespace: "staging"
       "efs-provisioner.efsProvisioner.efsFileSystemId": "${CONFIG_STAGING_EFS_ID}"
@@ -52,7 +162,7 @@ apps:
 
   elassandra-staging:
     timeout: 1200
-    name: "elassandra"
+    name: "elassandra-staging"
     description: "Elassandra, storage layer of the infrastructure"
     namespace: "staging"
     enabled: true
@@ -60,15 +170,15 @@ apps:
     chart: "../@infra_elassandra/elassandra"
     version: "1.0.0"
     valuesFile: "../@infra_elassandra/elassandra/values.yaml"
-    protected: true
+    protected: false
     wait: true
-    priority: -4
+    priority: -3
     setString:
       _global.namespace: "staging"
 
   redis-staging:
     timeout: 1200
-    name: "redis"
+    name: "redis-staging"
     description: "Redis, Storage layer for the distributed tasks"
     namespace: "staging"
     enabled: true
@@ -76,15 +186,15 @@ apps:
     chart: "../@infra_redis/redis"
     version: "0.1.0"
     valuesFile: "../@infra_redis/redis/values.yaml"
-    protected: true
+    protected: false
     wait: true
-    priority: -3
+    priority: -2
     setString:
       _global.namespace: "staging"
 
   platform-staging:
     timeout: 1200
-    name: "platform"
+    name: "platform-staging"
     description: "The Ticket721 Platform"
     namespace: "staging"
     enabled: true
@@ -94,7 +204,7 @@ apps:
     valuesFile: "../@infra_platform/platform/values.yaml"
     protected: false
     wait: true
-    priority: -2
+    priority: -1
     setString:
       _global.namespace: "staging"
 
@@ -105,13 +215,13 @@ apps:
 
       config.stripe.apiKey: "${CONFIG_STAGING_STRIPE_APIKEY}"
 
-      config.cassandra.host: "elassandra-cassandra"
+      config.cassandra.host: "elassandra-staging-cassandra"
       config.cassandra.port: "9042"
 
       config.redirections.emailValidationUrl: "http://localhost:3000/validate"
       config.redirections.passwordResetUrl: "http://localhost:3000/validate/password/reset"
 
-      config.elasticsearch.host: "elassandra-elasticsearch"
+      config.elasticsearch.host: "elassandra-staging-elasticsearch"
       config.elasticsearch.port: "9200"
       config.elasticsearch.protocol: "http"
 
@@ -122,7 +232,7 @@ apps:
       config.ethereumNode.path: "/ethereum/ropsten/jsonrpc"
       config.ethereumNode.headers: '\{"apikey": "${CONFIG_STAGING_ROCKSIDE_APIKEY}"\}'
 
-      config.redis.host: "redis-master"
+      config.redis.host: "redis-staging-master"
       config.redis.port: "6379"
 
       config.jwt.rounds: "9"
@@ -156,36 +266,4 @@ apps:
 
       migrations.image.repository: "097558125954.dkr.ecr.eu-west-3.amazonaws.com/ticket721/migrations"
       migrations.image.tag: "${TAG}"
-
-  ingress-staging:
-    timeout: 1200
-    name: "ingress"
-    description: "Ingress, managing all incoming traffic and properly redirecting on services"
-    namespace: "staging"
-    enabled: true
-    group: "critical"
-    chart: "../@infra_ingress/ingress"
-    version: "0.1.0"
-    valuesFile: "../@infra_ingress/ingress/values.yaml"
-    protected: false
-    wait: true
-    priority: -1
-    setString:
-      _global.namespace: "staging"
-
-      issuer.server: "${CONFIG_STAGING_ACME_SERVER}"
-
-      baseDomain: "ticket721.com"
-      domainExtension: "staging"
-
-      hosts[0].name: "api.staging.ticket721.com"
-      hosts[0].paths[0].route: "/"
-      hosts[0].paths[0].serviceName: "platform--server--svc"
-      hosts[0].paths[0].servicePort: "80"
-
-      route53.keyId: "${CONFIG_STAGING_ROUTE53_KEY}"
-      route53.keySecret: "${CONFIG_STAGING_ROUTE53_SECRET}"
-      route53.hostedzone: "${CONFIG_STAGING_ROUTE53_HOSTEDZONE}"
-      route53.region: "eu-west-3"
-
 

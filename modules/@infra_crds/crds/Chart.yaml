@@ -1,6 +1,6 @@
 apiVersion: v2
-name: monitoring
-description: A Helm chart for Kubernetes
+name: crds
+description: A Helm chart containing all the CRDs that might be required in the cluster
 
 # A chart can be either an 'application' or a 'library' chart.
 #
@@ -21,15 +21,3 @@ version: 0.1.0
 # incremented each time you make changes to the application. Versions are not expected to
 # follow Semantic Versioning. They should reflect the version the application is using.
 appVersion: 1.16.0
-
-dependencies:
-  - name: prometheus-operator
-    alias: prometheus
-    version: 8.13.8
-    repository: https://kubernetes-charts.storage.googleapis.com/
-    condition: monitoring.enabled
-  - name: sentry
-    alias: sentry
-    version: 4.2.1
-    repository: https://kubernetes-charts.storage.googleapis.com/
-    condition: monitoring.enabled
