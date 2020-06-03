@@ -252,4 +252,15 @@ export class AuthorizationsService extends CRUDExtension<AuthorizationsRepositor
             response: ret,
         };
     }
+
+    async generateEventWithdrawAuthorization(
+        eventController: string,
+        eventId: string,
+        currency: string,
+        amount: string,
+        target: string,
+    ): Promise<ServiceResponse<AuthorizationEntity>> {
+        return null;
+    }
+
 }
