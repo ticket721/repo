@@ -1,58 +1,57 @@
+import { Body, Controller, Delete, HttpCode, HttpException, Param, Post, Put, UseFilters, UseGuards } from '@nestjs/common';
 import {
-    Body,
-    Controller,
-    Delete,
-    HttpCode,
-    HttpException,
-    Param,
-    Post,
-    Put,
-    UseFilters,
-    UseGuards,
-} from '@nestjs/common';
-import { Roles, RolesGuard } from '@app/server/authentication/guards/RolesGuard.guard';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { AuthGuard } from '@nestjs/passport';
-import { User } from '@app/server/authentication/decorators/User.controller.decorator';
-import { UserDto } from '@lib/common/users/dto/User.dto';
-import { ControllerBasics } from '@lib/common/utils/ControllerBasics.base';
-import { ActionSetsService } from '@lib/common/actionsets/ActionSets.service';
-import { EventsService } from '@lib/common/events/Events.service';
-import { EventsSearchInputDto } from '@app/server/controllers/events/dto/EventsSearchInput.dto';
-import { EventsSearchResponseDto } from '@app/server/controllers/events/dto/EventsSearchResponse.dto';
-import { EventEntity } from '@lib/common/events/entities/Event.entity';
-import { ActionSet } from '@lib/common/actionsets/helper/ActionSet.class';
-import { StatusCodes } from '@lib/common/utils/codes.value';
-import { EventsBuildResponseDto } from '@app/server/controllers/events/dto/EventsBuildResponse.dto';
-import { EventsBuildInputDto } from '@app/server/controllers/events/dto/EventsBuildInput.dto';
-import { getT721ControllerGroupID, toAcceptedAddressFormat, uuidEq } from '@common/global';
-import { ActionSetToEventEntityConverter } from '@app/server/controllers/events/utils/ActionSetToEventEntityConverter.helper';
-import { ConfigService } from '@lib/common/config/Config.service';
-import { CurrenciesService } from '@lib/common/currencies/Currencies.service';
-import { DatesService } from '@lib/common/dates/Dates.service';
-import { DateEntity } from '@lib/common/dates/entities/Date.entity';
-import { HttpExceptionFilter } from '@app/server/utils/HttpException.filter';
-import { UUIDToolService } from '@lib/common/toolbox/UUID.tool.service';
-import { EventsStartInputDto } from '@app/server/controllers/events/dto/EventsStartInput.dto';
-import { EventsStartResponseDto } from '@app/server/controllers/events/dto/EventsStartResponse.dto';
-import { EventsUpdateInputDto } from '@app/server/controllers/events/dto/EventsUpdateInput.dto';
-import { EventsUpdateResponseDto } from '@app/server/controllers/events/dto/EventsUpdateResponse.dto';
-import { CategoriesService } from '@lib/common/categories/Categories.service';
-import { EventsAddDatesInputDto } from '@app/server/controllers/events/dto/EventsAddDatesInput.dto';
-import { EventsDeleteDatesInputDto } from '@app/server/controllers/events/dto/EventsDeleteDatesInput.dto';
-import { EventsAddCategoriesInputDto } from '@app/server/controllers/events/dto/EventsAddCategoriesInput.dto';
-import { EventsDeleteCategoriesInputDto } from '@app/server/controllers/events/dto/EventsDeleteCategoriesInput.dto';
-import { EventsDeleteCategoriesResponseDto } from '@app/server/controllers/events/dto/EventsDeleteCategoriesResponse.dto';
-import { EventsAddCategoriesResponseDto } from '@app/server/controllers/events/dto/EventsAddCategoriesResponse.dto';
-import { EventsAddDatesResponseDto } from '@app/server/controllers/events/dto/EventsAddDatesResponse.dto';
-import { EventsDeleteDatesResponseDto } from '@app/server/controllers/events/dto/EventsDeleteDatesResponse.dto';
-import { RightsService } from '@lib/common/rights/Rights.service';
-import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
-import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
-import { ApiResponses } from '@app/server/utils/ApiResponses.controller.decorator';
-import { MetadatasService } from '@lib/common/metadatas/Metadatas.service';
+    Roles,
+    RolesGuard,
+}                                                                                                      from '@app/server/authentication/guards/RolesGuard.guard';
+import { ApiBearerAuth, ApiTags }                                                                      from '@nestjs/swagger';
+import { AuthGuard }                                                                                   from '@nestjs/passport';
+import { User }                                                                                        from '@app/server/authentication/decorators/User.controller.decorator';
+import { UserDto }                                                                                     from '@lib/common/users/dto/User.dto';
+import { ControllerBasics }                                                                            from '@lib/common/utils/ControllerBasics.base';
+import { ActionSetsService }                                                                           from '@lib/common/actionsets/ActionSets.service';
+import { EventsService }                                                                               from '@lib/common/events/Events.service';
+import { EventsSearchInputDto }                                                                        from '@app/server/controllers/events/dto/EventsSearchInput.dto';
+import { EventsSearchResponseDto }                                                                     from '@app/server/controllers/events/dto/EventsSearchResponse.dto';
+import { EventEntity }                                                                                 from '@lib/common/events/entities/Event.entity';
+import { ActionSet }                                                                                   from '@lib/common/actionsets/helper/ActionSet.class';
+import { StatusCodes }                                                                                 from '@lib/common/utils/codes.value';
+import { EventsBuildResponseDto }                                                                      from '@app/server/controllers/events/dto/EventsBuildResponse.dto';
+import { EventsBuildInputDto }                                                                         from '@app/server/controllers/events/dto/EventsBuildInput.dto';
+import { getT721ControllerGroupID, toAcceptedAddressFormat, uuidEq }                                   from '@common/global';
+import { ActionSetToEventEntityConverter }                                                             from '@app/server/controllers/events/utils/ActionSetToEventEntityConverter.helper';
+import { ConfigService }                                                                               from '@lib/common/config/Config.service';
+import {
+    CurrenciesService,
+    ERC20Currency,
+}                                                                                                      from '@lib/common/currencies/Currencies.service';
+import { DatesService }                                                                                from '@lib/common/dates/Dates.service';
+import { DateEntity }                                                                                  from '@lib/common/dates/entities/Date.entity';
+import { HttpExceptionFilter }                                                                         from '@app/server/utils/HttpException.filter';
+import { UUIDToolService }                                                                             from '@lib/common/toolbox/UUID.tool.service';
+import { EventsStartInputDto }                                                                         from '@app/server/controllers/events/dto/EventsStartInput.dto';
+import { EventsStartResponseDto }                                                                      from '@app/server/controllers/events/dto/EventsStartResponse.dto';
+import { EventsUpdateInputDto }                                                                        from '@app/server/controllers/events/dto/EventsUpdateInput.dto';
+import { EventsUpdateResponseDto }                                                                     from '@app/server/controllers/events/dto/EventsUpdateResponse.dto';
+import { CategoriesService }                                                                           from '@lib/common/categories/Categories.service';
+import { EventsAddDatesInputDto }                                                                      from '@app/server/controllers/events/dto/EventsAddDatesInput.dto';
+import { EventsDeleteDatesInputDto }                                                                   from '@app/server/controllers/events/dto/EventsDeleteDatesInput.dto';
+import { EventsAddCategoriesInputDto }                                                                 from '@app/server/controllers/events/dto/EventsAddCategoriesInput.dto';
+import { EventsDeleteCategoriesInputDto }                                                              from '@app/server/controllers/events/dto/EventsDeleteCategoriesInput.dto';
+import { EventsDeleteCategoriesResponseDto }                                                           from '@app/server/controllers/events/dto/EventsDeleteCategoriesResponse.dto';
+import { EventsAddCategoriesResponseDto }                                                              from '@app/server/controllers/events/dto/EventsAddCategoriesResponse.dto';
+import { EventsAddDatesResponseDto }                                                                   from '@app/server/controllers/events/dto/EventsAddDatesResponse.dto';
+import { EventsDeleteDatesResponseDto }               from '@app/server/controllers/events/dto/EventsDeleteDatesResponse.dto';
+import { RightsService }                              from '@lib/common/rights/Rights.service';
+import { CategoryEntity }                             from '@lib/common/categories/entities/Category.entity';
+import { ActionSetEntity }                            from '@lib/common/actionsets/entities/ActionSet.entity';
+import { ApiResponses }                               from '@app/server/utils/ApiResponses.controller.decorator';
+import { MetadatasService }                           from '@lib/common/metadatas/Metadatas.service';
 import { RocksideCreateEOAResponse, RocksideService } from '@lib/common/rockside/Rockside.service';
-import { ValidGuard } from '@app/server/authentication/guards/ValidGuard.guard';
+import { ValidGuard }                                 from '@app/server/authentication/guards/ValidGuard.guard';
+import { EventsWithdrawInputDto }                     from '@app/server/controllers/events/dto/EventsWithdrawInput.dto';
+import { EventsWithdrawResponseDto }                  from '@app/server/controllers/events/dto/EventsWithdrawResponse.dto';
+import { contractCallHelper }                         from '@lib/common/utils/contractCall.helper';
+import { T721ControllerV0Service }                    from '@lib/common/contracts/t721controller/T721Controller.V0.service';
 
 /**
  * Events controller to create and fetch events
@@ -74,6 +73,7 @@ export class EventsController extends ControllerBasics<EventEntity> {
      * @param rightsService
      * @param metadatasService
      * @param rocksideService
+     * @param t721ControllerV0Service
      */
     constructor(
         private readonly eventsService: EventsService,
@@ -86,6 +86,7 @@ export class EventsController extends ControllerBasics<EventEntity> {
         private readonly rightsService: RightsService,
         private readonly metadatasService: MetadatasService,
         private readonly rocksideService: RocksideService,
+        private readonly t721ControllerV0Service: T721ControllerV0Service,
     ) {
         super();
     }
@@ -960,5 +961,93 @@ export class EventsController extends ControllerBasics<EventEntity> {
         return {
             event: eventEntity,
         };
+    }
+
+    /**
+     * Withdraw tokens from the t721controller
+     *
+     * @param body
+     * @param eventId
+     * @param user
+     */
+    @Post('/:eventId/withdraw')
+    @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
+    @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.Created)
+    @Roles('authenticated')
+    @ApiResponses([
+        StatusCodes.Created,
+        StatusCodes.NotFound,
+        StatusCodes.Unauthorized,
+        StatusCodes.InternalServerError,
+    ])
+    async withdraw(
+        @Body() body: EventsWithdrawInputDto,
+        @Param('eventId') eventId: string,
+        @User() user: UserDto,
+    ): Promise<EventsWithdrawResponseDto> {
+
+        const eventEntity: EventEntity = await this._authorizeOne(
+            this.rightsService,
+            this.eventsService,
+            user,
+            {
+                id: eventId,
+            },
+            'group_id',
+            ['withdraw'],
+        );
+
+        const currency = await this.currenciesService.get(body.currency)
+
+        if (currency === undefined) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.NotFound,
+                    message: 'cannot_find_currency',
+                },
+                StatusCodes.NotFound,
+            );
+        }
+
+        if (currency.type !== 'erc20') {
+            throw new HttpException(
+                {
+                    status: StatusCodes.Forbidden,
+                    message: 'invalid_currency_to_withdraw',
+                },
+                StatusCodes.Forbidden,
+            );
+        }
+
+        const erc20Currency: ERC20Currency = currency as ERC20Currency;
+        const groupId = eventEntity.group_id;
+
+        const balance = await this._serviceCall(
+            contractCallHelper(
+                await this.t721ControllerV0Service.get(),
+                'balanceOf',
+                {},
+                groupId,
+                erc20Currency.address
+            ),
+            StatusCodes.InternalServerError,
+            'cannot_retrieve_balance'
+        );
+
+        if (BigInt(balance.toString()) < BigInt(body.amount)) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.Forbidden,
+                    message: 'requested_amount_too_high',
+                },
+                StatusCodes.Forbidden,
+            );
+        }
+
+        // 4 generate authorization
+        // 5 generate txquence
+        // 6 return txsequence if
+        return null;
     }
 }

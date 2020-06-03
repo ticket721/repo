@@ -34,8 +34,8 @@ import {
     eventsCreateDatesConfiguration, eventsCreateImagesMetadata,
     eventsCreateModulesConfiguration,
     eventsCreateTextMetadata, eventsDeleteCategories, eventsDeleteDates,
-    eventsSearch, eventsStart, eventsUpdate,
-}                                                                         from './app/api/events';
+    eventsSearch, eventsStart, eventsUpdate, eventsWithdraw,
+} from './app/api/events';
 import { txsInfos, txsSearch, txsSubscribe }                              from './app/api/txs';
 import { contractsFetch }                                                 from './app/api/contracts';
 import { categoriesCreate, categoriesSearch, categoriesUpdate }           from './app/api/categories';
@@ -98,6 +98,7 @@ export class T721SDK {
         this.events.addCategories = this.events.addCategories.bind(this);
         this.events.deleteDates = this.events.deleteDates.bind(this);
         this.events.addDates = this.events.addDates.bind(this);
+        this.events.withdraw = this.events.withdraw.bind(this);
 
         this.categories.create = this.categories.create.bind(this);
         this.categories.search = this.categories.search.bind(this);
@@ -257,6 +258,7 @@ export class T721SDK {
         addCategories: eventsAddCategories,
         deleteDates: eventsDeleteDates,
         addDates: eventsAddDates,
+        withdraw: eventsWithdraw,
     };
 
     public rights = {

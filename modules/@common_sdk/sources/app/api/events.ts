@@ -25,6 +25,7 @@ import { EventsDeleteDatesInputDto }         from '@app/server/controllers/event
 import { EventsDeleteDatesResponseDto }      from '@app/server/controllers/events/dto/EventsDeleteDatesResponse.dto';
 import { EventsAddDatesInputDto }            from '@app/server/controllers/events/dto/EventsAddDatesInput.dto';
 import { EventsAddDatesResponseDto }         from '@app/server/controllers/events/dto/EventsAddDatesResponse.dto';
+import { EventsWithdrawInputDto }            from '@app/server/controllers/events/dto/EventsWithdrawInput.dto';
 
 export async function eventsSearch(
     token: string,
@@ -234,6 +235,20 @@ export async function eventsAddDates(
         'Content-Type': 'application/json',
     }, query);
 
+}
+
+export async function eventsWithdraw(
+    token: string,
+    event: string,
+    query: EventsWithdrawInputDto
+): Promise<AxiosResponse<EventsAddDatesResponseDto>> {
+
+    const self: T721SDK = this;
+
+    return self.post<EventsWithdrawInputDto>(`/events/${event}/withdraw`, {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+    }, query);
 }
 
 
