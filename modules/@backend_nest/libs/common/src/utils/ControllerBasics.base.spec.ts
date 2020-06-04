@@ -1,17 +1,19 @@
 import { anything, deepEqual, instance, mock, spy, verify, when } from 'ts-mockito';
 import { ControllerBasics } from '@lib/common/utils/ControllerBasics.base';
 import { CRUDExtension } from '@lib/common/crud/CRUDExtension.base';
-import { Repository } from '@iaminfinity/express-cassandra';
-import { Boundable } from '@lib/common/utils/Boundable.type';
-import { CategoriesService } from '@lib/common/categories/Categories.service';
-import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
-import { StatusCodes } from '@lib/common/utils/codes.value';
-import { RightsService } from '@lib/common/rights/Rights.service';
-import { UserDto } from '@lib/common/users/dto/User.dto';
-import { RightEntity } from '@lib/common/rights/entities/Right.entity';
-import { ESSearchReturn } from '@lib/common/utils/ESSearchReturn.type';
-import { EventsService } from '@lib/common/events/Events.service';
+import { Repository }          from '@iaminfinity/express-cassandra';
+import { Boundable }           from '@lib/common/utils/Boundable.type';
+import { CategoriesService }   from '@lib/common/categories/Categories.service';
+import { CategoryEntity }      from '@lib/common/categories/entities/Category.entity';
+import { StatusCodes }         from '@lib/common/utils/codes.value';
+import { RightsService }       from '@lib/common/rights/Rights.service';
+import { UserDto }             from '@lib/common/users/dto/User.dto';
+import { RightEntity }         from '@lib/common/rights/entities/Right.entity';
+import { ESSearchReturn }      from '@lib/common/utils/ESSearchReturn.type';
+import { EventsService }       from '@lib/common/events/Events.service';
 import { SortablePagedSearch } from '@lib/common/utils/SortablePagedSearch.type';
+import { SearchableField }     from '@lib/common/utils/SearchableField.type';
+import { ESCountReturn }       from '../../../../../@common_sdk/lib/@backend_nest/libs/common/src/utils/ESCountReturn.type';
 
 class FakeEntity {
     id: string;
@@ -739,6 +741,97 @@ describe('Controller Basics', function() {
             );
         });
     });
+
+    describe('_count', function() {
+        it('should count properly', async function() {
+            const query = {
+                id: {
+                    $eq: 'abcd',
+                },
+            }
+
+            const service = mock(CRUDExtension);
+
+            when(
+                service.countElastic(
+                    deepEqual({
+                        body: {
+                            query: {
+                                bool: {
+                                    must: {
+                                        term: {
+                                            id: 'abcd',
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: {
+                    count: 1,
+                    _shards: {
+                        total: 1,
+                        successful: 1,
+                        skipped: 0,
+                        failed: 0,
+                    },
+                } as ESCountReturn
+            })
+
+            const res = await context.controllerBasics._count(instance(service), query);
+
+            expect(res).toEqual({
+                count: 1,
+                _shards: {
+                    total: 1,
+                    successful: 1,
+                    skipped: 0,
+                    failed: 0,
+                },
+            });
+        });
+
+        it('internal server error', async function() {
+            const query = {
+                id: {
+                    $eq: 'abcd',
+                },
+            }
+
+            const service = mock(CRUDExtension);
+
+            when(
+                service.countElastic(
+                    deepEqual({
+                        body: {
+                            query: {
+                                bool: {
+                                    must: {
+                                        term: {
+                                            id: 'abcd',
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    }),
+                ),
+            ).thenResolve({
+                error: 'unexpected_error',
+                response: null,
+            });
+
+            await throwWith(
+                context.controllerBasics._count(instance(service), query),
+                StatusCodes.InternalServerError,
+                'unexpected_error',
+            );
+        });
+    });
+
     describe('_authorizeGlobal', function() {
         it('should properly check global rights', async function() {
             const user = {
