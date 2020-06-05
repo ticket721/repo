@@ -8,6 +8,7 @@ import CategorizeTicketsForm from '../../components/CategorizeTicketsForm';
 
 const CreateEvent: React.FC = () => {
   const [step, setStep] = useState(STEPS.generalInfo);
+
   return (
     <Container>
       <Forms>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/../@frontend_core/.idea/@frontend_core.iml" filepath="$PROJECT_DIR$/../@frontend_core/.idea/@frontend_core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../@frontend_flib-react/.idea/@frontend_flib-react.iml" filepath="$PROJECT_DIR$/../@frontend_flib-react/.idea/@frontend_flib-react.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/@frontend_organizer-app.iml" filepath="$PROJECT_DIR$/.idea/@frontend_organizer-app.iml" />
+    </modules>
+  </component>
+</project>
