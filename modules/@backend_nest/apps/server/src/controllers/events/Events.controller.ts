@@ -1053,7 +1053,7 @@ export class EventsController extends ControllerBasics<EventEntity> {
         }
 
         const txSeq = await this._serviceCall(
-            this.authorizationsService.generateEventWithdrawAuthorization(
+            this.authorizationsService.generateEventWithdrawAuthorizationAndTransactionSequence(
                 user,
                 eventEntity.address,
                 eventEntity.id.toLowerCase(),

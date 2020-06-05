@@ -20,6 +20,7 @@ import { TxSequenceAcsetBuilderArgs } from '@lib/common/txs/acset_builders/TxSeq
 import { UserDto } from '@lib/common/users/dto/User.dto';
 import { ActionSetsService } from '@lib/common/actionsets/ActionSets.service';
 import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
+import { WithdrawTransactionConfirmed, WithdrawTransactionFailure } from '@app/worker/tasks/withdraw/Withdraw.tasks';
 
 /**
  * Service to CRUD AuthorizationEntities
@@ -259,7 +260,16 @@ export class AuthorizationsService extends CRUDExtension<AuthorizationsRepositor
         };
     }
 
-    async generateEventWithdrawAuthorization(
+    /**
+     * Utility to generate Authorization and start the transaction sequence
+     *
+     * @param user
+     * @param eventController
+     * @param eventId
+     * @param currency
+     * @param amount
+     */
+    async generateEventWithdrawAuthorizationAndTransactionSequence(
         user: UserDto,
         eventController: string,
         eventId: string,
@@ -348,16 +358,20 @@ export class AuthorizationsService extends CRUDExtension<AuthorizationsRepositor
             data: (await this.t721ControllerV0Service.get()).methods.withdraw(...rawArgs).encodeABI(),
             value: '0',
             onConfirm: {
-                name: '@withdra/confirmation',
+                name: '@withdraw/confirmation',
                 jobData: {
-                    authorization: authorization.id,
-                },
+                    authorizationId: authorization.id,
+                    granter: authorization.granter,
+                    grantee: authorization.grantee,
+                } as WithdrawTransactionConfirmed,
             },
             onFailure: {
                 name: '@withdraw/failure',
                 jobData: {
-                    authorization: authorization.id,
-                },
+                    authorizationId: authorization.id,
+                    granter: authorization.granter,
+                    grantee: authorization.grantee,
+                } as WithdrawTransactionFailure,
             },
         };
 

@@ -1321,7 +1321,7 @@ describe('Authorizations Service', function() {
         });
     });
 
-    describe('generateEventWithdrawAuthorization', function() {
+    describe('generateEventWithdrawAuthorizationAndTransactionSequence', function() {
         it('should properly generate withdraw authorization for event owner', async function() {
             const user: UserDto = {
                 address: '0x98AD263a95F1ab1AbFF41F4D44b07c3240251A0a',
@@ -1387,15 +1387,19 @@ describe('Authorizations Service', function() {
                 data: encodedWithdrawCall,
                 value: '0',
                 onConfirm: {
-                    name: '@withdra/confirmation',
+                    name: '@withdraw/confirmation',
                     jobData: {
-                        authorization: authorizationId,
+                        authorizationId: authorizationId,
+                        granter: eventController,
+                        grantee: user.address,
                     },
                 },
                 onFailure: {
                     name: '@withdraw/failure',
                     jobData: {
-                        authorization: authorizationId,
+                        authorizationId: authorizationId,
+                        granter: eventController,
+                        grantee: user.address,
                     },
                 },
             };
@@ -1430,7 +1434,7 @@ describe('Authorizations Service', function() {
                 } as ActionSetEntity,
             });
 
-            const res = await context.authorizationsService.generateEventWithdrawAuthorization(
+            const res = await context.authorizationsService.generateEventWithdrawAuthorizationAndTransactionSequence(
                 user,
                 eventController,
                 eventId,
@@ -1499,7 +1503,7 @@ describe('Authorizations Service', function() {
             when(context.t721ControllerV0ServiceMock.get()).thenResolve(t721ControllerInstance);
             when(context.rocksideServiceMock.getSigner(eventController)).thenReturn(signer);
 
-            const res = await context.authorizationsService.generateEventWithdrawAuthorization(
+            const res = await context.authorizationsService.generateEventWithdrawAuthorizationAndTransactionSequence(
                 user,
                 eventController,
                 eventId,
@@ -1589,7 +1593,7 @@ describe('Authorizations Service', function() {
                 response: null,
             });
 
-            const res = await context.authorizationsService.generateEventWithdrawAuthorization(
+            const res = await context.authorizationsService.generateEventWithdrawAuthorizationAndTransactionSequence(
                 user,
                 eventController,
                 eventId,
@@ -1675,15 +1679,19 @@ describe('Authorizations Service', function() {
                 data: encodedWithdrawCall,
                 value: '0',
                 onConfirm: {
-                    name: '@withdra/confirmation',
+                    name: '@withdraw/confirmation',
                     jobData: {
-                        authorization: authorizationId,
+                        authorizationId: authorizationId,
+                        granter: eventController,
+                        grantee: user.address,
                     },
                 },
                 onFailure: {
                     name: '@withdraw/failure',
                     jobData: {
-                        authorization: authorizationId,
+                        authorizationId: authorizationId,
+                        granter: eventController,
+                        grantee: user.address,
                     },
                 },
             };
@@ -1715,7 +1723,7 @@ describe('Authorizations Service', function() {
                 response: null,
             });
 
-            const res = await context.authorizationsService.generateEventWithdrawAuthorization(
+            const res = await context.authorizationsService.generateEventWithdrawAuthorizationAndTransactionSequence(
                 user,
                 eventController,
                 eventId,
