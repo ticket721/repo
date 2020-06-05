@@ -36,7 +36,7 @@ const NavBar: React.FC = () => {
         <Container>
             <div onClick={() => dispatch(Logout())}>signout</div>
             <NavLink
-            to='/'>
+                to='/'>
                 <Icon icon='t721' color='#fff' size='30px' />
             </NavLink>
             <ActionContainer>
@@ -45,16 +45,16 @@ const NavBar: React.FC = () => {
                     Create Event
                 </NavLink>
                 <Profile
-                onClick={
-                    () => history.push((history.location.pathname === '/' ? '' : history.location.pathname) + '/drawer')
-                }>
+                    onClick={
+                        () => history.push((history.location.pathname === '/' ? '' : history.location.pathname) + '/drawer')
+                    }>
                     <UserHeader user={user} />
                     <Chevron icon='chevron' color='#fff' size='7px' />
                 </Profile>
             </ActionContainer>
             <DrawerAccount
-            open={computeDrawerPath(history.location.pathname) !== '/'}
-            onClose={drawerOnClose} />
+                open={computeDrawerPath(history.location.pathname) !== '/'}
+                onClose={drawerOnClose} />
         </Container>
     );
 };
@@ -87,7 +87,6 @@ const Profile = styled.div`
     background-color: rgba(255, 255, 255, 0.06);
     border-radius: ${(props) => props.theme.defaultRadius};
     padding: 12px 16px;
-
 `;
 
 const UserHeader = styled(WalletHeader)`

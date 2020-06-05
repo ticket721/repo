@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="9a929e5f-0bc1-4aed-a5a3-2c9cadda53e6" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/@frontend_organizer-app.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/CategorizeTicketsForm/CustomCategories/index.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/CategorizeTicketsForm/Global/index.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/CategorizeTicketsForm/validators.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/CategorizeTicketsForm/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/CategorizeTicketsForm/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/DatesForm/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/DatesForm/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/DatesForm/validators.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/DatesForm/validators.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/GeneralInfoForm/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/GeneralInfoForm/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Navbar/index.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/routes.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/routes.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/screens/CreateEvent/enums.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/screens/CreateEvent/enums.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/screens/CreateEvent/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/screens/CreateEvent/index.tsx" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
+  </component>
+  <component name="ProjectId" id="1cOCf0yLF8H4Brg5HkbB80DgdEC" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/src/components/CategorizeTicketsForm" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.path.for.package.tslint" value="project" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
+    <property name="nodejs_package_manager_path" value="npm" />
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+    <property name="ts.external.directory.path" value="$APPLICATION_HOME_DIR$/plugins/JavaScriptLanguage/jsLanguageServicesImpl/external" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/components/CategorizeTicketsForm" />
+    </key>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="9a929e5f-0bc1-4aed-a5a3-2c9cadda53e6" name="Default Changelist" comment="" />
+      <created>1590390351603</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1590390351603</updated>
+      <workItem from="1590390352844" duration="1857000" />
+      <workItem from="1590413903050" duration="39000" />
+      <workItem from="1590652292857" duration="2531000" />
+      <workItem from="1590656928663" duration="10458000" />
+      <workItem from="1590695513048" duration="15550000" />
+      <workItem from="1591272167045" duration="14522000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="2" />
+    <option name="exactExcludedFiles">
+      <list>
+        <option value="$PROJECT_DIR$/src/serviceWorker.js" />
+        <option value="$PROJECT_DIR$/src/setupTests.js" />
+      </list>
+    </option>
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="562" y="366" key="#TSLint" timestamp="1590655580493">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state x="562" y="366" key="#TSLint/0.0.1440.900@0.0.1440.900" timestamp="1590655580493" />
+    <state x="394" y="105" key="#TypeScript" timestamp="1590653727372">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state x="394" y="105" key="#TypeScript/0.0.1440.900@0.0.1440.900" timestamp="1590653727372" />
+    <state x="184" y="112" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1591346654218">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state x="184" y="112" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1440.900@0.0.1440.900" timestamp="1591346654218" />
+    <state width="1419" height="245" key="GridCell.Tab.0.bottom" timestamp="1590656924788">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state width="1419" height="245" key="GridCell.Tab.0.bottom/0.0.1440.900@0.0.1440.900" timestamp="1590656924788" />
+    <state width="1419" height="245" key="GridCell.Tab.0.center" timestamp="1590656924786">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state width="1419" height="245" key="GridCell.Tab.0.center/0.0.1440.900@0.0.1440.900" timestamp="1590656924786" />
+    <state width="1419" height="245" key="GridCell.Tab.0.left" timestamp="1590656924785">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state width="1419" height="245" key="GridCell.Tab.0.left/0.0.1440.900@0.0.1440.900" timestamp="1590656924785" />
+    <state width="1419" height="245" key="GridCell.Tab.0.right" timestamp="1590656924787">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state width="1419" height="245" key="GridCell.Tab.0.right/0.0.1440.900@0.0.1440.900" timestamp="1590656924787" />
+    <state x="251" y="89" key="SettingsEditor" timestamp="1590695499725">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state x="251" y="89" key="SettingsEditor/0.0.1440.900@0.0.1440.900" timestamp="1590695499725" />
+    <state width="498" height="451" key="SwitcherDM" timestamp="1591282292387">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state width="498" height="451" key="SwitcherDM/0.0.1440.900@0.0.1440.900" timestamp="1591282292387" />
+    <state x="395" y="71" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1591349055648">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state x="395" y="71" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/0.0.1440.900@0.0.1440.900" timestamp="1591349055648" />
+    <state x="248" y="22" width="1044" height="703" key="find.popup" timestamp="1591344289998">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state x="248" y="22" width="1044" height="703" key="find.popup/0.0.1440.900@0.0.1440.900" timestamp="1591344289998" />
+    <state x="383" y="194" width="672" height="678" key="search.everywhere.popup" timestamp="1591353307774">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state x="383" y="194" width="672" height="678" key="search.everywhere.popup/0.0.1440.900@0.0.1440.900" timestamp="1591353307774" />
+  </component>
+</project>
