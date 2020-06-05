@@ -28,13 +28,16 @@ interface Props {
 
 const GeneralInfoForm = ({ setStep }: Props) => {
   const [validation, setValidation] = React.useState('false');
+  const [edit, setEdit] = React.useState(false);
   const [currentTag, setCurrentTag] = useState('');
   const formik = useFormik({
     initialValues,
     onSubmit: values => {
       alert(JSON.stringify(values, null, 2));
       setValidation('true');
-      setStep(STEPS.dates);
+      if (!edit) {
+        setStep(STEPS.dates);
+      }
     },
     validationSchema: generalSchema
   });
@@ -55,7 +58,10 @@ const GeneralInfoForm = ({ setStep }: Props) => {
         <Card>
           <div className='line'>
             <h2>{formik.values.name}</h2>
-            <span className='edit' onClick={() => setValidation('false')}>EDIT</span>
+            <span className='edit' onClick={() => {
+                setValidation('false');
+                setEdit(true);
+            }}>EDIT</span>
           </div>
           <p>{formik.values.description}</p>
           <img src={formik.values.cover.previewUrl} alt='cover' />
