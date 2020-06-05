@@ -1,34 +1,6 @@
-import {
-    EventsCreateAdminsConfiguration,
-    EventsCreateCategoriesConfiguration,
-    EventsCreateDatesConfiguration,
-    EventsCreateImagesMetadata,
-    EventsCreateModulesConfiguration,
-    EventsCreateTextMetadata,
-} from '@common/sdk/lib/@backend_nest/apps/worker/src/actionhandlers/events/Events.input.handlers';
+import { CacheCore } from '../cores/cache/CacheCore';
 
-// export enum AcsetKind {
-//     CreateEventActions
-// }
-//
-// export interface CreateEventActions {
-//     acsetKind: AcsetKind.CreateEventActions;
-//     actions: [
-//         EventsCreateTextMetadata,
-//         EventsCreateModulesConfiguration,
-//         EventsCreateDatesConfiguration,
-//         EventsCreateCategoriesConfiguration,
-//         EventsCreateImagesMetadata,
-//         EventsCreateAdminsConfiguration,
-//     ]
-// }
-
-export type CreateEventAction =
-    EventsCreateTextMetadata
-    | EventsCreateModulesConfiguration
-    | EventsCreateDatesConfiguration
-    | EventsCreateCategoriesConfiguration
-    | EventsCreateImagesMetadata
-    | EventsCreateAdminsConfiguration;
-
-export type ActionInputType = CreateEventAction;
+export const rightsKey = (token: string): string => CacheCore.key('rights.search',[
+    token,
+    {}
+]);

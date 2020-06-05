@@ -2,7 +2,7 @@ import { useDispatch, useSelector }               from 'react-redux';
 import { AppState }                               from '../../redux/ducks';
 import { CacheCore }                              from '../../cores/cache/CacheCore';
 import { useEffect }                                         from 'react';
-import { RegisterComponent, UnregisterComponent } from '../../redux/ducks/cache';
+import { RegisterEntity, UnregisterEntity } from '../../redux/ducks/cache';
 
 export interface RequestTemplate {
     [key: string]: (...args: any[]) => any;
@@ -32,8 +32,8 @@ type Responses<TemplateInterfaceType extends RequestTemplate> = {
 
 export type RequestsBag<TemplateInterfaceType extends RequestTemplate> = {
     responses: Responses<TemplateInterfaceType>;
-    registerComponent: (uuid: string, refreshRates?: {[P in keyof TemplateInterfaceType]: number}) => void;
-    unregisterComponent: (uuid: string) => void;
+    registerEntity: (uuid: string, refreshRates?: {[P in keyof TemplateInterfaceType]: number}) => void;
+    unregisterEntity: (uuid: string) => void;
 }
 
 export const useRequests = <TemplateInterfaceType extends RequestTemplate>(
@@ -61,9 +61,8 @@ export const useRequests = <TemplateInterfaceType extends RequestTemplate>(
 
     const responses: Responses<TemplateInterfaceType> = {} as Responses<TemplateInterfaceType>;
 
-    const registerComponent = (uuid: string, refreshRates?: {[P in keyof TemplateInterfaceType]: number}) => entities.forEach(
-        ([key, entity]) => void dispatch(RegisterComponent(
-            CacheCore.key(entity.method, entity.args),
+    const registerEntity = (uuid: string, refreshRates?: {[P in keyof TemplateInterfaceType]: number}) => entities.forEach(
+        ([key, entity]) => void dispatch(RegisterEntity(
             entity.method,
             entity.args,
             uuid,
@@ -71,22 +70,22 @@ export const useRequests = <TemplateInterfaceType extends RequestTemplate>(
         ))
     );
 
-    const unregisterComponent = (uuid: string) => entities.forEach(
-        ([, entity]) => void dispatch(UnregisterComponent(
+    const unregisterEntity = (uuid: string) => entities.forEach(
+        ([, entity]) => void dispatch(UnregisterEntity(
             CacheCore.key(entity.method, entity.args),
             uuid
         ))
     );
 
     useEffect(() => {
-        registerComponent(initialUuid);
+        registerEntity(initialUuid);
 
-        return () => unregisterComponent(initialUuid);
+        return () => unregisterEntity(initialUuid);
     }, []);
 
     return {
         responses,
-        registerComponent,
-        unregisterComponent,
+        registerEntity,
+        unregisterEntity,
     }
 };

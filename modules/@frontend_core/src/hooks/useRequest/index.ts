@@ -2,7 +2,7 @@ import { useDispatch, useSelector }               from 'react-redux';
 import { AppState }                               from '../../redux/ducks';
 import { CacheCore }                              from '../../cores/cache/CacheCore';
 import { useEffect }                                         from 'react';
-import { RegisterComponent, UnregisterComponent } from '../../redux/ducks/cache';
+import { RegisterEntity, UnregisterEntity } from '../../redux/ducks/cache';
 
 interface RequestParams {
     method: string;
@@ -18,8 +18,8 @@ interface RequestResp<ReturnType> {
 
 export type RequestBag<ReturnType> = {
     response: RequestResp<ReturnType>;
-    registerComponent: (uuid: string, refreshRates?: number) => void;
-    unregisterComponent: (uuid: string) => void;
+    registerEntity: (uuid: string, refreshRates?: number) => void;
+    unregisterEntity: (uuid: string) => void;
 }
 
 export const useRequest = <ReturnType>(
@@ -33,25 +33,24 @@ export const useRequest = <ReturnType>(
 
     const dispatch = useDispatch();
 
-    const registerComponent = (uuid: string, refreshRate?: number): void =>
-        void dispatch(RegisterComponent(
-            CacheCore.key(call.method, call.args),
+    const registerEntity = (uuid: string, refreshRate?: number): void =>
+        void dispatch(RegisterEntity(
             call.method,
             call.args,
             uuid,
             refreshRate ? refreshRate : call.refreshRate
         ));
 
-    const unregisterComponent = (uuid: string): void =>
-        void dispatch(UnregisterComponent(
+    const unregisterEntity = (uuid: string): void =>
+        void dispatch(UnregisterEntity(
             CacheCore.key(call.method, call.args),
             uuid
         ));
 
     useEffect(() => {
-        registerComponent(initialUuid);
+        registerEntity(initialUuid);
 
-        return () => unregisterComponent(initialUuid);
+        return () => unregisterEntity(initialUuid);
     }, []);
 
     return {
@@ -59,7 +58,7 @@ export const useRequest = <ReturnType>(
             ...response,
             data: response.data ? response.data['data'] : null
         },
-        registerComponent,
-        unregisterComponent,
+        registerEntity,
+        unregisterEntity,
     }
 };

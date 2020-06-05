@@ -9,17 +9,22 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Toast from '@frontend/flib-react/lib/components/toast';
 
+export interface ToastStackerProps {
+    additionalLocales?: string[]
+}
+
 export interface ToastStackerRState {
     notification: NotificationItem;
 }
 
-const ToastStacker: React.FC<ToastStackerRState> = (props: ToastStackerRState) => {
-    const { notification } = props;
+const ToastStacker: React.FC<ToastStackerRState & ToastStackerProps> = (props: ToastStackerRState & ToastStackerProps) => {
+    const { notification, additionalLocales } = props;
     const [t] = useTranslation([
         'error_notifications',
         'warning_notifications',
         'success_notifications',
         'info_notifications',
+        ...additionalLocales
     ]);
 
     const showToast = (notif: NotificationItem) => {

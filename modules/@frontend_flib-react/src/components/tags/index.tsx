@@ -119,10 +119,10 @@ export interface TagsProps extends React.ComponentProps<any> {
     currentTagsNumber?: number;
     maxTags?: number;
     placeholder: string;
-    value?: Array<ITag>;
+    value: Array<string>;
     onInputChange: (inputValue: string) => void;
     onKeyDown: (e: React.KeyboardEvent<HTMLElement>, value: string) => void;
-    onChange: (value: any, event: any) => void;
+    onChange: (value: Array<string>) => void;
     onFocus?: (
         eventOrPath: string | ChangeEvent<any>,
     ) => void | ((eventOrTextValue: string | ChangeEvent<any>) => void);
@@ -226,8 +226,12 @@ export const Tags: React.FunctionComponent<TagsProps> = (props: TagsProps): JSX.
                 <CreatableSelect
                     id={props.name}
                     components={components}
-                    onChange={(v, e) => {
-                        props.onChange(v, e);
+                    onChange={(val: ITag[]) => {
+                        if (val) {
+                          props.onChange(val.map((tag: ITag) => tag.value));
+                        } else {
+                          props.onChange([]);
+                        }
                     }}
                     onKeyDown={(e) => {
                         const target = e.target as HTMLInputElement;
@@ -245,7 +249,12 @@ export const Tags: React.FunctionComponent<TagsProps> = (props: TagsProps): JSX.
                     isMulti
                     placeholder={props.placeholder}
                     styles={customStyles}
-                    value={props.value}
+                    value={
+                        props.value.map((value: string): ITag => ({
+                            label: value,
+                            value
+                        }))
+                    }
                 />
             </TagsContainer>
             {props.error && <Error>{props.errormessage}</Error>}

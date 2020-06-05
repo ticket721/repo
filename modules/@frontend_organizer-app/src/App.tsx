@@ -15,6 +15,7 @@ import { useSelector }      from 'react-redux';
 import styled               from 'styled-components';
 import { AppStatus }        from '@frontend/core/lib/redux/ducks/statuses';
 import ToastStacker from '@frontend/core/lib/components/ToastStacker';
+import './core/event_creation/locales';
 
 const App: React.FC = () => {
     const [ validated, setValidated ] = useState(true);
@@ -54,7 +55,9 @@ const App: React.FC = () => {
                     })
                 }
             </Switch>
-            <ToastStacker />
+            <ToastStacker additionalLocales={[
+                'organizer_error_notifications',
+            ]} />
         </AppContainer>
       </Suspense>
     )

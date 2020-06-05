@@ -1,110 +1,83 @@
-import React, { useState }              from 'react';
-import {
-  Tags,
-  ITag,
-  Textarea,
-  TextInput
-}                                       from '@frontend/flib-react/lib/components';
-import Button                           from '@frontend/flib-react/lib/components/button';
-import { EventsCreateTextMetadata }     from '@common/sdk/lib/@backend_nest/apps/worker/src/actionhandlers/events/Events.input.handlers';
+import React, { useState }                 from 'react';
+import { ITag, Tags, Textarea, TextInput } from '@frontend/flib-react/lib/components';
+import Button                              from '@frontend/flib-react/lib/components/button';
+import styled                              from 'styled-components';
+import { EventCreationActions }            from '../../core/event_creation/EventCreationCore';
+import { useEventCreation }                from '../../hooks/useEventCreation';
+import { EventsCreateTextMetadata }        from '@common/sdk/lib/@backend_nest/apps/worker/src/actionhandlers/events/Events.input.handlers';
 import { textMetadataValidationSchema } from './validationSchema';
-import { useAction }                    from '@frontend/core/lib/hooks/useActionSet';
-import styled                           from 'styled-components';
-import { useFormik }                    from 'formik';
 
-const initialValues = {
+const initialValues: EventsCreateTextMetadata = {
     name: '',
     description: '',
     tags: [],
 };
 
-const GeneralInfoForm = () => {
+const GeneralInfoForm: React.FC = () => {
     const [ inputTag, setInputTag ] = useState('');
-    const action = useAction<EventsCreateTextMetadata>(
-        '',
-        'eventCreate',
-        0,
+    const eventCreationFormik = useEventCreation<EventsCreateTextMetadata>(
+        EventCreationActions.TextMetadata,
         {
             initialValues,
             validationSchema: textMetadataValidationSchema,
+            onSubmit: () => console.log('test'),
         }
     );
 
-    const onTagsKeyDown = (e: React.KeyboardEvent<HTMLElement>, value: string) => {
-        if(!inputTag || action.formik.values.tags?.length === 5) return;
+    // console.log(eventCreationFormik.values);
 
+    const onTagsKeyDown = (e: React.KeyboardEvent<HTMLElement>, tag: string) => {
+        if(!inputTag || eventCreationFormik.values.tags?.length === 5) return;
         switch (e.key) {
             case 'Enter':
             case 'Tab':
-                if(!action.formik.values.tags) {
-                    setInputTag('');
-                  action.formik.setFieldValue('tags', [{
-                        label: value,
-                         value,
-                    }]);
+                if (eventCreationFormik.values.tags.indexOf(tag) > -1) {
+                    eventCreationFormik.setFieldTouched('tags', true);
+                    eventCreationFormik.setFieldError('tags', 'tag already added');
                 } else {
-                    if (action.formik.values.tags.findIndex((tag: any) => tag.value === value) > -1) {
-                      action.formik.setFieldError('tags', 'tag already added');
-                    } else {
-                        setInputTag('');
-                      action.formik.setFieldValue('tags', [
-                          ...action.formik.values.tags,
-                          {
-                              label: value,
-                              value,
-                          }
-                        ]);
-                    }
+                    setInputTag('');
+                    eventCreationFormik.setFieldValue('tags', [
+                      ...eventCreationFormik.values.tags,
+                      tag,
+                    ]);
                 }
                 e.preventDefault();
         }
     };
 
     return (
-        <Form onSubmit={action.formik.handleSubmit}>
+        <Form onSubmit={eventCreationFormik.handleSubmit}>
             <TextInput
             name='name'
             label='Name'
             placeholder='Name of your event'
-            onFocus={action.handleFocus}
-            onChange={action.handleChange}
-            onBlur={action.formik.handleBlur}
-            value={action.formik.values.name}
-            error={action.computeError('name')}
+            {...eventCreationFormik.getFieldProps('name')}
+            error={eventCreationFormik.computeError('name')}
             />
             <Textarea
             name='description'
             label='Description'
             placeholder='Describe your event'
             maxChar={1000}
-            onFocus={action.handleFocus}
-            onChange={action.handleChange}
-            onBlur={action.formik.handleBlur}
-            value={action.formik.values.description}
-            error={action.computeError('description')}
+            {...eventCreationFormik.getFieldProps('description')}
+            error={eventCreationFormik.computeError('description')}
             />
             <Tags
             name='tags'
-            value={action.formik.values.tags}
-            inputValue={inputTag}
             label='Tags'
-            onFocus={action.handleFocus}
-            onChange={(val: ITag[]) => {
-                if (val) {
-                  action.formik.setFieldValue('tags', val);
-                } else {
-                  action.formik.setFieldValue('tags', []);
-                }
-            }}
-            onBlur={action.formik.handleBlur}
+            placeholder='tags'
+            currentTagsNumber={eventCreationFormik.values?.tags ? eventCreationFormik.values?.tags.length : 0}
+            maxTags={5}
+            inputValue={inputTag}
             onInputChange={(val: string) => setInputTag(val)}
             onKeyDown={onTagsKeyDown}
-            currentTagsNumber={action.formik.values.tags ? action.formik.values.tags.length : 0}
-            maxTags={5}
-            placeholder='tags'
-            error={action.computeError('tags')}
+            value={eventCreationFormik.values.tags}
+            onChange={(tags: string[]) => eventCreationFormik.setFieldValue('tags', tags)}
+            onFocus={eventCreationFormik.handleFocus}
+            onBlur={(e: any) => eventCreationFormik.handleBlur(e, 'tags', eventCreationFormik.values.tags)}
+            error={eventCreationFormik.computeError('tags')}
             />
-            <Button variant='primary' type='submit' title='Create Event'/>
+            <Button variant='primary' type='submit' title='Validate TextMetadata'/>
         </Form>
     );
 };
