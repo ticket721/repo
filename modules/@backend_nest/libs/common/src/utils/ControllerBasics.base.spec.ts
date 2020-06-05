@@ -13,7 +13,7 @@ import { ESSearchReturn } from '@lib/common/utils/ESSearchReturn.type';
 import { EventsService } from '@lib/common/events/Events.service';
 import { SortablePagedSearch } from '@lib/common/utils/SortablePagedSearch.type';
 import { SearchableField } from '@lib/common/utils/SearchableField.type';
-import { ESCountReturn } from '../../../../../@common_sdk/lib/@backend_nest/libs/common/src/utils/ESCountReturn.type';
+import { ESCountReturn } from '@lib/common/utils/ESCountReturn.type';
 
 class FakeEntity {
     id: string;

@@ -17,7 +17,10 @@ import { RightsService } from '@lib/common/rights/Rights.service';
 import { ESSearchHit } from '@lib/common/utils/ESSearchReturn.type';
 import { RightEntity } from '@lib/common/rights/entities/Right.entity';
 import { Boundable } from '@lib/common/utils/Boundable.type';
-import { ESCountReturn } from '../../../../../@common_sdk/lib/@backend_nest/libs/common/src/utils/ESCountReturn.type';
+import { ESCountReturn } from '@lib/common/utils/ESCountReturn.type';
+import { EventsCountInputDto } from '@app/server/controllers/events/dto/EventsCountInput.dto';
+import { Sort } from '@lib/common/utils/Sort.type';
+import { SearchableField } from '@lib/common/utils/SearchableField.type';
 
 /**
  * Controller Basics, contains most methods used in controllers
@@ -221,7 +224,7 @@ export class ControllerBasics<EntityType> {
      * @param query
      * @private
      */
-    public _esQueryBuilder<CustomEntity = EntityType>(query: SortablePagedSearch): EsSearchOptionsStatic {
+    public _esQueryBuilder<CustomEntity = EntityType>(query: Partial<SortablePagedSearch>): EsSearchOptionsStatic {
         let esQuery;
         try {
             esQuery = ESSearchBodyBuilder(query);
@@ -256,7 +259,7 @@ export class ControllerBasics<EntityType> {
      */
     public async _count(
         service: CRUDExtension<Repository<EntityType>, EntityType>,
-        query: any, // need to receive type with SearchableField<> only
+        query: any, // need to rework that part
     ): Promise<ESCountReturn> {
         const es: EsSearchOptionsStatic = this._esQueryBuilder(query);
 
@@ -274,7 +277,6 @@ export class ControllerBasics<EntityType> {
                 StatusCodes.InternalServerError,
             );
         }
-
         return countResults.response;
     }
 
