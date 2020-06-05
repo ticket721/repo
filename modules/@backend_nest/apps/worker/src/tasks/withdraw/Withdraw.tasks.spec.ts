@@ -1,23 +1,14 @@
-import { WithdrawTasks, WithdrawTransactionConfirmed } from '@app/worker/tasks/withdraw/Withdraw.tasks';
+import { WithdrawTasks } from '@app/worker/tasks/withdraw/Withdraw.tasks';
 import { OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
-import { getQueueToken, InjectQueue } from '@nestjs/bull';
-import { Job, JobOptions, Queue } from 'bull';
+import { getQueueToken } from '@nestjs/bull';
+import { Job, JobOptions } from 'bull';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 import { AuthorizationsService } from '@lib/common/authorizations/Authorizations.service';
 import { deepEqual, instance, mock, verify, when } from 'ts-mockito';
 import { Test } from '@nestjs/testing';
-import { ActionSetsService } from '@lib/common/actionsets/ActionSets.service';
-import { T721TokenService } from '@lib/common/contracts/T721Token.service';
-import { T721AdminService } from '@lib/common/contracts/T721Admin.service';
-import { TicketforgeService } from '@lib/common/contracts/Ticketforge.service';
-import { ConfigService } from '@lib/common/config/Config.service';
-import { CurrenciesService } from '@lib/common/currencies/Currencies.service';
-import { UsersService } from '@lib/common/users/Users.service';
-import { GroupService } from '@lib/common/group/Group.service';
-import { TicketsService } from '@lib/common/tickets/Tickets.service';
-import { MintingTasks } from '@app/worker/tasks/minting/Minting.tasks';
 import { AuthorizationEntity } from '@lib/common/authorizations/entities/Authorization.entity';
 import { NestError } from '@lib/common/utils/NestError';
+import { WithdrawTransactionConfirmed } from '@app/worker/tasks/withdraw/Withdraw.tasks.types';
 
 class QueueMock<T = any> {
     add(name: string, data: T, opts?: JobOptions): Promise<Job<T>> {

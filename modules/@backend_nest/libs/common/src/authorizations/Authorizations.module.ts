@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { ExpressCassandraModule } from '@iaminfinity/express-cassandra';
 import { AuthorizationsService } from '@lib/common/authorizations/Authorizations.service';
 import { AuthorizationsRepository } from '@lib/common/authorizations/Authorizations.repository';

@@ -179,10 +179,10 @@ import { WithdrawTasks } from '@app/worker/tasks/withdraw/Withdraw.tasks';
         TxSeqEventHandlers,
 
         // Bull Tasks
+        WithdrawTasks,
         ActionSetsTasks,
         AuthorizationsTasks,
         MintingTasks,
-        WithdrawTasks,
 
         // Schedulers
         ActionSetsScheduler,
