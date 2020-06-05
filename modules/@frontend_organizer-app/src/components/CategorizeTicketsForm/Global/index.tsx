@@ -136,7 +136,7 @@ function Global({ formik, validation, setValidation }: Props): JSX.Element {
 }
 
 const Container = styled.div`
-  width: 550px;
+  min-width: 550px;
   && > div > * {
     margin: 25px 0;
   }

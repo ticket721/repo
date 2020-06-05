@@ -7,7 +7,7 @@ import STEPS                 from './enums';
 import CategorizeTicketsForm from '../../components/CategorizeTicketsForm';
 
 const CreateEvent: React.FC = () => {
-  const [step, setStep] = useState(STEPS.ticketCategories);
+  const [step, setStep] = useState(STEPS.generalInfo);
 
   return (
     <Container>
@@ -40,6 +40,7 @@ const Container = styled.div`
   justify-content: center;
   align-items: center;
   width: 100%;
+  scroll-behavior: smooth;
 `;
 
 const Forms = styled.div`

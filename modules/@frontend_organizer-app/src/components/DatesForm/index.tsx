@@ -176,7 +176,7 @@ const DatesForm = ({ setStep }: Props) => {
 };
 
 const StyledForm = styled.form`
-  width: 100%;
+  min-width: 550px;
   .field {
     margin: 24px 0;
   }

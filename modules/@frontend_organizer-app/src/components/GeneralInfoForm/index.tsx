@@ -162,9 +162,6 @@ const Card = styled.div`
    margin: 0 !important;
    white-space: pre-wrap;
   }
-  img {
-    max-width: 500px;
-  }
   .line {
       display: flex;
     justify-content: space-between;
@@ -185,7 +182,7 @@ const Card = styled.div`
 `;
 
 const StyledForm = styled.form`
-  width: 100%;
+  min-width: 550px;
   && .field {
     margin: 24px 0;
   }
