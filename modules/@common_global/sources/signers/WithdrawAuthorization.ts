@@ -1,7 +1,6 @@
 import { EIP712Signer }                     from '@ticket721/e712';
 import { encode, getT721ControllerGroupID } from '../abi';
 import { keccak256FromBuffer }              from '../hash';
-import { decimalToHex, toB32 } from '../utils';
 
 const Authorization = [
     {
