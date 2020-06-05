@@ -8,9 +8,7 @@ export interface InputProps extends React.ComponentProps<any> {
     error?: string;
     label: string;
     name: string;
-    onChange: (
-        eventOrPath: string | ChangeEvent<any>,
-    ) => void | ((eventOrTextValue: string | ChangeEvent<any>) => void);
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     onFocus?: (
         eventOrPath: string | ChangeEvent<any>,
     ) => void | ((eventOrTextValue: string | ChangeEvent<any>) => void);

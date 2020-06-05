@@ -40,7 +40,7 @@ function Card({ formik, index, steps, setSteps, validation, setValidation}: Prop
             }])}
           />
           <Button type='button' title='Confirm Categories' variant='secondary' onClick={() => {
-            const newValidation = validation.map(v => (v === 'true' ? 'complete' : v));
+            const newValidation = validation.map(v => (v === 'true' ? 'completing' : v));
             const newSteps = steps.map(s => (s === 0 ? 1 : s));
             setValidation(newValidation);
             setSteps(newSteps);

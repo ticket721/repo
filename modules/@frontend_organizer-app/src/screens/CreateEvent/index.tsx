@@ -7,7 +7,7 @@ import STEPS                 from './enums';
 import CategorizeTicketsForm from '../../components/CategorizeTicketsForm';
 
 const CreateEvent: React.FC = () => {
-  const [step, setStep] = useState(STEPS.generalInfo);
+  const [step, setStep] = useState(STEPS.ticketCategories);
 
   return (
     <Container>
