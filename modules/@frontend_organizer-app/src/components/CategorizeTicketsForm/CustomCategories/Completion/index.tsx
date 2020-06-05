@@ -1,5 +1,4 @@
 import React from 'react';
-import Card from "../Card";
 import { Button , TextInput, SelectInput } from "@frontend/flib-react/lib/components";
 
 import { Container } from "../../style";
