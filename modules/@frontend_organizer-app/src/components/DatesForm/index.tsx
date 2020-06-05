@@ -30,6 +30,11 @@ const DatesForm = ({ setStep }: Props) => {
   const formik = useFormik({
     initialValues,
     onSubmit: values => {
+      const dateValidation = formik.values.dates.map(d => d.start.final > d.end.final);
+      if (dateValidation.find(e => e === true)) {
+          setValidation('check');
+          return;
+      }
       alert(JSON.stringify(values, null, 2));
       setValidation('true');
       setStep(STEPS.ticketCategories);
@@ -37,6 +42,7 @@ const DatesForm = ({ setStep }: Props) => {
     validationSchema: dateSchema
 
   });
+
   return (
     <>
       {(validation === 'true' && (
@@ -54,7 +60,7 @@ const DatesForm = ({ setStep }: Props) => {
           <h2>Location:</h2>
           <span>{formik.values.location}</span>
         </Card>
-      )) || (validation === 'false' && (
+      )) || ((validation === 'false' || validation === 'check') && (
         <StyledForm onSubmit={formik.handleSubmit}>
           {formik.values.dates && formik.values.dates.map((c, idx) => (
             <React.Fragment key={`Dates-${idx}`}>
@@ -107,6 +113,10 @@ const DatesForm = ({ setStep }: Props) => {
                     formik.setFieldValue(`dates`, newDates);
                   }}
                   name='startTime'
+                  error={validation === 'check' &&
+                  formik.values.dates[idx].start.final > formik.values.dates[idx].end.final ?
+                      'Start date should be before end date' : undefined
+                  }
                 />
               </div>
               <div className='line field'>

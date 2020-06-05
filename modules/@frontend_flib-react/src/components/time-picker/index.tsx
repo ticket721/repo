@@ -13,6 +13,7 @@ export interface CustomTimePickerProps extends React.ComponentProps<any> {
     placeholder?: string;
     selected?: Date;
     className?: string;
+    error?: string;
 }
 
 const StyledLabel = styled.label`
@@ -132,6 +133,14 @@ const StyledInputContainer = styled.div`
     }
 `;
 
+const Error = styled.span`
+    top: 20px;
+    color: ${(props) => props.theme.errorColor.hex};
+    font-size: 13px;
+    font-weight: 500;
+    position: relative;
+`;
+
 export const CustomTimePicker: React.FunctionComponent<CustomTimePickerProps> = (
     props: CustomTimePickerProps,
 ): JSX.Element => {
@@ -148,6 +157,7 @@ export const CustomTimePicker: React.FunctionComponent<CustomTimePickerProps> = 
                 showTimeSelect
                 showTimeSelectOnly
             />
+          {props.error && <Error>{props.error}</Error>}
         </StyledInputContainer>
     );
 };
