@@ -60,11 +60,15 @@ const NavBar: React.FC = () => {
 };
 
 const Container = styled.div`
-    display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 8px 24px;
-    ${(props): string => blurAndDarkenBackground('chrome')};
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 24px;
+  ${(props): string => blurAndDarkenBackground('chrome')};
 `;
 
 const ActionContainer = styled.div`
