@@ -59,6 +59,7 @@ import { RocksideModule } from '@lib/common/rockside/Rockside.module';
 import { AuthenticationModule } from '@app/worker/authentication/Authentication.module';
 import { toHeaderFormat } from '@lib/common/utils/toHeaderFormat';
 import { StatusController } from '@app/worker/utils/Status.controller';
+import { WithdrawTasks } from '@app/worker/tasks/withdraw/Withdraw.tasks';
 
 @Module({
     imports: [
@@ -181,6 +182,7 @@ import { StatusController } from '@app/worker/utils/Status.controller';
         ActionSetsTasks,
         AuthorizationsTasks,
         MintingTasks,
+        WithdrawTasks,
 
         // Schedulers
         ActionSetsScheduler,
