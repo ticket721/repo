@@ -48,6 +48,7 @@ const Forms = styled.div`
   align-items: center;
   flex-direction: column;
   width: 600px;
+  margin: 40px 0 20px 0;
 `;
 
 const Title = styled.h1`

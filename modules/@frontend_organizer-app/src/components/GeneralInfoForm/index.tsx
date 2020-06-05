@@ -115,7 +115,7 @@ const GeneralInfoForm = ({ setStep }: Props) => {
             }
             onChange={(v, e) => {
               if (e.action === 'remove-value') {
-                const newTags = v.map((c: {value: string, label: string}) => c.value);
+                const newTags = v ? v.map((c: {value: string, label: string}) => c.value) : [];
                 formik.setFieldValue('tags', newTags);
                 setCurrentTag('');
               }
