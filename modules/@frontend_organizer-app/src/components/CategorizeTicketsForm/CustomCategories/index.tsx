@@ -5,8 +5,6 @@ import { Button, TextInput, SelectInput } from '@frontend/flib-react/lib/compone
 import Card from './Card';
 import Completion from './Completion';
 
-import { Line } from '../style';
-
 interface Props {
   formik: any;
   validation: string[];
@@ -18,7 +16,6 @@ const userDates = [new Date(), new Date('2020-05-17T03:24:00'), new Date('2020-0
 function CustomCategories ({ formik, validation, setValidation }: Props): JSX.Element {
   const options = userDates.map((d) => ({ label: d.toDateString(), value: d.toDateString()}));
   const [steps, setSteps] = React.useState([0]);
-  console.log(formik.values);
 
   return (
     <Container>
@@ -26,19 +23,21 @@ function CustomCategories ({ formik, validation, setValidation }: Props): JSX.El
       {formik.values.dates.map((elem: any, i: number) => {
         const validateTicket = () => {
           const newValidation = [...validation];
+          const newSteps = [...steps];
+          newSteps[i] = 0;
           if (
             formik.values.dates[i].name !== ''
             && formik.values.dates[i].dates.length > 0
           ) {
-            if (validation[i] === 'complete') {
-              const newStep = [...steps];
-              newStep[i] = 1;
-              setSteps(steps);
+            if (validation[i] === 'completing') {
+              newSteps[i] = 1;
+              setSteps(newSteps);
             }
             newValidation[i] = 'true';
           } else {
             newValidation[i] = 'check';
           }
+          setSteps(newSteps);
           setValidation(newValidation);
         };
 
@@ -53,9 +52,9 @@ function CustomCategories ({ formik, validation, setValidation }: Props): JSX.El
                   steps={steps}
                   index={i}
                 />
-            )) || (validation[i] === 'complete' && (
+            )) || (validation[i] === 'completing' && (
               <Completion formik={formik} index={i} validateTicket={validateTicket} state={validation[i]}/>
-            ))|| (validation[i] !== 'true' && validation[i] !== 'complete' && (
+            ))|| (validation[i] !== 'true' && validation[i] !== 'completing' && (
               <FormContainer key={`dates-${i}`}>
                 <TextInput
                   label={'name'}
@@ -77,7 +76,9 @@ function CustomCategories ({ formik, validation, setValidation }: Props): JSX.El
                   value={formik.values.dates[i].dates.map((c: any) => ({label: c.eventDate, value: c.eventDate}))}
                   onChange={(d: any, e: any) => {
                     if (e.action === 'remove-value') {
-                      const newDates = formik.values.dates[i].dates.filter((c: any) => c.eventDate !== e.removedValue.value);
+                      const newDates = formik.values.dates[i].dates.filter(
+                        (c: any) => c.eventDate !== e.removedValue.value
+                      );
                       formik.setFieldValue(`dates[${i}].dates`, newDates);
                     } else if (e.action === 'clear') {
                       formik.setFieldValue(`dates[${i}].dates`, []);
@@ -117,68 +118,5 @@ const FormContainer = styled.div`
 const Text = styled.h2`
   margin: 0 0 20px 0 !important;
 `;
-
-/*
-                <TextInput
-                  label={'quantity'}
-                  name={`dates[${i}].quantity`}
-                  onChange={formik.handleChange}
-                  placeholder={'quantity of tickets in this category'}
-                  value={formik.values.dates[i].quantity}
-                  error={validation[i] === 'check' && formik.values.dates[i].quantity < 0 ?
-                    'Quantity cannot be negative' : undefined
-                  }
-                  type={'number'}
-                />
-                <CustomDatePicker
-                  selected={formik.values.dates[i].salesStart}
-                  dateFormat={'iii, MMM do, yyyy'}
-                  placeholder='Pick a date'
-                  label='Sales start'
-                  onChange={(e) => {
-                    formik.setFieldValue(`dates[${i}].salesStart`, e)
-                  }}
-                  name={`dates[${i}].salesStart`}
-                />
-                <CustomDatePicker
-                  selected={formik.values.dates[i].salesEnd}
-                  minDate={formik.values.dates[i].salesStart}
-                  dateFormat={'iii, MMM do, yyyy'}
-                  placeholder='Pick a date'
-                  label='Sales end'
-                  onChange={(e) => {
-                    formik.setFieldValue(`dates[${i}].salesEnd`, e)
-                  }}
-                  name={`dates[${i}].salesEnd`}
-                />
-                <Checkbox label={'Allow resale'} name={`dates[${i}].resales`}
-                          onChange={(b, n) => formik.setFieldValue(`dates[${i}].resales`, b)}/>
-                {formik.values.dates[i].resales === true && (
-                  <Line>
-                    <CustomDatePicker
-                      selected={formik.values.dates[i].resalesStart}
-                      dateFormat={'iii, MMM do, yyyy'}
-                      placeholder='Pick a date'
-                      label='Resales start'
-                      onChange={(e) => {
-                        formik.setFieldValue(`dates[${i}].resalesStart`, e)
-                      }}
-                      name={`dates[${i}].resalesStart`}
-                    />
-                    <CustomDatePicker
-                      selected={formik.values.dates[i].resalesEnd}
-                      minDate={formik.values.dates[i].resalesStart}
-                      dateFormat={'iii, MMM do, yyyy'}
-                      placeholder='Pick a date'
-                      label='Resales end'
-                      onChange={(e) => {
-                        formik.setFieldValue(`dates[${i}].resalesEnd`, e)
-                      }}
-                      name={`dates[${i}].resalesEnd`}
-                    />
-                  </Line>
-                )}
-
- */
 
 export default CustomCategories;
