@@ -16,7 +16,7 @@ export const EventsRightsConfig: RightsConfig = {
             'route_add_dates',
             'route_delete_dates',
             'metadata_all',
-            'withdraw'
+            'withdraw',
         ],
     },
     route_search: {

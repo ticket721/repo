@@ -7,8 +7,8 @@ import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
 import { CategoriesService } from '@lib/common/categories/Categories.service';
 import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
 import { T721ControllerV0Service } from '@lib/common/contracts/t721controller/T721Controller.V0.service';
-import { HOUR } from '@lib/common/utils/time';
-import { MintAuthorization, toB32 } from '@common/global';
+import { DAY, HOUR } from '@lib/common/utils/time';
+import { MintAuthorization, toB32, WithdrawAuthorization } from '@common/global';
 import { Web3Service } from '@lib/common/web3/Web3.service';
 import { AuthorizedTicketMintingFormat, TicketMintingFormat } from '@lib/common/utils/Cart.type';
 import { EIP712Signature } from '@ticket721/e712/lib';
@@ -16,6 +16,10 @@ import { BytesToolService } from '@lib/common/toolbox/Bytes.tool.service';
 import { TimeToolService } from '@lib/common/toolbox/Time.tool.service';
 import { GroupService } from '@lib/common/group/Group.service';
 import { RocksideService } from '@lib/common/rockside/Rockside.service';
+import { TxSequenceAcsetBuilderArgs } from '@lib/common/txs/acset_builders/TxSequence.acsetbuilder.helper';
+import { UserDto } from '@lib/common/users/dto/User.dto';
+import { ActionSetsService } from '@lib/common/actionsets/ActionSets.service';
+import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
 
 /**
  * Service to CRUD AuthorizationEntities
@@ -34,6 +38,7 @@ export class AuthorizationsService extends CRUDExtension<AuthorizationsRepositor
      * @param timeToolService
      * @param groupService
      * @param rocksideService
+     * @param actionSetsService
      */
     constructor(
         @InjectRepository(AuthorizationsRepository)
@@ -48,6 +53,7 @@ export class AuthorizationsService extends CRUDExtension<AuthorizationsRepositor
         private readonly timeToolService: TimeToolService,
         private readonly groupService: GroupService,
         private readonly rocksideService: RocksideService,
+        private readonly actionSetsService: ActionSetsService,
     ) {
         super(
             authorizationEntity,
@@ -254,13 +260,128 @@ export class AuthorizationsService extends CRUDExtension<AuthorizationsRepositor
     }
 
     async generateEventWithdrawAuthorization(
+        user: UserDto,
         eventController: string,
         eventId: string,
         currency: string,
         amount: string,
-        target: string,
-    ): Promise<ServiceResponse<AuthorizationEntity>> {
-        return null;
-    }
+    ): Promise<ServiceResponse<{ txSeq: ActionSetEntity }>> {
+        const t721ControllerAddress = (await this.t721ControllerV0Service.get())._address;
+        const chainId = await this.web3Service.net();
 
+        const signer = new WithdrawAuthorization(t721ControllerAddress, chainId);
+
+        const expiration = Math.floor((this.timeToolService.now().getTime() + DAY) / 1000);
+        const code = await this.getUniqueAuthorizationCode(eventController);
+
+        const hash = signer.encodeAndHash(eventController, eventId, currency, amount, user.address, code, expiration);
+
+        const payload = signer.generatePayload(
+            {
+                emitter: eventController,
+                grantee: user.address,
+                hash,
+            },
+            'Authorization',
+        );
+
+        const rocksideSigner = this.rocksideService.getSigner(eventController);
+
+        let signature: EIP712Signature;
+
+        try {
+            signature = await signer.sign(rocksideSigner, payload);
+        } catch (e) {
+            return {
+                error: 'signature_error',
+                response: null,
+            };
+        }
+
+        const authorizationCreationRes = await this.create({
+            granter: eventController,
+            grantee: user.address,
+            mode: 'withdraw',
+            codes: WithdrawAuthorization.toCodesFormat(code),
+            selectors: WithdrawAuthorization.toSelectorFormat(eventController, eventId),
+            args: WithdrawAuthorization.toArgsFormat(
+                eventController,
+                eventId,
+                currency,
+                amount,
+                user.address,
+                code,
+                expiration,
+            ),
+            signature: signature.hex,
+            readable_signature: false,
+            cancelled: false,
+            consumed: false,
+            dispatched: true,
+            user_expiration: new Date(expiration * 1000),
+            be_expiration: new Date(expiration * 1000 + HOUR),
+        });
+
+        if (authorizationCreationRes.error) {
+            return {
+                error: 'cannot_create_authorization',
+                response: null,
+            };
+        }
+
+        const authorization: AuthorizationEntity = authorizationCreationRes.response;
+
+        const rawArgs = WithdrawAuthorization.getMethodArgs(
+            eventController,
+            eventId,
+            currency,
+            amount,
+            user.address,
+            code,
+            expiration,
+            signature.hex,
+        );
+
+        const transaction = {
+            from: user.address,
+            to: t721ControllerAddress,
+            data: (await this.t721ControllerV0Service.get()).methods.withdraw(...rawArgs).encodeABI(),
+            value: '0',
+            onConfirm: {
+                name: '@withdra/confirmation',
+                jobData: {
+                    authorization: authorization.id,
+                },
+            },
+            onFailure: {
+                name: '@withdraw/failure',
+                jobData: {
+                    authorization: authorization.id,
+                },
+            },
+        };
+
+        const txSeqHandler = await this.actionSetsService.build<TxSequenceAcsetBuilderArgs>(
+            'txseq_processor',
+            user,
+            {
+                transactions: [transaction],
+            },
+            true,
+        );
+
+        if (txSeqHandler.error) {
+            return {
+                error: 'cannot_create_tx_sequence',
+                response: null,
+            };
+        }
+
+        return {
+            response: {
+                txSeq: txSeqHandler.response,
+            },
+            error: null,
+        };
+    }
 }
