@@ -4,14 +4,10 @@ import * as yup                                          from 'yup';
 import styled                                            from 'styled-components';
 import { CustomDatePicker, CustomTimePicker, TextInput } from '@frontend/flib-react/lib/components';
 import Button                                            from '@frontend/flib-react/lib/components/button';
-import * as validators                                   from './validators';
+import { validationSchema }                              from './validationSchema';
 import STEPS                                             from '../../screens/CreateEvent/enums';
 
-const dateSchema = yup.object().shape({
-  location: validators.location,
-  dates: validators.dates
-});
-type FormValues = yup.InferType<typeof dateSchema>;
+type FormValues = yup.InferType<typeof validationSchema>;
 
 const initialValues: FormValues = { dates: [{
   start: { date: new Date(), time: new Date(), final: new Date() },
@@ -39,7 +35,7 @@ const DatesForm = ({ setStep }: Props) => {
       setValidation('true');
       setStep(STEPS.ticketCategories);
     },
-    validationSchema: dateSchema
+    validationSchema,
 
   });
 

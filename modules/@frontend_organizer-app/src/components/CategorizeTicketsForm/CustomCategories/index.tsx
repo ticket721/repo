@@ -2,6 +2,11 @@ import React from "react";
 import styled from "styled-components";
 import { Button, TextInput, CustomDatePicker, Checkbox, SelectInput } from "@frontend/flib-react/lib/components";
 
+import Card from './Card';
+import Completion from './Completion';
+
+import { Line } from '../style';
+
 interface Props {
   formik: any;
   validation: string[];
@@ -13,19 +18,12 @@ const userDates = [new Date(), new Date('2020-05-17T03:24:00'), new Date('2020-0
 function CustomCategories ({ formik, validation, setValidation }: Props): JSX.Element {
   const options = userDates.map((d) => ({ label: d.toDateString(), value: d.toDateString()}));
   const [steps, setSteps] = React.useState([0]);
-  const [prices, setPrices] = React.useState([[]]);
   console.log(formik.values);
 
   return (
     <Container>
       <Text>Create categories</Text>
       {formik.values.dates.map((elem: any, i: number) => {
-        console.log('price : ', prices);
-        const edit = () => {
-          const newValidation = [...validation];
-          newValidation[i] = 'false';
-          setValidation(newValidation);
-        };
         const validateTicket = () => {
           const newValidation = [...validation];
           if (
@@ -47,79 +45,16 @@ function CustomCategories ({ formik, validation, setValidation }: Props): JSX.El
         return (
           <React.Fragment key={`dates-${i}`}>
             {(validation[i] === 'true' && (
-                <>
-                  <Card>
-                    <Line>
-                      <h2>{formik.values.dates[i].name}</h2>
-                      {steps[i] === 0 && <span className='edit' onClick={() => edit()}>EDIT</span>}
-                    </Line>
-                    <h3>Dates:</h3>
-                    <p>{formik.values.dates[i].dates.map((d: any, idx: number, array: any[]) => (
-                      idx === array.length - 1 ? d.eventDate : `${d.eventDate}, `
-                    ))}</p>
-                  </Card>
-                  { i === validation.length - 1 && i === formik.values.dates.length - 1 && steps[i] === 0 && (
-                    <>
-                      <Button title='Create new Tickets' variant='secondary' onClick={() =>
-                        formik.setFieldValue('dates', [...formik.values.dates, {
-                          name: '',
-                          dates: [],
-                        }])}
-                      />
-                      <Button type='button' title='Confirm Categories' variant='secondary' onClick={() => {
-                        const newValidation = validation.map(v => (v === 'true' ? 'complete' : v));
-                        const newSteps = steps.map(s => (s === 0 ? 1 : s));
-                        setValidation(newValidation);
-                        setSteps(newSteps);
-                      }}
-                      />
-                    </>
-                  )}
-                </>
+                <Card
+                  formik={formik}
+                  setValidation={setValidation}
+                  setSteps={setSteps}
+                  validation={validation}
+                  steps={steps}
+                  index={i}
+                />
             )) || (validation[i] === 'complete' && (
-              <Card>
-                <h2>{formik.values.dates[i].name}</h2>
-                <h3>Dates:</h3>
-                <p>{formik.values.dates[i].dates.map((d: any, idx: number, array: any[]) => (
-                  idx === array.length - 1 ? d.eventDate : `${d.eventDate}, `
-                ))}</p>
-                <SelectInput
-                  options={[
-                    ...(formik.values.dates[i].dates.map((d: any) => ({ label: d.eventDate, value: d.eventDate}))),
-                    {value: 'alldates', label: 'All dates'}
-                  ]}
-                  multiple
-                  placeholder={'select dates to apply price to'}
-                  value={prices[i].map(p => ({ label: p, value: p}))}
-                  onChange={(d: any, e: any) => {
-                    if (e.action === 'remove-value') {
-                      const newDates = prices[i].filter((c: any) => c.value !== e.removedValue.value);
-                      prices[i] = newDates;
-                    } else if (e.action === 'clear') {
-                      prices[i] = [];
-                    } else if (e.action === 'select-option') {
-                      const newDates = [...prices[i], {
-                        label: e.option.value,
-                        value: e.option.value,
-                      }];
-                      // @ts-ignore
-                      prices[i] = newDates;
-                    }
-                  }}
-                />
-                <TextInput
-                  label={'price'}
-                  name={`dates[${i}].price`}
-                  onChange={formik.handleChange}
-                  placeholder={'price of one ticket'}
-                  value={formik.values.dates[i].price}
-                  error={validation[i] === 'check' && formik.values.dates[i].price < 0 ?
-                    'Price cannot be negative' : undefined
-                  }
-                  type={'number'}
-                />
-                <Button type='button' title='Create' variant='secondary' onClick={validateTicket} />
-              </Card>
+              <Completion formik={formik} index={i} validateTicket={validateTicket} state={validation[i]}/>
             ))|| (validation[i] !== 'true' && validation[i] !== 'complete' && (
               <FormContainer key={`dates-${i}`}>
                 <TextInput
@@ -175,63 +110,12 @@ const Container = styled.div`
   }
 `;
 
-const Card = styled.div`
-  border-radius: ${props => props.theme.defaultRadius};
-  padding: ${props => props.theme.biggerSpacing};
-  background-color: ${props => props.theme.darkerBg}; 
-  display: flex;
-  flex-direction: column;
-  margin: 10px 0;
-  
-  div {
-    margin: 0 !important;
-  }
-  h2 {
-    text-transform: uppercase;
-    font-size: 15px;
-    margin: 0 0 16px 0 !important;
-  }
-  h3 {
-    font-weight: normal;
-    font-size: 15px;
-    margin: 0 0 3px 0 !important;
-  }
-  p {
-   color: ${props => props.theme.textColorDarker};
-   font-size: 14px;
-   margin: 0 !important;
-  }
-  .warning {
-     color: ${props => props.theme.warningColor.hex};
-     text-align: right;
-     margin: 0 0 16px 0 !important;
-   }
-  .edit {
-    color: ${props => props.theme.textColorDarker};
-    text-align: right;
-    margin: 0 0 16px 0 !important;
-    font-weight: bold;
-    text-decoration: underline;
-    font-size: 10px;
-    cursor: pointer;
-  }
-`;
-
 const FormContainer = styled.div`
   margin-bottom: 30px;
 `;
 
 const Text = styled.h2`
   margin: 0 0 20px 0 !important;
-`;
-
-const Line = styled.div`
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    && > * {
-      width: 49%;
-    }
 `;
 
 /*

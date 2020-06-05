@@ -11,4 +11,12 @@ const cover = yup.object().shape({
 });
 const tags = yup.array().min(1, 'please select at least 1 tag').of(yup.string());
 
-export { name, description, tags, cover };
+
+const validationSchema = yup.object().shape({
+    name,
+    description,
+    cover,
+    tags,
+});
+
+export { validationSchema };

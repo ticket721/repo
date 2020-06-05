@@ -2,21 +2,16 @@ import React, { useState }               from 'react';
 import { useFormik }                                from 'formik';
 import * as yup                                     from 'yup';
 import styled                                       from 'styled-components';
-import * as validators                              from './validators';
+import { validationSchema }                         from './validationSchema';
 import { Textarea, TextInput, Tags, FilesUploader, TagsList } from '@frontend/flib-react/lib/components';
 import Button                                       from '@frontend/flib-react/lib/components/button';
 import STEPS from '../../screens/CreateEvent/enums';
+
 // import Vibrant from 'node-vibrant/lib/vibrant';
 // tslint:disable-next-line:no-var-requires
 // const ColorThief = require('colorthief');
 
-const generalSchema = yup.object().shape({
-  name: validators.name,
-  description: validators.description,
-  cover: validators.cover,
-  tags: validators.tags,
-});
-type FormValues = yup.InferType<typeof generalSchema>;
+type FormValues = yup.InferType<typeof validationSchema>;
 
 const initialValues: FormValues = { name: '', description: '', cover: {
   name: '', size: 0, height: 0, width: 0, previewUrl: ''
@@ -39,7 +34,7 @@ const GeneralInfoForm = ({ setStep }: Props) => {
         setStep(STEPS.dates);
       }
     },
-    validationSchema: generalSchema
+    validationSchema,
   });
 
   /*

@@ -17,4 +17,9 @@ const dates = yup.array().min(1, 'Dates are required').of(yup.object().shape(
 ));
 const location = yup.string().required('Location is required');
 
-export { dates, location };
+const validationSchema = yup.object().shape({
+  location,
+  dates
+});
+
+export { validationSchema };
