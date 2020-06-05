@@ -7,7 +7,7 @@ import Box              from '@material-ui/core/Box';
 import Button           from '@frontend/flib-react/lib/components/button';
 import styled           from 'styled-components';
 import { useFormik }    from 'formik';
-import * as validators  from './validators';
+import { validationSchema }  from './validationSchema';
 import Global           from './Global';
 import CustomCategories           from './CustomCategories';
 
@@ -44,11 +44,7 @@ function a11yProps(index: any) {
     };
 }
 
-const ticketsSchema = yup.object().shape({
-    global: validators.global,
-    dates: validators.dates,
-});
-type FormValues = yup.InferType<typeof ticketsSchema>;
+type FormValues = yup.InferType<typeof validationSchema>;
 
 const initialValues: FormValues = {
     global: [
@@ -83,7 +79,7 @@ function CategorizeTicketsForm() {
         onSubmit: values => {
             alert(JSON.stringify(values, null, 2));
         },
-        validationSchema: ticketsSchema
+        validationSchema,
     });
 
     return (

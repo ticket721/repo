@@ -35,4 +35,9 @@ const dates = yup.array().of(yup.object().shape({
     }))
 }));
 
-export { global, dates };
+const validationSchema = yup.object().shape({
+    global,
+    dates,
+});
+
+export { validationSchema };
