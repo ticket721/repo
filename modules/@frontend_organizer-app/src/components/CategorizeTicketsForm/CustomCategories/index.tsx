@@ -166,7 +166,7 @@ function CustomCategories ({ formik, validation, setValidation }: Props): JSX.El
 }
 
 const Container = styled.div`
-  width: 500px;
+  width: 550px;
   && > div > * {
     margin: 25px 0;
   }

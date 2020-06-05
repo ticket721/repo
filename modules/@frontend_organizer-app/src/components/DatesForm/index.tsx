@@ -47,22 +47,22 @@ const DatesForm = ({ setStep }: Props) => {
     <>
       {(validation === 'true' && (
         <Card>
-          <span className='edit' onClick={() => setValidation('false')}>EDIT</span>
           <h2>{`Date${formik.values.dates.length > 1 ? 's' : ''}:`}</h2>
           {formik.values.dates.map((d: any, i: number) => (
-            <span key={`finalDate-${i}`}>
+            <p key={`finalDate-${i}`}>
               {
                 d.start.final && d.end.final &&
                 `${getDisplayDate(d.start.final)} - ${getDisplayDate(d.end.final)}`
               }
-            </span>
+            </p>
           ))}
           <h2>Location:</h2>
-          <span>{formik.values.location}</span>
+          <p>{formik.values.location}</p>
         </Card>
       )) || ((validation === 'false' || validation === 'check') && (
         <StyledForm onSubmit={formik.handleSubmit}>
-          {formik.values.dates && formik.values.dates.map((c, idx) => (
+            <Warning>Once you click 'Continue' you will not be able to edit this category</Warning>
+            {formik.values.dates && formik.values.dates.map((c, idx) => (
             <React.Fragment key={`Dates-${idx}`}>
               {formik.values.dates.length > 1 && <h3>Date {idx + 1}:</h3>}
               <div className='line field'>
@@ -189,7 +189,7 @@ const DatesForm = ({ setStep }: Props) => {
             name='location'
           />
 
-          <Button variant='primary' type='submit' title='Continue'/>
+          <Button className='submit' variant='primary' type='submit' title='Continue'/>
         </StyledForm>
       ))}
     </>
@@ -248,10 +248,17 @@ const StyledForm = styled.form`
     justify-content: space-around;
     align-items: center;
   }
-  button {
+  .submit {
     margin: 45px 0;
     outline: none;
   }
+`;
+
+const Warning = styled.h3`
+    font-weight: normal;
+    font-size: 15px;
+    margin: 3px 0;
+    color: ${props => props.theme.warningColor.hex};
 `;
 
 export default DatesForm;
