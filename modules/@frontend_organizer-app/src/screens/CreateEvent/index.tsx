@@ -21,7 +21,7 @@ const CreateEvent: React.FC = () => {
         {step >= STEPS.dates && (
           <>
             <Title>Event Dates</Title>
-            <DatesForm  setStep={setStep}/>
+            <DatesForm setStep={setStep}/>
           </>)
         }
         {step >= STEPS.ticketCategories && (
