@@ -12,7 +12,7 @@ import { uuidEq } from '@common/global';
 
 export default function(getCtx: () => { ready: Promise<void> }) {
     return function() {
-        describe('search (GET /events/search)', function() {
+        describe('search (POST /events/search)', function() {
             test('should properly search for events', async function() {
                 const {
                     sdk,
@@ -59,6 +59,56 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 });
 
                 expect(eventsQuery.data.events.length).toEqual(1);
+            });
+        });
+
+        describe('count (POST /events/count)', function() {
+            test('should properly count events', async function() {
+                const {
+                    sdk,
+                    token,
+                    user,
+                    password,
+                }: {
+                    sdk: T721SDK;
+                    token: string;
+                    user: PasswordlessUserDto;
+                    password: string;
+                } = await getSDKAndUser(getCtx);
+
+                const event = await createEvent(token, sdk);
+
+                const eventsQuery = await sdk.events.count(token, {
+                    id: {
+                        $eq: event.id,
+                    },
+                });
+
+                expect(eventsQuery.data.events.count).toEqual(1);
+            });
+
+            test('should properly count events from unauthenticated', async function() {
+                const {
+                    sdk,
+                    token,
+                    user,
+                    password,
+                }: {
+                    sdk: T721SDK;
+                    token: string;
+                    user: PasswordlessUserDto;
+                    password: string;
+                } = await getSDKAndUser(getCtx);
+
+                const event = await createEvent(token, sdk);
+
+                const eventsQuery = await sdk.events.count(null, {
+                    id: {
+                        $eq: event.id,
+                    },
+                });
+
+                expect(eventsQuery.data.events.count).toEqual(1);
             });
         });
 
