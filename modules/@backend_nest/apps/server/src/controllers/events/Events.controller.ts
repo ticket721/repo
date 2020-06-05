@@ -42,19 +42,19 @@ import { EventsAddDatesInputDto } from '@app/server/controllers/events/dto/Event
 import { EventsDeleteDatesInputDto } from '@app/server/controllers/events/dto/EventsDeleteDatesInput.dto';
 import { EventsAddCategoriesInputDto } from '@app/server/controllers/events/dto/EventsAddCategoriesInput.dto';
 import { EventsDeleteCategoriesInputDto } from '@app/server/controllers/events/dto/EventsDeleteCategoriesInput.dto';
-import { EventsDeleteCategoriesResponseDto }          from '@app/server/controllers/events/dto/EventsDeleteCategoriesResponse.dto';
-import { EventsAddCategoriesResponseDto }             from '@app/server/controllers/events/dto/EventsAddCategoriesResponse.dto';
-import { EventsAddDatesResponseDto }                  from '@app/server/controllers/events/dto/EventsAddDatesResponse.dto';
-import { EventsDeleteDatesResponseDto }               from '@app/server/controllers/events/dto/EventsDeleteDatesResponse.dto';
-import { RightsService }                              from '@lib/common/rights/Rights.service';
-import { CategoryEntity }                             from '@lib/common/categories/entities/Category.entity';
-import { ActionSetEntity }                            from '@lib/common/actionsets/entities/ActionSet.entity';
-import { ApiResponses }                               from '@app/server/utils/ApiResponses.controller.decorator';
-import { MetadatasService }                           from '@lib/common/metadatas/Metadatas.service';
+import { EventsDeleteCategoriesResponseDto } from '@app/server/controllers/events/dto/EventsDeleteCategoriesResponse.dto';
+import { EventsAddCategoriesResponseDto } from '@app/server/controllers/events/dto/EventsAddCategoriesResponse.dto';
+import { EventsAddDatesResponseDto } from '@app/server/controllers/events/dto/EventsAddDatesResponse.dto';
+import { EventsDeleteDatesResponseDto } from '@app/server/controllers/events/dto/EventsDeleteDatesResponse.dto';
+import { RightsService } from '@lib/common/rights/Rights.service';
+import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
+import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
+import { ApiResponses } from '@app/server/utils/ApiResponses.controller.decorator';
+import { MetadatasService } from '@lib/common/metadatas/Metadatas.service';
 import { RocksideCreateEOAResponse, RocksideService } from '@lib/common/rockside/Rockside.service';
-import { ValidGuard }                                 from '@app/server/authentication/guards/ValidGuard.guard';
-import { EventsCountInputDto }                        from '@app/server/controllers/events/dto/EventsCountInput.dto';
-import { EventsCountResponseDto }                     from '@app/server/controllers/events/dto/EventsCountResponse.dto';
+import { ValidGuard } from '@app/server/authentication/guards/ValidGuard.guard';
+import { EventsCountInputDto } from '@app/server/controllers/events/dto/EventsCountInput.dto';
+import { EventsCountResponseDto } from '@app/server/controllers/events/dto/EventsCountResponse.dto';
 
 /**
  * Events controller to create and fetch events

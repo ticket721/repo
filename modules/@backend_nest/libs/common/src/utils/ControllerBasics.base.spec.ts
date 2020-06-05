@@ -1,19 +1,19 @@
 import { anything, deepEqual, instance, mock, spy, verify, when } from 'ts-mockito';
 import { ControllerBasics } from '@lib/common/utils/ControllerBasics.base';
 import { CRUDExtension } from '@lib/common/crud/CRUDExtension.base';
-import { Repository }          from '@iaminfinity/express-cassandra';
-import { Boundable }           from '@lib/common/utils/Boundable.type';
-import { CategoriesService }   from '@lib/common/categories/Categories.service';
-import { CategoryEntity }      from '@lib/common/categories/entities/Category.entity';
-import { StatusCodes }         from '@lib/common/utils/codes.value';
-import { RightsService }       from '@lib/common/rights/Rights.service';
-import { UserDto }             from '@lib/common/users/dto/User.dto';
-import { RightEntity }         from '@lib/common/rights/entities/Right.entity';
-import { ESSearchReturn }      from '@lib/common/utils/ESSearchReturn.type';
-import { EventsService }       from '@lib/common/events/Events.service';
+import { Repository } from '@iaminfinity/express-cassandra';
+import { Boundable } from '@lib/common/utils/Boundable.type';
+import { CategoriesService } from '@lib/common/categories/Categories.service';
+import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
+import { StatusCodes } from '@lib/common/utils/codes.value';
+import { RightsService } from '@lib/common/rights/Rights.service';
+import { UserDto } from '@lib/common/users/dto/User.dto';
+import { RightEntity } from '@lib/common/rights/entities/Right.entity';
+import { ESSearchReturn } from '@lib/common/utils/ESSearchReturn.type';
+import { EventsService } from '@lib/common/events/Events.service';
 import { SortablePagedSearch } from '@lib/common/utils/SortablePagedSearch.type';
-import { SearchableField }     from '@lib/common/utils/SearchableField.type';
-import { ESCountReturn }       from '../../../../../@common_sdk/lib/@backend_nest/libs/common/src/utils/ESCountReturn.type';
+import { SearchableField } from '@lib/common/utils/SearchableField.type';
+import { ESCountReturn } from '../../../../../@common_sdk/lib/@backend_nest/libs/common/src/utils/ESCountReturn.type';
 
 class FakeEntity {
     id: string;
@@ -748,7 +748,7 @@ describe('Controller Basics', function() {
                 id: {
                     $eq: 'abcd',
                 },
-            }
+            };
 
             const service = mock(CRUDExtension);
 
@@ -778,8 +778,8 @@ describe('Controller Basics', function() {
                         skipped: 0,
                         failed: 0,
                     },
-                } as ESCountReturn
-            })
+                } as ESCountReturn,
+            });
 
             const res = await context.controllerBasics._count(instance(service), query);
 
@@ -799,7 +799,7 @@ describe('Controller Basics', function() {
                 id: {
                     $eq: 'abcd',
                 },
-            }
+            };
 
             const service = mock(CRUDExtension);
 

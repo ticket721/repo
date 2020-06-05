@@ -8,16 +8,16 @@ import {
     SearchOptions,
     SearchQuery,
     UpdateOptions,
-}                          from '@lib/common/crud/CRUDExtension.base';
+} from '@lib/common/crud/CRUDExtension.base';
 import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
-import { StatusCodes }     from '@lib/common/utils/codes.value';
-import { fromES }          from '@lib/common/utils/fromES.helper';
-import { UserDto }         from '@lib/common/users/dto/User.dto';
-import { RightsService }   from '@lib/common/rights/Rights.service';
-import { ESSearchHit }     from '@lib/common/utils/ESSearchReturn.type';
-import { RightEntity }     from '@lib/common/rights/entities/Right.entity';
-import { Boundable }       from '@lib/common/utils/Boundable.type';
-import { ESCountReturn }   from '../../../../../@common_sdk/lib/@backend_nest/libs/common/src/utils/ESCountReturn.type';
+import { StatusCodes } from '@lib/common/utils/codes.value';
+import { fromES } from '@lib/common/utils/fromES.helper';
+import { UserDto } from '@lib/common/users/dto/User.dto';
+import { RightsService } from '@lib/common/rights/Rights.service';
+import { ESSearchHit } from '@lib/common/utils/ESSearchReturn.type';
+import { RightEntity } from '@lib/common/rights/entities/Right.entity';
+import { Boundable } from '@lib/common/utils/Boundable.type';
+import { ESCountReturn } from '../../../../../@common_sdk/lib/@backend_nest/libs/common/src/utils/ESCountReturn.type';
 
 /**
  * Controller Basics, contains most methods used in controllers
