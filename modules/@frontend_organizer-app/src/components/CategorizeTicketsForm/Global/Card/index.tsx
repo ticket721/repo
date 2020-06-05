@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from "@frontend/flib-react/lib/components/button";
-import styled from "styled-components";
+
 import { Container, Line } from "../../style";
 
 
