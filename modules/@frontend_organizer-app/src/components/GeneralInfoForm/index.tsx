@@ -24,8 +24,6 @@ const GeneralInfoForm: React.FC = () => {
         }
     );
 
-    // console.log(eventCreationFormik.values);
-
     const onTagsKeyDown = (e: React.KeyboardEvent<HTMLElement>, tag: string) => {
         if(!inputTag || eventCreationFormik.values.tags?.length === 5) return;
         switch (e.key) {
