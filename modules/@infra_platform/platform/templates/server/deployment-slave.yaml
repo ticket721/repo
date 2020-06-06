@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "platform.fullname" . }}--server-slave--d
+  labels:
+    app: {{ include "platform.fullname" . }}--server
+    name: {{ include "platform.fullname" . }}--server-slave--d
+    chart: {{ .Chart.Name }}
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: {{ include "platform.fullname" . }}--server
+      name: {{ include "platform.fullname" . }}--server-slave
+      chart: {{ .Chart.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "platform.fullname" . }}--server
+        name: {{ include "platform.fullname" . }}--server-slave
+        chart: {{ .Chart.Name }}
+    spec:
+      serviceAccountName: {{ include "platform.fullname" . }}--platform--sa
+      volumes:
+        - name: server-config
+          configMap:
+            name: {{ template "platform.fullname" . }}--server-config-slave--cfmp
+        - name: server-secret
+          secret:
+            secretName: {{ template "platform.fullname" . }}--server-secret--sec
+        - name: images-folder
+          persistentVolumeClaim:
+            claimName: {{ include "platform.fullname" . }}--server--pvc
+      initContainers:
+        - name: {{ include "platform.fullname" . }}--server-migrations
+          env:
+            - name: CASSANDRA_HOSTS
+              value: "{{ .Values.config.cassandra.host }}"
+            - name: CASSANDRA_PORT
+              value: "{{ .Values.config.cassandra.port }}"
+            - name: ELASTICSEARCH_HOST
+              value: "{{ .Values.config.elasticsearch.host }}:{{ .Values.config.elasticsearch.port }}"
+          image: "{{ .Values.migrations.image.repository }}:{{ .Values.migrations.image.tag }}"
+          imagePullPolicy: {{ .Values.migrations.image.pullPolicy }}
+      containers:
+        - name: {{ template  "platform.fullname" . }}--server
+          image: "{{ .Values.server.image.repository }}:{{ .Values.server.image.tag }}"
+          imagePullPolicy: {{ .Values.server.image.pullPolicy }}
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "250m"
+          volumeMounts:
+            - name: server-config
+              mountPath: /config/production.env
+              subPath: production.env
+            - name: server-secret
+              mountPath: /config/production.secret.env
+              subPath: production.secret.env
+            - name: images-folder
+              mountPath: /repo/modules/@backend_nest/images
+          env:
+            - name: CONFIG_PATH
+              value: /config/
+            - name: NODE_ENV
+              value: production
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
