@@ -4,51 +4,17 @@ import { InstanceSignature, OutrospectionService } from '@lib/common/outrospecti
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 import { AuthorizationsService } from '@lib/common/authorizations/Authorizations.service';
 import { NestError } from '@lib/common/utils/NestError';
-
-/**
- * Data format when withdraw succeeds
- */
-export interface WithdrawTransactionConfirmed {
-    /**
-     * ID of the authorization linked to the withdraw
-     */
-    authorizationId: string;
-
-    /**
-     * Authorization granter
-     */
-    granter: string;
-
-    /**
-     * Authorization grantee
-     */
-    grantee: string;
-}
-
-/**
- * Data format when withdraw fails
- */
-export interface WithdrawTransactionFailure {
-    /**
-     * ID of the authorization linked to the withdraw
-     */
-    authorizationId: string;
-
-    /**
-     * Authorization granter
-     */
-    granter: string;
-
-    /**
-     * Authorization grantee
-     */
-    grantee: string;
-}
+import { Injectable, OnModuleInit } from '@nestjs/common';
+import {
+    WithdrawTransactionConfirmed,
+    WithdrawTransactionFailure,
+} from '@app/worker/tasks/withdraw/Withdraw.tasks.types';
 
 /**
  * List of tasks for the Withdraw use cases
  */
-export class WithdrawTasks {
+@Injectable()
+export class WithdrawTasks implements OnModuleInit {
     /**
      * Dependency Injection
      *
@@ -58,10 +24,10 @@ export class WithdrawTasks {
      * @param authorizationsService
      */
     constructor(
-        private readonly outrospectionService: OutrospectionService,
-        @InjectQueue('tx') private readonly txQueue: Queue,
-        private readonly shutdownService: ShutdownService,
         private readonly authorizationsService: AuthorizationsService,
+        private readonly outrospectionService: OutrospectionService,
+        private readonly shutdownService: ShutdownService,
+        @InjectQueue('tx') private readonly txQueue: Queue,
     ) {}
 
     /**
@@ -113,6 +79,7 @@ export class WithdrawTasks {
     /**
      * Subscribes worker instances only
      */
+
     /* istanbul ignore next */
     async onModuleInit(): Promise<void> {
         const signature: InstanceSignature = await this.outrospectionService.getInstanceSignature();
