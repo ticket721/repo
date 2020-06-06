@@ -21,7 +21,7 @@ describe('Outrospection Service', function() {
     describe('constructor', function() {
         it('should build the Outrospection Service in dev mode', async function() {
             when(context.configServiceMock.get('NODE_ENV')).thenReturn('development');
-            when(context.configServiceMock.get('HOSTNAME_PATTERN')).thenReturn('worker');
+            when(context.configServiceMock.get('MASTER')).thenReturn('true');
 
             const outrospectionService = new OutrospectionService(
                 'worker',
@@ -35,37 +35,14 @@ describe('Outrospection Service', function() {
             expect(signature).toEqual({
                 master: true,
                 name: 'worker',
-                position: 1,
-                signature: 'worker [1 / 1] MASTER',
-                total: 1,
-            });
-        });
-
-        it('should build the Outrospection Service in production mode', async function() {
-            when(context.configServiceMock.get('NODE_ENV')).thenReturn('production');
-            when(context.configServiceMock.get('HOSTNAME_PATTERN')).thenReturn('worker');
-
-            const outrospectionService = new OutrospectionService(
-                'worker',
-                instance(context.configServiceMock),
-                instance(context.shutdownServiceMock),
-                () => 'worker-0',
-            );
-
-            const signature: InstanceSignature = await outrospectionService.getInstanceSignature();
-
-            expect(signature).toEqual({
-                master: true,
-                name: 'worker',
-                position: 1,
-                signature: 'worker [1 / 1] MASTER',
-                total: 1,
+                signature: 'worker MASTER',
+                instanceName: 'worker-0',
             });
         });
 
         it('should build the Outrospection Service with instance 2', async function() {
             when(context.configServiceMock.get('NODE_ENV')).thenReturn('production');
-            when(context.configServiceMock.get('HOSTNAME_PATTERN')).thenReturn('worker');
+            when(context.configServiceMock.get('MASTER')).thenReturn('false');
 
             const outrospectionService = new OutrospectionService(
                 'worker',
@@ -79,58 +56,9 @@ describe('Outrospection Service', function() {
             expect(signature).toEqual({
                 master: false,
                 name: 'worker',
-                position: 2,
-                signature: 'worker [2 / 1]',
-                total: 1,
+                signature: 'worker',
+                instanceName: 'worker-1',
             });
-        });
-
-        it('should fail on invalid hostname', async function() {
-            when(context.configServiceMock.get('NODE_ENV')).thenReturn('production');
-            when(context.configServiceMock.get('HOSTNAME_PATTERN')).thenReturn('worker');
-
-            expect((): void => {
-                new OutrospectionService(
-                    'worker',
-                    instance(context.configServiceMock),
-                    instance(context.shutdownServiceMock),
-                    () => 'server-0',
-                );
-            }).toThrow(new NestError(`Invalid instance name 'worker', cannot extract position in hostname 'server-0'`));
-
-            verify(
-                context.shutdownServiceMock.shutdownWithError(
-                    deepEqual(
-                        new NestError(`Invalid instance name 'worker', cannot extract position in hostname 'server-0'`),
-                    ),
-                ),
-            ).called();
-        });
-
-        it('should fail on regexp test fail', async function() {
-            when(context.configServiceMock.get('NODE_ENV')).thenReturn('production');
-            when(context.configServiceMock.get('HOSTNAME_PATTERN')).thenReturn('worker');
-
-            expect((): void => {
-                new OutrospectionService(
-                    'worker',
-                    instance(context.configServiceMock),
-                    instance(context.shutdownServiceMock),
-                    () => 'server--0',
-                );
-            }).toThrow(
-                new NestError(`Invalid instance name 'worker', cannot extract position in hostname 'server--0'`),
-            );
-
-            verify(
-                context.shutdownServiceMock.shutdownWithError(
-                    deepEqual(
-                        new NestError(
-                            `Invalid instance name 'worker', cannot extract position in hostname 'server--0'`,
-                        ),
-                    ),
-                ),
-            ).called();
         });
     });
 });

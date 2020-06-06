@@ -3,6 +3,7 @@ import pack from '../../../package.json';
 import { APIInfos } from './Server.types';
 import { ConfigService } from '@lib/common/config/Config.service';
 import { OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
+import { keccak256FromBuffer } from '@common/global';
 
 /**
  * Utility to recover the APIInfos
@@ -29,7 +30,7 @@ export class ServerService {
             version: pack.version,
             name: 't721api',
             env: `${this.configService.get('NODE_ENV')}@${process.env['TAG'] || 'bare'}`,
-            position: instanceSignature.position,
+            instanceHash: keccak256FromBuffer(Buffer.from(instanceSignature.instanceName)),
         };
     }
 }

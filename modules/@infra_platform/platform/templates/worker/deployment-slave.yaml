@@ -1,36 +1,39 @@
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
-  name: {{ include "platform.fullname" . }}--server--sfs
+  name: {{ include "platform.fullname" . }}--worker-slave--d
   labels:
-    name: {{ include "platform.fullname" . }}--server--sfs
+    app: {{ include "platform.fullname" . }}--worker
+    name: {{ include "platform.fullname" . }}--worker-slave--d
     chart: {{ .Chart.Name }}
 spec:
-  replicas: 2
-  serviceName: {{ include "platform.fullname" . }}--server--svc
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 0
   selector:
     matchLabels:
-      name: {{ include "platform.fullname" . }}--server
+      app: {{ include "platform.fullname" . }}--worker
+      name: {{ include "platform.fullname" . }}--worker-slave
       chart: {{ .Chart.Name }}
   template:
     metadata:
       labels:
-        name: {{ include "platform.fullname" . }}--server
+        app: {{ include "platform.fullname" . }}--worker
+        name: {{ include "platform.fullname" . }}--worker-slave
         chart: {{ .Chart.Name }}
     spec:
-      serviceAccountName: {{ include "platform.fullname" . }}--platform--sa
       volumes:
-        - name: server-config
+        - name: worker-config
           configMap:
-            name: {{ template "platform.fullname" . }}--server-config--cfmp
-        - name: server-secret
+            name: {{ template "platform.fullname" . }}--worker-config-slave--cfmp
+        - name: worker-secret
           secret:
-            secretName: {{ template "platform.fullname" . }}--server-secret--sec
-        - name: images-folder
-          persistentVolumeClaim:
-            claimName: {{ include "platform.fullname" . }}--server--pvc
+            secretName: {{ template "platform.fullname" . }}--worker-secret--sec
       initContainers:
-        - name: {{ include "platform.fullname" . }}--server-migrations
+        - name: {{ include "platform.fullname" . }}--worker-migrations
           env:
             - name: CASSANDRA_HOSTS
               value: "{{ .Values.config.cassandra.host }}"
@@ -41,9 +44,9 @@ spec:
           image: "{{ .Values.migrations.image.repository }}:{{ .Values.migrations.image.tag }}"
           imagePullPolicy: {{ .Values.migrations.image.pullPolicy }}
       containers:
-        - name: {{ template  "platform.fullname" . }}--server
-          image: "{{ .Values.server.image.repository }}:{{ .Values.server.image.tag }}"
-          imagePullPolicy: {{ .Values.server.image.pullPolicy }}
+        - name: {{ template  "platform.fullname" . }}--worker
+          image: "{{ .Values.worker.image.repository }}:{{ .Values.worker.image.tag }}"
+          imagePullPolicy: {{ .Values.worker.image.pullPolicy }}
           resources:
             requests:
               memory: "512Mi"
@@ -52,14 +55,12 @@ spec:
               memory: "512Mi"
               cpu: "250m"
           volumeMounts:
-            - name: server-config
+            - name: worker-config
               mountPath: /config/production.env
               subPath: production.env
-            - name: server-secret
+            - name: worker-secret
               mountPath: /config/production.secret.env
               subPath: production.secret.env
-            - name: images-folder
-              mountPath: /repo/modules/@backend_nest/images
           env:
             - name: CONFIG_PATH
               value: /config/

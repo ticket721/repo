@@ -16,5 +16,5 @@ spec:
       protocol: TCP
       name: http
   selector:
-    name: {{ include "platform.fullname" . }}--server
+    app: {{ include "platform.fullname" . }}--server
     chart: {{ .Chart.Name }}
