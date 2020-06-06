@@ -6,6 +6,7 @@ import { APIInfos } from './Server.types';
 import { ConfigService } from '@lib/common/config/Config.service';
 import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
 import { OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
+import { keccak256FromBuffer } from '@common/global';
 
 const context: {
     serverService: ServerService;
@@ -67,47 +68,16 @@ describe('Server Service', () => {
             signature: 'signature',
             master: true,
             name: 'name',
-            position: 0,
-            total: 1,
+            instanceName: 'name-0',
         });
 
         process.env.TAG = 'test';
 
         const res: APIInfos = await serverService.getAPIInfos();
         expect(res.name).toEqual('t721api');
-        expect(res.position).toEqual(0);
+        expect(res.instanceHash).toEqual(keccak256FromBuffer(Buffer.from('name-0')));
         expect(res.version).toEqual(pack.version);
         expect(res.env).toEqual(`development@test`);
-
-        verify(configServiceMock.get('NODE_ENV')).called();
-        verify(outrospectionServiceMock.getInstanceSignature()).called();
-    });
-
-    it('build and get info with NODE_ENV=production', async function() {
-        const {
-            serverService,
-            configServiceMock,
-            outrospectionServiceMock,
-        }: {
-            serverService: ServerService;
-            configServiceMock: ConfigService;
-            outrospectionServiceMock: OutrospectionService;
-        } = context;
-
-        when(configServiceMock.get('NODE_ENV')).thenReturn('production');
-        when(outrospectionServiceMock.getInstanceSignature()).thenResolve({
-            signature: 'signature',
-            master: true,
-            name: 'name',
-            position: 0,
-            total: 1,
-        });
-
-        const res: APIInfos = await serverService.getAPIInfos();
-        expect(res.name).toEqual('t721api');
-        expect(res.position).toEqual(0);
-        expect(res.version).toEqual(pack.version);
-        expect(res.env).toEqual(`production@bare`);
 
         verify(configServiceMock.get('NODE_ENV')).called();
         verify(outrospectionServiceMock.getInstanceSignature()).called();

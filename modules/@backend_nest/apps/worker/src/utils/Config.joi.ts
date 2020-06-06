@@ -8,7 +8,7 @@ export const Config: Joi.ObjectSchema = Joi.object({
         .valid('development', 'production', 'test', 'test-e2e', 'provision')
         .default('development'),
 
-    HOSTNAME_PATTERN: Joi.string().required(),
+    MASTER: Joi.boolean().required(),
 
     WORKER_PORT: Joi.number().default(3000),
     VALIDATION_URL: Joi.string().required(),
