@@ -86,4 +86,13 @@ export class UserEntity {
         type: 'text',
     })
     locale: string;
+
+    /**
+     * Stripe Customer Token
+     */
+    @Column({
+        type: 'text',
+    })
+        // tslint:disable-next-line:variable-name
+    stripe_customer_token: string;
 }

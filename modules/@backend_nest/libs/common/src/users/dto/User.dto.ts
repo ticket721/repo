@@ -46,4 +46,10 @@ export class UserDto {
      * Locale provided when registered
      */
     locale: string;
+
+    /**
+     * Stripe customer token
+     */
+        // tslint:disable-next-line:variable-name
+    stripe_customer_token: string;
 }

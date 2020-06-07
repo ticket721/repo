@@ -114,6 +114,7 @@ export class AuthenticationService {
      * @param address Expected signing address
      * @param signature Signature of a Web3Register payload
      * @param locale
+     * @param stripeCustomerToken
      */
     async createWeb3User(
         email: string,
@@ -122,6 +123,7 @@ export class AuthenticationService {
         address: string,
         signature: string,
         locale: string,
+        stripeCustomerToken: string,
     ): Promise<ServiceResponse<PasswordlessUserDto>> {
         address = toAcceptedAddressFormat(address);
 
@@ -198,6 +200,7 @@ export class AuthenticationService {
             type: 'web3',
             role: 'authenticated',
             locale,
+            stripe_customer_token: stripeCustomerToken
         });
 
         if (newUser.error) {
@@ -242,12 +245,14 @@ export class AuthenticationService {
      * @param password
      * @param username
      * @param locale
+     * @param stripeCustomerToken
      */
     async createT721User(
         email: string,
         password: string,
         username: string,
         locale: string,
+        stripeCustomerToken: string,
     ): Promise<ServiceResponse<PasswordlessUserDto>> {
         const emailUserResp: ServiceResponse<UserDto> = await this.usersService.findByEmail(email);
         if (emailUserResp.error) {
@@ -315,6 +320,7 @@ export class AuthenticationService {
             type: 't721',
             role: 'authenticated',
             locale,
+            stripe_customer_token: stripeCustomerToken
         });
 
         if (newUser.error) {

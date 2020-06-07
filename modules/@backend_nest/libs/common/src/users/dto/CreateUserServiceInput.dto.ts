@@ -52,4 +52,11 @@ export class CreateUserServiceInputDto {
      */
     @IsString()
     locale: string;
+
+    /**
+     * Locale
+     */
+    @IsString()
+        // tslint:disable-next-line:variable-name
+    stripe_customer_token: string;
 }

@@ -41,4 +41,10 @@ export class PasswordlessUserDto {
      * True if email has been validated
      */
     valid: boolean;
+
+    /**
+     * Stripe Customer Token
+     */
+        // tslint:disable-next-line:variable-name
+    stripe_customer_token: string;
 }
