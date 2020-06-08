@@ -18,9 +18,6 @@ import { ESSearchHit } from '@lib/common/utils/ESSearchReturn.type';
 import { RightEntity } from '@lib/common/rights/entities/Right.entity';
 import { Boundable } from '@lib/common/utils/Boundable.type';
 import { ESCountReturn } from '@lib/common/utils/ESCountReturn.type';
-import { EventsCountInputDto } from '@app/server/controllers/events/dto/EventsCountInput.dto';
-import { Sort } from '@lib/common/utils/Sort.type';
-import { SearchableField } from '@lib/common/utils/SearchableField.type';
 
 /**
  * Controller Basics, contains most methods used in controllers
