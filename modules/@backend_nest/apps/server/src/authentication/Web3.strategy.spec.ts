@@ -67,6 +67,7 @@ describe('Web3 Strategy', function() {
                         role: 'authenticated',
                         locale: 'en',
                         valid: false,
+                        stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
                     },
                     error: null,
                 }),
@@ -101,6 +102,7 @@ describe('Web3 Strategy', function() {
                 role: 'authenticated',
                 locale: 'en',
                 valid: false,
+                stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
             });
 
             verify(authenticationServiceMock.validateWeb3User(timestamp, login_signature.hex)).called();
@@ -409,6 +411,7 @@ describe('Web3 Strategy', function() {
                         role: 'authenticated',
                         locale: 'en',
                         valid: false,
+                        stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
                     },
                     error: null,
                 }),
@@ -474,6 +477,7 @@ describe('Web3 Strategy', function() {
                         role: 'authenticated',
                         locale: 'en',
                         valid: false,
+                        stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
                     },
                     error: null,
                 }),
@@ -542,6 +546,7 @@ describe('Web3 Strategy', function() {
                         role: 'authenticated',
                         locale: 'en',
                         valid: false,
+                        stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
                     },
                     error: null,
                 }),

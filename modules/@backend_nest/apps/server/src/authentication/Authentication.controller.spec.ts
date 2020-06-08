@@ -118,7 +118,6 @@ describe('Authentication Controller', function() {
                     address,
                     register_signature.hex,
                     'en',
-                    'cus_HHHHHHHHHHHHHH'
                 ),
             ).thenReturn(
                 Promise.resolve({
@@ -131,7 +130,7 @@ describe('Authentication Controller', function() {
                         role: 'authenticated',
                         locale: 'en',
                         valid: false,
-                        stripe_customer_token: 'cus_HHHHHHHHHHHHHH'
+                        stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
                     } as UserDto,
                     error: null,
                 }),
@@ -159,7 +158,7 @@ describe('Authentication Controller', function() {
                 role: 'authenticated',
                 locale: 'en',
                 valid: false,
-                stripe_customer_token: 'cus_HHHHHHHHHHHHHH'
+                stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
             });
             expect(res.token).toBeDefined();
 
@@ -171,7 +170,6 @@ describe('Authentication Controller', function() {
                     address,
                     register_signature.hex,
                     'en',
-                    'cus_HHHHHHHHHHHHHH'
                 ),
             ).called();
         });
@@ -199,7 +197,6 @@ describe('Authentication Controller', function() {
                     address,
                     register_signature.hex,
                     'en',
-                    'cus_HHHHHHHHHHHHHH'
                 ),
             ).thenReturn(
                 Promise.resolve({
@@ -212,7 +209,7 @@ describe('Authentication Controller', function() {
                         role: 'authenticated',
                         locale: 'en',
                         valid: false,
-                        stripe_customer_token: 'cus_HHHHHHHHHHHHHH'
+                        stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
                     },
                     error: null,
                 }),
@@ -240,7 +237,7 @@ describe('Authentication Controller', function() {
                 role: 'authenticated',
                 locale: 'en',
                 valid: false,
-                stripe_customer_token: 'cus_HHHHHHHHHHHHHH'
+                stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
             });
             expect(res.token).toBeDefined();
 
@@ -252,7 +249,6 @@ describe('Authentication Controller', function() {
                     address,
                     register_signature.hex,
                     'en',
-                    'cus_HHHHHHHHHHHHHH'
                 ),
             ).called();
         });
@@ -277,7 +273,6 @@ describe('Authentication Controller', function() {
                     address,
                     register_signature.hex,
                     'en',
-                    'cus_HHHHHHHHHHHHHH'
                 ),
             ).thenReturn(
                 Promise.resolve({
@@ -314,7 +309,6 @@ describe('Authentication Controller', function() {
                     address,
                     register_signature.hex,
                     'en',
-                    'cus_HHHHHHHHHHHHHH'
                 ),
             ).called();
         });
@@ -339,7 +333,6 @@ describe('Authentication Controller', function() {
                     address,
                     register_signature.hex,
                     'en',
-                    'cus_HHHHHHHHHHHHHH'
                 ),
             ).thenReturn(
                 Promise.resolve({
@@ -376,7 +369,6 @@ describe('Authentication Controller', function() {
                     address,
                     register_signature.hex,
                     'en',
-                    'cus_HHHHHHHHHHHHHH'
                 ),
             ).called();
         });
@@ -401,7 +393,6 @@ describe('Authentication Controller', function() {
                     address,
                     register_signature.hex,
                     'en',
-                    'cus_HHHHHHHHHHHHHH'
                 ),
             ).thenReturn(
                 Promise.resolve({
@@ -438,7 +429,6 @@ describe('Authentication Controller', function() {
                     address,
                     register_signature.hex,
                     'en',
-                    'cus_HHHHHHHHHHHHHH'
                 ),
             ).called();
         });
@@ -463,7 +453,6 @@ describe('Authentication Controller', function() {
                     address,
                     register_signature.hex,
                     'en',
-                    'cus_HHHHHHHHHHHHHH'
                 ),
             ).thenReturn(
                 Promise.resolve({
@@ -500,7 +489,6 @@ describe('Authentication Controller', function() {
                     address,
                     register_signature.hex,
                     'en',
-                    'cus_HHHHHHHHHHHHHH'
                 ),
             ).called();
         });
@@ -525,7 +513,6 @@ describe('Authentication Controller', function() {
                     address,
                     register_signature.hex,
                     'en',
-                    'cus_HHHHHHHHHHHHHH'
                 ),
             ).thenReturn(
                 Promise.resolve({
@@ -562,7 +549,6 @@ describe('Authentication Controller', function() {
                     address,
                     register_signature.hex,
                     'en',
-                    'cus_HHHHHHHHHHHHHH'
                 ),
             ).called();
         });
@@ -587,7 +573,6 @@ describe('Authentication Controller', function() {
                     address,
                     register_signature.hex,
                     'en',
-                    'cus_HHHHHHHHHHHHHH'
                 ),
             ).thenReturn(
                 Promise.resolve({
@@ -624,7 +609,6 @@ describe('Authentication Controller', function() {
                     address,
                     register_signature.hex,
                     'en',
-                    'cus_HHHHHHHHHHHHHH'
                 ),
             ).called();
         });
@@ -649,7 +633,6 @@ describe('Authentication Controller', function() {
                     address,
                     register_signature.hex,
                     'en',
-                    'cus_HHHHHHHHHHHHHH'
                 ),
             ).thenReturn(
                 Promise.resolve({
@@ -686,7 +669,6 @@ describe('Authentication Controller', function() {
                     address,
                     register_signature.hex,
                     'en',
-                    'cus_HHHHHHHHHHHHHH'
                 ),
             ).called();
         });
@@ -711,7 +693,6 @@ describe('Authentication Controller', function() {
                     address,
                     register_signature.hex,
                     'en',
-                    'cus_HHHHHHHHHHHHHH'
                 ),
             ).thenReturn(
                 Promise.resolve({
@@ -748,7 +729,6 @@ describe('Authentication Controller', function() {
                     address,
                     register_signature.hex,
                     'en',
-                    'cus_HHHHHHHHHHHHHH'
                 ),
             ).called();
         });
@@ -766,7 +746,7 @@ describe('Authentication Controller', function() {
             const hashedp = toAcceptedKeccak256Format(keccak256('salut'));
             const encrypted = JSON.parse(await encryptWallet(wallet, hashedp));
 
-            when(authenticationServiceMock.createT721User(email, hashedp, username, 'en', 'cus_HHHHHHHHHHHHHH')).thenReturn(
+            when(authenticationServiceMock.createT721User(email, hashedp, username, 'en')).thenReturn(
                 Promise.resolve({
                     response: {
                         username,
@@ -778,7 +758,7 @@ describe('Authentication Controller', function() {
                         role: 'authenticated',
                         locale: 'en',
                         valid: false,
-                        stripe_customer_token: 'cus_HHHHHHHHHHHHHH'
+                        stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
                     },
                     error: null,
                 }),
@@ -805,11 +785,11 @@ describe('Authentication Controller', function() {
                 role: 'authenticated',
                 locale: 'en',
                 valid: false,
-                stripe_customer_token: 'cus_HHHHHHHHHHHHHH'
+                stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
             });
             expect(res.token).toBeDefined();
 
-            verify(authenticationServiceMock.createT721User(email, hashedp, username, 'en', 'cus_HHHHHHHHHHHHHH')).called();
+            verify(authenticationServiceMock.createT721User(email, hashedp, username, 'en')).called();
         });
 
         test('should create a user & return validation token in development mode', async function() {
@@ -826,7 +806,7 @@ describe('Authentication Controller', function() {
             const hashedp = toAcceptedKeccak256Format(keccak256('salut'));
             const encrypted = JSON.parse(await encryptWallet(wallet, hashedp));
 
-            when(authenticationServiceMock.createT721User(email, hashedp, username, 'en', 'cus_HHHHHHHHHHHHHH')).thenReturn(
+            when(authenticationServiceMock.createT721User(email, hashedp, username, 'en')).thenReturn(
                 Promise.resolve({
                     response: {
                         username,
@@ -838,7 +818,7 @@ describe('Authentication Controller', function() {
                         role: 'authenticated',
                         locale: 'en',
                         valid: false,
-                        stripe_customer_token: 'cus_HHHHHHHHHHHHHH'
+                        stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
                     },
                     error: null,
                 }),
@@ -865,11 +845,11 @@ describe('Authentication Controller', function() {
                 role: 'authenticated',
                 locale: 'en',
                 valid: false,
-                stripe_customer_token: 'cus_HHHHHHHHHHHHHH'
+                stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
             });
             expect(res.token).toBeDefined();
 
-            verify(authenticationServiceMock.createT721User(email, hashedp, username, 'en', 'cus_HHHHHHHHHHHHHH')).called();
+            verify(authenticationServiceMock.createT721User(email, hashedp, username, 'en')).called();
         });
 
         test('email already in use - should error with 409', async function() {
@@ -883,7 +863,7 @@ describe('Authentication Controller', function() {
             const encrypted_string = await encryptWallet(wallet, hashedp);
             const encrypted = JSON.parse(encrypted_string);
 
-            when(authenticationServiceMock.createT721User(email, hashedp, username, 'en', 'cus_HHHHHHHHHHHHHH')).thenReturn(
+            when(authenticationServiceMock.createT721User(email, hashedp, username, 'en')).thenReturn(
                 Promise.resolve({
                     response: null,
                     error: 'email_already_in_use',
@@ -908,7 +888,7 @@ describe('Authentication Controller', function() {
                 },
             });
 
-            verify(authenticationServiceMock.createT721User(email, hashedp, username, 'en', 'cus_HHHHHHHHHHHHHH')).called();
+            verify(authenticationServiceMock.createT721User(email, hashedp, username, 'en')).called();
         });
 
         test('username already in use - should error with 409', async function() {
@@ -922,7 +902,7 @@ describe('Authentication Controller', function() {
             const encrypted_string = await encryptWallet(wallet, hashedp);
             const encrypted = JSON.parse(encrypted_string);
 
-            when(authenticationServiceMock.createT721User(email, hashedp, username, 'en', 'cus_HHHHHHHHHHHHHH')).thenReturn(
+            when(authenticationServiceMock.createT721User(email, hashedp, username, 'en')).thenReturn(
                 Promise.resolve({
                     response: null,
                     error: 'username_already_in_use',
@@ -947,7 +927,7 @@ describe('Authentication Controller', function() {
                 },
             });
 
-            verify(authenticationServiceMock.createT721User(email, hashedp, username, 'en', 'cus_HHHHHHHHHHHHHH')).called();
+            verify(authenticationServiceMock.createT721User(email, hashedp, username, 'en')).called();
         });
 
         test('address already in use - should error with 409', async function() {
@@ -961,7 +941,7 @@ describe('Authentication Controller', function() {
             const encrypted_string = await encryptWallet(wallet, hashedp);
             const encrypted = JSON.parse(encrypted_string);
 
-            when(authenticationServiceMock.createT721User(email, hashedp, username, 'en', 'cus_HHHHHHHHHHHHHH')).thenReturn(
+            when(authenticationServiceMock.createT721User(email, hashedp, username, 'en')).thenReturn(
                 Promise.resolve({
                     response: null,
                     error: 'address_already_in_use',
@@ -986,7 +966,7 @@ describe('Authentication Controller', function() {
                 },
             });
 
-            verify(authenticationServiceMock.createT721User(email, hashedp, username, 'en', 'cus_HHHHHHHHHHHHHH')).called();
+            verify(authenticationServiceMock.createT721User(email, hashedp, username, 'en')).called();
         });
 
         test('invalid password format - should error with 422', async function() {
@@ -1000,7 +980,7 @@ describe('Authentication Controller', function() {
             const encrypted_string = await encryptWallet(wallet, hashedp);
             const encrypted = JSON.parse(encrypted_string);
 
-            when(authenticationServiceMock.createT721User(email, hashedp, username, 'en', 'cus_HHHHHHHHHHHHHH')).thenReturn(
+            when(authenticationServiceMock.createT721User(email, hashedp, username, 'en')).thenReturn(
                 Promise.resolve({
                     response: null,
                     error: 'password_should_be_keccak256',
@@ -1025,7 +1005,7 @@ describe('Authentication Controller', function() {
                 },
             });
 
-            verify(authenticationServiceMock.createT721User(email, hashedp, username, 'en', 'cus_HHHHHHHHHHHHHH')).called();
+            verify(authenticationServiceMock.createT721User(email, hashedp, username, 'en')).called();
         });
 
         test('unknown error - should error with 500', async function() {
@@ -1039,7 +1019,7 @@ describe('Authentication Controller', function() {
             const encrypted_string = await encryptWallet(wallet, hashedp);
             const encrypted = JSON.parse(encrypted_string);
 
-            when(authenticationServiceMock.createT721User(email, hashedp, username, 'en', 'cus_HHHHHHHHHHHHHH')).thenReturn(
+            when(authenticationServiceMock.createT721User(email, hashedp, username, 'en')).thenReturn(
                 Promise.resolve({
                     response: null,
                     error: 'this_error_does_not_exist',
@@ -1064,7 +1044,7 @@ describe('Authentication Controller', function() {
                 },
             });
 
-            verify(authenticationServiceMock.createT721User(email, hashedp, username, 'en', 'cus_HHHHHHHHHHHHHH')).called();
+            verify(authenticationServiceMock.createT721User(email, hashedp, username, 'en')).called();
         });
     });
 
@@ -1095,7 +1075,7 @@ describe('Authentication Controller', function() {
                 valid: true,
                 type: 't721',
                 locale: 'fr',
-                stripe_customer_token: 'cus_HHHHHHHHHHHHHH'
+                stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
             };
 
             await expect(authenticationController.updatePassword(body, user)).rejects.toMatchObject({
@@ -1139,7 +1119,7 @@ describe('Authentication Controller', function() {
                 valid: true,
                 type: 't721',
                 locale: 'fr',
-                stripe_customer_token: 'cus_HHHHHHHHHHHHHH'
+                stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
             };
 
             await expect(authenticationController.updatePassword(body, user)).rejects.toMatchObject({
@@ -1183,7 +1163,7 @@ describe('Authentication Controller', function() {
                 valid: true,
                 type: 't721',
                 locale: 'fr',
-                stripe_customer_token: 'cus_HHHHHHHHHHHHHH'
+                stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
             };
 
             await expect(authenticationController.updatePassword(body, user)).rejects.toMatchObject({
@@ -1217,7 +1197,7 @@ describe('Authentication Controller', function() {
                         valid: true,
                         type: 't721',
                         locale: 'fr',
-                        stripe_customer_token: 'cus_HHHHHHHHHHHHHH'
+                        stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
                     },
                     error: null,
                 }),
@@ -1237,7 +1217,7 @@ describe('Authentication Controller', function() {
                 valid: true,
                 type: 't721',
                 locale: 'fr',
-                stripe_customer_token: 'cus_HHHHHHHHHHHHHH'
+                stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
             };
 
             await expect(authenticationController.updatePassword(body, user)).resolves.toMatchObject({
@@ -1282,7 +1262,7 @@ describe('Authentication Controller', function() {
                 type: 't721',
                 address: '0x...',
                 role: 'authenticated',
-                stripe_customer_token: 'cus_HHHHHHHHHHHHHH'
+                stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
             };
 
             when(authenticationServiceMock.validateUserEmail('123')).thenReturn(
@@ -1318,7 +1298,7 @@ describe('Authentication Controller', function() {
                 type: 't721',
                 address: '0x...',
                 role: 'authenticated',
-                stripe_customer_token: 'cus_HHHHHHHHHHHHHH'
+                stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
             };
 
             when(jwtServiceMock.verifyAsync('test_token')).thenThrow(new NestError('jwt expired'));
@@ -1355,7 +1335,7 @@ describe('Authentication Controller', function() {
                 type: 't721',
                 address: '0x...',
                 role: 'authenticated',
-                stripe_customer_token: 'cus_HHHHHHHHHHHHHH'
+                stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
             };
 
             when(jwtServiceMock.verifyAsync('test_token')).thenThrow(new NestError('invalid signature'));
@@ -1392,7 +1372,7 @@ describe('Authentication Controller', function() {
                 type: 't721',
                 address: '0x...',
                 role: 'authenticated',
-                stripe_customer_token: 'cus_HHHHHHHHHHHHHH'
+                stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
             };
 
             when(jwtServiceMock.verifyAsync('test_token')).thenThrow(new NestError('unknown error'));
@@ -1429,7 +1409,7 @@ describe('Authentication Controller', function() {
                 type: 't721',
                 address: '0x...',
                 role: 'authenticated',
-                stripe_customer_token: 'cus_HHHHHHHHHHHHHH'
+                stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
             };
 
             when(jwtServiceMock.verifyAsync('test_token')).thenReturn(
@@ -1528,7 +1508,7 @@ describe('Authentication Controller', function() {
                 type: 't721',
                 address: '0x...',
                 role: 'authenticated',
-                stripe_customer_token: 'cus_HHHHHHHHHHHHHH'
+                stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
             };
 
             when(authenticationServiceMock.getUserIfEmailExists(email)).thenResolve({
@@ -1563,7 +1543,7 @@ describe('Authentication Controller', function() {
                 type: 't721',
                 address: '0x...',
                 role: 'authenticated',
-                stripe_customer_token: 'cus_HHHHHHHHHHHHHH'
+                stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
             };
 
             when(authenticationServiceMock.getUserIfEmailExists(user.email)).thenResolve({
@@ -1742,7 +1722,7 @@ describe('Authentication Controller', function() {
                 type: 't721',
                 address: '0x...',
                 role: 'authenticated',
-                stripe_customer_token: 'cus_HHHHHHHHHHHHHH'
+                stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
             };
 
             when(authenticationServiceMock.validateResetPassword(user.id, 'password')).thenReturn(

@@ -16,7 +16,7 @@ import { EventDto } from '@app/server/controllers/events/dto/Event.dto';
 import FormData from 'form-data';
 import { ImagesUploadResponseDto } from '@app/server/controllers/images/dto/ImagesUploadResponse.dto';
 import { ActionSet } from '@lib/common/actionsets/helper/ActionSet.class';
-import { anything, instance, mock, when } from 'ts-mockito';
+import { anything, instance, mock, reset, when } from 'ts-mockito';
 import { Stripe } from 'stripe';
 import Crypto from 'crypto';
 import { TicketEntity } from '@lib/common/tickets/entities/Ticket.entity';
@@ -917,6 +917,7 @@ let stripeMock: Stripe;
 let paymentIntentsResourceMock: Stripe.PaymentIntentsResource;
 let payoutsResourceMock: Stripe.PayoutsResource;
 let refundsResourceMock: Stripe.RefundsResource;
+let customersResourceMock: Stripe.CustomersResource;
 
 export const setupStripeMock = (): Stripe => {
     stripeMock = mock(Stripe);
@@ -924,12 +925,29 @@ export const setupStripeMock = (): Stripe => {
     paymentIntentsResourceMock = mock(Stripe.PaymentIntentsResource);
     payoutsResourceMock = mock(Stripe.PayoutsResource);
     refundsResourceMock = mock(Stripe.RefundsResource);
+    customersResourceMock = mock(Stripe.CustomersResource);
 
     when(stripeMock.paymentIntents).thenReturn(instance(paymentIntentsResourceMock));
     when(stripeMock.payouts).thenReturn(instance(payoutsResourceMock));
     when(stripeMock.refunds).thenReturn(instance(refundsResourceMock));
+    when(stripeMock.customers).thenReturn(instance(customersResourceMock));
+
+    when(customersResourceMock.create(anything())).thenCall(async (opts: any) => ({
+        id: `cus_${opts.metadata.id}`,
+    }));
 
     return stripeMock;
+};
+
+export const resetStripeMocks = () => {
+    reset(paymentIntentsResourceMock);
+    reset(payoutsResourceMock);
+    reset(refundsResourceMock);
+    reset(customersResourceMock);
+
+    when(customersResourceMock.create(anything())).thenCall(async (opts: any) => ({
+        id: `cus_${opts.metadata.id}`,
+    }));
 };
 
 export const createPaymentIntent = (content: Partial<Stripe.PaymentIntent>): string => {
@@ -960,8 +978,14 @@ export const setPaymentIntent = (id: string, content: Partial<Stripe.PaymentInte
     } as Stripe.PaymentIntent);
 };
 
-export const getMocks = (): [Stripe, Stripe.PaymentIntentsResource, Stripe.PayoutsResource, Stripe.RefundsResource] => {
-    return [stripeMock, paymentIntentsResourceMock, payoutsResourceMock, refundsResourceMock];
+export const getMocks = (): [
+    Stripe,
+    Stripe.PaymentIntentsResource,
+    Stripe.PayoutsResource,
+    Stripe.RefundsResource,
+    Stripe.CustomersResource,
+] => {
+    return [stripeMock, paymentIntentsResourceMock, payoutsResourceMock, refundsResourceMock, customersResourceMock];
 };
 
 export const gemFail = async (sdk: T721SDK, token: string, id: string, body: any): Promise<void> => {

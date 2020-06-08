@@ -143,7 +143,6 @@ export class AuthenticationController {
             body.password,
             body.username,
             body.locale || 'en',
-            'cus_HHHHHHHHHHHHHH'
         );
         if (resp.error) {
             switch (resp.error) {
@@ -237,7 +236,6 @@ export class AuthenticationController {
             body.address,
             body.signature,
             body.locale || 'en',
-            'cus_HHHHHHHHHHHHHH'
         );
         if (resp.error) {
             switch (resp.error) {

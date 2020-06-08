@@ -62,6 +62,7 @@ describe('Local Strategy', function() {
                         role: 'authenticated',
                         locale: 'en',
                         valid: false,
+                        stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
                     },
                     error: null,
                 }),
@@ -79,6 +80,7 @@ describe('Local Strategy', function() {
                 role: 'authenticated',
                 locale: 'en',
                 valid: false,
+                stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
             });
 
             verify(authenticationServiceMock.validateUser(email, hashedp)).called();

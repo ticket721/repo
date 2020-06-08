@@ -93,6 +93,6 @@ export class UserEntity {
     @Column({
         type: 'text',
     })
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     stripe_customer_token: string;
 }

@@ -2,7 +2,16 @@ jest.setTimeout(process.env.JEST_GLOBAL_TIMEOUT ? parseInt(process.env.JEST_GLOB
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { T721SDK } from '@common/sdk';
-import { createPaymentIntent, prepare, runMigrations, setupStripeMock, startDocker, stopDocker } from './utils';
+import {
+    createPaymentIntent,
+    getMocks,
+    prepare,
+    resetStripeMocks,
+    runMigrations,
+    setupStripeMock,
+    startDocker,
+    stopDocker,
+} from './utils';
 import { ServerModule } from '../src/Server.module';
 import ascii from './ascii';
 
@@ -25,7 +34,7 @@ import TxsControllerTestSuite from '@app/server/controllers/txs/Txs.controller.r
 import RightsControllerTestSuite from '@app/server/controllers/rights/Rights.controller.routes-spec';
 import MetadatasControllerTestSuite from '@app/server/controllers/metadatas/Metadatas.controller.routes-spec';
 
-import { instance } from 'ts-mockito';
+import { instance, reset } from 'ts-mockito';
 
 const cassandraPort = 32702;
 const elasticSearchPort = 32610;
@@ -63,7 +72,15 @@ describe('AppController (e2e)', () => {
             await runMigrations(cassandraPort, elasticSearchPort);
         }
 
+        const stripeMock = setupStripeMock();
+
         const appFixture: TestingModule = await Test.createTestingModule({
+            providers: [
+                {
+                    provide: 'STRIPE_MOCK_INSTANCE',
+                    useValue: instance(stripeMock),
+                },
+            ],
             imports: [ServerModule],
         }).compile();
         appFixture.useLogger(new WinstonLoggerService('e2e-server'));
@@ -74,8 +91,6 @@ describe('AppController (e2e)', () => {
             console.log('Server & Worker Shut Down');
         });
         await app.listen(3000);
-
-        const stripeMock = setupStripeMock();
 
         const workerFixture: TestingModule = await Test.createTestingModule({
             providers: [
@@ -117,6 +132,10 @@ describe('AppController (e2e)', () => {
         process.stdout.write(ascii.afterAll);
         console.log('FINISHED');
     }, 60000);
+
+    afterEach(function() {
+        resetStripeMocks();
+    });
 
     describe('Server Controller', ServerControllerTestSuite(getCtx));
     describe('Users Controller', UsersControllerTestSuite(getCtx));

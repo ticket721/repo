@@ -18,6 +18,7 @@ import { UserDto } from '@lib/common/users/dto/User.dto';
 import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
 import { Web3Service } from '@lib/common/web3/Web3.service';
 import { RocksideService } from '@lib/common/rockside/Rockside.service';
+import { StripeService } from '@lib/common/stripe/Stripe.service';
 
 const context: {
     authenticationService: AuthenticationService;
@@ -25,12 +26,14 @@ const context: {
     configServiceMock: ConfigService;
     web3ServiceMock: Web3Service;
     rocksideServiceMock: RocksideService;
+    stripeServiceMock: StripeService;
 } = {
     authenticationService: null,
     usersServiceMock: null,
     configServiceMock: null,
     web3ServiceMock: null,
     rocksideServiceMock: null,
+    stripeServiceMock: null,
 };
 
 const resultAddress = toAcceptedAddressFormat('0x87c02dec6b33498b489e1698801fc2ef79d02eef');
@@ -41,6 +44,7 @@ describe('Authentication Service', function() {
         context.configServiceMock = mock(ConfigService);
         context.web3ServiceMock = mock(Web3Service);
         context.rocksideServiceMock = mock(RocksideService);
+        context.stripeServiceMock = mock(StripeService);
 
         when(context.configServiceMock.get('AUTH_SIGNATURE_TIMEOUT')).thenReturn('30');
         when(context.web3ServiceMock.net()).thenResolve(1);
@@ -66,6 +70,11 @@ describe('Authentication Service', function() {
                 {
                     provide: Web3Service,
                     useValue: instance(context.web3ServiceMock),
+                },
+
+                {
+                    provide: StripeService,
+                    useValue: instance(context.stripeServiceMock),
                 },
             ],
         }).compile();
@@ -98,12 +107,17 @@ describe('Authentication Service', function() {
                     role: 'authenticated',
                     locale: 'en',
                     valid: false,
-                    stripe_customer_token: 'cus_HHHHHHHHHHHHHH'
+                    stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
                 },
                 error: null,
             };
 
             when(usersServiceMock.findByAddress(address)).thenReturn(Promise.resolve(serviceResponse));
+
+            when(context.stripeServiceMock.createCustomer(anyString())).thenResolve({
+                error: null,
+                response: 'cus_HHHHHHHHHHHHHH',
+            });
 
             const res = await authenticationService.validateWeb3User(loginPayload[0].toString(), loginSignature.hex);
 
@@ -118,7 +132,7 @@ describe('Authentication Service', function() {
                 role: 'authenticated',
                 locale: 'en',
                 valid: false,
-                stripe_customer_token: 'cus_HHHHHHHHHHHHHH'
+                stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
             });
 
             verify(usersServiceMock.findByAddress(address)).called();
@@ -244,7 +258,7 @@ describe('Authentication Service', function() {
                     role: 'authenticated',
                     valid: false,
                     locale: 'en',
-                    stripe_customer_token: 'cus_HHHHHHHHHHHHHH'
+                    stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
                 },
                 error: null,
             };
@@ -257,6 +271,7 @@ describe('Authentication Service', function() {
             when(
                 usersServiceMock.create(
                     deepEqual({
+                        id: anything(),
                         email,
                         username,
                         address,
@@ -264,7 +279,7 @@ describe('Authentication Service', function() {
                         password: null,
                         role: 'authenticated',
                         locale: 'en',
-                        stripe_customer_token: 'cus_HHHHHHHHHHHHHH'
+                        stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
                     }),
                 ),
             ).thenReturn(Promise.resolve(serviceResponse));
@@ -273,6 +288,11 @@ describe('Authentication Service', function() {
             when(usersServiceMock.findByEmail(email)).thenReturn(emptyServiceResponse);
             when(usersServiceMock.findByUsername(username)).thenReturn(emptyServiceResponse);
 
+            when(context.stripeServiceMock.createCustomer(anyString())).thenResolve({
+                error: null,
+                response: 'cus_HHHHHHHHHHHHHH',
+            });
+
             const res = await authenticationService.createWeb3User(
                 email,
                 username,
@@ -280,7 +300,6 @@ describe('Authentication Service', function() {
                 address,
                 registerSignature.hex,
                 'en',
-                'cus_HHHHHHHHHHHHHH',
             );
 
             expect(res.response).toBeDefined();
@@ -294,12 +313,13 @@ describe('Authentication Service', function() {
                 role: 'authenticated',
                 locale: 'en',
                 valid: false,
-                stripe_customer_token: 'cus_HHHHHHHHHHHHHH'
+                stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
             });
 
             verify(
                 usersServiceMock.create(
                     deepEqual({
+                        id: anything(),
                         email,
                         username,
                         address,
@@ -307,7 +327,7 @@ describe('Authentication Service', function() {
                         password: null,
                         role: 'authenticated',
                         locale: 'en',
-                        stripe_customer_token: 'cus_HHHHHHHHHHHHHH'
+                        stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
                     }),
                 ),
             ).called();
@@ -338,6 +358,7 @@ describe('Authentication Service', function() {
             when(
                 usersServiceMock.create(
                     deepEqual({
+                        id: anything(),
                         email,
                         username,
                         address,
@@ -345,7 +366,7 @@ describe('Authentication Service', function() {
                         password: null,
                         role: 'authenticated',
                         locale: 'en',
-                        stripe_customer_token: 'cus_HHHHHHHHHHHHHH'
+                        stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
                     }),
                 ),
             ).thenReturn(
@@ -358,6 +379,10 @@ describe('Authentication Service', function() {
             when(usersServiceMock.findByAddress(address)).thenReturn(emptyServiceResponse);
             when(usersServiceMock.findByEmail(email)).thenReturn(emptyServiceResponse);
             when(usersServiceMock.findByUsername(username)).thenReturn(emptyServiceResponse);
+            when(context.stripeServiceMock.createCustomer(anyString())).thenResolve({
+                error: null,
+                response: 'cus_HHHHHHHHHHHHHH',
+            });
 
             const res = await authenticationService.createWeb3User(
                 email,
@@ -366,7 +391,6 @@ describe('Authentication Service', function() {
                 address,
                 registerSignature.hex,
                 'en',
-                'cus_HHHHHHHHHHHHHH',
             );
 
             expect(res.error).toEqual('unexpected_error');
@@ -375,6 +399,7 @@ describe('Authentication Service', function() {
             verify(
                 usersServiceMock.create(
                     deepEqual({
+                        id: anything(),
                         email,
                         username,
                         address,
@@ -382,7 +407,7 @@ describe('Authentication Service', function() {
                         password: null,
                         role: 'authenticated',
                         locale: 'en',
-                        stripe_customer_token: 'cus_HHHHHHHHHHHHHH'
+                        stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
                     }),
                 ),
             ).called();
@@ -418,7 +443,6 @@ describe('Authentication Service', function() {
                 address,
                 registerSignature.hex,
                 'en',
-                'cus_HHHHHHHHHHHHHH',
             );
 
             expect(res.error).toEqual('unexpected_error');
@@ -461,7 +485,6 @@ describe('Authentication Service', function() {
                 address,
                 registerSignature.hex,
                 'en',
-                'cus_HHHHHHHHHHHHHH',
             );
 
             expect(res.error).toEqual('unexpected_error');
@@ -507,7 +530,6 @@ describe('Authentication Service', function() {
                 address,
                 registerSignature.hex,
                 'en',
-                'cus_HHHHHHHHHHHHHH',
             );
 
             expect(res.error).toEqual('unexpected_error');
@@ -542,7 +564,7 @@ describe('Authentication Service', function() {
                     role: 'authenticated',
                     locale: 'en',
                     valid: false,
-                    stripe_customer_token: 'cus_HHHHHHHHHHHHHH'
+                    stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
                 },
                 error: null,
             };
@@ -556,7 +578,6 @@ describe('Authentication Service', function() {
                 address,
                 registerSignature.hex,
                 'en',
-                'cus_HHHHHHHHHHHHHH',
             );
 
             expect(res.response).toEqual(null);
@@ -589,7 +610,7 @@ describe('Authentication Service', function() {
                     role: 'authenticated',
                     locale: 'en',
                     valid: false,
-                    stripe_customer_token: 'cus_HHHHHHHHHHHHHH'
+                    stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
                 },
                 error: null,
             };
@@ -609,7 +630,6 @@ describe('Authentication Service', function() {
                 address,
                 registerSignature.hex,
                 'en',
-                'cus_HHHHHHHHHHHHHH',
             );
 
             expect(res.response).toEqual(null);
@@ -643,7 +663,7 @@ describe('Authentication Service', function() {
                     role: 'authenticated',
                     locale: 'en',
                     valid: false,
-                    stripe_customer_token: 'cus_HHHHHHHHHHHHHH'
+                    stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
                 },
                 error: null,
             };
@@ -664,7 +684,6 @@ describe('Authentication Service', function() {
                 address,
                 registerSignature.hex,
                 'en',
-                'cus_HHHHHHHHHHHHHH',
             );
 
             expect(res.response).toEqual(null);
@@ -713,7 +732,6 @@ describe('Authentication Service', function() {
                 address,
                 registerSignature.hex,
                 'en',
-                'cus_HHHHHHHHHHHHHH',
             );
 
             expect(res.response).toEqual(null);
@@ -754,7 +772,6 @@ describe('Authentication Service', function() {
                 address,
                 registerSignature.hex,
                 'en',
-                'cus_HHHHHHHHHHHHHH',
             );
 
             expect(res.response).toEqual(null);
@@ -786,7 +803,7 @@ describe('Authentication Service', function() {
                     role: 'authenticated',
                     locale: 'en',
                     valid: false,
-                    stripe_customer_token: 'cus_HHHHHHHHHHHHHH'
+                    stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
                 },
                 error: null,
             };
@@ -799,6 +816,7 @@ describe('Authentication Service', function() {
             when(
                 usersServiceMock.create(
                     deepEqual({
+                        id: anything(),
                         email,
                         username,
                         address: anyString(),
@@ -806,7 +824,7 @@ describe('Authentication Service', function() {
                         password: anyString(),
                         role: 'authenticated',
                         locale: 'en',
-                        stripe_customer_token: 'cus_HHHHHHHHHHHHHH'
+                        stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
                     }),
                 ),
             ).thenReturn(Promise.resolve(serviceResponse));
@@ -820,8 +838,12 @@ describe('Authentication Service', function() {
                 },
                 error: null,
             });
+            when(context.stripeServiceMock.createCustomer(anyString())).thenResolve({
+                error: null,
+                response: 'cus_HHHHHHHHHHHHHH',
+            });
 
-            const res = await authenticationService.createT721User(email, hashedp, username, 'en', 'cus_HHHHHHHHHHHHHH');
+            const res = await authenticationService.createT721User(email, hashedp, username, 'en');
 
             expect(res.response).toBeDefined();
             expect(res.error).toEqual(null);
@@ -834,12 +856,13 @@ describe('Authentication Service', function() {
                 role: 'authenticated',
                 valid: false,
                 locale: 'en',
-                stripe_customer_token: 'cus_HHHHHHHHHHHHHH'
+                stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
             });
 
             verify(
                 usersServiceMock.create(
                     deepEqual({
+                        id: anything(),
                         email,
                         username,
                         address: anyString(),
@@ -847,7 +870,7 @@ describe('Authentication Service', function() {
                         password: anyString(),
                         role: 'authenticated',
                         locale: 'en',
-                        stripe_customer_token: 'cus_HHHHHHHHHHHHHH'
+                        stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
                     }),
                 ),
             ).called();
@@ -877,7 +900,7 @@ describe('Authentication Service', function() {
                     role: 'authenticated',
                     locale: 'en',
                     valid: false,
-                    stripe_customer_token: 'cus_HHHHHHHHHHHHHH'
+                    stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
                 },
                 error: null,
             };
@@ -896,9 +919,9 @@ describe('Authentication Service', function() {
                 error: 'unexpected_error',
             });
 
-            const res = await authenticationService.createT721User(email, hashedp, username, 'en', 'cus_HHHHHHHHHHHHHH');
+            const res = await authenticationService.createT721User(email, hashedp, username, 'en');
 
-                expect(res.response).toBeDefined();
+            expect(res.response).toBeDefined();
             expect(res.error).toEqual('rockside_identity_creation_error');
             expect(res.response).toEqual(null);
 
@@ -929,14 +952,14 @@ describe('Authentication Service', function() {
                     role: 'authenticated',
                     locale: 'en',
                     valid: false,
-                    stripe_customer_token: 'cus_HHHHHHHHHHHHHH'
+                    stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
                 },
                 error: null,
             };
 
             when(usersServiceMock.findByEmail(email)).thenReturn(Promise.resolve(serviceResponse));
 
-            const res = await authenticationService.createT721User(email, hashedp, username, 'en', 'cus_HHHHHHHHHHHHHH');
+            const res = await authenticationService.createT721User(email, hashedp, username, 'en');
 
             expect(res.response).toEqual(null);
             expect(res.error).toEqual('email_already_in_use');
@@ -966,7 +989,7 @@ describe('Authentication Service', function() {
                     role: 'authenticated',
                     locale: 'en',
                     valid: false,
-                    stripe_customer_token: 'cus_HHHHHHHHHHHHHH'
+                    stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
                 },
                 error: null,
             };
@@ -979,7 +1002,7 @@ describe('Authentication Service', function() {
             when(usersServiceMock.findByEmail(email)).thenReturn(emptyServiceResponse);
             when(usersServiceMock.findByUsername(username)).thenReturn(Promise.resolve(serviceResponse));
 
-            const res = await authenticationService.createT721User(email, hashedp, username, 'en', 'cus_HHHHHHHHHHHHHH');
+            const res = await authenticationService.createT721User(email, hashedp, username, 'en');
 
             expect(res.response).toEqual(null);
             expect(res.error).toEqual('username_already_in_use');
@@ -1006,7 +1029,7 @@ describe('Authentication Service', function() {
                     role: 'authenticated',
                     locale: 'en',
                     valid: false,
-                    stripe_customer_token: 'cus_HHHHHHHHHHHHHH'
+                    stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
                 },
                 error: null,
             };
@@ -1026,7 +1049,7 @@ describe('Authentication Service', function() {
                 error: null,
             });
 
-            const res = await authenticationService.createT721User(email, hashedp, username, 'en', 'cus_HHHHHHHHHHHHHH');
+            const res = await authenticationService.createT721User(email, hashedp, username, 'en');
 
             expect(res.response).toEqual(null);
             expect(res.error).toEqual('address_already_in_use');
@@ -1059,7 +1082,7 @@ describe('Authentication Service', function() {
                 error: null,
             });
 
-            const res = await authenticationService.createT721User(email, hashedp.slice(4), username, 'en', 'cus_HHHHHHHHHHHHHH');
+            const res = await authenticationService.createT721User(email, hashedp.slice(4), username, 'en');
 
             expect(res.response).toEqual(null);
             expect(res.error).toEqual('password_should_be_keccak256');
@@ -1084,7 +1107,7 @@ describe('Authentication Service', function() {
                 }),
             );
 
-            const res = await authenticationService.createT721User(email, hashedp.slice(4), username, 'en', 'cus_HHHHHHHHHHHHHH');
+            const res = await authenticationService.createT721User(email, hashedp.slice(4), username, 'en');
 
             expect(res.response).toEqual(null);
             expect(res.error).toEqual('unexpected_error');
@@ -1112,7 +1135,7 @@ describe('Authentication Service', function() {
                 }),
             );
 
-            const res = await authenticationService.createT721User(email, hashedp.slice(4), username, 'en', 'cus_HHHHHHHHHHHHHH');
+            const res = await authenticationService.createT721User(email, hashedp.slice(4), username, 'en');
 
             expect(res.response).toEqual(null);
             expect(res.error).toEqual('unexpected_error');
@@ -1148,7 +1171,7 @@ describe('Authentication Service', function() {
                 error: null,
             });
 
-            const res = await authenticationService.createT721User(email, hashedp.slice(4), username, 'en', 'cus_HHHHHHHHHHHHHH');
+            const res = await authenticationService.createT721User(email, hashedp.slice(4), username, 'en');
 
             expect(res.response).toEqual(null);
             expect(res.error).toEqual('unexpected_error');
@@ -1174,6 +1197,7 @@ describe('Authentication Service', function() {
             when(
                 usersServiceMock.create(
                     deepEqual({
+                        id: anything(),
                         email,
                         username,
                         address: anyString(),
@@ -1181,7 +1205,7 @@ describe('Authentication Service', function() {
                         password: anyString(),
                         role: 'authenticated',
                         locale: 'en',
-                        stripe_customer_token: 'cus_HHHHHHHHHHHHHH'
+                        stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
                     }),
                 ),
             ).thenReturn(
@@ -1200,8 +1224,12 @@ describe('Authentication Service', function() {
                 },
                 error: null,
             });
+            when(context.stripeServiceMock.createCustomer(anyString())).thenResolve({
+                error: null,
+                response: 'cus_HHHHHHHHHHHHHH',
+            });
 
-            const res = await authenticationService.createT721User(email, hashedp, username, 'en', 'cus_HHHHHHHHHHHHHH');
+            const res = await authenticationService.createT721User(email, hashedp, username, 'en');
 
             expect(res.response).toEqual(null);
             expect(res.error).toEqual('unexpected_error');
@@ -1211,6 +1239,7 @@ describe('Authentication Service', function() {
             verify(
                 usersServiceMock.create(
                     deepEqual({
+                        id: anything(),
                         email,
                         username,
                         address: anyString(),
@@ -1218,7 +1247,7 @@ describe('Authentication Service', function() {
                         password: anyString(),
                         role: 'authenticated',
                         locale: 'en',
-                        stripe_customer_token: 'cus_HHHHHHHHHHHHHH'
+                        stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
                     }),
                 ),
             ).called();
@@ -1250,7 +1279,7 @@ describe('Authentication Service', function() {
                     role: 'authenticated',
                     locale: 'en',
                     valid: false,
-                    stripe_customer_token: 'cus_HHHHHHHHHHHHHH'
+                    stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
                 },
                 error: null,
             };
@@ -1268,7 +1297,7 @@ describe('Authentication Service', function() {
                 role: 'authenticated',
                 locale: 'en',
                 valid: false,
-                stripe_customer_token: 'cus_HHHHHHHHHHHHHH'
+                stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
             });
             verify(usersServiceMock.findByEmail(email)).called();
         });
@@ -1344,7 +1373,7 @@ describe('Authentication Service', function() {
                         address: '0x...',
                         valid: true,
                         locale: 'en',
-                        stripe_customer_token: 'cus_HHHHHHHHHHHHHH'
+                        stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
                     },
                 }),
             );
@@ -1362,7 +1391,7 @@ describe('Authentication Service', function() {
                 address: '0x...',
                 valid: true,
                 locale: 'en',
-                stripe_customer_token: 'cus_HHHHHHHHHHHHHH'
+                stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
             });
         });
 
@@ -1454,7 +1483,7 @@ describe('Authentication Service', function() {
                 password: 'anypass',
                 type: 't721',
                 locale: 'fr',
-                stripe_customer_token: 'cus_HHHHHHHHHHHHHH'
+                stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
             };
 
             when(usersServiceMock.findByEmail(email)).thenReturn(
@@ -1560,7 +1589,7 @@ describe('Authentication Service', function() {
                     password: 'anypass',
                     type: 't721',
                     locale: 'fr',
-                    stripe_customer_token: 'cus_HHHHHHHHHHHHHH'
+                    stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
                 },
                 error: null,
             };
@@ -1632,7 +1661,7 @@ describe('Authentication Service', function() {
                     type: 't721',
                     role: 'authenticated',
                     valid: true,
-                    stripe_customer_token: 'cus_HHHHHHHHHHHHHH'
+                    stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
                 },
             });
 
@@ -1677,7 +1706,7 @@ describe('Authentication Service', function() {
                     type: 't721',
                     role: 'authenticated',
                     valid: true,
-                    stripe_customer_token: 'cus_HHHHHHHHHHHHHH'
+                    stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
                 },
             });
 
@@ -1714,7 +1743,7 @@ describe('Authentication Service', function() {
                     role: 'authenticated',
                     locale: 'en',
                     valid: false,
-                    stripe_customer_token: 'cus_HHHHHHHHHHHHHH'
+                    stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
                 },
                 error: null,
             };
@@ -1740,7 +1769,7 @@ describe('Authentication Service', function() {
                     type: 't721',
                     role: 'authenticated',
                     valid: true,
-                    stripe_customer_token: 'cus_HHHHHHHHHHHHHH'
+                    stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
                 },
             });
 

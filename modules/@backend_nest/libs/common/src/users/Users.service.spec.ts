@@ -74,7 +74,7 @@ describe('Users Service', function() {
                     role: 'authenticated',
                     locale: 'en',
                     valid: false,
-                    stripe_customer_token: 'cus_HHHHHHHHHHHHHH'
+                    stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
                 };
             };
 
@@ -99,7 +99,7 @@ describe('Users Service', function() {
                 role: 'authenticated',
                 locale: 'en',
                 valid: false,
-                stripe_customer_token: 'cus_HHHHHHHHHHHHHH'
+                stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
             });
         });
 
@@ -147,7 +147,7 @@ describe('Users Service', function() {
                     role: 'authenticated',
                     locale: 'en',
                     valid: false,
-                    stripe_customer_token: 'cus_HHHHHHHHHHHHHH'
+                    stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
                 };
             };
 
@@ -864,7 +864,7 @@ describe('Users Service', function() {
                     role: 'authenticated',
                     locale: 'en',
                     valid: false,
-                    stripe_customer_token: 'cus_HHHHHHHHHHHHHH'
+                    stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
                 };
             };
 
@@ -907,7 +907,7 @@ describe('Users Service', function() {
                 role: 'authenticated',
                 locale: 'en',
                 valid: false,
-                stripe_customer_token: 'cus_HHHHHHHHHHHHHH'
+                stripe_customer_token: 'cus_HHHHHHHHHHHHHH',
             });
         });
 

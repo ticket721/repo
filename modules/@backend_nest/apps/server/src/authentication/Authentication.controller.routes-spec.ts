@@ -10,6 +10,7 @@ import {
     generateEmail,
     generatePassword,
     generateUserName,
+    getMocks,
     getSDK,
     getSDKAndUser,
 } from '../../test/utils';
@@ -17,6 +18,7 @@ import { PasswordlessUserDto } from './dto/PasswordlessUser.dto';
 import { FailedRegisterReport, T721SDK } from '@common/sdk';
 import { ValidateResetPasswordResponseDto } from '@app/server/authentication/dto/ValidateResetPasswordResponse.dto';
 import { ResetPasswordResponseDto } from '@app/server/authentication/dto/ResetPasswordResponse.dto';
+import { anything, reset, when } from 'ts-mockito';
 
 export default function(getCtx: () => { ready: Promise<void> }) {
     return function() {
@@ -53,6 +55,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                         address: user.wallet.address,
                         email: user.email,
                         id: response.data.user.id,
+                        stripe_customer_token: `cus_${response.data.user.id}`,
                         locale: 'en',
                         role: 'authenticated',
                         type: 'web3',
@@ -62,6 +65,36 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     validationToken: response.data.validationToken,
                     expiration: expect.anything(),
                 } as LocalRegisterResponseDto);
+            });
+
+            test('should fail on stripe customer creation error', async function() {
+                const sdk = await getSDK(getCtx);
+
+                const user = {
+                    email: generateEmail(),
+                    username: generateUserName(),
+                    password: generatePassword(),
+                    wallet: await createWallet(),
+                };
+
+                const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(2702);
+
+                const [timestamp, signature] = await web3RegisterSigner.generateRegistrationProof(
+                    user.email,
+                    user.username,
+                    user.wallet.privateKey,
+                );
+
+                const customersMock = getMocks()[4];
+
+                reset(customersMock);
+                when(customersMock.create(anything())).thenReject(new Error('cannot create customer'));
+
+                await failWithCode(
+                    sdk.web3Register(user.email, user.username, timestamp, user.wallet.address, signature.hex),
+                    StatusCodes.InternalServerError,
+                    'cannot_create_customer',
+                );
             });
 
             test('should create a new web3 account with fr locale', async function() {
@@ -97,6 +130,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                         address: user.wallet.address,
                         email: user.email,
                         id: response.data.user.id,
+                        stripe_customer_token: `cus_${response.data.user.id}`,
                         locale: 'fr',
                         role: 'authenticated',
                         type: 'web3',
@@ -174,6 +208,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                         otherUser.username,
                         otherUser.wallet.privateKey,
                     );
+
                     await failWithCode(
                         sdk.web3Register(
                             otherUser.email,
@@ -230,6 +265,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                         otherUser.username,
                         otherUser.wallet.privateKey,
                     );
+
                     await failWithCode(
                         sdk.web3Register(
                             otherUser.email,
@@ -286,6 +322,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                         otherUser.username,
                         otherUser.wallet.privateKey,
                     );
+
                     await failWithCode(
                         sdk.web3Register(
                             otherUser.email,
@@ -434,6 +471,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                             address: user.wallet.address,
                             email: user.email,
                             id: loginResponse.data.user.id,
+                            stripe_customer_token: `cus_${loginResponse.data.user.id}`,
                             locale: 'en',
                             role: 'authenticated',
                             type: 'web3',
@@ -583,6 +621,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                         email: user.email,
                         id: response.data.user.id,
                         locale: 'en',
+                        stripe_customer_token: `cus_${response.data.user.id}`,
                         role: 'authenticated',
                         type: 't721',
                         username: user.username,
@@ -591,6 +630,27 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     expiration: expect.anything(),
                     validationToken: response.data.validationToken,
                 } as LocalRegisterResponseDto);
+            });
+
+            test('should fail on stripe error', async function() {
+                const sdk = await getSDK(getCtx);
+
+                const user = {
+                    email: generateEmail(),
+                    username: generateUserName(),
+                    password: generatePassword(),
+                };
+
+                const customersMock = getMocks()[4];
+
+                reset(customersMock);
+                when(customersMock.create(anything())).thenReject(new Error('cannot create customer'));
+
+                await failWithCode(
+                    sdk.localRegister(user.email, user.password, user.username),
+                    StatusCodes.InternalServerError,
+                    'cannot_create_customer',
+                );
             });
 
             test('should create a new t721 account with fr locale', async function() {
@@ -614,6 +674,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     user: {
                         address: response.data.user.address,
                         email: user.email,
+                        stripe_customer_token: `cus_${response.data.user.id}`,
                         id: response.data.user.id,
                         locale: 'fr',
                         role: 'authenticated',
@@ -726,6 +787,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                         address: loginResponse.data.user.address,
                         role: 'authenticated',
                         id: loginResponse.data.user.id,
+                        stripe_customer_token: `cus_${response.data.user.id}`,
                         locale: 'en',
                         type: 't721',
                         email: loginResponse.data.user.email,
@@ -794,6 +856,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                         valid: true,
                         address: validationResponse.data.user.address,
                         role: 'authenticated',
+                        stripe_customer_token: `cus_${response.data.user.id}`,
                         id: validationResponse.data.user.id,
                         locale: 'en',
                         type: 't721',
@@ -842,6 +905,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     email: user.email,
                     username: expect.anything(),
                     address: expect.anything(),
+                    stripe_customer_token: `cus_${res.data.id}`,
                     type: 't721',
                     role: 'authenticated',
                     valid: expect.anything(),
@@ -856,6 +920,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                         address: loginResponse.data.user.address,
                         role: 'authenticated',
                         id: loginResponse.data.user.id,
+                        stripe_customer_token: `cus_${loginResponse.data.user.id}`,
                         locale: 'en',
                         type: 't721',
                         email: loginResponse.data.user.email,
@@ -952,6 +1017,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                         address: loginResponse.data.user.address,
                         role: 'authenticated',
                         id: loginResponse.data.user.id,
+                        stripe_customer_token: `cus_${loginResponse.data.user.id}`,
                         locale: 'en',
                         type: 't721',
                         email: loginResponse.data.user.email,

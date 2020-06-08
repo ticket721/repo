@@ -61,6 +61,7 @@ import { TicketsController } from '@app/server/controllers/tickets/Tickets.contr
 import { TicketsModule } from '@lib/common/tickets/Tickets.module';
 import { UsersController } from '@app/server/controllers/users/Users.controller';
 import { toHeaderFormat } from '@lib/common/utils/toHeaderFormat';
+import { StripeModule, StripeModuleBuildOptions } from '@lib/common/stripe/Stripe.module';
 
 @Module({
     imports: [
@@ -104,6 +105,14 @@ import { toHeaderFormat } from '@lib/common/utils/toHeaderFormat';
 
         // User Management Modules
         AuthenticationModule,
+
+        // Stripe Module
+        StripeModule.registerAsync({
+            useFactory: (configService: ConfigService): StripeModuleBuildOptions => ({
+                stripePrivateKey: configService.get('DOSOJIN_STRIPE_PRIVATE_KEY'),
+            }),
+            inject: [ConfigService],
+        }),
 
         // Utility Modules
         FSModule,

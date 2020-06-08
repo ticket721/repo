@@ -8,6 +8,8 @@ import { UserDto } from '@lib/common/users/dto/User.dto';
 import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
 import { Web3Service } from '@lib/common/web3/Web3.service';
 import { RocksideService } from '@lib/common/rockside/Rockside.service';
+import { uuid } from '@iaminfinity/express-cassandra';
+import { StripeService } from '@lib/common/stripe/Stripe.service';
 
 /**
  * Authentication services and utilities
@@ -21,12 +23,14 @@ export class AuthenticationService {
      * @param configService
      * @param web3Service
      * @param rocksideService
+     * @param stripeService
      */
     constructor /* instanbul ignore next */(
         private readonly usersService: UsersService,
         private readonly configService: ConfigService,
         private readonly web3Service: Web3Service,
         private readonly rocksideService: RocksideService,
+        private readonly stripeService: StripeService,
     ) {}
 
     /**
@@ -114,7 +118,6 @@ export class AuthenticationService {
      * @param address Expected signing address
      * @param signature Signature of a Web3Register payload
      * @param locale
-     * @param stripeCustomerToken
      */
     async createWeb3User(
         email: string,
@@ -123,7 +126,6 @@ export class AuthenticationService {
         address: string,
         signature: string,
         locale: string,
-        stripeCustomerToken: string,
     ): Promise<ServiceResponse<PasswordlessUserDto>> {
         address = toAcceptedAddressFormat(address);
 
@@ -192,7 +194,19 @@ export class AuthenticationService {
             };
         }
 
+        const id = uuid();
+
+        const stripeCustomerTokenRes = await this.stripeService.createCustomer(id.toString());
+
+        if (stripeCustomerTokenRes.error) {
+            return {
+                error: stripeCustomerTokenRes.error,
+                response: null,
+            };
+        }
+
         const newUser: ServiceResponse<UserDto> = await this.usersService.create({
+            id,
             email,
             password: null,
             username,
@@ -200,7 +214,7 @@ export class AuthenticationService {
             type: 'web3',
             role: 'authenticated',
             locale,
-            stripe_customer_token: stripeCustomerToken
+            stripe_customer_token: stripeCustomerTokenRes.response,
         });
 
         if (newUser.error) {
@@ -245,14 +259,12 @@ export class AuthenticationService {
      * @param password
      * @param username
      * @param locale
-     * @param stripeCustomerToken
      */
     async createT721User(
         email: string,
         password: string,
         username: string,
         locale: string,
-        stripeCustomerToken: string,
     ): Promise<ServiceResponse<PasswordlessUserDto>> {
         const emailUserResp: ServiceResponse<UserDto> = await this.usersService.findByEmail(email);
         if (emailUserResp.error) {
@@ -312,7 +324,19 @@ export class AuthenticationService {
             };
         }
 
+        const id = uuid();
+
+        const stripeCustomerTokenRes = await this.stripeService.createCustomer(id.toString());
+
+        if (stripeCustomerTokenRes.error) {
+            return {
+                error: stripeCustomerTokenRes.error,
+                response: null,
+            };
+        }
+
         const newUser: ServiceResponse<UserDto> = await this.usersService.create({
+            id,
             email,
             password: await hash(password, parseInt(this.configService.get('BCRYPT_SALT_ROUNDS'), 10)),
             username,
@@ -320,7 +344,7 @@ export class AuthenticationService {
             type: 't721',
             role: 'authenticated',
             locale,
-            stripe_customer_token: stripeCustomerToken
+            stripe_customer_token: stripeCustomerTokenRes.response,
         });
 
         if (newUser.error) {

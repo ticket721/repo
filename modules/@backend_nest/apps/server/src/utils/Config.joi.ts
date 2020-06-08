@@ -76,6 +76,7 @@ export const Config: Joi.ObjectSchema = Joi.object({
     GLOBAL_CONFIG_ETHEREUM_PRICE_FETCHING_RATE: Joi.number().required(),
     GLOBAL_CONFIG_BINANCE_MOCK: Joi.boolean().default('true'),
 
+    DOSOJIN_STRIPE_PRIVATE_KEY: Joi.string().required(),
     CART_MAX_TICKET_PER_CART: Joi.number().required(),
 
     ROCKSIDE_OPTS_BASE_URL: Joi.string().required(),

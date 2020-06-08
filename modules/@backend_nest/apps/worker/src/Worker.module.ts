@@ -39,7 +39,7 @@ import { EVMAntennaModule } from '@app/worker/evmantenna/EVMAntenna.module';
 import { GlobalConfigScheduler } from '@app/worker/schedulers/globalconfig/GlobalConfig.scheduler';
 import { EVMEventSetsModule } from '@lib/common/evmeventsets/EVMEventSets.module';
 import { GemOrdersModule } from '@lib/common/gemorders/GemOrders.module';
-import { DosojinRunnerModule, DosojinRunnerModuleBuildOptions } from '@app/worker/dosojinrunner/DosojinRunner.module';
+import { DosojinRunnerModule } from '@app/worker/dosojinrunner/DosojinRunner.module';
 import { CategoriesModule } from '@lib/common/categories/Categories.module';
 import { RightsModule } from '@lib/common/rights/Rights.module';
 import { CartInputHandlers } from '@app/worker/actionhandlers/cart/Cart.input.handlers';
@@ -60,6 +60,7 @@ import { AuthenticationModule } from '@app/worker/authentication/Authentication.
 import { toHeaderFormat } from '@lib/common/utils/toHeaderFormat';
 import { StatusController } from '@app/worker/utils/Status.controller';
 import { WithdrawTasks } from '@app/worker/tasks/withdraw/Withdraw.tasks';
+import { StripeModule, StripeModuleBuildOptions } from '@lib/common/stripe/Stripe.module';
 
 @Module({
     imports: [
@@ -103,13 +104,15 @@ import { WithdrawTasks } from '@app/worker/tasks/withdraw/Withdraw.tasks';
         // Ethereum Listeners
         EVMAntennaModule,
 
-        // Dosojin Handler
-        DosojinRunnerModule.registerAsync({
-            useFactory: (configService: ConfigService): DosojinRunnerModuleBuildOptions => ({
+        StripeModule.registerAsync({
+            useFactory: (configService: ConfigService): StripeModuleBuildOptions => ({
                 stripePrivateKey: configService.get('DOSOJIN_STRIPE_PRIVATE_KEY'),
             }),
             inject: [ConfigService],
         }),
+
+        // Dosojin Handler
+        DosojinRunnerModule,
 
         // Utility Modules
         FSModule,
