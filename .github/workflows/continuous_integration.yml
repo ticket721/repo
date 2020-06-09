@@ -722,14 +722,230 @@ jobs:
               working-directory: modules/@frontend_flib-react
               run: yarn format:check
 
-#     /$$$$  /$$$$$$   /$$$$$$  /$$$$
-#    | $$_/ /$$__  $$ /$$__  $$|_  $$
-#    | $$  | $$  \__/|__/  \ $$  | $$
-#    | $$  |  $$$$$$   /$$$$$$/  | $$
-#    | $$   \____  $$ /$$____/   | $$
-#    | $$   /$$  \ $$| $$        | $$
-#    | $$$$|  $$$$$$/| $$$$$$$$ /$$$$
-#    |____/ \______/ |________/|____/
+  #     /$$$$  /$$$$$$   /$$$$$$  /$$$$
+  #    | $$_/ /$$__  $$ /$$__  $$|_  $$
+  #    | $$  | $$  \__/|__/  \ $$  | $$
+  #    | $$  |  $$$$$$   /$$$$$$/  | $$
+  #    | $$   \____  $$ /$$____/   | $$
+  #    | $$   /$$  \ $$| $$        | $$
+  #    | $$$$|  $$$$$$/| $$$$$$$$ /$$$$
+  #    |____/ \______/ |________/|____/
+  #
+  #    @frontend_t721-app - build & lint
+  #
+  #    Recovers required dependencies from cache
+  #    Builds sources to verify everything still transpiles properly
+  #    Lints sources to verify everything is formatted properly
+  #
+
+    frontend-t721-app:
+      name: "[S2] [@frontend/t721-app] build, lint, format check & tests"
+      needs: install
+      runs-on: ubuntu-latest
+      steps:
+
+        #
+        # Initial Setup
+        #
+
+        - uses: actions/checkout@v1
+        - name: "Use Node.js 12.x"
+          uses: actions/setup-node@v1.2.0
+          with:
+            node-version: 12.x
+
+        - name: "Install required tools globally (npm install -g yarn)"
+          run: npm install -g yarn@1.22.4
+
+        #
+        # Cache Yarn Workspaces
+        #
+
+        - name: "CACHE root"
+          uses: actions/cache@v1
+          with:
+            path: ./node_modules
+            key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-root
+
+        - name: "CACHE @common_global"
+          uses: actions/cache@v1
+          with:
+            path: ./modules/@common_global/node_modules
+            key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_global
+
+        - name: "CACHE @common_sdk"
+          uses: actions/cache@v1
+          with:
+            path: ./modules/@common_sdk/node_modules
+            key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_sdk
+
+        - name: "CACHE @frontend_flib-react"
+          uses: actions/cache@v1
+          with:
+            path: ./modules/@frontend_flib-react/node_modules
+            key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-frontend_flib-react
+
+        - name: "CACHE @frontend_core"
+          uses: actions/cache@v1
+          with:
+            path: ./modules/@frontend_core/node_modules
+            key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-frontend_core
+
+        - name: "CACHE @backend_nest"
+          uses: actions/cache@v1
+          with:
+            path: ./modules/@backend_nest/node_modules
+            key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-backend_nest
+
+
+        #
+        # Build dependencies
+        #
+
+        - name: "Build @common_global (yarn build in modules/@common_global)"
+          working-directory: modules/@common_global
+          run: yarn build
+
+        - name: "Build @common_sdk (yarn build in modules/@common_sdk)"
+          working-directory: modules/@common_sdk
+          run: yarn build
+
+        - name: "Build @frontend_flib-react (yarn build in modules/@frontend_flib-react)"
+          working-directory: modules/@frontend_flib-react
+          run: yarn build
+
+        - name: "Build @frontend_core (yarn build in modules/@frontend_core)"
+          working-directory: modules/@frontend_core
+          run: yarn build
+
+        #
+        # Build, Lint, Format check & Tests @frontend_core
+        #
+
+        - name: "Build @frontend/t721-app (yarn build in modules/@frontend_t721-app)"
+          working-directory: modules/@frontend_t721-app
+          run: yarn build
+
+        - name: "Lint @frontend/t721-app (yarn lint in modules/@frontend_t721-app)"
+          working-directory: modules/@frontend_t721-app
+          run: yarn lint
+          
+  #     /$$$$  /$$$$$$   /$$$$$$  /$$$$
+  #    | $$_/ /$$__  $$ /$$__  $$|_  $$
+  #    | $$  | $$  \__/|__/  \ $$  | $$
+  #    | $$  |  $$$$$$   /$$$$$$/  | $$
+  #    | $$   \____  $$ /$$____/   | $$
+  #    | $$   /$$  \ $$| $$        | $$
+  #    | $$$$|  $$$$$$/| $$$$$$$$ /$$$$
+  #    |____/ \______/ |________/|____/
+  #
+  #    @frontend_organizer-app - build & lint
+  #
+  #    Recovers required dependencies from cache
+  #    Builds sources to verify everything still transpiles properly
+  #    Lints sources to verify everything is formatted properly
+  #
+
+    frontend-organizer-app:
+      name: "[S2] [@frontend/organizer-app] build, lint, format check & tests"
+      needs: install
+      runs-on: ubuntu-latest
+      steps:
+
+        #
+        # Initial Setup
+        #
+
+        - uses: actions/checkout@v1
+        - name: "Use Node.js 12.x"
+          uses: actions/setup-node@v1.2.0
+          with:
+            node-version: 12.x
+
+        - name: "Install required tools globally (npm install -g yarn)"
+          run: npm install -g yarn@1.22.4
+
+        #
+        # Cache Yarn Workspaces
+        #
+
+        - name: "CACHE root"
+          uses: actions/cache@v1
+          with:
+            path: ./node_modules
+            key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-root
+
+        - name: "CACHE @common_global"
+          uses: actions/cache@v1
+          with:
+            path: ./modules/@common_global/node_modules
+            key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_global
+
+        - name: "CACHE @common_sdk"
+          uses: actions/cache@v1
+          with:
+            path: ./modules/@common_sdk/node_modules
+            key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_sdk
+
+        - name: "CACHE @frontend_flib-react"
+          uses: actions/cache@v1
+          with:
+            path: ./modules/@frontend_flib-react/node_modules
+            key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-frontend_flib-react
+
+        - name: "CACHE @frontend_core"
+          uses: actions/cache@v1
+          with:
+            path: ./modules/@frontend_core/node_modules
+            key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-frontend_core
+
+        - name: "CACHE @backend_nest"
+          uses: actions/cache@v1
+          with:
+            path: ./modules/@backend_nest/node_modules
+            key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-backend_nest
+
+
+        #
+        # Build dependencies
+        #
+
+        - name: "Build @common_global (yarn build in modules/@common_global)"
+          working-directory: modules/@common_global
+          run: yarn build
+
+        - name: "Build @common_sdk (yarn build in modules/@common_sdk)"
+          working-directory: modules/@common_sdk
+          run: yarn build
+
+        - name: "Build @frontend_flib-react (yarn build in modules/@frontend_flib-react)"
+          working-directory: modules/@frontend_flib-react
+          run: yarn build
+
+        - name: "Build @frontend_core (yarn build in modules/@frontend_core)"
+          working-directory: modules/@frontend_core
+          run: yarn build
+
+        #
+        # Build, Lint, Format check & Tests @frontend_core
+        #
+
+        - name: "Build @frontend/organizer-app (yarn build in modules/@frontend_organizer-app)"
+          working-directory: modules/@frontend_organizer-app
+          run: yarn build
+
+        - name: "Lint @frontend/organizer-app (yarn lint in modules/@frontend_organizer-app)"
+          working-directory: modules/@frontend_organizer-app
+          run: yarn lint
+
+  #     /$$$$  /$$$$$$   /$$$$$$  /$$$$
+  #    | $$_/ /$$__  $$ /$$__  $$|_  $$
+  #    | $$  | $$  \__/|__/  \ $$  | $$
+  #    | $$  |  $$$$$$   /$$$$$$/  | $$
+  #    | $$   \____  $$ /$$____/   | $$
+  #    | $$   /$$  \ $$| $$        | $$
+  #    | $$$$|  $$$$$$/| $$$$$$$$ /$$$$
+  #    |____/ \______/ |________/|____/
 #
 #    @frontend_core - build, lint, format check & tests
 #
@@ -853,7 +1069,7 @@ jobs:
 
     coverage:
         name: "[S3] [@repo] upload coverage data"
-        needs: [global, sdk, server, server-e2e]
+        needs: [global, sdk, server, server-e2e, flib-react, frontend-organizer-app, frontend-t721-app, frontend-core]
         runs-on: ubuntu-latest
         steps:
 
@@ -909,7 +1125,7 @@ jobs:
 
     infra-dry-run:
       name: "[S3] infra (staging) dry run"
-      needs: [global, sdk, server, server-e2e]
+      needs: [global, sdk, server, server-e2e, flib-react, frontend-organizer-app, frontend-t721-app, frontend-core]
       runs-on: ubuntu-latest
       steps:
 
@@ -978,7 +1194,7 @@ jobs:
 
     docker:
       name: "[S3] docker"
-      needs: [global, sdk, server, server-e2e]
+      needs: [global, sdk, server, server-e2e, flib-react, frontend-organizer-app, frontend-t721-app, frontend-core]
       if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
       runs-on: ubuntu-latest
       steps:
