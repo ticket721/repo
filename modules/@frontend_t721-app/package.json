@@ -10,7 +10,7 @@
         "@frontend/core": "1.0.0",
         "@frontend/flib-react": "1.0.0",
         "@ionic/react": "5.0.7",
-        "@ionic/react-router": "5.0.7",
+        "@ionic/react-router": "5.1.1",
         "@testing-library/jest-dom": "4.2.4",
         "@testing-library/react": "9.4.0",
         "@testing-library/user-event": "8.0.3",
