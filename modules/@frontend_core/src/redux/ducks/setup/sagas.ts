@@ -19,7 +19,11 @@ import { PushNotification } from '../notifications';
 
 function* startSaga(action: IStart): IterableIterator<any> {
     global.window.t721Sdk = new T721SDK();
-    global.window.t721Sdk.connect('localhost', 3000);
+    global.window.t721Sdk.connect(
+        process.env.REACT_APP_T721_SERVER_HOST,
+        parseInt(process.env.REACT_APP_T721_SERVER_PORT, 10),
+        process.env.REACT_APP_T721_SERVER_PROTOCOL as 'http' | 'https',
+    );
 
     yield call(handleUser);
     yield put(GetDevice());

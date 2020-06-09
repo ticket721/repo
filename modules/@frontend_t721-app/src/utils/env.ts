@@ -1,16 +1,9 @@
-import Joi      from '@hapi/joi';
+import { CoreEnv, CoreEnvSchema } from '@frontend/core/lib/utils/env';
 
-export interface T721AppEnv {
-    REACT_APP_ETHEREUM_ENDPOINT_PROTOCOL: string;
-    REACT_APP_ETHEREUM_ENDPOINT_HOST: string;
-    REACT_APP_ETHEREUM_ENDPOINT_PORT: number;
-    REACT_APP_ETHEREUM_ENDPOINT_PATH: string;
+// tslint:disable-next-line:no-empty-interface
+export interface T721AppEnv extends CoreEnv {
 }
 
-export const T721AppEnvSchema = Joi.object<T721AppEnv>({
-    REACT_APP_ETHEREUM_ENDPOINT_PROTOCOL: Joi.string().required(),
-    REACT_APP_ETHEREUM_ENDPOINT_HOST: Joi.string().required(),
-    REACT_APP_ETHEREUM_ENDPOINT_PORT: Joi.number().required(),
-    REACT_APP_ETHEREUM_ENDPOINT_PATH: Joi.string().optional(),
+export const T721AppEnvSchema = CoreEnvSchema.append({
 }).unknown();
 

@@ -23,8 +23,8 @@ ReactDOM.render(
     <EnvValidator schema={T721AppEnvSchema}>
         <Provider store={store}>
             <ConnectedRouter history={history}>
-                <GlobalStyles/>
                 <ThemeProvider theme={customThemes['t721']}>
+                    <GlobalStyles/>
                     <BrowserRouter>
                         <ScrollToTop>
                             <MediaQuery maxDeviceWidth={1224}>
