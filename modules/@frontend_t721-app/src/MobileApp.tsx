@@ -8,7 +8,7 @@ import { NavLink, Route, Switch, withRouter } from 'react-router-dom';
 import { links, routes } from './routes';
 import { Navbar, Icon }            from '@frontend/flib-react/lib/components';
 
-const App: React.FC = ({ location }: any) => (
+const MobileApp: React.FC = ({ location }: any) => (
     <div id='App'>
         <Switch>
             {
@@ -24,7 +24,25 @@ const App: React.FC = ({ location }: any) => (
                 ))
             }
         </Switch>
+        {
+            location.pathname.lastIndexOf('/') === 0 ?
+            <Navbar>
+                {
+                    links.map((link, idx) => (
+                        <NavLink
+                        key={idx}
+                        to={link.to}>
+                            <Icon
+                            icon={link.icon}
+                            color='#FFFFFF'
+                            size={link.size} />
+                        </NavLink>
+                    ))
+                }
+            </Navbar> :
+            null
+        }
     </div>
 );
 
-export default withRouter(App);
+export default withRouter(MobileApp);
