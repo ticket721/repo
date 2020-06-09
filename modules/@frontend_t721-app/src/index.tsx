@@ -14,6 +14,8 @@ import { GlobalStyles }                      from '@frontend/flib-react/lib/shar
 import { customThemes }                      from '@frontend/flib-react/lib/config/theme';
 import { EnvValidator }                      from '@frontend/core/lib/components/EnvValidator';
 import { T721AppEnvSchema }                  from './utils/env';
+import MediaQuery                            from 'react-responsive';
+import MobileApp                             from './MobileApp';
 
 const store: Store<AppState> = configureStore();
 
@@ -21,11 +23,16 @@ ReactDOM.render(
     <EnvValidator schema={T721AppEnvSchema}>
         <Provider store={store}>
             <ConnectedRouter history={history}>
-                <GlobalStyles/>
                 <ThemeProvider theme={customThemes['t721']}>
+                    <GlobalStyles/>
                     <BrowserRouter>
                         <ScrollToTop>
-                            <App/>
+                            <MediaQuery maxDeviceWidth={1224}>
+                                <MobileApp/>
+                            </MediaQuery>
+                            <MediaQuery minDeviceWidth={1224}>
+                                <App/>
+                            </MediaQuery>
                         </ScrollToTop>
                     </BrowserRouter>
                 </ThemeProvider>

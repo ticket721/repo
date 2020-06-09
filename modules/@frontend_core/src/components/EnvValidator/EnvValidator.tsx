@@ -28,7 +28,11 @@ export const EnvValidator: React.FC<IEnvValidatorInputProps> = (
 
     if (valid.error) {
         const errors = valid.error.details.map(
-            (errorObject: any): React.ReactNode => <li style={{ color: 'red' }}>{errorObject.message}</li>,
+            (errorObject: any, idx: number): React.ReactNode => (
+                <li key={idx} style={{ color: 'red' }}>
+                    {errorObject.message}
+                </li>
+            ),
         );
         return (
             <div>
