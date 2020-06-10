@@ -37,7 +37,7 @@
         "yup": "0.28.4"
     },
     "devDependencies": {
-        "@capacitor/cli": "2.0.1",
+        "@capacitor/cli": "2.1.2",
         "react-scripts": "3.4.1",
         "tslint": "6.0.0"
     },
