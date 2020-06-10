@@ -6,18 +6,19 @@ import { EventCreationActionTypes, EventCreationState }                   from '
 import {
     IInitEventAcset,
     IUpdateAction,
-    SetActionData,
+    SetActionData, SetCompletedStep,
     SetEventAcset,
     SetSync,
 } from './actions';
-import { CacheActionTypes, IUpdateItemData, RegisterEntity }  from '@frontend/core/lib/redux/ducks/cache';
-import { EventCreationCore, EventCreationActions }                        from '../../../core/event_creation/EventCreationCore';
-import { AppState }                                                       from '@frontend/core/lib/redux';
-import { AuthState }                                                      from '@frontend/core/lib/redux/ducks/auth';
-import { PushNotification }                                               from '@frontend/core/lib/redux/ducks/notifications';
-import { CacheCore }                                                      from '@frontend/core/lib/cores/cache/CacheCore';
-import { v4 as uuid }                                                     from 'uuid';
-import { eventCreationInitialState }                                      from './reducers';
+import { CacheActionTypes, IUpdateItemData, RegisterEntity } from '@frontend/core/lib/redux/ducks/cache';
+import { EventCreationCore, EventCreationActions }           from '../../../core/event_creation/EventCreationCore';
+import { AppState }                                          from '@frontend/core/lib/redux';
+import { AuthState }                                         from '@frontend/core/lib/redux/ducks/auth';
+import { PushNotification }                                  from '@frontend/core/lib/redux/ducks/notifications';
+import { CacheCore }                                         from '@frontend/core/lib/cores/cache/CacheCore';
+import { v4 as uuid }                                        from 'uuid';
+import { eventCreationInitialState }                         from './reducers';
+import { ActionEntity }      from '@common/sdk/lib/@backend_nest/libs/common/src/actionsets/entities/ActionSet.entity';
 
 const getAuthState = (state: AppState): AuthState => state.auth;
 const getEventCreationState = (state: OrganizerState): EventCreationState => state.eventCreation;
@@ -89,7 +90,6 @@ function* synchronizedActions(action: IUpdateItemData): IterableIterator<any> {
 
         if (action.key === acsetCacheKey) {
             const actionsValues = Object.values(EventCreationActions);
-
             for (const [idx, actionType] of actionsValues.entries()) {
                 if (actionType !== eventCreationState.currentAction) {
                     const actionData = action.data.actionsets[0].actions[idx].data;
@@ -100,6 +100,11 @@ function* synchronizedActions(action: IUpdateItemData): IterableIterator<any> {
                     }
                 }
             }
+
+            const actionsStatus: string[] = action.data.actionsets[0].actions
+                .map((actionEntity: ActionEntity) => actionEntity.status);
+
+            yield put(SetCompletedStep(actionsStatus.lastIndexOf('complete')));
         }
     }
 }

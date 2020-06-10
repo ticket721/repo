@@ -2,6 +2,7 @@ import { ActionSetEntity } from '@common/sdk/lib/@backend_nest/libs/common/src/a
 import { default as get }  from 'lodash.get';
 import { AcsetCore }       from '@frontend/core/lib/cores/acset/AcsetCore';
 import '@frontend/core/lib/utils/window';
+import { ImageEntity }     from '@common/sdk/lib/@backend_nest/libs/common/src/images/entities/Image.entity';
 
 export enum EventCreationActions {
     TextMetadata = 'textMetadata',
@@ -12,8 +13,22 @@ export enum EventCreationActions {
     AdminsConfiguration = 'adminsConfiguration',
 }
 
+export enum EventCreationSteps {
+    None = -1,
+    GeneralInfo,
+    Styles,
+    Modules,
+    Dates,
+    Categories,
+    Admins,
+}
+
 export abstract class EventCreationCore {
 
+    /**
+     * @return acset id
+     * @param token
+     */
     public static getAcsetId = async (token: string): Promise<string | false> => {
         const lastInProgressEventAcsetResp = await global.window.t721Sdk.actions.search(
             token,
@@ -31,7 +46,7 @@ export abstract class EventCreationCore {
                 }
             }
         );
-console.log('getAcsetId', lastInProgressEventAcsetResp);
+
         return !lastInProgressEventAcsetResp.data.actionsets.length ?
             false
             : lastInProgressEventAcsetResp.data.actionsets[0].id;
@@ -76,6 +91,11 @@ console.log('getAcsetId', lastInProgressEventAcsetResp);
         return updateEventAcsetResp.data.actionset;
     };
 
+    /**
+     * @return event id
+     * @param token
+     * @param acsetId
+     */
     public static createEvent = async (token: string, acsetId: string): Promise<string> => {
         try {
             if (!global.window.t721Sdk) {
@@ -98,6 +118,12 @@ console.log('getAcsetId', lastInProgressEventAcsetResp);
         }
     };
 
+    /**
+     * @return event id
+     * @param token
+     * @param eventId
+     * @param dates
+     */
     public static startEvent = async (token: string, eventId: string, dates?: string[]): Promise<string> => {
         try {
             if (!global.window.t721Sdk) {
@@ -117,6 +143,28 @@ console.log('getAcsetId', lastInProgressEventAcsetResp);
                 throw Error('unauthorized_error');
             } else if (e.response.data.statusCode === 404) {
                 throw Error('event_acset_not_found_error');
+            } else if (e.response.data.statusCode === 500) {
+                throw Error('internal_server_error');
+            } else {
+                throw e;
+            }
+        }
+    };
+
+    public static uploadImages = async (token: string, data: FormData, headers: any): Promise<ImageEntity[]> => {
+        try {
+            if (!global.window.t721Sdk) {
+                throw Error('t721sdk_undefined');
+            }
+
+            const imageUploadResp = await global.window.t721Sdk.images.upload(token, data, headers);
+
+            return imageUploadResp.data.ids;
+        } catch (e) {
+            if (e.response.data.statusCode === 400) {
+                throw Error(e.response.data.message);
+            } else if (e.response.data.statusCode === 401) {
+                throw Error('unauthorized_error');
             } else if (e.response.data.statusCode === 500) {
                 throw Error('internal_server_error');
             } else {

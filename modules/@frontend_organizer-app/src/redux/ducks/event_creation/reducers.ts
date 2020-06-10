@@ -2,17 +2,20 @@ import {
     EventCreationAction,
     IResetEventAcset,
     ISetActionData,
+    ISetCompletedStep,
+    ISetCurrentAction,
     ISetEventAcset,
     ISetSync,
     IUpdateAction,
-    ISetCurrentAction
-} from './actions';
-import { EventCreationActionTypes, EventCreationState }                                               from './types';
-import { Reducer }                                                                                    from 'redux';
+}                                                       from './actions';
+import { EventCreationActionTypes, EventCreationState } from './types';
+import { Reducer }                                      from 'redux';
+import { EventCreationSteps }                           from '../../../core/event_creation/EventCreationCore';
 
 export const eventCreationInitialState: EventCreationState = {
     acsetId: '',
     currentAction: null,
+    completedStep: EventCreationSteps.None,
     textMetadata: {
         name: '',
         description: '',
@@ -52,6 +55,14 @@ const SetCurrentActionReducer: Reducer<EventCreationState, ISetCurrentAction> = 
 ): EventCreationState => ({
     ...state,
     currentAction: action.currentAction
+});
+
+const SetCompletedStepReducer: Reducer<EventCreationState, ISetCompletedStep> = (
+    state: EventCreationState,
+    action: ISetCompletedStep,
+): EventCreationState => ({
+    ...state,
+    completedStep: action.completedStep
 });
 
 const SetActionDataReducer: Reducer<EventCreationState, ISetActionData> = (
@@ -94,6 +105,8 @@ export const EventCreationReducer: Reducer<EventCreationState, EventCreationActi
             return ResetEventAcsetReducer(state, action as IResetEventAcset);
         case EventCreationActionTypes.SetCurrentAction:
             return SetCurrentActionReducer(state, action as ISetCurrentAction);
+        case EventCreationActionTypes.SetCompletedStep:
+            return SetCompletedStepReducer(state, action as ISetCompletedStep);
         case EventCreationActionTypes.SetActionData:
             return SetActionDataReducer(state, action as ISetActionData);
         case EventCreationActionTypes.SetSync:

@@ -1,6 +1,6 @@
 import { EventCreationActionTypes, EventCreationState } from './types';
-import { Action }                                       from 'redux';
-import { EventCreationActions }                         from '../../../core/event_creation/EventCreationCore';
+import { Action }                                   from 'redux';
+import { EventCreationActions, EventCreationSteps } from '../../../core/event_creation/EventCreationCore';
 
 export interface IInitEventAcset extends Action<string> {
     type: EventCreationActionTypes.InitEventAcset;
@@ -38,6 +38,16 @@ export const SetCurrentAction = (currentAction: EventCreationActions): ISetCurre
     currentAction,
 });
 
+export interface ISetCompletedStep extends Action<string> {
+    type: EventCreationActionTypes.SetCompletedStep;
+    completedStep: EventCreationSteps;
+}
+
+export const SetCompletedStep = (completedStep: EventCreationSteps): ISetCompletedStep => ({
+    type: EventCreationActionTypes.SetCompletedStep,
+    completedStep,
+});
+
 export interface ISetActionData extends Action<string> {
     type: EventCreationActionTypes.SetActionData;
     action: EventCreationActions;
@@ -73,6 +83,7 @@ export type EventCreationAction =
     & ISetEventAcset
     & IResetEventAcset
     & ISetCurrentAction
+    & ISetCompletedStep
     & ISetActionData
     & ISetSync
     & IUpdateAction;

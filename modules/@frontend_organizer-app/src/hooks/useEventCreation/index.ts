@@ -1,21 +1,24 @@
-import { FormikConfig, useFormik }      from 'formik';
+import { FormikConfig, useFormik }                       from 'formik';
 import { useDispatch, useSelector }                      from 'react-redux';
 import { SetActionData, SetCurrentAction, UpdateAction } from '../../redux/ducks/event_creation';
-import { EventCreationActions } from '../../core/event_creation/EventCreationCore';
-import { useEffect }  from 'react';
-import { OrganizerState }       from '../../redux/ducks';
+import { EventCreationActions, EventCreationSteps }      from '../../core/event_creation/EventCreationCore';
+import { useEffect, useState }                           from 'react';
+import { OrganizerState }                                from '../../redux/ducks';
 
 export const useEventCreation = <ActionInputType extends {[key: string]: any}>(
+    actIdx: EventCreationSteps,
     eventCreationAction: EventCreationActions,
     formikConfig: FormikConfig<ActionInputType>
 ) => {
     const dispatch = useDispatch();
 
-    const [ eventActionState, currentAction ]:
-        [ ActionInputType, EventCreationActions ] =
+    const [loadingState, setLoadingState ] = useState(false);
+    const [ eventActionState, currentAction, lastCompletedStep ]:
+        [ ActionInputType, EventCreationActions, EventCreationSteps ] =
         useSelector((state: OrganizerState) => [
             state.eventCreation[eventCreationAction] as ActionInputType,
             state.eventCreation.currentAction,
+            state.eventCreation.completedStep,
         ]);
 
     const formik = useFormik<ActionInputType>({
@@ -25,7 +28,6 @@ export const useEventCreation = <ActionInputType extends {[key: string]: any}>(
     });
 
     useEffect(() => {
-        console.log(formik.values);
         formik.setValues(eventActionState);
     }, [
         currentAction,
@@ -33,7 +35,16 @@ export const useEventCreation = <ActionInputType extends {[key: string]: any}>(
         eventCreationAction,
     ]);
 
-    const computeError = (field: string) => formik.touched[field] ? formik.errors[field] : undefined;
+    useEffect(() => {
+        setLoadingState(formik.isValid && lastCompletedStep < actIdx);
+    }, [
+        lastCompletedStep,
+        formik.isValid,
+    ]);
+
+    const computeError = (field: string) => formik.touched[field] && formik.errors[field] ? 'validation:' + formik.errors[field] : '';
+
+    const submitLoading = () => formik.isValid && lastCompletedStep < actIdx;
 
     const handleFocus = (value: any): void => {
         if (currentAction !== eventCreationAction) {
@@ -42,12 +53,18 @@ export const useEventCreation = <ActionInputType extends {[key: string]: any}>(
     };
 
     const handleBlur = (event: any, field?: string, value?: any): void => {
-        console.log(event);
         if (field) {
-            dispatch(SetActionData(eventCreationAction, {
-                ...eventActionState,
-                [field]: value
-            }));
+            if (value) {
+                dispatch(SetActionData(eventCreationAction, {
+                    ...eventActionState,
+                    [field]: value
+                }));
+            } else {
+                dispatch(SetActionData(eventCreationAction, {
+                    ...eventActionState,
+                    [field]: formik.values[field]
+                }));
+            }
         } else {
             dispatch(SetActionData(eventCreationAction, {
                 ...eventActionState,
@@ -56,7 +73,6 @@ export const useEventCreation = <ActionInputType extends {[key: string]: any}>(
         }
 
         formik.handleBlur(event);
-console.log('update HEREHREHREHREHRE');
         dispatch(UpdateAction());
     };
 
@@ -68,11 +84,24 @@ console.log('update HEREHREHREHREHRE');
         };
     };
 
+    const getSubmitButtonProps = (title: string) => {
+        return {
+            title,
+            type: 'submit',
+            variant: formik.isValid ? 'primary' : 'secondary' as 'primary' | 'secondary',
+            loadingState,
+            disabled: !formik.isValid || loadingState,
+            hidden: lastCompletedStep >= actIdx,
+        };
+    };
+
     return {
         ...formik,
         handleFocus,
         handleBlur,
         getFieldProps,
         computeError,
+        submitLoading,
+        getSubmitButtonProps,
     };
 };
