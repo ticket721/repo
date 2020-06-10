@@ -1,19 +1,22 @@
-import { ActionSetEntity }           from '@common/sdk/lib/@backend_nest/libs/common/src/actionsets/entities/ActionSet.entity';
+import { ActionSetEntity } from '@common/sdk/lib/@backend_nest/libs/common/src/actionsets/entities/ActionSet.entity';
 
 export abstract class AcsetCore {
-
     /**
      * @return acset id
      * @param token
      * @param acsetType (i.e: event_create)
      * @param initialArgs
      */
-    public static createAcset = async (token: string, acsetType: string, initialArgs: any = {}): Promise<ActionSetEntity> => {
+    public static createAcset = async (
+        token: string,
+        acsetType: string,
+        initialArgs: any = {},
+    ): Promise<ActionSetEntity> => {
         console.log(acsetType, initialArgs);
         try {
             const createAcsetResp = await global.window.t721Sdk.actions.create(token, {
                 name: acsetType,
-                arguments: initialArgs
+                arguments: initialArgs,
             });
 
             return createAcsetResp.data.actionset;
@@ -35,11 +38,16 @@ export abstract class AcsetCore {
      * @param args
      * @param actionIdx
      */
-    public static updateAcset = async (token: string, acsetId: string, args: any, actionIdx?: number): Promise<ActionSetEntity> => {
+    public static updateAcset = async (
+        token: string,
+        acsetId: string,
+        args: any,
+        actionIdx?: number,
+    ): Promise<ActionSetEntity> => {
         try {
             const updateAcsetResp = await global.window.t721Sdk.actions.update(token, acsetId, {
                 data: args,
-                action_idx: actionIdx || null
+                action_idx: actionIdx || null,
             });
 
             return updateAcsetResp.data.actionset;

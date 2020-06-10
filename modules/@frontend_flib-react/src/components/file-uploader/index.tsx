@@ -1,8 +1,8 @@
-import * as React      from 'react';
-import styled          from '../../config/styled';
-import Icon                                      from '../icon';
+import * as React from 'react';
+import styled from '../../config/styled';
+import Icon from '../icon';
 import { FileRejection, useDropzone } from 'react-dropzone';
-import { Dispatch, useEffect, useState }         from 'react';
+import { Dispatch, useEffect, useState } from 'react';
 
 export interface DropError {
     file: string;
@@ -14,24 +14,24 @@ export interface PreviewFile extends File {
 }
 
 export interface FilesUploaderProps extends React.ComponentProps<any> {
-  name: string;
-  browseLabel: string;
-  dragDropLabel: string;
-  width: string;
-  height: string;
-  onDrop: (files: File[], previews: string[]) => void;
-  onDropRejected: (errors: DropError[]) => void;
-  onRemove: (preview: string) => void;
-  uploadRecommendations?: string;
-  error?: string;
-  // multiple related inputs
-  multiple?: boolean;
-  multipleLabel?: string;
-  maxFiles?: number;
-  noFilesMsg?: string;
+    name: string;
+    browseLabel: string;
+    dragDropLabel: string;
+    width: string;
+    height: string;
+    onDrop: (files: File[], previews: string[]) => void;
+    onDropRejected: (errors: DropError[]) => void;
+    onRemove: (preview: string) => void;
+    uploadRecommendations?: string;
+    error?: string;
+    // multiple related inputs
+    multiple?: boolean;
+    multipleLabel?: string;
+    maxFiles?: number;
+    noFilesMsg?: string;
 }
 
-const InfosContainer = styled.div<{width: string, height: string}> `
+const InfosContainer = styled.div<{ width: string; height: string }>`
     position: relative;
     overflow: hidden;
     display: flex;
@@ -68,12 +68,12 @@ const UploadIcon = styled(Icon)`
     height: 64px;
 `;
 
-const DropZone = styled.div `
+const DropZone = styled.div`
     &:focus {
         outline: none;
     }
 `;
-const StyledContainer = styled.div `
+const StyledContainer = styled.div`
     max-width: 600px;
 `;
 
@@ -97,7 +97,8 @@ const MultipleLabel = styled.div`
     margin-bottom: 20px;
     width: 100%;
     display: flex;
-    justify-content: space-between;color: ${props => props.theme.textColorDarker};
+    justify-content: space-between;
+    color: ${(props) => props.theme.textColorDarker};
 `;
 
 const ThumbTile = styled.div`
@@ -111,18 +112,18 @@ const ThumbsContainer = styled.div`
     flex-wrap: wrap;
 `;
 
-const Thumb = styled.div<{ multiple: boolean | undefined, width: string }>`
+const Thumb = styled.div<{ multiple: boolean | undefined; width: string }>`
     position: relative;
     display: flex;
     min-width: 0;
     overflow: hidden;
     border-radius: 8px;
     margin-right: 10px;
-    height: ${(props) => props.multiple ? '100px' : 'auto' };
-    width: ${(props) => props.multiple ? 'auto' : props.width};
+    height: ${(props) => (props.multiple ? '100px' : 'auto')};
+    width: ${(props) => (props.multiple ? 'auto' : props.width)};
 `;
 
-const PreviewImg = styled.img<{ width: string}>`
+const PreviewImg = styled.img<{ width: string }>`
     display: block;
     width: ${(props) => props.width};
     height: auto;
@@ -134,8 +135,8 @@ const RemoveTile = styled.div<{ multiple: boolean | undefined }>`
     width: 100%;
     padding: 15px;
     display: flex;
-    justify-content: ${(props) => props.multiple ? 'center' : 'flex-end'};
-    align-items: ${(props) => props.multiple ? 'center' : 'top'};
+    justify-content: ${(props) => (props.multiple ? 'center' : 'flex-end')};
+    align-items: ${(props) => (props.multiple ? 'center' : 'top')};
     background-color: #000;
     opacity: 0;
     transition: opacity 300ms;
@@ -158,110 +159,104 @@ const ErrorMsg = styled(Disclaimer)`
 `;
 
 export const FilesUploader: React.FunctionComponent<FilesUploaderProps> = (props: FilesUploaderProps): JSX.Element => {
-  const [ files, setFiles ]: [ PreviewFile[], Dispatch<PreviewFile[]> ] = useState([] as PreviewFile[]);
-  const {getRootProps, getInputProps} = useDropzone({
-      accept: 'image/*',
-      multiple: props.multiple,
-      onDropAccepted: (acceptedFiles: File[]) => {
-          const addedPreviews: PreviewFile[] = acceptedFiles.map(file => ({
-              ...file,
-              preview: URL.createObjectURL(file)
-          }));
+    const [files, setFiles]: [PreviewFile[], Dispatch<PreviewFile[]>] = useState([] as PreviewFile[]);
+    const { getRootProps, getInputProps } = useDropzone({
+        accept: 'image/*',
+        multiple: props.multiple,
+        onDropAccepted: (acceptedFiles: File[]) => {
+            const addedPreviews: PreviewFile[] = acceptedFiles.map((file) => ({
+                ...file,
+                preview: URL.createObjectURL(file),
+            }));
 
-          setFiles(files.concat(addedPreviews));
+            setFiles(files.concat(addedPreviews));
 
-          const previews = addedPreviews.map(file => file.preview);
+            const previews = addedPreviews.map((file) => file.preview);
 
-          props.onDrop(acceptedFiles, previews);
-      },
-      onDropRejected: (rejectedFiles: FileRejection[]) => {
-        const errors: DropError[] = [];
+            props.onDrop(acceptedFiles, previews);
+        },
+        onDropRejected: (rejectedFiles: FileRejection[]) => {
+            const errors: DropError[] = [];
 
-        for (const rejected of rejectedFiles) {
-            errors.push({
-                file: rejected.file.name,
-                errorCodes: rejected.errors.map((err) => err.code),
-            });
-        }
+            for (const rejected of rejectedFiles) {
+                errors.push({
+                    file: rejected.file.name,
+                    errorCodes: rejected.errors.map((err) => err.code),
+                });
+            }
 
-        props.onDropRejected(errors);
-      }
-  });
+            props.onDropRejected(errors);
+        },
+    });
 
-  const thumbs = files.map(file => (
-          <Thumb
-          multiple={props.multiple}
-          width={props.width}>
-              <PreviewImg
-              width={props.width}
-              alt={file.name}
-              src={file.preview}
-              />
-              <RemoveTile
-              multiple={props.multiple}
-              onClick={() => {
-                setFiles(
-                  files.filter((fileItem) => fileItem.name !== file.name)
-                );
-                props.onRemove(file.preview);
-              }}>
-                  <Icon
-                  icon={'close'}
-                  size={'20px'}
-                  color={'#FFF'}/>
-              </RemoveTile>
-          </Thumb>
-  ));
+    const thumbs = files.map((file) => (
+        <Thumb multiple={props.multiple} width={props.width}>
+            <PreviewImg width={props.width} alt={file.name} src={file.preview} />
+            <RemoveTile
+                multiple={props.multiple}
+                onClick={() => {
+                    setFiles(files.filter((fileItem) => fileItem.name !== file.name));
+                    props.onRemove(file.preview);
+                }}
+            >
+                <Icon icon={'close'} size={'20px'} color={'#FFF'} />
+            </RemoveTile>
+        </Thumb>
+    ));
 
-  useEffect(() => () => {
-    files.forEach(file => URL.revokeObjectURL(file.preview));
-  }, [files]);
+    useEffect(
+        () => () => {
+            files.forEach((file) => URL.revokeObjectURL(file.preview));
+        },
+        [files],
+    );
 
-  return (
-    <StyledContainer>
-      <DropZone {...getRootProps()}>
-        <input name={props.name} {...getInputProps()} disabled={
-          !props.multiple && files.length === 1
-          || props.multiple && files.length === props.maxFiles
-        } />
-        <InfosContainer width={props.width} height={props.height}>
-          <UploadIcon
-            icon={'upload-img'}
-            size={'62px'}
-            color={!props.error ? 'rgba(255, 255, 255, 0.38)' : '#C91D31'}
-          />
-          <span>{props.dragDropLabel}</span>
-          <span>{props.browseLabel}</span>
-          {!props.multiple && <ThumbTile>{thumbs[0]}</ThumbTile>}
-        </InfosContainer>
-      </DropZone>
-      <Disclaimer>{props.uploadRecommendations}</Disclaimer>
-      {props.error && <ErrorMsg>{props.error}</ErrorMsg>}
+    return (
+        <StyledContainer>
+            <DropZone {...getRootProps()}>
+                <input
+                    name={props.name}
+                    {...getInputProps()}
+                    disabled={
+                        (!props.multiple && files.length === 1) || (props.multiple && files.length === props.maxFiles)
+                    }
+                />
+                <InfosContainer width={props.width} height={props.height}>
+                    <UploadIcon
+                        icon={'upload-img'}
+                        size={'62px'}
+                        color={!props.error ? 'rgba(255, 255, 255, 0.38)' : '#C91D31'}
+                    />
+                    <span>{props.dragDropLabel}</span>
+                    <span>{props.browseLabel}</span>
+                    {!props.multiple && <ThumbTile>{thumbs[0]}</ThumbTile>}
+                </InfosContainer>
+            </DropZone>
+            <Disclaimer>{props.uploadRecommendations}</Disclaimer>
+            {props.error && <ErrorMsg>{props.error}</ErrorMsg>}
 
-      {props.multiple && (
-          <PreviewsContainer>
-              <MultipleLabel>
-                  <span>{props.multipleLabel}</span>
-                  <span>{files.length} / {props.maxFiles}</span>
-              </MultipleLabel>
-              {!files.length && <span>{props.noFilesMsg}</span>}
-              <ThumbsContainer>
-                  {
-                      thumbs.map((thumb, idx) => (
-                          <div key={idx}>
-                              {thumb}
-                          </div>
-                      ))
-                  }
-              </ThumbsContainer>
-          </PreviewsContainer>
-      )}
-    </StyledContainer>
-  );
+            {props.multiple && (
+                <PreviewsContainer>
+                    <MultipleLabel>
+                        <span>{props.multipleLabel}</span>
+                        <span>
+                            {files.length} / {props.maxFiles}
+                        </span>
+                    </MultipleLabel>
+                    {!files.length && <span>{props.noFilesMsg}</span>}
+                    <ThumbsContainer>
+                        {thumbs.map((thumb, idx) => (
+                            <div key={idx}>{thumb}</div>
+                        ))}
+                    </ThumbsContainer>
+                </PreviewsContainer>
+            )}
+        </StyledContainer>
+    );
 };
 
 FilesUploader.defaultProps = {
-  error: undefined,
+    error: undefined,
 };
 
 export default FilesUploader;

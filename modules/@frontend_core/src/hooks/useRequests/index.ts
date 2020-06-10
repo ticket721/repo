@@ -1,7 +1,7 @@
-import { useDispatch, useSelector }               from 'react-redux';
-import { AppState }                               from '../../redux/ducks';
-import { CacheCore }                              from '../../cores/cache/CacheCore';
-import { useEffect }                                         from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppState } from '../../redux/ducks';
+import { CacheCore } from '../../cores/cache/CacheCore';
+import { useEffect } from 'react';
 import { RegisterEntity, UnregisterEntity } from '../../redux/ducks/cache';
 
 export interface RequestTemplate {
@@ -15,8 +15,8 @@ interface RequestParams<InputType> {
 }
 
 type RequestsCalls<TemplateInterfaceType extends RequestTemplate> = {
-    readonly [P in keyof TemplateInterfaceType]: RequestParams<Parameters<TemplateInterfaceType[P]>>
-}
+    readonly [P in keyof TemplateInterfaceType]: RequestParams<Parameters<TemplateInterfaceType[P]>>;
+};
 
 interface RequestResp<DataType> {
     data: DataType;
@@ -27,25 +27,26 @@ interface RequestResp<DataType> {
 type ThenArg<T> = T extends PromiseLike<infer U> ? U : T;
 
 type Responses<TemplateInterfaceType extends RequestTemplate> = {
-    [P in keyof TemplateInterfaceType]: RequestResp<ThenArg<ReturnType<TemplateInterfaceType[P]>>>
+    [P in keyof TemplateInterfaceType]: RequestResp<ThenArg<ReturnType<TemplateInterfaceType[P]>>>;
 };
 
 export type RequestsBag<TemplateInterfaceType extends RequestTemplate> = {
     responses: Responses<TemplateInterfaceType>;
-    registerEntity: (uuid: string, refreshRates?: {[P in keyof TemplateInterfaceType]: number}) => void;
+    registerEntity: (uuid: string, refreshRates?: { [P in keyof TemplateInterfaceType]: number }) => void;
     unregisterEntity: (uuid: string) => void;
-}
+};
 
 export const useRequests = <TemplateInterfaceType extends RequestTemplate>(
     calls: RequestsCalls<TemplateInterfaceType>,
-    initialUuid: string
+    initialUuid: string,
 ): RequestsBag<TemplateInterfaceType> => {
     useEffect(() => {
         for (const [entityKey, entity] of entities) {
             responses[entityKey] = {
                 ...useSelector((state: AppState) => state.cache.items[CacheCore.key(entity.method, entity.args)]),
-                loading: !useSelector((state: AppState) => state.cache.items[CacheCore.key(entity.method, entity.args)]
-                )
+                loading: !useSelector(
+                    (state: AppState) => state.cache.items[CacheCore.key(entity.method, entity.args)],
+                ),
             };
 
             if (!responses[entityKey].error) {
@@ -61,21 +62,23 @@ export const useRequests = <TemplateInterfaceType extends RequestTemplate>(
 
     const responses: Responses<TemplateInterfaceType> = {} as Responses<TemplateInterfaceType>;
 
-    const registerEntity = (uuid: string, refreshRates?: {[P in keyof TemplateInterfaceType]: number}) => entities.forEach(
-        ([key, entity]) => void dispatch(RegisterEntity(
-            entity.method,
-            entity.args,
-            uuid,
-            refreshRates ? refreshRates[key] : entity.refreshRate
-        ))
-    );
+    const registerEntity = (uuid: string, refreshRates?: { [P in keyof TemplateInterfaceType]: number }) =>
+        entities.forEach(
+            ([key, entity]) =>
+                void dispatch(
+                    RegisterEntity(
+                        entity.method,
+                        entity.args,
+                        uuid,
+                        refreshRates ? refreshRates[key] : entity.refreshRate,
+                    ),
+                ),
+        );
 
-    const unregisterEntity = (uuid: string) => entities.forEach(
-        ([, entity]) => void dispatch(UnregisterEntity(
-            CacheCore.key(entity.method, entity.args),
-            uuid
-        ))
-    );
+    const unregisterEntity = (uuid: string) =>
+        entities.forEach(
+            ([, entity]) => void dispatch(UnregisterEntity(CacheCore.key(entity.method, entity.args), uuid)),
+        );
 
     useEffect(() => {
         registerEntity(initialUuid);
@@ -87,5 +90,5 @@ export const useRequests = <TemplateInterfaceType extends RequestTemplate>(
         responses,
         registerEntity,
         unregisterEntity,
-    }
+    };
 };

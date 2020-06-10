@@ -1,12 +1,10 @@
 async function stall(stallTime = 2000) {
-    await new Promise(resolve => setTimeout(resolve, stallTime));
+    await new Promise((resolve) => setTimeout(resolve, stallTime));
 }
 
 export class T721SDKMock {
-
     constructor() {
         this.actions.create = this.actions.create.bind(this);
-
     }
 
     public actions = {
@@ -19,7 +17,7 @@ export class T721SDKMock {
                 statusText: 'status',
                 headers: {},
                 config: {},
-            }
+            };
         },
         update: async (query: any) => {
             await stall();
@@ -29,7 +27,7 @@ export class T721SDKMock {
                 statusText: 'status',
                 headers: {},
                 config: {},
-            }
+            };
         },
         search: async (query: any) => {
             await stall();
@@ -39,7 +37,7 @@ export class T721SDKMock {
                 statusText: 'status',
                 headers: {},
                 config: {},
-            }
-        }
-    }
+            };
+        },
+    };
 }

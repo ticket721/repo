@@ -157,7 +157,7 @@ export const CustomTimePicker: React.FunctionComponent<CustomTimePickerProps> = 
                 showTimeSelect
                 showTimeSelectOnly
             />
-          {props.error && <Error>{props.error}</Error>}
+            {props.error && <Error>{props.error}</Error>}
         </StyledInputContainer>
     );
 };

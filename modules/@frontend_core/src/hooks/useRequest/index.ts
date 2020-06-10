@@ -1,7 +1,7 @@
-import { useDispatch, useSelector }               from 'react-redux';
-import { AppState }                               from '../../redux/ducks';
-import { CacheCore }                              from '../../cores/cache/CacheCore';
-import { useEffect }                                         from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppState } from '../../redux/ducks';
+import { CacheCore } from '../../cores/cache/CacheCore';
+import { useEffect } from 'react';
 import { RegisterEntity, UnregisterEntity } from '../../redux/ducks/cache';
 
 interface RequestParams {
@@ -20,12 +20,9 @@ export type RequestBag<ReturnType> = {
     response: RequestResp<ReturnType>;
     registerEntity: (uuid: string, refreshRates?: number) => void;
     unregisterEntity: (uuid: string) => void;
-}
+};
 
-export const useRequest = <ReturnType>(
-    call: RequestParams,
-    initialUuid: string
-): RequestBag<ReturnType> => {
+export const useRequest = <ReturnType>(call: RequestParams, initialUuid: string): RequestBag<ReturnType> => {
     const response: RequestResp<ReturnType> = {
         ...useSelector((state: AppState) => state.cache.items[CacheCore.key(call.method, call.args)]),
         loading: !useSelector((state: AppState) => state.cache.items[CacheCore.key(call.method, call.args)]),
@@ -34,18 +31,10 @@ export const useRequest = <ReturnType>(
     const dispatch = useDispatch();
 
     const registerEntity = (uuid: string, refreshRate?: number): void =>
-        void dispatch(RegisterEntity(
-            call.method,
-            call.args,
-            uuid,
-            refreshRate ? refreshRate : call.refreshRate
-        ));
+        void dispatch(RegisterEntity(call.method, call.args, uuid, refreshRate ? refreshRate : call.refreshRate));
 
     const unregisterEntity = (uuid: string): void =>
-        void dispatch(UnregisterEntity(
-            CacheCore.key(call.method, call.args),
-            uuid
-        ));
+        void dispatch(UnregisterEntity(CacheCore.key(call.method, call.args), uuid));
 
     useEffect(() => {
         registerEntity(initialUuid);
@@ -56,9 +45,9 @@ export const useRequest = <ReturnType>(
     return {
         response: {
             ...response,
-            data: response.data ? response.data['data'] : null
+            data: response.data ? response.data['data'] : null,
         },
         registerEntity,
         unregisterEntity,
-    }
+    };
 };

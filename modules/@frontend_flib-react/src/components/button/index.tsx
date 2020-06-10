@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { rgba }   from 'polished';
-import styled     from '../../config/styled';
+import { rgba } from 'polished';
+import styled from '../../config/styled';
 import { Loader } from '../loader';
 
 export interface ButtonProps extends React.ComponentProps<any> {
@@ -31,7 +31,8 @@ const StyledButton = styled.button<ButtonProps>`
   `};
 
     ${(props) =>
-        props.variant === 'primary' && !props.disabled &&
+        props.variant === 'primary' &&
+        !props.disabled &&
         `
     background: linear-gradient(260deg, ${props.theme.primaryColor.hex}, ${props.theme.primaryColorGradientEnd.hex});
 
@@ -41,7 +42,8 @@ const StyledButton = styled.button<ButtonProps>`
   `};
 
     ${(props) =>
-        props.variant === 'custom' && !props.disabled &&
+        props.variant === 'custom' &&
+        !props.disabled &&
         `
     background: linear-gradient(260deg, ${props.gradients?.join(', ')});
 
@@ -53,7 +55,8 @@ const StyledButton = styled.button<ButtonProps>`
   `};
 
     ${(props) =>
-        props.variant === 'warning' && !props.disabled &&
+        props.variant === 'warning' &&
+        !props.disabled &&
         `
     background-color: ${rgba(props.theme.warningColor.hex, 0.4)};
     transition: background-color 300ms ease;
@@ -64,7 +67,8 @@ const StyledButton = styled.button<ButtonProps>`
 `};
 
     ${(props) =>
-        props.variant === 'error' && !props.disabled &&
+        props.variant === 'error' &&
+        !props.disabled &&
         `
       background-color: ${rgba(props.theme.errorColor.hex, 0.4)};
       transition: background-color 300ms ease;
@@ -122,22 +126,17 @@ const StyledButton = styled.button<ButtonProps>`
 export const Button: React.FunctionComponent<ButtonProps> = (props: ButtonProps): JSX.Element => {
     if (!props.hidden) {
         return (
-          <StyledButton
-            name={props.title}
-            onClick={props.onClick}
-            gradients={props.gradients}
-            variant={props.variant}
-            type={props.type}
-            {...props}
-          >
-            {
-              props.loadingState ?
-                <Loader
-                  size={'120%'}/> :
-                null
-            }
-            <span>{props.title}</span>
-          </StyledButton>
+            <StyledButton
+                name={props.title}
+                onClick={props.onClick}
+                gradients={props.gradients}
+                variant={props.variant}
+                type={props.type}
+                {...props}
+            >
+                {props.loadingState ? <Loader size={'120%'} /> : null}
+                <span>{props.title}</span>
+            </StyledButton>
         );
     }
 

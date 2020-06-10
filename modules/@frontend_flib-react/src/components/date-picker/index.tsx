@@ -208,7 +208,7 @@ export const CustomDatePicker: React.FunctionComponent<CustomDatePickerProps> = 
                 placeholderText={props.placeholderText}
                 selected={props.selected}
             />
-          {props.error && <Error>{props.error}</Error>}
+            {props.error && <Error>{props.error}</Error>}
         </StyledInputContainer>
     );
 };

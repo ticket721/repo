@@ -2,19 +2,17 @@ import * as React from 'react';
 import styled from '../../config/styled';
 import '../../../static/t721-icons/t721-icons.css';
 
-import { Icon }      from '../icon';
+import { Icon } from '../icon';
 import { keyframes } from 'styled-components';
 
 export interface LoaderProps extends React.ComponentProps<any> {
     size: string;
 }
 
-
-
-export const Loader: React.FunctionComponent<LoaderProps & { className?: string }> = (props: LoaderProps): JSX.Element => {
-  return (
-    <AnimatedLoader size={props.size}/>
-  );
+export const Loader: React.FunctionComponent<LoaderProps & { className?: string }> = (
+    props: LoaderProps,
+): JSX.Element => {
+    return <AnimatedLoader size={props.size} />;
 };
 
 const shape = keyframes`
@@ -48,15 +46,19 @@ const shape = keyframes`
 `;
 
 const AnimatedLoader = styled.div<LoaderProps>`
-    border: 1px solid #FFF;
+    border: 1px solid #fff;
     width: ${(props) => props.size};
     padding-top: ${(props) => props.size};
-    background: linear-gradient(260deg, ${props => props.theme.primaryColor.hex}, ${props => props.theme.primaryColorGradientEnd.hex});
+    background: linear-gradient(
+        260deg,
+        ${(props) => props.theme.primaryColor.hex},
+        ${(props) => props.theme.primaryColorGradientEnd.hex}
+    );
     animation: ${shape} 2s linear infinite;
 `;
 
 Icon.defaultProps = {
-  size: '24px',
+    size: '24px',
 };
 
 export default Icon;

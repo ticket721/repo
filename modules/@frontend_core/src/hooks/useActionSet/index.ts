@@ -1,15 +1,15 @@
-import React                             from 'react';
-import { v4 as uuid }                    from 'uuid';
-import { useFormik }                     from 'formik';
-import { ObjectSchema }                  from 'yup';
+import React from 'react';
+import { v4 as uuid } from 'uuid';
+import { useFormik } from 'formik';
+import { ObjectSchema } from 'yup';
 import { Dispatch, useEffect, useState } from 'react';
-import { useRequest }                    from '../useRequest';
-import { ActionsSearchResponseDto }      from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/actionsets/dto/ActionsSearchResponse.dto';
-import { ActionEntity }                  from '@common/sdk/lib/@backend_nest/libs/common/src/actionsets/entities/ActionSet.entity';
-import { useSelector }                   from 'react-redux';
-import { AppState }                      from '../../redux/ducks';
+import { useRequest } from '../useRequest';
+import { ActionsSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/actionsets/dto/ActionsSearchResponse.dto';
+import { ActionEntity } from '@common/sdk/lib/@backend_nest/libs/common/src/actionsets/entities/ActionSet.entity';
+import { useSelector } from 'react-redux';
+import { AppState } from '../../redux/ducks';
 
-export type ActionBag<ActionInputType extends {[key: string]: any}> = {
+export type ActionBag<ActionInputType extends { [key: string]: any }> = {
     // formik: any;
     values: ActionInputType;
     error: any;
@@ -22,11 +22,11 @@ export type ActionBag<ActionInputType extends {[key: string]: any}> = {
     handleBlur: (value: string | React.ChangeEvent) => void;
     handleSubmit: (e?: React.FormEvent<HTMLFormElement>) => void;
     computeError: (field: string) => string | undefined;
-}
+};
 
-export interface FormikConfig<ActionInputType extends {[key: string]: any}> {
-    initialValues: ActionInputType,
-    validationSchema: ObjectSchema,
+export interface FormikConfig<ActionInputType extends { [key: string]: any }> {
+    initialValues: ActionInputType;
+    validationSchema: ObjectSchema;
 }
 
 // interface EditObject {
@@ -50,9 +50,9 @@ export const useAction = <ActionInputType>(
     acsetType: string,
     actionIdx: number,
     formikConfig: FormikConfig<ActionInputType>,
-    refreshRate?: number
+    refreshRate?: number,
 ): ActionBag<ActionInputType> => {
-    const [ action, setAction ]: [ActionEntity, Dispatch<ActionEntity>] = useState(null);
+    const [action, setAction]: [ActionEntity, Dispatch<ActionEntity>] = useState(null);
     // const [ selected, setSelected ]: [string, Dispatch<string>] = useState(null);
     const token = useSelector((state: AppState): string => state.auth.token.value);
 
@@ -64,31 +64,34 @@ export const useAction = <ActionInputType>(
     //         }), {})
     // );
 
-    const { response } = useRequest<ActionsSearchResponseDto>({
+    const { response } = useRequest<ActionsSearchResponseDto>(
+        {
             method: 'actions.search',
             args: [
                 token,
                 {
                     id: {
-                        $eq: acsetId
-                    }
-                }
+                        $eq: acsetId,
+                    },
+                },
             ],
-            refreshRate: refreshRate ? refreshRate : 5
-    }, `ActionSet(${acsetType})@${uuid()}`);
+            refreshRate: refreshRate ? refreshRate : 5,
+        },
+        `ActionSet(${acsetType})@${uuid()}`,
+    );
 
     const rawResp: string = JSON.stringify(response);
 
     useEffect(() => {
         setAction(!response.loading ? response.data.actionsets[0].actions[actionIdx] : null);
-    }, [ rawResp ]);
+    }, [rawResp]);
 
     const formik = useFormik({
         initialValues: formikConfig.initialValues,
         validationSchema: formikConfig.validationSchema,
         onSubmit: (values: ActionInputType) => {
             console.log('values', values);
-        }
+        },
     });
 
     const computeError = (field: string) => {
@@ -134,7 +137,7 @@ export const useAction = <ActionInputType>(
             handleBlur: formik.handleBlur,
             handleSubmit: formik.handleSubmit,
             computeError,
-        }
+        };
     }
 
     return {
@@ -150,5 +153,5 @@ export const useAction = <ActionInputType>(
         handleBlur: formik.handleBlur,
         handleSubmit: formik.handleSubmit,
         computeError,
-    }
+    };
 };

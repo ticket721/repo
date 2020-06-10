@@ -3,14 +3,9 @@ import { withKnobs } from '@storybook/addon-knobs';
 import { Loader } from '../../src/components/loader';
 
 export default {
-  title: 'Global|Loader',
-  decorators: [withKnobs],
-  component: Loader,
+    title: 'Global|Loader',
+    decorators: [withKnobs],
+    component: Loader,
 };
 
-export const AnimatedLoader = () => (
-  <Loader
-      color={'#FFF'}
-      size={'50px'}
-  />
-);
+export const AnimatedLoader = () => <Loader color={'#FFF'} size={'50px'} />;

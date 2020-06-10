@@ -112,7 +112,7 @@ export const PreviewInfos: React.FunctionComponent<PreviewInfosProps> = (props: 
                 <h2>{props.ticket.name}</h2>
                 <h3>{props.ticket.ticketType}</h3>
             </TicketHeaderInfos>
-            <Separator bgColor={props.bgColor}/>
+            <Separator bgColor={props.bgColor} />
             <PreviewContainer>
                 <DateTime
                     endDate={props.ticket.endDate}

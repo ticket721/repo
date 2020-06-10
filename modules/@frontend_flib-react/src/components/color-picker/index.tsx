@@ -1,6 +1,6 @@
-import * as React                    from 'react';
+import * as React from 'react';
 import { SketchPicker, ColorResult } from 'react-color';
-import styled                             from '../../config/styled';
+import styled from '../../config/styled';
 import { ChangeEvent } from 'react';
 
 export interface ColorPickerProps extends React.ComponentProps<any> {
@@ -9,9 +9,7 @@ export interface ColorPickerProps extends React.ComponentProps<any> {
     presetLabel?: string;
     color: string;
     handleChange: (color: ColorResult) => void;
-    onFocus: (
-      eventOrPath: string | ChangeEvent<any>,
-    ) => void | ((eventOrTextValue: string | ChangeEvent<any>) => void);
+    onFocus: (eventOrPath: string | ChangeEvent<any>) => void | ((eventOrTextValue: string | ChangeEvent<any>) => void);
     onBlur: (value: any) => void;
 }
 
@@ -88,7 +86,7 @@ const PickerContainer = styled.div`
     .sketch-picker {
         position: absolute;
         z-index: 1;
-        background-color: rgb(34,32,41) !important;
+        background-color: rgb(34, 32, 41) !important;
         display: flex;
         flex-direction: column;
         margin-top: ${(props) => props.theme.regularSpacing};
@@ -169,10 +167,10 @@ export const ColorPicker: React.FunctionComponent<ColorPickerProps> = (props: Co
                 <PickerContainer>
                     {props.presetColors.length > 0 && <label>{props.presetLabel}</label>}
                     <SketchPicker
-                      color={props.color}
-                      disableAlpha={true}
-                      onChange={props.handleChange}
-                      presetColors={props.presetColors}
+                        color={props.color}
+                        disableAlpha={true}
+                        onChange={props.handleChange}
+                        presetColors={props.presetColors}
                     />
                 </PickerContainer>
             )}

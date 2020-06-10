@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RegisterEntity, UnregisterEntity } from '../../redux/ducks/cache';
-import { CacheCore }                              from '../../cores/cache/CacheCore';
-import { AppState }                     from '../../redux/ducks';
+import { CacheCore } from '../../cores/cache/CacheCore';
+import { AppState } from '../../redux/ducks';
 import { v4 as uuid } from 'uuid';
 
 export interface RequestTemplate {
@@ -81,20 +81,12 @@ export const withRequests = <TemplateInterfaceType extends RequestTemplate, Rest
         const registerEntity = () =>
             entities.forEach(
                 ([, entity]) =>
-                    void dispatch(
-                        RegisterEntity(
-                            entity.method,
-                            entity.args,
-                            f['uuid'],
-                            entity.refreshRate,
-                        ),
-                    ),
+                    void dispatch(RegisterEntity(entity.method, entity.args, f['uuid'], entity.refreshRate)),
             );
 
         const unregisterEntity = () =>
             entities.forEach(
-                ([, entity]) =>
-                    void dispatch(UnregisterEntity(CacheCore.key(entity.method, entity.args), f['uuid'])),
+                ([, entity]) => void dispatch(UnregisterEntity(CacheCore.key(entity.method, entity.args), f['uuid'])),
             );
 
         useEffect(() => {

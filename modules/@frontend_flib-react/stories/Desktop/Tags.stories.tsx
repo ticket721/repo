@@ -14,24 +14,21 @@ interface StoreObject {
 const onKeyDown = (e: React.KeyboardEvent<HTMLElement>, value: string) => {
     const tags = store.get('tags');
     store.set({ error: undefined });
-    if(!store.get('inputValue')) {
-      if (tags.length === maxItems) {
-        e.preventDefault();
-      }
-      return;
+    if (!store.get('inputValue')) {
+        if (tags.length === maxItems) {
+            e.preventDefault();
+        }
+        return;
     }
 
     switch (e.key) {
         case 'Enter':
         case 'Tab':
             if (tags.indexOf(value) > -1) {
-              store.set({ error: 'tag already added' });
+                store.set({ error: 'tag already added' });
             } else {
-              store.set({ inputValue: '' });
-              store.set({ tags: [
-                  ...tags,
-                  value,
-                ] });
+                store.set({ inputValue: '' });
+                store.set({ tags: [...tags, value] });
             }
             e.preventDefault();
     }

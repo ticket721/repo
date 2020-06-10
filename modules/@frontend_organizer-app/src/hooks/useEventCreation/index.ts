@@ -21,6 +21,7 @@ export const useEventCreation = <ActionInputType extends {[key: string]: any}>(
             state.eventCreation.completedStep,
         ]);
 
+    const stringifiedState = JSON.stringify(eventActionState);
     const formik = useFormik<ActionInputType>({
         initialValues: formikConfig.initialValues,
         validationSchema: formikConfig.validationSchema,
@@ -31,8 +32,9 @@ export const useEventCreation = <ActionInputType extends {[key: string]: any}>(
         formik.setValues(eventActionState);
     }, [
         currentAction,
-        JSON.stringify(eventActionState),
+        stringifiedState,
         eventCreationAction,
+        formik,
     ]);
 
     useEffect(() => {
@@ -40,6 +42,7 @@ export const useEventCreation = <ActionInputType extends {[key: string]: any}>(
     }, [
         lastCompletedStep,
         formik.isValid,
+        actIdx
     ]);
 
     const computeError = (field: string) => formik.touched[field] && formik.errors[field] ? 'validation:' + formik.errors[field] : '';

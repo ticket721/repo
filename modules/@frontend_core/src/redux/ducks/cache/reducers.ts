@@ -1,18 +1,9 @@
-import { Reducer }                                                                                 from 'redux';
-import { CacheActionTypes, CacheState }                                                            from './types';
-import { ISetIntervalId, ISetTickInterval }                                                from './actions/settings.actions';
-import {
-    CacheAction,
-    IUpdateItemData,
-    IUpdateItemError,
-    IFetchItem,
-} from './actions/actions';
-import {
-    IUpdateLastResponse,
-    IRegisterEntity,
-    IUnregisterEntity,
-} from './actions/properties.actions';
-import { CacheCore }                                 from '../../../cores/cache/CacheCore';
+import { Reducer } from 'redux';
+import { CacheActionTypes, CacheState } from './types';
+import { ISetIntervalId, ISetTickInterval } from './actions/settings.actions';
+import { CacheAction, IUpdateItemData, IUpdateItemError, IFetchItem } from './actions/actions';
+import { IUpdateLastResponse, IRegisterEntity, IUnregisterEntity } from './actions/properties.actions';
+import { CacheCore } from '../../../cores/cache/CacheCore';
 
 export const cacheInitialState: CacheState = {
     settings: {

@@ -1,6 +1,6 @@
-import * as React                   from 'react';
+import * as React from 'react';
 import FilesUploader, { DropError } from '../../src/components/file-uploader';
-import { text, withKnobs, number }  from '@storybook/addon-knobs';
+import { text, withKnobs, number } from '@storybook/addon-knobs';
 
 export default {
     title: 'Global|FilesUploader',

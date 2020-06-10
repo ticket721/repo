@@ -16,7 +16,7 @@ import { cacheInitialState, CacheReducer, CacheState } from './cache';
 import { authInitialState, AuthReducer, AuthState } from './auth';
 
 import { notificationsInitialState, NotificationsReducer, NotificationsState } from './notifications';
-import { Reducer }                                                             from 'redux';
+import { Reducer } from 'redux';
 
 export const history = createMemoryHistory();
 
@@ -32,19 +32,20 @@ export interface SpecificState {
 export type AppState = SpecificState & VtxState;
 
 export type AdditionalReducer<AdditionalState> = {
-    [key in keyof AdditionalState]: Reducer<AdditionalState[key], any>
+    [key in keyof AdditionalState]: Reducer<AdditionalState[key], any>;
 };
 
-export const rootReducer = <AdditionalState>(additionalReducer?: AdditionalReducer<AdditionalState>) => getReducers({
-    ...additionalReducer,
-    configs: ConfigsReducer,
-    router: connectRouter(history),
-    statuses: StatusesReducer,
-    userProperties: UserPropertiesReducer,
-    cache: CacheReducer,
-    auth: AuthReducer,
-    notifications: NotificationsReducer,
-});
+export const rootReducer = <AdditionalState>(additionalReducer?: AdditionalReducer<AdditionalState>) =>
+    getReducers({
+        ...additionalReducer,
+        configs: ConfigsReducer,
+        router: connectRouter(history),
+        statuses: StatusesReducer,
+        userProperties: UserPropertiesReducer,
+        cache: CacheReducer,
+        auth: AuthReducer,
+        notifications: NotificationsReducer,
+    });
 
 export const initialState = <AdditionalState>(additionalState?: AdditionalState): AppState & AdditionalState =>
     configureVtx<AppState & AdditionalState>(
@@ -61,4 +62,4 @@ export const initialState = <AdditionalState>(additionalState?: AdditionalState)
             confirmation_threshold: 2,
             poll_timer: 300,
         },
-);
+    );

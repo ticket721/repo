@@ -9,12 +9,7 @@ export interface IRegisterEntity extends Action<string> {
     rate: number;
 }
 
-export const RegisterEntity = (
-    method: string,
-    args: any,
-    uid: string,
-    rate: number,
-): IRegisterEntity => ({
+export const RegisterEntity = (method: string, args: any, uid: string, rate: number): IRegisterEntity => ({
     type: CacheActionTypes.RegisterEntity,
     method,
     args,

@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { action }                                  from '@storybook/addon-actions';
+import { action } from '@storybook/addon-actions';
 import { select, text, array, withKnobs, boolean } from '@storybook/addon-knobs';
-import { Button }                                  from '../../src/components/button';
+import { Button } from '../../src/components/button';
 
 const gradientsValues = ['#22c1c3', '#68bf93', '#8cbe7b', '#bdbd59', '#fdbb2d'];
 

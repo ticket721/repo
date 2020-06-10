@@ -1,8 +1,8 @@
-import { keccak256 }                 from '@common/global';
+import { keccak256 } from '@common/global';
 import { CacheSettings, CacheState } from '../../redux/ducks/cache';
-import { default as get }            from 'lodash.get';
-import { T721SDK }                   from '@common/sdk';
-import { AxiosResponse }             from 'axios';
+import { default as get } from 'lodash.get';
+import { T721SDK } from '@common/sdk';
+import { AxiosResponse } from 'axios';
 
 export type SDKCall = InstanceType<typeof T721SDK>;
 
