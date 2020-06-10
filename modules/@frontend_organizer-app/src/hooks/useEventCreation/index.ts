@@ -13,15 +13,14 @@ export const useEventCreation = <ActionInputType extends {[key: string]: any}>(
     const dispatch = useDispatch();
 
     const [loadingState, setLoadingState ] = useState(false);
-    const [ eventActionState, currentAction, lastCompletedStep ]:
-        [ ActionInputType, EventCreationActions, EventCreationSteps ] =
+    const [ stringifiedEventActionState, currentAction, lastCompletedStep ]:
+        [ string, EventCreationActions, EventCreationSteps ] =
         useSelector((state: OrganizerState) => [
-            state.eventCreation[eventCreationAction] as ActionInputType,
+            JSON.stringify(state.eventCreation[eventCreationAction] as ActionInputType),
             state.eventCreation.currentAction,
             state.eventCreation.completedStep,
         ]);
 
-    const stringifiedState = JSON.stringify(eventActionState);
     const formik = useFormik<ActionInputType>({
         initialValues: formikConfig.initialValues,
         validationSchema: formikConfig.validationSchema,
@@ -29,10 +28,10 @@ export const useEventCreation = <ActionInputType extends {[key: string]: any}>(
     });
 
     useEffect(() => {
-        formik.setValues(eventActionState);
+        formik.setValues(JSON.parse(stringifiedEventActionState));
     }, [
         currentAction,
-        stringifiedState,
+        stringifiedEventActionState,
         eventCreationAction,
         formik,
     ]);
@@ -56,6 +55,7 @@ export const useEventCreation = <ActionInputType extends {[key: string]: any}>(
     };
 
     const handleBlur = (event: any, field?: string, value?: any): void => {
+        const eventActionState: ActionInputType = JSON.parse(stringifiedEventActionState);
         if (field) {
             if (value) {
                 dispatch(SetActionData(eventCreationAction, {
