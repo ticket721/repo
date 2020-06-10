@@ -1,6 +1,6 @@
-import React from "react";
-import styled from "styled-components";
-import { Button, TextInput, CustomDatePicker, Checkbox, SelectInput } from "@frontend/flib-react/lib/components";
+import React from 'react';
+import styled from 'styled-components';
+import { Button, TextInput, SelectInput } from '@frontend/flib-react/lib/components';
 
 interface Props {
   formik: any;
@@ -13,7 +13,7 @@ const userDates = [new Date(), new Date('2020-05-17T03:24:00'), new Date('2020-0
 function CustomCategories ({ formik, validation, setValidation }: Props): JSX.Element {
   const options = userDates.map((d) => ({ label: d.toDateString(), value: d.toDateString()}));
   const [steps, setSteps] = React.useState([0]);
-  const [prices, setPrices] = React.useState([[]]);
+  const [prices] = React.useState([[]]);
   console.log(formik.values);
 
   return (
@@ -178,11 +178,11 @@ const Container = styled.div`
 const Card = styled.div`
   border-radius: ${props => props.theme.defaultRadius};
   padding: ${props => props.theme.biggerSpacing};
-  background-color: ${props => props.theme.darkerBg}; 
+  background-color: ${props => props.theme.darkerBg};
   display: flex;
   flex-direction: column;
   margin: 10px 0;
-  
+
   div {
     margin: 0 !important;
   }

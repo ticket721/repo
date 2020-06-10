@@ -1,6 +1,6 @@
-import React from "react";
-import styled from "styled-components";
-import { Button, TextInput, CustomDatePicker, Checkbox } from "@frontend/flib-react/lib/components";
+import React from 'react';
+import styled from 'styled-components';
+import { Button, TextInput, CustomDatePicker, Checkbox } from '@frontend/flib-react/lib/components';
 
 interface Props {
   formik: any;
@@ -191,11 +191,11 @@ const Container = styled.div`
 const Card = styled.div`
   border-radius: ${props => props.theme.defaultRadius};
   padding: ${props => props.theme.biggerSpacing};
-  background-color: ${props => props.theme.darkerBg}; 
+  background-color: ${props => props.theme.darkerBg};
   display: flex;
   flex-direction: column;
   margin: 10px 0;
-  
+
   div {
     margin: 0 !important;
   }
