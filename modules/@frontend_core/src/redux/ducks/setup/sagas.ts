@@ -10,12 +10,13 @@ import { GetCity, GetDevice } from '../user_properties';
 import { SetupActionTypes } from './types';
 
 import { EthConfig } from '../configs';
-import { StartRefreshInterval } from '../cache';
+import { RegisterEntity, StartRefreshInterval } from '../cache';
 import { GetUser, SetToken } from '../auth';
 import { isExpired, isValidFormat, parseToken } from '../../../utils/token';
 import { T721SDK } from '@common/sdk';
 import { AppStatus, SetAppStatus } from '../statuses';
 import { PushNotification } from '../notifications';
+import { v4 as uuid } from 'uuid';
 
 function* startSaga(action: IStart): IterableIterator<any> {
     global.window.t721Sdk = new T721SDK();
@@ -55,6 +56,8 @@ function* handleUser(): IterableIterator<any> {
                 yield global.window.t721Sdk.users.me(token.value);
                 yield put(SetToken(token));
                 yield put(GetUser());
+
+                yield put(RegisterEntity('rights.search', [token.value, {}], uuid() + '@rights', 5));
             } catch (e) {
                 if (e.message === 'Network Error') {
                     yield put(PushNotification('cannot_reach_server', 'error'));
