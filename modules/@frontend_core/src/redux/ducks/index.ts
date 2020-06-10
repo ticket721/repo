@@ -1,6 +1,3 @@
-import { State as VtxState } from 'ethvtx/lib/state';
-import { configureVtx, getInitialState, getReducers } from 'ethvtx/lib';
-
 import { createMemoryHistory } from 'history';
 
 import { connectRouter } from 'connected-react-router';
@@ -17,6 +14,7 @@ import { authInitialState, AuthReducer, AuthState } from './auth';
 
 import { notificationsInitialState, NotificationsReducer, NotificationsState } from './notifications';
 import { Reducer } from 'redux';
+import { combineReducers } from 'redux';
 
 export const history = createMemoryHistory();
 
@@ -29,37 +27,29 @@ export interface SpecificState {
     notifications: NotificationsState;
 }
 
-export type AppState = SpecificState & VtxState;
+export type AppState = SpecificState;
 
 export type AdditionalReducer<AdditionalState> = {
     [key in keyof AdditionalState]: Reducer<AdditionalState[key], any>;
 };
 
-export const rootReducer = <AdditionalState>(additionalReducer?: AdditionalReducer<AdditionalState>) =>
-    getReducers({
-        ...additionalReducer,
-        configs: ConfigsReducer,
-        router: connectRouter(history),
-        statuses: StatusesReducer,
-        userProperties: UserPropertiesReducer,
-        cache: CacheReducer,
-        auth: AuthReducer,
-        notifications: NotificationsReducer,
-    });
+export const rootReducer = <AdditionalState>(additionalReducer?: AdditionalReducer<AdditionalState>) => combineReducers({
+    ...additionalReducer,
+    configs: ConfigsReducer,
+    router: connectRouter(history),
+    statuses: StatusesReducer,
+    userProperties: UserPropertiesReducer,
+    cache: CacheReducer,
+    auth: AuthReducer,
+    notifications: NotificationsReducer,
+});
 
-export const initialState = <AdditionalState>(additionalState?: AdditionalState): AppState & AdditionalState =>
-    configureVtx<AppState & AdditionalState>(
-        getInitialState({
-            ...additionalState,
-            userProperties: userPropertiesInitialState,
-            configs: configsInitialState,
-            statuses: statusesInitialState,
-            cache: cacheInitialState,
-            auth: authInitialState,
-            notifications: notificationsInitialState,
-        }) as AppState & AdditionalState,
-        {
-            confirmation_threshold: 2,
-            poll_timer: 300,
-        },
-    );
+export const initialState = <AdditionalState>(additionalState?: AdditionalState): AppState & AdditionalState => ({
+    ...additionalState,
+    userProperties: userPropertiesInitialState,
+    configs: configsInitialState,
+    statuses: statusesInitialState,
+    cache: cacheInitialState,
+    auth: authInitialState,
+    notifications: notificationsInitialState,
+});

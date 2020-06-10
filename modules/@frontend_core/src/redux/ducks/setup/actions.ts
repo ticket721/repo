@@ -9,12 +9,4 @@ export const Start = (): IStart => ({
     type: SetupActionTypes.Start,
 });
 
-export interface IStartVtx extends Action<string> {
-    type: SetupActionTypes.StartVtx;
-}
-
-export const StartVtx = (): IStartVtx => ({
-    type: SetupActionTypes.StartVtx,
-});
-
-export type SetupAction = IStart & IStartVtx;
+export type SetupAction = IStart;
