@@ -1,85 +1,89 @@
 {
-    "name": "@frontend/core",
-    "description": "Shared library for the different Ticket721 Apps",
-    "version": "1.0.0",
-    "private": true,
-    "main": "lib/index.js",
-    "types": "",
-    "keywords": [
-        "frontend",
-        "t721",
-        "core",
-        "redux",
-        "shared"
+  "name": "@frontend/core",
+  "description": "Shared library for the different Ticket721 Apps",
+  "version": "1.0.0",
+  "private": true,
+  "main": "lib/index.js",
+  "types": "",
+  "keywords": [
+    "frontend",
+    "t721",
+    "core",
+    "redux",
+    "shared"
+  ],
+  "dependencies": {
+    "@common/global": "1.0.0",
+    "@common/sdk": "1.0.0",
+    "@frontend/flib-react": "1.0.0",
+    "@hapi/joi": "17.1.0",
+    "connected-react-router": "6.8.0",
+    "device-detect": "1.0.7",
+    "ethvtx": "2.0.6",
+    "formik": "2.1.4",
+    "i18next": "19.3.2",
+    "i18next-browser-languagedetector": "4.0.2",
+    "i18next-xhr-backend": "3.2.2",
+    "lodash.get": "4.4.2",
+    "react": "16.13.1",
+    "react-dom": "16.13.1",
+    "react-i18next": "11.3.3",
+    "react-redux": "7.2.0",
+    "redux": "4.0.5",
+    "redux-saga": "1.1.3",
+    "styled-components": "5.1.0",
+    "uuid": "8.0.0",
+    "react-toastify": "6.0.5",
+    "react-responsive": "8.1.0",
+    "yup": "0.28.5",
+    "snyk": "^1.339.0"
+  },
+  "devDependencies": {
+    "@types/jest": "25.2.1",
+    "@types/lodash.get": "4.4.6",
+    "@types/react": "16.9.35",
+    "@types/react-dom": "16.9.8",
+    "@types/react-redux": "7.1.7",
+    "@types/react-responsive": "8.0.2",
+    "@types/styled-components": "5.1.0",
+    "@types/uuid": "7.0.3",
+    "@types/yup": "0.28.0",
+    "axios": "0.19.2",
+    "jest": "25.4.0",
+    "prettier": "2.0.5",
+    "tslint": "6.0.0",
+    "ts-jest": "25.4.0",
+    "ts-loader": "^7.0.0",
+    "ts-mockito": "2.5.0",
+    "typescript": "3.7.5",
+    "web3": "1.2.6"
+  },
+  "scripts": {
+    "build": "rm -rf lib && tsc",
+    "watch": "watch 'yarn build && echo \"Done !\"' src",
+    "test": "jest --expand --verbose",
+    "lint": "tslint --project .",
+    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.tsx\"",
+    "format:check": "prettier --check \"src/**/*.ts\" \"src/**/*.tsx\"",
+    "@lerna/postinstall": "yarn build",
+    "@lerna/postclean": "rm -rf lib",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
     ],
-    "dependencies": {
-        "@common/global": "1.0.0",
-        "@common/sdk": "1.0.0",
-        "@frontend/flib-react": "1.0.0",
-        "@hapi/joi": "17.1.0",
-        "connected-react-router": "6.8.0",
-        "device-detect": "1.0.7",
-        "ethvtx": "2.0.6",
-        "formik": "2.1.4",
-        "i18next": "19.3.2",
-        "i18next-browser-languagedetector": "4.0.2",
-        "i18next-xhr-backend": "3.2.2",
-        "lodash.get": "4.4.2",
-        "react": "16.13.1",
-        "react-dom": "16.13.1",
-        "react-i18next": "11.3.3",
-        "react-redux": "7.2.0",
-        "redux": "4.0.5",
-        "redux-saga": "1.1.3",
-        "styled-components": "5.1.0",
-        "uuid": "8.0.0",
-        "react-toastify": "6.0.5",
-        "react-responsive": "8.1.0",
-        "yup": "0.28.5"
-    },
-    "devDependencies": {
-        "@types/jest": "25.2.1",
-        "@types/lodash.get": "4.4.6",
-        "@types/react": "16.9.35",
-        "@types/react-dom": "16.9.8",
-        "@types/react-redux": "7.1.7",
-        "@types/react-responsive": "8.0.2",
-        "@types/styled-components": "5.1.0",
-        "@types/uuid": "7.0.3",
-        "@types/yup": "0.28.0",
-        "axios": "0.19.2",
-        "jest": "25.4.0",
-        "prettier": "2.0.5",
-        "tslint": "6.0.0",
-        "ts-jest": "25.4.0",
-        "ts-loader": "^7.0.0",
-        "ts-mockito": "2.5.0",
-        "typescript": "3.7.5",
-        "web3": "1.2.6"
-    },
-    "scripts": {
-        "build": "rm -rf lib && tsc",
-        "watch": "watch 'yarn build && echo \"Done !\"' src",
-        "test": "jest --expand --verbose",
-        "lint": "tslint --project .",
-        "format": "prettier --write \"src/**/*.ts\" \"src/**/*.tsx\"",
-        "format:check": "prettier --check \"src/**/*.ts\" \"src/**/*.tsx\"",
-        "@lerna/postinstall": "yarn build",
-        "@lerna/postclean": "rm -rf lib"
-    },
-    "eslintConfig": {
-        "extends": "react-app"
-    },
-    "browserslist": {
-        "production": [
-            ">0.2%",
-            "not dead",
-            "not op_mini all"
-        ],
-        "development": [
-            "last 1 chrome version",
-            "last 1 firefox version",
-            "last 1 safari version"
-        ]
-    }
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "snyk": true
 }
