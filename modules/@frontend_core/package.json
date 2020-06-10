@@ -36,7 +36,7 @@
         "@types/lodash.get": "4.4.6",
         "web3": "1.2.6",
         "@types/react": "16.9.35",
-        "@types/react-dom": "16.9.6",
+        "@types/react-dom": "16.9.8",
         "@types/styled-components": "5.1.0",
         "device-detect": "1.0.7",
         "typescript": "3.7.5",
