@@ -6,53 +6,33 @@ import { Store, State } from '@sambego/storybook-state';
 const maxItems: number = 2;
 
 interface StoreObject {
-    tags: Tag[];
+    tags: string[];
     inputValue: string;
-    items: number;
+    error: string | undefined;
 }
-
-interface Tag {
-    label: string;
-    value: string;
-}
-
-const createTags = (label: string) => ({
-    label,
-    value: label,
-});
-
-const onChange = (value: any) => {
-    const itemsNumber = !value ? 0 : value.length;
-
-    store.set({
-        items: itemsNumber,
-        tags: value,
-    });
-};
-
-const onInputChange = (inputValue: string) => {
-    store.set({ inputValue });
-};
 
 const onKeyDown = (e: React.KeyboardEvent<HTMLElement>, value: string) => {
     const tags = store.get('tags');
-    const tagsLength = tags ? tags.length : 0;
-
-    if (!store.get('inputValue') || tagsLength === maxItems) return;
+    store.set({ error: undefined });
+    if(!store.get('inputValue')) {
+      if (tags.length === maxItems) {
+        e.preventDefault();
+      }
+      return;
+    }
 
     switch (e.key) {
         case 'Enter':
         case 'Tab':
-            store.set({ inputValue: '' });
-
-            if (!tags) {
-                store.set({ tags: [createTags(value)] });
+            if (tags.indexOf(value) > -1) {
+              store.set({ error: 'tag already added' });
             } else {
-                store.set({ tags: [...tags, createTags(value)] });
+              store.set({ inputValue: '' });
+              store.set({ tags: [
+                  ...tags,
+                  value,
+                ] });
             }
-
-            store.set({ items: tagsLength + 1 });
-
             e.preventDefault();
     }
 };
@@ -65,8 +45,8 @@ export default {
 
 const storeObject: StoreObject = {
     tags: [],
-    items: 0,
     inputValue: '',
+    error: undefined,
 };
 
 const store = new Store(storeObject);
@@ -79,15 +59,16 @@ export const showcase = () => (
                 placeholder={text('Placeholder', 'Add a tag, then press enter')}
                 inputValue={state.inputValue}
                 value={state.tags}
-                currentTagsNumber={state.items}
+                currentTagsNumber={state.tags.length}
                 maxTags={maxItems}
-                onChange={onChange}
+                onChange={(tags: string[]) => store.set({ tags })}
                 onKeyDown={onKeyDown}
-                onInputChange={onInputChange}
+                onInputChange={(inputValue: string) => store.set({ inputValue })}
                 name={'tagsName'}
                 onBlur={() => {
                     console.log('onBlur');
                 }}
+                error={state.error}
             />,
         ]}
     </State>

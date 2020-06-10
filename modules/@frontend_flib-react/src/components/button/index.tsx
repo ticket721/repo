@@ -1,18 +1,37 @@
 import * as React from 'react';
-import { rgba } from 'polished';
-import styled from '../../config/styled';
+import { rgba }   from 'polished';
+import styled     from '../../config/styled';
+import { Loader } from '../loader';
 
 export interface ButtonProps extends React.ComponentProps<any> {
     title: string;
     gradients?: string[];
     onClick?: () => void;
+    loadingState?: boolean;
+    hidden?: boolean;
+    disabled?: boolean;
     variant: 'primary' | 'secondary' | 'custom' | 'warning' | 'error';
     type?: string;
 }
 
 const StyledButton = styled.button<ButtonProps>`
     ${(props) =>
-        props.variant === 'primary' &&
+        (props.variant === 'secondary' || props.disabled) &&
+        `
+    background-color: ${rgba('#FFFFFF', 0.1)};
+    transition: background-color 300ms ease;
+
+    &:hover {
+        background-color: ${rgba('#FFFFFF', 0.25)};
+    }
+
+    &::before {
+        display: none;
+    }
+  `};
+
+    ${(props) =>
+        props.variant === 'primary' && !props.disabled &&
         `
     background: linear-gradient(260deg, ${props.theme.primaryColor.hex}, ${props.theme.primaryColorGradientEnd.hex});
 
@@ -22,22 +41,7 @@ const StyledButton = styled.button<ButtonProps>`
   `};
 
     ${(props) =>
-        props.variant === 'secondary' &&
-        `
-    background-color: ${rgba('#FFFFFF', 0.1)};
-    transition: background-color 300ms ease;
-
-    &:hover {
-      background-color: ${rgba('#FFFFFF', 0.25)};
-    }
-
-    &::before {
-      display: none;
-    }
-  `};
-
-    ${(props) =>
-        props.variant === 'custom' &&
+        props.variant === 'custom' && !props.disabled &&
         `
     background: linear-gradient(260deg, ${props.gradients?.join(', ')});
 
@@ -49,7 +53,7 @@ const StyledButton = styled.button<ButtonProps>`
   `};
 
     ${(props) =>
-        props.variant === 'warning' &&
+        props.variant === 'warning' && !props.disabled &&
         `
     background-color: ${rgba(props.theme.warningColor.hex, 0.4)};
     transition: background-color 300ms ease;
@@ -60,7 +64,7 @@ const StyledButton = styled.button<ButtonProps>`
 `};
 
     ${(props) =>
-        props.variant === 'error' &&
+        props.variant === 'error' && !props.disabled &&
         `
       background-color: ${rgba(props.theme.errorColor.hex, 0.4)};
       transition: background-color 300ms ease;
@@ -102,28 +106,42 @@ const StyledButton = styled.button<ButtonProps>`
         }
     }
 
-    span {
+    & > span {
         display: flex;
         justify-content: center;
         padding-top: 1px;
         position: relative;
         z-index: 1;
     }
+
+    & > div {
+        position: absolute;
+    }
 `;
 
 export const Button: React.FunctionComponent<ButtonProps> = (props: ButtonProps): JSX.Element => {
-    return (
-        <StyledButton
+    if (!props.hidden) {
+        return (
+          <StyledButton
             name={props.title}
             onClick={props.onClick}
             gradients={props.gradients}
             variant={props.variant}
             type={props.type}
             {...props}
-        >
+          >
+            {
+              props.loadingState ?
+                <Loader
+                  size={'120%'}/> :
+                null
+            }
             <span>{props.title}</span>
-        </StyledButton>
-    );
+          </StyledButton>
+        );
+    }
+
+    return <></>;
 };
 
 Button.defaultProps = {

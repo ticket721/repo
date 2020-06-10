@@ -1,26 +1,55 @@
-import * as React from 'react';
-import Dropzone, { IDropzoneProps, ILayoutProps } from 'react-dropzone-uploader';
-import styled from '../../config/styled';
-import 'react-dropzone-uploader/dist/styles.css';
-import { keyframes } from 'styled-components';
-import Icon from '../icon';
+import * as React      from 'react';
+import styled          from '../../config/styled';
+import Icon                                      from '../icon';
+import { FileRejection, useDropzone } from 'react-dropzone';
+import { Dispatch, useEffect, useState }         from 'react';
 
-export interface FilesUploaderProps extends React.ComponentProps<any> {
-    browseLabel: string;
-    dragDropLabel: string;
-    errorMessage: string;
-    hasErrors?: boolean;
-    noFilesMsg?: string;
-    maxFiles?: number;
-    multiple?: boolean;
-    uploadRecommandations?: string;
-    setCover: (cover: any) => void;
+export interface DropError {
+    file: string;
+    errorCodes: string[];
 }
 
-const InfosContainer = styled.div`
-    position: absolute;
+export interface PreviewFile extends File {
+    preview: string;
+}
+
+export interface FilesUploaderProps extends React.ComponentProps<any> {
+  name: string;
+  browseLabel: string;
+  dragDropLabel: string;
+  width: string;
+  height: string;
+  onDrop: (files: File[], previews: string[]) => void;
+  onDropRejected: (errors: DropError[]) => void;
+  onRemove: (preview: string) => void;
+  uploadRecommendations?: string;
+  error?: string;
+  // multiple related inputs
+  multiple?: boolean;
+  multipleLabel?: string;
+  maxFiles?: number;
+  noFilesMsg?: string;
+}
+
+const InfosContainer = styled.div<{width: string, height: string}> `
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: ${(props) => props.theme.componentColorLight};
+    border-radius: ${(props) => props.theme.defaultRadius};
+    cursor: pointer;
+    width: ${(props) => props.width};
+    height: ${(props) => props.height};
+    transition: background-color 300ms ease;
+
+    &:hover {
+        background-color: ${(props) => props.theme.componentColorLighter};
+    }
+
     text-align: center;
-    z-index: 0;
 
     span {
         display: block;
@@ -33,149 +62,19 @@ const InfosContainer = styled.div`
             margin-top: 8px;
         }
     }
-
-    svg {
-        margin: auto;
-    }
 `;
 
 const UploadIcon = styled(Icon)`
     height: 64px;
 `;
 
-const fadeIn = keyframes`
-  0% { opacity:0; }
-  66% { opacity:0; }
-  100% { opacity:1; }
-`;
-
-const StyledContainer = styled.div`
-    max-width: 600px;
-
-    .dzu {
-        &-dropzone {
-            overflow: hidden;
-            border: none;
-            z-index: 1;
-            align-items: center;
-            background-color: ${(props) => props.theme.componentColorLight};
-            border-radius: ${(props) => props.theme.defaultRadius};
-            cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            height: 375px;
-            justify-content: center;
-            transition: background-color 300ms ease;
-
-            &:hover {
-                background-color: ${(props) => props.theme.componentColorLighter};
-            }
-        }
-
-        &-inputLabel,
-        &-inputLabelWithFiles {
-            align-items: center;
-            background: none;
-            border-radius: 0;
-            bottom: 0;
-            color: ${(props) => props.theme.textColor};
-            cursor: pointer;
-            display: flex;
-            font-family: ${(props) => props.theme.fontStack};
-            font-size: 14px;
-            font-weight: 500;
-            justify-content: center;
-            left: 0;
-            margin: 0;
-            opacity: 1;
-            position: absolute;
-            right: 0;
-            text-transform: none;
-            top: 0;
-            transition: opacity 300ms ease;
-
-            span {
-                display: block;
-
-                &:first-of-type {
-                    margin-top: ${(props) => props.theme.biggerSpacing};
-                }
-
-                &:last-of-type {
-                    color: ${(props) => props.theme.textColorDark};
-                    margin-top: 8px;
-                }
-            }
-        }
-
-        &-dropzoneActive {
-            background-color: ${(props) => props.theme.componentColorLighter};
-            svg {
-                fill: ${(props) => props.theme.textColor};
-                transform: translateY(20px) rotate(-15deg);
-            }
-
-            span {
-                opacity: 0;
-            }
-        }
-
-        &-preview {
-            &Container {
-                animation: 1s ease 0s normal forwards 1 ${fadeIn};
-                border: none;
-                height: 100%;
-                padding: 0;
-
-                &::after {
-                    background: linear-gradient(180deg, rgba(10, 11, 23, 0.7) 0%, rgba(17, 16, 24, 0) 100%);
-                    content: '';
-                    display: block;
-                    height: 100%;
-                    left: 0;
-                    opacity: 0;
-                    position: absolute;
-                    top: 0;
-                    transition: opacity 300ms ease;
-                    width: 100%;
-                    z-index: 0;
-                }
-
-                &:hover {
-                    .dzu-previewStatusContainer,
-                    &::after {
-                        opacity: 1;
-                    }
-                }
-            }
-
-            &Image {
-                border-radius: 0;
-                height: 100%;
-                max-height: none;
-                max-width: none;
-                object-fit: cover;
-                width: 100%;
-            }
-
-            &Button  {
-                margin: 0 auto;
-            }
-
-            &StatusContainer {
-                opacity: 0;
-                position: absolute;
-                right: ${(props) => props.theme.biggerSpacing};
-                top: ${(props) => props.theme.biggerSpacing};
-                transition: opacity 300ms ease;
-                z-index: 1;
-
-                progress {
-                    display: none;
-                }
-            }
-        }
+const DropZone = styled.div `
+    &:focus {
+        outline: none;
     }
+`;
+const StyledContainer = styled.div `
+    max-width: 600px;
 `;
 
 const PreviewsContainer = styled.div`
@@ -187,52 +86,62 @@ const PreviewsContainer = styled.div`
     min-height: 185px;
     padding: ${(props) => props.theme.biggerSpacing};
 
-    label {
-        display: block;
-        padding: 0 0 8px;
-        width: 100%;
-    }
-
-    span {
+    & > span {
         color: ${(props) => props.theme.textColorDarker};
         display: block;
         margin-top: 8px;
     }
+`;
 
-    div {
-        display: flex;
-        flex-wrap: wrap;
-    }
+const MultipleLabel = styled.div`
+    margin-bottom: 20px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;color: ${props => props.theme.textColorDarker};
+`;
 
-    .dzu {
-        &-preview {
-            &Container {
-                border-radius: ${(props) => props.theme.defaultRadius};
-                height: 104px;
-                overflow: hidden;
-                margin: 8px 4px 0;
-                width: 104px;
+const ThumbTile = styled.div`
+    position: absolute;
+    width: 100%;
+    height: 100%;
+`;
 
-                &::after {
-                    background: linear-gradient(0deg, rgba(10, 11, 23, 0.8), rgba(10, 11, 23, 0.8));
-                }
+const ThumbsContainer = styled.div`
+    display: flex;
+    flex-wrap: wrap;
+`;
 
-                &:nth-of-type(5n + 1) {
-                    margin-left: 0;
-                }
+const Thumb = styled.div<{ multiple: boolean | undefined, width: string }>`
+    position: relative;
+    display: flex;
+    min-width: 0;
+    overflow: hidden;
+    border-radius: 8px;
+    margin-right: 10px;
+    height: ${(props) => props.multiple ? '100px' : 'auto' };
+    width: ${(props) => props.multiple ? 'auto' : props.width};
+`;
 
-                &:nth-of-type(5n + 5) {
-                    margin-right: 0;
-                }
-            }
+const PreviewImg = styled.img<{ width: string}>`
+    display: block;
+    width: ${(props) => props.width};
+    height: auto;
+`;
 
-            &StatusContainer {
-                bottom: 0;
-                left: 0;
-                right: 0;
-                top: 0;
-            }
-        }
+const RemoveTile = styled.div<{ multiple: boolean | undefined }>`
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    padding: 15px;
+    display: flex;
+    justify-content: ${(props) => props.multiple ? 'center' : 'flex-end'};
+    align-items: ${(props) => props.multiple ? 'center' : 'top'};
+    background-color: #000;
+    opacity: 0;
+    transition: opacity 300ms;
+
+    &:hover {
+        opacity: 0.7;
     }
 `;
 
@@ -249,75 +158,110 @@ const ErrorMsg = styled(Disclaimer)`
 `;
 
 export const FilesUploader: React.FunctionComponent<FilesUploaderProps> = (props: FilesUploaderProps): JSX.Element => {
-    const Layout = ({ input, previews, dropzoneProps, files, extra: { maxFiles } }: ILayoutProps) => {
-        return (
-            <StyledContainer>
-                <div {...dropzoneProps}>
-                    <InfosContainer>
-                        <UploadIcon
-                            icon={'upload-img'}
-                            size={'62px'}
-                            color={!props.hasErrors ? 'rgba(255, 255, 255, 0.38)' : '#C91D31'}
-                        />
-                        <span>{props.dragDropLabel}</span>
-                        <span>{props.browseLabel}</span>
-                    </InfosContainer>
+  const [ files, setFiles ]: [ PreviewFile[], Dispatch<PreviewFile[]> ] = useState([] as PreviewFile[]);
+  const {getRootProps, getInputProps} = useDropzone({
+      accept: 'image/*',
+      multiple: props.multiple,
+      onDropAccepted: (acceptedFiles: File[]) => {
+          const addedPreviews: PreviewFile[] = acceptedFiles.map(file => ({
+              ...file,
+              preview: URL.createObjectURL(file)
+          }));
 
-                    {!props.multiple && previews}
+          setFiles(files.concat(addedPreviews));
 
-                    {files.length < maxFiles && input}
-                </div>
-                <Disclaimer>{props.uploadRecommandations}</Disclaimer>
-                {props.hasErrors && <ErrorMsg>{props.errorMessage}</ErrorMsg>}
+          const previews = addedPreviews.map(file => file.preview);
 
-                {props.multiple && (
-                    <PreviewsContainer>
-                        <label>Photos & Videos</label>
-                        {!files.length && <span>{props.noFilesMsg}</span>}
-                        <div>{previews}</div>
-                    </PreviewsContainer>
-                )}
-            </StyledContainer>
-        );
-    };
+          props.onDrop(acceptedFiles, previews);
+      },
+      onDropRejected: (rejectedFiles: FileRejection[]) => {
+        const errors: DropError[] = [];
 
-    // Check documentation for uploading: https://react-dropzone-uploader.js.org/docs/api
-    const getUploadParams = () => {
-        return { url: 'https://httpbin.org/post' };
-    };
-
-    // todo: manage error here 👇
-    const handleChangeStatus: IDropzoneProps['onChangeStatus'] = ({ meta }, status) => {
-        console.log(status, meta);
-        if (status === 'done') {
-            props.setCover({
-                name: meta.name,
-                size: meta.size,
-                previewUrl: meta.previewUrl,
-                wifht: meta.width,
-                height: meta.height,
+        for (const rejected of rejectedFiles) {
+            errors.push({
+                file: rejected.file.name,
+                errorCodes: rejected.errors.map((err) => err.code),
             });
         }
-    };
 
-    return (
-        <div>
-            <Dropzone
-                accept={'image/*'}
-                canCancel={true}
-                getUploadParams={getUploadParams}
-                inputContent={null}
-                inputWithFilesContent={null}
-                LayoutComponent={Layout}
-                maxFiles={props.multiple ? props.maxFiles : 1}
-                onChangeStatus={handleChangeStatus}
-            />
-        </div>
-    );
+        props.onDropRejected(errors);
+      }
+  });
+
+  const thumbs = files.map(file => (
+          <Thumb
+          multiple={props.multiple}
+          width={props.width}>
+              <PreviewImg
+              width={props.width}
+              alt={file.name}
+              src={file.preview}
+              />
+              <RemoveTile
+              multiple={props.multiple}
+              onClick={() => {
+                setFiles(
+                  files.filter((fileItem) => fileItem.name !== file.name)
+                );
+                props.onRemove(file.preview);
+              }}>
+                  <Icon
+                  icon={'close'}
+                  size={'20px'}
+                  color={'#FFF'}/>
+              </RemoveTile>
+          </Thumb>
+  ));
+
+  useEffect(() => () => {
+    files.forEach(file => URL.revokeObjectURL(file.preview));
+  }, [files]);
+
+  return (
+    <StyledContainer>
+      <DropZone {...getRootProps()}>
+        <input name={props.name} {...getInputProps()} disabled={
+          !props.multiple && files.length === 1
+          || props.multiple && files.length === props.maxFiles
+        } />
+        <InfosContainer width={props.width} height={props.height}>
+          <UploadIcon
+            icon={'upload-img'}
+            size={'62px'}
+            color={!props.error ? 'rgba(255, 255, 255, 0.38)' : '#C91D31'}
+          />
+          <span>{props.dragDropLabel}</span>
+          <span>{props.browseLabel}</span>
+          {!props.multiple && <ThumbTile>{thumbs[0]}</ThumbTile>}
+        </InfosContainer>
+      </DropZone>
+      <Disclaimer>{props.uploadRecommendations}</Disclaimer>
+      {props.error && <ErrorMsg>{props.error}</ErrorMsg>}
+
+      {props.multiple && (
+          <PreviewsContainer>
+              <MultipleLabel>
+                  <span>{props.multipleLabel}</span>
+                  <span>{files.length} / {props.maxFiles}</span>
+              </MultipleLabel>
+              {!files.length && <span>{props.noFilesMsg}</span>}
+              <ThumbsContainer>
+                  {
+                      thumbs.map((thumb, idx) => (
+                          <div key={idx}>
+                              {thumb}
+                          </div>
+                      ))
+                  }
+              </ThumbsContainer>
+          </PreviewsContainer>
+      )}
+    </StyledContainer>
+  );
 };
 
 FilesUploader.defaultProps = {
-    hasErrors: false,
+  error: undefined,
 };
 
 export default FilesUploader;

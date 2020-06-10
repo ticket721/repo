@@ -6,7 +6,12 @@ import DateTimeCard from '../cards/datetime';
 
 export interface PreviewInfosProps extends React.ComponentProps<any> {
     ticket: TicketInterface;
+    bgColor?: string;
 }
+
+const Wrapper = styled.div`
+    position: relative;
+`;
 
 const PreviewContainer = styled.main`
     background: linear-gradient(180deg, ${(props) => props.theme.darkBg}, ${(props) => props.theme.darkerBg});
@@ -37,8 +42,8 @@ const TicketHeaderInfos = styled.div`
         margin-top: 0.5rem;
     }
 `;
-const Separator = styled.div`
-    background-color: #0b0912;
+const Separator = styled.div<{ bgColor: string | undefined }>`
+    background-color: ${(props) => props.bgColor || '#0b0912'};
     content: '';
     display: block;
     height: 2px;
@@ -47,7 +52,7 @@ const Separator = styled.div`
     z-index: 100;
 
     &::before {
-        background-color: #0b0912;
+        background-color: ${(props) => props.bgColor || '#0b0912'};
         content: '';
         display: inline-block;
         height: ${(props) => props.theme.regularSpacing};
@@ -102,12 +107,12 @@ const Subtitle = styled.span`
 
 export const PreviewInfos: React.FunctionComponent<PreviewInfosProps> = (props: PreviewInfosProps): JSX.Element => {
     return (
-        <div>
+        <Wrapper>
             <TicketHeaderInfos>
                 <h2>{props.ticket.name}</h2>
                 <h3>{props.ticket.ticketType}</h3>
             </TicketHeaderInfos>
-            <Separator />
+            <Separator bgColor={props.bgColor}/>
             <PreviewContainer>
                 <DateTime
                     endDate={props.ticket.endDate}
@@ -123,15 +128,14 @@ export const PreviewInfos: React.FunctionComponent<PreviewInfosProps> = (props: 
                     address={props.ticket.address}
                     removeBg
                 />
-
-                {props.ticket.addOns && (
+                {props.ticket.addOns ? (
                     <div>
                         <Subtitle>{props.ticket.addOns} add-ons purchased</Subtitle>
                     </div>
-                )}
+                ) : null}
             </PreviewContainer>
             <Gradient ticket={props.ticket} />
-        </div>
+        </Wrapper>
     );
 };
 

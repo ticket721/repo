@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { action } from '@storybook/addon-actions';
-import { select, text, array, withKnobs } from '@storybook/addon-knobs';
-import { Button } from '../../src/components/button';
+import { action }                                  from '@storybook/addon-actions';
+import { select, text, array, withKnobs, boolean } from '@storybook/addon-knobs';
+import { Button }                                  from '../../src/components/button';
 
 const gradientsValues = ['#22c1c3', '#68bf93', '#8cbe7b', '#bdbd59', '#fdbb2d'];
 
@@ -26,19 +26,21 @@ export const showcase = () => (
             'primary',
         )}
         gradients={array('Update to change color of custom button', gradientsValues)}
-    ></Button>
+        loadingState={boolean('Show Loader', false)}
+        disabled={boolean('Disabled', false)}
+    />
 );
 
 export const types = () => (
     <div>
-        <Button title={'Primary Button'} onClick={action('clicked')} variant={'primary'}></Button>
-        <Button title={'Secondary Button'} onClick={action('clicked')} variant={'secondary'}></Button>
-        <Button title={'Warning Button'} onClick={action('clicked')} variant={'warning'}></Button>
+        <Button title={'Primary Button'} onClick={action('clicked')} variant={'primary'} />
+        <Button title={'Secondary Button'} onClick={action('clicked')} variant={'secondary'} />
+        <Button title={'Warning Button'} onClick={action('clicked')} variant={'warning'} />
         <Button
             title={'Custom Button'}
             onClick={action('clicked')}
             variant={'custom'}
             gradients={array('Custom Gradient', gradientsValues)}
-        ></Button>
+        />
     </div>
 );

@@ -141,6 +141,7 @@ const Error = styled.span`
 const StyledLabel = styled.label`
   display: inline-flex;
   transform: translateX(-12px);
+  padding: 0;
   transition: all 300ms ease;
   &::before {
     background-color: ${ props => props.theme.primaryColor.hex};
@@ -248,7 +249,7 @@ export const Tags: React.FunctionComponent<TagsProps> = (props: TagsProps): JSX.
                     }
                 />
             </TagsContainer>
-            {props.error && <Error>{props.errormessage}</Error>}
+            {props.error && <Error>{props.error}</Error>}
         </StyledInputContainer>
     );
 };
