@@ -1,7 +1,8 @@
-import Home        from './screens/Home';
 import React       from 'react';
-import CreateEvent from './screens/CreateEvent';
 import { Login, Register }       from '@frontend/core/lib/components';
+
+import Home        from './screens/Home';
+import CreateEvent from './screens/CreateEvent';
 
 export interface LinkDatum {
     icon: string;
@@ -20,7 +21,7 @@ export interface RouteDatum {
 
 export const routes: RouteDatum[] = [
     {
-        path: '/createevent',
+        path: '/create-event',
         page: CreateEvent,
         topBarHeight: '81px',
         protected: true,

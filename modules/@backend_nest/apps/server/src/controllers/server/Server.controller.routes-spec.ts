@@ -1,4 +1,6 @@
 import { getSDK } from '../../../test/utils';
+import { keccak256FromBuffer } from '@common/global';
+import { hostname } from 'os';
 
 export default function(getCtx: () => { ready: Promise<void> }) {
     return function() {
@@ -8,10 +10,12 @@ export default function(getCtx: () => { ready: Promise<void> }) {
 
                 const apiInfos = await sdk.getApiInfos();
 
+                const currentHostname = hostname();
+
                 expect(apiInfos.data).toMatchObject({
                     version: '1.0.0',
                     name: 't721api',
-                    position: 1,
+                    instanceHash: keccak256FromBuffer(Buffer.from(currentHostname)),
                 });
             });
         });

@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { registerValidationSchema } from './validation';
 import './locales';
 import { getPasswordStrength } from '@common/global';
+import { useMediaQuery } from 'react-responsive';
 
 export const Register: React.FC = () => {
     const [t] = useTranslation(['registration', 'password_feedback']);
@@ -44,13 +45,14 @@ export const Register: React.FC = () => {
             }
         }
     }, [auth.loading, auth.user]);
+    const isTabletOrMobile = useMediaQuery({ maxWidth: 1224 });
 
     return (
         <RegisterWrapper>
             {!auth.loading && auth.submit && auth.token ? (
                 <ValidateEmail />
             ) : (
-                <RegisterContainer>
+                <RegisterContainer mobile={isTabletOrMobile}>
                     <IconContainer>
                         <Icon icon={'ticket721'} size={'40px'} color={'#fff'} />
                     </IconContainer>
@@ -113,6 +115,10 @@ const RegisterWrapper = styled.div`
     height: 100%;
 `;
 
+interface IRegisterContainerInputProps {
+    mobile: boolean;
+}
+
 const RegisterContainer = styled.div`
     display: flex;
     flex-direction: column;
@@ -120,7 +126,8 @@ const RegisterContainer = styled.div`
     align-items: center;
     width: 480px;
     max-height: 100vh;
-    background: linear-gradient(91.44deg, #241f33 0.31%, #1b1726 99.41%);
+    background: ${(props: IRegisterContainerInputProps) =>
+        props.mobile ? 'none' : 'linear-gradient(91.44deg, #241f33 0.31%, #1b1726 99.41%)'};
     padding: 40px;
     border-radius: 15px;
 `;

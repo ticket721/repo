@@ -8,7 +8,7 @@ redis:
         cpu: 250m
 
     persistence:
-      size: 100Gi
+      size: 50Gi
 
   slave:
     resources:
@@ -17,4 +17,4 @@ redis:
         cpu: 250m
 
     persistence:
-      size: 100Gi
+      size: 50Gi

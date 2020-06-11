@@ -1,7 +1,8 @@
 import { keccak256 } from '@common/global';
-import { CacheSettings, CacheState } from '../redux/ducks/cache';
+import { CacheSettings, CacheState } from '../../redux/ducks/cache';
 import { default as get } from 'lodash.get';
 import { T721SDK } from '@common/sdk';
+import { AxiosResponse } from 'axios';
 
 export type SDKCall = InstanceType<typeof T721SDK>;
 
@@ -12,7 +13,7 @@ export abstract class CacheCore {
      * @param args
      */
     public static key = (method: string, args: any): string => {
-        if (!get(global.window.t721Sdk, method, undefined)) {
+        if (!get(global.window.t721Sdk as T721SDK, method, undefined)) {
             throw Error(`Specified method: ${method} does not correspond to any T721 SDK method`);
         }
 
@@ -66,9 +67,8 @@ export abstract class CacheCore {
      * @param method
      * @param args
      */
-    public static fetchItem = async (method: any, args: any[]): Promise<any> => {
+    public static fetchItem = async (method: any, args: any[]): Promise<AxiosResponse> => {
         const sdkMethod = get(global.window.t721Sdk, method, undefined);
-
         if (!sdkMethod) {
             throw Error(`Specified method: ${method} does not correspond to any T721 SDK method`);
         }
@@ -76,7 +76,7 @@ export abstract class CacheCore {
         try {
             return await sdkMethod(...args);
         } catch (e) {
-            console.log('bad arguments');
+            console.log('CacheCore: bad arguments');
             throw e;
         }
     };

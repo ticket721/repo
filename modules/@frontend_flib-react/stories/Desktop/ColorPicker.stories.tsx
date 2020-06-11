@@ -29,6 +29,8 @@ export const showcase = () => (
                 label={text('Label', 'Primary Color')}
                 color={state.color}
                 handleChange={handleChange}
+                onFocus={() => console.log('focus')}
+                onBlur={() => console.log('blur')}
                 presetLabel={text('Preset colors label', 'Color from main image')}
                 presetColors={array('Preset colors:', colors)}
             />,

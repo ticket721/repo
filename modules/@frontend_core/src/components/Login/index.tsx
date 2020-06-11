@@ -8,6 +8,7 @@ import { AuthState, LocalLogin, ResetSubmission } from '../../redux/ducks/auth';
 import styled from 'styled-components';
 import { loginValidationSchema } from './validation';
 import { useTranslation } from 'react-i18next';
+import { useMediaQuery } from 'react-responsive';
 
 import './locales';
 
@@ -26,6 +27,7 @@ export const Login: React.FC = () => {
             dispatch(LocalLogin(values.email, values.password));
         },
     });
+    const isTabletOrMobile = useMediaQuery({ maxWidth: 1224 });
 
     const { from }: any = history.location.state || { from: '/' };
 
@@ -47,7 +49,7 @@ export const Login: React.FC = () => {
 
     return (
         <LoginWrapper>
-            <LoginContainer>
+            <LoginContainer mobile={isTabletOrMobile}>
                 <IconContainer>
                     <Icon icon={'ticket721'} size={'40px'} color={'#fff'} />
                 </IconContainer>
@@ -95,6 +97,10 @@ const LoginWrapper = styled.div`
     height: 100%;
 `;
 
+interface ILoginContainerInputProps {
+    mobile: boolean;
+}
+
 const LoginContainer = styled.div`
     display: flex;
     flex-direction: column;
@@ -102,7 +108,8 @@ const LoginContainer = styled.div`
     align-items: center;
     width: 480px;
     max-height: 100vh;
-    background: linear-gradient(91.44deg, #241f33 0.31%, #1b1726 99.41%);
+    background: ${(props: ILoginContainerInputProps) =>
+        props.mobile ? 'none' : 'linear-gradient(91.44deg, #241f33 0.31%, #1b1726 99.41%)'};
     padding: 40px;
     border-radius: 15px;
 `;

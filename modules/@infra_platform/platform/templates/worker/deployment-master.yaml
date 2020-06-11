@@ -1,0 +1,80 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "platform.fullname" . }}--worker-master--d
+  labels:
+    app: {{ include "platform.fullname" . }}--worker
+    name: {{ include "platform.fullname" . }}--worker-master--d
+    chart: {{ .Chart.Name }}
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: {{ include "platform.fullname" . }}--worker
+      name: {{ include "platform.fullname" . }}--worker-master
+      chart: {{ .Chart.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "platform.fullname" . }}--worker
+        name: {{ include "platform.fullname" . }}--worker-master
+        chart: {{ .Chart.Name }}
+    spec:
+      volumes:
+        - name: worker-config
+          configMap:
+            name: {{ template "platform.fullname" . }}--worker-config-master--cfmp
+        - name: worker-secret
+          secret:
+            secretName: {{ template "platform.fullname" . }}--worker-secret--sec
+      initContainers:
+        - name: {{ include "platform.fullname" . }}--worker-migrations
+          env:
+            - name: CASSANDRA_HOSTS
+              value: "{{ .Values.config.cassandra.host }}"
+            - name: CASSANDRA_PORT
+              value: "{{ .Values.config.cassandra.port }}"
+            - name: ELASTICSEARCH_HOST
+              value: "{{ .Values.config.elasticsearch.host }}:{{ .Values.config.elasticsearch.port }}"
+          image: "{{ .Values.migrations.image.repository }}:{{ .Values.migrations.image.tag }}"
+          imagePullPolicy: {{ .Values.migrations.image.pullPolicy }}
+      containers:
+        - name: {{ template  "platform.fullname" . }}--worker
+          image: "{{ .Values.worker.image.repository }}:{{ .Values.worker.image.tag }}"
+          imagePullPolicy: {{ .Values.worker.image.pullPolicy }}
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "250m"
+          volumeMounts:
+            - name: worker-config
+              mountPath: /config/production.env
+              subPath: production.env
+            - name: worker-secret
+              mountPath: /config/production.secret.env
+              subPath: production.secret.env
+          env:
+            - name: CONFIG_PATH
+              value: /config/
+            - name: NODE_ENV
+              value: production
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http

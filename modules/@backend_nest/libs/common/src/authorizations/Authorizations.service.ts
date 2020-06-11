@@ -20,7 +20,10 @@ import { TxSequenceAcsetBuilderArgs } from '@lib/common/txs/acset_builders/TxSeq
 import { UserDto } from '@lib/common/users/dto/User.dto';
 import { ActionSetsService } from '@lib/common/actionsets/ActionSets.service';
 import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
-import { WithdrawTransactionConfirmed, WithdrawTransactionFailure } from '@app/worker/tasks/withdraw/Withdraw.tasks';
+import {
+    WithdrawTransactionConfirmed,
+    WithdrawTransactionFailure,
+} from '@app/worker/tasks/withdraw/Withdraw.tasks.types';
 
 /**
  * Service to CRUD AuthorizationEntities

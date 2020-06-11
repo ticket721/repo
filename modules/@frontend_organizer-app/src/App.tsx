@@ -13,6 +13,7 @@ import { useSelector }      from 'react-redux';
 import styled               from 'styled-components';
 import { AppStatus }        from '@frontend/core/lib/redux/ducks/statuses';
 import ToastStacker from '@frontend/core/lib/components/ToastStacker';
+import './core/event_creation/locales';
 
 const App: React.FC = () => {
   const [ validated, setValidated ] = useState(true);
@@ -49,16 +50,18 @@ const App: React.FC = () => {
                   return <ProtectedRoute path={route.path} key={idx} page={page} />
               }
 
-              return <Route key={idx} path={route.path}>
-                <route.page />
-              </Route>
-            })
-          }
-        </Switch>
-        <ToastStacker />
-      </AppContainer>
-    </Suspense>
-  )
+                        return <Route key={idx} path={route.path}>
+                            <route.page />
+                        </Route>
+                    })
+                }
+            </Switch>
+            <ToastStacker additionalLocales={[
+                'organizer_error_notifications',
+            ]} />
+        </AppContainer>
+      </Suspense>
+    )
 };
 
 const AppContainer = styled.div`

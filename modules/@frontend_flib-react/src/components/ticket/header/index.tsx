@@ -55,7 +55,9 @@ const Header = styled.header<TicketHeaderProps>`
 export const TicketHeader: React.FunctionComponent<TicketHeaderProps> = (props: TicketHeaderProps): JSX.Element => {
     return (
         <Header fullWidth={props.fullWidth}>
-            {!props.fullWidth && <TicketHeaderNumber>x{props.ticket.number}</TicketHeaderNumber>}
+            {!props.fullWidth && props.ticket.number ? (
+                <TicketHeaderNumber>x{props.ticket.number}</TicketHeaderNumber>
+            ) : null}
             <img src={props.ticket.image} />
         </Header>
     );
