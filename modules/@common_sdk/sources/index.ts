@@ -34,7 +34,6 @@ import {
     eventsCreateDatesConfiguration, eventsCreateImagesMetadata,
     eventsCreateModulesConfiguration,
     eventsCreateTextMetadata, eventsDeleteCategories, eventsDeleteDates,
-    eventsSearch, eventsStart, eventsUpdate,
     eventsSearch, eventsStart, eventsUpdate, eventsWithdraw,
 } from './app/api/events';
 import { txsInfos, txsSearch, txsSubscribe }                              from './app/api/txs';
