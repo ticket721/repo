@@ -6,8 +6,6 @@ export function getContract(subspace: Subspace, mod: string, contractName: strin
         throw new Error(`Modules ${mod} not loading into artifacts`);
     }
 
-    console.log(contracts[mod].live);
-
     if (!contracts[mod].live[`${contractName}.json`]) {
         throw new Error(`Contract ${contractName} not loading into ${mod} module artifacts`);
     }

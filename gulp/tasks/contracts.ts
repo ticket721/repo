@@ -62,10 +62,7 @@ export async function convert_artifacts() {
 
     for (const mod of modules) {
 
-        finalValue[mod] = {
-            live: {},
-            lib: {}
-        };
+        finalValue[mod] = {};
 
         const contractsArtifactsPath = path.join(artifactPath, mod, 'build', 'contracts');
 
@@ -83,10 +80,10 @@ export async function convert_artifacts() {
 
             if (content.networks && content.networks[netId] && content.networks[netId].address) {
                 repo_log.success(`loaded live ${mod}::${contract}`);
-                finalValue[mod].live[contract] = content;
-            } else {
-                repo_log.success(`loaded ${mod}::${contract}`);
-                finalValue[mod].lib[contract] = content;
+                finalValue[mod][contract] = {
+                    abi: content.abi,
+                    networks: content.networks
+                };
             }
 
         }
