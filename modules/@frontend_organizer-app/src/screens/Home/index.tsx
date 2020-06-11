@@ -5,7 +5,7 @@ import { PushNotification } from '@frontend/core/lib/redux/ducks/notifications';
 const Home: React.FC = () => {
   const dispatch = useDispatch();
   return (
-    <div className='Home' style={{ color: 'white', height: "130vh"}}>
+    <div className='Home' style={{ color: 'white', height: '130vh'}}>
       Home
       <div onClick={() => dispatch(PushNotification('success message', 'success'))}>Success</div>
       <div onClick={() => dispatch(PushNotification('error message', 'error'))}>Error</div>
