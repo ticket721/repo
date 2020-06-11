@@ -5803,26 +5803,10 @@
   resolved "https://registry.yarnpkg.com/@testing-library/user-event/-/user-event-8.0.3.tgz#c3e304d2692b797ff0e3ced53c0597d341bb868b"
   integrity sha512-ALoIj6GzxN0UzFiudSwENy2yTD1xHDW+KtuOch5xuqRgQr0AxGB8z+EQBxT6zlWgAoLGN8hmYxTTGRoQSOZtlg==
 
-"@ticket721/e712@0.2.0":
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/@ticket721/e712/-/e712-0.2.0.tgz#7a014831ecc3a14f155556d9548927db6935719d"
-  integrity sha512-YOTebsfNq+hmmEYhz3cmaeOxD3zYBY9UQmfhK+9baNnUFhQFfDw38uOX08NHgdZthaCktqgOywGZyQNFvH1yng==
-  dependencies:
-    bn.js "^5.0.0"
-    ethers "^4.0.36"
-
 "@ticket721/e712@0.2.4":
   version "0.2.4"
   resolved "https://registry.yarnpkg.com/@ticket721/e712/-/e712-0.2.4.tgz#52ed402f74d16c9a09a09bc50604f8623d7ef5cf"
   integrity sha512-XWzAOtZbV5HKJciRPI2Nt3e4onZ3fsMwv91snh8qZIht/LRYXIOVLGQcdRTTSdK+BQfo/7uOkr7/i0Iu8PbFoA==
-  dependencies:
-    bn.js "5.1.1"
-    ethers "4.0.41"
-
-"@ticket721/e712@0.3.0":
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/@ticket721/e712/-/e712-0.3.0.tgz#fd8c05f0b1ed125719c09fa5ce69ac2705e169d8"
-  integrity sha512-gja3gchmK1zCZb7riWX20P/QqcEYMJMKkAJbYCEp/Kty0C/PKllKQtlTVkI61lQLuwUphsYqHIV4g08NKb3SrA==
   dependencies:
     bn.js "5.1.1"
     ethers "4.0.41"
@@ -9290,11 +9274,6 @@ bn.js@5.1.1, bn.js@^5.1.1:
   version "5.1.1"
   resolved "https://registry.yarnpkg.com/bn.js/-/bn.js-5.1.1.tgz#48efc4031a9c4041b9c99c6941d903463ab62eb5"
   integrity sha512-IUTD/REb78Z2eodka1QZyyEk66pciRcP6Sroka0aI3tG/iwIdYLrBD62RsubR7vqdt3WyX8p4jxeatzmRSphtA==
-
-bn.js@^5.0.0:
-  version "5.1.2"
-  resolved "https://registry.yarnpkg.com/bn.js/-/bn.js-5.1.2.tgz#c9686902d3c9a27729f43ab10f9d79c2004da7b0"
-  integrity sha512-40rZaf3bUNKTVYu9sIeeEGOg7g14Yvnj9kH7b50EiwX0Q7A6umbvfI5tvHaOERH0XigqKkfLkFQxzb4e6CIXnA==
 
 body-parser@1.19.0, body-parser@^1.16.0, body-parser@^1.17.2:
   version "1.19.0"
@@ -13005,16 +12984,6 @@ enzyme@3.11.0:
     rst-selector-parser "^2.2.3"
     string.prototype.trim "^1.2.1"
 
-erc2280@1.3.0:
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/erc2280/-/erc2280-1.3.0.tgz#1f739784140ea9f8faf074980a0fd5b564251bbe"
-  integrity sha512-5SnY8UKJEbBM0TAY14ksIPJznGaqeZCtCwZSLdBxTOvVaR76+0D8F8hjkMawUCz0F0LV1eADZeD482KlIxvaNA==
-  dependencies:
-    "@openzeppelin/contracts" "2.3.0"
-    "@ticket721/e712" "0.2.0"
-    ethers "4.0.41"
-    truffle "5.1.5"
-
 err-code@^1.0.0:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/err-code/-/err-code-1.1.2.tgz#06e0116d3028f6aef4806849eb0ea6a748ae6960"
@@ -14069,7 +14038,7 @@ ethers@4.0.45:
     uuid "2.0.1"
     xmlhttprequest "1.8.0"
 
-ethers@^4.0.32, ethers@^4.0.36, ethers@~4.0.4:
+ethers@^4.0.32, ethers@~4.0.4:
   version "4.0.47"
   resolved "https://registry.yarnpkg.com/ethers/-/ethers-4.0.47.tgz#91b9cd80473b1136dd547095ff9171bd1fc68c85"
   integrity sha512-hssRYhngV4hiDNeZmVU/k5/E8xmLG8UpcNUzg6mb7lqhgpFPH/t7nuv20RjRrEf0gblzvi2XwR5Te+V3ZFc9pQ==
@@ -28782,15 +28751,6 @@ truffle-hdwallet-provider@1.0.17:
     bindings "^1.3.1"
     web3 "1.2.1"
     websocket "^1.0.28"
-
-truffle@5.1.5:
-  version "5.1.5"
-  resolved "https://registry.yarnpkg.com/truffle/-/truffle-5.1.5.tgz#87730b484103bb77e7371a14d69628e1ec20a094"
-  integrity sha512-9zloOGyY/+kj+lqX6S9eCARrBvCLPlT1y+q41SPP2dfieRLsfXYDmBqgzCh5dSpccABlqkCUvE4nedhqi6Qggg==
-  dependencies:
-    app-module-path "^2.2.0"
-    mocha "5.2.0"
-    original-require "1.0.1"
 
 truffle@5.1.6:
   version "5.1.6"

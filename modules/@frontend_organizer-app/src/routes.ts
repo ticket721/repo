@@ -36,6 +36,6 @@ export const routes: RouteDatum[] = [
     {
         path: '/',
         page: Home,
-        protected: true,
+        // protected: true,
     },
 ];

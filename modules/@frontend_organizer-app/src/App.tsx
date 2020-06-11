@@ -31,7 +31,7 @@ const App: React.FC = () => {
       <Suspense fallback='loading'>
         <AppContainer>
             {
-                validated &&
+                !validated &&
                 location.pathname !== '/register' && location.pathname !== '/login' &&
                 <Navbar/>
             }
