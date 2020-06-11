@@ -1,10 +1,10 @@
-import Search         from './screens/Search';
-import Tags           from './screens/Tags';
-import Profile        from './screens/Profile';
+import Search                 from './screens/Search';
+import Tags                   from './screens/Tags';
+import Profile                from './screens/Profile';
 import Home                   from './screens/Home';
-import { TempoTopBar, Test1 } from './screens/Test1';
 import Wallet                 from './screens/Wallet';
-import React          from 'react';
+import React                  from 'react';
+import { Login, Register }    from '@frontend/core/lib/components';
 
 export interface LinkDatum {
     icon: string;
@@ -17,33 +17,44 @@ export interface RouteDatum {
     page: React.FC<any>;
     topBar?: React.ReactElement;
     topBarHeight?: string;
+    protected?: boolean;
 }
 
 export const routes: RouteDatum[] = [
     {
-        path: '/home/test',
-        page: Test1,
-        topBar: TempoTopBar,
+        path: '/login',
+        page: Login,
+        protected: false,
+    },
+    {
+        path: '/register',
+        page: Register,
+        protected: false,
     },
     {
         path: '/home',
         page: Home,
+        protected: false,
     },
     {
         path: '/profile',
         page: Profile,
+        protected: true,
     },
     {
         path: '/search',
         page: Search,
+        protected: false,
     },
     {
         path: '/tags',
         page: Tags,
+        protected: false,
     },
     {
         path: '/',
         page: Wallet,
+        protected: true,
     },
 ];
 

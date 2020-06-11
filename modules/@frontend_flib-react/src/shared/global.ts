@@ -1,4 +1,5 @@
-import { createGlobalStyle, css } from 'styled-components';
+import { createGlobalStyle, css, ThemeProps } from 'styled-components';
+import { Theme } from '../config/theme';
 
 export const masterReset = css`
     box-sizing: inherit;
@@ -78,7 +79,7 @@ export const linkStyle = css`
     text-decoration: none;
 `;
 
-export const GlobalStyles = createGlobalStyle`
+export const GlobalStyles = createGlobalStyle<{ theme: Theme }>`
   * {
     ${masterReset}
   }
@@ -204,6 +205,19 @@ export const GlobalStyles = createGlobalStyle`
     &--mb {
       margin-bottom: 1rem;
     }
+  }
+
+  .Toastify__toast--info {
+      background: ${(props: ThemeProps<Theme>) => props.theme.primaryColorGradientEnd.hex};
+  }
+  .Toastify__toast--success {
+      background: ${(props: ThemeProps<Theme>) => props.theme.successColor.hex};
+  }
+  .Toastify__toast--warning {
+      background: ${(props: ThemeProps<Theme>) => props.theme.warningColor.hex};
+  }
+  .Toastify__toast--error {
+      background: ${(props: ThemeProps<Theme>) => props.theme.errorColor.hex};
   }
 
 `;

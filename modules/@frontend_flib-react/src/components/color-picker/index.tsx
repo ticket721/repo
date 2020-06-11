@@ -1,13 +1,16 @@
 import * as React from 'react';
 import { SketchPicker, ColorResult } from 'react-color';
 import styled from '../../config/styled';
+import { ChangeEvent } from 'react';
 
 export interface ColorPickerProps extends React.ComponentProps<any> {
     label: string;
-    color: string;
-    handleChange: (color: ColorResult) => void;
     presetColors: any[];
     presetLabel?: string;
+    color: string;
+    handleChange: (color: ColorResult) => void;
+    onFocus: (eventOrPath: string | ChangeEvent<any>) => void | ((eventOrTextValue: string | ChangeEvent<any>) => void);
+    onBlur: (value: any) => void;
 }
 
 const StyledLabel = styled.label`
@@ -76,11 +79,14 @@ const PickerContainer = styled.div`
 
     label {
         position: absolute;
-        top: ${(props) => props.theme.biggerSpacing};
+        z-index: 2;
+        top: 35px;
     }
 
     .sketch-picker {
-        background-color: ${(props) => props.theme.componentColorLight} !important;
+        position: absolute;
+        z-index: 1;
+        background-color: rgb(34, 32, 41) !important;
         display: flex;
         flex-direction: column;
         margin-top: ${(props) => props.theme.regularSpacing};
@@ -127,14 +133,6 @@ const PickerContainer = styled.div`
     }
 `;
 
-const Cover = styled.div`
-    bottom: 0;
-    left: 0;
-    position: fixed;
-    right: 0;
-    top: 0;
-`;
-
 const ColorLabel = styled.span`
     color: ${(props) => props.theme.textColorDark};
     display: inline-block;
@@ -145,11 +143,16 @@ const ColorLabel = styled.span`
 
 export const ColorPicker: React.FunctionComponent<ColorPickerProps> = (props: ColorPickerProps): JSX.Element => {
     const [showPicker, setShowPicker] = React.useState(false);
-
     return (
         <div>
             <StyledContainer
                 onClick={() => {
+                    if (showPicker) {
+                        props.onBlur('click');
+                    } else {
+                        props.onFocus('');
+                    }
+
                     setShowPicker(!showPicker);
                 }}
                 className={showPicker ? 'active' : ''}
@@ -162,7 +165,6 @@ export const ColorPicker: React.FunctionComponent<ColorPickerProps> = (props: Co
             </StyledContainer>
             {showPicker && (
                 <PickerContainer>
-                    <Cover onClick={props.handleClick} />
                     {props.presetColors.length > 0 && <label>{props.presetLabel}</label>}
                     <SketchPicker
                         color={props.color}

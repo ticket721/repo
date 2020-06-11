@@ -52,7 +52,7 @@
     "react-color": "2.18.1",
     "react-datepicker": "2.16.0",
     "react-dom": "16.13.1",
-    "react-dropzone-uploader": "2.11.0",
+    "react-dropzone": "11.0.1",
     "react-router": "5.2.0",
     "react-router-dom": "5.2.0",
     "react-visibility-sensor": "5.1.1",
@@ -81,7 +81,9 @@
     "cpx": "1.5.0",
     "file-loader": "6.0.0",
     "svgtofont": "1.6.0",
-    "themeprovider-storybook": "1.5.1"
+    "themeprovider-storybook": "1.5.1",
+    "react-responsive": "8.1.0",
+    "@types/react-responsive": "8.0.2"
   },
   "devDependencies": {
     "@storybook/addon-actions": "5.3.19",
