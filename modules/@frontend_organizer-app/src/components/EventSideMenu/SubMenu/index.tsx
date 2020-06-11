@@ -1,11 +1,14 @@
 import React from 'react';
 import styled from 'styled-components';
-import Button from "@frontend/flib-react/lib/components/button";
 import Icon from "@frontend/flib-react/lib/components/icon";
 
 const tickets = ['Weekends', 'Mercredi', 'Super category'];
 
-const SideMenu = () => {
+interface Props {
+  type: 'information' | 'tickets';
+}
+
+const SubMenu = ({ type }: Props): JSX.Element => {
   const [more, setMore] = React.useState<
     'information' | 'all' | 'tickets' | 'none'
     >('none');
@@ -37,41 +40,32 @@ const SideMenu = () => {
     }
   }
 
+  if (type === 'information') {
+    return (
+      <>
+        <Button onClick={() => onChangeMore('information')}>
+          <Title>Information</Title>
+          <Icon icon='chevron' color='white' size='6px' />
+        </Button>
+        {
+          (more === 'information'|| more === 'all') &&
+          <InfoDetails />
+        }
+    </>
+    )
+  }
   return (
-    <Container>
-      <Actions>
-        <Button
-          className="top"
-          variant="primary"
-          title="Publish Event"
-          onClick={() => console.log('publish')}
-        />
-        <Button
-          variant="secondary"
-          title="Preview Event"
-          onClick={() => console.log('publish')}
-        />
-      </Actions>
-      <Separator />
-      <button onClick={() => onChangeMore('information')} className='more'>
-        <Title>Information</Title>
-        <Icon icon='chevron' color='white' size='6px' />
-      </button>
-      {
-        (more === 'information'|| more === 'all') &&
-        <InfoDetails />
-      }
-      <button onClick={() => onChangeMore('tickets')} className='more'>
+    <>
+      <Button onClick={() => onChangeMore('tickets')}>
         <Title>Tickets</Title>
-      </button>
+        <Icon icon='chevron' color='white' size='6px' />
+      </Button>
       {
         (more === 'tickets'|| more === 'all') &&
         <TicketList />
       }
-      <Title>Presentation</Title>
-      <Separator />
-    </Container>
-  )
+    </>
+  );
 };
 
 const InfoDetails = () => {
@@ -92,57 +86,15 @@ const TicketList = () => {
   )
 };
 
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 280px;
-  height: calc(100vh - 80px);
-  position: absolute;
-  left: 0;
-  background-color: ${(props) => props.theme.darkerBg};
-
-  button {
-    outline: none;
-  }
-  .more {
-    outline: none;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-right: 24px;
-  }
-`;
-
 const SubContainer = styled.div`
   display: flex;
   flex-direction: column;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 8px;
+  padding: 12px 0;
+  margin-bottom: 12px;
 `;
 
-const Separator = styled.div`
-  height: 2px;
-  width: 100%;
-  margin: 12px 0;
-  background: rgba(10, 8, 18, 0.3);
-`;
-
-const Actions = styled.div`
-  display: flex;
-  flex-direction: column;
-  height: 152px;
-  align-items: center;
-  padding: 24px 0 12px 0;
-
-  .top {
-    margin-bottom: 8px;
-  }
-  button {
-    margin: 0;
-    width: calc(100% - 48px);
-    span {
-      margin: 0;
-    }
-  }
-`;
 
 const Title = styled.span`
   font-weight: 500;
@@ -160,4 +112,12 @@ const Subtitle = styled.span`
   color: rgba(255, 255, 255, 0.38);
 `;
 
-export default SideMenu;
+const Button = styled.button`
+  outline: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-right: 24px;
+`;
+
+export default SubMenu;
