@@ -221,7 +221,7 @@ export class ControllerBasics<EntityType> {
      * @param query
      * @private
      */
-    public _esQueryBuilder<CustomEntity = EntityType>(query: Partial<SortablePagedSearch>): EsSearchOptionsStatic {
+    public _esQueryBuilder<CustomEntity = EntityType>(query: SortablePagedSearch): EsSearchOptionsStatic {
         let esQuery;
         try {
             esQuery = ESSearchBodyBuilder(query);

@@ -12,7 +12,6 @@ import { RightEntity } from '@lib/common/rights/entities/Right.entity';
 import { ESSearchReturn } from '@lib/common/utils/ESSearchReturn.type';
 import { EventsService } from '@lib/common/events/Events.service';
 import { SortablePagedSearch } from '@lib/common/utils/SortablePagedSearch.type';
-import { SearchableField } from '@lib/common/utils/SearchableField.type';
 import { ESCountReturn } from '@lib/common/utils/ESCountReturn.type';
 
 class FakeEntity {
