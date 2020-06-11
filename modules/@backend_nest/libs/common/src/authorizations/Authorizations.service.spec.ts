@@ -12,12 +12,16 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from '@iaminfinity/express-cassandra/dist/utils/cassandra-orm.utils';
 import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
 import { BytesToolService } from '@lib/common/toolbox/Bytes.tool.service';
-import { encode, MintAuthorization, toB32 } from '@common/global';
+import { encode, MintAuthorization, toB32, WithdrawAuthorization } from '@common/global';
 import { TimeToolService } from '@lib/common/toolbox/Time.tool.service';
 import { EsSearchOptionsStatic } from '@iaminfinity/express-cassandra/dist/orm/interfaces/externals/express-cassandra.interface';
 import { GroupService } from '@lib/common/group/Group.service';
 import { RocksideService } from '@lib/common/rockside/Rockside.service';
 import { NestError } from '@lib/common/utils/NestError';
+import { ActionSetsService } from '@lib/common/actionsets/ActionSets.service';
+import { EIP712Signature } from '@ticket721/e712/lib';
+import { UserDto } from '@lib/common/users/dto/User.dto';
+import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
 
 class AuthorizationEntityModelMock {
     _properties;
@@ -40,6 +44,7 @@ describe('Authorizations Service', function() {
         timeToolServiceMock: TimeToolService;
         groupServiceMock: GroupService;
         rocksideServiceMock: RocksideService;
+        actionSetsServiceMock: ActionSetsService;
     } = {
         authorizationsService: null,
         authorizationsRepositoryMock: null,
@@ -53,6 +58,7 @@ describe('Authorizations Service', function() {
         timeToolServiceMock: null,
         groupServiceMock: null,
         rocksideServiceMock: null,
+        actionSetsServiceMock: null,
     };
 
     beforeEach(async function() {
@@ -67,6 +73,7 @@ describe('Authorizations Service', function() {
         context.timeToolServiceMock = mock(TimeToolService);
         context.groupServiceMock = mock(GroupService);
         context.rocksideServiceMock = mock(RocksideService);
+        context.actionSetsServiceMock = mock(ActionSetsService);
 
         when(context.authorizationEntityMock._properties).thenReturn({
             schema: {
@@ -116,6 +123,10 @@ describe('Authorizations Service', function() {
                 {
                     provide: RocksideService,
                     useValue: instance(context.rocksideServiceMock),
+                },
+                {
+                    provide: ActionSetsService,
+                    useValue: instance(context.actionSetsServiceMock),
                 },
                 AuthorizationsService,
             ],
@@ -1307,6 +1318,440 @@ describe('Authorizations Service', function() {
                     }),
                 ),
             ).called();
+        });
+    });
+
+    describe('generateEventWithdrawAuthorizationAndTransactionSequence', function() {
+        it('should properly generate withdraw authorization for event owner', async function() {
+            const user: UserDto = {
+                address: '0x98AD263a95F1ab1AbFF41F4D44b07c3240251A0a',
+            } as UserDto;
+            const now = new Date(Date.now());
+            const eventController = '0xEFFe4deE65Da9503dd3363bC1C902474b4A955f4';
+            const eventId = 'f44aace8-d7cb-4017-9273-f9acc2cc9f3e'.toLowerCase();
+            const currency = '0x14bB2bB081b6B604394b41fF23Eb023A295dFa04';
+            const amount = '400';
+            const expiration = Math.floor((now.getTime() + DAY) / 1000);
+            const t721ControllerAddress = '0x2c95851D1c18c9788490d5FD558be3bA40C44268';
+            const encodedWithdrawCall = '0xencoded';
+            const t721ControllerInstance = {
+                _address: t721ControllerAddress,
+                methods: {
+                    isCodeConsummable: (...args: any[]) => ({
+                        call: async () => true,
+                    }),
+                    withdraw: (...args: any[]) => ({
+                        encodeABI: () => encodedWithdrawCall,
+                    }),
+                },
+            };
+            const chainId = 2702;
+            const randomBytes = '1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f';
+            const code = `0x${randomBytes}`;
+            const e712signature = {
+                hex: '0xsignature',
+                r: '0xr',
+                v: 1,
+                s: '0xs',
+            };
+            const signer = async (encodedPayload: string): Promise<EIP712Signature> => {
+                return e712signature;
+            };
+            const authorization = {
+                granter: eventController,
+                grantee: user.address,
+                mode: 'withdraw',
+                codes: WithdrawAuthorization.toCodesFormat(code),
+                selectors: WithdrawAuthorization.toSelectorFormat(eventController, eventId),
+                args: WithdrawAuthorization.toArgsFormat(
+                    eventController,
+                    eventId,
+                    currency,
+                    amount,
+                    user.address,
+                    code,
+                    expiration,
+                ),
+                signature: e712signature.hex,
+                readable_signature: false,
+                cancelled: false,
+                consumed: false,
+                dispatched: true,
+                user_expiration: new Date(expiration * 1000),
+                be_expiration: new Date(expiration * 1000 + HOUR),
+            };
+            const authorizationId = 'ffffffff-d7cb-4017-9273-f9acc2cc9f3f'.toLowerCase();
+            const transaction = {
+                from: user.address,
+                to: t721ControllerAddress,
+                data: encodedWithdrawCall,
+                value: '0',
+                onConfirm: {
+                    name: '@withdraw/confirmation',
+                    jobData: {
+                        authorizationId: authorizationId,
+                        granter: eventController,
+                        grantee: user.address,
+                    },
+                },
+                onFailure: {
+                    name: '@withdraw/failure',
+                    jobData: {
+                        authorizationId: authorizationId,
+                        granter: eventController,
+                        grantee: user.address,
+                    },
+                },
+            };
+            const actionSetId = 'ec34539c-7d9f-42c9-8716-556346f1dd2e';
+            const spiedService = spy(context.authorizationsService);
+
+            when(context.timeToolServiceMock.now()).thenReturn(now);
+            when(context.bytesToolServiceMock.randomBytes(31)).thenReturn(randomBytes);
+            when(context.web3ServiceMock.net()).thenResolve(chainId);
+            when(context.t721ControllerV0ServiceMock.get()).thenResolve(t721ControllerInstance);
+            when(context.rocksideServiceMock.getSigner(eventController)).thenReturn(signer);
+            when(spiedService.create(deepEqual(authorization) as AuthorizationEntity)).thenResolve({
+                error: null,
+                response: {
+                    id: authorizationId,
+                    ...authorization,
+                } as AuthorizationEntity,
+            });
+            when(
+                context.actionSetsServiceMock.build(
+                    'txseq_processor',
+                    deepEqual(user),
+                    deepEqual({
+                        transactions: [transaction],
+                    }),
+                    true,
+                ),
+            ).thenResolve({
+                error: null,
+                response: {
+                    id: actionSetId,
+                } as ActionSetEntity,
+            });
+
+            const res = await context.authorizationsService.generateEventWithdrawAuthorizationAndTransactionSequence(
+                user,
+                eventController,
+                eventId,
+                currency,
+                amount,
+            );
+
+            expect(res).toEqual({
+                error: null,
+                response: {
+                    txSeq: {
+                        id: actionSetId,
+                    },
+                },
+            });
+
+            verify(context.timeToolServiceMock.now()).times(1);
+            verify(context.bytesToolServiceMock.randomBytes(31)).times(1);
+            verify(context.web3ServiceMock.net()).times(1);
+            verify(context.t721ControllerV0ServiceMock.get()).times(3);
+            verify(context.rocksideServiceMock.getSigner(eventController)).times(1);
+            verify(spiedService.create(deepEqual(authorization) as AuthorizationEntity)).times(1);
+            verify(
+                context.actionSetsServiceMock.build(
+                    'txseq_processor',
+                    deepEqual(user),
+                    deepEqual({
+                        transactions: [transaction],
+                    }),
+                    true,
+                ),
+            ).times(1);
+        });
+
+        it('should fail on signature error', async function() {
+            const user: UserDto = {
+                address: '0x98AD263a95F1ab1AbFF41F4D44b07c3240251A0a',
+            } as UserDto;
+            const now = new Date(Date.now());
+            const eventController = '0xEFFe4deE65Da9503dd3363bC1C902474b4A955f4';
+            const eventId = 'f44aace8-d7cb-4017-9273-f9acc2cc9f3e'.toLowerCase();
+            const currency = '0x14bB2bB081b6B604394b41fF23Eb023A295dFa04';
+            const amount = '400';
+            const t721ControllerAddress = '0x2c95851D1c18c9788490d5FD558be3bA40C44268';
+            const encodedWithdrawCall = '0xencoded';
+            const t721ControllerInstance = {
+                _address: t721ControllerAddress,
+                methods: {
+                    isCodeConsummable: (...args: any[]) => ({
+                        call: async () => true,
+                    }),
+                    withdraw: (...args: any[]) => ({
+                        encodeABI: () => encodedWithdrawCall,
+                    }),
+                },
+            };
+            const chainId = 2702;
+            const randomBytes = '1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f';
+            const signer = async (encodedPayload: string): Promise<EIP712Signature> => {
+                throw new Error('unexpected_error');
+            };
+
+            when(context.timeToolServiceMock.now()).thenReturn(now);
+            when(context.bytesToolServiceMock.randomBytes(31)).thenReturn(randomBytes);
+            when(context.web3ServiceMock.net()).thenResolve(chainId);
+            when(context.t721ControllerV0ServiceMock.get()).thenResolve(t721ControllerInstance);
+            when(context.rocksideServiceMock.getSigner(eventController)).thenReturn(signer);
+
+            const res = await context.authorizationsService.generateEventWithdrawAuthorizationAndTransactionSequence(
+                user,
+                eventController,
+                eventId,
+                currency,
+                amount,
+            );
+
+            expect(res).toEqual({
+                error: 'signature_error',
+                response: null,
+            });
+
+            verify(context.timeToolServiceMock.now()).times(1);
+            verify(context.bytesToolServiceMock.randomBytes(31)).times(1);
+            verify(context.web3ServiceMock.net()).times(1);
+            verify(context.t721ControllerV0ServiceMock.get()).times(2);
+            verify(context.rocksideServiceMock.getSigner(eventController)).times(1);
+        });
+
+        it('should fail on authorization creation error', async function() {
+            const user: UserDto = {
+                address: '0x98AD263a95F1ab1AbFF41F4D44b07c3240251A0a',
+            } as UserDto;
+            const now = new Date(Date.now());
+            const eventController = '0xEFFe4deE65Da9503dd3363bC1C902474b4A955f4';
+            const eventId = 'f44aace8-d7cb-4017-9273-f9acc2cc9f3e'.toLowerCase();
+            const currency = '0x14bB2bB081b6B604394b41fF23Eb023A295dFa04';
+            const amount = '400';
+            const expiration = Math.floor((now.getTime() + DAY) / 1000);
+            const t721ControllerAddress = '0x2c95851D1c18c9788490d5FD558be3bA40C44268';
+            const encodedWithdrawCall = '0xencoded';
+            const t721ControllerInstance = {
+                _address: t721ControllerAddress,
+                methods: {
+                    isCodeConsummable: (...args: any[]) => ({
+                        call: async () => true,
+                    }),
+                    withdraw: (...args: any[]) => ({
+                        encodeABI: () => encodedWithdrawCall,
+                    }),
+                },
+            };
+            const chainId = 2702;
+            const randomBytes = '1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f';
+            const code = `0x${randomBytes}`;
+            const e712signature = {
+                hex: '0xsignature',
+                r: '0xr',
+                v: 1,
+                s: '0xs',
+            };
+            const signer = async (encodedPayload: string): Promise<EIP712Signature> => {
+                return e712signature;
+            };
+            const authorization = {
+                granter: eventController,
+                grantee: user.address,
+                mode: 'withdraw',
+                codes: WithdrawAuthorization.toCodesFormat(code),
+                selectors: WithdrawAuthorization.toSelectorFormat(eventController, eventId),
+                args: WithdrawAuthorization.toArgsFormat(
+                    eventController,
+                    eventId,
+                    currency,
+                    amount,
+                    user.address,
+                    code,
+                    expiration,
+                ),
+                signature: e712signature.hex,
+                readable_signature: false,
+                cancelled: false,
+                consumed: false,
+                dispatched: true,
+                user_expiration: new Date(expiration * 1000),
+                be_expiration: new Date(expiration * 1000 + HOUR),
+            };
+            const spiedService = spy(context.authorizationsService);
+
+            when(context.timeToolServiceMock.now()).thenReturn(now);
+            when(context.bytesToolServiceMock.randomBytes(31)).thenReturn(randomBytes);
+            when(context.web3ServiceMock.net()).thenResolve(chainId);
+            when(context.t721ControllerV0ServiceMock.get()).thenResolve(t721ControllerInstance);
+            when(context.rocksideServiceMock.getSigner(eventController)).thenReturn(signer);
+            when(spiedService.create(deepEqual(authorization) as AuthorizationEntity)).thenResolve({
+                error: 'unexpected_error',
+                response: null,
+            });
+
+            const res = await context.authorizationsService.generateEventWithdrawAuthorizationAndTransactionSequence(
+                user,
+                eventController,
+                eventId,
+                currency,
+                amount,
+            );
+
+            expect(res).toEqual({
+                error: 'cannot_create_authorization',
+                response: null,
+            });
+
+            verify(context.timeToolServiceMock.now()).times(1);
+            verify(context.bytesToolServiceMock.randomBytes(31)).times(1);
+            verify(context.web3ServiceMock.net()).times(1);
+            verify(context.t721ControllerV0ServiceMock.get()).times(2);
+            verify(context.rocksideServiceMock.getSigner(eventController)).times(1);
+            verify(spiedService.create(deepEqual(authorization) as AuthorizationEntity)).times(1);
+        });
+
+        it('should fail on txsequence creation error', async function() {
+            const user: UserDto = {
+                address: '0x98AD263a95F1ab1AbFF41F4D44b07c3240251A0a',
+            } as UserDto;
+            const now = new Date(Date.now());
+            const eventController = '0xEFFe4deE65Da9503dd3363bC1C902474b4A955f4';
+            const eventId = 'f44aace8-d7cb-4017-9273-f9acc2cc9f3e'.toLowerCase();
+            const currency = '0x14bB2bB081b6B604394b41fF23Eb023A295dFa04';
+            const amount = '400';
+            const expiration = Math.floor((now.getTime() + DAY) / 1000);
+            const t721ControllerAddress = '0x2c95851D1c18c9788490d5FD558be3bA40C44268';
+            const encodedWithdrawCall = '0xencoded';
+            const t721ControllerInstance = {
+                _address: t721ControllerAddress,
+                methods: {
+                    isCodeConsummable: (...args: any[]) => ({
+                        call: async () => true,
+                    }),
+                    withdraw: (...args: any[]) => ({
+                        encodeABI: () => encodedWithdrawCall,
+                    }),
+                },
+            };
+            const chainId = 2702;
+            const randomBytes = '1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f';
+            const code = `0x${randomBytes}`;
+            const e712signature = {
+                hex: '0xsignature',
+                r: '0xr',
+                v: 1,
+                s: '0xs',
+            };
+            const signer = async (encodedPayload: string): Promise<EIP712Signature> => {
+                return e712signature;
+            };
+            const authorization = {
+                granter: eventController,
+                grantee: user.address,
+                mode: 'withdraw',
+                codes: WithdrawAuthorization.toCodesFormat(code),
+                selectors: WithdrawAuthorization.toSelectorFormat(eventController, eventId),
+                args: WithdrawAuthorization.toArgsFormat(
+                    eventController,
+                    eventId,
+                    currency,
+                    amount,
+                    user.address,
+                    code,
+                    expiration,
+                ),
+                signature: e712signature.hex,
+                readable_signature: false,
+                cancelled: false,
+                consumed: false,
+                dispatched: true,
+                user_expiration: new Date(expiration * 1000),
+                be_expiration: new Date(expiration * 1000 + HOUR),
+            };
+            const authorizationId = 'ffffffff-d7cb-4017-9273-f9acc2cc9f3f'.toLowerCase();
+            const transaction = {
+                from: user.address,
+                to: t721ControllerAddress,
+                data: encodedWithdrawCall,
+                value: '0',
+                onConfirm: {
+                    name: '@withdraw/confirmation',
+                    jobData: {
+                        authorizationId: authorizationId,
+                        granter: eventController,
+                        grantee: user.address,
+                    },
+                },
+                onFailure: {
+                    name: '@withdraw/failure',
+                    jobData: {
+                        authorizationId: authorizationId,
+                        granter: eventController,
+                        grantee: user.address,
+                    },
+                },
+            };
+            const spiedService = spy(context.authorizationsService);
+
+            when(context.timeToolServiceMock.now()).thenReturn(now);
+            when(context.bytesToolServiceMock.randomBytes(31)).thenReturn(randomBytes);
+            when(context.web3ServiceMock.net()).thenResolve(chainId);
+            when(context.t721ControllerV0ServiceMock.get()).thenResolve(t721ControllerInstance);
+            when(context.rocksideServiceMock.getSigner(eventController)).thenReturn(signer);
+            when(spiedService.create(deepEqual(authorization) as AuthorizationEntity)).thenResolve({
+                error: null,
+                response: {
+                    id: authorizationId,
+                    ...authorization,
+                } as AuthorizationEntity,
+            });
+            when(
+                context.actionSetsServiceMock.build(
+                    'txseq_processor',
+                    deepEqual(user),
+                    deepEqual({
+                        transactions: [transaction],
+                    }),
+                    true,
+                ),
+            ).thenResolve({
+                error: 'unexpected_error',
+                response: null,
+            });
+
+            const res = await context.authorizationsService.generateEventWithdrawAuthorizationAndTransactionSequence(
+                user,
+                eventController,
+                eventId,
+                currency,
+                amount,
+            );
+
+            expect(res).toEqual({
+                error: 'cannot_create_tx_sequence',
+                response: null,
+            });
+
+            verify(context.timeToolServiceMock.now()).times(1);
+            verify(context.bytesToolServiceMock.randomBytes(31)).times(1);
+            verify(context.web3ServiceMock.net()).times(1);
+            verify(context.t721ControllerV0ServiceMock.get()).times(3);
+            verify(context.rocksideServiceMock.getSigner(eventController)).times(1);
+            verify(spiedService.create(deepEqual(authorization) as AuthorizationEntity)).times(1);
+            verify(
+                context.actionSetsServiceMock.build(
+                    'txseq_processor',
+                    deepEqual(user),
+                    deepEqual({
+                        transactions: [transaction],
+                    }),
+                    true,
+                ),
+            ).times(1);
         });
     });
 });

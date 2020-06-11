@@ -1,3 +1,3 @@
-export { configureStore } from './store.configureStore';
+export { configureStore } from './configureStore';
 export * from './ducks';
 export { entryPoint } from './entryPoint';

@@ -8,6 +8,7 @@ import { BullModule, BullModuleOptions } from '@nestjs/bull';
 import { ConfigService } from '@lib/common/config/Config.service';
 import { ToolBoxModule } from '@lib/common/toolbox/ToolBox.module';
 import { GroupModule } from '@lib/common/group/Group.module';
+import { ActionSetsModule } from '@lib/common/actionsets/ActionSets.module';
 
 @Module({
     imports: [
@@ -26,6 +27,7 @@ import { GroupModule } from '@lib/common/group/Group.module';
         CategoriesModule,
         ToolBoxModule,
         GroupModule,
+        ActionSetsModule,
     ],
     providers: [AuthorizationsService],
     exports: [AuthorizationsService],

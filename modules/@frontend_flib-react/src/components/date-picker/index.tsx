@@ -22,6 +22,7 @@ export interface CustomDatePickerProps extends React.ComponentProps<any> {
     placeholderText?: string;
     selected?: Date;
     className?: string;
+    error?: string;
 }
 
 const StyledLabel = styled.label`
@@ -182,6 +183,14 @@ const StyledInputContainer = styled.div`
     }
 `;
 
+const Error = styled.span`
+    top: 20px;
+    color: ${(props) => props.theme.errorColor.hex};
+    font-size: 13px;
+    font-weight: 500;
+    position: relative;
+`;
+
 export const CustomDatePicker: React.FunctionComponent<CustomDatePickerProps> = (
     props: CustomDatePickerProps,
 ): JSX.Element => {
@@ -199,6 +208,7 @@ export const CustomDatePicker: React.FunctionComponent<CustomDatePickerProps> = 
                 placeholderText={props.placeholderText}
                 selected={props.selected}
             />
+            {props.error && <Error>{props.error}</Error>}
         </StyledInputContainer>
     );
 };

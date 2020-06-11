@@ -119,10 +119,10 @@ export interface TagsProps extends React.ComponentProps<any> {
     currentTagsNumber?: number;
     maxTags?: number;
     placeholder: string;
-    value?: Array<ITag>;
+    value: Array<string>;
     onInputChange: (inputValue: string) => void;
     onKeyDown: (e: React.KeyboardEvent<HTMLElement>, value: string) => void;
-    onChange: (value: any, event: any) => void;
+    onChange: (value: Array<string>) => void;
     onFocus?: (
         eventOrPath: string | ChangeEvent<any>,
     ) => void | ((eventOrTextValue: string | ChangeEvent<any>) => void);
@@ -130,7 +130,7 @@ export interface TagsProps extends React.ComponentProps<any> {
 }
 
 const Error = styled.span`
-    bottom: -24px;
+    top: 104%;
     color: ${(props) => props.theme.errorColor.hex};
     font-size: 13px;
     font-weight: 500;
@@ -141,8 +141,8 @@ const Error = styled.span`
 const StyledLabel = styled.label`
     display: inline-flex;
     transform: translateX(-12px);
+    padding: 0;
     transition: all 300ms ease;
-
     &::before {
         background-color: ${(props) => props.theme.primaryColor.hex};
         border-radius: 100%;
@@ -166,31 +166,25 @@ const StyledInputContainer = styled.div<TagsProps>`
     flex-direction: column;
     padding-top: ${(props) => props.theme.biggerSpacing};
     transition: background-color 300ms ease;
-
     ${(props) =>
         props.error &&
         `
     ${StyledLabel}{
       color: ${props.theme.errorColor.hex};
       transform: translateX(0px);
-
       &::before {
         background-color: ${props.theme.errorColor.hex};
         opacity: 1;
       }
     }
   `}
-
     &:hover {
         background-color: ${(props) => props.theme.componentColorLight};
     }
-
     &:focus-within {
         background-color: ${(props) => props.theme.componentColorLighter};
-
         ${StyledLabel} {
             transform: translateX(0px);
-
             &::before {
                 opacity: 1;
             }
@@ -226,8 +220,12 @@ export const Tags: React.FunctionComponent<TagsProps> = (props: TagsProps): JSX.
                 <CreatableSelect
                     id={props.name}
                     components={components}
-                    onChange={(v, e) => {
-                        props.onChange(v, e);
+                    onChange={(val: ITag[]) => {
+                        if (val) {
+                            props.onChange(val.map((tag: ITag) => tag.value));
+                        } else {
+                            props.onChange([]);
+                        }
                     }}
                     onKeyDown={(e) => {
                         const target = e.target as HTMLInputElement;
@@ -245,10 +243,15 @@ export const Tags: React.FunctionComponent<TagsProps> = (props: TagsProps): JSX.
                     isMulti
                     placeholder={props.placeholder}
                     styles={customStyles}
-                    value={props.value}
+                    value={props.value.map(
+                        (value: string): ITag => ({
+                            label: value,
+                            value,
+                        }),
+                    )}
                 />
             </TagsContainer>
-            {props.error && <Error>{props.errormessage}</Error>}
+            {props.error && <Error>{props.error}</Error>}
         </StyledInputContainer>
     );
 };

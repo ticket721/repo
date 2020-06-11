@@ -2,8 +2,8 @@ import { Reducer } from 'redux';
 import { CacheActionTypes, CacheState } from './types';
 import { ISetIntervalId, ISetTickInterval } from './actions/settings.actions';
 import { CacheAction, IUpdateItemData, IUpdateItemError, IFetchItem } from './actions/actions';
-import { IUpdateLastResponse, IRegisterComponent, IUnregisterComponent } from './actions/properties.actions';
-import { CacheCore } from '../../../cores/CacheCore';
+import { IUpdateLastResponse, IRegisterEntity, IUnregisterEntity } from './actions/properties.actions';
+import { CacheCore } from '../../../cores/cache/CacheCore';
 
 export const cacheInitialState: CacheState = {
     settings: {
@@ -37,16 +37,17 @@ const SetIntervalIdReducer: Reducer<CacheState, ISetIntervalId> = (
     },
 });
 
-const RegisterComponentReducer: Reducer<CacheState, IRegisterComponent> = (
+const RegisterEntityReducer: Reducer<CacheState, IRegisterEntity> = (
     state: CacheState,
-    action: IRegisterComponent,
+    action: IRegisterEntity,
 ): CacheState => {
-    if (!state.properties[action.key]) {
+    const key = CacheCore.key(action.method, action.args);
+    if (!state.properties[key]) {
         return {
             ...state,
             properties: {
                 ...state.properties,
-                [action.key]: {
+                [key]: {
                     lastFetch: null,
                     lastResp: null,
                     method: action.method,
@@ -62,18 +63,18 @@ const RegisterComponentReducer: Reducer<CacheState, IRegisterComponent> = (
         ...state,
         properties: {
             ...state.properties,
-            [action.key]: {
-                ...state.properties[action.key],
-                requestedBy: state.properties[action.key].requestedBy.concat(action.uid),
-                refreshRates: state.properties[action.key].refreshRates.concat(action.rate),
+            [key]: {
+                ...state.properties[key],
+                requestedBy: state.properties[key].requestedBy.concat(action.uid),
+                refreshRates: state.properties[key].refreshRates.concat(action.rate),
             },
         },
     };
 };
 
-const UnregisterComponentReducer: Reducer<CacheState, IUnregisterComponent> = (
+const UnregisterEntityReducer: Reducer<CacheState, IUnregisterEntity> = (
     state: CacheState,
-    action: IUnregisterComponent,
+    action: IUnregisterEntity,
 ): CacheState => {
     const removeIdx: number = state.properties[action.key].requestedBy.indexOf(action.uid);
 
@@ -152,10 +153,10 @@ export const CacheReducer: Reducer<CacheState, CacheAction> = (
             return SetTickIntervalReducer(state, action as ISetTickInterval);
         case CacheActionTypes.SetIntervalId:
             return SetIntervalIdReducer(state, action as ISetIntervalId);
-        case CacheActionTypes.RegisterComponent:
-            return RegisterComponentReducer(state, action as IRegisterComponent);
-        case CacheActionTypes.UnregisterComponent:
-            return UnregisterComponentReducer(state, action as IUnregisterComponent);
+        case CacheActionTypes.RegisterEntity:
+            return RegisterEntityReducer(state, action as IRegisterEntity);
+        case CacheActionTypes.UnregisterEntity:
+            return UnregisterEntityReducer(state, action as IUnregisterEntity);
         case CacheActionTypes.FetchItem:
             return FetchItemReducer(state, action as IFetchItem);
         case CacheActionTypes.UpdateLastResponse:
