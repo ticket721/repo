@@ -75,14 +75,13 @@ const StyledInputContainer = styled.div`
     }
 
     .react-datepicker {
-        background-color: ${(props) => props.theme.componentColorLight};
+        background-color: #262626;
         border: none;
         color: ${(props) => props.theme.textColor};
         font-family: ${(props) => props.theme.fontStack};
 
         &__navigation {
-            background: url('assets/icons/icon--arrow.svg') center/cover no-repeat;
-            border: none;
+            outline: none;
             height: 16px;
             right: ${(props) => props.theme.biggerSpacing};
             top: ${(props) => props.theme.biggerSpacing};
@@ -91,7 +90,6 @@ const StyledInputContainer = styled.div`
             &--previous {
                 left: auto;
                 right: 3.5rem;
-                transform: rotate(180deg);
             }
         }
 
