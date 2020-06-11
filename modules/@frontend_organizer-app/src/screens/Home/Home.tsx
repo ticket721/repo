@@ -2,6 +2,7 @@ import React                from 'react';
 import { useDispatch }      from 'react-redux';
 import { PushNotification } from '@frontend/core/lib/redux/ducks/notifications';
 import EventSideMenu from "../../components/EventSideMenu";
+import HomeSideMenu from "../../components/HomeSideMenu";
 import EventSideDates from "../../components/EventSideDates";
 
 const dates = [
@@ -30,16 +31,15 @@ const dates = [
     date: new Date('2020-06-16T10:30:00'),
   },
 ];
-
+// `${dates[0].date.toDateString()} - ${dates[0].date.getHours()}:${dates[0].date.getMinutes()}`
 const Home: React.FC = () => {
     const dispatch = useDispatch();
-    const [currentDate, setCurrentDate] = React.useState<string>(
-      `${dates[0].date.toDateString()} - ${dates[0].date.getHours()}:${dates[0].date.getMinutes()}`
-    );
+    const [currentDate, setCurrentDate] = React.useState<string>();
 
     return (
       <>
-        <EventSideMenu currentDate={currentDate} setCurrentDate={setCurrentDate}/>
+        {currentDate && <EventSideMenu currentDate={currentDate} setCurrentDate={setCurrentDate}/>}
+        {!currentDate && <HomeSideMenu currentDate={currentDate} setCurrentDate={setCurrentDate}/>}
         <div className='Home' style={{ color: 'white', marginLeft: '280px' }}>
           Home
           <div onClick={() => dispatch(PushNotification('success message', 'success'))}>Success</div>
@@ -47,7 +47,7 @@ const Home: React.FC = () => {
           <div onClick={() => dispatch(PushNotification('warning message', 'warning'))}>Warning</div>
           <div onClick={() => dispatch(PushNotification('info message', 'info'))}>Info</div>
         </div>
-        <EventSideDates currentDate={currentDate} setCurrentDate={setCurrentDate}/>
+        {currentDate && <EventSideDates currentDate={currentDate} setCurrentDate={setCurrentDate}/>}
       </>
     )
 };

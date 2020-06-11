@@ -127,7 +127,7 @@ const EventName = styled.span`
   width: 85%;
   font-weight: 500;
   font-size: 13px;
-  color: rgba(255, 255, 255, 0.38);
+  color: ${(props) => props.theme.textColorDarker};
 `;
 
 const Title = styled.span`
@@ -135,7 +135,7 @@ const Title = styled.span`
   font-size: 13px;
   cursor: pointer;
   margin: 12px 0 12px 24px;
-  color: rgba(255, 255, 255, 0.9);
+  color: ${(props) => props.theme.textColor};
 `;
 
 export default EventSideMenu;
