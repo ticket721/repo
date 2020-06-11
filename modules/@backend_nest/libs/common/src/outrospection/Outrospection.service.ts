@@ -1,7 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 import { ConfigService } from '@lib/common/config/Config.service';
-import { NestError } from '@lib/common/utils/NestError';
 
 /**
  * Unique identifier of the instance
@@ -23,14 +22,9 @@ export interface InstanceSignature {
     name: string;
 
     /**
-     * Position of the instance in the current replica set
+     * Name of the instance
      */
-    position: number;
-
-    /**
-     * Total number of instances of this type inside the replica set
-     */
-    total: number;
+    instanceName: string;
 }
 
 /**
@@ -46,14 +40,9 @@ export class OutrospectionService {
     private readonly master: boolean = false;
 
     /**
-     * Current position of the instance in the replica set. Starting at 1.
+     * Name of current instance (hostname)
      */
-    private readonly position: number = null;
-
-    /**
-     * Regular Expression to match the end of the hostname
-     */
-    private readonly positionRegexp = /^-[0123456789]+$/;
+    private readonly instanceName: string = null;
 
     /**
      * Dependency Injection and position retrieval
@@ -69,45 +58,19 @@ export class OutrospectionService {
         shutdownService: ShutdownService,
         @Inject('OUTROSPECTION_HOSTNAME_GETTER') hostnameGetter: () => string,
     ) {
-        const hostNamePattern = configService.get('HOSTNAME_PATTERN');
-
-        if (configService.get('NODE_ENV') === 'development') {
-            this.master = true;
-            this.position = 1;
-        } else {
-            const hostname: string = hostnameGetter();
-
-            if (
-                hostname.indexOf(hostNamePattern) !== 0 ||
-                !this.positionRegexp.test(hostname.slice(hostNamePattern.length))
-            ) {
-                const error = new NestError(
-                    `Invalid instance name '${hostNamePattern}', cannot extract position in hostname '${hostname}'`,
-                );
-                shutdownService.shutdownWithError(error);
-                throw error;
-            }
-
-            this.position = parseInt(hostname.slice(hostNamePattern.length + 1), 10) + 1;
-
-            if (this.position === 1) {
-                this.master = true;
-            }
-        }
+        this.master = configService.get('MASTER') === 'true';
+        this.instanceName = hostnameGetter();
     }
 
     /**
      * Asynchrinous getter to recover the current position
      */
     public async getInstanceSignature(): Promise<InstanceSignature> {
-        const total = 1;
-
         return {
-            signature: `${this.name} [${this.position} / ${total}]${this.master ? ' MASTER' : ''}`,
+            signature: `${this.name}${this.master ? ' MASTER' : ''}`,
             master: this.master,
             name: this.name,
-            position: this.position,
-            total,
+            instanceName: this.instanceName,
         };
     }
 }

@@ -16,6 +16,7 @@ export const EventsRightsConfig: RightsConfig = {
             'route_add_dates',
             'route_delete_dates',
             'metadata_all',
+            'withdraw',
         ],
     },
     route_search: {
@@ -39,6 +40,7 @@ export const EventsRightsConfig: RightsConfig = {
     route_delete_dates: {
         countAs: ['metadata_write_history'],
     },
+    withdraw: {},
 
     metadata_all: {},
 

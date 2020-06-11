@@ -1,16 +1,16 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "platform.fullname" . }}--server-config--cfmp
+  name: {{ template "platform.fullname" . }}--server-config-slave--cfmp
   namespace: {{ .Release.Namespace }}
   labels:
-    name: {{ include "platform.fullname" . }}--server-config--cfmp
+    name: {{ include "platform.fullname" . }}--server-config-slave--cfmp
     chart: {{ .Chart.Name }}
 data:
   production.env: |-
     NODE_ENV=production
     API_PORT=3000
-    HOSTNAME_PATTERN={{ include "platform.fullname" . }}--server--sfs
+    MASTER=false
 
     CASSANDRA_CONTACT_POINTS={{ required "[server] Missing config.cassandra.host value" .Values.config.cassandra.host }}
     CASSANDRA_PORT={{ required "[server] Missing config.cassandra.port value" .Values.config.cassandra.port }}

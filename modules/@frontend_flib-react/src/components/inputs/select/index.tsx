@@ -86,6 +86,7 @@ const customStyles = {
         display: 'flex',
         flex: 1,
         padding: 0,
+        flexWrap: 'wrap' as 'wrap',
     }),
     singleValue: () => ({
         fontSize: 14,
@@ -97,20 +98,19 @@ const customStyles = {
 
 export interface SelectProps extends React.ComponentProps<any> {
     defaultValue?: object;
-    error?: boolean;
-    errorMessage?: string;
+    error?: string | undefined;
     label?: string;
     options: Array<object>;
     placeholder?: string;
     searchable?: boolean;
-    value?: string;
+    multiple?: boolean;
+    value?: Array<object>;
 }
 
 const StyledLabel = styled.label`
     display: inline-flex;
     transform: translateX(-12px);
     transition: all 300ms ease;
-
     &::before {
         background-color: ${(props) => props.theme.primaryColor.hex};
         border-radius: 100%;
@@ -126,6 +126,15 @@ const StyledLabel = styled.label`
     }
 `;
 
+const Error = styled.span`
+    top: 110%;
+    color: ${(props) => props.theme.errorColor.hex};
+    font-size: 13px;
+    font-weight: 500;
+    left: 10px;
+    position: absolute;
+`;
+
 const StyledInputContainer = styled.div<SelectProps>`
     background-color: ${(props) => props.theme.componentColor};
     border-radius: ${(props) => props.theme.defaultRadius};
@@ -133,21 +142,16 @@ const StyledInputContainer = styled.div<SelectProps>`
     flex-direction: column;
     padding-top: ${(props) => (props.label ? props.theme.biggerSpacing : 0)};
     transition: background-color 300ms ease;
-
     [class*='dummyInput'] {
         display: none;
     }
-
     &:hover {
         background-color: ${(props) => props.theme.componentColorLight};
     }
-
     &:focus-within {
         background-color: ${(props) => props.theme.componentColorLighter};
-
         ${StyledLabel} {
             transform: translateX(0px);
-
             &::before {
                 opacity: 1;
             }
@@ -160,13 +164,17 @@ export const SelectInput: React.FunctionComponent<SelectProps> = (props: SelectP
         <StyledInputContainer label={props.label}>
             {props.label && <StyledLabel>{props.label}</StyledLabel>}
             <Select
+                isMulti={props.multiple}
+                value={props.value}
                 defaultValue={props.defaultValue}
                 noOptionsMessage={() => 'No values available'}
                 options={props.options}
                 placeholder={props.placeholder}
                 isSearchable={props.searchable}
                 styles={customStyles}
+                onChange={props.onChange}
             />
+            {props.error && <Error>{props.error}</Error>}
         </StyledInputContainer>
     );
 };

@@ -4,9 +4,10 @@ export { isAddress, toAcceptedAddressFormat }                                   
 export { setVerbosity }                                                                  from './log';
 export { isKeccak256, toAcceptedKeccak256Format, keccak256, keccak256FromBuffer }        from './hash';
 export { Wallet }                                                                        from 'ethers';
+export { WithdrawAuthorization }                                                         from './signers/WithdrawAuthorization';
 export { Web3LoginSigner }                                                               from './signers/Web3Login';
 export { Web3RegisterSigner }                                                            from './signers/Web3Register';
-export { RefractMtx, MetaTransaction, TransactionParameters }                           from './signers/RefractMtx';
+export { RefractMtx, MetaTransaction, TransactionParameters }                            from './signers/RefractMtx';
 export { MintAuthorization }                                                             from './signers/MintAuthorization';
 export { MintTokensAuthorization }                                                       from './signers/MintTokensAuthorization';
 export { Coordinates, closestCity, City }                                                from './geoloc';

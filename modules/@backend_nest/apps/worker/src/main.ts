@@ -25,15 +25,6 @@ async function main() {
 
     const configService: ConfigService = app.get<ConfigService>(ConfigService);
 
-    if (configService.get('BULL_BOARD') === 'true') {
-        const mailing = app.get<Queue>(getQueueToken('mailing'));
-        const action = app.get<Queue>(getQueueToken('action'));
-        const evmantenna = app.get<Queue>(getQueueToken('evmantenna'));
-        const dosojin = app.get<Queue>(getQueueToken('dosojin'));
-        setQueues([mailing, action, evmantenna, dosojin]);
-        app.use('/admin/queues', UI);
-    }
-
     app.enableShutdownHooks();
     app.get(ShutdownService).subscribeToShutdown(() => {
         app.close();

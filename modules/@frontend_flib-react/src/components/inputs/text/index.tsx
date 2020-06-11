@@ -23,7 +23,7 @@ export interface InputProps extends React.ComponentProps<any> {
 }
 
 const Error = styled.span`
-    top: 110%;
+    top: 104%;
     color: ${(props) => props.theme.errorColor.hex};
     font-size: 13px;
     font-weight: 500;
