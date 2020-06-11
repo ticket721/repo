@@ -20,9 +20,9 @@ import MobileApp            from './MobileApp';
 import Web3                 from 'web3';
 import { getWeb3 }          from '@frontend/core/lib/subspace/getWeb3';
 // tslint:disable-next-line:no-var-requires
-const {SubspaceProvider} = require('@embarklabs/subspace-react')
+const {SubspaceProvider} = require('@embarklabs/subspace-react');
 
-const store: Store<AppState> = configureStore();
+const store: Store<AppState> = configureStore<any>({}, {}, []);
 const web3: Web3 = getWeb3();
 
 ReactDOM.render(

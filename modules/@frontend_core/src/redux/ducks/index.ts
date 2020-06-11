@@ -33,16 +33,17 @@ export type AdditionalReducer<AdditionalState> = {
     [key in keyof AdditionalState]: Reducer<AdditionalState[key], any>;
 };
 
-export const rootReducer = <AdditionalState>(additionalReducer?: AdditionalReducer<AdditionalState>) => combineReducers({
-    ...additionalReducer,
-    configs: ConfigsReducer,
-    router: connectRouter(history),
-    statuses: StatusesReducer,
-    userProperties: UserPropertiesReducer,
-    cache: CacheReducer,
-    auth: AuthReducer,
-    notifications: NotificationsReducer,
-});
+export const rootReducer = <AdditionalState>(additionalReducer?: AdditionalReducer<AdditionalState>) =>
+    combineReducers({
+        ...additionalReducer,
+        configs: ConfigsReducer,
+        router: connectRouter(history),
+        statuses: StatusesReducer,
+        userProperties: UserPropertiesReducer,
+        cache: CacheReducer,
+        auth: AuthReducer,
+        notifications: NotificationsReducer,
+    });
 
 export const initialState = <AdditionalState>(additionalState?: AdditionalState): AppState & AdditionalState => ({
     ...additionalState,
