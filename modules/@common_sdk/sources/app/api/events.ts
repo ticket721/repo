@@ -25,6 +25,8 @@ import { EventsDeleteDatesInputDto }         from '@app/server/controllers/event
 import { EventsDeleteDatesResponseDto }      from '@app/server/controllers/events/dto/EventsDeleteDatesResponse.dto';
 import { EventsAddDatesInputDto }            from '@app/server/controllers/events/dto/EventsAddDatesInput.dto';
 import { EventsAddDatesResponseDto }         from '@app/server/controllers/events/dto/EventsAddDatesResponse.dto';
+import { EventsCountInputDto }               from '@app/server/controllers/events/dto/EventsCountInput.dto';
+import { EventsCountResponseDto }            from '@app/server/controllers/events/dto/EventsCountResponse.dto';
 import { EventsWithdrawInputDto }            from '@app/server/controllers/events/dto/EventsWithdrawInput.dto';
 import { EventsWithdrawResponseDto }         from '@app/server/controllers/events/dto/EventsWithdrawResponse.dto';
 
@@ -36,6 +38,19 @@ export async function eventsSearch(
     const self: T721SDK = this;
 
     return self.post<EventsSearchInputDto>('/events/search', {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+    }, query);
+}
+
+export async function eventsCount(
+    token: string,
+    query: EventsCountInputDto,
+): Promise<AxiosResponse<EventsCountResponseDto>> {
+
+    const self: T721SDK = this;
+
+    return self.post<EventsCountInputDto>('/events/count', {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
     }, query);

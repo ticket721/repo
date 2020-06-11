@@ -53,6 +53,8 @@ import { ApiResponses } from '@app/server/utils/ApiResponses.controller.decorato
 import { MetadatasService } from '@lib/common/metadatas/Metadatas.service';
 import { RocksideCreateEOAResponse, RocksideService } from '@lib/common/rockside/Rockside.service';
 import { ValidGuard } from '@app/server/authentication/guards/ValidGuard.guard';
+import { EventsCountInputDto } from '@app/server/controllers/events/dto/EventsCountInput.dto';
+import { EventsCountResponseDto } from '@app/server/controllers/events/dto/EventsCountResponse.dto';
 import { EventsWithdrawInputDto } from '@app/server/controllers/events/dto/EventsWithdrawInput.dto';
 import { EventsWithdrawResponseDto } from '@app/server/controllers/events/dto/EventsWithdrawResponse.dto';
 import { contractCallHelper } from '@lib/common/utils/contractCall.helper';
@@ -112,6 +114,25 @@ export class EventsController extends ControllerBasics<EventEntity> {
         await this._authorizeGlobal(this.rightsService, this.eventsService, null, null, ['route_search']);
 
         const events = await this._search(this.eventsService, body);
+
+        return {
+            events,
+        };
+    }
+
+    /**
+     * Count for events
+     *
+     * @param body
+     */
+    @Post('/count')
+    @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.OK)
+    @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized, StatusCodes.InternalServerError])
+    async count(@Body() body: EventsCountInputDto): Promise<EventsCountResponseDto> {
+        await this._authorizeGlobal(this.rightsService, this.eventsService, null, null, ['route_search']);
+
+        const events = await this._count(this.eventsService, body);
 
         return {
             events,

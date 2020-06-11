@@ -12,6 +12,7 @@ import { RightEntity } from '@lib/common/rights/entities/Right.entity';
 import { ESSearchReturn } from '@lib/common/utils/ESSearchReturn.type';
 import { EventsService } from '@lib/common/events/Events.service';
 import { SortablePagedSearch } from '@lib/common/utils/SortablePagedSearch.type';
+import { ESCountReturn } from '@lib/common/utils/ESCountReturn.type';
 
 class FakeEntity {
     id: string;
@@ -739,6 +740,97 @@ describe('Controller Basics', function() {
             );
         });
     });
+
+    describe('_count', function() {
+        it('should count properly', async function() {
+            const query = {
+                id: {
+                    $eq: 'abcd',
+                },
+            };
+
+            const service = mock(CRUDExtension);
+
+            when(
+                service.countElastic(
+                    deepEqual({
+                        body: {
+                            query: {
+                                bool: {
+                                    must: {
+                                        term: {
+                                            id: 'abcd',
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: {
+                    count: 1,
+                    _shards: {
+                        total: 1,
+                        successful: 1,
+                        skipped: 0,
+                        failed: 0,
+                    },
+                } as ESCountReturn,
+            });
+
+            const res = await context.controllerBasics._count(instance(service), query);
+
+            expect(res).toEqual({
+                count: 1,
+                _shards: {
+                    total: 1,
+                    successful: 1,
+                    skipped: 0,
+                    failed: 0,
+                },
+            });
+        });
+
+        it('internal server error', async function() {
+            const query = {
+                id: {
+                    $eq: 'abcd',
+                },
+            };
+
+            const service = mock(CRUDExtension);
+
+            when(
+                service.countElastic(
+                    deepEqual({
+                        body: {
+                            query: {
+                                bool: {
+                                    must: {
+                                        term: {
+                                            id: 'abcd',
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    }),
+                ),
+            ).thenResolve({
+                error: 'unexpected_error',
+                response: null,
+            });
+
+            await throwWith(
+                context.controllerBasics._count(instance(service), query),
+                StatusCodes.InternalServerError,
+                'unexpected_error',
+            );
+        });
+    });
+
     describe('_authorizeGlobal', function() {
         it('should properly check global rights', async function() {
             const user = {
