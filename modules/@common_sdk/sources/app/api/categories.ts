@@ -24,7 +24,7 @@ export async function categoriesSearch(
 
 export async function categoriesCount(
     token: string,
-    query: CategoriesCountInputDto,
+    query: Partial<CategoriesCountInputDto>,
 ): Promise<AxiosResponse<CategoriesCountResponseDto>> {
 
     const self: T721SDK = this;
