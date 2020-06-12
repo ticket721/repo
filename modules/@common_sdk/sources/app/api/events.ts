@@ -32,12 +32,12 @@ import { EventsWithdrawResponseDto }         from '@app/server/controllers/event
 
 export async function eventsSearch(
     token: string,
-    query: EventsSearchInputDto,
+    query: Partial<EventsSearchInputDto>,
 ): Promise<AxiosResponse<EventsSearchResponseDto>> {
 
     const self: T721SDK = this;
 
-    return self.post<EventsSearchInputDto>('/events/search', {
+    return self.post<Partial<EventsSearchInputDto>>('/events/search', {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
     }, query);
@@ -45,12 +45,12 @@ export async function eventsSearch(
 
 export async function eventsCount(
     token: string,
-    query: EventsCountInputDto,
+    query: Partial<EventsCountInputDto>,
 ): Promise<AxiosResponse<EventsCountResponseDto>> {
 
     const self: T721SDK = this;
 
-    return self.post<EventsCountInputDto>('/events/count', {
+    return self.post<Partial<EventsCountInputDto>>('/events/count', {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
     }, query);

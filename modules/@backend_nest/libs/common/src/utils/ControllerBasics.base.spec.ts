@@ -13,6 +13,8 @@ import { ESSearchReturn } from '@lib/common/utils/ESSearchReturn.type';
 import { EventsService } from '@lib/common/events/Events.service';
 import { SortablePagedSearch } from '@lib/common/utils/SortablePagedSearch.type';
 import { ESCountReturn } from '@lib/common/utils/ESCountReturn.type';
+import { SearchInputType } from '@lib/common/utils/SearchInput.type';
+import { EventEntity } from '@lib/common/events/entities/Event.entity';
 
 class FakeEntity {
     id: string;
@@ -291,7 +293,7 @@ describe('Controller Basics', function() {
                 instance(rightsServiceMock),
                 user,
                 'id',
-                {},
+                {} as SearchInputType<EventEntity>,
             );
 
             expect(res).toEqual([entity]);
@@ -398,7 +400,7 @@ describe('Controller Basics', function() {
                     id: {
                         $in: ['abcd'],
                     },
-                } as SortablePagedSearch,
+                } as SearchInputType<EventEntity>,
             );
 
             expect(res).toEqual([entity]);
@@ -481,7 +483,7 @@ describe('Controller Basics', function() {
                     instance(rightsServiceMock),
                     user,
                     'id',
-                    {},
+                    {} as SearchInputType<EventEntity>,
                 ),
                 StatusCodes.InternalServerError,
                 'unexpected_error',
@@ -567,7 +569,7 @@ describe('Controller Basics', function() {
                         id: {
                             $in: ['efgh'],
                         },
-                    } as SortablePagedSearch,
+                    } as SearchInputType<EventEntity>,
                 ),
                 StatusCodes.Unauthorized,
                 'unauthorized_value_in_filter',
@@ -658,7 +660,10 @@ describe('Controller Basics', function() {
                 } as ESSearchReturn<any>,
             });
 
-            const res = await context.controllerBasics._search(instance(service), query);
+            const res = await context.controllerBasics._search(
+                instance(service),
+                query as SearchInputType<EventEntity>,
+            );
 
             expect(res).toEqual([]);
         });
@@ -698,7 +703,10 @@ describe('Controller Basics', function() {
                 } as ESSearchReturn<any>,
             });
 
-            const res = await context.controllerBasics._search(instance(service), query);
+            const res = await context.controllerBasics._search(
+                instance(service),
+                query as SearchInputType<EventEntity>,
+            );
 
             expect(res).toEqual([]);
         });
@@ -734,7 +742,7 @@ describe('Controller Basics', function() {
             });
 
             await throwWith(
-                context.controllerBasics._search(instance(service), query),
+                context.controllerBasics._search(instance(service), query as SearchInputType<EventEntity>),
                 StatusCodes.InternalServerError,
                 'lol',
             );
