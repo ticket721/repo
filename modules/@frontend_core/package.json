@@ -34,13 +34,13 @@
         "uuid": "8.0.0",
         "react-toastify": "6.0.5",
         "react-responsive": "8.1.0",
-        "yup": "0.28.5",
-        "@types/react-responsive": "8.0.2",
         "@embarklabs/subspace": "2.0.3",
         "@embarklabs/subspace-react": "1.0.4",
-        "rxjs": "6.5.5"
-    },
-    "devDependencies": {
+        "rxjs": "6.5.5",
+        "typescript": "3.7.5",
+        "web3": "1.2.6",
+        "axios": "0.19.2",
+        "yup": "0.28.5",
         "@types/jest": "25.2.1",
         "@types/lodash.get": "4.4.6",
         "@types/react": "16.9.35",
@@ -49,16 +49,15 @@
         "@types/react-responsive": "8.0.2",
         "@types/styled-components": "5.1.0",
         "@types/uuid": "7.0.3",
-        "@types/yup": "0.28.0",
-        "axios": "0.19.2",
+        "@types/yup": "0.28.0"
+    },
+    "devDependencies": {
         "jest": "25.4.0",
         "prettier": "2.0.5",
         "tslint": "6.0.0",
         "ts-jest": "25.4.0",
         "ts-loader": "^7.0.0",
-        "ts-mockito": "2.5.0",
-        "typescript": "3.7.5",
-        "web3": "1.2.6"
+        "ts-mockito": "2.5.0"
     },
     "scripts": {
         "build": "rm -rf lib && tsc",

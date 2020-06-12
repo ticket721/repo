@@ -29,7 +29,7 @@ import { uploadImage } from './app/api/images';
 // DATES
 import { datesAddCategories, datesCreate, datesDeleteCategories, datesSearch, datesUpdate } from './app/api/dates';
 import {
-    eventsAddCategories, eventsAddDates,
+    eventsAddCategories, eventsAddDates, eventsCount,
     eventsCreate, eventsCreateAdminsConfiguration, eventsCreateCategoriesConfiguration,
     eventsCreateDatesConfiguration, eventsCreateImagesMetadata,
     eventsCreateModulesConfiguration,
@@ -92,6 +92,7 @@ export class T721SDK {
         this.events.create.imagesMetadata = this.events.create.imagesMetadata.bind(this);
         this.events.create.adminsConfiguration = this.events.create.adminsConfiguration.bind(this);
         this.events.search = this.events.search.bind(this);
+        this.events.count = this.events.count.bind(this);
         this.events.start = this.events.start.bind(this);
         this.events.update = this.events.update.bind(this);
         this.events.deleteCategories = this.events.deleteCategories.bind(this);
@@ -243,6 +244,7 @@ export class T721SDK {
 
     public events = {
         search: eventsSearch,
+        count: eventsCount,
         create: {
             create: eventsCreate,
             textMetadata: eventsCreateTextMetadata,

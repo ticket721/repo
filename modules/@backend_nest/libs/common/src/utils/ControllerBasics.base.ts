@@ -17,6 +17,7 @@ import { RightsService } from '@lib/common/rights/Rights.service';
 import { ESSearchHit } from '@lib/common/utils/ESSearchReturn.type';
 import { RightEntity } from '@lib/common/rights/entities/Right.entity';
 import { Boundable } from '@lib/common/utils/Boundable.type';
+import { ESCountReturn } from '@lib/common/utils/ESCountReturn.type';
 
 /**
  * Controller Basics, contains most methods used in controllers
@@ -245,6 +246,35 @@ export class ControllerBasics<EntityType> {
         }
 
         return esQuery.response;
+    }
+
+    /**
+     * Generic count query, able to throw HttpExceptions
+     *
+     * @param service
+     * @param query
+     */
+    public async _count(
+        service: CRUDExtension<Repository<EntityType>, EntityType>,
+        query: any, // need to rework that part
+    ): Promise<ESCountReturn> {
+        const es: EsSearchOptionsStatic = this._esQueryBuilder(query);
+
+        const countResults = await service.countElastic(es);
+
+        /**
+         * Handle Request errors
+         */
+        if (countResults.error) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.InternalServerError,
+                    message: countResults.error,
+                },
+                StatusCodes.InternalServerError,
+            );
+        }
+        return countResults.response;
     }
 
     /**
