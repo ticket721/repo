@@ -1,15 +1,10 @@
-import { AppState } from '../';
 import { SagaIterator } from '@redux-saga/types';
-import { call, put, select, takeEvery } from 'redux-saga/effects';
+import { call, put, takeEvery } from 'redux-saga/effects';
 
-import Web3 from 'web3';
-import { VtxconfigReset, VtxconfigSetAllowedNet, VtxconfigSetWeb3 } from 'ethvtx/lib/vtxconfig/actions/actions';
-
-import { IStart, IStartVtx } from './actions';
+import { IStart } from './actions';
 import { GetCity, GetDevice } from '../user_properties';
 import { SetupActionTypes } from './types';
 
-import { EthConfig } from '../configs';
 import { RegisterEntity, StartRefreshInterval } from '../cache';
 import { GetUser, SetToken } from '../auth';
 import { isExpired, isValidFormat, parseToken } from '../../../utils/token';
@@ -31,20 +26,6 @@ function* startSaga(action: IStart): IterableIterator<any> {
     yield put(GetCity());
     yield put(SetAppStatus(AppStatus.Ready));
     yield put(StartRefreshInterval());
-}
-
-function* startVtxSaga(action: IStartVtx): IterableIterator<any> {
-    const getEthConfig = (state: AppState) => state.configs.eth;
-
-    const config: EthConfig = yield select(getEthConfig);
-
-    const web3 = new Web3(new Web3.providers.HttpProvider(config.ethereumEndpointUrl));
-
-    yield put(VtxconfigSetWeb3(web3));
-
-    yield put(VtxconfigSetAllowedNet(config.ethereumNetworkId, config.ethereumNetworkGenesisHash));
-
-    yield put(VtxconfigReset());
 }
 
 function* handleUser(): IterableIterator<any> {
@@ -82,5 +63,4 @@ function* handleUser(): IterableIterator<any> {
 
 export function* setupSaga(): SagaIterator {
     yield takeEvery(SetupActionTypes.Start, startSaga);
-    yield takeEvery(SetupActionTypes.StartVtx, startVtxSaga);
 }

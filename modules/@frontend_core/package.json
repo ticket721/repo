@@ -19,7 +19,6 @@
         "@hapi/joi": "17.1.0",
         "connected-react-router": "6.8.0",
         "device-detect": "1.0.7",
-        "ethvtx": "2.0.6",
         "formik": "2.1.4",
         "i18next": "19.3.2",
         "i18next-browser-languagedetector": "4.0.2",
@@ -35,6 +34,12 @@
         "uuid": "8.0.0",
         "react-toastify": "6.0.5",
         "react-responsive": "8.1.0",
+        "@embarklabs/subspace": "2.0.3",
+        "@embarklabs/subspace-react": "1.0.4",
+        "rxjs": "6.5.5",
+        "typescript": "3.7.5",
+        "web3": "1.2.6",
+        "axios": "0.19.2",
         "yup": "0.28.5",
         "@types/jest": "25.2.1",
         "@types/lodash.get": "4.4.6",
@@ -44,10 +49,7 @@
         "@types/react-responsive": "8.0.2",
         "@types/styled-components": "5.1.0",
         "@types/uuid": "7.0.3",
-        "@types/yup": "0.28.0",
-        "axios": "0.19.2",
-        "typescript": "3.7.5",
-        "web3": "1.2.6"
+        "@types/yup": "0.28.0"
     },
     "devDependencies": {
         "jest": "25.4.0",

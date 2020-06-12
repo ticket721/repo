@@ -53,7 +53,8 @@ In order to run the smart contracts migrations locally, you will need to use the
 rm -rf ./artifacts/remote_ganache/ && \
 env T721_CONFIG=./config.ganache.remote.json gulp network::clean contracts::clean && \
 env T721_CONFIG=./config.ganache.remote.json gulp network::run && \
-env T721_CONFIG=./config.ganache.remote.json gulp contracts::run
+env T721_CONFIG=./config.ganache.remote.json gulp contracts::run && \
+env T721_CONFIG=./config.ganache.remote.json ARTIFACT_BUNDLE_TARGET_PATH=./modules/@frontend_core/src/subspace/contract_artifacts.json  gulp contracts::convert_artifacts
 ```
 
 The smart contracts are now live, and all the required artifacts are now stored inside `artifacts/remote_ganache`.
@@ -106,7 +107,8 @@ ________________________________________________________________________________
 | $> rm -rf ./artifacts/remote_ganache/ && \                                                 |
 |    env T721_CONFIG=./config.ganache.remote.json gulp network::clean contracts::clean && \  |
 |    env T721_CONFIG=./config.ganache.remote.json gulp network::run && \                     |
-|    env T721_CONFIG=./config.ganache.remote.json gulp contracts::run                        |
+|    env T721_CONFIG=./config.ganache.remote.json gulp contracts::run && \
+|    env T721_CONFIG=./config.ganache.remote.json ..                                         |
 |                                                                                            |
 |                                                                                            |
 |                                                                                            |

@@ -53,14 +53,22 @@ export interface ISetUser extends Action<string> {
     kind: string;
     locale: string;
     validated: boolean;
+    address: string;
 }
 
-export const SetUser = (username: string, kind: string, locale: string, validated: boolean): ISetUser => ({
+export const SetUser = (
+    username: string,
+    kind: string,
+    locale: string,
+    validated: boolean,
+    address: string,
+): ISetUser => ({
     type: AuthActionTypes.SetUser,
     username,
     kind,
     locale,
     validated,
+    address,
 });
 
 export interface IGetUser extends Action<string> {
