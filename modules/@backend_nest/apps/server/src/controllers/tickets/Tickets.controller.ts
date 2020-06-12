@@ -13,6 +13,8 @@ import { TicketsService } from '@lib/common/tickets/Tickets.service';
 import { TicketsSearchInputDto } from '@app/server/controllers/tickets/dto/TicketsSearchInput.dto';
 import { TicketsSearchResponseDto } from '@app/server/controllers/tickets/dto/TicketsSearchResponse.dto';
 import { ValidGuard } from '@app/server/authentication/guards/ValidGuard.guard';
+import { TicketsCountInputDto } from '@app/server/controllers/tickets/dto/TicketsCountInput.dto';
+import { TicketsCountResponseDto } from '@app/server/controllers/tickets/dto/TicketsCountResponse.dto';
 
 /**
  * Controller Handling Tickets
@@ -45,6 +47,26 @@ export class TicketsController extends ControllerBasics<TicketEntity> {
     @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized, StatusCodes.InternalServerError, StatusCodes.BadRequest])
     async search(@Body() body: TicketsSearchInputDto, @User() user: UserDto): Promise<TicketsSearchResponseDto> {
         const tickets = await this._search(this.ticketsService, body);
+
+        return {
+            tickets,
+        };
+    }
+
+    /**
+     * Fetches Tickets
+     *
+     * @param body
+     * @param user
+     */
+    @Post('/count')
+    @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
+    @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.OK)
+    @Roles('authenticated')
+    @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized, StatusCodes.InternalServerError, StatusCodes.BadRequest])
+    async count(@Body() body: TicketsCountInputDto, @User() user: UserDto): Promise<TicketsCountResponseDto> {
+        const tickets = await this._count(this.ticketsService, body);
 
         return {
             tickets,
