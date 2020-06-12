@@ -6,6 +6,8 @@ import { CategoriesSearchResponseDto } from '@app/server/controllers/categories/
 import { CategoriesSearchInputDto }    from '@app/server/controllers/categories/dto/CategoriesSearchInput.dto';
 import { CategoriesUpdateInputDto }    from '@app/server/controllers/categories/dto/CategoriesUpdateInput.dto';
 import { CategoriesUpdateResponseDto } from '@app/server/controllers/categories/dto/CategoriesUpdateResponse.dto';
+import { CategoriesCountInputDto }     from '@app/server/controllers/categories/dto/CategoriesCountInput.dto';
+import { CategoriesCountResponseDto }  from '@app/server/controllers/categories/dto/CategoriesCountResponse.dto';
 
 export async function categoriesSearch(
     token: string,
@@ -15,6 +17,19 @@ export async function categoriesSearch(
     const self: T721SDK = this;
 
     return self.post<CategoriesSearchInputDto>('/categories/search', {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+    }, query);
+}
+
+export async function categoriesCount(
+    token: string,
+    query: CategoriesCountInputDto,
+): Promise<AxiosResponse<CategoriesCountResponseDto>> {
+
+    const self: T721SDK = this;
+
+    return self.post<CategoriesCountInputDto>('/categories/count', {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
     }, query);

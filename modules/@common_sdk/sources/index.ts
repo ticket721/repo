@@ -37,9 +37,9 @@ import {
     eventsSearch, eventsStart, eventsUpdate, eventsWithdraw,
 } from './app/api/events';
 import { txsInfos, txsSearch, txsSubscribe }                              from './app/api/txs';
-import { contractsFetch }                                                 from './app/api/contracts';
-import { categoriesCreate, categoriesSearch, categoriesUpdate }           from './app/api/categories';
-import { rightsSearch }                                                   from './app/api/rights';
+import { contractsFetch }                                                        from './app/api/contracts';
+import { categoriesCount, categoriesCreate, categoriesSearch, categoriesUpdate } from './app/api/categories';
+import { rightsSearch }                                                          from './app/api/rights';
 import { metadatasFetch }                                                 from './app/api/metadatas';
 import { cartModulesConfiguration, cartTicketSelections }                 from './app/api/cart';
 import { checkoutCartCommitStripe, checkoutResolveCartWithPaymentIntent } from './app/api/checkout';
@@ -102,6 +102,7 @@ export class T721SDK {
         this.events.withdraw = this.events.withdraw.bind(this);
 
         this.categories.create = this.categories.create.bind(this);
+        this.categories.count = this.categories.count.bind(this);
         this.categories.search = this.categories.search.bind(this);
         this.categories.update = this.categories.update.bind(this);
 
@@ -269,6 +270,7 @@ export class T721SDK {
 
     public categories = {
         search: categoriesSearch,
+        count: categoriesCount,
         create: categoriesCreate,
         update: categoriesUpdate,
     };
