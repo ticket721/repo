@@ -33,7 +33,7 @@ export async function datesCount(
 
     const self: T721SDK = this;
 
-    return self.post<DatesSearchInputDto>('/dates/count', {
+    return self.post<Partial<DatesCountInputDto>>('/dates/count', {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
     }, query);
