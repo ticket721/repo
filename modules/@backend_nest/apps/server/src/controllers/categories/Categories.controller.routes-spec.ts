@@ -653,12 +653,10 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     ],
                 });
 
-                expect(
-                    categories.data.categories.count
-                ).toEqual(1);
+                expect(categories.data.categories.count).toEqual(1);
 
                 console.log(categories.data.categories.count);
             });
-        })
+        });
     };
 }
