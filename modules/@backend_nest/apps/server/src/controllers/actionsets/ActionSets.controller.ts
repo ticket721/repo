@@ -53,9 +53,7 @@ export class ActionSetsController extends ControllerBasics<ActionSetEntity> {
     @Roles('authenticated')
     @ApiResponses([StatusCodes.OK, StatusCodes.InternalServerError, StatusCodes.Unauthorized, StatusCodes.BadRequest])
     async search(@Body() body: ActionsSearchInputDto, @User() user: UserDto): Promise<ActionsSearchResponseDto> {
-        const actionsets = await this._searchRestricted(this.actionSetsService, this.rightsService, user, 'id', {
-            ...body,
-        } as SortablePagedSearch);
+        const actionsets = await this._searchRestricted(this.actionSetsService, this.rightsService, user, 'id', body);
 
         return {
             actionsets,

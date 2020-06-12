@@ -18,6 +18,8 @@ import { ESSearchHit } from '@lib/common/utils/ESSearchReturn.type';
 import { RightEntity } from '@lib/common/rights/entities/Right.entity';
 import { Boundable } from '@lib/common/utils/Boundable.type';
 import { ESCountReturn } from '@lib/common/utils/ESCountReturn.type';
+import { SearchInputType } from '@lib/common/utils/SearchInput.type';
+import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
 
 /**
  * Controller Basics, contains most methods used in controllers
@@ -148,7 +150,7 @@ export class ControllerBasics<EntityType> {
         rightsService: RightsService,
         user: UserDto,
         field: string,
-        query: SortablePagedSearch,
+        query: SearchInputType<CustomEntityType>,
     ): Promise<CustomEntityType[]> {
         const entityName = service.name;
 
@@ -254,9 +256,9 @@ export class ControllerBasics<EntityType> {
      * @param service
      * @param query
      */
-    public async _count(
+    public async _count<CustomEntityType = EntityType>(
         service: CRUDExtension<Repository<EntityType>, EntityType>,
-        query: any, // need to rework that part
+        query: SearchInputType<CustomEntityType>,
     ): Promise<ESCountReturn> {
         const es: EsSearchOptionsStatic = this._esQueryBuilder(query);
 
@@ -283,9 +285,9 @@ export class ControllerBasics<EntityType> {
      * @param service
      * @param query
      */
-    public async _search(
+    public async _search<CustomEntityType = EntityType>(
         service: CRUDExtension<Repository<EntityType>, EntityType>,
-        query: SortablePagedSearch,
+        query: SearchInputType<CustomEntityType>,
     ): Promise<EntityType[]> {
         const es: EsSearchOptionsStatic = this._esQueryBuilder(query);
 

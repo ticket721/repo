@@ -1,77 +1,104 @@
 import { IsOptional } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { SearchableField } from '@lib/common/utils/SearchableField.type';
-import { SortablePagedSearch } from '@lib/common/utils/SortablePagedSearch.type';
-import { ActionEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
+import { ActionEntity, ActionSetEntity, ActionSetStatus } from '@lib/common/actionsets/entities/ActionSet.entity';
+import { SearchInputType } from '@lib/common/utils/SearchInput.type';
+import { Link } from '@lib/common/utils/Link.type';
+import { Sort } from '@lib/common/utils/Sort.type';
 
 /**
- * Input required by the Actions Search
+ * Extended type extending entity
  */
-export class ActionsSearchInputDto extends SortablePagedSearch {
+export class ActionsSearchInputDto implements SearchInputType<ActionSetEntity> {
     /**
      * Searchable field to search on the current_status
      */
-    @ApiPropertyOptional({
-        description: 'Current status of the searched action sets',
-    })
+    @ApiPropertyOptional()
     @IsOptional()
     // tslint:disable-next-line:variable-name
-    current_status?: SearchableField<string>;
+    current_status: SearchableField<ActionSetStatus>;
 
     /**
      * Searchable field to search on the current_action
      */
-    @ApiPropertyOptional({
-        description: 'Current action of the action sets',
-    })
+    @ApiPropertyOptional()
     @IsOptional()
     // tslint:disable-next-line:variable-name
-    current_action?: SearchableField<number>;
+    current_action: SearchableField<number>;
 
     /**
      * Searchable field to search on the id
      */
-    @ApiPropertyOptional({
-        description: 'Unique ID to search for',
-    })
+    @ApiPropertyOptional()
     @IsOptional()
-    id?: SearchableField<string>;
+    id: SearchableField<string>;
 
     /**
      * Searchable field to search in the actions
      */
-    @ApiPropertyOptional({
-        description: 'Actions details to search for',
-    })
+    @ApiPropertyOptional()
     @IsOptional()
-    actions?: SearchableField<ActionEntity[]>;
+    actions: SearchableField<ActionEntity[]>;
 
     /**
      * Searchable field to search on the name
      */
-    @ApiPropertyOptional({
-        description: 'Search by action set name',
-    })
+    @ApiPropertyOptional()
     @IsOptional()
-    name?: SearchableField<string>;
+    name: SearchableField<string>;
 
     /**
      * Searchable field to search on the creation timestamp
      */
-    @ApiPropertyOptional({
-        description: 'Search by creation date',
-    })
+    @ApiPropertyOptional()
     @IsOptional()
     // tslint:disable-next-line:variable-name
-    created_at?: SearchableField<Date>;
+    created_at: SearchableField<Date>;
 
     /**
      * Searchable field to search on the update timestamp
      */
-    @ApiPropertyOptional({
-        description: 'Search by update date',
-    })
+    @ApiPropertyOptional()
     @IsOptional()
     // tslint:disable-next-line:variable-name
-    updated_at?: SearchableField<Date>;
+    updated_at: SearchableField<Date>;
+
+    /**
+     * Searchable field to search on the update timestamp
+     */
+    @ApiPropertyOptional()
+    @IsOptional()
+    // tslint:disable-next-line:variable-name
+    links: SearchableField<Link[]>;
+    /**
+     * Searchable field to search on the dispatched timestamp
+     */
+    @ApiPropertyOptional()
+    @IsOptional()
+    // tslint:disable-next-line:variable-name
+    dispatched_at: SearchableField<Date>;
+
+    /**
+     * Sort arguments
+     */
+    @ApiPropertyOptional()
+    @IsOptional()
+    // tslint:disable-next-line:variable-name
+    $sort: Sort[];
+
+    /**
+     * Page size argument
+     */
+    @ApiPropertyOptional()
+    @IsOptional()
+    // tslint:disable-next-line:variable-name
+    $page_size: number;
+
+    /**
+     * Page index argument
+     */
+    @ApiPropertyOptional()
+    @IsOptional()
+    // tslint:disable-next-line:variable-name
+    $page_index: number;
 }

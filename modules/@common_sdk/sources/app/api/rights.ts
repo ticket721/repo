@@ -6,12 +6,12 @@ import { RightsSearchInputDto }     from '@app/server/controllers/rights/dto/Rig
 
 export async function rightsSearch(
     token: string,
-    query: RightsSearchInputDto,
+    query: Partial<RightsSearchInputDto>,
 ): Promise<AxiosResponse<RightsSearchResponseDto>> {
 
     const self: T721SDK = this;
 
-    return self.post<ActionsSearchInputDto>('/rights/search', {
+    return self.post<Partial<ActionsSearchInputDto>>('/rights/search', {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
     }, query);

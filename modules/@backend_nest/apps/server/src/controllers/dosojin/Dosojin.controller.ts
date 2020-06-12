@@ -47,9 +47,7 @@ export class DosojinController extends ControllerBasics<GemOrderEntity> {
     @Roles('authenticated')
     @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized, StatusCodes.InternalServerError, StatusCodes.BadRequest])
     async search(@Body() body: DosojinSearchInputDto, @User() user: UserDto): Promise<DosojinSearchResponseDto> {
-        const gemOrders = await this._searchRestricted(this.gemOrdersService, this.rightsService, user, 'id', {
-            ...body,
-        } as SortablePagedSearch);
+        const gemOrders = await this._searchRestricted(this.gemOrdersService, this.rightsService, user, 'id', body);
 
         return {
             gemOrders,

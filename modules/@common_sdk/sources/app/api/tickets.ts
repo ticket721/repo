@@ -5,12 +5,12 @@ import { TicketsSearchResponseDto } from '@app/server/controllers/tickets/dto/Ti
 
 export async function ticketsSearch(
     token: string,
-    query: TicketsSearchInputDto,
+    query: Partial<TicketsSearchInputDto>,
 ): Promise<AxiosResponse<TicketsSearchResponseDto>> {
 
     const self: T721SDK = this;
 
-    return self.post<TicketsSearchInputDto>('/tickets/search', {
+    return self.post<Partial<TicketsSearchInputDto>>('/tickets/search', {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
     }, query);

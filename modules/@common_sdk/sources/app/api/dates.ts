@@ -13,12 +13,12 @@ import { DatesUpdateResponseDto }           from '@app/server/controllers/dates/
 
 export async function datesSearch(
     token: string,
-    query: DatesSearchInputDto,
+    query: Partial<DatesSearchInputDto>,
 ): Promise<AxiosResponse<DatesSearchResponseDto>> {
 
     const self: T721SDK = this;
 
-    return self.post<DatesSearchInputDto>('/dates/search', {
+    return self.post<Partial<DatesSearchInputDto>>('/dates/search', {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
     }, query);
