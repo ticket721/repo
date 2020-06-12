@@ -648,7 +648,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     group_id: {
                         $eq: createdCategory.data.category.group_id,
                     },
-                } as SortablePagedSearch);
+                });
 
                 expect(categories.data.categories.count).toEqual(1);
 
