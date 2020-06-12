@@ -118,12 +118,12 @@ describe('AppController (e2e)', () => {
         console.log('FINISHED');
     }, 60000);
 
-    /*describe('Server Controller', ServerControllerTestSuite(getCtx));
+    describe('Server Controller', ServerControllerTestSuite(getCtx));
     describe('Users Controller', UsersControllerTestSuite(getCtx));
     describe('Authentication Controller', AuthenticationControllerTestSuite(getCtx));
-    describe('ActionSets Controller', ActionSetsControllerTestSuite(getCtx));*/
+    describe('ActionSets Controller', ActionSetsControllerTestSuite(getCtx));
     describe('Categories Controller', CategoriesControllerTestSuite(getCtx));
-    /*describe('Rights Controller', RightsControllerTestSuite(getCtx));
+    describe('Rights Controller', RightsControllerTestSuite(getCtx));
     describe('Contracts Controller', ContractsControllerTestSuite(getCtx));
     describe('Dates Controller', DatesControllerTestSuite(getCtx));
     describe('Images Controller', ImagesControllerTestSuite(getCtx));
@@ -131,5 +131,5 @@ describe('AppController (e2e)', () => {
     describe('Txs Controller', TxsControllerTestSuite(getCtx));
     describe('Metadatas Controller', MetadatasControllerTestSuite(getCtx));
     describe('Checkout Controller', CheckoutControllerTestSuite(getCtx));
-    describe('Dosojin Controller', DosojinControllerTestSuite(getCtx));*/
+    describe('Dosojin Controller', DosojinControllerTestSuite(getCtx));
 });
