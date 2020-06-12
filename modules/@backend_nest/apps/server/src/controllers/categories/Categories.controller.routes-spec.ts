@@ -557,7 +557,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
             });
         });
 
-        describe('search (GET /categories/search)', function() {
+        describe('search (POST /categories/search)', function() {
             test('should search owned categories', async function() {
                 const {
                     sdk,
@@ -608,5 +608,57 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 ).not.toEqual(-1);
             });
         });
+
+        describe('count (POST /categories/count)', function() {
+            test('should count owned categories', async function() {
+                const {
+                    sdk,
+                    token,
+                    user,
+                    password,
+                }: {
+                    sdk: T721SDK;
+                    token: string;
+                    user: PasswordlessUserDto;
+                    password: string;
+                } = await getSDKAndUser(getCtx);
+
+                const groupID = `0x${generateUserName()}`;
+
+                await admin_addRight(user.id, 'category', groupID, "{ 'owner' : true }");
+
+                const createdCategory = await sdk.categories.create(token, {
+                    group_id: groupID,
+                    display_name: 'VIP',
+                    sale_begin: new Date(Date.now() + 1000000),
+                    sale_end: new Date(Date.now() + 2000000),
+                    resale_begin: new Date(Date.now() + 1000000),
+                    resale_end: new Date(Date.now() + 2000000),
+                    prices: [
+                        {
+                            currency: 'Fiat',
+                            price: '100',
+                        },
+                    ],
+                    seats: 100,
+                });
+
+                const categories = await sdk.categories.count(null, {
+                    $page_size: 10000,
+                    $sort: [
+                        {
+                            $field_name: 'created_at',
+                            $order: 'desc',
+                        },
+                    ],
+                });
+
+                expect(
+                    categories.data.categories.count
+                ).toEqual(1);
+
+                console.log(categories.data.categories.count);
+            });
+        })
     };
 }
