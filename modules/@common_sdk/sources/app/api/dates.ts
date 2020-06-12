@@ -28,7 +28,7 @@ export async function datesSearch(
 
 export async function datesCount(
     token: string,
-    query: DatesCountInputDto,
+    query: Partial<DatesCountInputDto>,
     ): Promise<AxiosResponse<DatesCountResponseDto>> {
 
     const self: T721SDK = this;

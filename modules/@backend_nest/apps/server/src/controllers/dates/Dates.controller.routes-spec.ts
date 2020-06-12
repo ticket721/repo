@@ -146,7 +146,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     id: {
                         $eq: newDate.data.date.id,
                     },
-                } as SortablePagedSearch);
+                });
 
                 expect(datesCount.data.dates.count).toEqual(1);
             });
