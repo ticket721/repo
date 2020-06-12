@@ -3,6 +3,7 @@ import { PasswordlessUserDto } from '@app/server/authentication/dto/Passwordless
 import { admin_addRight, failWithCode, generateUserName, getSDKAndUser, getUser } from '../../../test/utils';
 import { StatusCodes } from '@lib/common/utils/codes.value';
 import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
+import { SortablePagedSearch } from '@lib/common/utils/SortablePagedSearch.type';
 
 export default function(getCtx: () => { ready: Promise<void> }) {
     return function() {
@@ -644,14 +645,54 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 });
 
                 const categories = await sdk.categories.count(null, {
-                    $page_size: 10000,
-                    $sort: [
+                    group_id: {
+                        $eq: createdCategory.data.category.group_id,
+                    },
+                } as SortablePagedSearch);
+
+                expect(categories.data.categories.count).toEqual(1);
+
+                console.log(categories.data.categories.count);
+            });
+
+            test('should count owned categories authentified', async function() {
+                const {
+                    sdk,
+                    token,
+                    user,
+                    password,
+                }: {
+                    sdk: T721SDK;
+                    token: string;
+                    user: PasswordlessUserDto;
+                    password: string;
+                } = await getSDKAndUser(getCtx);
+
+                const groupID = `0x${generateUserName()}`;
+
+                await admin_addRight(user.id, 'category', groupID, "{ 'owner' : true }");
+
+                const createdCategory = await sdk.categories.create(token, {
+                    group_id: groupID,
+                    display_name: 'VIP',
+                    sale_begin: new Date(Date.now() + 1000000),
+                    sale_end: new Date(Date.now() + 2000000),
+                    resale_begin: new Date(Date.now() + 1000000),
+                    resale_end: new Date(Date.now() + 2000000),
+                    prices: [
                         {
-                            $field_name: 'created_at',
-                            $order: 'desc',
+                            currency: 'Fiat',
+                            price: '100',
                         },
                     ],
+                    seats: 100,
                 });
+
+                const categories = await sdk.categories.count(token, {
+                    group_id: {
+                        $eq: createdCategory.data.category.group_id,
+                    },
+                } as SortablePagedSearch);
 
                 expect(categories.data.categories.count).toEqual(1);
 
