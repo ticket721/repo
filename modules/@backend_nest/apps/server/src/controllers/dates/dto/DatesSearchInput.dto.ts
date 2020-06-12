@@ -1,19 +1,123 @@
-import { SortablePagedSearch } from '@lib/common/utils/SortablePagedSearch.type';
 import { SearchableField } from '@lib/common/utils/SearchableField.type';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsOptional } from 'class-validator';
+import { Sort } from '@lib/common/utils/Sort.type';
+import { SearchInputType } from '@lib/common/utils/SearchInput.type';
+import { DateEntity, DateLocation, DateMetadata, DateTimestamps } from '@lib/common/dates/entities/Date.entity';
 
 /**
  * Input required by the Dates Search
  */
-export class DatesSearchInputDto extends SortablePagedSearch {
+export class DatesSearchInputDto implements SearchInputType<DateEntity> {
     /**
      * Searchable field to search by id
      */
-    @ApiPropertyOptional({
-        description: 'Unique ID of the Group',
-    })
+    @ApiPropertyOptional()
     @IsOptional()
     // tslint:disable-next-line:variable-name
-    group_id?: SearchableField<string>;
+    id: SearchableField<string>;
+
+    /**
+     * Searchable field to search by group_id
+     */
+    @ApiPropertyOptional()
+    @IsOptional()
+    // tslint:disable-next-line:variable-name
+    group_id: SearchableField<string>;
+
+    /**
+     * Searchable field to search by status
+     */
+    @ApiPropertyOptional()
+    @IsOptional()
+    // tslint:disable-next-line:variable-name
+    status: SearchableField<'preview' | 'live'>;
+
+    /**
+     * Searchable field to search by categories
+     */
+    @ApiPropertyOptional()
+    @IsOptional()
+    // tslint:disable-next-line:variable-name
+    categories: SearchableField<string[]>;
+
+    /**
+     * Searchable field to search by location
+     */
+    @ApiPropertyOptional()
+    @IsOptional()
+    // tslint:disable-next-line:variable-name
+    location: SearchableField<DateLocation>;
+
+    /**
+     * Searchable field to search by timestamps
+     */
+    @ApiPropertyOptional()
+    @IsOptional()
+    // tslint:disable-next-line:variable-name
+    timestamps: SearchableField<DateTimestamps>;
+
+    /**
+     * Searchable field to search by metadata
+     */
+    @ApiPropertyOptional()
+    @IsOptional()
+    // tslint:disable-next-line:variable-name
+    metadata: SearchableField<DateMetadata>;
+
+    /**
+     * Searchable field to search by parent_id
+     */
+    @ApiPropertyOptional()
+    @IsOptional()
+    // tslint:disable-next-line:variable-name
+    parent_id: SearchableField<string>;
+
+    /**
+     * Searchable field to search by parent_type
+     */
+    @ApiPropertyOptional()
+    @IsOptional()
+    // tslint:disable-next-line:variable-name
+    parent_type: SearchableField<string>;
+
+    /**
+     * Searchable field to search by create_at
+     */
+    @ApiPropertyOptional()
+    @IsOptional()
+    // tslint:disable-next-line:variable-name
+    created_at: SearchableField<Date>;
+
+    /**
+     * Searchable field to search by updated_at
+     */
+    @ApiPropertyOptional()
+    @IsOptional()
+    // tslint:disable-next-line:variable-name
+    updated_at: SearchableField<Date>;
+
+    /**
+     * Sort arguments
+     */
+    @ApiPropertyOptional()
+    @IsOptional()
+    // tslint:disable-next-line:variable-name
+    $sort: Sort[];
+
+    /**
+     * Page size argument
+     */
+    @ApiPropertyOptional()
+    @IsOptional()
+    // tslint:disable-next-line:variable-name
+    $page_size: number;
+
+    /**
+     * Page index argument
+     */
+    @ApiPropertyOptional()
+    @IsOptional()
+    // tslint:disable-next-line:variable-name
+    $page_index: number;
 }

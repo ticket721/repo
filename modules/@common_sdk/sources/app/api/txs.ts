@@ -17,12 +17,12 @@ export async function txsInfos(): Promise<AxiosResponse<TxsInfosResponseDto>> {
 
 export async function txsSearch(
     token: string,
-    query: TxsSearchInputDto,
+    query: Partial<TxsSearchInputDto>,
 ): Promise<AxiosResponse<TxsSearchResponseDto>> {
 
     const self: T721SDK = this;
 
-    return self.post<TxsSearchInputDto>('/txs/search', {
+    return self.post<Partial<TxsSearchInputDto>>('/txs/search', {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
     }, query);

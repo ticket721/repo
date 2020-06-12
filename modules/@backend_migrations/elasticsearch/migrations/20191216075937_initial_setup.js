@@ -141,6 +141,10 @@ class M20191216075937_initial_setup extends ElasticMigration {
                         "type": "nested",
                         "cql_collection": "singleton",
                         "properties": {
+                            "signature_colors": {
+                                "cql_collection": "list",
+                                "type": "text"
+                            },
                             "avatar": {
                                 "cql_collection": "singleton",
                                 "type": "keyword"

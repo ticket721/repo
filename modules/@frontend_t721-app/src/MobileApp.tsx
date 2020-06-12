@@ -40,7 +40,7 @@ const MobileApp: React.FC = () => {
                     })
                 }
             </Switch>
-            <ToastStacker />
+            <ToastStacker additionalLocales={[]}/>
             {
                 location.pathname.lastIndexOf('/') === 0 ?
                     <Navbar>

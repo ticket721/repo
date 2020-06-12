@@ -9,12 +9,12 @@ import { ActionsCreateResponseDto } from '@app/server/controllers/actionsets/dto
 
 export async function actionsSearch(
     token: string,
-    query: ActionsSearchInputDto,
+    query: Partial<ActionsSearchInputDto>,
 ): Promise<AxiosResponse<ActionsSearchResponseDto>> {
 
     const self: T721SDK = this;
 
-    return self.post<ActionsSearchInputDto>('/actions/search', {
+    return self.post<Partial<ActionsSearchInputDto>>('/actions/search', {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
     }, query);

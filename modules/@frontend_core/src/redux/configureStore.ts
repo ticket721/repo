@@ -1,8 +1,8 @@
 import { createStore, applyMiddleware, Store, compose } from 'redux';
 import createSagaMiddleware from 'redux-saga';
+import { all, AllEffect, fork } from 'redux-saga/effects';
 import '../utils/window';
 import { entryPoint } from './entryPoint';
-import { getSagas } from 'ethvtx/lib';
 import { routerMiddleware } from 'connected-react-router';
 import { AdditionalReducer, AppState, initialState, rootReducer } from './ducks';
 import { userPropertiesSaga } from './ducks/user_properties/sagas';
@@ -13,13 +13,9 @@ import { authSaga } from './ducks/auth/sagas';
 
 import { Saga } from '@redux-saga/types';
 
-export interface AdditionalStateTemplate {
-    [key: string]: any;
-}
-
 const sagaMiddleware = createSagaMiddleware();
 
-export const configureStore = <AdditionalState extends AdditionalStateTemplate>(
+export const configureStore = <AdditionalState>(
     additionalReducer?: AdditionalReducer<AdditionalState>,
     additionalInitState?: AdditionalState,
     additionalSagas?: Saga[],
@@ -35,7 +31,11 @@ export const configureStore = <AdditionalState extends AdditionalStateTemplate>(
         composeEnhancer(middlewares),
     );
 
-    const rootSaga = getSagas(store, [userPropertiesSaga, setupSaga, cacheSaga, authSaga, ...additionalSagas]);
+    const rootSaga = function* (): IterableIterator<AllEffect<any>> {
+        yield all(
+            [userPropertiesSaga, setupSaga, cacheSaga, authSaga, ...additionalSagas].map((saga: Saga) => fork(saga)),
+        );
+    };
 
     sagaMiddleware.run(rootSaga);
 
