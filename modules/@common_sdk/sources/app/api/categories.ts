@@ -29,7 +29,7 @@ export async function categoriesCount(
 
     const self: T721SDK = this;
 
-    return self.post<CategoriesCountInputDto>('/categories/count', {
+    return self.post<Partial<CategoriesCountInputDto>>('/categories/count', {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
     }, query);
