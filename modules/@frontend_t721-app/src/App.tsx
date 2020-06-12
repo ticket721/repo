@@ -38,7 +38,7 @@ const App: React.FC = () => {
                     })
                 }
             </Switch>
-            <ToastStacker />
+            <ToastStacker additionalLocales={[]}/>
         </div>
     </Suspense>
 };

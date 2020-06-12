@@ -11,12 +11,12 @@ import { CategoriesCountResponseDto }  from '@app/server/controllers/categories/
 
 export async function categoriesSearch(
     token: string,
-    query: CategoriesSearchInputDto,
+    query: Partial<CategoriesSearchInputDto>,
 ): Promise<AxiosResponse<CategoriesSearchResponseDto>> {
 
     const self: T721SDK = this;
 
-    return self.post<CategoriesSearchInputDto>('/categories/search', {
+    return self.post<Partial<CategoriesSearchInputDto>>('/categories/search', {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
     }, query);
