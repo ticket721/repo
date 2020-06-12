@@ -9,7 +9,6 @@ import { HttpExceptionFilter } from '@app/server/utils/HttpException.filter';
 import { ControllerBasics } from '@lib/common/utils/ControllerBasics.base';
 import { GemOrderEntity } from '@lib/common/gemorders/entities/GemOrder.entity';
 import { GemOrdersService } from '@lib/common/gemorders/GemOrders.service';
-import { SortablePagedSearch } from '@lib/common/utils/SortablePagedSearch.type';
 import { RightsService } from '@lib/common/rights/Rights.service';
 import { ApiResponses } from '@app/server/utils/ApiResponses.controller.decorator';
 import { DosojinSearchInputDto } from '@app/server/controllers/dosojin/dto/DosojinSearchInput.dto';
