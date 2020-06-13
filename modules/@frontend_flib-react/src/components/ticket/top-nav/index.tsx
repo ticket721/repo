@@ -3,18 +3,18 @@ import styled from '../../../config/styled';
 import Icon from '../../../components/icon';
 
 export interface TopNavProps extends React.ComponentProps<any> {
-    handleClick?: () => void;
-    label: string;
-    prevLink?: string;
-    scrolled?: boolean;
-    showSubNav?: boolean;
-    subNav?: SubNavObject[];
+  handleClick?: () => void;
+  label: string;
+  prevLink?: string;
+  scrolled?: boolean;
+  showSubNav?: boolean;
+  subNav?: SubNavObject[];
 }
 
 interface SubNavObject {
-    label: string;
-    id: string | number;
-    to: string;
+  label: string;
+  id: string | number;
+  to: string;
 }
 
 const Container = styled.div`
@@ -24,18 +24,15 @@ const Container = styled.div`
     flex: 0 0 1;
     font-size: 14px;
     font-weight: 500;
-    justify-content: center;
+    justify-content: space-between;
     left: 0;
     padding: ${(props) => props.theme.regularSpacing} ${(props) => props.theme.biggerSpacing};
     position: fixed;
     transition: background-color 300ms ease;
-    top: 0;
+    top: constant(safe-area-inset-top);
+    top: env(safe-area-inset-top);
     width: 100%;
     z-index: 1000;
-
-    span {
-        margin: auto;
-    }
 
     &.scrolled {
         background-color: rgba(33, 29, 45, 0.6);
@@ -72,34 +69,36 @@ const IconDots = styled(Icon)`
 `;
 
 export const TopNav: React.FunctionComponent<TopNavProps> = (props: TopNavProps): JSX.Element => {
-    const [showSub, setshowSub] = React.useState(false);
+  const [showSub, setshowSub] = React.useState(false);
 
-    return (
-        <Container className={props.scrolled ? 'scrolled' : ''}>
-            <Icon icon={'arrow'} size={'16px'} color={'rgba(255, 255, 255, 0.9)'} />
-            <span>{props.label}</span>
-            {props.subNav?.length && (
-                <SubnavContainer
-                    onClick={() => {
-                        setshowSub(!showSub);
-                    }}
-                >
-                    <IconDots icon={'dots'} size={'4px'} color={'rgba(255, 255, 255, 0.9)'} />
-                    {showSub && (
-                        <Subnav>
-                            {props.subNav.map((el) => {
-                                return (
-                                    <a key={el.id} href={el.to}>
-                                        {el.label}
-                                    </a>
-                                );
-                            })}
-                        </Subnav>
-                    )}
-                </SubnavContainer>
-            )}
-        </Container>
-    );
+  return (
+    <Container className={props.scrolled ? 'scrolled' : ''}>
+      <Icon icon={'back-arrow'} size={'16px'} color={'rgba(255, 255, 255, 0.9)'}/>
+      <span>{props.label}</span>
+      <span>
+      {props.subNav?.length && (
+        <SubnavContainer
+          onClick={() => {
+            setshowSub(!showSub);
+          }}
+        >
+          <IconDots icon={'dots'} size={'4px'} color={'rgba(255, 255, 255, 0.9)'} />
+          {showSub && (
+            <Subnav>
+              {props.subNav.map((el) => {
+                return (
+                  <a key={el.id} href={el.to}>
+                    {el.label}
+                  </a>
+                );
+              })}
+            </Subnav>
+          )}
+        </SubnavContainer>
+      )}
+                  </span>
+    </Container>
+  );
 };
 
 export default TopNav;
