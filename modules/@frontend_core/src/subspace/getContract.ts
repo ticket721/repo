@@ -6,14 +6,14 @@ export function getContract(subspace: Subspace, mod: string, contractName: strin
         throw new Error(`Modules ${mod} not loading into artifacts`);
     }
 
-    if (!contracts[mod].live[`${contractName}.json`]) {
+    if (!contracts[mod][`${contractName}.json`]) {
         throw new Error(`Contract ${contractName} not loading into ${mod} module artifacts`);
     }
 
     const networkId = parseInt(process.env.REACT_APP_ETHEREUM_NETWORK_ID, 10);
 
     return subspace.contract({
-        abi: contracts[mod].live[`${contractName}.json`].abi,
-        address: contracts[mod].live[`${contractName}.json`].networks[networkId].address,
+        abi: contracts[mod][`${contractName}.json`].abi,
+        address: contracts[mod][`${contractName}.json`].networks[networkId].address,
     });
 }
