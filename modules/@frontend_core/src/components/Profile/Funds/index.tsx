@@ -1,11 +1,11 @@
-import React  from 'react';
+import React from 'react';
 
 const Funds: React.FC = () => {
     return (
         <div className='Funds' style={{ color: 'white' }}>
-          FundsAndPayment
+            FundsAndPayment
         </div>
-    )
+    );
 };
 
 export default Funds;

@@ -1,12 +1,12 @@
-import React                  from 'react';
+import React from 'react';
 import {
     ActivitiesContainer,
     TitleText,
     FundsCard,
     LinksContainer,
-    ArrowLink
-}                             from '@frontend/flib-react/lib/components';
-import { useHistory }         from 'react-router';
+    ArrowLink,
+} from '@frontend/flib-react/lib/components';
+import { useHistory } from 'react-router';
 import { computeProfilePath } from '../../../utils/computeProfilePath';
 
 const user = {
@@ -29,26 +29,23 @@ const ProfileRoot = (): JSX.Element => {
         <>
             <ActivitiesContainer
                 title='Recent activities'
-                viewAllAction={
-                    () => history.push(computeProfilePath(history.location.pathname, '/activities'))
-                }
-                viewAllLabel='View all'>
+                viewAllAction={() => history.push(computeProfilePath(history.location.pathname, '/activities'))}
+                viewAllLabel='View all'
+            >
                 {displayedNotif.map((e, i) => {
-                    return (<TitleText text={e} key={e + i}/>);
+                    return <TitleText text={e} key={e + i} />;
                 })}
             </ActivitiesContainer>
             <FundsCard
                 title={'Funds'}
                 bankAccountLabel={'Bank account'}
                 currentBalanceLabel={'Current balance'}
-                onClick={
-                    () => history.push(computeProfilePath(history.location.pathname, '/funds'))
-                }
+                onClick={() => history.push(computeProfilePath(history.location.pathname, '/funds'))}
                 user={user}
                 icon='euro'
             />
             <LinksContainer title='Account'>
-                <ArrowLink to='#todo' label='General information'/>
+                <ArrowLink to='#todo' label='General information' />
                 <ArrowLink to='#todo' label='Main city' location='Paris, France' />
             </LinksContainer>
         </>

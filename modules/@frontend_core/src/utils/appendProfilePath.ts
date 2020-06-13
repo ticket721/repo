@@ -1,6 +1,5 @@
 export const appendProfilePath = (path: string, extraPath: string = ''): string => {
-
-    const drawerPathMatchArray = (path.match(/^((\/([a-z]|-)+)?\/profile)/));
+    const drawerPathMatchArray = path.match(/^((\/([a-z]|-)+)?\/profile)/);
 
     if (!drawerPathMatchArray) {
         if (path.lastIndexOf('/') === path.length - 1) {
@@ -11,5 +10,4 @@ export const appendProfilePath = (path: string, extraPath: string = ''): string 
     }
 
     return drawerPathMatchArray[0] + extraPath;
-
 };
