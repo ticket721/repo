@@ -11,13 +11,14 @@ import ProtectedRoute  from '@frontend/core/lib/components/ProtectedRoute';
 import { useSelector } from 'react-redux';
 import { AppState }    from '@frontend/core/lib/redux';
 import ToastStacker    from '@frontend/core/lib/components/ToastStacker';
+import styled          from 'styled-components';
 
 const App: React.FC = () => {
 
     const appStatus = useSelector(((state: AppState) => state.statuses.appStatus));
 
     return <Suspense fallback='loading'>
-        <div id='App'>
+        <AppContainer>
             <Switch>
                 {
                     appStatus === AppStatus.Ready && routes.map((route, idx) => {
@@ -39,8 +40,14 @@ const App: React.FC = () => {
                 }
             </Switch>
             <ToastStacker additionalLocales={[]}/>
-        </div>
+        </AppContainer>
     </Suspense>
 };
+
+const AppContainer = styled.div`
+  width: 100%;
+  height: 100vh;
+`;
+
 
 export default withRouter(App);
