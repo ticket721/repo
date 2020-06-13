@@ -7,6 +7,8 @@ import { Login, Register } from '@frontend/core/lib/components';
 import ProfileRoot         from '@frontend/core/lib/components/Profile/Root';
 import Activities          from '@frontend/core/lib/components/Profile/Activities';
 import Funds               from '@frontend/core/lib/components/Profile/Funds';
+import { NavbarMargin }    from './utils/NavbarMargin';
+import { TopNavMargin }    from './utils/TopNavMargin';
 
 export interface LinkDatum {
     icon: string;
@@ -40,17 +42,17 @@ export const routes: RouteDatum[] = [
     },
     {
         path: '/profile/activities',
-        page: Activities,
+        page: TopNavMargin(Activities),
         protected: true,
     },
     {
         path: '/profile/funds',
-        page: Funds,
+        page: TopNavMargin(Funds),
         protected: true,
     },
     {
         path: '/profile',
-        page: ProfileRoot,
+        page: NavbarMargin(ProfileRoot),
         protected: true,
     },
     {

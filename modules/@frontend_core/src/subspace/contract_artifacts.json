@@ -304,7 +304,46 @@
             ],
             "networks": {
                 "2702": {
-                    "events": {},
+                    "events": {
+                        "0x15d0ff71dab342335a22ae09bc22262458c06e5181c19efe52440a2c40fab507": {
+                            "anonymous": false,
+                            "inputs": [
+                                {
+                                    "indexed": true,
+                                    "internalType": "address",
+                                    "name": "buyer",
+                                    "type": "address"
+                                },
+                                {
+                                    "indexed": true,
+                                    "internalType": "address",
+                                    "name": "seller",
+                                    "type": "address"
+                                },
+                                {
+                                    "indexed": true,
+                                    "internalType": "uint256",
+                                    "name": "ticket",
+                                    "type": "uint256"
+                                },
+                                {
+                                    "indexed": false,
+                                    "internalType": "uint256",
+                                    "name": "nonce",
+                                    "type": "uint256"
+                                },
+                                {
+                                    "indexed": false,
+                                    "internalType": "bytes",
+                                    "name": "prices",
+                                    "type": "bytes"
+                                }
+                            ],
+                            "name": "SealedOffer",
+                            "type": "event",
+                            "signature": "0x15d0ff71dab342335a22ae09bc22262458c06e5181c19efe52440a2c40fab507"
+                        }
+                    },
                     "links": {},
                     "address": "0x71C4Ab66ce1587178faA6C1c3a1a29547d1CAFe5",
                     "transactionHash": "0x9aa9f65acb3831eea8c86f29da1ef885299f95795e2d14aabcaa9f2448d87365"
@@ -902,10 +941,139 @@
             ],
             "networks": {
                 "2702": {
-                    "events": {},
+                    "events": {
+                        "0x85e3434905b245fe01560acc657b1c439f61bb2438c8060a740123281e4dcffd": {
+                            "anonymous": false,
+                            "inputs": [
+                                {
+                                    "indexed": true,
+                                    "internalType": "address",
+                                    "name": "admin",
+                                    "type": "address"
+                                }
+                            ],
+                            "name": "ByeAdmin",
+                            "type": "event",
+                            "signature": "0x85e3434905b245fe01560acc657b1c439f61bb2438c8060a740123281e4dcffd"
+                        },
+                        "0x529e9444a5254994d1885571c8fc72d39bb3b42d18cab7fe48588670c4dfcee3": {
+                            "anonymous": false,
+                            "inputs": [
+                                {
+                                    "indexed": true,
+                                    "internalType": "address",
+                                    "name": "minter",
+                                    "type": "address"
+                                }
+                            ],
+                            "name": "ByeMinter",
+                            "type": "event",
+                            "signature": "0x529e9444a5254994d1885571c8fc72d39bb3b42d18cab7fe48588670c4dfcee3"
+                        },
+                        "0xcf78cf0d6f3d8371e1075c69c492ab4ec5d8cf23a1a239b6a51a1d00be7ca312": {
+                            "anonymous": false,
+                            "inputs": [
+                                {
+                                    "indexed": true,
+                                    "internalType": "address",
+                                    "name": "contractAddress",
+                                    "type": "address"
+                                }
+                            ],
+                            "name": "ContractCreated",
+                            "type": "event",
+                            "signature": "0xcf78cf0d6f3d8371e1075c69c492ab4ec5d8cf23a1a239b6a51a1d00be7ca312"
+                        },
+                        "0xf7522b88782cc7a7c36b07a1d7ffc719e0c1558a2c7484c827b76216096bba74": {
+                            "anonymous": false,
+                            "inputs": [
+                                {
+                                    "indexed": true,
+                                    "internalType": "address",
+                                    "name": "recipient",
+                                    "type": "address"
+                                },
+                                {
+                                    "indexed": true,
+                                    "internalType": "address",
+                                    "name": "minter",
+                                    "type": "address"
+                                },
+                                {
+                                    "indexed": false,
+                                    "internalType": "uint256",
+                                    "name": "amount",
+                                    "type": "uint256"
+                                },
+                                {
+                                    "indexed": false,
+                                    "internalType": "uint256",
+                                    "name": "code",
+                                    "type": "uint256"
+                                }
+                            ],
+                            "name": "MintTokens",
+                            "type": "event",
+                            "signature": "0xf7522b88782cc7a7c36b07a1d7ffc719e0c1558a2c7484c827b76216096bba74"
+                        },
+                        "0x71614071b88dee5e0b2ae578a9dd7b2ebbe9ae832ba419dc0242cd065a290b6c": {
+                            "anonymous": false,
+                            "inputs": [
+                                {
+                                    "indexed": true,
+                                    "internalType": "address",
+                                    "name": "admin",
+                                    "type": "address"
+                                }
+                            ],
+                            "name": "NewAdmin",
+                            "type": "event",
+                            "signature": "0x71614071b88dee5e0b2ae578a9dd7b2ebbe9ae832ba419dc0242cd065a290b6c"
+                        },
+                        "0x6adffd5c93085d835dac6f3b40adf7c242ca4b3284048d20c3d8a501748dc973": {
+                            "anonymous": false,
+                            "inputs": [
+                                {
+                                    "indexed": true,
+                                    "internalType": "address",
+                                    "name": "minter",
+                                    "type": "address"
+                                }
+                            ],
+                            "name": "NewMinter",
+                            "type": "event",
+                            "signature": "0x6adffd5c93085d835dac6f3b40adf7c242ca4b3284048d20c3d8a501748dc973"
+                        },
+                        "0x2fa70e1827070583e9d005d8f9615a3c9da46a089c016cf9cd32b1345a473802": {
+                            "anonymous": false,
+                            "inputs": [
+                                {
+                                    "indexed": true,
+                                    "internalType": "address",
+                                    "name": "target",
+                                    "type": "address"
+                                },
+                                {
+                                    "indexed": true,
+                                    "internalType": "uint256",
+                                    "name": "reason",
+                                    "type": "uint256"
+                                },
+                                {
+                                    "indexed": false,
+                                    "internalType": "uint256",
+                                    "name": "idx",
+                                    "type": "uint256"
+                                }
+                            ],
+                            "name": "NewVote",
+                            "type": "event",
+                            "signature": "0x2fa70e1827070583e9d005d8f9615a3c9da46a089c016cf9cd32b1345a473802"
+                        }
+                    },
                     "links": {},
                     "address": "0xCd5FA4b8dDCAa7F32f7E4c90A927ABb9d4c104E8",
-                    "transactionHash": "0x2a65bfc612d911367f7aab2764f06e721b0cc472a3b2a719c7130334765fe733"
+                    "transactionHash": "0x20b998ad07d372562c4cb067082695041457c7c60813fdf0f5e525d6c1c4d4af"
                 }
             }
         }
@@ -1481,7 +1649,128 @@
             ],
             "networks": {
                 "2702": {
-                    "events": {},
+                    "events": {
+                        "0x45637791524519c9ee9cbcdc2d12b1a544365aa04e0545c28c8c7275092cf113": {
+                            "anonymous": false,
+                            "inputs": [
+                                {
+                                    "indexed": true,
+                                    "internalType": "bytes32",
+                                    "name": "group",
+                                    "type": "bytes32"
+                                },
+                                {
+                                    "indexed": true,
+                                    "internalType": "bytes32",
+                                    "name": "attachment",
+                                    "type": "bytes32"
+                                },
+                                {
+                                    "indexed": true,
+                                    "internalType": "uint256",
+                                    "name": "ticket_id",
+                                    "type": "uint256"
+                                },
+                                {
+                                    "indexed": false,
+                                    "internalType": "uint256",
+                                    "name": "amount",
+                                    "type": "uint256"
+                                },
+                                {
+                                    "indexed": false,
+                                    "internalType": "uint256",
+                                    "name": "code",
+                                    "type": "uint256"
+                                }
+                            ],
+                            "name": "Attach",
+                            "type": "event",
+                            "signature": "0x45637791524519c9ee9cbcdc2d12b1a544365aa04e0545c28c8c7275092cf113"
+                        },
+                        "0xe8102b212636be533c5229780374a660400f2669df05637094313b977f907302": {
+                            "anonymous": false,
+                            "inputs": [
+                                {
+                                    "indexed": true,
+                                    "internalType": "bytes32",
+                                    "name": "group",
+                                    "type": "bytes32"
+                                },
+                                {
+                                    "indexed": true,
+                                    "internalType": "bytes32",
+                                    "name": "category",
+                                    "type": "bytes32"
+                                },
+                                {
+                                    "indexed": true,
+                                    "internalType": "address",
+                                    "name": "owner",
+                                    "type": "address"
+                                },
+                                {
+                                    "indexed": false,
+                                    "internalType": "uint256",
+                                    "name": "ticket_id",
+                                    "type": "uint256"
+                                },
+                                {
+                                    "indexed": false,
+                                    "internalType": "address",
+                                    "name": "buyer",
+                                    "type": "address"
+                                },
+                                {
+                                    "indexed": false,
+                                    "internalType": "uint256",
+                                    "name": "code",
+                                    "type": "uint256"
+                                }
+                            ],
+                            "name": "Mint",
+                            "type": "event",
+                            "signature": "0xe8102b212636be533c5229780374a660400f2669df05637094313b977f907302"
+                        },
+                        "0xfbde797d201c681b91056529119e0b02407c7bb96a4a2c75c01fc9667232c8db": {
+                            "anonymous": false,
+                            "inputs": [
+                                {
+                                    "indexed": true,
+                                    "internalType": "address",
+                                    "name": "trigger",
+                                    "type": "address"
+                                },
+                                {
+                                    "indexed": true,
+                                    "internalType": "address",
+                                    "name": "target",
+                                    "type": "address"
+                                },
+                                {
+                                    "indexed": true,
+                                    "internalType": "address",
+                                    "name": "currency",
+                                    "type": "address"
+                                },
+                                {
+                                    "indexed": false,
+                                    "internalType": "uint256",
+                                    "name": "amount",
+                                    "type": "uint256"
+                                },
+                                {
+                                    "indexed": false,
+                                    "internalType": "uint256",
+                                    "name": "code",
+                                    "type": "uint256"
+                                }
+                            ],
+                            "name": "Withdraw",
+                            "type": "event",
+                            "signature": "0xfbde797d201c681b91056529119e0b02407c7bb96a4a2c75c01fc9667232c8db"
+                        }
+                    },
                     "links": {},
                     "address": "0xBEA22B48d5dD6Bb356d20878d2Bf15Cc0c3FC7Eb",
                     "transactionHash": "0x5721fb4334a6ee92740173081c917b82cd86b75c9bacb84c3353baac3df9f191"
@@ -1980,7 +2269,100 @@
             ],
             "networks": {
                 "2702": {
-                    "events": {},
+                    "events": {
+                        "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": {
+                            "anonymous": false,
+                            "inputs": [
+                                {
+                                    "indexed": true,
+                                    "internalType": "address",
+                                    "name": "owner",
+                                    "type": "address"
+                                },
+                                {
+                                    "indexed": true,
+                                    "internalType": "address",
+                                    "name": "spender",
+                                    "type": "address"
+                                },
+                                {
+                                    "indexed": false,
+                                    "internalType": "uint256",
+                                    "name": "value",
+                                    "type": "uint256"
+                                }
+                            ],
+                            "name": "Approval",
+                            "type": "event",
+                            "signature": "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925"
+                        },
+                        "0xcc16f5dbb4873280815c1ee09dbd06736cffcc184412cf7a71a0fdb75d397ca5": {
+                            "anonymous": false,
+                            "inputs": [
+                                {
+                                    "indexed": true,
+                                    "internalType": "address",
+                                    "name": "recipient",
+                                    "type": "address"
+                                },
+                                {
+                                    "indexed": true,
+                                    "internalType": "uint256",
+                                    "name": "amount",
+                                    "type": "uint256"
+                                }
+                            ],
+                            "name": "Burn",
+                            "type": "event",
+                            "signature": "0xcc16f5dbb4873280815c1ee09dbd06736cffcc184412cf7a71a0fdb75d397ca5"
+                        },
+                        "0x0f6798a560793a54c3bcfe86a93cde1e73087d944c0ea20544137d4121396885": {
+                            "anonymous": false,
+                            "inputs": [
+                                {
+                                    "indexed": true,
+                                    "internalType": "address",
+                                    "name": "recipient",
+                                    "type": "address"
+                                },
+                                {
+                                    "indexed": true,
+                                    "internalType": "uint256",
+                                    "name": "amount",
+                                    "type": "uint256"
+                                }
+                            ],
+                            "name": "Mint",
+                            "type": "event",
+                            "signature": "0x0f6798a560793a54c3bcfe86a93cde1e73087d944c0ea20544137d4121396885"
+                        },
+                        "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": {
+                            "anonymous": false,
+                            "inputs": [
+                                {
+                                    "indexed": true,
+                                    "internalType": "address",
+                                    "name": "from",
+                                    "type": "address"
+                                },
+                                {
+                                    "indexed": true,
+                                    "internalType": "address",
+                                    "name": "to",
+                                    "type": "address"
+                                },
+                                {
+                                    "indexed": false,
+                                    "internalType": "uint256",
+                                    "name": "value",
+                                    "type": "uint256"
+                                }
+                            ],
+                            "name": "Transfer",
+                            "type": "event",
+                            "signature": "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"
+                        }
+                    },
                     "links": {},
                     "address": "0x0e0f19D19d5a4C7A49D0a373F70a7fc84D3f1064",
                     "transactionHash": "0x462663c735225a609654ff994a45f58daeaafe986734b436f9834c943ba2d19d"
@@ -2781,7 +3163,118 @@
             ],
             "networks": {
                 "2702": {
-                    "events": {},
+                    "events": {
+                        "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": {
+                            "anonymous": false,
+                            "inputs": [
+                                {
+                                    "indexed": true,
+                                    "internalType": "address",
+                                    "name": "owner",
+                                    "type": "address"
+                                },
+                                {
+                                    "indexed": true,
+                                    "internalType": "address",
+                                    "name": "approved",
+                                    "type": "address"
+                                },
+                                {
+                                    "indexed": true,
+                                    "internalType": "uint256",
+                                    "name": "tokenId",
+                                    "type": "uint256"
+                                }
+                            ],
+                            "name": "Approval",
+                            "type": "event",
+                            "signature": "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925"
+                        },
+                        "0x17307eab39ab6107e8899845ad3d59bd9653f200f220920489ca2b5937696c31": {
+                            "anonymous": false,
+                            "inputs": [
+                                {
+                                    "indexed": true,
+                                    "internalType": "address",
+                                    "name": "owner",
+                                    "type": "address"
+                                },
+                                {
+                                    "indexed": true,
+                                    "internalType": "address",
+                                    "name": "operator",
+                                    "type": "address"
+                                },
+                                {
+                                    "indexed": false,
+                                    "internalType": "bool",
+                                    "name": "approved",
+                                    "type": "bool"
+                                }
+                            ],
+                            "name": "ApprovalForAll",
+                            "type": "event",
+                            "signature": "0x17307eab39ab6107e8899845ad3d59bd9653f200f220920489ca2b5937696c31"
+                        },
+                        "0x8af9c7c4f2413d56d919f89b29336eab0ed2f54976f0934a2360ab013bc957a1": {
+                            "anonymous": false,
+                            "inputs": [
+                                {
+                                    "indexed": true,
+                                    "internalType": "string",
+                                    "name": "scope",
+                                    "type": "string"
+                                },
+                                {
+                                    "indexed": true,
+                                    "internalType": "address",
+                                    "name": "owner",
+                                    "type": "address"
+                                },
+                                {
+                                    "indexed": true,
+                                    "internalType": "address",
+                                    "name": "issuer",
+                                    "type": "address"
+                                },
+                                {
+                                    "indexed": false,
+                                    "internalType": "uint256",
+                                    "name": "ticketId",
+                                    "type": "uint256"
+                                }
+                            ],
+                            "name": "Mint",
+                            "type": "event",
+                            "signature": "0x8af9c7c4f2413d56d919f89b29336eab0ed2f54976f0934a2360ab013bc957a1"
+                        },
+                        "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": {
+                            "anonymous": false,
+                            "inputs": [
+                                {
+                                    "indexed": true,
+                                    "internalType": "address",
+                                    "name": "from",
+                                    "type": "address"
+                                },
+                                {
+                                    "indexed": true,
+                                    "internalType": "address",
+                                    "name": "to",
+                                    "type": "address"
+                                },
+                                {
+                                    "indexed": true,
+                                    "internalType": "uint256",
+                                    "name": "tokenId",
+                                    "type": "uint256"
+                                }
+                            ],
+                            "name": "Transfer",
+                            "type": "event",
+                            "signature": "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"
+                        }
+                    },
                     "links": {},
                     "address": "0x25B7B6c0e182564B96bc9d8005636f89cB26E027",
                     "transactionHash": "0xcfab5553cd151bff56467d84cc4eb2126d3f16fdfbefb411370649b3fd76fafe"

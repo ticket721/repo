@@ -2,37 +2,37 @@ import { DocsContainer, DocsPage }                from '@storybook/addon-docs/di
 import { INITIAL_VIEWPORTS }                      from '@storybook/addon-viewport';
 import { configure, addParameters, addDecorator } from '@storybook/react';
 import { withThemesProvider }                     from 'themeprovider-storybook';
-import { GlobalStyles } from '../src/shared';
-import { customThemes } from '../src/config/theme';
-import { themes }       from '@storybook/theming';
+import { GlobalStyles }                           from '../src/shared';
+import { customThemes }                           from '../src/config/theme';
+import { themes }                                 from '@storybook/theming';
 import * as React                                 from 'react';
 import { StoryFn }                                from '@storybook/addons';
-
-addDecorator(withThemesProvider([customThemes['t721']]));
 
 function withGlobalStyles(storyFn: StoryFn) {
   return (
     <>
-        <GlobalStyles />
-        {storyFn()}
+      <GlobalStyles/>
+      {storyFn()}
     </>
-  )
+  );
 }
 
 addDecorator(withGlobalStyles);
 
+addDecorator(withThemesProvider([customThemes['t721']]));
+
 addParameters({
   options: {
     theme: themes.dark,
-    name: 'T721 React FLIB'
+    name: 'T721 React FLIB',
   },
   docs: {
     container: DocsContainer,
-    page: DocsPage
+    page: DocsPage,
   },
   viewport: {
-    viewports: INITIAL_VIEWPORTS
-  }
+    viewports: INITIAL_VIEWPORTS,
+  },
 });
 
 // automatically import all files ending in *.stories.tsx

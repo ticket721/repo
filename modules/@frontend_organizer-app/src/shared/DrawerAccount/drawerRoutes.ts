@@ -1,7 +1,7 @@
-import React           from 'react';
-import Activities      from './Activities';
-import DrawerMenu      from './DrawerMenu';
-import FundsAndPayment from './FundsAndPayment';
+import React       from 'react';
+import Activities  from '@frontend/core/lib/components/Profile/Activities';
+import Funds       from '@frontend/core/lib/components/Profile/Funds';
+import ProfileRoot from '@frontend/core/lib/components/Profile/Root';
 
 export interface RouteDatum {
     path: string;
@@ -14,21 +14,12 @@ export const drawerRoutes: RouteDatum[] = [
         component: Activities,
     },
     {
-        path: '/fundsandpaymentmethod',
-        component: FundsAndPayment,
+        path: '/funds',
+        component: Funds,
     },
     {
         path: '/',
-        component: DrawerMenu,
+        component: ProfileRoot,
     },
 ];
 
-export const computeDrawerPath = (pathname: string, drawerSubPath: string = ''): string => {
-    const drawerPathMatchArray = (pathname.match(/^((\/([a-z]|-)+)?\/drawer)/));
-
-    if (!drawerPathMatchArray) {
-        return '/';
-    }
-
-    return drawerPathMatchArray[0] + drawerSubPath;
-};
