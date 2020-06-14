@@ -50,7 +50,7 @@ const Activities: React.FC = () => {
     if (response.loading) {
         return (
             <ActivitiesContainer title={t('title')}>
-                <Skeleton type={'text'} ready={false} showLoadingAnimation={true}></Skeleton>
+                <Skeleton type={'text'} ready={false} showLoadingAnimation={true} children={null} />
             </ActivitiesContainer>
         );
     }
