@@ -1,6 +1,6 @@
 import React from 'react';
-import { Button } from "@frontend/flib-react/lib/components/button";
-import { Container, Line} from "../../style";
+import { Button } from '@frontend/flib-react/lib/components/button';
+import { Container, Line} from '../../style';
 
 interface Props {
   formik: any;

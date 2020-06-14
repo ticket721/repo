@@ -80,7 +80,7 @@ const StyledButton = styled.button<ButtonProps>`
     outline: none;
     align-items: center;
     border-radius: ${(props) => props.theme.defaultRadius};
-    color: ${props => props.variant === 'disabled' ? rgba('#FFFFFF', 0.4) : rgba('#FFFFFF', 0.9)};
+    color: ${(props) => (props.variant === 'disabled' ? rgba('#FFFFFF', 0.4) : rgba('#FFFFFF', 0.9))};
     display: inline-flex;
     font-size: 15px;
     font-weight: 500;

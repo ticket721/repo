@@ -1,8 +1,8 @@
 import React from 'react';
-import { Button } from "@frontend/flib-react/lib/components";
+import { Button } from '@frontend/flib-react/lib/components';
 
 import { Prices, Quantities, Sales, Resales } from './Fields';
-import { Container } from "../../style";
+import { Container } from '../../style';
 
 interface Props {
   formik: any;

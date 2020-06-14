@@ -1,7 +1,7 @@
 import React from 'react';
-import { Button, SelectInput, CustomDatePicker } from "@frontend/flib-react/lib/components";
-import { Line } from "../../../style";
-import { Container } from "./style";
+import { Button, SelectInput, CustomDatePicker } from '@frontend/flib-react/lib/components';
+import { Line } from '../../../style';
+import { Container } from './style';
 
 interface Props {
   formik: any;
@@ -11,7 +11,7 @@ interface Props {
 
 function Sales({ formik, index, state }: Props) {
   const options = [
-    ...(formik.values.dates[index].dates.map((d: any) => ({ label: d.eventDate, value: d.eventDate}))),
+    ...(formik.values.dates[index].dates.map((dateItem: any) => ({ label: dateItem.eventDate, value: dateItem.eventDate}))),
     {value: 'All dates', label: 'All dates'}
   ];
   const [values, setValues] = React.useState<({label: string, value: string}[])[]>([[]]);
@@ -31,7 +31,7 @@ function Sales({ formik, index, state }: Props) {
             multiple
             placeholder={'select dates to apply sales dates to'}
             value={values[i]}
-            onChange={(d: any, e: any) => {
+            onChange={(dat: any, e: any) => {
               const newDates = [...values]
               if (e.action === 'remove-value') {
                 const newValues = formik.values.dates[index].dates.map(

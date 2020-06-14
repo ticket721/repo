@@ -1,8 +1,8 @@
 import * as React from 'react';
 import DatePicker from 'react-datepicker';
-import styled     from '../../config/styled';
+import styled from '../../config/styled';
 import 'react-datepicker/dist/react-datepicker.css';
-import Icon       from '../icon';
+import Icon from '../icon';
 
 export interface CustomTimePickerProps extends React.ComponentProps<any> {
     dateFormat?: string;
@@ -155,9 +155,7 @@ export const CustomTimePicker: React.FunctionComponent<CustomTimePickerProps> = 
     return (
         <StyledInputContainer className={props.className}>
             <StyledLabel>{props.label}</StyledLabel>
-            <Clock
-            icon={'clock'}
-            size={'16px'}/>
+            <Clock icon={'clock'} size={'16px'} />
             <DatePicker
                 name={props.name}
                 dateFormat={props.dateFormat}

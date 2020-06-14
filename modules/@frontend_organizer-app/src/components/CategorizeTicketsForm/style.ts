@@ -1,13 +1,13 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
 export const Container = styled.div`
   border-radius: ${props => props.theme.defaultRadius};
   padding: ${props => props.theme.biggerSpacing};
-  background-color: ${props => props.theme.darkerBg}; 
+  background-color: ${props => props.theme.darkerBg};
   display: flex;
   flex-direction: column;
   margin: 10px 0;
-  
+
   div {
     margin: 0 !important;
   }

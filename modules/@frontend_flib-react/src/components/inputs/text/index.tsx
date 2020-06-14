@@ -1,9 +1,9 @@
 import * as React from 'react';
 
-import Cleave          from 'cleave.js/react';
-import styled          from '../../../config/styled';
+import Cleave from 'cleave.js/react';
+import styled from '../../../config/styled';
 import { ChangeEvent } from 'react';
-import Icon            from '../../icon';
+import Icon from '../../icon';
 
 export interface InputProps extends React.ComponentProps<any> {
     error?: string;
@@ -115,35 +115,29 @@ export const TextInput: React.FunctionComponent<InputProps & { className?: strin
         <StyledInputContainer error={props.error} className={props.className}>
             <StyledLabel htmlFor={props.name}>{props.label}</StyledLabel>
             <div className={'sub-container'}>
-                {
-                  props.icon ?
-                    <Icon
-                      icon={props.icon}
-                      size={'16px'}/> :
-                    null
-                }
+                {props.icon ? <Icon icon={props.icon} size={'16px'} /> : null}
                 {props.options ? (
-                  <Cleave
-                    options={props.options}
-                    id={props.name}
-                    name={props.name}
-                    placeholder={props.placeholder}
-                    defaultValue={props.value}
-                    onChange={props.onChange}
-                    onFocus={props.onFocus}
-                    onBlur={props.onBlur}
-                  />
+                    <Cleave
+                        options={props.options}
+                        id={props.name}
+                        name={props.name}
+                        placeholder={props.placeholder}
+                        defaultValue={props.value}
+                        onChange={props.onChange}
+                        onFocus={props.onFocus}
+                        onBlur={props.onBlur}
+                    />
                 ) : (
-                  <input
-                    id={props.name}
-                    name={props.name}
-                    placeholder={props.placeholder}
-                    onFocus={props.onFocus}
-                    value={props.value}
-                    type={props.type || 'text'}
-                    onChange={props.onChange}
-                    onBlur={props.onBlur}
-                  />
+                    <input
+                        id={props.name}
+                        name={props.name}
+                        placeholder={props.placeholder}
+                        onFocus={props.onFocus}
+                        value={props.value}
+                        type={props.type || 'text'}
+                        onChange={props.onChange}
+                        onBlur={props.onBlur}
+                    />
                 )}
             </div>
             {props.error && <Error>{props.error}</Error>}
