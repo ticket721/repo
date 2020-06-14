@@ -1,5 +1,4 @@
 import React, { Suspense, useEffect, useState } from 'react';
-import { PageContainer }                        from '@frontend/core/lib/components';
 
 import { Route, Switch, useLocation, withRouter } from 'react-router-dom';
 
@@ -37,13 +36,9 @@ const App: React.FC = () => {
           {
             appStatus === AppStatus.Ready && routes.map((route, idx) => {
               const page = (
-                <PageContainer
-                  padding='50px 30px 30px'
-                  topBar={route.topBar}
-                  topBarHeight={route.topBarHeight}
-                >
+                <PageWrapper>
                   <route.page />
-                </PageContainer>
+                </PageWrapper>
               );
 
               if (route.protected) {
@@ -66,7 +61,11 @@ const App: React.FC = () => {
 
 const AppContainer = styled.div`
   width: 100%;
-  height: 100vh;
+`;
+
+const PageWrapper = styled.div`
+    padding: 50px 30px 30px;
+    margin-top: 80px;
 `;
 
 export default withRouter(App);
