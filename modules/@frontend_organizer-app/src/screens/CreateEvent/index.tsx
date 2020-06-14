@@ -1,4 +1,4 @@
-import React, { useEffect }         from 'react';
+import React, { useEffect, useRef } from 'react';
 import styled                       from 'styled-components';
 import GeneralInfoForm              from '../../components/GeneralInfoForm';
 import { useDispatch, useSelector } from 'react-redux';
@@ -6,15 +6,27 @@ import { MergedAppState }           from '../../index';
 import { InitEventAcset }           from '../../redux/ducks/event_creation';
 import { EventCreationSteps }       from '../../core/event_creation/EventCreationCore';
 import StylesForm                   from '../../components/StylesForm';
+import DatesForm                    from '../../components/DatesForm';
+import '@frontend/core/lib/utils/window';
+import { OrganizerState }           from '../../redux/ducks';
 
 const CreateEvent: React.FC = () => {
+    const StylesFormRef = useRef(null);
+    const DatesFormRef = useRef(null);
+
     const dispatch = useDispatch();
-    const [ eventAcsetId, lastCompletedStep ]:
-        [ string, EventCreationSteps ] =
+    const [ token, eventAcsetId, lastCompletedStep ]:
+        [ string, string, EventCreationSteps ] =
         useSelector((state: MergedAppState) => [
+            state.auth.token.value,
             state.eventCreation.acsetId,
             state.eventCreation.completedStep,
         ]);
+
+    const scrollToRef = (ref: any) =>
+        window.scrollTo({ top: ref.current.offsetTop, left: 0, behavior: 'smooth' });
+
+    const datesLength = useSelector((state: OrganizerState) => state.eventCreation.datesConfiguration.dates.length);
 
     useEffect(() => {
         if (!eventAcsetId) {
@@ -25,27 +37,54 @@ const CreateEvent: React.FC = () => {
         dispatch
     ]);
 
+    useEffect(() => {
+        switch (lastCompletedStep) {
+            case EventCreationSteps.GeneralInfo:
+                scrollToRef(StylesFormRef);
+                break;
+            case EventCreationSteps.Styles:
+                global.window.t721Sdk.actions.update(token, eventAcsetId, {
+                    data: {},
+                }).then(() => {
+                    console.log('complete module');
+                });
+                break;
+            case EventCreationSteps.Modules:
+                scrollToRef(DatesFormRef);
+        }
+    }, [
+        lastCompletedStep,
+        eventAcsetId,
+        token,
+    ]);
+
     return (
         <Container>
         {
             eventAcsetId &&
             <Forms>
-                <>
+                <FormWrapper>
                     <Title>General Informations</Title>
-                    <GeneralInfoForm />
-                </>
+                    <GeneralInfoForm/>
+                </FormWrapper>
                 { lastCompletedStep >= EventCreationSteps.GeneralInfo && (
-                    <>
+                    <FormWrapper ref={StylesFormRef}>
                         <Title>Event Style</Title>
                         <StylesForm />
-                    </>
+                    </FormWrapper>
                 )}
-                {/*{lastCompletedStep >= EventCreationSteps.Styles && (*/}
-                {/*    <>*/}
-                {/*        <Title>Event Dates</Title>*/}
-                {/*        <DatesForm />*/}
-                {/*    </>)*/}
-                {/*}*/}
+                { lastCompletedStep >= EventCreationSteps.Modules && (
+                    <FormWrapper ref={DatesFormRef}>
+                        <Title>Event Dates {
+                            datesLength > 0 ?
+                            <span className={'date-quantity'}>
+                                - {datesLength} date{datesLength > 1 ? 's' : null}
+                            </span> :
+                                null
+                        }</Title>
+                        <DatesForm />
+                    </FormWrapper>
+                )}
                 {/*{lastCompletedStep >= EventCreationSteps.Dates && (*/}
                 {/*    <>*/}
                 {/*        <Title>Ticket categories</Title>*/}
@@ -62,7 +101,6 @@ const Container = styled.div`
     justify-content: center;
     align-items: center;
     width: 100%;
-    scroll-behavior: smooth;
 `;
 
 const Forms = styled.div`
@@ -71,16 +109,27 @@ const Forms = styled.div`
     align-items: center;
     flex-direction: column;
     width: 600px;
-    margin: 40px 0 20px 0;
+`;
+
+const FormWrapper = styled.div`
+    width: 100%;
+    margin: 50px 0;
+    min-height: 65vh;
 `;
 
 const Title = styled.h1`
     font-size: 20px;
     font-weight: bold;
     color: ${(props) => props.theme.textColor};
-    margin-bottom: 8px;
+    margin-bottom: ${(props) => props.theme.doubleSpacing};
     text-align: left;
     width: 100%;
+
+    .date-quantity {
+        font-weight: 400;
+        font-size: 15px;
+        color: rgba(255,255,255,0.6);
+    }
 `;
 
 export default CreateEvent;

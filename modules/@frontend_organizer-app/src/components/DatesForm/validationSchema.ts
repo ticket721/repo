@@ -1,25 +1,22 @@
 import * as yup from 'yup';
 
-const dates = yup.array().min(1, 'Dates are required').of(yup.object().shape(
-    {
-        start: yup.object().shape({
-            date: yup.date().required('start day is missing'),
-            time: yup.date().required('start time is missing'),
-            final: yup.date(),
-        }).required('start date is missing'),
-
-        end: yup.object().shape({
-            date: yup.date().required('end day is missing'),
-            time: yup.date().required('end time is missing'),
-            final: yup.date(),
-        }).required('end date is missing')
-    }
-));
-const location = yup.string().required('Location is required');
-
-const validationSchema = yup.object().shape({
-  location,
-  dates
+const dateItemValidation = yup.object().shape({
+    name: yup.string().required('name is required'),
+    eventBegin: yup.date().min(new Date(), 'Cannot be a past date').required('you need to provide a start date'),
+    eventEnd: yup.date().min(new Date(), 'Cannot be a past date').required('you need to provide an end date'),
+    location: yup.object().shape({
+        lat: yup.number(),
+        lon: yup.number(),
+        label: yup.string().required('you need to provide a location'),
+    }).required('you need to provide a location'),
 });
 
-export { validationSchema };
+const dates = yup.array()
+    .min(1, 'Dates are required')
+    .of(dateItemValidation);
+
+const datesConfigValidationSchema = yup.object().shape({
+    dates
+});
+
+export { datesConfigValidationSchema, dateItemValidation };
