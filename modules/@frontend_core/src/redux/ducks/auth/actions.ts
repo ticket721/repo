@@ -54,6 +54,7 @@ export interface ISetUser extends Action<string> {
     locale: string;
     validated: boolean;
     address: string;
+    uuid: string;
 }
 
 export const SetUser = (
@@ -62,6 +63,7 @@ export const SetUser = (
     locale: string,
     validated: boolean,
     address: string,
+    uuid: string,
 ): ISetUser => ({
     type: AuthActionTypes.SetUser,
     username,
@@ -69,6 +71,7 @@ export const SetUser = (
     locale,
     validated,
     address,
+    uuid,
 });
 
 export interface IGetUser extends Action<string> {

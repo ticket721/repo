@@ -76,6 +76,8 @@ export abstract class CacheCore {
         try {
             return await sdkMethod(...args);
         } catch (e) {
+            console.error(e.response);
+            console.error(e.response.data.message);
             console.log('CacheCore: bad arguments');
             throw e;
         }

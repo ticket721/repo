@@ -34,6 +34,7 @@ const SetUserReducer: Reducer<AuthState, ISetUser> = (state: AuthState, action: 
         locale: action.locale,
         validated: action.validated,
         address: action.address,
+        uuid: action.uuid,
     },
 });
 
