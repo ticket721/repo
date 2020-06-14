@@ -16,3 +16,4 @@ export * from './ticket';
 export * from './time-picker';
 export * from './wallet';
 export * from './toast';
+export * from './loader';

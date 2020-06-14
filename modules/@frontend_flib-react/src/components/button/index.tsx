@@ -9,14 +9,13 @@ export interface ButtonProps extends React.ComponentProps<any> {
     onClick?: () => void;
     loadingState?: boolean;
     hidden?: boolean;
-    disabled?: boolean;
-    variant: 'primary' | 'secondary' | 'custom' | 'warning' | 'error';
+    variant: 'primary' | 'secondary' | 'custom' | 'warning' | 'danger' | 'disabled';
     type?: string;
 }
 
 const StyledButton = styled.button<ButtonProps>`
     ${(props) =>
-        (props.variant === 'secondary' || props.disabled) &&
+        (props.variant === 'secondary' || props.variant === 'disabled') &&
         `
     background-color: ${rgba('#FFFFFF', 0.1)};
     transition: background-color 300ms ease;
@@ -67,7 +66,7 @@ const StyledButton = styled.button<ButtonProps>`
 `};
 
     ${(props) =>
-        props.variant === 'error' &&
+        props.variant === 'danger' &&
         !props.disabled &&
         `
       background-color: ${rgba(props.theme.errorColor.hex, 0.4)};
@@ -78,9 +77,10 @@ const StyledButton = styled.button<ButtonProps>`
       }
   `};
 
+    outline: none;
     align-items: center;
     border-radius: ${(props) => props.theme.defaultRadius};
-    color: rgba(255, 255, 255, 0.9);
+    color: ${props => props.variant === 'disabled' ? rgba('#FFFFFF', 0.4) : rgba('#FFFFFF', 0.9)};
     display: inline-flex;
     font-size: 15px;
     font-weight: 500;
@@ -115,7 +115,6 @@ const StyledButton = styled.button<ButtonProps>`
         justify-content: center;
         padding-top: 1px;
         position: relative;
-        z-index: 1;
     }
 
     & > div {
@@ -132,6 +131,7 @@ export const Button: React.FunctionComponent<ButtonProps> = (props: ButtonProps)
                 gradients={props.gradients}
                 variant={props.variant}
                 type={props.type}
+                disabled={props.variant === 'disabled'}
                 {...props}
             >
                 {props.loadingState ? <Loader size={'120%'} /> : null}

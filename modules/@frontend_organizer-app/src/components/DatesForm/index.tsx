@@ -153,7 +153,6 @@ const StyledForm = styled.div`
 
 const DatesContainer = styled.div`
     width: 100%;
-    max-height: 100vh;
     overflow-y: scroll;
     overflow-x: hidden;
 
