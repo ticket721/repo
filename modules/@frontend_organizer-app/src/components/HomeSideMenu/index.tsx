@@ -89,24 +89,37 @@ const HomeSideMenu = ({ currentDate, setCurrentDate, setName, name }: Props) => 
 
   return (
     <Container>
-      <Title>{category[0].name}</Title>
-      {category.map((e, i) => {
-        const date = `${e.startDate.toDateString()} - ${e.startDate.getHours()}:${e.startDate.getMinutes()}`;
+      { category && (
+        <>
+          <Title>{category[0].name}</Title>
+          { name && category.map((e, i) => {
+              const date = `${e.startDate.toDateString()} - ${e.startDate.getHours()}:${e.startDate.getMinutes()}`;
 
-        return (
-          <SubTitle
-            key={`side-dates-${e.name}-${date}-${i}`}
-            focus={currentDate === date}
-            onClick={() => {
-              setCurrentDate(date);
-              setName(e.name);
-            }}
-          >
-            {date}
-          </SubTitle>
-        )
-       }
+              return (
+                <SubTitle
+                  key={`side-dates-${e.name}-${date}-${i}`}
+                  focus={currentDate === date}
+                  onClick={() => {
+                    setCurrentDate(date);
+                    setName(e.name);
+                  }}
+                >
+                  {date}
+                </SubTitle>
+              )
+            }
+          )}
+        </>
       )}
+      { !category && (dates.map((e, i) =>
+        <Title
+          clickable
+          key={`${e[0].name}-${i}`}
+          onClick={() => setName(e[0].name)}
+        >
+          {e[0].name}
+        </Title>
+      ))}
     </Container>
   )
 };
@@ -123,12 +136,13 @@ const Container = styled.div`
   overflow: auto;
 `;
 
-const Title = styled.span`
+const Title = styled.span<{ clickable?: boolean }>`
   width: 85%;
   margin: 20px 12px 10px 12px;
   font-weight: 500;
   font-size: 16px;
   color: ${(props) => props.theme.textColor};
+  cursor: ${({ clickable }) => clickable ? 'pointer' : 'auto'};
 `;
 
 const SubTitle = styled.span<{focus?: boolean}>`

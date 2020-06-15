@@ -3,7 +3,7 @@ export default interface Ticket {
     mainColor: string;
     location: string;
     address: string;
-    number: number;
+    number?: number;
     ticketType: string;
     startDate: string;
     gradients: string[];

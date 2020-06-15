@@ -6,9 +6,10 @@ const tickets = ['Weekends', 'Mercredi', 'Super category'];
 
 interface Props {
   type: 'information' | 'tickets';
+  setPage: (page: string) => void;
 }
 
-const SubMenu = ({ type }: Props): JSX.Element => {
+const SubMenu = ({ type, setPage }: Props): JSX.Element => {
   const [more, setMore] = React.useState<
     'information' | 'all' | 'tickets' | 'none'
     >('none');
@@ -49,7 +50,7 @@ const SubMenu = ({ type }: Props): JSX.Element => {
         </Button>
         {
           (more === 'information'|| more === 'all') &&
-          <InfoDetails />
+          <InfoDetails setPage={setPage}/>
         }
     </>
     )
@@ -62,26 +63,26 @@ const SubMenu = ({ type }: Props): JSX.Element => {
       </Button>
       {
         (more === 'tickets'|| more === 'all') &&
-        <TicketList />
+        <TicketList setPage={setPage}/>
       }
     </>
   );
 };
 
-const InfoDetails = () => {
+const InfoDetails = ({ setPage }: { setPage: (page: string) => void}) => {
   return (
     <SubContainer>
-      <Subtitle>General Information</Subtitle>
-      <Subtitle>Dates</Subtitle>
-      <Subtitle>Location</Subtitle>
+      <Subtitle onClick={() => setPage('general')}>General Information</Subtitle>
+      <Subtitle onClick={() => setPage('dates')}>Dates</Subtitle>
+      <Subtitle onClick={() => setPage('location')}>Location</Subtitle>
     </SubContainer>
   )
 };
 
-const TicketList = () => {
+const TicketList = ({ setPage }: { setPage: (page: string) => void}) => {
   return (
     <SubContainer>
-      {tickets.map((t, i) => <Subtitle key={`${t}-${i}`}>{t}</Subtitle>)}
+      {tickets.map((t, i) => <Subtitle onClick={() => setPage(t)} key={`${t}-${i}`}>{t}</Subtitle>)}
     </SubContainer>
   )
 };
@@ -94,7 +95,6 @@ const SubContainer = styled.div`
   padding: 12px 0;
   margin-bottom: 12px;
 `;
-
 
 const Title = styled.span`
   font-weight: 500;
