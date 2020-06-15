@@ -66,7 +66,7 @@
         "signale": "1.4.0",
         "truffle-hdwallet-provider": "1.0.17",
         "ts-node": "8.6.2",
-        "typedoc": "0.16.11",
+        "typedoc": "0.17.7",
         "typedoc-plugin-markdown": "2.2.17",
         "typescript": "3.8.3",
         "web3": "1.2.6",
