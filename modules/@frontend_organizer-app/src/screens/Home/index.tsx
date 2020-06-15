@@ -80,7 +80,6 @@ const dates = [
     },
   ],
 ];
-// `${startDates[0].startDate.toDateString()} - ${startDates[0].startDate.getHours()}:${startDates[0].date.getMinutes()}`
 
 const Home: React.FC = () => {
   const dispatch = useDispatch();
