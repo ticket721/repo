@@ -2,7 +2,7 @@ import { ActionSetsService, Progress } from '@lib/common/actionsets/ActionSets.s
 import { ActionSet } from '@lib/common/actionsets/helper/ActionSet.class';
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import Joi from '@hapi/joi';
-import { closestCity, serialize } from '@common/global';
+import { City, closestCity, serialize, Coordinates } from '@common/global';
 import { ImagesService } from '@lib/common/images/Images.service';
 import { ChecksRunnerUtil } from '@lib/common/actionsets/helper/ChecksRunner.util';
 import { EventCreationActions } from '@lib/common/events/acset_builders/EventCreate.acsetbuilder.helper';
@@ -437,6 +437,22 @@ export class EventsInputHandlers implements OnModuleInit {
     }
 
     /**
+     * City type dynamic checker
+     */
+    cityValidator = Joi.object<City>({
+        name: Joi.string().required(),
+        nameAscii: Joi.string().required(),
+        nameAdmin: Joi.string().required(),
+        country: Joi.string().required(),
+        coord: Joi.object<Coordinates>({
+            lon: Joi.number().required(),
+            lat: Joi.number().required(),
+        }),
+        population: Joi.number().required(),
+        id: Joi.number().required(),
+    });
+
+    /**
      * events/datesConfiguration dynamic argument checker
      */
     datesConfigurationValidator = Joi.object<EventsCreateDatesConfiguration>({
@@ -451,6 +467,7 @@ export class EventsInputHandlers implements OnModuleInit {
                         lon: Joi.number().required(),
                         label: Joi.string().required(),
                     }).required(),
+                    city: this.cityValidator.optional(),
                 }),
             )
             .min(1)
@@ -547,6 +564,7 @@ export class EventsInputHandlers implements OnModuleInit {
      */
     categoryConfigurationValidator = Joi.object({
         name: Joi.string().required(),
+        serializedName: Joi.string().optional(),
         saleBegin: Joi.date().required(),
         saleEnd: Joi.date().required(),
         resaleBegin: Joi.date(),

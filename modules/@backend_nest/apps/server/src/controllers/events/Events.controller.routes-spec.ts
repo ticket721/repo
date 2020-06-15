@@ -2,7 +2,9 @@ import { T721SDK } from '@common/sdk';
 import { PasswordlessUserDto } from '@app/server/authentication/dto/PasswordlessUser.dto';
 import {
     createEvent,
+    createEventActionSet,
     createPaymentIntent,
+    editEventActionSet,
     failWithCode,
     getSDKAndUser,
     getUser,
@@ -137,6 +139,27 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 } = await getSDKAndUser(getCtx);
 
                 const event = await createEvent(token, sdk);
+            });
+
+            test('should properly edit actionset then create event', async function() {
+                const {
+                    sdk,
+                    token,
+                    user,
+                    password,
+                }: {
+                    sdk: T721SDK;
+                    token: string;
+                    user: PasswordlessUserDto;
+                    password: string;
+                } = await getSDKAndUser(getCtx);
+
+                const actionSetId = await createEventActionSet(token, sdk);
+                await editEventActionSet(token, sdk, actionSetId);
+
+                const eventEntityRes = await sdk.events.create.create(token, {
+                    completedActionSet: actionSetId,
+                });
             });
 
             test('should fail by unauthenticated call', async function() {
