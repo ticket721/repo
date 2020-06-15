@@ -17,7 +17,8 @@ const dates = [
       ticketType: 'Gold Ticket',
       gradients: ['#00bfff', '#007399'],
       startTime: `${new Date().getHours()}:${new Date().getMinutes()}`,
-      endDate: new Date().toDateString(),
+      startDate: new Date(),
+      endDate: new Date(),
       endTime: `${new Date().getHours()}:${new Date().getMinutes()}`,
       ticketId: 'ticketId1',
       addOns: 1,
@@ -129,7 +130,6 @@ const dates = [
   ],
 ];
 
-
 interface Props {
   currentDate: string | undefined;
   setCurrentDate: (startDate: string) => void;
@@ -146,9 +146,9 @@ const EventPresentation = ({ currentDate, setCurrentDate, name }: Props) => {
         <Title>User preview</Title>
         <TicketContainer>
           <Ticket>
-            <TicketHeader ticket={{...category[0], startDate: category[0].startDate.toDateString()}} />
+            <TicketHeader ticket={{...category[0], startDate: category[0].startDate.toDateString(), endDate: category[0].endDate.toDateString()}} />
             <Overlap>
-              <PreviewInfos ticket={{...category[0], startDate: category[0].startDate.toDateString()}} />
+              <PreviewInfos ticket={{...category[0], startDate: category[0].startDate.toDateString(), endDate: category[0].endDate.toDateString()}} />
             </Overlap>
           </Ticket>
         </TicketContainer>
@@ -185,7 +185,6 @@ const Overlap = styled.div`
 
 const Title = styled.span`
   width: 100%;
-  margin-top: 30px;
   margin-bottom: 25px;
   font-weight: 500;
   font-size: 16px;

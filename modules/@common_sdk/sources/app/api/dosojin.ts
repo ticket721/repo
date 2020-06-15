@@ -5,12 +5,12 @@ import { DosojinSearchResponseDto }         from '@app/server/controllers/dosoji
 
 export async function dosojinSearch(
     token: string,
-    query: DosojinSearchInputDto,
+    query: Partial<DosojinSearchInputDto>,
 ): Promise<AxiosResponse<DosojinSearchResponseDto>> {
 
     const self: T721SDK = this;
 
-    return self.post<DosojinSearchInputDto>('/dosojin/search', {
+    return self.post<Partial<DosojinSearchInputDto>>('/dosojin/search', {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
     }, query);

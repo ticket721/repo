@@ -23,6 +23,7 @@ export const routes: RouteDatum[] = [
     {
         path: '/create-event',
         page: CreateEvent,
+        topBarHeight: '81px',
         protected: true,
     },
     {
@@ -36,6 +37,7 @@ export const routes: RouteDatum[] = [
     {
         path: '/',
         page: Home,
+        topBarHeight: '81px',
         protected: true,
     },
 ];

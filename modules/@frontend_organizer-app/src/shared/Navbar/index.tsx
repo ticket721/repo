@@ -6,9 +6,10 @@ import DrawerAccount                         from '../DrawerAccount';
 import { blurAndDarkenBackground, truncate } from '@frontend/core/lib/utils';
 import { useHistory }                        from 'react-router';
 import { NavLink }                           from 'react-router-dom';
-import { computeDrawerPath }                 from '../DrawerAccount/drawerRoutes';
 import { useDispatch }                       from 'react-redux';
 import { Logout }                            from '@frontend/core/lib/redux/ducks/auth';
+import { computeProfilePath }                from '@frontend/core/lib/utils/computeProfilePath';
+import { appendProfilePath }                 from '@frontend/core/lib/utils/appendProfilePath';
 
 const user = {
     firstName: 'Pierre',
@@ -24,11 +25,11 @@ const NavBar: React.FC = () => {
     const dispatch = useDispatch();
 
     const drawerOnClose = () => {
-        if (computeDrawerPath(history.location.pathname).startsWith('/drawer')) {
+        if (computeProfilePath(history.location.pathname).startsWith('/profile')) {
             history.push('/');
         } else {
-            const computedDrawerPath = computeDrawerPath(history.location.pathname);
-            history.push(computedDrawerPath.substr(0, computedDrawerPath.length - 7));
+            const computedProfilePath = computeProfilePath(history.location.pathname);
+            history.push(computedProfilePath.substr(0, computedProfilePath.length - 7));
         }
     };
 
@@ -46,26 +47,29 @@ const NavBar: React.FC = () => {
                 </NavLink>
                 <Profile
                     onClick={
-                        () => history.push((history.location.pathname === '/' ? '' : history.location.pathname) + '/drawer')
+                        () => history.push(appendProfilePath(history.location.pathname))
                     }>
                     <UserHeader user={user} />
                     <Chevron icon='chevron' color='#fff' size='7px' />
                 </Profile>
             </ActionContainer>
             <DrawerAccount
-                open={computeDrawerPath(history.location.pathname) !== '/'}
+                open={computeProfilePath(history.location.pathname) !== '/'}
                 onClose={drawerOnClose} />
         </Container>
     );
 };
 
 const Container = styled.div`
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 24px;
-    background-color: #0A0812 !important;
-    ${(props): string => blurAndDarkenBackground('chrome')};
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 24px;
+  ${(props): string => blurAndDarkenBackground('chrome')};
 `;
 
 const ActionContainer = styled.div`

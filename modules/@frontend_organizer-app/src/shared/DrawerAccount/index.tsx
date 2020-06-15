@@ -4,14 +4,15 @@ import { detect }                                             from 'detect-brows
 import { Drawer as MUIDrawer, DrawerProps as MUIDrawerProps } from '@material-ui/core';
 import { blurAndDarkenBackground }                            from '@frontend/core/lib/utils/style';
 import { Route, Switch }                                      from 'react-router-dom';
-import { computeDrawerPath, drawerRoutes } from './drawerRoutes';
-import { useHistory }         from 'react-router';
-import { WalletHeader }      from '@frontend/flib-react/lib/components';
-import { ArrowBackIos } from '@material-ui/icons';
+import { drawerRoutes }                                       from './drawerRoutes';
+import { useHistory }                                         from 'react-router';
+import { WalletHeader }                                       from '@frontend/flib-react/lib/components';
+import { ArrowBackIos }                                       from '@material-ui/icons';
+import { computeProfilePath }                                 from '@frontend/core/lib/utils/computeProfilePath';
 
 interface Props {
-  open: boolean,
-  onClose: () => void;
+    open: boolean,
+    onClose: () => void;
 }
 
 const user = {
@@ -32,11 +33,11 @@ const DrawerAccount = ({open, onClose}: Props): JSX.Element => {
             return null;
         }
 
-        return <BackArrow onClick={() => history.push(computeDrawerPath(history.location.pathname))}>
+        return <BackArrow onClick={() => history.push(computeProfilePath(history.location.pathname))}>
             <ArrowBackIos />
             <span>Back</span>
         </BackArrow>
-      };
+    };
 
     return (
         <Drawer anchor='right' open={open} onClose={onClose} browsername={browser?.name}>
@@ -45,12 +46,12 @@ const DrawerAccount = ({open, onClose}: Props): JSX.Element => {
                 {
                     drawerRoutes.map((route, idx) => (
                         <Route
-                        key={idx}
-                        path={computeDrawerPath(history.location.pathname, route.path)}>
-                          {
-                            topBar(route.path)
-                          }
-                          <route.component />
+                            key={idx}
+                            path={computeProfilePath(history.location.pathname, route.path)}>
+                            {
+                                topBar(route.path)
+                            }
+                            <route.component />
 
                         </Route>
                     ))
@@ -61,7 +62,7 @@ const DrawerAccount = ({open, onClose}: Props): JSX.Element => {
 };
 
 interface DrawerProps extends MUIDrawerProps {
-  browsername: string | undefined;
+    browsername: string | undefined;
 }
 
 const Drawer = styled(MUIDrawer)<DrawerProps>`

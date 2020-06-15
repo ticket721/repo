@@ -31,14 +31,14 @@ export const PageContainer: React.FC<PageContainerProps> = (props: PageContainer
 
     return (
         <div className={'PageContainer'} style={{ height: '100vh' }}>
-            {props.topBar ? <TopBarContainer height={topBarHeight}>{props.topBar}</TopBarContainer> : null}
+            {topBar ? <TopBarContainer height={topBarHeight}>{topBar}</TopBarContainer> : null}
             <ScrollWrapper>
                 <div style={{ width: '1px' }} />
             </ScrollWrapper>
             <ContentView
                 style={{
-                    top: topBar ? topBarHeight : null,
-                    height: `calc(100% ${topBar ? '- ' + topBarHeight : ''})`,
+                    top: topBar || props.topBarHeight ? topBarHeight : null,
+                    height: topBar || props.topBarHeight ? `calc(100% - ${topBarHeight})` : 'auto',
                     padding,
                 }}
             >

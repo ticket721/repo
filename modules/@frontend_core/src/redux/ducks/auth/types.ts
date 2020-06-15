@@ -16,6 +16,7 @@ export interface User {
     kind: string;
     locale: string;
     validated: boolean;
+    address: string;
 }
 
 export interface Token {

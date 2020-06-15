@@ -2,7 +2,9 @@ import { T721SDK } from '@common/sdk';
 import { PasswordlessUserDto } from '@app/server/authentication/dto/PasswordlessUser.dto';
 import {
     createEvent,
+    createEventActionSet,
     createPaymentIntent,
+    editEventActionSet,
     failWithCode,
     getSDKAndUser,
     getUser,
@@ -22,7 +24,7 @@ import { uuidEq } from '@common/global';
 
 export default function(getCtx: () => { ready: Promise<void> }) {
     return function() {
-        describe('search (GET /events/search)', function() {
+        describe('search (POST /events/search)', function() {
             test('should properly search for events', async function() {
                 const {
                     sdk,
@@ -72,6 +74,56 @@ export default function(getCtx: () => { ready: Promise<void> }) {
             });
         });
 
+        describe('count (POST /events/count)', function() {
+            test('should properly count events', async function() {
+                const {
+                    sdk,
+                    token,
+                    user,
+                    password,
+                }: {
+                    sdk: T721SDK;
+                    token: string;
+                    user: PasswordlessUserDto;
+                    password: string;
+                } = await getSDKAndUser(getCtx);
+
+                const event = await createEvent(token, sdk);
+
+                const eventsQuery = await sdk.events.count(token, {
+                    id: {
+                        $eq: event.id,
+                    },
+                });
+
+                expect(eventsQuery.data.events.count).toEqual(1);
+            });
+
+            test('should properly count events from unauthenticated', async function() {
+                const {
+                    sdk,
+                    token,
+                    user,
+                    password,
+                }: {
+                    sdk: T721SDK;
+                    token: string;
+                    user: PasswordlessUserDto;
+                    password: string;
+                } = await getSDKAndUser(getCtx);
+
+                const event = await createEvent(token, sdk);
+
+                const eventsQuery = await sdk.events.count(null, {
+                    id: {
+                        $eq: event.id,
+                    },
+                });
+
+                expect(eventsQuery.data.events.count).toEqual(1);
+            });
+        });
+
         describe('create (POST /events)', function() {
             test('should convert action set to event', async function() {
                 const {
@@ -87,6 +139,27 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 } = await getSDKAndUser(getCtx);
 
                 const event = await createEvent(token, sdk);
+            });
+
+            test('should properly edit actionset then create event', async function() {
+                const {
+                    sdk,
+                    token,
+                    user,
+                    password,
+                }: {
+                    sdk: T721SDK;
+                    token: string;
+                    user: PasswordlessUserDto;
+                    password: string;
+                } = await getSDKAndUser(getCtx);
+
+                const actionSetId = await createEventActionSet(token, sdk);
+                await editEventActionSet(token, sdk, actionSetId);
+
+                const eventEntityRes = await sdk.events.create.create(token, {
+                    completedActionSet: actionSetId,
+                });
             });
 
             test('should fail by unauthenticated call', async function() {

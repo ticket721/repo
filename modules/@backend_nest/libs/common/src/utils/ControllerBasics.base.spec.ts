@@ -12,6 +12,9 @@ import { RightEntity } from '@lib/common/rights/entities/Right.entity';
 import { ESSearchReturn } from '@lib/common/utils/ESSearchReturn.type';
 import { EventsService } from '@lib/common/events/Events.service';
 import { SortablePagedSearch } from '@lib/common/utils/SortablePagedSearch.type';
+import { ESCountReturn } from '@lib/common/utils/ESCountReturn.type';
+import { SearchInputType } from '@lib/common/utils/SearchInput.type';
+import { EventEntity } from '@lib/common/events/entities/Event.entity';
 
 class FakeEntity {
     id: string;
@@ -290,7 +293,7 @@ describe('Controller Basics', function() {
                 instance(rightsServiceMock),
                 user,
                 'id',
-                {},
+                {} as SearchInputType<EventEntity>,
             );
 
             expect(res).toEqual([entity]);
@@ -397,7 +400,7 @@ describe('Controller Basics', function() {
                     id: {
                         $in: ['abcd'],
                     },
-                } as SortablePagedSearch,
+                } as SearchInputType<EventEntity>,
             );
 
             expect(res).toEqual([entity]);
@@ -480,7 +483,7 @@ describe('Controller Basics', function() {
                     instance(rightsServiceMock),
                     user,
                     'id',
-                    {},
+                    {} as SearchInputType<EventEntity>,
                 ),
                 StatusCodes.InternalServerError,
                 'unexpected_error',
@@ -566,7 +569,7 @@ describe('Controller Basics', function() {
                         id: {
                             $in: ['efgh'],
                         },
-                    } as SortablePagedSearch,
+                    } as SearchInputType<EventEntity>,
                 ),
                 StatusCodes.Unauthorized,
                 'unauthorized_value_in_filter',
@@ -657,7 +660,10 @@ describe('Controller Basics', function() {
                 } as ESSearchReturn<any>,
             });
 
-            const res = await context.controllerBasics._search(instance(service), query);
+            const res = await context.controllerBasics._search(
+                instance(service),
+                query as SearchInputType<EventEntity>,
+            );
 
             expect(res).toEqual([]);
         });
@@ -697,7 +703,10 @@ describe('Controller Basics', function() {
                 } as ESSearchReturn<any>,
             });
 
-            const res = await context.controllerBasics._search(instance(service), query);
+            const res = await context.controllerBasics._search(
+                instance(service),
+                query as SearchInputType<EventEntity>,
+            );
 
             expect(res).toEqual([]);
         });
@@ -733,12 +742,103 @@ describe('Controller Basics', function() {
             });
 
             await throwWith(
-                context.controllerBasics._search(instance(service), query),
+                context.controllerBasics._search(instance(service), query as SearchInputType<EventEntity>),
                 StatusCodes.InternalServerError,
                 'lol',
             );
         });
     });
+
+    describe('_count', function() {
+        it('should count properly', async function() {
+            const query = {
+                id: {
+                    $eq: 'abcd',
+                },
+            };
+
+            const service = mock(CRUDExtension);
+
+            when(
+                service.countElastic(
+                    deepEqual({
+                        body: {
+                            query: {
+                                bool: {
+                                    must: {
+                                        term: {
+                                            id: 'abcd',
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: {
+                    count: 1,
+                    _shards: {
+                        total: 1,
+                        successful: 1,
+                        skipped: 0,
+                        failed: 0,
+                    },
+                } as ESCountReturn,
+            });
+
+            const res = await context.controllerBasics._count(instance(service), query);
+
+            expect(res).toEqual({
+                count: 1,
+                _shards: {
+                    total: 1,
+                    successful: 1,
+                    skipped: 0,
+                    failed: 0,
+                },
+            });
+        });
+
+        it('internal server error', async function() {
+            const query = {
+                id: {
+                    $eq: 'abcd',
+                },
+            };
+
+            const service = mock(CRUDExtension);
+
+            when(
+                service.countElastic(
+                    deepEqual({
+                        body: {
+                            query: {
+                                bool: {
+                                    must: {
+                                        term: {
+                                            id: 'abcd',
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    }),
+                ),
+            ).thenResolve({
+                error: 'unexpected_error',
+                response: null,
+            });
+
+            await throwWith(
+                context.controllerBasics._count(instance(service), query),
+                StatusCodes.InternalServerError,
+                'unexpected_error',
+            );
+        });
+    });
+
     describe('_authorizeGlobal', function() {
         it('should properly check global rights', async function() {
             const user = {

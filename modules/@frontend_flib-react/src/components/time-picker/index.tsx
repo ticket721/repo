@@ -71,7 +71,7 @@ const StyledInputContainer = styled.div`
     }
 
     .react-datepicker {
-        background-color: ${(props) => props.theme.componentColorLight};
+        background-color: #262626;
         border: none;
         color: ${(props) => props.theme.textColor};
         font-family: ${(props) => props.theme.fontStack};

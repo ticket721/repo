@@ -17,6 +17,8 @@ import { RightsService } from '@lib/common/rights/Rights.service';
 import { ESSearchHit } from '@lib/common/utils/ESSearchReturn.type';
 import { RightEntity } from '@lib/common/rights/entities/Right.entity';
 import { Boundable } from '@lib/common/utils/Boundable.type';
+import { ESCountReturn } from '@lib/common/utils/ESCountReturn.type';
+import { SearchInputType } from '@lib/common/utils/SearchInput.type';
 
 /**
  * Controller Basics, contains most methods used in controllers
@@ -147,7 +149,7 @@ export class ControllerBasics<EntityType> {
         rightsService: RightsService,
         user: UserDto,
         field: string,
-        query: SortablePagedSearch,
+        query: SearchInputType<CustomEntityType>,
     ): Promise<CustomEntityType[]> {
         const entityName = service.name;
 
@@ -248,14 +250,43 @@ export class ControllerBasics<EntityType> {
     }
 
     /**
+     * Generic count query, able to throw HttpExceptions
+     *
+     * @param service
+     * @param query
+     */
+    public async _count<CustomEntityType = EntityType>(
+        service: CRUDExtension<Repository<EntityType>, EntityType>,
+        query: SearchInputType<CustomEntityType>,
+    ): Promise<ESCountReturn> {
+        const es: EsSearchOptionsStatic = this._esQueryBuilder(query);
+
+        const countResults = await service.countElastic(es);
+
+        /**
+         * Handle Request errors
+         */
+        if (countResults.error) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.InternalServerError,
+                    message: countResults.error,
+                },
+                StatusCodes.InternalServerError,
+            );
+        }
+        return countResults.response;
+    }
+
+    /**
      * Generic search query, able to throw HttpExceptions
      *
      * @param service
      * @param query
      */
-    public async _search(
+    public async _search<CustomEntityType = EntityType>(
         service: CRUDExtension<Repository<EntityType>, EntityType>,
-        query: SortablePagedSearch,
+        query: SearchInputType<CustomEntityType>,
     ): Promise<EntityType[]> {
         const es: EsSearchOptionsStatic = this._esQueryBuilder(query);
 

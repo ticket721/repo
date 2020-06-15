@@ -37,6 +37,7 @@ function* localRegister(action: ILocalRegister): IterableIterator<any> {
                 registerData.user.type,
                 registerData.user.locale,
                 registerData.user.valid,
+                registerData.user.address,
             ),
         );
 
@@ -77,7 +78,15 @@ function* localLogin(action: ILocalRegister): IterableIterator<any> {
 
         yield put(SetToken(token));
 
-        yield put(SetUser(loginData.user.username, loginData.user.type, loginData.user.locale, loginData.user.valid));
+        yield put(
+            SetUser(
+                loginData.user.username,
+                loginData.user.type,
+                loginData.user.locale,
+                loginData.user.valid,
+                loginData.user.address,
+            ),
+        );
     } catch (e) {
         if (e.message === 'Network Error') {
             yield put(PushNotification('cannot_reach_server', 'error'));
@@ -107,7 +116,15 @@ function* getUser(action: IGetUser): IterableIterator<any> {
 
         const userData: UsersMeResponseDto = userResponse.data;
 
-        yield put(SetUser(userData.user.username, userData.user.type, userData.user.locale, userData.user.valid));
+        yield put(
+            SetUser(
+                userData.user.username,
+                userData.user.type,
+                userData.user.locale,
+                userData.user.valid,
+                userData.user.address,
+            ),
+        );
     } catch (e) {
         console.log(e);
     }

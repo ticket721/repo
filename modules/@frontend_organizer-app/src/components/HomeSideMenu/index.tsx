@@ -118,6 +118,7 @@ const Container = styled.div`
   height: calc(100vh - 80px);
   position: absolute;
   left: 0;
+  top: 0;
   background-color: ${(props) => props.theme.darkerBg};
   overflow: auto;
 `;

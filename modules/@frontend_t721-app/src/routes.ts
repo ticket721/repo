@@ -1,10 +1,12 @@
-import Search                 from './screens/Search';
-import Tags                   from './screens/Tags';
-import Profile                from './screens/Profile';
-import Home                   from './screens/Home';
-import Wallet                 from './screens/Wallet';
-import React                  from 'react';
-import { Login, Register }    from '@frontend/core/lib/components';
+import Search              from './screens/Search';
+import Tags                from './screens/Tags';
+import Home                from './screens/Home';
+import Wallet              from './screens/Wallet';
+import React               from 'react';
+import { Login, Register } from '@frontend/core/lib/components';
+import ProfileRoot         from '@frontend/core/lib/components/Profile/Root';
+import Activities          from '@frontend/core/lib/components/Profile/Activities';
+import Funds               from '@frontend/core/lib/components/Profile/Funds';
 
 export interface LinkDatum {
     icon: string;
@@ -37,8 +39,18 @@ export const routes: RouteDatum[] = [
         protected: false,
     },
     {
+        path: '/profile/activities',
+        page: Activities,
+        protected: true,
+    },
+    {
+        path: '/profile/funds',
+        page: Funds,
+        protected: true,
+    },
+    {
         path: '/profile',
-        page: Profile,
+        page: ProfileRoot,
         protected: true,
     },
     {

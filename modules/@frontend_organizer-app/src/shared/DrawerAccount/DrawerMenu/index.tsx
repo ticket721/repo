@@ -1,13 +1,13 @@
-import React   from 'react';
+import React                  from 'react';
 import {
   ActivitiesContainer,
   TitleText,
   FundsCard,
   LinksContainer,
   ArrowLink
-}                            from '@frontend/flib-react/lib/components';
-import { useHistory }        from 'react-router';
-import { computeDrawerPath } from '../drawerRoutes';
+}                             from '@frontend/flib-react/lib/components';
+import { useHistory }         from 'react-router';
+import { computeProfilePath } from '@frontend/core/lib/utils/computeProfilePath';
 
 const user = {
     firstName: 'Pierre',
@@ -30,7 +30,7 @@ const DrawerMenu = (): JSX.Element => {
           <ActivitiesContainer
           title='Recent activities'
           viewAllAction={
-              () => history.push(computeDrawerPath(history.location.pathname, '/activities'))
+              () => history.push(computeProfilePath(history.location.pathname, '/activities'))
           }
           viewAllLabel='View all'>
               {displayedNotif.map((e, i) => {
@@ -38,11 +38,11 @@ const DrawerMenu = (): JSX.Element => {
               })}
           </ActivitiesContainer>
           <FundsCard
-          title={'Funds & Payment Method'}
+          title={'Funds'}
           bankAccountLabel={'Bank account'}
           currentBalanceLabel={'Current balance'}
           onClick={
-              () => history.push(computeDrawerPath(history.location.pathname, '/fundsandpaymentmethod'))
+              () => history.push(computeProfilePath(history.location.pathname, '/fundsandpaymentmethod'))
           }
           user={user}
           icon='euro'

@@ -92,7 +92,7 @@ export class EventEntity {
         type: 'list',
         typeDef: '<uuid>',
     })
-    categories: Array<string>;
+    categories: string[];
 
     /**
      * Creation timestamp
