@@ -1,9 +1,9 @@
 import { FormikConfig, useFormik }                       from 'formik';
 import { useDispatch, useSelector }                      from 'react-redux';
 import { SetActionData, SetCurrentAction, UpdateAction } from '../../redux/ducks/event_creation';
-import { EventCreationActions, EventCreationSteps }      from '../../core/event_creation/EventCreationCore';
-import { useEffect, useState }                           from 'react';
-import { OrganizerState }                                from '../../redux/ducks';
+import { EventCreationActions, EventCreationSteps } from '../../core/event_creation/EventCreationCore';
+import { useEffect, useState }             from 'react';
+import { OrganizerState }                           from '../../redux/ducks';
 
 export const useEventCreation = <ActionInputType extends {[key: string]: any}>(
     actIdx: EventCreationSteps,
@@ -13,35 +13,44 @@ export const useEventCreation = <ActionInputType extends {[key: string]: any}>(
     const dispatch = useDispatch();
 
     const [loadingState, setLoadingState ] = useState(false);
-    const [ stringifiedEventActionState, currentAction, lastCompletedStep ]:
-        [ string, EventCreationActions, EventCreationSteps ] =
+    const [ eventActionState, currentAction, lastCompletedStep ]:
+        [ ActionInputType, EventCreationActions, EventCreationSteps ] =
         useSelector((state: OrganizerState) => [
-            JSON.stringify(state.eventCreation[eventCreationAction] as ActionInputType),
+            state.eventCreation[eventCreationAction] as ActionInputType,
             state.eventCreation.currentAction,
             state.eventCreation.completedStep,
         ]);
 
+    const stringifiedEventActionState = JSON.stringify(eventActionState);
+
     const formik = useFormik<ActionInputType>({
-        initialValues: formikConfig.initialValues,
+        initialValues: eventActionState,
         validationSchema: formikConfig.validationSchema,
         onSubmit: formikConfig.onSubmit || (() => void dispatch(UpdateAction()))
     });
 
     useEffect(() => {
-        formik.setValues(JSON.parse(stringifiedEventActionState));
-    }, [
+        formik.setValues(eventActionState);
+    },
+        // eslint-disable-next-line
+        [
         currentAction,
         stringifiedEventActionState,
         eventCreationAction,
-        formik,
     ]);
 
     useEffect(() => {
-        setLoadingState(formik.isValid && lastCompletedStep < actIdx);
+        setLoadingState(
+            formik.isValid &&
+            lastCompletedStep < actIdx &&
+            eventCreationAction === currentAction
+        );
     }, [
         lastCompletedStep,
         formik.isValid,
-        actIdx
+        actIdx,
+        eventCreationAction,
+        currentAction,
     ]);
 
     const computeError = (field: string) => formik.touched[field] && formik.errors[field] ? 'validation:' + formik.errors[field] : '';
@@ -55,7 +64,6 @@ export const useEventCreation = <ActionInputType extends {[key: string]: any}>(
     };
 
     const handleBlur = (event: any, field?: string, value?: any): void => {
-        const eventActionState: ActionInputType = JSON.parse(stringifiedEventActionState);
         if (field) {
             if (value) {
                 dispatch(SetActionData(eventCreationAction, {
@@ -91,9 +99,9 @@ export const useEventCreation = <ActionInputType extends {[key: string]: any}>(
         return {
             title,
             type: 'submit',
-            variant: formik.isValid ? 'primary' : 'secondary' as 'primary' | 'secondary',
+            variant: loadingState ? 'secondary' :
+                formik.isValid ? 'primary' : 'disabled' as 'primary' | 'secondary' | 'disabled',
             loadingState,
-            disabled: !formik.isValid || loadingState,
             hidden: lastCompletedStep >= actIdx,
         };
     };
@@ -106,5 +114,6 @@ export const useEventCreation = <ActionInputType extends {[key: string]: any}>(
         computeError,
         submitLoading,
         getSubmitButtonProps,
+        setLoadingState,
     };
 };

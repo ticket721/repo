@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import styled              from 'styled-components';
+import React, { Dispatch, useState } from 'react';
+import styled                        from 'styled-components';
 
 import { EventCreationActions, EventCreationCore, EventCreationSteps } from '../../core/event_creation/EventCreationCore';
 import { useEventCreation }                                            from '../../hooks/useEventCreation';
@@ -12,6 +12,7 @@ import {
     ColorPicker,
     Icon,
     Button,
+    Loader,
 } from '@frontend/flib-react/lib/components';
 import { ComponentsPreview } from './ComponentsPreview';
 
@@ -23,7 +24,7 @@ import { PushNotification }                            from '@frontend/core/lib/
 import { ColorResult }                                 from 'react-color';
 import Vibrant                                         from 'node-vibrant';
 
-import { useTranslation }                              from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import './locales';
 import '@frontend/core/lib/components/ToastStacker/locales';
 
@@ -36,6 +37,7 @@ const StylesForm: React.FC = () => {
     const dispacth = useDispatch();
     const [ t ] = useTranslation(['event_creation_styles', 'react_dropzone_errors', 'error_notifications']);
     const token: string = useSelector((state: MergedAppState) => state.auth.token.value);
+    const [ uploading, setUploading ]: [ boolean, Dispatch<boolean> ] = useState(null);
     const eventCreationFormik = useEventCreation<EventsCreateImagesMetadata>(
         EventCreationSteps.Styles,
         EventCreationActions.ImagesMetadata,
@@ -76,6 +78,7 @@ const StylesForm: React.FC = () => {
         const formData = new FormData();
         files.forEach((file) => formData.append('images', file));
 
+        setUploading(true);
         EventCreationCore.uploadImages(token, formData, {})
             .then((ids: ImageEntity[]) => {
                 eventCreationFormik.setFieldTouched('avatar');
@@ -85,7 +88,7 @@ const StylesForm: React.FC = () => {
                 presetImageAndColors(previews[0]);
             }).catch((error) => {
                 dispacth(PushNotification(t('error_notifications:' + error.message), 'error'));
-            });
+            }).finally(() => setUploading(false));
     };
 
     const removeImage = () => {
@@ -106,6 +109,7 @@ const StylesForm: React.FC = () => {
     };
 
     const updateColor = ( idx: number, color: ColorResult) => {
+        eventCreationFormik.handleFocus('');
         eventCreationFormik.setFieldValue(
             'signatureColors',
             Object.assign(
@@ -131,6 +135,12 @@ const StylesForm: React.FC = () => {
             height={'300px'}
             error={eventCreationFormik.computeError('avatar')}
             />
+            {
+                uploading ?
+                    <Loader size={'25px'}/> :
+                    null
+            }
+
             <Colors>
                 <ColorPicker
                 label={t('primary_color')}
@@ -146,6 +156,7 @@ const StylesForm: React.FC = () => {
                 )}
                 />
                 <div onClick={() => {
+                    eventCreationFormik.handleFocus('');
                     const [ primary, secondary ] = eventCreationFormik.values.signatureColors;
                     eventCreationFormik.setFieldValue('signatureColors', [secondary, primary]);
                     eventCreationFormik.handleBlur('swap', 'signatureColors', [secondary, primary]);
@@ -176,7 +187,9 @@ const StylesForm: React.FC = () => {
                     colors={eventCreationFormik.values.signatureColors}
                 />
             }
-            <Button {...eventCreationFormik.getSubmitButtonProps('Continue')}/>
+            <Button
+            onClick={() => eventCreationFormik.handleBlur('submit styles', 'signatureColors')}
+             {...eventCreationFormik.getSubmitButtonProps('Continue')}/>
         </StyledForm>
     );
 };

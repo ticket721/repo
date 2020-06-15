@@ -50,12 +50,12 @@ function* initEventAcset(action: IInitEventAcset): IterableIterator<any> {
         ...eventCreationInitialState,
         acsetId: acsetId as string,
     }));
+
 }
 
 function* updateAction(action: IUpdateAction): IterableIterator<any> {
     const authState: AuthState = yield select(getAuthState);
     const eventCreationState: EventCreationState = yield select(getEventCreationState);
-
     try {
         yield EventCreationCore.updateEventAcset(
             authState.token.value,
@@ -103,7 +103,6 @@ function* synchronizedActions(action: IUpdateItemData): IterableIterator<any> {
 
             const actionsStatus: string[] = action.data.actionsets[0].actions
                 .map((actionEntity: ActionEntity) => actionEntity.status);
-
             yield put(SetCompletedStep(actionsStatus.lastIndexOf('complete')));
         }
     }

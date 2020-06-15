@@ -10,7 +10,7 @@ import {
 }                                                       from './actions';
 import { EventCreationActionTypes, EventCreationState } from './types';
 import { Reducer }                                      from 'redux';
-import { EventCreationSteps }                           from '../../../core/event_creation/EventCreationCore';
+import { EventCreationActions, EventCreationSteps }     from '../../../core/event_creation/EventCreationCore';
 
 export const eventCreationInitialState: EventCreationState = {
     acsetId: '',
@@ -69,6 +69,22 @@ const SetActionDataReducer: Reducer<EventCreationState, ISetActionData> = (
     state: EventCreationState,
     action: ISetActionData,
 ): EventCreationState => {
+    if (action.action === EventCreationActions.DatesConfiguration) {
+        const filteredData = {
+            dates: action.data.dates.map((dateItem: any) => ({
+                eventBegin: dateItem.eventBegin,
+                eventEnd: dateItem.eventEnd,
+                location: dateItem.location,
+                name: dateItem.name,
+            }))
+        };
+
+        return {
+            ...state,
+            [action.action]: filteredData,
+        };
+    }
+
     return {
         ...state,
         [action.action]: {
