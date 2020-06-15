@@ -64,7 +64,7 @@
         "axios": "0.19.2",
         "bignumber.js": "9.0.0",
         "ethereum-address": "0.0.4",
-        "ethers": "4.0.45",
+        "ethers": "5.0.2",
         "lodash": "4.17.15",
         "web3": "1.2.6",
         "@types/hapi__joi": "16.0.12",
