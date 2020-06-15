@@ -104,7 +104,7 @@ export const CategoriesForm: React.FC = () => {
             {/*    validation={validationDates}*/}
             {/*    setValidation={setValidationDates}/>*/}
             {/*</TabPanel>*/}
-            <SubmitButton variant='primary' type='submit' title='Validate'/>
+            {/*<SubmitButton variant='primary' type='submit' title='Validate'/>*/}
         </>
     );
 };
@@ -128,6 +128,6 @@ const AppBar = styled(MuiAppBar)`
     }
 `;
 
-const SubmitButton = styled(Button)`
-    margin-top: ${props => props.theme.doubleSpacing};
-`;
+// const SubmitButton = styled(Button)`
+//     margin-top: ${props => props.theme.doubleSpacing};
+// `;

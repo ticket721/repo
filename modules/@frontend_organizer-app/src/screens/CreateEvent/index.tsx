@@ -10,12 +10,15 @@ import DatesForm                    from '../../components/DatesForm';
 import '@frontend/core/lib/utils/window';
 import { OrganizerState }           from '../../redux/ducks';
 import { CategoriesForm }           from '../../components/CategoriesForm';
+import { Button }                   from '@frontend/flib-react/lib/components';
+import { useHistory }               from 'react-router';
 
 const CreateEvent: React.FC = () => {
     const StylesFormRef = useRef(null);
     const DatesFormRef = useRef(null);
     const CategoriesFormRef = useRef(null);
 
+    const history = useHistory();
     const dispatch = useDispatch();
     const [ token, eventAcsetId, lastCompletedStep ]:
         [ string, string, EventCreationSteps ] =
@@ -57,6 +60,22 @@ const CreateEvent: React.FC = () => {
             case EventCreationSteps.Dates:
                 scrollToRef(DatesFormRef);
                 break;
+            case EventCreationSteps.Categories:
+                global.window.t721Sdk.actions.update(token, eventAcsetId, {
+                    data: {
+                        admins: [],
+                    },
+                }).then(() => {
+                    console.log('complete admins');
+                });
+                break;
+            case EventCreationSteps.Admins:
+                global.window.t721Sdk.events.create.create(token, {
+                    completedActionSet: eventAcsetId,
+                }).then(() => {
+                    console.log('complete admins');
+                });
+                break;
         }
     }, [
         lastCompletedStep,
@@ -96,6 +115,16 @@ const CreateEvent: React.FC = () => {
                         <Title>Ticket categories</Title>
                         <CategoriesForm />
                     </FormWrapper>
+                )}
+                {lastCompletedStep >= EventCreationSteps.Admins && (
+                    <SubmitButton variant='primary' onClick={() => global.window.t721Sdk.events.create.create(token, {
+                        completedActionSet: eventAcsetId,
+                    }).then(() => {
+                        console.log('complete admins');
+                    }).finally(() => {
+                        history.push('/');
+                    })
+                    } title='Validate'/>
                 )}
             </Forms>
         }
@@ -137,6 +166,10 @@ const Title = styled.h1`
         font-size: 15px;
         color: rgba(255,255,255,0.6);
     }
+`;
+
+const SubmitButton = styled(Button)`
+    margin-top: ${props => props.theme.doubleSpacing};
 `;
 
 export default CreateEvent;

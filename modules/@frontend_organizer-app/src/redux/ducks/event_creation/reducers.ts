@@ -84,6 +84,23 @@ const SetActionDataReducer: Reducer<EventCreationState, ISetActionData> = (
             [action.action]: filteredData,
         };
     }
+    // else if (action.action === EventCreationActions.CategoriesConfiguration) {
+    //     const filteredData = {
+    //         ...action.data,
+    //         global: action.data.global.map((categoryItem: any) => ({
+    //             name: categoryItem.name,
+    //             saleBegin: categoryItem.saleBegin,
+    //             saleEnd: categoryItem.saleEnd,
+    //             seats: categoryItem.seats,
+    //             currencies: action.data.global.currencies,
+    //         }))
+    //     };
+    //
+    //     return {
+    //         ...state,
+    //         [action.action]: filteredData,
+    //     };
+    // }
 
     return {
         ...state,
