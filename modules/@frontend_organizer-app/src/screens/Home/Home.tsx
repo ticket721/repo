@@ -1,55 +1,125 @@
 import React                from 'react';
 import { useDispatch }      from 'react-redux';
+import styled from 'styled-components';
 import { PushNotification } from '@frontend/core/lib/redux/ducks/notifications';
-import EventSideMenu from "../../components/EventSideMenu";
+import { SingleImage } from "@frontend/flib-react/lib/components";
+import EventPresentation from "../../components/EventPresentation";
 import HomeSideMenu from "../../components/HomeSideMenu";
-import EventSideDates from "../../components/EventSideDates";
 
 const dates = [
-  {
-    name: 'VIP',
-    date: new Date(),
-  },
-  {
-    name: 'VIP',
-    date: new Date('2020-05-17T10:30:00'),
-  },
-  {
-    name: 'VIP',
-    date: new Date('2020-05-20T10:30:00'),
-  },
-  {
-    name: 'VIP',
-    date: new Date('2020-05-23T10:30:00'),
-  },
-  {
-    name: 'VIP',
-    date: new Date('2020-06-02T10:30:00'),
-  },
-  {
-    name: 'VIP',
-    date: new Date('2020-06-16T10:30:00'),
-  },
+  [
+    {
+      name: 'VIP',
+      startDate: new Date(),
+      src: 'superImage',
+      price: 120,
+    },
+    {
+      name: 'VIP',
+      startDate: new Date('2020-05-17T10:30:00'),
+    },
+    {
+      name: 'VIP',
+      startDate: new Date('2020-05-20T10:30:00'),
+    },
+    {
+      name: 'VIP',
+      startDate: new Date('2020-05-23T10:30:00'),
+    },
+    {
+      name: 'VIP',
+      startDate: new Date('2020-06-02T10:30:00'),
+    },
+    {
+      name: 'VIP',
+      startDate: new Date('2020-06-16T10:30:00'),
+    },
+  ],
+  [
+    {
+      name: 'Weekend',
+      startDate: new Date(),
+      src: 'superImage',
+      price: 80,
+    },
+    {
+      name: 'Weekend',
+      startDate: new Date('2020-05-17T10:30:00'),
+    },
+    {
+      name: 'Weekend',
+      startDate: new Date('2020-05-20T10:30:00'),
+    },
+    {
+      name: 'Weekend',
+      startDate: new Date('2020-05-23T10:30:00'),
+    },
+  ],
+  [
+    {
+      name: 'Early bird',
+      startDate: new Date('2020-06-02T10:30:00'),
+      src: 'superImage',
+      price: 70,
+    },
+    {
+      name: 'Early bird',
+      startDate: new Date('2020-06-16T10:30:00'),
+    },
+  ],
+  [
+    {
+      name: 'test',
+      startDate: new Date('2020-06-02T10:30:00'),
+      src: 'superImage',
+      price: 12,
+    },
+    {
+      name: 'test',
+      startDate: new Date('2020-06-16T10:30:00'),
+    },
+  ],
 ];
-// `${dates[0].date.toDateString()} - ${dates[0].date.getHours()}:${dates[0].date.getMinutes()}`
+// `${startDates[0].startDate.toDateString()} - ${startDates[0].startDate.getHours()}:${startDates[0].date.getMinutes()}`
+
 const Home: React.FC = () => {
     const dispatch = useDispatch();
     const [currentDate, setCurrentDate] = React.useState<string>();
+    const [name, setName] = React.useState<string>();
 
     return (
       <>
-        {currentDate && <EventSideMenu currentDate={currentDate} setCurrentDate={setCurrentDate}/>}
-        {!currentDate && <HomeSideMenu currentDate={currentDate} setCurrentDate={setCurrentDate}/>}
-        <div className='Home' style={{ color: 'white', marginLeft: '280px' }}>
-          Home
-          <div onClick={() => dispatch(PushNotification('success message', 'success'))}>Success</div>
-          <div onClick={() => dispatch(PushNotification('error message', 'error'))}>Error</div>
-          <div onClick={() => dispatch(PushNotification('warning message', 'warning'))}>Warning</div>
-          <div onClick={() => dispatch(PushNotification('info message', 'info'))}>Info</div>
-        </div>
-        {currentDate && <EventSideDates currentDate={currentDate} setCurrentDate={setCurrentDate}/>}
+        {currentDate && <EventPresentation name={name} currentDate={currentDate} setCurrentDate={setCurrentDate}/>}
+        {name && !currentDate && <HomeSideMenu setName={setName} currentDate={currentDate} setCurrentDate={setCurrentDate} name={name}/>}
+        <Container isMenuOpen={(!!name || !!currentDate)}>
+        {!currentDate && dates.map((event, i) =>
+          <div key={`${event[0].name}-${i}`} className='card' onClick={() => setName(event[0].name)}>
+            <SingleImage
+              src={event[0].src}
+              id={`${event[0].name}-${i}`}
+              title={event[0].name}
+              price={event[0].price}
+              text={`${event[0].startDate.toDateString()} - ${event[0].startDate.getHours()}:${event[0].startDate.getMinutes()}`}
+            />
+          </div>
+        )}
+        </Container>
       </>
     )
 };
+
+const Container = styled.div<{isMenuOpen: boolean}>`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+  width: ${({ isMenuOpen }) => isMenuOpen ? 'calc(100% - 280px)' : '100%'};
+  margin-left: ${({ isMenuOpen }) => isMenuOpen ? '280px' : 'unset'};
+
+  .card {
+    display: flex;
+    width: 45%;
+    cursor: pointer;
+  }
+`;
 
 export default Home;

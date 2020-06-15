@@ -109,7 +109,7 @@ const Subtitle = styled.span`
   font-size: 13px;
   cursor: pointer;
   margin: 8px 0 8px 40px;
-  color: rgba(255, 255, 255, 0.38);
+  color: ${(props) => props.theme.textColorDarker};
 `;
 
 const Button = styled.button`

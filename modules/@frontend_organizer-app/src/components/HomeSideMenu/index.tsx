@@ -1,58 +1,112 @@
 import React from 'react';
 import styled from 'styled-components';
 
+
 const dates = [
-  {
-    name: 'VIP',
-    date: new Date(),
-  },
-  {
-    name: 'VIP',
-    date: new Date('2020-05-17T10:30:00'),
-  },
-  {
-    name: 'VIP',
-    date: new Date('2020-05-20T10:30:00'),
-  },
-  {
-    name: 'VIP',
-    date: new Date('2020-05-23T10:30:00'),
-  },
-  {
-    name: 'VIP',
-    date: new Date('2020-06-02T10:30:00'),
-  },
-  {
-    name: 'VIP',
-    date: new Date('2020-06-16T10:30:00'),
-  },
+  [
+    {
+      name: 'VIP',
+      startDate: new Date(),
+      src: 'superImage',
+      price: 120,
+    },
+    {
+      name: 'VIP',
+      startDate: new Date('2020-05-17T10:30:00'),
+    },
+    {
+      name: 'VIP',
+      startDate: new Date('2020-05-20T10:30:00'),
+    },
+    {
+      name: 'VIP',
+      startDate: new Date('2020-05-23T10:30:00'),
+    },
+    {
+      name: 'VIP',
+      startDate: new Date('2020-06-02T10:30:00'),
+    },
+    {
+      name: 'VIP',
+      startDate: new Date('2020-06-16T10:30:00'),
+    },
+  ],
+  [
+    {
+      name: 'Weekend',
+      startDate: new Date(),
+      src: 'superImage',
+      price: 80,
+    },
+    {
+      name: 'Weekend',
+      startDate: new Date('2020-05-17T10:30:00'),
+    },
+    {
+      name: 'Weekend',
+      startDate: new Date('2020-05-20T10:30:00'),
+    },
+    {
+      name: 'Weekend',
+      startDate: new Date('2020-05-23T10:30:00'),
+    },
+  ],
+  [
+    {
+      name: 'Early bird',
+      startDate: new Date('2020-06-02T10:30:00'),
+      src: 'superImage',
+      price: 70,
+    },
+    {
+      name: 'Early bird',
+      startDate: new Date('2020-06-16T10:30:00'),
+    },
+  ],
+  [
+    {
+      name: 'test',
+      startDate: new Date('2020-06-02T10:30:00'),
+      src: 'superImage',
+      price: 12,
+    },
+    {
+      name: 'test',
+      startDate: new Date('2020-06-16T10:30:00'),
+    },
+  ],
 ];
 
 interface Props {
   currentDate: string | undefined;
-  setCurrentDate: (date: string) => void;
+  setCurrentDate: (startDate: string) => void;
+  setName: (name: string) => void;
+  name: string;
 }
 
-const HomeSideMenu = ({ currentDate, setCurrentDate }: Props) => {
+const HomeSideMenu = ({ currentDate, setCurrentDate, setName, name }: Props) => {
+  const category = dates.find((e) => e[0].name === name);
+
   return (
     <Container>
-      <Title>{dates[0].name}</Title>
-      {
-        dates.map((e, i) => {
-            const date = `${e.date.toDateString()} - ${e.date.getHours()}:${e.date.getMinutes()}`;
+      <Title>{category[0].name}</Title>
+      {category.map((e, i) => {
+        const date = `${e.startDate.toDateString()} - ${e.startDate.getHours()}:${e.startDate.getMinutes()}`;
 
-            return (
-              <SubTitle
-                key={`side-dates-${e.name}-${date}-${i}`}
-                focus={currentDate === date}
-                onClick={() => setCurrentDate(date)}
-              >
-                {date}
-              </SubTitle>
-            );
-          }
+        return (
+          <SubTitle
+            key={`side-dates-${e.name}-${date}-${i}`}
+            focus={currentDate === date}
+            onClick={() => {
+              setCurrentDate(date);
+              setName(e.name);
+            }}
+          >
+            {date}
+          </SubTitle>
         )
-      }
+       }
+      )}
     </Container>
   )
 };
@@ -65,13 +119,7 @@ const Container = styled.div`
   position: absolute;
   left: 0;
   background-color: ${(props) => props.theme.darkerBg};
-`;
-
-const Separator = styled.div`
-  height: 2px;
-  width: 100%;
-  margin: 12px 0;
-  background: rgba(10, 8, 18, 0.3);
+  overflow: auto;
 `;
 
 const Title = styled.span`

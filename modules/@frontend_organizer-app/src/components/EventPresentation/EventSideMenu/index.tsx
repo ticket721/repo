@@ -4,45 +4,96 @@ import Button from "@frontend/flib-react/lib/components/button";
 import SubMenu from "./SubMenu";
 
 const dates = [
-  {
-    name: 'VIP',
-    date: new Date(),
-  },
-  {
-    name: 'VIP',
-    date: new Date('2020-05-17T10:30:00'),
-  },
-  {
-    name: 'VIP',
-    date: new Date('2020-05-20T10:30:00'),
-  },
-  {
-    name: 'VIP',
-    date: new Date('2020-05-23T10:30:00'),
-  },
-  {
-    name: 'VIP',
-    date: new Date('2020-06-02T10:30:00'),
-  },
-  {
-    name: 'VIP',
-    date: new Date('2020-06-16T10:30:00'),
-  },
+  [
+    {
+      name: 'VIP',
+      date: new Date(),
+      src: 'superImage',
+      price: 120,
+    },
+    {
+      name: 'VIP',
+      date: new Date('2020-05-17T10:30:00'),
+    },
+    {
+      name: 'VIP',
+      date: new Date('2020-05-20T10:30:00'),
+    },
+    {
+      name: 'VIP',
+      date: new Date('2020-05-23T10:30:00'),
+    },
+    {
+      name: 'VIP',
+      date: new Date('2020-06-02T10:30:00'),
+    },
+    {
+      name: 'VIP',
+      date: new Date('2020-06-16T10:30:00'),
+    },
+  ],
+  [
+    {
+      name: 'Weekend',
+      date: new Date(),
+      src: 'superImage',
+      price: 80,
+    },
+    {
+      name: 'Weekend',
+      date: new Date('2020-05-17T10:30:00'),
+    },
+    {
+      name: 'Weekend',
+      date: new Date('2020-05-20T10:30:00'),
+    },
+    {
+      name: 'Weekend',
+      date: new Date('2020-05-23T10:30:00'),
+    },
+  ],
+  [
+    {
+      name: 'Early bird',
+      date: new Date('2020-06-02T10:30:00'),
+      src: 'superImage',
+      price: 70,
+    },
+    {
+      name: 'Early bird',
+      date: new Date('2020-06-16T10:30:00'),
+    },
+  ],
+  [
+    {
+      name: 'test',
+      date: new Date('2020-06-02T10:30:00'),
+      src: 'superImage',
+      price: 12,
+    },
+    {
+      name: 'test',
+      date: new Date('2020-06-16T10:30:00'),
+    },
+  ],
 ];
 
 interface Props {
   currentDate: string | undefined;
   setCurrentDate: (date: string) => void;
+  name: string;
 }
 
-const EventSideMenu = ({ currentDate, setCurrentDate }: Props) => {
+const EventSideMenu = ({ currentDate, setCurrentDate, name }: Props) => {
+  const category = dates.find((e) => e[0].name === name);
+
   return (
     <Container>
       <Actions>
-        <EventName>{dates[0].name}</EventName>
+        <EventName>{name}</EventName>
         <SelectDate value={currentDate} onChange={(e) => setCurrentDate(e.target.value)}>
           {
-            dates.map((e, i) => {
+            category.map((e, i) => {
               const date = `${e.date.toDateString()} - ${e.date.getHours()}:${e.date.getMinutes()}`;
               return (
                 <option key={`side-menu-${e.name}-${date}-${i}`} value={date}>
