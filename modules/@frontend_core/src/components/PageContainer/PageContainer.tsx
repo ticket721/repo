@@ -38,7 +38,7 @@ export const PageContainer: React.FC<PageContainerProps> = (props: PageContainer
             <ContentView
                 style={{
                     top: topBar || props.topBarHeight ? topBarHeight : null,
-                    height: `calc(100% ${topBar ? '- ' + topBarHeight : ''})`,
+                    height: topBar || props.topBarHeight ? `calc(100% - ${topBarHeight})` : 'auto',
                     padding,
                 }}
             >
