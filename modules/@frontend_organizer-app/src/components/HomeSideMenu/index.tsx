@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import Icon from "@frontend/flib-react/lib/components/icon";
 
 
 const dates = [
@@ -91,6 +92,13 @@ const HomeSideMenu = ({ currentDate, setCurrentDate, setName, name }: Props) => 
     <Container>
       { category && (
         <>
+          <BackIcon onClick={() => setName(undefined)}>
+            <Icon
+              icon={'back-arrow'}
+              size={'14px'}
+              color={'rgba(255, 255, 255, 0.9)'}
+            />
+          </BackIcon>
           <Title>{category[0].name}</Title>
           { name && category.map((e, i) => {
               const date = `${e.startDate.toDateString()} - ${e.startDate.getHours()}:${e.startDate.getMinutes()}`;
@@ -152,4 +160,10 @@ const SubTitle = styled.span<{focus?: boolean}>`
   margin: 12px 20px;
   color: ${({ theme, focus }) => focus ? theme.textColor : theme.textColorDarker};
 `;
+
+const BackIcon = styled.div`
+  padding: 20px 12px 10px;
+  cursor: pointer;
+`;
+
 export default HomeSideMenu;

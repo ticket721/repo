@@ -1,9 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
 import Button from "@frontend/flib-react/lib/components/button";
+import Icon from "@frontend/flib-react/lib/components/icon";
 import SubMenu from "./SubMenu";
 
-import { dates} from "../fakeData";
+import { dates } from "../fakeData";
 
 interface Props {
   currentDate: string | undefined;
@@ -17,6 +18,13 @@ const EventSideMenu = ({ currentDate, setCurrentDate, setPage, name }: Props) =>
 
   return (
     <Container>
+      <BackIcon onClick={() => setCurrentDate(undefined)}>
+        <Icon
+          icon={'back-arrow'}
+          size={'14px'}
+          color={'rgba(255, 255, 255, 0.9)'}
+        />
+      </BackIcon>
       <Actions>
         <EventName>{name}</EventName>
         <SelectDate value={currentDate} onChange={(e) => setCurrentDate(e.target.value)}>
@@ -117,6 +125,11 @@ const Title = styled.span`
   cursor: pointer;
   margin: 12px 0 12px 24px;
   color: ${(props) => props.theme.textColor};
+`;
+
+const BackIcon = styled.div`
+  padding: 20px 12px 0 10px;
+  cursor: pointer;
 `;
 
 export default EventSideMenu;
