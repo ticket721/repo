@@ -16,7 +16,7 @@
         "@install/public/postinstall": "cd modules && ls -d */ | grep '@public_' | xargs -P 1 -I % sh -c 'echo % && cd % && if test -f package.json; then yarn @lerna/postinstall; fi'",
         "@clean/public/postclean": "cd modules && ls -d */ | grep '@public_' | xargs -P 1 -I % sh -c 'echo % && cd % && if test -f package.json; then env yarn @lerna/postclean; fi'",
         "@install": "yarn @install/public/install && yarn @install/public/postinstall && yarn install",
-        "postinstall": "lerna exec 'yarn @lerna/postinstall' && yarn setup:portals",
+        "postinstall": "./post_install.sh && lerna exec 'yarn @lerna/postinstall' && yarn setup:portals",
         "@install:prod": "yarn @install/public/install && yarn @install/public/postinstall && yarn install --prod",
         "@docker:build": "docker-compose build",
         "@docker:build:github": "env TAG=$GITHUB_SHA yarn @docker:build",
