@@ -76,9 +76,9 @@ const Container = styled.div`
   flex-direction: column;
   width: 280px;
   height: calc(100vh - 80px);
-  position: absolute;
+  position: fixed;
   left: 0;
-  top: 0;
+  top: 81px;
   background-color: ${(props) => props.theme.darkerBg};
 
   button {

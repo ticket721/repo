@@ -1,14 +1,13 @@
 import React                from 'react';
-import { useDispatch }      from 'react-redux';
 import styled from 'styled-components';
-import { PushNotification } from '@frontend/core/lib/redux/ducks/notifications';
+// import { PushNotification } from '@frontend/core/lib/redux/ducks/notifications';
 import { SingleImage } from "@frontend/flib-react/lib/components";
 import EventPresentation from "../../components/EventPresentation";
 import HomeSideMenu from "../../components/HomeSideMenu";
+
 import { dates } from '../../components/EventPresentation/fakeData';
 
 const Home: React.FC = () => {
-  const dispatch = useDispatch();
   const [currentDate, setCurrentDate] = React.useState<string>();
   const [name, setName] = React.useState<string>();
 
