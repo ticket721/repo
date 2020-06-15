@@ -9,10 +9,12 @@ import StylesForm                   from '../../components/StylesForm';
 import DatesForm                    from '../../components/DatesForm';
 import '@frontend/core/lib/utils/window';
 import { OrganizerState }           from '../../redux/ducks';
+import { CategoriesForm }           from '../../components/CategoriesForm';
 
 const CreateEvent: React.FC = () => {
     const StylesFormRef = useRef(null);
     const DatesFormRef = useRef(null);
+    const CategoriesFormRef = useRef(null);
 
     const dispatch = useDispatch();
     const [ token, eventAcsetId, lastCompletedStep ]:
@@ -51,6 +53,10 @@ const CreateEvent: React.FC = () => {
                 break;
             case EventCreationSteps.Modules:
                 scrollToRef(DatesFormRef);
+                break;
+            case EventCreationSteps.Dates:
+                scrollToRef(DatesFormRef);
+                break;
         }
     }, [
         lastCompletedStep,
@@ -85,11 +91,12 @@ const CreateEvent: React.FC = () => {
                         <DatesForm />
                     </FormWrapper>
                 )}
-                {/*{lastCompletedStep >= EventCreationSteps.Dates && (*/}
-                {/*    <>*/}
-                {/*        <Title>Ticket categories</Title>*/}
-                {/*        <CategorizeTicketsForm />*/}
-                {/*    </>*/}
+                {lastCompletedStep >= EventCreationSteps.Dates && (
+                    <FormWrapper ref={CategoriesFormRef}>
+                        <Title>Ticket categories</Title>
+                        <CategoriesForm />
+                    </FormWrapper>
+                )}
             </Forms>
         }
         </Container>

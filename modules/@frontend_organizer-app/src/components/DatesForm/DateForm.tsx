@@ -1,6 +1,5 @@
 import React                  from 'react';
 import {
-    Button,
     CustomDatePicker,
     CustomTimePicker,
     TextInput
@@ -9,25 +8,23 @@ import styled                 from 'styled-components';
 import { useFormik }          from 'formik';
 import { DateItem }           from './index';
 import { dateItemValidation } from './validationSchema';
-import { checkFormatDate }    from '@frontend/core/lib/utils/date';
+import { checkFormatDate }               from '@frontend/core/lib/utils/date';
+import { FormActions, FormActionsProps } from '../FormActions';
 
-export interface DateFormProps {
+export interface DateFormProps extends FormActionsProps {
     initialValues: DateItem;
-    cancel: () => void;
-    confirm: (dateItem: DateItem) => void;
-    newDate?: boolean;
-    delete?: () => void;
+    confirm: (date: DateItem) => void;
 }
 
 export const DateForm: React.FC<DateFormProps> = (props: DateFormProps) => {
-    const { newDate, initialValues } = props;
+    const { initialValues } = props;
     const checkedInitialValues = {
         ...initialValues,
         eventBegin: checkFormatDate(initialValues.eventBegin),
         eventEnd: checkFormatDate(initialValues.eventEnd),
     };
 
-    const dateItemFormik = useFormik({
+    const formik = useFormik({
         initialValues: checkedInitialValues,
         validationSchema: dateItemValidation,
         onSubmit: (dateItem: DateItem) => props.confirm(dateItem),
@@ -39,11 +36,11 @@ export const DateForm: React.FC<DateFormProps> = (props: DateFormProps) => {
         }
 
         const unchangedTime: number[] = [
-            dateItemFormik.values[dateType].getHours(),
-            dateItemFormik.values[dateType].getMinutes(),
+            formik.values[dateType].getHours(),
+            formik.values[dateType].getMinutes(),
         ];
 
-        dateItemFormik.setFieldValue(dateType, new Date(
+        formik.setFieldValue(dateType, new Date(
             date.getFullYear(),
             date.getMonth(),
             date.getDate(),
@@ -51,8 +48,8 @@ export const DateForm: React.FC<DateFormProps> = (props: DateFormProps) => {
         ));
 
         if (dateType === 'eventBegin') {
-            if (date.getTime() > dateItemFormik.values.eventEnd.getTime()) {
-                dateItemFormik.setFieldValue('eventEnd', new Date(
+            if (date.getTime() > formik.values.eventEnd.getTime()) {
+                formik.setFieldValue('eventEnd', new Date(
                     date.getFullYear(),
                     date.getMonth(),
                     date.getDate(),
@@ -68,12 +65,12 @@ export const DateForm: React.FC<DateFormProps> = (props: DateFormProps) => {
         }
 
         const unchangedDate: number[] = [
-            dateItemFormik.values[dateType].getFullYear(),
-            dateItemFormik.values[dateType].getMonth(),
-            dateItemFormik.values[dateType].getDate()
+            formik.values[dateType].getFullYear(),
+            formik.values[dateType].getMonth(),
+            formik.values[dateType].getDate()
         ];
 
-        dateItemFormik.setFieldValue(dateType, new Date(
+        formik.setFieldValue(dateType, new Date(
             unchangedDate[0],
             unchangedDate[1],
             unchangedDate[2],
@@ -83,7 +80,7 @@ export const DateForm: React.FC<DateFormProps> = (props: DateFormProps) => {
     };
 
     const onLocationChange = (location: string) => {
-        dateItemFormik.setFieldValue('location', {
+        formik.setFieldValue('location', {
             lon: 0,
             lat: 0,
             label: location,
@@ -91,24 +88,24 @@ export const DateForm: React.FC<DateFormProps> = (props: DateFormProps) => {
     };
 
     const computeError = (field: string, nestedField?: string): string => {
-        if (nestedField) {
-            return dateItemFormik.touched[field] && dateItemFormik.errors[field][nestedField] ?
-                dateItemFormik.errors[field] :
+        if (nestedField && formik.errors[field]) {
+            return formik.touched[field] && formik.errors[field][nestedField] ?
+                formik.errors[field] :
                 undefined;
         }
 
-        return dateItemFormik.touched[field] && dateItemFormik.errors[field] ?
-            dateItemFormik.errors[field] :
+        return formik.touched[field] && formik.errors[field] ?
+            formik.errors[field] :
             undefined;
     };
 
     return (
-        <Form onSubmit={dateItemFormik.handleSubmit}>
+        <Form onSubmit={formik.handleSubmit}>
             <TextInput
             className={'date-line-field'}
             label='Name'
             placeholder='Provide a name'
-            {...dateItemFormik.getFieldProps('name')}
+            {...formik.getFieldProps('name')}
             error={computeError('name')} />
             <div className={'date-line-field date-container'}>
                 <CustomDatePicker
@@ -117,7 +114,7 @@ export const DateForm: React.FC<DateFormProps> = (props: DateFormProps) => {
                 dateFormat={'iii, MMM do, yyyy'}
                 placeholder={'Pick a start date'}
                 minDate={new Date()}
-                selected={dateItemFormik.values.eventBegin}
+                selected={formik.values.eventBegin}
                 onChange={(date: Date) => onDateChange('eventBegin', date)}
                 error={computeError('eventBegin')}/>
                 <CustomTimePicker
@@ -125,31 +122,31 @@ export const DateForm: React.FC<DateFormProps> = (props: DateFormProps) => {
                 name={'startTime'}
                 dateFormat={'hh:mm aa'}
                 placeholder={'Pick a start time'}
-                selected={dateItemFormik.values.eventBegin}
+                selected={formik.values.eventBegin}
                 onChange={(date: Date) => onTimeChange('eventBegin', date)}
                 error={computeError('eventBegin')}/>
             </div>
             <DateEndContainer
             className={'date-line-field date-container'}
-            disabled={!dateItemFormik.values.eventBegin}>
+            disabled={!formik.values.eventBegin}>
                 <CustomDatePicker
-                disabled={!dateItemFormik.values.eventBegin}
+                disabled={!formik.values.eventBegin}
                 label={'Event End'}
                 name={'endDate'}
                 dateFormat={'iii, MMM do, yyyy'}
                 placeholder={'Pick a end date'}
-                minDate={dateItemFormik.values.eventBegin}
-                selected={dateItemFormik.values.eventEnd}
+                minDate={formik.values.eventBegin}
+                selected={formik.values.eventEnd}
                 onChange={(date: Date) => onDateChange('eventEnd', date)}
                 error={computeError('eventEnd')}/>
                 <CustomTimePicker
-                disabled={!dateItemFormik.values.eventBegin}
+                disabled={!formik.values.eventBegin}
                 label={'End Time'}
                 name={'endTime'}
                 dateFormat={'hh:mm aa'}
                 placeholder={'Pick a end time'}
-                minTime={dateItemFormik.values.eventBegin}
-                selected={dateItemFormik.values.eventEnd}
+                minTime={formik.values.eventBegin}
+                selected={formik.values.eventEnd}
                 onChange={(date: Date) => onTimeChange('eventEnd', date)}
                 error={computeError('eventEnd')}/>
             </DateEndContainer>
@@ -159,37 +156,18 @@ export const DateForm: React.FC<DateFormProps> = (props: DateFormProps) => {
             name='location'
             icon={'pin'}
             placeholder='Provide a location'
-            value={dateItemFormik.values.location.label}
+            value={formik.values.location.label}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => onLocationChange(e.target.value)}
             error={computeError('location', 'label')} />
-            <ButtonsContainer>
-                {
-                    !newDate ?
-                        <Button
-                        title='Delete this date'
-                        variant={'danger'}
-                        onClick={props.delete}
-                        /> :
-                        <div/>
-                }
-                <div className={'sub-container'}>
-                    <Button
-                    title='Cancel'
-                    variant={'secondary'}
-                    onClick={newDate ? props.delete : props.cancel}
-                    />
-                    <Button
-                    type='submit'
-                    title='Confirm Date'
-                    variant={
-                        dateItemFormik.isValid &&
-                        JSON.stringify(dateItemFormik.values) !== JSON.stringify(checkedInitialValues) ?
-                            'primary' :
-                            'disabled'
-                    }
-                    />
-                </div>
-            </ButtonsContainer>
+            <FormActions
+            delete={props.delete}
+            cancel={props.cancel}
+            newItem={props.newItem}
+            disabled={
+                !formik.isValid &&
+                JSON.stringify(formik.values) === JSON.stringify(checkedInitialValues)
+            }
+            />
         </Form>
     )
 };
@@ -216,27 +194,4 @@ const Form = styled.form`
 
 const DateEndContainer = styled.div<{ disabled: boolean }>`
     opacity: ${props => props.disabled ? '0.3' : '1'};
-`;
-
-const ButtonsContainer = styled.div`
-    display: flex;
-    justify-content: space-between;
-
-    & > button {
-        width: 30%;
-    }
-
-    .sub-container {
-        width: 50%;
-        display: flex;
-
-        & > button:first-child {
-            flex: 1;
-            margin-right: ${props => props.theme.regularSpacing};
-        }
-
-        & > button:last-child {
-            flex: 2;
-        }
-    }
 `;

@@ -1,102 +1,58 @@
-import React, { Fragment } from 'react';
-import styled              from 'styled-components';
+import React, { Fragment }          from 'react';
+import styled                       from 'styled-components';
 import { displayDate, displayTime } from '@frontend/core/lib/utils/date';
 import { Icon }                     from '@frontend/flib-react/lib/components';
+import { FormCard, FormCardProps }                 from '../FormCard';
 
-export interface DateCardProps extends React.ComponentProps<any> {
-    edit: boolean;
-    editable: boolean;
-    name: string;
+export interface DateCardProps extends FormCardProps {
     beginDate: Date;
     endDate: Date;
     location: string;
-    setEdit: () => void;
 }
-export const DateCard: React.FC<DateCardProps> = (props: DateCardProps) => {
-    return (
-        <StyledDateCard
-        editable={props.editable}
-        edit={props.edit}
-        onClick={() => props.editable && !props.edit ? props.setEdit() : null}>
-            {
-                props.edit ?
-                    props.children :
-                    <Fragment>
-                        <Title>
-                            <span>{props.name}</span>
-                            {
-                                props.editable && !props.edit ?
-                                    <span className='edit'>edit</span> :
-                                    null
-                            }
-                        </Title>
-                        <DateContainer>
-                            <Icon
+
+export const DateCard: React.FC<DateCardProps> = (props: DateCardProps) => (
+    <FormCard
+    name={props.name}
+    editable={props.editable}
+    edit={props.edit}
+    setEdit={props.setEdit}>
+        {
+            props.edit ?
+                props.children :
+                <Fragment>
+                    <DateContainer>
+                        <Icon
                             icon={'calendar'}
                             size={'16px'} />
-                            <div className={'displayed-date'}>
-                                <span>{displayDate(props.beginDate)}</span>
-                                <span>{displayTime(props.beginDate)}</span>
-                            </div>
-                            <Arrow
+                        <div className={'displayed-date'}>
+                            <span>{displayDate(props.beginDate)}</span>
+                            <span>{displayTime(props.beginDate)}</span>
+                        </div>
+                        <Arrow
                             icon={'arrow'}
                             size={'15px'}
                             color={'rgba(255, 255, 255, 0.9)'}/>
-                            <div className={'displayed-date'}>
-                                <span>{displayDate(props.endDate)}</span>
-                                <span>{displayTime(props.endDate)}</span>
-                            </div>
-                        </DateContainer>
-                        <Location>
-                            <Icon
+                        <div className={'displayed-date'}>
+                            <span>{displayDate(props.endDate)}</span>
+                            <span>{displayTime(props.endDate)}</span>
+                        </div>
+                    </DateContainer>
+                    <Location>
+                        <Icon
                             icon={'pin'}
                             size={'16px'} />
-                            <span className={'label'}>{props.location}</span>
-                        </Location>
-                    </Fragment>
-            }
-        </StyledDateCard>
-    )
-};
-
-const StyledDateCard = styled.div<{ editable: boolean, edit: boolean }>`
-    position: relative;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    border-radius: ${props => props.theme.defaultRadius};
-    padding: ${props => props.theme.biggerSpacing};
-    background-color: ${props => props.edit ? props.theme.darkBg : props.theme.darkerBg};
-    font-size: 13px;
-    font-weight: bold;
-    transition: background-color 300ms;
-
-    &:hover {
-        background-color: ${props => props.editable || props.edit ? props.theme.darkBg : props.theme.darkerBg};
-    }
-`;
-
-const Title = styled.div`
-    display: flex;
-    justify-content: space-between;
-    top: 10px;
-    right: 10px;
-    margin-bottom: ${props => props.theme.regularSpacing};
-    text-transform: uppercase;
-
-    span:first-child {
-        color: rgba(255, 255,255, 0.4);
-    }
-
-    .edit {
-        cursor: pointer;
-        color: rgba(255, 255,255, 0.6);
-    }
-`;
+                        <span className={'label'}>{props.location}</span>
+                    </Location>
+                </Fragment>
+        }
+    </FormCard>
+);
 
 const DateContainer = styled.div`
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    width: 65%;
     margin-bottom: ${props => props.theme.regularSpacing};
 
     & > span:first-child {

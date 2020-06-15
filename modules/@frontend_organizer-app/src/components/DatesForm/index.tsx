@@ -112,7 +112,7 @@ const DatesForm: React.FC = () => {
                         edit={editIdx === idx}
                         setEdit={() => setEditIdx(idx)}>
                             <DateForm
-                            newDate={onNewDate}
+                            newItem={onNewDate}
                             initialValues={date}
                             delete={() => deleteDate(idx)}
                             cancel={() => resetEdition()}
@@ -123,22 +123,20 @@ const DatesForm: React.FC = () => {
             </DatesContainer>
             {
                 editIdx === null ?
-                    <ButtonsContainer>
-                        <Button
-                        title={'Add Date'}
-                        variant={'secondary'}
-                        onClick={addDateDraft}/>
-                        <Button
-                        onClick={() => {
-                            eventCreationFormik.handleFocus('');
-                            eventCreationFormik.setLoadingState(true);
-                            eventCreationFormik.handleBlur('submit', 'dates');
-                        }}
-                        {...eventCreationFormik.getSubmitButtonProps('Continue')}/>
-                    </ButtonsContainer>
+                    <AddDateButton
+                    title={'Add Date'}
+                    variant={'secondary'}
+                    onClick={addDateDraft}/>
                 :
                 null
             }
+            <SubmitButton
+            onClick={() => {
+                eventCreationFormik.handleFocus('');
+                eventCreationFormik.setLoadingState(true);
+                eventCreationFormik.handleBlur('submit', 'dates');
+            }}
+            {...eventCreationFormik.getSubmitButtonProps('Continue')}/>
       </StyledForm>
   );
 };
@@ -147,14 +145,11 @@ const StyledForm = styled.div`
     position: relative;
     display: flex;
     flex-direction: column;
-    align-items: center;
     width: 100%;
 `;
 
 const DatesContainer = styled.div`
     width: 100%;
-    overflow-y: scroll;
-    overflow-x: hidden;
 
     & > div {
         margin-bottom: ${props => props.theme.regularSpacing};
@@ -165,15 +160,14 @@ const DatesContainer = styled.div`
     }
 `;
 
-const ButtonsContainer = styled.div`
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    margin-top: 30px;
+const AddDateButton = styled(Button)`
+    margin-top: ${props => props.theme.regularSpacing};
+    width: calc(50% - ${props => props.theme.regularSpacing});
+`;
 
-    & > button {
-        width: calc(50% - ${props => props.theme.regularSpacing});
-    }
+const SubmitButton = styled(Button)`
+    margin-top: ${props => props.theme.doubleSpacing};
+    width: 100%;
 `;
 
 export default DatesForm;
