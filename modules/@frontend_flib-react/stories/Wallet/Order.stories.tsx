@@ -28,7 +28,7 @@ const purchase = {
 
 export const showcase = () => (
     <div>
-        <UserHeader user={user} />
+        <UserHeader username={'mortimr'} picture={'assets/images/user-1.jpg'} balance={'0'} />
         <WalletOrder user={user} purchase={purchase} />
     </div>
 );
