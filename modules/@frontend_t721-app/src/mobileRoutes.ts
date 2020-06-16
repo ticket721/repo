@@ -37,7 +37,7 @@ export const routes: RouteDatum[] = [
     },
     {
         path: '/home',
-        page: Home,
+        page: NavbarMargin(Home),
         protected: false,
     },
     {
