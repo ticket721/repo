@@ -28,3 +28,13 @@ export const checkFormatDate = (date: string | Date): Date => {
 
     return date;
 };
+
+const DTFormat = new Intl.DateTimeFormat('default', {
+    year: '2-digit',
+    month: '2-digit',
+    day: '2-digit',
+    hour: 'numeric',
+    minute: 'numeric',
+});
+
+export const format = (date: Date): string => DTFormat.format(date);

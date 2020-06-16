@@ -18,6 +18,7 @@ import { UserDto } from '@lib/common/users/dto/User.dto';
 import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
 import { Web3Service } from '@lib/common/web3/Web3.service';
 import { RocksideService } from '@lib/common/rockside/Rockside.service';
+import { MetadatasService } from '@lib/common/metadatas/Metadatas.service';
 
 const context: {
     authenticationService: AuthenticationService;
@@ -25,12 +26,14 @@ const context: {
     configServiceMock: ConfigService;
     web3ServiceMock: Web3Service;
     rocksideServiceMock: RocksideService;
+    metadatasServiceMock: MetadatasService;
 } = {
     authenticationService: null,
     usersServiceMock: null,
     configServiceMock: null,
     web3ServiceMock: null,
     rocksideServiceMock: null,
+    metadatasServiceMock: null,
 };
 
 const resultAddress = toAcceptedAddressFormat('0x87c02dec6b33498b489e1698801fc2ef79d02eef');
@@ -41,6 +44,7 @@ describe('Authentication Service', function() {
         context.configServiceMock = mock(ConfigService);
         context.web3ServiceMock = mock(Web3Service);
         context.rocksideServiceMock = mock(RocksideService);
+        context.metadatasServiceMock = mock(MetadatasService);
 
         when(context.configServiceMock.get('AUTH_SIGNATURE_TIMEOUT')).thenReturn('30');
         when(context.web3ServiceMock.net()).thenResolve(1);
@@ -66,6 +70,11 @@ describe('Authentication Service', function() {
                 {
                     provide: Web3Service,
                     useValue: instance(context.web3ServiceMock),
+                },
+
+                {
+                    provide: MetadatasService,
+                    useValue: instance(context.metadatasServiceMock),
                 },
             ],
         }).compile();
@@ -268,6 +277,43 @@ describe('Authentication Service', function() {
             when(usersServiceMock.findByAddress(address)).thenReturn(emptyServiceResponse);
             when(usersServiceMock.findByEmail(email)).thenReturn(emptyServiceResponse);
             when(usersServiceMock.findByUsername(username)).thenReturn(emptyServiceResponse);
+            when(
+                context.metadatasServiceMock.attach(
+                    'history',
+                    'web3_user_create',
+                    deepEqual([
+                        {
+                            type: 'user',
+                            id: '0',
+                            field: 'id',
+                        },
+                    ]),
+                    deepEqual([
+                        {
+                            type: 'user',
+                            id: '0',
+                            field: 'id',
+                        },
+                    ]),
+                    deepEqual([]),
+                    anything(),
+                    deepEqual({
+                        email,
+                        username,
+                        address,
+                        type: 'web3',
+                        password: null,
+                        id: '0',
+                        role: 'authenticated',
+                        valid: false,
+                        locale: 'en',
+                    }),
+                    null,
+                ),
+            ).thenResolve({
+                error: null,
+                response: null,
+            });
 
             const res = await authenticationService.createWeb3User(
                 email,
@@ -308,6 +354,192 @@ describe('Authentication Service', function() {
             verify(usersServiceMock.findByAddress(address)).called();
             verify(usersServiceMock.findByEmail(email)).called();
             verify(usersServiceMock.findByUsername(username)).called();
+            verify(
+                context.metadatasServiceMock.attach(
+                    'history',
+                    'web3_user_create',
+                    deepEqual([
+                        {
+                            type: 'user',
+                            id: '0',
+                            field: 'id',
+                        },
+                    ]),
+                    deepEqual([
+                        {
+                            type: 'user',
+                            id: '0',
+                            field: 'id',
+                        },
+                    ]),
+                    deepEqual([]),
+                    anything(),
+                    deepEqual({
+                        email,
+                        username,
+                        address,
+                        type: 'web3',
+                        id: '0',
+                        role: 'authenticated',
+                        valid: false,
+                        locale: 'en',
+                    } as UserDto),
+                    null,
+                ),
+            ).times(1);
+        });
+
+        test('should fail on metadata creation error', async function() {
+            const authenticationService: AuthenticationService = context.authenticationService;
+            const usersServiceMock: UsersService = context.usersServiceMock;
+
+            const email = 'test@test.com';
+            const username = 'salut';
+            const wallet: Wallet = await createWallet();
+            const address = toAcceptedAddressFormat(wallet.address);
+
+            const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(1);
+            const registerPayload = web3RegisterSigner.generateRegistrationProofPayload(email, username);
+            const registerSignature = await web3RegisterSigner.sign(wallet.privateKey, registerPayload[1]);
+
+            const serviceResponse: ServiceResponse<UserDto> = {
+                response: {
+                    email,
+                    username,
+                    address,
+                    type: 'web3',
+                    password: null,
+                    id: '0',
+                    role: 'authenticated',
+                    valid: false,
+                    locale: 'en',
+                },
+                error: null,
+            };
+
+            const emptyServiceResponse: Promise<ServiceResponse<UserDto>> = Promise.resolve({
+                response: null,
+                error: null,
+            });
+
+            when(
+                usersServiceMock.create(
+                    deepEqual({
+                        email,
+                        username,
+                        address,
+                        type: 'web3',
+                        password: null,
+                        role: 'authenticated',
+                        locale: 'en',
+                    }),
+                ),
+            ).thenReturn(Promise.resolve(serviceResponse));
+
+            when(usersServiceMock.findByAddress(address)).thenReturn(emptyServiceResponse);
+            when(usersServiceMock.findByEmail(email)).thenReturn(emptyServiceResponse);
+            when(usersServiceMock.findByUsername(username)).thenReturn(emptyServiceResponse);
+            when(
+                context.metadatasServiceMock.attach(
+                    'history',
+                    'web3_user_create',
+                    deepEqual([
+                        {
+                            type: 'user',
+                            id: '0',
+                            field: 'id',
+                        },
+                    ]),
+                    deepEqual([
+                        {
+                            type: 'user',
+                            id: '0',
+                            field: 'id',
+                        },
+                    ]),
+                    deepEqual([]),
+                    anything(),
+                    deepEqual({
+                        email,
+                        username,
+                        address,
+                        type: 'web3',
+                        password: null,
+                        id: '0',
+                        role: 'authenticated',
+                        valid: false,
+                        locale: 'en',
+                    }),
+                    null,
+                ),
+            ).thenResolve({
+                error: 'unexpected_error',
+                response: null,
+            });
+
+            const res = await authenticationService.createWeb3User(
+                email,
+                username,
+                registerPayload[0].toString(),
+                address,
+                registerSignature.hex,
+                'en',
+            );
+
+            expect(res.error).toEqual('cannot_create_activity_item');
+            expect(res.response).toEqual(null);
+
+            verify(
+                usersServiceMock.create(
+                    deepEqual({
+                        email,
+                        username,
+                        address,
+                        type: 'web3',
+                        password: null,
+                        role: 'authenticated',
+                        locale: 'en',
+                    }),
+                ),
+            ).called();
+
+            verify(usersServiceMock.findByAddress(address)).called();
+            verify(usersServiceMock.findByEmail(email)).called();
+            verify(usersServiceMock.findByUsername(username)).called();
+            verify(
+                context.metadatasServiceMock.attach(
+                    'history',
+                    'web3_user_create',
+                    deepEqual([
+                        {
+                            type: 'user',
+                            id: '0',
+                            field: 'id',
+                        },
+                    ]),
+                    deepEqual([
+                        {
+                            type: 'user',
+                            id: '0',
+                            field: 'id',
+                        },
+                    ]),
+                    deepEqual([]),
+                    anything(),
+                    deepEqual({
+                        email,
+                        username,
+                        address,
+                        password: null,
+                        type: 'web3',
+                        id: '0',
+                        role: 'authenticated',
+                        valid: false,
+                        locale: 'en',
+                    } as UserDto),
+                    null,
+                ),
+            ).times(1);
         });
 
         test('should report creation error', async function() {
@@ -812,6 +1044,43 @@ describe('Authentication Service', function() {
                 },
                 error: null,
             });
+            when(
+                context.metadatasServiceMock.attach(
+                    'history',
+                    't721_user_create',
+                    deepEqual([
+                        {
+                            type: 'user',
+                            id: '0',
+                            field: 'id',
+                        },
+                    ]),
+                    deepEqual([
+                        {
+                            type: 'user',
+                            id: '0',
+                            field: 'id',
+                        },
+                    ]),
+                    deepEqual([]),
+                    anything(),
+                    deepEqual({
+                        email,
+                        username,
+                        address: resultAddress,
+                        type: 't721',
+                        password: hashedp,
+                        id: '0',
+                        role: 'authenticated',
+                        locale: 'en',
+                        valid: false,
+                    }),
+                    null,
+                ),
+            ).thenResolve({
+                error: null,
+                response: null,
+            });
 
             const res = await authenticationService.createT721User(email, hashedp, username, 'en');
 
@@ -846,6 +1115,187 @@ describe('Authentication Service', function() {
             verify(usersServiceMock.findByEmail(email)).called();
             verify(usersServiceMock.findByUsername(username)).called();
             verify(context.rocksideServiceMock.createIdentity()).called();
+            verify(
+                context.metadatasServiceMock.attach(
+                    'history',
+                    't721_user_create',
+                    deepEqual([
+                        {
+                            type: 'user',
+                            id: '0',
+                            field: 'id',
+                        },
+                    ]),
+                    deepEqual([
+                        {
+                            type: 'user',
+                            id: '0',
+                            field: 'id',
+                        },
+                    ]),
+                    deepEqual([]),
+                    anything(),
+                    deepEqual({
+                        email,
+                        username,
+                        address: resultAddress,
+                        type: 't721',
+                        id: '0',
+                        role: 'authenticated',
+                        locale: 'en',
+                        valid: false,
+                    } as UserDto),
+                    null,
+                ),
+            ).called();
+        });
+
+        test('should fail on metadata creation error', async function() {
+            const authenticationService: AuthenticationService = context.authenticationService;
+            const usersServiceMock: UsersService = context.usersServiceMock;
+
+            const email = 'test@test.com';
+            const username = 'salut';
+            const hashedp = toAcceptedKeccak256Format(keccak256('salut'));
+
+            const serviceResponse: ServiceResponse<UserDto> = {
+                response: {
+                    email,
+                    username,
+                    address: resultAddress,
+                    type: 't721',
+                    password: hashedp,
+                    id: '0',
+                    role: 'authenticated',
+                    locale: 'en',
+                    valid: false,
+                },
+                error: null,
+            };
+
+            const emptyServiceResponse: Promise<ServiceResponse<UserDto>> = Promise.resolve({
+                response: null,
+                error: null,
+            });
+
+            when(
+                usersServiceMock.create(
+                    deepEqual({
+                        email,
+                        username,
+                        address: anyString(),
+                        type: 't721',
+                        password: anyString(),
+                        role: 'authenticated',
+                        locale: 'en',
+                    }),
+                ),
+            ).thenReturn(Promise.resolve(serviceResponse));
+
+            when(usersServiceMock.findByAddress(resultAddress)).thenReturn(emptyServiceResponse);
+            when(usersServiceMock.findByEmail(email)).thenReturn(emptyServiceResponse);
+            when(usersServiceMock.findByUsername(username)).thenReturn(emptyServiceResponse);
+            when(context.rocksideServiceMock.createIdentity()).thenResolve({
+                response: {
+                    address: resultAddress,
+                },
+                error: null,
+            });
+            when(
+                context.metadatasServiceMock.attach(
+                    'history',
+                    't721_user_create',
+                    deepEqual([
+                        {
+                            type: 'user',
+                            id: '0',
+                            field: 'id',
+                        },
+                    ]),
+                    deepEqual([
+                        {
+                            type: 'user',
+                            id: '0',
+                            field: 'id',
+                        },
+                    ]),
+                    deepEqual([]),
+                    anything(),
+                    deepEqual({
+                        email,
+                        username,
+                        address: resultAddress,
+                        type: 't721',
+                        password: hashedp,
+                        id: '0',
+                        role: 'authenticated',
+                        locale: 'en',
+                        valid: false,
+                    }),
+                    null,
+                ),
+            ).thenResolve({
+                error: 'unexpected_error',
+                response: null,
+            });
+
+            const res = await authenticationService.createT721User(email, hashedp, username, 'en');
+
+            expect(res.error).toEqual('cannot_create_activity_item');
+            expect(res.response).toEqual(null);
+
+            verify(
+                usersServiceMock.create(
+                    deepEqual({
+                        email,
+                        username,
+                        address: anyString(),
+                        type: 't721',
+                        password: anyString(),
+                        role: 'authenticated',
+                        locale: 'en',
+                    }),
+                ),
+            ).called();
+
+            verify(usersServiceMock.findByAddress(resultAddress)).called();
+            verify(usersServiceMock.findByEmail(email)).called();
+            verify(usersServiceMock.findByUsername(username)).called();
+            verify(context.rocksideServiceMock.createIdentity()).called();
+            verify(
+                context.metadatasServiceMock.attach(
+                    'history',
+                    't721_user_create',
+                    deepEqual([
+                        {
+                            type: 'user',
+                            id: '0',
+                            field: 'id',
+                        },
+                    ]),
+                    deepEqual([
+                        {
+                            type: 'user',
+                            id: '0',
+                            field: 'id',
+                        },
+                    ]),
+                    deepEqual([]),
+                    anything(),
+                    deepEqual({
+                        email,
+                        username,
+                        address: resultAddress,
+                        password: hashedp,
+                        type: 't721',
+                        id: '0',
+                        role: 'authenticated',
+                        locale: 'en',
+                        valid: false,
+                    } as UserDto),
+                    null,
+                ),
+            ).called();
         });
 
         test('should fail on rockside account creation error', async function() {

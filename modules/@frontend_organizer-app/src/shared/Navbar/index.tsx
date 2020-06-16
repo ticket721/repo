@@ -1,28 +1,28 @@
-import React from 'react';
-import styled              from 'styled-components';
-import { Icon, WalletHeader }   from '@frontend/flib-react/lib/components';
+import React                  from 'react';
+import styled                 from 'styled-components';
+import { Icon, WalletHeader } from '@frontend/flib-react/lib/components';
 
 import DrawerAccount                         from '../DrawerAccount';
 import { blurAndDarkenBackground, truncate } from '@frontend/core/lib/utils';
 import { useHistory }                        from 'react-router';
 import { NavLink }                           from 'react-router-dom';
-import { useDispatch }                       from 'react-redux';
+import { useDispatch, useSelector }          from 'react-redux';
 import { Logout }                            from '@frontend/core/lib/redux/ducks/auth';
 import { computeProfilePath }                from '@frontend/core/lib/utils/computeProfilePath';
 import { appendProfilePath }                 from '@frontend/core/lib/utils/appendProfilePath';
-
-const user = {
-    firstName: 'Pierre',
-    lastName: 'Paul',
-    profilePicture: '/favicon.ico',
-    creditBalance: 3500,
-    creditCard: 5234,
-    currentLocation: 'Paris, France',
-};
+import { AppState }                          from '@frontend/core/lib/redux';
+import { getContract }                       from '@frontend/core/lib/subspace/getContract';
+// tslint:disable-next-line:no-var-requires
+const { observe, useSubspace } = require('@embarklabs/subspace-react');
 
 const NavBar: React.FC = () => {
     const history = useHistory();
     const dispatch = useDispatch();
+    const user = useSelector((state: AppState) => state.auth.user);
+
+    const subspace = useSubspace();
+    const T721TokenContract = getContract(subspace, 't721token', 'T721Token');
+    const $balance = T721TokenContract.methods.balanceOf(user?.address).track();
 
     const drawerOnClose = () => {
         if (computeProfilePath(history.location.pathname).startsWith('/profile')) {
@@ -38,24 +38,24 @@ const NavBar: React.FC = () => {
             <div onClick={() => dispatch(Logout())}>signout</div>
             <NavLink
                 to='/'>
-                <Icon icon='t721' color='#fff' size='30px' />
+                <Icon icon='t721' color='#fff' size='30px'/>
             </NavLink>
             <ActionContainer>
                 <NavLink
-                to='/create-event'>
+                    to='/create-event'>
                     Create Event
                 </NavLink>
                 <Profile
                     onClick={
                         () => history.push(appendProfilePath(history.location.pathname))
                     }>
-                    <UserHeader user={user} />
-                    <Chevron icon='chevron' color='#fff' size='7px' />
+                    <ConnectedUserHeader username={user?.username} picture={'/favicon.ico'} balance={$balance}/>
+                    <Chevron icon='chevron' color='#fff' size='7px'/>
                 </Profile>
             </ActionContainer>
             <DrawerAccount
                 open={computeProfilePath(history.location.pathname) !== '/'}
-                onClose={drawerOnClose} />
+                onClose={drawerOnClose}/>
         </Container>
     );
 };
@@ -102,10 +102,12 @@ const UserHeader = styled(WalletHeader)`
         height: 40px;
     }
     h3 {
-        ${ truncate('80px') };
+        ${truncate('80px')};
         font-size: 13px;
     }
 `;
+
+const ConnectedUserHeader = observe(UserHeader);
 
 const Chevron = styled(Icon)`
     transform: rotate(90deg);

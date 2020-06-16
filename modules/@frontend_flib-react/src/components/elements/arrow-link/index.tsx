@@ -5,8 +5,8 @@ import Icon from '../../../components/icon';
 export interface ArrowLinkProps extends React.ComponentProps<any> {
     image?: string;
     label: string;
-    to: string;
     location?: string;
+    onClick?: () => void;
 }
 
 const LinkContainer = styled.div`
@@ -45,7 +45,11 @@ const LinkContainer = styled.div`
 
 const Arrow = styled(Icon)`
     fill: ${(props) => props.theme.textColor};
-    transform: rotate(180deg);
+`;
+
+const Chevron = styled(Icon)`
+    fill: ${(props) => props.theme.textColor};
+    transform: rotate(270deg);
 `;
 
 const LocationContainer = styled.div`
@@ -67,13 +71,13 @@ export const ArrowLink: React.FunctionComponent<ArrowLinkProps & { className?: s
 ): JSX.Element => {
     // TODO -- Update to use link from react-router
     return (
-        <LinkContainer>
+        <LinkContainer onClick={props.onClick} style={{ cursor: props.onClick ? 'pointer' : undefined }}>
             <span>{props.label}</span>
             {props.location ? (
                 <LocationContainer>
                     <Icon icon={'location'} size={'16px'} />
                     <span>{props.location}</span>
-                    <Icon icon={'chevron'} size={'12px'} color={'rgba(255, 255, 255, 0.9)'} />
+                    <Chevron icon={'chevron'} size={'12px'} color={'rgba(255, 255, 255, 0.9)'} />
                 </LocationContainer>
             ) : (
                 <Arrow icon={'arrow'} size={'16px'} />

@@ -1,52 +1,92 @@
-import React from 'react';
-import {
-    ActivitiesContainer,
-    TitleText,
-    FundsCard,
-    LinksContainer,
-    ArrowLink,
-} from '@frontend/flib-react/lib/components';
+import React, { useState } from 'react';
+import { LinksContainer, ArrowLink } from '@frontend/flib-react/lib/components';
+import { useRequest } from '../../../hooks/useRequest';
+import { MetadatasFetchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/metadatas/dto/MetadatasFetchResponse.dto';
+import { v4 } from 'uuid';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppState } from '../../../redux';
+import { ActivitiesList } from '../Activities/ActivitiesList';
+import { Logout } from '../../../redux/ducks/auth';
 import { useHistory } from 'react-router';
-import { computeProfilePath } from '../../../utils/computeProfilePath';
+import { WalletHeader } from '@frontend/flib-react/lib/components';
+import { getContract } from '../../../subspace/getContract';
+// tslint:disable-next-line:no-var-requires
+const { observe, useSubspace } = require('@embarklabs/subspace-react');
 
-const user = {
-    firstName: 'Pierre',
-    lastName: 'Paul',
-    profilePicture: '/public/favicon.ico',
-    creditBalance: 3500,
-    creditCard: 5234,
-    currentLocation: 'Paris, France',
-};
-
-const notif = ['notif0', 'notif1', 'notif2', 'notif3', 'notif4', 'notif5', 'notif6', 'notif7'];
+const ConnectedWalletHeader = observe(WalletHeader);
 
 const ProfileRoot = (): JSX.Element => {
+    const [uuid] = useState(v4());
+    const { token, userUuid, username, address } = useSelector((state: AppState) => ({
+        token: state.auth.token.value,
+        userUuid: state.auth.user?.uuid,
+        username: state.auth.user?.username,
+        address: state.auth.user?.address,
+    }));
+    const dispatch = useDispatch();
     const history = useHistory();
+    const subspace = useSubspace();
+    const T721TokenContract = getContract(subspace, 't721token', 'T721Token');
+    const $balance = T721TokenContract.methods.balanceOf(address).track();
 
-    const displayedNotif = notif.slice(0, 3);
+    const activityResponse = useRequest<MetadatasFetchResponseDto>(
+        {
+            method: 'metadatas.fetch',
+            args: [
+                token,
+                {
+                    useReadRights: [
+                        {
+                            id: userUuid,
+                            type: 'user',
+                            field: 'id',
+                        },
+                    ],
+                    withLinks: [
+                        {
+                            id: userUuid,
+                            type: 'user',
+                            field: 'id',
+                        },
+                    ],
+                    metadataClassName: 'history',
+                },
+            ],
+            refreshRate: 50,
+        },
+        uuid,
+    ).response;
+
+    // <FundsCard
+    //     title={'Funds'}
+    //     bankAccountLabel={'Bank account'}
+    //     currentBalanceLabel={'Current balance'}
+    //     onClick={() => history.push(computeProfilePath(history.location.pathname, '/funds'))}
+    //     user={user}
+    //     icon='euro'
+    // />
+    // <ArrowLink to='#todo' label='General information' />
+    // <ArrowLink to='#todo' label='Main city' location='Paris, France' />
 
     return (
         <>
-            <ActivitiesContainer
-                title='Recent activities'
-                viewAllAction={() => history.push(computeProfilePath(history.location.pathname, '/activities'))}
-                viewAllLabel='View all'
-            >
-                {displayedNotif.map((e, i) => {
-                    return <TitleText text={e} key={e + i} />;
-                })}
-            </ActivitiesContainer>
-            <FundsCard
-                title={'Funds'}
-                bankAccountLabel={'Bank account'}
-                currentBalanceLabel={'Current balance'}
-                onClick={() => history.push(computeProfilePath(history.location.pathname, '/funds'))}
-                user={user}
-                icon='euro'
+            <ConnectedWalletHeader username={username} picture={'/favicon.ico'} balance={$balance} />
+            <ActivitiesList
+                loading={activityResponse.loading}
+                error={activityResponse.error}
+                data={activityResponse.data}
+                limit={3}
+                link={'/activities'}
             />
             <LinksContainer title='Account'>
-                <ArrowLink to='#todo' label='General information' />
-                <ArrowLink to='#todo' label='Main city' location='Paris, France' />
+                <ArrowLink
+                    to='#todo'
+                    label='Log Out'
+                    onClick={() => {
+                        dispatch(Logout());
+                        history.replace('/');
+                    }}
+                />
             </LinksContainer>
         </>
     );

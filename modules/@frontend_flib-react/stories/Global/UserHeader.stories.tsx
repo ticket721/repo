@@ -10,13 +10,11 @@ export default {
     },
 };
 
-const user = {
-    firstName: 'Pete',
-    lastName: 'Peter',
-    profilePicture: 'assets/images/user-1.jpg',
-    creditCard: 1736,
-    creditBalance: 500,
-    currentLocation: 'New York City, NY',
-};
-
-export const showcase = () => <UserHeader user={user} profileHeader={boolean('Profile header ?', false)} />;
+export const showcase = () => (
+    <UserHeader
+        username={'mortimr'}
+        picture={'assets/images/user-1.jpg'}
+        profileHeader={boolean('Profile header ?', false)}
+        balance={'0'}
+    />
+);

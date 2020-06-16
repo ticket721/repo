@@ -45,7 +45,7 @@ export const useRequest = <ReturnType>(call: RequestParams, initialUuid: string)
     return {
         response: {
             ...response,
-            data: response.data ? response.data['data'] : null,
+            data: response.data,
         },
         registerEntity,
         unregisterEntity,

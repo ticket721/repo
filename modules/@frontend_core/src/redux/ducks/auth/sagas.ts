@@ -38,6 +38,7 @@ function* localRegister(action: ILocalRegister): IterableIterator<any> {
                 registerData.user.locale,
                 registerData.user.valid,
                 registerData.user.address,
+                registerData.user.id,
             ),
         );
 
@@ -85,6 +86,7 @@ function* localLogin(action: ILocalRegister): IterableIterator<any> {
                 loginData.user.locale,
                 loginData.user.valid,
                 loginData.user.address,
+                loginData.user.id,
             ),
         );
     } catch (e) {
@@ -123,6 +125,7 @@ function* getUser(action: IGetUser): IterableIterator<any> {
                 userData.user.locale,
                 userData.user.valid,
                 userData.user.address,
+                userData.user.id,
             ),
         );
     } catch (e) {
