@@ -1,6 +1,12 @@
 import { ExceptionFilter, Catch, ArgumentsHost, HttpException } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { StatusNames } from '@lib/common/utils/codes.value';
+import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
+
+/**
+ * Logger instance for the HTTP Exception Filter
+ */
+const HTTPErrorLogger = new WinstonLoggerService('http');
 
 /**
  * Utility to catch HttpExceptions and respond properly to Http Requests
@@ -19,7 +25,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
         const request = ctx.getRequest<Request>();
         const status = exception.getStatus();
 
-        console.error('HTTP Error: ', (exception.getResponse() as any).message);
+        HTTPErrorLogger.warn(`[${exception.getStatus()}] ${(exception.getResponse() as any).message}`);
 
         response.status(status).json({
             statusCode: status,
