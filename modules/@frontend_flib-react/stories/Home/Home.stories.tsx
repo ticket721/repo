@@ -22,21 +22,21 @@ const featuredSlides = [
         title: 'Matt Houlonski Houlonski',
         text: 'Mon, Feb 16 8:30PM',
         src: 'assets/images/slide-1.jpg',
-        price: 33,
+        price: '33',
     },
     {
         id: '2',
         title: 'Matt Houlonski',
         text: 'Mon, Feb 16 8:30PM',
         src: 'assets/images/slide-2.jpg',
-        price: 33,
+        price: '33',
     },
     {
         id: '3',
         title: 'Matt Houlonski',
         text: 'Mon, Feb 16 8:30PM',
         src: 'assets/images/slide-1.jpg',
-        price: 33,
+        price: '33',
     },
 ];
 
