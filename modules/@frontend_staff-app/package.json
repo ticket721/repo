@@ -16,7 +16,7 @@
         "@types/node": "12.12.24",
         "@types/react": "16.9.35",
         "@types/react-dom": "16.9.6",
-        "@types/react-router": "5.1.5",
+        "@types/react-router": "5.1.7",
         "@types/react-router-dom": "5.1.4",
         "ionicons": "5.0.0",
         "react": "16.13.1",
