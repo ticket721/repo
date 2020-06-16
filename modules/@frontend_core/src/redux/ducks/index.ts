@@ -12,6 +12,8 @@ import { cacheInitialState, CacheReducer, CacheState } from './cache';
 
 import { authInitialState, AuthReducer, AuthState } from './auth';
 
+import { locationInitialState, LocationReducer, LocationState } from './location';
+
 import { notificationsInitialState, NotificationsReducer, NotificationsState } from './notifications';
 import { Reducer } from 'redux';
 import { combineReducers } from 'redux';
@@ -25,6 +27,7 @@ export interface SpecificState {
     cache: CacheState;
     auth: AuthState;
     notifications: NotificationsState;
+    location: LocationState;
 }
 
 export type AppState = SpecificState;
@@ -43,6 +46,7 @@ export const rootReducer = <AdditionalState>(additionalReducer?: AdditionalReduc
         cache: CacheReducer,
         auth: AuthReducer,
         notifications: NotificationsReducer,
+        location: LocationReducer,
     });
 
 export const initialState = <AdditionalState>(additionalState?: AdditionalState): AppState & AdditionalState => ({
@@ -53,4 +57,5 @@ export const initialState = <AdditionalState>(additionalState?: AdditionalState)
     cache: cacheInitialState,
     auth: authInitialState,
     notifications: notificationsInitialState,
+    location: locationInitialState,
 });
