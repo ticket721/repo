@@ -8,6 +8,7 @@ import { UserDto } from '@lib/common/users/dto/User.dto';
 import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
 import { Web3Service } from '@lib/common/web3/Web3.service';
 import { RocksideService } from '@lib/common/rockside/Rockside.service';
+import { MetadatasService } from '@lib/common/metadatas/Metadatas.service';
 
 /**
  * Authentication services and utilities
@@ -21,12 +22,14 @@ export class AuthenticationService {
      * @param configService
      * @param web3Service
      * @param rocksideService
+     * @param metadatasService
      */
     constructor /* instanbul ignore next */(
         private readonly usersService: UsersService,
         private readonly configService: ConfigService,
         private readonly web3Service: Web3Service,
         private readonly rocksideService: RocksideService,
+        private readonly metadatasService: MetadatasService,
     ) {}
 
     /**
@@ -204,6 +207,42 @@ export class AuthenticationService {
             return newUser;
         }
 
+        newUser.response.id = newUser.response.id.toString();
+
+        const creationMetadataRes = await this.metadatasService.attach(
+            'history',
+            'web3_user_create',
+            [
+                {
+                    type: 'user',
+                    id: newUser.response.id.toString(),
+                    field: 'id',
+                },
+            ],
+            [
+                {
+                    type: 'user',
+                    id: newUser.response.id.toString(),
+                    field: 'id',
+                },
+            ],
+            [],
+            {
+                date: {
+                    at: new Date(Date.now()),
+                },
+            },
+            newUser.response,
+            null,
+        );
+
+        if (creationMetadataRes.error) {
+            return {
+                error: 'cannot_create_activity_item',
+                response: null,
+            };
+        }
+
         delete newUser.response.password;
 
         return {
@@ -319,6 +358,42 @@ export class AuthenticationService {
 
         if (newUser.error) {
             return newUser;
+        }
+
+        newUser.response.id = newUser.response.id.toString();
+
+        const creationMetadataRes = await this.metadatasService.attach(
+            'history',
+            't721_user_create',
+            [
+                {
+                    type: 'user',
+                    id: newUser.response.id.toString(),
+                    field: 'id',
+                },
+            ],
+            [
+                {
+                    type: 'user',
+                    id: newUser.response.id.toString(),
+                    field: 'id',
+                },
+            ],
+            [],
+            {
+                date: {
+                    at: new Date(Date.now()),
+                },
+            },
+            newUser.response,
+            null,
+        );
+
+        if (creationMetadataRes.error) {
+            return {
+                error: 'cannot_create_activity_item',
+                response: null,
+            };
         }
 
         delete newUser.response.password;

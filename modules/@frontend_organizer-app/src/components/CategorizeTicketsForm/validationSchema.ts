@@ -11,7 +11,20 @@ const resalesEnd = yup.date().notRequired();
 const resales = yup.boolean().default(false);
 
 const global = yup.array().of(yup.object().shape({
-    name,
+  name,
+  price,
+  quantity,
+  salesStart,
+  salesEnd,
+  resalesStart,
+  resalesEnd,
+  resales,
+}));
+
+const dates = yup.array().of(yup.object().shape({
+  name,
+  dates: yup.array().of(yup.object().shape({
+    eventDate,
     price,
     quantity,
     salesStart,
@@ -19,20 +32,12 @@ const global = yup.array().of(yup.object().shape({
     resalesStart,
     resalesEnd,
     resales,
+  }))
 }));
 
-const dates = yup.array().of(yup.object().shape({
-    name,
-    dates: yup.array().of(yup.object().shape({
-        eventDate,
-        price,
-        quantity,
-        salesStart,
-        salesEnd,
-        resalesStart,
-        resalesEnd,
-        resales,
-    }))
-}));
+const validationSchema = yup.object().shape({
+  global,
+  dates,
+});
 
-export { global, dates };
+export { validationSchema };

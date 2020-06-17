@@ -1,9 +1,10 @@
 import * as React from 'react';
 import styled from '../../../config/styled';
-import UserInterface from '../../../shared/userInterface';
 
 export interface WalletHeaderProps extends React.ComponentProps<any> {
-    user: UserInterface;
+    username: string;
+    picture: string;
+    balance: string;
     profileHeader?: boolean;
 }
 
@@ -55,17 +56,15 @@ const Amount = styled.h4`
 export const WalletHeader: React.FunctionComponent<WalletHeaderProps & { className?: string }> = (
     props: WalletHeaderProps,
 ): JSX.Element => {
-    const fullName = `${props.user.firstName} ${props.user.lastName}`;
-
     return (
         <Container profileHeader={props.profileHeader} className={props.className}>
             <ImgContainer profileHeader={props.profileHeader}>
-                <img src={props.user.profilePicture} alt={fullName} />
+                <img src={props.picture} alt={props.username} />
             </ImgContainer>
             <div>
-                {props.profileHeader ? <h1>{fullName}</h1> : <h3>{fullName}</h3>}
+                {props.profileHeader ? <h1>{props.username}</h1> : <h3>{props.username}</h3>}
                 <Amount>
-                    <span>€</span> {props.user.creditBalance}
+                    <span>€</span> {props.balance || '...'}
                 </Amount>
             </div>
         </Container>

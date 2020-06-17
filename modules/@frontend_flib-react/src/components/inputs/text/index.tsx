@@ -3,14 +3,13 @@ import * as React from 'react';
 import Cleave from 'cleave.js/react';
 import styled from '../../../config/styled';
 import { ChangeEvent } from 'react';
+import Icon from '../../icon';
 
 export interface InputProps extends React.ComponentProps<any> {
     error?: string;
     label: string;
     name: string;
-    onChange: (
-        eventOrPath: string | ChangeEvent<any>,
-    ) => void | ((eventOrTextValue: string | ChangeEvent<any>) => void);
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     onFocus?: (
         eventOrPath: string | ChangeEvent<any>,
     ) => void | ((eventOrTextValue: string | ChangeEvent<any>) => void);
@@ -20,6 +19,7 @@ export interface InputProps extends React.ComponentProps<any> {
     value?: string | number;
     className?: string;
     type?: string | undefined;
+    icon?: string;
 }
 
 const Error = styled.span`
@@ -90,6 +90,22 @@ const StyledInputContainer = styled.div<InputProps>`
             }
         }
     }
+
+    .sub-container {
+        display: flex;
+        align-items: center;
+        padding-left: 1.5rem;
+
+        & > span {
+            margin-right: 0.7rem;
+            margin-bottom: 5px;
+        }
+
+        & > :not(span) {
+            width: 100%;
+            padding: 1rem 1.5rem 1rem 0;
+        }
+    }
 `;
 
 export const TextInput: React.FunctionComponent<InputProps & { className?: string }> = (
@@ -98,31 +114,32 @@ export const TextInput: React.FunctionComponent<InputProps & { className?: strin
     return (
         <StyledInputContainer error={props.error} className={props.className}>
             <StyledLabel htmlFor={props.name}>{props.label}</StyledLabel>
-
-            {props.options ? (
-                <Cleave
-                    options={props.options}
-                    id={props.name}
-                    name={props.name}
-                    placeholder={props.placeholder}
-                    defaultValue={props.value}
-                    onChange={props.onChange}
-                    onFocus={props.onFocus}
-                    onBlur={props.onBlur}
-                />
-            ) : (
-                <input
-                    id={props.name}
-                    name={props.name}
-                    placeholder={props.placeholder}
-                    onFocus={props.onFocus}
-                    value={props.value}
-                    type={props.type || 'text'}
-                    onChange={props.onChange}
-                    onBlur={props.onBlur}
-                />
-            )}
-
+            <div className={'sub-container'}>
+                {props.icon ? <Icon icon={props.icon} size={'16px'} /> : null}
+                {props.options ? (
+                    <Cleave
+                        options={props.options}
+                        id={props.name}
+                        name={props.name}
+                        placeholder={props.placeholder}
+                        defaultValue={props.value}
+                        onChange={props.onChange}
+                        onFocus={props.onFocus}
+                        onBlur={props.onBlur}
+                    />
+                ) : (
+                    <input
+                        id={props.name}
+                        name={props.name}
+                        placeholder={props.placeholder}
+                        onFocus={props.onFocus}
+                        value={props.value}
+                        type={props.type || 'text'}
+                        onChange={props.onChange}
+                        onBlur={props.onBlur}
+                    />
+                )}
+            </div>
             {props.error && <Error>{props.error}</Error>}
         </StyledInputContainer>
     );

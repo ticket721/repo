@@ -1,264 +1,179 @@
-import React                                             from 'react';
-import { useFormik }                                     from 'formik';
-import * as yup                                          from 'yup';
-import styled                                            from 'styled-components';
-import { CustomDatePicker, CustomTimePicker, TextInput } from '@frontend/flib-react/lib/components';
-import Button                                            from '@frontend/flib-react/lib/components/button';
-import * as validators                                   from './validators';
-import STEPS                                             from '../../screens/CreateEvent/enums';
+import React, { Dispatch, useEffect, useState } from 'react';
+import styled                                   from 'styled-components';
+import Button                                       from '@frontend/flib-react/lib/components/button';
+import { datesConfigValidationSchema }              from './validationSchema';
+import {
+    EventsCreateDatesConfiguration,
+}                                                   from '@common/sdk/lib/@backend_nest/apps/worker/src/actionhandlers/events/Events.input.handlers';
+import { useSelector }                              from 'react-redux';
+import { OrganizerState }                           from '../../redux/ducks';
+import { useEventCreation }                         from '../../hooks/useEventCreation';
+import { EventCreationActions, EventCreationSteps } from '../../core/event_creation/EventCreationCore';
+import { DateCard }                                 from './DateCard';
+import { DateForm }                                 from './DateForm';
+import { checkFormatDate }                          from '@frontend/core/lib/utils/date';
+import { day, hour }                                from '@frontend/core/lib/utils/date';
 
-const dateSchema = yup.object().shape({
-  location: validators.location,
-  dates: validators.dates
-});
-type FormValues = yup.InferType<typeof dateSchema>;
-
-const initialValues: FormValues = { dates: [{
-  start: { date: new Date(), time: new Date(), final: new Date() },
-  end: { date: new Date(), time: new Date(), final: new Date() }
-}], location: '' };
-
-interface Props {
-  setStep: (step: number) => void;
+export interface DateItem {
+    name: string;
+    eventBegin: Date;
+    eventEnd: Date;
+    location: {
+        lon: number;
+        lat: number;
+        label: string;
+    }
 }
 
-const DatesForm = ({ setStep }: Props) => {
-  const [validation, setValidation] = React.useState('false');
-  const mergeDate = (date: Date, time: Date) => new Date(date.getFullYear(), date.getMonth(), date.getDate(),
-    time.getHours(), time.getMinutes(), time.getSeconds());
-  const getDisplayDate = (d: Date) => `${d.toDateString()}, ${d.getHours()}:${d.getMinutes() < 10 ? `0${d.getMinutes()}` : d.getMinutes()}`;
-  const formik = useFormik({
-    initialValues,
-    onSubmit: values => {
-      const dateValidation = formik.values.dates.map(d => d.start.final > d.end.final);
-      if (dateValidation.find(e => e === true)) {
-          setValidation('check');
-          return;
-      }
-      alert(JSON.stringify(values, null, 2));
-      setValidation('true');
-      setStep(STEPS.ticketCategories);
-    },
-    validationSchema: dateSchema
+const initialValues: EventsCreateDatesConfiguration = { dates: []};
 
-  });
+const DatesForm: React.FC = () => {
+    const [ editIdx, setEditIdx ]: [ number, Dispatch<number> ] = useState(null);
+    const [ onNewDate, setOnNewDate ]: [ boolean, Dispatch<boolean> ] = useState(null);
+    const eventName: string = useSelector((state: OrganizerState) => state.eventCreation.textMetadata.name);
 
-  return (
-    <>
-      {(validation === 'true' && (
-        <Card>
-          <h2>{`Date${formik.values.dates.length > 1 ? 's' : ''}:`}</h2>
-          {formik.values.dates.map((d: any, i: number) => (
-            <p key={`finalDate-${i}`}>
-              {
-                d.start.final && d.end.final &&
-                `${getDisplayDate(d.start.final)} - ${getDisplayDate(d.end.final)}`
-              }
-            </p>
-          ))}
-          <h2>Location:</h2>
-          <p>{formik.values.location}</p>
-        </Card>
-      )) || ((validation === 'false' || validation === 'check') && (
-        <StyledForm onSubmit={formik.handleSubmit}>
-            <Warning>Once you click 'Continue' you will not be able to edit this category</Warning>
-            {formik.values.dates && formik.values.dates.map((c, idx) => (
-            <React.Fragment key={`Dates-${idx}`}>
-              {formik.values.dates.length > 1 && <h3>Date {idx + 1}:</h3>}
-              <div className='line field'>
-                <CustomDatePicker
-                  selected={formik.values.dates[idx].start.date}
-                  dateFormat={'iii, MMM do, yyyy'}
-                  placeholder='Pick a date'
-                  label='Event Start'
-                  onChange={(d: Date) => {
-                    const newDates = formik.values.dates.map(date => ({
-                      ...date,
-                      start: {
-                        date: date.start.date,
-                        time: date.start.time,
-                        final: mergeDate(
-                          date.start.date, date.start.time
-                        ),
-                      }
-                    }));
-                    newDates[idx].start.date = d;
-                    newDates[idx].start.final = mergeDate(
-                      newDates[idx].start.date, newDates[idx].start.time
-                    );
-                    formik.setFieldValue(`dates`, newDates);
-                  }}
-                  name='startDate'
-                />
-                <CustomTimePicker
-                  selected={formik.values.dates[idx].start.time}
-                  dateFormat={'h:mm aa'}
-                  label='Start Time'
-                  placeholder='Pick start time'
-                  onChange={(d: Date) => {
-                    const newDates = formik.values.dates.map(date => ({
-                      ...date,
-                      start: {
-                        date: date.start.date,
-                        time: date.start.time,
-                        final: mergeDate(
-                          date.start.date, date.start.time
-                        ),
-                      }
-                    }));
-                    newDates[idx].start.time = d;
-                    newDates[idx].start.final = mergeDate(
-                      newDates[idx].start.date, newDates[idx].start.time
-                    );
-                    formik.setFieldValue(`dates`, newDates);
-                  }}
-                  name='startTime'
-                  error={validation === 'check' &&
-                  formik.values.dates[idx].start.final > formik.values.dates[idx].end.final ?
-                      'Start date should be before end date' : undefined
-                  }
-                />
-              </div>
-              <div className='line field'>
-                <CustomDatePicker
-                  selected={formik.values.dates[idx].end.date}
-                  minDate={formik.values.dates[idx].start.date}
-                  dateFormat={'iii, MMM do, yyyy'}
-                  placeholder='Pick a date'
-                  label='Event End'
-                  onChange={(d: Date) => {
-                    const newDates = formik.values.dates.map(date => ({
-                      ...date,
-                      end: {
-                        date: date.end.date,
-                        time: date.end.time,
-                        final: mergeDate(
-                          date.end.date, date.end.time
-                        ),
-                      }
-                    }));
-                    newDates[idx].end.date = d;
-                    newDates[idx].end.final = mergeDate(
-                      newDates[idx].end.date, newDates[idx].end.time
-                    );
-                    formik.setFieldValue(`dates`, newDates);
-                  }}
-                  name='endDate'
-                />
-                <CustomTimePicker
-                  selected={formik.values.dates[idx].end.time}
-                  dateFormat={'h:mm aa'}
-                  label='End Time'
-                  placeholder='Pick end time'
-                  onChange={(d: Date) => {
-                    const newDates = formik.values.dates.map(date => ({
-                      ...date,
-                      end: {
-                        date: date.end.date,
-                        time: date.end.time,
-                        final: mergeDate(
-                          date.end.date, date.end.time
-                        ),
-                      }
-                    }));
-                    newDates[idx].end.time = d;
-                    newDates[idx].end.final = mergeDate(
-                      newDates[idx].end.date, newDates[idx].end.time
-                    );
-                    formik.setFieldValue(`dates`, newDates);
-                  }}
-                  name='endTime'
-                />
-              </div>
-            </React.Fragment>
-          ))}
-          <Button title='Add dates' variant='secondary' onClick={() => {
-            formik.setFieldValue('dates', [...formik.values.dates,
-              { start: { date: new Date(), time: new Date() }, end: { date: new Date(), time: new Date() }}
-            ])}}
-          />
-          <TextInput
-            className='field'
-            label='Location'
-            placeholder='Type an address'
-            error={!!(formik.getFieldMeta('location').touched && formik.getFieldMeta('location').error) ?
-              formik.getFieldMeta('location').error : undefined
+    const eventCreationFormik = useEventCreation<EventsCreateDatesConfiguration>(
+        EventCreationSteps.Dates,
+        EventCreationActions.DatesConfiguration,
+        {
+            initialValues,
+            validationSchema: datesConfigValidationSchema,
+            onSubmit: () => console.log('test'),
+        }
+    );
+
+    const addDateDraft = () => {
+        const datesLength = eventCreationFormik.values.dates.length;
+
+        eventCreationFormik.setFieldValue('dates', [
+            ...eventCreationFormik.values.dates,
+            {
+                name: eventName,
+                eventBegin: new Date(Date.now() + hour),
+                eventEnd: new Date(Date.now() + day),
+                location: datesLength ?
+                    eventCreationFormik.values.dates[datesLength - 1].location :
+                    {
+                        lon: null,
+                        lat: null,
+                        label: '',
+                    }
             }
-            value={formik.values.location}
-            onChange={formik.handleChange}
-            name='location'
-          />
+        ]);
+        setEditIdx(datesLength);
+        setOnNewDate(true);
+    };
 
-          <Button className='submit' variant='primary' type='submit' title='Continue'/>
-        </StyledForm>
-      ))}
-    </>
+    const resetEdition = () => {
+        setEditIdx(null);
+        setOnNewDate(false);
+    };
+
+    const deleteDate = (deleteIdx: number) => {
+        eventCreationFormik.handleFocus('date delete');
+        const dates: DateItem[] = eventCreationFormik.values.dates
+            .filter((date: DateItem, idx: number) => deleteIdx !== idx);
+
+        resetEdition();
+        eventCreationFormik.handleBlur('delete date', 'dates', dates);
+    };
+
+    const confirmDate = (comfirmedIdx: number ,updateDateItem: DateItem) => {
+        eventCreationFormik.handleFocus('dates confirm');
+        const dates: DateItem[] = eventCreationFormik.values.dates.map((dateItem: DateItem, idx) =>
+            comfirmedIdx === idx ? updateDateItem : dateItem
+        );
+
+        eventCreationFormik.handleBlur('confirm date', 'dates', dates);
+        resetEdition();
+    };
+
+    useEffect(() => {
+        if (eventCreationFormik.values.dates.length === 0) {
+            addDateDraft();
+        }
+    }, // eslint-disable-next-line
+        [
+        eventCreationFormik.values.dates.length
+    ]);
+
+    return (
+        <StyledForm>
+            <DatesContainer>
+                {
+                    eventCreationFormik.values.dates.map((date, idx) => (
+                        <DateCard
+                        key={'dates-' + idx}
+                        name={date.name}
+                        beginDate={checkFormatDate(date.eventBegin)}
+                        endDate={checkFormatDate(date.eventEnd)}
+                        location={date.location.label}
+                        editable={editIdx === null}
+                        edit={editIdx === idx}
+                        setEdit={() => setEditIdx(idx)}>
+                            <DateForm
+                            newDate={onNewDate}
+                            initialValues={date}
+                            delete={() => deleteDate(idx)}
+                            cancel={() => resetEdition()}
+                            confirm={(dateItem: DateItem) => confirmDate(idx, dateItem)}/>
+                        </DateCard>
+                    ))
+                }
+            </DatesContainer>
+            {
+                editIdx === null ?
+                    <ButtonsContainer>
+                        <Button
+                        title={'Add Date'}
+                        variant={'secondary'}
+                        onClick={addDateDraft}/>
+                        <Button
+                        onClick={() => {
+                            eventCreationFormik.handleFocus('');
+                            eventCreationFormik.setLoadingState(true);
+                            eventCreationFormik.handleBlur('submit', 'dates');
+                        }}
+                        {...eventCreationFormik.getSubmitButtonProps('Continue')}/>
+                    </ButtonsContainer>
+                :
+                null
+            }
+      </StyledForm>
   );
 };
 
-const Card = styled.div`
-  min-width: 550px;
-  border-radius: ${props => props.theme.defaultRadius};
-  padding: ${props => props.theme.biggerSpacing};
-  background-color: ${props => props.theme.darkerBg};
-  display: flex;
-  flex-direction: column;
-  margin: 10px 0 40px 0;
-
-  div {
-    margin: 0;
-  }
-  h2 {
-    text-transform: uppercase;
-    font-size: 15px;
-    margin: 16px 0;
-  }
-  h3 {
-    font-weight: normal;
-    font-size: 15px;
-    margin: 0 0 3px 0;
-  }
-  p {
-   color: ${props => props.theme.textColorDarker};
-   font-size: 14px;
-   margin: 0;
-  }
-  .warning {
-     color: ${props => props.theme.warningColor.hex};
-     text-align: right;
-     margin: 16px 0;
-   }
-  .edit {
-    color: ${props => props.theme.textColorDarker};
-    text-align: right;
-    font-weight: bold;
-    text-decoration: underline;
-    font-size: 10px;
-    cursor: pointer;
-  }
-`;
-
-const StyledForm = styled.form`
-  width: 100%;
-  .field {
-    margin: 24px 0;
-  }
-  .line {
+const StyledForm = styled.div`
+    position: relative;
     display: flex;
-    justify-content: space-around;
+    flex-direction: column;
     align-items: center;
-  }
-  .submit {
-    margin: 45px 0;
-    outline: none;
-  }
+    width: 100%;
 `;
 
-const Warning = styled.h3`
-    font-weight: normal;
-    font-size: 15px;
-    margin: 3px 0;
-    color: ${props => props.theme.warningColor.hex};
+const DatesContainer = styled.div`
+    width: 100%;
+    overflow-y: scroll;
+    overflow-x: hidden;
+
+    & > div {
+        margin-bottom: ${props => props.theme.regularSpacing};
+    }
+
+    & > div:last-child {
+        margin-bottom: 0;
+    }
+`;
+
+const ButtonsContainer = styled.div`
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 30px;
+
+    & > button {
+        width: calc(50% - ${props => props.theme.regularSpacing});
+    }
 `;
 
 export default DatesForm;

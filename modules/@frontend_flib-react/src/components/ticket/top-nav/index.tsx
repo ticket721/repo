@@ -9,6 +9,7 @@ export interface TopNavProps extends React.ComponentProps<any> {
     scrolled?: boolean;
     showSubNav?: boolean;
     subNav?: SubNavObject[];
+    onPress?: () => void;
 }
 
 interface SubNavObject {
@@ -73,7 +74,9 @@ export const TopNav: React.FunctionComponent<TopNavProps> = (props: TopNavProps)
 
     return (
         <Container className={props.scrolled ? 'scrolled' : ''}>
-            <Icon icon={'back-arrow'} size={'16px'} color={'rgba(255, 255, 255, 0.9)'} />
+            <a onClick={props.onPress}>
+                <Icon icon={'back-arrow'} size={'16px'} color={'rgba(255, 255, 255, 0.9)'} />
+            </a>
             <span>{props.label}</span>
             <span>
                 {props.subNav?.length && (

@@ -28,7 +28,7 @@ const user = {
 
 export const showcase = () => (
     <div>
-        <UserHeader user={user} profileHeader />
+        <UserHeader username={'mortimr'} picture={'assets/images/user-1.jpg'} profileHeader balance={'0'} />
         <ActivitiesContainer
             title={'Recent activities'}
             viewAllAction={() => console.log('clicked!')}

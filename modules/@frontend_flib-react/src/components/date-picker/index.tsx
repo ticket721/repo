@@ -5,6 +5,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import fr from 'date-fns/locale/fr';
 import es from 'date-fns/locale/es';
 import it from 'date-fns/locale/it';
+import Icon from '../icon';
 
 registerLocale('es', es);
 registerLocale('fr', fr);
@@ -46,6 +47,7 @@ const StyledLabel = styled.label`
 `;
 
 const StyledInputContainer = styled.div`
+    position: relative;
     background-color: ${(props) => props.theme.componentColor};
     border-radius: ${(props) => props.theme.defaultRadius};
     display: flex;
@@ -189,12 +191,19 @@ const Error = styled.span`
     position: relative;
 `;
 
+const Calendar = styled(Icon)`
+    position: absolute;
+    top: 52px;
+    left: 24px;
+`;
+
 export const CustomDatePicker: React.FunctionComponent<CustomDatePickerProps> = (
     props: CustomDatePickerProps,
 ): JSX.Element => {
     return (
         <StyledInputContainer className={props.className}>
             <StyledLabel>{props.label}</StyledLabel>
+            <Calendar icon={'calendar'} size={'16px'} />
             <DatePicker
                 name={props.name}
                 dateFormat={props.dateFormat}

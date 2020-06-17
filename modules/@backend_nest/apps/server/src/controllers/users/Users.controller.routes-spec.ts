@@ -21,8 +21,6 @@ export default function(getCtx: () => { ready: Promise<void> }) {
 
                 const myInfos = await sdk.users.me(token);
 
-                console.log(myInfos);
-
                 expect(myInfos.data.user.id).toEqual(user.id);
                 expect((myInfos as any).data.user.password).toEqual(undefined);
             });
@@ -41,8 +39,6 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 } = await getSDKAndInvalidUser(getCtx);
 
                 const myInfos = await sdk.users.me(token);
-
-                console.log(myInfos);
 
                 expect(myInfos.data.user.id).toEqual(user.id);
                 expect(user.valid).toEqual(false);

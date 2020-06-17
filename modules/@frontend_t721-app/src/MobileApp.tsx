@@ -3,7 +3,7 @@ import {
     PageContainer
 }                                               from '@frontend/core/lib/components';
 
-import { NavLink, Route, Switch, useLocation, withRouter } from 'react-router-dom';
+import { NavLink, Route, Switch, useHistory, useLocation, withRouter } from 'react-router-dom';
 
 import { links, routes }        from './mobileRoutes';
 import { Navbar, Icon, TopNav } from '@frontend/flib-react/lib/components';
@@ -18,12 +18,13 @@ const MobileApp: React.FC = () => {
 
     const appStatus = useSelector(((state: AppState) => state.statuses.appStatus));
     const location = useLocation();
+    const history = useHistory();
 
     return <Suspense fallback='loading'>
         <AppContainer>
             {
                 location.pathname.lastIndexOf('/') !== 0 ?
-                    <TopNav label={''}/> : null
+                    <TopNav label={''} onPress={history.goBack}/> : null
             }
             <Switch>
                 {

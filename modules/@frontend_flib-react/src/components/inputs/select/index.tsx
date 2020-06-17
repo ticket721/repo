@@ -105,6 +105,7 @@ export interface SelectProps extends React.ComponentProps<any> {
     searchable?: boolean;
     multiple?: boolean;
     value?: Array<object>;
+    className?: string;
 }
 
 const StyledLabel = styled.label`
@@ -161,7 +162,7 @@ const StyledInputContainer = styled.div<SelectProps>`
 
 export const SelectInput: React.FunctionComponent<SelectProps> = (props: SelectProps): JSX.Element => {
     return (
-        <StyledInputContainer label={props.label}>
+        <StyledInputContainer label={props.label} className={props.className}>
             {props.label && <StyledLabel>{props.label}</StyledLabel>}
             <Select
                 isMulti={props.multiple}

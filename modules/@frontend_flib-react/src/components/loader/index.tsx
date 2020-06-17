@@ -1,8 +1,6 @@
 import * as React from 'react';
 import styled from '../../config/styled';
 import '../../../static/t721-icons/t721-icons.css';
-
-import { Icon } from '../icon';
 import { keyframes } from 'styled-components';
 
 export interface LoaderProps extends React.ComponentProps<any> {
@@ -56,9 +54,3 @@ const AnimatedLoader = styled.div<LoaderProps>`
     );
     animation: ${shape} 2s linear infinite;
 `;
-
-Icon.defaultProps = {
-    size: '24px',
-};
-
-export default Icon;

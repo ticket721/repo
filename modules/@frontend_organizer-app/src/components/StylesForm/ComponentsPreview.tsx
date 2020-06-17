@@ -7,8 +7,9 @@ import TicketInterface                from '@frontend/flib-react/lib/shared/tick
 import { useSelector }                from 'react-redux';
 import { MergedAppState }             from '../../index';
 
-import { useTranslation }                              from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import './locales';
+import { useEffect, useRef } from 'react';
 
 interface ComponentsPreviewProps {
     previewSrc: string;
@@ -41,10 +42,15 @@ const Overlap = styled.div`
 export const ComponentsPreview: React.FC<ComponentsPreviewProps> = (props: ComponentsPreviewProps) => {
     const eventName: string = useSelector((state: MergedAppState) => state.eventCreation.textMetadata.name);
     const [ t ] = useTranslation('event_creation_styles_preview');
+    const previewRef = useRef(null);
+
+    useEffect(() => {
+        window.scrollTo({top: previewRef.current.offsetTop, left: 0, behavior: 'smooth'});
+    }, []);
 
     return (
         <>
-            <PreviewLabel>{t('preview_label')}</PreviewLabel>
+            <PreviewLabel ref={previewRef}>{t('preview_label')}</PreviewLabel>
             <StyledPreview>
                 <ElementLabel>{t('button_label')}</ElementLabel>
                 <Button
