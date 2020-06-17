@@ -44,7 +44,7 @@
         "rxjs": "6.5.5"
     },
     "devDependencies": {
-        "@capacitor/cli": "2.0.1",
+        "@capacitor/cli": "2.2.0",
         "react-scripts": "3.4.1",
         "tslint": "6.0.0"
     },
