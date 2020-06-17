@@ -82,7 +82,7 @@ const InfoDetails = ({ setPage }: { setPage: (page: string) => void}) => {
 const TicketList = ({ setPage }: { setPage: (page: string) => void}) => {
   return (
     <SubContainer>
-      {tickets.map((t, i) => <Subtitle onClick={() => setPage(t)} key={`${t}-${i}`}>{t}</Subtitle>)}
+      {tickets.map((t, i) => <Subtitle onClick={() => setPage('ticket')} key={`${t}-${i}`}>{t}</Subtitle>)}
     </SubContainer>
   )
 };

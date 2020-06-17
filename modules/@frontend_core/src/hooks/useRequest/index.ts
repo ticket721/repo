@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../../redux/ducks';
 import { CacheCore } from '../../cores/cache/CacheCore';
-import { useEffect } from 'react';
+// import { useEffect } from 'react';
 import { RegisterEntity, UnregisterEntity } from '../../redux/ducks/cache';
 
 interface RequestParams {
@@ -36,16 +36,16 @@ export const useRequest = <ReturnType>(call: RequestParams, initialUuid: string)
     const unregisterEntity = (uuid: string): void =>
         void dispatch(UnregisterEntity(CacheCore.key(call.method, call.args), uuid));
 
-    useEffect(() => {
-        registerEntity(initialUuid);
-
-        return () => unregisterEntity(initialUuid);
-    }, []);
+    // useEffect(() => {
+    //     registerEntity(initialUuid);
+    //
+    //     return () => unregisterEntity(initialUuid);
+    // }, []);
 
     return {
         response: {
             ...response,
-            data: response.data ? response.data['data'] : null,
+            data: response.data ? response.data : null,
         },
         registerEntity,
         unregisterEntity,

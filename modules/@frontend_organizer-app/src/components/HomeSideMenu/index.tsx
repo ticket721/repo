@@ -2,91 +2,19 @@ import React from 'react';
 import styled from 'styled-components';
 import Icon from "@frontend/flib-react/lib/components/icon";
 
-
-const dates = [
-  [
-    {
-      name: 'VIP',
-      startDate: new Date(),
-      src: 'superImage',
-      price: 120,
-    },
-    {
-      name: 'VIP',
-      startDate: new Date('2020-05-17T10:30:00'),
-    },
-    {
-      name: 'VIP',
-      startDate: new Date('2020-05-20T10:30:00'),
-    },
-    {
-      name: 'VIP',
-      startDate: new Date('2020-05-23T10:30:00'),
-    },
-    {
-      name: 'VIP',
-      startDate: new Date('2020-06-02T10:30:00'),
-    },
-    {
-      name: 'VIP',
-      startDate: new Date('2020-06-16T10:30:00'),
-    },
-  ],
-  [
-    {
-      name: 'Weekend',
-      startDate: new Date(),
-      src: 'superImage',
-      price: 80,
-    },
-    {
-      name: 'Weekend',
-      startDate: new Date('2020-05-17T10:30:00'),
-    },
-    {
-      name: 'Weekend',
-      startDate: new Date('2020-05-20T10:30:00'),
-    },
-    {
-      name: 'Weekend',
-      startDate: new Date('2020-05-23T10:30:00'),
-    },
-  ],
-  [
-    {
-      name: 'Early bird',
-      startDate: new Date('2020-06-02T10:30:00'),
-      src: 'superImage',
-      price: 70,
-    },
-    {
-      name: 'Early bird',
-      startDate: new Date('2020-06-16T10:30:00'),
-    },
-  ],
-  [
-    {
-      name: 'test',
-      startDate: new Date('2020-06-02T10:30:00'),
-      src: 'superImage',
-      price: 12,
-    },
-    {
-      name: 'test',
-      startDate: new Date('2020-06-16T10:30:00'),
-    },
-  ],
-];
+import { formatDateForDisplay } from "../../utils/functions";
+import { Events } from "../../types/UserEvents";
 
 interface Props {
   currentDate: string | undefined;
   setCurrentDate: (startDate: string) => void;
   setName: (name: string) => void;
   name: string;
+  userEvents: Events[];
 }
 
-const HomeSideMenu = ({ currentDate, setCurrentDate, setName, name }: Props) => {
-  const category = dates.find((e) => e[0].name === name);
+const HomeSideMenu = ({ currentDate, setCurrentDate, setName, name, userEvents }: Props) => {
+  const category = userEvents.find((e) => e.name === name);
 
   return (
     <Container>
@@ -99,13 +27,13 @@ const HomeSideMenu = ({ currentDate, setCurrentDate, setName, name }: Props) => 
               color={'rgba(255, 255, 255, 0.9)'}
             />
           </BackIcon>
-          <Title>{category[0].name}</Title>
-          { name && category.map((e, i) => {
-              const date = `${e.startDate.toDateString()} - ${e.startDate.getHours()}:${e.startDate.getMinutes()}`;
+          <Title>{category.name}</Title>
+          { name && category.dates.map((e, i) => {
+              const date = e.startDate ? formatDateForDisplay(e.startDate) : 'Global';
 
               return (
                 <SubTitle
-                  key={`side-dates-${e.name}-${date}-${i}`}
+                  key={`side-dates-${e.id}-${date}-${i}`}
                   focus={currentDate === date}
                   onClick={() => {
                     setCurrentDate(date);
@@ -119,13 +47,13 @@ const HomeSideMenu = ({ currentDate, setCurrentDate, setName, name }: Props) => 
           )}
         </>
       )}
-      { !category && (dates.map((e, i) =>
+      { !category && (userEvents.map((e, i) =>
         <Title
           clickable
-          key={`${e[0].name}-${i}`}
-          onClick={() => setName(e[0].name)}
+          key={`${e.id}-${i}`}
+          onClick={() => setName(e.name)}
         >
-          {e[0].name}
+          {e.name}
         </Title>
       ))}
     </Container>

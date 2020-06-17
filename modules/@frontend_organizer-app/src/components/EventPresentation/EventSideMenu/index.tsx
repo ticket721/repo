@@ -2,19 +2,22 @@ import React from 'react';
 import styled from 'styled-components';
 import Button from "@frontend/flib-react/lib/components/button";
 import Icon from "@frontend/flib-react/lib/components/icon";
-import SubMenu from "./SubMenu";
 
-import { dates } from "../fakeData";
+import { formatDateForDisplay } from "../../../utils/functions";
+import { Events } from "../../../types/UserEvents";
+
+import SubMenu from "./SubMenu";
 
 interface Props {
   currentDate: string | undefined;
   setCurrentDate: (date: string) => void;
   setPage: (page: string) => void;
   name: string;
+  userEvents: Events[];
 }
 
-const EventSideMenu = ({ currentDate, setCurrentDate, setPage, name }: Props) => {
-  const category = dates.find((e) => e[0].name === name);
+const EventSideMenu = ({ currentDate, setCurrentDate, setPage, name, userEvents }: Props) => {
+  const category = userEvents.find((e) => e.name === name);
 
   return (
     <Container>
@@ -29,11 +32,11 @@ const EventSideMenu = ({ currentDate, setCurrentDate, setPage, name }: Props) =>
         <EventName>{name}</EventName>
         <SelectDate value={currentDate} onChange={(e) => setCurrentDate(e.target.value)}>
           {
-            // @ts-ignore
-            category.map((e, i) => {
-              const date = `${e.startDate.toDateString()} - ${e.startDate.getHours()}:${e.startDate.getMinutes()}`;
+            category.dates.map((e, i) => {
+              const date = e.startDate ? formatDateForDisplay(e.startDate) : 'Global';
+
               return (
-                <option key={`side-menu-${e.name}-${date}-${i}`} value={date}>
+                <option key={`side-menu-${e.id}-${i}`} value={date}>
                   {date}
                 </option>
               );

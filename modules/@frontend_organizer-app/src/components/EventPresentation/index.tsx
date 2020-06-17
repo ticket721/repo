@@ -4,21 +4,34 @@ import styled from 'styled-components';
 import EventSideMenu from "./EventSideMenu";
 import { PreviewInfos, TicketHeader } from "@frontend/flib-react/lib/components";
 import Pages from "./Pages";
-import { dates } from './fakeData';
+import { formatDateForDisplay } from "../../utils/functions";
+import { Events } from "../../types/UserEvents";
 
 interface Props {
   currentDate: string | undefined;
   setCurrentDate: (startDate: string) => void;
   name: string;
+  userEvents: Events[];
 }
 
-const EventPresentation = ({ currentDate, setCurrentDate, name }: Props) => {
-  const category = dates.find((e) => e[0].name === name);
-  const [page, setPage] = React.useState<string>();
+const EventPresentation = ({ currentDate, setCurrentDate, name, userEvents }: Props) => {
+  const [page, setPage] = React.useState<'general' | 'ticket' | 'dates' | 'location' | 'presentation'>();
+  const category = userEvents.find((e) => e.name === name);
+  const first = category.dates.find((e) => e.type === 'date');
+  const startDate = first && formatDateForDisplay( first.startDate, 'day');
+  const endDate = first && formatDateForDisplay( first.endDate, 'day');
+  const startTime = first && formatDateForDisplay( first.startDate, 'time');
+  const endTime = first && formatDateForDisplay(first.endDate, 'time');
 
   return (
     <>
-      <EventSideMenu name={name} currentDate={currentDate} setCurrentDate={setCurrentDate} setPage={setPage}/>
+      <EventSideMenu
+        name={name}
+        currentDate={currentDate}
+        setCurrentDate={setCurrentDate}
+        setPage={setPage}
+        userEvents={userEvents}
+      />
       <PageContainer>
         { !page && (
           <>
@@ -26,17 +39,25 @@ const EventPresentation = ({ currentDate, setCurrentDate, name }: Props) => {
             <TicketContainer>
               <Ticket>
                 <TicketHeader ticket={{
-                    ...category[0],
-                    startDate: category[0].startDate.toDateString(),
-                    endDate: category[0].endDate.toDateString()
-                  }}
+                  first,
+                  image: first.avatar,
+                  startDate,
+                  endDate
+                }}
                 />
                 <Overlap>
                   <PreviewInfos ticket={{
-                      ...category[0],
-                      startDate: category[0].startDate.toDateString(),
-                      endDate: category[0].endDate.toDateString()
-                    }}
+                    ...first,
+                    image: first.avatar,
+                    mainColor: first.signature_colors[0],
+                    location: first.location.location_label,
+                    gradients: first.signature_colors,
+                    ticketType: first.categoryName,
+                    startDate,
+                    endDate,
+                    startTime,
+                    endTime,
+                  }}
                   />
                 </Overlap>
               </Ticket>
