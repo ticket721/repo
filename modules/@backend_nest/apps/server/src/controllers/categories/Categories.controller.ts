@@ -85,7 +85,7 @@ export class CategoriesController extends ControllerBasics<CategoryEntity> {
     }
 
     /**
-     * Search for categories
+     * Count for categories
      *
      * @param body
      */
