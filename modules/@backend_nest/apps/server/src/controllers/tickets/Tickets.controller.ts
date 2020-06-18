@@ -54,7 +54,7 @@ export class TicketsController extends ControllerBasics<TicketEntity> {
     }
 
     /**
-     * Fetches Tickets
+     * Counts Tickets
      *
      * @param body
      * @param user

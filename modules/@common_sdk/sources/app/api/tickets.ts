@@ -20,12 +20,12 @@ export async function ticketsSearch(
 
 export async function ticketsCount(
     token: string,
-    query: TicketsCountInputDto,
+    query: Partial<TicketsCountInputDto>,
 ): Promise<AxiosResponse<TicketsCountResponseDto>> {
 
     const self: T721SDK = this;
 
-    return self.post<TicketsCountInputDto>('/tickets/count', {
+    return self.post<Partial<TicketsCountInputDto>>('/tickets/count', {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
     }, query);

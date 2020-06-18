@@ -94,7 +94,9 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     return tickets.length === 3;
                 });
             });
+        });
 
+        describe('count (POST /ticket/count)', function() {
             test('should count for created tickets', async function() {
                 const {
                     sdk,
