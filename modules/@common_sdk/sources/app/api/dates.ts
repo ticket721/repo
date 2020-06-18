@@ -10,6 +10,8 @@ import { DatesDeleteCategoriesInputDto }    from '@app/server/controllers/dates/
 import { DatesDeleteCategoriesResponseDto } from '@app/server/controllers/dates/dto/DatesDeleteCategoriesResponse.dto';
 import { DatesUpdateInputDto }              from '@app/server/controllers/dates/dto/DatesUpdateInput.dto';
 import { DatesUpdateResponseDto }           from '@app/server/controllers/dates/dto/DatesUpdateResponse.dto';
+import { DatesCountInputDto }               from '@app/server/controllers/dates/dto/DatesCountInput.dto';
+import { DatesCountResponseDto }            from '@app/server/controllers/dates/dto/DatesCountResponse.dto';
 
 export async function datesSearch(
     token: string,
@@ -24,6 +26,18 @@ export async function datesSearch(
     }, query);
 }
 
+export async function datesCount(
+    token: string,
+    query: Partial<DatesCountInputDto>,
+    ): Promise<AxiosResponse<DatesCountResponseDto>> {
+
+    const self: T721SDK = this;
+
+    return self.post<Partial<DatesCountInputDto>>('/dates/count', {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+    }, query);
+}
 
 export async function datesCreate(
     token: string,

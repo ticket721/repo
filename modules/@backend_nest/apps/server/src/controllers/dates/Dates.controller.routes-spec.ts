@@ -103,6 +103,102 @@ export default function(getCtx: () => { ready: Promise<void> }) {
             });
         });
 
+        describe('count (POST /count)', function() {
+            test('should count for created date', async function() {
+                const {
+                    sdk,
+                    token,
+                    user,
+                    password,
+                }: {
+                    sdk: T721SDK;
+                    token: string;
+                    user: PasswordlessUserDto;
+                    password: string;
+                } = await getSDKAndUser(getCtx);
+
+                const groupID = `0x${generateUserName()}`;
+
+                await admin_addRight(user.id, 'date', groupID, "{ 'owner' : true }");
+                const newDate = await sdk.dates.create(token, {
+                    group_id: groupID,
+                    location: {
+                        location: {
+                            lat: 48.882301,
+                            lon: 2.34015,
+                        },
+                        location_label: '120 Boulevard de Rochechouart, 75018 Paris',
+                    },
+                    metadata: {
+                        name: 'Test Date',
+                        description: 'This is a test date',
+                        tags: ['wow'],
+                        avatar: null,
+                        signature_colors: ['#00ff00', '#ff0000'],
+                    },
+                    timestamps: {
+                        event_begin: new Date(Date.now() + 1000000),
+                        event_end: new Date(Date.now() + 2000000),
+                    },
+                });
+
+                const datesCount = await sdk.dates.count(token, {
+                    id: {
+                        $eq: newDate.data.date.id,
+                    },
+                });
+
+                expect(datesCount.data.dates.count).toEqual(1);
+            });
+
+            test('should count for created date from unauthenticated', async function() {
+                const {
+                    sdk,
+                    token,
+                    user,
+                    password,
+                }: {
+                    sdk: T721SDK;
+                    token: string;
+                    user: PasswordlessUserDto;
+                    password: string;
+                } = await getSDKAndUser(getCtx);
+
+                const groupID = `0x${generateUserName()}`;
+
+                await admin_addRight(user.id, 'date', groupID, "{ 'owner' : true }");
+                const newDate = await sdk.dates.create(token, {
+                    group_id: groupID,
+                    location: {
+                        location: {
+                            lat: 48.882301,
+                            lon: 2.34015,
+                        },
+                        location_label: '120 Boulevard de Rochechouart, 75018 Paris',
+                    },
+                    metadata: {
+                        name: 'Test Date',
+                        description: 'This is a test date',
+                        tags: ['wow'],
+                        avatar: null,
+                        signature_colors: ['#00ff00', '#ff0000'],
+                    },
+                    timestamps: {
+                        event_begin: new Date(Date.now() + 1000000),
+                        event_end: new Date(Date.now() + 2000000),
+                    },
+                });
+
+                const datesCount = await sdk.dates.count(token, {
+                    id: {
+                        $eq: newDate.data.date.id,
+                    },
+                } as SortablePagedSearch);
+
+                expect(datesCount.data.dates.count).toEqual(1);
+            });
+        });
+
         describe('create (POST /dates)', function() {
             test('should create a date', async function() {
                 const {

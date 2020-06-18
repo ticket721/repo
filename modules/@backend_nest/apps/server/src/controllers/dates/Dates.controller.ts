@@ -28,6 +28,8 @@ import { DatesCreateResponseDto } from '@app/server/controllers/dates/dto/DatesC
 import { DatesAddCategoriesResponseDto } from '@app/server/controllers/dates/dto/DatesAddCategoriesResponse.dto';
 import { DatesDeleteCategoriesResponseDto } from '@app/server/controllers/dates/dto/DatesDeleteCategoriesResponse.dto';
 import { DatesUpdateResponseDto } from '@app/server/controllers/dates/dto/DatesUpdateResponse.dto';
+import { DatesCountResponseDto } from '@app/server/controllers/dates/dto/DatesCountResponse.dto';
+import { DatesCountInputDto } from '@app/server/controllers/dates/dto/DatesCountInput.dto';
 import { RightsService } from '@lib/common/rights/Rights.service';
 import { AuthGuard } from '@nestjs/passport';
 import { Roles, RolesGuard } from '@app/server/authentication/guards/RolesGuard.guard';
@@ -76,6 +78,25 @@ export class DatesController extends ControllerBasics<DateEntity> {
         await this._authorizeGlobal(this.rightsService, this.datesService, null, null, ['route_search']);
 
         const dates = await this._search(this.datesService, body);
+
+        return {
+            dates,
+        };
+    }
+
+    /**
+     * Count for dates
+     *
+     * @param body
+     */
+    @Post('/count')
+    @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.OK)
+    @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized, StatusCodes.InternalServerError, StatusCodes.BadRequest])
+    async count(@Body() body: DatesCountInputDto): Promise<DatesCountResponseDto> {
+        await this._authorizeGlobal(this.rightsService, this.datesService, null, null, ['route_search']);
+
+        const dates = await this._count(this.datesService, body);
 
         return {
             dates,
