@@ -151,7 +151,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 expect(datesCount.data.dates.count).toEqual(1);
             });
 
-            test('should search for created date from unauthenticated', async function() {
+            test('should count for created date from unauthenticated', async function() {
                 const {
                     sdk,
                     token,
