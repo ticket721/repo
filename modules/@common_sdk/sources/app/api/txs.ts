@@ -5,6 +5,8 @@ import { TxsSearchInputDto }       from '@app/server/controllers/txs/dto/TxsSear
 import { TxsSubscribeInputDto }    from '@app/server/controllers/txs/dto/TxsSubscribeInput.dto';
 import { TxsInfosResponseDto }     from '@app/server/controllers/txs/dto/TxsInfosResponse.dto';
 import { TxsSubscribeResponseDto } from '@app/server/controllers/txs/dto/TxsSubscribeResponse.dto';
+import { TxsCountInputDto }        from '@app/server/controllers/txs/dto/TxsCountInput.dto';
+import { TxsCountResponseDto }     from '@app/server/controllers/txs/dto/TxsCountResponse.dto';
 
 export async function txsInfos(): Promise<AxiosResponse<TxsInfosResponseDto>> {
 
@@ -23,6 +25,19 @@ export async function txsSearch(
     const self: T721SDK = this;
 
     return self.post<Partial<TxsSearchInputDto>>('/txs/search', {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+    }, query);
+}
+
+export async function txsCount(
+    token: string,
+    query: Partial<TxsCountInputDto>,
+): Promise<AxiosResponse<TxsCountResponseDto>> {
+
+    const self: T721SDK = this;
+
+    return self.post<Partial<TxsCountInputDto>>('/txs/count', {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
     }, query);
