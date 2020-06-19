@@ -660,7 +660,7 @@ describe('Controller Basics', function() {
                 } as ESSearchReturn<any>,
             });
 
-            const res = await context.controllerBasics._search(
+            const res = await context.controllerBasics._search<EventEntity>(
                 instance(service),
                 query as SearchInputType<EventEntity>,
             );
@@ -703,7 +703,7 @@ describe('Controller Basics', function() {
                 } as ESSearchReturn<any>,
             });
 
-            const res = await context.controllerBasics._search(
+            const res = await context.controllerBasics._search<EventEntity>(
                 instance(service),
                 query as SearchInputType<EventEntity>,
             );
@@ -742,7 +742,7 @@ describe('Controller Basics', function() {
             });
 
             await throwWith(
-                context.controllerBasics._search(instance(service), query as SearchInputType<EventEntity>),
+                context.controllerBasics._search<EventEntity>(instance(service), query as SearchInputType<EventEntity>),
                 StatusCodes.InternalServerError,
                 'lol',
             );

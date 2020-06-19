@@ -213,7 +213,7 @@ export class ControllerBasics<EntityType> {
             query[field].$in = aggregatedFields;
         }
 
-        return this._search<CustomEntityType>(service, query);
+        return this._elasticGet<CustomEntityType>(service, query);
     }
 
     /**
