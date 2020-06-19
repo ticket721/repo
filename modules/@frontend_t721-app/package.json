@@ -23,6 +23,8 @@
         "connected-react-router": "6.8.0",
         "ionicons": "5.0.0",
         "react": "16.13.1",
+        "formik": "2.1.4",
+        "quick-score": "0.0.8",
         "react-dom": "16.13.1",
         "react-redux": "7.2.0",
         "react-router": "5.1.2",
