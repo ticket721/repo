@@ -43,7 +43,7 @@ export default {
                 currencies: [
                     {
                         currency: 'Fiat',
-                        price: '100'
+                        price: '20000'
                     }
                 ]
             }
@@ -60,7 +60,7 @@ export default {
                     currencies: [
                         {
                             currency: 'Fiat',
-                            price: '100'
+                            price: '10000'
                         }
                     ]
                 }
@@ -76,7 +76,7 @@ export default {
                     currencies: [
                         {
                             currency: 'Fiat',
-                            price: '100'
+                            price: '10000'
                         }
                     ]
                 }

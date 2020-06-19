@@ -10,6 +10,7 @@ import { setupSaga } from './ducks/setup/sagas';
 import { history } from './ducks';
 import { cacheSaga } from './ducks/cache/sagas';
 import { authSaga } from './ducks/auth/sagas';
+import { locationSaga } from './ducks/location/sagas';
 
 import { Saga } from '@redux-saga/types';
 
@@ -33,7 +34,9 @@ export const configureStore = <AdditionalState>(
 
     const rootSaga = function* (): IterableIterator<AllEffect<any>> {
         yield all(
-            [userPropertiesSaga, setupSaga, cacheSaga, authSaga, ...additionalSagas].map((saga: Saga) => fork(saga)),
+            [userPropertiesSaga, setupSaga, cacheSaga, authSaga, locationSaga, ...additionalSagas].map((saga: Saga) =>
+                fork(saga),
+            ),
         );
     };
 
