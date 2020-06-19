@@ -6,14 +6,13 @@ import { formatDateForDisplay } from "../../utils/functions";
 import { Events } from "../../types/UserEvents";
 
 interface Props {
-  currentDate: string | undefined;
   setCurrentDate: (startDate: string) => void;
   setName: (name: string) => void;
   name: string;
   userEvents: Events[];
 }
 
-const HomeSideMenu = ({ currentDate, setCurrentDate, setName, name, userEvents }: Props) => {
+const HomeSideMenu = ({ setCurrentDate, setName, name, userEvents }: Props) => {
   const category = userEvents.find((e) => e.name === name);
 
   return (
@@ -34,7 +33,6 @@ const HomeSideMenu = ({ currentDate, setCurrentDate, setName, name, userEvents }
               return (
                 <SubTitle
                   key={`side-dates-${e.id}-${date}-${i}`}
-                  focus={currentDate === date}
                   onClick={() => {
                     setCurrentDate(date);
                     setName(e.name);
@@ -86,7 +84,7 @@ const SubTitle = styled.span<{focus?: boolean}>`
   font-size: 14px;
   cursor: pointer;
   margin: 12px 20px;
-  color: ${({ theme, focus }) => focus ? theme.textColor : theme.textColorDarker};
+  color: ${({ theme }) => theme.textColorDarker};
 `;
 
 const BackIcon = styled.div`

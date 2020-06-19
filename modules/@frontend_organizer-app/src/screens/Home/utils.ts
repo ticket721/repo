@@ -56,6 +56,7 @@ const formatCategories = (categories: any, userEvents: Events[]) => {
         const category = userEvents[idx].dates.find(c => (c.id === d.parent_id));
         return ({
           ...category,
+          name: e.name,
           id: category ? category.id : d.id,
           price: d.prices[0].value,
           salesStart: d.sale_begin,

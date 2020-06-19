@@ -2,6 +2,8 @@ import React                from 'react';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 import { v4 } from 'uuid';
+import { useTranslation } from 'react-i18next';
+
 import { EventsSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsSearchResponse.dto';
 import { DatesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
 import { CategoriesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/categories/dto/CategoriesSearchResponse.dto';
@@ -13,13 +15,16 @@ import { AppState } from "@frontend/core/src/redux/ducks";
 
 import EventPresentation from "../../components/EventPresentation";
 import HomeSideMenu from "../../components/HomeSideMenu";
-
 import { MergedAppState } from "../../index";
 import { formatDateForDisplay } from "../../utils/functions";
 import { Events } from "../../types/UserEvents";
+
 import { formatEvent, formatDates, formatCategories} from "./utils";
+import './locales';
+
 
 const Home: React.FC = () => {
+  const [ t ] = useTranslation(['home']);
   const [currentDate, setCurrentDate] = React.useState<string>();
   const [name, setName] = React.useState<string>();
   let userEvents: Events[] = [];
@@ -105,14 +110,14 @@ const Home: React.FC = () => {
   if (events.loading || dates.loading || categories.loading) {
     return (
       <Container>
-        Loading...
+        {t('loading_label')}
       </Container>
     );
   }
   if (!events.loading && !dates.loading && !categories.loading && userEvents.length === 0) {
     return (
       <Container>
-        You don't have any event
+        {t('no_result_label')}
       </Container>
     );
   }
@@ -129,7 +134,6 @@ const Home: React.FC = () => {
       {!currentDate &&
         <HomeSideMenu
             setName={setName}
-            currentDate={currentDate}
             setCurrentDate={setCurrentDate}
             name={name}
             userEvents={userEvents}

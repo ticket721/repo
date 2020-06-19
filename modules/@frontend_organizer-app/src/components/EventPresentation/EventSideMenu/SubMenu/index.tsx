@@ -1,6 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
+import { useTranslation } from 'react-i18next';
+
 import Icon from "@frontend/flib-react/lib/components/icon";
+import '../locales';
 
 const tickets = ['Weekends', 'Mercredi', 'Super category'];
 
@@ -10,6 +13,7 @@ interface Props {
 }
 
 const SubMenu = ({ type, setPage }: Props): JSX.Element => {
+  const [ t ] = useTranslation(['event_side_menu']);
   const [more, setMore] = React.useState<
     'information' | 'all' | 'tickets' | 'none'
     >('none');
@@ -45,7 +49,7 @@ const SubMenu = ({ type, setPage }: Props): JSX.Element => {
     return (
       <>
         <Button onClick={() => onChangeMore('information')}>
-          <Title>Information</Title>
+          <Title>{t('information_title')}</Title>
           <Icon icon='chevron' color='white' size='6px' />
         </Button>
         {
@@ -70,11 +74,12 @@ const SubMenu = ({ type, setPage }: Props): JSX.Element => {
 };
 
 const InfoDetails = ({ setPage }: { setPage: (page: string) => void}) => {
+  const [ t ] = useTranslation(['event_side_menu']);
   return (
     <SubContainer>
-      <Subtitle onClick={() => setPage('general')}>General Information</Subtitle>
-      <Subtitle onClick={() => setPage('dates')}>Dates</Subtitle>
-      <Subtitle onClick={() => setPage('location')}>Location</Subtitle>
+      <Subtitle onClick={() => setPage('general')}>{t('general_info_title')}</Subtitle>
+      <Subtitle onClick={() => setPage('dates')}>{t('date_title')}</Subtitle>
+      <Subtitle onClick={() => setPage('location')}>{t('location_title')}</Subtitle>
     </SubContainer>
   )
 };

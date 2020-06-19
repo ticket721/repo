@@ -18,9 +18,9 @@ const EventPresentation = ({ currentDate, setCurrentDate, name, userEvents }: Pr
   const [page, setPage] = React.useState<'general' | 'ticket' | 'dates' | 'location' | 'presentation'>();
   const category = userEvents.find((e) => e.name === name);
   const first = category.dates.find((e) => e.type === 'date');
-  const startDate = first && formatDateForDisplay( first.startDate, 'day');
-  const endDate = first && formatDateForDisplay( first.endDate, 'day');
-  const startTime = first && formatDateForDisplay( first.startDate, 'time');
+  const startDate = first && formatDateForDisplay(first.startDate, 'day');
+  const endDate = first && formatDateForDisplay(first.endDate, 'day');
+  const startTime = first && formatDateForDisplay(first.startDate, 'time');
   const endTime = first && formatDateForDisplay(first.endDate, 'time');
 
   return (
@@ -65,7 +65,7 @@ const EventPresentation = ({ currentDate, setCurrentDate, name, userEvents }: Pr
           </>
         )}
         {
-          page && <Pages page={page}/>
+          page && <Pages page={page} userEvent={category} currentDate={currentDate}/>
         }
       </PageContainer>
     </>

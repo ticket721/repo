@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { useTranslation } from 'react-i18next';
 import Button from "@frontend/flib-react/lib/components/button";
 import Icon from "@frontend/flib-react/lib/components/icon";
 
@@ -7,6 +8,7 @@ import { formatDateForDisplay } from "../../../utils/functions";
 import { Events } from "../../../types/UserEvents";
 
 import SubMenu from "./SubMenu";
+import './locales';
 
 interface Props {
   currentDate: string | undefined;
@@ -17,6 +19,7 @@ interface Props {
 }
 
 const EventSideMenu = ({ currentDate, setCurrentDate, setPage, name, userEvents }: Props) => {
+  const [ t ] = useTranslation(['event_side_menu']);
   const category = userEvents.find((e) => e.name === name);
 
   return (
@@ -47,19 +50,19 @@ const EventSideMenu = ({ currentDate, setCurrentDate, setPage, name, userEvents 
         <Button
           className="top"
           variant="primary"
-          title="Publish Event"
+          title={t('publish_label')}
           onClick={() => console.log('publish')}
         />
         <Button
           variant="secondary"
-          title="Preview Event"
+          title={t('preview_label')}
           onClick={() => console.log('publish')}
         />
       </Actions>
       <Separator />
       <SubMenu type='information' setPage={setPage}/>
       <SubMenu type='tickets' setPage={setPage}/>
-      <Title onClick={() => setPage('presentation')}>Presentation</Title>
+      <Title onClick={() => setPage('presentation')}>{t('presentation_title')}</Title>
       <Separator />
     </Container>
   )

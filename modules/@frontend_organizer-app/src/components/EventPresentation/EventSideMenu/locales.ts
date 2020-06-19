@@ -1,0 +1,21 @@
+import i18n from '@frontend/core/lib/utils/i18n';
+
+i18n.addResourceBundle('en', 'event_side_menu', {
+    publish_label: 'Publish Event',
+    preview_label: 'Publish Event',
+    presentation_title: 'Presentation',
+    information_title: 'Information',
+    general_info_title: 'General Information',
+    date_title: 'Dates',
+    location_title: 'Location'
+});
+
+i18n.addResourceBundle('fr', 'event_side_menu', {
+    publish_label: 'Publier l\'évènement',
+    preview_label: 'Aperçu de l\'évènement',
+    presentation_title: 'Présentation',
+    information_title: 'Informations',
+    general_info_title: 'Informations générale',
+    date_title: 'Dates',
+    location_title: 'Emplacement'
+});
