@@ -1,4 +1,4 @@
-import React, { useState }                            from 'react';
+import React                                          from 'react';
 import { CurrentLocation, LocationList, SearchInput } from '@frontend/flib-react/lib/components';
 import { Formik, FormikProps }                        from 'formik';
 import { citiesList, City }                           from '@common/global';
@@ -30,7 +30,7 @@ const parsedCities = citiesList.cities.map((city: string[]): City => ({
 }));
 
 const qs = new QuickScore(parsedCities, {
-    keys: ['nameAscii','nameAdmin', 'country'],
+    keys: ['nameAscii', 'nameAdmin', 'country'],
 });
 
 export const LocationModifier: React.FC<LocationModifierProps> = (coreProps: LocationModifierProps): JSX.Element => {
@@ -47,16 +47,16 @@ export const LocationModifier: React.FC<LocationModifierProps> = (coreProps: Loc
         {
             (props: FormikProps<FormData>) => {
 
-                let results: {label: string; value: City}[] = [];
+                let results: { label: string; value: City }[] = [];
 
                 if (props.values.cityLabel !== '') {
                     results =
                         qs.search(props.values.cityLabel)
                             .slice(0, 20)
-                            .map((res): {label: string; value: City} => ({
+                            .map((res): { label: string; value: City } => ({
                                 label: `${res.item.nameAscii}, ${res.item.nameAdmin}, ${res.item.country}`,
-                                value: res.item
-                            }))
+                                value: res.item,
+                            }));
                 }
 
                 const clearInput = () => {
