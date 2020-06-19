@@ -27,7 +27,6 @@ import { CategoriesUpdateResponseDto } from '@app/server/controllers/categories/
 import { RightsService } from '@lib/common/rights/Rights.service';
 import { ConfigService } from '@lib/common/config/Config.service';
 import { serialize } from '@common/global';
-import { SortablePagedSearch } from '@lib/common/utils/SortablePagedSearch.type';
 import { CurrenciesService, Price } from '@lib/common/currencies/Currencies.service';
 import { AuthGuard } from '@nestjs/passport';
 import { Roles, RolesGuard } from '@app/server/authentication/guards/RolesGuard.guard';
@@ -37,6 +36,7 @@ import { MetadatasService } from '@lib/common/metadatas/Metadatas.service';
 import { ValidGuard } from '@app/server/authentication/guards/ValidGuard.guard';
 import { CategoriesCountInputDto } from '@app/server/controllers/categories/dto/CategoriesCountInput.dto';
 import { CategoriesCountResponseDto } from '@app/server/controllers/categories/dto/CategoriesCountResponse.dto';
+import { SearchInputType } from '@lib/common/utils/SearchInput.type';
 
 /**
  * Generic Categories controller. Recover Categories linked to all types of events
@@ -121,14 +121,29 @@ export class CategoriesController extends ControllerBasics<CategoryEntity> {
         const scope = this.configService.get('TICKETFORGE_SCOPE');
         const categoryName = serialize(body.display_name);
 
-        const categories = await this._search(this.categoriesService, {
-            category_name: {
+        const searchBody: SearchInputType<CategoryEntity> = {
+            created_at: undefined,
+            display_name: undefined,
+            id: undefined,
+            parent_id: undefined,
+            parent_type: undefined,
+            prices: undefined,
+            resale_begin: undefined,
+            resale_end: undefined,
+            reserved: undefined,
+            sale_begin: undefined,
+            sale_end: undefined,
+            scope: undefined,
+            seats: undefined,
+            updated_at: undefined,
+            group_id: {
                 $eq: body.group_id,
             },
-            group_id: {
+            category_name: {
                 $eq: categoryName,
             },
-        });
+        };
+        const categories = await this._search<CategoryEntity>(this.categoriesService, searchBody);
 
         if (categories.length !== 0) {
             throw new HttpException(

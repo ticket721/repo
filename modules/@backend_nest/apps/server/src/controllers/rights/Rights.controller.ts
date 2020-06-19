@@ -9,7 +9,6 @@ import { StatusCodes } from '@lib/common/utils/codes.value';
 import { ApiResponses } from '@app/server/utils/ApiResponses.controller.decorator';
 import { User } from '@app/server/authentication/decorators/User.controller.decorator';
 import { UserDto } from '@lib/common/users/dto/User.dto';
-import { SortablePagedSearch } from '@lib/common/utils/SortablePagedSearch.type';
 import { RightEntity } from '@lib/common/rights/entities/Right.entity';
 import { RightsSearchInputDto } from '@app/server/controllers/rights/dto/RightsSearchInput.dto';
 import { RightsSearchResponseDto } from '@app/server/controllers/rights/dto/RightsSearchResponse.dto';
