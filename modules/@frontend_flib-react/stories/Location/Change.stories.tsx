@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { action } from '@storybook/addon-actions';
-import { text, withKnobs, array } from '@storybook/addon-knobs';
+import { text, withKnobs } from '@storybook/addon-knobs';
 import { Store, State } from '@sambego/storybook-state';
 
 import LocationList from '../../src/components/location/list';
@@ -21,7 +21,16 @@ const updateLocation = (location: string) => {
     });
 };
 
-const locations = ['Quebec City, CA', 'San Diego, USA', 'Paris, FR'];
+const locations = [
+    {
+        label: 'Quebec City, CA',
+        value: 'QC',
+    },
+    {
+        label: 'San Diego, USA',
+        value: 'QC',
+    },
+];
 
 const store = new Store({
     currentLocation: '',
@@ -46,13 +55,13 @@ export const showcase = () => (
                 />
                 <LocationList
                     title={'Current location'}
-                    locations={['Quebec City']}
+                    locations={[{ label: 'Quebec City', value: 'QC' }]}
                     selectedLocation={'Quebec City'}
                     updateLocation={updateLocation}
                 />
                 <LocationList
                     title={text('Title', 'Popular locations')}
-                    locations={array('Locations', locations)}
+                    locations={locations}
                     updateLocation={updateLocation}
                     selectedLocation={state.currentLocation}
                 />
