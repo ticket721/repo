@@ -7,7 +7,7 @@
         "test": "test"
     },
     "dependencies": {
-        "truffle": "5.1.6"
+        "truffle": "5.1.31"
     },
     "devDependencies": {
     },
