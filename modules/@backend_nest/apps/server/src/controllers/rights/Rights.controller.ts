@@ -46,12 +46,12 @@ export class RightsController extends ControllerBasics<RightEntity> {
     @Roles('authenticated')
     @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized, StatusCodes.InternalServerError, StatusCodes.BadRequest])
     async search(@Body() body: RightsSearchInputDto, @User() user: UserDto): Promise<RightsSearchResponseDto> {
-        const rights: RightEntity[] = await this._elasticGet<RightEntity>(this.rightsService, {
+        const rights: RightEntity[] = await this._search(this.rightsService, {
             ...body,
             grantee_id: {
                 $eq: user.id,
             },
-        } as SortablePagedSearch);
+        });
 
         return {
             rights,

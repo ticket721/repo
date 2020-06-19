@@ -29,6 +29,7 @@ import { ControllerBasics } from '@lib/common/utils/ControllerBasics.base';
 import { UUIDToolService } from '@lib/common/toolbox/UUID.tool.service';
 import { ApiResponses } from '@app/server/utils/ApiResponses.controller.decorator';
 import { ValidGuard } from '@app/server/authentication/guards/ValidGuard.guard';
+import { CategoriesSearchInputDto } from '@app/server/controllers/categories/dto/CategoriesSearchInput.dto';
 
 /**
  * Accepted Mimetypes
@@ -112,12 +113,12 @@ export class ImagesController extends ControllerBasics<ImageEntity> {
                 );
             }
 
-            const collision = await this._elasticGet<ImageEntity>(this.imagesService, {
+            const collision = await this._search(this.imagesService, {
                 $page_size: 1,
                 hash: {
                     $eq: file.hash,
                 },
-            } as SortablePagedSearch);
+            });
 
             if (collision.length === 1) {
                 result.push(collision[0]);

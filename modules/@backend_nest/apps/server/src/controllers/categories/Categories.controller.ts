@@ -121,14 +121,14 @@ export class CategoriesController extends ControllerBasics<CategoryEntity> {
         const scope = this.configService.get('TICKETFORGE_SCOPE');
         const categoryName = serialize(body.display_name);
 
-        const categories = await this._elasticGet<CategoryEntity>(this.categoriesService, {
-            group_id: {
+        const categories = await this._search(this.categoriesService, {
+            category_name: {
                 $eq: body.group_id,
             },
-            category_name: {
+            group_id: {
                 $eq: categoryName,
             },
-        } as SortablePagedSearch);
+        });
 
         if (categories.length !== 0) {
             throw new HttpException(
