@@ -25,10 +25,12 @@ const locations = [
     {
         label: 'Quebec City, CA',
         value: 'QC',
+        idx: 0,
     },
     {
         label: 'San Diego, USA',
         value: 'QC',
+        idx: 1,
     },
 ];
 
@@ -55,7 +57,7 @@ export const showcase = () => (
                 />
                 <LocationList
                     title={'Current location'}
-                    locations={[{ label: 'Quebec City', value: 'QC' }]}
+                    locations={[{ label: 'Quebec City', value: 'QC', idx: 0 }]}
                     selectedLocation={'Quebec City'}
                     updateLocation={updateLocation}
                 />

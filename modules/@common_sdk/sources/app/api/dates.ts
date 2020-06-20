@@ -12,6 +12,8 @@ import { DatesUpdateInputDto }              from '@app/server/controllers/dates/
 import { DatesUpdateResponseDto }           from '@app/server/controllers/dates/dto/DatesUpdateResponse.dto';
 import { DatesCountInputDto }               from '@app/server/controllers/dates/dto/DatesCountInput.dto';
 import { DatesCountResponseDto }            from '@app/server/controllers/dates/dto/DatesCountResponse.dto';
+import { DatesHomeSearchInputDto }          from '@app/server/controllers/dates/dto/DatesHomeSearchInput.dto';
+import { DatesHomeSearchResponseDto }       from '@app/server/controllers/dates/dto/DatesHomeSearchResponse.dto';
 
 export async function datesSearch(
     token: string,
@@ -94,5 +96,16 @@ export async function datesUpdate(
 
 }
 
+export async function datesHomeSearch(
+    token: string,
+    query: DatesHomeSearchInputDto
+): Promise<AxiosResponse<DatesHomeSearchResponseDto>> {
+    const self: T721SDK = this;
 
+    return self.post<DatesHomeSearchInputDto>(`/dates/home-search`, {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+    }, query);
+
+}
 

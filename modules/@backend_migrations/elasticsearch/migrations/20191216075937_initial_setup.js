@@ -117,10 +117,9 @@ class M20191216075937_initial_setup extends ElasticMigration {
         await this.createIndex('ticket721_date', 'ticket721');
         await this.putMapping('ticket721_date', 'date', {
             "date": {
-                "discover": "^((?!(location|metadata)).*)",
+                "discover": "^((?!(location|metadata|timestamps)).*)",
                 "properties": {
                     "location": {
-                        "type": "nested",
                         "cql_collection": "singleton",
                         "properties": {
                             "location": {
@@ -138,7 +137,6 @@ class M20191216075937_initial_setup extends ElasticMigration {
                         }
                     },
                     "metadata": {
-                        "type": "nested",
                         "cql_collection": "singleton",
                         "properties": {
                             "signature_colors": {
@@ -160,6 +158,19 @@ class M20191216075937_initial_setup extends ElasticMigration {
                             "tags": {
                                 "cql_collection": "list",
                                 "type": "text"
+                            }
+                        }
+                    },
+                    "timestamps": {
+                        "cql_collection": "singleton",
+                        "properties": {
+                            "event_begin": {
+                                "type": "date",
+                                "cql_collection": "singleton"
+                            },
+                            "event_end": {
+                                "type": "date",
+                                "cql_collection": "singleton"
                             }
                         }
                     }
@@ -298,6 +309,7 @@ class M20191216075937_initial_setup extends ElasticMigration {
         await this.removeIndex('ticket721_striperesource');
         await this.removeIndex('ticket721_category');
         await this.removeIndex('ticket721_metadata');
+        await this.removeIndex('ticket721_authorization');
     }
 }
 

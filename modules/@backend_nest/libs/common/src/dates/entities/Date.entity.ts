@@ -144,10 +144,9 @@ export class DateLocation {
     table_name: 'date',
     key: ['id'],
     es_index_mapping: {
-        discover: '^((?!(location|metadata)).*)',
+        discover: '^((?!(location|metadata|timestamps)).*)',
         properties: {
             location: {
-                type: 'nested',
                 cql_collection: 'singleton',
                 properties: {
                     location: {
@@ -165,7 +164,6 @@ export class DateLocation {
                 },
             },
             metadata: {
-                type: 'nested',
                 cql_collection: 'singleton',
                 properties: {
                     avatar: {
@@ -183,6 +181,19 @@ export class DateLocation {
                     tags: {
                         cql_collection: 'list',
                         type: 'text',
+                    },
+                },
+            },
+            timestamps: {
+                cql_collection: 'singleton',
+                properties: {
+                    event_begin: {
+                        type: 'date',
+                        cql_collection: 'singleton',
+                    },
+                    event_end: {
+                        type: 'date',
+                        cql_collection: 'singleton',
                     },
                 },
             },
