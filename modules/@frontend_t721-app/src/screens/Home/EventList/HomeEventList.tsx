@@ -21,26 +21,12 @@ export const HomeEventList: React.FC<HomeEventListProps> = (props: HomeEventList
 
     const dates = useRequest<DatesSearchResponseDto>(
         {
-            method: 'dates.search',
+            method: 'dates.homeSearch',
             args: [
                 token,
                 {
-                    status: {
-                        $eq: 'live',
-                    },
-                    location: {
-                        $eq: {
-                            assigned_city: props.location.city.id
-                        }
-                    },
-                    $sort: [
-                        {
-                            $nested: true,
-                            $field_name: 'timestamps.event_begin',
-                            $order: 'asc',
-                        },
-                    ],
-
+                    lat: props.location.lat,
+                    lon: props.location.lon,
                 },
             ],
             refreshRate: 100,
@@ -58,7 +44,6 @@ export const HomeEventList: React.FC<HomeEventListProps> = (props: HomeEventList
     if (dates.response.error) {
         return <Error message={dates.response.error}/>
     }
-
 
     return <div style={{padding: '5%'}}>
         {

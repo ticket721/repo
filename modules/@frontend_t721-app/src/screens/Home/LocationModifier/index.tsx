@@ -30,7 +30,7 @@ const parsedCities = citiesList.cities.map((city: string[]): City => ({
 }));
 
 const qs = new QuickScore(parsedCities, {
-    keys: ['nameAscii', 'nameAdmin', 'country'],
+    keys: ['nameAscii', 'nameAdmin'],
 });
 
 export const LocationModifier: React.FC<LocationModifierProps> = (coreProps: LocationModifierProps): JSX.Element => {
@@ -47,15 +47,16 @@ export const LocationModifier: React.FC<LocationModifierProps> = (coreProps: Loc
         {
             (props: FormikProps<FormData>) => {
 
-                let results: { label: string; value: City }[] = [];
+                let results: { label: string; value: City; idx: number; }[] = [];
 
                 if (props.values.cityLabel !== '') {
                     results =
                         qs.search(props.values.cityLabel)
                             .slice(0, 20)
-                            .map((res): { label: string; value: City } => ({
-                                label: `${res.item.nameAscii}, ${res.item.nameAdmin}, ${res.item.country}`,
+                            .map((res, idx): { label: string; value: City; idx: number; } => ({
+                                label: `${res.item.name}, ${res.item.nameAdmin}, ${res.item.country}`,
                                 value: res.item,
+                                idx,
                             }));
                 }
 
