@@ -40,6 +40,13 @@ import { isFutureDateRange } from '@common/global/lib/utils';
 import { ApiResponses } from '@app/server/utils/ApiResponses.controller.decorator';
 import { MetadatasService } from '@lib/common/metadatas/Metadatas.service';
 import { ValidGuard } from '@app/server/authentication/guards/ValidGuard.guard';
+import { DatesHomeSearchInputDto } from '@app/server/controllers/dates/dto/DatesHomeSearchInput.dto';
+import { DatesHomeSearchResponseDto } from '@app/server/controllers/dates/dto/DatesHomeSearchResponse.dto';
+import { TimeToolService } from '@lib/common/toolbox/Time.tool.service';
+import { HOUR } from '@lib/common/utils/time';
+import { SortablePagedSearch } from '@lib/common/utils/SortablePagedSearch.type';
+import { ESSearchHit } from '@lib/common/utils/ESSearchReturn.type';
+import { fromES } from '@lib/common/utils/fromES.helper';
 
 /**
  * Generic Dates controller. Recover Dates linked to all types of events
@@ -61,8 +68,93 @@ export class DatesController extends ControllerBasics<DateEntity> {
         private readonly rightsService: RightsService,
         private readonly categoriesService: CategoriesService,
         private readonly metadatasService: MetadatasService,
+        private readonly timeToolService: TimeToolService,
     ) {
         super();
+    }
+
+    /**
+     * Search for dates
+     *
+     * @param body
+     */
+    @Post('/home-search')
+    @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.OK)
+    @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized, StatusCodes.InternalServerError, StatusCodes.BadRequest])
+    async homeSearch(@Body() body: DatesHomeSearchInputDto): Promise<DatesHomeSearchResponseDto> {
+        await this._authorizeGlobal(this.rightsService, this.datesService, null, null, ['route_search']);
+
+        const now = this.timeToolService.now().getTime();
+        const hour = now - (now % HOUR);
+
+        const query = this._esQueryBuilder<DateEntity>({
+            status: {
+                $eq: 'live',
+            },
+            'timestamps.event_begin': {
+                $gt: hour,
+            },
+        } as SortablePagedSearch);
+
+        query.body.query.bool.filter = {
+            script: {
+                script: {
+                    source: `
+                        double distance = doc['location.location'].arcDistance(params.lat, params.lon) / 1000;
+                        return distance < params.maxDistance;
+                    `,
+                    lang: 'painless',
+                    params: {
+                        maxDistance: 100,
+                        lon: body.lon,
+                        lat: body.lat,
+                    },
+                },
+            },
+        };
+
+        query.body.sort = [];
+
+        query.body.sort.push({
+            _script: {
+                script: {
+                    source: `
+                        double distance = doc['location.location'].arcDistance(params.lat, params.lon) / 1000;
+                        double time = (doc['timestamps.event_begin'].getValue().toInstant().toEpochMilli() - params.now) / 3600000;
+                        return distance + time;
+                    `,
+                    params: {
+                        now: hour,
+                        lon: body.lon,
+                        lat: body.lat,
+                    },
+                    lang: 'painless',
+                },
+                type: 'number',
+                order: 'asc',
+            },
+        });
+
+        const dates = await this.datesService.searchElastic(query);
+
+        if (dates.error) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.InternalServerError,
+                    message: 'error_while_fetching_home_dates',
+                },
+                StatusCodes.InternalServerError,
+            );
+        }
+
+        const resultDates = dates.response.hits.hits.map(
+            (hit: ESSearchHit<DateEntity>): DateEntity => fromES<DateEntity>(hit),
+        );
+
+        return {
+            dates: resultDates,
+        };
     }
 
     /**

@@ -35,7 +35,7 @@ export class ExpressCassandraConfigService {
                     host: `${this.config.get('ELASTICSEARCH_PROTOCOL')}://${this.config.get(
                         'ELASTICSEARCH_HOST',
                     )}:${this.config.get('ELASTICSEARCH_PORT')}`,
-                    apiVersion: '6.8',
+                    apiVersion: '7.0',
                     sniffOnStart: false,
                 },
             },
