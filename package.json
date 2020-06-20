@@ -29,6 +29,7 @@
             "modules/@backend_nest",
             "modules/@backend_simulation",
             "modules/@common_global",
+            "modules/@common_geoloc",
             "modules/@common_sdk",
             "modules/@contracts_dev",
             "modules/@contracts_minter_management",
