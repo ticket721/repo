@@ -1,6 +1,6 @@
-import React                           from 'react';
-import { LocationHeader }              from '@frontend/flib-react/lib/components';
-import { useTranslation }              from 'react-i18next';
+import React                               from 'react';
+import { FullPageLoading, LocationHeader } from '@frontend/flib-react/lib/components';
+import { useTranslation }                  from 'react-i18next';
 import { useSelector }                 from 'react-redux';
 import { AppState }                    from '@frontend/core/lib/redux';
 import { LocationState, UserLocation } from '@frontend/core/lib/redux/ducks/location';
@@ -16,6 +16,8 @@ export const EventList: React.FC<EventListProps> = (props: EventListProps): JSX.
     const [t] = useTranslation('home');
     const location = useSelector((state: AppState): LocationState => state.location);
 
+    console.log('current location', location);
+
     const selectedLocation = props.customLocation || location.location;
     let locationString = null;
 
@@ -23,13 +25,26 @@ export const EventList: React.FC<EventListProps> = (props: EventListProps): JSX.
         locationString = `${selectedLocation.city.name}, ${selectedLocation.city.country}`;
     }
 
+    const providedLocation = props.customLocation || location.location;
+
     return <div>
         <LocationHeader
             location={location.requesting ? '...' : locationString}
             title={t('browsing_events_in')}
             onFilter={props.enableFilter}
         />
-        <HomeEventList location={props.customLocation || location.location} requesting={location.requesting}/>
+        {
+            providedLocation
+
+                ?
+                <HomeEventList location={providedLocation} requesting={location.requesting}/>
+
+                :
+                <FullPageLoading
+                    width={250}
+                    height={250}
+                />
+        }
     </div>;
 
 };

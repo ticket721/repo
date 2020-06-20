@@ -8,7 +8,7 @@ const NavbarMarginContainer = styled.div`
 export const NavbarMargin = (Comp: React.ComponentType): React.FC => {
     return () => {
         return <NavbarMarginContainer>
-            <Comp/>
-        </NavbarMarginContainer>
+                <Comp/>
+            </NavbarMarginContainer>
     }
 };

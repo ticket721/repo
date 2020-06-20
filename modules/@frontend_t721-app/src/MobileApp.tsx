@@ -30,7 +30,6 @@ const MobileApp: React.FC = () => {
                 {
                     appStatus === AppStatus.Ready && routes.map((route, idx) => {
                         const page = <PageContainer
-                            adding='40px 40px 110px'
                             topBar={route.topBar}
                             topBarHeight={route.topBarHeight}>
                             <route.page/>
@@ -72,7 +71,7 @@ const MobileApp: React.FC = () => {
 
 const AppContainer = styled.div`
   width: 100%;
-  height: 100vh;
+  height: 100%;
 `;
 
 export default withRouter(MobileApp);
