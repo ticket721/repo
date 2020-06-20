@@ -15,10 +15,12 @@ const locations = [
     {
         label: 'Quebec City, CA',
         value: 'QC',
+        idx: 0,
     },
     {
         label: 'San Diego, USA',
         value: 'QC',
+        idx: 1,
     },
 ];
 

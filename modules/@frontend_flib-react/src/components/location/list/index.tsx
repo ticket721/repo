@@ -5,7 +5,7 @@ import Icon from '../../icon';
 
 export interface LocationListProps extends React.ComponentProps<any> {
     title: string;
-    locations: { label: string; value: any }[];
+    locations: { label: string; value: any; idx: number }[];
     mainColor?: string;
     selectedLocation?: string;
     updateLocation: (location: any) => void;
@@ -64,7 +64,7 @@ export const LocationList: React.FunctionComponent<LocationListProps> = (props: 
                 {props.locations.map((location) => {
                     return (
                         <Item
-                            key={slugify(location.label)}
+                            key={slugify(`${location.label}-${location.idx}`)}
                             className={location.label === props.selectedLocation ? 'selected' : ''}
                             onClick={() => {
                                 return props.updateLocation(location.value);
