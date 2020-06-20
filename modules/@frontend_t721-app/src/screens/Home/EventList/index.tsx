@@ -16,8 +16,6 @@ export const EventList: React.FC<EventListProps> = (props: EventListProps): JSX.
     const [t] = useTranslation('home');
     const location = useSelector((state: AppState): LocationState => state.location);
 
-    console.log('current location', location);
-
     const selectedLocation = props.customLocation || location.location;
     let locationString = null;
 

@@ -13,7 +13,6 @@ const LocationGate: React.FC = (props: PropsWithChildren<any>) => {
 
     useEffect(() => {
         if (location.location === null && location.requesting === false) {
-            console.log('dispatching get location');
             dispatch(GetLocation());
         }
     });
