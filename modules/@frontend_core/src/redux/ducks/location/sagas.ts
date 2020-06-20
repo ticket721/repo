@@ -5,6 +5,9 @@ import { SagaIterator } from '@redux-saga/types';
 import { LocationActionTypes } from './types';
 import { ISetLocation, SetLocation } from './actions';
 import { closestCity, Coordinates } from '@common/global';
+import { Plugins } from '@capacitor/core';
+
+const { Geolocation } = Plugins;
 
 function* recoverStoredLocation(): SagaIterator {
     const location = localStorage.getItem('location');
@@ -66,11 +69,7 @@ function getLocationFromBrowser() {
             setFallbackCity();
         };
 
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(positionCb, positionErrorCb);
-        } else {
-            setFallbackCity();
-        }
+        Geolocation.getCurrentPosition().then(positionCb).catch(positionErrorCb);
 
         return () => void 0;
     });

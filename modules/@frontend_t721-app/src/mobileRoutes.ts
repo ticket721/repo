@@ -6,9 +6,9 @@ import React               from 'react';
 import { Login, Register } from '@frontend/core/lib/components';
 import ProfileRoot         from '@frontend/core/lib/components/Profile/Root';
 import Activities          from '@frontend/core/lib/components/Profile/Activities';
-import Funds               from '@frontend/core/lib/components/Profile/Funds';
 import { NavbarMargin }    from './utils/NavbarMargin';
 import { TopNavMargin }    from './utils/TopNavMargin';
+import { StatusBarMargin } from './utils/StatusBarMargin';
 
 export interface LinkDatum {
     icon: string;
@@ -27,47 +27,42 @@ export interface RouteDatum {
 export const routes: RouteDatum[] = [
     {
         path: '/login',
-        page: Login,
+        page: StatusBarMargin(NavbarMargin(Login)),
         protected: false,
     },
     {
         path: '/register',
-        page: Register,
+        page: StatusBarMargin(NavbarMargin(Register)),
         protected: false,
     },
     {
         path: '/home',
-        page: NavbarMargin(Home),
+        page: StatusBarMargin(NavbarMargin(Home)),
         protected: false,
     },
     {
         path: '/profile/activities',
-        page: TopNavMargin(Activities),
-        protected: true,
-    },
-    {
-        path: '/profile/funds',
-        page: TopNavMargin(Funds),
+        page: StatusBarMargin(TopNavMargin(Activities)),
         protected: true,
     },
     {
         path: '/profile',
-        page: NavbarMargin(ProfileRoot),
+        page: StatusBarMargin(NavbarMargin(ProfileRoot)),
         protected: true,
     },
     {
         path: '/search',
-        page: Search,
+        page: StatusBarMargin(Search),
         protected: false,
     },
     {
         path: '/tags',
-        page: Tags,
+        page: StatusBarMargin(Tags),
         protected: false,
     },
     {
         path: '/',
-        page: Wallet,
+        page: StatusBarMargin(Wallet),
         protected: true,
     },
 ];
