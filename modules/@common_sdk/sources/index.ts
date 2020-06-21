@@ -27,7 +27,16 @@ import { actionsCreate, actionsSearch, actionsUpdate } from './app/api/actions';
 import { uploadImage } from './app/api/images';
 
 // DATES
-import { datesAddCategories, datesCount, datesCreate, datesDeleteCategories, datesHomeSearch, datesSearch, datesUpdate } from './app/api/dates';
+import {
+    datesAddCategories,
+    datesCount,
+    datesCreate,
+    datesDeleteCategories,
+    datesFuzzySearch,
+    datesHomeSearch,
+    datesSearch,
+    datesUpdate,
+} from './app/api/dates';
 import {
     eventsAddCategories, eventsAddDates, eventsCount,
     eventsCreate, eventsCreateAdminsConfiguration, eventsCreateCategoriesConfiguration,
@@ -80,6 +89,7 @@ export class T721SDK {
 
         this.dates.search = this.dates.search.bind(this);
         this.dates.homeSearch = this.dates.homeSearch.bind(this);
+        this.dates.fuzzySearch = this.dates.fuzzySearch.bind(this);
         this.dates.count = this.dates.count.bind(this);
         this.dates.create = this.dates.create.bind(this);
         this.dates.addCategories = this.dates.addCategories.bind(this);
@@ -240,6 +250,7 @@ export class T721SDK {
     public dates = {
         search: datesSearch,
         homeSearch: datesHomeSearch,
+        fuzzySearch: datesFuzzySearch,
         create: datesCreate,
         count: datesCount,
         addCategories: datesAddCategories,
