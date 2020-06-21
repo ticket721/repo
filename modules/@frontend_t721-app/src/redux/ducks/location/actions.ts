@@ -19,4 +19,14 @@ export const SetLocation = (location: UserLocation): ISetLocation => ({
     location,
 });
 
-export type LocationAction = IGetLocation | ISetLocation;
+export interface ISetCustomLocation extends Action<string> {
+    type: LocationActionTypes.SetCustomLocation;
+    location: UserLocation;
+}
+
+export const SetCustomLocation = (location: UserLocation): ISetCustomLocation => ({
+    type: LocationActionTypes.SetCustomLocation,
+    location,
+});
+
+export type LocationAction = IGetLocation | ISetLocation | ISetCustomLocation;

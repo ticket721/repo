@@ -9,6 +9,7 @@ import Activities          from '@frontend/core/lib/components/Profile/Activitie
 import { NavbarMargin }    from './utils/NavbarMargin';
 import { TopNavMargin }    from './utils/TopNavMargin';
 import { StatusBarMargin } from './utils/StatusBarMargin';
+import Test                from './components/Test';
 
 export interface LinkDatum {
     icon: string;
@@ -53,6 +54,11 @@ export const routes: RouteDatum[] = [
     {
         path: '/search',
         page: StatusBarMargin(Search),
+        protected: false,
+    },
+    {
+        path: '/search/events/:query',
+        page: TopNavMargin(() => <p>lol<p>),
         protected: false,
     },
     {
