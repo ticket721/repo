@@ -1,14 +1,13 @@
 import './locales';
 import React, { PropsWithChildren, useEffect, useState } from 'react';
 import { useDispatch, useSelector }                      from 'react-redux';
-import { AppState }                                      from '@frontend/core/lib/redux';
 import { GetLocation, LocationState }                    from '@frontend/core/lib/redux/ducks/location';
 import { EventList }                                     from './EventList';
-import { LocationModifier }                              from './LocationModifier';
-import { City }                                          from '@common/global';
+import { LocationModifier }                              from '../../components/LocationModifier';
+import { T721AppState }                                  from '../../redux';
 
 const LocationGate: React.FC = (props: PropsWithChildren<any>) => {
-    const location = useSelector((state: AppState): LocationState => state.location);
+    const location = useSelector((state: T721AppState): LocationState => state.location);
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -28,8 +27,6 @@ const Home: React.FC = () => {
         customCity: null
     });
 
-    console.log(locationFilter.customCity);
-
     return (
         <LocationGate>
             {
@@ -38,27 +35,11 @@ const Home: React.FC = () => {
                     ?
                     <LocationModifier
                         disableFilter={() => setLocationFilter({...locationFilter, active: false})}
-                        setCustomCity={(city: City): void => {
-                            setLocationFilter({...locationFilter, active: false, customCity: city})
-                        }}
                     />
 
                     :
                     <EventList
                         enableFilter={() => setLocationFilter({...locationFilter, active: true})}
-                        customLocation={
-                            locationFilter.customCity
-
-                                ?
-                                {
-                                    city: locationFilter.customCity,
-                                    lat: locationFilter.customCity.coord.lat,
-                                    lon: locationFilter.customCity.coord.lon,
-                                }
-
-                                :
-                                null
-                        }
 
                     />
             }

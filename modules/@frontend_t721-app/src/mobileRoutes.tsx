@@ -1,15 +1,16 @@
 import Search              from './screens/Search';
-import Tags                from './screens/Tags';
-import Home                from './screens/Home';
-import Wallet              from './screens/Wallet';
-import React               from 'react';
-import { Login, Register } from '@frontend/core/lib/components';
-import ProfileRoot         from '@frontend/core/lib/components/Profile/Root';
-import Activities          from '@frontend/core/lib/components/Profile/Activities';
-import { NavbarMargin }    from './utils/NavbarMargin';
-import { TopNavMargin }    from './utils/TopNavMargin';
-import { StatusBarMargin } from './utils/StatusBarMargin';
-import Test                from './components/Test';
+import SearchViewAll                from './screens/SearchViewAll';
+import Tags                         from './screens/Tags';
+import Home                         from './screens/Home';
+import Wallet                       from './screens/Wallet';
+import React                        from 'react';
+import { Login, Register }          from '@frontend/core/lib/components';
+import ProfileRoot                  from '@frontend/core/lib/components/Profile/Root';
+import Activities                   from '@frontend/core/lib/components/Profile/Activities';
+import { NavbarMargin }             from './utils/NavbarMargin';
+import { TopNavMargin }             from './utils/TopNavMargin';
+import { StatusBarMargin }          from './utils/StatusBarMargin';
+import { InvisibleStatusBarMargin } from './utils/InvisibleStatusBarMargin';
 
 export interface LinkDatum {
     icon: string;
@@ -43,7 +44,7 @@ export const routes: RouteDatum[] = [
     },
     {
         path: '/profile/activities',
-        page: StatusBarMargin(TopNavMargin(Activities)),
+        page: InvisibleStatusBarMargin(TopNavMargin(Activities)),
         protected: true,
     },
     {
@@ -52,13 +53,13 @@ export const routes: RouteDatum[] = [
         protected: true,
     },
     {
-        path: '/search',
-        page: StatusBarMargin(Search),
+        path: '/search/events/:query',
+        page: InvisibleStatusBarMargin(TopNavMargin(SearchViewAll)),
         protected: false,
     },
     {
-        path: '/search/events/:query',
-        page: TopNavMargin(() => <p>lol<p>),
+        path: '/search',
+        page: StatusBarMargin(Search),
         protected: false,
     },
     {

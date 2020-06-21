@@ -6,6 +6,7 @@ import { QuickScore }                                 from 'quick-score';
 import { useDispatch }                                from 'react-redux';
 import { GetLocation }                                from '@frontend/core/lib/redux/ducks/location';
 import { useTranslation }                             from 'react-i18next';
+import { SetCustomLocation }                          from '@frontend/core/lib/redux/ducks/location';
 
 interface FormData {
     cityLabel: string;
@@ -13,7 +14,6 @@ interface FormData {
 
 export interface LocationModifierProps {
     disableFilter: () => void;
-    setCustomCity: (city: City) => void;
 }
 
 const parsedCities = citiesList.cities.map((city: string[]): City => ({
@@ -70,9 +70,9 @@ export const LocationModifier: React.FC<LocationModifierProps> = (coreProps: Loc
                 };
 
                 const requestCurrentLocation = () => {
-                    coreProps.setCustomCity(null);
                     dispatch(GetLocation());
                     clearInput();
+                    coreProps.disableFilter();
                 };
 
                 return <>
@@ -100,7 +100,16 @@ export const LocationModifier: React.FC<LocationModifierProps> = (coreProps: Loc
                                 title={null}
                                 locations={results}
                                 selectedLocation={null}
-                                updateLocation={coreProps.setCustomCity}
+                                updateLocation={
+                                    (city: City): void => {
+                                        dispatch(SetCustomLocation({
+                                            lat: city.coord.lat,
+                                            lon: city.coord.lon,
+                                            city,
+                                        }));
+                                        coreProps.disableFilter();
+                                    }
+                                }
                             />
 
                             :

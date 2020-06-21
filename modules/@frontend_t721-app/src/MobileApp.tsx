@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import {
     PageContainer
 }                                               from '@frontend/core/lib/components';
@@ -14,6 +14,29 @@ import { AppState }      from '@frontend/core/lib/redux';
 import ToastStacker      from '@frontend/core/lib/components/ToastStacker';
 import styled            from 'styled-components';
 
+const TopNavWrapper = (props: {back: () => void}): JSX.Element => {
+
+    const [scrolled, setScrolled] = useState(false);
+
+    const setScrolledCallback = () => {
+        if (!scrolled && window.pageYOffset !== 0) {
+            setScrolled(true);
+        } else if (scrolled && window.pageYOffset === 0) {
+            setScrolled(false);
+        }
+    };
+
+    useEffect(() => {
+        window.addEventListener('scroll', setScrolledCallback, { passive: true });
+        return () => {
+            window.removeEventListener('scroll', setScrolledCallback);
+        }
+    });
+
+    return <TopNav label={''} onPress={props.back} scrolled={scrolled}/>
+};
+
+
 const MobileApp: React.FC = () => {
 
     const appStatus = useSelector(((state: AppState) => state.statuses.appStatus));
@@ -24,7 +47,8 @@ const MobileApp: React.FC = () => {
         <AppContainer>
             {
                 location.pathname.lastIndexOf('/') !== 0 ?
-                    <TopNav label={''} onPress={history.goBack}/> : null
+                    <TopNavWrapper back={history.goBack}/>
+                    : null
             }
             <Switch>
                 {
@@ -39,7 +63,7 @@ const MobileApp: React.FC = () => {
                             return <ProtectedRoute path={route.path} key={idx} page={page}/>
                         }
 
-                        return <Route key={idx} path={route.path}>
+                        return <Route key={idx} path={route.path} exact={true}>
                             <route.page/>
                         </Route>
                     })

@@ -1,8 +1,8 @@
 import './locales';
-import React, { useState }          from 'react';
-import { LocationGate }             from '../../components/LocationGate';
-import { LocationModifier }         from '../../components/LocationModifier';
-import { SearchResultList }         from './SearchResultList';
+import React, { useState }         from 'react';
+import { LocationGate }            from '../../components/LocationGate';
+import { LocationModifier }        from '../../components/LocationModifier';
+import { SearchViewAllResultList } from './SearchViewAllResultList';
 
 const Search: React.FC = () => {
 
@@ -22,7 +22,7 @@ const Search: React.FC = () => {
                     />
 
                     :
-                    <SearchResultList
+                    <SearchViewAllResultList
                         enableFilter={() => setLocationFilter({...locationFilter, active: true})}
 
                     />
