@@ -6,8 +6,6 @@ import DrawerAccount                         from '../DrawerAccount';
 import { blurAndDarkenBackground, truncate } from '@frontend/core/lib/utils';
 import { useHistory }                        from 'react-router';
 import { NavLink }                           from 'react-router-dom';
-import { useDispatch }                       from 'react-redux';
-import { Logout }                            from '@frontend/core/lib/redux/ducks/auth';
 import { computeProfilePath }                from '@frontend/core/lib/utils/computeProfilePath';
 import { appendProfilePath }                 from '@frontend/core/lib/utils/appendProfilePath';
 
@@ -22,7 +20,6 @@ const user = {
 
 const NavBar: React.FC = () => {
     const history = useHistory();
-    const dispatch = useDispatch();
 
     const drawerOnClose = () => {
         if (computeProfilePath(history.location.pathname).startsWith('/profile')) {
@@ -35,7 +32,6 @@ const NavBar: React.FC = () => {
 
     return (
         <Container>
-            <div onClick={() => dispatch(Logout())}>signout</div>
             <NavLink
                 to='/'>
                 <Icon icon='t721' color='#fff' size='30px' />

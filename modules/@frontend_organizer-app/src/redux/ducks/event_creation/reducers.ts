@@ -1,9 +1,11 @@
 import {
     EventCreationAction,
     IResetEventAcset,
+    ISetAcsetStatus,
     ISetActionData,
     ISetCompletedStep,
     ISetCurrentAction,
+    ISetCurrentActionIdx,
     ISetEventAcset,
     ISetSync,
     IUpdateAction,
@@ -14,6 +16,8 @@ import { EventCreationActions, EventCreationSteps }     from '../../../core/even
 
 export const eventCreationInitialState: EventCreationState = {
     acsetId: '',
+    acsetStatus: null,
+    currentActionIdx: null,
     currentAction: null,
     completedStep: EventCreationSteps.None,
     textMetadata: {
@@ -38,6 +42,22 @@ export const eventCreationInitialState: EventCreationState = {
     },
     sync: true,
 };
+
+const SetAcsetStatusReducer: Reducer<EventCreationState, ISetAcsetStatus> = (
+    state: EventCreationState,
+    action: ISetAcsetStatus,
+): EventCreationState => ({
+    ...state,
+    acsetStatus: action.acsetStatus,
+});
+
+const SetCurrentActionIdxReducer: Reducer<EventCreationState, ISetCurrentActionIdx> = (
+    state: EventCreationState,
+    action: ISetCurrentActionIdx,
+): EventCreationState => ({
+    ...state,
+    currentActionIdx: action.idx,
+})
 
 const SetEventAcsetReducer: Reducer<EventCreationState, ISetEventAcset> = (
     state: EventCreationState,
@@ -71,12 +91,12 @@ const SetActionDataReducer: Reducer<EventCreationState, ISetActionData> = (
 ): EventCreationState => {
     if (action.action === EventCreationActions.DatesConfiguration) {
         const filteredData = {
-            dates: action.data.dates.map((dateItem: any) => ({
+            dates: action.data.dates ? action.data.dates.map((dateItem: any) => ({
                 eventBegin: dateItem.eventBegin,
                 eventEnd: dateItem.eventEnd,
                 location: dateItem.location,
                 name: dateItem.name,
-            }))
+            })) : []
         };
 
         return {
@@ -84,23 +104,6 @@ const SetActionDataReducer: Reducer<EventCreationState, ISetActionData> = (
             [action.action]: filteredData,
         };
     }
-    // else if (action.action === EventCreationActions.CategoriesConfiguration) {
-    //     const filteredData = {
-    //         ...action.data,
-    //         global: action.data.global.map((categoryItem: any) => ({
-    //             name: categoryItem.name,
-    //             saleBegin: categoryItem.saleBegin,
-    //             saleEnd: categoryItem.saleEnd,
-    //             seats: categoryItem.seats,
-    //             currencies: action.data.global.currencies,
-    //         }))
-    //     };
-    //
-    //     return {
-    //         ...state,
-    //         [action.action]: filteredData,
-    //     };
-    // }
 
     return {
         ...state,
@@ -132,6 +135,10 @@ export const EventCreationReducer: Reducer<EventCreationState, EventCreationActi
     action: EventCreationAction,
 ): EventCreationState => {
     switch (action.type) {
+        case EventCreationActionTypes.SetAcsetStatus:
+            return SetAcsetStatusReducer(state, action as ISetAcsetStatus);
+        case EventCreationActionTypes.SetCurrentActionIdx:
+            return SetCurrentActionIdxReducer(state, action as ISetCurrentActionIdx);
         case EventCreationActionTypes.SetEventAcset:
             return SetEventAcsetReducer(state, action as ISetEventAcset);
         case EventCreationActionTypes.ResetEventAcset:
