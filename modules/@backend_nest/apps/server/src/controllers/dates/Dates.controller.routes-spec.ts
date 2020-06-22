@@ -3,6 +3,7 @@ import { PasswordlessUserDto } from '@app/server/authentication/dto/Passwordless
 import {
     admin_addRight,
     createEvent,
+    createFuzzyEvent,
     createLostEvent,
     failWithCode,
     generateUserName,
@@ -35,7 +36,33 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     lat: 0,
                 });
 
-                expect(datesSearch.data.dates.length).toEqual(2);
+                expect(datesSearch.data.dates.length).toBeGreaterThanOrEqual(2);
+            });
+        });
+
+        describe('fuzzySearch (POST /dates/home-search)', function() {
+            test('should search for created date', async function() {
+                const {
+                    sdk,
+                    token,
+                    user,
+                    password,
+                }: {
+                    sdk: T721SDK;
+                    token: string;
+                    user: PasswordlessUserDto;
+                    password: string;
+                } = await getSDKAndUser(getCtx);
+
+                const event = await createFuzzyEvent(token, sdk);
+
+                const datesSearch = await sdk.dates.fuzzySearch(token, {
+                    lon: 0,
+                    lat: 0,
+                    query: 'fuzzy',
+                });
+
+                expect(datesSearch.data.dates.length).toBeGreaterThanOrEqual(2);
             });
         });
 

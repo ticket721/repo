@@ -6,7 +6,7 @@ const DAY = 24 * HOUR;
 export default {
     nonce: 1,
     admins: [],
-    name: 'Booba Tour 2020',
+    name: 'Booba Tour 2020 Album Trone Titre Long :(',
     description: 'Booba Concert',
     tags: ['french', 'rap', 'trap'],
     dates: [

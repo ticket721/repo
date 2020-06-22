@@ -1,11 +1,11 @@
 import { takeEvery, put, call, take } from 'redux-saga/effects';
-import { eventChannel, END } from 'redux-saga';
-import { SetupActionTypes } from '../setup/types';
-import { SagaIterator } from '@redux-saga/types';
-import { LocationActionTypes } from './types';
-import { ISetLocation, SetLocation } from './actions';
-import { closestCity, Coordinates } from '@common/global';
-import { Plugins } from '@capacitor/core';
+import { eventChannel, END }          from 'redux-saga';
+import { SagaIterator }               from '@redux-saga/types';
+import { LocationActionTypes }        from './types';
+import { ISetLocation, SetLocation }  from './actions';
+import { closestCity, Coordinates }   from '@common/global';
+import { Plugins }                    from '@capacitor/core';
+import { SetupActionTypes }           from '@frontend/core/lib/redux/ducks/setup';
 
 const { Geolocation } = Plugins;
 
@@ -14,11 +14,10 @@ function* recoverStoredLocation(): SagaIterator {
 
     if (location !== null) {
         yield put(SetLocation(JSON.parse(location)));
-        console.log('recovered location');
     }
 }
 
-function* storeLocation(action: ISetLocation): SagaIterator {
+function storeLocation(action: ISetLocation): void {
     localStorage.setItem('location', JSON.stringify(action.location));
 }
 

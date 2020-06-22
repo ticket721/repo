@@ -31,7 +31,6 @@ function* startSaga(action: IStart): IterableIterator<any> {
 function* handleUser(): IterableIterator<any> {
     if (localStorage.getItem('token')) {
         const token = parseToken(localStorage.getItem('token'));
-        console.log(token, isValidFormat(token) && !isExpired(token));
         if (isValidFormat(token) && !isExpired(token)) {
             try {
                 yield global.window.t721Sdk.users.me(token.value);

@@ -5,12 +5,12 @@ import Icon from '../../icon';
 export interface SearchInputProps extends React.ComponentProps<any> {
     name: string;
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    cancel: () => void;
+    cancel?: () => void;
     clearInput: () => void;
     placeholder: string;
     value?: string;
     mainColor?: string;
-    cancelLabel: string;
+    cancelLabel?: string;
     icon?: string;
     autofocus?: boolean;
     onFocus?: () => void;
@@ -93,7 +93,7 @@ export const SearchInput: React.FunctionComponent<SearchInputProps> = (props: Se
     return (
         <Container>
             <InputContainer>
-                <SearchIcon icon={props.icon} size={props.icon === 'pin' ? '16px' : '24px'} color={props.mainColor} />
+                <SearchIcon icon={props.icon} size={'16px'} color={props.mainColor} />
                 <input
                     id={props.name}
                     name={props.name}
@@ -110,9 +110,11 @@ export const SearchInput: React.FunctionComponent<SearchInputProps> = (props: Se
                     </ClearButton>
                 ) : null}
             </InputContainer>
-            <CancelButton focused={focused} onClick={props.cancel}>
-                {props.cancelLabel}
-            </CancelButton>
+            {props.cancel ? (
+                <CancelButton focused={focused} onClick={props.cancel}>
+                    {props.cancelLabel}
+                </CancelButton>
+            ) : null}
         </Container>
     );
 };

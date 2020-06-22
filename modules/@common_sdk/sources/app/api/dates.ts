@@ -14,6 +14,8 @@ import { DatesCountInputDto }               from '@app/server/controllers/dates/
 import { DatesCountResponseDto }            from '@app/server/controllers/dates/dto/DatesCountResponse.dto';
 import { DatesHomeSearchInputDto }          from '@app/server/controllers/dates/dto/DatesHomeSearchInput.dto';
 import { DatesHomeSearchResponseDto }       from '@app/server/controllers/dates/dto/DatesHomeSearchResponse.dto';
+import { DatesFuzzySearchInputDto }         from '@app/server/controllers/dates/dto/DatesFuzzySearchInput.dto';
+import { DatesFuzzySearchResponseDto }      from '@app/server/controllers/dates/dto/DatesFuzzySearchResponse.dto';
 
 export async function datesSearch(
     token: string,
@@ -108,4 +110,18 @@ export async function datesHomeSearch(
     }, query);
 
 }
+
+export async function datesFuzzySearch(
+    token: string,
+    query: DatesFuzzySearchInputDto
+): Promise<AxiosResponse<DatesFuzzySearchResponseDto>> {
+    const self: T721SDK = this;
+
+    return self.post<DatesFuzzySearchInputDto>(`/dates/fuzzy-search`, {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+    }, query);
+
+}
+
 
