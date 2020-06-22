@@ -33,7 +33,7 @@
     "devDependencies": {
         "@types/zxcvbn": "4.4.0",
         "watch": "^1.0.2",
-        "jest": "25.1.0",
+        "jest": "26.0.1",
         "ts-jest": "25.2.1",
         "tslint": "6.0.0"
     }
