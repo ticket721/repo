@@ -9,8 +9,8 @@ export interface ColorPickerProps extends React.ComponentProps<any> {
     presetLabel?: string;
     color: string;
     handleChange: (color: ColorResult) => void;
-    onFocus: (eventOrPath: string | ChangeEvent<any>) => void | ((eventOrTextValue: string | ChangeEvent<any>) => void);
-    onBlur: (value: any) => void;
+    onFocus?: (eventOrPath: string | ChangeEvent<any>) => void | ((eventOrTextValue: string | ChangeEvent<any>) => void);
+    onBlur?: (value: any) => void;
 }
 
 const StyledLabel = styled.label`
@@ -147,10 +147,12 @@ export const ColorPicker: React.FunctionComponent<ColorPickerProps> = (props: Co
         <div>
             <StyledContainer
                 onClick={() => {
-                    if (showPicker) {
+                    if (showPicker && props.onBlur) {
                         props.onBlur('click');
                     } else {
-                        props.onFocus('');
+                        if (props.onFocus) {
+                            props.onFocus('');
+                        }
                     }
 
                     setShowPicker(!showPicker);
