@@ -78,8 +78,7 @@ const InfoDetails = ({ setPage }: { setPage: (page: string) => void}) => {
   return (
     <SubContainer>
       <Subtitle onClick={() => setPage('general')}>{t('general_info_title')}</Subtitle>
-      <Subtitle onClick={() => setPage('dates')}>{t('date_title')}</Subtitle>
-      <Subtitle onClick={() => setPage('location')}>{t('location_title')}</Subtitle>
+      <Subtitle onClick={() => setPage('dates')}>{t('date_location_title')}</Subtitle>
     </SubContainer>
   )
 };

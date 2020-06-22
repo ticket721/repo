@@ -2,12 +2,11 @@ import i18n from '@frontend/core/lib/utils/i18n';
 
 i18n.addResourceBundle('en', 'event_side_menu', {
     publish_label: 'Publish Event',
-    preview_label: 'Publish Event',
+    preview_label: 'Preview Event',
     presentation_title: 'Presentation',
     information_title: 'Information',
     general_info_title: 'General Information',
-    date_title: 'Dates',
-    location_title: 'Location'
+    date_location_title: 'Dates and Location',
 });
 
 i18n.addResourceBundle('fr', 'event_side_menu', {

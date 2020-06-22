@@ -13,18 +13,22 @@ import './locales';
 interface Props {
   currentDate: string | undefined;
   setCurrentDate: (date: string) => void;
+  setName: (name: string) => void;
   setPage: (page: string) => void;
   name: string;
   userEvents: Events[];
 }
 
-const EventSideMenu = ({ currentDate, setCurrentDate, setPage, name, userEvents }: Props) => {
+const EventSideMenu = ({ currentDate, setCurrentDate, setName, setPage, name, userEvents }: Props) => {
   const [ t ] = useTranslation(['event_side_menu']);
   const category = userEvents.find((e) => e.name === name);
 
   return (
     <Container>
-      <BackIcon onClick={() => setCurrentDate(undefined)}>
+      <BackIcon onClick={() => {
+        setCurrentDate(undefined);
+        setName(undefined);
+      }}>
         <Icon
           icon={'back-arrow'}
           size={'14px'}
@@ -36,7 +40,7 @@ const EventSideMenu = ({ currentDate, setCurrentDate, setPage, name, userEvents 
         <SelectDate value={currentDate} onChange={(e) => setCurrentDate(e.target.value)}>
           {
             category.dates.map((e, i) => {
-              const date = e.startDate ? formatDateForDisplay(e.startDate) : 'Global';
+              const date = e.startDate ? formatDateForDisplay(e.startDate) : 'Premium';
 
               return (
                 <option key={`side-menu-${e.id}-${i}`} value={date}>
@@ -60,7 +64,7 @@ const EventSideMenu = ({ currentDate, setCurrentDate, setPage, name, userEvents 
         />
       </Actions>
       <Separator />
-      <SubMenu type='information' setPage={setPage}/>
+      { currentDate !== 'Premium' && <SubMenu type='information' setPage={setPage}/>}
       <SubMenu type='tickets' setPage={setPage}/>
       <Title onClick={() => setPage('presentation')}>{t('presentation_title')}</Title>
       <Separator />

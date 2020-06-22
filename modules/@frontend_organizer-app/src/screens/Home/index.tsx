@@ -7,11 +7,13 @@ import { useTranslation } from 'react-i18next';
 import { EventsSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsSearchResponse.dto';
 import { DatesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
 import { CategoriesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/categories/dto/CategoriesSearchResponse.dto';
+import { RightEntity } from "@common/sdk/lib/@backend_nest/libs/common/src/rights/entities/Right.entity";
 import { useRequest } from "@frontend/core/lib/hooks/useRequest";
 import { CacheCore } from "@frontend/core/lib/cores/cache/CacheCore";
 // import { PushNotification } from '@frontend/core/lib/redux/ducks/notifications';
 import { SingleImage } from "@frontend/flib-react/lib/components";
 import { AppState } from "@frontend/core/src/redux/ducks";
+import { useDeepEffect } from "@frontend/core/lib/hooks/useDeepEffect";
 
 import EventPresentation from "../../components/EventPresentation";
 import HomeSideMenu from "../../components/HomeSideMenu";
@@ -27,25 +29,25 @@ const Home: React.FC = () => {
   const [ t ] = useTranslation(['home']);
   const [currentDate, setCurrentDate] = React.useState<string>();
   const [name, setName] = React.useState<string>();
-  let userEvents: Events[] = [];
+  const [page, setPage] = React.useState<'general' | 'ticket' | 'dates' | 'location' | 'presentation'>();
+  const [userEvents, setUserEvents] = React.useState<Events[]>([]);
 
   const rights = useSelector((state: MergedAppState) => state.cache.items[CacheCore.key('rights.search', [
     state.auth.token.value, {}
   ])]);
-  const event = rights ? rights.data.rights.find((r: any) => r.entity_type === 'event') : undefined;
-  const date = rights ? rights.data.rights.find((r: any) => r.entity_type === 'date') : undefined;
-  const category = rights ? rights.data.rights.find((r: any) => r.entity_type === 'category') : undefined;
-
+  const groupIDs = rights ? rights.data.rights.filter((r: RightEntity) => r.entity_type === 'event').map((e: any) => e.entity_value) : undefined;
   const [uuid] = React.useState(v4());
+  const [uuid2] = React.useState(v4());
+  const [uuid3] = React.useState(v4());
   const token = useSelector((state: AppState): string => state.auth.token.value);
-  const { response: events, registerEntity: eventRegisterEntity } = useRequest<EventsSearchResponseDto>(
+  const { response: events } = useRequest<EventsSearchResponseDto>(
     {
       method: 'events.search',
       args: [
         token,
         {
           group_id: {
-            $eq: event ? event.entity_typen: "",
+            $in: groupIDs,
           }
         },
       ],
@@ -53,59 +55,50 @@ const Home: React.FC = () => {
     },
     uuid
   );
-  const { response: dates, registerEntity: dateRegisterEntity } = useRequest<DatesSearchResponseDto>(
+  const { response: dates } = useRequest<DatesSearchResponseDto>(
     {
       method: 'dates.search',
       args: [
         token,
         {
           group_id: {
-            $eq: date ? date.entity_typen: "",
+            $in: groupIDs,
           }
         },
       ],
       refreshRate: 50,
     },
-    uuid
+    uuid2
   );
-  const { response: categories, registerEntity: categoryRegisterEntity } = useRequest<CategoriesSearchResponseDto>(
+  const { response: categories } = useRequest<CategoriesSearchResponseDto>(
     {
       method: 'categories.search',
       args: [
         token,
         {
           group_id: {
-            $eq: event ? event.entity_typen: "",
+            $in: groupIDs,
           }
         },
       ],
       refreshRate: 50,
     },
-    uuid
+    uuid3
   );
 
-  if (event && !events.loading && !events.error) {
-    formatEvent(events.data.events, userEvents);
-  }
-  if (date && !dates.loading && !dates.error) {
-    userEvents = formatDates(dates.data.dates, userEvents);
-  }
-  if (category && !categories.loading && !categories.error) {
-    userEvents = formatCategories(categories.data.categories, userEvents);
-  }
-
-  React.useEffect(() => {
-    if (event && !events.data && events.loading) {
-      eventRegisterEntity(uuid, 50);
+  useDeepEffect(() => {
+    console.log('deep effect');
+    if (groupIDs && !events.loading && !events.error) {
+      setUserEvents(formatEvent(events.data.events));
     }
-    if (date && !dates.data && dates.loading) {
-      dateRegisterEntity(uuid, 50);
+    if (groupIDs && !dates.loading && !dates.error) {
+      setUserEvents(formatDates(dates.data.dates, userEvents));
     }
-    if (category && !categories.data && categories.loading) {
-      categoryRegisterEntity(uuid, 50);
+    if (groupIDs && !categories.loading && !categories.error) {
+      setUserEvents(formatCategories(categories.data.categories, userEvents));
     }
-  // eslint-disable-next-line
-  }, [event, events, date, dates, category, categories]);
+    // eslint-disable-next-line
+  }, [events, dates, groupIDs, categories]);
 
   if (events.loading || dates.loading || categories.loading) {
     return (
@@ -121,12 +114,16 @@ const Home: React.FC = () => {
       </Container>
     );
   }
+//  console.log('UserEvents : ', userEvents);
   return (
     <>
       {currentDate &&
         <EventPresentation
+          setPage={setPage}
+          page={page}
           name={name}
           currentDate={currentDate}
+          setName={setName}
           setCurrentDate={setCurrentDate}
           userEvents={userEvents}
         />
@@ -141,15 +138,21 @@ const Home: React.FC = () => {
       }
       <Container>
         {!currentDate && userEvents.map((event, i) => {
-          const first = event.dates.find(d => d.type === 'date');
+          const first = event.dates[0];
 
           return (
-            <div key={`home-${event.id}-${i}`} className='card' onClick={() => setName(event.name)}>
+            <div key={`home-${event.group_id}-${i}`}
+               className='card'
+               onClick={() => {
+                setName(event.name);
+                setCurrentDate(formatDateForDisplay(first.startDate));
+              }}
+            >
               <SingleImage
                 src={first.avatar}
-                id={`presentation-card-${event.id}-${i}`}
+                id={`presentation-card-${event.group_id}-${i}`}
                 title={event.name}
-                price={parseFloat(first.price)}
+                price={parseFloat("12")}
                 text={formatDateForDisplay(first.startDate)}
               />
             </div>

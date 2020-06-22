@@ -70,14 +70,15 @@ export const ComponentsPreview: React.FC<ComponentsPreviewProps> = (props: Compo
                             template={true}
                             bgColor={'rgb(24,22,31)'}
                             ticket={{
-                            ...prevTicket,
-                            name: eventName,
-                            mainColor: props.colors[0],
-                            gradients: [
-                                `${props.colors[0]} 15%`,
-                                props.colors[1]
-                            ],
-                        }} />
+                                ...prevTicket,
+                                name: eventName,
+                                mainColor: props.colors[0],
+                                gradients: [
+                                    `${props.colors[0]} 15%`,
+                                    props.colors[1]
+                                ],
+                            }}
+                        />
                     </Overlap>
                 </Ticket>
             </StyledPreview>

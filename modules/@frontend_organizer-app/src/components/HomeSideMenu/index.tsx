@@ -1,6 +1,5 @@
 import React from 'react';
 import styled from 'styled-components';
-import Icon from "@frontend/flib-react/lib/components/icon";
 
 import { formatDateForDisplay } from "../../utils/functions";
 import { Events } from "../../types/UserEvents";
@@ -17,39 +16,15 @@ const HomeSideMenu = ({ setCurrentDate, setName, name, userEvents }: Props) => {
 
   return (
     <Container>
-      { category && (
-        <>
-          <BackIcon onClick={() => setName(undefined)}>
-            <Icon
-              icon={'back-arrow'}
-              size={'14px'}
-              color={'rgba(255, 255, 255, 0.9)'}
-            />
-          </BackIcon>
-          <Title>{category.name}</Title>
-          { name && category.dates.map((e, i) => {
-              const date = e.startDate ? formatDateForDisplay(e.startDate) : 'Global';
-
-              return (
-                <SubTitle
-                  key={`side-dates-${e.id}-${date}-${i}`}
-                  onClick={() => {
-                    setCurrentDate(date);
-                    setName(e.name);
-                  }}
-                >
-                  {date}
-                </SubTitle>
-              )
-            }
-          )}
-        </>
-      )}
       { !category && (userEvents.map((e, i) =>
         <Title
           clickable
-          key={`${e.id}-${i}`}
-          onClick={() => setName(e.name)}
+          key={`home-side-menu-${e.group_id}-${i}`}
+          onClick={() => {
+            const first = formatDateForDisplay(e.dates[0].startDate);
+            setName(e.name);
+            setCurrentDate(first);
+          }}
         >
           {e.name}
         </Title>
@@ -77,19 +52,6 @@ const Title = styled.span<{ clickable?: boolean }>`
   font-size: 16px;
   color: ${(props) => props.theme.textColor};
   cursor: ${({ clickable }) => clickable ? 'pointer' : 'auto'};
-`;
-
-const SubTitle = styled.span<{focus?: boolean}>`
-  font-weight: 500;
-  font-size: 14px;
-  cursor: pointer;
-  margin: 12px 20px;
-  color: ${({ theme }) => theme.textColorDarker};
-`;
-
-const BackIcon = styled.div`
-  padding: 20px 12px 10px;
-  cursor: pointer;
 `;
 
 export default HomeSideMenu;

@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../../redux/ducks';
 import { CacheCore } from '../../cores/cache/CacheCore';
@@ -36,11 +37,11 @@ export const useRequest = <ReturnType>(call: RequestParams, initialUuid: string)
     const unregisterEntity = (uuid: string): void =>
         void dispatch(UnregisterEntity(CacheCore.key(call.method, call.args), uuid));
 
-    // useEffect(() => {
-    //     registerEntity(initialUuid);
-    //
-    //     return () => unregisterEntity(initialUuid);
-    // }, []);
+    useEffect(() => {
+        registerEntity(initialUuid);
+
+        return () => unregisterEntity(initialUuid);
+    }, []);
 
     return {
         response: {

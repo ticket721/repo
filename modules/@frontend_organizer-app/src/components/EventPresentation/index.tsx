@@ -9,15 +9,17 @@ import { Events } from "../../types/UserEvents";
 
 interface Props {
   currentDate: string | undefined;
-  setCurrentDate: (startDate: string) => void;
+  setCurrentDate: (name: string) => void;
+  setName: (startDate: string) => void;
   name: string;
+  setPage: (page: 'general' | 'ticket' | 'dates' | 'location' | 'presentation') => void;
+  page: 'general' | 'ticket' | 'dates' | 'location' | 'presentation';
   userEvents: Events[];
 }
 
-const EventPresentation = ({ currentDate, setCurrentDate, name, userEvents }: Props) => {
-  const [page, setPage] = React.useState<'general' | 'ticket' | 'dates' | 'location' | 'presentation'>();
+const EventPresentation = ({ currentDate, setName, setCurrentDate, name, userEvents, page, setPage }: Props) => {
   const category = userEvents.find((e) => e.name === name);
-  const first = category.dates.find((e) => e.type === 'date');
+  const first = category.dates[0];
   const startDate = first && formatDateForDisplay(first.startDate, 'day');
   const endDate = first && formatDateForDisplay(first.endDate, 'day');
   const startTime = first && formatDateForDisplay(first.startDate, 'time');
@@ -29,6 +31,7 @@ const EventPresentation = ({ currentDate, setCurrentDate, name, userEvents }: Pr
         name={name}
         currentDate={currentDate}
         setCurrentDate={setCurrentDate}
+        setName={setName}
         setPage={setPage}
         userEvents={userEvents}
       />
@@ -49,10 +52,10 @@ const EventPresentation = ({ currentDate, setCurrentDate, name, userEvents }: Pr
                   <PreviewInfos ticket={{
                     ...first,
                     image: first.avatar,
-                    mainColor: first.signature_colors[0],
-                    location: first.location.location_label,
-                    gradients: first.signature_colors,
-                    ticketType: first.categoryName,
+                    mainColor: first.colors[0],
+                    location: first.location,
+                    gradients: first.colors,
+                    ticketType: first.categories[0].name,
                     startDate,
                     endDate,
                     startTime,

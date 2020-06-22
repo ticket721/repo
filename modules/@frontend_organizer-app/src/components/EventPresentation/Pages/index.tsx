@@ -24,6 +24,7 @@ const Pages = ({ page, userEvent, currentDate }: Props) => {
     ticket: <Ticket />
   };
 
+  console.log('page to render : ', page);
   return (
     <Container>{pages[page]}</Container>
   );

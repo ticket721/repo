@@ -2,8 +2,19 @@ import React from 'react';
 import { useFormik } from 'formik';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
-import { EventsCreateTextMetadata } from '@common/sdk/lib/@backend_nest/apps/worker/src/actionhandlers/events/Events.input.handlers';
+import { useSelector, useDispatch } from 'react-redux';
+import { v4 } from 'uuid';
 import { TextInput, Textarea, Tags, Button } from "@frontend/flib-react/lib/components";
+import { AppState } from "@frontend/core/src/redux/ducks";
+import { useRequest } from "@frontend/core/lib/hooks/useRequest";
+// import { PushNotification } from "@frontend/core/lib/redux/ducks/notifications";
+import { useLazyRequest } from "@frontend/core/lib/hooks/useLazyRequest";
+import { PushNotification } from "@frontend/core/lib/redux/ducks/notifications";
+import { useDeepEffect } from "@frontend/core/lib/hooks/useDeepEffect";
+
+import {
+  DatesSearchResponseDto
+} from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
 
 import { Events } from "../../../types/UserEvents";
 import { formatDateForDisplay } from "../../../utils/functions";
@@ -17,21 +28,53 @@ interface Props {
 }
 
 const GeneralInformation = ({ userEvent, currentDate }: Props) => {
-  const date = userEvent.dates.find((d) => formatDateForDisplay(d.startDate) === currentDate);
-  const initialValues: EventsCreateTextMetadata = {
-    name: userEvent.name,
-    description: date.description,
-    tags: date.tags,
-  };
+  const current = userEvent.dates.find((d) => formatDateForDisplay(d.startDate) === currentDate);
+  const dispatch = useDispatch();
+  const [uuidRequest] = React.useState(v4());
+  const [uuidUpdate] = React.useState(v4());
+  const token = useSelector((state: AppState): string => state.auth.token.value);
+  const { response } = useRequest<DatesSearchResponseDto>(
+    {
+      method: 'dates.search',
+      args: [
+        token,
+        {
+          id: {
+            $eq: current.id,
+          }
+        },
+      ],
+      refreshRate: 50,
+    },
+    uuidRequest
+  );
+  const { lazyRequest, response: updateResponse } = useLazyRequest('dates.update', uuidUpdate);
+
   const [ inputTag, setInputTag ] = React.useState('');
   const [ t ] = useTranslation(['general_infos', 'validation']);
   const formik = useFormik({
-    initialValues,
-    onSubmit: (values: EventsCreateTextMetadata) => {
-      alert(JSON.stringify(values, null, 2));
+    initialValues: { name: '', description: '', tags: [], avatar: '', signature_colors: []},
+    onSubmit: (values) => {
+      lazyRequest([token, current.id, { metadata: values }]);
     },
     validationSchema: textMetadataValidationSchema,
   });
+
+  useDeepEffect(() => {
+    if (updateResponse.error) {
+      dispatch(PushNotification(updateResponse.error, 'error'));
+    }
+    if (!updateResponse.error && !updateResponse.loading && updateResponse.called) {
+      dispatch(PushNotification('Success', 'success'));
+    }
+
+  }, [updateResponse]);
+
+  useDeepEffect(() => {
+    if (!response.loading && response.error === undefined) {
+      formik.setValues({...response.data.dates[0].metadata});
+    }
+  }, [response]);
 
   const onTagsKeyDown = (e: React.KeyboardEvent<HTMLElement>, tag: string) => {
     if(!inputTag) {
@@ -65,8 +108,15 @@ const GeneralInformation = ({ userEvent, currentDate }: Props) => {
     }
   };
 
-  const computeError = (field: string) => formik.touched[field] && formik.errors[field] ? 'validation:' + formik.errors[field] : '';
+  const computeError = (field: string) => formik.touched[field] && formik.errors[field] ?
+    'validation:' + formik.errors[field] : '';
 
+  if (response.loading || formik.values === undefined) {
+    return <div>loading...</div>;
+  }
+  if (response.error) {
+    return <div>error</div>;
+  }
 
   return (
     <Form onSubmit={formik.handleSubmit}>
