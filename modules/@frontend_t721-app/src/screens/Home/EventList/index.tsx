@@ -2,9 +2,8 @@ import React                               from 'react';
 import { FullPageLoading, LocationHeader } from '@frontend/flib-react/lib/components';
 import { useTranslation }                  from 'react-i18next';
 import { useSelector }                     from 'react-redux';
-import { LocationState }                   from '@frontend/core/lib/redux/ducks/location';
 import { HomeEventList }                   from './HomeEventList';
-import { T721AppState }                    from '../../../redux';
+import { LocationState, T721AppState }     from '../../../redux';
 
 export interface EventListProps {
     enableFilter: () => void;

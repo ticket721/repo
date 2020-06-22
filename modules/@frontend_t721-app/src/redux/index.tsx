@@ -1,6 +1,6 @@
-import { AppState }      from '@frontend/core/lib/redux';
 import { LocationState } from './ducks/location';
 import { SearchState }   from './ducks/search';
+import { AppState }      from '@frontend/core/lib/redux';
 
 export *            from './ducks/location';
 

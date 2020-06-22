@@ -4,9 +4,8 @@ import { Formik, FormikProps }                        from 'formik';
 import { citiesList, City }                           from '@common/global';
 import { QuickScore }                                 from 'quick-score';
 import { useDispatch }                                from 'react-redux';
-import { GetLocation }                                from '@frontend/core/lib/redux/ducks/location';
-import { useTranslation }                             from 'react-i18next';
-import { SetCustomLocation }                          from '@frontend/core/lib/redux/ducks/location';
+import { useTranslation }                 from 'react-i18next';
+import { GetLocation, SetCustomLocation } from '../../redux/ducks/location';
 
 interface FormData {
     cityLabel: string;
