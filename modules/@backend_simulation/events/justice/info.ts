@@ -86,8 +86,8 @@ export default {
     images: {
         avatar: 'avatar.jpg',
         signatureColors: [
-            '#52b2ff',
-            '#5dffd6'
+            '#FAE2B2',
+            '#57472F'
         ]
     }
 }

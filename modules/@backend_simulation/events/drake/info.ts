@@ -13,7 +13,7 @@ export default {
         {
             name: 'Times Square',
             eventBegin: new Date(Date.now() + DAY),
-            eventEnd: new Date(Date.now() + 2 * DAY),
+            eventEnd: new Date(Date.now() + DAY + 2 * HOUR),
             location: {
                 label: 'Times Square',
                 lat: 40.758896,
