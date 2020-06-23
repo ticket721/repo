@@ -45,5 +45,19 @@ const DTFormatShort = new Intl.DateTimeFormat('default', {
     hour12: false,
 });
 
+const DTFormatDay = new Intl.DateTimeFormat('default', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+});
+
+const DTFormatHour = new Intl.DateTimeFormat('default', {
+    hour12: true,
+    hour: '2-digit',
+    minute: '2-digit',
+});
+
 export const format = (date: Date): string => DTFormat.format(date);
 export const formatShort = (date: Date): string => DTFormatShort.format(date);
+export const formatDay = (date: Date): string => DTFormatDay.format(date);
+export const formatHour = (date: Date): string => DTFormatHour.format(date);
