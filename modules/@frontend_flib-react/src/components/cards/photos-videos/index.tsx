@@ -7,6 +7,7 @@ export interface PhotosVideosCardProps extends React.ComponentProps<any> {
     title: string;
     removeBg?: boolean;
     wSeparator?: boolean;
+    showMore?: boolean;
 }
 
 const PhotosGrid = styled.div`
@@ -48,7 +49,7 @@ export const PhotosVideosCard: React.FunctionComponent<PhotosVideosCardProps> = 
         <CardContainer removeBg={props.removeBg}>
             <div className={'row aic jcsb'}>
                 <h3>{props.title}</h3>
-                <a href={'#todo'}>View all</a>
+                {props.showMore ? <a href={'#todo'}>View all</a> : null}
             </div>
             <PhotosGrid>
                 <div className={'column'}>

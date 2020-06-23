@@ -86,7 +86,12 @@
     "@types/react-responsive": "8.0.2",
     "react-placeholder": "4.0.3",
     "react-lottie": "1.2.3",
-    "@types/react-lottie": "1.2.5"
+    "@types/react-lottie": "1.2.5",
+    "react-leaflet": "2.7.0",
+    "@types/react-leaflet": "2.5.1",
+    "@types/leaflet": "1.5.12",
+    "leaflet": "1.6.0",
+    "platform-detect": "3.0.0"
   },
   "devDependencies": {
     "@storybook/addon-actions": "5.3.19",

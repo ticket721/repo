@@ -60,12 +60,23 @@ export const DateTimeCard: React.FunctionComponent<DateTimeCardProps & { classNa
                 <Icon icon={'calendar'} size={'18px'} color={props.iconColor} />
             </IconContainer>
             <Column iconColor={props.iconColor}>
-                <Info>
-                    {props.startDate} - {props.endDate}
-                </Info>
-                <Info>
-                    {props.startTime} - {props.endTime}
-                </Info>
+                {props.startDate === props.endDate ? (
+                    <>
+                        <Info>{props.startDate}</Info>
+                        <Info>
+                            {props.startTime} to {props.endTime}
+                        </Info>
+                    </>
+                ) : (
+                    <>
+                        <Info>
+                            {props.startDate} - {props.startTime}
+                        </Info>
+                        <Info>
+                            {props.endDate} - {props.endTime}
+                        </Info>
+                    </>
+                )}
                 {/* TODO - Update to use react-router if necessary */}
                 {props.link && (
                     <a href={props.link}>
