@@ -2,6 +2,7 @@ import Search              from './screens/Search';
 import SearchViewAll                from './screens/SearchViewAll';
 import Tags                         from './screens/Tags';
 import Home                         from './screens/Home';
+import Event                         from './screens/Event';
 import Wallet                       from './screens/Wallet';
 import React                        from 'react';
 import { Login, Register }          from '@frontend/core/lib/components';
@@ -55,6 +56,11 @@ export const routes: RouteDatum[] = [
     {
         path: '/search/events/:query',
         page: InvisibleStatusBarMargin(TopNavMargin(SearchViewAll)),
+        protected: false,
+    },
+    {
+        path: '/event/:id',
+        page: Event,
         protected: false,
     },
     {

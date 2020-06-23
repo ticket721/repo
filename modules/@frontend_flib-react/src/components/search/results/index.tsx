@@ -23,6 +23,7 @@ interface Event {
     price: number;
     date: string;
     image: string;
+    onClick?: () => void;
 }
 
 interface Location {
@@ -30,6 +31,7 @@ interface Location {
     name: string;
     numberEvents: number;
     url: string;
+    onClick?: () => void;
 }
 
 const Container = styled.div<SearchResultsProps>`
@@ -69,6 +71,7 @@ const SingleResult = styled.article<SearchResultsProps>`
     font-size: 13px;
     margin-bottom: ${(props) => props.theme.regularSpacing};
     width: 100%;
+    cursor: ${(props) => (props.clickable ? 'pointer' : 'default')};
 
     &:last-of-type {
         margin-bottom: ${(props) => props.theme.biggerSpacing};
@@ -116,7 +119,7 @@ const InfoContainer = styled.div`
 
 export const SingleEvent = (props: Event) => {
     return (
-        <SingleResult>
+        <SingleResult clickable={!!props.onClick} onClick={props.onClick}>
             <ImgContainer>
                 <img src={props.image} />
             </ImgContainer>

@@ -8,6 +8,7 @@ import { CategoriesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/
 import { getPriceRange }               from '../../../utils/prices';
 import { SingleEvent }                 from '@frontend/flib-react/lib/components';
 import { formatShort }                 from '@frontend/core/lib/utils/date';
+import { useHistory }                  from 'react-router';
 
 interface SearchViewAllResultEventProps {
     date: DateEntity;
@@ -20,6 +21,7 @@ export const SearchViewAllResultEvent: React.FC<SearchViewAllResultEventProps> =
     const imageUrl = `${serverUrl}/${props.date.metadata.avatar}`;
     const [uuid] = useState(v4());
     const token = useSelector((state: AppState): string => state.auth.token?.value);
+    const history = useHistory();
 
     const categories = useRequest<CategoriesSearchResponseDto>({
         method: 'categories.search',
@@ -61,6 +63,7 @@ export const SearchViewAllResultEvent: React.FC<SearchViewAllResultEventProps> =
     }
 
     return <SingleEvent
+        onClick={() => history.push(`/event/${props.date.id}`)}
         name={props.date.metadata.name}
         color={props.date.metadata.signature_colors[0]}
         id={props.idx}

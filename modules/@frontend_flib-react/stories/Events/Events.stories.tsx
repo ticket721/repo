@@ -12,8 +12,6 @@ import Border from '../../src/components/elements/border';
 import PhotosVideosCard from '../../src/components/cards/photos-videos';
 import Gradient from '../../src/components/elements/gradient';
 import TagsListCard from '../../src/components/cards/tags-list';
-import DescriptionLinkCard from '../../src/components/cards/description-link';
-import HostedByCard from '../../src/components/cards/hosted-by';
 import EventCarousel from '../../src/components/events/carousel';
 import EventCta from '../../src/components/events/cta';
 
@@ -47,26 +45,13 @@ const tags = [
 const eventDetails = {
     name: 'Ticket #1',
     location: 'Philharmonie de Paris',
-    address: '221 avenue Jean Jaurès, Paris',
     startDate: '2020/02/14',
     endDate: '2020/20/15',
     startTime: '2:00PM',
     about:
         'Duis posuere dui ut arcu dictum pellentesque. Nunc ex nulla, dictum sed risus eget, tempus pretium ex. Mauris ornare tempor blandit. Cras et mollis quam, sit amet porttitor odio. Duis posuere dui ut arcu dictum pellentesque. Nunc ex nulla, dictum sed risus eget, tempus pretium ex. Mauris ornare tempor blandit. Cras et mollis quam, sit amet porttitor odio.',
-    refundPolicy: {
-        title: '10 days before',
-        description: 'Sed ac mattis elit, aliquam lobortis purus. Suspendisse a ex et mattis.',
-        link: '#todo',
-    },
-    tags: tags,
+    tags,
     resale: true,
-    hostedBy: {
-        name: 'Band',
-        image: 'assets/images/band-1.jpg',
-        spotifyUrl: 'https://spotify.com',
-        numberEvents: 12,
-        eventsLink: 'todo',
-    },
     endTime: '4:00PM',
     gradients: ['#EBBC16', '#DB535B'],
     mainColor: '#EBBC16',
@@ -139,7 +124,13 @@ export const showcase = () => (
             <div>
                 <Container>
                     <Gradient values={eventDetails.gradients} blurOnly />
-                    <EventHeader event={eventDetails} onChange={onChange} onClick={action('clicked')} />
+                    <EventHeader
+                        event={eventDetails}
+                        subtitle={'Tickets from 12 $'}
+                        buttonTitle={'Get Tickets'}
+                        onChange={onChange}
+                        onClick={action('clicked')}
+                    />
                     <BgContainer>
                         <DateTimeCard
                             iconColor={eventDetails.mainColor}
@@ -150,7 +141,7 @@ export const showcase = () => (
                             removeBg
                         />
                         <LocationCard
-                            address={eventDetails.address}
+                            address={eventDetails.location}
                             iconColor={eventDetails.mainColor}
                             location={eventDetails.location}
                             removeBg
@@ -176,15 +167,6 @@ export const showcase = () => (
                             removeBg
                         />
                         <Border />
-                        <HostedByCard title={'Hosted by'} hostedBy={eventDetails.hostedBy} removeBg />
-                        <Border />
-                        <DescriptionLinkCard
-                            link={eventDetails.refundPolicy.link}
-                            title={eventDetails.refundPolicy.title}
-                            subtitle={'Refund policy'}
-                            text={eventDetails.refundPolicy.description}
-                            removeBg
-                        />
                     </BgContainer>
                     <EventCarousel title={'More events'} slides={slides} />
                 </Container>

@@ -13,6 +13,7 @@ export interface SingleImageProps extends React.ComponentProps<any> {
     begin?: Date;
     end?: Date;
     dateLabel?: string;
+    onClick?: () => void;
 }
 
 const Container = styled.div<SingleImageProps>`
@@ -22,6 +23,7 @@ const Container = styled.div<SingleImageProps>`
     overflow: hidden;
     position: relative;
     width: 100%;
+    cursor: ${(props) => (props.clickable ? 'pointer' : 'default')};
 
     img {
         height: 100%;
@@ -99,7 +101,13 @@ export const SingleImage: React.FunctionComponent<SingleImageProps & { className
     props: SingleImageProps,
 ): JSX.Element => {
     return (
-        <Container imgOnly={props.imgOnly} smaller={props.smaller} className={props.className}>
+        <Container
+            imgOnly={props.imgOnly}
+            smaller={props.smaller}
+            className={props.className}
+            clickable={!!props.onClick}
+            onClick={props.onClick}
+        >
             <img src={props.src} />
             {!props.imgOnly && (
                 <Details mainColor={props.mainColor} smaller={props.smaller}>

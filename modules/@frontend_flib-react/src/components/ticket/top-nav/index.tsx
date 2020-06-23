@@ -30,7 +30,7 @@ const SafeOffsetContainer = styled.div`
     padding: ${(props) => props.theme.regularSpacing} ${(props) => props.theme.biggerSpacing};
     position: fixed;
     top: 0;
-    transition: background-color 300ms ease;
+    transition: backdrop-filter 300ms ease;
     height: calc(48px + constant(safe-area-inset-top));
     height: calc(48px + env(safe-area-inset-top));
     width: 100%;
@@ -38,7 +38,7 @@ const SafeOffsetContainer = styled.div`
 
     &.scrolled {
         background-color: rgba(0, 0, 0, 0);
-        backdrop-filter: blur(8px);
+        backdrop-filter: blur(16px);
     }
 `;
 
