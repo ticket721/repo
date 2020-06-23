@@ -8,7 +8,7 @@ const StatusBarMarginContainer = styled.div`
     height: constant(safe-area-inset-top);
     height: env(safe-area-inset-top);
     background-color: rgba(0, 0, 0, 0);
-    backdrop-filter: blur(8px);
+    backdrop-filter: blur(16px);
     z-index: 9999;
 `;
 

@@ -1,29 +1,14 @@
 import './locales';
-import React, { PropsWithChildren, useEffect, useState } from 'react';
-import { useDispatch, useSelector }                      from 'react-redux';
-import { EventList }                                     from './EventList';
-import { LocationModifier }                         from '../../components/LocationModifier';
-import { GetLocation, LocationState, T721AppState } from '../../redux';
-
-const LocationGate: React.FC = (props: PropsWithChildren<any>) => {
-    const location = useSelector((state: T721AppState): LocationState => state.location);
-    const dispatch = useDispatch();
-
-    useEffect(() => {
-        if (location.location === null && location.requesting === false) {
-            dispatch(GetLocation());
-        }
-    });
-
-    return props.children;
-
-};
+import React, { useState }  from 'react';
+import { EventList }        from './EventList';
+import { LocationModifier } from '../../components/LocationModifier';
+import { LocationGate }     from '../../components/LocationGate';
 
 const Home: React.FC = () => {
 
     const [locationFilter, setLocationFilter] = useState({
         active: false,
-        customCity: null
+        customCity: null,
     });
 
     return (
@@ -33,12 +18,12 @@ const Home: React.FC = () => {
 
                     ?
                     <LocationModifier
-                        disableFilter={() => setLocationFilter({...locationFilter, active: false})}
+                        disableFilter={() => setLocationFilter({ ...locationFilter, active: false })}
                     />
 
                     :
                     <EventList
-                        enableFilter={() => setLocationFilter({...locationFilter, active: true})}
+                        enableFilter={() => setLocationFilter({ ...locationFilter, active: true })}
 
                     />
             }

@@ -8,6 +8,7 @@ import { CategoriesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/
 import { SingleImage }                 from '@frontend/flib-react/lib/components';
 import { DateEntity }                  from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
 import { getPriceRange }               from '../../../utils/prices';
+import { useHistory }                  from 'react-router';
 
 export interface HomeEventProps {
     date: DateEntity;
@@ -22,6 +23,7 @@ export const HomeEvent: React.FC<HomeEventProps> = (props: HomeEventProps): JSX.
     const eventEnd = formatShort(new Date(props.date.timestamps.event_end));
     const [uuid] = useState(v4());
     const token = useSelector((state: AppState): string => state.auth.token?.value);
+    const history = useHistory();
 
     const dateString = `${eventBegin ? eventBegin : null}${eventEnd && eventBegin ? ' - ' : null}${eventEnd ? eventEnd : null}`;
 
@@ -65,6 +67,7 @@ export const HomeEvent: React.FC<HomeEventProps> = (props: HomeEventProps): JSX.
     }
 
     return <SingleImage
+        onClick={() => history.push(`/event/${props.date.id}`)}
         id={props.idx}
         key={props.idx}
         src={imageUrl}

@@ -1,12 +1,17 @@
-import Search              from './screens/Search';
-import Tags                from './screens/Tags';
-import Home                from './screens/Home';
-import Wallet              from './screens/Wallet';
-import React               from 'react';
-import { Login, Register } from '@frontend/core/lib/components';
-import ProfileRoot         from '@frontend/core/lib/components/Profile/Root';
-import Activities          from '@frontend/core/lib/components/Profile/Activities';
-import Funds               from '@frontend/core/lib/components/Profile/Funds';
+import Search                       from './screens/Search';
+import Tags                         from './screens/Tags';
+import Home                         from './screens/Home';
+import Wallet                       from './screens/Wallet';
+import React                        from 'react';
+import { Login, Register }          from '@frontend/core/lib/components';
+import ProfileRoot                  from '@frontend/core/lib/components/Profile/Root';
+import Activities                   from '@frontend/core/lib/components/Profile/Activities';
+import { StatusBarMargin }          from './utils/StatusBarMargin';
+import { NavbarMargin }             from './utils/NavbarMargin';
+import { InvisibleStatusBarMargin } from './utils/InvisibleStatusBarMargin';
+import { TopNavMargin }             from './utils/TopNavMargin';
+import SearchViewAll                from './screens/SearchViewAll';
+import Event                        from './screens/Event';
 
 export interface LinkDatum {
     icon: string;
@@ -25,47 +30,52 @@ export interface RouteDatum {
 export const routes: RouteDatum[] = [
     {
         path: '/login',
-        page: Login,
+        page: StatusBarMargin(NavbarMargin(Login)),
         protected: false,
     },
     {
         path: '/register',
-        page: Register,
+        page: StatusBarMargin(NavbarMargin(Register)),
         protected: false,
     },
     {
         path: '/home',
-        page: Home,
+        page: StatusBarMargin(NavbarMargin(Home)),
         protected: false,
     },
     {
         path: '/profile/activities',
-        page: Activities,
-        protected: true,
-    },
-    {
-        path: '/profile/funds',
-        page: Funds,
+        page: InvisibleStatusBarMargin(TopNavMargin(Activities)),
         protected: true,
     },
     {
         path: '/profile',
-        page: ProfileRoot,
+        page: StatusBarMargin(NavbarMargin(ProfileRoot)),
         protected: true,
     },
     {
+        path: '/search/events/:query',
+        page: InvisibleStatusBarMargin(TopNavMargin(SearchViewAll)),
+        protected: false,
+    },
+    {
+        path: '/event/:id',
+        page: Event,
+        protected: false,
+    },
+    {
         path: '/search',
-        page: Search,
+        page: StatusBarMargin(Search),
         protected: false,
     },
     {
         path: '/tags',
-        page: Tags,
+        page: StatusBarMargin(Tags),
         protected: false,
     },
     {
         path: '/',
-        page: Wallet,
+        page: StatusBarMargin(Wallet),
         protected: true,
     },
 ];
