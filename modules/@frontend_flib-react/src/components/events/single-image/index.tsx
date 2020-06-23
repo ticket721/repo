@@ -2,7 +2,7 @@ import * as React from 'react';
 import styled from '../../../config/styled';
 
 export interface SingleImageProps extends React.ComponentProps<any> {
-    price?: number;
+    price?: string | number;
     id: string | number;
     src: string;
     text?: string;

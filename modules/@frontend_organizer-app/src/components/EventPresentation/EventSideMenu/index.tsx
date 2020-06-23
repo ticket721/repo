@@ -1,33 +1,41 @@
 import React from 'react';
 import styled from 'styled-components';
+import { useHistory } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import Button from "@frontend/flib-react/lib/components/button";
-import Icon from "@frontend/flib-react/lib/components/icon";
+import Button from '@frontend/flib-react/lib/components/button';
+import Icon from '@frontend/flib-react/lib/components/icon';
 
-import { formatDateForDisplay } from "../../../utils/functions";
-import { Events } from "../../../types/UserEvents";
+import { formatDateForDisplay } from '../../../utils/functions';
+import { Events } from '../../../types/UserEvents';
 
-import SubMenu from "./SubMenu";
+import SubMenu from './SubMenu';
 import './locales';
 
 interface Props {
   currentDate: string | undefined;
   setCurrentDate: (date: string) => void;
   setName: (name: string) => void;
-  setPage: (page: string) => void;
   name: string;
   userEvents: Events[];
 }
 
-const EventSideMenu = ({ currentDate, setCurrentDate, setName, setPage, name, userEvents }: Props) => {
+const EventSideMenu = ({ currentDate, setCurrentDate, setName, name, userEvents }: Props) => {
   const [ t ] = useTranslation(['event_side_menu']);
   const category = userEvents.find((e) => e.name === name);
+  const history = useHistory();
+
+  const handleClick = (page: string) => {
+    const id = history.location.pathname.match(/^\/0x([a-zA-Z]|[0-9])+/);
+    history.push(`${id[0]}/${page}`);
+  };
+
 
   return (
     <Container>
       <BackIcon onClick={() => {
         setCurrentDate(undefined);
         setName(undefined);
+        history.push('/');
       }}>
         <Icon
           icon={'back-arrow'}
@@ -52,21 +60,21 @@ const EventSideMenu = ({ currentDate, setCurrentDate, setName, setPage, name, us
           }
         </SelectDate>
         <Button
-          className="top"
-          variant="primary"
+          className='top'
+          variant='primary'
           title={t('publish_label')}
           onClick={() => console.log('publish')}
         />
         <Button
-          variant="secondary"
+          variant='secondary'
           title={t('preview_label')}
           onClick={() => console.log('publish')}
         />
       </Actions>
       <Separator />
-      { currentDate !== 'Premium' && <SubMenu type='information' setPage={setPage}/>}
-      <SubMenu type='tickets' setPage={setPage}/>
-      <Title onClick={() => setPage('presentation')}>{t('presentation_title')}</Title>
+      { currentDate !== 'Premium' && <SubMenu type='information'/>}
+      <SubMenu type='tickets'/>
+      <Title onClick={() => handleClick('presentation')}>{t('presentation_title')}</Title>
       <Separator />
     </Container>
   )

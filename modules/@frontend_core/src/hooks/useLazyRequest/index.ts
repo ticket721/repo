@@ -1,8 +1,9 @@
+import { Dispatch, useState }    from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../../redux/ducks';
 import { CacheCore }                        from '../../cores/cache/CacheCore';
-import { Dispatch, useEffect, useState }    from 'react';
 import { RegisterEntity, UnregisterEntity } from '../../redux/ducks/cache';
+import { useDeepEffect } from '../useDeepEffect';
 
 interface RequestResp<ReturnType> {
   data: ReturnType;
@@ -33,16 +34,14 @@ export const useLazyRequest = <ReturnType>(method: string, initialUuid: string):
     setCalled(true);
   };
 
-  const stringifyArgs = JSON.stringify(args);
-
-  useEffect(() => {
+  useDeepEffect(() => {
     setCalled(false);
     return (): void => {
       if (args) {
         dispatch(UnregisterEntity(CacheCore.key(method, args), initialUuid));
       }
     }
-  }, [stringifyArgs]);
+  }, [args]);
 
   return {
     response,

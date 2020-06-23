@@ -1,6 +1,12 @@
 import React from 'react';
+import { Events } from '../../../types/UserEvents';
 
-const Ticket = () => {
+interface Props {
+  userEvent: Events;
+  currentDate: string | undefined;
+}
+
+const Ticket = ({ userEvent, currentDate }: Props) => {
   return (<div>Ticket</div>)
 };
 

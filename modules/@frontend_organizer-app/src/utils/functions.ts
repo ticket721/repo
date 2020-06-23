@@ -3,7 +3,7 @@ export const formatDateForDisplay = (dateToFormat: Date | string, format: 'all' 
 
   let date: Date;
 
-  if (typeof dateToFormat === typeof "string") {
+  if (typeof dateToFormat === typeof 'string') {
     date = new Date(dateToFormat)
   } else {
     // @ts-ignore

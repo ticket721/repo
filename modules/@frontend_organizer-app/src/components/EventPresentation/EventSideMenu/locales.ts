@@ -4,8 +4,8 @@ i18n.addResourceBundle('en', 'event_side_menu', {
     publish_label: 'Publish Event',
     preview_label: 'Preview Event',
     presentation_title: 'Presentation',
-    information_title: 'Information',
-    general_info_title: 'General Information',
+    information_title: 'Informations',
+    general_info_title: 'General Informations',
     date_location_title: 'Dates and Location',
 });
 
@@ -14,7 +14,7 @@ i18n.addResourceBundle('fr', 'event_side_menu', {
     preview_label: 'Aperçu de l\'évènement',
     presentation_title: 'Présentation',
     information_title: 'Informations',
-    general_info_title: 'Informations générale',
+    general_info_title: 'Informations générales',
     date_title: 'Dates',
     location_title: 'Emplacement'
 });

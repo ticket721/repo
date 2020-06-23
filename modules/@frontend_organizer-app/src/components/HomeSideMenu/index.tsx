@@ -1,8 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
+import { useHistory } from 'react-router';
 
-import { formatDateForDisplay } from "../../utils/functions";
-import { Events } from "../../types/UserEvents";
+import { formatDateForDisplay } from '../../utils/functions';
+import { Events } from '../../types/UserEvents';
 
 interface Props {
   setCurrentDate: (startDate: string) => void;
@@ -13,10 +14,11 @@ interface Props {
 
 const HomeSideMenu = ({ setCurrentDate, setName, name, userEvents }: Props) => {
   const category = userEvents.find((e) => e.name === name);
+  const history = useHistory();
 
   return (
     <Container>
-      { !category && (userEvents.map((e, i) =>
+      { !category && (userEvents?.map((e, i) =>
         <Title
           clickable
           key={`home-side-menu-${e.group_id}-${i}`}
@@ -24,6 +26,8 @@ const HomeSideMenu = ({ setCurrentDate, setName, name, userEvents }: Props) => {
             const first = formatDateForDisplay(e.dates[0].startDate);
             setName(e.name);
             setCurrentDate(first);
+            history.push(`/${e.group_id}`);
+
           }}
         >
           {e.name}

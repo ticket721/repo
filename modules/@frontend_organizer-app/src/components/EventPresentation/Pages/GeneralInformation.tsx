@@ -4,23 +4,22 @@ import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { useSelector, useDispatch } from 'react-redux';
 import { v4 } from 'uuid';
-import { TextInput, Textarea, Tags, Button } from "@frontend/flib-react/lib/components";
-import { AppState } from "@frontend/core/src/redux/ducks";
-import { useRequest } from "@frontend/core/lib/hooks/useRequest";
-// import { PushNotification } from "@frontend/core/lib/redux/ducks/notifications";
-import { useLazyRequest } from "@frontend/core/lib/hooks/useLazyRequest";
-import { PushNotification } from "@frontend/core/lib/redux/ducks/notifications";
-import { useDeepEffect } from "@frontend/core/lib/hooks/useDeepEffect";
 
+import { TextInput, Textarea, Tags, Button } from '@frontend/flib-react/lib/components';
+import { AppState } from '@frontend/core/src/redux/ducks';
+import { useRequest } from '@frontend/core/lib/hooks/useRequest';
+import { useLazyRequest } from '@frontend/core/lib/hooks/useLazyRequest';
+import { PushNotification } from '@frontend/core/lib/redux/ducks/notifications';
+import { useDeepEffect } from '@frontend/core/lib/hooks/useDeepEffect';
 import {
   DatesSearchResponseDto
 } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
 
-import { Events } from "../../../types/UserEvents";
-import { formatDateForDisplay } from "../../../utils/functions";
+import { Events } from '../../../types/UserEvents';
+import { formatDateForDisplay } from '../../../utils/functions';
 
 import { textMetadataValidationSchema } from './validationSchema';
-import './locales';
+import '../../../shared/Translations/generalInfoForm';
 
 interface Props {
   userEvent: Events;
@@ -51,7 +50,7 @@ const GeneralInformation = ({ userEvent, currentDate }: Props) => {
   const { lazyRequest, response: updateResponse } = useLazyRequest('dates.update', uuidUpdate);
 
   const [ inputTag, setInputTag ] = React.useState('');
-  const [ t ] = useTranslation(['general_infos', 'validation']);
+  const [ t ] = useTranslation(['general_infos', 'validation', 'notify']);
   const formik = useFormik({
     initialValues: { name: '', description: '', tags: [], avatar: '', signature_colors: []},
     onSubmit: (values) => {
@@ -62,17 +61,25 @@ const GeneralInformation = ({ userEvent, currentDate }: Props) => {
 
   useDeepEffect(() => {
     if (updateResponse.error) {
-      dispatch(PushNotification(updateResponse.error, 'error'));
+      dispatch(PushNotification(t(updateResponse.error), 'error'));
     }
     if (!updateResponse.error && !updateResponse.loading && updateResponse.called) {
-      dispatch(PushNotification('Success', 'success'));
+      dispatch(PushNotification(t('success'), 'success'));
     }
 
-  }, [updateResponse]);
+  }, [updateResponse.data]);
 
   useDeepEffect(() => {
-    if (!response.loading && response.error === undefined) {
+    if (
+      !response.loading && !response.error && response.data && formik.values.name === ''
+    ) {
       formik.setValues({...response.data.dates[0].metadata});
+      const d = response.data.dates[0].metadata;
+      formik.setFieldValue('name', d.name);
+      formik.setFieldValue('description', d.description);
+      formik.setFieldValue('signature_colors', d.signature_colors);
+      formik.setFieldValue('avatar', d.avatar);
+      formik.setFieldValue('tags', d.tags);
     }
   }, [response]);
 
@@ -152,8 +159,8 @@ const GeneralInformation = ({ userEvent, currentDate }: Props) => {
         onKeyDown={onTagsKeyDown}
         value={formik.values.tags}
         onChange={(tags: string[]) => formik.setFieldValue('tags', tags)}
-        onFocus={(v) => {}}
-        onBlur={(e: any) => {}}
+        onFocus={(v) => { console.log('focus');}}
+        onBlur={(e: any) => { console.log('focus');}}
         error={
           computeError('tags')
           && t(computeError('tags'))

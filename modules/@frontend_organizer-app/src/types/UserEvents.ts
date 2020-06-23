@@ -1,17 +1,19 @@
 export interface Events {
   group_id: string;
   name: string;
-  dates: {
-    name: string;
-    avatar: string;
-    id: string;
-    location: string,
-    colors: string[],
-    startDate: string,
-    endDate: string,
-    categories: Category[]
-  }[];
+  dates: Date[];
   categories: Category[];
+}
+
+export interface Date {
+  name: string;
+  avatar: string;
+  id: string;
+  location: string,
+  colors: string[],
+  startDate: string,
+  endDate: string,
+  categories: Category[]
 }
 
 export interface Category {

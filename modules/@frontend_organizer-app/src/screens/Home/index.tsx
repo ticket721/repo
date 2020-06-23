@@ -1,41 +1,42 @@
-import React                from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 import { v4 } from 'uuid';
 import { useTranslation } from 'react-i18next';
+import { useHistory } from 'react-router';
 
 import { EventsSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsSearchResponse.dto';
 import { DatesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
 import { CategoriesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/categories/dto/CategoriesSearchResponse.dto';
-import { RightEntity } from "@common/sdk/lib/@backend_nest/libs/common/src/rights/entities/Right.entity";
-import { useRequest } from "@frontend/core/lib/hooks/useRequest";
-import { CacheCore } from "@frontend/core/lib/cores/cache/CacheCore";
+import { RightEntity } from '@common/sdk/lib/@backend_nest/libs/common/src/rights/entities/Right.entity';
+import { useRequest } from '@frontend/core/lib/hooks/useRequest';
+import { CacheCore } from '@frontend/core/lib/cores/cache/CacheCore';
 // import { PushNotification } from '@frontend/core/lib/redux/ducks/notifications';
-import { SingleImage } from "@frontend/flib-react/lib/components";
-import { AppState } from "@frontend/core/src/redux/ducks";
-import { useDeepEffect } from "@frontend/core/lib/hooks/useDeepEffect";
+import { SingleImage } from '@frontend/flib-react/lib/components';
+import { AppState } from '@frontend/core/src/redux/ducks';
+import { useDeepEffect } from '@frontend/core/lib/hooks/useDeepEffect';
 
-import EventPresentation from "../../components/EventPresentation";
-import HomeSideMenu from "../../components/HomeSideMenu";
-import { MergedAppState } from "../../index";
-import { formatDateForDisplay } from "../../utils/functions";
-import { Events } from "../../types/UserEvents";
+import EventPresentation from '../../components/EventPresentation';
+import HomeSideMenu from '../../components/HomeSideMenu';
+import { MergedAppState } from '../../index';
+import { formatDateForDisplay } from '../../utils/functions';
+import { Events } from '../../types/UserEvents';
 
-import { formatEvent, formatDates, formatCategories} from "./utils";
+import { formatEvent, formatDates, formatCategories} from './utils';
 import './locales';
 
 
 const Home: React.FC = () => {
+  const history = useHistory();
   const [ t ] = useTranslation(['home']);
   const [currentDate, setCurrentDate] = React.useState<string>();
   const [name, setName] = React.useState<string>();
-  const [page, setPage] = React.useState<'general' | 'ticket' | 'dates' | 'location' | 'presentation'>();
   const [userEvents, setUserEvents] = React.useState<Events[]>([]);
 
   const rights = useSelector((state: MergedAppState) => state.cache.items[CacheCore.key('rights.search', [
     state.auth.token.value, {}
   ])]);
-  const groupIDs = rights ? rights.data.rights.filter((r: RightEntity) => r.entity_type === 'event').map((e: any) => e.entity_value) : undefined;
+  const groupIDs = rights ? rights.data.rights.filter((r: RightEntity) => r.entity_type === 'event')?.map((e: any) => e.entity_value) : undefined;
   const [uuid] = React.useState(v4());
   const [uuid2] = React.useState(v4());
   const [uuid3] = React.useState(v4());
@@ -87,7 +88,6 @@ const Home: React.FC = () => {
   );
 
   useDeepEffect(() => {
-    console.log('deep effect');
     if (groupIDs && !events.loading && !events.error) {
       setUserEvents(formatEvent(events.data.events));
     }
@@ -97,16 +97,13 @@ const Home: React.FC = () => {
     if (groupIDs && !categories.loading && !categories.error) {
       setUserEvents(formatCategories(categories.data.categories, userEvents));
     }
-    // eslint-disable-next-line
   }, [events, dates, groupIDs, categories]);
 
-  if (events.loading || dates.loading || categories.loading) {
-    return (
-      <Container>
-        {t('loading_label')}
-      </Container>
-    );
-  }
+  useEffect(() => {
+    history.push('/');
+    // eslint-disable-next-line
+  }, []);
+
   if (!events.loading && !dates.loading && !categories.loading && userEvents.length === 0) {
     return (
       <Container>
@@ -114,13 +111,18 @@ const Home: React.FC = () => {
       </Container>
     );
   }
-//  console.log('UserEvents : ', userEvents);
+  if (events.loading || dates.loading || !userEvents.find(e => e.dates)) {
+    return (
+      <Container>
+        {t('loading_label')}
+      </Container>
+    );
+  }
+
   return (
     <>
       {currentDate &&
         <EventPresentation
-          setPage={setPage}
-          page={page}
           name={name}
           currentDate={currentDate}
           setName={setName}
@@ -138,22 +140,31 @@ const Home: React.FC = () => {
       }
       <Container>
         {!currentDate && userEvents.map((event, i) => {
-          const first = event.dates[0];
+          const first = event?.dates[0];
+          let lowestPrice: number;
 
+          first?.categories?.forEach((c) => {
+            if (!lowestPrice || parseFloat(c.prices[0].value) < lowestPrice) {
+              lowestPrice = parseFloat(c.prices[0].value);
+            }
+          });
           return (
             <div key={`home-${event.group_id}-${i}`}
                className='card'
                onClick={() => {
                 setName(event.name);
-                setCurrentDate(formatDateForDisplay(first.startDate));
+                if (first) {
+                  setCurrentDate(formatDateForDisplay(first.startDate));
+                  history.push(event.group_id);
+                }
               }}
             >
               <SingleImage
                 src={first.avatar}
                 id={`presentation-card-${event.group_id}-${i}`}
                 title={event.name}
-                price={parseFloat("12")}
-                text={formatDateForDisplay(first.startDate)}
+                price={lowestPrice}
+                text={formatDateForDisplay(first.startDate) ?? '...'}
               />
             </div>
           );

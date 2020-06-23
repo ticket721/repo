@@ -1,7 +1,7 @@
-import { Events } from "../../types/UserEvents";
+import { Events } from '../../types/UserEvents';
 
 const formatEvent = (events: any): Events[] => {
-  return events.map((e: any) => {
+  return events?.map((e: any) => {
     return ({ name: e.name, group_id: e.group_id });
   });
 };
@@ -10,8 +10,8 @@ const formatDates = (dates: any, userEvents: Events[]): Events[] => {
   const origin =
     `${process.env.REACT_APP_T721_SERVER_PROTOCOL}://${process.env.REACT_APP_T721_SERVER_HOST}:${process.env.REACT_APP_T721_SERVER_PORT}/static/`;
 
-  return userEvents.map((e) => {
-    const newDates = dates.filter((d: any) => e.group_id === d.group_id).map((d: any) => ({
+  return userEvents?.map((e) => {
+    const newDates = dates?.filter((d: any) => e.group_id === d.group_id)?.map((d: any) => ({
         name: d.metadata.name,
         colors: d.metadata.signature_colors,
         avatar: `${origin}${d.metadata.avatar}`,
@@ -25,17 +25,17 @@ const formatDates = (dates: any, userEvents: Events[]): Events[] => {
 }
 
 const formatCategories = (categories: any, userEvents: Events[]): Events[] => (userEvents.map(e => {
-    const filteredCategories = categories.filter((c: any) => c.group_id === e.group_id);
-    const newCategories = filteredCategories.filter((c: any) => c.parent_type === 'event').map((category: any) => ({
+    const filteredCategories = categories?.filter((c: any) => c.group_id === e.group_id);
+    const newCategories = filteredCategories?.filter((c: any) => c.parent_type === 'event')?.map((category: any) => ({
       id: category.id,
       price: category.prices,
       name: category.display_name,
     }));
-    const newDates = e.dates.map(date => ({
+    const newDates = e?.dates?.map(date => ({
       ...date,
-      categories: filteredCategories.filter((c: any) => c.parent_type === 'date').map((category: any) => ({
+      categories: filteredCategories?.filter((c: any) => c.parent_type === 'date')?.map((category: any) => ({
         id: category.id,
-        price: category.prices[0].value,
+        prices: category.prices,
         name: category.display_name,
       }))
     }));
