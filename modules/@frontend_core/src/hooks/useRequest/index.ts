@@ -1,9 +1,9 @@
-import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { AppState } from '../../redux/ducks';
 import { CacheCore } from '../../cores/cache/CacheCore';
 // import { useEffect } from 'react';
 import { RegisterEntity, UnregisterEntity } from '../../redux/ducks/cache';
+import { useDeepEffect } from "../useDeepEffect";
 
 interface RequestParams {
     method: string;
@@ -25,9 +25,9 @@ export type RequestBag<ReturnType> = {
 
 export const useRequest = <ReturnType>(call: RequestParams, initialUuid: string): RequestBag<ReturnType> => {
     const response: RequestResp<ReturnType> = {
-        data: useSelector((state: AppState) => state.cache.items[CacheCore.key(call.method, call.args)]?.data),
-        error: useSelector((state: AppState) => state.cache.items[CacheCore.key(call.method, call.args)]?.error),
-        loading: !useSelector((state: AppState) => state.cache.items[CacheCore.key(call.method, call.args)]),
+        data: useSelector((state: AppState) => state.cache.items[CacheCore.key(call.method, call.args)]?.data, shallowEqual),
+        error: useSelector((state: AppState) => state.cache.items[CacheCore.key(call.method, call.args)]?.error, shallowEqual),
+        loading: !useSelector((state: AppState) => state.cache.items[CacheCore.key(call.method, call.args)], shallowEqual),
     };
 
     const dispatch = useDispatch();
@@ -38,11 +38,11 @@ export const useRequest = <ReturnType>(call: RequestParams, initialUuid: string)
     const unregisterEntity = (uuid: string): void =>
         void dispatch(UnregisterEntity(CacheCore.key(call.method, call.args), uuid));
 
-    useEffect(() => {
+    useDeepEffect(() => {
         registerEntity(initialUuid);
 
         return () => unregisterEntity(initialUuid);
-    }, [JSON.stringify(call)]);
+    }, [call]);
 
     return {
         response: {

@@ -67,19 +67,12 @@ const GeneralInformation = ({ userEvent, currentDate }: Props) => {
       dispatch(PushNotification(t('success'), 'success'));
     }
 
-  }, [updateResponse.data]);
+  }, [updateResponse]);
 
   useDeepEffect(() => {
-    if (
-      !response.loading && !response.error && response.data && formik.values.name === ''
+    if (!response.loading && !response.error && response.data
     ) {
       formik.setValues({...response.data.dates[0].metadata});
-      const d = response.data.dates[0].metadata;
-      formik.setFieldValue('name', d.name);
-      formik.setFieldValue('description', d.description);
-      formik.setFieldValue('signature_colors', d.signature_colors);
-      formik.setFieldValue('avatar', d.avatar);
-      formik.setFieldValue('tags', d.tags);
     }
   }, [response]);
 

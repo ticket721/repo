@@ -35,9 +35,9 @@ export const routes: RouteDatum[] = [
         page: Register,
     },
     {
-        path: '/',
+        path: '/:group_id?',
         page: Home,
         topBarHeight: '81px',
         protected: true,
-    },
+    }
 ];
