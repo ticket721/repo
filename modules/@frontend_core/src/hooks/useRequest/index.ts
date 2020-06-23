@@ -42,7 +42,7 @@ export const useRequest = <ReturnType>(call: RequestParams, initialUuid: string)
         registerEntity(initialUuid);
 
         return () => unregisterEntity(initialUuid);
-    }, []);
+    }, [JSON.stringify(call)]);
 
     return {
         response: {

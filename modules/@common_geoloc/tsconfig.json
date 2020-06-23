@@ -1,0 +1,39 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "declaration": true,
+        "declarationMap": true,
+        "removeComments": true,
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "target": "es2017",
+        "sourceMap": true,
+        "outDir": "./lib",
+        "baseUrl": "./sources",
+        "incremental": true,
+        "resolveJsonModule": true,
+        "esModuleInterop": true,
+        "types": ["jest", "node"],
+        "paths": {
+            "@lib/common/": [
+                "../../@backend_nest/libs/common/src"
+            ],
+            "@lib/common/*": [
+                "../../@backend_nest/libs/common/src/*"
+            ],
+            "@app/server/": [
+                "../../@backend_nest/apps/server/src"
+            ],
+            "@app/server/*": [
+                "../../@backend_nest/apps/server/src/*"
+            ],
+            "@app/worker/": [
+                "../../@backend_nest/apps/worker/src"
+            ],
+            "@app/worker/*": [
+                "../../@backend_nest/apps/worker/src/*"
+            ]
+        }
+    },
+    "exclude": ["node_modules", "lib", "**/*.spec.ts"]
+}

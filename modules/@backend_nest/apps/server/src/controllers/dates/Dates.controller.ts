@@ -28,6 +28,8 @@ import { DatesCreateResponseDto } from '@app/server/controllers/dates/dto/DatesC
 import { DatesAddCategoriesResponseDto } from '@app/server/controllers/dates/dto/DatesAddCategoriesResponse.dto';
 import { DatesDeleteCategoriesResponseDto } from '@app/server/controllers/dates/dto/DatesDeleteCategoriesResponse.dto';
 import { DatesUpdateResponseDto } from '@app/server/controllers/dates/dto/DatesUpdateResponse.dto';
+import { DatesCountResponseDto } from '@app/server/controllers/dates/dto/DatesCountResponse.dto';
+import { DatesCountInputDto } from '@app/server/controllers/dates/dto/DatesCountInput.dto';
 import { RightsService } from '@lib/common/rights/Rights.service';
 import { AuthGuard } from '@nestjs/passport';
 import { Roles, RolesGuard } from '@app/server/authentication/guards/RolesGuard.guard';
@@ -38,6 +40,15 @@ import { isFutureDateRange } from '@common/global/lib/utils';
 import { ApiResponses } from '@app/server/utils/ApiResponses.controller.decorator';
 import { MetadatasService } from '@lib/common/metadatas/Metadatas.service';
 import { ValidGuard } from '@app/server/authentication/guards/ValidGuard.guard';
+import { DatesHomeSearchInputDto } from '@app/server/controllers/dates/dto/DatesHomeSearchInput.dto';
+import { DatesHomeSearchResponseDto } from '@app/server/controllers/dates/dto/DatesHomeSearchResponse.dto';
+import { TimeToolService } from '@lib/common/toolbox/Time.tool.service';
+import { HOUR } from '@lib/common/utils/time';
+import { SortablePagedSearch } from '@lib/common/utils/SortablePagedSearch.type';
+import { ESSearchHit } from '@lib/common/utils/ESSearchReturn.type';
+import { fromES } from '@lib/common/utils/fromES.helper';
+import { DatesFuzzySearchInputDto } from '@app/server/controllers/dates/dto/DatesFuzzySearchInput.dto';
+import { DatesFuzzySearchResponseDto } from '@app/server/controllers/dates/dto/DatesFuzzySearchResponse.dto';
 
 /**
  * Generic Dates controller. Recover Dates linked to all types of events
@@ -53,14 +64,176 @@ export class DatesController extends ControllerBasics<DateEntity> {
      * @param rightsService
      * @param categoriesService
      * @param metadatasService
+     * @param timeToolService
      */
     constructor(
         private readonly datesService: DatesService,
         private readonly rightsService: RightsService,
         private readonly categoriesService: CategoriesService,
         private readonly metadatasService: MetadatasService,
+        private readonly timeToolService: TimeToolService,
     ) {
         super();
+    }
+
+    /**
+     * Search for dates
+     *
+     * @param body
+     */
+    @Post('/fuzzy-search')
+    @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.OK)
+    @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized, StatusCodes.InternalServerError, StatusCodes.BadRequest])
+    async fuzzySearch(@Body() body: DatesFuzzySearchInputDto): Promise<DatesFuzzySearchResponseDto> {
+        await this._authorizeGlobal(this.rightsService, this.datesService, null, null, ['route_search']);
+
+        const now = this.timeToolService.now().getTime();
+        const hour = now - (now % HOUR);
+
+        const query = this._esQueryBuilder<DateEntity>({
+            status: {
+                $eq: 'live',
+            },
+        } as SortablePagedSearch);
+
+        query.body.query.bool.must = [
+            {
+                term: query.body.query.bool.must.term,
+            },
+            {
+                multi_match: {
+                    fields: ['metadata.name^3', 'metadata.description'],
+                    query: body.query,
+                    fuzziness: 'AUTO',
+                },
+            },
+        ];
+
+        query.body.sort = [];
+
+        query.body.sort.push({
+            _script: {
+                script: {
+                    source: `
+                        double distance = doc['location.location'].arcDistance(params.lat, params.lon) / 1000;
+                        double time = (doc['timestamps.event_begin'].getValue().toInstant().toEpochMilli() - params.now) / 3600000;
+                        return distance + time;
+                    `,
+                    params: {
+                        now: hour,
+                        lon: body.lon,
+                        lat: body.lat,
+                    },
+                    lang: 'painless',
+                },
+                type: 'number',
+                order: 'asc',
+            },
+        });
+
+        const dates = await this.datesService.searchElastic(query);
+
+        if (dates.error) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.InternalServerError,
+                    message: 'error_while_fetching_home_dates',
+                },
+                StatusCodes.InternalServerError,
+            );
+        }
+
+        const resultDates = dates.response.hits.hits.map(
+            (hit: ESSearchHit<DateEntity>): DateEntity => fromES<DateEntity>(hit),
+        );
+
+        return {
+            dates: resultDates,
+        };
+    }
+    /**
+     * Search for dates
+     *
+     * @param body
+     */
+    @Post('/home-search')
+    @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.OK)
+    @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized, StatusCodes.InternalServerError, StatusCodes.BadRequest])
+    async homeSearch(@Body() body: DatesHomeSearchInputDto): Promise<DatesHomeSearchResponseDto> {
+        await this._authorizeGlobal(this.rightsService, this.datesService, null, null, ['route_search']);
+
+        const now = this.timeToolService.now().getTime();
+        const hour = now - (now % HOUR);
+
+        const query = this._esQueryBuilder<DateEntity>({
+            status: {
+                $eq: 'live',
+            },
+            'timestamps.event_begin': {
+                $gt: hour,
+            },
+        } as SortablePagedSearch);
+
+        query.body.query.bool.filter = {
+            script: {
+                script: {
+                    source: `
+                        double distance = doc['location.location'].arcDistance(params.lat, params.lon) / 1000;
+                        return distance < params.maxDistance;
+                    `,
+                    lang: 'painless',
+                    params: {
+                        maxDistance: 100,
+                        lon: body.lon,
+                        lat: body.lat,
+                    },
+                },
+            },
+        };
+
+        query.body.sort = [];
+
+        query.body.sort.push({
+            _script: {
+                script: {
+                    source: `
+                        double distance = doc['location.location'].arcDistance(params.lat, params.lon) / 1000;
+                        double time = (doc['timestamps.event_begin'].getValue().toInstant().toEpochMilli() - params.now) / 3600000;
+                        return distance + time;
+                    `,
+                    params: {
+                        now: hour,
+                        lon: body.lon,
+                        lat: body.lat,
+                    },
+                    lang: 'painless',
+                },
+                type: 'number',
+                order: 'asc',
+            },
+        });
+
+        const dates = await this.datesService.searchElastic(query);
+
+        if (dates.error) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.InternalServerError,
+                    message: 'error_while_fetching_home_dates',
+                },
+                StatusCodes.InternalServerError,
+            );
+        }
+
+        const resultDates = dates.response.hits.hits.map(
+            (hit: ESSearchHit<DateEntity>): DateEntity => fromES<DateEntity>(hit),
+        );
+
+        return {
+            dates: resultDates,
+        };
     }
 
     /**
@@ -76,6 +249,25 @@ export class DatesController extends ControllerBasics<DateEntity> {
         await this._authorizeGlobal(this.rightsService, this.datesService, null, null, ['route_search']);
 
         const dates = await this._search(this.datesService, body);
+
+        return {
+            dates,
+        };
+    }
+
+    /**
+     * Count for dates
+     *
+     * @param body
+     */
+    @Post('/count')
+    @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.OK)
+    @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized, StatusCodes.InternalServerError, StatusCodes.BadRequest])
+    async count(@Body() body: DatesCountInputDto): Promise<DatesCountResponseDto> {
+        await this._authorizeGlobal(this.rightsService, this.datesService, null, null, ['route_search']);
+
+        const dates = await this._count(this.datesService, body);
 
         return {
             dates,

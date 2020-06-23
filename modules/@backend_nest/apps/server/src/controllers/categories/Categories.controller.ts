@@ -35,6 +35,8 @@ import { isFutureDateRange } from '@common/global/lib/utils';
 import { ApiResponses } from '@app/server/utils/ApiResponses.controller.decorator';
 import { MetadatasService } from '@lib/common/metadatas/Metadatas.service';
 import { ValidGuard } from '@app/server/authentication/guards/ValidGuard.guard';
+import { CategoriesCountInputDto } from '@app/server/controllers/categories/dto/CategoriesCountInput.dto';
+import { CategoriesCountResponseDto } from '@app/server/controllers/categories/dto/CategoriesCountResponse.dto';
 
 /**
  * Generic Categories controller. Recover Categories linked to all types of events
@@ -76,6 +78,25 @@ export class CategoriesController extends ControllerBasics<CategoryEntity> {
         await this._authorizeGlobal(this.rightsService, this.categoriesService, null, null, ['route_search']);
 
         const categories = await this._search(this.categoriesService, body);
+
+        return {
+            categories,
+        };
+    }
+
+    /**
+     * Count for categories
+     *
+     * @param body
+     */
+    @Post('/count')
+    @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.OK)
+    @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized])
+    async count(@Body() body: CategoriesCountInputDto): Promise<CategoriesCountResponseDto> {
+        await this._authorizeGlobal(this.rightsService, this.categoriesService, null, null, ['route_search']);
+
+        const categories = await this._count(this.categoriesService, body);
 
         return {
             categories,

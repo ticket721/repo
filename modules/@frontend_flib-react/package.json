@@ -84,7 +84,9 @@
     "themeprovider-storybook": "1.5.1",
     "react-responsive": "8.1.0",
     "@types/react-responsive": "8.0.2",
-    "react-placeholder": "4.0.3"
+    "react-placeholder": "4.0.3",
+    "react-lottie": "1.2.3",
+    "@types/react-lottie": "1.2.5"
   },
   "devDependencies": {
     "@storybook/addon-actions": "5.3.19",

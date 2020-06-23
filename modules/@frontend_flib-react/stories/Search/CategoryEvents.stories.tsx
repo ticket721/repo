@@ -75,7 +75,7 @@ export const showcase = () => (
                             key={event.id}
                             src={event.src}
                             id={event.id}
-                            price={event.price}
+                            price={event.price.toString()}
                             text={event.text}
                             title={event.title}
                         />

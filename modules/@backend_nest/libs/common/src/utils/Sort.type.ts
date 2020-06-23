@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsBoolean, IsIn, IsOptional, IsString } from 'class-validator';
 
 /**
@@ -31,7 +31,7 @@ export class Sort {
     /**
      * Order to use for sorting
      */
-    @ApiProperty({
+    @ApiPropertyOptional({
         example: null,
         description: 'True if ordering on nested field',
     })

@@ -17,3 +17,6 @@ export * from './time-picker';
 export * from './wallet';
 export * from './toast';
 export * from './loader';
+export * from './search';
+export * from './animation';
+export * from './message';

@@ -5,6 +5,7 @@ import Icon from '../../icon';
 export interface LocationHeaderProps extends React.ComponentProps<any> {
     title: string;
     location: string;
+    onFilter?: () => void;
     mainColor?: string;
 }
 
@@ -38,7 +39,7 @@ export const LocationHeader: React.FunctionComponent<LocationHeaderProps> = (
                     {props.location}
                 </h3>
             </div>
-            <button type={'button'}>
+            <button type={'button'} onClick={props.onFilter}>
                 <Icon icon={'filter'} size={'16px'} color={'rgba(255, 255, 255, 0.9)'} />
             </button>
         </Container>

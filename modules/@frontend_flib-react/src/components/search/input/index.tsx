@@ -5,19 +5,22 @@ import Icon from '../../icon';
 export interface SearchInputProps extends React.ComponentProps<any> {
     name: string;
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    cancel: () => void;
+    cancel?: () => void;
     clearInput: () => void;
     placeholder: string;
     value?: string;
     mainColor?: string;
-    cancelLabel: string;
+    cancelLabel?: string;
     icon?: string;
+    autofocus?: boolean;
+    onFocus?: () => void;
+    onBlur?: () => void;
 }
 
 const Container = styled.div`
     align-items: center;
     display: flex;
-    margin: ${(props) => props.theme.regularSpacing} ${(props) => props.theme.biggerSpacing};
+    padding: ${(props) => props.theme.regularSpacing} ${(props) => props.theme.biggerSpacing};
 `;
 
 const InputContainer = styled.div`
@@ -73,30 +76,45 @@ const SearchIcon = styled(Icon)`
 export const SearchInput: React.FunctionComponent<SearchInputProps> = (props: SearchInputProps): JSX.Element => {
     const [focused, setFocus] = React.useState(false);
 
-    const test = () => {
-        props.clearInput();
+    const onFocus = () => {
+        setFocus(true);
+        if (props.onFocus) {
+            props.onFocus();
+        }
+    };
+
+    const onBlur = () => {
         setFocus(false);
+        if (props.onBlur) {
+            props.onBlur();
+        }
     };
 
     return (
         <Container>
             <InputContainer>
-                <SearchIcon icon={props.icon} size={props.icon === 'pin' ? '16px' : '24px'} color={props.mainColor} />
+                <SearchIcon icon={props.icon} size={'16px'} color={props.mainColor} />
                 <input
                     id={props.name}
                     name={props.name}
                     placeholder={props.placeholder}
-                    onFocus={() => setFocus(true)}
+                    onFocus={onFocus}
                     onChange={props.onChange}
                     value={props.value}
+                    autoFocus={props.autofocus}
+                    onBlur={onBlur}
                 />
-                <ClearButton value={props.value} onClick={props.clearInput}>
-                    <ClearIcon icon={'close'} size={'12px'} />
-                </ClearButton>
+                {props.clearInput ? (
+                    <ClearButton value={props.value} onClick={props.clearInput}>
+                        <ClearIcon icon={'close'} size={'12px'} />
+                    </ClearButton>
+                ) : null}
             </InputContainer>
-            <CancelButton focused={focused} onClick={test}>
-                {props.cancelLabel}
-            </CancelButton>
+            {props.cancel ? (
+                <CancelButton focused={focused} onClick={props.cancel}>
+                    {props.cancelLabel}
+                </CancelButton>
+            ) : null}
         </Container>
     );
 };

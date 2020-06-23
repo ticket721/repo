@@ -37,4 +37,13 @@ const DTFormat = new Intl.DateTimeFormat('default', {
     minute: 'numeric',
 });
 
+const DTFormatShort = new Intl.DateTimeFormat('default', {
+    month: 'short',
+    day: '2-digit',
+    hour: 'numeric',
+    minute: 'numeric',
+    hour12: false,
+});
+
 export const format = (date: Date): string => DTFormat.format(date);
+export const formatShort = (date: Date): string => DTFormatShort.format(date);

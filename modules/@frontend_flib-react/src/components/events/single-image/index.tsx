@@ -10,6 +10,9 @@ export interface SingleImageProps extends React.ComponentProps<any> {
     mainColor?: string;
     smaller?: boolean;
     imgOnly?: boolean;
+    begin?: Date;
+    end?: Date;
+    dateLabel?: string;
 }
 
 const Container = styled.div<SingleImageProps>`
@@ -51,6 +54,7 @@ const Details = styled.div<SingleImageProps>`
     left: ${(props) => props.theme.regularSpacing};
     position: absolute;
     z-index: 1;
+    width: calc(100% - 2 * ${(props) => props.theme.regularSpacing});
 
     h3 {
         color: ${(props) => props.theme.textColor};
@@ -77,6 +81,20 @@ const Details = styled.div<SingleImageProps>`
     }
 `;
 
+const EllipsedText = styled.p`
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: calc(100%);
+`;
+
+const EllipsedTitle = styled.h3`
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: calc(100%);
+`;
+
 export const SingleImage: React.FunctionComponent<SingleImageProps & { className?: string }> = (
     props: SingleImageProps,
 ): JSX.Element => {
@@ -85,11 +103,12 @@ export const SingleImage: React.FunctionComponent<SingleImageProps & { className
             <img src={props.src} />
             {!props.imgOnly && (
                 <Details mainColor={props.mainColor} smaller={props.smaller}>
-                    <h3>{props.title}</h3>
-                    <p>
-                        {props.price && <span>{props.price}€</span>}
+                    <EllipsedTitle>{props.title}</EllipsedTitle>
+                    {props.dateLabel ? <EllipsedText>{props.dateLabel}</EllipsedText> : null}
+                    <EllipsedText>
+                        {props.price && <span>{props.price} €</span>}
                         {props.text}
-                    </p>
+                    </EllipsedText>
                 </Details>
             )}
         </Container>
