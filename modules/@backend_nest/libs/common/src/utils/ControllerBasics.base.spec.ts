@@ -163,6 +163,29 @@ describe('Controller Basics', function() {
                 'unexpected_error',
             );
         });
+
+        it('should properly catch and handle error with message', async function() {
+            const boundable: Boundable<CategoryEntity> & CRUDExtension<any, any> = mock(CategoriesService);
+
+            const entity = {
+                id: 'test',
+            };
+
+            when(boundable.create(deepEqual(entity))).thenResolve({
+                error: 'unexpected_error',
+                response: null,
+            });
+
+            await throwWith(
+                context.controllerBasics._crudCall<any>(
+                    instance(boundable).create(entity),
+                    StatusCodes.InternalServerError,
+                    'custom_error',
+                ),
+                StatusCodes.InternalServerError,
+                'custom_error',
+            );
+        });
     });
     describe('_servicaCall', function() {
         it('should properly process service response', async function() {
