@@ -47,7 +47,7 @@ export const CategoryForm: React.FC<CategoryFormProps> = (props: CategoryFormPro
             saleEnd: categoryItem.saleEnd,
             seats: categoryItem.seats,
             currencies: [{
-                currency: 'eur',
+                currency: 'T721Token',
                 price: (categoryItem.price * 100).toString(),
             }]
         })
