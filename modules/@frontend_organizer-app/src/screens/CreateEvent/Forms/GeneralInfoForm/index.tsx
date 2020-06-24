@@ -7,6 +7,7 @@ import { EventsCreateTextMetadata }        from '@common/sdk/lib/@backend_nest/a
 import { textMetadataValidationSchema } from './validationSchema';
 
 import { useTranslation } from 'react-i18next';
+import './locales';
 
 const GeneralInfoForm: React.FC = () => {
     const [ inputTag, setInputTag ] = useState('');

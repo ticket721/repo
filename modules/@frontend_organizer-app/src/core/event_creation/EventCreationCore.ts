@@ -38,8 +38,8 @@ export abstract class EventCreationCore {
                     $order: 'desc'
                 }],
                 $page_size: 1,
-                current_status: {
-                    $ne: 'complete'
+                consumed: {
+                    $eq: false
                 },
                 name: {
                     $eq: '@events/creation'
