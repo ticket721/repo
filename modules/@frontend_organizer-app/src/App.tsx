@@ -45,7 +45,7 @@ const App: React.FC = () => {
                   return <ProtectedRoute path={route.path} key={idx} page={page} />
               }
 
-                        return <Route key={idx} path={route.path}>
+                        return <Route key={idx} path={route.path} >
                             <route.page />
                         </Route>
                     })
