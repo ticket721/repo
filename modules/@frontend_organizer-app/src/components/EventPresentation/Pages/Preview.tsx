@@ -29,6 +29,7 @@ const Preview = ({ category }: Props) => {
           }}
           />
           <Overlap>
+            { /* tslint:disable */}
             <PreviewInfos
               ticket={{
               ...category,
@@ -45,6 +46,7 @@ const Preview = ({ category }: Props) => {
               endTime,
             }}
             />
+            { /* tslint:enable */}
           </Overlap>
         </Ticket>
       </TicketContainer>
