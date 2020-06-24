@@ -193,7 +193,7 @@ apps:
       _global.namespace: "staging"
 
   platform-staging:
-    timeout: 1200
+    timeout: 2400
     name: "platform-staging"
     description: "The Ticket721 Platform"
     namespace: "staging"

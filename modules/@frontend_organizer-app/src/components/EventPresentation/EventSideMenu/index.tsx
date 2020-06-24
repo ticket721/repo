@@ -1,24 +1,43 @@
 import React from 'react';
 import styled from 'styled-components';
-import Button from "@frontend/flib-react/lib/components/button";
-import Icon from "@frontend/flib-react/lib/components/icon";
-import SubMenu from "./SubMenu";
 
-import { dates } from "../fakeData";
+import { useHistory } from 'react-router';
+import { useTranslation } from 'react-i18next';
+import Button from '@frontend/flib-react/lib/components/button';
+import Icon from '@frontend/flib-react/lib/components/icon';
+
+import { formatDateForDisplay } from '../../../utils/functions';
+import { Events } from '../../../types/UserEvents';
+
+import SubMenu from './SubMenu';
+import './locales';
 
 interface Props {
   currentDate: string | undefined;
   setCurrentDate: (date: string) => void;
-  setPage: (page: string) => void;
+  setName: (name: string) => void;
   name: string;
+  userEvents: Events[];
 }
 
-const EventSideMenu = ({ currentDate, setCurrentDate, setPage, name }: Props) => {
-  const category = dates.find((e) => e[0].name === name);
+const EventSideMenu = ({ currentDate, setCurrentDate, setName, name, userEvents }: Props) => {
+  const [ t ] = useTranslation(['event_side_menu']);
+  const category = userEvents.find((e) => e.name === name);
+  const history = useHistory();
+
+  const handleClick = (page: string) => {
+    const id = history.location.pathname.match(/^\/0x([a-zA-Z]|[0-9])+/);
+    history.push(`${id[0]}/${page}`);
+  };
+
 
   return (
     <Container>
-      <BackIcon onClick={() => setCurrentDate(undefined)}>
+      <BackIcon onClick={() => {
+        setCurrentDate(undefined);
+        setName(undefined);
+        history.push('/');
+      }}>
         <Icon
           icon={'back-arrow'}
           size={'14px'}
@@ -29,11 +48,11 @@ const EventSideMenu = ({ currentDate, setCurrentDate, setPage, name }: Props) =>
         <EventName>{name}</EventName>
         <SelectDate value={currentDate} onChange={(e) => setCurrentDate(e.target.value)}>
           {
-            // @ts-ignore
-            category.map((e, i) => {
-              const date = `${e.startDate.toDateString()} - ${e.startDate.getHours()}:${e.startDate.getMinutes()}`;
+            category.dates.map((e, i) => {
+              const date = e.startDate ? formatDateForDisplay(e.startDate) : 'Premium';
+
               return (
-                <option key={`side-menu-${e.name}-${date}-${i}`} value={date}>
+                <option key={`side-menu-${e.id}-${i}`} value={date}>
                   {date}
                 </option>
               );
@@ -42,21 +61,21 @@ const EventSideMenu = ({ currentDate, setCurrentDate, setPage, name }: Props) =>
           }
         </SelectDate>
         <Button
-          className="top"
-          variant="primary"
-          title="Publish Event"
+          className='top'
+          variant='primary'
+          title={t('publish_label')}
           onClick={() => console.log('publish')}
         />
         <Button
-          variant="secondary"
-          title="Preview Event"
+          variant='secondary'
+          title={t('preview_label')}
           onClick={() => console.log('publish')}
         />
       </Actions>
       <Separator />
-      <SubMenu type='information' setPage={setPage}/>
-      <SubMenu type='tickets' setPage={setPage}/>
-      <Title onClick={() => setPage('presentation')}>Presentation</Title>
+      { currentDate !== 'Premium' && <SubMenu type='information'/>}
+      <SubMenu type='tickets'/>
+      <Title onClick={() => handleClick('presentation')}>{t('presentation_title')}</Title>
       <Separator />
     </Container>
   )

@@ -1,0 +1,123 @@
+import React                                          from 'react';
+import { CurrentLocation, LocationList, SearchInput } from '@frontend/flib-react/lib/components';
+import { Formik, FormikProps }                        from 'formik';
+import { citiesList, City }                           from '@common/global';
+import { QuickScore }                                 from 'quick-score';
+import { useDispatch }                                from 'react-redux';
+import { useTranslation }                 from 'react-i18next';
+import { GetLocation, SetCustomLocation } from '../../redux/ducks/location';
+
+interface FormData {
+    cityLabel: string;
+}
+
+export interface LocationModifierProps {
+    disableFilter: () => void;
+}
+
+const parsedCities = citiesList.cities.map((city: string[]): City => ({
+    name: city[4],
+    nameAscii: city[0],
+    nameAdmin: city[5],
+    country: city[1],
+    coord: {
+        lat: parseFloat(city[2]),
+        lon: parseFloat(city[3]),
+    },
+    population: parseInt(city[6], 10),
+    id: parseInt(city[7], 10),
+}));
+
+const qs = new QuickScore(parsedCities, {
+    keys: ['nameAscii', 'nameAdmin'],
+});
+
+export const LocationModifier: React.FC<LocationModifierProps> = (coreProps: LocationModifierProps): JSX.Element => {
+
+    const [t] = useTranslation('home');
+    const dispatch = useDispatch();
+
+    return <Formik
+        initialValues={{
+            cityLabel: '',
+        }}
+        onSubmit={null}
+    >
+        {
+            (props: FormikProps<FormData>) => {
+
+                let results: { label: string; value: City; idx: number; }[] = [];
+
+                if (props.values.cityLabel !== '') {
+                    results =
+                        qs.search(props.values.cityLabel)
+                            .slice(0, 20)
+                            .map((res, idx): { label: string; value: City; idx: number; } => ({
+                                label: `${res.item.name}, ${res.item.nameAdmin}, ${res.item.country}`,
+                                value: res.item,
+                                idx,
+                            }));
+                }
+
+                const clearInput = () => {
+                    props.setFieldValue('cityLabel', '');
+                };
+
+                const cancel = () => {
+                    clearInput();
+                    coreProps.disableFilter();
+                };
+
+                const requestCurrentLocation = () => {
+                    dispatch(GetLocation());
+                    clearInput();
+                    coreProps.disableFilter();
+                };
+
+                return <>
+                    <SearchInput
+                        onChange={props.handleChange}
+                        cancel={cancel}
+                        clearInput={null}
+                        value={props.values.cityLabel}
+                        name={'cityLabel'}
+                        autofocus={true}
+                        icon={'pin'}
+
+                        placeholder={t('search_city')}
+                        cancelLabel={t('cancel')}
+                    />
+                    <CurrentLocation
+                        label={t('use_current_location')}
+                        getCurrentLocation={requestCurrentLocation}
+                    />
+                    {
+                        results.length
+
+                            ?
+                            <LocationList
+                                title={null}
+                                locations={results}
+                                selectedLocation={null}
+                                updateLocation={
+                                    (city: City): void => {
+                                        dispatch(SetCustomLocation({
+                                            lat: city.coord.lat,
+                                            lon: city.coord.lon,
+                                            city,
+                                        }));
+                                        coreProps.disableFilter();
+                                    }
+                                }
+                            />
+
+                            :
+                            null
+
+                    }
+                </>;
+
+            }
+        }
+    </Formik>;
+};

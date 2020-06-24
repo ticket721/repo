@@ -48,7 +48,7 @@ export const EventInfos: React.FunctionComponent<EventInfosProps> = (props: Even
                 endTime={props.event.endTime}
                 iconColor={props.event.mainColor}
             />
-            <Location iconColor={props.event.mainColor} location={props.event.location} address={props.event.address} />
+            <Location iconColor={props.event.mainColor} location={props.event.location} />
         </Container>
     );
 };

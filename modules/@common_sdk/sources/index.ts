@@ -27,7 +27,16 @@ import { actionsCreate, actionsSearch, actionsUpdate } from './app/api/actions';
 import { uploadImage } from './app/api/images';
 
 // DATES
-import { datesAddCategories, datesCreate, datesDeleteCategories, datesSearch, datesUpdate } from './app/api/dates';
+import {
+    datesAddCategories,
+    datesCount,
+    datesCreate,
+    datesDeleteCategories,
+    datesFuzzySearch,
+    datesHomeSearch,
+    datesSearch,
+    datesUpdate,
+} from './app/api/dates';
 import {
     eventsAddCategories, eventsAddDates, eventsCount,
     eventsCreate, eventsCreateAdminsConfiguration, eventsCreateCategoriesConfiguration,
@@ -35,11 +44,11 @@ import {
     eventsCreateModulesConfiguration,
     eventsCreateTextMetadata, eventsDeleteCategories, eventsDeleteDates,
     eventsSearch, eventsStart, eventsUpdate, eventsWithdraw,
-} from './app/api/events';
+}                                                                                                                        from './app/api/events';
 import { txsInfos, txsSearch, txsSubscribe }                              from './app/api/txs';
-import { contractsFetch }                                                 from './app/api/contracts';
-import { categoriesCreate, categoriesSearch, categoriesUpdate }           from './app/api/categories';
-import { rightsSearch }                                                   from './app/api/rights';
+import { contractsFetch }                                                        from './app/api/contracts';
+import { categoriesCount, categoriesCreate, categoriesSearch, categoriesUpdate } from './app/api/categories';
+import { rightsSearch }                                                          from './app/api/rights';
 import { metadatasFetch }                                                 from './app/api/metadatas';
 import { cartModulesConfiguration, cartTicketSelections }                 from './app/api/cart';
 import { checkoutCartCommitStripe, checkoutResolveCartWithPaymentIntent } from './app/api/checkout';
@@ -79,6 +88,9 @@ export class T721SDK {
         this.actions.create = this.actions.create.bind(this);
 
         this.dates.search = this.dates.search.bind(this);
+        this.dates.homeSearch = this.dates.homeSearch.bind(this);
+        this.dates.fuzzySearch = this.dates.fuzzySearch.bind(this);
+        this.dates.count = this.dates.count.bind(this);
         this.dates.create = this.dates.create.bind(this);
         this.dates.addCategories = this.dates.addCategories.bind(this);
         this.dates.deleteCategories = this.dates.deleteCategories.bind(this);
@@ -102,6 +114,7 @@ export class T721SDK {
         this.events.withdraw = this.events.withdraw.bind(this);
 
         this.categories.create = this.categories.create.bind(this);
+        this.categories.count = this.categories.count.bind(this);
         this.categories.search = this.categories.search.bind(this);
         this.categories.update = this.categories.update.bind(this);
 
@@ -236,7 +249,10 @@ export class T721SDK {
 
     public dates = {
         search: datesSearch,
+        homeSearch: datesHomeSearch,
+        fuzzySearch: datesFuzzySearch,
         create: datesCreate,
+        count: datesCount,
         addCategories: datesAddCategories,
         deleteCategories: datesDeleteCategories,
         update: datesUpdate,
@@ -269,6 +285,7 @@ export class T721SDK {
 
     public categories = {
         search: categoriesSearch,
+        count: categoriesCount,
         create: categoriesCreate,
         update: categoriesUpdate,
     };

@@ -6,7 +6,6 @@ import { blurAndDarkenBackground }                            from '@frontend/co
 import { Route, Switch }                                      from 'react-router-dom';
 import { drawerRoutes }                                       from './drawerRoutes';
 import { useHistory }                                         from 'react-router';
-import { WalletHeader }                                       from '@frontend/flib-react/lib/components';
 import { ArrowBackIos }                                       from '@material-ui/icons';
 import { computeProfilePath }                                 from '@frontend/core/lib/utils/computeProfilePath';
 
@@ -14,15 +13,6 @@ interface Props {
     open: boolean,
     onClose: () => void;
 }
-
-const user = {
-    firstName: 'Pierre',
-    lastName: 'Paul',
-    profilePicture: '/favicon.ico',
-    creditBalance: 3500,
-    creditCard: 5234,
-    currentLocation: 'Paris, France',
-};
 
 const DrawerAccount = ({open, onClose}: Props): JSX.Element => {
     const history = useHistory();
@@ -33,7 +23,7 @@ const DrawerAccount = ({open, onClose}: Props): JSX.Element => {
             return null;
         }
 
-        return <BackArrow onClick={() => history.push(computeProfilePath(history.location.pathname))}>
+        return <BackArrow style={{marginTop: 24}} onClick={() => history.push(computeProfilePath(history.location.pathname))}>
             <ArrowBackIos />
             <span>Back</span>
         </BackArrow>
@@ -41,7 +31,6 @@ const DrawerAccount = ({open, onClose}: Props): JSX.Element => {
 
     return (
         <Drawer anchor='right' open={open} onClose={onClose} browsername={browser?.name}>
-            <WalletHeader user={user} />
             <Switch>
                 {
                     drawerRoutes.map((route, idx) => (

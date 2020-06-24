@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { action } from '@storybook/addon-actions';
-import { text, withKnobs, array } from '@storybook/addon-knobs';
+import { text, withKnobs } from '@storybook/addon-knobs';
 import LocationList from '../../src/components/location/list';
 
 export default {
@@ -11,12 +11,23 @@ export default {
     },
 };
 
-const locations = ['Quebec City, CA', 'San Diego, USA', 'Paris, FR'];
+const locations = [
+    {
+        label: 'Quebec City, CA',
+        value: 'QC',
+        idx: 0,
+    },
+    {
+        label: 'San Diego, USA',
+        value: 'QC',
+        idx: 1,
+    },
+];
 
 export const showcase = () => (
     <LocationList
         title={text('Title', 'Popular locations')}
-        locations={array('Locations', locations)}
+        locations={locations}
         updateLocation={action('...updating location')}
     />
 );

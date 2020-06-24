@@ -37,7 +37,7 @@ export const CurrentLocation: React.FunctionComponent<CurrentLocationProps> = (
         <Item onClick={props.getCurrentLocation}>
             <LocationIcon icon={'location'} size={'16px'} color={'rgba(255, 255, 255, 0.38)'} />
             {props.label}
-            <ChevronIcon icon={'chevron'} size={'12px'} color={'rgba(255, 255, 255, 0.9)'} />
+            <ChevronIcon icon={'chevron'} size={'8px'} color={'rgba(255, 255, 255, 0.9)'} />
         </Item>
     );
 };

@@ -2,7 +2,7 @@ import * as React from 'react';
 import styled from '../../../config/styled';
 
 export interface SingleImageProps extends React.ComponentProps<any> {
-    price?: number;
+    price?: string | number;
     id: string | number;
     src: string;
     text?: string;
@@ -10,6 +10,10 @@ export interface SingleImageProps extends React.ComponentProps<any> {
     mainColor?: string;
     smaller?: boolean;
     imgOnly?: boolean;
+    begin?: Date;
+    end?: Date;
+    dateLabel?: string;
+    onClick?: () => void;
 }
 
 const Container = styled.div<SingleImageProps>`
@@ -19,6 +23,7 @@ const Container = styled.div<SingleImageProps>`
     overflow: hidden;
     position: relative;
     width: 100%;
+    cursor: ${(props) => (props.clickable ? 'pointer' : 'default')};
 
     img {
         height: 100%;
@@ -51,6 +56,7 @@ const Details = styled.div<SingleImageProps>`
     left: ${(props) => props.theme.regularSpacing};
     position: absolute;
     z-index: 1;
+    width: calc(100% - 2 * ${(props) => props.theme.regularSpacing});
 
     h3 {
         color: ${(props) => props.theme.textColor};
@@ -77,19 +83,40 @@ const Details = styled.div<SingleImageProps>`
     }
 `;
 
+const EllipsedText = styled.p`
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: calc(100%);
+`;
+
+const EllipsedTitle = styled.h3`
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: calc(100%);
+`;
+
 export const SingleImage: React.FunctionComponent<SingleImageProps & { className?: string }> = (
     props: SingleImageProps,
 ): JSX.Element => {
     return (
-        <Container imgOnly={props.imgOnly} smaller={props.smaller} className={props.className}>
+        <Container
+            imgOnly={props.imgOnly}
+            smaller={props.smaller}
+            className={props.className}
+            clickable={!!props.onClick}
+            onClick={props.onClick}
+        >
             <img src={props.src} />
             {!props.imgOnly && (
                 <Details mainColor={props.mainColor} smaller={props.smaller}>
-                    <h3>{props.title}</h3>
-                    <p>
-                        {props.price && <span>{props.price}€</span>}
+                    <EllipsedTitle>{props.title}</EllipsedTitle>
+                    {props.dateLabel ? <EllipsedText>{props.dateLabel}</EllipsedText> : null}
+                    <EllipsedText>
+                        {props.price && <span>{props.price} €</span>}
                         {props.text}
-                    </p>
+                    </EllipsedText>
                 </Details>
             )}
         </Container>

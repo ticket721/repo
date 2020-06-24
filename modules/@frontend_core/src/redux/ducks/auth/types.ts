@@ -17,6 +17,7 @@ export interface User {
     locale: string;
     validated: boolean;
     address: string;
+    uuid: string;
 }
 
 export interface Token {

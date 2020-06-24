@@ -116,5 +116,6 @@ export const useEventCreation = <ActionInputType extends {[key: string]: any}>(
         submit,
         update,
         getSubmitButtonProps,
+        setLoadingState,
     };
 };

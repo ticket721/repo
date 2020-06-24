@@ -12,7 +12,7 @@
   },
   "scripts": {
     "build": "rm -rf lib && tsc && echo \"Components compiled !\" && mkdir -p lib/assets && cp -r static/assets/fonts lib/assets/fonts && yarn gen-icons",
-    "watch": "watch 'yarn build && echo \"Done !\"' src",
+    "watch": "watch 'npx tsc && echo \"Done !\"' src",
     "gen-icons": "rm -rf static/t721-icons && node scripts/svgtofont.js",
     "storybook": "start-storybook -p 6007 -s ./static",
     "build-storybook": "build-storybook -c .storybook -o dist -s ./static",
@@ -83,7 +83,15 @@
     "svgtofont": "1.6.0",
     "themeprovider-storybook": "1.5.1",
     "react-responsive": "8.1.0",
-    "@types/react-responsive": "8.0.2"
+    "@types/react-responsive": "8.0.2",
+    "react-placeholder": "4.0.3",
+    "react-lottie": "1.2.3",
+    "@types/react-lottie": "1.2.5",
+    "react-leaflet": "2.7.0",
+    "@types/react-leaflet": "2.5.1",
+    "@types/leaflet": "1.5.12",
+    "leaflet": "1.6.0",
+    "platform-detect": "3.0.0"
   },
   "devDependencies": {
     "@storybook/addon-actions": "5.3.19",

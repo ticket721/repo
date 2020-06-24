@@ -71,7 +71,7 @@ export class WinstonLoggerService implements LoggerService {
      * @param message
      */
     warn(message: string) {
-        this.logger.warning(message);
+        this.logger.warn(message);
     }
 
     /**

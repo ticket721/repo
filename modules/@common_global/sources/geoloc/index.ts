@@ -127,3 +127,5 @@ export function closestCity(pos: Coordinates): City {
 
     return rawToStruct(result);
 }
+
+export const citiesList = cities;

@@ -5,11 +5,6 @@ const Paris: Coordinates = {
     lon: 2.349014,
 };
 
-const Rome: Coordinates = {
-    lat: 41.902782,
-    lon: 12.496366,
-};
-
 const NewYork: Coordinates = {
     lat: 40.730610,
     lon: -73.935242,
@@ -35,16 +30,7 @@ describe('GeoLoc', function () {
         expect(result.country).toEqual('France');
 
     });
-    
-    it('should return Rome', function () {
 
-        const result: City = closestCity(Rome);
-
-        expect(result.name).toEqual('Rome');
-        expect(result.country).toEqual('Italy');
-
-    });
-    
     it('should return NewYork', function () {
 
         const result: City = closestCity(NewYork);
@@ -79,7 +65,7 @@ describe('GeoLoc', function () {
             lat: 61.1333,
         });
 
-        expect(result.name).toEqual('Ennadai');
+        expect(result.name).toEqual('Fort McMurray');
         expect(result.country).toEqual('Canada');
 
     });

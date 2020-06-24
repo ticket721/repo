@@ -394,6 +394,7 @@ export class MetadatasService extends CRUDExtension<MetadatasRepository, Metadat
         });
 
         if (metadataEntityRes.error) {
+            console.log(metadataEntityRes);
             return {
                 error: 'metadata_creation_error',
                 response: null,

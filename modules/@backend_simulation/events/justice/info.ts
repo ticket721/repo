@@ -43,7 +43,7 @@ export default {
                 currencies: [
                     {
                         currency: 'Fiat',
-                        price: '100'
+                        price: '20000'
                     }
                 ]
             }
@@ -60,7 +60,7 @@ export default {
                     currencies: [
                         {
                             currency: 'Fiat',
-                            price: '100'
+                            price: '10000'
                         }
                     ]
                 }
@@ -76,7 +76,7 @@ export default {
                     currencies: [
                         {
                             currency: 'Fiat',
-                            price: '100'
+                            price: '10000'
                         }
                     ]
                 }
@@ -86,8 +86,8 @@ export default {
     images: {
         avatar: 'avatar.jpg',
         signatureColors: [
-            '#52b2ff',
-            '#5dffd6'
+            '#FAE2B2',
+            '#57472F'
         ]
     }
 }

@@ -1,15 +1,19 @@
 import React from 'react';
 import styled from 'styled-components';
-import Icon from "@frontend/flib-react/lib/components/icon";
+
+import { useTranslation } from 'react-i18next';
+import { useHistory } from 'react-router';
+import Icon from '@frontend/flib-react/lib/components/icon';
+import '../locales';
 
 const tickets = ['Weekends', 'Mercredi', 'Super category'];
 
 interface Props {
   type: 'information' | 'tickets';
-  setPage: (page: string) => void;
 }
 
-const SubMenu = ({ type, setPage }: Props): JSX.Element => {
+const SubMenu = ({ type }: Props): JSX.Element => {
+  const [ t ] = useTranslation(['event_side_menu']);
   const [more, setMore] = React.useState<
     'information' | 'all' | 'tickets' | 'none'
     >('none');
@@ -45,12 +49,12 @@ const SubMenu = ({ type, setPage }: Props): JSX.Element => {
     return (
       <>
         <Button onClick={() => onChangeMore('information')}>
-          <Title>Information</Title>
+          <Title>{t('information_title')}</Title>
           <Icon icon='chevron' color='white' size='6px' />
         </Button>
         {
           (more === 'information'|| more === 'all') &&
-          <InfoDetails setPage={setPage}/>
+          <InfoDetails/>
         }
     </>
     )
@@ -63,26 +67,40 @@ const SubMenu = ({ type, setPage }: Props): JSX.Element => {
       </Button>
       {
         (more === 'tickets'|| more === 'all') &&
-        <TicketList setPage={setPage}/>
+        <TicketList/>
       }
     </>
   );
 };
 
-const InfoDetails = ({ setPage }: { setPage: (page: string) => void}) => {
+const InfoDetails = () => {
+  const [ t ] = useTranslation(['event_side_menu']);
+  const history = useHistory();
+
+  const handleClick = (page: string) => {
+    const id = history.location.pathname.match(/^\/0x([a-zA-Z]|[0-9])+/);
+    history.push(`${id[0]}/${page}`);
+  };
+
   return (
     <SubContainer>
-      <Subtitle onClick={() => setPage('general')}>General Information</Subtitle>
-      <Subtitle onClick={() => setPage('dates')}>Dates</Subtitle>
-      <Subtitle onClick={() => setPage('location')}>Location</Subtitle>
+      <Subtitle onClick={() => handleClick('general')}>{t('general_info_title')}</Subtitle>
+      <Subtitle onClick={() => handleClick('dates')}>{t('date_location_title')}</Subtitle>
     </SubContainer>
   )
 };
 
-const TicketList = ({ setPage }: { setPage: (page: string) => void}) => {
+const TicketList = () => {
+  const history = useHistory();
+
+  const handleClick = (page: string) => {
+    const id = history.location.pathname.match(/^\/0x([a-zA-Z]|[0-9])+/);
+    history.push(`${id[0]}/${page}`);
+  };
+
   return (
     <SubContainer>
-      {tickets.map((t, i) => <Subtitle onClick={() => setPage(t)} key={`${t}-${i}`}>{t}</Subtitle>)}
+      {tickets.map((t, i) => <Subtitle onClick={() => handleClick('ticket')} key={`${t}-${i}`}>{t}</Subtitle>)}
     </SubContainer>
   )
 };

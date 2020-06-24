@@ -10,7 +10,6 @@ import { UserPropertiesActionTypes } from './types';
 function* getDevice(): IterableIterator<any> {
     const deviceInfos = deviceDetect();
 
-    console.log(deviceInfos);
     yield put(SetDeviceInfos(deviceInfos.device, deviceInfos.browser));
 }
 

@@ -1,50 +1,58 @@
-// @ts-nocheck
 import React from 'react';
+import { useParams } from 'react-router';
+import { Route, Switch } from 'react-router-dom';
 import styled from 'styled-components';
-import EventSideMenu from "./EventSideMenu";
-import { PreviewInfos, TicketHeader } from "@frontend/flib-react/lib/components";
-import Pages from "./Pages";
-import { dates } from './fakeData';
+
+import { Events } from '../../types/UserEvents';
+
+import EventSideMenu from './EventSideMenu';
+import GeneralInformation from './Pages/GeneralInformation';
+import Dates from './Pages/Dates';
+import Ticket from './Pages/Ticket';
+import Presentation from './Pages/Presentation';
+import Preview from './Pages/Preview';
 
 interface Props {
   currentDate: string | undefined;
-  setCurrentDate: (startDate: string) => void;
+  setCurrentDate: (name: string) => void;
+  setName: (startDate: string) => void;
   name: string;
+  userEvents: Events[];
 }
 
-const EventPresentation = ({ currentDate, setCurrentDate, name }: Props) => {
-  const category = dates.find((e) => e[0].name === name);
-  const [page, setPage] = React.useState<string>();
+const EventPresentation = ({ currentDate, setName, setCurrentDate, name, userEvents }: Props) => {
+  const userEvent = userEvents.find((e) => e.name === name);
+  const category = userEvents.find((e) => e.name === name)?.dates[0];
+  const { group_id } = useParams();
 
   return (
     <>
-      <EventSideMenu name={name} currentDate={currentDate} setCurrentDate={setCurrentDate} setPage={setPage}/>
+      <EventSideMenu
+        name={name}
+        currentDate={currentDate}
+        setCurrentDate={setCurrentDate}
+        setName={setName}
+        userEvents={userEvents}
+      />
       <PageContainer>
-        { !page && (
-          <>
-            <Title>User preview</Title>
-            <TicketContainer>
-              <Ticket>
-                <TicketHeader ticket={{
-                    ...category[0],
-                    startDate: category[0].startDate.toDateString(),
-                    endDate: category[0].endDate.toDateString()
-                  }}
-                />
-                <Overlap>
-                  <PreviewInfos ticket={{
-                      ...category[0],
-                      startDate: category[0].startDate.toDateString(),
-                      endDate: category[0].endDate.toDateString()
-                    }}
-                  />
-                </Overlap>
-              </Ticket>
-            </TicketContainer>
-          </>
-        )}
         {
-          page && <Pages page={page}/>
+          <Switch>
+            <Route path={`/${group_id}/general`}>
+              <GeneralInformation userEvent={userEvent} currentDate={currentDate} />
+            </Route>
+            <Route path={`/${group_id}/dates`}>
+              <Dates userEvent={userEvent} currentDate={currentDate} />
+            </Route>
+            <Route path={`/${group_id}/ticket`}>
+              <Ticket userEvent={userEvent} currentDate={currentDate} />
+            </Route>
+            <Route path={`/${group_id}/presentation`}>
+              <Presentation userEvent={userEvent} currentDate={currentDate} />
+            </Route>
+            <Route path={`/${group_id}`}>
+              <Preview category={category} />
+            </Route>
+          </Switch>
         }
       </PageContainer>
     </>
@@ -56,34 +64,6 @@ const PageContainer = styled.div`
   flex-wrap: wrap;
   width: calc(100% - 280px);
   margin-left: 280px;
-`;
-
-const TicketContainer = styled.div`
-  display: flex;
-  width: 100%;
-  justify-content: center;
-`;
-
-const Ticket = styled.div`
-  width: 380px;
-  margin-top: 20px;
-  border-radius: 8px;
-  overflow: hidden;
-`;
-
-const Overlap = styled.div`
-  margin-top: -94px;
-  position: relative;
-  z-index: 1;
-`;
-
-const Title = styled.span`
-  width: 100%;
-  margin-bottom: 25px;
-  font-weight: 500;
-  font-size: 16px;
-  color: ${(props) => props.theme.textColor};
-  text-align: center;
 `;
 
 export default EventPresentation;

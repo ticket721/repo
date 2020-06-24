@@ -1,5 +1,6 @@
 import { Link } from '@lib/common/utils/Link.type';
 import { IsOptional, IsString, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
 
 /**
  * Data model required when fetching metadatas
@@ -10,12 +11,14 @@ export class MetadatasFetchInputDto {
      */
     @ValidateNested({ each: true })
     @IsOptional()
+    @Type(() => Link)
     useReadRights?: Link[];
 
     /**
      * Fetch metadata with provided links: AND statement is applied !
      */
     @ValidateNested({ each: true })
+    @Type(() => Link)
     withLinks: Link[];
 
     /**

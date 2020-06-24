@@ -1,53 +1,89 @@
 import React, { Suspense } from 'react';
-import {
-    PageContainer
-}                                               from '@frontend/core/lib/components';
 
 import { Route, Switch, withRouter } from 'react-router-dom';
 
-import {  routes }     from './routes';
-import { AppStatus }   from '@frontend/core/lib/redux/ducks/statuses';
-import ProtectedRoute  from '@frontend/core/lib/components/ProtectedRoute';
-import { useSelector } from 'react-redux';
-import { AppState }    from '@frontend/core/lib/redux';
-import ToastStacker    from '@frontend/core/lib/components/ToastStacker';
-import styled          from 'styled-components';
+import ProtectedRoute               from '@frontend/core/lib/components/ProtectedRoute';
+import ToastStacker                 from '@frontend/core/lib/components/ToastStacker';
+import styled                       from 'styled-components';
+import { StatusBarMargin }          from './utils/StatusBarMargin';
+import { NavbarMargin }             from './utils/NavbarMargin';
+import { Login, Register }          from '@frontend/core/lib/components';
+import Home                         from './screens/Home';
+import { InvisibleStatusBarMargin } from './utils/InvisibleStatusBarMargin';
+import { TopNavMargin }             from './utils/TopNavMargin';
+import Activities                   from '@frontend/core/lib/components/Profile/Activities';
+import ProfileRoot                  from '@frontend/core/lib/components/Profile/Root';
+import SearchViewAll                from './screens/SearchViewAll';
+import Search                       from './screens/Search';
+import Tags                         from './screens/Tags';
+import Wallet                       from './screens/Wallet';
+import Event                        from './screens/Event';
+import { FullPageLoading }          from '@frontend/flib-react/lib/components';
+
+const LoginPage = StatusBarMargin(NavbarMargin(Login));
+const RegisterPage = StatusBarMargin(NavbarMargin(Register));
+const HomePage = StatusBarMargin(NavbarMargin(Home));
+const ProfileActivitiesPage = InvisibleStatusBarMargin(TopNavMargin(Activities));
+const ProfilePage = StatusBarMargin(NavbarMargin(ProfileRoot));
+const SearchViewAllPage = InvisibleStatusBarMargin(TopNavMargin(SearchViewAll));
+const EventPage = Event;
+const SearchPage = StatusBarMargin(Search);
+const TagsPage = StatusBarMargin(Tags);
+const WalletPage = StatusBarMargin(Wallet);
 
 const App: React.FC = () => {
 
-    const appStatus = useSelector(((state: AppState) => state.statuses.appStatus));
-
-    return <Suspense fallback='loading'>
+    return <Suspense fallback={FullPageLoading}>
         <AppContainer>
             <Switch>
-                {
-                    appStatus === AppStatus.Ready && routes.map((route, idx) => {
-                        const page = <PageContainer
-                            padding='50px 30px 30px'
-                            topBar={route.topBar}
-                            topBarHeight={route.topBarHeight}>
-                            <route.page />
-                        </PageContainer>;
+                <Route path={'/login'} exact={true}>
+                    <LoginPage/>
+                </Route>
 
-                        if (route.protected) {
-                            return <ProtectedRoute path={route.path} key={idx} page={page} />
-                        }
+                <Route path={'/register'} exact={true}>
+                    <RegisterPage/>
+                </Route>
 
-                        return <Route key={idx} path={route.path}>
-                            <route.page />
-                        </Route>
-                    })
-                }
+                <Route path={'/home'} exact={true}>
+                    <HomePage/>
+                </Route>
+
+                <ProtectedRoute path={'/profile/activities'} exact={true}>
+                    <ProfileActivitiesPage/>
+                </ProtectedRoute>
+
+                <ProtectedRoute path={'/profile'} exact={true}>
+                    <ProfilePage/>
+                </ProtectedRoute>
+
+                <Route path={'/search/events/:query'} exact={true}>
+                    <SearchViewAllPage/>
+                </Route>
+
+                <Route path={'/event/:id'} exact={true}>
+                    <EventPage/>
+                </Route>
+
+                <Route path={'/search'} exact={true}>
+                    <SearchPage/>
+                </Route>
+
+                <Route path={'/tags'} exact={true}>
+                    <TagsPage/>
+                </Route>
+
+                <ProtectedRoute path={'/'} exact={true}>
+                    <WalletPage/>
+                </ProtectedRoute>
             </Switch>
             <ToastStacker additionalLocales={[]}/>
         </AppContainer>
-    </Suspense>
+    </Suspense>;
 };
 
 const AppContainer = styled.div`
   width: 100%;
   height: 100vh;
 `;
-
 
 export default withRouter(App);

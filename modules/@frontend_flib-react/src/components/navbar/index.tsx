@@ -14,6 +14,7 @@ const StyledNavbar = styled.nav`
     padding: calc(${(props) => props.theme.regularSpacing} * 1.5) ${(props) => props.theme.doubleSpacing};
     position: fixed;
     width: 100%;
+    z-index: 9999;
 
     a {
         align-items: center;
@@ -24,6 +25,7 @@ const StyledNavbar = styled.nav`
         position: relative;
         text-decoration: none;
         transition: opacity 300ms ease;
+        z-index: 9999;
 
         &:hover {
             opacity: 1;
