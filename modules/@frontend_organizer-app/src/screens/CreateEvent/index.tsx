@@ -99,10 +99,6 @@ const CreateEvent: React.FC = () => {
 
     return (
         <Container>
-            <div onClick={() => global.window.t721Sdk.actions.create(token, {
-                name: 'event_create',
-                arguments: {}
-            })}>reset</div>
         {
             eventAcsetId &&
             <Forms>

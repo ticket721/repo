@@ -16,14 +16,11 @@ export enum TimeScale {
 
 export const displayTime = (date: Date): string => {
     const timeArray = date.toLocaleTimeString().split(':');
-    const pm: boolean = parseInt(timeArray[0], 10) > 12;
-    return `${pm ? parseInt(timeArray[0], 10) - 12 : timeArray[0]}:
-            ${timeArray[1]}${pm ? 'pm' : 'am'}`;
+    return `${timeArray[0]}:${timeArray[1]}`;
 };
 
 export const displayDate = (date: Date): string => {
-    const dateArray = date.toDateString().split(' ');
-    return `${dateArray[0]}, ${dateArray[1]} ${dateArray[2]}, ${dateArray[3]}`;
+    return date.toLocaleDateString();
 };
 
 export const displayCompleteDate = (date: Date): string => {
@@ -38,7 +35,9 @@ export const checkFormatDate = (date: string | Date): Date => {
     return date;
 };
 
-export const compareDates = (dateA: Date, dateB: Date, precision: TimeScale): boolean => {
+export const compareDates = (dateA: Date | string, dateB: Date | string, precision?: TimeScale): boolean => {
+    dateA = checkFormatDate(dateA);
+    dateB = checkFormatDate(dateB);
     switch (precision) {
         case TimeScale.year:
             return dateA.getFullYear() === dateB.getFullYear();

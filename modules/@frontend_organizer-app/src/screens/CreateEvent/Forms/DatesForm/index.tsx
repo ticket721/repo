@@ -7,9 +7,9 @@ import { OrganizerState }                           from '../../../../redux/duck
 import { useEventCreation }                         from '../../../../hooks/useEventCreation';
 import { EventCreationActions, EventCreationSteps } from '../../../../core/event_creation/EventCreationCore';
 import { DateCard }                                 from './DateCard';
-import { DateForm }                                 from './DateForm';
-import { checkFormatDate }               from '@frontend/core/lib/utils/date';
-import { SetActionData, UpdateAction }              from '../../../../redux/ducks/event_creation';
+import { DateForm }                              from './DateForm';
+import { checkFormatDate } from '@frontend/core/lib/utils/date';
+import { SetActionData, UpdateAction }           from '../../../../redux/ducks/event_creation';
 import { CategoryItem }                             from '../CategoriesForm';
 import { CreateDate }                               from './CreateDate';
 
@@ -124,6 +124,10 @@ const StyledForm = styled.div`
     display: flex;
     flex-direction: column;
     width: 100%;
+
+    & > div:nth-child(2) {
+        margin-top: ${props => props.theme.regularSpacing};
+    }
 `;
 
 const DatesContainer = styled.div`

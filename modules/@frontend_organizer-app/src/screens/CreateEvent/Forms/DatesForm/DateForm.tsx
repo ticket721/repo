@@ -3,7 +3,7 @@ import {
     CustomDatePicker,
     CustomTimePicker,
     TextInput
-}                                        from '@frontend/flib-react/lib/components';
+}                           from '@frontend/flib-react/lib/components';
 import styled                            from 'styled-components';
 import { useFormik }                     from 'formik';
 import { DateItem }                      from './index';
@@ -11,12 +11,16 @@ import { dateItemValidation }            from './validationSchema';
 import { checkFormatDate, minute, compareDates, TimeScale }       from '@frontend/core/lib/utils/date';
 import { FormActions, FormActionsProps } from '../FormActions';
 
+import { useTranslation } from 'react-i18next';
+import './locales';
+
 export interface DateFormProps extends FormActionsProps {
     initialValues: DateItem;
     confirm: (date: DateItem) => void;
 }
 
 export const DateForm: React.FC<DateFormProps> = (props: DateFormProps) => {
+    const [ t, i18n ] = useTranslation(['date_form', 'vaildation']);
     const { initialValues } = props;
     const checkedInitialValues = {
         ...initialValues,
@@ -87,7 +91,7 @@ export const DateForm: React.FC<DateFormProps> = (props: DateFormProps) => {
 
     const computeError = (field: string): string => {
         return formik.touched[field] && formik.errors[field] ?
-            formik.errors[field] :
+            'validation:' + formik.errors[field] :
             undefined;
     };
 
@@ -95,48 +99,56 @@ export const DateForm: React.FC<DateFormProps> = (props: DateFormProps) => {
         <Form onSubmit={formik.handleSubmit}>
             <TextInput
             className={'date-line-field'}
-            label='Name'
-            placeholder='Provide a name'
+            label={t('date_name_label')}
+            placeholder={t('date_name_label')}
             {...formik.getFieldProps('name')}
-            error={computeError('name')} />
+            error={
+                computeError('name') &&
+                t(computeError('name'))
+            } />
             <div className={'date-line-field date-container'}>
                 <CustomDatePicker
-                label={'Event Start'}
+                label={t('start_date_label')}
                 name={'startDate'}
                 dateFormat={'iii, MMM do, yyyy'}
-                placeholder={'Pick a start date'}
                 minDate={new Date()}
                 selected={formik.values.eventBegin}
+                locale={i18n.language}
                 onChange={(date: Date) => onDateChange('eventBegin', date)}
-                error={computeError('eventBegin')}/>
+                error={
+                    computeError('eventBegin') &&
+                    t(computeError('eventBegin'))
+                }/>
                 <CustomTimePicker
-                label={'Start Time'}
+                label={t('start_time_label')}
                 name={'startTime'}
-                dateFormat={'hh:mm aa'}
-                placeholder={'Pick a start time'}
                 selected={formik.values.eventBegin}
                 onChange={(date: Date) => onTimeChange('eventBegin', date)}
-                error={computeError('eventBegin')}/>
+                error={
+                    computeError('eventBegin') &&
+                    t(computeError('eventBegin'))
+                }/>
             </div>
             <DateEndContainer
             className={'date-line-field date-container'}
             disabled={!formik.values.eventBegin}>
                 <CustomDatePicker
                 disabled={!formik.values.eventBegin}
-                label={'Event End'}
+                label={t('end_date_label')}
                 name={'endDate'}
                 dateFormat={'iii, MMM do, yyyy'}
-                placeholder={'Pick a end date'}
                 minDate={formik.values.eventBegin}
                 selected={formik.values.eventEnd}
+                locale={i18n.language}
                 onChange={(date: Date) => onDateChange('eventEnd', date)}
-                error={computeError('eventEnd')}/>
+                error={
+                    computeError('eventEnd') &&
+                    t(computeError('eventEnd'))
+                }/>
                 <CustomTimePicker
                 disabled={!formik.values.eventBegin}
-                label={'End Time'}
+                label={t('end_time_label')}
                 name={'endTime'}
-                dateFormat={'hh:mm aa'}
-                placeholder={'Pick a end time'}
                 minTime={compareDates(
                   formik.values.eventBegin,
                   formik.values.eventEnd,
@@ -144,15 +156,21 @@ export const DateForm: React.FC<DateFormProps> = (props: DateFormProps) => {
                 ) ? new Date(formik.values.eventBegin.getTime() + 30 * minute) : undefined}
                 selected={formik.values.eventEnd}
                 onChange={(date: Date) => onTimeChange('eventEnd', date)}
-                error={computeError('eventEnd')}/>
+                error={
+                    computeError('eventEnd') &&
+                    t(computeError('eventEnd'))
+                }/>
             </DateEndContainer>
             <TextInput
             className={'date-line-field'}
-            label='Location'
+            label={t('location_label')}
             {...formik.getFieldProps('location')}
             icon={'pin'}
-            placeholder='Provide a location'
-            error={computeError('location')} />
+            placeholder={t('location_placeholder')}
+            error={
+                computeError('location') &&
+                t(computeError('location'))
+            } />
             <FormActions
             delete={props.delete}
             cancel={props.cancel}

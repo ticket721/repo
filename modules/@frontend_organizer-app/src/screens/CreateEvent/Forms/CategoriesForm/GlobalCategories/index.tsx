@@ -1,11 +1,13 @@
 import React, { Dispatch, Fragment, useState } from 'react';
 import styled                                  from 'styled-components';
 
-import { CategoryItem }           from '../index';
-import { CategoryForm }           from '../CategoryForm';
-import { checkFormatDate }        from '@frontend/core/lib/utils/date';
-import { CategoryCard }           from '../CategoryCard';
-import { CreateGlobalCategory }   from './CreateGlobalCategory';
+import { CategoryItem }         from '../index';
+import { CategoryForm }         from '../CategoryForm';
+import { checkFormatDate }      from '@frontend/core/lib/utils/date';
+import { CategoryCard }         from '../CategoryCard';
+import { CreateGlobalCategory } from './CreateGlobalCategory';
+import { useSelector }          from 'react-redux';
+import { OrganizerState }       from '../../../../../redux/ducks';
 
 interface GlobalCategoriesProps {
     categories: CategoryItem[];
@@ -13,6 +15,8 @@ interface GlobalCategoriesProps {
 }
 
 export const GlobalCategories: React.FC<GlobalCategoriesProps> = (props: GlobalCategoriesProps) => {
+    const maxDate: Date = useSelector((state: OrganizerState) =>
+        state.eventCreation.datesConfiguration.dates[state.eventCreation.datesConfiguration.dates.length - 1].eventEnd);
     const [ editIdx, setEditIdx ]: [ number, Dispatch<number> ] = useState(null);
 
     const resetEdition = () => {
@@ -28,7 +32,6 @@ export const GlobalCategories: React.FC<GlobalCategoriesProps> = (props: GlobalC
     };
 
     const updateCategory = (updateCategoryItem: CategoryItem) => {
-        console.log(updateCategoryItem);
         const categories: CategoryItem[] = props.categories.map((categoryItem: CategoryItem, idx) =>
             editIdx === idx ? updateCategoryItem : categoryItem
         );
@@ -49,7 +52,6 @@ export const GlobalCategories: React.FC<GlobalCategoriesProps> = (props: GlobalC
 
     return (
         <StyledGlobal>
-            <Description>A Global Category corresponds to a ticket valid for all dates</Description>
             <CategoriesContainer>
                 {
                   props.categories.map((globalCategory: CategoryItem, idx: number) => (
@@ -65,6 +67,7 @@ export const GlobalCategories: React.FC<GlobalCategoriesProps> = (props: GlobalC
                           setEdit={() => setEditIdx(idx)}>
                               <CategoryForm
                               initialValues={globalCategory}
+                              maxDate={checkFormatDate(maxDate)}
                               delete={deleteCategory}
                               cancel={resetEdition}
                               confirm={updateCategory}/>
@@ -74,6 +77,7 @@ export const GlobalCategories: React.FC<GlobalCategoriesProps> = (props: GlobalC
                 }
             </CategoriesContainer>
             <CreateGlobalCategory
+            maxDate={checkFormatDate(maxDate)}
             editable={editIdx === null}
             onCategoryCreate={createCategories}/>
         </StyledGlobal>
@@ -85,7 +89,6 @@ const StyledGlobal = styled.div`
     display: flex;
     flex-direction: column;
     width: 100%;
-    margin-top: ${props => props.theme.doubleSpacing};
 
     button {
         margin-top: ${props => props.theme.regularSpacing};
@@ -93,21 +96,10 @@ const StyledGlobal = styled.div`
     }
 `;
 
-const Description = styled.span`
-    padding-bottom: ${props => props.theme.regularSpacing};
-    font-size: 14px;
-    font-weight: 500;
-    color: rgba(255, 255, 255, 0.6);
-`;
-
 const CategoriesContainer = styled.div`
     width: 100%;
 
     & > div {
         margin-bottom: ${props => props.theme.regularSpacing};
-    }
-
-    & > div:last-child {
-        margin-bottom: 0;
     }
 `;

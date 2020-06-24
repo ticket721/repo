@@ -58,7 +58,6 @@ export const useEventCreation = <ActionInputType extends {[key: string]: any}>(
     };
 
     const handleBlur = (event: any, field?: string, value: any = null): void => {
-        console.log(field, value);
         if (field) {
             if (value !== null) {
                 dispatch(SetActionData(eventCreationAction, {

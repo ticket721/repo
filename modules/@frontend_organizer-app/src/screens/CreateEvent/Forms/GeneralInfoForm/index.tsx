@@ -20,7 +20,6 @@ const GeneralInfoForm: React.FC = () => {
     );
 
     const onTagsKeyDown = (e: React.KeyboardEvent<HTMLElement>, tag: string) => {
-        console.log(tag);
         if(!tag && eventCreationFormik.values.tags?.length === 5) {
             e.preventDefault();
             return;

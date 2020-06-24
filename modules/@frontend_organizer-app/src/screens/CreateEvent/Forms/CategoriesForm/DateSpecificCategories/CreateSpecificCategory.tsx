@@ -1,11 +1,20 @@
-import React, { useEffect, useState } from 'react';
-import { Button, SelectInput } from '@frontend/flib-react/lib/components';
+import React, { Dispatch, useEffect, useState } from 'react';
+import { Button, SelectInput }                  from '@frontend/flib-react/lib/components';
 
 import { CategoryItem }                 from '../index';
 import { CategoryForm }                 from '../CategoryForm';
 import { checkFormatDate, displayDate } from '@frontend/core/lib/utils/date';
 import { DateItem }                     from '../../DatesForm';
 import { FormCard }                              from '../../FormCard';
+
+import { useTranslation } from 'react-i18next';
+import '../locales';
+import styled             from 'styled-components';
+
+interface DateOption {
+    label: string;
+    value: number;
+}
 
 interface CreateSpecificCategoryProps {
     dates: DateItem[];
@@ -14,24 +23,21 @@ interface CreateSpecificCategoryProps {
 }
 
 export const CreateSpecificCategory: React.FC<CreateSpecificCategoryProps> = (props: CreateSpecificCategoryProps) => {
-    const [ selectableDates, setSelectableDates ] = useState([]);
+    const [ t ] = useTranslation('categories');
+    const [ selectableDates, setSelectableDates ]: [ DateOption[], Dispatch<DateOption[]> ] = useState([]);
     const [ edit, setEdit ] = useState(null);
-    const [ selectedDates, setSelectedDates ] = useState([]);
+    const [ selectedDates, setSelectedDates ]: [ DateOption[], Dispatch<DateOption[]> ] = useState([]);
 
     useEffect(() =>
         setSelectableDates([
             ...props.dates.map((date: DateItem, idx: number) => ({
                 label: `${date.name} - ${displayDate(checkFormatDate(date.eventBegin))}`,
                 value: idx,
-            })),
-            {
-                label: 'All dates',
-                value: props.dates.length,
-            }
-        ]), [props.dates]);
+            }))
+        ]), [props.dates, t]);
 
     return (
-        <>
+        <CreateCategoryWrapper>
             {
                 edit ?
                     <FormCard
@@ -41,19 +47,35 @@ export const CreateSpecificCategory: React.FC<CreateSpecificCategoryProps> = (pr
                     setEdit={() => null}>
                         <SelectInput
                         className={'select'}
-                        label={'Select dates'}
-                        options={selectableDates}
+                        label={t('select_dates_label')}
+                        options={[
+                            {
+                                label: t('all_dates'),
+                                value: -1,
+                            },
+                            ...selectableDates
+                        ]}
                         multiple={true}
-                        placeholder={'select dates on which category will be applied'}
+                        placeholder={t('select_dates_placeholder')}
                         value={selectedDates}
-                        onChange={(dates: any[]) => setSelectedDates(dates.map((date) => date.value))}/>
+                        onChange={(dates: DateOption[]) => {
+                            if (!dates) {
+                                setSelectedDates([]);
+                            } else if (dates.findIndex((date: DateOption) => date.value === -1) !== -1) {
+                                setSelectedDates(selectableDates);
+                            } else {
+                                setSelectedDates(dates);
+                            }
+                        }
+                        }/>
                         {
                             selectedDates.length > 0 ?
                                 <CategoryForm
                                 newItem={true}
+                                maxDate={checkFormatDate(props.dates[selectedDates[0].value].eventEnd)}
                                 cancel={() => setEdit(false)}
                                 confirm={(categoryItem: CategoryItem) => {
-                                    props.onCategoryCreate(selectedDates, categoryItem);
+                                    props.onCategoryCreate(selectedDates.map((dateOpt: DateOption) => dateOpt.value), categoryItem);
                                     setEdit(false);
                                 }}/> :
                                 null
@@ -64,12 +86,18 @@ export const CreateSpecificCategory: React.FC<CreateSpecificCategoryProps> = (pr
             {
                 props.editable && !edit ?
                     <Button
-                        title={'Create New Category'}
+                        title={t('create_category')}
                         variant={'secondary'}
                         onClick={() => setEdit(true)}/>
                     :
                     null
             }
-        </>
+        </CreateCategoryWrapper>
     );
 };
+
+const CreateCategoryWrapper = styled.div`
+    form {
+        margin-top: ${props => props.theme.biggerSpacing};
+    }
+`;

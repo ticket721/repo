@@ -1,15 +1,18 @@
-import React                  from 'react';
+import React, { useEffect } from 'react';
 import {
     CustomDatePicker,
     CustomTimePicker,
     TextInput
-}                                   from '@frontend/flib-react/lib/components';
+}                           from '@frontend/flib-react/lib/components';
 import styled                       from 'styled-components';
 import { useFormik }                from 'formik';
 import { CategoryItem }       from '../index';
 import { categoryValidationSchema }                              from '../validationSchema';
 import { checkFormatDate, compareDates, day, minute, TimeScale } from '@frontend/core/lib/utils/date';
 import { FormActions, FormActionsProps }                         from '../../FormActions';
+
+import { useTranslation } from 'react-i18next';
+import './locales';
 
 const defaultInitialValues = {
     name: '',
@@ -21,10 +24,12 @@ const defaultInitialValues = {
 
 export interface CategoryFormProps extends FormActionsProps {
     initialValues?: CategoryItem;
+    maxDate: Date;
     confirm: (categoryItem: CategoryItem) => void;
 }
 
 export const CategoryForm: React.FC<CategoryFormProps> = (props: CategoryFormProps) => {
+    const [ t, i18n ] = useTranslation(['category_form', 'validation']);
     const checkedInitialValues = props.initialValues ? {
         name: props.initialValues.name,
         saleBegin: checkFormatDate(props.initialValues.saleBegin),
@@ -39,7 +44,7 @@ export const CategoryForm: React.FC<CategoryFormProps> = (props: CategoryFormPro
         onSubmit: (categoryItem) => props.confirm({
             name: categoryItem.name,
             saleBegin: categoryItem.saleBegin,
-            saleEnd: categoryItem.saleBegin,
+            saleEnd: categoryItem.saleEnd,
             seats: categoryItem.seats,
             currencies: [{
                 currency: 'eur',
@@ -95,10 +100,22 @@ export const CategoryForm: React.FC<CategoryFormProps> = (props: CategoryFormPro
         }
     };
 
-    const computeError = (field: string): string =>
-        formik.touched[field] && formik.errors[field] ?
-            formik.errors[field] :
-            undefined;
+    const computeError = (field: string): string => {
+        return formik.touched[field] && formik.errors[field] ?
+          'validation:' + formik.errors[field] :
+          undefined;
+    };
+
+    useEffect(() => {
+        if (formik.values.saleBegin > props.maxDate) {
+            formik.setFieldValue('saleBegin', new Date(props.maxDate.getTime() - 30 * minute));
+        }
+
+        if (formik.values.saleEnd > props.maxDate) {
+            formik.setFieldValue('saleEnd', props.maxDate);
+        }
+        // eslint-disable-next-line
+    }, [props.maxDate]);
 
     return (
         <Form onSubmit={formik.handleSubmit}>
@@ -107,74 +124,103 @@ export const CategoryForm: React.FC<CategoryFormProps> = (props: CategoryFormPro
             </Title>
             <TextInput
                 className={'category-line-field'}
-                label='Name'
-                placeholder='Provide a name'
+                label={t('category_label')}
+                placeholder={t('category_placeholder')}
                 {...formik.getFieldProps('name')}
-                error={computeError('name')} />
+                error={
+                    computeError('name') &&
+                      t(computeError('name'))
+                } />
             <div className={'category-line-field seats-container'}>
                 <TextInput
                     type='number'
-                    label='Price'
+                    label={t('price_label')}
                     icon={'euro'}
-                    placeholder='Provide price'
+                    placeholder={t('price_placeholder')}
                     {...formik.getFieldProps('price')}
-                    error={computeError('price')} />
+                    error={
+                        computeError('price') &&
+                        t(computeError('price'))
+                    } />
                 <TextInput
                     type='number'
-                    label='Quantity'
-                    placeholder='Provide a quantity'
+                    label={t('quantity_label')}
+                    placeholder={t('quantity_placeholder')}
                     {...formik.getFieldProps('seats')}
-                    error={computeError('seats')} />
+                    error={
+                        computeError('seats') &&
+                        t(computeError('seats'))
+                    } />
             </div>
             <Title>
                 Sales dates range
             </Title>
             <div className={'category-line-field date-container'}>
                 <CustomDatePicker
-                    label={'Sale Start Date'}
+                    label={t('start_sale_date_label')}
                     name={'saleDateBegin'}
                     dateFormat={'iii, MMM do, yyyy'}
-                    placeholder={'Pick a start date for sales'}
                     minDate={new Date()}
+                    maxDate={props.maxDate}
                     selected={formik.values.saleBegin}
+                    locale={i18n.language}
                     onChange={(date: Date) => onSaleDateChange('saleBegin', date)}
-                    error={computeError('saleBegin')}/>
+                    error={
+                        computeError('saleBegin') &&
+                        t(computeError('saleBegin'))
+                    }/>
                 <CustomTimePicker
-                    label={'Sale Start Time'}
+                    label={t('start_sale_time_label')}
                     name={'saleTimeBegin'}
-                    dateFormat={'hh:mm aa'}
-                    placeholder={'Pick a start time for sales'}
+                    maxTime={compareDates(
+                        formik.values.saleBegin,
+                        props.maxDate,
+                        TimeScale.day
+                    ) ? new Date(props.maxDate.getTime() - 30 * minute) : undefined}
                     selected={formik.values.saleBegin}
                     onChange={(date: Date) => onSaleTimeChange('saleBegin', date)}
-                    error={computeError('saleBegin')}/>
+                    error={
+                        computeError('saleBegin') &&
+                        t(computeError('saleBegin'))
+                    }/>
             </div>
             <SaleEndContainer
                 className={'category-line-field date-container'}
                 disabled={!formik.values.saleBegin}>
                 <CustomDatePicker
                     disabled={!formik.values.saleBegin}
-                    label={'Sale End Date'}
+                    label={t('end_sale_date_label')}
                     name={'saleEndDate'}
                     dateFormat={'iii, MMM do, yyyy'}
-                    placeholder={'Pick an end date for sales'}
                     minDate={formik.values.saleBegin}
+                    maxDate={props.maxDate}
                     selected={formik.values.saleEnd}
+                    locale={i18n.language}
                     onChange={(date: Date) => onSaleDateChange('saleEnd', date)}
-                    error={computeError('saleEnd')}/>
+                    error={
+                        computeError('saleEnd') &&
+                        t(computeError('saleEnd'))
+                    }/>
                 <CustomTimePicker
                     disabled={!formik.values.saleBegin}
-                    label={'Sale End Time'}
+                    label={t('end_sale_time_label')}
                     name={'saleEndTime'}
-                    dateFormat={'hh:mm aa'}
-                    placeholder={'Pick an end time for sales'}
                     minTime={compareDates(
                         formik.values.saleBegin,
                         formik.values.saleEnd,
                         TimeScale.day
                     ) ? new Date(formik.values.saleBegin.getTime() + 30 * minute) : undefined}
+                    maxTime={compareDates(
+                        formik.values.saleBegin,
+                        props.maxDate,
+                        TimeScale.day
+                    ) ? props.maxDate : undefined}
                     selected={formik.values.saleEnd}
                     onChange={(date: Date) => onSaleTimeChange('saleEnd', date)}
-                    error={computeError('saleEnd')}/>
+                    error={
+                        computeError('saleEnd') &&
+                        t(computeError('saleEnd'))
+                    }/>
             </SaleEndContainer>
             <FormActions
                 delete={props.delete}

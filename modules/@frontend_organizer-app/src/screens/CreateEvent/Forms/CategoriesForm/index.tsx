@@ -15,7 +15,9 @@ import {
 }                                                   from '@common/sdk/lib/@backend_nest/apps/worker/src/actionhandlers/events/Events.input.handlers';
 import { EventCreationActions, EventCreationSteps } from '../../../../core/event_creation/EventCreationCore';
 import { OrganizerState }                           from '../../../../redux/ducks';
-import { DateItem }                                 from '../DatesForm';
+
+import { useTranslation } from 'react-i18next';
+import './locales';
 
 export interface CategoryItem {
     name: string;
@@ -29,8 +31,9 @@ export interface CategoryItem {
 }
 
 const CategoriesForm: React.FC = () => {
+    const [ t ] = useTranslation('categories');
     const [ tabIdx, setTabIdx ]: [ number, Dispatch<number> ] = React.useState(0);
-    const dates: DateItem[] = useSelector((state: OrganizerState) => state.eventCreation.datesConfiguration.dates);
+    const datesLength: number = useSelector((state: OrganizerState) => state.eventCreation.datesConfiguration.dates.length);
     const eventCreationFormik = useEventCreation<EventsCreateCategoriesConfiguration>(
         EventCreationSteps.Categories,
         EventCreationActions.CategoriesConfiguration,
@@ -54,7 +57,7 @@ const CategoriesForm: React.FC = () => {
     };
 
     useEffect(() => {
-        const datesCategoriesDelta = dates.length - eventCreationFormik.values.dates.length;
+        const datesCategoriesDelta = datesLength - eventCreationFormik.values.dates.length;
         if (datesCategoriesDelta > 0) {
             const emptyCategories = [];
             for (let i = 0; i < datesCategoriesDelta; i++) {
@@ -70,7 +73,7 @@ const CategoriesForm: React.FC = () => {
             });
         }
         // eslint-disable-next-line
-    }, [dates.length, eventCreationFormik.values.dates.length]);
+    }, [datesLength, eventCreationFormik.values.dates.length]);
 
     return (
         <>
@@ -80,11 +83,11 @@ const CategoriesForm: React.FC = () => {
                 onChange={(e: any, idx: number) => setTabIdx(idx)}
                 aria-label='from tabs'>
                     <Tab
-                    label='Global Passes'
+                    label={t('global_tab')}
                     id={`simple-tab-${0}`}
                     aria-controls={`simple-tabpanel-${0}`}/>
                     <Tab
-                    label='Tickets'
+                    label={t('date_specific_tab')}
                     id={`simple-tab-${1}`}
                     aria-controls={`simple-tabpanel-${1}`}/>
                 </Tabs>
@@ -95,9 +98,12 @@ const CategoriesForm: React.FC = () => {
             id={`simple-tabpanel-${0}`}
             aria-labelledby={`simple-tab-${0}`}>
                 {tabIdx === 0 && (
-                    <GlobalCategories
-                    categories={eventCreationFormik.values.global}
-                    onCategoriesChange={globalCategoriesChange} />
+                    <>
+                        <Description>A Global Category corresponds to a ticket valid for all dates</Description>
+                        <GlobalCategories
+                        categories={eventCreationFormik.values.global}
+                        onCategoriesChange={globalCategoriesChange} />
+                    </>
                 )}
             </div>
             <div
@@ -106,9 +112,12 @@ const CategoriesForm: React.FC = () => {
             id={`simple-tabpanel-${1}`}
             aria-labelledby={`simple-tab-${1}`}>
                 {tabIdx === 1 && (
-                    <DateSpecificCategories
-                    categories={eventCreationFormik.values.dates}
-                    onCategoriesChange={dateSpecificCategoriesChange}/>
+                    <>
+                        <Description>A Normal ticket corresponds to a category which can be applied to several dates</Description>
+                        <DateSpecificCategories
+                        categories={eventCreationFormik.values.dates}
+                        onCategoriesChange={dateSpecificCategoriesChange}/>
+                    </>
                 )}
             </div>
         </>
@@ -132,6 +141,14 @@ const AppBar = styled(MuiAppBar)`
             background-color: ${(props) => props.theme.primaryColor.hex};
         }
     }
+`;
+
+const Description = styled.span`
+    display: block;
+    margin: ${props => props.theme.doubleSpacing} 0 ${props => props.theme.regularSpacing};
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.6);
 `;
 
 export default CategoriesForm;

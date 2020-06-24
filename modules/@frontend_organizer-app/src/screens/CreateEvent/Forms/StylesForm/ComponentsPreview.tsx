@@ -9,7 +9,7 @@ import { MergedAppState }             from '../../../../index';
 
 import { useTranslation } from 'react-i18next';
 import './locales';
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 
 interface ComponentsPreviewProps {
     previewSrc: string;
@@ -43,10 +43,6 @@ export const ComponentsPreview: React.FC<ComponentsPreviewProps> = (props: Compo
     const eventName: string = useSelector((state: MergedAppState) => state.eventCreation.textMetadata.name);
     const [ t ] = useTranslation('event_creation_styles_preview');
     const previewRef = useRef(null);
-
-    useEffect(() => {
-        window.scrollTo({top: previewRef.current.offsetTop, left: 0, behavior: 'smooth'});
-    }, []);
 
     return (
         <>

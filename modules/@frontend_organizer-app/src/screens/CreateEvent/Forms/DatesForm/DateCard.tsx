@@ -1,6 +1,6 @@
 import React, { Fragment }          from 'react';
 import styled                       from 'styled-components';
-import { displayDate, displayTime } from '@frontend/core/lib/utils/date';
+import { displayCompleteDate } from '@frontend/core/lib/utils/date';
 import { Icon }                     from '@frontend/flib-react/lib/components';
 import { FormCard, FormCardProps }                 from '../FormCard';
 
@@ -24,18 +24,12 @@ export const DateCard: React.FC<DateCardProps> = (props: DateCardProps) => (
                         <Icon
                             icon={'calendar'}
                             size={'16px'} />
-                        <div className={'displayed-date'}>
-                            <span>{displayDate(props.beginDate)}</span>
-                            <span>{displayTime(props.beginDate)}</span>
-                        </div>
+                        <span>{displayCompleteDate(props.beginDate)}</span>
                         <Arrow
                             icon={'arrow'}
                             size={'15px'}
                             color={'rgba(255, 255, 255, 0.9)'}/>
-                        <div className={'displayed-date'}>
-                            <span>{displayDate(props.endDate)}</span>
-                            <span>{displayTime(props.endDate)}</span>
-                        </div>
+                        <span>{displayCompleteDate(props.endDate)}</span>
                     </DateContainer>
                     <Location>
                         <Icon
@@ -51,26 +45,15 @@ export const DateCard: React.FC<DateCardProps> = (props: DateCardProps) => (
 const DateContainer = styled.div`
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    width: 65%;
     margin-bottom: ${props => props.theme.regularSpacing};
 
     & > span:first-child {
         margin-right: ${props => props.theme.regularSpacing};
     }
-
-    .displayed-date {
-        display: flex;
-        flex-direction: column;
-
-        & > span:first-child {
-            margin-bottom: ${props => props.theme.smallSpacing};
-        }
-    }
 `;
 
 const Arrow = styled(Icon)`
-    margin: 0 ${props => props.theme.biggerSpacing};
+    margin: 0 20px;
 `;
 
 const Location = styled.div`

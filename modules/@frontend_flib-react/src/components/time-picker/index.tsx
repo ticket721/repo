@@ -5,7 +5,6 @@ import 'react-datepicker/dist/react-datepicker.css';
 import Icon                    from '../icon';
 
 export interface CustomTimePickerProps extends React.ComponentProps<any> {
-    dateFormat?: string;
     label: string;
     name: string;
     onChange: (date: Date) => void;
@@ -160,7 +159,8 @@ export const CustomTimePicker: React.FunctionComponent<CustomTimePickerProps> = 
             <Clock icon={'clock'} size={'16px'} />
             <DatePicker
                 name={props.name}
-                dateFormat={props.dateFormat}
+                dateFormat={'HH:mm'}
+                timeFormat={'HH:mm'}
                 onChange={props.onChange}
                 onChangeRaw={props.onChangeRaw ? props.onChangeRaw : (e: any) => {e.preventDefault()}}
                 placeholderText={props.placeholder}

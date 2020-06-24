@@ -2,7 +2,10 @@ import React, { Fragment } from 'react';
 import styled                       from 'styled-components';
 import { FormCard, FormCardProps }  from '../../FormCard';
 import { Icon }                     from '@frontend/flib-react/lib/components';
-import { displayDate, displayTime } from '@frontend/core/lib/utils/date';
+import { displayCompleteDate } from '@frontend/core/lib/utils/date';
+
+import { useTranslation } from 'react-i18next';
+import './locales';
 
 interface CategoryCardProps extends FormCardProps {
     price: number;
@@ -11,43 +14,45 @@ interface CategoryCardProps extends FormCardProps {
     seats: number;
 }
 
-export const CategoryCard: React.FC<CategoryCardProps> = (props: CategoryCardProps) => (
-    <FormCard
-    name={props.name}
-    editable={props.editable}
-    edit={props.edit}
-    setEdit={props.setEdit}>
-        {
-            props.edit ?
-                props.children :
-                <Fragment>
-                    <Price>
-                        {props.price}€
-                    </Price>
-                    <Quantity>
-                        {props.seats} passes available
-                    </Quantity>
-                    <SaleDates>
-                        <Icon
-                            icon={'calendar'}
-                            size={'16px'} />
-                        <div className={'displayed-date'}>
-                            <span>{displayDate(props.saleBegin)}</span>
-                            <span>{displayTime(props.saleBegin)}</span>
-                        </div>
-                        <Arrow
-                            icon={'arrow'}
-                            size={'15px'}
-                            color={'rgba(255, 255, 255, 0.9)'}/>
-                        <div className={'displayed-date'}>
-                            <span>{displayDate(props.saleEnd)}</span>
-                            <span>{displayTime(props.saleEnd)}</span>
-                        </div>
-                    </SaleDates>
-                </Fragment>
-        }
-    </FormCard>
-);
+export const CategoryCard: React.FC<CategoryCardProps> = (props: CategoryCardProps) => {
+    const [ t ] = useTranslation('category_card');
+    return (
+        <FormCard
+        name={props.name}
+        editable={props.editable}
+        edit={props.edit}
+        setEdit={props.setEdit}>
+            {
+                props.edit ?
+                    props.children :
+                    <Fragment>
+                        <Price>
+                            {props.price}€
+                        </Price>
+                        <Quantity>
+                            {props.seats} {t('available_tickets')}
+                        </Quantity>
+                        <SaleDates>
+                            <Icon
+                                icon={'calendar'}
+                                size={'16px'} />
+                            <div>
+                                <span>{t('sale_dates_label')}</span>
+                                <SaleDateDetails>
+                                    <span>{displayCompleteDate(props.saleBegin)}</span>
+                                    <Arrow
+                                        icon={'arrow'}
+                                        size={'15px'}
+                                        color={'rgba(255, 255, 255, 0.9)'}/>
+                                    <span>{displayCompleteDate(props.saleEnd)}</span>
+                                </SaleDateDetails>
+                            </div>
+                        </SaleDates>
+                    </Fragment>
+            }
+        </FormCard>
+)
+};
 
 const Price = styled.span`
     margin-bottom: ${props => props.theme.regularSpacing};
@@ -63,23 +68,18 @@ const Quantity = styled.span`
 const SaleDates = styled.div`
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    width: 65%;
 
     & > span:first-child {
         margin-right: ${props => props.theme.regularSpacing};
     }
+`;
 
-    .displayed-date {
-        display: flex;
-        flex-direction: column;
-
-        & > span:first-child {
-            margin-bottom: ${props => props.theme.smallSpacing};
-        }
-    }
+const SaleDateDetails = styled.div`
+    display: flex;
+    align-items: center;
+    margin-top: 8px;
 `;
 
 const Arrow = styled(Icon)`
-    margin: 0 ${props => props.theme.biggerSpacing};
+    margin: 0 20px;
 `;

@@ -70,50 +70,50 @@ export const DateSpecificCategories: React.FC<DateSpecificCategoriesProps> = (pr
 
     return (
         <StyledDateSpecific>
-            <Description>A Normal ticket corresponds to a category which can be applied to several dates</Description>
             <CategoriesContainer>
                 {
                     dates.map((date: DateItem, dateIdx: number) => {
                         if (props.categories[dateIdx] && props.categories[dateIdx].length > 0) {
                             return (
-                                <div key={`date-${dateIdx}`}>
+                                <DateSection key={`date-${dateIdx}`}>
                                     <span>{date.name}</span>
-                                    <div>
+                                    <DateDetails>
                                         <span>{displayDate(checkFormatDate(date.eventBegin))}</span>
-                                        <Icon
+                                        <Arrow
                                             icon={'arrow'}
-                                            size={'16px'}
+                                            size={'14px'}
                                             color={'#FFF'}/>
                                         <span>{displayDate(checkFormatDate(date.eventEnd))}</span>
-                                    </div>
-                                    {
-                                        props.categories[dateIdx].map((category: CategoryItem, categoryIdx: number) => (
-                                            <Fragment key={`dateSpecificCategory-${categoryIdx}`}>
-                                                <CategoryCard
-                                                    name={category.name}
-                                                    price={parseInt(category.currencies[0].price, 10) / 100}
-                                                    saleBegin={checkFormatDate(category.saleBegin)}
-                                                    saleEnd={checkFormatDate(category.saleEnd)}
-                                                    seats={category.seats}
-                                                    edit={
-                                                        editDateIdx === dateIdx &&
-                                                        editCategoryIdx === categoryIdx
-                                                    }
-                                                    editable={editCategoryIdx === null}
-                                                    setEdit={() => {
-                                                        setEditDateIdx(dateIdx);
-                                                        setEditCategoryIdx(categoryIdx);
-                                                    }}>
-                                                    <CategoryForm
-                                                        initialValues={category}
-                                                        delete={deleteCategory}
-                                                        cancel={resetEdition}
-                                                        confirm={updateCategory}/>
-                                                </CategoryCard>
-                                            </Fragment>
-                                        ))
-                                    }
-                                </div>
+                                    </DateDetails>
+                                {
+                                    props.categories[dateIdx].map((category: CategoryItem, categoryIdx: number) => (
+                                        <Fragment key={`dateSpecificCategory-${categoryIdx}`}>
+                                            <CategoryCard
+                                                name={category.name}
+                                                price={parseInt(category.currencies[0].price, 10) / 100}
+                                                saleBegin={checkFormatDate(category.saleBegin)}
+                                                saleEnd={checkFormatDate(category.saleEnd)}
+                                                seats={category.seats}
+                                                edit={
+                                                    editDateIdx === dateIdx &&
+                                                    editCategoryIdx === categoryIdx
+                                                }
+                                                editable={editCategoryIdx === null}
+                                                setEdit={() => {
+                                                    setEditDateIdx(dateIdx);
+                                                    setEditCategoryIdx(categoryIdx);
+                                                }}>
+                                                <CategoryForm
+                                                    initialValues={category}
+                                                    maxDate={checkFormatDate(date.eventEnd)}
+                                                    delete={deleteCategory}
+                                                    cancel={resetEdition}
+                                                    confirm={updateCategory}/>
+                                            </CategoryCard>
+                                        </Fragment>
+                                    ))
+                                }
+                                </DateSection>
                             )
                         }
 
@@ -134,19 +134,11 @@ const StyledDateSpecific = styled.div`
     display: flex;
     flex-direction: column;
     width: 100%;
-    margin-top: ${props => props.theme.doubleSpacing};
 
     button {
         margin-top: ${props => props.theme.regularSpacing};
         width: calc(50% - ${props => props.theme.regularSpacing});
     }
-`;
-
-const Description = styled.span`
-    padding-bottom: ${props => props.theme.regularSpacing};
-    font-size: 14px;
-    font-weight: 500;
-    color: rgba(255, 255, 255, 0.6);
 `;
 
 const CategoriesContainer = styled.div`
@@ -155,8 +147,29 @@ const CategoriesContainer = styled.div`
     & > div {
         margin-bottom: ${props => props.theme.regularSpacing};
     }
+`;
 
-    & > div:last-child {
-        margin-bottom: 0;
+const DateSection = styled.div`
+    font-weight: 500;
+
+    & > span {
+        display: block;
+        font-weight: 600;
+        text-transform: uppercase;
+        margin-bottom: ${props => props.theme.regularSpacing};
     }
+`;
+
+const DateDetails = styled.div`
+    display: flex;
+    margin-bottom: ${props => props.theme.regularSpacing};
+    font-size: 14px;
+
+    & > span:first-child, & > span:last-child {
+        margin-top: 2px;
+    }
+`;
+
+const Arrow = styled(Icon)`
+    margin: 0 5px;
 `;

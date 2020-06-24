@@ -6,6 +6,9 @@ import { DateItem }     from './index';
 import { day, hour }    from '@frontend/core/lib/utils/date';
 import { DateForm }     from './DateForm';
 
+import { useTranslation } from 'react-i18next';
+import './locales';
+
 interface CreateDateProps {
     editable: boolean;
     forcedEdit: boolean;
@@ -19,6 +22,7 @@ interface CreateDateProps {
 }
 
 export const CreateDate: React.FC<CreateDateProps> = (props: CreateDateProps) => {
+    const [ t ] = useTranslation('create_date');
     const [ edit, setEdit ] = useState(null);
 
     return (
@@ -55,7 +59,7 @@ export const CreateDate: React.FC<CreateDateProps> = (props: CreateDateProps) =>
             {
                 props.editable && !props.forcedEdit && !edit ?
                     <Button
-                    title={'Create New Date'}
+                    title={t('create_date')}
                     variant={'secondary'}
                     onClick={() => setEdit(true)}/>
                     :

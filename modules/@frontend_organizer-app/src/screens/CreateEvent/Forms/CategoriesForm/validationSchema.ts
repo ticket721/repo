@@ -1,15 +1,21 @@
 import * as yup        from 'yup';
 
-const name = yup.string().required('the name of the category is required');
+const name = yup.string()
+    .max(20, 'category_name_too_long')
+    .required('category_name_required');
 const saleBegin = yup.date();
 const saleEnd = yup.date();
-const seats = yup.number().integer().positive('quantity can not be negative').moreThan(0, 'You can not have a category with 0 tickets');
+const seats = yup.number()
+    .integer()
+    .positive('seats_positive_number')
+    .moreThan(0, 'seats_more_than_zero');
 const currencies = yup.array().of(yup.object().shape({
     currency: yup.string().required(),
     price: yup.number().integer().positive(),
 }));
 
-const price = yup.number().positive('price can not be negative');
+const price = yup.number()
+    .min(0, 'price_positive_number');
 
 const categoryValidationSchema = yup.object().shape({
     name,
