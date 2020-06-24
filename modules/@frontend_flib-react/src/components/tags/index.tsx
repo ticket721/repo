@@ -126,7 +126,6 @@ export interface TagsProps extends React.ComponentProps<any> {
     onFocus?: (
         eventOrPath: string | ChangeEvent<any>,
     ) => void | ((eventOrTextValue: string | ChangeEvent<any>) => void);
-    onBlur: (value: any) => void;
 }
 
 const Error = styled.span`
@@ -234,7 +233,6 @@ export const Tags: React.FunctionComponent<TagsProps> = (props: TagsProps): JSX.
                     onInputChange={(e) => {
                         props.onInputChange(e);
                     }}
-                    onBlur={props.onBlur}
                     onFocus={props.onFocus}
                     defaultValue={props.defaultValue}
                     inputValue={props.inputValue}
