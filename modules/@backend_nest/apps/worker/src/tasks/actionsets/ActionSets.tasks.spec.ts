@@ -54,6 +54,7 @@ describe('ActionSets Tasks', function() {
 
             const actionSet: ActionSetEntity = {
                 id: 'ccf2ef65-3632-4277-a061-dddfefac48da',
+                consumed: false,
                 name: 'test',
                 current_status: 'input:in progress',
                 links: [],
@@ -113,6 +114,7 @@ describe('ActionSets Tasks', function() {
 
             const actionSet: ActionSetEntity = {
                 id: 'ccf2ef65-3632-4277-a061-dddfefac48da',
+                consumed: false,
                 name: 'test',
                 current_status: 'input:in progress',
                 links: [],
@@ -166,6 +168,7 @@ describe('ActionSets Tasks', function() {
 
             const actionSet: ActionSetEntity = {
                 id: 'ccf2ef65-3632-4277-a061-dddfefac48da',
+                consumed: false,
                 name: 'test',
                 current_status: 'input:in progress',
                 links: [],
@@ -225,6 +228,7 @@ describe('ActionSets Tasks', function() {
 
             const actionSet: ActionSetEntity = {
                 id: 'ccf2ef65-3632-4277-a061-dddfefac48da',
+                consumed: false,
                 name: 'test',
                 current_status: 'input:in progress',
                 links: [],
@@ -278,6 +282,7 @@ describe('ActionSets Tasks', function() {
 
             const actionSet: ActionSetEntity = {
                 id: 'ccf2ef65-3632-4277-a061-dddfefac48da',
+                consumed: false,
                 name: 'test',
                 current_status: 'input:in progress',
                 links: [],
@@ -336,6 +341,7 @@ describe('ActionSets Tasks', function() {
 
             const actionSet: ActionSetEntity = {
                 id: 'ccf2ef65-3632-4277-a061-dddfefac48da',
+                consumed: false,
                 name: 'test',
                 current_status: 'input:in progress',
                 links: [],
@@ -385,6 +391,7 @@ describe('ActionSets Tasks', function() {
 
             const actionSet: ActionSetEntity = {
                 id: 'ccf2ef65-3632-4277-a061-dddfefac48da',
+                consumed: false,
                 name: 'test',
                 current_status: 'input:in progress',
                 links: [],
@@ -434,6 +441,7 @@ describe('ActionSets Tasks', function() {
 
             const actionSet: ActionSetEntity = {
                 id: 'ccf2ef65-3632-4277-a061-dddfefac48da',
+                consumed: false,
                 name: 'test',
                 current_status: 'input:in progress',
                 links: [],

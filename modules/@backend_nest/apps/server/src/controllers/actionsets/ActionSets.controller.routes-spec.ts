@@ -33,6 +33,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     id: eventCreationActionSetRes.data.actionset.id,
                     actions: eventCreationActionSetRes.data.actionset.actions,
                     links: [],
+                    consumed: false,
                     current_action: 0,
                     current_status: 'input:in progress',
                     name: '@events/creation',

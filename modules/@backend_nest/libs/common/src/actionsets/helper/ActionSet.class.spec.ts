@@ -25,6 +25,7 @@ describe('ActionSet', function() {
 
         expect(actionSet.raw).toEqual({
             name: 'test',
+            consumed: false,
             current_status: 'input:in progress',
             id: 'ccf2ef65-3632-4277-a061-dddfefac48da',
             actions: [
@@ -53,6 +54,7 @@ describe('ActionSet', function() {
 
         expect(otherActionSet.raw).toEqual({
             name: 'test',
+            consumed: false,
             current_status: 'input:in progress',
             id: 'ccf2ef65-3632-4277-a061-dddfefac48da',
             actions: [
@@ -76,6 +78,61 @@ describe('ActionSet', function() {
             current_action: 0,
             dispatched_at: actionSet.raw.dispatched_at,
         });
+    });
+
+    it('should load an ActionSetEntity and edit / get consumed flag', function() {
+        const actions: Action[] = [
+            new Action()
+                .setType('input')
+                .setName('first')
+                .setData({ name: 'hello' })
+                .setStatus('in progress'),
+
+            new Action()
+                .setType('event')
+                .setName('second')
+                .setData({ name: 'hello' })
+                .setStatus('in progress'),
+        ];
+
+        const actionSet: ActionSet = new ActionSet()
+            .setName('test')
+            .setStatus('input:in progress')
+            .setId('ccf2ef65-3632-4277-a061-dddfefac48da')
+            .setActions(actions);
+
+        expect(actionSet.raw).toEqual({
+            name: 'test',
+            current_status: 'input:in progress',
+            consumed: false,
+            id: 'ccf2ef65-3632-4277-a061-dddfefac48da',
+            actions: [
+                {
+                    error: null,
+                    type: 'input',
+                    name: 'first',
+                    data: '{"name":"hello"}',
+                    status: 'in progress',
+                    private: false,
+                },
+                {
+                    error: null,
+                    type: 'event',
+                    name: 'second',
+                    data: '{"name":"hello"}',
+                    status: 'in progress',
+                    private: false,
+                },
+            ],
+            current_action: 0,
+            dispatched_at: actionSet.raw.dispatched_at,
+        });
+
+        expect(actionSet.consumed).toBeFalsy();
+
+        actionSet.setConsumed(true);
+
+        expect(actionSet.consumed).toBeTruthy();
     });
 
     it('should get and set status field', function() {
@@ -353,6 +410,7 @@ describe('ActionSet', function() {
         });
         expect(actionSet.withoutQuery()).toEqual({
             name: 'test',
+            consumed: false,
             current_status: 'input:in progress',
             actions: [
                 {

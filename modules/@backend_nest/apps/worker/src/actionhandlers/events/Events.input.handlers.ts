@@ -567,8 +567,8 @@ export class EventsInputHandlers implements OnModuleInit {
         serializedName: Joi.string().optional(),
         saleBegin: Joi.date().required(),
         saleEnd: Joi.date().required(),
-        resaleBegin: Joi.date(),
-        resaleEnd: Joi.date(),
+        resaleBegin: Joi.date().allow(null),
+        resaleEnd: Joi.date().allow(null),
         seats: Joi.number().required(),
         currencies: Joi.array()
             .items(
@@ -634,6 +634,10 @@ export class EventsInputHandlers implements OnModuleInit {
      * events/categoriesConfiguration check categories dates
      */
     checkCategoryDates(cat: any): string {
+        if (cat.saleEnd < cat.saleBegin) {
+            return 'sale_end_before_sale_begin';
+        }
+
         if (!cat.resaleEnd && !cat.resaleBegin) {
             return null;
         }
@@ -644,10 +648,6 @@ export class EventsInputHandlers implements OnModuleInit {
 
         if (cat.resaleEnd < cat.resaleBegin) {
             return 'resale_end_before_resale_begin';
-        }
-
-        if (cat.saleEnd < cat.saleBegin) {
-            return 'sale_end_before_sale_begin';
         }
 
         return null;

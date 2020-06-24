@@ -55,6 +55,7 @@ describe('Event Input Handlers', function() {
 
             const actionSetEntity: ActionSetEntity = {
                 id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
                 actions: [
                     {
                         status: 'waiting',
@@ -86,6 +87,7 @@ describe('Event Input Handlers', function() {
             expect(update).toEqual(true);
             expect(resActionSet.raw).toEqual({
                 id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
                 actions: [
                     {
                         status: 'complete',
@@ -119,6 +121,7 @@ describe('Event Input Handlers', function() {
 
             const actionSetEntity: ActionSetEntity = {
                 id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
                 actions: [
                     {
                         status: 'waiting',
@@ -150,6 +153,7 @@ describe('Event Input Handlers', function() {
             expect(update).toEqual(true);
             expect(resActionSet.raw).toEqual({
                 id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
                 actions: [
                     {
                         status: 'error',
@@ -183,6 +187,7 @@ describe('Event Input Handlers', function() {
 
             const actionSetEntity: ActionSetEntity = {
                 id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
                 actions: [
                     {
                         status: 'waiting',
@@ -214,6 +219,7 @@ describe('Event Input Handlers', function() {
             expect(update).toEqual(true);
             expect(resActionSet.raw).toEqual({
                 id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
                 actions: [
                     {
                         status: 'incomplete',
@@ -245,6 +251,7 @@ describe('Event Input Handlers', function() {
 
             const actionSetEntity: ActionSetEntity = {
                 id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
                 actions: [
                     {
                         status: 'waiting',
@@ -276,6 +283,7 @@ describe('Event Input Handlers', function() {
             expect(update).toEqual(true);
             expect(resActionSet.raw).toEqual({
                 id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
                 actions: [
                     {
                         status: 'complete',
@@ -307,6 +315,7 @@ describe('Event Input Handlers', function() {
 
             const actionSetEntity: ActionSetEntity = {
                 id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
                 actions: [
                     {
                         status: 'waiting',
@@ -338,6 +347,7 @@ describe('Event Input Handlers', function() {
             expect(update).toEqual(true);
             expect(resActionSet.raw).toEqual({
                 id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
                 actions: [
                     {
                         status: 'error',
@@ -383,6 +393,7 @@ describe('Event Input Handlers', function() {
 
             const actionSetEntity: ActionSetEntity = {
                 id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
                 actions: [
                     {
                         status: 'waiting',
@@ -427,6 +438,7 @@ describe('Event Input Handlers', function() {
             expect(update).toEqual(true);
             expect(resActionSet.raw).toEqual({
                 id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
                 actions: [
                     {
                         status: 'complete',
@@ -468,6 +480,7 @@ describe('Event Input Handlers', function() {
 
             const actionSetEntity: ActionSetEntity = {
                 id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
                 actions: [
                     {
                         status: 'waiting',
@@ -499,6 +512,7 @@ describe('Event Input Handlers', function() {
             expect(update).toEqual(true);
             expect(resActionSet.raw).toEqual({
                 id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
                 actions: [
                     {
                         status: 'error',
@@ -530,6 +544,7 @@ describe('Event Input Handlers', function() {
 
             const actionSetEntity: ActionSetEntity = {
                 id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
                 actions: [
                     {
                         status: 'waiting',
@@ -561,6 +576,7 @@ describe('Event Input Handlers', function() {
             expect(update).toEqual(true);
             expect(resActionSet.raw).toEqual({
                 id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
                 actions: [
                     {
                         status: 'incomplete',
@@ -603,6 +619,7 @@ describe('Event Input Handlers', function() {
 
             const actionSetEntity: ActionSetEntity = {
                 id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
                 actions: [
                     {
                         status: 'waiting',
@@ -634,6 +651,7 @@ describe('Event Input Handlers', function() {
             expect(update).toEqual(true);
             expect(resActionSet.raw).toEqual({
                 id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
                 actions: [
                     {
                         status: 'error',
@@ -758,6 +776,7 @@ describe('Event Input Handlers', function() {
 
             const actionSetEntity: ActionSetEntity = {
                 id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
                 actions: [
                     {
                         status: 'complete',
@@ -821,6 +840,7 @@ describe('Event Input Handlers', function() {
             expect(update).toEqual(true);
             expect(resActionSet.raw).toEqual({
                 id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
                 actions: [
                     {
                         status: 'complete',
@@ -969,6 +989,7 @@ describe('Event Input Handlers', function() {
 
             const actionSetEntity: ActionSetEntity = {
                 id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
                 actions: [
                     {
                         status: 'complete',
@@ -1032,6 +1053,7 @@ describe('Event Input Handlers', function() {
             expect(update).toEqual(true);
             expect(resActionSet.raw).toEqual({
                 id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
                 actions: [
                     {
                         status: 'complete',
@@ -1110,6 +1132,7 @@ describe('Event Input Handlers', function() {
 
             const actionSetEntity: ActionSetEntity = {
                 id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
                 actions: [
                     {
                         status: 'complete',
@@ -1173,6 +1196,7 @@ describe('Event Input Handlers', function() {
             expect(update).toEqual(true);
             expect(resActionSet.raw).toEqual({
                 id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
                 actions: [
                     {
                         status: 'complete',
@@ -1276,6 +1300,7 @@ describe('Event Input Handlers', function() {
 
             const actionSetEntity: ActionSetEntity = {
                 id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
                 actions: [
                     {
                         status: 'complete',
@@ -1339,6 +1364,7 @@ describe('Event Input Handlers', function() {
             expect(update).toEqual(true);
             expect(resActionSet.raw).toEqual({
                 id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
                 actions: [
                     {
                         status: 'complete',
@@ -1453,6 +1479,7 @@ describe('Event Input Handlers', function() {
 
             const actionSetEntity: ActionSetEntity = {
                 id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
                 actions: [
                     {
                         status: 'complete',
@@ -1516,6 +1543,7 @@ describe('Event Input Handlers', function() {
             expect(update).toEqual(true);
             expect(resActionSet.raw).toEqual({
                 id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
                 actions: [
                     {
                         status: 'complete',
@@ -1630,6 +1658,7 @@ describe('Event Input Handlers', function() {
 
             const actionSetEntity: ActionSetEntity = {
                 id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
                 actions: [
                     {
                         status: 'complete',
@@ -1693,6 +1722,7 @@ describe('Event Input Handlers', function() {
             expect(update).toEqual(true);
             expect(resActionSet.raw).toEqual({
                 id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
                 actions: [
                     {
                         status: 'complete',
@@ -1807,6 +1837,7 @@ describe('Event Input Handlers', function() {
 
             const actionSetEntity: ActionSetEntity = {
                 id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
                 actions: [
                     {
                         status: 'complete',
@@ -1870,6 +1901,7 @@ describe('Event Input Handlers', function() {
             expect(update).toEqual(true);
             expect(resActionSet.raw).toEqual({
                 id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
                 actions: [
                     {
                         status: 'complete',
@@ -1984,6 +2016,7 @@ describe('Event Input Handlers', function() {
 
             const actionSetEntity: ActionSetEntity = {
                 id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
                 actions: [
                     {
                         status: 'complete',
@@ -2047,6 +2080,7 @@ describe('Event Input Handlers', function() {
             expect(update).toEqual(true);
             expect(resActionSet.raw).toEqual({
                 id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
                 actions: [
                     {
                         status: 'complete',
@@ -2161,6 +2195,7 @@ describe('Event Input Handlers', function() {
 
             const actionSetEntity: ActionSetEntity = {
                 id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
                 actions: [
                     {
                         status: 'complete',
@@ -2224,6 +2259,7 @@ describe('Event Input Handlers', function() {
             expect(update).toEqual(true);
             expect(resActionSet.raw).toEqual({
                 id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
                 actions: [
                     {
                         status: 'complete',
@@ -2337,6 +2373,7 @@ describe('Event Input Handlers', function() {
 
             const actionSetEntity: ActionSetEntity = {
                 id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
                 actions: [
                     {
                         status: 'complete',
@@ -2400,6 +2437,7 @@ describe('Event Input Handlers', function() {
             expect(update).toEqual(true);
             expect(resActionSet.raw).toEqual({
                 id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
                 actions: [
                     {
                         status: 'complete',
@@ -2531,6 +2569,7 @@ describe('Event Input Handlers', function() {
 
             const actionSetEntity: ActionSetEntity = {
                 id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
                 actions: [
                     {
                         status: 'complete',
@@ -2594,6 +2633,7 @@ describe('Event Input Handlers', function() {
             expect(update).toEqual(true);
             expect(resActionSet.raw).toEqual({
                 id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
                 actions: [
                     {
                         status: 'complete',
@@ -2723,6 +2763,7 @@ describe('Event Input Handlers', function() {
 
             const actionSetEntity: ActionSetEntity = {
                 id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
                 actions: [
                     {
                         status: 'complete',
@@ -2786,6 +2827,7 @@ describe('Event Input Handlers', function() {
             expect(update).toEqual(true);
             expect(resActionSet.raw).toEqual({
                 id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
                 actions: [
                     {
                         status: 'complete',
@@ -2915,6 +2957,7 @@ describe('Event Input Handlers', function() {
 
             const actionSetEntity: ActionSetEntity = {
                 id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
                 actions: [
                     {
                         status: 'complete',
@@ -2978,6 +3021,7 @@ describe('Event Input Handlers', function() {
             expect(update).toEqual(true);
             expect(resActionSet.raw).toEqual({
                 id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
                 actions: [
                     {
                         status: 'complete',
@@ -3066,6 +3110,7 @@ describe('Event Input Handlers', function() {
 
             const actionSetEntity: ActionSetEntity = {
                 id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
                 actions: [
                     {
                         status: 'waiting',
@@ -3097,6 +3142,7 @@ describe('Event Input Handlers', function() {
             expect(update).toEqual(true);
             expect(resActionSet.raw).toEqual({
                 id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
                 actions: [
                     {
                         status: 'complete',
@@ -3140,6 +3186,7 @@ describe('Event Input Handlers', function() {
 
             const actionSetEntity: ActionSetEntity = {
                 id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
                 actions: [
                     {
                         status: 'waiting',
@@ -3171,6 +3218,7 @@ describe('Event Input Handlers', function() {
             expect(update).toEqual(true);
             expect(resActionSet.raw).toEqual({
                 id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
                 actions: [
                     {
                         status: 'error',
@@ -3225,6 +3273,7 @@ describe('Event Input Handlers', function() {
 
             const actionSetEntity: ActionSetEntity = {
                 id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
                 actions: [
                     {
                         status: 'waiting',
@@ -3256,6 +3305,7 @@ describe('Event Input Handlers', function() {
             expect(update).toEqual(true);
             expect(resActionSet.raw).toEqual({
                 id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
                 actions: [
                     {
                         status: 'error',
@@ -3285,6 +3335,7 @@ describe('Event Input Handlers', function() {
 
             const actionSetEntity: ActionSetEntity = {
                 id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
                 actions: [
                     {
                         status: 'waiting',
@@ -3316,6 +3367,7 @@ describe('Event Input Handlers', function() {
             expect(update).toEqual(true);
             expect(resActionSet.raw).toEqual({
                 id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
                 actions: [
                     {
                         status: 'incomplete',
@@ -3347,6 +3399,7 @@ describe('Event Input Handlers', function() {
 
             const actionSetEntity: ActionSetEntity = {
                 id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
                 actions: [
                     {
                         status: 'waiting',
@@ -3378,6 +3431,7 @@ describe('Event Input Handlers', function() {
             expect(update).toEqual(true);
             expect(resActionSet.raw).toEqual({
                 id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
                 actions: [
                     {
                         status: 'error',
@@ -3412,6 +3466,7 @@ describe('Event Input Handlers', function() {
 
             const actionSetEntity: ActionSetEntity = {
                 id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
                 actions: [
                     {
                         status: 'waiting',
@@ -3443,6 +3498,7 @@ describe('Event Input Handlers', function() {
             expect(update).toEqual(true);
             expect(resActionSet.raw).toEqual({
                 id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
                 actions: [
                     {
                         status: 'complete',
@@ -3474,6 +3530,7 @@ describe('Event Input Handlers', function() {
 
             const actionSetEntity: ActionSetEntity = {
                 id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
                 actions: [
                     {
                         status: 'waiting',
@@ -3505,6 +3562,7 @@ describe('Event Input Handlers', function() {
             expect(update).toEqual(true);
             expect(resActionSet.raw).toEqual({
                 id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
                 actions: [
                     {
                         status: 'error',
@@ -3535,6 +3593,7 @@ describe('Event Input Handlers', function() {
 
             const actionSetEntity: ActionSetEntity = {
                 id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
                 actions: [
                     {
                         status: 'waiting',
@@ -3566,6 +3625,7 @@ describe('Event Input Handlers', function() {
             expect(update).toEqual(true);
             expect(resActionSet.raw).toEqual({
                 id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
                 actions: [
                     {
                         status: 'incomplete',
