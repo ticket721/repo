@@ -21,7 +21,7 @@
         "@types/react-router": "5.1.5",
         "@types/react-router-dom": "5.1.4",
         "connected-react-router": "6.8.0",
-        "ionicons": "5.0.0",
+        "ionicons": "5.1.0",
         "react": "16.13.1",
         "formik": "2.1.4",
         "quick-score": "0.0.8",
