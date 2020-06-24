@@ -21,7 +21,7 @@ import {
 } from './app/api/authentication';
 
 // ACTIONS
-import { actionsCreate, actionsSearch, actionsUpdate } from './app/api/actions';
+import { actionsConsumeUpdate, actionsCreate, actionsSearch, actionsUpdate } from './app/api/actions';
 
 // IMAGES
 import { uploadImage } from './app/api/images';
@@ -86,6 +86,7 @@ export class T721SDK {
         this.actions.search = this.actions.search.bind(this);
         this.actions.update = this.actions.update.bind(this);
         this.actions.create = this.actions.create.bind(this);
+        this.actions.consumeUpdate = this.actions.consumeUpdate.bind(this);
 
         this.dates.search = this.dates.search.bind(this);
         this.dates.homeSearch = this.dates.homeSearch.bind(this);
@@ -245,6 +246,7 @@ export class T721SDK {
         search: actionsSearch,
         update: actionsUpdate,
         create: actionsCreate,
+        consumeUpdate: actionsConsumeUpdate,
     };
 
     public dates = {
