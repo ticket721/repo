@@ -1,6 +1,5 @@
 import React, { Dispatch, useEffect, useRef, useState } from 'react';
 import styled                                           from 'styled-components';
-import { useHistory }               from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
 
 import '@frontend/core/lib/utils/window';
@@ -9,13 +8,16 @@ import { InitEventAcset }           from '../../redux/ducks/event_creation';
 import { EventCreationSteps }       from '../../core/event_creation/EventCreationCore';
 import { OrganizerState }           from '../../redux/ducks';
 
-import { Button, Icon } from '@frontend/flib-react/lib/components';
+import { Icon } from '@frontend/flib-react/lib/components';
 
 import GeneralInfoForm     from './Forms/GeneralInfoForm';
 import StylesForm          from './Forms/StylesForm';
 import DatesForm           from './Forms/DatesForm';
 import CategoriesForm      from './Forms/CategoriesForm';
-import { ActionSetStatus } from '@common/sdk/lib/@backend_nest/libs/common/src/actionsets/entities/ActionSet.entity';
+
+import { useTranslation }     from 'react-i18next';
+import './locales';
+import { EventCreateActions } from './EventCreateActions';
 
 const ScrollToLastStep: React.FC<{reference: any}> = ({reference}) => {
     const scrollToRef = () =>
@@ -32,6 +34,7 @@ const ScrollToLastStep: React.FC<{reference: any}> = ({reference}) => {
 };
 
 const CreateEvent: React.FC = () => {
+    const [ t ] = useTranslation('create_event');
     const FormRefs = [
         useRef(null),
         useRef(null),
@@ -41,15 +44,13 @@ const CreateEvent: React.FC = () => {
         useRef(null),
     ];
 
-    const history = useHistory();
     const dispatch = useDispatch();
-    const [ token, eventAcsetId, lastCompletedStep, acsetStatus, currentActionIdx ]:
-        [ string, string, EventCreationSteps, ActionSetStatus, number ] =
+    const [ token, eventAcsetId, lastCompletedStep, currentActionIdx ]:
+        [ string, string, EventCreationSteps, number ] =
         useSelector((state: MergedAppState) => [
             state.auth.token.value,
             state.eventCreation.acsetId,
             state.eventCreation.completedStep,
-            state.eventCreation.acsetStatus,
             state.eventCreation.currentActionIdx,
         ]);
 
@@ -103,12 +104,12 @@ const CreateEvent: React.FC = () => {
             eventAcsetId &&
             <Forms>
                 <FormWrapper ref={FormRefs[0]}>
-                    <Title>General Informations</Title>
+                    <Title>{t('general_infos_title')}</Title>
                     <GeneralInfoForm/>
                 </FormWrapper>
                 { lastCompletedStep >= EventCreationSteps.GeneralInfo && (
                     <FormWrapper ref={FormRefs[1]} disabled={currentActionIdx < 1}>
-                        <Title>Event Style</Title>
+                        <Title>{t('styles_title')}</Title>
                         <StylesForm/>
                     </FormWrapper>
                 )}
@@ -117,7 +118,7 @@ const CreateEvent: React.FC = () => {
                 )}
                 { lastCompletedStep >= EventCreationSteps.Modules && (
                     <FormWrapper ref={FormRefs[3]} disabled={currentActionIdx < 3}>
-                        <Title>Event Dates {
+                        <Title>{t('dates_title')} {
                             datesLength > 0 ?
                             <span className={'date-quantity'}>
                                 - {datesLength} date{datesLength > 1 ? 's' : null}
@@ -129,23 +130,16 @@ const CreateEvent: React.FC = () => {
                 )}
                 {lastCompletedStep >= EventCreationSteps.Dates && (
                     <FormWrapper ref={FormRefs[4]} disabled={currentActionIdx < 4}>
-                        <Title>Ticket categories</Title>
+                        <Title>{t('categories_title')}</Title>
                         <CategoriesForm/>
                     </FormWrapper>
                 )}
                 {lastCompletedStep >= EventCreationSteps.Categories && (
                     <div ref={FormRefs[5]} />
                 )}
-                {acsetStatus === 'complete' &&
-                    <SubmitButton variant='primary' onClick={() => global.window.t721Sdk.events.create.create(token, {
-                        completedActionSet: eventAcsetId,
-                    }).then(() => {
-                        console.log('event created');
-                    }).finally(() => {
-                        history.push('/');
-                    })
-                    } title='Validate'/>
-                }
+                <EventCreateActions
+                token={token}
+                eventAcsetId={eventAcsetId}/>
                 {
                     showScroll ?
                     <ScrollToLastStep reference={FormRefs[currentActionIdx]} /> :
@@ -202,10 +196,6 @@ const Title = styled.h1`
         font-size: 15px;
         color: rgba(255,255,255,0.6);
     }
-`;
-
-const SubmitButton = styled(Button)`
-    margin-top: ${props => props.theme.doubleSpacing};
 `;
 
 export default CreateEvent;
