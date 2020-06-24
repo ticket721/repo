@@ -35,9 +35,17 @@ const App: React.FC = () => {
         <Switch>
           {
             appStatus === AppStatus.Ready && routes.map((route, idx) => {
+              const page: JSX.Element = (
+                <PageWrapper>
+                  <route.page />
+                </PageWrapper>
+              );
+
               if (route.protected) {
                   return <ProtectedRoute path={route.path} key={idx}>
-                      <route.page/>
+                      {
+                          page
+                      }
                   </ProtectedRoute>
               }
 
@@ -57,6 +65,11 @@ const App: React.FC = () => {
 
 const AppContainer = styled.div`
   width: 100%;
+`;
+
+const PageWrapper = styled.div`
+    padding: 50px 30px 30px;
+    margin-top: 80px;
 `;
 
 export default withRouter(App);
