@@ -9,7 +9,9 @@ export interface ColorPickerProps extends React.ComponentProps<any> {
     presetLabel?: string;
     color: string;
     handleChange: (color: ColorResult) => void;
-    onFocus?: (eventOrPath: string | ChangeEvent<any>) => void | ((eventOrTextValue: string | ChangeEvent<any>) => void);
+    onFocus?: (
+        eventOrPath: string | ChangeEvent<any>,
+    ) => void | ((eventOrTextValue: string | ChangeEvent<any>) => void);
     onBlur?: (value: any) => void;
 }
 

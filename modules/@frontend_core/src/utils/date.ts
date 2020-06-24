@@ -11,7 +11,7 @@ export enum TimeScale {
     hour,
     day,
     month,
-    year
+    year,
 }
 
 export const displayTime = (date: Date): string => {
@@ -42,30 +42,37 @@ export const compareDates = (dateA: Date | string, dateB: Date | string, precisi
         case TimeScale.year:
             return dateA.getFullYear() === dateB.getFullYear();
         case TimeScale.month:
-            return dateA.getFullYear() === dateB.getFullYear() &&
-                dateA.getMonth() === dateB.getMonth();
+            return dateA.getFullYear() === dateB.getFullYear() && dateA.getMonth() === dateB.getMonth();
         case TimeScale.day:
-            return dateA.getFullYear() === dateB.getFullYear() &&
+            return (
+                dateA.getFullYear() === dateB.getFullYear() &&
                 dateA.getMonth() === dateB.getMonth() &&
-                dateA.getDate() === dateB.getDate();
+                dateA.getDate() === dateB.getDate()
+            );
         case TimeScale.hour:
-            return dateA.getFullYear() === dateB.getFullYear() &&
+            return (
+                dateA.getFullYear() === dateB.getFullYear() &&
                 dateA.getMonth() === dateB.getMonth() &&
                 dateA.getDate() === dateB.getDate() &&
-                dateA.getHours() === dateB.getHours();
+                dateA.getHours() === dateB.getHours()
+            );
         case TimeScale.minute:
-            return dateA.getFullYear() === dateB.getFullYear() &&
+            return (
+                dateA.getFullYear() === dateB.getFullYear() &&
                 dateA.getMonth() === dateB.getMonth() &&
                 dateA.getDate() === dateB.getDate() &&
                 dateA.getHours() === dateB.getHours() &&
-                dateA.getMinutes() === dateB.getMinutes();
+                dateA.getMinutes() === dateB.getMinutes()
+            );
         case TimeScale.second:
-            return dateA.getFullYear() === dateB.getFullYear() &&
+            return (
+                dateA.getFullYear() === dateB.getFullYear() &&
                 dateA.getMonth() === dateB.getMonth() &&
                 dateA.getDate() === dateB.getDate() &&
                 dateA.getHours() === dateB.getHours() &&
                 dateA.getMinutes() === dateB.getMinutes() &&
-                dateA.getSeconds() === dateB.getSeconds();
+                dateA.getSeconds() === dateB.getSeconds()
+            );
         default:
             return dateA.getTime() === dateB.getTime();
     }

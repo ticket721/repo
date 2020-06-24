@@ -163,17 +163,17 @@ const StyledInputContainer = styled.div<SelectProps>`
         padding-left: ${(props) => props.theme.biggerSpacing};
     }
 
-    & > div > div[class$="Menu"] {
+    & > div > div[class$='Menu'] {
         background-color: rgb(34, 32, 41);
         z-index: 1;
     }
 
-    & > div > div > div[class$="ValueContainer"] > div[class$=multiValue] {
-        background-color: #241F33;
+    & > div > div > div[class$='ValueContainer'] > div[class$='multiValue'] {
+        background-color: #241f33;
         padding: 5px;
 
         & > div {
-            color: ${props => props.theme.textColor};
+            color: ${(props) => props.theme.textColor};
         }
     }
 `;

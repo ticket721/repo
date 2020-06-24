@@ -1,8 +1,8 @@
-import * as React   from 'react';
-import DatePicker   from 'react-datepicker';
-import styled       from '../../config/styled';
+import * as React from 'react';
+import DatePicker from 'react-datepicker';
+import styled from '../../config/styled';
 import 'react-datepicker/dist/react-datepicker.css';
-import Icon                    from '../icon';
+import Icon from '../icon';
 
 export interface CustomTimePickerProps extends React.ComponentProps<any> {
     label: string;
@@ -162,7 +162,13 @@ export const CustomTimePicker: React.FunctionComponent<CustomTimePickerProps> = 
                 dateFormat={'HH:mm'}
                 timeFormat={'HH:mm'}
                 onChange={props.onChange}
-                onChangeRaw={props.onChangeRaw ? props.onChangeRaw : (e: any) => {e.preventDefault()}}
+                onChangeRaw={
+                    props.onChangeRaw
+                        ? props.onChangeRaw
+                        : (e: any) => {
+                              e.preventDefault();
+                          }
+                }
                 placeholderText={props.placeholder}
                 selected={props.selected}
                 minTime={props.minTime ? props.minTime : new Date(0, 0, 0, 0, 0)}

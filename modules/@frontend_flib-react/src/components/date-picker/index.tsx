@@ -212,7 +212,13 @@ export const CustomDatePicker: React.FunctionComponent<CustomDatePickerProps> = 
                 minDate={props.minDate}
                 maxDate={props.maxDate}
                 onChange={props.onChange}
-                onChangeRaw={props.onChangeRaw ? props.onChangeRaw : (e: any) => {e.preventDefault()}}
+                onChangeRaw={
+                    props.onChangeRaw
+                        ? props.onChangeRaw
+                        : (e: any) => {
+                              e.preventDefault();
+                          }
+                }
                 open={props.open}
                 placeholderText={props.placeholderText}
                 selected={props.selected}

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import styled                     from '../../../config/styled';
+import styled from '../../../config/styled';
 import { ChangeEvent, useEffect } from 'react';
 
 export interface TextareaProps extends React.ComponentProps<any> {
@@ -123,14 +123,14 @@ export const Textarea: React.FunctionComponent<TextareaProps> = (props: Textarea
             </LabelsContainer>
 
             <textarea
-            id={props.name}
-            name={props.name}
-            placeholder={props.placeholder}
-            value={props.value}
-            onChange={props.onChange}
-            onFocus={props.onFocus}
-            onBlur={props.onBlur}
-            maxLength={props.maxChar}
+                id={props.name}
+                name={props.name}
+                placeholder={props.placeholder}
+                value={props.value}
+                onChange={props.onChange}
+                onFocus={props.onFocus}
+                onBlur={props.onBlur}
+                maxLength={props.maxChar}
             />
 
             {props.error && <Error>{props.error}</Error>}
