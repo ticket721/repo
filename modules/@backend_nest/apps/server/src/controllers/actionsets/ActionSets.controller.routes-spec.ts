@@ -6,6 +6,150 @@ import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entit
 
 export default function(getCtx: () => { ready: Promise<void> }) {
     return function() {
+        describe('updateConsume (PUT /actions/:actionSetId/consume', function() {
+            test('should properly create an event creation actionset and consume it', async function() {
+                const {
+                    sdk,
+                    token,
+                    user,
+                    password,
+                }: {
+                    sdk: T721SDK;
+                    token: string;
+                    user: PasswordlessUserDto;
+                    password: string;
+                } = await getSDKAndUser(getCtx);
+
+                const initialArgument = {};
+
+                const actionSetName = 'event_create';
+
+                const eventCreationActionSetRes = await sdk.actions.create(token, {
+                    name: actionSetName,
+                    arguments: initialArgument,
+                });
+
+                expect(eventCreationActionSetRes.data.actionset).toEqual({
+                    id: eventCreationActionSetRes.data.actionset.id,
+                    actions: eventCreationActionSetRes.data.actionset.actions,
+                    links: [],
+                    consumed: false,
+                    current_action: 0,
+                    current_status: 'input:in progress',
+                    name: '@events/creation',
+                    dispatched_at: eventCreationActionSetRes.data.actionset.dispatched_at,
+                });
+
+                await sdk.actions.consumeUpdate(token, eventCreationActionSetRes.data.actionset.id, {
+                    consumed: true,
+                });
+
+                const eventCreationActionSetConsumedRes = await sdk.actions.search(token, {
+                    id: {
+                        $eq: eventCreationActionSetRes.data.actionset.id,
+                    },
+                });
+
+                expect(eventCreationActionSetConsumedRes.data.actionsets[0]).toEqual({
+                    id: eventCreationActionSetConsumedRes.data.actionsets[0].id,
+                    actions: eventCreationActionSetConsumedRes.data.actionsets[0].actions,
+                    links: [],
+                    consumed: true,
+                    current_action: 0,
+                    current_status: 'input:in progress',
+                    name: '@events/creation',
+                    created_at: eventCreationActionSetConsumedRes.data.actionsets[0].created_at,
+                    updated_at: eventCreationActionSetConsumedRes.data.actionsets[0].updated_at,
+                    dispatched_at: eventCreationActionSetConsumedRes.data.actionsets[0].dispatched_at,
+                });
+            });
+
+            test('should fail updating consumed for unauthorized null user', async function() {
+                const {
+                    sdk,
+                    token,
+                    user,
+                    password,
+                }: {
+                    sdk: T721SDK;
+                    token: string;
+                    user: PasswordlessUserDto;
+                    password: string;
+                } = await getSDKAndUser(getCtx);
+
+                const initialArgument = {};
+
+                const actionSetName = 'event_create';
+
+                const eventCreationActionSetRes = await sdk.actions.create(token, {
+                    name: actionSetName,
+                    arguments: initialArgument,
+                });
+
+                expect(eventCreationActionSetRes.data.actionset).toEqual({
+                    id: eventCreationActionSetRes.data.actionset.id,
+                    actions: eventCreationActionSetRes.data.actionset.actions,
+                    links: [],
+                    consumed: false,
+                    current_action: 0,
+                    current_status: 'input:in progress',
+                    name: '@events/creation',
+                    dispatched_at: eventCreationActionSetRes.data.actionset.dispatched_at,
+                });
+
+                await failWithCode(
+                    sdk.actions.consumeUpdate(null, eventCreationActionSetRes.data.actionset.id, {
+                        consumed: true,
+                    }),
+                    StatusCodes.Unauthorized,
+                );
+            });
+
+            test('should fail updating consumed for unauthorized user', async function() {
+                const {
+                    sdk,
+                    token,
+                    user,
+                    password,
+                }: {
+                    sdk: T721SDK;
+                    token: string;
+                    user: PasswordlessUserDto;
+                    password: string;
+                } = await getSDKAndUser(getCtx);
+
+                const otherUser = await getUser(sdk);
+
+                const initialArgument = {};
+
+                const actionSetName = 'event_create';
+
+                const eventCreationActionSetRes = await sdk.actions.create(token, {
+                    name: actionSetName,
+                    arguments: initialArgument,
+                });
+
+                expect(eventCreationActionSetRes.data.actionset).toEqual({
+                    id: eventCreationActionSetRes.data.actionset.id,
+                    actions: eventCreationActionSetRes.data.actionset.actions,
+                    links: [],
+                    consumed: false,
+                    current_action: 0,
+                    current_status: 'input:in progress',
+                    name: '@events/creation',
+                    dispatched_at: eventCreationActionSetRes.data.actionset.dispatched_at,
+                });
+
+                await failWithCode(
+                    sdk.actions.consumeUpdate(otherUser.token, eventCreationActionSetRes.data.actionset.id, {
+                        consumed: true,
+                    }),
+                    StatusCodes.Unauthorized,
+                    'unauthorized_action',
+                );
+            });
+        });
+
         describe('createActions (POST /actions)', function() {
             test('should properly create an event creation actionset', async function() {
                 const {
@@ -33,6 +177,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     id: eventCreationActionSetRes.data.actionset.id,
                     actions: eventCreationActionSetRes.data.actionset.actions,
                     links: [],
+                    consumed: false,
                     current_action: 0,
                     current_status: 'input:in progress',
                     name: '@events/creation',

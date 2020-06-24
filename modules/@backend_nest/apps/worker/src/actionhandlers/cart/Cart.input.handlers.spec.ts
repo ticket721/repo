@@ -131,6 +131,7 @@ describe('Cart Input Handlers Spec', function() {
 
             expect(handlerResult[0].raw).toEqual({
                 name: '@cart/creation',
+                consumed: false,
                 dispatched_at: handlerResult[0].raw.dispatched_at,
                 actions: [
                     {
@@ -274,6 +275,7 @@ describe('Cart Input Handlers Spec', function() {
 
             expect(handlerResult[0].raw).toEqual({
                 name: '@cart/creation',
+                consumed: false,
                 dispatched_at: handlerResult[0].raw.dispatched_at,
                 actions: [
                     {
@@ -441,6 +443,7 @@ describe('Cart Input Handlers Spec', function() {
 
             expect(handlerResult[0].raw).toEqual({
                 name: '@cart/creation',
+                consumed: false,
                 dispatched_at: handlerResult[0].raw.dispatched_at,
                 actions: [
                     {
@@ -524,6 +527,7 @@ describe('Cart Input Handlers Spec', function() {
 
             expect(handlerResult[0].raw).toEqual({
                 name: '@cart/creation',
+                consumed: false,
                 dispatched_at: handlerResult[0].raw.dispatched_at,
                 actions: [
                     {
@@ -578,6 +582,7 @@ describe('Cart Input Handlers Spec', function() {
 
             expect(handlerResult[0].raw).toEqual({
                 name: '@cart/creation',
+                consumed: false,
                 dispatched_at: handlerResult[0].raw.dispatched_at,
                 actions: [
                     {
@@ -652,6 +657,7 @@ describe('Cart Input Handlers Spec', function() {
 
             expect(handlerResult[0].raw).toEqual({
                 name: '@cart/creation',
+                consumed: false,
                 dispatched_at: handlerResult[0].raw.dispatched_at,
                 actions: [
                     {
@@ -734,6 +740,7 @@ describe('Cart Input Handlers Spec', function() {
 
             expect(handlerResult[0].raw).toEqual({
                 name: '@cart/creation',
+                consumed: false,
                 dispatched_at: handlerResult[0].raw.dispatched_at,
                 actions: [
                     {
@@ -826,6 +833,7 @@ describe('Cart Input Handlers Spec', function() {
 
             expect(handlerResult[0].raw).toEqual({
                 name: '@cart/creation',
+                consumed: false,
                 dispatched_at: handlerResult[0].raw.dispatched_at,
                 actions: [
                     {
@@ -932,6 +940,7 @@ describe('Cart Input Handlers Spec', function() {
 
             expect(handlerResult[0].raw).toEqual({
                 name: '@cart/creation',
+                consumed: false,
                 dispatched_at: handlerResult[0].raw.dispatched_at,
                 actions: [
                     {
@@ -1051,6 +1060,7 @@ describe('Cart Input Handlers Spec', function() {
 
             expect(handlerResult[0].raw).toEqual({
                 name: '@cart/creation',
+                consumed: false,
                 dispatched_at: handlerResult[0].raw.dispatched_at,
                 actions: [
                     {
@@ -1127,6 +1137,7 @@ describe('Cart Input Handlers Spec', function() {
 
             expect(handlerResult[0].raw).toEqual({
                 name: '@cart/creation',
+                consumed: false,
                 dispatched_at: handlerResult[0].raw.dispatched_at,
                 actions: [
                     {
@@ -1184,6 +1195,7 @@ describe('Cart Input Handlers Spec', function() {
 
             expect(handlerResult[0].raw).toEqual({
                 name: '@cart/creation',
+                consumed: false,
                 dispatched_at: handlerResult[0].raw.dispatched_at,
                 actions: [
                     {
@@ -1281,6 +1293,7 @@ describe('Cart Input Handlers Spec', function() {
 
             expect(handlerResult[0].raw).toEqual({
                 name: '@cart/creation',
+                consumed: false,
                 dispatched_at: handlerResult[0].raw.dispatched_at,
                 actions: [
                     {
@@ -1376,6 +1389,7 @@ describe('Cart Input Handlers Spec', function() {
 
             expect(handlerResult[0].raw).toEqual({
                 name: '@cart/creation',
+                consumed: false,
                 dispatched_at: handlerResult[0].raw.dispatched_at,
                 actions: [
                     {
@@ -1454,6 +1468,7 @@ describe('Cart Input Handlers Spec', function() {
 
             expect(handlerResult[0].raw).toEqual({
                 name: '@cart/creation',
+                consumed: false,
                 dispatched_at: handlerResult[0].raw.dispatched_at,
                 actions: [
                     {
@@ -1549,6 +1564,7 @@ describe('Cart Input Handlers Spec', function() {
 
             expect(handlerResult[0].raw).toEqual({
                 name: '@cart/creation',
+                consumed: false,
                 dispatched_at: handlerResult[0].raw.dispatched_at,
                 actions: [
                     {

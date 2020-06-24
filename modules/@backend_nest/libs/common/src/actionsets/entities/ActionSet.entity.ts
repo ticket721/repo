@@ -89,6 +89,10 @@ export interface ActionEntity {
                     },
                 },
             },
+            consumed: {
+                type: 'boolean',
+                index: true,
+            },
         },
     },
 } as any)
@@ -101,6 +105,7 @@ export class ActionSetEntity {
     constructor(as?: Partial<ActionSetEntity>) {
         if (as) {
             this.id = as.id ? as.id.toString() : as.id;
+            this.consumed = as.consumed;
             this.actions = ECAAG(as.actions);
             this.links = ECAAG(as.links);
             this.current_action = as.current_action;
@@ -117,6 +122,14 @@ export class ActionSetEntity {
      */
     @GeneratedUUidColumn()
     id: string;
+
+    /**
+     * Flag to signal if action set is not usable anymore
+     */
+    @Column({
+        type: 'boolean',
+    })
+    consumed: boolean;
 
     /**
      * Action container

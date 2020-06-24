@@ -11,6 +11,14 @@ import { Sort } from '@lib/common/utils/Sort.type';
  */
 export class ActionsSearchInputDto implements SearchInputType<ActionSetEntity> {
     /**
+     * Searchable field to search on the consumed
+     */
+    @ApiPropertyOptional()
+    @IsOptional()
+    // tslint:disable-next-line:variable-name
+    consumed: SearchableField<boolean>;
+
+    /**
      * Searchable field to search on the current_status
      */
     @ApiPropertyOptional()
