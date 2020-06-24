@@ -10090,7 +10090,7 @@ cassandra-driver@3.6.0, cassandra-driver@^3.0.0, cassandra-driver@^3.3.0:
 
 "cassandra-migrate@github:ticket721/cassandra-migrate#master":
   version "1.2.2"
-  resolved "https://codeload.github.com/ticket721/cassandra-migrate/tar.gz/daa6b6e756ffa5df1f4eb7ac6a2a44ba20a24bda"
+  resolved "https://codeload.github.com/ticket721/cassandra-migrate/tar.gz/7dc716337040cfe48bd200047bd09ddfb01663d4"
   dependencies:
     async "^0.9.0"
     cassandra-driver "^3.0.0"
