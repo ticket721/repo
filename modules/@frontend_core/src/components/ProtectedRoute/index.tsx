@@ -16,10 +16,10 @@ interface ProtectedRouteRState {
 type MergedProps = ProtectedRouteProps & ProtectedRouteRState;
 
 const ProtectedRoute: React.FC<PropsWithChildren<MergedProps>> = (props: PropsWithChildren<MergedProps>) => {
-    const { path, key, authenticated, validated, exact } = props;
+    const { path, authenticated, validated, exact } = props;
 
     return (
-        <Route key={key} path={path} exact={exact}>
+        <Route path={path} exact={exact}>
             {!authenticated || (validated !== undefined && !validated) ? (
                 <Redirect
                     to={{
