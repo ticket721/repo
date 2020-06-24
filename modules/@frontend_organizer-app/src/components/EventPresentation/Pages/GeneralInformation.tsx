@@ -20,6 +20,7 @@ import { formatDateForDisplay } from '../../../utils/functions';
 
 import { textMetadataValidationSchema } from './validationSchema';
 import '../../../shared/Translations/generalInfoForm';
+import '../../../shared/Translations/global';
 
 interface Props {
   userEvent: Events;
@@ -50,7 +51,7 @@ const GeneralInformation = ({ userEvent, currentDate }: Props) => {
   const { lazyRequest, response: updateResponse } = useLazyRequest('dates.update', uuidUpdate);
 
   const [ inputTag, setInputTag ] = React.useState('');
-  const [ t ] = useTranslation(['general_infos', 'validation', 'notify']);
+  const [ t ] = useTranslation(['general_infos', 'validation', 'notify', 'global']);
   const formik = useFormik({
     initialValues: { name: '', description: '', tags: [], avatar: '', signature_colors: []},
     onSubmit: (values) => {
@@ -120,55 +121,66 @@ const GeneralInformation = ({ userEvent, currentDate }: Props) => {
 
   return (
     <Form onSubmit={formik.handleSubmit}>
-      <TextInput
-        name='name'
-        label={t('name_label')}
-        placeholder={t('name_placeholder')}
-        {...formik.getFieldProps('name')}
-        error={
-          computeError('name')
-          && t(computeError('name'))
-        }
-      />
-      <Textarea
-        name='description'
-        label={t('description_label')}
-        placeholder={t('description_placeholder')}
-        maxChar={1000}
-        {...formik.getFieldProps('description')}
-        error={
-          computeError('description')
-          && t(computeError('description'))
-        }
-      />
-      <Tags
-        name='tags'
-        label={t('tags_label')}
-        placeholder={t('tags_placeholder')}
-        currentTagsNumber={formik.values?.tags ? formik.values?.tags.length : 0}
-        maxTags={5}
-        inputValue={inputTag}
-        onInputChange={(val: string) => setInputTag(val)}
-        onKeyDown={onTagsKeyDown}
-        value={formik.values.tags}
-        onChange={(tags: string[]) => formik.setFieldValue('tags', tags)}
-        onFocus={(v) => { console.log('focus');}}
-        onBlur={(e: any) => { console.log('focus');}}
-        error={
-          computeError('tags')
-          && t(computeError('tags'))
-        }
-      />
-      <Button variant='primary' type='submit' title='Validate'/>
+      <div className={'form-container'}>
+        <TextInput
+          name='name'
+          label={t('name_label')}
+          placeholder={t('name_placeholder')}
+          {...formik.getFieldProps('name')}
+          error={
+            computeError('name')
+            && t(computeError('name'))
+          }
+        />
+        <Textarea
+          name='description'
+          label={t('description_label')}
+          placeholder={t('description_placeholder')}
+          maxChar={1000}
+          {...formik.getFieldProps('description')}
+          error={
+            computeError('description')
+            && t(computeError('description'))
+          }
+        />
+        <Tags
+          name='tags'
+          label={t('tags_label')}
+          placeholder={t('tags_placeholder')}
+          currentTagsNumber={formik.values?.tags ? formik.values?.tags.length : 0}
+          maxTags={5}
+          inputValue={inputTag}
+          onInputChange={(val: string) => setInputTag(val)}
+          onKeyDown={onTagsKeyDown}
+          value={formik.values.tags}
+          onChange={(tags: string[]) => formik.setFieldValue('tags', tags)}
+          onFocus={(v) => { console.log('focus');}}
+          onBlur={(e: any) => { console.log('focus');}}
+          error={
+            computeError('tags')
+            && t(computeError('tags'))
+          }
+        />
+        <Button variant='primary' type='submit' title={t('validate')}/>
+      </div>
     </Form>
   );
 };
 
 const Form = styled.form`
     width: 100%;
+    display: flex;
+    justify-content: center;
 
-    > * {
+    .form-container {
+      @media (min-width: 1024px) {
+        max-width: 600px;
+      }
+      width: 100%;
+      min-width: 375px;
+      > * {
         margin-bottom: 35px
+      }
     }
 `;
 

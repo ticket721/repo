@@ -39,13 +39,3 @@ i18n.addResourceBundle('fr', 'validation', {
   tag_already_added: 'tag déjà existant',
   tag_required: 'veuillez fournir au moins 1 tag',
 });
-
-i18n.addResourceBundle('en', 'notify', {
-  success: 'Success',
-  invalid_event_dates: 'Unable to update this date',
-});
-
-i18n.addResourceBundle('fr', 'notify', {
-  success: 'Succès',
-  invalid_event_dates: 'Impossible de mettre à jour cette date'
-});
