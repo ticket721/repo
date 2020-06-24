@@ -16,6 +16,7 @@ export class ActionSet {
     constructor() {
         this.entity = {
             name: null,
+            consumed: false,
             dispatched_at: new Date(Date.now()),
             actions: [],
             current_action: 0,
@@ -47,6 +48,24 @@ export class ActionSet {
      */
     setId(id: string): ActionSet {
         this.entity.id = id;
+
+        return this;
+    }
+
+    /**
+     * Recover consumed field
+     */
+    get consumed(): boolean {
+        return this.entity.consumed;
+    }
+
+    /**
+     * Changes the consumed flag
+     *
+     * @param val
+     */
+    setConsumed(val: boolean): ActionSet {
+        this.entity.consumed = val;
 
         return this;
     }

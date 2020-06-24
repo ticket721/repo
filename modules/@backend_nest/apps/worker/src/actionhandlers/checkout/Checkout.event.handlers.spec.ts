@@ -60,6 +60,7 @@ describe('Checkout Event Handlers', function() {
 
             const rawActionSet: ActionSetEntity = {
                 id: 'action_set_id',
+                consumed: false,
                 links: [],
                 name: '@checkout/creation',
                 dispatched_at: now,
@@ -169,6 +170,7 @@ describe('Checkout Event Handlers', function() {
 
             const rawActionSet: ActionSetEntity = {
                 id: 'action_set_id',
+                consumed: false,
                 links: [],
                 name: '@checkout/creation',
                 dispatched_at: now,
@@ -259,6 +261,7 @@ describe('Checkout Event Handlers', function() {
 
             const rawActionSet: ActionSetEntity = {
                 id: 'action_set_id',
+                consumed: false,
                 links: [],
                 name: '@checkout/creation',
                 dispatched_at: now,
@@ -319,6 +322,7 @@ describe('Checkout Event Handlers', function() {
 
             const rawActionSet: ActionSetEntity = {
                 id: 'action_set_id',
+                consumed: false,
                 links: [],
                 name: '@checkout/creation',
                 dispatched_at: now,
@@ -428,6 +432,7 @@ describe('Checkout Event Handlers', function() {
 
             const rawActionSet: ActionSetEntity = {
                 id: 'action_set_id',
+                consumed: false,
                 links: [],
                 name: '@checkout/creation',
                 dispatched_at: now,
@@ -538,6 +543,7 @@ describe('Checkout Event Handlers', function() {
 
             const rawActionSet: ActionSetEntity = {
                 id: 'action_set_id',
+                consumed: false,
                 links: [],
                 name: '@checkout/creation',
                 dispatched_at: now,
@@ -648,6 +654,7 @@ describe('Checkout Event Handlers', function() {
 
             const rawActionSet: ActionSetEntity = {
                 id: 'action_set_id',
+                consumed: false,
                 links: [],
                 name: '@checkout/creation',
                 dispatched_at: now,
@@ -758,6 +765,7 @@ describe('Checkout Event Handlers', function() {
 
             const rawActionSet: ActionSetEntity = {
                 id: 'action_set_id',
+                consumed: false,
                 links: [],
                 name: '@checkout/creation',
                 dispatched_at: now,
@@ -868,6 +876,7 @@ describe('Checkout Event Handlers', function() {
 
             const rawActionSet: ActionSetEntity = {
                 id: 'action_set_id',
+                consumed: false,
                 links: [],
                 name: '@checkout/creation',
                 dispatched_at: now,

@@ -762,6 +762,14 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     return as.current_status === 'complete';
                 });
 
+                const cartActionSetBeforeRes = await sdk.actions.search(token, {
+                    id: {
+                        $eq: actionSetId,
+                    },
+                });
+
+                expect(cartActionSetBeforeRes.data.actionsets[0].consumed).toEqual(false);
+
                 const res = await sdk.checkout.cart.resolve.paymentIntent(token, {
                     cart: actionSetId,
                     paymentIntentId: validPaymentIntentId,
@@ -776,6 +784,14 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 await waitForTickets(sdk, token, user.address, (tickets: TicketEntity[]): boolean => {
                     return tickets.length === 3;
                 });
+
+                const cartActionSetFinalRes = await sdk.actions.search(token, {
+                    id: {
+                        $eq: actionSetId,
+                    },
+                });
+
+                expect(cartActionSetFinalRes.data.actionsets[0].consumed).toEqual(true);
             });
 
             test('should create, fill and commit cart, then resolve with uncaptured payment intent', async function() {

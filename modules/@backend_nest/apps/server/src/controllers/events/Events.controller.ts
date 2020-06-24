@@ -462,6 +462,19 @@ export class EventsController extends ControllerBasics<EventEntity> {
 
         await this.generateHistoryMetadata(createdEventWithCategories[0], dates, categories, user);
 
+        await this._crudCall<ActionSetEntity>(
+            this.actionSetsService.update(
+                {
+                    id: actionSetEntity.id,
+                },
+                {
+                    consumed: true,
+                },
+            ),
+            StatusCodes.InternalServerError,
+            'unable_to_consumed_action_set',
+        );
+
         return {
             event: createdEventWithCategories[0],
         };

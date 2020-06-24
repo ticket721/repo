@@ -1,6 +1,7 @@
 import { EventCreationActionTypes, EventCreationState } from './types';
-import { Action }                                   from 'redux';
-import { EventCreationActions, EventCreationSteps } from '../../../core/event_creation/EventCreationCore';
+import { Action }                                       from 'redux';
+import { EventCreationActions, EventCreationSteps }     from '../../../core/event_creation/EventCreationCore';
+import { ActionSetStatus }                              from '@common/sdk/lib/@backend_nest/libs/common/src/actionsets/entities/ActionSet.entity';
 
 export interface IInitEventAcset extends Action<string> {
     type: EventCreationActionTypes.InitEventAcset;
@@ -26,6 +27,26 @@ export interface IResetEventAcset extends Action<string> {
 
 export const ResetEventAcset = (): IResetEventAcset => ({
     type: EventCreationActionTypes.ResetEventAcset,
+});
+
+export interface ISetAcsetStatus extends Action<string> {
+    type: EventCreationActionTypes.SetAcsetStatus;
+    acsetStatus: ActionSetStatus;
+}
+
+export const SetAcsetStatus = (acsetStatus: ActionSetStatus): ISetAcsetStatus => ({
+    type: EventCreationActionTypes.SetAcsetStatus,
+    acsetStatus,
+});
+
+export interface ISetCurrentActionIdx extends Action<string> {
+    type: EventCreationActionTypes.SetCurrentActionIdx;
+    idx: number;
+}
+
+export const SetCurrentActionIdx = (idx: number): ISetCurrentActionIdx => ({
+    type: EventCreationActionTypes.SetCurrentActionIdx,
+    idx,
 });
 
 export interface ISetCurrentAction extends Action<string> {
@@ -82,6 +103,8 @@ export type EventCreationAction =
     IInitEventAcset
     & ISetEventAcset
     & IResetEventAcset
+    & ISetAcsetStatus
+    & ISetCurrentActionIdx
     & ISetCurrentAction
     & ISetCompletedStep
     & ISetActionData

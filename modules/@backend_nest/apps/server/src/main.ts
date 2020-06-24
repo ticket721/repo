@@ -8,6 +8,7 @@ import { ConfigService } from '@lib/common/config/Config.service';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 import * as express from 'express';
 import { InstanceSignature, OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
+import cors from 'cors';
 
 /**
  * Core Logger
@@ -38,6 +39,7 @@ async function main() {
 
     app.use(
         '/static',
+        cors(),
         express.static(configService.get('IMAGE_SERVE_DIRECTORY'), {
             extensions: ['png', 'jpg', 'gif', 'svg', 'bmp'],
         }),

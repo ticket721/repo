@@ -56,6 +56,7 @@ describe('Tx Sequence Acset Builder Helper', function() {
                         },
                     ],
                     current_action: 0,
+                    consumed: false,
                     current_status: 'event:in progress',
                     dispatched_at: expect.any(Date),
                     name: '@txseq/processor',

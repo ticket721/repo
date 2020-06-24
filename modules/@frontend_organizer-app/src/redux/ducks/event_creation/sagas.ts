@@ -5,8 +5,8 @@ import { OrganizerState }                                                 from '
 import { EventCreationActionTypes, EventCreationState }                   from './types';
 import {
     IInitEventAcset,
-    IUpdateAction,
-    SetActionData, SetCompletedStep,
+    IUpdateAction, SetAcsetStatus,
+    SetActionData, SetCompletedStep, SetCurrentActionIdx,
     SetEventAcset,
     SetSync,
 } from './actions';
@@ -104,6 +104,8 @@ function* synchronizedActions(action: IUpdateItemData): IterableIterator<any> {
             const actionsStatus: string[] = action.data.actionsets[0].actions
                 .map((actionEntity: ActionEntity) => actionEntity.status);
             yield put(SetCompletedStep(actionsStatus.lastIndexOf('complete')));
+            yield put(SetAcsetStatus(action.data.actionsets[0].current_status));
+            yield put(SetCurrentActionIdx(action.data.actionsets[0].current_action));
         }
     }
 }

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import styled from '../../../config/styled';
-import { ChangeEvent } from 'react';
+import { ChangeEvent, useEffect } from 'react';
 
 export interface TextareaProps extends React.ComponentProps<any> {
     error?: string;
@@ -105,11 +105,11 @@ const LabelsContainer = styled.div`
 export const Textarea: React.FunctionComponent<TextareaProps> = (props: TextareaProps): JSX.Element => {
     const [count, setCount] = React.useState(0);
 
-    const keypress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-        const target = e.target as HTMLTextAreaElement;
-
-        setCount(target.value.length);
-    };
+    useEffect(() => {
+        if (props.value) {
+            setCount(props.value.length);
+        }
+    }, [props.value]);
 
     return (
         <StyledTextarea error={props.error} className={props.className}>
@@ -130,9 +130,8 @@ export const Textarea: React.FunctionComponent<TextareaProps> = (props: Textarea
                 onChange={props.onChange}
                 onFocus={props.onFocus}
                 onBlur={props.onBlur}
-                onKeyUp={keypress}
                 maxLength={props.maxChar}
-            ></textarea>
+            />
 
             {props.error && <Error>{props.error}</Error>}
         </StyledTextarea>

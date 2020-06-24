@@ -23,6 +23,7 @@ describe('Cart AcSetBuilder Helper', function() {
 
         expect(actionSet.response.raw).toEqual({
             name: '@cart/creation',
+            consumed: false,
             dispatched_at: actionSet.response.raw.dispatched_at,
             actions: [
                 {

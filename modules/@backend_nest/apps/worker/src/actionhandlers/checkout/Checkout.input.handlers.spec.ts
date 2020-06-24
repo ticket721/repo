@@ -68,6 +68,7 @@ describe('Checkout Input Handlers', function() {
 
             const rawActionSet: ActionSetEntity = {
                 id: 'action_set_id',
+                consumed: false,
                 links: [],
                 name: '@checkout/creation',
                 dispatched_at: now,
@@ -128,6 +129,7 @@ describe('Checkout Input Handlers', function() {
 
             const rawCartActionSet: ActionSetEntity = {
                 id: 'cart_id',
+                consumed: false,
                 links: [],
                 created_at: now,
                 updated_at: now,
@@ -243,6 +245,7 @@ describe('Checkout Input Handlers', function() {
 
             const rawActionSet: ActionSetEntity = {
                 id: 'action_set_id',
+                consumed: false,
                 links: [],
                 name: '@checkout/creation',
                 dispatched_at: now,
@@ -272,6 +275,7 @@ describe('Checkout Input Handlers', function() {
 
             const rawCartActionSet: ActionSetEntity = {
                 id: 'cart_id',
+                consumed: false,
                 links: [],
                 created_at: now,
                 updated_at: now,
@@ -373,6 +377,7 @@ describe('Checkout Input Handlers', function() {
 
             const rawActionSet: ActionSetEntity = {
                 id: 'action_set_id',
+                consumed: false,
                 links: [],
                 name: '@checkout/creation',
                 dispatched_at: now,
@@ -434,6 +439,7 @@ describe('Checkout Input Handlers', function() {
 
             const rawActionSet: ActionSetEntity = {
                 id: 'action_set_id',
+                consumed: false,
                 links: [],
                 name: '@checkout/creation',
                 dispatched_at: now,
@@ -496,6 +502,7 @@ describe('Checkout Input Handlers', function() {
 
             const rawActionSet: ActionSetEntity = {
                 id: 'action_set_id',
+                consumed: false,
                 links: [],
                 name: '@checkout/creation',
                 dispatched_at: now,
@@ -556,6 +563,7 @@ describe('Checkout Input Handlers', function() {
 
             const rawCartActionSet: ActionSetEntity = {
                 id: 'cart_id',
+                consumed: false,
                 links: [],
                 created_at: now,
                 updated_at: now,
@@ -645,6 +653,7 @@ describe('Checkout Input Handlers', function() {
 
             const rawActionSet: ActionSetEntity = {
                 id: 'action_set_id',
+                consumed: false,
                 links: [],
                 name: '@checkout/creation',
                 dispatched_at: now,
@@ -705,6 +714,7 @@ describe('Checkout Input Handlers', function() {
 
             const rawCartActionSet: ActionSetEntity = {
                 id: 'cart_id',
+                consumed: false,
                 links: [],
                 created_at: now,
                 updated_at: now,
@@ -790,6 +800,7 @@ describe('Checkout Input Handlers', function() {
 
             const rawActionSet: ActionSetEntity = {
                 id: 'action_set_id',
+                consumed: false,
                 links: [],
                 name: '@checkout/creation',
                 dispatched_at: now,
@@ -850,6 +861,7 @@ describe('Checkout Input Handlers', function() {
 
             const rawCartActionSet: ActionSetEntity = {
                 id: 'cart_id',
+                consumed: false,
                 links: [],
                 created_at: now,
                 updated_at: now,
@@ -947,6 +959,7 @@ describe('Checkout Input Handlers', function() {
 
             const rawActionSet: ActionSetEntity = {
                 id: 'action_set_id',
+                consumed: false,
                 links: [],
                 name: '@checkout/creation',
                 dispatched_at: now,
@@ -976,6 +989,7 @@ describe('Checkout Input Handlers', function() {
 
             const rawCartActionSet: ActionSetEntity = {
                 id: 'cart_id',
+                consumed: false,
                 links: [],
                 created_at: now,
                 updated_at: now,
@@ -1073,6 +1087,7 @@ describe('Checkout Input Handlers', function() {
 
             const rawActionSet: ActionSetEntity = {
                 id: 'action_set_id',
+                consumed: false,
                 links: [],
                 name: '@checkout/creation',
                 dispatched_at: now,
@@ -1133,6 +1148,7 @@ describe('Checkout Input Handlers', function() {
 
             const rawCartActionSet: ActionSetEntity = {
                 id: 'cart_id',
+                consumed: false,
                 links: [],
                 created_at: now,
                 updated_at: now,
@@ -1222,6 +1238,7 @@ describe('Checkout Input Handlers', function() {
 
             const rawActionSet: ActionSetEntity = {
                 id: 'action_set_id',
+                consumed: false,
                 links: [],
                 name: '@checkout/creation',
                 dispatched_at: now,
@@ -1282,6 +1299,7 @@ describe('Checkout Input Handlers', function() {
 
             const rawCartActionSet: ActionSetEntity = {
                 id: 'cart_id',
+                consumed: false,
                 links: [],
                 created_at: now,
                 updated_at: now,
@@ -1390,6 +1408,7 @@ describe('Checkout Input Handlers', function() {
 
             const rawActionSet: ActionSetEntity = {
                 id: 'action_set_id',
+                consumed: false,
                 links: [],
                 name: '@checkout/creation',
                 dispatched_at: now,
@@ -1450,6 +1469,7 @@ describe('Checkout Input Handlers', function() {
 
             const rawCartActionSet: ActionSetEntity = {
                 id: 'cart_id',
+                consumed: false,
                 links: [],
                 created_at: now,
                 updated_at: now,
@@ -1558,6 +1578,7 @@ describe('Checkout Input Handlers', function() {
 
             const rawActionSet: ActionSetEntity = {
                 id: 'action_set_id',
+                consumed: false,
                 links: [],
                 name: '@checkout/creation',
                 dispatched_at: now,
@@ -1618,6 +1639,7 @@ describe('Checkout Input Handlers', function() {
 
             const rawCartActionSet: ActionSetEntity = {
                 id: 'cart_id',
+                consumed: false,
                 links: [],
                 created_at: now,
                 updated_at: now,
@@ -1726,6 +1748,7 @@ describe('Checkout Input Handlers', function() {
 
             const rawActionSet: ActionSetEntity = {
                 id: 'action_set_id',
+                consumed: false,
                 links: [],
                 name: '@checkout/creation',
                 dispatched_at: now,
@@ -1786,6 +1809,7 @@ describe('Checkout Input Handlers', function() {
 
             const rawCartActionSet: ActionSetEntity = {
                 id: 'cart_id',
+                consumed: false,
                 links: [],
                 created_at: now,
                 updated_at: now,
@@ -1906,6 +1930,7 @@ describe('Checkout Input Handlers', function() {
 
             const rawActionSet: ActionSetEntity = {
                 id: 'action_set_id',
+                consumed: false,
                 links: [],
                 name: '@checkout/creation',
                 dispatched_at: now,
@@ -1966,6 +1991,7 @@ describe('Checkout Input Handlers', function() {
 
             const rawCartActionSet: ActionSetEntity = {
                 id: 'cart_id',
+                consumed: false,
                 links: [],
                 created_at: now,
                 updated_at: now,
@@ -2087,6 +2113,7 @@ describe('Checkout Input Handlers', function() {
 
             const rawActionSet: ActionSetEntity = {
                 id: 'action_set_id',
+                consumed: false,
                 links: [],
                 name: '@checkout/creation',
                 dispatched_at: now,
@@ -2141,6 +2168,7 @@ describe('Checkout Input Handlers', function() {
 
             const rawCartActionSet: ActionSetEntity = {
                 id: 'cart_id',
+                consumed: false,
                 links: [],
                 created_at: now,
                 updated_at: now,
