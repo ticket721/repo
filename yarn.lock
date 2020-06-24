@@ -10088,10 +10088,9 @@ cassandra-driver@3.6.0, cassandra-driver@^3.0.0, cassandra-driver@^3.3.0:
   dependencies:
     long "^2.2.0"
 
-cassandra-migrate@1.2.333:
-  version "1.2.333"
-  resolved "https://registry.yarnpkg.com/cassandra-migrate/-/cassandra-migrate-1.2.333.tgz#2b6e8aef18c46d5945f601f1028b9feb136a9a0c"
-  integrity sha512-4uizL1SxK8tfpg18+qMuJge+VQQIlo4Or8fYA/xI6b2sdyXbCwTTLu31jJx1rXtmgoP/W5F4aQ3TfGeFX9YQIA==
+"cassandra-migrate@github:ticket721/cassandra-migrate#master":
+  version "1.2.2"
+  resolved "https://codeload.github.com/ticket721/cassandra-migrate/tar.gz/daa6b6e756ffa5df1f4eb7ac6a2a44ba20a24bda"
   dependencies:
     async "^0.9.0"
     cassandra-driver "^3.0.0"
