@@ -1,7 +1,7 @@
 import { useEffect, EffectCallback, DependencyList } from 'react';
 
 export const useDeepEffect = (effect: EffectCallback, deps?: DependencyList) => {
-  const stringifiedDeps = deps.map((e) => JSON.stringify(e));
+    const stringifiedDeps = deps.map((e) => JSON.stringify(e));
 
-  useEffect(effect, stringifiedDeps);
+    useEffect(effect, stringifiedDeps);
 };

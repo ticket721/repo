@@ -24,9 +24,18 @@ export type RequestBag<ReturnType> = {
 
 export const useRequest = <ReturnType>(call: RequestParams, initialUuid: string): RequestBag<ReturnType> => {
     const response: RequestResp<ReturnType> = {
-        data: useSelector((state: AppState) => state.cache.items[CacheCore.key(call.method, call.args)]?.data, shallowEqual),
-        error: useSelector((state: AppState) => state.cache.items[CacheCore.key(call.method, call.args)]?.error, shallowEqual),
-        loading: !useSelector((state: AppState) => state.cache.items[CacheCore.key(call.method, call.args)], shallowEqual),
+        data: useSelector(
+            (state: AppState) => state.cache.items[CacheCore.key(call.method, call.args)]?.data,
+            shallowEqual,
+        ),
+        error: useSelector(
+            (state: AppState) => state.cache.items[CacheCore.key(call.method, call.args)]?.error,
+            shallowEqual,
+        ),
+        loading: !useSelector(
+            (state: AppState) => state.cache.items[CacheCore.key(call.method, call.args)],
+            shallowEqual,
+        ),
     };
 
     const dispatch = useDispatch();
