@@ -1,9 +1,8 @@
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { AppState } from '../../redux/ducks';
 import { CacheCore } from '../../cores/cache/CacheCore';
-// import { useEffect } from 'react';
 import { RegisterEntity, UnregisterEntity } from '../../redux/ducks/cache';
-import { useDeepEffect } from "../useDeepEffect";
+import { useDeepEffect } from '../useDeepEffect';
 
 interface RequestParams {
     method: string;
