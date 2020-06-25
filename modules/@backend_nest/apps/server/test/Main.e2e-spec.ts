@@ -24,6 +24,7 @@ import ImagesControllerTestSuite from '@app/server/controllers/images/Images.con
 import TxsControllerTestSuite from '@app/server/controllers/txs/Txs.controller.routes-spec';
 import RightsControllerTestSuite from '@app/server/controllers/rights/Rights.controller.routes-spec';
 import MetadatasControllerTestSuite from '@app/server/controllers/metadatas/Metadatas.controller.routes-spec';
+import TicketsControllerTestSuite from '@app/server/controllers/tickets/Tickets.controller.routes-spec';
 
 import { instance } from 'ts-mockito';
 
@@ -132,4 +133,5 @@ describe('AppController (e2e)', () => {
     describe('Metadatas Controller', MetadatasControllerTestSuite(getCtx));
     describe('Checkout Controller', CheckoutControllerTestSuite(getCtx));
     describe('Dosojin Controller', DosojinControllerTestSuite(getCtx));
+    describe('Tickets Controller', TicketsControllerTestSuite(getCtx));
 });
