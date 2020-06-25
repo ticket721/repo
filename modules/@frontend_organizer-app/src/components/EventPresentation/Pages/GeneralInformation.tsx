@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { useSelector, useDispatch } from 'react-redux';
 import { v4 } from 'uuid';
+import { getLatLng, geocodeByAddress } from 'react-google-places-autocomplete';
 
 import { TextInput, Textarea, Tags, Button } from '@frontend/flib-react/lib/components';
 import { AppState } from '@frontend/core/src/redux/ducks';
@@ -11,6 +12,7 @@ import { useRequest } from '@frontend/core/lib/hooks/useRequest';
 import { useLazyRequest } from '@frontend/core/lib/hooks/useLazyRequest';
 import { PushNotification } from '@frontend/core/lib/redux/ducks/notifications';
 import { useDeepEffect } from '@frontend/core/lib/hooks/useDeepEffect';
+import { LocationInput } from '@frontend/core/lib/components/LocationInput';
 import {
   DatesSearchResponseDto
 } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
@@ -53,9 +55,24 @@ const GeneralInformation = ({ userEvent, currentDate }: Props) => {
   const [ inputTag, setInputTag ] = React.useState('');
   const [ t ] = useTranslation(['general_infos', 'validation', 'notify', 'global']);
   const formik = useFormik({
-    initialValues: { name: '', description: '', tags: [], avatar: '', signature_colors: []},
+    initialValues: { name: '', description: '', tags: [], avatar: '', signature_colors: [], location: { label: '', lon: '', lat: ''}},
     onSubmit: (values) => {
-      lazyRequest([token, current.id, { metadata: values }]);
+      lazyRequest([token, current.id, {
+        metadata: {
+          avatar: values.avatar,
+          name: values.name,
+          description: values.description,
+          tags: values.tags,
+          signature_colors: values.signature_colors
+        },
+        location: {
+          location: {
+            lon: values.location.lon,
+            lat: values.location.lat
+          },
+          location_label: values.location.label,
+        }
+      }]);
     },
     validationSchema: textMetadataValidationSchema,
   });
@@ -73,9 +90,46 @@ const GeneralInformation = ({ userEvent, currentDate }: Props) => {
   useDeepEffect(() => {
     if (!response.loading && !response.error && response.data
     ) {
-      formik.setValues({...response.data.dates[0].metadata});
+      formik.setValues(
+        {
+          ...response.data.dates[0].metadata,
+          location: {
+            ...response.data.dates[0].location.location,
+            label: response.data.dates[0].location.location_label
+          }
+        }
+      );
     }
   }, [response]);
+
+  const onLocationChange = (result: any) => {
+    geocodeByAddress(result.description)
+      .then((gecodeResult) => {
+          getLatLng(gecodeResult[0])
+            .then(({ lat, lng }) => {
+              formik.setFieldValue('location', {
+                label: gecodeResult[0].formatted_address ?? '',
+                lon: lng,
+                lat,
+              })
+            }).catch((e) => {
+            dispatch(PushNotification(t('google_api_error'), 'error'));
+            formik.setFieldValue('location', {
+              label: '',
+              lon: null,
+              lat: null,
+            });
+          })
+        }
+      ).catch((e) => {
+      dispatch(PushNotification(t('google_api_error'), 'error'));
+      formik.setFieldValue('location', {
+        label: '',
+        lon: null,
+        lat: null,
+      });
+    });
+  };
 
   const onTagsKeyDown = (e: React.KeyboardEvent<HTMLElement>, tag: string) => {
     if(!inputTag) {
@@ -161,6 +215,17 @@ const GeneralInformation = ({ userEvent, currentDate }: Props) => {
             && t(computeError('tags'))
           }
         />
+        <LocationInput
+          name={'location'}
+          className={'date-line-field'}
+          initialValue={formik.values.location.label}
+          label={t('location_label')}
+          placeholder={t('location_placeholder')}
+          onSelect={onLocationChange}
+          error={
+            computeError('location') &&
+            t(computeError('location'))
+          }/>
         <Button variant='primary' type='submit' title={t('validate')}/>
       </div>
     </Form>

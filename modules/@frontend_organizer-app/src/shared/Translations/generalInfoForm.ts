@@ -7,6 +7,9 @@ i18n.addResourceBundle('en', 'general_infos', {
   name_placeholder: 'Name of your event',
   description_placeholder: 'Describe your event',
   tags_placeholder: 'tags',
+  location_label: 'Location',
+  location_placeholder: 'Provide a location',
+
 });
 
 i18n.addResourceBundle('fr', 'general_infos', {
@@ -16,6 +19,9 @@ i18n.addResourceBundle('fr', 'general_infos', {
   name_placeholder: 'Nom de votre évènement',
   description_placeholder: 'Decrivez votre évènement',
   tags_placeholder: 'tags',
+  location_label: 'Localisation',
+  location_placeholder: 'Veuillez fournir une adresse',
+
 });
 
 i18n.addResourceBundle('en', 'validation', {
