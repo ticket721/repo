@@ -28,6 +28,7 @@ import methodsRestrictions from './restrictions/methodsRestrictions.value';
 import { GemOrderEntity } from '@lib/common/gemorders/entities/GemOrder.entity';
 import { CheckoutAcsetBuilderArgs } from '@lib/common/checkout/acset_builders/Checkout.acsetbuilder.helper';
 import { ValidGuard } from '@app/server/authentication/guards/ValidGuard.guard';
+import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
 
 /**
  * Checkout controller to create, update and resolve carts
@@ -275,6 +276,19 @@ export class CheckoutController extends ControllerBasics<StripeResourceEntity> {
             }),
             StatusCodes.InternalServerError,
             'checkout_acset_update_error',
+        );
+
+        await this._crudCall<ActionSetEntity>(
+            this.actionSetsService.update(
+                {
+                    id: cart.id,
+                },
+                {
+                    consumed: true,
+                },
+            ),
+            StatusCodes.InternalServerError,
+            'unable_to_consume_action_set',
         );
 
         return {

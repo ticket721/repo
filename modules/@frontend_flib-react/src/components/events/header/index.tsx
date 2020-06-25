@@ -7,6 +7,8 @@ import VisibiltySensor from 'react-visibility-sensor';
 
 export interface EventHeaderProps extends React.ComponentProps<any> {
     event: EventInterface;
+    subtitle: string;
+    buttonTitle: string;
     onClick: () => void;
     onChange: (e: any) => void;
 }
@@ -15,7 +17,7 @@ const Header = styled.header<EventHeaderProps>`
     position: relative;
 
     img {
-        height: 40vh;
+        height: 50vh;
         object-fit: cover;
         width: 100%;
     }
@@ -47,11 +49,11 @@ export const EventHeader: React.FunctionComponent<EventHeaderProps> = (props: Ev
             <img src={props.event.image} />
             <Infos>
                 <h2>{props.event.name}</h2>
-                <h4>Ticket from €49 to €100 each</h4>
+                <h4>{props.subtitle}</h4>
                 <VisibiltySensor onChange={props.onChange}>
                     <Button
                         variant={'custom'}
-                        title={'Get tickets'}
+                        title={props.buttonTitle}
                         gradients={props.event.gradients}
                         onClick={props.onClick}
                     />

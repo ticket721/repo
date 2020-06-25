@@ -12,11 +12,12 @@ registerLocale('fr', fr);
 registerLocale('it', it);
 
 export interface CustomDatePickerProps extends React.ComponentProps<any> {
-    dateFormat: string;
+    dateFormat?: string;
     label: string;
     name: string;
     locale?: string;
     minDate?: Date;
+    maxDate?: Date;
     onChange: (date: Date) => void;
     onChangeRaw?: (e: React.FocusEvent<HTMLInputElement>) => void;
     open?: boolean;
@@ -209,8 +210,15 @@ export const CustomDatePicker: React.FunctionComponent<CustomDatePickerProps> = 
                 dateFormat={props.dateFormat}
                 locale={props.locale}
                 minDate={props.minDate}
+                maxDate={props.maxDate}
                 onChange={props.onChange}
-                onChangeRaw={props.onChangeRaw}
+                onChangeRaw={
+                    props.onChangeRaw
+                        ? props.onChangeRaw
+                        : (e: any) => {
+                              e.preventDefault();
+                          }
+                }
                 open={props.open}
                 placeholderText={props.placeholderText}
                 selected={props.selected}

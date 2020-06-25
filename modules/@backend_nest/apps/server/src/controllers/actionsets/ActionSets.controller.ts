@@ -22,6 +22,8 @@ import { RightsService } from '@lib/common/rights/Rights.service';
 import { ApiResponses } from '@app/server/utils/ApiResponses.controller.decorator';
 import { EventCreateAcsetBuilderArgs } from '@lib/common/events/acset_builders/EventCreate.acsetbuilder.helper';
 import { ValidGuard } from '@app/server/authentication/guards/ValidGuard.guard';
+import { ActionsConsumeUpdateInputDto } from '@app/server/controllers/actionsets/dto/ActionsConsumeUpdateInput.dto';
+import { ActionsConsumeUpdateResponseDto } from '@app/server/controllers/actionsets/dto/ActionsConsumeUpdateResponse.dto';
 
 /**
  * Generic Actions controller. Recover / delete action sets generated across the app
@@ -59,6 +61,55 @@ export class ActionSetsController extends ControllerBasics<ActionSetEntity> {
         };
     }
 
+    /**
+     * Route to update an actionset consumed flag
+     *
+     * @param body
+     * @param actionSetId
+     * @param user
+     */
+    @Put('/:actionSetId/consume')
+    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.OK)
+    @Roles('authenticated')
+    @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized, StatusCodes.BadRequest, StatusCodes.Conflict])
+    async consumeUpdate(
+        @Body() body: ActionsConsumeUpdateInputDto,
+        @Param('actionSetId') actionSetId: string,
+        @User() user: UserDto,
+    ): Promise<ActionsConsumeUpdateResponseDto> {
+        const actionSetEntity: ActionSetEntity = await this._authorizeOne(
+            this.rightsService,
+            this.actionSetsService,
+            user,
+            {
+                id: actionSetId,
+            },
+            'id',
+            ['owner'],
+        );
+
+        await this._crudCall<ActionSetEntity>(
+            this.actionSetsService.update(
+                {
+                    id: actionSetId,
+                },
+                {
+                    consumed: body.consumed,
+                },
+            ),
+            StatusCodes.InternalServerError,
+            'cannot_change_consume_flag',
+        );
+
+        return {
+            actionset: {
+                ...actionSetEntity,
+                consumed: body.consumed,
+            },
+        };
+    }
     /**
      * Route to update an action, its data and its status.
      * Will make the action dispatchable in the action queue.

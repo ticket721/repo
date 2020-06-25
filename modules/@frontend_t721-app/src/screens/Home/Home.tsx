@@ -1,16 +1,34 @@
-import React from 'react';
-import { default as Test } from '../../components/Test';
+import './locales';
+import React, { useState }  from 'react';
+import { EventList }        from './EventList';
+import { LocationModifier } from '../../components/LocationModifier';
+import { LocationGate }     from '../../components/LocationGate';
 
 const Home: React.FC = () => {
 
-    console.log(process.env);
+    const [locationFilter, setLocationFilter] = useState({
+        active: false,
+        customCity: null,
+    });
 
     return (
-        <div className='Home' style={{ color: 'white' }}>
-            Home
-            <Test title='Test' />
-        </div>
-    )
+        <LocationGate>
+            {
+                locationFilter.active
+
+                    ?
+                    <LocationModifier
+                        disableFilter={() => setLocationFilter({ ...locationFilter, active: false })}
+                    />
+
+                    :
+                    <EventList
+                        enableFilter={() => setLocationFilter({ ...locationFilter, active: true })}
+
+                    />
+            }
+        </LocationGate>
+    );
 };
 
 export default Home;

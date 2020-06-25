@@ -158,6 +158,24 @@ const StyledInputContainer = styled.div<SelectProps>`
             }
         }
     }
+
+    & > div > div {
+        padding-left: ${(props) => props.theme.biggerSpacing};
+    }
+
+    & > div > div[class$='Menu'] {
+        background-color: rgb(34, 32, 41);
+        z-index: 1;
+    }
+
+    & > div > div > div[class$='ValueContainer'] > div[class$='multiValue'] {
+        background-color: #241f33;
+        padding: 5px;
+
+        & > div {
+            color: ${(props) => props.theme.textColor};
+        }
+    }
 `;
 
 export const SelectInput: React.FunctionComponent<SelectProps> = (props: SelectProps): JSX.Element => {

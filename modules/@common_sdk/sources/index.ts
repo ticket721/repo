@@ -21,13 +21,22 @@ import {
 } from './app/api/authentication';
 
 // ACTIONS
-import { actionsCreate, actionsSearch, actionsUpdate } from './app/api/actions';
+import { actionsConsumeUpdate, actionsCreate, actionsSearch, actionsUpdate } from './app/api/actions';
 
 // IMAGES
 import { uploadImage } from './app/api/images';
 
 // DATES
-import { datesAddCategories, datesCount, datesCreate, datesDeleteCategories, datesSearch, datesUpdate } from './app/api/dates';
+import {
+    datesAddCategories,
+    datesCount,
+    datesCreate,
+    datesDeleteCategories,
+    datesFuzzySearch,
+    datesHomeSearch,
+    datesSearch,
+    datesUpdate,
+} from './app/api/dates';
 import {
     eventsAddCategories, eventsAddDates, eventsCount,
     eventsCreate, eventsCreateAdminsConfiguration, eventsCreateCategoriesConfiguration,
@@ -38,6 +47,7 @@ import {
 }                                                      from './app/api/events';
 import { txsCount, txsInfos, txsSearch, txsSubscribe } from './app/api/txs';
 import { contractsFetch }                              from './app/api/contracts';
+
 import { categoriesCount, categoriesCreate, categoriesSearch, categoriesUpdate } from './app/api/categories';
 import { rightsSearch }                                                          from './app/api/rights';
 import { metadatasFetch }                                                 from './app/api/metadatas';
@@ -77,8 +87,11 @@ export class T721SDK {
         this.actions.search = this.actions.search.bind(this);
         this.actions.update = this.actions.update.bind(this);
         this.actions.create = this.actions.create.bind(this);
+        this.actions.consumeUpdate = this.actions.consumeUpdate.bind(this);
 
         this.dates.search = this.dates.search.bind(this);
+        this.dates.homeSearch = this.dates.homeSearch.bind(this);
+        this.dates.fuzzySearch = this.dates.fuzzySearch.bind(this);
         this.dates.count = this.dates.count.bind(this);
         this.dates.create = this.dates.create.bind(this);
         this.dates.addCategories = this.dates.addCategories.bind(this);
@@ -235,10 +248,13 @@ export class T721SDK {
         search: actionsSearch,
         update: actionsUpdate,
         create: actionsCreate,
+        consumeUpdate: actionsConsumeUpdate,
     };
 
     public dates = {
         search: datesSearch,
+        homeSearch: datesHomeSearch,
+        fuzzySearch: datesFuzzySearch,
         create: datesCreate,
         count: datesCount,
         addCategories: datesAddCategories,

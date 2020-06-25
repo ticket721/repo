@@ -18,7 +18,7 @@ interface SubNavObject {
     to: string;
 }
 
-const Container = styled.div`
+const SafeOffsetContainer = styled.div`
     align-items: center;
     background-color: transparent;
     display: flex;
@@ -29,16 +29,34 @@ const Container = styled.div`
     left: 0;
     padding: ${(props) => props.theme.regularSpacing} ${(props) => props.theme.biggerSpacing};
     position: fixed;
-    transition: background-color 300ms ease;
-    top: constant(safe-area-inset-top);
-    top: env(safe-area-inset-top);
+    top: 0;
+    transition: backdrop-filter 300ms ease;
+    height: calc(48px + constant(safe-area-inset-top));
+    height: calc(48px + env(safe-area-inset-top));
     width: 100%;
-    z-index: 1000;
+    z-index: 9999;
 
     &.scrolled {
-        background-color: rgba(33, 29, 45, 0.6);
-        backdrop-filter: blur(40px);
+        background-color: rgba(0, 0, 0, 0);
+        backdrop-filter: blur(16px);
     }
+`;
+
+const Container = styled.div`
+    align-items: center;
+    background-color: transparent;
+    display: flex;
+    flex: 0 0 1;
+    font-size: 14px;
+    font-weight: 500;
+    justify-content: space-between;
+    left: 0;
+    padding: ${(props) => props.theme.regularSpacing} ${(props) => props.theme.biggerSpacing};
+    top: constant(safe-area-inset-top);
+    top: env(safe-area-inset-top);
+    position: fixed;
+    width: 100%;
+    z-index: 9999;
 `;
 
 const SubnavContainer = styled.div`
@@ -73,34 +91,36 @@ export const TopNav: React.FunctionComponent<TopNavProps> = (props: TopNavProps)
     const [showSub, setshowSub] = React.useState(false);
 
     return (
-        <Container className={props.scrolled ? 'scrolled' : ''}>
-            <a onClick={props.onPress}>
-                <Icon icon={'back-arrow'} size={'16px'} color={'rgba(255, 255, 255, 0.9)'} />
-            </a>
-            <span>{props.label}</span>
-            <span>
-                {props.subNav?.length && (
-                    <SubnavContainer
-                        onClick={() => {
-                            setshowSub(!showSub);
-                        }}
-                    >
-                        <IconDots icon={'dots'} size={'4px'} color={'rgba(255, 255, 255, 0.9)'} />
-                        {showSub && (
-                            <Subnav>
-                                {props.subNav.map((el) => {
-                                    return (
-                                        <a key={el.id} href={el.to}>
-                                            {el.label}
-                                        </a>
-                                    );
-                                })}
-                            </Subnav>
-                        )}
-                    </SubnavContainer>
-                )}
-            </span>
-        </Container>
+        <SafeOffsetContainer className={props.scrolled ? 'scrolled' : ''}>
+            <Container>
+                <a onClick={props.onPress}>
+                    <Icon icon={'back-arrow'} size={'16px'} color={'rgba(255, 255, 255, 0.9)'} />
+                </a>
+                <span>{props.label}</span>
+                <span>
+                    {props.subNav?.length && (
+                        <SubnavContainer
+                            onClick={() => {
+                                setshowSub(!showSub);
+                            }}
+                        >
+                            <IconDots icon={'dots'} size={'4px'} color={'rgba(255, 255, 255, 0.9)'} />
+                            {showSub && (
+                                <Subnav>
+                                    {props.subNav.map((el) => {
+                                        return (
+                                            <a key={el.id} href={el.to}>
+                                                {el.label}
+                                            </a>
+                                        );
+                                    })}
+                                </Subnav>
+                            )}
+                        </SubnavContainer>
+                    )}
+                </span>
+            </Container>
+        </SafeOffsetContainer>
     );
 };
 

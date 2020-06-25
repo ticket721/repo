@@ -23,6 +23,7 @@ export interface FilesUploaderProps extends React.ComponentProps<any> {
     onDropRejected: (errors: DropError[]) => void;
     onRemove: (preview: string) => void;
     uploadRecommendations?: string;
+    previewPaths?: string[];
     error?: string;
     // multiple related inputs
     multiple?: boolean;
@@ -74,6 +75,7 @@ const DropZone = styled.div`
     }
 `;
 const StyledContainer = styled.div`
+    position: relative;
     max-width: 600px;
 `;
 
@@ -101,10 +103,13 @@ const MultipleLabel = styled.div`
     color: ${(props) => props.theme.textColorDarker};
 `;
 
-const ThumbTile = styled.div`
+const ThumbTile = styled.div<{ width: string; height: string }>`
     position: absolute;
-    width: 100%;
-    height: 100%;
+    top: 0;
+    width: ${(props) => props.width};
+    height: ${(props) => props.height};
+    border-radius: ${(props) => props.theme.defaultRadius};
+    overflow: hidden;
 `;
 
 const ThumbsContainer = styled.div`
@@ -189,20 +194,36 @@ export const FilesUploader: React.FunctionComponent<FilesUploaderProps> = (props
         },
     });
 
-    const thumbs = files.map((file) => (
-        <Thumb multiple={props.multiple} width={props.width}>
-            <PreviewImg width={props.width} alt={file.name} src={file.preview} />
-            <RemoveTile
-                multiple={props.multiple}
-                onClick={() => {
-                    setFiles(files.filter((fileItem) => fileItem.name !== file.name));
-                    props.onRemove(file.preview);
-                }}
-            >
-                <Icon icon={'close'} size={'20px'} color={'#FFF'} />
-            </RemoveTile>
-        </Thumb>
-    ));
+    const thumbs = props.previewPaths
+        ? props.previewPaths.map((path, previewIdx: number) => (
+              <Thumb multiple={props.multiple} width={props.width}>
+                  <PreviewImg width={props.width} alt={path} src={path} />
+                  <RemoveTile
+                      multiple={props.multiple}
+                      onClick={(e: any) => {
+                          setFiles(files.filter((fileItem, idx: number) => previewIdx !== idx));
+                          e.preventDefault();
+                          props.onRemove(path);
+                      }}
+                  >
+                      <Icon icon={'close'} size={'20px'} color={'#FFF'} />
+                  </RemoveTile>
+              </Thumb>
+          ))
+        : files.map((file) => (
+              <Thumb multiple={props.multiple} width={props.width}>
+                  <PreviewImg width={props.width} alt={file.name} src={file.preview} />
+                  <RemoveTile
+                      multiple={props.multiple}
+                      onClick={() => {
+                          setFiles(files.filter((fileItem) => fileItem.name !== file.name));
+                          props.onRemove(file.preview);
+                      }}
+                  >
+                      <Icon icon={'close'} size={'20px'} color={'#FFF'} />
+                  </RemoveTile>
+              </Thumb>
+          ));
 
     useEffect(
         () => () => {
@@ -229,9 +250,14 @@ export const FilesUploader: React.FunctionComponent<FilesUploaderProps> = (props
                     />
                     <span>{props.dragDropLabel}</span>
                     <span>{props.browseLabel}</span>
-                    {!props.multiple && <ThumbTile>{thumbs[0]}</ThumbTile>}
                 </InfosContainer>
             </DropZone>
+            {!props.multiple &&
+            ((props.previewPaths && props.previewPaths.length > 0 && props.previewPaths[0]) || files.length > 0) ? (
+                <ThumbTile width={props.width} height={props.height}>
+                    {thumbs[0]}
+                </ThumbTile>
+            ) : null}
             <Disclaimer>{props.uploadRecommendations}</Disclaimer>
             {props.error && <ErrorMsg>{props.error}</ErrorMsg>}
 

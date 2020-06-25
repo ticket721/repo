@@ -138,7 +138,27 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const event = await createEvent(token, sdk);
+                const eventActionSetId = await createEventActionSet(token, sdk);
+
+                const actionSetEntityBeforeRes = await sdk.actions.search(token, {
+                    id: {
+                        $eq: eventActionSetId,
+                    },
+                });
+
+                expect(actionSetEntityBeforeRes.data.actionsets[0].consumed).toEqual(false);
+
+                await sdk.events.create.create(token, {
+                    completedActionSet: eventActionSetId,
+                });
+
+                const actionSetEntityAfterRes = await sdk.actions.search(token, {
+                    id: {
+                        $eq: eventActionSetId,
+                    },
+                });
+
+                expect(actionSetEntityAfterRes.data.actionsets[0].consumed).toEqual(true);
             });
 
             test('should properly edit actionset then create event', async function() {

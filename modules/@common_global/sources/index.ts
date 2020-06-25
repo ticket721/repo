@@ -10,7 +10,7 @@ export { Web3RegisterSigner }                                                   
 export { RefractMtx, MetaTransaction, TransactionParameters }                            from './signers/RefractMtx';
 export { MintAuthorization }                                                             from './signers/MintAuthorization';
 export { MintTokensAuthorization }                                                       from './signers/MintTokensAuthorization';
-export { Coordinates, closestCity, City }                                                from './geoloc';
+export { Coordinates, closestCity, City, citiesList }                                    from './geoloc';
 export { uuidEq, toB32, leftPad, serialize, toHex, decimalToHex }                        from './utils';
 export { isTransactionHash, toAcceptedTransactionHashFormat }                            from './transactions';
 export { getT721ControllerGroupID, encode }                                              from './abi';

@@ -1,12 +1,71 @@
 import { T721SDK } from '@common/sdk';
 import { PasswordlessUserDto } from '@app/server/authentication/dto/PasswordlessUser.dto';
-import { admin_addRight, failWithCode, generateUserName, getSDKAndUser } from '../../../test/utils';
+import {
+    admin_addRight,
+    createEvent,
+    createFuzzyEvent,
+    createLostEvent,
+    failWithCode,
+    generateUserName,
+    getSDKAndUser,
+} from '../../../test/utils';
 import { DateEntity } from '@lib/common/dates/entities/Date.entity';
 import { StatusCodes } from '@lib/common/utils/codes.value';
 import { SortablePagedSearch } from '@lib/common/utils/SortablePagedSearch.type';
 
 export default function(getCtx: () => { ready: Promise<void> }) {
     return function() {
+        describe('homeSearch (POST /dates/home-search)', function() {
+            test('should search for created date', async function() {
+                const {
+                    sdk,
+                    token,
+                    user,
+                    password,
+                }: {
+                    sdk: T721SDK;
+                    token: string;
+                    user: PasswordlessUserDto;
+                    password: string;
+                } = await getSDKAndUser(getCtx);
+
+                const event = await createLostEvent(token, sdk);
+
+                const datesSearch = await sdk.dates.homeSearch(token, {
+                    lon: 0,
+                    lat: 0,
+                });
+
+                expect(datesSearch.data.dates.length).toBeGreaterThanOrEqual(2);
+            });
+        });
+
+        describe('fuzzySearch (POST /dates/home-search)', function() {
+            test('should search for created date', async function() {
+                const {
+                    sdk,
+                    token,
+                    user,
+                    password,
+                }: {
+                    sdk: T721SDK;
+                    token: string;
+                    user: PasswordlessUserDto;
+                    password: string;
+                } = await getSDKAndUser(getCtx);
+
+                const event = await createFuzzyEvent(token, sdk);
+
+                const datesSearch = await sdk.dates.fuzzySearch(token, {
+                    lon: 0,
+                    lat: 0,
+                    query: 'fuzzy',
+                });
+
+                expect(datesSearch.data.dates.length).toBeGreaterThanOrEqual(2);
+            });
+        });
+
         describe('search (POST /dates/search)', function() {
             test('should search for created date', async function() {
                 const {

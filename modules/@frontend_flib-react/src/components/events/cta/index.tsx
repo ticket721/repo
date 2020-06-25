@@ -39,7 +39,7 @@ const CtaContainer = styled.div<EventCtaProps>`
   transform: translateY(100%);
   transition: all 300ms ease, opacity 450ms ease;
   width: 100%;
-  z-index: 100;
+  z-index: 9999;
 
   ${(props) =>
       props.show &&

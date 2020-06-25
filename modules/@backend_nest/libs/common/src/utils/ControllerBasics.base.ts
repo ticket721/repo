@@ -85,11 +85,13 @@ export class ControllerBasics<EntityType> {
      *
      * @param promise
      * @param errorStatus
+     * @param message
      * @private
      */
     public async _crudCall<ResType = any>(
         promise: Promise<CRUDResponse<ResType>>,
         errorStatus: StatusCodes,
+        message?: string,
     ): Promise<ResType> {
         const res = await promise;
 
@@ -97,7 +99,7 @@ export class ControllerBasics<EntityType> {
             throw new HttpException(
                 {
                     status: errorStatus,
-                    message: res.error,
+                    message: message || res.error,
                 },
                 errorStatus,
             );

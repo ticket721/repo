@@ -3,7 +3,7 @@ export default interface Ticket {
     mainColor: string;
     location: string;
     address: string;
-    number: number;
+    number?: number;
     ticketType: string;
     startDate: string;
     gradients: string[];
@@ -11,7 +11,7 @@ export default interface Ticket {
     endDate: string;
     endTime: string;
     ticketId: string;
-    addOns: number;
+    addOns?: number;
     image: string;
     seat?: SeatProps;
     purchase_date?: string;

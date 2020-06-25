@@ -3,9 +3,7 @@ import styled from '../../../config/styled';
 import Icon from '../../icon';
 
 export interface SearchResultsProps extends React.ComponentProps<any> {
-    mainColor?: string;
     noResultsLabel: string;
-    viewResultsLabel: string;
     searchResults: SearchCategory[];
 }
 
@@ -13,15 +11,19 @@ interface SearchCategory {
     id: string | number;
     name: string;
     url: string;
-    results: EventOrLocation[];
+    viewResultsLabel?: string;
+    onViewResults?: () => void;
+    results: JSX.Element[];
 }
 
 interface Event {
+    color: string;
     name: string;
     id: string | number;
     price: number;
     date: string;
     image: string;
+    onClick?: () => void;
 }
 
 interface Location {
@@ -29,16 +31,11 @@ interface Location {
     name: string;
     numberEvents: number;
     url: string;
+    onClick?: () => void;
 }
-
-type EventOrLocation = Event | Location;
 
 const Container = styled.div<SearchResultsProps>`
     width: 100%;
-
-    .price {
-        color: ${(props) => props.color};
-    }
 `;
 
 const ImgContainer = styled.div`
@@ -73,6 +70,8 @@ const SingleResult = styled.article<SearchResultsProps>`
     display: flex;
     font-size: 13px;
     margin-bottom: ${(props) => props.theme.regularSpacing};
+    width: 100%;
+    cursor: ${(props) => (props.clickable ? 'pointer' : 'default')};
 
     &:last-of-type {
         margin-bottom: ${(props) => props.theme.biggerSpacing};
@@ -108,38 +107,40 @@ const CategorySection = styled.section`
     }
 `;
 
-const isLocationOrEvent = (el: EventOrLocation): el is Event => {
-    if ((el as Event).price) {
-        return true;
-    }
+const EllipsedTitle = styled.h4`
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+`;
 
-    return false;
-};
+const InfoContainer = styled.div`
+    width: calc(90% - 80px);
+`;
 
-const SingleEvent = (props: any) => {
+export const SingleEvent = (props: Event) => {
     return (
-        <SingleResult>
+        <SingleResult clickable={!!props.onClick} onClick={props.onClick}>
             <ImgContainer>
-                <img src={props.event.image} />
+                <img src={props.image} />
             </ImgContainer>
-            <div>
-                <h4 className={'uppercase'}>{props.event.name}</h4>
-                <span>{props.event.date}</span>
-                <span className={'price'}>{props.event.price}€</span>
-            </div>
+            <InfoContainer>
+                <EllipsedTitle className={'uppercase'}>{props.name}</EllipsedTitle>
+                <span>{props.date}</span>
+                <span style={{ color: props.color }}>{props.price}€</span>
+            </InfoContainer>
         </SingleResult>
     );
 };
 
-const SingleLocation = (props: any) => {
+export const SingleLocation = (props: Location) => {
     return (
         <SingleResult>
             <ImgContainer className={'icon'}>
                 <Icon icon={'pin'} size={'16px'} color={'rgba(255, 255, 255, 0.6)'} />
             </ImgContainer>
             <div>
-                <h4>{props.location.name}</h4>
-                <span>{props.location.numberEvents} events</span>
+                <h4>{props.name}</h4>
+                <span>{props.numberEvents} events</span>
             </div>
         </SingleResult>
     );
@@ -149,15 +150,10 @@ const CategoryResults = (props: any) => {
     return (
         <CategorySection>
             <h2>{props.category.name}</h2>
-            {props.category.results.map((result: EventOrLocation) => {
-                if (isLocationOrEvent(result)) {
-                    return <SingleEvent key={result.id} event={result} color={props.color} />;
-                }
-
-                return <SingleLocation key={result.id} location={result} />;
-            })}
-            {/* update to use react-router Link */}
-            <a href={props.category.url}>{props.resultsLabel}</a>
+            {props.category.results}
+            {props.category.viewResultsLabel ? (
+                <a onClick={props.category.onViewResults}>{props.category.viewResultsLabel}</a>
+            ) : null}
         </CategorySection>
     );
 };
@@ -166,12 +162,10 @@ export const SearchResults: React.FunctionComponent<SearchResultsProps & { class
     props: SearchResultsProps,
 ): JSX.Element => {
     return (
-        <Container className={props.className} color={props.mainColor}>
+        <Container className={props.className}>
             {props.searchResults.length ? (
                 props.searchResults.map((category: SearchCategory) => {
-                    return (
-                        <CategoryResults key={category.id} category={category} resultsLabel={props.viewResultsLabel} />
-                    );
+                    return <CategoryResults key={category.id} category={category} />;
                 })
             ) : (
                 <CategorySection>

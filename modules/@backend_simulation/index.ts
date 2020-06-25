@@ -180,6 +180,9 @@ export const createEvent = async (user: UserDto, sdk: T721SDK, token: string, ev
 
 const eventCreator = async (sdk: T721SDK, token: string, user: UserDto): Promise<void> => {
     await createEvent(user, sdk, token, 'justice', './events/justice/images');
+    await createEvent(user, sdk, token, 'booba', './events/booba/images');
+    await createEvent(user, sdk, token, 'drake', './events/drake/images');
+    await createEvent(user, sdk, token, 'festival', './events/festival/images');
 };
 
 const main = async (): Promise<void> => {

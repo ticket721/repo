@@ -5,10 +5,10 @@ import Icon from '../../icon';
 
 export interface LocationListProps extends React.ComponentProps<any> {
     title: string;
-    locations: string[];
+    locations: { label: string; value: any; idx: number }[];
     mainColor?: string;
     selectedLocation?: string;
-    updateLocation: (location: string) => void;
+    updateLocation: (location: any) => void;
 }
 
 const Container = styled.section`
@@ -64,15 +64,15 @@ export const LocationList: React.FunctionComponent<LocationListProps> = (props: 
                 {props.locations.map((location) => {
                     return (
                         <Item
-                            key={slugify(location)}
-                            className={location === props.selectedLocation ? 'selected' : ''}
+                            key={slugify(`${location.label}-${location.idx}`)}
+                            className={location.label === props.selectedLocation ? 'selected' : ''}
                             onClick={() => {
-                                return props.updateLocation(location);
+                                return props.updateLocation(location.value);
                             }}
                         >
                             <LocationIcon icon={'pin'} size={'16px'} color={'rgba(255, 255, 255, 0.38)'} />
-                            {location}
-                            <CheckIcon icon={'check'} size={'16px'} color={'rgba(255, 255, 255, 0.38)'} />
+                            {location.label}
+                            <CheckIcon icon={'check'} size={'12px'} color={'rgba(255, 255, 255, 0.38)'} />
                         </Item>
                     );
                 })}

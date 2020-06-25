@@ -44,6 +44,7 @@ describe('Checkout AcSet Builder', function() {
                     type: 'event',
                 },
             ],
+            consumed: false,
             current_action: 0,
             current_status: 'input:in progress',
             dispatched_at: actionSetBuilderResponse.response.raw.dispatched_at,

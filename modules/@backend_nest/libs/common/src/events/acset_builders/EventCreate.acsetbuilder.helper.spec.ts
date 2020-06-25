@@ -26,6 +26,7 @@ describe('EventCreate AcSetBuilder Helper', function() {
 
         expect(actionSet.response.raw).toEqual({
             name: '@events/creation',
+            consumed: false,
             dispatched_at: actionSet.response.raw.dispatched_at,
             actions: [
                 {

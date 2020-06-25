@@ -35,17 +35,21 @@ const App: React.FC = () => {
         <Switch>
           {
             appStatus === AppStatus.Ready && routes.map((route, idx) => {
-              const page = (
+              const page: JSX.Element = (
                 <PageWrapper>
                   <route.page />
                 </PageWrapper>
               );
 
               if (route.protected) {
-                  return <ProtectedRoute path={route.path} key={idx} page={page} />
+                  return <ProtectedRoute path={route.path} key={idx}>
+                      {
+                          page
+                      }
+                  </ProtectedRoute>
               }
 
-                        return <Route key={idx} path={route.path}>
+                        return <Route key={idx} path={route.path} >
                             <route.page />
                         </Route>
                     })

@@ -212,6 +212,7 @@ describe('ActionSets Service', function() {
             expect(res.error).toEqual(null);
             expect(res.response).toEqual({
                 name: null,
+                consumed: false,
                 dispatched_at: res.response.dispatched_at,
                 actions: [],
                 current_action: 0,
@@ -412,6 +413,7 @@ describe('ActionSets Service', function() {
 
             const actionSetEntity: ActionSetEntity = {
                 id: actionSetId,
+                consumed: false,
                 actions: [
                     {
                         status: 'waiting',
@@ -464,6 +466,7 @@ describe('ActionSets Service', function() {
                             },
                         ],
                         links: [],
+                        consumed: false,
                         current_action: 0,
                         current_status: 'input:error',
                         name: 'test',
@@ -476,6 +479,7 @@ describe('ActionSets Service', function() {
                 error: null,
                 response: {
                     id: actionSetId,
+                    consumed: false,
                     actions: [
                         {
                             status: 'error',
@@ -512,6 +516,7 @@ describe('ActionSets Service', function() {
                     },
                 ],
                 links: [],
+                consumed: false,
                 current_action: 0,
                 current_status: 'input:error',
                 name: 'test',
@@ -545,6 +550,7 @@ describe('ActionSets Service', function() {
                             },
                         ],
                         links: [],
+                        consumed: false,
                         current_action: 0,
                         current_status: 'input:error',
                         name: 'test',
@@ -561,6 +567,7 @@ describe('ActionSets Service', function() {
 
             const actionSetEntity: ActionSetEntity = {
                 id: actionSetId,
+                consumed: false,
                 actions: [
                     {
                         status: 'waiting',
@@ -615,6 +622,7 @@ describe('ActionSets Service', function() {
 
             const actionSetEntity: ActionSetEntity = {
                 id: actionSetId,
+                consumed: false,
                 actions: [
                     {
                         status: 'waiting',
@@ -669,6 +677,7 @@ describe('ActionSets Service', function() {
 
             const actionSetEntity: ActionSetEntity = {
                 id: actionSetId,
+                consumed: false,
                 actions: [
                     {
                         status: 'waiting',
@@ -721,6 +730,7 @@ describe('ActionSets Service', function() {
                             },
                         ],
                         links: [],
+                        consumed: false,
                         current_action: 0,
                         current_status: 'input:error',
                         name: 'test',
@@ -764,6 +774,7 @@ describe('ActionSets Service', function() {
                             },
                         ],
                         links: [],
+                        consumed: false,
                         current_action: 0,
                         current_status: 'input:error',
                         name: 'test',
@@ -782,6 +793,7 @@ describe('ActionSets Service', function() {
 
             const actionSetEntity: ActionSetEntity = {
                 id: actionSetId,
+                consumed: false,
                 actions: [
                     {
                         status: 'waiting',
@@ -823,6 +835,7 @@ describe('ActionSets Service', function() {
                             },
                         ],
                         links: [],
+                        consumed: false,
                         current_action: 0,
                         current_status: 'input:waiting',
                         name: 'test',
@@ -857,6 +870,7 @@ describe('ActionSets Service', function() {
                         response: [
                             {
                                 id: actionSetId,
+                                consumed: false,
                                 actions: [
                                     {
                                         status: 'waiting',
@@ -896,6 +910,7 @@ describe('ActionSets Service', function() {
                     },
                 ],
                 links: [],
+                consumed: false,
                 current_action: 0,
                 current_status: 'input:waiting',
                 name: 'test',
@@ -922,6 +937,7 @@ describe('ActionSets Service', function() {
                         ],
                         links: [],
                         current_action: 0,
+                        consumed: false,
                         current_status: 'input:waiting',
                         name: 'test',
                         created_at: anything(),
@@ -947,6 +963,7 @@ describe('ActionSets Service', function() {
 
             const actionSetEntity: ActionSetEntity = {
                 id: actionSetId,
+                consumed: false,
                 actions: [
                     {
                         status: 'waiting',
@@ -987,6 +1004,7 @@ describe('ActionSets Service', function() {
                                 private: false,
                             },
                         ],
+                        consumed: false,
                         links: [],
                         current_action: 0,
                         current_status: 'input:waiting',
@@ -1022,6 +1040,7 @@ describe('ActionSets Service', function() {
                         response: [
                             {
                                 id: actionSetId,
+                                consumed: false,
                                 actions: [
                                     {
                                         status: 'waiting',
@@ -1061,6 +1080,7 @@ describe('ActionSets Service', function() {
                     },
                 ],
                 links: [],
+                consumed: false,
                 current_action: 0,
                 current_status: 'input:waiting',
                 name: 'test',
@@ -1086,6 +1106,7 @@ describe('ActionSets Service', function() {
                             },
                         ],
                         links: [],
+                        consumed: false,
                         current_action: 0,
                         current_status: 'input:waiting',
                         name: 'test',
@@ -1112,6 +1133,7 @@ describe('ActionSets Service', function() {
 
             const actionSetEntity: ActionSetEntity = {
                 id: actionSetId,
+                consumed: false,
                 actions: [
                     {
                         status: 'waiting',
@@ -1229,6 +1251,7 @@ describe('ActionSets Service', function() {
 
             const actionSetEntity: ActionSetEntity = {
                 id: actionSetId,
+                consumed: false,
                 actions: [
                     {
                         status: 'waiting',
@@ -1346,6 +1369,7 @@ describe('ActionSets Service', function() {
 
             const actionSetEntity: ActionSetEntity = {
                 id: actionSetId,
+                consumed: false,
                 actions: [
                     {
                         status: 'waiting',
@@ -1387,6 +1411,7 @@ describe('ActionSets Service', function() {
                             },
                         ],
                         links: [],
+                        consumed: false,
                         current_action: 0,
                         current_status: 'input:waiting',
                         name: 'test',
@@ -1421,6 +1446,7 @@ describe('ActionSets Service', function() {
                         response: [
                             {
                                 id: actionSetId,
+                                consumed: false,
                                 actions: [
                                     {
                                         status: 'waiting',
@@ -1466,6 +1492,7 @@ describe('ActionSets Service', function() {
                             },
                         ],
                         links: [],
+                        consumed: false,
                         current_action: 0,
                         current_status: 'input:waiting',
                         name: 'test',
@@ -1490,6 +1517,7 @@ describe('ActionSets Service', function() {
 
             const actionSetEntity: ActionSetEntity = {
                 id: actionSetId,
+                consumed: false,
                 actions: [
                     {
                         status: 'waiting',
@@ -1530,6 +1558,7 @@ describe('ActionSets Service', function() {
                                 private: false,
                             },
                         ],
+                        consumed: false,
                         links: [],
                         current_action: 0,
                         current_status: 'input:waiting',
@@ -1589,6 +1618,7 @@ describe('ActionSets Service', function() {
                             },
                         ],
                         links: [],
+                        consumed: false,
                         current_action: 0,
                         current_status: 'input:waiting',
                         name: 'test',

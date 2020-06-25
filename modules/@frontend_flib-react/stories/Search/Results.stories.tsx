@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { withKnobs, text, color } from '@storybook/addon-knobs';
-import SearchResults from '../../src/components/search/results';
+import SearchResults, { SingleEvent, SingleLocation } from '../../src/components/search/results';
 import SearchInput from '../../src/components/search/input';
 import { Store, State } from '@sambego/storybook-state';
 
@@ -28,37 +28,26 @@ const searchResults = [
         name: 'Events',
         url: '#todo',
         results: [
-            {
-                id: 1,
-                name: 'Event 1',
-                price: 31,
-                date: 'June 3rd 2020',
-                image: 'assets/images/band-1.jpg',
-            },
+            <SingleEvent
+                color={'#188ae2'}
+                name={'Event 1'}
+                id={1}
+                price={31}
+                date={'June 3rd 2020'}
+                image={'assets/images/band-1.jpg'}
+            />,
         ],
     },
     {
         id: 2,
         name: 'Locations',
         url: '#todo',
-        results: [
-            {
-                id: 1,
-                name: 'James E. Memorial',
-                url: '#todo',
-                numberEvents: 31,
-            },
-        ],
+        results: [<SingleLocation id={1} name={'James E. Memorial'} numberEvents={31} url={'#todo'} />],
     },
 ];
 
 export const withResults = () => (
-    <SearchResults
-        mainColor={color('Color', '#079CF0')}
-        searchResults={searchResults}
-        noResultsLabel={text('No results label', 'No results')}
-        viewResultsLabel={text('View results label', 'View all results')}
-    />
+    <SearchResults searchResults={searchResults} noResultsLabel={text('No results label', 'No results')} />
 );
 
 const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

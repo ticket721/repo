@@ -5,11 +5,12 @@ import 'react-datepicker/dist/react-datepicker.css';
 import Icon from '../icon';
 
 export interface CustomTimePickerProps extends React.ComponentProps<any> {
-    dateFormat?: string;
     label: string;
     name: string;
     onChange: (date: Date) => void;
     onChangeRaw?: (e: React.FocusEvent<HTMLInputElement>) => void;
+    minTime?: Date;
+    maxTime?: Date;
     open?: boolean;
     placeholder?: string;
     selected?: Date;
@@ -158,11 +159,20 @@ export const CustomTimePicker: React.FunctionComponent<CustomTimePickerProps> = 
             <Clock icon={'clock'} size={'16px'} />
             <DatePicker
                 name={props.name}
-                dateFormat={props.dateFormat}
+                dateFormat={'HH:mm'}
+                timeFormat={'HH:mm'}
                 onChange={props.onChange}
-                onChangeRaw={props.onChangeRaw}
+                onChangeRaw={
+                    props.onChangeRaw
+                        ? props.onChangeRaw
+                        : (e: any) => {
+                              e.preventDefault();
+                          }
+                }
                 placeholderText={props.placeholder}
                 selected={props.selected}
+                minTime={props.minTime ? props.minTime : new Date(0, 0, 0, 0, 0)}
+                maxTime={props.maxTime ? props.maxTime : new Date(0, 0, 0, 23, 59)}
                 showTimeSelect
                 showTimeSelectOnly
             />
