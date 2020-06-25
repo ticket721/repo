@@ -1,11 +1,11 @@
 import { ESCountReturn } from '@lib/common/utils/ESCountReturn.type';
 
 /**
- * Data Model returns by the Events search
+ * Data Model returns by the Tickets count
  */
 export class TicketsCountResponseDto {
     /**
-     * Categories matching the query
+     * Tickets matching the query
      */
     tickets: ESCountReturn;
 }
