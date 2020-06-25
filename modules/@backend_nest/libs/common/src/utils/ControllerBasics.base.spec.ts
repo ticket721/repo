@@ -301,15 +301,11 @@ describe('Controller Basics', function() {
             const spiedService = spy(context.controllerBasics);
 
             when(
-                spiedService._elasticGet(
+                spiedService._search(
                     anything(),
-                    deepEqual({
-                        id: {
-                            $in: ['abcd'],
-                        },
-                    } as SortablePagedSearch),
+                    anything(),
                 ),
-            ).thenResolve([entity]);
+            ).thenResolve([]);
 
             const res = await context.controllerBasics._searchRestricted(
                 instance(eventsServiceMock),
@@ -319,17 +315,13 @@ describe('Controller Basics', function() {
                 {} as SearchInputType<EventEntity>,
             );
 
-            expect(res).toEqual([entity]);
+            expect(res).toEqual([]);
 
             verify(rightsServiceMock.searchElastic(deepEqual(rightsQuery))).called();
             verify(
-                spiedService._elasticGet(
+                spiedService._search(
                     anything(),
-                    deepEqual({
-                        id: {
-                            $in: ['abcd'],
-                        },
-                    } as SortablePagedSearch),
+                    anything(),
                 ),
             ).called();
         });
@@ -384,10 +376,6 @@ describe('Controller Basics', function() {
                 },
             };
 
-            const entity = {
-                id: 'abcd',
-            };
-
             when(rightsServiceMock.searchElastic(deepEqual(rightsQuery))).thenResolve({
                 error: null,
                 response: {
@@ -404,15 +392,11 @@ describe('Controller Basics', function() {
             const spiedService = spy(context.controllerBasics);
 
             when(
-                spiedService._elasticGet(
+                spiedService._search(
                     anything(),
-                    deepEqual({
-                        id: {
-                            $in: ['abcd'],
-                        },
-                    } as SortablePagedSearch),
+                    anything(),
                 ),
-            ).thenResolve([entity]);
+            ).thenResolve([]);
 
             const res = await context.controllerBasics._searchRestricted(
                 instance(eventsServiceMock),
@@ -426,17 +410,13 @@ describe('Controller Basics', function() {
                 } as SearchInputType<EventEntity>,
             );
 
-            expect(res).toEqual([entity]);
+            expect(res).toEqual([]);
 
             verify(rightsServiceMock.searchElastic(deepEqual(rightsQuery))).called();
             verify(
-                spiedService._elasticGet(
+                spiedService._search(
                     anything(),
-                    deepEqual({
-                        id: {
-                            $in: ['abcd'],
-                        },
-                    } as SortablePagedSearch),
+                    anything(),
                 ),
             ).called();
         });
