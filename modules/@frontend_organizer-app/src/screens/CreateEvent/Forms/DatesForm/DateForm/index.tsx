@@ -6,13 +6,17 @@ import {
 }                           from '@frontend/flib-react/lib/components';
 import styled                            from 'styled-components';
 import { useFormik }                     from 'formik';
-import { DateItem }                      from './index';
-import { dateItemValidation }            from './validationSchema';
+import { DateItem }                      from '../';
+import { dateItemValidation }            from '../validationSchema';
 import { checkFormatDate, minute, compareDates, TimeScale }       from '@frontend/core/lib/utils/date';
-import { FormActions, FormActionsProps } from '../FormActions';
+import { FormActions, FormActionsProps } from '../../FormActions';
 
-import { useTranslation } from 'react-i18next';
+import { useTranslation }              from 'react-i18next';
 import './locales';
+import { LocationInput }               from '@frontend/core/lib/components/LocationInput';
+import { getLatLng, geocodeByAddress } from 'react-google-places-autocomplete';
+import { PushNotification }            from '@frontend/core/lib/redux/ducks/notifications';
+import { useDispatch }                 from 'react-redux';
 
 export interface DateFormProps extends FormActionsProps {
     initialValues: DateItem;
@@ -20,26 +24,20 @@ export interface DateFormProps extends FormActionsProps {
 }
 
 export const DateForm: React.FC<DateFormProps> = (props: DateFormProps) => {
-    const [ t, i18n ] = useTranslation(['date_form', 'vaildation']);
+    const [ t, i18n ] = useTranslation(['date_form', 'vaildation', 'errors']);
     const { initialValues } = props;
     const checkedInitialValues = {
         ...initialValues,
         eventBegin: checkFormatDate(initialValues.eventBegin),
         eventEnd: checkFormatDate(initialValues.eventEnd),
-        location: initialValues.location.label,
     };
+
+    const dispatch = useDispatch();
 
     const formik = useFormik({
         initialValues: checkedInitialValues,
         validationSchema: dateItemValidation,
-        onSubmit: (date) => props.confirm({
-            ...date,
-            location: {
-                label: date.location,
-                lon: 0,
-                lat: 0,
-            }
-        }),
+        onSubmit: (date) => props.confirm(date),
     });
 
     const onDateChange = (dateType: 'eventBegin' | 'eventEnd', date: Date) => {
@@ -87,6 +85,35 @@ export const DateForm: React.FC<DateFormProps> = (props: DateFormProps) => {
                 formik.setFieldValue('eventEnd', minTime);
             }
         }
+    };
+
+    const onLocationChange = (result: any) => {
+        geocodeByAddress(result.description)
+            .then((gecodeResult) => {
+                getLatLng(gecodeResult[0])
+                    .then(({ lat, lng }) => {
+                        formik.setFieldValue('location', {
+                            label: gecodeResult[0].formatted_address,
+                            lon: lng,
+                            lat,
+                        })
+                    }).catch((e) => {
+                        dispatch(PushNotification(t('google_api_error'), 'error'));
+                        formik.setFieldValue('location', {
+                            label: '',
+                            lon: null,
+                            lat: null,
+                        });
+                })
+                }
+            ).catch((e) => {
+                dispatch(PushNotification(t('google_api_error'), 'error'));
+                formik.setFieldValue('location', {
+                    label: '',
+                    lon: null,
+                    lat: null,
+                });
+        });
     };
 
     const computeError = (field: string): string => {
@@ -161,16 +188,17 @@ export const DateForm: React.FC<DateFormProps> = (props: DateFormProps) => {
                     t(computeError('eventEnd'))
                 }/>
             </DateEndContainer>
-            <TextInput
+            <LocationInput
+            name={'location'}
             className={'date-line-field'}
+            initialValue={formik.values.location.label}
             label={t('location_label')}
-            {...formik.getFieldProps('location')}
-            icon={'pin'}
             placeholder={t('location_placeholder')}
+            onSelect={onLocationChange}
             error={
                 computeError('location') &&
                 t(computeError('location'))
-            } />
+            }/>
             <FormActions
             delete={props.delete}
             cancel={props.cancel}

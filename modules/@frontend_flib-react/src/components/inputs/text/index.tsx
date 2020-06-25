@@ -10,11 +10,12 @@ export interface InputProps extends React.ComponentProps<any> {
     label: string;
     name: string;
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    onKeyDown?: (e: React.KeyboardEvent<any>) => void;
     onFocus?: (
         eventOrPath: string | ChangeEvent<any>,
     ) => void | ((eventOrTextValue: string | ChangeEvent<any>) => void);
     onBlur?: (eventOrPath: string | ChangeEvent<any>) => void | ((eventOrTextValue: string | ChangeEvent<any>) => void);
-    placeholder: string;
+    placeholder?: string;
     options?: any;
     value?: string | number;
     className?: string;
@@ -133,6 +134,7 @@ export const TextInput: React.FunctionComponent<InputProps & { className?: strin
                         name={props.name}
                         placeholder={props.placeholder}
                         onFocus={props.onFocus}
+                        onKeyDown={props.onKeyDown}
                         value={props.value}
                         type={props.type || 'text'}
                         onChange={props.onChange}

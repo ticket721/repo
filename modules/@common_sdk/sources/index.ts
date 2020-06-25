@@ -44,16 +44,17 @@ import {
     eventsCreateModulesConfiguration,
     eventsCreateTextMetadata, eventsDeleteCategories, eventsDeleteDates,
     eventsSearch, eventsStart, eventsUpdate, eventsWithdraw,
-}                                                                                                                        from './app/api/events';
-import { txsInfos, txsSearch, txsSubscribe }                              from './app/api/txs';
-import { contractsFetch }                                                        from './app/api/contracts';
+}                                                      from './app/api/events';
+import { txsCount, txsInfos, txsSearch, txsSubscribe } from './app/api/txs';
+import { contractsFetch }                              from './app/api/contracts';
+
 import { categoriesCount, categoriesCreate, categoriesSearch, categoriesUpdate } from './app/api/categories';
 import { rightsSearch }                                                          from './app/api/rights';
 import { metadatasFetch }                                                 from './app/api/metadatas';
 import { cartModulesConfiguration, cartTicketSelections }                 from './app/api/cart';
 import { checkoutCartCommitStripe, checkoutResolveCartWithPaymentIntent } from './app/api/checkout';
 import { dosojinSearch }                                                  from './app/api/dosojin';
-import { ticketsSearch }                                                  from './app/api/tickets';
+import { ticketsSearch, ticketsCount }                                    from './app/api/tickets';
 import { usersMe }                                                        from './app/api/users';
 
 export { FailedRegisterReport } from './app/api/authentication';
@@ -124,6 +125,7 @@ export class T721SDK {
         this.images.upload = this.images.upload.bind(this);
 
         this.txs.search = this.txs.search.bind(this);
+        this.txs.count = this.txs.count.bind(this);
         this.txs.subscribe = this.txs.subscribe.bind(this);
         this.txs.infos = this.txs.infos.bind(this);
 
@@ -140,6 +142,7 @@ export class T721SDK {
         this.dosojin.search = this.dosojin.search.bind(this);
 
         this.tickets.search = this.tickets.search.bind(this);
+        this.tickets.count = this.tickets.count.bind(this);
     }
 
     connect(host: string, port: number, protocol: 'http' | 'https' = 'http') {
@@ -298,6 +301,7 @@ export class T721SDK {
 
     public txs = {
         search: txsSearch,
+        count: txsCount,
         subscribe: txsSubscribe,
         infos: txsInfos,
     };
@@ -332,5 +336,6 @@ export class T721SDK {
 
     public tickets = {
         search: ticketsSearch,
+        count: ticketsCount,
     }
 }

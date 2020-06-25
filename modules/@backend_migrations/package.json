@@ -5,13 +5,17 @@
     "main": "index.js",
     "scripts": {
         "@lerna/postinstall": "echo '@backend/migrations has no postinstall'",
-        "@lerna/postclean": "echo '@backend/migrations has no postclean'"
+        "@lerna/postclean": "echo '@backend/migrations has no postclean'",
+        "cassandra-migrate-up": "cd cassandra && cassandra-migrate up -o ./options.js -n",
+        "cassandra-migrate-down": "cd cassandra && cassandra-migrate down -o ./options.js -n",
+        "elastic-migrate-up": "cd elasticsearch && elastic-migrate up",
+        "elastic-migrate-down": "cd elasticsearch && elastic-migrate down"
     },
     "author": "Iulian Rotaru",
     "license": "MIT",
     "dependencies": {
         "cassandra-driver": "3.6.0",
-        "cassandra-migrate": "1.2.333",
+        "cassandra-migrate": "github:ticket721/cassandra-migrate#master",
         "elastic-migrate": "github:ticket721/elastic-migrate#master"
     }
 }

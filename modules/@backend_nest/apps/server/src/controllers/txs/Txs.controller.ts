@@ -19,6 +19,8 @@ import { isTransactionHash } from '@common/global';
 import { HttpExceptionFilter } from '@app/server/utils/HttpException.filter';
 import { ApiResponses } from '@app/server/utils/ApiResponses.controller.decorator';
 import { ValidGuard } from '@app/server/authentication/guards/ValidGuard.guard';
+import { TxsCountInputDto } from '@app/server/controllers/txs/dto/TxsCountInput.dto';
+import { TxsCountResponseDto } from '@app/server/controllers/txs/dto/TxsCountResponse.dto';
 
 /**
  * Transaction Controller. Fetch and recover transactions
@@ -71,6 +73,21 @@ export class TxsController extends ControllerBasics<TxEntity> {
     @ApiResponses([StatusCodes.OK, StatusCodes.BadRequest, StatusCodes.InternalServerError])
     async search(@Body() body: TxsSearchInputDto, @User() user: UserDto): Promise<TxsSearchResponseDto> {
         const txs = await this._search(this.txsService, body);
+        return { txs };
+    }
+
+    /**
+     * Count for transactions
+     *
+     * @param body
+     * @param user
+     */
+    @Post('/count')
+    @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.OK)
+    @ApiResponses([StatusCodes.OK, StatusCodes.BadRequest, StatusCodes.InternalServerError])
+    async count(@Body() body: TxsCountInputDto, @User() user: UserDto): Promise<TxsCountResponseDto> {
+        const txs = await this._count(this.txsService, body);
         return { txs };
     }
 

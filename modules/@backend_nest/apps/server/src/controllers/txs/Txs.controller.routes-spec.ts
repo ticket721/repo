@@ -150,6 +150,70 @@ export default function(getCtx: () => { ready: Promise<void> }) {
             });
         });
 
+        describe('count (POST /txs/count)', function() {
+            test('should count for transactions', async function() {
+                const {
+                    sdk,
+                    token,
+                    user,
+                    password,
+                }: {
+                    sdk: T721SDK;
+                    token: string;
+                    user: PasswordlessUserDto;
+                    password: string;
+                } = await getSDKAndUser(getCtx);
+
+                const artifacts = await sdk.contracts.fetch();
+
+                const existingContract = artifacts.data.contracts['metamarketplace::MetaMarketplace_v0'];
+                const transactionHash = existingContract.networks[2702].transactionHash;
+
+                const subscribedTx = await sdk.txs.subscribe(token, {
+                    transaction_hash: transactionHash,
+                });
+
+                const countEvents = await sdk.txs.count(token, {
+                    transaction_hash: {
+                        $eq: transactionHash,
+                    },
+                });
+
+                expect(countEvents.data.txs.count).toEqual(1);
+            });
+
+            test('should count from unauthenticated', async function() {
+                const {
+                    sdk,
+                    token,
+                    user,
+                    password,
+                }: {
+                    sdk: T721SDK;
+                    token: string;
+                    user: PasswordlessUserDto;
+                    password: string;
+                } = await getSDKAndUser(getCtx);
+
+                const artifacts = await sdk.contracts.fetch();
+
+                const existingContract = artifacts.data.contracts['metamarketplace::MetaMarketplace_v0'];
+                const transactionHash = existingContract.networks[2702].transactionHash;
+
+                await sdk.txs.subscribe(token, {
+                    transaction_hash: transactionHash,
+                });
+
+                const countEvents = await sdk.txs.count(null, {
+                    transaction_hash: {
+                        $eq: transactionHash,
+                    },
+                });
+
+                expect(countEvents.data.txs.count).toEqual(1);
+            });
+        });
+
         describe('infos (GET /txs/infos)', function() {
             test('should recover relayer info', async function() {
                 const {

@@ -10088,10 +10088,9 @@ cassandra-driver@3.6.0, cassandra-driver@^3.0.0, cassandra-driver@^3.3.0:
   dependencies:
     long "^2.2.0"
 
-cassandra-migrate@1.2.333:
-  version "1.2.333"
-  resolved "https://registry.yarnpkg.com/cassandra-migrate/-/cassandra-migrate-1.2.333.tgz#2b6e8aef18c46d5945f601f1028b9feb136a9a0c"
-  integrity sha512-4uizL1SxK8tfpg18+qMuJge+VQQIlo4Or8fYA/xI6b2sdyXbCwTTLu31jJx1rXtmgoP/W5F4aQ3TfGeFX9YQIA==
+"cassandra-migrate@github:ticket721/cassandra-migrate#master":
+  version "1.2.2"
+  resolved "https://codeload.github.com/ticket721/cassandra-migrate/tar.gz/7dc716337040cfe48bd200047bd09ddfb01663d4"
   dependencies:
     async "^0.9.0"
     cassandra-driver "^3.0.0"
@@ -25015,6 +25014,14 @@ react-focus-lock@^2.1.0:
     use-callback-ref "^1.2.1"
     use-sidecar "^1.0.1"
 
+react-google-places-autocomplete@2.0.7:
+  version "2.0.7"
+  resolved "https://registry.yarnpkg.com/react-google-places-autocomplete/-/react-google-places-autocomplete-2.0.7.tgz#52a370b0309551d960fd5002978fe6ae56223469"
+  integrity sha512-8vJXNHGE3Wekoi3/eSTZ8R3io8ogK+umSehDSwMpyQ4njHddQp+GQQv27jD36HXpGPDmMTQGqgxjlZzLrauAGw==
+  dependencies:
+    prop-types "^15.6.2"
+    react "^16.13.1"
+
 react-helmet-async@^1.0.2:
   version "1.0.6"
   resolved "https://registry.yarnpkg.com/react-helmet-async/-/react-helmet-async-1.0.6.tgz#11c15c74e79b3f66670c73779bef3e0e352b1d4e"
@@ -25376,7 +25383,7 @@ react@16.10.2:
     object-assign "^4.1.1"
     prop-types "^15.6.2"
 
-react@16.13.1, react@^16.8.3:
+react@16.13.1, react@^16.13.1, react@^16.8.3:
   version "16.13.1"
   resolved "https://registry.yarnpkg.com/react/-/react-16.13.1.tgz#2e818822f1a9743122c063d6410d85c1e3afe48e"
   integrity sha512-YMZQQq32xHLX0bz5Mnibv1/LHb3Sqzngu7xstSM+vrkE5Kzr9xE0yMByK5kMoTK30YVJE61WfbxIFFvfeDKT1w==
