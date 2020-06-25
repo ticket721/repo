@@ -25014,6 +25014,14 @@ react-focus-lock@^2.1.0:
     use-callback-ref "^1.2.1"
     use-sidecar "^1.0.1"
 
+react-google-places-autocomplete@2.0.7:
+  version "2.0.7"
+  resolved "https://registry.yarnpkg.com/react-google-places-autocomplete/-/react-google-places-autocomplete-2.0.7.tgz#52a370b0309551d960fd5002978fe6ae56223469"
+  integrity sha512-8vJXNHGE3Wekoi3/eSTZ8R3io8ogK+umSehDSwMpyQ4njHddQp+GQQv27jD36HXpGPDmMTQGqgxjlZzLrauAGw==
+  dependencies:
+    prop-types "^15.6.2"
+    react "^16.13.1"
+
 react-helmet-async@^1.0.2:
   version "1.0.6"
   resolved "https://registry.yarnpkg.com/react-helmet-async/-/react-helmet-async-1.0.6.tgz#11c15c74e79b3f66670c73779bef3e0e352b1d4e"
@@ -25375,7 +25383,7 @@ react@16.10.2:
     object-assign "^4.1.1"
     prop-types "^15.6.2"
 
-react@16.13.1, react@^16.8.3:
+react@16.13.1, react@^16.13.1, react@^16.8.3:
   version "16.13.1"
   resolved "https://registry.yarnpkg.com/react/-/react-16.13.1.tgz#2e818822f1a9743122c063d6410d85c1e3afe48e"
   integrity sha512-YMZQQq32xHLX0bz5Mnibv1/LHb3Sqzngu7xstSM+vrkE5Kzr9xE0yMByK5kMoTK30YVJE61WfbxIFFvfeDKT1w==

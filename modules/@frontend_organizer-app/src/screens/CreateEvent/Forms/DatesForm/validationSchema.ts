@@ -12,13 +12,11 @@ const location = yup.object().shape({
         label: yup.string(),
     }).required('location_required');
 
-const formLocation = yup.string().required('location_required');
-
 const dateItemValidation = yup.object().shape({
     name,
     eventBegin,
     eventEnd,
-    location: formLocation,
+    location,
 });
 
 const dates = yup.array()
