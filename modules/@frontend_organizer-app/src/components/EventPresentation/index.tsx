@@ -10,6 +10,7 @@ import GeneralInformation from './Pages/GeneralInformation';
 import Dates from './Pages/Dates';
 import Ticket from './Pages/Ticket';
 import Presentation from './Pages/Presentation';
+import AddDate from './Pages/AddDate';
 import Preview from './Pages/Preview';
 
 interface Props {
@@ -48,6 +49,9 @@ const EventPresentation = ({ currentDate, setName, setCurrentDate, name, userEve
             </Route>
             <Route path={`/${group_id}/presentation`}>
               <Presentation userEvent={userEvent} currentDate={currentDate} />
+            </Route>
+            <Route path={`/${group_id}/add-date`}>
+              <AddDate userEvent={userEvent} currentDate={currentDate} />
             </Route>
             <Route path={`/${group_id}`}>
               <Preview category={category} />

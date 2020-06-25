@@ -18,7 +18,7 @@ export type RequestBag<ReturnType> = {
 };
 
 export const useLazyRequest = <ReturnType>(method: string, initialUuid: string): RequestBag<ReturnType> => {
-    const [called, setCalled]: [boolean, Dispatch<boolean>] = useState(null);
+    const [called, setCalled] = useState(false);
     const [args, setArgs]: [any, Dispatch<any>] = useState(null);
     const response: RequestResp<ReturnType> = {
         data: useSelector((state: AppState) =>

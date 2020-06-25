@@ -49,10 +49,11 @@ const Home: React.FC = () => {
         {
           group_id: {
             $in: groupIDs,
-          }
+          },
+          $page_size: 100
         },
       ],
-      refreshRate: 50,
+      refreshRate: 1,
     },
     uuid
   );
@@ -64,10 +65,11 @@ const Home: React.FC = () => {
         {
           group_id: {
             $in: groupIDs,
-          }
+          },
+          $page_size: 100
         },
       ],
-      refreshRate: 50,
+      refreshRate: 1,
     },
     uuid2
   );
@@ -79,10 +81,11 @@ const Home: React.FC = () => {
         {
           group_id: {
             $in: groupIDs,
-          }
+          },
+          $page_size: 100
         },
       ],
-      refreshRate: 50,
+      refreshRate: 1,
     },
     uuid3
   );

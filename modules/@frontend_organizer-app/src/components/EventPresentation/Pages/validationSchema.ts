@@ -37,3 +37,16 @@ const dates = yup.array()
 export const datesConfigValidationSchema = yup.object().shape({
   dates
 });
+
+export const completeDateValidation = yup.object().shape({
+  eventBegin: yup.date().min(new Date(), 'Cannot be a past date').required('you need to provide a start date'),
+  eventEnd: yup.date().min(new Date(), 'Cannot be a past date').required('you need to provide an end date'),
+  location: yup.object().shape({
+    lat: yup.number(),
+    lon: yup.number(),
+    label: yup.string().required('you need to provide a location'),
+  }).required('you need to provide a location'),
+  name,
+  description,
+  tags,
+});

@@ -77,6 +77,8 @@ const EventSideMenu = ({ currentDate, setCurrentDate, setName, name, userEvents 
       <SubMenu type='tickets'/>
       <Title onClick={() => handleClick('presentation')}>{t('presentation_title')}</Title>
       <Separator />
+      <Title onClick={() => handleClick('add-date')}>{t('add_date_title')}</Title>
+      <Separator />
     </Container>
   )
 };
