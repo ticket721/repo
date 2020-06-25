@@ -16,7 +16,6 @@ import {
 } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
 
 import { Events } from '../../../types/UserEvents';
-import { formatDateForDisplay } from '../../../utils/functions';
 
 import { textMetadataValidationSchema } from './validationSchema';
 import '../../../shared/Translations/generalInfoForm';
@@ -27,7 +26,6 @@ interface Props {
 }
 
 const GeneralInformation = ({ userEvent, currentDate }: Props) => {
-  const current = userEvent.dates.find((d) => formatDateForDisplay(d.startDate) === currentDate);
   const dispatch = useDispatch();
   const [uuidRequest] = React.useState(v4());
   const [uuidUpdate] = React.useState(v4());
@@ -39,7 +37,7 @@ const GeneralInformation = ({ userEvent, currentDate }: Props) => {
         token,
         {
           id: {
-            $eq: current.id,
+            $eq: currentDate,
           }
         },
       ],
@@ -54,7 +52,7 @@ const GeneralInformation = ({ userEvent, currentDate }: Props) => {
   const formik = useFormik({
     initialValues: { name: '', description: '', tags: [], avatar: '', signature_colors: []},
     onSubmit: (values) => {
-      lazyRequest([token, current.id, { metadata: values }]);
+      lazyRequest([token, currentDate, { metadata: values }]);
     },
     validationSchema: textMetadataValidationSchema,
   });

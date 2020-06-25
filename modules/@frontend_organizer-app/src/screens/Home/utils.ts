@@ -1,16 +1,17 @@
 import { Events } from '../../types/UserEvents';
 
-const formatEvent = (events: any): Events[] => {
-  return events?.map((e: any) => {
+const formatEvent = (events: any, dates: any): Events[] => {
+  const formatEvents =  events?.map((e: any) => {
     return ({ name: e.name, group_id: e.group_id });
   });
+  return formatDates(dates, formatEvents);
 };
 
 const formatDates = (dates: any, userEvents: Events[]): Events[] => {
   const origin =
     `${process.env.REACT_APP_T721_SERVER_PROTOCOL}://${process.env.REACT_APP_T721_SERVER_HOST}:${process.env.REACT_APP_T721_SERVER_PORT}/static/`;
 
-  return userEvents?.map((e) => {
+  const tmp = userEvents?.map((e) => {
     const newDates = dates?.filter((d: any) => e.group_id === d.group_id)?.map((d: any) => ({
         name: d.metadata.name,
         colors: d.metadata.signature_colors,
@@ -22,9 +23,11 @@ const formatDates = (dates: any, userEvents: Events[]): Events[] => {
       }));
     return ({ ...e, dates: newDates });
   });
+  return tmp;
 }
 
-const formatCategories = (categories: any, userEvents: Events[]): Events[] => (userEvents.map(e => {
+const formatCategories = (categories: any, userEvents: Events[]): Events[] => {
+  const tmp = userEvents.map(e => {
     const filteredCategories = categories?.filter((c: any) => c.group_id === e.group_id);
     const newCategories = filteredCategories?.filter((c: any) => c.parent_type === 'event')?.map((category: any) => ({
       id: category.id,
@@ -40,7 +43,8 @@ const formatCategories = (categories: any, userEvents: Events[]): Events[] => (u
       }))
     }));
     return {...e, categories: newCategories, dates: newDates};
-  })
-);
+  });
+  return (tmp);
+};
 
 export { formatEvent, formatDates, formatCategories };

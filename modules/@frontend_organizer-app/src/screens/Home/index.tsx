@@ -11,7 +11,6 @@ import { CategoriesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/
 import { RightEntity } from '@common/sdk/lib/@backend_nest/libs/common/src/rights/entities/Right.entity';
 import { useRequest } from '@frontend/core/lib/hooks/useRequest';
 import { CacheCore } from '@frontend/core/lib/cores/cache/CacheCore';
-// import { PushNotification } from '@frontend/core/lib/redux/ducks/notifications';
 import { SingleImage } from '@frontend/flib-react/lib/components';
 import { AppState } from '@frontend/core/src/redux/ducks';
 import { useDeepEffect } from '@frontend/core/lib/hooks/useDeepEffect';
@@ -22,7 +21,7 @@ import { MergedAppState } from '../../index';
 import { formatDateForDisplay } from '../../utils/functions';
 import { Events } from '../../types/UserEvents';
 
-import { formatEvent, formatDates, formatCategories} from './utils';
+import { formatEvent, formatCategories } from './utils';
 import './locales';
 
 
@@ -91,23 +90,22 @@ const Home: React.FC = () => {
   );
 
   useDeepEffect(() => {
-    if (groupIDs && !events.loading && !events.error) {
-      setUserEvents(formatEvent(events.data.events));
-    }
-    if (groupIDs && !dates.loading && !dates.error) {
-      setUserEvents(formatDates(dates.data.dates, userEvents));
-    }
-    if (groupIDs && !categories.loading && !categories.error) {
-      setUserEvents(formatCategories(categories.data.categories, userEvents));
+    if (groupIDs && !events.loading && !events.error && !dates.loading && !dates.error) {
+      setUserEvents(formatEvent(events.data.events, dates.data.dates));
+      if (groupIDs && !categories.loading && !categories.error) {
+        setUserEvents(formatCategories(categories.data.categories, userEvents));
+      }
     }
   }, [events, dates, groupIDs, categories]);
 
+  // used to reset url to '/' when page reload on dev
   useEffect(() => {
     history.push('/');
     // eslint-disable-next-line
   }, []);
 
-  if (!events.loading && !dates.loading && !categories.loading && userEvents.length === 0) {
+  if (!events.loading && !dates.loading && !categories.loading && userEvents.length === 0 &&
+    !events.error && !dates.error && !categories.error) {
     return (
       <Container>
         {t('no_result_label')}
@@ -148,7 +146,7 @@ const Home: React.FC = () => {
 
           first?.categories?.forEach((c) => {
             if (!lowestPrice || parseFloat(c.prices[0].value) < lowestPrice) {
-              lowestPrice = parseFloat(c.prices[0].value);
+              lowestPrice = parseFloat(c.prices[0].value) / 100;
             }
           });
           return (
@@ -157,7 +155,7 @@ const Home: React.FC = () => {
                onClick={() => {
                 setName(event.name);
                 if (first) {
-                  setCurrentDate(formatDateForDisplay(first.startDate));
+                  setCurrentDate(first.id);
                   history.push(event.group_id);
                 }
               }}
