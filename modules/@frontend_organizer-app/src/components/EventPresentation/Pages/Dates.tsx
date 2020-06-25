@@ -231,16 +231,16 @@ const Form = styled.form`
       & > .date-line-field {
           margin-bottom: ${props => props.theme.biggerSpacing};
       }
-  
+
       & > .date-container {
           display: flex;
           justify-content: space-between;
-  
+
           & > div:first-child {
               width: calc(65% - ${props => props.theme.biggerSpacing});
               margin-right: ${props => props.theme.biggerSpacing};
           }
-  
+
           & > div:last-child {
               width: 35%;
           }
