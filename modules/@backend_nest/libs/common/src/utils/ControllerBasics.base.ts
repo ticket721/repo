@@ -258,7 +258,7 @@ export class ControllerBasics<EntityType> {
      * @param query
      */
     public async _count<CustomEntityType = EntityType>(
-        service: CRUDExtension<Repository<EntityType>, EntityType>,
+        service: CRUDExtension<Repository<CustomEntityType>, CustomEntityType>,
         query: SearchInputType<CustomEntityType>,
     ): Promise<ESCountReturn> {
         const es: EsSearchOptionsStatic = this._esQueryBuilder(query);
@@ -287,9 +287,9 @@ export class ControllerBasics<EntityType> {
      * @param query
      */
     public async _search<CustomEntityType = EntityType>(
-        service: CRUDExtension<Repository<EntityType>, EntityType>,
+        service: CRUDExtension<Repository<CustomEntityType>, CustomEntityType>,
         query: SearchInputType<CustomEntityType>,
-    ): Promise<EntityType[]> {
+    ): Promise<CustomEntityType[]> {
         const es: EsSearchOptionsStatic = this._esQueryBuilder(query);
 
         const searchResults = await service.searchElastic(es);
