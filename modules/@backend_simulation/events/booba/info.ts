@@ -7,7 +7,7 @@ export default {
     nonce: 1,
     admins: [],
     name: 'Booba Tour 2020 Album Trone Titre Long :(',
-    description: 'Booba Concert',
+    description: '',
     tags: ['french', 'rap', 'trap'],
     dates: [
         {
@@ -60,8 +60,8 @@ export default {
     images: {
         avatar: 'avatar.jpg',
         signatureColors: [
-            '#4e061a',
-            '#2a2a2b'
+            '#D52325',
+            '#8D1719'
         ]
     }
 }

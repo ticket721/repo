@@ -19,6 +19,7 @@ import Tags                         from './screens/Tags';
 import Wallet                       from './screens/Wallet';
 import Event                        from './screens/Event';
 import { FullPageLoading }          from '@frontend/flib-react/lib/components';
+import TicketSelection              from './screens/TicketSelection';
 
 const LoginPage = StatusBarMargin(NavbarMargin(Login));
 const RegisterPage = StatusBarMargin(NavbarMargin(Register));
@@ -27,6 +28,7 @@ const ProfileActivitiesPage = InvisibleStatusBarMargin(TopNavMargin(Activities))
 const ProfilePage = StatusBarMargin(NavbarMargin(ProfileRoot));
 const SearchViewAllPage = InvisibleStatusBarMargin(TopNavMargin(SearchViewAll));
 const EventPage = Event;
+const TicketSelectionPage = InvisibleStatusBarMargin(TopNavMargin(TicketSelection));
 const SearchPage = StatusBarMargin(Search);
 const TagsPage = StatusBarMargin(Tags);
 const WalletPage = StatusBarMargin(Wallet);
@@ -58,6 +60,10 @@ const App: React.FC = () => {
 
                 <Route path={'/search/events/:query'} exact={true}>
                     <SearchViewAllPage/>
+                </Route>
+
+                <Route path={'/event/:id/selection'} exact={true}>
+                    <TicketSelectionPage/>
                 </Route>
 
                 <Route path={'/event/:id'} exact={true}>

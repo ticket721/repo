@@ -63,6 +63,34 @@ export default {
                             price: '10000'
                         }
                     ]
+                },
+                {
+                    name: 'Super Tickets',
+                    saleBegin: new Date(Date.now() + HOUR),
+                    saleEnd: new Date(Date.now() + 23 * HOUR),
+                    resaleBegin: new Date(Date.now() + HOUR),
+                    resaleEnd: new Date(Date.now() + 23 * HOUR),
+                    seats: 200,
+                    currencies: [
+                        {
+                            currency: 'Fiat',
+                            price: '15000'
+                        }
+                    ]
+                },
+                {
+                    name: 'Hyper Tickets',
+                    saleBegin: new Date(Date.now() + HOUR),
+                    saleEnd: new Date(Date.now() + 23 * HOUR),
+                    resaleBegin: new Date(Date.now() + HOUR),
+                    resaleEnd: new Date(Date.now() + 23 * HOUR),
+                    seats: 200,
+                    currencies: [
+                        {
+                            currency: 'Fiat',
+                            price: '30000'
+                        }
+                    ]
                 }
             ],
             [
@@ -77,6 +105,34 @@ export default {
                         {
                             currency: 'Fiat',
                             price: '10000'
+                        }
+                    ]
+                },
+                {
+                    name: 'Super Tickets',
+                    saleBegin: new Date(Date.now() + HOUR),
+                    saleEnd: new Date(Date.now() + 23 * HOUR),
+                    resaleBegin: new Date(Date.now() + HOUR),
+                    resaleEnd: new Date(Date.now() + 23 * HOUR),
+                    seats: 200,
+                    currencies: [
+                        {
+                            currency: 'Fiat',
+                            price: '15000'
+                        }
+                    ]
+                },
+                {
+                    name: 'Hyper Tickets',
+                    saleBegin: new Date(Date.now() + HOUR),
+                    saleEnd: new Date(Date.now() + 23 * HOUR),
+                    resaleBegin: new Date(Date.now() + HOUR),
+                    resaleEnd: new Date(Date.now() + 23 * HOUR),
+                    seats: 200,
+                    currencies: [
+                        {
+                            currency: 'Fiat',
+                            price: '30000'
                         }
                     ]
                 }

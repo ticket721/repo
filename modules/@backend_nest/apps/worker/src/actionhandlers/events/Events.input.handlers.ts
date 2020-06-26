@@ -230,6 +230,7 @@ export class EventsInputHandlers implements OnModuleInit {
             .optional(),
         description: Joi.string()
             .max(1000)
+            .allow('')
             .optional(),
         tags: Joi.array()
             .items(
