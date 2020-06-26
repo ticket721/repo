@@ -285,6 +285,18 @@ describe('Controller Basics', function() {
                 id: 'abcd',
             };
 
+            const query: EventEntity = {
+                address: 'mdr',
+                categories: [],
+                controller: 'event',
+                created_at: undefined,
+                dates: [],
+                group_id: 'dcba',
+                id: 'abcd',
+                name: 'lol',
+                updated_at: undefined,
+            };
+
             when(rightsServiceMock.searchElastic(deepEqual(rightsQuery))).thenResolve({
                 error: null,
                 response: {
@@ -300,30 +312,24 @@ describe('Controller Basics', function() {
 
             const spiedService = spy(context.controllerBasics);
 
-            when(
-                spiedService._search(
-                    anything(),
-                    anything(),
-                ),
-            ).thenResolve([]);
+            when(spiedService._search(anything(), anything())).thenResolve([query]);
 
             const res = await context.controllerBasics._searchRestricted(
                 instance(eventsServiceMock),
                 instance(rightsServiceMock),
                 user,
                 'id',
-                {} as SearchInputType<EventEntity>,
+                {
+                    id: {
+                        $in: ['abcd'],
+                    },
+                } as SearchInputType<EventEntity>,
             );
 
-            expect(res).toEqual([]);
+            expect(res).toEqual([query]);
 
             verify(rightsServiceMock.searchElastic(deepEqual(rightsQuery))).called();
-            verify(
-                spiedService._search(
-                    anything(),
-                    anything(),
-                ),
-            ).called();
+            verify(spiedService._search(anything(), anything())).called();
         });
 
         it('should search on allowed entities only with custom query', async function() {
@@ -391,12 +397,19 @@ describe('Controller Basics', function() {
 
             const spiedService = spy(context.controllerBasics);
 
-            when(
-                spiedService._search(
-                    anything(),
-                    anything(),
-                ),
-            ).thenResolve([]);
+            const query: EventEntity = {
+                address: 'mdr',
+                categories: [],
+                controller: 'event',
+                created_at: undefined,
+                dates: [],
+                group_id: 'dcba',
+                id: 'abcd',
+                name: 'lol',
+                updated_at: undefined,
+            };
+
+            when(spiedService._search(anything(), anything())).thenResolve([query]);
 
             const res = await context.controllerBasics._searchRestricted(
                 instance(eventsServiceMock),
@@ -410,15 +423,10 @@ describe('Controller Basics', function() {
                 } as SearchInputType<EventEntity>,
             );
 
-            expect(res).toEqual([]);
+            expect(res).toEqual([query]);
 
             verify(rightsServiceMock.searchElastic(deepEqual(rightsQuery))).called();
-            verify(
-                spiedService._search(
-                    anything(),
-                    anything(),
-                ),
-            ).called();
+            verify(spiedService._search(anything(), anything())).called();
         });
 
         it('should fail on rights query fail', async function() {
