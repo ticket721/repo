@@ -20,24 +20,19 @@ export default {
                 lon: -73.985130
             }
         },
+        {
+            name: 'Times Square',
+            eventBegin: new Date(Date.now() + 2 * DAY),
+            eventEnd: new Date(Date.now() + 2 * DAY + 2 * HOUR),
+            location: {
+                label: 'Times Square',
+                lat: 40.758896,
+                lon: -73.985130
+            }
+        },
     ],
     categories: {
-        global: [
-            {
-                name: 'VIP Tickets',
-                saleBegin: new Date(Date.now() + HOUR),
-                saleEnd: new Date(Date.now() + 23 * HOUR),
-                resaleBegin: new Date(Date.now() + HOUR),
-                resaleEnd: new Date(Date.now() + 23 * HOUR),
-                seats: 100,
-                currencies: [
-                    {
-                        currency: 'Fiat',
-                        price: '20000'
-                    }
-                ]
-            }
-        ],
+        global: [],
         dates: [
             [
                 {
@@ -55,6 +50,7 @@ export default {
                     ]
                 }
             ],
+            []
         ]
     },
     images: {
