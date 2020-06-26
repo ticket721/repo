@@ -2,10 +2,10 @@ import * as React from 'react';
 import styled from '../../../config/styled';
 import Icon from '../../../components/icon';
 
-export interface ArrowLinkProps extends React.ComponentProps<any> {
+export interface LanguageLinkProps extends React.ComponentProps<any> {
     image?: string;
     label: string;
-    location?: string;
+    currentLanguage: string;
     onClick?: () => void;
 }
 
@@ -43,10 +43,6 @@ const LinkContainer = styled.div`
     }
 `;
 
-const Arrow = styled(Icon)`
-    fill: ${(props) => props.theme.textColor};
-`;
-
 const Chevron = styled(Icon)`
     fill: ${(props) => props.theme.textColor};
     transform: rotate(270deg);
@@ -66,32 +62,20 @@ const LocationContainer = styled.div`
     }
 `;
 
-const IconContainer = styled.div`
-    span {
-        margin: 0 ${(props) => props.theme.smallSpacing};
-    }
-`;
-
-export const ArrowLink: React.FunctionComponent<ArrowLinkProps & { className?: string }> = (
-    props: ArrowLinkProps,
+export const LanguageLink: React.FunctionComponent<LanguageLinkProps & { className?: string }> = (
+    props: LanguageLinkProps,
 ): JSX.Element => {
     // TODO -- Update to use link from react-router
     return (
         <LinkContainer onClick={props.onClick} style={{ cursor: props.onClick ? 'pointer' : undefined }}>
             <span>{props.label}</span>
-            {props.location ? (
-                <LocationContainer>
-                    <Icon icon={'location'} size={'16px'} />
-                    <span>{props.location}</span>
-                    <Chevron icon={'chevron'} size={'9px'} color={'rgba(255, 255, 255, 0.9)'} />
-                </LocationContainer>
-            ) : (
-                <IconContainer>
-                    <Arrow icon={'arrow'} size={'16px'} color={'rgba(255, 255, 255, 0.9)'} />
-                </IconContainer>
-            )}
+            <LocationContainer>
+                <Icon icon={'tags'} size={'16px'} />
+                <span>{props.currentLanguage}</span>
+                <Chevron icon={'chevron'} size={'9px'} color={'rgba(255, 255, 255, 0.9)'} />
+            </LocationContainer>
         </LinkContainer>
     );
 };
 
-export default ArrowLink;
+export default LanguageLink;

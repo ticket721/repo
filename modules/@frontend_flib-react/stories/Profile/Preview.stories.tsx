@@ -7,6 +7,7 @@ import UserHeader from '../../src/components/elements/user-header';
 import ActivitiesContainer from '../../src/components/profile/activities-container';
 import LinksContainer from '../../src/components/profile/links-container';
 import ArrowLink from '../../src/components/elements/arrow-link';
+import LanguageLink from '../../src/components/elements/language-link';
 import TitleText from '../../src/components/ticket/cards/title-text';
 
 export default {
@@ -48,6 +49,7 @@ export const showcase = () => (
         <LinksContainer title={'Account'}>
             <ArrowLink to={'#todo'} label={'General information'} />
             <ArrowLink to={'#todo'} label={'Payment information'} />
+            <LanguageLink currentLanguage={''} label={'Language'} />
             <ArrowLink to={'#todo'} label={'Main city'} location={'Paris, France'} />
         </LinksContainer>
     </div>
