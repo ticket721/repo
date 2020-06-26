@@ -106,10 +106,14 @@ const CategoriesForm: React.FC<FormProps> = ({ onComplete }) => {
                     label={t('date_specific_tab')}
                     id={`simple-tab-${0}`}
                     aria-controls={`simple-tabpanel-${0}`}/>
-                    <Tab
-                    label={t('global_tab')}
-                    id={`simple-tab-${1}`}
-                    aria-controls={`simple-tabpanel-${1}`}/>
+                    {
+                        datesLength > 1 ?
+                        <Tab
+                        label={t('global_tab')}
+                        id={`simple-tab-${1}`}
+                        aria-controls={`simple-tabpanel-${1}`}/> :
+                            null
+                    }
                 </Tabs>
             </AppBar>
             <div

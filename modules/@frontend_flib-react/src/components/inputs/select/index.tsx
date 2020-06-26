@@ -100,6 +100,7 @@ export interface SelectProps extends React.ComponentProps<any> {
     defaultValue?: object;
     error?: string | undefined;
     label?: string;
+    disabled?: boolean;
     options: Array<object>;
     placeholder?: string;
     searchable?: boolean;
@@ -184,6 +185,7 @@ export const SelectInput: React.FunctionComponent<SelectProps> = (props: SelectP
             {props.label && <StyledLabel>{props.label}</StyledLabel>}
             <Select
                 isMulti={props.multiple}
+                isDisabled={props.disabled}
                 value={props.value}
                 defaultValue={props.defaultValue}
                 noOptionsMessage={() => 'No values available'}
