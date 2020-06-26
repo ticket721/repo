@@ -13,9 +13,10 @@ import { InitEventAcset }   from '../../../redux/ducks/event_creation';
 export interface ResetEventCreateFormProps {
     token: string;
     eventAcsetId: string;
+    onReset: () => void;
 }
 
-export const ResetEventCreateForm: React.FC<ResetEventCreateFormProps> = ({ token, eventAcsetId }) => {
+export const ResetEventCreateForm: React.FC<ResetEventCreateFormProps> = ({ token, eventAcsetId, onReset }) => {
     const [ t ] = useTranslation('reset_event_create_form');
 
     const dispatch = useDispatch();
@@ -46,6 +47,7 @@ export const ResetEventCreateForm: React.FC<ResetEventCreateFormProps> = ({ toke
                                         }).then(() => {
                                             setShowResetPopup(false);
                                             dispatch(InitEventAcset());
+                                            onReset();
                                     })
                                 }
                                 }/>

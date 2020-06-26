@@ -16,7 +16,7 @@ interface GlobalCategoriesProps {
 
 export const GlobalCategories: React.FC<GlobalCategoriesProps> = (props: GlobalCategoriesProps) => {
     const maxDate: Date = useSelector((state: OrganizerState) =>
-        state.eventCreation.datesConfiguration.dates[state.eventCreation.datesConfiguration.dates.length - 1].eventEnd);
+        state.eventCreation.datesConfiguration.dates[state.eventCreation.datesConfiguration.dates.length - 1]?.eventEnd);
     const [ editIdx, setEditIdx ]: [ number, Dispatch<number> ] = useState(null);
 
     const resetEdition = () => {

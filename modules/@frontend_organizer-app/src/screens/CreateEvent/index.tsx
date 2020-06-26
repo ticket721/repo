@@ -61,12 +61,13 @@ const CreateEvent: React.FC = () => {
             dispatch(InitEventAcset());
         }
 
-        if(eventAcsetId) {
+        if (eventAcsetId && stepIdx === null && actionsStatuses.length > 0) {
             setStepIdx(actionsStatuses.lastIndexOf('complete') + 1);
         }
-        // eslint-disable-next-line
     }, [
         eventAcsetId,
+        stepIdx,
+        actionsStatuses,
         dispatch
     ]);
 
@@ -108,10 +109,7 @@ const CreateEvent: React.FC = () => {
                             variant={actionsStatuses[0] === 'complete' ? 'primary' : 'disabled'}
                             loadingState={loadingForms[0] && actionsStatuses[0] !== 'complete'}
                             title={loadingForms[0] && actionsStatuses[0] !== 'complete' ? t('loading_btn') : t('next_step_btn')}
-                            onClick={() => {
-                                setStepIdx(1);
-                                // scrollToRef(FormRefs[1]);
-                            }}/> :
+                            onClick={() => setStepIdx(1)}/> :
                             null
                     }
                 </FormWrapper>
@@ -124,11 +122,8 @@ const CreateEvent: React.FC = () => {
                                 <Button
                                 variant={actionsStatuses[2] === 'complete' ? 'primary' : 'disabled'}
                                 loadingState={loadingForms[1] && actionsStatuses[2] !== 'complete'}
-                                title={loadingForms[0] && actionsStatuses[0] !== 'complete' ? t('loading_btn') : t('next_step_btn')}
-                                onClick={() => {
-                                    setStepIdx(3);
-                                    // scrollToRef(FormRefs[2]);
-                                }}/> :
+                                title={loadingForms[1] && actionsStatuses[2] !== 'complete' ? t('loading_btn') : t('next_step_btn')}
+                                onClick={() => setStepIdx(3)}/> :
                                 null
                         }
                     </FormWrapper>
@@ -148,11 +143,8 @@ const CreateEvent: React.FC = () => {
                                 <Button
                                 variant={actionsStatuses[3] === 'complete' ? 'primary' : 'disabled'}
                                 loadingState={loadingForms[2] && actionsStatuses[3] !== 'complete'}
-                                title={loadingForms[0] && actionsStatuses[0] !== 'complete' ? t('loading_btn') : t('next_step_btn')}
-                                onClick={() => {
-                                    setStepIdx(4);
-                                    // scrollToRef(FormRefs[3]);
-                                }}/> :
+                                title={loadingForms[2] && actionsStatuses[3] !== 'complete' ? t('loading_btn') : t('next_step_btn')}
+                                onClick={() => setStepIdx(4)}/> :
                                 null
                         }
                     </FormWrapper>
@@ -164,7 +156,7 @@ const CreateEvent: React.FC = () => {
                         <SubmitButton
                             variant={acsetStatus === 'complete' ? 'primary' : 'disabled'}
                             loadingState={loadingForms[3] && actionsStatuses[5] !== 'complete'}
-                            title={loadingForms[0] && actionsStatuses[0] !== 'complete' ? t('loading_btn') : t('next_step_btn')}
+                            title={loadingForms[3] && actionsStatuses[5] !== 'complete' ? t('loading_btn') : t('create_event_btn')}
                             onClick={() => global.window.t721Sdk.events.create.create(
                                 token,
                                 {completedActionSet: eventAcsetId}
@@ -176,7 +168,8 @@ const CreateEvent: React.FC = () => {
                 )}
                 <ResetEventCreateForm
                 token={token}
-                eventAcsetId={eventAcsetId}/>
+                eventAcsetId={eventAcsetId}
+                onReset={() => setStepIdx(0)}/>
             </Forms>
         }
         </Container>
