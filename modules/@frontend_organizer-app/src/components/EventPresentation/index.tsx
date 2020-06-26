@@ -7,7 +7,6 @@ import { Events } from '../../types/UserEvents';
 
 import EventSideMenu from './EventSideMenu';
 import GeneralInformation from './Pages/GeneralInformation';
-import Dates from './Pages/Dates';
 import Ticket from './Pages/Ticket';
 import Presentation from './Pages/Presentation';
 import Preview from './Pages/Preview';
@@ -39,9 +38,6 @@ const EventPresentation = ({ currentDate, setName, setCurrentDate, name, userEve
           <Switch>
             <Route path={`/${group_id}/general`}>
               <GeneralInformation userEvent={userEvent} currentDate={currentDate} />
-            </Route>
-            <Route path={`/${group_id}/dates`}>
-              <Dates userEvent={userEvent} currentDate={currentDate} />
             </Route>
             <Route path={`/${group_id}/ticket`}>
               <Ticket userEvent={userEvent} currentDate={currentDate} />
