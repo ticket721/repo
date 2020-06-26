@@ -42,7 +42,6 @@ const CategoriesForm: React.FC<FormProps> = ({ onComplete }) => {
     const [ t ] = useTranslation('categories');
     const [ tabIdx, setTabIdx ]: [ number, Dispatch<number> ] = React.useState(0);
     const datesLength: number = useSelector((state: OrganizerState) => state.eventCreation.datesConfiguration.dates.length);
-    const dispatch = useDispatch();
     const eventCreationFormik = useEventCreation<EventsCreateCategoriesConfiguration>(
         EventCreationSteps.Categories,
         EventCreationActions.CategoriesConfiguration,

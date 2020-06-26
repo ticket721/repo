@@ -49,9 +49,6 @@ const CreateEvent: React.FC = () => {
 
     const datesLength = useSelector((state: OrganizerState) => state.eventCreation.datesConfiguration.dates.length);
 
-    const scrollToRef = (reference: any) =>
-        window.scrollTo({ top: reference.current.offsetTop, left: 0, behavior: 'smooth' });
-
     const handleLoadingState = (updateIdx: number, updateLoadingState: boolean) =>
         setLoadingForms(loadingForms.map(
             (loadingState, idx) => idx === updateIdx ?
