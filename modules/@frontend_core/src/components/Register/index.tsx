@@ -13,7 +13,11 @@ import './locales';
 import { getPasswordStrength } from '@common/global';
 import { useMediaQuery } from 'react-responsive';
 
-export const Register: React.FC = () => {
+export interface RegisterProps {
+    onLogin?: () => void;
+}
+
+export const Register: React.FC<RegisterProps> = (props: RegisterProps) => {
     const [t] = useTranslation(['registration', 'password_feedback']);
     const auth = useSelector((state: AppState): AuthState => state.auth);
     const dispatch = useDispatch();
@@ -95,7 +99,11 @@ export const Register: React.FC = () => {
                             <Button variant={'primary'} type={'submit'} title={t('register')} />
                             <SwitchToLogin
                                 onClick={() => {
-                                    history.push('/login');
+                                    if (props.onLogin) {
+                                        props.onLogin();
+                                    } else {
+                                        history.push('/login');
+                                    }
                                 }}
                             >
                                 {t('login_switch')}

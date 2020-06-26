@@ -12,7 +12,11 @@ import { useMediaQuery } from 'react-responsive';
 
 import './locales';
 
-export const Login: React.FC = () => {
+export interface LoginProps {
+    onRegister?: () => void;
+}
+
+export const Login: React.FC<LoginProps> = (props: LoginProps) => {
     const [t] = useTranslation('login');
     const auth = useSelector((state: AppState): AuthState => state.auth);
     const history = useHistory();
@@ -78,7 +82,11 @@ export const Login: React.FC = () => {
                         <Button variant={'primary'} type={'submit'} title={t('login')} />
                         <SwitchToRegister
                             onClick={() => {
-                                history.push('/register');
+                                if (props.onRegister) {
+                                    props.onRegister();
+                                } else {
+                                    history.push('/register');
+                                }
                             }}
                         >
                             {t('register_switch')}

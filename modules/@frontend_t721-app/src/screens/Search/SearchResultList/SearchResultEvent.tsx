@@ -57,9 +57,11 @@ export const SearchResultEvent: React.FC<SearchResultEventProps> = (props: Searc
     let priceString;
 
     if (priceRange[0] && priceRange[1]) {
-        priceString = `${priceRange[0] || 'FREE'} - ${priceRange[1]}`
+        priceString = `${priceRange[0] || '0'} - ${priceRange[1]}`
     } else if (priceRange[0]) {
         priceString = `${priceRange[0]}`
+    } else {
+        priceString = '0'
     }
 
     return <SingleEvent

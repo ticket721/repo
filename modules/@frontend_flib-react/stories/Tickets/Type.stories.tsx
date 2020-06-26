@@ -16,14 +16,11 @@ export const showcase = () => (
     <TicketType
         color={text('Color', '#DB535B')}
         gradient={array('Gradient', gradientsValues)}
-        description={text(
-            'Description',
-            ' Sed ac mattis elit, aliquam lobortis puus dictumst. Suspendisse a ex et lorem mattis faucibus rhoncus at justo',
-        )}
+        description={<p>Description</p>}
         feesIncluded={boolean('Fees included ?', false)}
         selected={boolean('Selected ?', false)}
         soldOutLabel={text('Sold out', 'Sold out')}
-        startingPrice={text('Starting price', '55€')}
+        price={text('Price', '55€')}
         startingPriceLabel={text('Starting at', 'Starting at')}
         title={text('Ticket type', '2 days VIP pass')}
         ticketsLeft={number('Tickets left', 10)}
@@ -35,11 +32,15 @@ export const list = () => (
     <div>
         <TicketType
             description={
-                'Sed ac mattis elit, aliquam lobortis puus dictumst. Suspendisse a ex et lorem mattis faucibus rhoncus at justo'
+                <p>
+                    'Sed ac mattis elit, aliquam lobortis puus dictumst. Suspendisse a ex et lorem mattis faucibus
+                    rhoncus at justo'
+                </p>
             }
+            gradient={gradientsValues}
             feesIncluded={true}
             selected={false}
-            startingPrice={'550€'}
+            price={'550€'}
             title={'2 days VIP pass'}
             ticketsLeft={0}
             soldOutLabel={'Sold out'}
@@ -47,10 +48,11 @@ export const list = () => (
             ticketsLeftLabel={'left'}
         />
         <TicketType
-            description={'Sed ac mattis elit'}
+            description={<p>'Sed ac mattis elit'</p>}
             feesIncluded={false}
+            gradient={gradientsValues}
             selected={true}
-            startingPrice={'55€'}
+            price={'55€'}
             title={'1 day ticket'}
             ticketsLeft={130}
             soldOutLabel={'Sold out'}

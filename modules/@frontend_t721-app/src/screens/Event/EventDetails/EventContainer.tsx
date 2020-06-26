@@ -5,6 +5,7 @@ import styled                                                                   
 import { DateEntity }                                                                    from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
 import { formatDay, formatHour }                                                         from '@frontend/core/lib/utils/date';
 import { useTranslation }                                                                from 'react-i18next';
+import { useHistory }                                                                    from 'react-router';
 
 export interface EventContainerProps {
     date: DateEntity;
@@ -28,6 +29,7 @@ export const EventContainer: React.FC<EventContainerProps> = (props: EventContai
     const serverUrl = `${process.env.REACT_APP_T721_SERVER_PROTOCOL}://${process.env.REACT_APP_T721_SERVER_HOST}:${process.env.REACT_APP_T721_SERVER_PORT}/static`;
     const imageUrl = `${serverUrl}/${props.date.metadata.avatar}`;
     const [t] = useTranslation('event');
+    const history = useHistory();
 
     const eventDetails = {
         name: props.date.metadata.name,
@@ -48,13 +50,17 @@ export const EventContainer: React.FC<EventContainerProps> = (props: EventContai
         photos: [imageUrl],
     };
 
+    const goToTicketSelection = () => {
+        history.push(`/event/${props.date.id}/selection`)
+    };
+
     return <Container>
         <EventHeader
             event={eventDetails}
             subtitle={props.priceString}
             buttonTitle={t('get_tickets')}
             onChange={props.setCtaVisibility}
-            onClick={console.log}
+            onClick={goToTicketSelection}
         />
         <BgContainer>
             <DateTimeCard
