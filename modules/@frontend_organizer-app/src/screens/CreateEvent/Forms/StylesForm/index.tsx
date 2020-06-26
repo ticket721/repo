@@ -1,4 +1,4 @@
-import React, { Dispatch, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled                                           from 'styled-components';
 
 import { EventCreationActions, EventCreationCore, EventCreationSteps } from '../../../../core/event_creation/EventCreationCore';

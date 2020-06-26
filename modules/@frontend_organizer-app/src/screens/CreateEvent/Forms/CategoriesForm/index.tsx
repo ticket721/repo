@@ -3,7 +3,7 @@ import MuiAppBar                              from '@material-ui/core/AppBar';
 import MuiTabs                                      from '@material-ui/core/Tabs';
 import Tab                                          from '@material-ui/core/Tab';
 import styled                       from 'styled-components';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 import { categoriesValidationSchema }               from './validationSchema';
 import { GlobalCategories }                         from './GlobalCategories';
