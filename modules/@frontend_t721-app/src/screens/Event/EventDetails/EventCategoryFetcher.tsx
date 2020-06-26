@@ -9,6 +9,7 @@ import { v4 }                          from 'uuid';
 import { useSelector }                 from 'react-redux';
 import { T721AppState }                from '../../../redux';
 import { useTranslation }              from 'react-i18next';
+import { useHistory }                  from 'react-router';
 
 export interface EventCategoryFetcherProps {
     date: DateEntity;
@@ -18,8 +19,9 @@ export const EventCategoryFetcher: React.FC<EventCategoryFetcherProps> = (props:
 
     const [uuid] = useState(v4());
     const {token} = useSelector((state: T721AppState) => ({token: state.auth.token?.value}));
-    const [ctaHidden, setCtaVisibility] = useState(false);
+    const [ctaHidden, setCtaVisibility] = useState(true);
     const [t] = useTranslation('event');
+    const history = useHistory();
 
     const categories = useRequest<CategoriesSearchResponseDto>({
         method: 'categories.search',
@@ -52,12 +54,16 @@ export const EventCategoryFetcher: React.FC<EventCategoryFetcherProps> = (props:
         ...(globalCategories.response.data?.categories || [])
     ]);
 
-    const priceString = priceRange[0] === priceRange[1]
+    const priceString = priceRange[0] === priceRange[1] || priceRange[1] === null
         ?
         t('get_ticket_pricing_solo', {price: priceRange[0]})
 
         :
         t('get_ticket_pricing_range', {minPrice: priceRange[0], maxPrice: priceRange[1]});
+
+    const goToTicketSelection = () => {
+        history.push(`/event/${props.date.id}/selection`)
+    };
 
     return <>
         <EventContainer
@@ -68,7 +74,7 @@ export const EventCategoryFetcher: React.FC<EventCategoryFetcherProps> = (props:
         <EventCta
             ctaLabel={t('get_tickets')}
             title={t('tickets_from')}
-            onClick={console.log}
+            onClick={goToTicketSelection}
             subtitle={priceString}
             gradients={props.date.metadata.signature_colors}
             show={!ctaHidden}
