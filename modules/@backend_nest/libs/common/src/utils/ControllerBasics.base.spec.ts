@@ -230,6 +230,289 @@ describe('Controller Basics', function() {
             );
         });
     });
+
+    describe('_countRestricted', function() {
+        it('should search on allowed entities only', async function() {
+            const eventsServiceMock = mock(EventsService);
+            const rightsServiceMock = mock(RightsService);
+            const entityName = 'event';
+            when(eventsServiceMock.name).thenReturn(entityName);
+            const user = {
+                id: 'user_id',
+            } as UserDto;
+            const rightsQuery = {
+                body: {
+                    size: 2147483647, // int max value
+                    query: {
+                        bool: {
+                            must: [
+                                {
+                                    term: {
+                                        entity_type: entityName,
+                                    },
+                                },
+                                {
+                                    term: {
+                                        grantee_id: user.id,
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                },
+            };
+
+            const right = {
+                entity_type: entityName,
+                grantee_id: user.id,
+                entity_value: 'abcd',
+            } as RightEntity;
+
+            const response: ESCountReturn = {
+                _shards: {
+                    failed: 0,
+                    skipped: 0,
+                    successful: 3,
+                    total: 3,
+                },
+                count: 3,
+            };
+
+            when(rightsServiceMock.searchElastic(deepEqual(rightsQuery))).thenResolve({
+                error: null,
+                response: {
+                    hits: {
+                        hits: [
+                            {
+                                _source: right,
+                            },
+                        ],
+                    },
+                } as ESSearchReturn<any>,
+            });
+
+            const spiedService = spy(context.controllerBasics);
+
+            when(spiedService._count(anything(), anything())).thenResolve(response);
+
+            const res = await context.controllerBasics._countRestricted(
+                instance(eventsServiceMock),
+                instance(rightsServiceMock),
+                user,
+                'id',
+                {
+                    id: {
+                        $in: ['abcd'],
+                    },
+                } as SearchInputType<EventEntity>,
+            );
+
+            expect(res).toEqual(response);
+
+            verify(rightsServiceMock.searchElastic(deepEqual(rightsQuery))).called();
+            verify(spiedService._count(anything(), anything())).called();
+        });
+
+        it('should search on allowed entities only with custom query', async function() {
+            const eventsServiceMock = mock(EventsService);
+            const rightsServiceMock = mock(RightsService);
+            const entityName = 'event';
+            when(eventsServiceMock.name).thenReturn(entityName);
+            const user = {
+                id: 'user_id',
+            } as UserDto;
+            const rightsQuery = {
+                body: {
+                    size: 2147483647, // int max value
+                    query: {
+                        bool: {
+                            must: [
+                                {
+                                    term: {
+                                        entity_type: entityName,
+                                    },
+                                },
+                                {
+                                    term: {
+                                        grantee_id: user.id,
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                },
+            };
+
+            const right = {
+                entity_type: entityName,
+                grantee_id: user.id,
+                entity_value: 'abcd',
+            } as RightEntity;
+
+            when(rightsServiceMock.searchElastic(deepEqual(rightsQuery))).thenResolve({
+                error: null,
+                response: {
+                    hits: {
+                        hits: [
+                            {
+                                _source: right,
+                            },
+                        ],
+                    },
+                } as ESSearchReturn<any>,
+            });
+
+            const spiedService = spy(context.controllerBasics);
+
+            const response: ESCountReturn = {
+                _shards: {
+                    failed: 0,
+                    skipped: 0,
+                    successful: 3,
+                    total: 3,
+                },
+                count: 3,
+            };
+
+            when(spiedService._count(anything(), anything())).thenResolve(response);
+
+            const res = await context.controllerBasics._countRestricted(
+                instance(eventsServiceMock),
+                instance(rightsServiceMock),
+                user,
+                'id',
+                {
+                    id: {
+                        $in: ['abcd'],
+                    },
+                } as SearchInputType<EventEntity>,
+            );
+
+            expect(res).toEqual(response);
+
+            verify(rightsServiceMock.searchElastic(deepEqual(rightsQuery))).called();
+            verify(spiedService._count(anything(), anything())).called();
+        });
+
+        it('should fail on rights query fail', async function() {
+            const eventsServiceMock = mock(EventsService);
+            const rightsServiceMock = mock(RightsService);
+            const entityName = 'event';
+            when(eventsServiceMock.name).thenReturn(entityName);
+            const user = {
+                id: 'user_id',
+            } as UserDto;
+            const rightsQuery = {
+                body: {
+                    size: 2147483647, // int max value
+                    query: {
+                        bool: {
+                            must: [
+                                {
+                                    term: {
+                                        entity_type: entityName,
+                                    },
+                                },
+                                {
+                                    term: {
+                                        grantee_id: user.id,
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                },
+            };
+
+            when(rightsServiceMock.searchElastic(deepEqual(rightsQuery))).thenResolve({
+                error: 'unexpected_error',
+                response: null,
+            });
+
+            await throwWith(
+                context.controllerBasics._countRestricted(
+                    instance(eventsServiceMock),
+                    instance(rightsServiceMock),
+                    user,
+                    'id',
+                    {} as SearchInputType<EventEntity>,
+                ),
+                StatusCodes.InternalServerError,
+                'unexpected_error',
+            );
+
+            verify(rightsServiceMock.searchElastic(deepEqual(rightsQuery))).called();
+        });
+
+        it('should fail invalid field in query', async function() {
+            const eventsServiceMock = mock(EventsService);
+            const rightsServiceMock = mock(RightsService);
+            const entityName = 'event';
+            when(eventsServiceMock.name).thenReturn(entityName);
+            const user = {
+                id: 'user_id',
+            } as UserDto;
+            const rightsQuery = {
+                body: {
+                    size: 2147483647, // int max value
+                    query: {
+                        bool: {
+                            must: [
+                                {
+                                    term: {
+                                        entity_type: entityName,
+                                    },
+                                },
+                                {
+                                    term: {
+                                        grantee_id: user.id,
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                },
+            };
+
+            const right = {
+                entity_type: entityName,
+                grantee_id: user.id,
+                entity_value: 'abcd',
+            } as RightEntity;
+
+            when(rightsServiceMock.searchElastic(deepEqual(rightsQuery))).thenResolve({
+                error: null,
+                response: {
+                    hits: {
+                        hits: [
+                            {
+                                _source: right,
+                            },
+                        ],
+                    },
+                } as ESSearchReturn<any>,
+            });
+
+            await throwWith(
+                context.controllerBasics._countRestricted(
+                    instance(eventsServiceMock),
+                    instance(rightsServiceMock),
+                    user,
+                    'id',
+                    {
+                        id: {
+                            $in: ['efgh'],
+                        },
+                    } as SearchInputType<EventEntity>,
+                ),
+                StatusCodes.Unauthorized,
+                'unauthorized_value_in_filter',
+            );
+
+            verify(rightsServiceMock.searchElastic(deepEqual(rightsQuery))).called();
+        });
+    });
+
     describe('_searchRestricted', function() {
         it('should search on allowed entities only', async function() {
             const eventsServiceMock = mock(EventsService);
@@ -589,6 +872,7 @@ describe('Controller Basics', function() {
             verify(rightsServiceMock.searchElastic(deepEqual(rightsQuery))).called();
         });
     });
+
     describe('_esQueryBuilder', function() {
         it('should properly build an es query', function() {
             const query = {
@@ -635,6 +919,7 @@ describe('Controller Basics', function() {
             });
         });
     });
+
     describe('_search', function() {
         it('should properly search', async function() {
             const query = {
