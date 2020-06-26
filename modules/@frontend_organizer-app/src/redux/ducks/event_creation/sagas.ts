@@ -5,8 +5,11 @@ import { OrganizerState }                                                 from '
 import { EventCreationActionTypes, EventCreationState }                   from './types';
 import {
     IInitEventAcset,
-    IUpdateAction, SetAcsetStatus,
-    SetActionData, SetCompletedStep, SetCurrentActionIdx,
+    IUpdateAction,
+    SetAcsetStatus,
+    SetActionData,
+    SetActionsStatuses,
+    SetCurrentActionIdx,
     SetEventAcset,
     SetSync,
 } from './actions';
@@ -17,8 +20,11 @@ import { AuthState }                                         from '@frontend/cor
 import { PushNotification }                                  from '@frontend/core/lib/redux/ducks/notifications';
 import { CacheCore }                                         from '@frontend/core/lib/cores/cache/CacheCore';
 import { v4 as uuid }                                        from 'uuid';
-import { eventCreationInitialState }                         from './reducers';
-import { ActionEntity }      from '@common/sdk/lib/@backend_nest/libs/common/src/actionsets/entities/ActionSet.entity';
+import { eventCreationInitialState }  from './reducers';
+import {
+    ActionEntity,
+    ActionStatus
+} from '@common/sdk/lib/@backend_nest/libs/common/src/actionsets/entities/ActionSet.entity';
 
 const getAuthState = (state: AppState): AuthState => state.auth;
 const getEventCreationState = (state: OrganizerState): EventCreationState => state.eventCreation;
@@ -101,9 +107,10 @@ function* synchronizedActions(action: IUpdateItemData): IterableIterator<any> {
                 }
             }
 
-            const actionsStatus: string[] = action.data.actionsets[0].actions
+            const actionsStatus: Array<ActionStatus> = action.data.actionsets[0].actions
                 .map((actionEntity: ActionEntity) => actionEntity.status);
-            yield put(SetCompletedStep(actionsStatus.lastIndexOf('complete')));
+
+            yield put(SetActionsStatuses(actionsStatus));
             yield put(SetAcsetStatus(action.data.actionsets[0].current_status));
             yield put(SetCurrentActionIdx(action.data.actionsets[0].current_action));
         }

@@ -1,9 +1,9 @@
-import React, { Dispatch, useEffect } from 'react';
-import MuiAppBar                      from '@material-ui/core/AppBar';
+import React, { Dispatch, useEffect, useRef } from 'react';
+import MuiAppBar                              from '@material-ui/core/AppBar';
 import MuiTabs                                      from '@material-ui/core/Tabs';
 import Tab                                          from '@material-ui/core/Tab';
-import styled                                       from 'styled-components';
-import { useSelector }                              from 'react-redux';
+import styled                       from 'styled-components';
+import { useSelector } from 'react-redux';
 
 import { categoriesValidationSchema }               from './validationSchema';
 import { GlobalCategories }                         from './GlobalCategories';
@@ -18,6 +18,13 @@ import { OrganizerState }                           from '../../../../redux/duck
 
 import { useTranslation } from 'react-i18next';
 import './locales';
+import { FormProps }      from '../../index';
+import { useDeepEffect }  from '@frontend/core/lib/hooks/useDeepEffect';
+
+const defaultValues: EventsCreateCategoriesConfiguration = {
+    global: [],
+    dates: [],
+};
 
 export interface CategoryItem {
     name: string;
@@ -30,7 +37,8 @@ export interface CategoryItem {
     }[]
 }
 
-const CategoriesForm: React.FC = () => {
+const CategoriesForm: React.FC<FormProps> = ({ onComplete }) => {
+    const reference = useRef(null);
     const [ t ] = useTranslation('categories');
     const [ tabIdx, setTabIdx ]: [ number, Dispatch<number> ] = React.useState(0);
     const datesLength: number = useSelector((state: OrganizerState) => state.eventCreation.datesConfiguration.dates.length);
@@ -38,6 +46,7 @@ const CategoriesForm: React.FC = () => {
         EventCreationSteps.Categories,
         EventCreationActions.CategoriesConfiguration,
         categoriesValidationSchema,
+        defaultValues,
     );
 
     const globalCategoriesChange = (categories: CategoryItem[]) => {
@@ -64,6 +73,7 @@ const CategoriesForm: React.FC = () => {
                 emptyCategories[i] = [];
             }
 
+            eventCreationFormik.handleFocus('auto focus');
             eventCreationFormik.update({
                 ...eventCreationFormik.values,
                 dates: [
@@ -75,9 +85,19 @@ const CategoriesForm: React.FC = () => {
         // eslint-disable-next-line
     }, [datesLength, eventCreationFormik.values.dates.length]);
 
+    useDeepEffect(() => {
+        onComplete(true);
+    }, [
+        eventCreationFormik.isValid
+    ]);
+
+    useEffect(() => {
+        window.scrollTo({ top: reference.current.offsetTop, left: 0, behavior: 'smooth' });
+    }, []);
+
     return (
         <>
-            <AppBar position='static'>
+            <AppBar position='static' ref={reference}>
                 <Tabs
                 value={tabIdx}
                 onChange={(e: any, idx: number) => setTabIdx(idx)}

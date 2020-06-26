@@ -1,5 +1,5 @@
-import React, { Dispatch, useEffect, useState } from 'react';
-import styled                                   from 'styled-components';
+import React, { useEffect, useRef, useState } from 'react';
+import styled                                           from 'styled-components';
 
 import { EventCreationActions, EventCreationCore, EventCreationSteps } from '../../../../core/event_creation/EventCreationCore';
 import { useEventCreation }                                            from '../../../../hooks/useEventCreation';
@@ -9,7 +9,6 @@ import { imagesMetadataValidationSchema }              from './validationSchema'
 import {
     FilesUploader,
     DropError,
-    Loader,
 } from '@frontend/flib-react/lib/components';
 import { ComponentsPreview } from './ComponentsPreview';
 
@@ -24,17 +23,25 @@ import '@frontend/core/lib/components/ToastStacker/locales';
 import { ColorPickers }   from './ColorPickers';
 import { getImgPath }     from '@frontend/core/lib/utils/images';
 import { OrganizerState } from '../../../../redux/ducks';
+import { FormProps }      from '../../';
+import { useDeepEffect }  from '@frontend/core/lib/hooks/useDeepEffect';
 
-const StylesForm: React.FC = () => {
+const defaultValues: EventsCreateImagesMetadata = {
+    avatar: '',
+    signatureColors: [],
+};
+
+const StylesForm: React.FC<FormProps> = ({ onComplete }) => {
+    const reference = useRef(null);
     const dispacth = useDispatch();
     const [ t ] = useTranslation(['event_creation_styles', 'react_dropzone_errors', 'error_notifications', 'validation']);
     const token: string = useSelector((state: MergedAppState) => state.auth.token.value);
     const cover: string = useSelector((state: OrganizerState) => state.eventCreation.imagesMetadata.avatar);
-    const [ uploading, setUploading ]: [ boolean, Dispatch<boolean> ] = useState(null);
     const eventCreationFormik = useEventCreation<EventsCreateImagesMetadata>(
         EventCreationSteps.Styles,
         EventCreationActions.ImagesMetadata,
         imagesMetadataValidationSchema,
+        defaultValues,
     );
 
     const [ preview, setPreview ] = useState('');
@@ -43,8 +50,6 @@ const StylesForm: React.FC = () => {
         eventCreationFormik.handleFocus('');
         const formData = new FormData();
         files.forEach((file) => formData.append('images', file));
-
-        setUploading(true);
         EventCreationCore.uploadImages(token, formData, {})
             .then((ids: ImageEntity[]) => {
                 eventCreationFormik.setFieldTouched('avatar');
@@ -54,7 +59,7 @@ const StylesForm: React.FC = () => {
                 });
             }).catch((error) => {
                 dispacth(PushNotification(t('error_notifications:' + error.message), 'error'));
-            }).finally(() => setUploading(false));
+            });
     };
 
     const removeImage = () => {
@@ -89,8 +94,24 @@ const StylesForm: React.FC = () => {
         }
     }, [cover]);
 
+    useDeepEffect(() => {
+        if (eventCreationFormik.isValid && eventCreationFormik.values !== eventCreationFormik.initialValues) {
+            onComplete(true);
+        } else {
+            onComplete(false);
+        }
+    }, [
+        eventCreationFormik.isValid,
+        eventCreationFormik.initialValues,
+        eventCreationFormik.values,
+    ]);
+
+    useEffect(() => {
+        window.scrollTo({ top: reference.current.offsetTop, left: 0, behavior: 'smooth' });
+    }, []);
+
     return (
-        <StyledForm onSubmit={eventCreationFormik.handleSubmit}>
+        <StyledForm ref={reference} onSubmit={eventCreationFormik.handleSubmit}>
             <FilesUploader
             name={'avatar'}
             multiple={false}
@@ -108,11 +129,6 @@ const StylesForm: React.FC = () => {
                 t(eventCreationFormik.computeError('avatar'))
             }
             />
-            {
-                uploading ?
-                    <Loader size={'25px'}/> :
-                    null
-            }
 
             <ColorPickers
             srcImage={preview}
