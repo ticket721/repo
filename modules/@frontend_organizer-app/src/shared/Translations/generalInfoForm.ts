@@ -7,6 +7,9 @@ i18n.addResourceBundle('en', 'general_infos', {
   name_placeholder: 'Name of your event',
   description_placeholder: 'Describe your event',
   tags_placeholder: 'tags',
+  location_label: 'Location',
+  location_placeholder: 'Provide a location',
+
 });
 
 i18n.addResourceBundle('fr', 'general_infos', {
@@ -16,6 +19,9 @@ i18n.addResourceBundle('fr', 'general_infos', {
   name_placeholder: 'Nom de votre évènement',
   description_placeholder: 'Decrivez votre évènement',
   tags_placeholder: 'tags',
+  location_label: 'Localisation',
+  location_placeholder: 'Veuillez fournir une adresse',
+
 });
 
 i18n.addResourceBundle('en', 'validation', {
@@ -38,14 +44,4 @@ i18n.addResourceBundle('fr', 'validation', {
   tag_too_long: 'un tag ne peut pas contenir plus de 16 caractères',
   tag_already_added: 'tag déjà existant',
   tag_required: 'veuillez fournir au moins 1 tag',
-});
-
-i18n.addResourceBundle('en', 'notify', {
-  success: 'Success',
-  invalid_event_dates: 'Unable to update this date',
-});
-
-i18n.addResourceBundle('fr', 'notify', {
-  success: 'Succès',
-  invalid_event_dates: 'Impossible de mettre à jour cette date'
 });
