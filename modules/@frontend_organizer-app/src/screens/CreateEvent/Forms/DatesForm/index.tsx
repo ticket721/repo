@@ -1,5 +1,5 @@
-import React, { Dispatch, useState }     from 'react';
-import styled                                       from 'styled-components';
+import React, { Dispatch, useEffect, useState } from 'react';
+import styled                                   from 'styled-components';
 import { datesConfigValidationSchema }              from './validationSchema';
 import { EventsCreateDatesConfiguration }           from '@common/sdk/lib/@backend_nest/apps/worker/src/actionhandlers/events/Events.input.handlers';
 import { useDispatch, useSelector }                 from 'react-redux';
@@ -7,11 +7,17 @@ import { OrganizerState }                           from '../../../../redux/duck
 import { useEventCreation }                         from '../../../../hooks/useEventCreation';
 import { EventCreationActions, EventCreationSteps } from '../../../../core/event_creation/EventCreationCore';
 import { DateCard }                                 from './DateCard';
-import { DateForm }                              from './DateForm';
-import { checkFormatDate } from '@frontend/core/lib/utils/date';
-import { SetActionData, UpdateAction }           from '../../../../redux/ducks/event_creation';
+import { DateForm }                                 from './DateForm';
+import { checkFormatDate }                          from '@frontend/core/lib/utils/date';
+import { SetActionData, UpdateAction }              from '../../../../redux/ducks/event_creation';
 import { CategoryItem }                             from '../CategoriesForm';
 import { CreateDate }                               from './CreateDate';
+import { FormProps }                                from '../../index';
+import { useDeepEffect }                            from '@frontend/core/lib/hooks/useDeepEffect';
+
+const defaultValues: EventsCreateDatesConfiguration = {
+    dates: [],
+};
 
 export interface DateItem {
     name: string;
@@ -24,7 +30,7 @@ export interface DateItem {
     }
 }
 
-const DatesForm: React.FC = () => {
+const DatesForm: React.FC<FormProps> = ({ onComplete }) => {
     const [ editIdx, setEditIdx ]: [ number, Dispatch<number> ] = useState(null);
     const eventName: string = useSelector((state: OrganizerState) => state.eventCreation.textMetadata.name);
 
@@ -32,6 +38,7 @@ const DatesForm: React.FC = () => {
         EventCreationSteps.Dates,
         EventCreationActions.DatesConfiguration,
         datesConfigValidationSchema,
+        defaultValues,
     );
 
     const categories = useSelector((state: OrganizerState) => state.eventCreation.categoriesConfiguration);
@@ -81,6 +88,18 @@ const DatesForm: React.FC = () => {
 
         eventCreationFormik.update({dates});
     };
+
+    useDeepEffect(() => {
+        if (eventCreationFormik.isValid && eventCreationFormik.values !== eventCreationFormik.initialValues) {
+            onComplete(true);
+        } else {
+            onComplete(false);
+        }
+    }, [
+        eventCreationFormik.isValid,
+        eventCreationFormik.initialValues,
+        eventCreationFormik.values,
+    ]);
 
     return (
         <StyledForm>

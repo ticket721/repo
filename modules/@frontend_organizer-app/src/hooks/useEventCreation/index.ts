@@ -1,38 +1,32 @@
 import { useFormik }                       from 'formik';
 import { useDispatch, useSelector }                      from 'react-redux';
 import { SetActionData, SetCurrentAction, UpdateAction } from '../../redux/ducks/event_creation';
-import { EventCreationActions, EventCreationSteps }      from '../../core/event_creation/EventCreationCore';
-import { useEffect, useState }                           from 'react';
-import { OrganizerState }                                from '../../redux/ducks';
+import { EventCreationActions, EventCreationSteps } from '../../core/event_creation/EventCreationCore';
+import { useEffect }                      from 'react';
+import { OrganizerState }                           from '../../redux/ducks';
 import { ObjectSchema }                                  from 'yup';
 
 export const useEventCreation = <ActionInputType extends {[key: string]: any}>(
     actIdx: EventCreationSteps,
     eventCreationAction: EventCreationActions,
     validationSchema: ObjectSchema,
+    initialValues: ActionInputType,
 ) => {
     const dispatch = useDispatch();
 
-    const [loadingState, setLoadingState ] = useState(false);
-    const [ eventActionState, currentAction, lastCompletedStep ]:
-        [ ActionInputType, EventCreationActions, EventCreationSteps ] =
+    const [ eventActionState, currentAction ]:
+        [ ActionInputType, EventCreationActions ] =
         useSelector((state: OrganizerState) => [
             state.eventCreation[eventCreationAction] as ActionInputType,
             state.eventCreation.currentAction,
-            state.eventCreation.completedStep,
         ]);
 
     const stringifiedEventActionState = JSON.stringify(eventActionState);
 
-    const submit = () => {
-        dispatch(UpdateAction());
-        setLoadingState(formik.isValid);
-    };
-
     const formik = useFormik<ActionInputType>({
-        initialValues: eventActionState,
+        initialValues,
         validationSchema,
-        onSubmit: submit,
+        onSubmit: () => void dispatch(UpdateAction()),
     });
 
     useEffect(() => {
@@ -44,12 +38,6 @@ export const useEventCreation = <ActionInputType extends {[key: string]: any}>(
         stringifiedEventActionState,
         eventCreationAction,
     ]);
-
-    useEffect(() => {
-        if (lastCompletedStep < actIdx) {
-            setLoadingState(false);
-        }
-    }, [lastCompletedStep, actIdx]);
 
     const computeError = (field: string) => formik.touched[field] && formik.errors[field] ? 'validation:' + formik.errors[field] : '';
 
@@ -82,7 +70,7 @@ export const useEventCreation = <ActionInputType extends {[key: string]: any}>(
 
     const update = (data: any): void => {
         dispatch(SetActionData(eventCreationAction, data));
-        submit();
+        dispatch(UpdateAction());
     };
 
     const getFieldProps = (field: string, updateOnBlur?: boolean) => {
@@ -98,24 +86,12 @@ export const useEventCreation = <ActionInputType extends {[key: string]: any}>(
         };
     };
 
-    const getSubmitButtonProps = (title: string) => ({
-        title,
-        type: 'submit',
-        variant: loadingState ? 'secondary' :
-            formik.isValid ? 'primary' : 'disabled' as 'primary' | 'secondary' | 'disabled',
-        loadingState,
-        hidden: lastCompletedStep >= actIdx,
-    });
-
     return {
         ...formik,
         handleFocus,
         handleBlur,
         getFieldProps,
         computeError,
-        submit,
         update,
-        getSubmitButtonProps,
-        setLoadingState,
     };
 };

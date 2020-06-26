@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Tags, Textarea, TextInput }   from '@frontend/flib-react/lib/components';
+import { Tags, Textarea, TextInput }  from '@frontend/flib-react/lib/components';
 import styled                      from 'styled-components';
 import { EventCreationActions, EventCreationSteps } from '../../../../core/event_creation/EventCreationCore';
 import { useEventCreation }                         from '../../../../hooks/useEventCreation';
@@ -8,8 +8,16 @@ import { textMetadataValidationSchema } from './validationSchema';
 
 import { useTranslation } from 'react-i18next';
 import './locales';
+import { FormProps }      from '../../';
+import { useDeepEffect }  from '@frontend/core/lib/hooks/useDeepEffect';
 
-const GeneralInfoForm: React.FC = () => {
+const defaultValues: EventsCreateTextMetadata = {
+    name: '',
+    description: '',
+    tags: [],
+};
+
+const GeneralInfoForm: React.FC<FormProps> = ({ onComplete }) => {
     const [ inputTag, setInputTag ] = useState('');
     const [ t ] = useTranslation(['general_infos', 'validation']);
 
@@ -17,6 +25,7 @@ const GeneralInfoForm: React.FC = () => {
         EventCreationSteps.GeneralInfo,
         EventCreationActions.TextMetadata,
         textMetadataValidationSchema,
+        defaultValues,
     );
 
     const onTagsKeyDown = (e: React.KeyboardEvent<HTMLElement>, tag: string) => {
@@ -56,6 +65,18 @@ const GeneralInfoForm: React.FC = () => {
                 }
         }
     };
+
+    useDeepEffect(() => {
+        if (eventCreationFormik.isValid && eventCreationFormik.values !== eventCreationFormik.initialValues) {
+            onComplete(true);
+        } else {
+            onComplete(false);
+        }
+    }, [
+        eventCreationFormik.isValid,
+        eventCreationFormik.initialValues,
+        eventCreationFormik.values,
+    ]);
 
     return (
         <Form onSubmit={eventCreationFormik.handleSubmit}>

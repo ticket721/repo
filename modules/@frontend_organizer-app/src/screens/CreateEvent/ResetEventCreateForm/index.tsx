@@ -1,46 +1,28 @@
 import React, { useState } from 'react';
 import styled                                           from 'styled-components';
-import { useHistory }               from 'react-router';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 import '@frontend/core/lib/utils/window';
 
 import { Button } from '@frontend/flib-react/lib/components';
-import { ActionSetStatus } from '@common/sdk/lib/@backend_nest/libs/common/src/actionsets/entities/ActionSet.entity';
 
 import { useTranslation }   from 'react-i18next';
 import './locales';
-import { OrganizerState }   from '../../../redux/ducks';
-import { PushNotification } from '@frontend/core/lib/redux/ducks/notifications';
 import { InitEventAcset }   from '../../../redux/ducks/event_creation';
 
-export interface EventCreateActionsProps {
+export interface ResetEventCreateFormProps {
     token: string;
     eventAcsetId: string;
 }
 
-export const EventCreateActions: React.FC<EventCreateActionsProps> = ({ token, eventAcsetId }) => {
-    const [ t ] = useTranslation('create_event_actions');
+export const ResetEventCreateForm: React.FC<ResetEventCreateFormProps> = ({ token, eventAcsetId }) => {
+    const [ t ] = useTranslation('reset_event_create_form');
 
     const dispatch = useDispatch();
-    const history = useHistory();
     const [ showResetPopup, setShowResetPopup ] = useState<boolean>(false);
-    const acsetStatus: ActionSetStatus = useSelector((state: OrganizerState) => state.eventCreation.acsetStatus);
 
     return (
         <>
-            {acsetStatus === 'complete' &&
-                <SubmitButton
-                    variant='primary'
-                    title={t('validate_btn')}
-                    onClick={() => global.window.t721Sdk.events.create.create(
-                        token,
-                        {completedActionSet: eventAcsetId}
-                        ).then(() => history.push('/'))
-                        .catch((e) => dispatch(PushNotification(e.message, 'error')))
-                    }
-                />
-            }
             <ResetLink onClick={() => setShowResetPopup(true)}>{t('reset_link')}</ResetLink>
             {
                 showResetPopup &&
@@ -74,10 +56,6 @@ export const EventCreateActions: React.FC<EventCreateActionsProps> = ({ token, e
         </>
     )
 };
-
-const SubmitButton = styled(Button)`
-    margin-top: ${props => props.theme.doubleSpacing};
-`;
 
 const ResetLink = styled.span`
     font-size: 12px;

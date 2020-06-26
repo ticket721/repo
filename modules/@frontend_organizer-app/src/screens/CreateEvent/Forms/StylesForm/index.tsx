@@ -9,7 +9,6 @@ import { imagesMetadataValidationSchema }              from './validationSchema'
 import {
     FilesUploader,
     DropError,
-    Loader,
 } from '@frontend/flib-react/lib/components';
 import { ComponentsPreview } from './ComponentsPreview';
 
@@ -24,8 +23,15 @@ import '@frontend/core/lib/components/ToastStacker/locales';
 import { ColorPickers }   from './ColorPickers';
 import { getImgPath }     from '@frontend/core/lib/utils/images';
 import { OrganizerState } from '../../../../redux/ducks';
+import { FormProps }      from '../../';
+import { useDeepEffect }  from '@frontend/core/lib/hooks/useDeepEffect';
 
-const StylesForm: React.FC = () => {
+const defaultValues: EventsCreateImagesMetadata = {
+    avatar: '',
+    signatureColors: [],
+};
+
+const StylesForm: React.FC<FormProps> = ({ onComplete }) => {
     const dispacth = useDispatch();
     const [ t ] = useTranslation(['event_creation_styles', 'react_dropzone_errors', 'error_notifications', 'validation']);
     const token: string = useSelector((state: MergedAppState) => state.auth.token.value);
@@ -35,6 +41,7 @@ const StylesForm: React.FC = () => {
         EventCreationSteps.Styles,
         EventCreationActions.ImagesMetadata,
         imagesMetadataValidationSchema,
+        defaultValues,
     );
 
     const [ preview, setPreview ] = useState('');
@@ -89,6 +96,18 @@ const StylesForm: React.FC = () => {
         }
     }, [cover]);
 
+    useDeepEffect(() => {
+        if (eventCreationFormik.isValid && eventCreationFormik.values !== eventCreationFormik.initialValues) {
+            onComplete(true);
+        } else {
+            onComplete(false);
+        }
+    }, [
+        eventCreationFormik.isValid,
+        eventCreationFormik.initialValues,
+        eventCreationFormik.values,
+    ]);
+
     return (
         <StyledForm onSubmit={eventCreationFormik.handleSubmit}>
             <FilesUploader
@@ -108,11 +127,6 @@ const StylesForm: React.FC = () => {
                 t(eventCreationFormik.computeError('avatar'))
             }
             />
-            {
-                uploading ?
-                    <Loader size={'25px'}/> :
-                    null
-            }
 
             <ColorPickers
             srcImage={preview}
