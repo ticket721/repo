@@ -206,7 +206,6 @@ export class ControllerBasics<EntityType> {
                 }
             }
         }
-
         if (!query[field]) {
             query[field] = {
                 $in: aggregatedFields,
@@ -287,7 +286,6 @@ export class ControllerBasics<EntityType> {
                 }
             }
         }
-
         if (!query[field]) {
             query[field] = {
                 $in: aggregatedFields,
