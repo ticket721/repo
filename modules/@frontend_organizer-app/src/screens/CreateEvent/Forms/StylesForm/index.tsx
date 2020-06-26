@@ -1,5 +1,5 @@
-import React, { Dispatch, useEffect, useState } from 'react';
-import styled                                   from 'styled-components';
+import React, { Dispatch, useEffect, useRef, useState } from 'react';
+import styled                                           from 'styled-components';
 
 import { EventCreationActions, EventCreationCore, EventCreationSteps } from '../../../../core/event_creation/EventCreationCore';
 import { useEventCreation }                                            from '../../../../hooks/useEventCreation';
@@ -32,6 +32,7 @@ const defaultValues: EventsCreateImagesMetadata = {
 };
 
 const StylesForm: React.FC<FormProps> = ({ onComplete }) => {
+    const reference = useRef(null);
     const dispacth = useDispatch();
     const [ t ] = useTranslation(['event_creation_styles', 'react_dropzone_errors', 'error_notifications', 'validation']);
     const token: string = useSelector((state: MergedAppState) => state.auth.token.value);
@@ -108,8 +109,12 @@ const StylesForm: React.FC<FormProps> = ({ onComplete }) => {
         eventCreationFormik.values,
     ]);
 
+    useEffect(() => {
+        window.scrollTo({ top: reference.current.offsetTop, left: 0, behavior: 'smooth' });
+    }, []);
+
     return (
-        <StyledForm onSubmit={eventCreationFormik.handleSubmit}>
+        <StyledForm ref={reference} onSubmit={eventCreationFormik.handleSubmit}>
             <FilesUploader
             name={'avatar'}
             multiple={false}

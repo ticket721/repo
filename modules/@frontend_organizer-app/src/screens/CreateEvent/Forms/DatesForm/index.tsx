@@ -1,5 +1,5 @@
-import React, { Dispatch, useEffect, useState } from 'react';
-import styled                                   from 'styled-components';
+import React, { Dispatch, useEffect, useRef, useState } from 'react';
+import styled                                           from 'styled-components';
 import { datesConfigValidationSchema }              from './validationSchema';
 import { EventsCreateDatesConfiguration }           from '@common/sdk/lib/@backend_nest/apps/worker/src/actionhandlers/events/Events.input.handlers';
 import { useDispatch, useSelector }                 from 'react-redux';
@@ -31,6 +31,7 @@ export interface DateItem {
 }
 
 const DatesForm: React.FC<FormProps> = ({ onComplete }) => {
+    const reference = useRef(null);
     const [ editIdx, setEditIdx ]: [ number, Dispatch<number> ] = useState(null);
     const eventName: string = useSelector((state: OrganizerState) => state.eventCreation.textMetadata.name);
 
@@ -101,8 +102,12 @@ const DatesForm: React.FC<FormProps> = ({ onComplete }) => {
         eventCreationFormik.values,
     ]);
 
+    useEffect(() => {
+        window.scrollTo({ top: reference.current.offsetTop, left: 0, behavior: 'smooth' });
+    }, []);
+
     return (
-        <StyledForm>
+        <StyledForm ref={reference}>
             <DatesContainer>
                 {
                     eventCreationFormik.values.dates.map((date, idx) => (
