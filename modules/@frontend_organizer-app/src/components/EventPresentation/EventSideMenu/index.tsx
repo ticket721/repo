@@ -105,7 +105,6 @@ const EventSideMenu = ({ currentDate, setCurrentDate, setName, name }: Props) =>
       <Title onClick={() => handleClick('informations')}>{t('information_title')}</Title>
       <SubMenu />
       <Title onClick={() => handleClick('presentation')}>{t('presentation_title')}</Title>
-      <Separator />
       <Title onClick={() => handleClick('add-date')}>{t('add_date_title')}</Title>
       <Separator />
     </Container>

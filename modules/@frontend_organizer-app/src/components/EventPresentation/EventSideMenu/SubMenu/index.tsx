@@ -21,9 +21,11 @@ const SubMenu = (): JSX.Element => {
         <Title>Tickets</Title>
         <Icon icon='chevron' color='white' size='6px' />
       </Button>
-      <SubContainer>
-        {tickets.map((t, i) => <Subtitle onClick={() => handleClick('ticket')} key={`${t}-${i}`}>{t}</Subtitle>)}
-      </SubContainer>
+      { more &&
+        <SubContainer>
+          {tickets.map((t, i) => <Subtitle onClick={() => handleClick('ticket')} key={`${t}-${i}`}>{t}</Subtitle>)}
+        </SubContainer>
+      }
     </>
   );
 };
