@@ -36,6 +36,12 @@ export const CreateSpecificCategory: React.FC<CreateSpecificCategoryProps> = (pr
             }))
         ]), [props.dates, t]);
 
+    useEffect(() => {
+        if (selectableDates.length === 1) {
+            setSelectedDates(selectableDates);
+        }
+    }, [selectableDates]);
+
     return (
         <CreateCategoryWrapper>
             {
@@ -46,6 +52,7 @@ export const CreateSpecificCategory: React.FC<CreateSpecificCategoryProps> = (pr
                     editable={false}
                     setEdit={() => null}>
                         <SelectInput
+                        disabled={selectableDates.length === 1}
                         className={'select'}
                         label={t('select_dates_label')}
                         options={[

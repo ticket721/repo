@@ -103,13 +103,17 @@ const CategoriesForm: React.FC<FormProps> = ({ onComplete }) => {
                 onChange={(e: any, idx: number) => setTabIdx(idx)}
                 aria-label='from tabs'>
                     <Tab
-                    label={t('global_tab')}
+                    label={t('date_specific_tab')}
                     id={`simple-tab-${0}`}
                     aria-controls={`simple-tabpanel-${0}`}/>
-                    <Tab
-                    label={t('date_specific_tab')}
-                    id={`simple-tab-${1}`}
-                    aria-controls={`simple-tabpanel-${1}`}/>
+                    {
+                        datesLength > 1 ?
+                        <Tab
+                        label={t('global_tab')}
+                        id={`simple-tab-${1}`}
+                        aria-controls={`simple-tabpanel-${1}`}/> :
+                            null
+                    }
                 </Tabs>
             </AppBar>
             <div
@@ -119,10 +123,10 @@ const CategoriesForm: React.FC<FormProps> = ({ onComplete }) => {
             aria-labelledby={`simple-tab-${0}`}>
                 {tabIdx === 0 && (
                     <>
-                        <Description>A Global Category corresponds to a ticket valid for all dates</Description>
-                        <GlobalCategories
-                        categories={eventCreationFormik.values.global}
-                        onCategoriesChange={globalCategoriesChange} />
+                        <Description>A Normal ticket corresponds to a category which can be applied to several dates</Description>
+                        <DateSpecificCategories
+                            categories={eventCreationFormik.values.dates}
+                            onCategoriesChange={dateSpecificCategoriesChange}/>
                     </>
                 )}
             </div>
@@ -133,10 +137,10 @@ const CategoriesForm: React.FC<FormProps> = ({ onComplete }) => {
             aria-labelledby={`simple-tab-${1}`}>
                 {tabIdx === 1 && (
                     <>
-                        <Description>A Normal ticket corresponds to a category which can be applied to several dates</Description>
-                        <DateSpecificCategories
-                        categories={eventCreationFormik.values.dates}
-                        onCategoriesChange={dateSpecificCategoriesChange}/>
+                        <Description>A Global Category corresponds to a ticket valid for all dates</Description>
+                        <GlobalCategories
+                            categories={eventCreationFormik.values.global}
+                            onCategoriesChange={globalCategoriesChange} />
                     </>
                 )}
             </div>
