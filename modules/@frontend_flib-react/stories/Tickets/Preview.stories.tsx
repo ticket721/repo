@@ -49,7 +49,7 @@ export const showcase = () => (
                 <h1>My tickets</h1>
                 <a href={'#todo'}>View past ticket</a>
             </div>
-            <TicketHeader ticket={defaultTicket} />
+            <TicketHeader cover={defaultTicket.image} ticketQuantity={defaultTicket.number} />
             <PullUp>
                 <TicketPreview ticket={defaultTicket} />
             </PullUp>
