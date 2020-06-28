@@ -7,12 +7,13 @@ import { routes }       from './routes';
 import Navbar               from './shared/Navbar';
 import { AppState }         from '@frontend/core/lib/redux';
 
-import ProtectedRoute       from '@frontend/core/lib/components/ProtectedRoute';
-import { useSelector }      from 'react-redux';
-import styled               from 'styled-components';
-import { AppStatus }        from '@frontend/core/lib/redux/ducks/statuses';
-import ToastStacker from '@frontend/core/lib/components/ToastStacker';
+import ProtectedRoute  from '@frontend/core/lib/components/ProtectedRoute';
+import { useSelector } from 'react-redux';
+import styled          from 'styled-components';
+import { AppStatus }   from '@frontend/core/lib/redux/ducks/statuses';
+import ToastStacker    from '@frontend/core/lib/components/ToastStacker';
 import './core/event_creation/locales';
+import { EventMenu }   from './screens/Event/EventMenu';
 
 const App: React.FC = () => {
   const [ validated, setValidated ] = useState(true);
@@ -37,15 +38,17 @@ const App: React.FC = () => {
             appStatus === AppStatus.Ready && routes.map((route, idx) => {
               const page: JSX.Element = (
                 <PageWrapper>
+                    {
+                        route.path.match(/^\/:groupId\/date/) &&
+                        <EventMenu/>
+                    }
                   <route.page />
                 </PageWrapper>
               );
 
               if (route.protected) {
                   return <ProtectedRoute path={route.path} key={idx}>
-                      {
-                          page
-                      }
+                      {page}
                   </ProtectedRoute>
               }
 
@@ -68,7 +71,7 @@ const AppContainer = styled.div`
 `;
 
 const PageWrapper = styled.div`
-    padding: 50px 30px 30px;
+    padding: 50px;
     margin-top: 80px;
 `;
 

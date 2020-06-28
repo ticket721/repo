@@ -2,14 +2,13 @@ import React, { Fragment, useState } from 'react';
 import styled                                                         from 'styled-components';
 import { Icon } from '@frontend/flib-react/lib/components';
 
-import { CategoryItem }                 from '../index';
-import { CategoryForm }                 from '../CategoryForm';
+import { CategoryForm, CategoryItem }   from '../../../../../components/CategoryForm';
 import { checkFormatDate, displayDate } from '@frontend/core/lib/utils/date';
-import { CategoryCard }       from '../CategoryCard';
-import { useSelector }        from 'react-redux';
-import { OrganizerState }     from '../../../../../redux/ducks';
-import { DateItem }           from '../../DatesForm';
-import { CreateSpecificCategory } from './CreateSpecificCategory';
+import { useSelector }                  from 'react-redux';
+import { OrganizerState }               from '../../../../../redux/ducks';
+import { DateItem }                     from '../../DatesForm';
+import { CreateSpecificCategory }       from './CreateSpecificCategory';
+import { CategoryCard }                 from '../../../../../components/CategoryCard';
 
 interface DateSpecificCategoriesProps {
     categories: CategoryItem[][];

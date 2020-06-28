@@ -20,22 +20,12 @@ import { useTranslation } from 'react-i18next';
 import './locales';
 import { FormProps }      from '../../index';
 import { useDeepEffect }  from '@frontend/core/lib/hooks/useDeepEffect';
+import { CategoryItem }   from '../../../../components/CategoryForm';
 
 const defaultValues: EventsCreateCategoriesConfiguration = {
     global: [],
     dates: [],
 };
-
-export interface CategoryItem {
-    name: string;
-    saleBegin: Date;
-    saleEnd: Date;
-    seats: number;
-    currencies: {
-        currency: string,
-        price: string;
-    }[]
-}
 
 const CategoriesForm: React.FC<FormProps> = ({ onComplete }) => {
     const reference = useRef(null);

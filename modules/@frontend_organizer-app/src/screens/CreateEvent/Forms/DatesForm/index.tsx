@@ -10,10 +10,10 @@ import { DateCard }                                 from './DateCard';
 import { DateForm }                                 from './DateForm';
 import { checkFormatDate }                          from '@frontend/core/lib/utils/date';
 import { SetActionData, UpdateAction }              from '../../../../redux/ducks/event_creation';
-import { CategoryItem }                             from '../CategoriesForm';
 import { CreateDate }                               from './CreateDate';
 import { FormProps }                                from '../../index';
 import { useDeepEffect }                            from '@frontend/core/lib/hooks/useDeepEffect';
+import { CategoryItem }                             from '../../../../components/CategoryForm';
 
 const defaultValues: EventsCreateDatesConfiguration = {
     dates: [],

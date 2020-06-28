@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { Button } from '@frontend/flib-react/lib/components';
 
-import { FormCard }     from '../FormCard';
 import { DateItem }     from './index';
 import { day, hour }    from '@frontend/core/lib/utils/date';
 import { DateForm }     from './DateForm';
 
 import { useTranslation } from 'react-i18next';
 import './locales';
+import { FormCard }       from '../../../../components/FormCard';
 
 interface CreateDateProps {
     editable: boolean;

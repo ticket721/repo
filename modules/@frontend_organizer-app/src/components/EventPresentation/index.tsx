@@ -9,7 +9,6 @@ import EventSideMenu from './EventSideMenu';
 import GeneralInformation from './Pages/GeneralInformation';
 import Ticket from './Pages/Ticket';
 import Presentation from './Pages/Presentation';
-import Preview from './Pages/Preview';
 
 interface Props {
   currentDate: string | undefined;
@@ -44,9 +43,6 @@ const EventPresentation = ({ currentDate, setName, setCurrentDate, name, userEve
             </Route>
             <Route path={`/${group_id}/presentation`}>
               <Presentation userEvent={userEvent} currentDate={currentDate} />
-            </Route>
-            <Route path={`/${group_id}`}>
-              <Preview category={category} />
             </Route>
           </Switch>
         }
