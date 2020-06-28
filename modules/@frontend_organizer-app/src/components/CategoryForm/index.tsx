@@ -6,13 +6,23 @@ import {
 }                           from '@frontend/flib-react/lib/components';
 import styled                       from 'styled-components';
 import { useFormik }                from 'formik';
-import { CategoryItem }       from '../index';
-import { categoryValidationSchema }                              from '../validationSchema';
+import { categoryValidationSchema }                              from './validationSchema';
 import { checkFormatDate, compareDates, day, minute, TimeScale } from '@frontend/core/lib/utils/date';
-import { FormActions, FormActionsProps }                         from '../../FormActions';
+import { FormActions, FormActionsProps }                         from '../FormActions';
 
 import { useTranslation } from 'react-i18next';
 import './locales';
+
+export interface CategoryItem {
+    name: string;
+    saleBegin: Date;
+    saleEnd: Date;
+    seats: number;
+    currencies: {
+        currency: string,
+        price: string;
+    }[]
+}
 
 const defaultInitialValues = {
     name: '',

@@ -9,14 +9,14 @@ import { useFormik }                     from 'formik';
 import { DateItem }                      from '../';
 import { dateItemValidation }            from '../validationSchema';
 import { checkFormatDate, minute, compareDates, TimeScale }       from '@frontend/core/lib/utils/date';
-import { FormActions, FormActionsProps } from '../../FormActions';
 
 import { useTranslation }              from 'react-i18next';
 import './locales';
 import { LocationInput }               from '@frontend/core/lib/components/LocationInput';
 import { getLatLng, geocodeByAddress } from 'react-google-places-autocomplete';
 import { PushNotification }            from '@frontend/core/lib/redux/ducks/notifications';
-import { useDispatch }                 from 'react-redux';
+import { useDispatch }                   from 'react-redux';
+import { FormActions, FormActionsProps } from '../../../../../components/FormActions';
 
 export interface DateFormProps extends FormActionsProps {
     initialValues: DateItem;
@@ -97,7 +97,7 @@ export const DateForm: React.FC<DateFormProps> = (props: DateFormProps) => {
                             lon: lng,
                             lat,
                         })
-                    }).catch((e) => {
+                    }).catch(() => {
                         dispatch(PushNotification(t('google_api_error'), 'error'));
                         formik.setFieldValue('location', {
                             label: '',
@@ -106,7 +106,7 @@ export const DateForm: React.FC<DateFormProps> = (props: DateFormProps) => {
                         });
                 })
                 }
-            ).catch((e) => {
+            ).catch(() => {
                 dispatch(PushNotification(t('google_api_error'), 'error'));
                 formik.setFieldValue('location', {
                     label: '',

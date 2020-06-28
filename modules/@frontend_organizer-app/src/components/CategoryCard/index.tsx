@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 import styled                       from 'styled-components';
-import { FormCard, FormCardProps }  from '../../FormCard';
+import { FormCard, FormCardProps }  from '../FormCard';
 import { Icon }                     from '@frontend/flib-react/lib/components';
 import { displayCompleteDate } from '@frontend/core/lib/utils/date';
 

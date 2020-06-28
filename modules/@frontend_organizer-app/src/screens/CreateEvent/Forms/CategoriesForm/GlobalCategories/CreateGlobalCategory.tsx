@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { Button } from '@frontend/flib-react/lib/components';
 
-import { CategoryItem }                 from '../index';
-import { CategoryForm }                 from '../CategoryForm';
-import { FormCard }                              from '../../FormCard';
+import { CategoryForm, CategoryItem } from '../../../../../components/CategoryForm';
+import { FormCard }                   from '../../../../../components/FormCard';
 
 import { useTranslation } from 'react-i18next';
 import '../locales';

@@ -1,8 +1,8 @@
-import React, { Fragment }          from 'react';
-import styled                       from 'styled-components';
+import React, { Fragment }     from 'react';
+import styled                  from 'styled-components';
 import { displayCompleteDate } from '@frontend/core/lib/utils/date';
-import { Icon }                     from '@frontend/flib-react/lib/components';
-import { FormCard, FormCardProps }                 from '../../FormCard';
+import { Icon }                    from '@frontend/flib-react/lib/components';
+import { FormCard, FormCardProps } from '../../../../../components/FormCard';
 
 export interface DateCardProps extends FormCardProps {
     beginDate: Date;
