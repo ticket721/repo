@@ -1,11 +1,11 @@
 import React              from 'react';
 import { EventDashboard } from '../formatters';
 import styled             from 'styled-components';
-import { Icon }                                 from '@frontend/flib-react/lib/components';
 import { checkFormatDate, displayCompleteDate } from '@frontend/core/lib/utils/date';
 
 import { useTranslation } from 'react-i18next';
 import './locales';
+import { formatEuro }     from '@frontend/core/lib/utils/price';
 
 export const EventCard: React.FC<EventDashboard> = (props: EventDashboard) => {
     const [ t ] = useTranslation('event_card');
@@ -15,25 +15,18 @@ export const EventCard: React.FC<EventDashboard> = (props: EventDashboard) => {
             <img src={props.covers[0]} alt={'cover'}/>
             <Content>
                 <Name>{props.name}</Name>
-                <PriceAndSeats color={props.colors[0]}>
+                <PriceAndDate color={props.colors[0]}>
                     {
                         props.startPrice && props.totalSeats ?
                             <>
-                                <span>{props.startPrice} €</span>
+                                <span>{formatEuro(props.startPrice)}</span>
                                 ·
-                                <span>{props.totalSeats} {t('seats_remaining')}</span>
+                                <span>{displayCompleteDate(checkFormatDate(props.datesRange[0]))}</span>
                             </> :
                             <span>{t('no_category')}</span>
                     }
-                </PriceAndSeats>
-                <DateRange>
-                    <span>{displayCompleteDate(checkFormatDate(props.datesRange[0]))}</span>
-                    <Icon
-                        icon={'arrow'}
-                        color={'#FFF'}
-                        size={'16px'}/>
-                    <span>{displayCompleteDate(checkFormatDate(props.datesRange[0]))}</span>
-                </DateRange>
+                </PriceAndDate>
+                <Seats>{props.totalSeats} {t('tickets_remaining')}</Seats>
             </Content>
         </StyledCard>
     );
@@ -63,32 +56,33 @@ const Content = styled.div`
     position: absolute;
     bottom: ${props => props.theme.biggerSpacing};
     left: ${props => props.theme.biggerSpacing};
+    font-weight: 500;
 `;
 
 const Name = styled.span`
     text-transform: uppercase;
+    font-size: 16px;
     font-weight: 600;
 `;
 
-const PriceAndSeats = styled.div<{ color: string }>`
+const PriceAndDate = styled.div<{ color: string }>`
     display: flex;
-    color: ${props => props.theme.componentColorLight};
-    margin: 8px 0;
+    font-size: 15px;
+    color: ${props => props.theme.textColorDark};
+    margin: 8px 0 5px;
 
     & > span:first-child {
+        padding-right: 4px;
         color: ${props => props.color};
+    }
+
+    & > span:last-child {
+        padding-left: 4px;
     }
 `;
 
-const DateRange = styled.div`
-    display: flex;
+const Seats = styled.span`
+    font-size: 12px;
     font-weight: 500;
-
-    & > span:first-child, & > span:last-child {
-        line-height: 20px;
-    }
-
-    & > span:nth-child(2) {
-        margin: 0 ${props => props.theme.regularSpacing};
-    }
+    color: ${props => props.theme.textColorDark};
 `;

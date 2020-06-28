@@ -1,7 +1,7 @@
 import i18n from '@frontend/core/lib/utils/i18n';
 
 i18n.addResourceBundle('en', 'event_card', {
-    tickets_remaining: 'tickets remaining',
+    tickets_remaining: 'remaining tickets',
     no_category: 'No category created yet',
 });
 

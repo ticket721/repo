@@ -81,12 +81,13 @@ export const EventsFetcher: React.FC<EventsFetcherProps> = ({ token, uuid, group
     useDeepEffect(() => {
         if (
             formattedEvents.length > 0 &&
+            formattedEvents[0].datesRange &&
             categoriesResp.data &&
             categoriesResp.data.categories.length > 0
         ) {
             setFormattedEvents(formatPricesAndSeats(categoriesResp.data.categories, formattedEvents));
         }
-    }, [formattedEvents.length, categoriesResp.data]);
+    }, [formattedEvents, categoriesResp.data]);
 
     return (
         <Cards>
