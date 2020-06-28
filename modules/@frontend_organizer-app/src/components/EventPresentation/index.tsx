@@ -20,7 +20,6 @@ interface Props {
 
 const EventPresentation = ({ currentDate, setName, setCurrentDate, name, userEvents }: Props) => {
   const userEvent = userEvents.find((e) => e.name === name);
-  const category = userEvents.find((e) => e.name === name)?.dates[0];
   const { group_id } = useParams();
 
   return (

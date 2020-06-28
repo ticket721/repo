@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import styled                         from 'styled-components';
 
 import { useHistory, useParams } from 'react-router';
-import { Button, SelectInput }  from '@frontend/flib-react/lib/components';
+import { Button }  from '@frontend/flib-react/lib/components';
 
+import { DateSelect } from './DateSelect';
 import { SubMenu }                          from './SubMenu';
 import { useRequest }                   from '@frontend/core/lib/hooks/useRequest';
 import { useSelector }                  from 'react-redux';
@@ -11,7 +12,7 @@ import { MergedAppState }               from '../../../index';
 import { DatesSearchResponseDto }       from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
 import { v4 }                           from 'uuid';
 import { useDeepEffect }                from '@frontend/core/lib/hooks/useDeepEffect';
-import { checkFormatDate, displayDate } from '@frontend/core/lib/utils/date';
+import { checkFormatDate, displayCompleteDate } from '@frontend/core/lib/utils/date';
 import { DateEntity }                   from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
 
 import { useTranslation }        from 'react-i18next';
@@ -22,8 +23,8 @@ interface DateOption {
     value: string;
 }
 
-const formatDateLabel = (startDate: string | Date, endDate: string | Date): string =>
-    `${displayDate(checkFormatDate(startDate))} - ${displayDate(checkFormatDate(endDate))}`;
+const formatDateLabel = (date: string | Date): string =>
+    `${displayCompleteDate(checkFormatDate(date))}`;
 
 export const EventMenu: React.FC = () => {
     const [ t ] = useTranslation(['event_side_menu']);
@@ -41,8 +42,8 @@ export const EventMenu: React.FC = () => {
             args: [
                 token,
                 {
-                    [dateId ? 'id' : 'group_id']: {
-                        $eq: dateId || groupId,
+                    group_id: {
+                        $eq: groupId,
                     }
                 },
             ],
@@ -56,27 +57,31 @@ export const EventMenu: React.FC = () => {
             const currentDate: DateEntity = datesResp.data.dates.find((date) => date.id === dateId);
             setSelectedDate(currentDate);
             setSelectableDates(datesResp.data.dates.map((date) => ({
-                label: formatDateLabel(date.timestamps.event_begin, date.timestamps.event_end),
+                label: formatDateLabel(date.timestamps.event_begin),
                 value: date.id,
             })));
         }
     }, [datesResp]);
 
-    return (
-        <Container>
-            {
-                selectedDate ?
-                <Actions>
-                    <EventName>{selectedDate.metadata.name}</EventName>
-                    <SelectInput
-                    options={selectableDates}
-                    value={[{
-                        label: formatDateLabel(selectedDate.timestamps.event_begin, selectedDate.timestamps.event_end),
-                        value: dateId,
-                    }]}
-                    onChange={(dateOpt: DateOption) => history.push(dateOpt.value)}/>
+    if (selectedDate) {
+        return (
+            <Container>
+                <DateActions>
+                    <Header>
+                        <Title>{selectedDate.metadata.name}</Title>
+                        <DateSelect
+                            menuPosition={{
+                                top: '-24px',
+                                left: '250px'
+                            }}
+                            options={selectableDates}
+                            value={[{
+                                label: formatDateLabel(selectedDate.timestamps.event_begin),
+                                value: dateId,
+                            }]}
+                            onChange={(dateOpt: DateOption) => history.push(`/${groupId}/date/${dateOpt.value}`)}/>
+                    </Header>
                     <Button
-                        className='top'
                         variant='primary'
                         title={t('publish_label')}
                         onClick={() => console.log('publish')}
@@ -84,20 +89,27 @@ export const EventMenu: React.FC = () => {
                     <Button
                         variant='secondary'
                         title={t('preview_label')}
-                        onClick={() => console.log('preview')}
+                        onClick={() => history.push(`/${groupId}/date/${dateId}`)}
                     />
-                </Actions> :
-                    null
-            }
-            <Separator />
-            <SubMenu/>
-            <Separator />
-            <Button
-            title={'New Date'}
-            variant={'primary'}
-            onClick={() => history.push(`${groupId}/date`)}/>
-        </Container>
-    )
+                </DateActions>
+                <Separator/>
+                <SubMenu/>
+                <Separator/>
+                <LastSection>
+                    <Button
+                        title={'New Date'}
+                        variant={'primary'}
+                        onClick={() => history.push(`/${groupId}/date`)}/>
+                    <Button
+                        title={datesResp.data.dates.length > 1 ? 'Delete Date' : 'Delete Event'}
+                        variant={'danger'}
+                        onClick={() => console.log('delete date')}/>
+                </LastSection>
+            </Container>
+        )
+    }  else {
+        return <></>;
+    }
 };
 
 const Container = styled.div`
@@ -108,7 +120,9 @@ const Container = styled.div`
   position: fixed;
   left: 0;
   top: 81px;
+  padding: ${props => props.theme.biggerSpacing} 0;
   background-color: ${(props) => props.theme.darkerBg};
+  z-index: 3;
 
   button {
     outline: none;
@@ -122,36 +136,36 @@ const Separator = styled.div`
   background: rgba(10, 8, 18, 0.3);
 `;
 
-const Actions = styled.div`
-  display: flex;
-  flex-direction: column;
-  height: 190px;
-  align-items: center;
-  padding: 24px 0 12px 0;
+const DateActions = styled.div`
+    margin: 0 ${props => props.theme.biggerSpacing};
 
-  .top {
-    margin-bottom: 8px;
-  }
-  button {
-    margin: 0;
-    width: calc(100% - 48px);
-    span {
-      margin: 0;
+    & > button {
+        margin: 0 0 ${props => props.theme.smallSpacing};
+        width: 100%;
     }
-  }
 `;
 
-const EventName = styled.span`
-  width: 85%;
-  font-weight: 500;
-  font-size: 13px;
-  color: ${(props) => props.theme.textColorDarker};
+const Header = styled.div`
+    border-left: 2px solid ${(props) => props.theme.componentColorLighter};
+    margin-bottom: ${props => props.theme.biggerSpacing};
+    padding: 2px 0 2px ${props => props.theme.regularSpacing};
 `;
 
 const Title = styled.span`
   font-weight: 500;
   font-size: 13px;
-  cursor: pointer;
-  margin: 12px 0 12px 24px;
-  color: ${(props) => props.theme.textColor};
+  display: block;
+  margin-bottom: 4px;
+  color: ${(props) => props.theme.textColorDarker};
+`;
+
+const LastSection = styled.div`
+    margin: 0 ${props => props.theme.biggerSpacing};
+
+    & > span {
+        padding-top: ${props => props.theme.regularSpacing};
+        font-size: 13px;
+        font-weight: 500;
+        color: ${(props) => props.theme.textColorDarker};
+    }
 `;

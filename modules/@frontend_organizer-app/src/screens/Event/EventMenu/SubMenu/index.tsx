@@ -15,11 +15,12 @@ import './locales';
 
 export const SubMenu: React.FC = () => {
     const history = useHistory();
-    const { dateId } = useParams();
+    const { groupId, dateId } = useParams();
+    const [activeTile, setActiveTile] = useState<string>(null);
     const [uuid] = useState<string>(v4() + '@event-submenu');
     const [ t ] = useTranslation(['event_sub_menu']);
-    const [ isShowingInfos, setIsShowingInfos ] = useState<boolean>(false);
-    const [ isShowingCategories, setIsShowingCategories ] = useState<boolean>(false);
+    const [ showingInfos, setShowingInfos ] = useState<boolean>(false);
+    const [ showingCategories, setShowingCategories ] = useState<boolean>(false);
 
     const [ categories, setCategories ] = useState<CategoryEntity[]>([]);
     const token = useSelector((state: MergedAppState) => state.auth.token.value);
@@ -40,81 +41,146 @@ export const SubMenu: React.FC = () => {
     );
 
     useEffect(() => {
+        const MatchingSubPath = history.location.pathname.match(/([a-zA-Z0-9]|-)+$/);
+        setActiveTile(MatchingSubPath && MatchingSubPath[0]);
+    }, [history.location.pathname]);
+
+    useEffect(() => {
+        if (history.location.state) {
+            setShowingInfos(history.location.state['showingInfos']);
+            setShowingCategories(history.location.state['showingCategories']);
+        }
+    }, [history.location.state]);
+
+    useEffect(() => {
         if (categoriesResp.data && categoriesResp.data.categories.length > 0) {
             setCategories(categoriesResp.data.categories);
         }
     },
     [categoriesResp]);
+
     return (
         <>
-            <TilesContainer>
-                <div onClick={() => setIsShowingInfos(!isShowingInfos)}>
+            <EditSection opened={showingInfos}>
+                <TileHeader onClick={() => setShowingInfos(!showingInfos)}>
                     <Title>{t('information_title')}</Title>
                     <Icon icon='chevron' color='white' size='6px'/>
-                </div>
+                </TileHeader>
                 {
-                    isShowingInfos ?
-                        <div>
-                            <Tile onClick={() => history.push('general-infos')}>
+                    showingInfos ?
+                        <Tiles>
+                            <Tile
+                            active={activeTile === 'general-infos'}
+                            onClick={() => history.push(`/${groupId}/date/${dateId}/general-infos`, {
+                                showingInfos,
+                                showingCategories
+                            })}>
                                 {t('general_info_subtitle')}
                             </Tile>
-                            <Tile onClick={() => history.push('styles')}>
+                            <Tile
+                            active={activeTile === 'styles'}
+                            onClick={() => history.push(`/${groupId}/date/${dateId}/styles`, {
+                                showingInfos,
+                                showingCategories
+                            })}>
                                 {t('styles_subtitle')}
                             </Tile>
-                            <Tile onClick={() => history.push('location')}>
+                            <Tile
+                            active={activeTile === 'location'}
+                            onClick={() => history.push(`/${groupId}/date/${dateId}/location`, {
+                                showingInfos,
+                                showingCategories
+                            })}>
                                 {t('location_subtitle')}
                             </Tile>
-                        </div> :
+                        </Tiles> :
                         null
                 }
-            </TilesContainer>
-            <TilesContainer>
-                <div onClick={() => setIsShowingCategories(!isShowingCategories)}>
+            </EditSection>
+            <EditSection opened={showingCategories}>
+                <TileHeader onClick={() => setShowingCategories(!showingCategories)}>
                     <Title>{t('categories_title')}</Title>
                     <Icon icon='chevron' color='white' size='6px'/>
-                </div>
+                </TileHeader>
                 {
-                    isShowingCategories ?
-                        <div>
+                    showingCategories ?
+                        <Tiles>
                             {
                                 categories.map((category) => (
-                                    <Tile key={category.id} onClick={() => history.push(`category/${category.id}`)}>
+                                    <Tile
+                                    key={category.id}
+                                    active={activeTile === category.id}
+                                    onClick={() => history.push(`/${groupId}/date/${dateId}/category/${category.id}`, {
+                                        showingInfos,
+                                        showingCategories
+                                    })}>
                                         {category.display_name}
                                     </Tile>
                                 ))
                             }
-                            <Tile key={'new-category'} onClick={() => history.push('category')}>
+                            <Tile
+                            active={activeTile === 'category'}
+                            key={'new-category'} onClick={() => history.push(`/${groupId}/date/${dateId}/category`, {
+                                showingInfos,
+                                showingCategories
+                            })}>
                                 {t('new_category_subtitle')}
                             </Tile>
-                        </div> :
+                        </Tiles> :
                         null
                 }
-            </TilesContainer>
+            </EditSection>
         </>
     );
 };
 
-const TilesContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  background: rgba(255, 255, 255, 0.04);
-  border-radius: 8px;
-  padding: 12px 0;
-  margin-bottom: 12px;
+const EditSection = styled.div<{ opened: boolean }>`
+    display: flex;
+    flex-direction: column;
+    background-color: ${props => props.opened ? props.theme.componentColor : null};
+    border-radius: ${props => props.theme.defaultRadius};
+    padding: ${props => `${props.theme.regularSpacing} ${props.theme.biggerSpacing}`};
+    margin-bottom: ${props => props.theme.smallSpacing};
+
+    & > div:first-child > span:last-child {
+        transform: ${props => props.opened ? 'rotateX(180deg)' : null};
+        transition: 200ms transform;
+    }
+`;
+
+const TileHeader = styled.div`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
 `;
 
 const Title = styled.span`
-  font-weight: 500;
-  font-size: 13px;
-  cursor: pointer;
-  margin: 12px 0 12px 24px;
-  color: rgba(255, 255, 255, 0.9);
+    font-weight: 500;
+    font-size: 13px;
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.9);
 `;
 
-const Tile = styled.span`
-  font-weight: 500;
-  font-size: 13px;
-  cursor: pointer;
-  margin: 8px 0 8px 40px;
-  color: ${(props) => props.theme.textColorDarker};
+const Tiles = styled.div`
+    display: flex;
+    flex-direction: column;
+    margin-top: ${props => props.theme.smallSpacing};
+    margin-left: ${props => props.theme.regularSpacing};
+`;
+
+const Tile = styled.span<{ active?: boolean }>`
+    font-weight: 500;
+    font-size: 13px;
+    cursor: pointer;
+    margin: ${props => props.theme.smallSpacing} 0;
+    color: ${(props) => props.active ? props.theme.textColor : props.theme.textColorDarker};
+
+    &:last-child {
+        margin: ${props => props.theme.smallSpacing} 0 0;
+    }
+
+    :hover {
+        color: ${(props) => props.theme.textColor};
+    }
 `;
