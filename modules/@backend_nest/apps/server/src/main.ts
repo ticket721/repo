@@ -29,6 +29,9 @@ async function main() {
     app.useGlobalPipes(
         new ValidationPipe({
             transform: true,
+            forbidUnknownValues: true,
+            forbidNonWhitelisted: true,
+            whitelist: true,
         }),
     );
 
