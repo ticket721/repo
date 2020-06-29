@@ -17,6 +17,20 @@ export const FetchItem = (key: string, method: string, args: any[]): IFetchItem 
     args,
 });
 
+export interface IManualFetchItem extends Action<string> {
+    type: CacheActionTypes.ManualFetchItem;
+    key: string;
+    method: string;
+    args: any[];
+}
+
+export const ManualFetchItem = (key: string, method: string, args: any[]): IManualFetchItem => ({
+    type: CacheActionTypes.ManualFetchItem,
+    key,
+    method,
+    args,
+});
+
 export interface IUpdateItemData extends Action<string> {
     type: CacheActionTypes.UpdateItemData;
     key: string;
@@ -50,6 +64,7 @@ export const StartRefreshInterval = (): IStartRefreshInterval => ({
 });
 
 export type CacheAction = IFetchItem &
+    IManualFetchItem &
     IUpdateItemData &
     IUpdateItemError &
     IStartRefreshInterval &

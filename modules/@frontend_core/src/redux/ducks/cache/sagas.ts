@@ -69,5 +69,6 @@ function refreshChannel(cache: CacheState) {
 export function* cacheSaga(): SagaIterator {
     yield takeEvery(CacheActionTypes.RegisterEntity, checkItem);
     yield takeEvery(CacheActionTypes.FetchItem, fetchItem);
+    yield takeEvery(CacheActionTypes.ManualFetchItem, fetchItem);
     yield takeEvery(CacheActionTypes.StartRefreshInterval, startRefreshInterval);
 }

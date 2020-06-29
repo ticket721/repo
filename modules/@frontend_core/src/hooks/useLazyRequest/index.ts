@@ -2,7 +2,7 @@ import { Dispatch, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../../redux/ducks';
 import { CacheCore } from '../../cores/cache/CacheCore';
-import { RegisterEntity, UnregisterEntity } from '../../redux/ducks/cache';
+import { ManualFetchItem, RegisterEntity, UnregisterEntity } from '../../redux/ducks/cache';
 import { useDeepEffect } from '../useDeepEffect';
 
 interface RequestResp<ReturnType> {
@@ -12,13 +12,17 @@ interface RequestResp<ReturnType> {
     called: boolean;
 }
 
+export interface LazyRequestOptions {
+    force: boolean;
+}
+
 export type RequestBag<ReturnType> = {
     response: RequestResp<ReturnType>;
-    lazyRequest: (lazyArgs: any, uuid?: string) => void;
+    lazyRequest: (lazyArgs: any, options?: Partial<LazyRequestOptions>) => void;
 };
 
 export const useLazyRequest = <ReturnType>(method: string, initialUuid: string): RequestBag<ReturnType> => {
-    const [called, setCalled]: [boolean, Dispatch<boolean>] = useState(null);
+    const [called, setCalled] = useState(false);
     const [args, setArgs]: [any, Dispatch<any>] = useState(null);
     const response: RequestResp<ReturnType> = {
         data: useSelector((state: AppState) =>
@@ -32,20 +36,22 @@ export const useLazyRequest = <ReturnType>(method: string, initialUuid: string):
     };
 
     const dispatch = useDispatch();
-    const lazyRequest = (lazyArgs: any): void => {
+    const lazyRequest = (lazyArgs: any, options?: Partial<LazyRequestOptions>): void => {
+        if (options?.force) {
+            dispatch(ManualFetchItem(CacheCore.key(method, lazyArgs), method, lazyArgs));
+        }
         dispatch(RegisterEntity(method, lazyArgs, initialUuid, 0));
         setArgs(lazyArgs);
         setCalled(true);
     };
 
     useDeepEffect(() => {
-        setCalled(false);
         return (): void => {
             if (args) {
                 dispatch(UnregisterEntity(CacheCore.key(method, args), initialUuid));
             }
         };
-    }, [args]);
+    }, [args, initialUuid]);
 
     return {
         response,

@@ -1,7 +1,7 @@
 import { Reducer } from 'redux';
 import { CacheActionTypes, CacheState } from './types';
 import { ISetIntervalId, ISetTickInterval } from './actions/settings.actions';
-import { CacheAction, IUpdateItemData, IUpdateItemError, IFetchItem } from './actions/actions';
+import { CacheAction, IUpdateItemData, IUpdateItemError, IFetchItem, IManualFetchItem } from './actions/actions';
 import { IUpdateLastResponse, IRegisterEntity, IUnregisterEntity } from './actions/properties.actions';
 import { CacheCore } from '../../../cores/cache/CacheCore';
 
@@ -91,6 +91,24 @@ const UnregisterEntityReducer: Reducer<CacheState, IUnregisterEntity> = (
     };
 };
 
+const ManualFetchItemReducer: Reducer<CacheState, IManualFetchItem> = (
+    state: CacheState,
+    action: IManualFetchItem,
+): CacheState => ({
+    ...state,
+    properties: {
+        ...state.properties,
+        [action.key]: {
+            ...state.properties[action.key],
+            method: action.method,
+            args: action.args,
+            requestedBy: [...(state.properties[action.key]?.requestedBy || [])],
+            refreshRates: [...(state.properties[action.key]?.refreshRates || [])],
+            lastFetch: CacheCore.elapsedTicks(state.settings),
+        },
+    },
+});
+
 const FetchItemReducer: Reducer<CacheState, IFetchItem> = (state: CacheState, action: IFetchItem): CacheState => ({
     ...state,
     properties: {
@@ -150,7 +168,7 @@ export const CacheReducer: Reducer<CacheState, CacheAction> = (
 ): CacheState => {
     switch (action.type) {
         case CacheActionTypes.SetTickInterval:
-            return SetTickIntervalReducer(state, action as ISetTickInterval);
+            return SetTickIntervalReducer(state, action);
         case CacheActionTypes.SetIntervalId:
             return SetIntervalIdReducer(state, action as ISetIntervalId);
         case CacheActionTypes.RegisterEntity:
@@ -159,6 +177,8 @@ export const CacheReducer: Reducer<CacheState, CacheAction> = (
             return UnregisterEntityReducer(state, action as IUnregisterEntity);
         case CacheActionTypes.FetchItem:
             return FetchItemReducer(state, action as IFetchItem);
+        case CacheActionTypes.ManualFetchItem:
+            return ManualFetchItemReducer(state, action as IManualFetchItem);
         case CacheActionTypes.UpdateLastResponse:
             return UpdateLastResponseReducer(state, action as IUpdateLastResponse);
         case CacheActionTypes.UpdateItemData:
