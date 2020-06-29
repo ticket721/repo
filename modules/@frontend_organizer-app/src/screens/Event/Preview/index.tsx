@@ -53,7 +53,7 @@ const Preview: React.FC = () => {
                     }
                 },
             ],
-            refreshRate: 5,
+            refreshRate: 1,
         },
         uuid
     );
@@ -70,7 +70,7 @@ const Preview: React.FC = () => {
                     $page_size: 1,
                 },
             ],
-            refreshRate: 5,
+            refreshRate: 1,
         },
         uuid
     );

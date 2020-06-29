@@ -17,7 +17,7 @@ import { getImgPath }               from '@frontend/core/lib/utils/images';
 import { ColorPickers }             from '../../../components/ColorPickers';
 import { DateMetadata }             from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
 import { useDeepEffect }            from '@frontend/core/lib/hooks/useDeepEffect';
-import { useHistory }               from 'react-router';
+import { isEqual }                  from 'lodash';
 
 interface StylesFormProps {
     uuid: string;
@@ -31,7 +31,7 @@ interface Styles {
 }
 
 export const StylesForm: React.FC<StylesFormProps> = (props: StylesFormProps) => {
-    const history = useHistory();
+    const [ lastInitialValues, setLastInitialValues ] = useState<Styles>(null);
     const [ updatable, setUpdatable ] = useState<boolean>(false);
     const dispatch = useDispatch();
     const [ t ] = useTranslation(['update_styles', 'validation']);
@@ -55,7 +55,9 @@ export const StylesForm: React.FC<StylesFormProps> = (props: StylesFormProps) =>
                         signature_colors: values.signatureColors,
                     }
                 }
-            ]),
+            ], {
+            force: true
+            }),
     });
 
     const [ preview, setPreview ] = useState('');
@@ -99,13 +101,20 @@ export const StylesForm: React.FC<StylesFormProps> = (props: StylesFormProps) =>
 
     useDeepEffect(() => {
         if (updateResponse.data) {
-            history.push(history.location.pathname.substring(0, history.location.pathname.length - 7));
+            dispatch(PushNotification('Successfuly updated', 'success'));
         }
     }, [updateResponse.data]);
 
     useDeepEffect(() => {
-        setUpdatable(formik.isValid && formik.values !== formik.initialValues);
-    }, [formik.values, formik.initialValues, formik.isValid]);
+        setUpdatable(formik.isValid && !isEqual(formik.values, lastInitialValues));
+    }, [formik.values, lastInitialValues, formik.isValid]);
+
+    useEffect(() => {
+        setLastInitialValues({
+            avatar: props.initialValues.avatar,
+            signatureColors: props.initialValues.signature_colors,
+        })
+    }, [props.initialValues]);
 
     return (
         <Form onSubmit={formik.handleSubmit}>

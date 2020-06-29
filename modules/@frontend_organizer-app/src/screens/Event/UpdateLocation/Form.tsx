@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import styled              from 'styled-components';
+import React, { useEffect, useState } from 'react';
+import styled                         from 'styled-components';
 
 import { useTranslation } from 'react-i18next';
 import './locales';
@@ -16,7 +16,7 @@ import { locationValidationSchema }    from './validationSchema';
 import { InputDateLocation }           from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
 import { Coordinates }                 from '@common/global';
 import { useDeepEffect }               from '@frontend/core/lib/hooks/useDeepEffect';
-import { useHistory }                  from 'react-router';
+import { isEqual } from 'lodash';
 
 interface LocationFormProps {
     uuid: string;
@@ -30,7 +30,7 @@ interface Location {
 }
 
 export const LocationForm: React.FC<LocationFormProps> = (props: LocationFormProps) => {
-    const history = useHistory();
+    const [ lastInitialValues, setLastInitialValues ] = useState<Location>(null);
     const [ updatable, setUpdatable ] = useState<boolean>(false);
     const dispatch = useDispatch();
     const [ t ] = useTranslation(['update_location', 'validation', 'errors']);
@@ -45,7 +45,6 @@ export const LocationForm: React.FC<LocationFormProps> = (props: LocationFormPro
         },
         validationSchema: locationValidationSchema,
         onSubmit: (values) => {
-            console.log(values);
             updateLocation([
                 token,
                 props.dateId,
@@ -55,7 +54,9 @@ export const LocationForm: React.FC<LocationFormProps> = (props: LocationFormPro
                         location: values.coords,
                     }
                 }
-            ]);
+            ], {
+                force: true
+            });
         }
     });
 
@@ -98,13 +99,20 @@ export const LocationForm: React.FC<LocationFormProps> = (props: LocationFormPro
 
     useDeepEffect(() => {
         if (updateResponse.data) {
-            history.push(history.location.pathname.substring(0, history.location.pathname.length - 9));
+            dispatch(PushNotification('Successfuly updated', 'success'));
         }
     }, [updateResponse.data]);
 
     useDeepEffect(() => {
-        setUpdatable(formik.isValid && formik.values !== formik.initialValues);
-    }, [formik.values, formik.initialValues, formik.isValid]);
+        setUpdatable(formik.isValid && !isEqual(formik.values, lastInitialValues));
+    }, [formik.values, lastInitialValues, formik.isValid]);
+
+    useEffect(() => {
+        setLastInitialValues({
+            locationLabel: props.initialValues.location_label,
+            coords: props.initialValues.location,
+        })
+    }, [props.initialValues]);
 
     return (
         <Form onSubmit={formik.handleSubmit}>

@@ -13,7 +13,7 @@ import { MergedAppState }           from '../../../index';
 import { DateMetadata }             from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
 import { useDeepEffect }            from '@frontend/core/lib/hooks/useDeepEffect';
 import { PushNotification }         from '@frontend/core/lib/redux/ducks/notifications';
-import { useHistory }               from 'react-router';
+import { isEqual }                  from 'lodash';
 
 interface GeneralInfosFormProps {
     uuid: string;
@@ -28,7 +28,7 @@ interface GeneralInfos {
 }
 
 export const GeneralInfosForm: React.FC<GeneralInfosFormProps> = (props: GeneralInfosFormProps) => {
-    const history = useHistory();
+    const [ lastInitialValues, setLastInitialValues ] = useState<GeneralInfos>(null);
     const dispatch = useDispatch();
     const [ updatable, setUpdatable ] = useState<boolean>(false);
     const [ inputTag, setInputTag ] = useState('');
@@ -56,7 +56,9 @@ export const GeneralInfosForm: React.FC<GeneralInfosFormProps> = (props: General
                         tags: values.tags,
                     }
                 }
-            ]);
+            ], {
+                force: true
+            });
         }
     });
 
@@ -103,7 +105,7 @@ export const GeneralInfosForm: React.FC<GeneralInfosFormProps> = (props: General
 
     useDeepEffect(() => {
         if (updateResponse.data) {
-            history.push(history.location.pathname.substring(0, history.location.pathname.length - 14));
+            dispatch(PushNotification('Successfuly updated', 'success'));
         }
     }, [updateResponse.data]);
 
@@ -112,6 +114,18 @@ export const GeneralInfosForm: React.FC<GeneralInfosFormProps> = (props: General
             dispatch(PushNotification('Update failed. Please retry.', 'error'));
         }
     }, [updateResponse.error]);
+
+    useDeepEffect(() => {
+        setUpdatable(formik.isValid && !isEqual(formik.values, lastInitialValues));
+    }, [formik.values, lastInitialValues, formik.isValid]);
+
+    useEffect(() => {
+        setLastInitialValues({
+            name: props.initialValues.name,
+            description: props.initialValues.description,
+            tags: props.initialValues.tags
+        })
+    }, [props.initialValues]);
 
     return (
         <Form onSubmit={formik.handleSubmit}>
