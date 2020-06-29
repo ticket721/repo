@@ -451,7 +451,195 @@ describe('Cart Input Handlers Spec', function() {
                         name: '@cart/ticketSelections',
                         data:
                             '{"tickets":[{"categoryId":"category_id","price":{"currency":"Fiat","price":"100"}},{"categoryId":"category_id","price":{"currency":"Fiat","price":"100"}},{"categoryId":"category_id_two","price":{"currency":"Fiat","price":"100"}}],"total":[{"currency":"T721Token","value":"300","log_value":0}],"fees":["0"]}',
-                        error: '{"details":["group_id","group_id_two"],"error":"cannot_purchase_multiple_group_id"}',
+                        error: "{\"details\":{\"group_id\":[{\"categoryId\":\"category_id\",\"price\":{\"currency\":\"Fiat\",\"price\":\"100\"}},{\"categoryId\":\"category_id\",\"price\":{\"currency\":\"Fiat\",\"price\":\"100\"}}],\"group_id_two\":[{\"categoryId\":\"category_id_two\",\"price\":{\"currency\":\"Fiat\",\"price\":\"100\"}}]},\"error\":\"cannot_purchase_multiple_group_id\"}",
+                        status: 'error',
+                        private: false,
+                    },
+                    {
+                        type: 'input',
+                        name: '@cart/modulesConfiguration',
+                        data: null,
+                        error: null,
+                        status: 'in progress',
+                        private: false,
+                    },
+                    {
+                        type: 'input',
+                        name: '@cart/authorizations',
+                        data: null,
+                        error: null,
+                        status: 'in progress',
+                        private: true,
+                    },
+                ],
+                current_action: 0,
+                current_status: 'input:error',
+            });
+            expect(handlerResult[1]).toEqual(true);
+
+            verify(
+                context.categoriesServiceMock.search(
+                    deepEqual({
+                        id: 'category_id',
+                    }),
+                ),
+            ).called();
+
+            verify(
+                context.currenciesServiceMock.resolveInputPrices(
+                    deepEqual([
+                        {
+                            currency: 'Fiat',
+                            price: '100',
+                        },
+                    ]),
+                ),
+            ).called();
+
+            verify(context.currenciesServiceMock.computeFee('T721Token', '100')).called();
+        });
+
+        it('should fail on too much elements in cart', async function() {
+            const acsetbuilder = new CartAcsetbuilderHelper();
+            const caller = {
+                id: 'user_id',
+            } as UserDto;
+
+            const actionSetRes = await acsetbuilder.buildActionSet(caller, {});
+
+            const actionSet = actionSetRes.response;
+
+            actionSet.action.setData({
+                tickets: [
+                    {
+                        categoryId: 'category_id',
+                        price: {
+                            currency: 'Fiat',
+                            price: '100',
+                        },
+                    },
+                    {
+                        categoryId: 'category_id',
+                        price: {
+                            currency: 'Fiat',
+                            price: '100',
+                        },
+                    },
+                    {
+                        categoryId: 'category_id',
+                        price: {
+                            currency: 'Fiat',
+                            price: '100',
+                        },
+                    },
+                    {
+                        categoryId: 'category_id',
+                        price: {
+                            currency: 'Fiat',
+                            price: '100',
+                        },
+                    },
+                    {
+                        categoryId: 'category_id',
+                        price: {
+                            currency: 'Fiat',
+                            price: '100',
+                        },
+                    },
+                    {
+                        categoryId: 'category_id',
+                        price: {
+                            currency: 'Fiat',
+                            price: '100',
+                        },
+                    },
+                ],
+            });
+
+            when(
+                context.categoriesServiceMock.search(
+                    deepEqual({
+                        id: 'category_id',
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: [
+                    {
+                        id: 'category_id',
+                        group_id: 'group_id',
+                        prices: [
+                            {
+                                currency: 'T721Token',
+                                value: '100',
+                                log_value: 0,
+                            },
+                        ],
+                    } as CategoryEntity,
+                ],
+            });
+
+            when(
+                context.categoriesServiceMock.search(
+                    deepEqual({
+                        id: 'category_id_two',
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: [
+                    {
+                        id: 'category_id_two',
+                        group_id: 'group_id_two',
+                        prices: [
+                            {
+                                currency: 'T721Token',
+                                value: '100',
+                                log_value: 0,
+                            },
+                        ],
+                    } as CategoryEntity,
+                ],
+            });
+
+            when(
+                context.currenciesServiceMock.resolveInputPrices(
+                    deepEqual([
+                        {
+                            currency: 'Fiat',
+                            price: '100',
+                        },
+                    ]),
+                ),
+            ).thenResolve({
+                error: null,
+                response: [
+                    {
+                        currency: 'T721Token',
+                        value: '100',
+                        log_value: 0,
+                    },
+                ],
+            });
+
+            when(context.currenciesServiceMock.computeFee('T721Token', '300')).thenResolve('0');
+
+            const handlerResult = await context.cartInputHandlers.ticketSelectionsHandler(
+                context.cartInputHandlers.ticketSelectionsFields,
+                actionSet,
+                async () => {},
+            );
+
+            expect(handlerResult[0].raw).toEqual({
+                name: '@cart/creation',
+                consumed: false,
+                dispatched_at: handlerResult[0].raw.dispatched_at,
+                actions: [
+                    {
+                        type: 'input',
+                        name: '@cart/ticketSelections',
+                        data: "{\"tickets\":[{\"categoryId\":\"category_id\",\"price\":{\"currency\":\"Fiat\",\"price\":\"100\"}},{\"categoryId\":\"category_id\",\"price\":{\"currency\":\"Fiat\",\"price\":\"100\"}},{\"categoryId\":\"category_id\",\"price\":{\"currency\":\"Fiat\",\"price\":\"100\"}},{\"categoryId\":\"category_id\",\"price\":{\"currency\":\"Fiat\",\"price\":\"100\"}},{\"categoryId\":\"category_id\",\"price\":{\"currency\":\"Fiat\",\"price\":\"100\"}},{\"categoryId\":\"category_id\",\"price\":{\"currency\":\"Fiat\",\"price\":\"100\"}}],\"total\":[{\"currency\":\"T721Token\",\"value\":\"600\",\"log_value\":0}],\"fees\":[null]}",
+                        error: "{\"details\":null,\"error\":\"cart_too_big\"}",
                         status: 'error',
                         private: false,
                     },
@@ -780,92 +968,6 @@ describe('Cart Input Handlers Spec', function() {
                     }),
                 ),
             ).called();
-        });
-
-        it('should fail on too much elements in cart', async function() {
-            const acsetbuilder = new CartAcsetbuilderHelper();
-            const caller = {
-                id: 'user_id',
-            } as UserDto;
-
-            const actionSetRes = await acsetbuilder.buildActionSet(caller, {});
-
-            const actionSet = actionSetRes.response;
-
-            actionSet.action.setData({
-                tickets: [
-                    {
-                        categoryId: 'category_id',
-                        price: {
-                            currency: 'Fiat',
-                            price: '100',
-                        },
-                    },
-                    {
-                        categoryId: 'category_id',
-                        price: {
-                            currency: 'Fiat',
-                            price: '100',
-                        },
-                    },
-                    {
-                        categoryId: 'category_id',
-                        price: {
-                            currency: 'Fiat',
-                            price: '100',
-                        },
-                    },
-                    {
-                        categoryId: 'category_id',
-                        price: {
-                            currency: 'Fiat',
-                            price: '100',
-                        },
-                    },
-                ],
-            });
-
-            const handlerResult = await context.cartInputHandlers.ticketSelectionsHandler(
-                context.cartInputHandlers.ticketSelectionsFields,
-                actionSet,
-                async () => {},
-            );
-
-            expect(handlerResult[0].raw).toEqual({
-                name: '@cart/creation',
-                consumed: false,
-                dispatched_at: handlerResult[0].raw.dispatched_at,
-                actions: [
-                    {
-                        type: 'input',
-                        name: '@cart/ticketSelections',
-                        data:
-                            '{"tickets":[{"categoryId":"category_id","price":{"currency":"Fiat","price":"100"}},{"categoryId":"category_id","price":{"currency":"Fiat","price":"100"}},{"categoryId":"category_id","price":{"currency":"Fiat","price":"100"}},{"categoryId":"category_id","price":{"currency":"Fiat","price":"100"}}]}',
-                        error: '{"details":null,"error":"cart_too_big"}',
-                        status: 'error',
-                        private: false,
-                    },
-                    {
-                        type: 'input',
-                        name: '@cart/modulesConfiguration',
-                        data: null,
-                        error: null,
-                        status: 'in progress',
-                        private: false,
-                    },
-                    {
-                        type: 'input',
-                        name: '@cart/authorizations',
-                        data: null,
-                        error: null,
-                        status: 'in progress',
-                        private: true,
-                    },
-                ],
-                current_action: 0,
-                current_status: 'input:error',
-            });
-            expect(handlerResult[1]).toEqual(true);
         });
 
         it('should fail on invalid prices not matching', async function() {
