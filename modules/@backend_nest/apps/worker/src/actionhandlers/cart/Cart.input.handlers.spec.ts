@@ -451,7 +451,8 @@ describe('Cart Input Handlers Spec', function() {
                         name: '@cart/ticketSelections',
                         data:
                             '{"tickets":[{"categoryId":"category_id","price":{"currency":"Fiat","price":"100"}},{"categoryId":"category_id","price":{"currency":"Fiat","price":"100"}},{"categoryId":"category_id_two","price":{"currency":"Fiat","price":"100"}}],"total":[{"currency":"T721Token","value":"300","log_value":0}],"fees":["0"]}',
-                        error: "{\"details\":{\"group_id\":[{\"categoryId\":\"category_id\",\"price\":{\"currency\":\"Fiat\",\"price\":\"100\"}},{\"categoryId\":\"category_id\",\"price\":{\"currency\":\"Fiat\",\"price\":\"100\"}}],\"group_id_two\":[{\"categoryId\":\"category_id_two\",\"price\":{\"currency\":\"Fiat\",\"price\":\"100\"}}]},\"error\":\"cannot_purchase_multiple_group_id\"}",
+                        error:
+                            '{"details":{"group_id":[{"categoryId":"category_id","price":{"currency":"Fiat","price":"100"}},{"categoryId":"category_id","price":{"currency":"Fiat","price":"100"}}],"group_id_two":[{"categoryId":"category_id_two","price":{"currency":"Fiat","price":"100"}}]},"error":"cannot_purchase_multiple_group_id"}',
                         status: 'error',
                         private: false,
                     },
@@ -638,8 +639,9 @@ describe('Cart Input Handlers Spec', function() {
                     {
                         type: 'input',
                         name: '@cart/ticketSelections',
-                        data: "{\"tickets\":[{\"categoryId\":\"category_id\",\"price\":{\"currency\":\"Fiat\",\"price\":\"100\"}},{\"categoryId\":\"category_id\",\"price\":{\"currency\":\"Fiat\",\"price\":\"100\"}},{\"categoryId\":\"category_id\",\"price\":{\"currency\":\"Fiat\",\"price\":\"100\"}},{\"categoryId\":\"category_id\",\"price\":{\"currency\":\"Fiat\",\"price\":\"100\"}},{\"categoryId\":\"category_id\",\"price\":{\"currency\":\"Fiat\",\"price\":\"100\"}},{\"categoryId\":\"category_id\",\"price\":{\"currency\":\"Fiat\",\"price\":\"100\"}}],\"total\":[{\"currency\":\"T721Token\",\"value\":\"600\",\"log_value\":0}],\"fees\":[null]}",
-                        error: "{\"details\":null,\"error\":\"cart_too_big\"}",
+                        data:
+                            '{"tickets":[{"categoryId":"category_id","price":{"currency":"Fiat","price":"100"}},{"categoryId":"category_id","price":{"currency":"Fiat","price":"100"}},{"categoryId":"category_id","price":{"currency":"Fiat","price":"100"}},{"categoryId":"category_id","price":{"currency":"Fiat","price":"100"}},{"categoryId":"category_id","price":{"currency":"Fiat","price":"100"}},{"categoryId":"category_id","price":{"currency":"Fiat","price":"100"}}],"total":[{"currency":"T721Token","value":"600","log_value":0}],"fees":[null]}',
+                        error: '{"details":null,"error":"cart_too_big"}',
                         status: 'error',
                         private: false,
                     },

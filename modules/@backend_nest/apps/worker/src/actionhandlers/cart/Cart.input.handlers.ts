@@ -197,7 +197,7 @@ export class CartInputHandlers implements OnModuleInit {
 
                     groupIds[categorySearchRes.response[0].group_id] = [
                         ...(groupIds[categorySearchRes.response[0].group_id] || []),
-                        ticket
+                        ticket,
                     ];
 
                     const resolvedCurrencies = await this.priceChecks(

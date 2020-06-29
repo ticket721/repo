@@ -2,7 +2,8 @@ import { T721SDK } from '@common/sdk';
 import { PasswordlessUserDto } from '@app/server/authentication/dto/PasswordlessUser.dto';
 import {
     createEvent,
-    createEventActionSet, createFreeEventActionSet,
+    createEventActionSet,
+    createFreeEventActionSet,
     createPaymentIntent,
     editEventActionSet,
     failWithCode,
