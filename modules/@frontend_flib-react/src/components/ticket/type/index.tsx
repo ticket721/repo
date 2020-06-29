@@ -3,17 +3,15 @@ import styled from '../../../config/styled';
 import Icon from '../../icon';
 
 export interface TicketTypeProps extends React.ComponentProps<any> {
-    color?: string;
-    gradient?: string[];
-    description: string;
-    feesIncluded?: boolean;
+    gradient: string[];
+    description: JSX.Element;
     selected?: boolean;
     soldOutLabel: string;
-    startingPrice: string;
-    startingPriceLabel: string;
+    price: string;
     title: string;
     ticketsLeft: number;
     ticketsLeftLabel: string;
+    onClick?: () => void;
 }
 
 const Container = styled.article<TicketTypeProps>`
@@ -29,7 +27,7 @@ const Container = styled.article<TicketTypeProps>`
     }
 
     &:before {
-        background: linear-gradient(260deg, ${(props) => props.gradient?.join(', ')});
+        background: linear-gradient(260deg, ${(props) => props.gradient.join(', ')});
         content: '';
         display: block;
         height: 100%;
@@ -70,22 +68,23 @@ const TicketCount = styled.span<TicketTypeProps>`
     }
 `;
 
+const TicketIcon = styled(Icon)`
+    margin-right: ${(props) => props.theme.regularSpacing};
+`;
+
 export const TicketType: React.FunctionComponent<TicketTypeProps> = (props: TicketTypeProps): JSX.Element => {
     return (
-        <Container selected={props.selected} gradient={props.gradient}>
+        <Container selected={props.selected} gradient={props.gradient} onClick={props.onClick}>
             <div className={'row aic jcsb'}>
                 <h3>{props.title}</h3>
                 <TicketCount ticketsLeft={props.ticketsLeft}>
-                    <Icon icon={'ticket'} size={'18px'} color={props.color} />
+                    <TicketIcon icon={'ticket'} size={'20px'} color={props.gradient[0]} />
                     {props.ticketsLeft < 1 ? props.soldOutLabel : `${props.ticketsLeft} ${props.ticketsLeftLabel}`}
                 </TicketCount>
             </div>
-            <h4>
-                {props.startingPriceLabel} {props.startingPrice}
-            </h4>
+            <h4>{props.price}</h4>
 
-            <span>{props.feesIncluded ? 'Fees included' : '+ fees'}</span>
-            <p>{props.description}</p>
+            {props.description}
         </Container>
     );
 };

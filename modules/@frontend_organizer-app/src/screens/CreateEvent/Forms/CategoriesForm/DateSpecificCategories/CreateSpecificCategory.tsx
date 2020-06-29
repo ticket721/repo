@@ -1,11 +1,10 @@
 import React, { Dispatch, useEffect, useState } from 'react';
 import { Button, SelectInput }                  from '@frontend/flib-react/lib/components';
 
-import { CategoryItem }                 from '../index';
-import { CategoryForm }                 from '../CategoryForm';
+import { CategoryForm, CategoryItem }   from '../../../../../components/CategoryForm';
 import { checkFormatDate, displayDate } from '@frontend/core/lib/utils/date';
 import { DateItem }                     from '../../DatesForm';
-import { FormCard }                              from '../../FormCard';
+import { FormCard }                              from '../../../../../components/FormCard';
 
 import { useTranslation } from 'react-i18next';
 import '../locales';
@@ -36,6 +35,12 @@ export const CreateSpecificCategory: React.FC<CreateSpecificCategoryProps> = (pr
             }))
         ]), [props.dates, t]);
 
+    useEffect(() => {
+        if (selectableDates.length === 1) {
+            setSelectedDates(selectableDates);
+        }
+    }, [selectableDates]);
+
     return (
         <CreateCategoryWrapper>
             {
@@ -46,6 +51,7 @@ export const CreateSpecificCategory: React.FC<CreateSpecificCategoryProps> = (pr
                     editable={false}
                     setEdit={() => null}>
                         <SelectInput
+                        disabled={selectableDates.length === 1}
                         className={'select'}
                         label={t('select_dates_label')}
                         options={[

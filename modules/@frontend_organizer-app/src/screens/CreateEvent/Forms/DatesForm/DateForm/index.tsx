@@ -4,8 +4,8 @@ import { useFormik }                     from 'formik';
 import { DateItem }                      from '../';
 import { dateItemValidation }            from '../validationSchema';
 import { checkFormatDate }               from '@frontend/core/lib/utils/date';
-import { FormActions, FormActionsProps } from '../../FormActions';
 
+import { FormActions, FormActionsProps } from '../../../../../components/FormActions';
 import DatesForm from '../../../../../components/DatesForm';
 
 export interface DateFormProps extends FormActionsProps {

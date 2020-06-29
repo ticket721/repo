@@ -1,0 +1,30 @@
+import React from 'react';
+import { SelectableList } from '@frontend/flib-react/lib/components';
+import { useTranslation } from 'react-i18next';
+import './locales';
+
+const Language: React.FC = () => {
+    const [t, i18n] = useTranslation('language');
+
+    const setLanguage = (lang: string) => i18n.changeLanguage(lang);
+
+    return (
+        <SelectableList
+            title={t('title')}
+            items={[
+                {
+                    label: t('en_select'),
+                    value: 'en',
+                },
+                {
+                    label: t('fr_select'),
+                    value: 'fr',
+                },
+            ]}
+            selected={i18n.language.slice(0, 2)}
+            update={setLanguage}
+        />
+    );
+};
+
+export default Language;

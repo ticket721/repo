@@ -1,99 +1,96 @@
-import React, { Dispatch, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled                                           from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 
 import '@frontend/core/lib/utils/window';
 import { MergedAppState }           from '../../index';
 import { InitEventAcset }           from '../../redux/ducks/event_creation';
-import { EventCreationSteps }       from '../../core/event_creation/EventCreationCore';
 import { OrganizerState }           from '../../redux/ducks';
 
-import { Icon } from '@frontend/flib-react/lib/components';
+import { Button } from '@frontend/flib-react/lib/components';
 
 import GeneralInfoForm     from './Forms/GeneralInfoForm';
 import StylesForm          from './Forms/StylesForm';
 import DatesForm           from './Forms/DatesForm';
 import CategoriesForm      from './Forms/CategoriesForm';
 
-import { useTranslation }     from 'react-i18next';
+import { useTranslation }                from 'react-i18next';
 import './locales';
-import { EventCreateActions } from './EventCreateActions';
+import { ResetEventCreateForm }          from './ResetEventCreateForm';
+import { ActionSetStatus, ActionStatus } from '@common/sdk/lib/@backend_nest/libs/common/src/actionsets/entities/ActionSet.entity';
+import { PushNotification }              from '@frontend/core/lib/redux/ducks/notifications';
+import { useHistory }                    from 'react-router';
 
-const ScrollToLastStep: React.FC<{reference: any}> = ({reference}) => {
-    const scrollToRef = () =>
-        window.scrollTo({ top: reference.current.offsetTop, left: 0, behavior: 'smooth' });
-
-    return (
-        <ArrowNextStep onClick={() => scrollToRef()}>
-            <Icon
-            icon={'arrow'}
-            size={'30px'}
-            color={'#FFF'}/>
-        </ArrowNextStep>
-    );
-};
-
+export interface FormProps {
+    onComplete: (valid: boolean) => void;
+}
 const CreateEvent: React.FC = () => {
     const [ t ] = useTranslation('create_event');
     const FormRefs = [
         useRef(null),
         useRef(null),
         useRef(null),
-        useRef(null),
-        useRef(null),
-        useRef(null),
     ];
 
+    const [ stepIdx, setStepIdx ] = useState<number>(null);
+    const [ loadingForms, setLoadingForms ] = useState<boolean[]>([false, false, false, false]);
+
     const dispatch = useDispatch();
-    const [ token, eventAcsetId, lastCompletedStep, currentActionIdx ]:
-        [ string, string, EventCreationSteps, number ] =
+    const history = useHistory();
+    const [ token, eventAcsetId, actionsStatuses, currentActionIdx, acsetStatus ]:
+        [ string, string, Array<ActionStatus>, number, ActionSetStatus ] =
         useSelector((state: MergedAppState) => [
             state.auth.token.value,
             state.eventCreation.acsetId,
-            state.eventCreation.completedStep,
+            state.eventCreation.actionsStatuses,
             state.eventCreation.currentActionIdx,
+            state.eventCreation.acsetStatus,
         ]);
 
     const datesLength = useSelector((state: OrganizerState) => state.eventCreation.datesConfiguration.dates.length);
 
-    const [ showScroll, setShowScroll]: [ boolean, Dispatch<boolean> ] = useState(null);
+    const handleLoadingState = (updateIdx: number, updateLoadingState: boolean) =>
+        setLoadingForms(loadingForms.map(
+            (loadingState, idx) => idx === updateIdx ?
+                updateLoadingState :
+                loadingState
+        ));
 
     useEffect(() => {
         if (!eventAcsetId) {
             dispatch(InitEventAcset());
         }
+
+        if (eventAcsetId && stepIdx === null && actionsStatuses.length > 0) {
+            setStepIdx(actionsStatuses.lastIndexOf('complete') + 1);
+        }
     }, [
         eventAcsetId,
+        stepIdx,
+        actionsStatuses,
         dispatch
     ]);
 
     useEffect(() => {
-        if (currentActionIdx && FormRefs[currentActionIdx]?.current?.innerText) {
-            setShowScroll(window.scrollY < FormRefs[currentActionIdx].current?.offsetTop - 300);
+        if (actionsStatuses.lastIndexOf('complete') === 1) {
+            global.window.t721Sdk.actions.update(token, eventAcsetId, {
+                data: {},
+            }).then(() => {
+                console.log('complete module');
+            });
         }
-    }, [currentActionIdx, FormRefs]);
 
-    useEffect(() => {
-        switch (lastCompletedStep) {
-            case EventCreationSteps.Styles:
-                global.window.t721Sdk.actions.update(token, eventAcsetId, {
-                    data: {},
-                }).then(() => {
-                    console.log('complete module');
-                });
-                break;
-            case EventCreationSteps.Categories:
-                global.window.t721Sdk.actions.update(token, eventAcsetId, {
-                    data: {
-                        admins: [],
-                    },
-                }).then(() => {
-                    console.log('complete admins');
-                });
-                break;
+        if (actionsStatuses.lastIndexOf('complete') === 4) {
+            global.window.t721Sdk.actions.update(token, eventAcsetId, {
+                data: {
+                    admins: [],
+                },
+            }).then(() => {
+                console.log('complete admins');
+            });
         }
     }, [
-        lastCompletedStep,
+        actionsStatuses,
         eventAcsetId,
         token,
     ]);
@@ -103,21 +100,36 @@ const CreateEvent: React.FC = () => {
         {
             eventAcsetId &&
             <Forms>
-                <FormWrapper ref={FormRefs[0]}>
+                <FormWrapper>
                     <Title>{t('general_infos_title')}</Title>
-                    <GeneralInfoForm/>
+                    <GeneralInfoForm onComplete={(valid) => handleLoadingState(0, valid)}/>
+                    {
+                        stepIdx === 0 ?
+                            <Button
+                            variant={actionsStatuses[0] === 'complete' ? 'primary' : 'disabled'}
+                            loadingState={loadingForms[0] && actionsStatuses[0] !== 'complete'}
+                            title={loadingForms[0] && actionsStatuses[0] !== 'complete' ? t('loading_btn') : t('next_step_btn')}
+                            onClick={() => setStepIdx(1)}/> :
+                            null
+                    }
                 </FormWrapper>
-                { lastCompletedStep >= EventCreationSteps.GeneralInfo && (
-                    <FormWrapper ref={FormRefs[1]} disabled={currentActionIdx < 1}>
+                { stepIdx >= 1 && (
+                    <FormWrapper ref={FormRefs[0]} disabled={currentActionIdx < 1}>
                         <Title>{t('styles_title')}</Title>
-                        <StylesForm/>
+                        <StylesForm onComplete={(valid) => handleLoadingState(1, valid)}/>
+                        {
+                            stepIdx === 1 ?
+                                <Button
+                                variant={actionsStatuses[2] === 'complete' ? 'primary' : 'disabled'}
+                                loadingState={loadingForms[1] && actionsStatuses[2] !== 'complete'}
+                                title={loadingForms[1] && actionsStatuses[2] !== 'complete' ? t('loading_btn') : t('next_step_btn')}
+                                onClick={() => setStepIdx(3)}/> :
+                                null
+                        }
                     </FormWrapper>
                 )}
-                {lastCompletedStep >= EventCreationSteps.Styles && (
-                    <div ref={FormRefs[2]} />
-                )}
-                { lastCompletedStep >= EventCreationSteps.Modules && (
-                    <FormWrapper ref={FormRefs[3]} disabled={currentActionIdx < 3}>
+                { stepIdx >= 3 && (
+                    <FormWrapper ref={FormRefs[1]} disabled={currentActionIdx < 3}>
                         <Title>{t('dates_title')} {
                             datesLength > 0 ?
                             <span className={'date-quantity'}>
@@ -125,26 +137,39 @@ const CreateEvent: React.FC = () => {
                             </span> :
                                 null
                         }</Title>
-                        <DatesForm/>
+                        <DatesForm onComplete={(valid) => handleLoadingState(2, valid)}/>
+                        {
+                            stepIdx === 3 ?
+                                <Button
+                                variant={actionsStatuses[3] === 'complete' ? 'primary' : 'disabled'}
+                                loadingState={loadingForms[2] && actionsStatuses[3] !== 'complete'}
+                                title={loadingForms[2] && actionsStatuses[3] !== 'complete' ? t('loading_btn') : t('next_step_btn')}
+                                onClick={() => setStepIdx(4)}/> :
+                                null
+                        }
                     </FormWrapper>
                 )}
-                {lastCompletedStep >= EventCreationSteps.Dates && (
-                    <FormWrapper ref={FormRefs[4]} disabled={currentActionIdx < 4}>
+                {stepIdx >= 4 && (
+                    <FormWrapper ref={FormRefs[2]} disabled={currentActionIdx < 4}>
                         <Title>{t('categories_title')}</Title>
-                        <CategoriesForm/>
+                        <CategoriesForm onComplete={(valid) => handleLoadingState(3, valid)}/>
+                        <SubmitButton
+                            variant={acsetStatus === 'complete' ? 'primary' : 'disabled'}
+                            loadingState={loadingForms[3] && actionsStatuses[5] !== 'complete'}
+                            title={loadingForms[3] && actionsStatuses[5] !== 'complete' ? t('loading_btn') : t('create_event_btn')}
+                            onClick={() => global.window.t721Sdk.events.create.create(
+                                token,
+                                {completedActionSet: eventAcsetId}
+                            ).then(() => history.push('/'))
+                                .catch((e) => dispatch(PushNotification(e.message, 'error')))
+                            }
+                        />
                     </FormWrapper>
                 )}
-                {lastCompletedStep >= EventCreationSteps.Categories && (
-                    <div ref={FormRefs[5]} />
-                )}
-                <EventCreateActions
+                <ResetEventCreateForm
                 token={token}
-                eventAcsetId={eventAcsetId}/>
-                {
-                    showScroll ?
-                    <ScrollToLastStep reference={FormRefs[currentActionIdx]} /> :
-                        null
-                }
+                eventAcsetId={eventAcsetId}
+                onReset={() => setStepIdx(0)}/>
             </Forms>
         }
         </Container>
@@ -175,14 +200,6 @@ const FormWrapper = styled.div<{ disabled?: boolean }>`
     filter: ${props => props.disabled ? 'grayscale(0.8)' : 'none'};
 `;
 
-const ArrowNextStep = styled.div`
-    position: fixed;
-    bottom: 50px;
-    right: 50px;
-    cursor: pointer;
-    transform: rotate(90deg);
-`;
-
 const Title = styled.h1`
     font-size: 20px;
     font-weight: bold;
@@ -196,6 +213,10 @@ const Title = styled.h1`
         font-size: 15px;
         color: rgba(255,255,255,0.6);
     }
+`;
+
+const SubmitButton = styled(Button)`
+    margin-top: ${props => props.theme.doubleSpacing};
 `;
 
 export default CreateEvent;

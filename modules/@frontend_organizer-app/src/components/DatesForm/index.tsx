@@ -49,6 +49,7 @@ const DatesForm = ({ formik, formActions, className, hasName = false }: Props) =
       }
     }
   };
+
   const onTimeChange = (dateType: 'eventBegin' | 'eventEnd', date: Date) => {
     if (date.getTime() < Date.now()) {
       return;
@@ -71,6 +72,7 @@ const DatesForm = ({ formik, formActions, className, hasName = false }: Props) =
       }
     }
   };
+
   const onLocationChange = (result: any) => {
     geocodeByAddress(result.description)
       .then((gecodeResult) => {
@@ -81,7 +83,7 @@ const DatesForm = ({ formik, formActions, className, hasName = false }: Props) =
                 lon: lng,
                 lat,
               })
-            }).catch((e) => {
+            }).catch(() => {
             dispatch(PushNotification(t('google_api_error'), 'error'));
             formik.setFieldValue('location', {
               label: '',
@@ -90,7 +92,7 @@ const DatesForm = ({ formik, formActions, className, hasName = false }: Props) =
             });
           })
         }
-      ).catch((e) => {
+      ).catch(() => {
       dispatch(PushNotification(t('google_api_error'), 'error'));
       formik.setFieldValue('location', {
         label: '',
@@ -99,6 +101,7 @@ const DatesForm = ({ formik, formActions, className, hasName = false }: Props) =
       });
     });
   };
+
   const computeError = (field: string): string => {
     return formik.touched[field] && formik.errors[field] ?
       'validation:' + formik.errors[field] :

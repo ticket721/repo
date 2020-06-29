@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { rgba } from 'polished';
 import styled from '../../config/styled';
-import { Loader } from '../loader';
+import Icon from '../icon';
+import { keyframes } from 'styled-components';
 
 export interface ButtonProps extends React.ComponentProps<any> {
     title: string;
@@ -15,7 +16,17 @@ export interface ButtonProps extends React.ComponentProps<any> {
 
 const StyledButton = styled.button<ButtonProps>`
     ${(props) =>
-        (props.variant === 'secondary' || props.variant === 'disabled') &&
+        props.variant === 'disabled' &&
+        `
+        background-color: ${rgba('#FFFFFF', 0.1)};
+        transition: background-color 300ms ease;
+        cursor: default;
+        &::before {
+            display: none;
+        }
+    `};
+    ${(props) =>
+        props.variant === 'secondary' &&
         `
     background-color: ${rgba('#FFFFFF', 0.1)};
     transition: background-color 300ms ease;
@@ -110,16 +121,28 @@ const StyledButton = styled.button<ButtonProps>`
         }
     }
 
-    & > span {
+    & > span:last-child {
         display: flex;
         justify-content: center;
         padding-top: 1px;
         position: relative;
     }
+`;
 
-    & > div {
-        position: absolute;
+const loaderRotation = keyframes`
+    from {
+        transform: rotate(0deg);
     }
+
+    to {
+        transform: rotate(360deg);
+    }
+`;
+
+const LoaderIcon = styled(Icon)`
+    position: absolute;
+    right: 20px;
+    animation: ${loaderRotation} 1s linear infinite;
 `;
 
 export const Button: React.FunctionComponent<ButtonProps> = (props: ButtonProps): JSX.Element => {
@@ -134,7 +157,7 @@ export const Button: React.FunctionComponent<ButtonProps> = (props: ButtonProps)
                 disabled={props.variant === 'disabled'}
                 {...props}
             >
-                {props.loadingState ? <Loader size={'120%'} /> : null}
+                {props.loadingState ? <LoaderIcon icon={'loader'} size={'20px'} color={'#FFF'} /> : null}
                 <span>{props.title}</span>
             </StyledButton>
         );

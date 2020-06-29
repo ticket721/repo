@@ -56,11 +56,7 @@ export const ComponentsPreview: React.FC<ComponentsPreviewProps> = (props: Compo
                 <ElementLabel>{t('ticket_label')}</ElementLabel>
                 <Ticket>
                     <TicketHeader
-                        template={true}
-                        ticket={{
-                        ...prevTicket,
-                        image: props.previewSrc
-                    }} />
+                        cover={props.previewSrc} />
                     <Overlap>
                         <PreviewInfos
                             template={true}

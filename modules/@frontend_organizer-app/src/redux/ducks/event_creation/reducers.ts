@@ -1,25 +1,24 @@
 import {
     EventCreationAction,
-    IResetEventAcset,
     ISetAcsetStatus,
     ISetActionData,
-    ISetCompletedStep,
+    ISetActionsStatuses,
     ISetCurrentAction,
     ISetCurrentActionIdx,
     ISetEventAcset,
     ISetSync,
     IUpdateAction,
-}                                                       from './actions';
+} from './actions';
 import { EventCreationActionTypes, EventCreationState } from './types';
 import { Reducer }                                      from 'redux';
-import { EventCreationActions, EventCreationSteps }     from '../../../core/event_creation/EventCreationCore';
+import { EventCreationActions }     from '../../../core/event_creation/EventCreationCore';
 
 export const eventCreationInitialState: EventCreationState = {
     acsetId: '',
     acsetStatus: null,
+    actionsStatuses: [],
     currentActionIdx: null,
     currentAction: null,
-    completedStep: EventCreationSteps.None,
     textMetadata: {
         name: '',
         description: '',
@@ -51,23 +50,26 @@ const SetAcsetStatusReducer: Reducer<EventCreationState, ISetAcsetStatus> = (
     acsetStatus: action.acsetStatus,
 });
 
+const SetActionsStatusesReducer: Reducer<EventCreationState, ISetActionsStatuses> = (
+    state: EventCreationState,
+    action: ISetActionsStatuses,
+): EventCreationState => ({
+    ...state,
+    actionsStatuses: action.actionsStatuses,
+});
+
 const SetCurrentActionIdxReducer: Reducer<EventCreationState, ISetCurrentActionIdx> = (
     state: EventCreationState,
     action: ISetCurrentActionIdx,
 ): EventCreationState => ({
     ...state,
     currentActionIdx: action.idx,
-})
+});
 
 const SetEventAcsetReducer: Reducer<EventCreationState, ISetEventAcset> = (
     state: EventCreationState,
     action: ISetEventAcset,
 ): EventCreationState => action.acsetData;
-
-const ResetEventAcsetReducer: Reducer<EventCreationState, IResetEventAcset> = (
-    state: EventCreationState,
-    action: IResetEventAcset,
-): EventCreationState => eventCreationInitialState;
 
 const SetCurrentActionReducer: Reducer<EventCreationState, ISetCurrentAction> = (
     state: EventCreationState,
@@ -75,14 +77,6 @@ const SetCurrentActionReducer: Reducer<EventCreationState, ISetCurrentAction> = 
 ): EventCreationState => ({
     ...state,
     currentAction: action.currentAction
-});
-
-const SetCompletedStepReducer: Reducer<EventCreationState, ISetCompletedStep> = (
-    state: EventCreationState,
-    action: ISetCompletedStep,
-): EventCreationState => ({
-    ...state,
-    completedStep: action.completedStep
 });
 
 const SetActionDataReducer: Reducer<EventCreationState, ISetActionData> = (
@@ -137,16 +131,14 @@ export const EventCreationReducer: Reducer<EventCreationState, EventCreationActi
     switch (action.type) {
         case EventCreationActionTypes.SetAcsetStatus:
             return SetAcsetStatusReducer(state, action as ISetAcsetStatus);
+        case EventCreationActionTypes.SetActionsStatuses:
+            return SetActionsStatusesReducer(state, action as ISetActionsStatuses);
         case EventCreationActionTypes.SetCurrentActionIdx:
             return SetCurrentActionIdxReducer(state, action as ISetCurrentActionIdx);
         case EventCreationActionTypes.SetEventAcset:
             return SetEventAcsetReducer(state, action as ISetEventAcset);
-        case EventCreationActionTypes.ResetEventAcset:
-            return ResetEventAcsetReducer(state, action as IResetEventAcset);
         case EventCreationActionTypes.SetCurrentAction:
             return SetCurrentActionReducer(state, action as ISetCurrentAction);
-        case EventCreationActionTypes.SetCompletedStep:
-            return SetCompletedStepReducer(state, action as ISetCompletedStep);
         case EventCreationActionTypes.SetActionData:
             return SetActionDataReducer(state, action as ISetActionData);
         case EventCreationActionTypes.SetSync:

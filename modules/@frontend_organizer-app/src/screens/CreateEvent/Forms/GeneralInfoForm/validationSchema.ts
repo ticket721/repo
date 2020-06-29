@@ -11,7 +11,7 @@ const tags = yup.array().of(
     yup.string()
         .min(3, 'tag_too_short')
         .max(16, 'tag_too_long')
-).min(1, 'tag_required');
+);
 
 export const textMetadataValidationSchema = yup.object().shape({
     name,

@@ -1,9 +1,9 @@
-import React, { Dispatch, useEffect } from 'react';
-import MuiAppBar                      from '@material-ui/core/AppBar';
+import React, { Dispatch, useEffect, useRef } from 'react';
+import MuiAppBar                              from '@material-ui/core/AppBar';
 import MuiTabs                                      from '@material-ui/core/Tabs';
 import Tab                                          from '@material-ui/core/Tab';
-import styled                                       from 'styled-components';
-import { useSelector }                              from 'react-redux';
+import styled                       from 'styled-components';
+import { useSelector } from 'react-redux';
 
 import { categoriesValidationSchema }               from './validationSchema';
 import { GlobalCategories }                         from './GlobalCategories';
@@ -18,19 +18,17 @@ import { OrganizerState }                           from '../../../../redux/duck
 
 import { useTranslation } from 'react-i18next';
 import './locales';
+import { FormProps }      from '../../index';
+import { useDeepEffect }  from '@frontend/core/lib/hooks/useDeepEffect';
+import { CategoryItem }   from '../../../../components/CategoryForm';
 
-export interface CategoryItem {
-    name: string;
-    saleBegin: Date;
-    saleEnd: Date;
-    seats: number;
-    currencies: {
-        currency: string,
-        price: string;
-    }[]
-}
+const defaultValues: EventsCreateCategoriesConfiguration = {
+    global: [],
+    dates: [],
+};
 
-const CategoriesForm: React.FC = () => {
+const CategoriesForm: React.FC<FormProps> = ({ onComplete }) => {
+    const reference = useRef(null);
     const [ t ] = useTranslation('categories');
     const [ tabIdx, setTabIdx ]: [ number, Dispatch<number> ] = React.useState(0);
     const datesLength: number = useSelector((state: OrganizerState) => state.eventCreation.datesConfiguration.dates.length);
@@ -38,6 +36,7 @@ const CategoriesForm: React.FC = () => {
         EventCreationSteps.Categories,
         EventCreationActions.CategoriesConfiguration,
         categoriesValidationSchema,
+        defaultValues,
     );
 
     const globalCategoriesChange = (categories: CategoryItem[]) => {
@@ -64,6 +63,7 @@ const CategoriesForm: React.FC = () => {
                 emptyCategories[i] = [];
             }
 
+            eventCreationFormik.handleFocus('auto focus');
             eventCreationFormik.update({
                 ...eventCreationFormik.values,
                 dates: [
@@ -75,21 +75,35 @@ const CategoriesForm: React.FC = () => {
         // eslint-disable-next-line
     }, [datesLength, eventCreationFormik.values.dates.length]);
 
+    useDeepEffect(() => {
+        onComplete(true);
+    }, [
+        eventCreationFormik.isValid
+    ]);
+
+    useEffect(() => {
+        window.scrollTo({ top: reference.current.offsetTop, left: 0, behavior: 'smooth' });
+    }, []);
+
     return (
         <>
-            <AppBar position='static'>
+            <AppBar position='static' ref={reference}>
                 <Tabs
                 value={tabIdx}
                 onChange={(e: any, idx: number) => setTabIdx(idx)}
                 aria-label='from tabs'>
                     <Tab
-                    label={t('global_tab')}
+                    label={t('date_specific_tab')}
                     id={`simple-tab-${0}`}
                     aria-controls={`simple-tabpanel-${0}`}/>
-                    <Tab
-                    label={t('date_specific_tab')}
-                    id={`simple-tab-${1}`}
-                    aria-controls={`simple-tabpanel-${1}`}/>
+                    {
+                        datesLength > 1 ?
+                        <Tab
+                        label={t('global_tab')}
+                        id={`simple-tab-${1}`}
+                        aria-controls={`simple-tabpanel-${1}`}/> :
+                            null
+                    }
                 </Tabs>
             </AppBar>
             <div
@@ -99,10 +113,10 @@ const CategoriesForm: React.FC = () => {
             aria-labelledby={`simple-tab-${0}`}>
                 {tabIdx === 0 && (
                     <>
-                        <Description>A Global Category corresponds to a ticket valid for all dates</Description>
-                        <GlobalCategories
-                        categories={eventCreationFormik.values.global}
-                        onCategoriesChange={globalCategoriesChange} />
+                        <Description>A Normal ticket corresponds to a category which can be applied to several dates</Description>
+                        <DateSpecificCategories
+                            categories={eventCreationFormik.values.dates}
+                            onCategoriesChange={dateSpecificCategoriesChange}/>
                     </>
                 )}
             </div>
@@ -113,10 +127,10 @@ const CategoriesForm: React.FC = () => {
             aria-labelledby={`simple-tab-${1}`}>
                 {tabIdx === 1 && (
                     <>
-                        <Description>A Normal ticket corresponds to a category which can be applied to several dates</Description>
-                        <DateSpecificCategories
-                        categories={eventCreationFormik.values.dates}
-                        onCategoriesChange={dateSpecificCategoriesChange}/>
+                        <Description>A Global Category corresponds to a ticket valid for all dates</Description>
+                        <GlobalCategories
+                            categories={eventCreationFormik.values.global}
+                            onCategoriesChange={globalCategoriesChange} />
                     </>
                 )}
             </div>

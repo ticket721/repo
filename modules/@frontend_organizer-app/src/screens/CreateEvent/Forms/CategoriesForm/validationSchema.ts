@@ -14,17 +14,6 @@ const currencies = yup.array().of(yup.object().shape({
     price: yup.number().integer().positive(),
 }));
 
-const price = yup.number()
-    .min(0, 'price_positive_number');
-
-const categoryValidationSchema = yup.object().shape({
-    name,
-    saleBegin,
-    saleEnd,
-    seats,
-    price,
-});
-
 const global = yup.array().of(yup.object().shape({
     name,
     saleBegin,
@@ -42,9 +31,7 @@ const dates = yup.array().of(yup.array().of(yup.object().shape({
     currencies,
 })));
 
-const categoriesValidationSchema = yup.object().shape({
+export const categoriesValidationSchema = yup.object().shape({
     global,
     dates,
 });
-
-export { categoriesValidationSchema, categoryValidationSchema };

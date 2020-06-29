@@ -66,6 +66,12 @@ const LocationContainer = styled.div`
     }
 `;
 
+const IconContainer = styled.div`
+    span {
+        margin: 0 ${(props) => props.theme.smallSpacing};
+    }
+`;
+
 export const ArrowLink: React.FunctionComponent<ArrowLinkProps & { className?: string }> = (
     props: ArrowLinkProps,
 ): JSX.Element => {
@@ -77,10 +83,12 @@ export const ArrowLink: React.FunctionComponent<ArrowLinkProps & { className?: s
                 <LocationContainer>
                     <Icon icon={'location'} size={'16px'} />
                     <span>{props.location}</span>
-                    <Chevron icon={'chevron'} size={'12px'} color={'rgba(255, 255, 255, 0.9)'} />
+                    <Chevron icon={'chevron'} size={'9px'} color={'rgba(255, 255, 255, 0.9)'} />
                 </LocationContainer>
             ) : (
-                <Arrow icon={'arrow'} size={'16px'} />
+                <IconContainer>
+                    <Arrow icon={'arrow'} size={'16px'} color={'rgba(255, 255, 255, 0.9)'} />
+                </IconContainer>
             )}
         </LinkContainer>
     );

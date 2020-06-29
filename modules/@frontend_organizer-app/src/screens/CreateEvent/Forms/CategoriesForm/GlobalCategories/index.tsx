@@ -1,13 +1,12 @@
 import React, { Dispatch, Fragment, useState } from 'react';
 import styled                                  from 'styled-components';
 
-import { CategoryItem }         from '../index';
-import { CategoryForm }         from '../CategoryForm';
-import { checkFormatDate }      from '@frontend/core/lib/utils/date';
-import { CategoryCard }         from '../CategoryCard';
-import { CreateGlobalCategory } from './CreateGlobalCategory';
-import { useSelector }          from 'react-redux';
-import { OrganizerState }       from '../../../../../redux/ducks';
+import { CategoryForm, CategoryItem } from '../../../../../components/CategoryForm';
+import { checkFormatDate }            from '@frontend/core/lib/utils/date';
+import { CreateGlobalCategory }       from './CreateGlobalCategory';
+import { useSelector }                from 'react-redux';
+import { OrganizerState }             from '../../../../../redux/ducks';
+import { CategoryCard }               from '../../../../../components/CategoryCard';
 
 interface GlobalCategoriesProps {
     categories: CategoryItem[];
@@ -16,7 +15,7 @@ interface GlobalCategoriesProps {
 
 export const GlobalCategories: React.FC<GlobalCategoriesProps> = (props: GlobalCategoriesProps) => {
     const maxDate: Date = useSelector((state: OrganizerState) =>
-        state.eventCreation.datesConfiguration.dates[state.eventCreation.datesConfiguration.dates.length - 1].eventEnd);
+        state.eventCreation.datesConfiguration.dates[state.eventCreation.datesConfiguration.dates.length - 1]?.eventEnd);
     const [ editIdx, setEditIdx ]: [ number, Dispatch<number> ] = useState(null);
 
     const resetEdition = () => {

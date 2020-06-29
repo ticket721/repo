@@ -1,9 +1,9 @@
 import * as React from 'react';
 import styled from '../../../config/styled';
-import TicketInterface from '../../../shared/ticketInterface';
 
 export interface TicketHeaderProps extends React.ComponentProps<any> {
-    ticket: TicketInterface;
+    ticketQuantity?: number;
+    cover: string;
     fullWidth?: boolean;
 }
 
@@ -55,10 +55,10 @@ const Header = styled.header<TicketHeaderProps>`
 export const TicketHeader: React.FunctionComponent<TicketHeaderProps> = (props: TicketHeaderProps): JSX.Element => {
     return (
         <Header fullWidth={props.fullWidth}>
-            {!props.fullWidth && props.ticket.number ? (
-                <TicketHeaderNumber>x{props.ticket.number}</TicketHeaderNumber>
+            {!props.fullWidth && props.ticketQuantity ? (
+                <TicketHeaderNumber>x{props.ticketQuantity}</TicketHeaderNumber>
             ) : null}
-            <img src={props.ticket.image} />
+            <img src={props.cover} alt={'cover'} />
         </Header>
     );
 };

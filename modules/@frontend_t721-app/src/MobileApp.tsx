@@ -2,28 +2,28 @@ import React, { Suspense, useEffect, useState } from 'react';
 import {
     Login,
     Register,
-} from '@frontend/core/lib/components';
-
+}                                               from '@frontend/core/lib/components';
 import { NavLink, Route, Switch, useHistory, useLocation, withRouter } from 'react-router-dom';
-
 import { FullPageLoading, Navbar, Icon, TopNav } from '@frontend/flib-react/lib/components';
-import ProtectedRoute               from '@frontend/core/lib/components/ProtectedRoute';
-import ToastStacker                 from '@frontend/core/lib/components/ToastStacker';
-import styled                       from 'styled-components';
-import { StatusBarMargin }          from './utils/StatusBarMargin';
-import { NavbarMargin }             from './utils/NavbarMargin';
+import ProtectedRoute                            from '@frontend/core/lib/components/ProtectedRoute';
+import ToastStacker                              from '@frontend/core/lib/components/ToastStacker';
+import styled                                    from 'styled-components';
+import { StatusBarMargin }                       from './utils/StatusBarMargin';
+import { NavbarMargin }                          from './utils/NavbarMargin';
 import Home                         from './screens/Home';
 import { InvisibleStatusBarMargin } from './utils/InvisibleStatusBarMargin';
 import { TopNavMargin }             from './utils/TopNavMargin';
 import Activities                   from '@frontend/core/lib/components/Profile/Activities';
+import Language                     from '@frontend/core/lib/components/Profile/Language';
 import ProfileRoot                  from '@frontend/core/lib/components/Profile/Root';
 import SearchViewAll                from './screens/SearchViewAll';
 import Search                       from './screens/Search';
 import Tags                         from './screens/Tags';
 import Wallet                       from './screens/Wallet';
 import Event                        from './screens/Event';
+import TicketSelection              from './screens/TicketSelection';
 
-const TopNavWrapper = (props: {back: () => void}): JSX.Element => {
+const TopNavWrapper = (props: { back: () => void }): JSX.Element => {
 
     const [scrolled, setScrolled] = useState(false);
 
@@ -39,19 +39,21 @@ const TopNavWrapper = (props: {back: () => void}): JSX.Element => {
         window.addEventListener('scroll', setScrolledCallback, { passive: true });
         return () => {
             window.removeEventListener('scroll', setScrolledCallback);
-        }
+        };
     });
 
-    return <TopNav label={''} onPress={props.back} scrolled={scrolled}/>
+    return <TopNav label={''} onPress={props.back} scrolled={scrolled}/>;
 };
 
 const LoginPage = StatusBarMargin(NavbarMargin(Login));
 const RegisterPage = StatusBarMargin(NavbarMargin(Register));
 const HomePage = StatusBarMargin(NavbarMargin(Home));
 const ProfileActivitiesPage = InvisibleStatusBarMargin(TopNavMargin(Activities));
+const ProfileLanguagePage = InvisibleStatusBarMargin(TopNavMargin(Language));
 const ProfilePage = StatusBarMargin(NavbarMargin(ProfileRoot));
 const SearchViewAllPage = InvisibleStatusBarMargin(TopNavMargin(SearchViewAll));
 const EventPage = Event;
+const TicketSelectionPage = InvisibleStatusBarMargin(TopNavMargin(TicketSelection));
 const SearchPage = StatusBarMargin(Search);
 const TagsPage = StatusBarMargin(Tags);
 const WalletPage = StatusBarMargin(Wallet);
@@ -85,12 +87,24 @@ const MobileApp: React.FC = () => {
                     <ProfileActivitiesPage/>
                 </ProtectedRoute>
 
+                <ProtectedRoute path={'/profile/language'} exact={true}>
+                    <ProfileLanguagePage/>
+                </ProtectedRoute>
+
                 <ProtectedRoute path={'/profile'} exact={true}>
                     <ProfilePage/>
                 </ProtectedRoute>
 
+                <ProtectedRoute path={'/cart/checkout'} exact={true}>
+                    <p>Cart</p>
+                </ProtectedRoute>
+
                 <Route path={'/search/events/:query'} exact={true}>
                     <SearchViewAllPage/>
+                </Route>
+
+                <Route path={'/event/:id/selection'} exact={true}>
+                    <TicketSelectionPage/>
                 </Route>
 
                 <Route path={'/event/:id'} exact={true}>
@@ -137,12 +151,11 @@ const MobileApp: React.FC = () => {
 
                     </Navbar>
 
-
                     :
                     null
             }
         </AppContainer>
-    </Suspense>
+    </Suspense>;
 };
 
 const AppContainer = styled.div`

@@ -6,17 +6,16 @@ import {
     EventsCreateCategoriesConfiguration,
     EventsCreateAdminsConfiguration,
 }                                                   from '@common/sdk/lib/@backend_nest/apps/worker/src/actionhandlers/events/Events.input.handlers';
-import { EventCreationActions, EventCreationSteps } from '../../../core/event_creation/EventCreationCore';
-import { ActionSetStatus }                          from '@common/sdk/lib/@backend_nest/libs/common/src/actionsets/entities/ActionSet.entity';
+import { EventCreationActions } from '../../../core/event_creation/EventCreationCore';
+import { ActionSetStatus, ActionStatus }            from '@common/sdk/lib/@backend_nest/libs/common/src/actionsets/entities/ActionSet.entity';
 
 export enum EventCreationActionTypes {
     InitEventAcset = '@@eventcreation/initeventacset',
     SetEventAcset = '@@eventcreation/seteventacset',
-    ResetEventAcset = '@@eventcreation/reseteventacset',
     SetAcsetStatus = '@@eventcreation/setacsetstatus',
+    SetActionsStatuses = '@@eventcreation/actionsstatuses',
     SetCurrentActionIdx = '@@eventcreation/setcurrentactionidx',
     SetCurrentAction = '@@eventcreation/setcurrentaction',
-    SetCompletedStep = '@@eventcreation/setcompletestep',
     SetActionData = '@@eventcreation/setactiondata',
     SetSync = '@@eventcreation/setsync',
     UpdateAction = '@@eventcreation/updateaction',
@@ -25,9 +24,10 @@ export enum EventCreationActionTypes {
 export interface EventCreationState {
     acsetId: string;
     acsetStatus: ActionSetStatus;
+    actionsStatuses: Array<ActionStatus>;
     currentActionIdx: number;
     currentAction: EventCreationActions;
-    completedStep: EventCreationSteps;
+
     textMetadata: EventsCreateTextMetadata;
     imagesMetadata: EventsCreateImagesMetadata;
     modulesConfiguration: EventsCreateModulesConfiguration;

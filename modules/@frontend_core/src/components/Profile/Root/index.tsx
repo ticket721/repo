@@ -8,8 +8,10 @@ import { AppState } from '../../../redux';
 import { ActivitiesList } from '../Activities/ActivitiesList';
 import { Logout } from '../../../redux/ducks/auth';
 import { useHistory } from 'react-router';
-import { WalletHeader } from '@frontend/flib-react/lib/components';
+import { WalletHeader, LanguageLink } from '@frontend/flib-react/lib/components';
 import { getContract } from '../../../subspace/getContract';
+import { useTranslation } from 'react-i18next';
+import '../locales';
 // tslint:disable-next-line:no-var-requires
 const { observe, useSubspace } = require('@embarklabs/subspace-react');
 
@@ -28,6 +30,7 @@ const ProfileRoot = (): JSX.Element => {
     const subspace = useSubspace();
     const T721TokenContract = getContract(subspace, 't721token', 'T721Token');
     const $balance = T721TokenContract.methods.balanceOf(address).track();
+    const [t, i18n] = useTranslation('profile');
 
     const activityResponse = useRequest<MetadatasFetchResponseDto>(
         {
@@ -57,17 +60,6 @@ const ProfileRoot = (): JSX.Element => {
         uuid,
     ).response;
 
-    // <FundsCard
-    //     title={'Funds'}
-    //     bankAccountLabel={'Bank account'}
-    //     currentBalanceLabel={'Current balance'}
-    //     onClick={() => history.push(computeProfilePath(history.location.pathname, '/funds'))}
-    //     user={user}
-    //     icon='euro'
-    // />
-    // <ArrowLink to='#todo' label='General information' />
-    // <ArrowLink to='#todo' label='Main city' location='Paris, France' />
-
     return (
         <>
             <ConnectedWalletHeader username={username} picture={'/favicon.ico'} balance={$balance} />
@@ -78,10 +70,16 @@ const ProfileRoot = (): JSX.Element => {
                 limit={3}
                 link={'/activities'}
             />
-            <LinksContainer title='Account'>
+            <LinksContainer title={t('account')}>
+                <LanguageLink
+                    label={t('language')}
+                    currentLanguage={t(i18n.language.slice(0, 2))}
+                    onClick={() => {
+                        history.push('/profile/language');
+                    }}
+                />
                 <ArrowLink
-                    to='#todo'
-                    label='Log Out'
+                    label={t('log_out')}
                     onClick={() => {
                         dispatch(Logout());
                         history.replace('/');
