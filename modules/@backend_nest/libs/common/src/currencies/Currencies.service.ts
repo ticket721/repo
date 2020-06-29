@@ -4,10 +4,10 @@ import { ContractsControllerBase } from '@lib/common/contracts/ContractsControll
 import { Web3Service } from '@lib/common/web3/Web3.service';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 import { IsNumber, IsNumberString, IsString } from 'class-validator';
-import { Decimal } from 'decimal.js';
 import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
 import currenciesConfig from '@lib/common/currencies/Currencies.config.value';
 import { NestError } from '@lib/common/utils/NestError';
+import { log2 } from '@common/global';
 
 /**
  * Price of the Category
@@ -386,7 +386,7 @@ export class CurrenciesService {
                         (curr: string): Price => ({
                             currency: curr,
                             value: inputPrice.price,
-                            log_value: Decimal.log2(inputPrice.price).toNumber(),
+                            log_value: log2(inputPrice.price),
                         }),
                     ),
                 ];

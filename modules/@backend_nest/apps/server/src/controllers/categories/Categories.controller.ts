@@ -31,7 +31,7 @@ import { SortablePagedSearch } from '@lib/common/utils/SortablePagedSearch.type'
 import { CurrenciesService, Price } from '@lib/common/currencies/Currencies.service';
 import { AuthGuard } from '@nestjs/passport';
 import { Roles, RolesGuard } from '@app/server/authentication/guards/RolesGuard.guard';
-import { isFutureDateRange } from '@common/global/lib/utils';
+import { isFutureDateRange, isValidDateRange } from '@common/global';
 import { ApiResponses } from '@app/server/utils/ApiResponses.controller.decorator';
 import { MetadatasService } from '@lib/common/metadatas/Metadatas.service';
 import { ValidGuard } from '@app/server/authentication/guards/ValidGuard.guard';
@@ -259,7 +259,7 @@ export class CategoriesController extends ControllerBasics<CategoryEntity> {
         );
 
         if (
-            !isFutureDateRange(
+            !isValidDateRange(
                 body.sale_begin ? new Date(body.sale_begin) : categoryEntity.sale_begin,
                 body.sale_end ? new Date(body.sale_end) : categoryEntity.sale_end,
             )
@@ -274,7 +274,7 @@ export class CategoriesController extends ControllerBasics<CategoryEntity> {
         }
 
         if (
-            !isFutureDateRange(
+            !isValidDateRange(
                 body.resale_begin ? new Date(body.resale_begin) : categoryEntity.resale_begin,
                 body.resale_end ? new Date(body.resale_end) : categoryEntity.resale_end,
             )
