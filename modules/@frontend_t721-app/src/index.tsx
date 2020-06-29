@@ -21,8 +21,8 @@ import Web3                                                    from 'web3';
 import { getWeb3 }                                             from '@frontend/core/lib/subspace/getWeb3';
 import { LocationReducer, locationInitialState, locationSaga } from './redux/ducks/location';
 import { T721AppState }                                        from './redux';
-import { searchInitialState, SearchReducer } from './redux/ducks/search';
-import { cartInitialState, CartReducer }     from './redux/ducks/cart';
+import { searchInitialState, SearchReducer }       from './redux/ducks/search';
+import { cartInitialState, CartReducer, cartSaga } from './redux/ducks/cart';
 // tslint:disable-next-line:no-var-requires
 const { SubspaceProvider } = require('@embarklabs/subspace-react');
 
@@ -36,6 +36,7 @@ const store: Store<T721AppState> = configureStore<any>({
     cart: cartInitialState,
 }, [
     locationSaga,
+    cartSaga
 ]);
 
 const web3: Web3 = getWeb3();

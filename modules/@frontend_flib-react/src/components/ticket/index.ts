@@ -6,5 +6,6 @@ export * from './qr-code';
 export * from './top-nav';
 export * from './type';
 export * from './ticket-qty';
+export * from './category-qty';
 export * from './single';
 export * from './total';
