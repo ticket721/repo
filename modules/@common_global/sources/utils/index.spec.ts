@@ -1,4 +1,4 @@
-import { decimalToHex, isFutureDateRange, leftPad, serialize, toB32, toHex, uuidEq } from './index';
+import { decimalToHex, isFutureDateRange, leftPad, log2, serialize, toB32, toHex, uuidEq } from './index';
 
 describe('Utils', function () {
 
@@ -140,6 +140,22 @@ describe('Utils', function () {
             expect(decimalToHex(input)).toEqual('0xff');
 
         });
+
+    });
+
+    describe('log2', function() {
+
+        it('should properly compute log of 1', function() {
+            const input = '1';
+
+            expect(log2(input)).toEqual(0);
+        })
+
+        it('should properly compute log of 0', function() {
+            const input = '0';
+
+            expect(log2(input)).toEqual(-1);
+        })
 
     });
 

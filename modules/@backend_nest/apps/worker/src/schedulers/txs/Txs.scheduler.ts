@@ -1,18 +1,17 @@
 import { Inject, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
-import { InjectSchedule, Schedule } from 'nest-schedule';
-import { TxsService, TxsServiceOptions } from '@lib/common/txs/Txs.service';
-import { GlobalConfigService } from '@lib/common/globalconfig/GlobalConfig.service';
-import { ESSearchBodyBuilder } from '@lib/common/utils/ESSearchBodyBuilder.helper';
-import { SortablePagedSearch } from '@lib/common/utils/SortablePagedSearch.type';
-import { fromES } from '@lib/common/utils/fromES.helper';
-import { Log, TxEntity } from '@lib/common/txs/entities/Tx.entity';
-import { Web3Service } from '@lib/common/web3/Web3.service';
-import { toAcceptedAddressFormat } from '@common/global';
-import { Decimal } from 'decimal.js';
-import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
-import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
-import { OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
-import { NestError } from '@lib/common/utils/NestError';
+import { InjectSchedule, Schedule }              from 'nest-schedule';
+import { TxsService, TxsServiceOptions }         from '@lib/common/txs/Txs.service';
+import { GlobalConfigService }                   from '@lib/common/globalconfig/GlobalConfig.service';
+import { ESSearchBodyBuilder }                   from '@lib/common/utils/ESSearchBodyBuilder.helper';
+import { SortablePagedSearch }                   from '@lib/common/utils/SortablePagedSearch.type';
+import { fromES }                                from '@lib/common/utils/fromES.helper';
+import { Log, TxEntity }                         from '@lib/common/txs/entities/Tx.entity';
+import { Web3Service }                           from '@lib/common/web3/Web3.service';
+import { toAcceptedAddressFormat, log2 }         from '@common/global';
+import { WinstonLoggerService }                  from '@lib/common/logger/WinstonLogger.service';
+import { ShutdownService }                       from '@lib/common/shutdown/Shutdown.service';
+import { OutrospectionService }                  from '@lib/common/outrospection/Outrospection.service';
+import { NestError }                             from '@lib/common/utils/NestError';
 
 /**
  * Txs task scheduler
@@ -40,7 +39,8 @@ export class TxsScheduler implements OnModuleInit, OnModuleDestroy {
         @Inject('TXS_MODULE_OPTIONS')
         private readonly txsOptions: TxsServiceOptions,
         private readonly outrospectionService: OutrospectionService,
-    ) {}
+    ) {
+    }
 
     /**
      * Last fetched block number
@@ -163,11 +163,11 @@ export class TxsScheduler implements OnModuleInit, OnModuleDestroy {
                     ? toAcceptedAddressFormat(txReceipt.contractAddress)
                     : null;
                 parsed.cumulative_gas_used = txReceipt.cumulativeGasUsed.toString();
-                parsed.cumulative_gas_used_ln = Decimal.log2(txReceipt.cumulativeGasUsed).toNumber();
+                parsed.cumulative_gas_used_ln = log2(txReceipt.cumulativeGasUsed);
                 parsed.gas_used = txReceipt.gasUsed.toString();
-                parsed.gas_used_ln = Decimal.log2(txReceipt.gasUsed).toNumber();
+                parsed.gas_used_ln = log2(txReceipt.gasUsed);
                 parsed.gas_price = txInfos.gasPrice.toString();
-                parsed.gas_price_ln = Decimal.log2(txInfos.gasPrice).toNumber();
+                parsed.gas_price_ln = log2(txInfos.gasPrice);
                 parsed.from_ = txReceipt.from;
                 parsed.to_ = txReceipt.to;
                 parsed.transaction_index = txReceipt.transactionIndex;
@@ -222,6 +222,7 @@ export class TxsScheduler implements OnModuleInit, OnModuleDestroy {
     /**
      * Interval Starter
      */
+
     /* istanbul ignore next */
     async onModuleInit(): Promise<void> {
         const signature = await this.outrospectionService.getInstanceSignature();
@@ -243,6 +244,7 @@ export class TxsScheduler implements OnModuleInit, OnModuleDestroy {
     /**
      * Interval Stopper
      */
+
     /* istanbul ignore next */
     async onModuleDestroy(): Promise<void> {
         const signature = await this.outrospectionService.getInstanceSignature();

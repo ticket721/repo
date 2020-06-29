@@ -1,4 +1,5 @@
 import { BigNumber, formatBytes32String } from 'ethers/utils';
+import { Decimal } from 'decimal.js';
 
 /**
  * Performs an equality check on two uuid strings
@@ -56,4 +57,12 @@ export function decimalToHex(num: string): string {
 
     return new BigNumber(num).toHexString()
 
+}
+
+export function log2(num: string): number {
+    if (num === '0') {
+        return -1;
+    } else {
+        return Decimal.log2(num).toNumber();
+    }
 }

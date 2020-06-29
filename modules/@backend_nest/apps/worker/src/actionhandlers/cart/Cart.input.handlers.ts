@@ -176,19 +176,7 @@ export class CartInputHandlers implements OnModuleInit {
 
                 const maxSize = parseInt(this.configService.get('CART_MAX_TICKET_PER_CART'), 10);
 
-                if (data.tickets.length > maxSize) {
-                    actionset.action.setError({
-                        details: null,
-                        error: 'cart_too_big',
-                    });
-                    actionset.action.setStatus('error');
-                    actionset.setStatus('input:error');
-
-                    valid = false;
-                    break;
-                }
-
-                const groupIds: { [key: string]: boolean } = {};
+                const groupIds: { [key: string]: TicketMintingFormat[] } = {};
 
                 for (const ticket of data.tickets) {
                     const categorySearchRes = await this.categoriesService.search({
@@ -207,7 +195,10 @@ export class CartInputHandlers implements OnModuleInit {
                         break;
                     }
 
-                    groupIds[categorySearchRes.response[0].group_id] = true;
+                    groupIds[categorySearchRes.response[0].group_id] = [
+                        ...(groupIds[categorySearchRes.response[0].group_id] || []),
+                        ticket
+                    ];
 
                     const resolvedCurrencies = await this.priceChecks(
                         ticket.price,
@@ -261,12 +252,24 @@ export class CartInputHandlers implements OnModuleInit {
 
                 if (Object.keys(groupIds).length > 1) {
                     actionset.action.setError({
-                        details: Object.keys(groupIds),
+                        details: groupIds,
                         error: 'cannot_purchase_multiple_group_id',
                     });
                     actionset.action.setStatus('error');
                     actionset.setStatus('input:error');
 
+                    break;
+                }
+
+                if (data.tickets.length > maxSize) {
+                    actionset.action.setError({
+                        details: null,
+                        error: 'cart_too_big',
+                    });
+                    actionset.action.setStatus('error');
+                    actionset.setStatus('input:error');
+
+                    valid = false;
                     break;
                 }
 
