@@ -31,7 +31,7 @@ export const useLazyRequest = <ReturnType>(method: string, initialUuid: string):
         error: useSelector((state: AppState) =>
             args ? state.cache.items[CacheCore.key(method, args)]?.error : undefined,
         ),
-        loading: !useSelector((state: AppState) => (args ? state.cache.items[CacheCore.key(method, args)] : false)),
+        loading: !useSelector((state: AppState) => (!called ? true : (args ? state.cache.items[CacheCore.key(method, args)] : false))),
         called,
     };
 

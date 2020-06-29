@@ -91,7 +91,7 @@ const Preview: React.FC = () => {
     }, [categoryResp.data, datePreview]);
 
     return (
-        <>
+        <PreviewContainer>
             <Title>{t('title')}</Title>
             <TicketContainer>
                 <Ticket>
@@ -123,36 +123,41 @@ const Preview: React.FC = () => {
                     }
                 </Ticket>
             </TicketContainer>
-        </>
+        </PreviewContainer>
     );
 };
 
+const PreviewContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+`;
+
 const TicketContainer = styled.div`
-  display: flex;
-  width: 100%;
-  justify-content: center;
+    display: flex;
+    width: 100%;
+    justify-content: center;
 `;
 
 const Ticket = styled.div`
-  width: 380px;
-  margin-top: 20px;
-  border-radius: 8px;
-  overflow: hidden;
+    width: 380px;
+    margin-top: 20px;
+    border-radius: 8px;
+    overflow: hidden;
 `;
 
 const Overlap = styled.div`
-  margin-top: -94px;
-  position: relative;
-  z-index: 1;
+    margin-top: -94px;
+    position: relative;
+    z-index: 1;
 `;
 
 const Title = styled.span`
-  width: 100%;
-  margin-bottom: 25px;
-  font-weight: 500;
-  font-size: 16px;
-  color: ${(props) => props.theme.textColor};
-  text-align: center;
+    width: 100%;
+    margin-bottom: 25px;
+    font-weight: 500;
+    font-size: 18px;
+    color: ${(props) => props.theme.textColor};
+    text-align: center;
 `;
 
 export default Preview;

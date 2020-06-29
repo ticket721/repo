@@ -20,7 +20,7 @@ import { PushNotification }                            from '@frontend/core/lib/
 import { useTranslation } from 'react-i18next';
 import './locales';
 import '@frontend/core/lib/components/ToastStacker/locales';
-import { ColorPickers }   from './ColorPickers';
+import { ColorPickers }   from '../../../../components/ColorPickers';
 import { getImgPath }     from '@frontend/core/lib/utils/images';
 import { OrganizerState } from '../../../../redux/ducks';
 import { FormProps }      from '../../';
@@ -33,7 +33,7 @@ const defaultValues: EventsCreateImagesMetadata = {
 
 const StylesForm: React.FC<FormProps> = ({ onComplete }) => {
     const reference = useRef(null);
-    const dispacth = useDispatch();
+    const dispatch = useDispatch();
     const [ t ] = useTranslation(['event_creation_styles', 'react_dropzone_errors', 'error_notifications', 'validation']);
     const token: string = useSelector((state: MergedAppState) => state.auth.token.value);
     const cover: string = useSelector((state: OrganizerState) => state.eventCreation.imagesMetadata.avatar);
@@ -58,7 +58,7 @@ const StylesForm: React.FC<FormProps> = ({ onComplete }) => {
                     avatar: ids[0].id
                 });
             }).catch((error) => {
-                dispacth(PushNotification(t('error_notifications:' + error.message), 'error'));
+                dispatch(PushNotification(t('error_notifications:' + error.message), 'error'));
             });
     };
 
