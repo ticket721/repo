@@ -8,13 +8,9 @@ import { useParams, useHistory } from 'react-router';
 
 import { Button, Textarea, TextInput, Tags } from '@frontend/flib-react/lib/components';
 import { AppState } from '@frontend/core/src/redux/ducks';
-import { useRequest } from '@frontend/core/lib/hooks/useRequest';
 import { useLazyRequest } from '@frontend/core/lib/hooks/useLazyRequest';
 import { PushNotification } from '@frontend/core/lib/redux/ducks/notifications';
 import { useDeepEffect } from '@frontend/core/lib/hooks/useDeepEffect';
-import {
-    DatesSearchResponseDto
-} from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
 import {
     DatesCreateResponseDto
 } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesCreateResponse.dto';
@@ -27,27 +23,12 @@ import DatesForm from '../../../components/DatesForm';
 const NewDate = () => {
     const [ t ] = useTranslation(['general_infos', 'notify', 'global']);
     const history = useHistory();
-    const { groupId, dateId } = useParams();
+    const { groupId } = useParams();
     const [ inputTag, setInputTag ] = React.useState('');
     const dispatch = useDispatch();
-    const [uuidRequest] = React.useState(v4());
     const [uuiCreate] = React.useState(v4());
     const token = useSelector((state: AppState): string => state.auth.token.value);
-    const { response } = useRequest<DatesSearchResponseDto>(
-      {
-          method: 'dates.search',
-          args: [
-              token,
-              {
-                  id: {
-                      $eq: dateId,
-                  }
-              },
-          ],
-          refreshRate: 50,
-      },
-      uuidRequest
-    );
+
     const { lazyRequest: createDate, response: createResponse } = useLazyRequest<DatesCreateResponseDto>('dates.create', uuiCreate);
 
     const formik = useFormik({
@@ -96,21 +77,6 @@ const NewDate = () => {
         }
     }, [createResponse]);
 
-    useDeepEffect(() => {
-        if (!response.loading && !response.error && response.data
-        ) {
-            formik.setValues({
-                eventBegin: new Date(response.data.dates?.[0]?.timestamps?.event_begin),
-                eventEnd: new Date(response.data.dates?.[0]?.timestamps?.event_end),
-                location: {
-                    ...response.data.dates?.[0]?.location?.location,
-                    label: response.data.dates?.[0]?.location?.location_label,
-                },
-                ...response.data.dates?.[0]?.metadata
-            });
-        }
-    }, [response]);
-
     const onTagsKeyDown = (e: React.KeyboardEvent<HTMLElement>, tag: string) => {
         if(!inputTag) {
             if (formik.values.tags?.length === 5) {
@@ -150,52 +116,53 @@ const NewDate = () => {
     const renderFormActions = () => (<Button variant='primary' type='submit' title={t('validate')}/>);
 
     return (
-      <Form onSubmit={formik.handleSubmit}>
-          <div className={'form-container'}>
-              <TextInput
-                name='name'
-                label={t('name_label')}
-                placeholder={t('name_placeholder')}
-                {...formik.getFieldProps('name')}
-                error={
-                    computeError('name')
-                    && t(computeError('name'))
-                }
-              />
-              <Textarea
-                name='description'
-                label={t('description_label')}
-                placeholder={t('description_placeholder')}
-                maxChar={1000}
-                {...formik.getFieldProps('description')}
-                error={
-                    computeError('description')
-                    && t(computeError('description'))
-                }
-              />
-              <Tags
-                name='tags'
-                label={t('tags_label')}
-                placeholder={t('tags_placeholder')}
-                currentTagsNumber={formik.values?.tags ? formik.values?.tags.length : 0}
-                maxTags={5}
-                inputValue={inputTag}
-                onInputChange={(val: string) => setInputTag(val)}
-                onKeyDown={onTagsKeyDown}
-                value={formik.values.tags}
-                onChange={(tags: string[]) => formik.setFieldValue('tags', tags)}
-                onFocus={(v) => { console.log('focus');}}
-                onBlur={(e: any) => { console.log('focus');}}
-                error={
-                    computeError('tags')
-                    && t(computeError('tags'))
-                } />
-              <DatesForm
-                formik={formik}
-                formActions={renderFormActions}
-              />
-          </div>
-      </Form>
+        <Form onSubmit={formik.handleSubmit}>
+            <div className={'form-container'}>
+                <TextInput
+                    name='name'
+                    label={t('name_label')}
+                    placeholder={t('name_placeholder')}
+                    {...formik.getFieldProps('name')}
+                    error={
+                        computeError('name')
+                        && t(computeError('name'))
+                    }
+                />
+                <Textarea
+                    name='description'
+                    label={t('description_label')}
+                    placeholder={t('description_placeholder')}
+                    maxChar={1000}
+                    {...formik.getFieldProps('description')}
+                    error={
+                        computeError('description')
+                        && t(computeError('description'))
+                    }
+                />
+                <Tags
+                    name='tags'
+                    label={t('tags_label')}
+                    placeholder={t('tags_placeholder')}
+                    currentTagsNumber={formik.values?.tags ? formik.values?.tags.length : 0}
+                    maxTags={5}
+                    inputValue={inputTag}
+                    onInputChange={(val: string) => setInputTag(val)}
+                    onKeyDown={onTagsKeyDown}
+                    value={formik.values.tags}
+                    onChange={(tags: string[]) => formik.setFieldValue('tags', tags)}
+                    onFocus={(v) => { console.log('focus');}}
+                    onBlur={(e: any) => { console.log('focus');}}
+                    error={
+                        computeError('tags')
+                        && t(computeError('tags'))
+                    }
+                />
+                <DatesForm
+                    formik={formik}
+                    formActions={renderFormActions}
+                />
+              </div>
+          </Form>
     )
 };
 

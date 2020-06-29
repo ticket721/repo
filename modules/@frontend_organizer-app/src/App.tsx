@@ -39,8 +39,8 @@ const App: React.FC = () => {
               const page: JSX.Element = (
                 <PageWrapper>
                     {
-                        route.path.match(/\/:groupId\/date/) &&
-                        <EventMenu />
+                        route.path.match(/^\/:groupId\/date/) &&
+                        <EventMenu/>
                     }
                   <route.page />
                 </PageWrapper>
