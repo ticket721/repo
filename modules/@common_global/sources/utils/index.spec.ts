@@ -1,4 +1,4 @@
-import { decimalToHex, isFutureDateRange, leftPad, log2, serialize, toB32, toHex, uuidEq } from './index';
+import { decimalToHex, isFutureDateRange, isValidDateRange, leftPad, log2, serialize, toB32, toHex, uuidEq } from './index';
 
 describe('Utils', function () {
 
@@ -74,6 +74,36 @@ describe('Utils', function () {
 
     });
 
+    describe('isValidDateRange', function() {
+
+        it('is indeed valid date range', function() {
+
+            const begin = new Date(Date.now() + 1000 * 60);
+            const end = new Date(Date.now() + 1000 * 120);
+
+            expect(isValidDateRange(begin, end)).toBeTruthy();
+
+        });
+
+        it('end before begin error', function() {
+
+            const begin = new Date(Date.now() + 1000 * 120);
+            const end = new Date(Date.now() + 1000 * 60);
+
+            expect(isValidDateRange(begin, end)).toBeFalsy();
+
+        });
+
+        it('past dates', function() {
+
+            const begin = new Date(Date.now() - 1000 * 120);
+            const end = new Date(Date.now() - 1000 * 60);
+
+            expect(isValidDateRange(begin, end)).toBeTruthy();
+
+        });
+
+    });
     describe('isFutureDateRange', function() {
 
         it('is indeed future date range', function() {

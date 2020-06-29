@@ -45,8 +45,12 @@ export function serialize(text: string): string {
         .replace(/\s/g, '_')
 }
 
+export function isValidDateRange(begin: Date, end: Date): boolean {
+    return (end.getTime() > begin.getTime());
+}
+
 export function isFutureDateRange(begin: Date, end: Date): boolean {
-    return ((end.getTime() > begin.getTime()) && (begin.getTime() > Date.now()));
+    return (isValidDateRange(begin, end) && (begin.getTime() > Date.now()));
 }
 
 export function toHex(data: string): string {

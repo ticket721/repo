@@ -36,7 +36,7 @@ import { Roles, RolesGuard } from '@app/server/authentication/guards/RolesGuard.
 import { closestCity, uuidEq } from '@common/global';
 import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
 import { CategoriesService } from '@lib/common/categories/Categories.service';
-import { isFutureDateRange } from '@common/global/lib/utils';
+import { isFutureDateRange, isValidDateRange } from '@common/global';
 import { ApiResponses } from '@app/server/utils/ApiResponses.controller.decorator';
 import { MetadatasService } from '@lib/common/metadatas/Metadatas.service';
 import { ValidGuard } from '@app/server/authentication/guards/ValidGuard.guard';
@@ -152,6 +152,7 @@ export class DatesController extends ControllerBasics<DateEntity> {
             dates: resultDates,
         };
     }
+
     /**
      * Search for dates
      *
@@ -604,7 +605,7 @@ export class DatesController extends ControllerBasics<DateEntity> {
         );
 
         if (
-            !isFutureDateRange(
+            !isValidDateRange(
                 body.timestamps && body.timestamps.event_begin
                     ? new Date(body.timestamps.event_begin)
                     : dateEntity.timestamps.event_begin,
