@@ -114,5 +114,6 @@ const Cards = styled.div`
 
     & > div {
         width: fit-content;
+        margin: ${props => props.theme.regularSpacing} 0;
     }
 `;

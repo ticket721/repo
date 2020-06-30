@@ -1,7 +1,7 @@
 import { useFormik }                       from 'formik';
-import { useDispatch, useSelector }                      from 'react-redux';
-import { SetActionData, SetCurrentAction, UpdateAction } from '../../redux/ducks/event_creation';
-import { EventCreationActions, EventCreationSteps } from '../../core/event_creation/EventCreationCore';
+import { useDispatch, useSelector }                               from 'react-redux';
+import { SetActionData, SetCurrentAction, SetSync, UpdateAction } from '../../redux/ducks/event_creation';
+import { EventCreationActions, EventCreationSteps }               from '../../core/event_creation/EventCreationCore';
 import { useEffect }                      from 'react';
 import { OrganizerState }                           from '../../redux/ducks';
 import { ObjectSchema }                                  from 'yup';
@@ -69,6 +69,7 @@ export const useEventCreation = <ActionInputType extends {[key: string]: any}>(
     };
 
     const update = (data: any): void => {
+        dispatch(SetSync(false));
         dispatch(SetActionData(eventCreationAction, data));
         dispatch(UpdateAction());
     };

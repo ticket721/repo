@@ -63,53 +63,50 @@ export const EventMenu: React.FC = () => {
         }
     }, [datesResp]);
 
-    if (selectedDate) {
-        return (
-            <Container>
-                <DateActions>
-                    <Header>
-                        <Title>{selectedDate.metadata.name}</Title>
-                        <DateSelect
-                            menuPosition={{
-                                top: '-24px',
-                                left: '250px'
-                            }}
-                            options={selectableDates}
-                            value={[{
-                                label: formatDateLabel(selectedDate.timestamps.event_begin),
-                                value: dateId,
-                            }]}
-                            onChange={(dateOpt: DateOption) => history.push(`/${groupId}/date/${dateOpt.value}`)}/>
-                    </Header>
-                    <Button
-                        variant='primary'
-                        title={t('publish_label')}
-                        onClick={() => console.log('publish')}
-                    />
-                    <Button
-                        variant='secondary'
-                        title={t('preview_label')}
-                        onClick={() => history.push(`/${groupId}/date/${dateId}`)}
-                    />
-                </DateActions>
-                <Separator/>
-                <SubMenu/>
-                <Separator/>
-                <LastSection>
-                    <Button
-                        title={'New Date'}
-                        variant={'primary'}
-                        onClick={() => history.push(`/${groupId}/date`)}/>
-                    <Button
-                        title={datesResp.data.dates.length > 1 ? 'Delete Date' : 'Delete Event'}
-                        variant={'danger'}
-                        onClick={() => console.log('delete date')}/>
-                </LastSection>
-            </Container>
-        )
-    }  else {
-        return <></>;
-    }
+    return (
+        <Container>
+            <DateActions>
+                <Header>
+                    <Title>{dateId && selectedDate ? selectedDate.metadata.name : 'New Date'}</Title>
+                    {dateId && selectedDate && <DateSelect
+                        menuPosition={{
+                          top: '-24px',
+                          left: '250px'
+                        }}
+                        options={selectableDates}
+                        value={[{
+                          label: formatDateLabel(selectedDate.timestamps.event_begin),
+                          value: dateId,
+                        }]}
+                        onChange={(dateOpt: DateOption) => history.push(`/${groupId}/date/${dateOpt.value}`)}/>
+                    }
+                </Header>
+                <Button
+                    variant={dateId ? 'primary' : 'disabled'}
+                    title={t('publish_label')}
+                    onClick={() => console.log('publish')}
+                />
+                <Button
+                    variant={dateId ? 'secondary' : 'disabled'}
+                    title={t('preview_label')}
+                    onClick={() => history.push(`/${groupId}/date/${dateId}`)}
+                />
+            </DateActions>
+            <Separator/>
+            <SubMenu/>
+            <Separator/>
+            <LastSection>
+                <Button
+                    title={'New Date'}
+                    variant={dateId ? 'primary' : 'disabled'}
+                    onClick={() => history.push(`/${groupId}/date`)}/>
+                <Button
+                    title={selectedDate && datesResp.data.dates.length > 1 ? 'Delete Date' : 'Delete Event'}
+                    variant={dateId ? 'danger' : 'disabled'}
+                    onClick={() => console.log('delete date')}/>
+            </LastSection>
+        </Container>
+    )
 };
 
 const Container = styled.div`
