@@ -79,6 +79,15 @@ const App: React.FC = () => {
                   </PageWrapper>
               </ProtectedRoute>
 
+              <ProtectedRoute path='/:groupId/category/:categoryId' exact>
+                  <PageWrapper>
+                      <EventPageWrapper>
+                          <EventMenu/>
+                          <UpdateCategory/>
+                      </EventPageWrapper>
+                  </PageWrapper>
+              </ProtectedRoute>
+
               <ProtectedRoute path='/:groupId/date/:dateId/category' exact>
                   <PageWrapper>
                       <EventPageWrapper>

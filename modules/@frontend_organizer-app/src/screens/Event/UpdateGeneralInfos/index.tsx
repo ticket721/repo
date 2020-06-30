@@ -33,7 +33,7 @@ const UpdateGeneralInfos: React.FC = () => {
 
     useDeepEffect(() => {
         if (dateResp.data && dateResp.data.dates.length > 0) {
-            setMetadata(dateResp.data.dates[0].metadata);
+            setMetadata(dateResp.data.dates.filter(d => d.parent_type === 'event' || d.parent_type === 'date')?.[0].metadata);
         }
     }, [dateResp.data]);
 

@@ -77,7 +77,7 @@ const Preview: React.FC = () => {
 
     useDeepEffect(() => {
         if (dateResp.data) {
-            setDatePreview(formatDatePreview(dateResp.data.dates[0]));
+            setDatePreview(formatDatePreview(dateResp.data.dates.filter(d => d.parent_type === 'event' || d.parent_type === 'date')?.[0]));
         }
     }, [dateResp.data]);
 

@@ -37,7 +37,7 @@ export const EventMenu: React.FC = () => {
     const token = useSelector((state: MergedAppState) => state.auth.token.value);
     const { groupId, dateId } = useParams();
     const dispatch = useDispatch();
-
+    const [eventId, setEventId] = useState<string>(null);
 
     const [ selectableDates, setSelectableDates ] = useState<DateOption[]>(null);
     const [ selectedDate, setSelectedDate ] = useState<DateEntity>(null);
@@ -63,24 +63,25 @@ export const EventMenu: React.FC = () => {
         if (datesResp.data && datesResp.data.dates.length > 0) {
             const currentDate: DateEntity = datesResp.data.dates.find((date) => date.id === dateId);
             setSelectedDate(currentDate);
-            setSelectableDates(datesResp.data.dates.map((date) => ({
+            setSelectableDates(datesResp.data.dates.filter(d => d.parent_type === 'event' || d.parent_type === 'date').map((date) => ({
                 label: formatDateLabel(date.timestamps.event_begin),
                 value: date.id,
             })));
+            setEventId(currentDate.parent_id);
         }
     }, [datesResp]);
 
     useDeepEffect(() => {
       if (deleteDateResp.called) {
         if (!deleteDateResp.error && !deleteDateResp.loading) {
-          dispatch(PushNotification(t('success'), 'success'));
           history.push(`/${groupId}`);
+          dispatch(PushNotification(t('success'), 'success'));
         } else {
           dispatch(PushNotification(t('error'), 'error'));
         }
       }
     }, [deleteDateResp]);
-
+    //0x(([a-zA-Z]|[0-9])+)\/category
 
     if (selectedDate) {
         return (
@@ -120,9 +121,9 @@ export const EventMenu: React.FC = () => {
                         variant={'primary'}
                         onClick={() => history.push(`/${groupId}/date`)}/>
                     <Button
-                        title={datesResp.data.dates.length > 1 ? 'Delete Date' : 'Delete Event'}
+                        title={datesResp.data?.dates?.length > 1 ? 'Delete Date' : 'Delete Event'}
                         variant={'danger'}
-                        onClick={() => { deleteDate([token, groupId, { dates: [dateId] }]) }}/>
+                        onClick={() => { deleteDate([token, eventId, { dates: [dateId] }]) }}/>
                 </LastSection>
             </Container>
         )
