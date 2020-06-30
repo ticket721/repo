@@ -1,5 +1,4 @@
 import React from 'react';
-import styled                            from 'styled-components';
 import { useFormik }                     from 'formik';
 import { DateItem }                      from '../';
 import { dateItemValidation }            from '../validationSchema';
@@ -37,12 +36,11 @@ export const UpdateDate: React.FC<DateFormProps> = (props: DateFormProps) => {
                 JSON.stringify(formik.values) === JSON.stringify(checkedInitialValues)
             }
         />
-    )
+    );
+
     return (
-        <Form onSubmit={formik.handleSubmit}>
+        <form onSubmit={formik.handleSubmit}>
           <GenericDateForm formik={formik} formActions={renderFormAction} />
-        </Form>
+        </form>
     )
 };
-
-const Form = styled.form``;

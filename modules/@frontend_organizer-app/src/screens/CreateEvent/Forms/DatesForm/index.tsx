@@ -1,19 +1,19 @@
-import React, { Dispatch, useEffect, useRef, useState } from 'react';
-import styled                                           from 'styled-components';
-import { datesConfigValidationSchema }              from './validationSchema';
-import { EventsCreateDatesConfiguration }           from '@common/sdk/lib/@backend_nest/apps/worker/src/actionhandlers/events/Events.input.handlers';
-import { useDispatch, useSelector }                 from 'react-redux';
-import { OrganizerState }                           from '../../../../redux/ducks';
-import { useEventCreation }                         from '../../../../hooks/useEventCreation';
-import { EventCreationActions, EventCreationSteps } from '../../../../core/event_creation/EventCreationCore';
-import { DateCard }                                 from './DateCard';
-import { UpdateDate }                                 from './UpdateDate';
-import { checkFormatDate }                          from '@frontend/core/lib/utils/date';
-import { SetActionData, UpdateAction }              from '../../../../redux/ducks/event_creation';
-import { CreateDate }                               from './CreateDate';
-import { FormProps }                                from '../../index';
-import { useDeepEffect }                            from '@frontend/core/lib/hooks/useDeepEffect';
-import { CategoryItem }                             from '../../../../components/CategoryForm';
+import React, { Dispatch, useEffect, useRef, useState }  from 'react';
+import styled                                            from 'styled-components';
+import { datesConfigValidationSchema }                   from './validationSchema';
+import { EventsCreateDatesConfiguration }                from '@common/sdk/lib/@backend_nest/apps/worker/src/actionhandlers/events/Events.input.handlers';
+import { useDispatch, useSelector }                      from 'react-redux';
+import { OrganizerState }                                from '../../../../redux/ducks';
+import { useEventCreation }                              from '../../../../hooks/useEventCreation';
+import { EventCreationActions, EventCreationSteps }      from '../../../../core/event_creation/EventCreationCore';
+import { DateCard }                                      from './DateCard';
+import { UpdateDate }                                    from './UpdateDate';
+import { checkFormatDate }                               from '@frontend/core/lib/utils/date';
+import { SetActionData, SetCurrentAction, UpdateAction } from '../../../../redux/ducks/event_creation';
+import { CreateDate }                                    from './CreateDate';
+import { FormProps }                                     from '../../index';
+import { useDeepEffect }                                 from '@frontend/core/lib/hooks/useDeepEffect';
+import { CategoryItem }                                  from '../../../../components/CategoryForm';
 
 const defaultValues: EventsCreateDatesConfiguration = {
     dates: [],
@@ -33,6 +33,7 @@ export interface DateItem {
 const DatesForm: React.FC<FormProps> = ({ onComplete }) => {
     const reference = useRef(null);
     const [ editIdx, setEditIdx ]: [ number, Dispatch<number> ] = useState(null);
+    const [ lastActionIdx, setLastActionIdx ] = useState<number>(null);
     const eventName: string = useSelector((state: OrganizerState) => state.eventCreation.textMetadata.name);
 
     const eventCreationFormik = useEventCreation<EventsCreateDatesConfiguration>(
@@ -42,7 +43,11 @@ const DatesForm: React.FC<FormProps> = ({ onComplete }) => {
         defaultValues,
     );
 
-    const categories = useSelector((state: OrganizerState) => state.eventCreation.categoriesConfiguration);
+    const [ categories, sync ] =
+        useSelector((state: OrganizerState) => [
+            state.eventCreation.categoriesConfiguration,
+            state.eventCreation.sync,
+        ]);
     const dispatch = useDispatch();
 
     const resetEdition = () => {
@@ -56,18 +61,7 @@ const DatesForm: React.FC<FormProps> = ({ onComplete }) => {
 
         resetEdition();
         eventCreationFormik.update({dates});
-        deleteRelatedCategories(deleteIdx);
-    };
-
-    const deleteRelatedCategories = (deleteIdx: number) => {
-        const filteredCategories = categories.dates
-            .filter((dateCategories: CategoryItem[], idx: number) => deleteIdx !== idx);
-
-        dispatch(SetActionData(EventCreationActions.CategoriesConfiguration, {
-            ...categories,
-            dates: filteredCategories,
-        }));
-        dispatch(UpdateAction());
+        setLastActionIdx(deleteIdx);
     };
 
     const updateDate = (comfirmedIdx: number ,updateDateItem: DateItem) => {
@@ -92,6 +86,37 @@ const DatesForm: React.FC<FormProps> = ({ onComplete }) => {
         eventCreationFormik.update({dates});
     };
 
+    useEffect(() => {
+        if (sync && eventCreationFormik.values.dates.length !== categories.dates.length) {
+            const datesCategoriesDelta = eventCreationFormik.values.dates.length - categories.dates.length;
+            dispatch(SetCurrentAction(EventCreationActions.CategoriesConfiguration));
+            if (datesCategoriesDelta > 0) {
+                const emptyCategories = [];
+                for (let i = 0; i < datesCategoriesDelta; i++) {
+                    emptyCategories[i] = [];
+                }
+
+                dispatch(SetActionData(EventCreationActions.CategoriesConfiguration, {
+                    ...categories,
+                    dates: [
+                        ...categories.dates,
+                        ...emptyCategories,
+                    ],
+                }));
+                dispatch(UpdateAction());
+            } else {
+                const filteredCategories = categories.dates
+                    .filter((dateCategories: CategoryItem[], idx: number) => lastActionIdx !== idx);
+                dispatch(SetActionData(EventCreationActions.CategoriesConfiguration, {
+                    ...categories,
+                    dates: filteredCategories,
+                }));
+                dispatch(UpdateAction());
+            }
+        }
+        // eslint-disable-next-line
+    }, [lastActionIdx, sync]);
+
     useDeepEffect(() => {
         if (eventCreationFormik.isValid && eventCreationFormik.values !== eventCreationFormik.initialValues) {
             onComplete(true);
@@ -114,8 +139,8 @@ const DatesForm: React.FC<FormProps> = ({ onComplete }) => {
                 {
                     eventCreationFormik.values.dates.map((date, idx) => (
                         <DateCard
-                        key={'dates-' + idx}
-                        name={`dates-${idx + 1}`}
+                        key={'date-' + idx}
+                        name={`date ${idx + 1}`}
                         beginDate={checkFormatDate(date.eventBegin)}
                         endDate={checkFormatDate(date.eventEnd)}
                         location={date.location.label}
