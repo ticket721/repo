@@ -40,7 +40,7 @@ export const UpdateForm: React.FC<DateFormProps> = (props: DateFormProps) => {
     )
     return (
         <Form onSubmit={formik.handleSubmit}>
-          <GenericDateForm formik={formik} formActions={renderFormAction} hasName />
+          <GenericDateForm formik={formik} formActions={renderFormAction} />
         </Form>
     )
 };

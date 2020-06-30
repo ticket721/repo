@@ -2,7 +2,6 @@ import React from 'react';
 import {
   CustomDatePicker,
   CustomTimePicker,
-  TextInput
 } from '@frontend/flib-react/lib/components';
 import styled                            from 'styled-components';
 import { minute, compareDates, TimeScale }       from '@frontend/core/lib/utils/date';
@@ -19,10 +18,9 @@ interface Props {
   formik: any;
   formActions: () => JSX.Element;
   className?: string;
-  hasName?: boolean;
 }
 
-const DateForm = ({ formik, formActions, className, hasName = false }: Props) => {
+const DateForm = ({ formik, formActions, className }: Props) => {
   const dispatch = useDispatch();
   const [ t, i18n ] = useTranslation(['date_form', 'vaildation', 'errors']);
 
@@ -110,16 +108,6 @@ const DateForm = ({ formik, formActions, className, hasName = false }: Props) =>
 
   return (
     <Container className={className}>
-      { hasName && <TextInput
-        className={'date-line-field'}
-        label={t('date_name_label')}
-        placeholder={t('date_name_label')}
-        {...formik.getFieldProps('name')}
-        error={
-          computeError('name') &&
-          t(computeError('name'))
-        } />
-      }
       <div className={'date-line-field date-container'}>
         <CustomDatePicker
           label={t('start_date_label')}
