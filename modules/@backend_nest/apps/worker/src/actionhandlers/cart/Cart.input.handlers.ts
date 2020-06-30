@@ -9,6 +9,7 @@ import { AuthorizedTicketMintingFormat, TicketMintingFormat } from '@lib/common/
 import { BigNumber } from 'bignumber.js';
 import { detectAuthorizationStackDifferences } from '@lib/common/utils/detectTicketAuthorizationStackDifferences.helper';
 import { ConfigService } from '@lib/common/config/Config.service';
+import { TimeToolService } from '@lib/common/toolbox/Time.tool.service';
 
 /**
  * Data Model of the Ticket Selection step
@@ -73,12 +74,14 @@ export class CartInputHandlers implements OnModuleInit {
      * @param categoriesService
      * @param currenciesService
      * @param configService
+     * @param timeToolService
      */
     constructor(
         private readonly actionSetsService: ActionSetsService,
         private readonly categoriesService: CategoriesService,
         private readonly currenciesService: CurrenciesService,
         private readonly configService: ConfigService,
+        private readonly timeToolService: TimeToolService,
     ) {}
 
     /**
@@ -142,6 +145,7 @@ export class CartInputHandlers implements OnModuleInit {
         progress: Progress,
     ): Promise<[ActionSet, boolean]> {
         const data: CartTicketSelections = actionset.action.data;
+        const now = this.timeToolService.now();
 
         const { error, error_trace } = ChecksRunnerUtil<CartTicketSelections>(
             data,
@@ -178,6 +182,8 @@ export class CartInputHandlers implements OnModuleInit {
 
                 const groupIds: { [key: string]: TicketMintingFormat[] } = {};
 
+                const saleErrors = [];
+
                 for (const ticket of data.tickets) {
                     const categorySearchRes = await this.categoriesService.search({
                         id: ticket.categoryId,
@@ -193,6 +199,20 @@ export class CartInputHandlers implements OnModuleInit {
 
                         valid = false;
                         break;
+                    }
+
+                    if (now.getTime() > new Date(categorySearchRes.response[0].sale_end).getTime()) {
+                        saleErrors.push({
+                            category: categorySearchRes.response[0],
+                            reason: 'sale_ended',
+                        });
+                    }
+
+                    if (now.getTime() < new Date(categorySearchRes.response[0].sale_begin).getTime()) {
+                        saleErrors.push({
+                            category: categorySearchRes.response[0],
+                            reason: 'sale_not_started',
+                        });
                     }
 
                     groupIds[categorySearchRes.response[0].group_id] = [
@@ -248,6 +268,17 @@ export class CartInputHandlers implements OnModuleInit {
                         total: returnPrices,
                         fees,
                     });
+                }
+
+                if (saleErrors.length) {
+                    actionset.action.setError({
+                        details: saleErrors,
+                        error: 'cannot_purchase_tickets',
+                    });
+                    actionset.action.setStatus('error');
+                    actionset.setStatus('input:error');
+
+                    break;
                 }
 
                 if (Object.keys(groupIds).length > 1) {

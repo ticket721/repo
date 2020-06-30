@@ -8,6 +8,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CartAcsetbuilderHelper } from '@lib/common/cart/acset_builders/Cart.acsetbuilder.helper';
 import { UserDto } from '@lib/common/users/dto/User.dto';
 import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
+import { TimeToolService } from '@lib/common/toolbox/Time.tool.service';
 
 describe('Cart Input Handlers Spec', function() {
     const context: {
@@ -16,12 +17,14 @@ describe('Cart Input Handlers Spec', function() {
         categoriesServiceMock: CategoriesService;
         currenciesServiceMock: CurrenciesService;
         configServiceMock: ConfigService;
+        timeToolServiceMock: TimeToolService;
     } = {
         cartInputHandlers: null,
         actionSetsServiceMock: null,
         categoriesServiceMock: null,
         currenciesServiceMock: null,
         configServiceMock: null,
+        timeToolServiceMock: null,
     };
 
     beforeEach(async function() {
@@ -29,6 +32,9 @@ describe('Cart Input Handlers Spec', function() {
         context.categoriesServiceMock = mock(CategoriesService);
         context.currenciesServiceMock = mock(CurrenciesService);
         context.configServiceMock = mock(ConfigService);
+        context.timeToolServiceMock = mock(TimeToolService);
+
+        when(context.timeToolServiceMock.now()).thenReturn(new Date(Date.now()));
         when(context.configServiceMock.get('CART_MAX_TICKET_PER_CART')).thenReturn('3');
 
         const module: TestingModule = await Test.createTestingModule({
@@ -48,6 +54,10 @@ describe('Cart Input Handlers Spec', function() {
                 {
                     provide: ConfigService,
                     useValue: instance(context.configServiceMock),
+                },
+                {
+                    provide: TimeToolService,
+                    useValue: instance(context.timeToolServiceMock),
                 },
                 CartInputHandlers,
             ],
@@ -453,6 +463,286 @@ describe('Cart Input Handlers Spec', function() {
                             '{"tickets":[{"categoryId":"category_id","price":{"currency":"Fiat","price":"100"}},{"categoryId":"category_id","price":{"currency":"Fiat","price":"100"}},{"categoryId":"category_id_two","price":{"currency":"Fiat","price":"100"}}],"total":[{"currency":"T721Token","value":"300","log_value":0}],"fees":["0"]}',
                         error:
                             '{"details":{"group_id":[{"categoryId":"category_id","price":{"currency":"Fiat","price":"100"}},{"categoryId":"category_id","price":{"currency":"Fiat","price":"100"}}],"group_id_two":[{"categoryId":"category_id_two","price":{"currency":"Fiat","price":"100"}}]},"error":"cannot_purchase_multiple_group_id"}',
+                        status: 'error',
+                        private: false,
+                    },
+                    {
+                        type: 'input',
+                        name: '@cart/modulesConfiguration',
+                        data: null,
+                        error: null,
+                        status: 'in progress',
+                        private: false,
+                    },
+                    {
+                        type: 'input',
+                        name: '@cart/authorizations',
+                        data: null,
+                        error: null,
+                        status: 'in progress',
+                        private: true,
+                    },
+                ],
+                current_action: 0,
+                current_status: 'input:error',
+            });
+            expect(handlerResult[1]).toEqual(true);
+
+            verify(
+                context.categoriesServiceMock.search(
+                    deepEqual({
+                        id: 'category_id',
+                    }),
+                ),
+            ).called();
+
+            verify(
+                context.currenciesServiceMock.resolveInputPrices(
+                    deepEqual([
+                        {
+                            currency: 'Fiat',
+                            price: '100',
+                        },
+                    ]),
+                ),
+            ).called();
+
+            verify(context.currenciesServiceMock.computeFee('T721Token', '100')).called();
+        });
+
+        it('should fail on ticket purchase before sale start', async function() {
+            const acsetbuilder = new CartAcsetbuilderHelper();
+            const caller = {
+                id: 'user_id',
+            } as UserDto;
+
+            const actionSetRes = await acsetbuilder.buildActionSet(caller, {});
+
+            const actionSet = actionSetRes.response;
+
+            const saleBegin = new Date(Date.now() + 60000);
+
+            actionSet.action.setData({
+                tickets: [
+                    {
+                        categoryId: 'category_id',
+                        price: {
+                            currency: 'Fiat',
+                            price: '100',
+                        },
+                    },
+                    {
+                        categoryId: 'category_id',
+                        price: {
+                            currency: 'Fiat',
+                            price: '100',
+                        },
+                    },
+                ],
+            });
+
+            when(
+                context.categoriesServiceMock.search(
+                    deepEqual({
+                        id: 'category_id',
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: [
+                    {
+                        id: 'category_id',
+                        group_id: 'group_id',
+                        sale_begin: saleBegin,
+                        prices: [
+                            {
+                                currency: 'T721Token',
+                                value: '100',
+                                log_value: 0,
+                            },
+                        ],
+                    } as CategoryEntity,
+                ],
+            });
+
+            when(
+                context.currenciesServiceMock.resolveInputPrices(
+                    deepEqual([
+                        {
+                            currency: 'Fiat',
+                            price: '100',
+                        },
+                    ]),
+                ),
+            ).thenResolve({
+                error: null,
+                response: [
+                    {
+                        currency: 'T721Token',
+                        value: '100',
+                        log_value: 0,
+                    },
+                ],
+            });
+
+            when(context.currenciesServiceMock.computeFee('T721Token', '300')).thenResolve('0');
+
+            const handlerResult = await context.cartInputHandlers.ticketSelectionsHandler(
+                context.cartInputHandlers.ticketSelectionsFields,
+                actionSet,
+                async () => {},
+            );
+
+            expect(handlerResult[0].raw).toEqual({
+                name: '@cart/creation',
+                consumed: false,
+                dispatched_at: handlerResult[0].raw.dispatched_at,
+                actions: [
+                    {
+                        type: 'input',
+                        name: '@cart/ticketSelections',
+                        data: `{\"tickets\":[{\"categoryId\":\"category_id\",\"price\":{\"currency\":\"Fiat\",\"price\":\"100\"}},{\"categoryId\":\"category_id\",\"price\":{\"currency\":\"Fiat\",\"price\":\"100\"}}],\"total\":[{\"currency\":\"T721Token\",\"value\":\"200\",\"log_value\":0}],\"fees\":[null]}`,
+                        error: `{\"details\":[{\"category\":{\"id\":\"category_id\",\"group_id\":\"group_id\",\"sale_begin\":\"${saleBegin.toISOString()}\",\"prices\":[{\"currency\":\"T721Token\",\"value\":\"100\",\"log_value\":0}]},\"reason\":\"sale_not_started\"},{\"category\":{\"id\":\"category_id\",\"group_id\":\"group_id\",\"sale_begin\":\"${saleBegin.toISOString()}\",\"prices\":[{\"currency\":\"T721Token\",\"value\":\"100\",\"log_value\":0}]},\"reason\":\"sale_not_started\"}],\"error\":\"cannot_purchase_tickets\"}`,
+                        status: 'error',
+                        private: false,
+                    },
+                    {
+                        type: 'input',
+                        name: '@cart/modulesConfiguration',
+                        data: null,
+                        error: null,
+                        status: 'in progress',
+                        private: false,
+                    },
+                    {
+                        type: 'input',
+                        name: '@cart/authorizations',
+                        data: null,
+                        error: null,
+                        status: 'in progress',
+                        private: true,
+                    },
+                ],
+                current_action: 0,
+                current_status: 'input:error',
+            });
+            expect(handlerResult[1]).toEqual(true);
+
+            verify(
+                context.categoriesServiceMock.search(
+                    deepEqual({
+                        id: 'category_id',
+                    }),
+                ),
+            ).called();
+
+            verify(
+                context.currenciesServiceMock.resolveInputPrices(
+                    deepEqual([
+                        {
+                            currency: 'Fiat',
+                            price: '100',
+                        },
+                    ]),
+                ),
+            ).called();
+
+            verify(context.currenciesServiceMock.computeFee('T721Token', '100')).called();
+        });
+
+        it('should fail on ticket purchase before sale end', async function() {
+            const acsetbuilder = new CartAcsetbuilderHelper();
+            const caller = {
+                id: 'user_id',
+            } as UserDto;
+
+            const actionSetRes = await acsetbuilder.buildActionSet(caller, {});
+
+            const actionSet = actionSetRes.response;
+
+            const saleEnd = new Date(Date.now() - 60000);
+
+            actionSet.action.setData({
+                tickets: [
+                    {
+                        categoryId: 'category_id',
+                        price: {
+                            currency: 'Fiat',
+                            price: '100',
+                        },
+                    },
+                    {
+                        categoryId: 'category_id',
+                        price: {
+                            currency: 'Fiat',
+                            price: '100',
+                        },
+                    },
+                ],
+            });
+
+            when(
+                context.categoriesServiceMock.search(
+                    deepEqual({
+                        id: 'category_id',
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: [
+                    {
+                        id: 'category_id',
+                        group_id: 'group_id',
+                        sale_end: saleEnd,
+                        prices: [
+                            {
+                                currency: 'T721Token',
+                                value: '100',
+                                log_value: 0,
+                            },
+                        ],
+                    } as CategoryEntity,
+                ],
+            });
+
+            when(
+                context.currenciesServiceMock.resolveInputPrices(
+                    deepEqual([
+                        {
+                            currency: 'Fiat',
+                            price: '100',
+                        },
+                    ]),
+                ),
+            ).thenResolve({
+                error: null,
+                response: [
+                    {
+                        currency: 'T721Token',
+                        value: '100',
+                        log_value: 0,
+                    },
+                ],
+            });
+
+            when(context.currenciesServiceMock.computeFee('T721Token', '300')).thenResolve('0');
+
+            const handlerResult = await context.cartInputHandlers.ticketSelectionsHandler(
+                context.cartInputHandlers.ticketSelectionsFields,
+                actionSet,
+                async () => {},
+            );
+
+            expect(handlerResult[0].raw).toEqual({
+                name: '@cart/creation',
+                consumed: false,
+                dispatched_at: handlerResult[0].raw.dispatched_at,
+                actions: [
+                    {
+                        type: 'input',
+                        name: '@cart/ticketSelections',
+                        data: `{\"tickets\":[{\"categoryId\":\"category_id\",\"price\":{\"currency\":\"Fiat\",\"price\":\"100\"}},{\"categoryId\":\"category_id\",\"price\":{\"currency\":\"Fiat\",\"price\":\"100\"}}],\"total\":[{\"currency\":\"T721Token\",\"value\":\"200\",\"log_value\":0}],\"fees\":[null]}`,
+                        error: `{\"details\":[{\"category\":{\"id\":\"category_id\",\"group_id\":\"group_id\",\"sale_end\":\"${saleEnd.toISOString()}\",\"prices\":[{\"currency\":\"T721Token\",\"value\":\"100\",\"log_value\":0}]},\"reason\":\"sale_ended\"},{\"category\":{\"id\":\"category_id\",\"group_id\":\"group_id\",\"sale_end\":\"${saleEnd.toISOString()}\",\"prices\":[{\"currency\":\"T721Token\",\"value\":\"100\",\"log_value\":0}]},\"reason\":\"sale_ended\"}],\"error\":\"cannot_purchase_tickets\"}`,
                         status: 'error',
                         private: false,
                     },
