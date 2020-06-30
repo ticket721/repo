@@ -36,13 +36,17 @@ const App: React.FC = () => {
         <Switch>
           {
             appStatus === AppStatus.Ready && routes.map((route, idx) => {
+
               const page: JSX.Element = (
                 <PageWrapper>
                     {
-                        route.path.match(/^\/:groupId\/date/) &&
-                        <EventMenu/>
+                        route.path.match(/^\/:groupId\/date/) ?
+                        <EventPageWrapper>
+                            <EventMenu/>
+                            <route.page />
+                        </EventPageWrapper> :
+                            <route.page />
                     }
-                  <route.page />
                 </PageWrapper>
               );
 
@@ -67,12 +71,23 @@ const App: React.FC = () => {
 };
 
 const AppContainer = styled.div`
-  width: 100%;
+    width: 100%;
 `;
 
 const PageWrapper = styled.div`
     padding: 50px;
     margin-top: 80px;
+`;
+
+const EventPageWrapper = styled.div`
+    margin-left: 280px;
+    width: calc(100% - 280px);
+    display: flex;
+    justify-content: center;
+
+    & > *:last-child {
+        width: 600px;
+    }
 `;
 
 export default withRouter(App);

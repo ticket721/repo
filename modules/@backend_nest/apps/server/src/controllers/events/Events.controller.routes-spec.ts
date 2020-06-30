@@ -3,6 +3,7 @@ import { PasswordlessUserDto } from '@app/server/authentication/dto/Passwordless
 import {
     createEvent,
     createEventActionSet,
+    createFreeEventActionSet,
     createPaymentIntent,
     editEventActionSet,
     failWithCode,
@@ -139,6 +140,42 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 } = await getSDKAndUser(getCtx);
 
                 const eventActionSetId = await createEventActionSet(token, sdk);
+
+                const actionSetEntityBeforeRes = await sdk.actions.search(token, {
+                    id: {
+                        $eq: eventActionSetId,
+                    },
+                });
+
+                expect(actionSetEntityBeforeRes.data.actionsets[0].consumed).toEqual(false);
+
+                await sdk.events.create.create(token, {
+                    completedActionSet: eventActionSetId,
+                });
+
+                const actionSetEntityAfterRes = await sdk.actions.search(token, {
+                    id: {
+                        $eq: eventActionSetId,
+                    },
+                });
+
+                expect(actionSetEntityAfterRes.data.actionsets[0].consumed).toEqual(true);
+            });
+
+            test('should convert action set to event with free tickets', async function() {
+                const {
+                    sdk,
+                    token,
+                    user,
+                    password,
+                }: {
+                    sdk: T721SDK;
+                    token: string;
+                    user: PasswordlessUserDto;
+                    password: string;
+                } = await getSDKAndUser(getCtx);
+
+                const eventActionSetId = await createFreeEventActionSet(token, sdk);
 
                 const actionSetEntityBeforeRes = await sdk.actions.search(token, {
                     id: {

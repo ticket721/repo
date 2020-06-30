@@ -1,9 +1,15 @@
 import { SearchableField } from '@lib/common/utils/SearchableField.type';
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional } from 'class-validator';
 import { Sort } from '@lib/common/utils/Sort.type';
 import { SearchInputType } from '@lib/common/utils/SearchInput.type';
-import { DateEntity, DateLocation, DateMetadata, DateTimestamps } from '@lib/common/dates/entities/Date.entity';
+import {
+    Coordinates,
+    DateEntity,
+    DateLocation,
+    DateMetadata,
+    DateTimestamps,
+} from '@lib/common/dates/entities/Date.entity';
+import { IsOptional } from 'class-validator';
 
 /**
  * Input required by the Dates Search
@@ -50,6 +56,27 @@ export class DatesSearchInputDto implements SearchInputType<DateEntity> {
     location: SearchableField<DateLocation>;
 
     /**
+     * Nested value of location
+     */
+    @ApiPropertyOptional()
+    @IsOptional()
+    'location.location': SearchableField<Coordinates>;
+
+    /**
+     * Nested value of location
+     */
+    @ApiPropertyOptional()
+    @IsOptional()
+    'location.location_label': SearchableField<string>;
+
+    /**
+     * Nested value of location
+     */
+    @ApiPropertyOptional()
+    @IsOptional()
+    'location.assigned_city': SearchableField<string>;
+
+    /**
      * Searchable field to search by timestamps
      */
     @ApiPropertyOptional()
@@ -58,12 +85,61 @@ export class DatesSearchInputDto implements SearchInputType<DateEntity> {
     timestamps: SearchableField<DateTimestamps>;
 
     /**
+     * Nested value of timestamps
+     */
+    @ApiPropertyOptional()
+    @IsOptional()
+    'timestamps.event_begin': SearchableField<Date>;
+
+    /**
+     * Nested value of timestamps
+     */
+    @ApiPropertyOptional()
+    @IsOptional()
+    'timestamps.event_end': SearchableField<Date>;
+
+    /**
      * Searchable field to search by metadata
      */
     @ApiPropertyOptional()
     @IsOptional()
     // tslint:disable-next-line:variable-name
     metadata: SearchableField<DateMetadata>;
+
+    /**
+     * Nested value of metadata
+     */
+    @ApiPropertyOptional()
+    @IsOptional()
+    'metadata.name': SearchableField<string>;
+
+    /**
+     * Nested value of metadata
+     */
+    @ApiPropertyOptional()
+    @IsOptional()
+    'metadata.description': SearchableField<string>;
+
+    /**
+     * Nested value of metadata
+     */
+    @ApiPropertyOptional()
+    @IsOptional()
+    'metadata.avatar': SearchableField<string>;
+
+    /**
+     * Nested value of metadata
+     */
+    @ApiPropertyOptional()
+    @IsOptional()
+    'metadata.tags': SearchableField<string[]>;
+
+    /**
+     * Nested value of metadata
+     */
+    @ApiPropertyOptional()
+    @IsOptional()
+    'metadata.signature_colors': SearchableField<string[]>;
 
     /**
      * Searchable field to search by parent_id

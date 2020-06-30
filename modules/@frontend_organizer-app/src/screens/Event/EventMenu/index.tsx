@@ -44,7 +44,7 @@ export const EventMenu: React.FC = () => {
                 {
                     group_id: {
                         $eq: groupId,
-                    }
+                    },
                 },
             ],
             refreshRate: 5,

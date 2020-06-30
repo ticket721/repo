@@ -2,7 +2,7 @@ import { Dispatch, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../../redux/ducks';
 import { CacheCore } from '../../cores/cache/CacheCore';
-import { RegisterEntity, UnregisterEntity } from '../../redux/ducks/cache';
+import { ManualFetchItem, RegisterEntity, UnregisterEntity } from '../../redux/ducks/cache';
 import { useDeepEffect } from '../useDeepEffect';
 
 interface RequestResp<ReturnType> {
@@ -12,9 +12,13 @@ interface RequestResp<ReturnType> {
     called: boolean;
 }
 
+export interface LazyRequestOptions {
+    force: boolean;
+}
+
 export type RequestBag<ReturnType> = {
     response: RequestResp<ReturnType>;
-    lazyRequest: (lazyArgs: any, uuid?: string) => void;
+    lazyRequest: (lazyArgs: any, options?: Partial<LazyRequestOptions>) => void;
 };
 
 export const useLazyRequest = <ReturnType>(method: string, initialUuid: string): RequestBag<ReturnType> => {
@@ -27,25 +31,29 @@ export const useLazyRequest = <ReturnType>(method: string, initialUuid: string):
         error: useSelector((state: AppState) =>
             args ? state.cache.items[CacheCore.key(method, args)]?.error : undefined,
         ),
-        loading: !useSelector((state: AppState) => (args ? state.cache.items[CacheCore.key(method, args)] : false)),
+        loading: !useSelector((state: AppState) =>
+            !called ? true : args ? state.cache.items[CacheCore.key(method, args)] : false,
+        ),
         called,
     };
 
     const dispatch = useDispatch();
-    const lazyRequest = (lazyArgs: any): void => {
+    const lazyRequest = (lazyArgs: any, options?: Partial<LazyRequestOptions>): void => {
+        if (options?.force) {
+            dispatch(ManualFetchItem(CacheCore.key(method, lazyArgs), method, lazyArgs));
+        }
         dispatch(RegisterEntity(method, lazyArgs, initialUuid, 0));
         setArgs(lazyArgs);
         setCalled(true);
     };
 
     useDeepEffect(() => {
-        setCalled(false);
         return (): void => {
             if (args) {
                 dispatch(UnregisterEntity(CacheCore.key(method, args), initialUuid));
             }
         };
-    }, [args]);
+    }, [args, initialUuid]);
 
     return {
         response,

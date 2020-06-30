@@ -19,7 +19,7 @@ export interface ColorPickersProps {
 }
 
 export const ColorPickers: React.FC<ColorPickersProps> = (props: ColorPickersProps) => {
-    const [ t ] = useTranslation(['event_creation_styles', 'error_notifications']);
+    const [ t ] = useTranslation('color_pickers');
 
     const [ presetColors, setPresetColors ]: [ string[], Dispatch<string[]> ] = useState([]);
 
@@ -50,35 +50,35 @@ export const ColorPickers: React.FC<ColorPickersProps> = (props: ColorPickersPro
     };
 
     useEffect(() => {
-        if (props.srcImage) {
+        if (!props.colors && props.srcImage) {
             generatePresetColors(props.srcImage);
         }
 
         setPresetColors([]);
         // eslint-disable-next-line
-    }, [props.srcImage]);
+    }, [props.srcImage, props.colors]);
 
     return (
         <Colors>
             <ColorPicker
-            label={t('primary_color')}
-            presetLabel={t('color_suggestions')}
-            presetColors={presetColors}
-            color={props.colors[0]}
-            handleChange={(color: ColorResult) => updateColor(0, color)}
+                label={t('primary_color')}
+                presetLabel={t('color_suggestions')}
+                presetColors={presetColors}
+                color={props.colors[0]}
+                handleChange={(color: ColorResult) => updateColor(0, color)}
             />
             <div onClick={() => props.onColorsChange([props.colors[1], props.colors[0]])}>
                 <Icon
-                icon={'swap'}
-                size={'22px'}
-                color={'#CCC'}/>
+                    icon={'swap'}
+                    size={'22px'}
+                    color={'#CCC'}/>
             </div>
             <ColorPicker
-            label={t('secondary_color')}
-            presetLabel={t('color_suggestions')}
-            presetColors={presetColors}
-            color={props.colors[1]}
-            handleChange={(color: ColorResult) => updateColor(1, color)}
+                label={t('secondary_color')}
+                presetLabel={t('color_suggestions')}
+                presetColors={presetColors}
+                color={props.colors[1]}
+                handleChange={(color: ColorResult) => updateColor(1, color)}
             />
         </Colors>
     );

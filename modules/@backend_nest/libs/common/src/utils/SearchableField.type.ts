@@ -22,6 +22,7 @@ export class SearchableField<FieldType> {
         description: 'Should not equal the provided value',
         example: null,
     })
+    @IsOptional()
     $ne?: FieldType;
 
     /**

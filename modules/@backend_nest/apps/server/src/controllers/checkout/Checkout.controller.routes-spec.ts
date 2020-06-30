@@ -436,7 +436,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
 
                 await sdk.cart.ticketSelections(token, actionSetId, {
                     tickets: [
-                        ...[...Array(4)].map(() => ({
+                        ...[...Array(6)].map(() => ({
                             categoryId: event.categories[0],
                             price: {
                                 currency: 'Fiat',

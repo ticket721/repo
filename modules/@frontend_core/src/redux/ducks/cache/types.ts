@@ -2,6 +2,7 @@ export enum CacheActionTypes {
     SetTickInterval = '@@cache/settickinterval',
     SetIntervalId = '@@cache/setintervalid',
     FetchItem = '@@cache/fetchitem',
+    ManualFetchItem = `@@cache/manualfetchitem`,
     RegisterEntity = '@@cache/registerentity',
     UnregisterEntity = '@@cache/unregisterentity',
     UpdateItemData = '@@cache/updateitemdata',

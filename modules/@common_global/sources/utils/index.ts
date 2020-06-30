@@ -1,4 +1,5 @@
 import { BigNumber, formatBytes32String } from 'ethers/utils';
+import { Decimal } from 'decimal.js';
 
 /**
  * Performs an equality check on two uuid strings
@@ -44,8 +45,12 @@ export function serialize(text: string): string {
         .replace(/\s/g, '_')
 }
 
+export function isValidDateRange(begin: Date, end: Date): boolean {
+    return (end.getTime() > begin.getTime());
+}
+
 export function isFutureDateRange(begin: Date, end: Date): boolean {
-    return ((end.getTime() > begin.getTime()) && (begin.getTime() > Date.now()));
+    return (isValidDateRange(begin, end) && (begin.getTime() > Date.now()));
 }
 
 export function toHex(data: string): string {
@@ -56,4 +61,12 @@ export function decimalToHex(num: string): string {
 
     return new BigNumber(num).toHexString()
 
+}
+
+export function log2(num: string): number {
+    if (num === '0') {
+        return -1;
+    } else {
+        return Decimal.log2(num).toNumber();
+    }
 }
