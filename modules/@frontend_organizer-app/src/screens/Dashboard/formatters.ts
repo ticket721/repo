@@ -51,7 +51,7 @@ const formatDatesAndCovers = (dates: DateEntity[], events: EventDashboard[]): Ev
         return {
             ...event,
             datesRange: [startDate, endDate],
-            defaultDateId: dates[0].id,
+            defaultDateId: filteredDates[0].id,
             covers: filteredDates.map((date) => getImgPath(date.metadata.avatar)),
             colors: filteredDates.map((date) => date.metadata.signature_colors[0]),
             pastEvent: endDate < new Date(),
