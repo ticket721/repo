@@ -22,7 +22,7 @@ interface Props {
   hasName?: boolean;
 }
 
-const DatesForm = ({ formik, formActions, className, hasName = false }: Props) => {
+const DateForm = ({ formik, formActions, className, hasName = false }: Props) => {
   const dispatch = useDispatch();
   const [ t, i18n ] = useTranslation(['date_form', 'vaildation', 'errors']);
 
@@ -195,4 +195,4 @@ const DateEndContainer = styled.div<{ disabled: boolean }>`
     opacity: ${props => props.disabled ? '0.3' : '1'};
 `;
 
-export default DatesForm;
+export default DateForm;

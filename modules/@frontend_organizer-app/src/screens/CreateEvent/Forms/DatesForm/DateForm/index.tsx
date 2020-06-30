@@ -6,7 +6,7 @@ import { dateItemValidation }            from '../validationSchema';
 import { checkFormatDate }               from '@frontend/core/lib/utils/date';
 
 import { FormActions, FormActionsProps } from '../../../../../components/FormActions';
-import DatesForm from '../../../../../components/DatesForm';
+import GenericDateForm from '../../../../../components/DateForm';
 
 export interface DateFormProps extends FormActionsProps {
     initialValues: DateItem;
@@ -40,7 +40,7 @@ export const DateForm: React.FC<DateFormProps> = (props: DateFormProps) => {
     )
     return (
         <Form onSubmit={formik.handleSubmit}>
-          <DatesForm formik={formik} formActions={renderFormAction} hasName />
+          <GenericDateForm formik={formik} formActions={renderFormAction} hasName />
         </Form>
     )
 };

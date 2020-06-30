@@ -18,7 +18,7 @@ import {
 import { completeDateValidation } from './validationSchema';
 import '../../../shared/Translations/generalInfoForm';
 import '../../../shared/Translations/global';
-import DatesForm from '../../../components/DatesForm';
+import DateForm from '../../../components/DateForm';
 
 const NewDate = () => {
     const [ t ] = useTranslation(['general_infos', 'notify', 'global']);
@@ -35,7 +35,7 @@ const NewDate = () => {
         initialValues: {
             eventBegin: new Date(),
             eventEnd: new Date(),
-            location: { lon: 0, lat: 0, label: ''},
+            location: { lon: null, lat: null, label: ''},
             name: '',
             description: '',
             tags: [],
@@ -71,11 +71,14 @@ const NewDate = () => {
         if (createResponse.error) {
             dispatch(PushNotification(t(createResponse.error), 'error'));
         }
-        if (!createResponse.error && !createResponse.loading) {
+    }, [createResponse.error]);
+
+    useDeepEffect(() => {
+        if (createResponse.data) {
             dispatch(PushNotification(t('success'), 'success'));
             history.push(`/${groupId}/date/${createResponse.data.date.id}`);
         }
-    }, [createResponse]);
+    }, [createResponse.data]);
 
     const onTagsKeyDown = (e: React.KeyboardEvent<HTMLElement>, tag: string) => {
         if(!inputTag) {
@@ -157,7 +160,7 @@ const NewDate = () => {
                         && t(computeError('tags'))
                     }
                 />
-                <DatesForm
+                <DateForm
                     formik={formik}
                     formActions={renderFormActions}
                 />
