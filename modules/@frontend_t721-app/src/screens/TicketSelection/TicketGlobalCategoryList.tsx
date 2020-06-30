@@ -101,6 +101,8 @@ export const TicketGlobalCategoryList: React.FC<TicketGlobalCategoryListProps> =
         categoriesList = globalCategories.response.data.categories.map((category: CategoryEntity, idx: number): JSX.Element => (
             <TicketType
                 key={idx}
+                saleBegin={new Date(category.sale_begin)}
+                saleEnd={new Date(category.sale_end)}
                 onClick={() => props.setSelection({section: 'global', selection: idx, category})}
                 description={genDateCategoryDescription(props.date, eventEntity, t)}
                 gradient={props.date.metadata.signature_colors}
@@ -110,6 +112,8 @@ export const TicketGlobalCategoryList: React.FC<TicketGlobalCategoryListProps> =
                 ticketsLeft={category.seats - category.reserved}
                 soldOutLabel={t('sold_out')}
                 ticketsLeftLabel={t('left')}
+                availableInLabel={t('available_in')}
+                saleEndsInLabel={t('sale_ends_in')}
             />
         ));
     }

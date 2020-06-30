@@ -11,7 +11,9 @@ i18n.addResourceBundle('en', 'event_ticket_list', {
     left: 'left',
     regular_category_description: 'These categories give you access to one event',
     global_category_description: 'These categories give you access to several events',
-    checkout: 'Checkout'
+    checkout: 'Checkout',
+    available_in: 'Available in',
+    sale_ends_in: 'Sale ends in'
 });
 i18n.addResourceBundle('fr', 'event_ticket_list', {
     ticket_for_event: 'Ticket pour l\'evenement ',
@@ -24,5 +26,7 @@ i18n.addResourceBundle('fr', 'event_ticket_list', {
     left: 'restant',
     regular_category_description: 'Ces categories donnent acces a un evenement',
     global_category_description: 'Ces categories donnent acces a plusieurs evenements',
-    checkout: 'Checkout'
+    checkout: 'Checkout',
+    available_in: 'Disponible dans',
+    sale_ends_in: 'Fin de la vente dans'
 });

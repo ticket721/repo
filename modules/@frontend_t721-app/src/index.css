@@ -19,6 +19,13 @@
     font-weight: 700;
 }
 
+@font-face {
+    font-family: 'Roboto Mono';
+    src: url('~@frontend/flib-react/lib/assets/fonts/RobotoMono-Regular.ttf');
+    font-style: normal;
+    font-weight: 700;
+}
+
 html {
     width: 100%;
     height: 100%;
