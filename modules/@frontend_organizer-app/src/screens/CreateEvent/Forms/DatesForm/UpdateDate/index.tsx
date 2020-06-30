@@ -13,7 +13,7 @@ export interface DateFormProps extends FormActionsProps {
     confirm: (date: DateItem) => void;
 }
 
-export const UpdateForm: React.FC<DateFormProps> = (props: DateFormProps) => {
+export const UpdateDate: React.FC<DateFormProps> = (props: DateFormProps) => {
     const { initialValues } = props;
     const checkedInitialValues = {
         ...initialValues,

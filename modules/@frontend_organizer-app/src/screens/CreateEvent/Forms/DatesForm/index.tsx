@@ -7,7 +7,7 @@ import { OrganizerState }                           from '../../../../redux/duck
 import { useEventCreation }                         from '../../../../hooks/useEventCreation';
 import { EventCreationActions, EventCreationSteps } from '../../../../core/event_creation/EventCreationCore';
 import { DateCard }                                 from './DateCard';
-import { UpdateForm }                                 from './UpdateDate';
+import { UpdateDate }                                 from './UpdateDate';
 import { checkFormatDate }                          from '@frontend/core/lib/utils/date';
 import { SetActionData, UpdateAction }              from '../../../../redux/ducks/event_creation';
 import { CreateDate }                               from './CreateDate';
@@ -122,7 +122,7 @@ const DatesForm: React.FC<FormProps> = ({ onComplete }) => {
                         editable={editIdx === null}
                         edit={editIdx === idx}
                         setEdit={() => setEditIdx(idx)}>
-                            <UpdateForm
+                            <UpdateDate
                             initialValues={date}
                             delete={() => deleteDate(idx)}
                             cancel={() => resetEdition()}

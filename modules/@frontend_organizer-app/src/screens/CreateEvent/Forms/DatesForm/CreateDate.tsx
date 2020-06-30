@@ -3,7 +3,7 @@ import { Button } from '@frontend/flib-react/lib/components';
 
 import { DateItem }     from './index';
 import { day, hour }    from '@frontend/core/lib/utils/date';
-import { UpdateForm }     from './UpdateDate';
+import { UpdateDate }     from './UpdateDate';
 
 import { useTranslation } from 'react-i18next';
 import './locales';
@@ -34,7 +34,7 @@ export const CreateDate: React.FC<CreateDateProps> = (props: CreateDateProps) =>
                     edit={true}
                     editable={false}
                     setEdit={() => null}>
-                        <UpdateForm
+                        <UpdateDate
                         newItem={true}
                         initialValues={{
                             name: props.initialName,
