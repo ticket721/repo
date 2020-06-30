@@ -1,21 +1,24 @@
-import React, { useState } from 'react';
-import styled                         from 'styled-components';
+import React, { useState }                      from 'react';
+import { useTranslation }                       from 'react-i18next';
+import styled                                   from 'styled-components';
+import { useHistory, useParams }                from 'react-router';
+import { v4 }                                   from 'uuid';
+import { useSelector, useDispatch }             from 'react-redux';
 
-import { useHistory, useParams } from 'react-router';
-import { Button }  from '@frontend/flib-react/lib/components';
 
-import { DateSelect } from './DateSelect';
-import { SubMenu }                          from './SubMenu';
-import { useRequest }                   from '@frontend/core/lib/hooks/useRequest';
-import { useSelector }                  from 'react-redux';
-import { MergedAppState }               from '../../../index';
-import { DatesSearchResponseDto }       from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
-import { v4 }                           from 'uuid';
-import { useDeepEffect }                from '@frontend/core/lib/hooks/useDeepEffect';
+import { DatesSearchResponseDto }               from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
+import { DateEntity }                           from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
+import { Button }                               from '@frontend/flib-react/lib/components';
+import { useRequest }                           from '@frontend/core/lib/hooks/useRequest';
+import { useLazyRequest }                       from '@frontend/core/lib/hooks/useLazyRequest';
+import { useDeepEffect }                        from '@frontend/core/lib/hooks/useDeepEffect';
 import { checkFormatDate, displayCompleteDate } from '@frontend/core/lib/utils/date';
-import { DateEntity }                   from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
+import { PushNotification }                     from '@frontend/core/lib/redux/ducks/notifications';
 
-import { useTranslation }        from 'react-i18next';
+import { MergedAppState } from '../../../index';
+
+import { SubMenu }                              from './SubMenu';
+import { DateSelect }                           from './DateSelect';
 import './locales';
 
 interface DateOption {
@@ -30,11 +33,15 @@ export const EventMenu: React.FC = () => {
     const [ t ] = useTranslation(['event_side_menu']);
     const history = useHistory();
     const [uuid] = useState<string>(v4() + '@event-menu');
+    const [uuidDelete] = useState<string>(v4() + '@event-menu');
     const token = useSelector((state: MergedAppState) => state.auth.token.value);
     const { groupId, dateId } = useParams();
+    const dispatch = useDispatch();
+
 
     const [ selectableDates, setSelectableDates ] = useState<DateOption[]>(null);
     const [ selectedDate, setSelectedDate ] = useState<DateEntity>(null);
+    const { lazyRequest: deleteDate, response: deleteDateResp } = useLazyRequest('events.deleteDates', uuidDelete);
 
     const { response: datesResp } = useRequest<DatesSearchResponseDto>(
         {
@@ -62,6 +69,18 @@ export const EventMenu: React.FC = () => {
             })));
         }
     }, [datesResp]);
+
+    useDeepEffect(() => {
+      if (deleteDateResp.called) {
+        if (!deleteDateResp.error && !deleteDateResp.loading) {
+          dispatch(PushNotification(t('success'), 'success'));
+          history.push(`/${groupId}`);
+        } else {
+          dispatch(PushNotification(t('error'), 'error'));
+        }
+      }
+    }, [deleteDateResp]);
+
 
     if (selectedDate) {
         return (
@@ -103,7 +122,7 @@ export const EventMenu: React.FC = () => {
                     <Button
                         title={datesResp.data.dates.length > 1 ? 'Delete Date' : 'Delete Event'}
                         variant={'danger'}
-                        onClick={() => console.log('delete date')}/>
+                        onClick={() => { deleteDate([token, groupId, { dates: [dateId] }]) }}/>
                 </LastSection>
             </Container>
         )

@@ -11,9 +11,11 @@ i18n.addResourceBundle('fr', 'notify', {
 });
 
 i18n.addResourceBundle('en', 'global', {
-  validate: 'Validate'
+  validate: 'Validate',
+  loading: 'Loading...'
 });
 
 i18n.addResourceBundle('fr', 'global', {
-  validate: 'Valider'
+  validate: 'Valider',
+  loading: 'Chargement...'
 });
