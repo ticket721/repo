@@ -74,7 +74,7 @@
         "fs-extra": "8.1.0",
         "ts-jest": "25.2.1",
         "ts-loader": "6.1.1",
-        "typescript": "3.8.3",
+        "typescript": "3.9.5",
         "@rocksideio/rockside-wallet-sdk": "0.3.4",
         "@types/node": "13.7.7",
         "@types/bull": "3.10.6",
