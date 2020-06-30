@@ -116,6 +116,12 @@ export const StylesForm: React.FC<StylesFormProps> = (props: StylesFormProps) =>
         })
     }, [props.initialValues]);
 
+    useEffect(() => {
+        if(updateResponse.error) {
+            dispatch(PushNotification('Update failed. Please retry.', 'error'));
+        }
+    }, [updateResponse.error, dispatch]);
+
     return (
         <Form onSubmit={formik.handleSubmit}>
             <FilesUploader

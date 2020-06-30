@@ -114,6 +114,12 @@ export const LocationForm: React.FC<LocationFormProps> = (props: LocationFormPro
         })
     }, [props.initialValues]);
 
+    useEffect(() => {
+        if(updateResponse.error) {
+            dispatch(PushNotification('Update failed. Please retry.', 'error'));
+        }
+    }, [updateResponse.error, dispatch]);
+
     return (
         <Form onSubmit={formik.handleSubmit}>
             <LocationInput

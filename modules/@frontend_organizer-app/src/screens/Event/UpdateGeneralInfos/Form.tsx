@@ -113,7 +113,7 @@ export const GeneralInfosForm: React.FC<GeneralInfosFormProps> = (props: General
         if(updateResponse.error) {
             dispatch(PushNotification('Update failed. Please retry.', 'error'));
         }
-    }, [updateResponse.error]);
+    }, [updateResponse.error, dispatch]);
 
     useDeepEffect(() => {
         setUpdatable(formik.isValid && !isEqual(formik.values, lastInitialValues));
