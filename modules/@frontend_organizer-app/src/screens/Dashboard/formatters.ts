@@ -35,7 +35,6 @@ const formatEventName = (events: EventEntity[]): EventDashboard[] => (
 const formatDatesAndCovers = (dates: DateEntity[], events: EventDashboard[]): EventDashboard[] => (
     events?.map((event) => {
         const filteredDates = dates.filter((date) => date.group_id === event.groupId);
-
         const startDate: Date = checkFormatDate(
             filteredDates.sort((dateA, dateB) =>
                 checkFormatDate(dateA.timestamps.event_begin).getTime() - checkFormatDate(dateB.timestamps.event_begin).getTime()
@@ -51,7 +50,7 @@ const formatDatesAndCovers = (dates: DateEntity[], events: EventDashboard[]): Ev
         return {
             ...event,
             datesRange: [startDate, endDate],
-            defaultDateId: dates[0].id,
+            defaultDateId: filteredDates[0].id,
             covers: filteredDates.map((date) => getImgPath(date.metadata.avatar)),
             colors: filteredDates.map((date) => date.metadata.signature_colors[0]),
             pastEvent: endDate < new Date(),
