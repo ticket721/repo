@@ -35,7 +35,6 @@ const formatEventName = (events: EventEntity[]): EventDashboard[] => (
 const formatDatesAndCovers = (dates: DateEntity[], events: EventDashboard[]): EventDashboard[] => (
     events?.map((event) => {
         const filteredDates = dates.filter((date) => date.group_id === event.groupId);
-
         const startDate: Date = checkFormatDate(
             filteredDates.sort((dateA, dateB) =>
                 checkFormatDate(dateA.timestamps.event_begin).getTime() - checkFormatDate(dateB.timestamps.event_begin).getTime()

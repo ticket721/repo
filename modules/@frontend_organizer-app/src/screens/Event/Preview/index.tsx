@@ -74,7 +74,7 @@ const Preview: React.FC = () => {
                     }
                 },
             ],
-            refreshRate: 5,
+            refreshRate: 1,
         },
         uuid
     );
@@ -91,7 +91,7 @@ const Preview: React.FC = () => {
                     $page_size: 1,
                 },
             ],
-            refreshRate: 5,
+            refreshRate: 1,
         },
         uuid
     );
@@ -241,7 +241,7 @@ const Title = styled.span`
   width: 100%;
   margin-bottom: 25px;
   font-weight: 500;
-  font-size: 16px;
+  font-size: 18px;
   color: ${(props) => props.theme.textColor};
   text-align: center;
 `;
