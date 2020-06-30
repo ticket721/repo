@@ -7,7 +7,7 @@ import { OrganizerState }                           from '../../../../redux/duck
 import { useEventCreation }                         from '../../../../hooks/useEventCreation';
 import { EventCreationActions, EventCreationSteps } from '../../../../core/event_creation/EventCreationCore';
 import { DateCard }                                 from './DateCard';
-import { DateForm }                                 from './DateForm';
+import { UpdateForm }                                 from './UpdateDate';
 import { checkFormatDate }                          from '@frontend/core/lib/utils/date';
 import { SetActionData, UpdateAction }              from '../../../../redux/ducks/event_creation';
 import { CreateDate }                               from './CreateDate';
@@ -84,9 +84,11 @@ const DatesForm: React.FC<FormProps> = ({ onComplete }) => {
         eventCreationFormik.handleFocus('dates confirm');
         const dates: DateItem[] = [
             ...eventCreationFormik.values.dates,
-            dateItem,
+            {
+                ...dateItem,
+                name: eventName,
+            },
         ];
-
         eventCreationFormik.update({dates});
     };
 
@@ -113,14 +115,14 @@ const DatesForm: React.FC<FormProps> = ({ onComplete }) => {
                     eventCreationFormik.values.dates.map((date, idx) => (
                         <DateCard
                         key={'dates-' + idx}
-                        name={date.name}
+                        name={`dates-${idx + 1}`}
                         beginDate={checkFormatDate(date.eventBegin)}
                         endDate={checkFormatDate(date.eventEnd)}
                         location={date.location.label}
                         editable={editIdx === null}
                         edit={editIdx === idx}
                         setEdit={() => setEditIdx(idx)}>
-                            <DateForm
+                            <UpdateForm
                             initialValues={date}
                             delete={() => deleteDate(idx)}
                             cancel={() => resetEdition()}

@@ -13,7 +13,7 @@ export interface DateFormProps extends FormActionsProps {
     confirm: (date: DateItem) => void;
 }
 
-export const DateForm: React.FC<DateFormProps> = (props: DateFormProps) => {
+export const UpdateForm: React.FC<DateFormProps> = (props: DateFormProps) => {
     const { initialValues } = props;
     const checkedInitialValues = {
         ...initialValues,
@@ -45,22 +45,4 @@ export const DateForm: React.FC<DateFormProps> = (props: DateFormProps) => {
     )
 };
 
-const Form = styled.form`
-    & .date-line-field {
-        margin-bottom: ${props => props.theme.biggerSpacing};
-    }
-
-    & .date-container {
-        display: flex;
-        justify-content: space-between;
-
-        & > div:first-child {
-            width: calc(65% - ${props => props.theme.biggerSpacing});
-            margin-right: ${props => props.theme.biggerSpacing};
-        }
-
-        & > div:last-child {
-            width: 35%;
-        }
-    }
-`;
+const Form = styled.form``;

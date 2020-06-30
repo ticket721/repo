@@ -109,7 +109,7 @@ const DateForm = ({ formik, formActions, className, hasName = false }: Props) =>
   };
 
   return (
-    <div className={className}>
+    <Container className={className}>
       { hasName && <TextInput
         className={'date-line-field'}
         label={t('date_name_label')}
@@ -187,12 +187,32 @@ const DateForm = ({ formik, formActions, className, hasName = false }: Props) =>
           t(computeError('location'))
         }/>
         {formActions()}
-    </div>
+    </Container>
   );
 };
 
 const DateEndContainer = styled.div<{ disabled: boolean }>`
     opacity: ${props => props.disabled ? '0.3' : '1'};
+`;
+
+const Container = styled.div`
+  & .date-line-field {
+      margin-bottom: ${props => props.theme.biggerSpacing};
+  }
+
+  & .date-container {
+      display: flex;
+      justify-content: space-between;
+
+      & > div:first-child {
+          width: calc(65% - ${props => props.theme.biggerSpacing});
+          margin-right: ${props => props.theme.biggerSpacing};
+      }
+
+      & > div:last-child {
+          width: 35%;
+      }
+  }
 `;
 
 export default DateForm;
