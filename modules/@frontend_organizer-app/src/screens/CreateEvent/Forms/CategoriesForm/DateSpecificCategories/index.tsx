@@ -85,32 +85,34 @@ export const DateSpecificCategories: React.FC<DateSpecificCategoriesProps> = (pr
                                         <span>{displayDate(checkFormatDate(date.eventEnd))}</span>
                                     </DateDetails>
                                 {
-                                    props.categories[dateIdx].map((category: CategoryItem, categoryIdx: number) => (
+                                    props.categories[dateIdx].map((category: CategoryItem, categoryIdx: number) => {
+                                      return (
                                         <Fragment key={`dateSpecificCategory-${categoryIdx}`}>
-                                            <CategoryCard
-                                                name={category.name}
-                                                price={parseInt(category.currencies[0].price, 10) / 100}
-                                                saleBegin={checkFormatDate(category.saleBegin)}
-                                                saleEnd={checkFormatDate(category.saleEnd)}
-                                                seats={category.seats}
-                                                edit={
-                                                    editDateIdx === dateIdx &&
-                                                    editCategoryIdx === categoryIdx
-                                                }
-                                                editable={editCategoryIdx === null}
-                                                setEdit={() => {
-                                                    setEditDateIdx(dateIdx);
-                                                    setEditCategoryIdx(categoryIdx);
-                                                }}>
-                                                <CategoryForm
-                                                    initialValues={category}
-                                                    maxDate={checkFormatDate(date.eventEnd)}
-                                                    delete={deleteCategory}
-                                                    cancel={resetEdition}
-                                                    confirm={updateCategory}/>
-                                            </CategoryCard>
+                                          <CategoryCard
+                                            name={category.name}
+                                            price={parseInt(category.currencies[0].price, 10) / 100}
+                                            saleBegin={checkFormatDate(category.saleBegin)}
+                                            saleEnd={checkFormatDate(category.saleEnd)}
+                                            seats={category.seats}
+                                            edit={
+                                              editDateIdx === dateIdx &&
+                                              editCategoryIdx === categoryIdx
+                                            }
+                                            editable={editCategoryIdx === null}
+                                            setEdit={() => {
+                                              setEditDateIdx(dateIdx);
+                                              setEditCategoryIdx(categoryIdx);
+                                            }}>
+                                            <CategoryForm
+                                              initialValues={category}
+                                              maxDate={checkFormatDate(date.eventEnd)}
+                                              delete={deleteCategory}
+                                              cancel={resetEdition}
+                                              confirm={updateCategory}/>
+                                          </CategoryCard>
                                         </Fragment>
-                                    ))
+                                      )
+                                    })
                                 }
                                 </DateSection>
                             )

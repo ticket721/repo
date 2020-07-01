@@ -2,7 +2,7 @@ import React, { Dispatch, Fragment, useState } from 'react';
 import styled                                  from 'styled-components';
 
 import { CategoryForm, CategoryItem } from '../../../../../components/CategoryForm';
-import { checkFormatDate }            from '@frontend/core/lib/utils/date';
+import { checkFormatDate, compareDates } from '@frontend/core/lib/utils/date';
 import { CreateGlobalCategory }       from './CreateGlobalCategory';
 import { useSelector }                from 'react-redux';
 import { OrganizerState }             from '../../../../../redux/ducks';
@@ -62,6 +62,7 @@ export const GlobalCategories: React.FC<GlobalCategoriesProps> = (props: GlobalC
                           saleEnd={checkFormatDate(globalCategory.saleEnd)}
                           seats={globalCategory.seats}
                           edit={editIdx === idx}
+                          error={compareDates(maxDate, globalCategory.saleEnd)}
                           editable={editIdx === null}
                           setEdit={() => setEditIdx(idx)}>
                               <CategoryForm

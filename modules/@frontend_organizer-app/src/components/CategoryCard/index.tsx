@@ -1,11 +1,13 @@
 import React, { Fragment } from 'react';
 import styled                       from 'styled-components';
+import { useSelector }              from 'react-redux';
 import { FormCard, FormCardProps }  from '../FormCard';
 import { Icon }                     from '@frontend/flib-react/lib/components';
 import { displayCompleteDate } from '@frontend/core/lib/utils/date';
 
 import { useTranslation } from 'react-i18next';
 import './locales';
+import {OrganizerState} from "../../redux/ducks";
 
 interface CategoryCardProps extends FormCardProps {
     price: number;
@@ -16,8 +18,11 @@ interface CategoryCardProps extends FormCardProps {
 
 export const CategoryCard: React.FC<CategoryCardProps> = (props: CategoryCardProps) => {
     const [ t ] = useTranslation('category_card');
+    const maxDate: Date = useSelector((state: OrganizerState) =>
+      state.eventCreation.datesConfiguration.dates[state.eventCreation.datesConfiguration.dates.length - 1]?.eventEnd);
     return (
         <FormCard
+        error={props.saleBegin > maxDate || props.saleEnd > maxDate}
         name={props.name}
         editable={props.editable}
         edit={props.edit}
