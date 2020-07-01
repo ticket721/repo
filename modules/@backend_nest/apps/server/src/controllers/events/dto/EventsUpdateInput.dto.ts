@@ -1,5 +1,5 @@
 import { EventEntity } from '@lib/common/events/entities/Event.entity';
-import { IsOptional, IsString } from 'class-validator';
+import { IsOptional, IsString, ValidateIf } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
 /**
@@ -13,6 +13,6 @@ export class EventsUpdateInputDto implements Partial<Pick<EventEntity, 'name'>> 
         description: 'Edits event name',
     })
     @IsString()
-    @IsOptional()
+    @ValidateIf((_, v) => v !== undefined)
     name?: string;
 }

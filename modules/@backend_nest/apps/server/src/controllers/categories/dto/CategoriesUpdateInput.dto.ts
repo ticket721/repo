@@ -1,6 +1,6 @@
 import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
 import { InputPrice } from '@lib/common/currencies/Currencies.service';
-import { IsDateString, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsDateString, IsNumber, IsString, ValidateIf, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
@@ -19,7 +19,7 @@ export class CategoriesUpdateInputDto
         description: 'Edits the display name of the category',
     })
     @IsString()
-    @IsOptional()
+    @ValidateIf((_, v) => v !== undefined)
     // tslint:disable-next-line:variable-name
     display_name?: string;
 
@@ -30,7 +30,7 @@ export class CategoriesUpdateInputDto
         description: 'Edits the sale start date',
     })
     @IsDateString()
-    @IsOptional()
+    @ValidateIf((_, v) => v !== undefined)
     // tslint:disable-next-line:variable-name
     sale_begin?: Date;
 
@@ -41,7 +41,7 @@ export class CategoriesUpdateInputDto
         description: 'Edits the sale end date',
     })
     @IsDateString()
-    @IsOptional()
+    @ValidateIf((_, v) => v !== undefined)
     // tslint:disable-next-line:variable-name
     sale_end?: Date;
 
@@ -52,7 +52,7 @@ export class CategoriesUpdateInputDto
         description: 'Edits the resales start date',
     })
     @IsDateString()
-    @IsOptional()
+    @ValidateIf((_, v) => v !== undefined)
     // tslint:disable-next-line:variable-name
     resale_begin?: Date;
 
@@ -63,7 +63,7 @@ export class CategoriesUpdateInputDto
         description: 'Edits the resales end date',
     })
     @IsDateString()
-    @IsOptional()
+    @ValidateIf((_, v) => v !== undefined)
     // tslint:disable-next-line:variable-name
     resale_end?: Date;
 
@@ -75,7 +75,7 @@ export class CategoriesUpdateInputDto
     })
     @ValidateNested({ each: true })
     @Type(() => InputPrice)
-    @IsOptional()
+    @ValidateIf((_, v) => v !== undefined)
     prices?: InputPrice[];
 
     /**
@@ -85,6 +85,6 @@ export class CategoriesUpdateInputDto
         description: 'Edits the number of available tickets',
     })
     @IsNumber()
-    @IsOptional()
+    @ValidateIf((_, v) => v !== undefined)
     seats?: number;
 }

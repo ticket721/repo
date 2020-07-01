@@ -76,6 +76,28 @@ describe('Utils', function () {
 
     describe('isValidDateRange', function() {
 
+        it('null date begin', function() {
+
+            const end = new Date(Date.now() + 1000 * 120);
+
+            expect(isValidDateRange(null, end)).toBeFalsy();
+
+        });
+
+        it('null date end', function() {
+
+            const begin = new Date(Date.now() + 1000 * 60);
+
+            expect(isValidDateRange(begin, null)).toBeFalsy();
+
+        });
+
+        it('null dates', function() {
+
+            expect(isValidDateRange(null, null)).toBeTruthy();
+
+        });
+        
         it('is indeed valid date range', function() {
 
             const begin = new Date(Date.now() + 1000 * 60);
@@ -105,6 +127,28 @@ describe('Utils', function () {
 
     });
     describe('isFutureDateRange', function() {
+
+        it('null date begin', function() {
+
+            const end = new Date(Date.now() + 1000 * 120);
+
+            expect(isFutureDateRange(null, end)).toBeFalsy();
+
+        });
+
+        it('null date end', function() {
+
+            const begin = new Date(Date.now() + 1000 * 60);
+
+            expect(isFutureDateRange(begin, null)).toBeFalsy();
+
+        });
+
+        it('null dates', function() {
+
+            expect(isFutureDateRange(null, null)).toBeFalsy();
+
+        });
 
         it('is indeed future date range', function() {
 
