@@ -9,6 +9,21 @@ import { ECAAG } from '@lib/common/utils/ECAAG.helper';
 import { Price } from '@lib/common/currencies/Currencies.service';
 
 /**
+ * Error interface whem checking for selection validity
+ */
+export interface CategorySelectionError {
+    /**
+     * Category affected by error
+     */
+    category: CategoryEntity;
+
+    /**
+     * Error reason
+     */
+    reason: string;
+}
+
+/**
  * Category Entity
  */
 @Entity<CategoryEntity>({
@@ -179,4 +194,37 @@ export class CategoryEntity {
     @UpdateDateColumn()
     // tslint:disable-next-line:variable-name
     updated_at: Date;
+
+    /**
+     * Utility to check if a purchase can happen
+     *
+     * @param now
+     * @param cat
+     */
+    static checkCategoryErrors(now: Date, cat: CategoryEntity): CategorySelectionError[] {
+        const errors: CategorySelectionError[] = [];
+
+        if (now.getTime() > new Date(cat.sale_end).getTime()) {
+            errors.push({
+                category: cat,
+                reason: 'sale_ended',
+            });
+        }
+
+        if (now.getTime() < new Date(cat.sale_begin).getTime()) {
+            errors.push({
+                category: cat,
+                reason: 'sale_not_started',
+            });
+        }
+
+        if (cat.parent_type === null) {
+            errors.push({
+                category: cat,
+                reason: 'category_not_available',
+            });
+        }
+
+        return errors;
+    }
 }

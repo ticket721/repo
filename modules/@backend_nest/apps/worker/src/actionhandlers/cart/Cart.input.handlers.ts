@@ -10,6 +10,7 @@ import { BigNumber } from 'bignumber.js';
 import { detectAuthorizationStackDifferences } from '@lib/common/utils/detectTicketAuthorizationStackDifferences.helper';
 import { ConfigService } from '@lib/common/config/Config.service';
 import { TimeToolService } from '@lib/common/toolbox/Time.tool.service';
+import { CategoryEntity, CategorySelectionError } from '@lib/common/categories/entities/Category.entity';
 
 /**
  * Data Model of the Ticket Selection step
@@ -145,7 +146,6 @@ export class CartInputHandlers implements OnModuleInit {
         progress: Progress,
     ): Promise<[ActionSet, boolean]> {
         const data: CartTicketSelections = actionset.action.data;
-        const now = this.timeToolService.now();
 
         const { error, error_trace } = ChecksRunnerUtil<CartTicketSelections>(
             data,
@@ -182,7 +182,7 @@ export class CartInputHandlers implements OnModuleInit {
 
                 const groupIds: { [key: string]: TicketMintingFormat[] } = {};
 
-                const saleErrors = [];
+                let saleErrors: CategorySelectionError[] = [];
 
                 for (const ticket of data.tickets) {
                     const categorySearchRes = await this.categoriesService.search({
@@ -201,19 +201,13 @@ export class CartInputHandlers implements OnModuleInit {
                         break;
                     }
 
-                    if (now.getTime() > new Date(categorySearchRes.response[0].sale_end).getTime()) {
-                        saleErrors.push({
-                            category: categorySearchRes.response[0],
-                            reason: 'sale_ended',
-                        });
-                    }
-
-                    if (now.getTime() < new Date(categorySearchRes.response[0].sale_begin).getTime()) {
-                        saleErrors.push({
-                            category: categorySearchRes.response[0],
-                            reason: 'sale_not_started',
-                        });
-                    }
+                    saleErrors = [
+                        ...saleErrors,
+                        ...CategoryEntity.checkCategoryErrors(
+                            this.timeToolService.now(),
+                            categorySearchRes.response[0],
+                        ),
+                    ];
 
                     groupIds[categorySearchRes.response[0].group_id] = [
                         ...(groupIds[categorySearchRes.response[0].group_id] || []),

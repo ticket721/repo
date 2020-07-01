@@ -100,6 +100,8 @@ describe('Cart Input Handlers Spec', function() {
                 response: [
                     {
                         id: 'category_id',
+                        parent_id: 'date',
+                        parent_type: 'date_id',
                         prices: [
                             {
                                 currency: 'T721Token',
@@ -244,6 +246,8 @@ describe('Cart Input Handlers Spec', function() {
                 response: [
                     {
                         id: 'category_id',
+                        parent_id: 'date',
+                        parent_type: 'date_id',
                         prices: [
                             {
                                 currency: 'T721Token',
@@ -388,6 +392,8 @@ describe('Cart Input Handlers Spec', function() {
                 response: [
                     {
                         id: 'category_id',
+                        parent_id: 'date',
+                        parent_type: 'date_id',
                         group_id: 'group_id',
                         prices: [
                             {
@@ -552,6 +558,8 @@ describe('Cart Input Handlers Spec', function() {
                 response: [
                     {
                         id: 'category_id',
+                        parent_id: 'date',
+                        parent_type: 'date_id',
                         group_id: 'group_id',
                         sale_begin: saleBegin,
                         prices: [
@@ -602,7 +610,7 @@ describe('Cart Input Handlers Spec', function() {
                         type: 'input',
                         name: '@cart/ticketSelections',
                         data: `{\"tickets\":[{\"categoryId\":\"category_id\",\"price\":{\"currency\":\"Fiat\",\"price\":\"100\"}},{\"categoryId\":\"category_id\",\"price\":{\"currency\":\"Fiat\",\"price\":\"100\"}}],\"total\":[{\"currency\":\"T721Token\",\"value\":\"200\",\"log_value\":0}],\"fees\":[null]}`,
-                        error: `{\"details\":[{\"category\":{\"id\":\"category_id\",\"group_id\":\"group_id\",\"sale_begin\":\"${saleBegin.toISOString()}\",\"prices\":[{\"currency\":\"T721Token\",\"value\":\"100\",\"log_value\":0}]},\"reason\":\"sale_not_started\"},{\"category\":{\"id\":\"category_id\",\"group_id\":\"group_id\",\"sale_begin\":\"${saleBegin.toISOString()}\",\"prices\":[{\"currency\":\"T721Token\",\"value\":\"100\",\"log_value\":0}]},\"reason\":\"sale_not_started\"}],\"error\":\"cannot_purchase_tickets\"}`,
+                        error: `{\"details\":[{\"category\":{\"id\":\"category_id\",\"parent_id\":\"date\",\"parent_type\":\"date_id\",\"group_id\":\"group_id\",\"sale_begin\":\"${saleBegin.toISOString()}\",\"prices\":[{\"currency\":\"T721Token\",\"value\":\"100\",\"log_value\":0}]},\"reason\":\"sale_not_started\"},{\"category\":{\"id\":\"category_id\",\"parent_id\":\"date\",\"parent_type\":\"date_id\",\"group_id\":\"group_id\",\"sale_begin\":\"${saleBegin.toISOString()}\",\"prices\":[{\"currency\":\"T721Token\",\"value\":\"100\",\"log_value\":0}]},\"reason\":\"sale_not_started\"}],\"error\":\"cannot_purchase_tickets\"}`,
                         status: 'error',
                         private: false,
                     },
@@ -692,6 +700,8 @@ describe('Cart Input Handlers Spec', function() {
                 response: [
                     {
                         id: 'category_id',
+                        parent_id: 'date',
+                        parent_type: 'date_id',
                         group_id: 'group_id',
                         sale_end: saleEnd,
                         prices: [
@@ -742,7 +752,147 @@ describe('Cart Input Handlers Spec', function() {
                         type: 'input',
                         name: '@cart/ticketSelections',
                         data: `{\"tickets\":[{\"categoryId\":\"category_id\",\"price\":{\"currency\":\"Fiat\",\"price\":\"100\"}},{\"categoryId\":\"category_id\",\"price\":{\"currency\":\"Fiat\",\"price\":\"100\"}}],\"total\":[{\"currency\":\"T721Token\",\"value\":\"200\",\"log_value\":0}],\"fees\":[null]}`,
-                        error: `{\"details\":[{\"category\":{\"id\":\"category_id\",\"group_id\":\"group_id\",\"sale_end\":\"${saleEnd.toISOString()}\",\"prices\":[{\"currency\":\"T721Token\",\"value\":\"100\",\"log_value\":0}]},\"reason\":\"sale_ended\"},{\"category\":{\"id\":\"category_id\",\"group_id\":\"group_id\",\"sale_end\":\"${saleEnd.toISOString()}\",\"prices\":[{\"currency\":\"T721Token\",\"value\":\"100\",\"log_value\":0}]},\"reason\":\"sale_ended\"}],\"error\":\"cannot_purchase_tickets\"}`,
+                        error: `{\"details\":[{\"category\":{\"id\":\"category_id\",\"parent_id\":\"date\",\"parent_type\":\"date_id\",\"group_id\":\"group_id\",\"sale_end\":\"${saleEnd.toISOString()}\",\"prices\":[{\"currency\":\"T721Token\",\"value\":\"100\",\"log_value\":0}]},\"reason\":\"sale_ended\"},{\"category\":{\"id\":\"category_id\",\"parent_id\":\"date\",\"parent_type\":\"date_id\",\"group_id\":\"group_id\",\"sale_end\":\"${saleEnd.toISOString()}\",\"prices\":[{\"currency\":\"T721Token\",\"value\":\"100\",\"log_value\":0}]},\"reason\":\"sale_ended\"}],\"error\":\"cannot_purchase_tickets\"}`,
+                        status: 'error',
+                        private: false,
+                    },
+                    {
+                        type: 'input',
+                        name: '@cart/modulesConfiguration',
+                        data: null,
+                        error: null,
+                        status: 'in progress',
+                        private: false,
+                    },
+                    {
+                        type: 'input',
+                        name: '@cart/authorizations',
+                        data: null,
+                        error: null,
+                        status: 'in progress',
+                        private: true,
+                    },
+                ],
+                current_action: 0,
+                current_status: 'input:error',
+            });
+            expect(handlerResult[1]).toEqual(true);
+
+            verify(
+                context.categoriesServiceMock.search(
+                    deepEqual({
+                        id: 'category_id',
+                    }),
+                ),
+            ).called();
+
+            verify(
+                context.currenciesServiceMock.resolveInputPrices(
+                    deepEqual([
+                        {
+                            currency: 'Fiat',
+                            price: '100',
+                        },
+                    ]),
+                ),
+            ).called();
+
+            verify(context.currenciesServiceMock.computeFee('T721Token', '100')).called();
+        });
+
+        it('should fail on ticket purchase on category not existing anymore', async function() {
+            const acsetbuilder = new CartAcsetbuilderHelper();
+            const caller = {
+                id: 'user_id',
+            } as UserDto;
+
+            const actionSetRes = await acsetbuilder.buildActionSet(caller, {});
+
+            const actionSet = actionSetRes.response;
+
+            actionSet.action.setData({
+                tickets: [
+                    {
+                        categoryId: 'category_id',
+                        price: {
+                            currency: 'Fiat',
+                            price: '100',
+                        },
+                    },
+                    {
+                        categoryId: 'category_id',
+                        price: {
+                            currency: 'Fiat',
+                            price: '100',
+                        },
+                    },
+                ],
+            });
+
+            when(
+                context.categoriesServiceMock.search(
+                    deepEqual({
+                        id: 'category_id',
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: [
+                    {
+                        id: 'category_id',
+                        group_id: 'group_id',
+                        parent_id: null,
+                        parent_type: null,
+                        prices: [
+                            {
+                                currency: 'T721Token',
+                                value: '100',
+                                log_value: 0,
+                            },
+                        ],
+                    } as CategoryEntity,
+                ],
+            });
+
+            when(
+                context.currenciesServiceMock.resolveInputPrices(
+                    deepEqual([
+                        {
+                            currency: 'Fiat',
+                            price: '100',
+                        },
+                    ]),
+                ),
+            ).thenResolve({
+                error: null,
+                response: [
+                    {
+                        currency: 'T721Token',
+                        value: '100',
+                        log_value: 0,
+                    },
+                ],
+            });
+
+            when(context.currenciesServiceMock.computeFee('T721Token', '300')).thenResolve('0');
+
+            const handlerResult = await context.cartInputHandlers.ticketSelectionsHandler(
+                context.cartInputHandlers.ticketSelectionsFields,
+                actionSet,
+                async () => {},
+            );
+
+            expect(handlerResult[0].raw).toEqual({
+                name: '@cart/creation',
+                consumed: false,
+                dispatched_at: handlerResult[0].raw.dispatched_at,
+                actions: [
+                    {
+                        type: 'input',
+                        name: '@cart/ticketSelections',
+                        data: `{\"tickets\":[{\"categoryId\":\"category_id\",\"price\":{\"currency\":\"Fiat\",\"price\":\"100\"}},{\"categoryId\":\"category_id\",\"price\":{\"currency\":\"Fiat\",\"price\":\"100\"}}],\"total\":[{\"currency\":\"T721Token\",\"value\":\"200\",\"log_value\":0}],\"fees\":[null]}`,
+                        error:
+                            '{"details":[{"category":{"id":"category_id","group_id":"group_id","parent_id":null,"parent_type":null,"prices":[{"currency":"T721Token","value":"100","log_value":0}]},"reason":"category_not_available"},{"category":{"id":"category_id","group_id":"group_id","parent_id":null,"parent_type":null,"prices":[{"currency":"T721Token","value":"100","log_value":0}]},"reason":"category_not_available"}],"error":"cannot_purchase_tickets"}',
                         status: 'error',
                         private: false,
                     },
@@ -858,6 +1008,8 @@ describe('Cart Input Handlers Spec', function() {
                 response: [
                     {
                         id: 'category_id',
+                        parent_id: 'date',
+                        parent_type: 'date_id',
                         group_id: 'group_id',
                         prices: [
                             {
@@ -1421,6 +1573,8 @@ describe('Cart Input Handlers Spec', function() {
                 response: [
                     {
                         id: 'category_id',
+                        parent_id: 'date',
+                        parent_type: 'date_id',
                         prices: [
                             {
                                 currency: 'T721Token',

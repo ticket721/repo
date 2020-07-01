@@ -1591,7 +1591,7 @@ export const createEvent = async (token: string, sdk: T721SDK): Promise<EventDto
         global: [
             {
                 name: 'VIP Tickets',
-                saleBegin: new Date(Date.now() + 1000000),
+                saleBegin: new Date(Date.now() - 1000000),
                 saleEnd: new Date(Date.now() + 23 * 1000000),
                 resaleBegin: new Date(Date.now() + 1000000),
                 resaleEnd: new Date(Date.now() + 23 * 1000000),
@@ -1608,7 +1608,7 @@ export const createEvent = async (token: string, sdk: T721SDK): Promise<EventDto
             [
                 {
                     name: 'Regular Tickets',
-                    saleBegin: new Date(Date.now() + 1000000),
+                    saleBegin: new Date(Date.now() - 1000000),
                     saleEnd: new Date(Date.now() + 23 * 1000000),
                     resaleBegin: new Date(Date.now() + 1000000),
                     resaleEnd: new Date(Date.now() + 23 * 1000000),
@@ -1624,7 +1624,7 @@ export const createEvent = async (token: string, sdk: T721SDK): Promise<EventDto
             [
                 {
                     name: 'Regular Tickets',
-                    saleBegin: new Date(Date.now() + 1000000),
+                    saleBegin: new Date(Date.now() - 1000000),
                     saleEnd: new Date(Date.now() + 23 * 1000000),
                     resaleBegin: new Date(Date.now() + 1000000),
                     resaleEnd: new Date(Date.now() + 23 * 1000000),
