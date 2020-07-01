@@ -3,33 +3,41 @@ import { Button }             from '@frontend/flib-react/lib/components';
 import styled                 from 'styled-components';
 
 export interface FormActionsProps{
-    cancel: () => void;
+    cancel?: () => void;
     newItem?: boolean;
     disabled?: boolean;
     delete?: () => void;
+    loadingState?: boolean;
 }
 
 export const FormActions = (props: FormActionsProps) => (
     <StyledFormActions>
-        {
-            !props.newItem ?
-                <Button
-                title='Delete item'
-                variant={'danger'}
-                onClick={props.delete}
-                /> :
-                <div/>
-        }
-        <div className={'sub-container'}>
+      {
+        !props.newItem && props.delete ?
+        <div className={'delete-container'}>
             <Button
-            title='Cancel'
-            variant={'secondary'}
-            onClick={props.cancel}
+            title='Delete item'
+            variant={'danger'}
+            onClick={props.delete}
             />
+        </div> :
+          null
+      }
+        <div className={'sub-container'}>
+            {
+                props.cancel ?
+                <Button
+                title='Cancel'
+                variant={'secondary'}
+                onClick={props.cancel}
+                /> :
+                  null
+            }
             <Button
             type='submit'
             title='Save changes'
             variant={props.disabled ? 'disabled' : 'primary'}
+            loadingState={props.loadingState}
             />
         </div>
     </StyledFormActions>
@@ -39,12 +47,16 @@ const StyledFormActions = styled.div`
     display: flex;
     justify-content: space-between;
 
-    & > button {
-        width: 30%;
+    .delete-container {
+        flex: 1;
+
+        & > button {
+            width: 60%;
+        }
     }
 
     .sub-container {
-        width: 50%;
+        flex: 1;
         display: flex;
 
         & > button:first-child {
@@ -54,6 +66,7 @@ const StyledFormActions = styled.div`
 
         & > button:last-child {
             flex: 2;
+            margin-right: 0;
         }
     }
 `;

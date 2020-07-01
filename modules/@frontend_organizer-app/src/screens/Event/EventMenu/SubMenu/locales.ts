@@ -6,7 +6,9 @@ i18n.addResourceBundle('en', 'event_sub_menu', {
     styles_subtitle: 'Styles',
     location_subtitle: 'Location',
     categories_title: 'Categories',
-    new_category_subtitle: 'New Category',
+    global_categories_title: 'Global categories',
+    new_category_subtitle: '+ New category',
+    new_global_category_subtitle: '+ New global category',
 });
 
 i18n.addResourceBundle('fr', 'event_sub_menu', {
@@ -15,5 +17,7 @@ i18n.addResourceBundle('fr', 'event_sub_menu', {
     styles_subtitle: 'Styles',
     location_subtitle: 'Emplacement',
     categories_title: 'Catégories',
-    new_category_subtitle: 'Nouvelle Catégorie',
+    global_categories_title: 'Catégories globales',
+    new_date_category_subtitle: '+ Nouvelle catégorie',
+    new_global_category_subtitle: '+ Nouvelle catégorie globale',
 });

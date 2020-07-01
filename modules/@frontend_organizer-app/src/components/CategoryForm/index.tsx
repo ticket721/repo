@@ -3,7 +3,7 @@ import {
     CustomDatePicker,
     CustomTimePicker,
     TextInput
-}                           from '@frontend/flib-react/lib/components';
+}                                     from '@frontend/flib-react/lib/components';
 import styled                       from 'styled-components';
 import { useFormik }                from 'formik';
 import { categoryValidationSchema }                              from './validationSchema';
@@ -12,6 +12,8 @@ import { FormActions, FormActionsProps }                         from '../FormAc
 
 import { useTranslation } from 'react-i18next';
 import './locales';
+import { useDeepEffect }  from '@frontend/core/lib/hooks/useDeepEffect';
+import { isEqual } from 'lodash';
 
 export interface CategoryItem {
     name: string;
@@ -36,6 +38,7 @@ export interface CategoryFormProps extends FormActionsProps {
     initialValues?: CategoryItem;
     maxDate: Date;
     confirm: (categoryItem: CategoryItem) => void;
+    loadingState?: boolean;
 }
 
 export const CategoryForm: React.FC<CategoryFormProps> = (props: CategoryFormProps) => {
@@ -126,6 +129,13 @@ export const CategoryForm: React.FC<CategoryFormProps> = (props: CategoryFormPro
         }
         // eslint-disable-next-line
     }, [props.maxDate]);
+
+    useDeepEffect(() => {
+        console.log(checkedInitialValues);
+        if (formik.initialValues) {
+            formik.setValues(checkedInitialValues);
+        }
+    }, [checkedInitialValues]);
 
     return (
         <Form onSubmit={formik.handleSubmit}>
@@ -236,9 +246,10 @@ export const CategoryForm: React.FC<CategoryFormProps> = (props: CategoryFormPro
                 delete={props.delete}
                 cancel={props.cancel}
                 newItem={props.newItem}
+                loadingState={props.loadingState}
                 disabled={
-                    !formik.isValid &&
-                    JSON.stringify(formik.values) === JSON.stringify(checkedInitialValues)
+                    !formik.isValid ||
+                    isEqual(formik.values, checkedInitialValues)
                 }/>
         </Form>
     )

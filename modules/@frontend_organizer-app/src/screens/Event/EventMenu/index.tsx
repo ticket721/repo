@@ -32,6 +32,7 @@ export const EventMenu: React.FC = () => {
     const [uuid] = useState<string>(v4() + '@event-menu');
     const token = useSelector((state: MergedAppState) => state.auth.token.value);
     const { groupId, dateId } = useParams();
+    const [ eventId, setEventId ] = useState<string>(null);
 
     const [ selectableDates, setSelectableDates ] = useState<DateOption[]>(null);
     const [ selectedDate, setSelectedDate ] = useState<DateEntity>(null);
@@ -60,6 +61,7 @@ export const EventMenu: React.FC = () => {
                 label: formatDateLabel(date.timestamps.event_begin),
                 value: date.id,
             })));
+            setEventId(currentDate.parent_id);
         }
     }, [datesResp]);
 
@@ -93,7 +95,11 @@ export const EventMenu: React.FC = () => {
                 />
             </DateActions>
             <Separator/>
-            <SubMenu/>
+            <SubMenu
+            newDate={!dateId}
+            groupId={groupId}
+            eventId={eventId}
+            dateId={dateId}/>
             <Separator/>
             <LastSection>
                 <Button

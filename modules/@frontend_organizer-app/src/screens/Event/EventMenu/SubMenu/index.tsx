@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled                         from 'styled-components';
 
-import { useHistory, useParams }       from 'react-router';
+import { useHistory }       from 'react-router';
 import Icon                            from '@frontend/flib-react/lib/components/icon';
 import { useRequest }                  from '@frontend/core/lib/hooks/useRequest';
 import { useSelector }                 from 'react-redux';
@@ -13,18 +13,26 @@ import { CategoryEntity }              from '@common/sdk/lib/@backend_nest/libs/
 import { useTranslation }              from 'react-i18next';
 import './locales';
 
-export const SubMenu: React.FC = () => {
+export interface SubMenuProps {
+    groupId: string;
+    eventId: string;
+    dateId: string;
+    newDate: boolean;
+}
+
+export const SubMenu: React.FC<SubMenuProps> = ({ groupId, eventId, dateId, newDate}: SubMenuProps) => {
     const history = useHistory();
-    const { groupId, dateId } = useParams();
     const [activeTile, setActiveTile] = useState<string>(null);
     const [uuid] = useState<string>(v4() + '@event-submenu');
     const [ t ] = useTranslation(['event_sub_menu']);
     const [ showingInfos, setShowingInfos ] = useState<boolean>(false);
-    const [ showingCategories, setShowingCategories ] = useState<boolean>(false);
+    const [ showingDateCategories, setShowingDateCategories ] = useState<boolean>(false);
+    const [ showingGlobalCategories, setShowingGlobalCategories ] = useState<boolean>(false);
 
-    const [ categories, setCategories ] = useState<CategoryEntity[]>([]);
+    const [ dateCategories, setDateCategories ] = useState<CategoryEntity[]>([]);
+    const [ globalCategories, setGlobalCategories ] = useState<CategoryEntity[]>([]);
     const token = useSelector((state: MergedAppState) => state.auth.token.value);
-    const { response: categoriesResp } = useRequest<CategoriesSearchResponseDto>(
+    const { response: dateCategoriesResp } = useRequest<CategoriesSearchResponseDto>(
         {
             method: 'categories.search',
             args: [
@@ -32,6 +40,22 @@ export const SubMenu: React.FC = () => {
                 {
                     parent_id: {
                         $eq: dateId,
+                    }
+                },
+            ],
+            refreshRate: 5,
+        },
+        uuid
+    );
+
+    const { response: globalCategoriesResp } = useRequest<CategoriesSearchResponseDto>(
+        {
+            method: 'categories.search',
+            args: [
+                token,
+                {
+                    parent_id: {
+                        $eq: eventId,
                     }
                 },
             ],
@@ -48,20 +72,28 @@ export const SubMenu: React.FC = () => {
     useEffect(() => {
         if (history.location.state) {
             setShowingInfos(history.location.state['showingInfos']);
-            setShowingCategories(history.location.state['showingCategories']);
+            setShowingDateCategories(history.location.state['showingDateCategories']);
+            setShowingGlobalCategories(history.location.state['showingGlobalCategories']);
         }
     }, [history.location.state]);
 
     useEffect(() => {
-        if (categoriesResp.data && categoriesResp.data.categories.length > 0) {
-            setCategories(categoriesResp.data.categories);
+        if (dateCategoriesResp.data && dateCategoriesResp.data.categories.length > 0) {
+            setDateCategories(dateCategoriesResp.data.categories);
         }
     },
-    [categoriesResp]);
+    [dateCategoriesResp]);
+
+    useEffect(() => {
+            if (globalCategoriesResp.data && globalCategoriesResp.data.categories.length > 0) {
+                setGlobalCategories(globalCategoriesResp.data.categories);
+            }
+        },
+        [globalCategoriesResp]);
 
     return (
         <>
-            <EditSection opened={showingInfos} disabled={!dateId}>
+            <EditSection opened={showingInfos} disabled={newDate}>
                 <TileHeader onClick={() => dateId && setShowingInfos(!showingInfos)}>
                     <Title>{t('information_title')}</Title>
                     <Icon icon='chevron' color='white' size='6px'/>
@@ -73,7 +105,8 @@ export const SubMenu: React.FC = () => {
                             active={activeTile === 'general-infos'}
                             onClick={() => history.push(`/${groupId}/date/${dateId}/general-infos`, {
                                 showingInfos,
-                                showingCategories
+                                showingDateCategories,
+                                showingGlobalCategories,
                             })}>
                                 {t('general_info_subtitle')}
                             </Tile>
@@ -81,7 +114,8 @@ export const SubMenu: React.FC = () => {
                             active={activeTile === 'styles'}
                             onClick={() => history.push(`/${groupId}/date/${dateId}/styles`, {
                                 showingInfos,
-                                showingCategories
+                                showingDateCategories,
+                                showingGlobalCategories,
                             })}>
                                 {t('styles_subtitle')}
                             </Tile>
@@ -89,7 +123,8 @@ export const SubMenu: React.FC = () => {
                             active={activeTile === 'location'}
                             onClick={() => history.push(`/${groupId}/date/${dateId}/location`, {
                                 showingInfos,
-                                showingCategories
+                                showingDateCategories,
+                                showingGlobalCategories,
                             })}>
                                 {t('location_subtitle')}
                             </Tile>
@@ -97,22 +132,23 @@ export const SubMenu: React.FC = () => {
                         null
                 }
             </EditSection>
-            <EditSection opened={showingCategories} disabled={!dateId}>
-                <TileHeader onClick={() => dateId && setShowingCategories(!showingCategories)}>
+            <EditSection opened={showingDateCategories} disabled={newDate}>
+                <TileHeader onClick={() => dateId && setShowingDateCategories(!showingDateCategories)}>
                     <Title>{t('categories_title')}</Title>
                     <Icon icon='chevron' color='white' size='6px'/>
                 </TileHeader>
                 {
-                    showingCategories ?
+                    showingDateCategories ?
                         <Tiles>
                             {
-                                categories.map((category) => (
+                                dateCategories.map((category) => (
                                     <Tile
                                     key={category.id}
                                     active={activeTile === category.id}
                                     onClick={() => history.push(`/${groupId}/date/${dateId}/category/${category.id}`, {
                                         showingInfos,
-                                        showingCategories
+                                        showingDateCategories,
+                                        showingGlobalCategories,
                                     })}>
                                         {category.display_name}
                                     </Tile>
@@ -122,9 +158,45 @@ export const SubMenu: React.FC = () => {
                             active={activeTile === 'category'}
                             key={'new-category'} onClick={() => history.push(`/${groupId}/date/${dateId}/category`, {
                                 showingInfos,
-                                showingCategories
+                                showingDateCategories,
+                                showingGlobalCategories,
                             })}>
                                 {t('new_category_subtitle')}
+                            </Tile>
+                        </Tiles> :
+                        null
+                }
+            </EditSection>
+            <EditSection opened={showingGlobalCategories} disabled={newDate}>
+                <TileHeader onClick={() => dateId && setShowingGlobalCategories(!showingGlobalCategories)}>
+                    <Title>{t('global_categories_title')}</Title>
+                    <Icon icon='chevron' color='white' size='6px'/>
+                </TileHeader>
+                {
+                    showingGlobalCategories ?
+                        <Tiles>
+                            {
+                                globalCategories.map((category) => (
+                                    <Tile
+                                        key={category.id + '-global'}
+                                        active={activeTile === category.id}
+                                        onClick={() => history.push(`/${groupId}/date/${dateId}/category/${category.id}`, {
+                                            showingInfos,
+                                            showingDateCategories,
+                                            showingGlobalCategories,
+                                        })}>
+                                        {category.display_name}
+                                    </Tile>
+                                ))
+                            }
+                            <Tile
+                                active={activeTile === 'category'}
+                                key={'new-global-category'} onClick={() => history.push(`/${groupId}/date/${dateId}/category`, {
+                                showingInfos,
+                                showingDateCategories,
+                                showingGlobalCategories,
+                            })}>
+                                {t('new_global_category_subtitle')}
                             </Tile>
                         </Tiles> :
                         null

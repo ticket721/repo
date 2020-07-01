@@ -1,15 +1,17 @@
 import React       from 'react';
 import { Login, Register }       from '@frontend/core/lib/components';
 
-import Dashboard          from './screens/Dashboard';
-import CreateEvent        from './screens/CreateEvent';
-import Preview            from './screens/Event/Preview';
-import UpdateGeneralInfos from './screens/Event/UpdateGeneralInfos';
-import UpdateCategory     from './screens/Event/UpdateCategory';
-import NewCategory        from './screens/Event/NewCategory';
-import UpdateStyles       from './screens/Event/UpdateStyles';
-import UpdateLocation     from './screens/Event/UpdateLocation';
-import NewDate            from './screens/Event/NewDate';
+import Dashboard            from './screens/Dashboard';
+import CreateEvent          from './screens/CreateEvent';
+import Preview              from './screens/Event/Preview';
+import UpdateGeneralInfos   from './screens/Event/UpdateGeneralInfos';
+import UpdateCategory       from './screens/Event/UpdateCategory';
+import NewCategory          from './screens/Event/NewCategory';
+import UpdateStyles         from './screens/Event/UpdateStyles';
+import UpdateLocation       from './screens/Event/UpdateLocation';
+import NewDate              from './screens/Event/NewDate';
+import UpdateGlobalCategory from './screens/Event/UpdateGlobalCategory';
+import NewGlobalCategory    from './screens/Event/NewGlobalCategory';
 
 export interface RouteDatum {
     path: string;
@@ -19,6 +21,16 @@ export interface RouteDatum {
 }
 
 export const routes: RouteDatum[] = [
+    {
+        path: '/:groupId/event/:eventId/category/:categoryId',
+        page: UpdateGlobalCategory,
+        protected: true,
+    },
+    {
+        path: '/:groupId/event/:eventId/category',
+        page: NewGlobalCategory,
+        protected: true,
+    },
     {
         path: '/:groupId/date/:dateId/category/:categoryId',
         page: UpdateCategory,
