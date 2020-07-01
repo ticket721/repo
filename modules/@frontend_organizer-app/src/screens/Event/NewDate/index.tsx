@@ -26,10 +26,10 @@ const NewDate = () => {
     const { groupId } = useParams();
     const [ inputTag, setInputTag ] = React.useState('');
     const dispatch = useDispatch();
-    const [uuiCreate] = React.useState(v4());
+    const [uuidCreate] = React.useState(v4() + '@new-date');
     const token = useSelector((state: AppState): string => state.auth.token.value);
 
-    const { lazyRequest: createDate, response: createResponse } = useLazyRequest<DatesCreateResponseDto>('dates.create', uuiCreate);
+    const { lazyRequest: createDate, response: createResponse } = useLazyRequest<DatesCreateResponseDto>('dates.create', uuidCreate);
 
     const formik = useFormik({
         initialValues: {
@@ -62,7 +62,9 @@ const NewDate = () => {
                         lon: values.location.lon,
                         lat: values.location.lat,
                     }
-                }}]);
+                }}], {
+                force: true
+            });
         },
         validationSchema: completeDateValidation,
     });

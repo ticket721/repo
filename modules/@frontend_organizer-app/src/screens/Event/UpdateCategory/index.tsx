@@ -49,7 +49,9 @@ const UpdateCategory: React.FC = () => {
         return (
             <UpdateCategoryForm
                 uuid={uuid}
+                dateId={dateId}
                 categoryId={categoryId}
+                categoryName={categoryResp.data?.categories[0].display_name}
                 initialValues={categoryResp.data.categories[0]}
                 maxDate={checkFormatDate(dateResp.data.dates[0].timestamps.event_end)}
             />

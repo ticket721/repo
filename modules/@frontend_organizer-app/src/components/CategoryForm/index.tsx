@@ -131,7 +131,6 @@ export const CategoryForm: React.FC<CategoryFormProps> = (props: CategoryFormPro
     }, [props.maxDate]);
 
     useDeepEffect(() => {
-        console.log(checkedInitialValues);
         if (formik.initialValues) {
             formik.setValues(checkedInitialValues);
         }

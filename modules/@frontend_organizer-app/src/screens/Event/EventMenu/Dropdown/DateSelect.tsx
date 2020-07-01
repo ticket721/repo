@@ -145,10 +145,10 @@ const StyledInputContainer = styled.div<DateSelectProps>`
 
     ${props => props.menuPosition ?
         `& [class$=Menu] {
-                top: ${props.menuPosition.top};
-                bottom: ${props.menuPosition.bottom};
-                right: ${props.menuPosition.right};
-                left: ${props.menuPosition.left};
+            top: ${props.menuPosition.top};
+            bottom: ${props.menuPosition.bottom};
+            right: ${props.menuPosition.right};
+            left: ${props.menuPosition.left};
         }
         `: null
     }

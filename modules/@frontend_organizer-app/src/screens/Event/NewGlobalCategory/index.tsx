@@ -3,23 +3,25 @@ import { useRequest }                  from '@frontend/core/lib/hooks/useRequest
 import { v4 }                       from 'uuid';
 import { useHistory, useParams }    from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
-import { MergedAppState }                from '../../../index';
-import { DatesSearchResponseDto }        from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
-import { checkFormatDate }               from '@frontend/core/lib/utils/date';
-import { CategoryForm, CategoryItem }    from '../../../components/CategoryForm';
-import { useDeepEffect }                 from '@frontend/core/lib/hooks/useDeepEffect';
-import { PushNotification }              from '@frontend/core/lib/redux/ducks/notifications';
-import { useLazyRequest }                from '@frontend/core/lib/hooks/useLazyRequest';
-import { CategoriesCreateResponseDto }   from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/categories/dto/CategoriesCreateResponse.dto';
-import { DatesAddCategoriesResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesAddCategoriesResponse.dto';
+import { MergedAppState }                 from '../../../index';
+import { DatesSearchResponseDto }     from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
+import { checkFormatDate, year }      from '@frontend/core/lib/utils/date';
+import { CategoryForm, CategoryItem } from '../../../components/CategoryForm';
+import { useDeepEffect }                  from '@frontend/core/lib/hooks/useDeepEffect';
+import { PushNotification }               from '@frontend/core/lib/redux/ducks/notifications';
+import { useLazyRequest }                 from '@frontend/core/lib/hooks/useLazyRequest';
+import {
+    CategoriesCreateResponseDto
+}    from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/categories/dto/CategoriesCreateResponse.dto';
+import { EventsAddCategoriesResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsAddCategoriesResponse.dto';
 
-const NewCategory: React.FC = () => {
+const NewGlobalCategory: React.FC = () => {
     const history = useHistory();
-    const { groupId, dateId } = useParams();
+    const { groupId, eventId } = useParams();
 
     const [ loadingState, setLoadingState ] = useState<boolean>(false);
     const dispatch = useDispatch();
-    const [uuid] = useState(v4() + '@create-category');
+    const [uuid] = useState(v4() + '@create-global-category');
     const token = useSelector((state: MergedAppState) => state.auth.token.value);
     const { response: dateResp } = useRequest<DatesSearchResponseDto>(
         {
@@ -27,8 +29,8 @@ const NewCategory: React.FC = () => {
             args: [
                 token,
                 {
-                    id: {
-                        $eq: dateId
+                    parent_id: {
+                        $eq: eventId
                     }
                 }
             ],
@@ -38,7 +40,7 @@ const NewCategory: React.FC = () => {
     );
 
     const { lazyRequest: createCategory, response: createResp } = useLazyRequest<CategoriesCreateResponseDto>('categories.create', uuid);
-    const { lazyRequest: addCategory, response: addCategoryResp } = useLazyRequest<DatesAddCategoriesResponseDto>('dates.addCategories', uuid);
+    const { lazyRequest: addCategory, response: addCategoryResp } = useLazyRequest<EventsAddCategoriesResponseDto>('events.addCategories', uuid);
 
     const create = (values: CategoryItem) => {
         setLoadingState(true);
@@ -59,11 +61,17 @@ const NewCategory: React.FC = () => {
         })
     };
 
+    const getMaxDate = (): Date => {
+        const sortedDates = dateResp.data.dates.sort((dateA, dateB) =>
+            checkFormatDate(dateB.timestamps.event_end).getTime() - checkFormatDate(dateA.timestamps.event_end).getTime());
+        return checkFormatDate(sortedDates[0].timestamps.event_end);
+    };
+
     useDeepEffect(() => {
         if (createResp.data?.category) {
             addCategory([
                 token,
-                dateId,
+                eventId,
                 {
                     categories: [createResp.data.category.id]
                 }
@@ -75,7 +83,9 @@ const NewCategory: React.FC = () => {
         if (addCategoryResp.data) {
             setLoadingState(false);
             dispatch(PushNotification('Successfuly updated', 'success'));
-            history.push(`/${groupId}/date/${dateId}/category/${createResp.data.category.id}`);
+            history.push(`/${groupId}/event/${eventId}/category/${createResp.data.category.id}`, {
+                showingGlobalCategories: true
+            })
         }
     }, [addCategoryResp.data]);
 
@@ -86,16 +96,14 @@ const NewCategory: React.FC = () => {
         }
     }, [createResp.error, addCategoryResp.error]);
 
-    if (dateResp.data?.dates[0]) {
-        return (
-            <CategoryForm
-            maxDate={checkFormatDate(dateResp.data.dates[0].timestamps.event_end)}
+    return (
+        <CategoryForm
+            maxDate={dateResp.data?.dates.length > 0 ?
+                getMaxDate():
+            new Date(Date.now() + year)}
             loadingState={loadingState}
             confirm={create}/>
-        )
-    } else {
-        return <span>loading...</span>
-    }
+    )
 };
 
-export default NewCategory;
+export default NewGlobalCategory;

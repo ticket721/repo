@@ -7,10 +7,13 @@ import { useDeepEffect }            from '@frontend/core/lib/hooks/useDeepEffect
 import { PushNotification }         from '@frontend/core/lib/redux/ducks/notifications';
 import { CategoryEntity }             from '@common/sdk/lib/@backend_nest/libs/common/src/categories/entities/Category.entity';
 import { CategoryForm, CategoryItem } from '../../../components/CategoryForm';
+import { CategoryDeletionPopup } from '../CategoryDeletionPopup';
 
 interface UpdateCategoryFormProps {
     uuid: string;
+    dateId: string;
     categoryId: string;
+    categoryName: string;
     initialValues: CategoryEntity,
     maxDate: Date;
 }
@@ -20,6 +23,7 @@ export const UpdateCategoryForm: React.FC<UpdateCategoryFormProps> = (props: Upd
     const [ loadingState, setLoadingState ] = useState<boolean>(false);
     const dispatch = useDispatch();
 
+    const [ deletionOpened, setDeletionOpened ] = useState<boolean>(false);
     const token = useSelector((state: MergedAppState): string => state.auth.token.value);
     const { lazyRequest: updateCategory, response: updateResponse } = useLazyRequest('categories.update', props.uuid);
 
@@ -34,8 +38,8 @@ export const UpdateCategoryForm: React.FC<UpdateCategoryFormProps> = (props: Upd
                 seats: values.seats,
                 sale_begin: values.saleBegin,
                 sale_end: values.saleEnd,
-                resale_begin: null,
-                resale_end: null,
+                resale_begin: values.saleBegin,
+                resale_end: values.saleEnd,
             }
         ], {
             force: true
@@ -70,10 +74,20 @@ export const UpdateCategoryForm: React.FC<UpdateCategoryFormProps> = (props: Upd
     }, [props.initialValues]);
 
     return (
+        <>
         <CategoryForm
             initialValues={lastInitialValues}
             maxDate={props.maxDate}
             loadingState={loadingState}
-            confirm={update}/>
+            confirm={update}
+            delete={() => setDeletionOpened(true)}/>
+            <CategoryDeletionPopup
+            parentType={'date'}
+            parentId={props.dateId}
+            categoryId={props.categoryId}
+            categoryName={props.categoryName}
+            open={deletionOpened}
+            onClose={() => setDeletionOpened(false)}/>
+    </>
     );
 };

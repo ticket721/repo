@@ -1,16 +1,19 @@
 import React, { useEffect, useState }        from 'react';
 
-import { useDispatch, useSelector } from 'react-redux';
-import { useLazyRequest }           from '@frontend/core/lib/hooks/useLazyRequest';
-import { MergedAppState }           from '../../../index';
-import { useDeepEffect }            from '@frontend/core/lib/hooks/useDeepEffect';
-import { PushNotification }         from '@frontend/core/lib/redux/ducks/notifications';
+import { useDispatch, useSelector }   from 'react-redux';
+import { useLazyRequest }             from '@frontend/core/lib/hooks/useLazyRequest';
+import { MergedAppState }             from '../../../index';
+import { useDeepEffect }              from '@frontend/core/lib/hooks/useDeepEffect';
+import { PushNotification }           from '@frontend/core/lib/redux/ducks/notifications';
 import { CategoryEntity }             from '@common/sdk/lib/@backend_nest/libs/common/src/categories/entities/Category.entity';
 import { CategoryForm, CategoryItem } from '../../../components/CategoryForm';
+import { CategoryDeletionPopup }      from '../CategoryDeletionPopup';
 
 interface UpdateCategoryFormProps {
     uuid: string;
+    eventId: string;
     categoryId: string;
+    categoryName: string;
     initialValues: CategoryEntity,
     maxDate: Date;
 }
@@ -19,7 +22,7 @@ export const UpdateGlobalCategoryForm: React.FC<UpdateCategoryFormProps> = (prop
     const [ lastInitialValues, setLastInitialValues ] = useState<CategoryItem>(null);
     const [ loadingState, setLoadingState ] = useState<boolean>(false);
     const dispatch = useDispatch();
-
+    const [ deletionOpened, setDeletionOpened ] = useState<boolean>(false);
     const token = useSelector((state: MergedAppState): string => state.auth.token.value);
     const { lazyRequest: updateCategory, response: updateResponse } = useLazyRequest('categories.update', props.uuid);
 
@@ -34,6 +37,8 @@ export const UpdateGlobalCategoryForm: React.FC<UpdateCategoryFormProps> = (prop
                 seats: values.seats,
                 sale_begin: values.saleBegin,
                 sale_end: values.saleEnd,
+                resale_begin: values.saleBegin,
+                resale_end: values.saleEnd,
             }
         ], {
             force: true
@@ -57,18 +62,31 @@ export const UpdateGlobalCategoryForm: React.FC<UpdateCategoryFormProps> = (prop
     useEffect(() => {
         setLastInitialValues({
             name: props.initialValues.display_name,
-            currencies: props.initialValues.prices,
+            currencies: props.initialValues.prices.map((priceItem) => ({
+                currency: priceItem.currency,
+                price: priceItem.value,
+            })),
             seats: props.initialValues.seats,
             saleBegin: props.initialValues.sale_begin,
             saleEnd: props.initialValues.sale_end,
-        })
+        });
     }, [props.initialValues]);
 
     return (
-        <CategoryForm
-            initialValues={lastInitialValues}
-            maxDate={props.maxDate}
-            loadingState={loadingState}
-            confirm={update}/>
+        <>
+            <CategoryForm
+                initialValues={lastInitialValues}
+                maxDate={props.maxDate}
+                loadingState={loadingState}
+                confirm={update}
+                delete={() => setDeletionOpened(true)}/>
+            <CategoryDeletionPopup
+                parentType={'event'}
+                parentId={props.eventId}
+                categoryId={props.categoryId}
+                categoryName={props.categoryName}
+                open={deletionOpened}
+                onClose={() => setDeletionOpened(false)}/>
+        </>
     );
 };

@@ -59,7 +59,9 @@ const UpdateGlobalCategory: React.FC = () => {
         return (
             <UpdateGlobalCategoryForm
                 uuid={uuid}
+                eventId={eventId}
                 categoryId={categoryId}
+                categoryName={categoryResp.data.categories[0].display_name}
                 initialValues={categoryResp.data.categories[0]}
                 maxDate={maxDate}
             />
