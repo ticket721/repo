@@ -2,17 +2,18 @@ import React, { Suspense, useEffect, useState } from 'react';
 
 import { Route, Switch, useLocation, withRouter } from 'react-router-dom';
 
-import Navbar               from './shared/Navbar';
-import { AppState }         from '@frontend/core/lib/redux';
+import Navbar          from './shared/Navbar';
+import { AppState }    from '@frontend/core/lib/redux';
 
 import ProtectedRoute  from '@frontend/core/lib/components/ProtectedRoute';
 import { useSelector } from 'react-redux';
 import styled          from 'styled-components';
 import { AppStatus }   from '@frontend/core/lib/redux/ducks/statuses';
 import ToastStacker    from '@frontend/core/lib/components/ToastStacker';
-import './core/event_creation/locales';
 import { EventMenu }   from './screens/Event/EventMenu';
-import { routes } from "./routes";
+import { routes }      from './routes';
+
+import './core/event_creation/locales';
 
 const App: React.FC = () => {
   const [ validated, setValidated ] = useState(true);
@@ -41,7 +42,7 @@ const App: React.FC = () => {
                 const page: JSX.Element = (
                   <PageWrapper>
                     {
-                      route.path.match(/^\/:groupId\//) ?
+                      route.path.match(/^\/:groupId\/(date|event)/) ?
                         <EventPageWrapper>
                           <EventMenu/>
                           <route.page />

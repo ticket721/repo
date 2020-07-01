@@ -119,7 +119,7 @@ export const EventMenu: React.FC = () => {
                 <Button
                     title={'New Date'}
                     variant={dateId ? 'primary' : 'disabled'}
-                    onClick={() => history.push(`/${groupId}/new-date/${eventId}`)}/>
+                    onClick={() => history.push(`/${groupId}/event/${eventId}/date`)}/>
                 <Button
                   variant={dateId ? 'danger' : 'disabled'}
                   title={datesResp.data?.dates?.length > 1 ? 'Delete Date' : 'Delete Event'}

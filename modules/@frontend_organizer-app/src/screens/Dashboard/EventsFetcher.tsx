@@ -75,9 +75,7 @@ export const EventsFetcher: React.FC<EventsFetcherProps> = ({ token, uuid, group
     useDeepEffect(() => {
         if (formattedEvents.length > 0 && datesResp.data) {
             const filteredDates = datesResp.data.dates.filter(d => d.parent_type === 'event' || d.parent_type === 'date');
-            if (filteredDates.length === 0) {
-                setFormattedEvents([]);
-            } else {
+            if (filteredDates.length > 0) {
                 setFormattedEvents(formatDatesAndCovers(filteredDates, formattedEvents));
             }
         }
@@ -98,7 +96,7 @@ export const EventsFetcher: React.FC<EventsFetcherProps> = ({ token, uuid, group
         <Cards>
             {
                 (formattedEvents.length > 0 && formattedEvents[0].datesRange &&
-                    formattedEvents.map((event) => event.groupId && (
+                    formattedEvents.map((event) => (
                         <div
                         key={event.groupId}
                         onClick={() => history.push(`/${event.groupId}`)}>

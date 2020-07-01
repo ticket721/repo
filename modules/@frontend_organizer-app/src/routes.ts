@@ -51,7 +51,7 @@ export const routes: RouteDatum[] = [
         protected: true,
     },
     {
-        path: '/:groupId/new-date/:eventId',
+        path: '/:groupId/event/:eventId/date',
         page: NewDate,
         protected: true
     },
