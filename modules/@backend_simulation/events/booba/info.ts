@@ -25,9 +25,9 @@ export default {
         global: [
             {
                 name: 'VIP Tickets',
-                saleBegin: new Date(Date.now() + HOUR),
+                saleBegin: new Date(Date.now() + 30 * SECOND),
                 saleEnd: new Date(Date.now() + 23 * HOUR),
-                resaleBegin: new Date(Date.now() + HOUR),
+                resaleBegin: new Date(Date.now() + 30 * SECOND),
                 resaleEnd: new Date(Date.now() + 23 * HOUR),
                 seats: 100,
                 currencies: [

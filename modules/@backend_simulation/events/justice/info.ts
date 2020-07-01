@@ -52,7 +52,7 @@ export default {
             [
                 {
                     name: 'Regular Tickets',
-                    saleBegin: new Date(Date.now() + HOUR),
+                    saleBegin: new Date(Date.now() + 30 * SECOND),
                     saleEnd: new Date(Date.now() + 23 * HOUR),
                     resaleBegin: new Date(Date.now() + HOUR),
                     resaleEnd: new Date(Date.now() + 23 * HOUR),
@@ -80,8 +80,8 @@ export default {
                 },
                 {
                     name: 'Hyper Tickets',
-                    saleBegin: new Date(Date.now() + HOUR),
-                    saleEnd: new Date(Date.now() + 23 * HOUR),
+                    saleBegin: new Date(Date.now() + 30 * SECOND),
+                    saleEnd: new Date(Date.now() + 31 * SECOND),
                     resaleBegin: new Date(Date.now() + HOUR),
                     resaleEnd: new Date(Date.now() + 23 * HOUR),
                     seats: 200,
@@ -96,7 +96,7 @@ export default {
             [
                 {
                     name: 'Regular Tickets',
-                    saleBegin: new Date(Date.now() + HOUR),
+                    saleBegin: new Date(Date.now() + 30 * SECOND),
                     saleEnd: new Date(Date.now() + 23 * HOUR),
                     resaleBegin: new Date(Date.now() + HOUR),
                     resaleEnd: new Date(Date.now() + 23 * HOUR),
@@ -124,8 +124,8 @@ export default {
                 },
                 {
                     name: 'Hyper Tickets',
-                    saleBegin: new Date(Date.now() + HOUR),
-                    saleEnd: new Date(Date.now() + 23 * HOUR),
+                    saleBegin: new Date(Date.now() + 30 * SECOND),
+                    saleEnd: new Date(Date.now() + 31 * SECOND),
                     resaleBegin: new Date(Date.now() + HOUR),
                     resaleEnd: new Date(Date.now() + 23 * HOUR),
                     seats: 200,
