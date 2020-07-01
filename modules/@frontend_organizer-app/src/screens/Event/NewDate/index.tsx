@@ -20,21 +20,24 @@ import {
 import { EventCreationCore }        from '../../../core/event_creation/EventCreationCore';
 import { ColorPickers }             from '../../../components/ColorPickers';
 import '../../../shared/Translations/generalInfoForm';
+import '../../../shared/Translations/StylesForm';
 import '../../../shared/Translations/global';
 import DateForm from '../../../components/DateForm';
 
 import { completeDateValidation } from './validationSchema';
 
 const NewDate = () => {
-    const [ t ] = useTranslation(['general_infos', 'notify', 'global']);
+    const [ t ] = useTranslation(['general_infos', 'notify', 'global', 'event_creation_styles']);
     const history = useHistory();
-    const { groupId } = useParams();
+    const { groupId, eventId } = useParams();
     const [ inputTag, setInputTag ] = React.useState('');
     const dispatch = useDispatch();
     const [uuiCreate] = React.useState(v4());
+    const [uuiAdd] = React.useState(v4());
     const token = useSelector((state: AppState): string => state.auth.token.value);
 
     const { lazyRequest: createDate, response: createResponse } = useLazyRequest<DatesCreateResponseDto>('dates.create', uuiCreate);
+    const { lazyRequest: addDate, response: addResponse } = useLazyRequest<DatesCreateResponseDto>('events.addDates', uuiAdd);
 
     const formik = useFormik({
         initialValues: {
@@ -77,13 +80,24 @@ const NewDate = () => {
             dispatch(PushNotification(t(createResponse.error), 'error'));
         }
     }, [createResponse.error]);
-
     useDeepEffect(() => {
         if (createResponse.data) {
+            addDate([token, eventId, { dates: [createResponse.data.date.id]}])
+        }
+    }, [createResponse.data]);
+
+    useDeepEffect(() => {
+        if (addResponse.error) {
+            dispatch(PushNotification(t(createResponse.error), 'error'));
+        }
+    }, [addResponse.error]);
+    useDeepEffect(() => {
+        if (addResponse.data) {
             dispatch(PushNotification(t('success'), 'success'));
             history.push(`/${groupId}/date/${createResponse.data.date.id}`);
         }
-    }, [createResponse.data]);
+    }, [addResponse.data]);
+
 
     const onTagsKeyDown = (e: React.KeyboardEvent<HTMLElement>, tag: string) => {
         if(!inputTag) {
@@ -215,11 +229,10 @@ const NewDate = () => {
                       t(computeError('avatar'))
                   }
                 />
-
                 <ColorPickers
                   srcImage={preview}
                   colors={formik.values.signature_colors}
-                  onColorsChange={(colors) => formik.setFieldValue('signatureColors', colors)}/>
+                  onColorsChange={(colors) => formik.setFieldValue('signature_colors', colors)}/>
                 <DateForm
                     formik={formik}
                     formActions={renderFormActions}

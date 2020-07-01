@@ -114,7 +114,7 @@ const App: React.FC = () => {
                   </PageWrapper>
               </ProtectedRoute>
 
-              <ProtectedRoute path='/:groupId/date' exact>
+              <ProtectedRoute path='/:groupId/new-date/:eventId' exact>
                   <PageWrapper>
                       <EventPageWrapper>
                           <EventMenu/>

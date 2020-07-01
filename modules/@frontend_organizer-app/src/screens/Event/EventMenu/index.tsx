@@ -35,7 +35,7 @@ export const EventMenu: React.FC = () => {
     const [uuid] = useState<string>(v4() + '@event-menu');
     const [uuidDelete] = useState<string>(v4() + '@event-menu');
     const token = useSelector((state: MergedAppState) => state.auth.token.value);
-    const { groupId, dateId, categoryId } = useParams();
+    const { groupId, dateId } = useParams();
     const dispatch = useDispatch();
     const [eventId, setEventId] = useState<string>(null);
 
@@ -102,12 +102,12 @@ export const EventMenu: React.FC = () => {
                     }
                 </Header>
                 <Button
-                    variant={dateId || categoryId ? 'primary' : 'disabled'}
+                    variant={dateId ? 'primary' : 'disabled'}
                     title={t('publish_label')}
                     onClick={() => console.log('publish')}
                 />
               <Button
-                  variant={dateId || categoryId ? 'secondary' : 'disabled'}
+                  variant={dateId ? 'secondary' : 'disabled'}
                   title={t('preview_label')}
                   onClick={() => history.push(`/${groupId}/date/${dateId}`)}
               />
@@ -118,11 +118,11 @@ export const EventMenu: React.FC = () => {
             <LastSection>
                 <Button
                     title={'New Date'}
-                    variant={dateId || categoryId ? 'primary' : 'disabled'}
-                    onClick={() => history.push(`/${groupId}/date`)}/>
+                    variant={dateId ? 'primary' : 'disabled'}
+                    onClick={() => history.push(`/${groupId}/new-date/${eventId}`)}/>
                 <Button
+                  variant={dateId ? 'danger' : 'disabled'}
                   title={datesResp.data?.dates?.length > 1 ? 'Delete Date' : 'Delete Event'}
-                  variant={'danger'}
                   onClick={() => { deleteDate([token, eventId, { dates: [dateId] }]) }}/>
             </LastSection>
         </Container>

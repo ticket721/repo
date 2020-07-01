@@ -64,6 +64,9 @@ const formatDatesAndCovers = (dates: DateEntity[], events: EventDashboard[]): Ev
 const formatPricesAndSeats = (categories: CategoryEntity[], events: EventDashboard[]): EventDashboard[] => (
     events?.map((event) => {
         const filteredCategories = categories.filter((category) => category.group_id === event.groupId);
+        if (filteredCategories.length === 0) {
+          return undefined;
+        }
         const seatsCount: number = filteredCategories
             .map((category) => category.seats)
             .reduce((acc, seats) => acc + seats);
@@ -79,7 +82,7 @@ const formatPricesAndSeats = (categories: CategoryEntity[], events: EventDashboa
             startPrice: sortedPrices[0],
             totalSeats: seatsCount,
         }
-    })
+    }).filter(c => c !== undefined)
 );
 
 export { formatEventName, formatDatesAndCovers, formatPricesAndSeats };
