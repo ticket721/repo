@@ -18,7 +18,6 @@ import Dashboard          from './screens/Dashboard';
 import CreateEvent        from './screens/CreateEvent';
 import Preview            from './screens/Event/Preview';
 import UpdateGeneralInfos from './screens/Event/UpdateGeneralInfos';
-import UpdateCategory     from './screens/Event/UpdateCategory';
 import NewCategory        from './screens/Event/NewCategory';
 import UpdateStyles       from './screens/Event/UpdateStyles';
 import UpdateLocation     from './screens/Event/UpdateLocation';
@@ -67,24 +66,6 @@ const App: React.FC = () => {
               <ProtectedRoute path='/' exact>
                   <PageWrapper>
                       <Dashboard/>
-                  </PageWrapper>
-              </ProtectedRoute>
-
-              <ProtectedRoute path='/:groupId/date/:dateId/category/:categoryId' exact>
-                  <PageWrapper>
-                      <EventPageWrapper>
-                          <EventMenu/>
-                          <UpdateCategory/>
-                      </EventPageWrapper>
-                  </PageWrapper>
-              </ProtectedRoute>
-
-              <ProtectedRoute path='/:groupId/category/:categoryId' exact>
-                  <PageWrapper>
-                      <EventPageWrapper>
-                          <EventMenu/>
-                          <UpdateCategory/>
-                      </EventPageWrapper>
                   </PageWrapper>
               </ProtectedRoute>
 

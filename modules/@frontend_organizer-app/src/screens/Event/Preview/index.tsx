@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styled                         from 'styled-components';
 import { PreviewInfos, TicketHeader }  from '@frontend/flib-react/lib/components';
-import { useParams }                   from 'react-router';
+import { useParams, useHistory }       from 'react-router';
 import { v4 }                          from 'uuid';
 import { useRequest }                  from '@frontend/core/lib/hooks/useRequest';
 import { useSelector }                 from 'react-redux';
@@ -39,6 +39,7 @@ const formatDatePreview = (date: DateEntity): DatePreview => ({
 const Preview: React.FC = () => {
     const [ t ] = useTranslation('preview_event');
     const { dateId } = useParams();
+    const history = useHistory();
     const [uuid] = useState(v4() + '@event-preview');
     const token = useSelector((state: MergedAppState) => state.auth.token.value);
     const [ datePreview, setDatePreview ] = useState<DatePreview>(null);
@@ -77,7 +78,11 @@ const Preview: React.FC = () => {
 
     useDeepEffect(() => {
         if (dateResp.data) {
-            setDatePreview(formatDatePreview(dateResp.data.dates.filter(d => d.parent_type === 'event' || d.parent_type === 'date')?.[0]));
+            if (dateResp.data.dates.filter(d => d.parent_type === 'event' || d.parent_type === 'date').length === 0) {
+                history.push('/');
+            } else {
+                setDatePreview(formatDatePreview(dateResp.data.dates.filter(d => d.parent_type === 'event' || d.parent_type === 'date')?.[0]));
+            }
         }
     }, [dateResp.data]);
 

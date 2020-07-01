@@ -35,7 +35,7 @@ export const EventMenu: React.FC = () => {
     const [uuid] = useState<string>(v4() + '@event-menu');
     const [uuidDelete] = useState<string>(v4() + '@event-menu');
     const token = useSelector((state: MergedAppState) => state.auth.token.value);
-    const { groupId, dateId } = useParams();
+    const { groupId, dateId, categoryId } = useParams();
     const dispatch = useDispatch();
     const [eventId, setEventId] = useState<string>(null);
 
@@ -61,18 +61,20 @@ export const EventMenu: React.FC = () => {
 
     useDeepEffect(() => {
         if (datesResp.data && datesResp.data.dates.length > 0) {
-            const currentDate: DateEntity = datesResp.data.dates.find((date) => date.id === dateId);
+            const filteredDates = datesResp.data.dates.filter(d => d.parent_type === 'event' || d.parent_type === 'date');
+            const currentDate: DateEntity = filteredDates.find((date) => date.id === dateId);
             setSelectedDate(currentDate);
-            setSelectableDates(datesResp.data.dates.map((date) => ({
+            setSelectableDates(filteredDates.map((date) => ({
                 label: formatDateLabel(date.timestamps.event_begin),
                 value: date.id,
             })));
+            setEventId(currentDate?.parent_id);
         }
     }, [datesResp]);
 
     useDeepEffect(() => {
-      if (deleteDateResp.called) {
-        if (!deleteDateResp.error && !deleteDateResp.loading) {
+      if (deleteDateResp.called && !deleteDateResp.loading) {
+        if (!deleteDateResp.error) {
           history.push(`/${groupId}`);
           dispatch(PushNotification(t('success'), 'success'));
         } else {
@@ -80,7 +82,6 @@ export const EventMenu: React.FC = () => {
         }
       }
     }, [deleteDateResp]);
-    //0x(([a-zA-Z]|[0-9])+)\/category
 
     return (
         <Container>
@@ -101,15 +102,15 @@ export const EventMenu: React.FC = () => {
                     }
                 </Header>
                 <Button
-                    variant={dateId ? 'primary' : 'disabled'}
+                    variant={dateId || categoryId ? 'primary' : 'disabled'}
                     title={t('publish_label')}
                     onClick={() => console.log('publish')}
                 />
-                <Button
-                    variant={dateId ? 'secondary' : 'disabled'}
-                    title={t('preview_label')}
-                    onClick={() => history.push(`/${groupId}/date/${dateId}`)}
-                />
+              <Button
+                  variant={dateId || categoryId ? 'secondary' : 'disabled'}
+                  title={t('preview_label')}
+                  onClick={() => history.push(`/${groupId}/date/${dateId}`)}
+              />
             </DateActions>
             <Separator/>
             <SubMenu/>
@@ -117,7 +118,7 @@ export const EventMenu: React.FC = () => {
             <LastSection>
                 <Button
                     title={'New Date'}
-                    variant={dateId ? 'primary' : 'disabled'}
+                    variant={dateId || categoryId ? 'primary' : 'disabled'}
                     onClick={() => history.push(`/${groupId}/date`)}/>
                 <Button
                   title={datesResp.data?.dates?.length > 1 ? 'Delete Date' : 'Delete Event'}
