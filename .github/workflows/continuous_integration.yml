@@ -51,6 +51,7 @@ jobs:
 
             - name: "CACHE root"
               uses: actions/cache@v1
+              id: root_cache
               with:
                   path: ./node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-root
@@ -181,8 +182,14 @@ jobs:
             # Run Complete install
             #
 
-            - name: "Install all dependencies (yarn @install)"
+
+            - name: "FULL Install all dependencies (yarn @install)"
+              if: steps.root_cache.outputs.cache-hit = 'false'
               run: "yarn @install"
+
+            # - name: "PARTIAL Install all dependencies (yarn @install)"
+            #   if: steps.root_cache.outputs.cache-hit = 'true'
+            #   run: "yarn @hitinstall"
 
 #     /$$$$  /$$$$$$   /$$$$$$  /$$$$
 #    | $$_/ /$$__  $$ /$$__  $$|_  $$

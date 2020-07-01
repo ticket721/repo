@@ -16,6 +16,7 @@
         "@install/public/postinstall": "cd modules && ls -d */ | grep '@public_' | xargs -P 1 -I % sh -c 'echo % && cd % && if test -f package.json; then yarn @lerna/postinstall; fi'",
         "@clean/public/postclean": "cd modules && ls -d */ | grep '@public_' | xargs -P 1 -I % sh -c 'echo % && cd % && if test -f package.json; then env yarn @lerna/postclean; fi'",
         "@install": "yarn @install/public/install && yarn @install/public/postinstall && yarn install",
+        "@hitinstall": "yarn @install/public/postinstall && yarn postinstall",
         "postinstall": "lerna exec 'yarn @lerna/postinstall' && yarn setup:portals",
         "@install:prod": "yarn @install/public/install && yarn @install/public/postinstall && yarn install --prod",
         "@docker:build": "docker-compose build",
@@ -77,7 +78,8 @@
         "@ledgerhq/web3-subprovider": "5.14.0",
         "@ledgerhq/hw-app-eth": "5.14.0",
         "@ledgerhq/logs": "5.13.1",
-        "@0x/subproviders": "6.0.8"
+        "@0x/subproviders": "6.0.8",
+        "commander": "5.1.0"
     },
     "editorconfig-cli": [
         "gulpfile.ts",
