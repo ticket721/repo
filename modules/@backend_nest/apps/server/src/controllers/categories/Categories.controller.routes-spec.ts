@@ -384,6 +384,176 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 });
             });
 
+            test('should update dates', async function() {
+                const {
+                    sdk,
+                    token,
+                    user,
+                    password,
+                }: {
+                    sdk: T721SDK;
+                    token: string;
+                    user: PasswordlessUserDto;
+                    password: string;
+                } = await getSDKAndUser(getCtx);
+
+                const groupID = `0x${generateUserName()}`;
+
+                await admin_addRight(user.id, 'category', groupID, "{ 'owner' : true }");
+
+                const now = Date.now();
+
+                const newCategory = await sdk.categories.create(token, {
+                    group_id: groupID,
+                    display_name: 'VIP',
+                    sale_begin: new Date(now + 1000000),
+                    sale_end: new Date(now + 2000000),
+                    resale_begin: new Date(now + 1000000),
+                    resale_end: new Date(now + 2000000),
+                    prices: [
+                        {
+                            currency: 'Fiat',
+                            price: '100',
+                        },
+                    ],
+                    seats: 100,
+                });
+
+                const editedCategory = await sdk.categories.update(token, newCategory.data.category.id, {
+                    sale_begin: new Date(now + 2000000),
+                    sale_end: new Date(now + 3000000),
+                    resale_begin: new Date(now + 2000000),
+                    resale_end: new Date(now + 3000000),
+                });
+
+                expect(editedCategory.data.category).toMatchObject({
+                    category_name: 'vip',
+                    display_name: 'VIP',
+                    group_id: groupID,
+                    id: editedCategory.data.category.id,
+                    prices: [
+                        {
+                            currency: 'T721Token',
+                            log_value: 6.643856189774724,
+                            value: '100',
+                        },
+                    ],
+                    sale_begin: new Date(now + 2000000).toISOString(),
+                    sale_end: new Date(now + 3000000).toISOString(),
+                    resale_begin: new Date(now + 2000000).toISOString(),
+                    resale_end: new Date(now + 3000000).toISOString(),
+                    scope: 'ticket721_0',
+                    seats: 100,
+                });
+            });
+
+            test('should update only one date', async function() {
+                const {
+                    sdk,
+                    token,
+                    user,
+                    password,
+                }: {
+                    sdk: T721SDK;
+                    token: string;
+                    user: PasswordlessUserDto;
+                    password: string;
+                } = await getSDKAndUser(getCtx);
+
+                const groupID = `0x${generateUserName()}`;
+
+                await admin_addRight(user.id, 'category', groupID, "{ 'owner' : true }");
+
+                const now = Date.now();
+
+                const newCategory = await sdk.categories.create(token, {
+                    group_id: groupID,
+                    display_name: 'VIP',
+                    sale_begin: new Date(now + 1000000),
+                    sale_end: new Date(now + 2000000),
+                    resale_begin: new Date(now + 1000000),
+                    resale_end: new Date(now + 2000000),
+                    prices: [
+                        {
+                            currency: 'Fiat',
+                            price: '100',
+                        },
+                    ],
+                    seats: 100,
+                });
+
+                const editedCategory = await sdk.categories.update(token, newCategory.data.category.id, {
+                    sale_end: new Date(now + 3000000),
+                    resale_begin: new Date(now + 1200000),
+                });
+
+                expect(editedCategory.data.category).toMatchObject({
+                    category_name: 'vip',
+                    display_name: 'VIP',
+                    group_id: groupID,
+                    id: editedCategory.data.category.id,
+                    prices: [
+                        {
+                            currency: 'T721Token',
+                            log_value: 6.643856189774724,
+                            value: '100',
+                        },
+                    ],
+                    sale_begin: new Date(now + 1000000).toISOString(),
+                    sale_end: new Date(now + 3000000).toISOString(),
+                    resale_begin: new Date(now + 1200000).toISOString(),
+                    resale_end: new Date(now + 2000000).toISOString(),
+                    scope: 'ticket721_0',
+                    seats: 100,
+                });
+            });
+
+            test('should update on full null dates', async function() {
+                const {
+                    sdk,
+                    token,
+                    user,
+                    password,
+                }: {
+                    sdk: T721SDK;
+                    token: string;
+                    user: PasswordlessUserDto;
+                    password: string;
+                } = await getSDKAndUser(getCtx);
+
+                const groupID = `0x${generateUserName()}`;
+
+                await admin_addRight(user.id, 'category', groupID, "{ 'owner' : true }");
+
+                const now = Date.now();
+
+                const newCategory = await sdk.categories.create(token, {
+                    group_id: groupID,
+                    display_name: 'VIP',
+                    sale_begin: new Date(now + 1000000),
+                    sale_end: new Date(now + 2000000),
+                    resale_begin: new Date(now + 1000000),
+                    resale_end: new Date(now + 2000000),
+                    prices: [
+                        {
+                            currency: 'Fiat',
+                            price: '100',
+                        },
+                    ],
+                    seats: 100,
+                });
+
+                await failWithCode(
+                    sdk.categories.update(token, newCategory.data.category.id, {
+                        sale_begin: null,
+                        sale_end: null,
+                        resale_begin: null,
+                        resale_end: null,
+                    }),
+                    StatusCodes.BadRequest,
+                );
+            });
+
             test('should fail update from user without rights', async function() {
                 const {
                     sdk,
@@ -695,8 +865,6 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 } as SortablePagedSearch);
 
                 expect(categories.data.categories.count).toEqual(1);
-
-                console.log(categories.data.categories.count);
             });
         });
     };
