@@ -297,6 +297,9 @@ describe('Controller Basics', function() {
                 spiedService._count(
                     anything(),
                     deepEqual({
+                        name: {
+                            $in: ['abcd'],
+                        },
                         id: {
                             $in: ['abcd'],
                         },
@@ -310,10 +313,10 @@ describe('Controller Basics', function() {
                 user,
                 'id',
                 {
-                    id: {
+                    name: {
                         $in: ['abcd'],
                     },
-                } as SearchInputType<EventEntity>,
+                } as SearchInputType<FakeEntity>,
             );
 
             expect(res).toEqual(response);
@@ -323,6 +326,9 @@ describe('Controller Basics', function() {
                 spiedService._count(
                     anything(),
                     deepEqual({
+                        name: {
+                            $in: ['abcd'],
+                        },
                         id: {
                             $in: ['abcd'],
                         },
@@ -734,6 +740,9 @@ describe('Controller Basics', function() {
                 spiedService._search(
                     anything(),
                     deepEqual({
+                        name: {
+                            $in: ['abcd'],
+                        },
                         id: {
                             $in: ['abcd'],
                         },
@@ -747,7 +756,7 @@ describe('Controller Basics', function() {
                 user,
                 'id',
                 {
-                    id: {
+                    name: {
                         $in: ['abcd'],
                     },
                 } as SearchInputType<EventEntity>,
@@ -760,6 +769,9 @@ describe('Controller Basics', function() {
                 spiedService._search(
                     anything(),
                     deepEqual({
+                        name: {
+                            $in: ['abcd'],
+                        },
                         id: {
                             $in: ['abcd'],
                         },
