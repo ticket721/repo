@@ -12,6 +12,7 @@ import {
     LocationCard,
     ReadMore,
     EventCta,
+    LeafletMap
 }                                      from '@frontend/flib-react/lib/components';
 import TagsListCard                    from '@frontend/flib-react/lib/components/cards/tags-list';
 import { useRequest }                  from '@frontend/core/lib/hooks/useRequest';
@@ -39,6 +40,7 @@ interface DatePreview {
     cover: string;
     colors: string[];
     location: string;
+    coord: { lon: number, lat: number };
     tags: string[];
     categoryName: string | null;
     prices: number[];
@@ -52,6 +54,7 @@ const formatDatePreview = (date: DateEntity): DatePreview => ({
     cover: getImgPath(date.metadata.avatar),
     colors: date.metadata.signature_colors,
     location: date.location.location_label,
+    coord: date.location.location,
     tags: date.metadata.tags,
     categoryName: null,
     prices: []
@@ -172,6 +175,10 @@ const Preview: React.FC = () => {
                                         location={ticket.location}
                                         removeBg
                                     />
+                                    <LeafletMap
+                                      width={'100%'}
+                                      height={'300px'}
+                                      coords={datePreview.coord}/>
                                     <Separator />
                                     <ReadMore
                                         readMoreColor={ticket.mainColor}
