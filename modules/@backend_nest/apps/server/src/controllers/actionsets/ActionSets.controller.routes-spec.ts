@@ -534,5 +534,42 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 expect(actionSets.data.actionsets[0].id).toEqual(eventCreationActionSetRes.data.actionset.id);
             });
         });
+
+        describe('count (GET /actions/count)', function() {
+            test('should count for my actionsets only', async function() {
+                const {
+                    sdk,
+                    token,
+                    user,
+                    password,
+                }: {
+                    sdk: T721SDK;
+                    token: string;
+                    user: PasswordlessUserDto;
+                    password: string;
+                } = await getSDKAndUser(getCtx);
+
+                const otherUser = await getUser(sdk);
+
+                const initialArgument = {};
+
+                const actionSetName = 'event_create';
+
+                const eventCreationActionSetRes = await sdk.actions.create(token, {
+                    name: actionSetName,
+                    arguments: initialArgument,
+                });
+
+                await sdk.actions.create(otherUser.token, {
+                    name: actionSetName,
+                    arguments: initialArgument,
+                });
+
+                const actionSets = await sdk.actions.count(token, {});
+
+                expect(actionSets.data.actionsets.count).toEqual(1);
+                expect(actionSets.data.actionsets[0].id).toEqual(eventCreationActionSetRes.data.actionset.id);
+            });
+        });
     };
 }
