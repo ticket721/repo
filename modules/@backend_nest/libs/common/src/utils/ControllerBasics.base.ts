@@ -146,6 +146,86 @@ export class ControllerBasics<EntityType> {
      * @param field
      * @param query
      */
+    public async _countRestricted<CustomEntityType = EntityType>(
+        service: CRUDExtension<Repository<CustomEntityType>, CustomEntityType>,
+        rightsService: RightsService,
+        user: UserDto,
+        field: string,
+        query: SearchInputType<CustomEntityType>,
+    ): Promise<ESCountReturn> {
+        const entityName = service.name;
+
+        const restrictionEsQuery = {
+            body: {
+                size: 2147483647, // int max value
+                query: {
+                    bool: {
+                        must: [
+                            {
+                                term: {
+                                    entity_type: entityName,
+                                },
+                            },
+                            {
+                                term: {
+                                    grantee_id: user.id,
+                                },
+                            },
+                        ],
+                    },
+                },
+            },
+        };
+
+        const restrictionsRes = await rightsService.searchElastic(restrictionEsQuery);
+
+        if (restrictionsRes.error) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.InternalServerError,
+                    message: restrictionsRes.error,
+                },
+                StatusCodes.InternalServerError,
+            );
+        }
+
+        const aggregatedFields = restrictionsRes.response.hits.hits.map(
+            (esh: ESSearchHit<RightEntity>): any => esh._source.entity_value,
+        );
+
+        if (query[field] && query[field].$in) {
+            for (const value of query[field].$in) {
+                if (aggregatedFields.findIndex((agg: any): boolean => agg === value) === -1) {
+                    throw new HttpException(
+                        {
+                            status: StatusCodes.Unauthorized,
+                            message: 'unauthorized_value_in_filter',
+                        },
+                        StatusCodes.Unauthorized,
+                    );
+                }
+            }
+        }
+        if (!query[field]) {
+            query[field] = {
+                $in: aggregatedFields,
+            };
+        } else {
+            query[field].$in = aggregatedFields;
+        }
+
+        return this._count<CustomEntityType>(service, query);
+    }
+
+    /**
+     * Generic search query, able to throw HttpExceptions
+     *
+     * @param service
+     * @param rightsService
+     * @param user
+     * @param field
+     * @param query
+     */
     public async _searchRestricted<CustomEntityType = EntityType>(
         service: CRUDExtension<Repository<CustomEntityType>, CustomEntityType>,
         rightsService: RightsService,
@@ -206,7 +286,6 @@ export class ControllerBasics<EntityType> {
                 }
             }
         }
-
         if (!query[field]) {
             query[field] = {
                 $in: aggregatedFields,
@@ -215,7 +294,7 @@ export class ControllerBasics<EntityType> {
             query[field].$in = aggregatedFields;
         }
 
-        return this._elasticGet<CustomEntityType>(service, query);
+        return this._search<CustomEntityType>(service, query);
     }
 
     /**
@@ -258,7 +337,7 @@ export class ControllerBasics<EntityType> {
      * @param query
      */
     public async _count<CustomEntityType = EntityType>(
-        service: CRUDExtension<Repository<EntityType>, EntityType>,
+        service: CRUDExtension<Repository<CustomEntityType>, CustomEntityType>,
         query: SearchInputType<CustomEntityType>,
     ): Promise<ESCountReturn> {
         const es: EsSearchOptionsStatic = this._esQueryBuilder(query);
@@ -287,9 +366,9 @@ export class ControllerBasics<EntityType> {
      * @param query
      */
     public async _search<CustomEntityType = EntityType>(
-        service: CRUDExtension<Repository<EntityType>, EntityType>,
+        service: CRUDExtension<Repository<CustomEntityType>, CustomEntityType>,
         query: SearchInputType<CustomEntityType>,
-    ): Promise<EntityType[]> {
+    ): Promise<CustomEntityType[]> {
         const es: EsSearchOptionsStatic = this._esQueryBuilder(query);
 
         const searchResults = await service.searchElastic(es);
