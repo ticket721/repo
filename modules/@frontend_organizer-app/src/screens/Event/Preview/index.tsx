@@ -147,59 +147,61 @@ const Preview: React.FC = () => {
             <PreviewContainer>
                 {
                     ticket ?
-                        <>
-                            <Gradient values={datePreview.colors} blurOnly />
-                            <EventHeader
-                                event={ticket}
-                                subtitle={priceRange}
-                                buttonTitle={t('get_tickets')}
-                                onChange={doNothing}
-                                onClick={doNothing}
-                            />
-                            <BgContainer>
-                                <DateTimeCard
-                                    iconColor={ticket.mainColor}
-                                    endDate={ticket.endDate}
-                                    endTime={ticket.endTime}
-                                    startDate={ticket.startDate}
-                                    startTime={ticket.startTime}
-                                    removeBg
-                                />
-                                <LocationCard
-                                    address={''}
-                                    iconColor={ticket.mainColor}
-                                    location={ticket.location}
-                                    removeBg
-                                />
-                                <Separator />
-                                <ReadMore
-                                    readMoreColor={ticket.mainColor}
-                                    title='About'
-                                    text={ticket.about === '' ? t('no_description') : ticket.about}
-                                    showLabel='Read more'
-                                    hideLabel='Show less'
-                                    removeBg
-                                />
-                                <Separator />
-                                <TagsListCard
-                                    label={t('tags')}
-                                    handleToggle={doNothing}
-                                    showAll={true}
-                                    tags={ticket.tags}
-                                    hideLabel='Hide'
-                                    removeBg
-                                />
-                                <Separator />
-                                <EventBottomBand
-                                    ctaLabel={t('get_tickets')}
-                                    title={t('tickets_from')}
-                                    onClick={doNothing}
+                    <div className='smartphone'>
+                          <div className='content'>
+                                <Gradient values={datePreview.colors} blurOnly />
+                                <EventHeader
+                                    event={ticket}
                                     subtitle={priceRange}
-                                    gradients={ticket.gradients}
-                                    show={true}
+                                    buttonTitle={t('get_tickets')}
+                                    onChange={doNothing}
+                                    onClick={doNothing}
                                 />
-                            </BgContainer>
-                        </>
+                                <>
+                                    <DateTimeCard
+                                        iconColor={ticket.mainColor}
+                                        endDate={ticket.endDate}
+                                        endTime={ticket.endTime}
+                                        startDate={ticket.startDate}
+                                        startTime={ticket.startTime}
+                                        removeBg
+                                    />
+                                    <LocationCard
+                                        address={''}
+                                        iconColor={ticket.mainColor}
+                                        location={ticket.location}
+                                        removeBg
+                                    />
+                                    <Separator />
+                                    <ReadMore
+                                        readMoreColor={ticket.mainColor}
+                                        title='About'
+                                        text={ticket.about === '' ? t('no_description') : ticket.about}
+                                        showLabel='Read more'
+                                        hideLabel='Show less'
+                                        removeBg
+                                    />
+                                    <Separator />
+                                    <TagsListCard
+                                        label={t('tags')}
+                                        handleToggle={doNothing}
+                                        showAll={true}
+                                        tags={ticket.tags}
+                                        hideLabel='Hide'
+                                        removeBg
+                                    />
+                                    <Separator />
+                                    <EventBottomBand
+                                        ctaLabel={t('get_tickets')}
+                                        title={t('tickets_from')}
+                                        onClick={doNothing}
+                                        subtitle={priceRange}
+                                        gradients={ticket.gradients}
+                                        show={true}
+                                    />
+                                </>
+                            </div>
+                        </div>
                       :
                       <span>Loading...</span>
                 }
@@ -219,16 +221,53 @@ const Container = styled.div`
 `;
 
 const PreviewContainer = styled.div`
-  width: 320px;
-  height: 480px;
-  margin-top: 20px;
-  border-radius: 8px;
-  overflow: scroll;
-`;
+  .smartphone {
+      position: relative;
+      width: 353px;
+      height: 630px;
+      margin: auto;
+      border: 16px black solid;
+      border-top-width: 60px;
+      border-bottom-width: 60px;
+      border-radius: 36px;
+      z-index: 2;
+  }
 
-const BgContainer = styled.div`
-  background-color: ${ props => props.theme.darkerBg };
-  margin-bottom:  ${ props => props.theme.biggerSpacing };
+/* The horizontal line on the top of the device */
+  .smartphone:before {
+      content: '';
+      display: block;
+      width: 60px;
+      height: 5px;
+      position: absolute;
+      top: -30px;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #333;
+      border-radius: 10px;
+  }
+
+/* The circle on the bottom of the device */
+  .smartphone:after {
+      content: '';
+      display: block;
+      width: 35px;
+      height: 35px;
+      position: absolute;
+      left: 50%;
+      bottom: -65px;
+      transform: translate(-50%, -50%);
+      background: #333;
+      border-radius: 50%;
+  }
+
+/* The screen (or content) of the device */
+  .smartphone .content {
+      width: 320px;
+      height: 510px;
+      background: inherit;
+      overflow: scroll;
+  }
 `;
 
 const EventBottomBand = styled(EventCta)`
