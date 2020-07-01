@@ -219,18 +219,13 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     },
                 });
 
-                const dosojinSearch = await sdk.dosojin.search(token, {
-                    id: {
-                        $eq: actionSetId,
-                    },
-                });
+                const dosojinSearch = await sdk.dosojin.search(token, {});
 
-                console.log(dosojinSearch);
                 expect(cartActionSetFinalRes.data.actionsets[0].consumed).toEqual(true);
                 expect(dosojinSearch.data.gemOrders.length).toEqual(1);
             });
         });
-        describe('search (POST /dosojin/search)', function() {
+        describe('count (POST /dosojin/count)', function() {
             test('should count dosojin', async function() {
                 const {
                     sdk,
@@ -331,13 +326,8 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     },
                 });
 
-                const dosojinSearch = await sdk.dosojin.count(token, {
-                    id: {
-                        $eq: actionSetId,
-                    },
-                });
+                const dosojinSearch = await sdk.dosojin.count(token, {});
 
-                console.log(dosojinSearch);
                 expect(cartActionSetFinalRes.data.actionsets[0].consumed).toEqual(true);
                 expect(dosojinSearch.data.gemOrders.count).toEqual(1);
             });
