@@ -26,7 +26,7 @@ import DateForm from '../../../components/DateForm';
 
 import { completeDateValidation } from './validationSchema';
 
-const NewDate = () => {
+const NewDate = (): JSX.Element => {
     const [ t ] = useTranslation(['general_infos', 'notify', 'global', 'event_creation_styles']);
     const history = useHistory();
     const { groupId, eventId } = useParams();

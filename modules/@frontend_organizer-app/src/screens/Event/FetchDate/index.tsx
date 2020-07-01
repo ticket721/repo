@@ -11,7 +11,7 @@ import { DatesSearchResponseDto }      from '@common/sdk/lib/@backend_nest/apps/
 
 import '../../../shared/Translations/global';
 
-const FetchDate = () => {
+const FetchDate = (): JSX.Element => {
   const [ t ] = useTranslation('global');
   const [uuid] = useState(v4() + '@fetchDate');
   const token = useSelector((state: AppState): string => state.auth.token.value);
@@ -55,7 +55,7 @@ const FetchDate = () => {
       </>
     );
   } else {
-    return null;
+    return (<></>);
   }
 };
 
