@@ -293,16 +293,25 @@ describe('Controller Basics', function() {
 
             const spiedService = spy(context.controllerBasics);
 
-            when(spiedService._count(anything(), anything())).thenResolve(response);
+            when(
+                spiedService._count(
+                    anything(),
+                    deepEqual({
+                        id: {
+                            $in: ['abcd'],
+                        },
+                    }) as SearchInputType<FakeEntity>,
+                ),
+            ).thenResolve(response);
 
             const res = await context.controllerBasics._countRestricted(
                 instance(eventsServiceMock),
                 instance(rightsServiceMock),
                 user,
-                '',
+                'id',
                 {
                     id: {
-                        $eq: 'abcd',
+                        $in: ['abcd'],
                     },
                 } as SearchInputType<EventEntity>,
             );
@@ -310,7 +319,16 @@ describe('Controller Basics', function() {
             expect(res).toEqual(response);
 
             verify(rightsServiceMock.searchElastic(deepEqual(rightsQuery))).called();
-            verify(spiedService._count(anything(), anything())).called();
+            verify(
+                spiedService._count(
+                    anything(),
+                    deepEqual({
+                        id: {
+                            $in: ['abcd'],
+                        },
+                    }) as SearchInputType<FakeEntity>,
+                ),
+            ).called();
         });
 
         it('should count on allowed entities only', async function() {
@@ -374,7 +392,16 @@ describe('Controller Basics', function() {
 
             const spiedService = spy(context.controllerBasics);
 
-            when(spiedService._count(anything(), anything())).thenResolve(response);
+            when(
+                spiedService._count(
+                    anything(),
+                    deepEqual({
+                        id: {
+                            $in: ['abcd'],
+                        },
+                    }) as SearchInputType<FakeEntity>,
+                ),
+            ).thenResolve(response);
 
             const res = await context.controllerBasics._countRestricted(
                 instance(eventsServiceMock),
@@ -391,7 +418,16 @@ describe('Controller Basics', function() {
             expect(res).toEqual(response);
 
             verify(rightsServiceMock.searchElastic(deepEqual(rightsQuery))).called();
-            verify(spiedService._count(anything(), anything())).called();
+            verify(
+                spiedService._count(
+                    anything(),
+                    deepEqual({
+                        id: {
+                            $in: ['abcd'],
+                        },
+                    }) as SearchInputType<FakeEntity>,
+                ),
+            ).called();
         });
 
         it('should count on allowed entities only with custom query', async function() {
@@ -455,7 +491,16 @@ describe('Controller Basics', function() {
                 count: 3,
             };
 
-            when(spiedService._count(anything(), anything())).thenResolve(response);
+            when(
+                spiedService._count(
+                    anything(),
+                    deepEqual({
+                        id: {
+                            $in: ['abcd'],
+                        },
+                    }) as SearchInputType<FakeEntity>,
+                ),
+            ).thenResolve(response);
 
             const res = await context.controllerBasics._countRestricted(
                 instance(eventsServiceMock),
@@ -472,7 +517,16 @@ describe('Controller Basics', function() {
             expect(res).toEqual(response);
 
             verify(rightsServiceMock.searchElastic(deepEqual(rightsQuery))).called();
-            verify(spiedService._count(anything(), anything())).called();
+            verify(
+                spiedService._count(
+                    anything(),
+                    deepEqual({
+                        id: {
+                            $in: ['abcd'],
+                        },
+                    }) as SearchInputType<FakeEntity>,
+                ),
+            ).called();
         });
 
         it('should fail on rights query fail', async function() {
@@ -676,13 +730,22 @@ describe('Controller Basics', function() {
 
             const spiedService = spy(context.controllerBasics);
 
-            when(spiedService._search(anything(), anything())).thenResolve([query]);
+            when(
+                spiedService._search(
+                    anything(),
+                    deepEqual({
+                        id: {
+                            $in: ['abcd'],
+                        },
+                    }) as SearchInputType<FakeEntity>,
+                ),
+            ).thenResolve([query]);
 
             const res = await context.controllerBasics._searchRestricted(
                 instance(eventsServiceMock),
                 instance(rightsServiceMock),
                 user,
-                '',
+                'id',
                 {
                     id: {
                         $in: ['abcd'],
@@ -693,7 +756,16 @@ describe('Controller Basics', function() {
             expect(res).toEqual([query]);
 
             verify(rightsServiceMock.searchElastic(deepEqual(rightsQuery))).called();
-            verify(spiedService._search(anything(), anything())).called();
+            verify(
+                spiedService._search(
+                    anything(),
+                    deepEqual({
+                        id: {
+                            $in: ['abcd'],
+                        },
+                    }) as SearchInputType<FakeEntity>,
+                ),
+            ).called();
         });
 
         it('should search on allowed entities only', async function() {
@@ -777,7 +849,16 @@ describe('Controller Basics', function() {
 
             const spiedService = spy(context.controllerBasics);
 
-            when(spiedService._search(anything(), anything())).thenResolve([query]);
+            when(
+                spiedService._search(
+                    anything(),
+                    deepEqual({
+                        id: {
+                            $in: ['abcd'],
+                        },
+                    }) as SearchInputType<FakeEntity>,
+                ),
+            ).thenResolve([query]);
 
             const res = await context.controllerBasics._searchRestricted(
                 instance(eventsServiceMock),
@@ -794,7 +875,16 @@ describe('Controller Basics', function() {
             expect(res).toEqual([query]);
 
             verify(rightsServiceMock.searchElastic(deepEqual(rightsQuery))).called();
-            verify(spiedService._search(anything(), anything())).called();
+            verify(
+                spiedService._search(
+                    anything(),
+                    deepEqual({
+                        id: {
+                            $in: ['abcd'],
+                        },
+                    }) as SearchInputType<FakeEntity>,
+                ),
+            ).called();
         });
 
         it('should search on allowed entities only with custom query', async function() {
@@ -874,7 +964,16 @@ describe('Controller Basics', function() {
                 updated_at: undefined,
             };
 
-            when(spiedService._search(anything(), anything())).thenResolve([query]);
+            when(
+                spiedService._search(
+                    anything(),
+                    deepEqual({
+                        id: {
+                            $in: ['abcd'],
+                        },
+                    }) as SearchInputType<FakeEntity>,
+                ),
+            ).thenResolve([query]);
 
             const res = await context.controllerBasics._searchRestricted(
                 instance(eventsServiceMock),
@@ -891,7 +990,16 @@ describe('Controller Basics', function() {
             expect(res).toEqual([query]);
 
             verify(rightsServiceMock.searchElastic(deepEqual(rightsQuery))).called();
-            verify(spiedService._search(anything(), anything())).called();
+            verify(
+                spiedService._search(
+                    anything(),
+                    deepEqual({
+                        id: {
+                            $in: ['abcd'],
+                        },
+                    }) as SearchInputType<FakeEntity>,
+                ),
+            ).called();
         });
 
         it('should fail on rights query fail', async function() {
