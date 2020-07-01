@@ -568,7 +568,6 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 const actionSets = await sdk.actions.count(token, {});
 
                 expect(actionSets.data.actionsets.count).toEqual(1);
-                expect(actionSets.data.actionsets[0].id).toEqual(eventCreationActionSetRes.data.actionset.id);
             });
         });
     };
