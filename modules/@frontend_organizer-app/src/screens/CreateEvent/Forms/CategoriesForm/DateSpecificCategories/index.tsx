@@ -75,7 +75,7 @@ export const DateSpecificCategories: React.FC<DateSpecificCategoriesProps> = (pr
                         if (props.categories[dateIdx] && props.categories[dateIdx].length > 0) {
                             return (
                                 <DateSection key={`date-${dateIdx}`}>
-                                    <span>{date.name}</span>
+                                    <span>{'date ' + (dateIdx + 1)}</span>
                                     <DateDetails>
                                         <span>{displayDate(checkFormatDate(date.eventBegin))}</span>
                                         <Arrow
@@ -142,19 +142,24 @@ const StyledDateSpecific = styled.div`
 
 const CategoriesContainer = styled.div`
     width: 100%;
-
-    & > div {
-        margin-bottom: ${props => props.theme.regularSpacing};
-    }
 `;
 
 const DateSection = styled.div`
     font-weight: 500;
+    margin-bottom: ${props => props.theme.doubleSpacing};
+
+    &:first-child {
+        margin-top: ${props => props.theme.regularSpacing};
+    }
 
     & > span {
         display: block;
         font-weight: 600;
         text-transform: uppercase;
+        margin-bottom: ${props => props.theme.smallSpacing};
+    }
+
+    & > div:not(:first-child) {
         margin-bottom: ${props => props.theme.regularSpacing};
     }
 `;

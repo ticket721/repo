@@ -1,11 +1,13 @@
 import React              from 'react';
-import { EventDashboard } from '../formatters';
 import styled             from 'styled-components';
-import { checkFormatDate, displayCompleteDate } from '@frontend/core/lib/utils/date';
-
 import { useTranslation } from 'react-i18next';
-import './locales';
+
+import { checkFormatDate, displayCompleteDate } from '@frontend/core/lib/utils/date';
 import { formatEuro }     from '@frontend/core/lib/utils/price';
+
+import { EventDashboard } from '../formatters';
+
+import './locales';
 
 export const EventCard: React.FC<EventDashboard> = (props: EventDashboard) => {
     const [ t ] = useTranslation('event_card');

@@ -61,8 +61,8 @@ export const SubMenu: React.FC = () => {
 
     return (
         <>
-            <EditSection opened={showingInfos}>
-                <TileHeader onClick={() => setShowingInfos(!showingInfos)}>
+            <EditSection opened={showingInfos} disabled={!dateId}>
+                <TileHeader onClick={() => dateId && setShowingInfos(!showingInfos)}>
                     <Title>{t('information_title')}</Title>
                     <Icon icon='chevron' color='white' size='6px'/>
                 </TileHeader>
@@ -97,8 +97,8 @@ export const SubMenu: React.FC = () => {
                         null
                 }
             </EditSection>
-            <EditSection opened={showingCategories}>
-                <TileHeader onClick={() => setShowingCategories(!showingCategories)}>
+            <EditSection opened={showingCategories} disabled={!dateId}>
+                <TileHeader onClick={() => dateId && setShowingCategories(!showingCategories)}>
                     <Title>{t('categories_title')}</Title>
                     <Icon icon='chevron' color='white' size='6px'/>
                 </TileHeader>
@@ -134,9 +134,10 @@ export const SubMenu: React.FC = () => {
     );
 };
 
-const EditSection = styled.div<{ opened: boolean }>`
+const EditSection = styled.div<{ opened: boolean, disabled: boolean }>`
     display: flex;
     flex-direction: column;
+    cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
     background-color: ${props => props.opened ? props.theme.componentColor : null};
     border-radius: ${props => props.theme.defaultRadius};
     padding: ${props => `${props.theme.regularSpacing} ${props.theme.biggerSpacing}`};
@@ -152,13 +153,13 @@ const TileHeader = styled.div`
     display: flex;
     justify-content: space-between;
     align-items: center;
-    cursor: pointer;
+    cursor: inherit;
 `;
 
 const Title = styled.span`
     font-weight: 500;
     font-size: 13px;
-    cursor: pointer;
+    cursor: inherit;
     color: rgba(255, 255, 255, 0.9);
 `;
 
@@ -172,7 +173,7 @@ const Tiles = styled.div`
 const Tile = styled.span<{ active?: boolean }>`
     font-weight: 500;
     font-size: 13px;
-    cursor: pointer;
+    cursor: inherit;
     margin: ${props => props.theme.smallSpacing} 0;
     color: ${(props) => props.active ? props.theme.textColor : props.theme.textColorDarker};
 

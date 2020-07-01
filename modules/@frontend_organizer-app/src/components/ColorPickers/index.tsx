@@ -50,7 +50,7 @@ export const ColorPickers: React.FC<ColorPickersProps> = (props: ColorPickersPro
     };
 
     useEffect(() => {
-        if (!props.colors && props.srcImage) {
+        if ((!props.colors || props.colors.length === 0 ) && props.srcImage) {
             generatePresetColors(props.srcImage);
         }
 

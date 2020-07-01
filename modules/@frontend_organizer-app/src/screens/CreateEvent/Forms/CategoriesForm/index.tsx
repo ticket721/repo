@@ -55,26 +55,6 @@ const CategoriesForm: React.FC<FormProps> = ({ onComplete }) => {
         });
     };
 
-    useEffect(() => {
-        const datesCategoriesDelta = datesLength - eventCreationFormik.values.dates.length;
-        if (datesCategoriesDelta > 0) {
-            const emptyCategories = [];
-            for (let i = 0; i < datesCategoriesDelta; i++) {
-                emptyCategories[i] = [];
-            }
-
-            eventCreationFormik.handleFocus('auto focus');
-            eventCreationFormik.update({
-                ...eventCreationFormik.values,
-                dates: [
-                    ...eventCreationFormik.values.dates,
-                    ...emptyCategories,
-                ]
-            });
-        }
-        // eslint-disable-next-line
-    }, [datesLength, eventCreationFormik.values.dates.length]);
-
     useDeepEffect(() => {
         onComplete(true);
     }, [

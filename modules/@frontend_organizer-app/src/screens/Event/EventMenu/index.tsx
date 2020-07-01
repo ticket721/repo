@@ -63,11 +63,10 @@ export const EventMenu: React.FC = () => {
         if (datesResp.data && datesResp.data.dates.length > 0) {
             const currentDate: DateEntity = datesResp.data.dates.find((date) => date.id === dateId);
             setSelectedDate(currentDate);
-            setSelectableDates(datesResp.data.dates.filter(d => d.parent_type === 'event' || d.parent_type === 'date').map((date) => ({
+            setSelectableDates(datesResp.data.dates.map((date) => ({
                 label: formatDateLabel(date.timestamps.event_begin),
                 value: date.id,
             })));
-            setEventId(currentDate.parent_id);
         }
     }, [datesResp]);
 
@@ -83,53 +82,50 @@ export const EventMenu: React.FC = () => {
     }, [deleteDateResp]);
     //0x(([a-zA-Z]|[0-9])+)\/category
 
-    if (selectedDate) {
-        return (
-            <Container>
-                <DateActions>
-                    <Header>
-                        <Title>{selectedDate.metadata.name}</Title>
-                        <DateSelect
-                            menuPosition={{
-                                top: '-24px',
-                                left: '250px'
-                            }}
-                            options={selectableDates}
-                            value={[{
-                                label: formatDateLabel(selectedDate.timestamps.event_begin),
-                                value: dateId,
-                            }]}
-                            onChange={(dateOpt: DateOption) => history.push(`/${groupId}/date/${dateOpt.value}`)}/>
-                    </Header>
-                    <Button
-                        variant='primary'
-                        title={t('publish_label')}
-                        onClick={() => console.log('publish')}
-                    />
-                    <Button
-                        variant='secondary'
-                        title={t('preview_label')}
-                        onClick={() => history.push(`/${groupId}/date/${dateId}`)}
-                    />
-                </DateActions>
-                <Separator/>
-                <SubMenu/>
-                <Separator/>
-                <LastSection>
-                    <Button
-                        title={'New Date'}
-                        variant={'primary'}
-                        onClick={() => history.push(`/${groupId}/date`)}/>
-                    <Button
-                        title={datesResp.data?.dates?.length > 1 ? 'Delete Date' : 'Delete Event'}
-                        variant={'danger'}
-                        onClick={() => { deleteDate([token, eventId, { dates: [dateId] }]) }}/>
-                </LastSection>
-            </Container>
-        )
-    }  else {
-        return <></>;
-    }
+    return (
+        <Container>
+            <DateActions>
+                <Header>
+                    <Title>{dateId && selectedDate ? selectedDate.metadata.name : 'New Date'}</Title>
+                    {dateId && selectedDate && <DateSelect
+                        menuPosition={{
+                          top: '-24px',
+                          left: '250px'
+                        }}
+                        options={selectableDates}
+                        value={[{
+                          label: formatDateLabel(selectedDate.timestamps.event_begin),
+                          value: dateId,
+                        }]}
+                        onChange={(dateOpt: DateOption) => history.push(`/${groupId}/date/${dateOpt.value}`)}/>
+                    }
+                </Header>
+                <Button
+                    variant={dateId ? 'primary' : 'disabled'}
+                    title={t('publish_label')}
+                    onClick={() => console.log('publish')}
+                />
+                <Button
+                    variant={dateId ? 'secondary' : 'disabled'}
+                    title={t('preview_label')}
+                    onClick={() => history.push(`/${groupId}/date/${dateId}`)}
+                />
+            </DateActions>
+            <Separator/>
+            <SubMenu/>
+            <Separator/>
+            <LastSection>
+                <Button
+                    title={'New Date'}
+                    variant={dateId ? 'primary' : 'disabled'}
+                    onClick={() => history.push(`/${groupId}/date`)}/>
+                <Button
+                  title={datesResp.data?.dates?.length > 1 ? 'Delete Date' : 'Delete Event'}
+                  variant={'danger'}
+                  onClick={() => { deleteDate([token, eventId, { dates: [dateId] }]) }}/>
+            </LastSection>
+        </Container>
+    )
 };
 
 const Container = styled.div`
