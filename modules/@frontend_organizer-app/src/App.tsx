@@ -12,17 +12,7 @@ import { AppStatus }   from '@frontend/core/lib/redux/ducks/statuses';
 import ToastStacker    from '@frontend/core/lib/components/ToastStacker';
 import './core/event_creation/locales';
 import { EventMenu }   from './screens/Event/EventMenu';
-import { Login, Register }       from '@frontend/core/lib/components';
-
-import Dashboard          from './screens/Dashboard';
-import CreateEvent        from './screens/CreateEvent';
-import Preview            from './screens/Event/Preview';
-import UpdateGeneralInfos from './screens/Event/UpdateGeneralInfos';
-import NewCategory        from './screens/Event/NewCategory';
-import UpdateStyles       from './screens/Event/UpdateStyles';
-import UpdateLocation     from './screens/Event/UpdateLocation';
-import NewDate            from './screens/Event/NewDate';
-import FetchDate          from './screens/Event/FetchDate';
+import { routes } from "./routes";
 
 const App: React.FC = () => {
   const [ validated, setValidated ] = useState(true);
@@ -45,89 +35,33 @@ const App: React.FC = () => {
         {
           appStatus === AppStatus.Ready &&
           <Switch>
-              <Route path='/login' exact>
-                  <PageWrapper>
-                      <Login/>
-                  </PageWrapper>
-              </Route>
+            {
+              appStatus === AppStatus.Ready && routes.map((route, idx) => {
 
-              <Route path='/register' exact>
+                const page: JSX.Element = (
                   <PageWrapper>
-                      <Register/>
-                  </PageWrapper>
-              </Route>
-
-              <ProtectedRoute path='/create-event' exact>
-                  <PageWrapper>
-                      <CreateEvent/>
-                  </PageWrapper>
-              </ProtectedRoute>
-
-              <ProtectedRoute path='/' exact>
-                  <PageWrapper>
-                      <Dashboard/>
-                  </PageWrapper>
-              </ProtectedRoute>
-
-              <ProtectedRoute path='/:groupId/date/:dateId/category' exact>
-                  <PageWrapper>
-                      <EventPageWrapper>
+                    {
+                      route.path.match(/^\/:groupId\//) ?
+                        <EventPageWrapper>
                           <EventMenu/>
-                          <NewCategory/>
-                      </EventPageWrapper>
+                          <route.page />
+                        </EventPageWrapper> :
+                        <route.page />
+                    }
                   </PageWrapper>
-              </ProtectedRoute>
+                );
 
-              <ProtectedRoute path='/:groupId/date/:dateId/general-infos' exact>
-                  <PageWrapper>
-                      <EventPageWrapper>
-                          <EventMenu/>
-                          <UpdateGeneralInfos/>
-                      </EventPageWrapper>
-                  </PageWrapper>
-              </ProtectedRoute>
+                if (route.protected) {
+                  return <ProtectedRoute path={route.path} key={idx}>
+                    {page}
+                  </ProtectedRoute>
+                }
 
-              <ProtectedRoute path='/:groupId/date/:dateId/styles' exact>
-                  <PageWrapper>
-                      <EventPageWrapper>
-                          <EventMenu/>
-                          <UpdateStyles/>
-                      </EventPageWrapper>
-                  </PageWrapper>
-              </ProtectedRoute>
-
-              <ProtectedRoute path='/:groupId/date/:dateId/location' exact>
-                  <PageWrapper>
-                      <EventPageWrapper>
-                          <EventMenu/>
-                          <UpdateLocation/>
-                      </EventPageWrapper>
-                  </PageWrapper>
-              </ProtectedRoute>
-
-              <ProtectedRoute path='/:groupId/date/:dateId' exact>
-                  <PageWrapper>
-                      <EventPageWrapper>
-                          <EventMenu/>
-                          <Preview/>
-                      </EventPageWrapper>
-                  </PageWrapper>
-              </ProtectedRoute>
-
-              <ProtectedRoute path='/:groupId/new-date/:eventId' exact>
-                  <PageWrapper>
-                      <EventPageWrapper>
-                          <EventMenu/>
-                          <NewDate/>
-                      </EventPageWrapper>
-                  </PageWrapper>
-              </ProtectedRoute>
-
-              <ProtectedRoute path='/:groupId' exact>
-                  <PageWrapper>
-                      <FetchDate/>
-                  </PageWrapper>
-              </ProtectedRoute>
+                return <Route key={idx} path={route.path} >
+                  <route.page />
+                </Route>
+              })
+            }
           </Switch>
         }
             <ToastStacker additionalLocales={[

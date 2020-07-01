@@ -40,7 +40,7 @@ const formatDatesAndCovers = (dates: DateEntity[], events: EventDashboard[]): Ev
         }
         const startDate: Date = checkFormatDate(
             filteredDates.sort((dateA, dateB) =>
-                checkFormatDate(dateA?.timestamps.event_begin).getTime() - checkFormatDate(dateB?.timestamps.event_begin).getTime()
+                checkFormatDate(dateA.timestamps.event_begin).getTime() - checkFormatDate(dateB.timestamps.event_begin).getTime()
             )[0].timestamps.event_begin
         );
 
