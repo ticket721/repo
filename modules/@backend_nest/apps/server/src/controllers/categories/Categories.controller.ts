@@ -26,18 +26,18 @@ import { CategoriesCreateResponseDto } from '@app/server/controllers/categories/
 import { CategoriesUpdateResponseDto } from '@app/server/controllers/categories/dto/CategoriesUpdateResponse.dto';
 import { RightsService } from '@lib/common/rights/Rights.service';
 import { ConfigService } from '@lib/common/config/Config.service';
-import { serialize }                           from '@common/global';
-import { SortablePagedSearch }                 from '@lib/common/utils/SortablePagedSearch.type';
-import { CurrenciesService, Price }            from '@lib/common/currencies/Currencies.service';
-import { AuthGuard }                           from '@nestjs/passport';
-import { Roles, RolesGuard }                   from '@app/server/authentication/guards/RolesGuard.guard';
+import { serialize } from '@common/global';
+import { SortablePagedSearch } from '@lib/common/utils/SortablePagedSearch.type';
+import { CurrenciesService, Price } from '@lib/common/currencies/Currencies.service';
+import { AuthGuard } from '@nestjs/passport';
+import { Roles, RolesGuard } from '@app/server/authentication/guards/RolesGuard.guard';
 import { isFutureDateRange, isValidDateRange } from '@common/global';
-import { ApiResponses }                        from '@app/server/utils/ApiResponses.controller.decorator';
-import { MetadatasService }                    from '@lib/common/metadatas/Metadatas.service';
-import { ValidGuard }                          from '@app/server/authentication/guards/ValidGuard.guard';
-import { CategoriesCountInputDto }             from '@app/server/controllers/categories/dto/CategoriesCountInput.dto';
-import { CategoriesCountResponseDto }          from '@app/server/controllers/categories/dto/CategoriesCountResponse.dto';
-import { SearchInputType }                     from '@lib/common/utils/SearchInput.type';
+import { ApiResponses } from '@app/server/utils/ApiResponses.controller.decorator';
+import { MetadatasService } from '@lib/common/metadatas/Metadatas.service';
+import { ValidGuard } from '@app/server/authentication/guards/ValidGuard.guard';
+import { CategoriesCountInputDto } from '@app/server/controllers/categories/dto/CategoriesCountInput.dto';
+import { CategoriesCountResponseDto } from '@app/server/controllers/categories/dto/CategoriesCountResponse.dto';
+import { SearchInputType } from '@lib/common/utils/SearchInput.type';
 
 /**
  * Generic Categories controller. Recover Categories linked to all types of events
