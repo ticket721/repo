@@ -27,7 +27,6 @@ import { CategoriesUpdateResponseDto } from '@app/server/controllers/categories/
 import { RightsService } from '@lib/common/rights/Rights.service';
 import { ConfigService } from '@lib/common/config/Config.service';
 import { serialize } from '@common/global';
-import { SortablePagedSearch } from '@lib/common/utils/SortablePagedSearch.type';
 import { CurrenciesService, Price } from '@lib/common/currencies/Currencies.service';
 import { AuthGuard } from '@nestjs/passport';
 import { Roles, RolesGuard } from '@app/server/authentication/guards/RolesGuard.guard';
