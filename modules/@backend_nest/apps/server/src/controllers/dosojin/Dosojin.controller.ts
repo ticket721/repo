@@ -3,19 +3,19 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { StatusCodes } from '@lib/common/utils/codes.value';
 import { User } from '@app/server/authentication/decorators/User.controller.decorator';
 import { UserDto } from '@lib/common/users/dto/User.dto';
-import { AuthGuard }                from '@nestjs/passport';
-import { Roles, RolesGuard }        from '@app/server/authentication/guards/RolesGuard.guard';
-import { HttpExceptionFilter }      from '@app/server/utils/HttpException.filter';
-import { ControllerBasics }         from '@lib/common/utils/ControllerBasics.base';
-import { GemOrderEntity }           from '@lib/common/gemorders/entities/GemOrder.entity';
-import { GemOrdersService }         from '@lib/common/gemorders/GemOrders.service';
-import { RightsService }            from '@lib/common/rights/Rights.service';
-import { ApiResponses }             from '@app/server/utils/ApiResponses.controller.decorator';
-import { DosojinSearchInputDto }    from '@app/server/controllers/dosojin/dto/DosojinSearchInput.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { Roles, RolesGuard } from '@app/server/authentication/guards/RolesGuard.guard';
+import { HttpExceptionFilter } from '@app/server/utils/HttpException.filter';
+import { ControllerBasics } from '@lib/common/utils/ControllerBasics.base';
+import { GemOrderEntity } from '@lib/common/gemorders/entities/GemOrder.entity';
+import { GemOrdersService } from '@lib/common/gemorders/GemOrders.service';
+import { RightsService } from '@lib/common/rights/Rights.service';
+import { ApiResponses } from '@app/server/utils/ApiResponses.controller.decorator';
+import { DosojinSearchInputDto } from '@app/server/controllers/dosojin/dto/DosojinSearchInput.dto';
 import { DosojinSearchResponseDto } from '@app/server/controllers/dosojin/dto/DosojinSearchResponse.dto';
-import { ValidGuard }               from '@app/server/authentication/guards/ValidGuard.guard';
-import { DosojinCountInputDto }     from '@app/server/controllers/dosojin/dto/DosojinCountInput.dto';
-import { DosojinCountResponseDto }  from '@app/server/controllers/dosojin/dto/DosojinCountResponse.dto';
+import { ValidGuard } from '@app/server/authentication/guards/ValidGuard.guard';
+import { DosojinCountInputDto } from '@app/server/controllers/dosojin/dto/DosojinCountInput.dto';
+import { DosojinCountResponseDto } from '@app/server/controllers/dosojin/dto/DosojinCountResponse.dto';
 
 /**
  * Controller Handling Gem Orders
@@ -71,7 +71,7 @@ export class DosojinController extends ControllerBasics<GemOrderEntity> {
         const gemOrders = await this._countRestricted(this.gemOrdersService, this.rightsService, user, 'id', body);
 
         return {
-            gemOrders
+            gemOrders,
         };
     }
 }

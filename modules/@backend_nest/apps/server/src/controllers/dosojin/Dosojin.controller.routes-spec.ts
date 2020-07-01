@@ -10,11 +10,12 @@ import {
     getSDKAndUser,
     getUser,
     setPaymentIntent,
-    waitForActionSet, waitForTickets,
-}                          from '../../../test/utils';
+    waitForActionSet,
+    waitForTickets,
+} from '../../../test/utils';
 import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
-import { Stripe }          from 'stripe';
-import { TicketEntity }    from '@lib/common/tickets/entities/Ticket.entity';
+import { Stripe } from 'stripe';
+import { TicketEntity } from '@lib/common/tickets/entities/Ticket.entity';
 
 export default function(getCtx: () => { ready: Promise<void> }) {
     return function() {
@@ -218,20 +219,19 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     },
                 });
 
-                const dosojinSearch = await sdk.dosojin.search(
-                    token,
-                    {
-                        id: {
-                            $eq: actionSetId
-                        },
-                    })
+                const dosojinSearch = await sdk.dosojin.search(token, {
+                    id: {
+                        $eq: actionSetId,
+                    },
+                });
 
-                console.log(dosojinSearch)
+                console.log(dosojinSearch);
                 expect(cartActionSetFinalRes.data.actionsets[0].consumed).toEqual(true);
                 expect(dosojinSearch.data.gemOrders.length).toEqual(1);
             });
-
-            test('should search dosojin to remove', async function() {
+        });
+        describe('search (POST /dosojin/search)', function() {
+            test('should count dosojin', async function() {
                 const {
                     sdk,
                     token,
@@ -331,15 +331,13 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     },
                 });
 
-                const dosojinSearch = await sdk.dosojin.count(
-                    token,
-                    {
-                        id: {
-                            $eq: actionSetId
-                        },
-                    })
+                const dosojinSearch = await sdk.dosojin.count(token, {
+                    id: {
+                        $eq: actionSetId,
+                    },
+                });
 
-                console.log(dosojinSearch)
+                console.log(dosojinSearch);
                 expect(cartActionSetFinalRes.data.actionsets[0].consumed).toEqual(true);
                 expect(dosojinSearch.data.gemOrders.count).toEqual(1);
             });
