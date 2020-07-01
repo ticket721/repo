@@ -184,7 +184,7 @@ jobs:
 
 
             - name: "FULL Install all dependencies (yarn @install)"
-              if: steps.root_cache.outputs.cache-hit == 'false'
+              if: steps.root_cache.outputs.cache-hit != 'true'
               run: "yarn @install"
 
             # - name: "PARTIAL Install all dependencies (yarn @install)"
