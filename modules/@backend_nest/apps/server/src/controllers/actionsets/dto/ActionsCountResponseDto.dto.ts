@@ -1,7 +1,7 @@
 import { ESCountReturn } from '@lib/common/utils/ESCountReturn.type';
 
 /**
- * Data Model returns by the Dates count
+ * Data Model returns by the actions count
  */
 export class ActionsCountResponseDto {
     /**
