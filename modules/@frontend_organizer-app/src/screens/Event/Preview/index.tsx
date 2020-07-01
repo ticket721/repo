@@ -142,75 +142,73 @@ const Preview: React.FC = () => {
     }
 
     return (
-        <>
-            <TicketContainer>
-                <Title>{t('title')}</Title>
-                <Ticket>
-                    {
-                        ticket ?
-                            <>
-                                <Gradient values={datePreview.colors} blurOnly />
-                                <EventHeader
-                                    event={ticket}
-                                    subtitle={priceRange}
-                                    buttonTitle={t('get_tickets')}
-                                    onChange={doNothing}
-                                    onClick={doNothing}
+        <Container>
+            <Title>{t('title')}</Title>
+            <PreviewContainer>
+                {
+                    ticket ?
+                        <>
+                            <Gradient values={datePreview.colors} blurOnly />
+                            <EventHeader
+                                event={ticket}
+                                subtitle={priceRange}
+                                buttonTitle={t('get_tickets')}
+                                onChange={doNothing}
+                                onClick={doNothing}
+                            />
+                            <BgContainer>
+                                <DateTimeCard
+                                    iconColor={ticket.mainColor}
+                                    endDate={ticket.endDate}
+                                    endTime={ticket.endTime}
+                                    startDate={ticket.startDate}
+                                    startTime={ticket.startTime}
+                                    removeBg
                                 />
-                                <BgContainer>
-                                    <DateTimeCard
-                                        iconColor={ticket.mainColor}
-                                        endDate={ticket.endDate}
-                                        endTime={ticket.endTime}
-                                        startDate={ticket.startDate}
-                                        startTime={ticket.startTime}
-                                        removeBg
-                                    />
-                                    <LocationCard
-                                        address={''}
-                                        iconColor={ticket.mainColor}
-                                        location={ticket.location}
-                                        removeBg
-                                    />
-                                    <Separator />
-                                    <ReadMore
-                                        readMoreColor={ticket.mainColor}
-                                        title='About'
-                                        text={ticket.about === '' ? t('no_description') : ticket.about}
-                                        showLabel='Read more'
-                                        hideLabel='Show less'
-                                        removeBg
-                                    />
-                                    <Separator />
-                                    <TagsListCard
-                                        label={t('tags')}
-                                        handleToggle={doNothing}
-                                        showAll={true}
-                                        tags={ticket.tags}
-                                        hideLabel='Hide'
-                                        removeBg
-                                    />
-                                    <Separator />
-                                    <EventBottomBand
-                                        ctaLabel={t('get_tickets')}
-                                        title={t('tickets_from')}
-                                        onClick={doNothing}
-                                        subtitle={priceRange}
-                                        gradients={ticket.gradients}
-                                        show={true}
-                                    />
-                                </BgContainer>
-                            </>
-                          :
-                          <span>Loading...</span>
-                    }
-                </Ticket>
-            </TicketContainer>
-        </>
+                                <LocationCard
+                                    address={''}
+                                    iconColor={ticket.mainColor}
+                                    location={ticket.location}
+                                    removeBg
+                                />
+                                <Separator />
+                                <ReadMore
+                                    readMoreColor={ticket.mainColor}
+                                    title='About'
+                                    text={ticket.about === '' ? t('no_description') : ticket.about}
+                                    showLabel='Read more'
+                                    hideLabel='Show less'
+                                    removeBg
+                                />
+                                <Separator />
+                                <TagsListCard
+                                    label={t('tags')}
+                                    handleToggle={doNothing}
+                                    showAll={true}
+                                    tags={ticket.tags}
+                                    hideLabel='Hide'
+                                    removeBg
+                                />
+                                <Separator />
+                                <EventBottomBand
+                                    ctaLabel={t('get_tickets')}
+                                    title={t('tickets_from')}
+                                    onClick={doNothing}
+                                    subtitle={priceRange}
+                                    gradients={ticket.gradients}
+                                    show={true}
+                                />
+                            </BgContainer>
+                        </>
+                      :
+                      <span>Loading...</span>
+                }
+            </PreviewContainer>
+        </Container>
     );
 };
 
-const TicketContainer = styled.div`
+const Container = styled.div`
   display: flex;
   width: 100%;
   flex-direction: column;
@@ -220,7 +218,7 @@ const TicketContainer = styled.div`
   border-bottom-right-radius: 8px;
 `;
 
-const Ticket = styled.div`
+const PreviewContainer = styled.div`
   width: 320px;
   height: 480px;
   margin-top: 20px;
