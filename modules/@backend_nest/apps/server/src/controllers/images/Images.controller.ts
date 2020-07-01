@@ -18,17 +18,18 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 import { ImagesUploadResponseDto } from '@app/server/controllers/images/dto/ImagesUploadResponse.dto';
 import { ImagesUploadInputDto } from '@app/server/controllers/images/dto/ImagesUploadInput.dto';
 import { ImagesService } from '@lib/common/images/Images.service';
-import { ConfigService } from '@lib/common/config/Config.service';
-import { keccak256 } from '@common/global';
+import { ConfigService }       from '@lib/common/config/Config.service';
+import { keccak256 }           from '@common/global';
 import { SortablePagedSearch } from '@lib/common/utils/SortablePagedSearch.type';
-import { ImageEntity } from '@lib/common/images/entities/Image.entity';
-import * as path from 'path';
-import { FSService } from '@lib/common/fs/FS.service';
+import { ImageEntity }         from '@lib/common/images/entities/Image.entity';
+import * as path               from 'path';
+import { FSService }           from '@lib/common/fs/FS.service';
 import { HttpExceptionFilter } from '@app/server/utils/HttpException.filter';
-import { ControllerBasics } from '@lib/common/utils/ControllerBasics.base';
-import { UUIDToolService } from '@lib/common/toolbox/UUID.tool.service';
-import { ApiResponses } from '@app/server/utils/ApiResponses.controller.decorator';
-import { ValidGuard } from '@app/server/authentication/guards/ValidGuard.guard';
+import { ControllerBasics }    from '@lib/common/utils/ControllerBasics.base';
+import { UUIDToolService }     from '@lib/common/toolbox/UUID.tool.service';
+import { ApiResponses }        from '@app/server/utils/ApiResponses.controller.decorator';
+import { ValidGuard }          from '@app/server/authentication/guards/ValidGuard.guard';
+import { SearchInputType }     from '@lib/common/utils/SearchInput.type';
 
 /**
  * Accepted Mimetypes
@@ -112,12 +113,12 @@ export class ImagesController extends ControllerBasics<ImageEntity> {
                 );
             }
 
-            const collision = await this._elasticGet<ImageEntity>(this.imagesService, {
+            const collision = await this._search<ImageEntity>(this.imagesService, {
                 $page_size: 1,
                 hash: {
                     $eq: file.hash,
                 },
-            } as SortablePagedSearch);
+            } as SearchInputType<ImageEntity>);
 
             if (collision.length === 1) {
                 result.push(collision[0]);

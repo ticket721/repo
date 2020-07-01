@@ -3,17 +3,18 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ControllerBasics } from '@lib/common/utils/ControllerBasics.base';
 import { RightsService } from '@lib/common/rights/Rights.service';
 import { AuthGuard } from '@nestjs/passport';
-import { Roles, RolesGuard } from '@app/server/authentication/guards/RolesGuard.guard';
-import { HttpExceptionFilter } from '@app/server/utils/HttpException.filter';
-import { StatusCodes } from '@lib/common/utils/codes.value';
-import { ApiResponses } from '@app/server/utils/ApiResponses.controller.decorator';
-import { User } from '@app/server/authentication/decorators/User.controller.decorator';
-import { UserDto } from '@lib/common/users/dto/User.dto';
-import { SortablePagedSearch } from '@lib/common/utils/SortablePagedSearch.type';
-import { RightEntity } from '@lib/common/rights/entities/Right.entity';
-import { RightsSearchInputDto } from '@app/server/controllers/rights/dto/RightsSearchInput.dto';
+import { Roles, RolesGuard }       from '@app/server/authentication/guards/RolesGuard.guard';
+import { HttpExceptionFilter }     from '@app/server/utils/HttpException.filter';
+import { StatusCodes }             from '@lib/common/utils/codes.value';
+import { ApiResponses }            from '@app/server/utils/ApiResponses.controller.decorator';
+import { User }                    from '@app/server/authentication/decorators/User.controller.decorator';
+import { UserDto }                 from '@lib/common/users/dto/User.dto';
+import { SortablePagedSearch }     from '@lib/common/utils/SortablePagedSearch.type';
+import { RightEntity }             from '@lib/common/rights/entities/Right.entity';
+import { RightsSearchInputDto }    from '@app/server/controllers/rights/dto/RightsSearchInput.dto';
 import { RightsSearchResponseDto } from '@app/server/controllers/rights/dto/RightsSearchResponse.dto';
-import { ValidGuard } from '@app/server/authentication/guards/ValidGuard.guard';
+import { ValidGuard }              from '@app/server/authentication/guards/ValidGuard.guard';
+import { SearchInputType }         from '@lib/common/utils/SearchInput.type';
 
 /**
  * Controller Handling Gem Orders
@@ -46,12 +47,12 @@ export class RightsController extends ControllerBasics<RightEntity> {
     @Roles('authenticated')
     @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized, StatusCodes.InternalServerError, StatusCodes.BadRequest])
     async search(@Body() body: RightsSearchInputDto, @User() user: UserDto): Promise<RightsSearchResponseDto> {
-        const rights: RightEntity[] = await this._elasticGet<RightEntity>(this.rightsService, {
+        const rights: RightEntity[] = await this._search<RightEntity>(this.rightsService, {
             ...body,
             grantee_id: {
                 $eq: user.id,
             },
-        } as SortablePagedSearch);
+        } as SearchInputType<RightEntity>);
 
         return {
             rights,
