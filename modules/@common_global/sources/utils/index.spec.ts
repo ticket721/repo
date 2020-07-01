@@ -94,7 +94,7 @@ describe('Utils', function () {
 
         it('null dates', function() {
 
-            expect(isValidDateRange(null, null)).toBeTruthy();
+            expect(isValidDateRange(null, null)).toBeFalsy();
 
         });
         

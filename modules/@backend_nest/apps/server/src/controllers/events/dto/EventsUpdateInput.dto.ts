@@ -1,5 +1,5 @@
 import { EventEntity } from '@lib/common/events/entities/Event.entity';
-import { IsOptional, IsString, ValidateIf } from 'class-validator';
+import { IsString, ValidateIf } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
 /**

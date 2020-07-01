@@ -1,5 +1,5 @@
 import { DateEntity, DateMetadata, DateTimestamps, InputDateLocation } from '@lib/common/dates/entities/Date.entity';
-import { IsOptional, ValidateIf, ValidateNested } from 'class-validator';
+import { ValidateIf, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
