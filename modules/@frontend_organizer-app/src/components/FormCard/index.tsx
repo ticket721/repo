@@ -3,6 +3,7 @@ import styled              from 'styled-components';
 
 export interface FormCardProps extends React.ComponentProps<any> {
     edit: boolean;
+    error?: boolean;
     editable: boolean;
     name: string;
     setEdit: () => void;
@@ -10,6 +11,7 @@ export interface FormCardProps extends React.ComponentProps<any> {
 
 export const FormCard: React.FC<FormCardProps> = (props: FormCardProps) => (
     <StyledFormCard
+    error={props.error}
     editable={props.editable}
     edit={props.edit}
     onClick={() => props.editable && !props.edit ? props.setEdit() : null}>
@@ -31,7 +33,7 @@ export const FormCard: React.FC<FormCardProps> = (props: FormCardProps) => (
     </StyledFormCard>
 );
 
-const StyledFormCard = styled.div<{ editable: boolean, edit: boolean }>`
+const StyledFormCard = styled.div<{ editable: boolean, edit: boolean, error: boolean }>`
     position: relative;
     width: 100%;
     display: flex;
@@ -42,6 +44,7 @@ const StyledFormCard = styled.div<{ editable: boolean, edit: boolean }>`
     font-size: 13px;
     font-weight: bold;
     transition: background-color 300ms;
+    border: ${props => props.error ? `1px ${props.theme.errorColor.hex} solid` : 'none'};
 
     &:hover {
         background-color: ${props => props.editable || props.edit ? props.theme.darkBg : props.theme.darkerBg};
