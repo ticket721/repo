@@ -52,7 +52,13 @@ function* localRegister(action: ILocalRegister): IterableIterator<any> {
         } else {
             const errorData = e.response.data;
             if (errorData.statusCode === 409) {
-                yield put(SetErrors({ email: errorData.message }));
+                if (errorData.message === 'username_already_in_use') {
+                    yield put(SetErrors({ username: errorData.message }));
+                }
+
+                if (errorData.message === 'email_already_in_use') {
+                    yield put(SetErrors({ email: errorData.message }));
+                }
             } else {
                 yield put(PushNotification('internal_server_error', 'error'));
             }
