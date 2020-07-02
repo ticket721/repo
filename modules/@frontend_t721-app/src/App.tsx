@@ -1,13 +1,13 @@
 import React, { Suspense } from 'react';
 
-import { Route, Switch, withRouter } from 'react-router-dom';
+import { Redirect, Route, Switch, withRouter } from 'react-router-dom';
 
 import ProtectedRoute               from '@frontend/core/lib/components/ProtectedRoute';
 import ToastStacker                 from '@frontend/core/lib/components/ToastStacker';
 import styled                       from 'styled-components';
 import { StatusBarMargin }          from './utils/StatusBarMargin';
 import { NavbarMargin }             from './utils/NavbarMargin';
-import { Login, Register }          from '@frontend/core/lib/components';
+import { Login, Register, ValidateRoute }          from '@frontend/core/lib/components';
 import Home                         from './screens/Home';
 import { InvisibleStatusBarMargin } from './utils/InvisibleStatusBarMargin';
 import { TopNavMargin }             from './utils/TopNavMargin';
@@ -45,6 +45,9 @@ const App: React.FC = () => {
                 <Route path={'/register'} exact={true}>
                     <RegisterPage/>
                 </Route>
+                <Route path={'/validate-email'} exact={true}>
+                    <ValidateRoute/>
+                </Route>
 
                 <Route path={'/home'} exact={true}>
                     <HomePage/>
@@ -81,6 +84,7 @@ const App: React.FC = () => {
                 <ProtectedRoute path={'/'} exact={true}>
                     <WalletPage/>
                 </ProtectedRoute>
+                <Redirect to={'/'}/>
             </Switch>
             <ToastStacker additionalLocales={[]}/>
         </AppContainer>

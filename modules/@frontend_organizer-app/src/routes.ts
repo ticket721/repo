@@ -1,5 +1,5 @@
 import React       from 'react';
-import { Login, Register }       from '@frontend/core/lib/components';
+import { Login, Register, ValidateRoute }       from '@frontend/core/lib/components';
 
 import Dashboard            from './screens/Dashboard';
 import CreateEvent          from './screens/CreateEvent';
@@ -79,6 +79,10 @@ export const routes: RouteDatum[] = [
     {
         path: '/register',
         page: Register,
+    },
+    {
+        path: '/validate-email',
+        page: ValidateRoute,
     },
     {
         path: '/create-event',

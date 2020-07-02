@@ -24,21 +24,19 @@ const Dashboard: React.FC = () => {
     const token = useSelector((state: AppState): string => state.auth.token.value);
     const [ groupIds, setGroupIds ] = useState<string[]>();
 
-    const { response: eventRights } = useRequest<RightsSearchResponseDto>(
-        {
-            method: 'rights.search',
-            args: [
-                token,
-                {
-                    entity_type: {
-                        $eq: 'event'
-                    }
+    const { response: eventRights } = useRequest<RightsSearchResponseDto>({
+        method: 'rights.search',
+        args: [
+            token,
+            {
+                entity_type: {
+                    $eq: 'event'
                 }
-            ],
-            refreshRate: 1
-        },
-        uuid,
-    );
+            }
+        ],
+        refreshRate: 5
+    },
+        uuid);
 
     useDeepEffect(() => {
         if (eventRights.data && eventRights.data.rights.length > 0) {

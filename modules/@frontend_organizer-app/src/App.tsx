@@ -1,6 +1,6 @@
 import React, { Suspense, useEffect, useState } from 'react';
 
-import { Route, Switch, useLocation, withRouter } from 'react-router-dom';
+import { Redirect, Route, Switch, useLocation, withRouter } from 'react-router-dom';
 
 import Navbar          from './shared/Navbar';
 import { AppState }    from '@frontend/core/lib/redux';
@@ -58,12 +58,12 @@ const App: React.FC = () => {
                     {page}
                   </ProtectedRoute>
                 }
-
                 return <Route key={idx} path={route.path} >
                   <route.page />
                 </Route>
               })
             }
+            <Redirect to={'/'}/>
         </Switch>
         <ToastStacker additionalLocales={[
             'organizer_error_notifications',
