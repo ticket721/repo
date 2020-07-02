@@ -125,7 +125,6 @@ export const PreviewInfos: React.FunctionComponent<PreviewInfosProps> = (props: 
                 <Location
                     iconColor={props.ticket.mainColor}
                     location={props.ticket.location}
-                    address={props.ticket.address}
                     removeBg
                 />
                 {props.ticket.addOns ? (
