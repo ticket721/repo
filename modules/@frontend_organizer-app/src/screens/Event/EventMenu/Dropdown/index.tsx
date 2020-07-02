@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled                         from 'styled-components';
 
 import { useHistory, useParams } from 'react-router';
 
 import { DateSelect } from './DateSelect';
 import { useRequest }                   from '@frontend/core/lib/hooks/useRequest';
+import { useLazyRequest }               from '@frontend/core/lib/hooks/useLazyRequest';
 import { useSelector }                  from 'react-redux';
 import { DatesSearchResponseDto }       from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
 import { v4 }                           from 'uuid';
@@ -67,30 +68,25 @@ export const Dropdown: React.FC = () => {
         uuid
     );
 
-    const { response: datesResp } = useRequest<DatesSearchResponseDto>(
-        {
-            method: 'dates.search',
-            args: [
-                token,
-                {
-                    group_id: {
-                        $eq: groupId,
-                    },
-                },
-            ],
-            refreshRate: 1,
-        },
-        uuid
-    );
+    const { lazyRequest, response: datesResp } = useLazyRequest<DatesSearchResponseDto>('dates.search', uuid);
+
+    useEffect(() => {
+        lazyRequest([token, { group_id: { $eq: groupId }}]);
+    // eslint-disable-next-line
+    }, []);
 
     useDeepEffect(() => {
         if (datesResp.data && dateId) {
             const dateItem = datesResp.data.dates.find((date) => date.id === dateId);
-            setCurrentDate(dateItem);
-            setSelectedItem({
-                label: formatDateLabel(dateItem.timestamps.event_begin),
-                value: dateItem.id,
-            });
+            if (!dateItem) {
+                lazyRequest([token, { group_id: { $eq: groupId }}, { force: true }]);
+            } else {
+                setCurrentDate(dateItem);
+                setSelectedItem({
+                    label: formatDateLabel(dateItem.timestamps.event_begin),
+                    value: dateItem?.id,
+                });
+            }
         } else if (eventId) {
             setSelectedItem({
                 label: 'Global category',
@@ -102,15 +98,17 @@ export const Dropdown: React.FC = () => {
                 value: 'new-date',
             });
         }
-    }, [datesResp.data, dateId, eventId]);
+    }, [datesResp, dateId, eventId]);
 
     useDeepEffect(() => {
         if (datesResp.data && datesResp.data.dates.length > 0) {
             setSelectableDates([
-                ...datesResp.data.dates.map((date) => ({
-                    label: formatDateLabel(date.timestamps.event_begin),
-                    value: date.id,
-                })),
+                ...datesResp.data.dates.filter(d => d.parent_type === 'event' || d.parent_type === 'date')
+                    .map((date) => ({
+                        label: formatDateLabel(date.timestamps.event_begin),
+                        value: date.id,
+                    })
+                ),
                 {
                     label: 'New Date',
                     value: 'new-date',
@@ -149,7 +147,7 @@ export const Dropdown: React.FC = () => {
                                         });
                                 }
                             } else if (dateOpt.value === 'new-date') {
-                                history.push(`/${groupId}/date`);
+                                history.push(`/${groupId}/event/${eventId}/date`);
                             } else {
                                 history.push(`/${groupId}/date/${dateOpt.value}`, {
                                     showingInfos: true,

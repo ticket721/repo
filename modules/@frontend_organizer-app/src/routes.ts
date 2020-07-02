@@ -12,6 +12,7 @@ import UpdateLocation       from './screens/Event/UpdateLocation';
 import NewDate              from './screens/Event/NewDate';
 import UpdateGlobalCategory from './screens/Event/UpdateGlobalCategory';
 import NewGlobalCategory    from './screens/Event/NewGlobalCategory';
+import FetchDate          from './screens/Event/FetchDate';
 
 export interface RouteDatum {
     path: string;
@@ -62,9 +63,14 @@ export const routes: RouteDatum[] = [
         protected: true,
     },
     {
-        path: '/:groupId/date',
+        path: '/:groupId/event/:eventId/date',
         page: NewDate,
-        protected: true,
+        protected: true
+    },
+    {
+        path: '/:groupId',
+        page: FetchDate,
+        protected: true
     },
     {
         path: '/login',

@@ -74,7 +74,10 @@ export const EventsFetcher: React.FC<EventsFetcherProps> = ({ token, uuid, group
 
     useDeepEffect(() => {
         if (formattedEvents.length > 0 && datesResp.data) {
-            setFormattedEvents(formatDatesAndCovers(datesResp.data.dates, formattedEvents));
+            const filteredDates = datesResp.data.dates.filter(d => d.parent_type === 'event' || d.parent_type === 'date');
+            if (filteredDates.length > 0) {
+                setFormattedEvents(formatDatesAndCovers(filteredDates, formattedEvents));
+            }
         }
     }, [formattedEvents.length, datesResp.data]);
 
@@ -92,15 +95,15 @@ export const EventsFetcher: React.FC<EventsFetcherProps> = ({ token, uuid, group
     return (
         <Cards>
             {
-                formattedEvents.length > 0 && formattedEvents[0].datesRange ?
+                (formattedEvents.length > 0 && formattedEvents[0].datesRange &&
                     formattedEvents.map((event) => (
                         <div
                         key={event.groupId}
-                        onClick={() => history.push(`${event.groupId}/date/${event.defaultDateId}`)}>
+                        onClick={() => history.push(`/${event.groupId}`)}>
                             <EventCard
                             {...event}/>
                         </div>
-                    )) :
+                    ))) || (formattedEvents.length === 0 && <span>You don't have any event</span>) ||
                     <span>Loading...</span>
             }
         </Cards>

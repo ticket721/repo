@@ -6,30 +6,37 @@ import { useSelector, useDispatch } from 'react-redux';
 import { v4 } from 'uuid';
 import { useParams, useHistory } from 'react-router';
 
-import { Button, Textarea, TextInput, Tags } from '@frontend/flib-react/lib/components';
+import {Button, Textarea, TextInput, Tags, DropError, FilesUploader} from '@frontend/flib-react/lib/components';
 import { AppState } from '@frontend/core/src/redux/ducks';
 import { useLazyRequest } from '@frontend/core/lib/hooks/useLazyRequest';
 import { PushNotification } from '@frontend/core/lib/redux/ducks/notifications';
 import { useDeepEffect } from '@frontend/core/lib/hooks/useDeepEffect';
+import { ImageEntity }              from '@common/sdk/lib/@backend_nest/libs/common/src/images/entities/Image.entity';
+import { getImgPath }               from '@frontend/core/lib/utils/images';
 import {
     DatesCreateResponseDto
 } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesCreateResponse.dto';
 
-import { completeDateValidation } from './validationSchema';
+import { EventCreationCore }        from '../../../core/event_creation/EventCreationCore';
+import { ColorPickers }             from '../../../components/ColorPickers';
 import '../../../shared/Translations/generalInfoForm';
 import '../../../shared/Translations/global';
 import DateForm from '../../../components/DateForm';
 
-const NewDate = () => {
-    const [ t ] = useTranslation(['general_infos', 'notify', 'global']);
+import { completeDateValidation } from './validationSchema';
+
+const NewDate = (): JSX.Element => {
+    const [ t ] = useTranslation(['general_infos', 'notify', 'global', 'event_creation_styles']);
     const history = useHistory();
-    const { groupId } = useParams();
+    const { groupId, eventId } = useParams();
     const [ inputTag, setInputTag ] = React.useState('');
     const dispatch = useDispatch();
-    const [uuidCreate] = React.useState(v4() + '@new-date');
+    const [uuiAdd] = React.useState(v4() + '@new-date-add');
+    const [uuidCreate] = React.useState(v4() + '@new-date-create');
     const token = useSelector((state: AppState): string => state.auth.token.value);
 
     const { lazyRequest: createDate, response: createResponse } = useLazyRequest<DatesCreateResponseDto>('dates.create', uuidCreate);
+    const { lazyRequest: addDate, response: addResponse } = useLazyRequest<DatesCreateResponseDto>('events.addDates', uuiAdd);
 
     const formik = useFormik({
         initialValues: {
@@ -77,10 +84,22 @@ const NewDate = () => {
 
     useDeepEffect(() => {
         if (createResponse.data) {
+            addDate([token, eventId, { dates: [createResponse.data.date.id]}])
+        }
+    }, [createResponse.data]);
+
+    useDeepEffect(() => {
+        if (addResponse.error) {
+            dispatch(PushNotification(t(createResponse.error), 'error'));
+        }
+    }, [addResponse.error]);
+    useDeepEffect(() => {
+        if (addResponse.data) {
             dispatch(PushNotification(t('success'), 'success'));
             history.push(`/${groupId}/date/${createResponse.data.date.id}`);
         }
-    }, [createResponse.data]);
+    }, [addResponse.data]);
+
 
     const onTagsKeyDown = (e: React.KeyboardEvent<HTMLElement>, tag: string) => {
         if(!inputTag) {
@@ -114,9 +133,42 @@ const NewDate = () => {
         }
     };
 
-    const computeError = (field: string) => formik.touched[field] && formik.errors[field] ?
-      'validation:' + formik.errors[field] : '';
+    const [ preview, setPreview ] = React.useState('');
 
+    const uploadImages = (files: File[], previews: string[]) => {
+        const formData = new FormData();
+        files.forEach((file) => formData.append('images', file));
+        EventCreationCore.uploadImages(token, formData, {})
+          .then((ids: ImageEntity[]) => {
+              formik.setFieldTouched('avatar');
+              formik.setFieldValue('avatar', ids[0].id);
+          }).catch((error) => {
+            dispatch(PushNotification(t('error_notifications:' + error.message), 'error'));
+        });
+    };
+
+    const removeImage = () => {
+        formik.setFieldValue('avatar', '');
+        formik.setFieldValue('signature_colors', []);
+        setPreview('');
+    };
+
+    const handleDropErrors = (errors: DropError[]) => {
+        let finalError: string = '';
+        for (const err of errors[0].errorCodes) {
+            finalError = finalError.concat(' ' + t('react_dropzone_errors:' + err));
+        }
+
+        formik.setFieldError('avatar', finalError);
+    };
+
+    const computeError = (field: string) => formik.touched[field] && formik.errors[field] ? 'validation:' + formik.errors[field] : '';
+
+    React.useEffect(() => {
+        if (formik.values.avatar) {
+            setPreview(getImgPath(formik.values.avatar));
+        }
+    }, [formik.values.avatar]);
 
     const renderFormActions = () => (<Button variant='primary' type='submit' title={t('validate')}/>);
 
@@ -162,6 +214,27 @@ const NewDate = () => {
                         && t(computeError('tags'))
                     }
                 />
+                <FilesUploader
+                  name={'avatar'}
+                  multiple={false}
+                  browseLabel={t('browse')}
+                  dragDropLabel={t('drag_and_drop')}
+                  uploadRecommendations={t('image_recommendation')}
+                  onDrop={uploadImages}
+                  onDropRejected={handleDropErrors}
+                  onRemove={removeImage}
+                  width={'600px'}
+                  height={'300px'}
+                  previewPaths={[preview]}
+                  error={
+                      computeError('avatar') &&
+                      t(computeError('avatar'))
+                  }
+                />
+                <ColorPickers
+                  srcImage={preview}
+                  colors={formik.values.signature_colors}
+                  onColorsChange={(colors) => formik.setFieldValue('signature_colors', colors)}/>
                 <DateForm
                     formik={formik}
                     formActions={renderFormActions}

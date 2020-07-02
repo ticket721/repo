@@ -2,10 +2,8 @@ import React, { Suspense, useEffect, useState } from 'react';
 
 import { Route, Switch, useLocation, withRouter } from 'react-router-dom';
 
-import { routes }       from './routes';
-
-import Navbar               from './shared/Navbar';
-import { AppState }         from '@frontend/core/lib/redux';
+import Navbar          from './shared/Navbar';
+import { AppState }    from '@frontend/core/lib/redux';
 
 import ProtectedRoute  from '@frontend/core/lib/components/ProtectedRoute';
 import { useSelector } from 'react-redux';
@@ -14,6 +12,9 @@ import { AppStatus }   from '@frontend/core/lib/redux/ducks/statuses';
 import ToastStacker    from '@frontend/core/lib/components/ToastStacker';
 import './core/event_creation/locales';
 import { EventMenu }   from './screens/Event/EventMenu';
+import { routes }      from './routes';
+
+import './core/event_creation/locales';
 
 const App: React.FC = () => {
   const [ validated, setValidated ] = useState(true);
@@ -37,36 +38,36 @@ const App: React.FC = () => {
           {
             appStatus === AppStatus.Ready && routes.map((route, idx) => {
 
-              const page: JSX.Element = (
-                <PageWrapper>
+                const page: JSX.Element = (
+                  <PageWrapper>
                     {
-                        route.path.match(/^\/:groupId\/date/) || route.path.match(/^\/:groupId\/event/) ?
+                        route.path.match(/^\/:groupId\/(date|event)/) ?
                         <EventPageWrapper>
                             <EventMenu/>
                             <div>
                                 <route.page />
                             </div>
                         </EventPageWrapper> :
-                            <route.page />
+                        <route.page />
                     }
-                </PageWrapper>
-              );
+                  </PageWrapper>
+                );
 
-              if (route.protected) {
+                if (route.protected) {
                   return <ProtectedRoute path={route.path} key={idx}>
-                      {page}
+                    {page}
                   </ProtectedRoute>
-              }
-
-                        return <Route key={idx} path={route.path} >
-                            <route.page />
-                        </Route>
-                    })
                 }
-            </Switch>
-            <ToastStacker additionalLocales={[
-                'organizer_error_notifications',
-            ]} />
+
+                return <Route key={idx} path={route.path} >
+                  <route.page />
+                </Route>
+              })
+            }
+        </Switch>
+        <ToastStacker additionalLocales={[
+            'organizer_error_notifications',
+        ]} />
         </AppContainer>
       </Suspense>
     )
@@ -87,7 +88,7 @@ const EventPageWrapper = styled.div`
     display: flex;
     justify-content: center;
 
-    & > div:last-child {
+    & > *:last-child {
         width: 600px;
     }
 `;
