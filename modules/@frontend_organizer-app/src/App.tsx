@@ -1,6 +1,6 @@
 import React, { Suspense, useEffect, useState } from 'react';
 
-import { Route, Switch, useLocation, withRouter } from 'react-router-dom';
+import { Redirect, Route, Switch, useLocation, withRouter } from 'react-router-dom';
 
 import { routes }       from './routes';
 
@@ -63,6 +63,7 @@ const App: React.FC = () => {
                         </Route>
                     })
                 }
+                <Redirect to={'/'}/>
             </Switch>
             <ToastStacker additionalLocales={[
                 'organizer_error_notifications',
