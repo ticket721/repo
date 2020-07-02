@@ -136,13 +136,13 @@ const TileHeader = styled.div`
     display: flex;
     justify-content: space-between;
     align-items: center;
-    cursor: inherit;
+    cursor: pointer;
 `;
 
 const Title = styled.span`
     font-weight: 500;
     font-size: 13px;
-    cursor: inherit;
+    cursor: pointer;
     color: rgba(255, 255, 255, 0.9);
 `;
 
@@ -159,7 +159,7 @@ const Tile = styled.span<{ active?: boolean }>`
     justify-content: space-between;
     font-weight: 500;
     font-size: 13px;
-    cursor: inherit;
+    cursor: pointer;
     margin: ${props => props.theme.smallSpacing} 0;
     color: ${(props) => props.active ? props.theme.textColor : props.theme.textColorDarker};
 
