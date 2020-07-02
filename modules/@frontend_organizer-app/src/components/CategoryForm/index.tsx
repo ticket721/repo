@@ -1,16 +1,17 @@
-import React from 'react';
+import React                                                     from 'react';
 import {
     CustomDatePicker,
     CustomTimePicker,
     TextInput
-}                           from '@frontend/flib-react/lib/components';
-import styled                       from 'styled-components';
-import { useFormik }                from 'formik';
+}                                                                from '@frontend/flib-react/lib/components';
+import styled                                                    from 'styled-components';
+import { useFormik }                                             from 'formik';
+import { useDeepEffect }                                         from '@frontend/core/lib/hooks/useDeepEffect';
+import { isEqual }                                               from 'lodash';
 import { categoryValidationSchema }                              from './validationSchema';
 import { checkFormatDate, compareDates, day, minute, TimeScale } from '@frontend/core/lib/utils/date';
 import { FormActions, FormActionsProps }                         from '../FormActions';
-
-import { useTranslation } from 'react-i18next';
+import { useTranslation }                                        from 'react-i18next';
 import './locales';
 
 export interface CategoryItem {
@@ -36,6 +37,7 @@ export interface CategoryFormProps extends FormActionsProps {
     initialValues?: CategoryItem;
     maxDate: Date;
     confirm: (categoryItem: CategoryItem) => void;
+    loadingState?: boolean;
 }
 
 export const CategoryForm: React.FC<CategoryFormProps> = (props: CategoryFormProps) => {
@@ -115,6 +117,12 @@ export const CategoryForm: React.FC<CategoryFormProps> = (props: CategoryFormPro
           'validation:' + formik.errors[field] :
           undefined;
     };
+
+    useDeepEffect(() => {
+        if (formik.initialValues) {
+            formik.setValues(checkedInitialValues);
+        }
+    }, [checkedInitialValues]);
 
     return (
         <Form onSubmit={formik.handleSubmit}>
@@ -229,9 +237,10 @@ export const CategoryForm: React.FC<CategoryFormProps> = (props: CategoryFormPro
                 delete={props.delete}
                 cancel={props.cancel}
                 newItem={props.newItem}
+                loadingState={props.loadingState}
                 disabled={
-                    !formik.isValid &&
-                    JSON.stringify(formik.values) === JSON.stringify(checkedInitialValues)
+                    !formik.isValid ||
+                    isEqual(formik.values, checkedInitialValues)
                 }/>
         </Form>
     )

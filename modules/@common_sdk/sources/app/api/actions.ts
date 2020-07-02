@@ -8,6 +8,8 @@ import { ActionsCreateInputDto }           from '@app/server/controllers/actions
 import { ActionsCreateResponseDto }        from '@app/server/controllers/actionsets/dto/ActionsCreateResponse.dto';
 import { ActionsConsumeUpdateInputDto }    from '@app/server/controllers/actionsets/dto/ActionsConsumeUpdateInput.dto';
 import { ActionsConsumeUpdateResponseDto } from '@app/server/controllers/actionsets/dto/ActionsConsumeUpdateResponse.dto';
+import { ActionsCountInputDto }            from '@app/server/controllers/actionsets/dto/ActionsCountInputDto.dto';
+import { ActionsCountResponseDto }         from '@app/server/controllers/actionsets/dto/ActionsCountResponseDto.dto';
 
 export async function actionsSearch(
     token: string,
@@ -17,6 +19,19 @@ export async function actionsSearch(
     const self: T721SDK = this;
 
     return self.post<Partial<ActionsSearchInputDto>>('/actions/search', {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+    }, query);
+}
+
+export async function actionsCount(
+    token: string,
+    query: Partial<ActionsCountInputDto>,
+): Promise<AxiosResponse<ActionsCountResponseDto>> {
+
+    const self: T721SDK = this;
+
+    return self.post<Partial<ActionsCountInputDto>>('/actions/count', {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
     }, query);

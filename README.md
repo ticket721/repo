@@ -51,6 +51,16 @@ Some code is located outside the `modules` directory. The [`gulp`](./gulp), [`ne
 
 ## Setup
 
+### T721 CLI
+
+To manipulate the repository, you have to use the T721 CLI. To do so, start by installing its dependencies
+
+```bash
+cd cli && npm install
+```
+
+Then, add the path to `cli/bin` to your `PATH` env variable. (you should have something like `home/username/path/to/repo/cli/bin`)
+
 ### Required dependencies
 
 In order for you to properly use the monorepo, you will have to install `lerna` and `yarn` (and `node` obviously) globally.
@@ -58,7 +68,7 @@ In order for you to properly use the monorepo, you will have to install `lerna` 
 Simply run the following command to get started
 
 ```
-npm install --global lerna yarn truffle@5.0.18
+t721cli repo_depencies
 ```
 
 ### First time cloning ?
@@ -66,7 +76,7 @@ npm install --global lerna yarn truffle@5.0.18
 When you barely cloned the repository, you have to fetch the submodules before installing anything. Run the following to fetch and checkout all submodules
 
 ```
-yarn setup:submodules:clone && yarn @install
+t721cli repo_submodules && t721cli repo_install
 ```
 
 After this you should be ready to do anything on any module of the repo. If this is not the case, this means that there is a configuration error that should be fixed.
@@ -76,18 +86,10 @@ After this you should be ready to do anything on any module of the repo. If this
 We are using automated dependency checkers that are raising PRs with dependency updates. Our CI being pretty robust, we automatically merge these PRs. This means that you will often have to pull updates from the main branch, and you will often need to update localy installed packages.
 
 ```
-yarn @clean && yarn @install
+t721cli repo_install
 ```
 
 This command should completely reset the repository and install all required (and up-to-date) dependencies.
-
-If you are on a fresh commit (*no unstaged changes*), you can run the following command instead to prevent useless lockfiles updates
-
-```
-yarn @clean && yarn @install && git reset --hard
-```
-
-Remember, this second solution will remove all changegs that haven't been comitted, so use it wisely.
 
 ## Module Roots
 

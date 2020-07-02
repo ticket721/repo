@@ -40,10 +40,12 @@ const App: React.FC = () => {
               const page: JSX.Element = (
                 <PageWrapper>
                     {
-                        route.path.match(/^\/:groupId\/date/) ?
+                        route.path.match(/^\/:groupId\/date/) || route.path.match(/^\/:groupId\/event/) ?
                         <EventPageWrapper>
                             <EventMenu/>
-                            <route.page />
+                            <div>
+                                <route.page />
+                            </div>
                         </EventPageWrapper> :
                             <route.page />
                     }
@@ -85,7 +87,7 @@ const EventPageWrapper = styled.div`
     display: flex;
     justify-content: center;
 
-    & > *:last-child {
+    & > div:last-child {
         width: 600px;
     }
 `;

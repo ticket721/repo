@@ -1,0 +1,10 @@
+{
+    "name": "cli",
+    "version": "1.0.0",
+    "dependencies": {
+        "commander": "5.1.0",
+        "ts-node": "8.10.2",
+        "typescript": "3.9.6",
+        "@types/node": "14.0.14"
+    }
+}

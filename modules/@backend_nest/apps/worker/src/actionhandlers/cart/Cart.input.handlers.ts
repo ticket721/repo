@@ -9,6 +9,8 @@ import { AuthorizedTicketMintingFormat, TicketMintingFormat } from '@lib/common/
 import { BigNumber } from 'bignumber.js';
 import { detectAuthorizationStackDifferences } from '@lib/common/utils/detectTicketAuthorizationStackDifferences.helper';
 import { ConfigService } from '@lib/common/config/Config.service';
+import { TimeToolService } from '@lib/common/toolbox/Time.tool.service';
+import { CategoryEntity, CategorySelectionError } from '@lib/common/categories/entities/Category.entity';
 
 /**
  * Data Model of the Ticket Selection step
@@ -73,12 +75,14 @@ export class CartInputHandlers implements OnModuleInit {
      * @param categoriesService
      * @param currenciesService
      * @param configService
+     * @param timeToolService
      */
     constructor(
         private readonly actionSetsService: ActionSetsService,
         private readonly categoriesService: CategoriesService,
         private readonly currenciesService: CurrenciesService,
         private readonly configService: ConfigService,
+        private readonly timeToolService: TimeToolService,
     ) {}
 
     /**
@@ -178,6 +182,8 @@ export class CartInputHandlers implements OnModuleInit {
 
                 const groupIds: { [key: string]: TicketMintingFormat[] } = {};
 
+                let saleErrors: CategorySelectionError[] = [];
+
                 for (const ticket of data.tickets) {
                     const categorySearchRes = await this.categoriesService.search({
                         id: ticket.categoryId,
@@ -194,6 +200,14 @@ export class CartInputHandlers implements OnModuleInit {
                         valid = false;
                         break;
                     }
+
+                    saleErrors = [
+                        ...saleErrors,
+                        ...CategoryEntity.checkCategoryErrors(
+                            this.timeToolService.now(),
+                            categorySearchRes.response[0],
+                        ),
+                    ];
 
                     groupIds[categorySearchRes.response[0].group_id] = [
                         ...(groupIds[categorySearchRes.response[0].group_id] || []),
@@ -248,6 +262,17 @@ export class CartInputHandlers implements OnModuleInit {
                         total: returnPrices,
                         fees,
                     });
+                }
+
+                if (saleErrors.length) {
+                    actionset.action.setError({
+                        details: saleErrors,
+                        error: 'cannot_purchase_tickets',
+                    });
+                    actionset.action.setStatus('error');
+                    actionset.setStatus('input:error');
+
+                    break;
                 }
 
                 if (Object.keys(groupIds).length > 1) {
