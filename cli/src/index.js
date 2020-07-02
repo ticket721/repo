@@ -1,5 +1,6 @@
 const { program } = require('commander');
 const repo = require('./repo');
+const ci = require('./ci')
 const packageJson = require('../../package.json');
 
 program
@@ -7,5 +8,6 @@ program
     .version(packageJson.version);
 
 repo(program);
+ci(program)
 
 program.parse(process.argv);
