@@ -104,7 +104,7 @@ export const DateSubMenu: React.FC = () => {
                     <Icon icon='chevron' color='white' size='6px'/>
                 </TileHeader>
                 {
-                    showingDateCategories &&
+                    showingDateCategories ?
                         <Tiles>
                             {
                                 dateCategories.map((category) => (
@@ -127,7 +127,8 @@ export const DateSubMenu: React.FC = () => {
                             })}>
                                 {t('new_category_subtitle')}
                             </Tile>
-                        </Tiles>
+                        </Tiles> :
+                        null
                 }
             </EditSection>
         </>
