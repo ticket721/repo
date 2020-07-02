@@ -14,6 +14,8 @@ import { ApiResponses } from '@app/server/utils/ApiResponses.controller.decorato
 import { DosojinSearchInputDto } from '@app/server/controllers/dosojin/dto/DosojinSearchInput.dto';
 import { DosojinSearchResponseDto } from '@app/server/controllers/dosojin/dto/DosojinSearchResponse.dto';
 import { ValidGuard } from '@app/server/authentication/guards/ValidGuard.guard';
+import { DosojinCountInputDto } from '@app/server/controllers/dosojin/dto/DosojinCountInput.dto';
+import { DosojinCountResponseDto } from '@app/server/controllers/dosojin/dto/DosojinCountResponse.dto';
 
 /**
  * Controller Handling Gem Orders
@@ -47,6 +49,26 @@ export class DosojinController extends ControllerBasics<GemOrderEntity> {
     @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized, StatusCodes.InternalServerError, StatusCodes.BadRequest])
     async search(@Body() body: DosojinSearchInputDto, @User() user: UserDto): Promise<DosojinSearchResponseDto> {
         const gemOrders = await this._searchRestricted(this.gemOrdersService, this.rightsService, user, 'id', body);
+
+        return {
+            gemOrders,
+        };
+    }
+
+    /**
+     * Count Gem Orders
+     *
+     * @param body
+     * @param user
+     */
+    @Post('/count')
+    @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
+    @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.OK)
+    @Roles('authenticated')
+    @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized, StatusCodes.InternalServerError, StatusCodes.BadRequest])
+    async count(@Body() body: DosojinCountInputDto, @User() user: UserDto): Promise<DosojinCountResponseDto> {
+        const gemOrders = await this._countRestricted(this.gemOrdersService, this.rightsService, user, 'id', body);
 
         return {
             gemOrders,

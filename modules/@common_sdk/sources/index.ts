@@ -21,7 +21,7 @@ import {
 } from './app/api/authentication';
 
 // ACTIONS
-import { actionsConsumeUpdate, actionsCreate, actionsSearch, actionsUpdate } from './app/api/actions';
+import { actionsConsumeUpdate, actionsCreate, actionsSearch, actionsCount, actionsUpdate } from './app/api/actions';
 
 // IMAGES
 import { uploadImage } from './app/api/images';
@@ -53,7 +53,7 @@ import { rightsSearch }                                                         
 import { metadatasFetch }                                                 from './app/api/metadatas';
 import { cartModulesConfiguration, cartTicketSelections }                 from './app/api/cart';
 import { checkoutCartCommitStripe, checkoutResolveCartWithPaymentIntent } from './app/api/checkout';
-import { dosojinSearch }                                                  from './app/api/dosojin';
+import { dosojinSearch, dosojinCount }                                                  from './app/api/dosojin';
 import { ticketsSearch, ticketsCount }                                    from './app/api/tickets';
 import { usersMe }                                                        from './app/api/users';
 
@@ -85,6 +85,7 @@ export class T721SDK {
         this.users.me = this.users.me.bind(this);
 
         this.actions.search = this.actions.search.bind(this);
+        this.actions.count = this.actions.count.bind(this);
         this.actions.update = this.actions.update.bind(this);
         this.actions.create = this.actions.create.bind(this);
         this.actions.consumeUpdate = this.actions.consumeUpdate.bind(this);
@@ -140,6 +141,7 @@ export class T721SDK {
         this.checkout.cart.resolve.paymentIntent = this.checkout.cart.resolve.paymentIntent.bind(this);
 
         this.dosojin.search = this.dosojin.search.bind(this);
+        this.dosojin.count = this.dosojin.count.bind(this);
 
         this.tickets.search = this.tickets.search.bind(this);
         this.tickets.count = this.tickets.count.bind(this);
@@ -247,6 +249,7 @@ export class T721SDK {
 
     public actions = {
         search: actionsSearch,
+        count: actionsCount,
         update: actionsUpdate,
         create: actionsCreate,
         consumeUpdate: actionsConsumeUpdate,
@@ -332,6 +335,7 @@ export class T721SDK {
 
     public dosojin = {
         search: dosojinSearch,
+        count: dosojinCount,
     };
 
     public tickets = {

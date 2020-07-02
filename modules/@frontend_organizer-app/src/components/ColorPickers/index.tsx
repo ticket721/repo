@@ -27,10 +27,12 @@ export const ColorPickers: React.FC<ColorPickersProps> = (props: ColorPickersPro
         Vibrant.from(src)
             .getPalette()
             .then((palette) => {
-                props.onColorsChange([
-                    palette.Vibrant.getHex(),
-                    palette.Muted.getHex(),
-                ]);
+                if (!props.colors || props.colors.length === 0) {
+                    props.onColorsChange([
+                        palette.Vibrant.getHex(),
+                        palette.Muted.getHex(),
+                    ]);
+                }
 
                 setPresetColors([
                     palette.LightVibrant.getHex(),
@@ -50,13 +52,11 @@ export const ColorPickers: React.FC<ColorPickersProps> = (props: ColorPickersPro
     };
 
     useEffect(() => {
-        if ((!props.colors || props.colors.length === 0 ) && props.srcImage) {
+        if (props.srcImage) {
             generatePresetColors(props.srcImage);
         }
-
-        setPresetColors([]);
         // eslint-disable-next-line
-    }, [props.srcImage, props.colors]);
+    }, [props.srcImage]);
 
     return (
         <Colors>

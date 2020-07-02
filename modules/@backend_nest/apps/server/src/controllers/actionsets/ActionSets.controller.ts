@@ -24,6 +24,8 @@ import { EventCreateAcsetBuilderArgs } from '@lib/common/events/acset_builders/E
 import { ValidGuard } from '@app/server/authentication/guards/ValidGuard.guard';
 import { ActionsConsumeUpdateInputDto } from '@app/server/controllers/actionsets/dto/ActionsConsumeUpdateInput.dto';
 import { ActionsConsumeUpdateResponseDto } from '@app/server/controllers/actionsets/dto/ActionsConsumeUpdateResponse.dto';
+import { ActionsCountInputDto } from '@app/server/controllers/actionsets/dto/ActionsCountInputDto.dto';
+import { ActionsCountResponseDto } from '@app/server/controllers/actionsets/dto/ActionsCountResponseDto.dto';
 
 /**
  * Generic Actions controller. Recover / delete action sets generated across the app
@@ -55,6 +57,26 @@ export class ActionSetsController extends ControllerBasics<ActionSetEntity> {
     @ApiResponses([StatusCodes.OK, StatusCodes.InternalServerError, StatusCodes.Unauthorized, StatusCodes.BadRequest])
     async search(@Body() body: ActionsSearchInputDto, @User() user: UserDto): Promise<ActionsSearchResponseDto> {
         const actionsets = await this._searchRestricted(this.actionSetsService, this.rightsService, user, 'id', body);
+
+        return {
+            actionsets,
+        };
+    }
+
+    /**
+     * Count for action sets
+     *
+     * @param body
+     * @param user
+     */
+    @Post('/count')
+    @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
+    @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.OK)
+    @Roles('authenticated')
+    @ApiResponses([StatusCodes.OK, StatusCodes.InternalServerError, StatusCodes.Unauthorized, StatusCodes.BadRequest])
+    async count(@Body() body: ActionsCountInputDto, @User() user: UserDto): Promise<ActionsCountResponseDto> {
+        const actionsets = await this._countRestricted(this.actionSetsService, this.rightsService, user, 'id', body);
 
         return {
             actionsets,
