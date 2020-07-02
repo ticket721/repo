@@ -59,7 +59,7 @@ To manipulate the repository, you have to use the T721 CLI. To do so, start by i
 cd cli && npm install
 ```
 
-Then, add the path to `cli/bin` to your `PATH` env variable. (you should have something like `home/username/path/to/repo/cli/bin`)
+Then, add the path to `cli/bin` to your `PATH` env variable. (you should have something like `home/your_username/path/to/repo/cli/bin`)
 
 ### Required dependencies
 
