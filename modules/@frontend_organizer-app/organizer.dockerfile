@@ -12,14 +12,10 @@ COPY --from=DEPENDENCIES "/repo/modules/@frontend_flib-react/node_modules" "/rep
 
 WORKDIR "/repo/modules/@frontend_organizer-app"
 
-RUN cd ../@common_global\
- && yarn build\
- && cd ../@common_sdk\
- && yarn build\
- && cd ../@frontend_core\
- && yarn build\
- && cd ../@frontend_flib-react\
- && yarn build
+RUN cd ../@common_global && yarn build \
+ && cd ../@common_sdk && yarn build \
+ && cd ../@frontend_flib-react && yarn build \
+ && cd ../@frontend_core && yarn build
 
 CMD ["yarn", "build_and_serve"]
 
