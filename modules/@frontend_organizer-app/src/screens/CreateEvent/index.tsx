@@ -102,7 +102,7 @@ const CreateEvent: React.FC = () => {
             <Forms>
                 <FormWrapper>
                     <Title>{t('general_infos_title')}</Title>
-                    <Subtitle>{t('general_infos_description')}</Subtitle>
+                    <Description>{t('general_infos_description')}<br/>{t('general_infos__tags_description')}</Description>
                     <GeneralInfoForm onComplete={(valid) => handleLoadingState(0, valid)}/>
                     {
                         stepIdx === 0 ?
@@ -117,7 +117,7 @@ const CreateEvent: React.FC = () => {
                 { stepIdx >= 1 && (
                     <FormWrapper ref={FormRefs[0]} disabled={currentActionIdx < 1}>
                         <Title>{t('styles_title')}</Title>
-                        <Subtitle>{t('styles_description')}</Subtitle>
+                        <Description>{t('styles_description')}</Description>
                         <StylesForm onComplete={(valid) => handleLoadingState(1, valid)}/>
                         {
                             stepIdx === 1 ?
@@ -139,7 +139,7 @@ const CreateEvent: React.FC = () => {
                             </span> :
                                 null
                         }</Title>
-                        <Subtitle>{t('dates_description')}</Subtitle>
+                        <Description>{t('dates_description')}</Description>
                         <DatesForm onComplete={(valid) => handleLoadingState(2, valid)}/>
                         {
                             stepIdx === 3 ?
@@ -155,7 +155,6 @@ const CreateEvent: React.FC = () => {
                 {stepIdx >= 4 && (
                     <FormWrapper ref={FormRefs[2]} disabled={currentActionIdx < 4}>
                         <Title>{t('categories_title')}</Title>
-                        <Subtitle>{t('categories_description')}</Subtitle>
                         <CategoriesForm onComplete={(valid) => handleLoadingState(3, valid)}/>
                         <SubmitButton
                             variant={acsetStatus === 'complete' ? 'primary' : 'disabled'}
@@ -219,9 +218,10 @@ const Title = styled.h1`
     }
 `;
 
-const Subtitle = styled.h2`
+const Description = styled.h2`
     font-weight: 500;
     font-size: 14px;
+    line-height: 20px;
     color: ${props => props.theme.textColorDark};
     margin-bottom: ${props => props.theme.biggerSpacing};
     white-space: pre-wrap;

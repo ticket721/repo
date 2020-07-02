@@ -113,7 +113,7 @@ const CategoriesForm: React.FC<FormProps> = ({ onComplete }) => {
             aria-labelledby={`simple-tab-${0}`}>
                 {tabIdx === 0 && (
                     <>
-                        <Description>A Normal ticket corresponds to a category which can be applied to several dates</Description>
+                        <Description>{t('date_specific_desc')}</Description>
                         <DateSpecificCategories
                             categories={eventCreationFormik.values.dates}
                             onCategoriesChange={dateSpecificCategoriesChange}/>
@@ -127,7 +127,7 @@ const CategoriesForm: React.FC<FormProps> = ({ onComplete }) => {
             aria-labelledby={`simple-tab-${1}`}>
                 {tabIdx === 1 && (
                     <>
-                        <Description>A Global Category corresponds to a ticket valid for all dates</Description>
+                        <Description>{t('global_desc')}</Description>
                         <GlobalCategories
                             categories={eventCreationFormik.values.global}
                             onCategoriesChange={globalCategoriesChange} />
@@ -157,12 +157,13 @@ const AppBar = styled(MuiAppBar)`
     }
 `;
 
-const Description = styled.span`
-    display: block;
-    margin: ${props => props.theme.doubleSpacing} 0 ${props => props.theme.regularSpacing};
-    font-size: 14px;
+const Description = styled.h2`
     font-weight: 500;
-    color: rgba(255, 255, 255, 0.6);
+    font-size: 14px;
+    line-height: 20px;
+    color: ${props => props.theme.textColorDark};
+    margin-bottom: ${props => props.theme.biggerSpacing};
+    white-space: pre-wrap;
 `;
 
 export default CategoriesForm;
