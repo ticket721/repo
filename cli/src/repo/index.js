@@ -8,15 +8,23 @@ const dependencies = async () => {
 
 const submodules = async () => {
     const current = goroot();
-    await run('yarn setup:submodules:clone', () => goback(current));
-    goback(current);
+    try {
+        await run('yarn setup:submodules:clone', () => goback(current));
+        goback(current);
+    } catch {
+        goback(current)
+    }
 };
 
 const install = async () => {
     const current = goroot();
-    await run('yarn @clean');
-    await run('yarn @install');
-    goback(current);
+    try {
+        await run('yarn @clean');
+        await run('yarn @install');
+        goback(current);
+    } catch {
+        goback(current)
+    }
 };
 
 const ciexec = async (module, commands) => {
