@@ -479,36 +479,6 @@ export class ControllerBasics<EntityType> {
     }
 
     /**
-     * Elastic Search Helper
-     *
-     * @param service
-     * @param query
-     * @private
-     */
-    public async _elasticGet<CustomEntityType>(
-        service: CRUDExtension<Repository<CustomEntityType>, CustomEntityType>,
-        query: SortablePagedSearch,
-    ): Promise<CustomEntityType[]> {
-        const esQuery = this._esQueryBuilder(query);
-
-        const entitiesQueryRes = await service.searchElastic(esQuery);
-
-        if (entitiesQueryRes.error) {
-            throw new HttpException(
-                {
-                    status: StatusCodes.InternalServerError,
-                    message: entitiesQueryRes.error,
-                },
-                StatusCodes.InternalServerError,
-            );
-        }
-
-        return entitiesQueryRes.response.hits.hits.map(
-            (esh: ESSearchHit<CustomEntityType>): CustomEntityType => esh._source,
-        );
-    }
-
-    /**
      * CQL Search Query Helper
      *
      * @param service
