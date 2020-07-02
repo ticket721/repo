@@ -3,6 +3,7 @@ import styled                 from 'styled-components';
 import { Icon, WalletHeader } from '@frontend/flib-react/lib/components';
 
 import DrawerAccount                         from '../DrawerAccount';
+import { useTranslation }                    from 'react-i18next';
 import { blurAndDarkenBackground, truncate } from '@frontend/core/lib/utils';
 import { useHistory }                        from 'react-router';
 import { NavLink }                           from 'react-router-dom';
@@ -11,10 +12,13 @@ import { computeProfilePath }                from '@frontend/core/lib/utils/comp
 import { appendProfilePath }                 from '@frontend/core/lib/utils/appendProfilePath';
 import { AppState }                          from '@frontend/core/lib/redux';
 import { getContract }                       from '@frontend/core/lib/subspace/getContract';
+import './locales';
+
 // tslint:disable-next-line:no-var-requires
 const { observe, useSubspace } = require('@embarklabs/subspace-react');
 
 const NavBar: React.FC = () => {
+    const { t } = useTranslation('navbar');
     const history = useHistory();
     const user = useSelector((state: AppState) => state.auth.user);
 
@@ -40,7 +44,9 @@ const NavBar: React.FC = () => {
             <ActionContainer>
                 <NavLink
                     to='/create-event'>
-                    Create Event
+                  {
+                    t('create_event')
+                  }
                 </NavLink>
                 <Profile
                     onClick={

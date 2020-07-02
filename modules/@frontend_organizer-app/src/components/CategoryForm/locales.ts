@@ -11,6 +11,8 @@ i18n.addResourceBundle('en', 'category_form', {
     start_sale_time_label: 'Start sale time',
     end_sale_date_label: 'End sale date',
     end_sale_time_label: 'End sale time',
+    category_title: 'Category informations',
+    sales_dates_range: 'Sales dates range'
 });
 
 i18n.addResourceBundle('fr', 'category_form', {
@@ -24,6 +26,8 @@ i18n.addResourceBundle('fr', 'category_form', {
     start_sale_time_label: 'Heure début de vente',
     end_sale_date_label: 'Date fin de vente',
     end_sale_time_label: 'Heure fin de vente',
+    category_title: 'Informations de la catégorie',
+    sales_dates_range: 'Dates de vente'
 });
 
 i18n.addResourceBundle('en', 'validation', {

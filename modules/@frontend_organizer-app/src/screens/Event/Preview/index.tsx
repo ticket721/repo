@@ -145,7 +145,7 @@ const Preview: React.FC = () => {
           :
           `${datePreview.prices[0]}€ ${t('each')}`
         if (datePreview.prices[0] === null) {
-            priceRange = t('unknown_prices')
+            priceRange = t('free_ticket')
         }
     }
 
@@ -238,7 +238,7 @@ const PreviewContainer = styled.div`
       width: 353px;
       height: 630px;
       margin: auto;
-      border: 16px black solid;
+      border: 16px white solid;
       border-top-width: 60px;
       border-bottom-width: 60px;
       border-radius: 36px;
@@ -254,7 +254,7 @@ const PreviewContainer = styled.div`
       top: -30px;
       left: 50%;
       transform: translate(-50%, -50%);
-      background: #333;
+      background: #aaa;
       border-radius: 10px;
   }
 
@@ -268,7 +268,7 @@ const PreviewContainer = styled.div`
       left: 50%;
       bottom: -65px;
       transform: translate(-50%, -50%);
-      background: #333;
+      background: #aaa;
       border-radius: 50%;
   }
 
