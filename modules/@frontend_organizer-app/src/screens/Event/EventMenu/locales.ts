@@ -1,20 +1,13 @@
 import i18n from '@frontend/core/lib/utils/i18n';
 
-i18n.addResourceBundle('en', 'event_side_menu', {
-    publish_label: 'Publish Event',
-    preview_label: 'Preview Event',
-    presentation_title: 'Presentation',
-    information_title: 'Informations',
-    general_info_title: 'General Informations',
-    date_location_title: 'Dates and Location',
+i18n.addResourceBundle('en', 'date_actions', {
+  delete_date_label: 'Delete Date',
+  delete_event_label: 'Delete Event',
+  add_label: 'New Date',
 });
 
-i18n.addResourceBundle('fr', 'event_side_menu', {
-    publish_label: 'Publier l\'évènement',
-    preview_label: 'Aperçu de l\'évènement',
-    presentation_title: 'Présentation',
-    information_title: 'Informations',
-    general_info_title: 'Informations générales',
-    date_title: 'Dates',
-    location_title: 'Emplacement'
+i18n.addResourceBundle('fr', 'date_actions', {
+  delete_date_label: 'Supprimer la date',
+  delete_event_label: 'Supprimer l\'événement',
+  add_label: 'Ajouter une date',
 });

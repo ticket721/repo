@@ -1,16 +1,22 @@
 import * as React from 'react';
 import styled from '../../../config/styled';
 import Icon from '../../icon';
+import Countdown from 'react-countdown';
+import { useEffect, useState } from 'react';
 
 export interface TicketTypeProps extends React.ComponentProps<any> {
     gradient: string[];
     description: JSX.Element;
     selected?: boolean;
-    soldOutLabel: string;
     price: string;
     title: string;
     ticketsLeft: number;
+    soldOutLabel: string;
     ticketsLeftLabel: string;
+    availableInLabel: string;
+    saleEndsInLabel: string;
+    saleBegin: Date;
+    saleEnd: Date;
     onClick?: () => void;
 }
 
@@ -72,19 +78,140 @@ const TicketIcon = styled(Icon)`
     margin-right: ${(props) => props.theme.regularSpacing};
 `;
 
+interface DisabledContainerProps {
+    disabled: boolean;
+}
+
+const DisabledContainer = styled.div<DisabledContainerProps>`
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    backdrop-filter: blur(3px);
+    background-color: rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+`;
+
+const CountdownText = styled.h4`
+    font-weight: 300;
+    font-size: 24px;
+`;
+
+const NumberText = styled.span`
+    font-family: 'Roboto Mono', monospace;
+`;
+
+const SoldOutText = styled.span`
+    text-transform: uppercase;
+    font-weight: 900;
+    font-size: 24px;
+`;
+
+interface SoldOutContainerProps {
+    gradient: string[];
+}
+
+const SoldOutContainer = styled.div<SoldOutContainerProps>`
+    transform: rotate(-20deg);
+    background: linear-gradient(260deg, ${(props) => props.gradient[0]}, ${(props) => props.gradient[1]});
+    background-color: ${(props) => props.color};
+    padding: ${(props) => props.theme.regularSpacing};
+    border-radius: 8px;
+`;
+
+const renderer = (
+    availableInLabel: string,
+    { hours, minutes, seconds, completed }: { hours: number; minutes: number; seconds: number; completed: boolean },
+) => {
+    if (completed) {
+        return null;
+    } else {
+        return (
+            <CountdownText>
+                {availableInLabel} <NumberText>{hours}</NumberText>h <NumberText>{minutes}</NumberText>m{' '}
+                <NumberText>{seconds}</NumberText>s
+            </CountdownText>
+        );
+    }
+};
+
+const descRenderer = (
+    saleEndsInLabel: string,
+    { hours, minutes, seconds, completed }: { hours: number; minutes: number; seconds: number; completed: boolean },
+) => {
+    if (completed) {
+        return null;
+    } else {
+        return (
+            <CountdownText>
+                {saleEndsInLabel} <NumberText>{hours}</NumberText>h <NumberText>{minutes}</NumberText>m
+            </CountdownText>
+        );
+    }
+};
+
+const isBeforeSale = (saleBegin: Date): boolean => {
+    return Date.now() < saleBegin.getTime();
+};
+
+const isAfterSale = (saleEnd: Date): boolean => {
+    return Date.now() > saleEnd.getTime();
+};
+
+const isSoldOut = (count: number): boolean => {
+    return count === 0;
+};
+
+const isDisabled = (props: TicketTypeProps): boolean => {
+    return isBeforeSale(props.saleBegin) || isAfterSale(props.saleEnd) || isSoldOut(props.ticketsLeft);
+};
+
 export const TicketType: React.FunctionComponent<TicketTypeProps> = (props: TicketTypeProps): JSX.Element => {
+    const [, setNow] = useState(Date.now());
+
+    useEffect(() => {
+        const intervalId = setInterval(() => {
+            setNow(Date.now());
+        }, 1000);
+        return () => clearInterval(intervalId);
+    }, []);
+
     return (
-        <Container selected={props.selected} gradient={props.gradient} onClick={props.onClick}>
+        <Container
+            selected={!isDisabled(props) && props.selected}
+            gradient={props.gradient}
+            onClick={isDisabled(props) ? undefined : props.onClick}
+        >
+            {isDisabled(props) ? (
+                <DisabledContainer disabled={isDisabled(props)}>
+                    {isBeforeSale(props.saleBegin) ? (
+                        <Countdown
+                            date={props.saleBegin.getTime()}
+                            renderer={renderer.bind(null, props.availableInLabel)}
+                        />
+                    ) : (
+                        <SoldOutContainer gradient={props.gradient}>
+                            <SoldOutText>{props.soldOutLabel}</SoldOutText>
+                        </SoldOutContainer>
+                    )}
+                </DisabledContainer>
+            ) : null}
             <div className={'row aic jcsb'}>
                 <h3>{props.title}</h3>
                 <TicketCount ticketsLeft={props.ticketsLeft}>
                     <TicketIcon icon={'ticket'} size={'20px'} color={props.gradient[0]} />
-                    {props.ticketsLeft < 1 ? props.soldOutLabel : `${props.ticketsLeft} ${props.ticketsLeftLabel}`}
+                    {`${props.ticketsLeft} ${props.ticketsLeftLabel}`}
                 </TicketCount>
             </div>
             <h4>{props.price}</h4>
 
             {props.description}
+            {!isDisabled(props) && !isAfterSale(props.saleEnd) ? (
+                <Countdown date={props.saleEnd.getTime()} renderer={descRenderer.bind(null, props.saleEndsInLabel)} />
+            ) : null}
         </Container>
     );
 };

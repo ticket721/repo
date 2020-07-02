@@ -680,9 +680,9 @@ export const createEventWithUltraVIP = async (token: string, sdk: T721SDK): Prom
         global: [
             {
                 name: 'VIP Tickets',
-                saleBegin: new Date(Date.now() + 1000000),
+                saleBegin: new Date(Date.now() - 1000000),
                 saleEnd: new Date(Date.now() + 23 * 1000000),
-                resaleBegin: new Date(Date.now() + 1000000),
+                resaleBegin: new Date(Date.now() - 1000000),
                 resaleEnd: new Date(Date.now() + 23 * 1000000),
                 seats: 100,
                 currencies: [
@@ -694,9 +694,9 @@ export const createEventWithUltraVIP = async (token: string, sdk: T721SDK): Prom
             },
             {
                 name: 'Ultra VIP Tickets',
-                saleBegin: new Date(Date.now() + 1000000),
+                saleBegin: new Date(Date.now() - 1000000),
                 saleEnd: new Date(Date.now() + 23 * 1000000),
-                resaleBegin: new Date(Date.now() + 1000000),
+                resaleBegin: new Date(Date.now() - 1000000),
                 resaleEnd: new Date(Date.now() + 23 * 1000000),
                 seats: 2,
                 currencies: [
@@ -711,9 +711,9 @@ export const createEventWithUltraVIP = async (token: string, sdk: T721SDK): Prom
             [
                 {
                     name: 'Regular Tickets',
-                    saleBegin: new Date(Date.now() + 1000000),
+                    saleBegin: new Date(Date.now() - 1000000),
                     saleEnd: new Date(Date.now() + 23 * 1000000),
-                    resaleBegin: new Date(Date.now() + 1000000),
+                    resaleBegin: new Date(Date.now() - 1000000),
                     resaleEnd: new Date(Date.now() + 23 * 1000000),
                     seats: 200,
                     currencies: [
@@ -727,9 +727,9 @@ export const createEventWithUltraVIP = async (token: string, sdk: T721SDK): Prom
             [
                 {
                     name: 'Regular Tickets',
-                    saleBegin: new Date(Date.now() + 1000000),
+                    saleBegin: new Date(Date.now() - 1000000),
                     saleEnd: new Date(Date.now() + 23 * 1000000),
-                    resaleBegin: new Date(Date.now() + 1000000),
+                    resaleBegin: new Date(Date.now() - 1000000),
                     resaleEnd: new Date(Date.now() + 23 * 1000000),
                     seats: 200,
                     currencies: [
@@ -775,9 +775,9 @@ export const editEventActionSet = async (token: string, sdk: T721SDK, actionSetI
         global: [
             {
                 name: 'VIP Tickets',
-                saleBegin: new Date(Date.now() + 1000000),
+                saleBegin: new Date(Date.now() - 1000000),
                 saleEnd: new Date(Date.now() + 23 * 1000000),
-                resaleBegin: new Date(Date.now() + 1000000),
+                resaleBegin: new Date(Date.now() - 1000000),
                 resaleEnd: new Date(Date.now() + 23 * 1000000),
                 seats: 100,
                 currencies: [
@@ -792,9 +792,9 @@ export const editEventActionSet = async (token: string, sdk: T721SDK, actionSetI
             [
                 {
                     name: 'Regular Tickets',
-                    saleBegin: new Date(Date.now() + 1000000),
+                    saleBegin: new Date(Date.now() - 1000000),
                     saleEnd: new Date(Date.now() + 23 * 1000000),
-                    resaleBegin: new Date(Date.now() + 1000000),
+                    resaleBegin: new Date(Date.now() - 1000000),
                     resaleEnd: new Date(Date.now() + 23 * 1000000),
                     seats: 200,
                     currencies: [
@@ -808,9 +808,9 @@ export const editEventActionSet = async (token: string, sdk: T721SDK, actionSetI
             [
                 {
                     name: 'Regular Tickets',
-                    saleBegin: new Date(Date.now() + 1000000),
+                    saleBegin: new Date(Date.now() - 1000000),
                     saleEnd: new Date(Date.now() + 23 * 1000000),
-                    resaleBegin: new Date(Date.now() + 1000000),
+                    resaleBegin: new Date(Date.now() - 1000000),
                     resaleEnd: new Date(Date.now() + 23 * 1000000),
                     seats: 200,
                     currencies: [
@@ -983,9 +983,9 @@ export const createFreeEventActionSet = async (token: string, sdk: T721SDK): Pro
         global: [
             {
                 name: 'VIP Tickets',
-                saleBegin: new Date(Date.now() + 1000000),
+                saleBegin: new Date(Date.now() - 1000000),
                 saleEnd: new Date(Date.now() + 23 * 1000000),
-                resaleBegin: new Date(Date.now() + 1000000),
+                resaleBegin: new Date(Date.now() - 1000000),
                 resaleEnd: new Date(Date.now() + 23 * 1000000),
                 seats: 100,
                 currencies: [
@@ -1000,9 +1000,9 @@ export const createFreeEventActionSet = async (token: string, sdk: T721SDK): Pro
             [
                 {
                     name: 'Regular Tickets',
-                    saleBegin: new Date(Date.now() + 1000000),
+                    saleBegin: new Date(Date.now() - 1000000),
                     saleEnd: new Date(Date.now() + 23 * 1000000),
-                    resaleBegin: new Date(Date.now() + 1000000),
+                    resaleBegin: new Date(Date.now() - 1000000),
                     resaleEnd: new Date(Date.now() + 23 * 1000000),
                     seats: 200,
                     currencies: [
@@ -1016,9 +1016,9 @@ export const createFreeEventActionSet = async (token: string, sdk: T721SDK): Pro
             [
                 {
                     name: 'Regular Tickets',
-                    saleBegin: new Date(Date.now() + 1000000),
+                    saleBegin: new Date(Date.now() - 1000000),
                     saleEnd: new Date(Date.now() + 23 * 1000000),
-                    resaleBegin: new Date(Date.now() + 1000000),
+                    resaleBegin: new Date(Date.now() - 1000000),
                     resaleEnd: new Date(Date.now() + 23 * 1000000),
                     seats: 200,
                     currencies: [
@@ -1131,9 +1131,9 @@ export const createEventActionSet = async (token: string, sdk: T721SDK): Promise
         global: [
             {
                 name: 'VIP Tickets',
-                saleBegin: new Date(Date.now() + 1000000),
+                saleBegin: new Date(Date.now() - 1000000),
                 saleEnd: new Date(Date.now() + 23 * 1000000),
-                resaleBegin: new Date(Date.now() + 1000000),
+                resaleBegin: new Date(Date.now() - 1000000),
                 resaleEnd: new Date(Date.now() + 23 * 1000000),
                 seats: 100,
                 currencies: [
@@ -1148,9 +1148,9 @@ export const createEventActionSet = async (token: string, sdk: T721SDK): Promise
             [
                 {
                     name: 'Regular Tickets',
-                    saleBegin: new Date(Date.now() + 1000000),
+                    saleBegin: new Date(Date.now() - 1000000),
                     saleEnd: new Date(Date.now() + 23 * 1000000),
-                    resaleBegin: new Date(Date.now() + 1000000),
+                    resaleBegin: new Date(Date.now() - 1000000),
                     resaleEnd: new Date(Date.now() + 23 * 1000000),
                     seats: 200,
                     currencies: [
@@ -1164,9 +1164,9 @@ export const createEventActionSet = async (token: string, sdk: T721SDK): Promise
             [
                 {
                     name: 'Regular Tickets',
-                    saleBegin: new Date(Date.now() + 1000000),
+                    saleBegin: new Date(Date.now() - 1000000),
                     saleEnd: new Date(Date.now() + 23 * 1000000),
-                    resaleBegin: new Date(Date.now() + 1000000),
+                    resaleBegin: new Date(Date.now() - 1000000),
                     resaleEnd: new Date(Date.now() + 23 * 1000000),
                     seats: 200,
                     currencies: [
@@ -1279,9 +1279,9 @@ export const createLostEvent = async (token: string, sdk: T721SDK): Promise<Even
         global: [
             {
                 name: 'VIP Tickets',
-                saleBegin: new Date(Date.now() + 1000000),
+                saleBegin: new Date(Date.now() - 1000000),
                 saleEnd: new Date(Date.now() + 23 * 1000000),
-                resaleBegin: new Date(Date.now() + 1000000),
+                resaleBegin: new Date(Date.now() - 1000000),
                 resaleEnd: new Date(Date.now() + 23 * 1000000),
                 seats: 100,
                 currencies: [
@@ -1296,9 +1296,9 @@ export const createLostEvent = async (token: string, sdk: T721SDK): Promise<Even
             [
                 {
                     name: 'Regular Tickets',
-                    saleBegin: new Date(Date.now() + 1000000),
+                    saleBegin: new Date(Date.now() - 1000000),
                     saleEnd: new Date(Date.now() + 23 * 1000000),
-                    resaleBegin: new Date(Date.now() + 1000000),
+                    resaleBegin: new Date(Date.now() - 1000000),
                     resaleEnd: new Date(Date.now() + 23 * 1000000),
                     seats: 200,
                     currencies: [
@@ -1312,9 +1312,9 @@ export const createLostEvent = async (token: string, sdk: T721SDK): Promise<Even
             [
                 {
                     name: 'Regular Tickets',
-                    saleBegin: new Date(Date.now() + 1000000),
+                    saleBegin: new Date(Date.now() - 1000000),
                     saleEnd: new Date(Date.now() + 23 * 1000000),
-                    resaleBegin: new Date(Date.now() + 1000000),
+                    resaleBegin: new Date(Date.now() - 1000000),
                     resaleEnd: new Date(Date.now() + 23 * 1000000),
                     seats: 200,
                     currencies: [
@@ -1435,9 +1435,9 @@ export const createFuzzyEvent = async (token: string, sdk: T721SDK): Promise<Eve
         global: [
             {
                 name: 'VIP Tickets',
-                saleBegin: new Date(Date.now() + 1000000),
+                saleBegin: new Date(Date.now() - 1000000),
                 saleEnd: new Date(Date.now() + 23 * 1000000),
-                resaleBegin: new Date(Date.now() + 1000000),
+                resaleBegin: new Date(Date.now() - 1000000),
                 resaleEnd: new Date(Date.now() + 23 * 1000000),
                 seats: 100,
                 currencies: [
@@ -1452,9 +1452,9 @@ export const createFuzzyEvent = async (token: string, sdk: T721SDK): Promise<Eve
             [
                 {
                     name: 'Regular Tickets',
-                    saleBegin: new Date(Date.now() + 1000000),
+                    saleBegin: new Date(Date.now() - 1000000),
                     saleEnd: new Date(Date.now() + 23 * 1000000),
-                    resaleBegin: new Date(Date.now() + 1000000),
+                    resaleBegin: new Date(Date.now() - 1000000),
                     resaleEnd: new Date(Date.now() + 23 * 1000000),
                     seats: 200,
                     currencies: [
@@ -1468,9 +1468,9 @@ export const createFuzzyEvent = async (token: string, sdk: T721SDK): Promise<Eve
             [
                 {
                     name: 'Regular Tickets',
-                    saleBegin: new Date(Date.now() + 1000000),
+                    saleBegin: new Date(Date.now() - 1000000),
                     saleEnd: new Date(Date.now() + 23 * 1000000),
-                    resaleBegin: new Date(Date.now() + 1000000),
+                    resaleBegin: new Date(Date.now() - 1000000),
                     resaleEnd: new Date(Date.now() + 23 * 1000000),
                     seats: 200,
                     currencies: [
@@ -1591,7 +1591,7 @@ export const createEvent = async (token: string, sdk: T721SDK): Promise<EventDto
         global: [
             {
                 name: 'VIP Tickets',
-                saleBegin: new Date(Date.now() + 1000000),
+                saleBegin: new Date(Date.now() - 1000000),
                 saleEnd: new Date(Date.now() + 23 * 1000000),
                 resaleBegin: new Date(Date.now() + 1000000),
                 resaleEnd: new Date(Date.now() + 23 * 1000000),
@@ -1608,7 +1608,7 @@ export const createEvent = async (token: string, sdk: T721SDK): Promise<EventDto
             [
                 {
                     name: 'Regular Tickets',
-                    saleBegin: new Date(Date.now() + 1000000),
+                    saleBegin: new Date(Date.now() - 1000000),
                     saleEnd: new Date(Date.now() + 23 * 1000000),
                     resaleBegin: new Date(Date.now() + 1000000),
                     resaleEnd: new Date(Date.now() + 23 * 1000000),
@@ -1624,7 +1624,7 @@ export const createEvent = async (token: string, sdk: T721SDK): Promise<EventDto
             [
                 {
                     name: 'Regular Tickets',
-                    saleBegin: new Date(Date.now() + 1000000),
+                    saleBegin: new Date(Date.now() - 1000000),
                     saleEnd: new Date(Date.now() + 23 * 1000000),
                     resaleBegin: new Date(Date.now() + 1000000),
                     resaleEnd: new Date(Date.now() + 23 * 1000000),

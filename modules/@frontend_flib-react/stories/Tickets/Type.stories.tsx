@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { withKnobs, text, number, boolean, array } from '@storybook/addon-knobs';
+import { withKnobs, text, number, boolean, array, date } from '@storybook/addon-knobs';
 import TicketType from '../../src/components/ticket/type';
 
 export default {
@@ -25,39 +25,9 @@ export const showcase = () => (
         title={text('Ticket type', '2 days VIP pass')}
         ticketsLeft={number('Tickets left', 10)}
         ticketsLeftLabel={text('Tickets left', 'left')}
+        availableInLabel={text('Available in', 'Available in')}
+        saleEndsInLabel={text('Sale ends in', 'Sale ends in')}
+        saleBegin={new Date(date('Sale begin', new Date(Date.now() - 1)))}
+        saleEnd={new Date(date('Sale End', new Date(Date.now() + 100000)))}
     />
-);
-
-export const list = () => (
-    <div>
-        <TicketType
-            description={
-                <p>
-                    'Sed ac mattis elit, aliquam lobortis puus dictumst. Suspendisse a ex et lorem mattis faucibus
-                    rhoncus at justo'
-                </p>
-            }
-            gradient={gradientsValues}
-            feesIncluded={true}
-            selected={false}
-            price={'550€'}
-            title={'2 days VIP pass'}
-            ticketsLeft={0}
-            soldOutLabel={'Sold out'}
-            startingPriceLabel={'Starting at'}
-            ticketsLeftLabel={'left'}
-        />
-        <TicketType
-            description={<p>'Sed ac mattis elit'</p>}
-            feesIncluded={false}
-            gradient={gradientsValues}
-            selected={true}
-            price={'55€'}
-            title={'1 day ticket'}
-            ticketsLeft={130}
-            soldOutLabel={'Sold out'}
-            startingPriceLabel={'Starting at'}
-            ticketsLeftLabel={'left'}
-        />
-    </div>
 );

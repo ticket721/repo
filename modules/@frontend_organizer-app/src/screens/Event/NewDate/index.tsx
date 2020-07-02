@@ -20,7 +20,6 @@ import {
 import { EventCreationCore }        from '../../../core/event_creation/EventCreationCore';
 import { ColorPickers }             from '../../../components/ColorPickers';
 import '../../../shared/Translations/generalInfoForm';
-import '../../../shared/Translations/StylesForm';
 import '../../../shared/Translations/global';
 import DateForm from '../../../components/DateForm';
 
@@ -32,11 +31,11 @@ const NewDate = (): JSX.Element => {
     const { groupId, eventId } = useParams();
     const [ inputTag, setInputTag ] = React.useState('');
     const dispatch = useDispatch();
-    const [uuiCreate] = React.useState(v4());
-    const [uuiAdd] = React.useState(v4());
+    const [uuiAdd] = React.useState(v4() + '@new-date-add');
+    const [uuidCreate] = React.useState(v4() + '@new-date-create');
     const token = useSelector((state: AppState): string => state.auth.token.value);
 
-    const { lazyRequest: createDate, response: createResponse } = useLazyRequest<DatesCreateResponseDto>('dates.create', uuiCreate);
+    const { lazyRequest: createDate, response: createResponse } = useLazyRequest<DatesCreateResponseDto>('dates.create', uuidCreate);
     const { lazyRequest: addDate, response: addResponse } = useLazyRequest<DatesCreateResponseDto>('events.addDates', uuiAdd);
 
     const formik = useFormik({
@@ -70,7 +69,9 @@ const NewDate = (): JSX.Element => {
                         lon: values.location.lon,
                         lat: values.location.lat,
                     }
-                }}]);
+                }}], {
+                force: true
+            });
         },
         validationSchema: completeDateValidation,
     });
@@ -80,6 +81,7 @@ const NewDate = (): JSX.Element => {
             dispatch(PushNotification(t(createResponse.error), 'error'));
         }
     }, [createResponse.error]);
+
     useDeepEffect(() => {
         if (createResponse.data) {
             addDate([token, eventId, { dates: [createResponse.data.date.id]}])

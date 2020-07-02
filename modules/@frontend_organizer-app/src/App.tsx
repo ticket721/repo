@@ -10,6 +10,7 @@ import { useSelector } from 'react-redux';
 import styled          from 'styled-components';
 import { AppStatus }   from '@frontend/core/lib/redux/ducks/statuses';
 import ToastStacker    from '@frontend/core/lib/components/ToastStacker';
+import './core/event_creation/locales';
 import { EventMenu }   from './screens/Event/EventMenu';
 import { routes }      from './routes';
 
@@ -33,19 +34,19 @@ const App: React.FC = () => {
           location.pathname !== '/register' && location.pathname !== '/login' &&
           <Navbar/>
         }
-        {
-          appStatus === AppStatus.Ready &&
-          <Switch>
-            {
-              appStatus === AppStatus.Ready && routes.map((route, idx) => {
+        <Switch>
+          {
+            appStatus === AppStatus.Ready && routes.map((route, idx) => {
 
                 const page: JSX.Element = (
                   <PageWrapper>
                     {
-                      route.path.match(/^\/:groupId\/(date|event)/) ?
+                        route.path.match(/^\/:groupId\/(date|event)/) ?
                         <EventPageWrapper>
-                          <EventMenu/>
-                          <route.page />
+                            <EventMenu/>
+                            <div>
+                                <route.page />
+                            </div>
                         </EventPageWrapper> :
                         <route.page />
                     }

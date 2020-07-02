@@ -1,39 +1,63 @@
-import React, { useState } from 'react';
-import styled                         from 'styled-components';
-import { PreviewInfos, TicketHeader }  from '@frontend/flib-react/lib/components';
+import React, { useState }             from 'react';
+import styled                          from 'styled-components';
+import { useTranslation }              from 'react-i18next';
 import { useParams, useHistory }       from 'react-router';
 import { v4 }                          from 'uuid';
-import { useRequest }                  from '@frontend/core/lib/hooks/useRequest';
 import { useSelector }                 from 'react-redux';
-import { MergedAppState }              from '../../../index';
+
+import {
+    Gradient,
+    EventHeader,
+    DateTimeCard,
+    LocationCard,
+    ReadMore,
+    EventCta,
+    LeafletMap
+}                                      from '@frontend/flib-react/lib/components';
+import TagsListCard                    from '@frontend/flib-react/lib/components/cards/tags-list';
+import { useRequest }                  from '@frontend/core/lib/hooks/useRequest';
 import { DatesSearchResponseDto }      from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
 import { useDeepEffect }               from '@frontend/core/lib/hooks/useDeepEffect';
 import { CategoriesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/categories/dto/CategoriesSearchResponse.dto';
-import { DateEntity }                                                     from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
-import { checkFormatDate, displayDate, displayTime } from '@frontend/core/lib/utils/date';
+import { DateEntity }                  from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
+import {
+    checkFormatDate,
+    displayDate,
+    displayTime
+}                                      from '@frontend/core/lib/utils/date';
+import { getImgPath }                  from '@frontend/core/lib/utils/images';
 
-import { useTranslation } from 'react-i18next';
+import { MergedAppState }              from '../../../index';
+import { getPriceRange }               from '../../../utils/functions';
+
 import './locales';
-import { getImgPath }     from '@frontend/core/lib/utils/images';
 
 interface DatePreview {
     name: string;
+    description: string;
     eventStart: Date;
     eventEnd: Date;
     cover: string;
     colors: string[];
     location: string;
-    categoryName: string;
+    coord: { lon: number, lat: number };
+    tags: string[];
+    categoryName: string | null;
+    prices: number[];
 }
 
 const formatDatePreview = (date: DateEntity): DatePreview => ({
     name: date.metadata.name,
+    description: date.metadata.description,
     eventStart: date.timestamps.event_begin,
     eventEnd: date.timestamps.event_end,
     cover: getImgPath(date.metadata.avatar),
     colors: date.metadata.signature_colors,
     location: date.location.location_label,
+    coord: date.location.location,
+    tags: date.metadata.tags,
     categoryName: null,
+    prices: []
 });
 
 const Preview: React.FC = () => {
@@ -91,78 +115,191 @@ const Preview: React.FC = () => {
             setDatePreview({
                 ...datePreview,
                 categoryName: categoryResp.data.categories[0]?.display_name,
+                prices: getPriceRange(categoryResp.data.categories),
             });
         }
     }, [categoryResp.data, datePreview]);
 
+    let ticket;
+    let priceRange;
+    // tslint:disable-next-line
+    const doNothing = () => {};
+
+    if (datePreview && datePreview.name && categoryResp.data) {
+        ticket = {
+            name: datePreview.name,
+            image: datePreview.cover,
+            mainColor: datePreview.colors[0],
+            location: datePreview.location,
+            gradients: datePreview.colors,
+            about: datePreview.description,
+            startDate: displayDate(checkFormatDate(datePreview.eventStart)),
+            endDate: displayDate(checkFormatDate(datePreview.eventEnd)),
+            startTime: displayTime(checkFormatDate(datePreview.eventStart)),
+            endTime: displayTime(checkFormatDate(datePreview.eventEnd)),
+            tags: datePreview.tags.map(tag => ({ id: tag, label: tag })),
+            resale: false
+        };
+        priceRange = datePreview.prices[1] !== null ?
+          `${t('from')} ${datePreview.prices[0]}€ ${t('to')} ${datePreview.prices[1]}€ ${t('each')}`
+          :
+          `${datePreview.prices[0]}€ ${t('each')}`
+        if (datePreview.prices[0] === null) {
+            priceRange = t('unknown_prices')
+        }
+    }
+
     return (
-        <PreviewContainer>
+        <Container>
             <Title>{t('title')}</Title>
-            <TicketContainer>
-                <Ticket>
-                    {
-                        datePreview && datePreview.name ?
-                            <>
-                                <TicketHeader
-                                    cover={datePreview.cover}/>
-                                <Overlap>
-                                    <PreviewInfos
-                                        ticket={{
-                                            name: datePreview.name,
-                                            image: datePreview.cover,
-                                            mainColor: datePreview.colors[0],
-                                            location: datePreview.location,
-                                            gradients: datePreview.colors,
-                                            ticketType: datePreview.categoryName && 'Foo category',
-                                            address: '',
-                                            ticketId: '',
-                                            startDate: displayDate(checkFormatDate(datePreview.eventStart)),
-                                            endDate: displayDate(checkFormatDate(datePreview.eventEnd)),
-                                            startTime: displayTime(checkFormatDate(datePreview.eventStart)),
-                                            endTime: displayTime(checkFormatDate(datePreview.eventEnd)),
-                                        }}
+            <PreviewContainer>
+                {
+                    ticket ?
+                    <div className='smartphone'>
+                          <div className='content'>
+                                <Gradient values={datePreview.colors} blurOnly />
+                                <EventHeader
+                                    event={ticket}
+                                    subtitle={priceRange}
+                                    buttonTitle={t('get_tickets')}
+                                    onChange={doNothing}
+                                    onClick={doNothing}
+                                />
+                                <>
+                                    <DateTimeCard
+                                        iconColor={ticket.mainColor}
+                                        endDate={ticket.endDate}
+                                        endTime={ticket.endTime}
+                                        startDate={ticket.startDate}
+                                        startTime={ticket.startTime}
+                                        removeBg
                                     />
-                                </Overlap>
-                            </> :
-                            <span>Loading...</span>
-                    }
-                </Ticket>
-            </TicketContainer>
-        </PreviewContainer>
+                                    <LocationCard
+                                        address={''}
+                                        iconColor={ticket.mainColor}
+                                        location={ticket.location}
+                                        removeBg
+                                    />
+                                    <LeafletMap
+                                      width={'100%'}
+                                      height={'300px'}
+                                      coords={datePreview.coord}/>
+                                    <Separator />
+                                    <ReadMore
+                                        readMoreColor={ticket.mainColor}
+                                        title='About'
+                                        text={ticket.about === '' ? t('no_description') : ticket.about}
+                                        showLabel='Read more'
+                                        hideLabel='Show less'
+                                        removeBg
+                                    />
+                                    <Separator />
+                                    <TagsListCard
+                                        label={t('tags')}
+                                        handleToggle={doNothing}
+                                        showAll={true}
+                                        tags={ticket.tags}
+                                        hideLabel='Hide'
+                                        removeBg
+                                    />
+                                    <Separator />
+                                    <EventBottomBand
+                                        ctaLabel={t('get_tickets')}
+                                        title={t('tickets_from')}
+                                        onClick={doNothing}
+                                        subtitle={priceRange}
+                                        gradients={ticket.gradients}
+                                        show={true}
+                                    />
+                                </>
+                            </div>
+                        </div>
+                      :
+                      <span>Loading...</span>
+                }
+            </PreviewContainer>
+        </Container>
     );
 };
 
+const Container = styled.div`
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+`;
+
 const PreviewContainer = styled.div`
-    display: flex;
-    flex-direction: column;
+  .smartphone {
+      position: relative;
+      width: 353px;
+      height: 630px;
+      margin: auto;
+      border: 16px black solid;
+      border-top-width: 60px;
+      border-bottom-width: 60px;
+      border-radius: 36px;
+  }
+
+/* The horizontal line on the top of the device */
+  .smartphone:before {
+      content: '';
+      display: block;
+      width: 60px;
+      height: 5px;
+      position: absolute;
+      top: -30px;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #333;
+      border-radius: 10px;
+  }
+
+/* The circle on the bottom of the device */
+  .smartphone:after {
+      content: '';
+      display: block;
+      width: 35px;
+      height: 35px;
+      position: absolute;
+      left: 50%;
+      bottom: -65px;
+      transform: translate(-50%, -50%);
+      background: #333;
+      border-radius: 50%;
+  }
+
+/* The screen (or content) of the device */
+  .smartphone .content {
+      width: 320px;
+      height: 510px;
+      background: inherit;
+      overflow: scroll;
+  }
 `;
 
-const TicketContainer = styled.div`
-    display: flex;
-    width: 100%;
-    justify-content: center;
-`;
-
-const Ticket = styled.div`
-    width: 380px;
-    margin-top: 20px;
-    border-radius: 8px;
-    overflow: hidden;
-`;
-
-const Overlap = styled.div`
-    margin-top: -94px;
-    position: relative;
-    z-index: 1;
+const EventBottomBand = styled(EventCta)`
+  position: inherit;
 `;
 
 const Title = styled.span`
-    width: 100%;
-    margin-bottom: 25px;
-    font-weight: 500;
-    font-size: 18px;
-    color: ${(props) => props.theme.textColor};
-    text-align: center;
+  width: 100%;
+  margin-bottom: 25px;
+  font-weight: 500;
+  font-size: 18px;
+  color: ${(props) => props.theme.textColor};
+  text-align: center;
 `;
+
+const Separator = styled.div`
+  height: 2px;
+  width: 100%;
+  margin: 12px 0;
+  background: rgba(10, 8, 18, 0.3);
+`;
+
 
 export default Preview;
