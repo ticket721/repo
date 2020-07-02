@@ -218,8 +218,8 @@ apps:
       config.cassandra.host: "elassandra-staging-cassandra"
       config.cassandra.port: "9042"
 
-      config.redirections.emailValidationUrl: "http://localhost:3000/validate"
-      config.redirections.passwordResetUrl: "http://localhost:3000/validate/password/reset"
+      config.redirections.emailValidationUrl: "https://organizer.staging.ticket721.com/validate-email"
+      config.redirections.passwordResetUrl: "https://organizer.staging.ticket721.com/validate/password/reset"
 
       config.elasticsearch.host: "elassandra-staging-elasticsearch"
       config.elasticsearch.port: "9200"

@@ -44,21 +44,21 @@
         "yup": "0.28.4",
         "@embarklabs/subspace": "2.0.3",
         "@embarklabs/subspace-react": "1.0.4",
-        "rxjs": "6.5.5"
-    },
-    "devDependencies": {
+        "rxjs": "6.5.5",
         "@capacitor/cli": "2.0.1",
         "react-scripts": "3.4.1",
-        "tslint": "6.0.0"
+        "tslint": "6.0.0",
+        "serve": "11.3.2"
     },
     "resolutions": {
         "react-scripts/**/jest": "24.9.0"
     },
     "scripts": {
         "start": "REACT_APP_ENV=dev PORT=3001 react-scripts start",
-        "build": "react-scripts --max_old_space_size=4096 build",
+        "build": "react-scripts --max_old_space_size=8192 build",
         "test": "react-scripts test",
         "lint": "tslint --project .",
+        "build_and_serve": "yarn build && serve ./build",
         "@lerna/postinstall": "echo '@frontend/organizer-app has no postinstall'",
         "@lerna/postclean": "echo '@frontend/organizer-app has no postclean'"
     },
