@@ -23,52 +23,52 @@ export interface RouteDatum {
 
 export const routes: RouteDatum[] = [
     {
-        path: '/:groupId/event/:eventId/category/:categoryId',
+        path: '/group/:groupId/event/:eventId/category/:categoryId',
         page: UpdateGlobalCategory,
         protected: true,
     },
     {
-        path: '/:groupId/event/:eventId/category',
+        path: '/group/:groupId/event/:eventId/category',
         page: NewGlobalCategory,
         protected: true,
     },
     {
-        path: '/:groupId/date/:dateId/category/:categoryId',
+        path: '/group/:groupId/date/:dateId/category/:categoryId',
         page: UpdateCategory,
         protected: true,
     },
     {
-        path: '/:groupId/date/:dateId/category',
+        path: '/group/:groupId/date/:dateId/category',
         page: NewCategory,
         protected: true,
     },
     {
-        path: '/:groupId/date/:dateId/general-infos',
+        path: '/group/:groupId/date/:dateId/general-infos',
         page: UpdateGeneralInfos,
         protected: true,
     },
     {
-        path: '/:groupId/date/:dateId/styles',
+        path: '/group/:groupId/date/:dateId/styles',
         page: UpdateStyles,
         protected: true,
     },
     {
-        path: '/:groupId/date/:dateId/location',
+        path: '/group/:groupId/date/:dateId/location',
         page: UpdateLocation,
         protected: true,
     },
     {
-        path: '/:groupId/date/:dateId',
+        path: '/group/:groupId/date/:dateId',
         page: Preview,
         protected: true,
     },
     {
-        path: '/:groupId/event/:eventId/date',
+        path: '/group/:groupId/event/:eventId/date',
         page: NewDate,
         protected: true
     },
     {
-        path: '/:groupId',
+        path: '/group/:groupId',
         page: FetchDate,
         protected: true
     },

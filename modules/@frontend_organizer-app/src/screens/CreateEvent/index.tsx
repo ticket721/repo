@@ -57,6 +57,7 @@ const CreateEvent: React.FC = () => {
         ));
 
     useEffect(() => {
+        console.log('here');
         if (!eventAcsetId) {
             dispatch(InitEventAcset());
         }

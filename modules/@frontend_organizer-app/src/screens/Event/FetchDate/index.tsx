@@ -40,7 +40,7 @@ const FetchDate = (): JSX.Element => {
       if (!datesResp.loading && !datesResp.error && datesResp.data.dates) {
         const filteredDate = datesResp.data.dates?.filter(d => d.parent_type === 'event' || d.parent_type === 'date')
         if (filteredDate?.[0]?.id) {
-          history.push(`/${groupId}/date/${filteredDate?.[0]?.id}`);
+          history.push(`/group/${groupId}/date/${filteredDate?.[0]?.id}`);
         } else {
           history.push('/');
         }

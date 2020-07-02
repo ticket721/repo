@@ -96,7 +96,7 @@ const NewDate = (): JSX.Element => {
     useDeepEffect(() => {
         if (addResponse.data) {
             dispatch(PushNotification(t('success'), 'success'));
-            history.push(`/${groupId}/date/${createResponse.data.date.id}`);
+            history.push(`/group/${groupId}/date/${createResponse.data.date.id}`);
         }
     }, [addResponse.data]);
 

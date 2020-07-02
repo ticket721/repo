@@ -136,20 +136,20 @@ export const Dropdown: React.FC = () => {
                         onChange={(dateOpt: DateOption) => {
                             if (dateOpt.value === 'global') {
                                 if (globalCategoriesResp.data.categories.length > 0) {
-                                    history.push(`/${groupId}/event/${eventResp.data.events[0].id}/category/${globalCategoriesResp.data.categories[0].id}`,
+                                    history.push(`/group/${groupId}/event/${eventResp.data.events[0].id}/category/${globalCategoriesResp.data.categories[0].id}`,
                                         {
                                             showingGlobalCategories: true,
                                         });
                                 } else {
-                                    history.push(`/${groupId}/event/${eventResp.data.events[0].id}/category`,
+                                    history.push(`/group/${groupId}/event/${eventResp.data.events[0].id}/category`,
                                     {
                                             showingGlobalCategories: true,
                                         });
                                 }
                             } else if (dateOpt.value === 'new-date') {
-                                history.push(`/${groupId}/event/${eventId}/date`);
+                                history.push(`/group/${groupId}/event/${eventId}/date`);
                             } else {
-                                history.push(`/${groupId}/date/${dateOpt.value}`, {
+                                history.push(`/group/${groupId}/date/${dateOpt.value}`, {
                                     showingInfos: true,
                                 })
                             }

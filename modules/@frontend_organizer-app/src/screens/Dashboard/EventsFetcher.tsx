@@ -99,7 +99,7 @@ export const EventsFetcher: React.FC<EventsFetcherProps> = ({ token, uuid, group
                     formattedEvents.map((event) => (
                         <div
                         key={event.groupId}
-                        onClick={() => history.push(`/${event.groupId}`)}>
+                        onClick={() => history.push(`/group/${event.groupId}`)}>
                             <EventCard
                             {...event}/>
                         </div>

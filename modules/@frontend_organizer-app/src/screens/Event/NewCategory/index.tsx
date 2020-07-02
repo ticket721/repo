@@ -75,7 +75,7 @@ const NewCategory: React.FC = () => {
         if (addCategoryResp.data) {
             setLoadingState(false);
             dispatch(PushNotification('Successfuly updated', 'success'));
-            history.push(`/${groupId}/date/${dateId}/category/${createResp.data.category.id}`);
+            history.push(`/group/${groupId}/date/${dateId}/category/${createResp.data.category.id}`);
         }
     }, [addCategoryResp.data]);
 
