@@ -35,5 +35,9 @@ module.exports = function(program) {
         .command('repo_install')
         .description('install repository dependencies')
         .action(install);
+
+    program
+        .command('ci_exec')
+        .description('runs command if code changed on current branch')
 }
 
