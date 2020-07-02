@@ -64,11 +64,10 @@ const App: React.FC = () => {
                 </Route>
               })
             }
-          </Switch>
-        }
-            <ToastStacker additionalLocales={[
-                'organizer_error_notifications',
-            ]} />
+        </Switch>
+        <ToastStacker additionalLocales={[
+            'organizer_error_notifications',
+        ]} />
         </AppContainer>
       </Suspense>
     )
