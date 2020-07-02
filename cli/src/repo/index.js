@@ -1,4 +1,5 @@
-const { run } = require('../run');
+const { run, runGet } = require('../run');
+const { join } = require('path');
 const { goback, goroot } = require('../root');
 
 const dependencies = async () => {
@@ -17,6 +18,20 @@ const install = async () => {
     await run('yarn @install');
     goback(current);
 };
+
+const ciexec = async (module, commands) => {
+    const path = goroot()
+    const modulePath = join(process.cwd(), 'modules', module)
+    try {
+        const diff = await runGet(`git diff $(git merge-base develop HEAD)..HEAD ${modulePath}`)
+        goback(path)
+        if (diff === '')
+            return 0
+    } catch {
+        goback(path)
+    }
+    await run(commands.join(' '))
+}
 
 module.exports = function(program) {
 
@@ -37,7 +52,8 @@ module.exports = function(program) {
         .action(install);
 
     program
-        .command('ci_exec')
+        .command('ci_exec <module> [commands...]')
         .description('runs command if code changed on current branch')
+        .action(ciexec)
 }
 

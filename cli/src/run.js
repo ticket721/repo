@@ -1,4 +1,4 @@
-const { spawn } = require("child_process");
+const { spawn, exec } = require("child_process");
 
 const run = (command, onEnd) => {
     return new Promise((ok, ko) => {
@@ -23,6 +23,18 @@ const run = (command, onEnd) => {
     })
 };
 
+const runGet = (command) => {
+    return new Promise((ok, ko) => {
+        exec(command, function(error, stdout, stderr) {
+            if (stderr)
+                ko(stderr)
+            else
+                ok(stdout);
+        });
+    })
+};
+
 module.exports = {
-    run
+    run,
+    runGet
 };
