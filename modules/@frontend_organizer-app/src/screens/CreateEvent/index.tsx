@@ -102,6 +102,7 @@ const CreateEvent: React.FC = () => {
             <Forms>
                 <FormWrapper>
                     <Title>{t('general_infos_title')}</Title>
+                    <Description>{t('general_infos_description')}<br/>{t('general_infos__tags_description')}</Description>
                     <GeneralInfoForm onComplete={(valid) => handleLoadingState(0, valid)}/>
                     {
                         stepIdx === 0 ?
@@ -116,6 +117,7 @@ const CreateEvent: React.FC = () => {
                 { stepIdx >= 1 && (
                     <FormWrapper ref={FormRefs[0]} disabled={currentActionIdx < 1}>
                         <Title>{t('styles_title')}</Title>
+                        <Description>{t('styles_description')}</Description>
                         <StylesForm onComplete={(valid) => handleLoadingState(1, valid)}/>
                         {
                             stepIdx === 1 ?
@@ -137,6 +139,7 @@ const CreateEvent: React.FC = () => {
                             </span> :
                                 null
                         }</Title>
+                        <Description>{t('dates_description')}</Description>
                         <DatesForm onComplete={(valid) => handleLoadingState(2, valid)}/>
                         {
                             stepIdx === 3 ?
@@ -211,8 +214,17 @@ const Title = styled.h1`
     .date-quantity {
         font-weight: 400;
         font-size: 15px;
-        color: rgba(255,255,255,0.6);
+        color: ${props => props.theme.textColorDark};
     }
+`;
+
+const Description = styled.h2`
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    color: ${props => props.theme.textColorDark};
+    margin-bottom: ${props => props.theme.biggerSpacing};
+    white-space: pre-wrap;
 `;
 
 const SubmitButton = styled(Button)`
