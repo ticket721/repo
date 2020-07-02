@@ -12,31 +12,32 @@ import { AppStatus }   from '@frontend/core/lib/redux/ducks/statuses';
 import ToastStacker    from '@frontend/core/lib/components/ToastStacker';
 import './core/event_creation/locales';
 import { EventMenu }   from './screens/Event/EventMenu';
+import MediaQuery      from 'react-responsive';
 import { routes }      from './routes';
 
-import './core/event_creation/locales';
-
 const App: React.FC = () => {
-  const [ validated, setValidated ] = useState(true);
-  const authState = useSelector(((state: AppState) => state.auth));
-  const appStatus = useSelector(((state: AppState) => state.statuses.appStatus));
-  const location = useLocation();
+    const [ validated, setValidated ] = useState(true);
+    const authState = useSelector(((state: AppState) => state.auth));
+    const appStatus = useSelector(((state: AppState) => state.statuses.appStatus));
+    const location = useLocation();
 
-  useEffect(() => {
-    setValidated(authState.user?.validated);
-  }, [ authState.user ]);
+    useEffect(() => {
+        setValidated(authState.user?.validated);
+    }, [ authState.user ]);
 
-  return (
-    <Suspense fallback='loading'>
-      <AppContainer>
-        {
-          validated &&
-          location.pathname !== '/register' && location.pathname !== '/login' &&
-          <Navbar/>
-        }
-        <Switch>
-          {
-            appStatus === AppStatus.Ready && routes.map((route, idx) => {
+    return (
+        <Suspense fallback='loading'>
+            <AppContainer>
+                <MediaQuery minDeviceWidth={1224}>
+                    {
+                        validated &&
+                        location.pathname !== '/register' && location.pathname !== '/login' &&
+                        <Navbar/>
+                    }
+                </MediaQuery>
+                <Switch>
+                    {
+                        appStatus === AppStatus.Ready && routes.map((route, idx) => {
 
                 const page: JSX.Element = (
                   <PageWrapper>

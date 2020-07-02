@@ -12,6 +12,7 @@ import UpdateLocation       from './screens/Event/UpdateLocation';
 import NewDate              from './screens/Event/NewDate';
 import UpdateGlobalCategory from './screens/Event/UpdateGlobalCategory';
 import NewGlobalCategory    from './screens/Event/NewGlobalCategory';
+import { MobileWarning }    from './utils/MobileWarning';
 import FetchDate          from './screens/Event/FetchDate';
 
 export interface RouteDatum {
@@ -24,61 +25,61 @@ export interface RouteDatum {
 export const routes: RouteDatum[] = [
     {
         path: '/group/:groupId/event/:eventId/category/:categoryId',
-        page: UpdateGlobalCategory,
+        page: MobileWarning(UpdateGlobalCategory),
         protected: true,
     },
     {
         path: '/group/:groupId/event/:eventId/category',
-        page: NewGlobalCategory,
+        page: MobileWarning(NewGlobalCategory),
         protected: true,
     },
     {
         path: '/group/:groupId/date/:dateId/category/:categoryId',
-        page: UpdateCategory,
+        page: MobileWarning(UpdateCategory),
         protected: true,
     },
     {
         path: '/group/:groupId/date/:dateId/category',
-        page: NewCategory,
+        page: MobileWarning(NewCategory),
         protected: true,
     },
     {
         path: '/group/:groupId/date/:dateId/general-infos',
-        page: UpdateGeneralInfos,
+        page: MobileWarning(UpdateGeneralInfos),
         protected: true,
     },
     {
         path: '/group/:groupId/date/:dateId/styles',
-        page: UpdateStyles,
+        page: MobileWarning(UpdateStyles),
         protected: true,
     },
     {
         path: '/group/:groupId/date/:dateId/location',
-        page: UpdateLocation,
+        page: MobileWarning(UpdateLocation),
         protected: true,
     },
     {
         path: '/group/:groupId/date/:dateId',
-        page: Preview,
+        page: MobileWarning(Preview),
         protected: true,
     },
     {
         path: '/group/:groupId/event/:eventId/date',
-        page: NewDate,
+        page: MobileWarning(NewDate),
         protected: true
     },
     {
         path: '/group/:groupId',
-        page: FetchDate,
+        page: MobileWarning(FetchDate),
         protected: true
     },
     {
         path: '/login',
-        page: Login,
+        page: MobileWarning(Login),
     },
     {
         path: '/register',
-        page: Register,
+        page: MobileWarning(Register),
     },
     {
         path: '/validate-email',
@@ -86,12 +87,12 @@ export const routes: RouteDatum[] = [
     },
     {
         path: '/create-event',
-        page: CreateEvent,
+        page: MobileWarning(CreateEvent),
         protected: true,
     },
     {
         path: '/',
-        page: Dashboard,
+        page: MobileWarning(Dashboard),
         protected: true,
     }
 ];
