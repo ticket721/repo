@@ -83,7 +83,7 @@ const NewGlobalCategory: React.FC = () => {
         if (addCategoryResp.data) {
             setLoadingState(false);
             dispatch(PushNotification('Successfuly updated', 'success'));
-            history.push(`/${groupId}/event/${eventId}/category/${createResp.data.category.id}`, {
+            history.push(`/group/${groupId}/event/${eventId}/category/${createResp.data.category.id}`, {
                 showingGlobalCategories: true
             })
         }

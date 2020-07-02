@@ -72,7 +72,7 @@ export const DateSubMenu: React.FC = () => {
                         <Tiles>
                             <Tile
                                 active={activeTile === 'general-infos'}
-                                onClick={() => history.push(`/${groupId}/date/${dateId}/general-infos`, {
+                                onClick={() => history.push(`/group/${groupId}/date/${dateId}/general-infos`, {
                                     showingInfos,
                                     showingDateCategories,
                                 })}>
@@ -80,7 +80,7 @@ export const DateSubMenu: React.FC = () => {
                             </Tile>
                             <Tile
                                 active={activeTile === 'styles'}
-                                onClick={() => history.push(`/${groupId}/date/${dateId}/styles`, {
+                                onClick={() => history.push(`/group/${groupId}/date/${dateId}/styles`, {
                                     showingInfos,
                                     showingDateCategories,
                                 })}>
@@ -88,7 +88,7 @@ export const DateSubMenu: React.FC = () => {
                             </Tile>
                             <Tile
                                 active={activeTile === 'location'}
-                                onClick={() => history.push(`/${groupId}/date/${dateId}/location`, {
+                                onClick={() => history.push(`/group/${groupId}/date/${dateId}/location`, {
                                     showingInfos,
                                     showingDateCategories,
                                 })}>
@@ -111,7 +111,7 @@ export const DateSubMenu: React.FC = () => {
                                     <Tile
                                         key={category.id}
                                         active={activeTile === category.id}
-                                        onClick={() => history.push(`/${groupId}/date/${dateId}/category/${category.id}`, {
+                                        onClick={() => history.push(`/group/${groupId}/date/${dateId}/category/${category.id}`, {
                                             showingInfos,
                                             showingDateCategories,
                                         })}>
@@ -121,7 +121,7 @@ export const DateSubMenu: React.FC = () => {
                             }
                             <Tile
                                 active={activeTile === 'category'}
-                                key={'new-category'} onClick={() => history.push(`/${groupId}/date/${dateId}/category`, {
+                                key={'new-category'} onClick={() => history.push(`/group/${groupId}/date/${dateId}/category`, {
                                 showingInfos,
                                 showingDateCategories,
                             })}>

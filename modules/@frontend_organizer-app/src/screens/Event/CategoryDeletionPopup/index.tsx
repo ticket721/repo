@@ -69,7 +69,7 @@ export const CategoryDeletionPopup: React.FC<CategoryDeletionPopupProps> =
                                             categories: [categoryId]
                                         }
                                     ]);
-                                    history.push(`/${groupId}/date/${dateId}`)
+                                    history.push(`/group/${groupId}/date/${dateId}`)
                                 }}/>
                         </Buttons>
                     </Popup> :

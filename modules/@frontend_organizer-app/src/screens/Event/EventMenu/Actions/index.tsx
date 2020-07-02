@@ -53,7 +53,7 @@ export const Actions = () => {
   useDeepEffect(() => {
     if (deleteDateResp.called && !deleteDateResp.loading) {
       if (!deleteDateResp.error) {
-        history.push(`/${groupId}`);
+        history.push(`/group/${groupId}`);
         dispatch(PushNotification(t('success'), 'success'));
       } else {
         dispatch(PushNotification(t('error'), 'error'));
@@ -68,7 +68,7 @@ export const Actions = () => {
         <Button
           title={t('add_label')}
           variant='primary'
-          onClick={() => history.push(`/${groupId}/event/${eventId}/date`)}
+          onClick={() => history.push(`/group/${groupId}/event/${eventId}/date`)}
         />
         <Button
           variant={dateId ? 'danger' : 'disabled'}

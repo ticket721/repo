@@ -57,7 +57,7 @@ export const DateActions: React.FC = () => {
             <Button
                 variant={dateId ? 'secondary' : 'disabled'}
                 title={t('preview_label')}
-                onClick={() => history.push(`/${groupId}/date/${dateId}`)}
+                onClick={() => history.push(`/group/${groupId}/date/${dateId}`)}
             />
         </Container>
     )

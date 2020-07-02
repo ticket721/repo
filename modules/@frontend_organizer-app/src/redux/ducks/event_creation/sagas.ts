@@ -31,7 +31,7 @@ const getEventCreationState = (state: OrganizerState): EventCreationState => sta
 
 function* initEventAcset(action: IInitEventAcset): IterableIterator<any> {
     const authState: AuthState = yield select(getAuthState);
-
+console.log(action);
     let acsetId = yield EventCreationCore.getAcsetId(authState.token.value);
 
     if (!acsetId) {

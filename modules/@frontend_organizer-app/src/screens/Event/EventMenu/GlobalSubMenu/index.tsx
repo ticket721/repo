@@ -93,7 +93,7 @@ export const GlobalSubMenu: React.FC = () => {
                                 <Tile
                                     key={category.id + '-global'}
                                     active={activeTile === category.id}
-                                    onClick={() => history.push(`/${groupId}/event/${category.parent_id}/category/${category.id}`, {
+                                    onClick={() => history.push(`/group/${groupId}/event/${category.parent_id}/category/${category.id}`, {
                                         showingGlobalCategories,
                                     })}>
                                     <span>{category.display_name}</span>
@@ -104,7 +104,7 @@ export const GlobalSubMenu: React.FC = () => {
                             eventResp.data?.events ?
                                 <Tile
                                 active={activeTile === 'category'}
-                                key={'new-global-category'} onClick={() => history.push(`/${groupId}/event/${eventResp.data.events[0].id}/category`, {
+                                key={'new-global-category'} onClick={() => history.push(`/group/${groupId}/event/${eventResp.data.events[0].id}/category`, {
                                 showingGlobalCategories,
                                 })}>
                                     {t('new_global_category_subtitle')}

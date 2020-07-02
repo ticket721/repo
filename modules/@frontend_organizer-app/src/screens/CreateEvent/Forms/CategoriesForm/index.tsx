@@ -68,6 +68,7 @@ const CategoriesForm: React.FC<FormProps> = ({ onComplete }) => {
     return (
         <>
             <AppBar position='static' ref={reference}>
+                <Border />
                 <Tabs
                 value={tabIdx}
                 onChange={(e: any, idx: number) => setTabIdx(idx)}
@@ -130,6 +131,7 @@ const Tabs = styled(MuiTabs)`
 
 const AppBar = styled(MuiAppBar)`
     && {
+        box-shadow: none;
         background-color: transparent;
         div > div > span {
             background-color: ${(props) => props.theme.primaryColor.hex};
@@ -137,12 +139,19 @@ const AppBar = styled(MuiAppBar)`
     }
 `;
 
+const Border = styled.div`
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    border-bottom: 2px solid ${props => props.theme.componentColorLight};
+`;
+
 const Description = styled.h2`
     font-weight: 500;
     font-size: 14px;
     line-height: 20px;
     color: ${props => props.theme.textColorDark};
-    margin-bottom: ${props => props.theme.biggerSpacing};
+    margin: ${props => props.theme.biggerSpacing} 0;
     white-space: pre-wrap;
 `;
 

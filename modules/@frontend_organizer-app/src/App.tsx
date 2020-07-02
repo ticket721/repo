@@ -41,7 +41,7 @@ const App: React.FC = () => {
                 const page: JSX.Element = (
                   <PageWrapper>
                     {
-                        route.path.match(/^\/:groupId\/(date|event)/) ?
+                        route.path.match(/^\/group\/:groupId\/(date|event)/) ?
                         <EventPageWrapper>
                             <EventMenu/>
                             <div>
@@ -54,11 +54,11 @@ const App: React.FC = () => {
                 );
 
                 if (route.protected) {
-                  return <ProtectedRoute path={route.path} key={idx}>
+                  return <ProtectedRoute exact={true} path={route.path} key={idx}>
                     {page}
                   </ProtectedRoute>
                 }
-                return <Route key={idx} path={route.path} >
+                return <Route exact={true} key={idx} path={route.path} >
                   <route.page />
                 </Route>
               })
@@ -88,7 +88,7 @@ const EventPageWrapper = styled.div`
     display: flex;
     justify-content: center;
 
-    & > *:last-child {
+    & > div:last-child {
         width: 600px;
     }
 `;
