@@ -35,5 +35,11 @@ services:
       args:
         - "TAG=$TAG"
     image: "migrations:$TAG"
-
+  organizer:
+    build:
+      context: ./modules/@frontend_organizer-app
+      dockerfile: organizer.dockerfile
+      args:
+        - "TAG=$TAG"
+    image: "organizer:$TAG"
 
