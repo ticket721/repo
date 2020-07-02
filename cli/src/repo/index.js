@@ -33,8 +33,10 @@ const ciexec = async (module, commands) => {
     try {
         const diff = await runGet(`git diff $(git merge-base develop HEAD)..HEAD ${modulePath}`)
         goback(path)
-        if (diff === '')
-            return 0
+        if (diff === '') {
+            console.log(`No diff found in ${modulePath}`)
+            process.exit(0)
+        }
     } catch {
         goback(path)
     }
