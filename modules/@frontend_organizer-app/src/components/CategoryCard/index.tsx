@@ -3,11 +3,11 @@ import styled                       from 'styled-components';
 import { useSelector }              from 'react-redux';
 import { FormCard, FormCardProps }  from '../FormCard';
 import { Icon }                     from '@frontend/flib-react/lib/components';
-import { displayCompleteDate } from '@frontend/core/lib/utils/date';
+import { displayCompleteDate }      from '@frontend/core/lib/utils/date';
+import { useTranslation }           from 'react-i18next';
 
-import { useTranslation } from 'react-i18next';
+import { OrganizerState }           from '../../redux/ducks';
 import './locales';
-import {OrganizerState} from "../../redux/ducks";
 
 interface CategoryCardProps extends FormCardProps {
     price: number;

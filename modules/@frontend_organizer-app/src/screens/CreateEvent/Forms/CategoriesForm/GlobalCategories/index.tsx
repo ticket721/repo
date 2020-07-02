@@ -2,7 +2,7 @@ import React, { Dispatch, Fragment, useState } from 'react';
 import styled                                  from 'styled-components';
 
 import { CategoryForm, CategoryItem } from '../../../../../components/CategoryForm';
-import { checkFormatDate, compareDates } from '@frontend/core/lib/utils/date';
+import { checkFormatDate }            from '@frontend/core/lib/utils/date';
 import { CreateGlobalCategory }       from './CreateGlobalCategory';
 import { useSelector }                from 'react-redux';
 import { OrganizerState }             from '../../../../../redux/ducks';
@@ -53,27 +53,27 @@ export const GlobalCategories: React.FC<GlobalCategoriesProps> = (props: GlobalC
         <StyledGlobal>
             <CategoriesContainer>
                 {
-                  props.categories.map((globalCategory: CategoryItem, idx: number) => (
-                      <Fragment key={`globalCategory-${idx}`}>
-                          <CategoryCard
-                          name={globalCategory.name}
-                          price={parseInt(globalCategory.currencies[0].price, 10) / 100}
-                          saleBegin={checkFormatDate(globalCategory.saleBegin)}
-                          saleEnd={checkFormatDate(globalCategory.saleEnd)}
-                          seats={globalCategory.seats}
-                          edit={editIdx === idx}
-                          error={compareDates(maxDate, globalCategory.saleEnd)}
-                          editable={editIdx === null}
-                          setEdit={() => setEditIdx(idx)}>
-                              <CategoryForm
-                              initialValues={globalCategory}
-                              maxDate={checkFormatDate(maxDate)}
-                              delete={deleteCategory}
-                              cancel={resetEdition}
-                              confirm={updateCategory}/>
-                          </CategoryCard>
-                      </Fragment>
-                ))
+                    props.categories.map((globalCategory: CategoryItem, idx: number) => (
+                        <Fragment key={`globalCategory-${idx}`}>
+                            <CategoryCard
+                                name={globalCategory.name}
+                                price={parseInt(globalCategory.currencies[0].price, 10) / 100}
+                                saleBegin={checkFormatDate(globalCategory.saleBegin)}
+                                saleEnd={checkFormatDate(globalCategory.saleEnd)}
+                                seats={globalCategory.seats}
+                                edit={editIdx === idx}
+                                editable={editIdx === null}
+                                setEdit={() => setEditIdx(idx)}>
+                                    <CategoryForm
+                                        initialValues={globalCategory}
+                                        maxDate={checkFormatDate(maxDate)}
+                                        delete={deleteCategory}
+                                        cancel={resetEdition}
+                                        confirm={updateCategory}
+                                    />
+                            </CategoryCard>
+                        </Fragment>
+                    ))
                 }
             </CategoriesContainer>
             <CreateGlobalCategory
