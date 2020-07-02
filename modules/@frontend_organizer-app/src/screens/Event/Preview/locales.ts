@@ -8,7 +8,7 @@ i18n.addResourceBundle('en', 'preview_event', {
     from: 'From',
     to: 'to',
     each: 'each',
-    unknown_prices: 'Unknown range of prices',
+    free_ticket: '0€ each',
     no_description: 'No description'
 });
 
@@ -20,6 +20,6 @@ i18n.addResourceBundle('fr', 'preview_event', {
     from: 'De',
     to: 'à',
     each: 'chacun',
-    unknown_prices: 'Tranche de prix inconnue',
+    free_ticket: '0€ chacun',
     no_description: 'Aucune description'
 });

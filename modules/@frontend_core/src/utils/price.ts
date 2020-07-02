@@ -4,7 +4,7 @@ export const formatEuro = (rawPrice: number | string): string => {
     }
 
     let formattedPrice = (rawPrice / 100).toString().replace('.', ',');
-    if (rawPrice.toString().match(/0$/)) {
+    if (formattedPrice.match(/,[0-9]$/)) {
         formattedPrice = formattedPrice.concat('0');
     }
 
