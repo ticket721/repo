@@ -126,9 +126,7 @@ export const CategoryForm: React.FC<CategoryFormProps> = (props: CategoryFormPro
 
     return (
         <Form onSubmit={formik.handleSubmit}>
-            <Title>
-                Category informations
-            </Title>
+            <Title>{t('category_title')}</Title>
             <TextInput
                 className={'category-line-field'}
                 label={t('category_label')}
@@ -159,9 +157,7 @@ export const CategoryForm: React.FC<CategoryFormProps> = (props: CategoryFormPro
                         t(computeError('seats'))
                     } />
             </div>
-            <Title>
-                Sales dates range
-            </Title>
+            <Title>{t('sales_dates_range')}</Title>
             <div className={'category-line-field date-container'}>
                 <CustomDatePicker
                     className={formik.values.saleBegin > props.maxDate ? 'errorBorder' : ''}

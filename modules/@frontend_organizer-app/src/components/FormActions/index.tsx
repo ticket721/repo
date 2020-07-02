@@ -12,26 +12,24 @@ export interface FormActionsProps{
 
 export const FormActions = (props: FormActionsProps) => (
     <StyledFormActions>
-      {
-        !props.newItem && props.delete ?
-        <div className={'delete-container'}>
-            <Button
-            title='Delete item'
-            variant={'danger'}
-            onClick={props.delete}
-            />
-        </div> :
-          null
-      }
+        {
+            !props.newItem && props.delete &&
+            <div className={'delete-container'}>
+                <Button
+                title='Delete item'
+                variant={'danger'}
+                onClick={props.delete}
+                />
+            </div>
+        }
         <div className={'sub-container'}>
             {
-                props.cancel ?
+                props.cancel &&
                 <Button
                 title='Cancel'
                 variant={'secondary'}
                 onClick={props.cancel}
-                /> :
-                  null
+                />
             }
             <Button
             type='submit'
