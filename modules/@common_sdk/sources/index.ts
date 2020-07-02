@@ -53,7 +53,7 @@ import { rightsSearch }                                                         
 import { metadatasFetch }                                                 from './app/api/metadatas';
 import { cartModulesConfiguration, cartTicketSelections }                 from './app/api/cart';
 import { checkoutCartCommitStripe, checkoutResolveCartWithPaymentIntent } from './app/api/checkout';
-import { dosojinSearch }                                                  from './app/api/dosojin';
+import { dosojinSearch, dosojinCount }                                                  from './app/api/dosojin';
 import { ticketsSearch, ticketsCount }                                    from './app/api/tickets';
 import { usersMe }                                                        from './app/api/users';
 
@@ -141,6 +141,7 @@ export class T721SDK {
         this.checkout.cart.resolve.paymentIntent = this.checkout.cart.resolve.paymentIntent.bind(this);
 
         this.dosojin.search = this.dosojin.search.bind(this);
+        this.dosojin.count = this.dosojin.count.bind(this);
 
         this.tickets.search = this.tickets.search.bind(this);
         this.tickets.count = this.tickets.count.bind(this);
@@ -334,6 +335,7 @@ export class T721SDK {
 
     public dosojin = {
         search: dosojinSearch,
+        count: dosojinCount,
     };
 
     public tickets = {
