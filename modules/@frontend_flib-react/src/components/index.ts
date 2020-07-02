@@ -20,3 +20,4 @@ export * from './search';
 export * from './animation';
 export * from './message';
 export * from './map';
+export * from './popup';

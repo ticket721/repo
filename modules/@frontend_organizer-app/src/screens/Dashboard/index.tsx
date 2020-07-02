@@ -30,7 +30,9 @@ const Dashboard: React.FC = () => {
             args: [
                 token,
                 {
-                    entity_type: 'event'
+                    entity_type: {
+                        $eq: 'event'
+                    }
                 }
             ],
             refreshRate: 1

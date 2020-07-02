@@ -1,27 +1,28 @@
-import React, { useState } from 'react';
-import { useRequest }                 from '@frontend/core/lib/hooks/useRequest';
+import React, { useEffect, useState }  from 'react';
+import { useRequest }                  from '@frontend/core/lib/hooks/useRequest';
 import { v4 }                          from 'uuid';
 import { useParams }                   from 'react-router';
 import { useSelector }                 from 'react-redux';
 import { MergedAppState }              from '../../../index';
 import { CategoriesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/categories/dto/CategoriesSearchResponse.dto';
-import { UpdateCategoryForm }          from './Form';
+import { UpdateGlobalCategoryForm }          from './Form';
 import { DatesSearchResponseDto }      from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
 import { checkFormatDate }             from '@frontend/core/lib/utils/date';
 
-const UpdateCategory: React.FC = () => {
-    const { dateId, categoryId } = useParams();
+const UpdateGlobalCategory: React.FC = () => {
+    const { eventId, categoryId } = useParams();
 
-    const [uuid] = useState(v4() + '@update-category');
+    const [uuid] = useState(v4() + '@update-global-category');
     const token = useSelector((state: MergedAppState) => state.auth.token.value);
-    const { response: dateResp } = useRequest<DatesSearchResponseDto>(
+    const [ maxDate, setMaxDate ] = useState<Date>(null);
+    const { response: datesResp } = useRequest<DatesSearchResponseDto>(
         {
             method: 'dates.search',
             args: [
                 token,
                 {
-                    id: {
-                        $eq: dateId
+                    parent_id: {
+                        $eq: eventId
                     }
                 }
             ],
@@ -29,6 +30,7 @@ const UpdateCategory: React.FC = () => {
         },
         uuid
     );
+
     const { response: categoryResp } = useRequest<CategoriesSearchResponseDto>(
         {
             method: 'categories.search',
@@ -45,15 +47,23 @@ const UpdateCategory: React.FC = () => {
         uuid
     );
 
-    if (categoryResp.data?.categories[0]) {
+    useEffect(() => {
+        if (datesResp.data) {
+            const sortedDates = datesResp.data.dates.sort((dateA, dateB) =>
+                checkFormatDate(dateB.timestamps.event_end).getTime() - checkFormatDate(dateA.timestamps.event_end).getTime());
+            setMaxDate(checkFormatDate(sortedDates[0].timestamps.event_end));
+        }
+    }, [datesResp.data]);
+
+    if (categoryResp.data?.categories[0] && maxDate) {
         return (
-            <UpdateCategoryForm
+            <UpdateGlobalCategoryForm
                 uuid={uuid}
-                dateId={dateId}
+                eventId={eventId}
                 categoryId={categoryId}
-                categoryName={categoryResp.data?.categories[0].display_name}
+                categoryName={categoryResp.data.categories[0].display_name}
                 initialValues={categoryResp.data.categories[0]}
-                maxDate={checkFormatDate(dateResp.data.dates[0].timestamps.event_end)}
+                maxDate={maxDate}
             />
         )
     } else {
@@ -61,4 +71,4 @@ const UpdateCategory: React.FC = () => {
     }
 };
 
-export default UpdateCategory;
+export default  UpdateGlobalCategory;

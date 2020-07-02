@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import styled                         from 'styled-components';
 
-import { useHistory, useParams }       from 'react-router';
-import Icon                            from '@frontend/flib-react/lib/components/icon';
+import { useHistory, useParams } from 'react-router';
+import Icon                      from '@frontend/flib-react/lib/components/icon';
 import { useRequest }                  from '@frontend/core/lib/hooks/useRequest';
 import { useSelector }                 from 'react-redux';
 import { MergedAppState }              from '../../../../index';
@@ -10,21 +10,22 @@ import { v4 }                          from 'uuid';
 import { CategoriesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/categories/dto/CategoriesSearchResponse.dto';
 import { CategoryEntity }              from '@common/sdk/lib/@backend_nest/libs/common/src/categories/entities/Category.entity';
 
-import { useTranslation }              from 'react-i18next';
+import { useTranslation }   from 'react-i18next';
 import './locales';
+import { useDeepEffect }    from '@frontend/core/lib/hooks/useDeepEffect';
 
-export const SubMenu: React.FC = () => {
+export const DateSubMenu: React.FC = () => {
     const history = useHistory();
     const { groupId, dateId } = useParams();
     const [activeTile, setActiveTile] = useState<string>(null);
-    const [uuid] = useState<string>(v4() + '@event-submenu');
-    const [ t ] = useTranslation(['event_sub_menu']);
+    const [uuid] = useState<string>(v4() + '@date-submenu');
+    const [ t ] = useTranslation('date_sub_menu');
     const [ showingInfos, setShowingInfos ] = useState<boolean>(false);
-    const [ showingCategories, setShowingCategories ] = useState<boolean>(false);
+    const [ showingDateCategories, setShowingDateCategories ] = useState<boolean>(false);
 
-    const [ categories, setCategories ] = useState<CategoryEntity[]>([]);
+    const [ dateCategories, setDateCategories ] = useState<CategoryEntity[]>([]);
     const token = useSelector((state: MergedAppState) => state.auth.token.value);
-    const { response: categoriesResp } = useRequest<CategoriesSearchResponseDto>(
+    const { response: dateCategoriesResp } = useRequest<CategoriesSearchResponseDto>(
         {
             method: 'categories.search',
             args: [
@@ -35,7 +36,7 @@ export const SubMenu: React.FC = () => {
                     }
                 },
             ],
-            refreshRate: 5,
+            refreshRate: 1,
         },
         uuid
     );
@@ -48,21 +49,21 @@ export const SubMenu: React.FC = () => {
     useEffect(() => {
         if (history.location.state) {
             setShowingInfos(history.location.state['showingInfos']);
-            setShowingCategories(history.location.state['showingCategories']);
+            setShowingDateCategories(history.location.state['showingDateCategories']);
         }
     }, [history.location.state]);
 
-    useEffect(() => {
-        if (categoriesResp.data && categoriesResp.data.categories.length > 0) {
-            setCategories(categoriesResp.data.categories);
-        }
-    },
-    [categoriesResp]);
+    useDeepEffect(() => {
+            if (dateCategoriesResp.data) {
+                setDateCategories(dateCategoriesResp.data.categories);
+            }
+        },
+        [dateCategoriesResp.data]);
 
     return (
         <>
-            <EditSection opened={showingInfos} disabled={!dateId}>
-                <TileHeader onClick={() => dateId && setShowingInfos(!showingInfos)}>
+            <EditSection opened={showingInfos}>
+                <TileHeader onClick={() => setShowingInfos(!showingInfos)}>
                     <Title>{t('information_title')}</Title>
                     <Icon icon='chevron' color='white' size='6px'/>
                 </TileHeader>
@@ -70,59 +71,59 @@ export const SubMenu: React.FC = () => {
                     showingInfos ?
                         <Tiles>
                             <Tile
-                            active={activeTile === 'general-infos'}
-                            onClick={() => history.push(`/${groupId}/date/${dateId}/general-infos`, {
-                                showingInfos,
-                                showingCategories
-                            })}>
+                                active={activeTile === 'general-infos'}
+                                onClick={() => history.push(`/${groupId}/date/${dateId}/general-infos`, {
+                                    showingInfos,
+                                    showingDateCategories,
+                                })}>
                                 {t('general_info_subtitle')}
                             </Tile>
                             <Tile
-                            active={activeTile === 'styles'}
-                            onClick={() => history.push(`/${groupId}/date/${dateId}/styles`, {
-                                showingInfos,
-                                showingCategories
-                            })}>
+                                active={activeTile === 'styles'}
+                                onClick={() => history.push(`/${groupId}/date/${dateId}/styles`, {
+                                    showingInfos,
+                                    showingDateCategories,
+                                })}>
                                 {t('styles_subtitle')}
                             </Tile>
                             <Tile
-                            active={activeTile === 'location'}
-                            onClick={() => history.push(`/${groupId}/date/${dateId}/location`, {
-                                showingInfos,
-                                showingCategories
-                            })}>
+                                active={activeTile === 'location'}
+                                onClick={() => history.push(`/${groupId}/date/${dateId}/location`, {
+                                    showingInfos,
+                                    showingDateCategories,
+                                })}>
                                 {t('location_subtitle')}
                             </Tile>
                         </Tiles> :
                         null
                 }
             </EditSection>
-            <EditSection opened={showingCategories} disabled={!dateId}>
-                <TileHeader onClick={() => dateId && setShowingCategories(!showingCategories)}>
+            <EditSection opened={showingDateCategories}>
+                <TileHeader onClick={() => setShowingDateCategories(!showingDateCategories)}>
                     <Title>{t('categories_title')}</Title>
                     <Icon icon='chevron' color='white' size='6px'/>
                 </TileHeader>
                 {
-                    showingCategories ?
+                    showingDateCategories ?
                         <Tiles>
                             {
-                                categories.map((category) => (
+                                dateCategories.map((category) => (
                                     <Tile
-                                    key={category.id}
-                                    active={activeTile === category.id}
-                                    onClick={() => history.push(`/${groupId}/date/${dateId}/category/${category.id}`, {
-                                        showingInfos,
-                                        showingCategories
-                                    })}>
-                                        {category.display_name}
+                                        key={category.id}
+                                        active={activeTile === category.id}
+                                        onClick={() => history.push(`/${groupId}/date/${dateId}/category/${category.id}`, {
+                                            showingInfos,
+                                            showingDateCategories,
+                                        })}>
+                                        <span>{category.display_name}</span>
                                     </Tile>
                                 ))
                             }
                             <Tile
-                            active={activeTile === 'category'}
-                            key={'new-category'} onClick={() => history.push(`/${groupId}/date/${dateId}/category`, {
+                                active={activeTile === 'category'}
+                                key={'new-category'} onClick={() => history.push(`/${groupId}/date/${dateId}/category`, {
                                 showingInfos,
-                                showingCategories
+                                showingDateCategories,
                             })}>
                                 {t('new_category_subtitle')}
                             </Tile>
@@ -134,10 +135,9 @@ export const SubMenu: React.FC = () => {
     );
 };
 
-const EditSection = styled.div<{ opened: boolean, disabled: boolean }>`
+const EditSection = styled.div<{ opened: boolean }>`
     display: flex;
     flex-direction: column;
-    cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
     background-color: ${props => props.opened ? props.theme.componentColor : null};
     border-radius: ${props => props.theme.defaultRadius};
     padding: ${props => `${props.theme.regularSpacing} ${props.theme.biggerSpacing}`};
@@ -171,6 +171,9 @@ const Tiles = styled.div`
 `;
 
 const Tile = styled.span<{ active?: boolean }>`
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     font-weight: 500;
     font-size: 13px;
     cursor: inherit;
