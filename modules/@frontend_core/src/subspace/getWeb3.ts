@@ -1,10 +1,11 @@
 import Web3 from 'web3';
+import { getEnv } from '../utils/getEnv';
 
 const getHeaders = (): any => {
-    console.log(process.env.REACT_APP_ETHEREUM_HEADERS);
-    if (!process.env.REACT_APP_ETHEREUM_HEADERS) return undefined;
+    console.log(getEnv().REACT_APP_ETHEREUM_HEADERS);
+    if (!getEnv().REACT_APP_ETHEREUM_HEADERS) return undefined;
 
-    const headers = JSON.parse(process.env.REACT_APP_ETHEREUM_HEADERS);
+    const headers = JSON.parse(getEnv().REACT_APP_ETHEREUM_HEADERS);
     const ret = [];
 
     for (const key of Object.keys(headers)) {
@@ -19,8 +20,9 @@ const getHeaders = (): any => {
 };
 
 export function getWeb3(): Web3 {
+    console.log('url', getEnv().REACT_APP_ETHEREUM_URL);
     return new Web3(
-        new Web3.providers.HttpProvider(process.env.REACT_APP_ETHEREUM_URL, {
+        new Web3.providers.HttpProvider(getEnv().REACT_APP_ETHEREUM_URL, {
             headers: getHeaders(),
         }),
     );

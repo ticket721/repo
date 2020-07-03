@@ -11,13 +11,14 @@ import { isExpired, isValidFormat, parseToken } from '../../../utils/token';
 import { T721SDK } from '@common/sdk';
 import { AppStatus, SetAppStatus } from '../statuses';
 import { PushNotification } from '../notifications';
+import { getEnv } from '../../../utils/getEnv';
 
 function* startSaga(action: IStart): IterableIterator<any> {
     global.window.t721Sdk = new T721SDK();
     global.window.t721Sdk.connect(
-        process.env.REACT_APP_T721_SERVER_HOST,
-        parseInt(process.env.REACT_APP_T721_SERVER_PORT, 10),
-        process.env.REACT_APP_T721_SERVER_PROTOCOL as 'http' | 'https',
+        getEnv().REACT_APP_T721_SERVER_HOST,
+        parseInt(getEnv().REACT_APP_T721_SERVER_PORT, 10),
+        getEnv().REACT_APP_T721_SERVER_PROTOCOL as 'http' | 'https',
     );
 
     yield call(handleUser);

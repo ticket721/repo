@@ -8,6 +8,7 @@ import { UsersMeResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/sr
 import { AxiosResponse } from 'axios';
 import { AppState } from '../index';
 import { PushNotification } from '../notifications';
+import { getEnv } from '../../../utils/getEnv';
 
 const getAuthState = (state: AppState): AuthState => state.auth;
 
@@ -42,7 +43,7 @@ function* localRegister(action: ILocalRegister): IterableIterator<any> {
             ),
         );
 
-        if (process.env.REACT_APP_ENV === 'dev') {
+        if (getEnv().REACT_APP_ENV === 'dev') {
             const validateEmail = yield global.window.t721Sdk.validateEmail(registerData.validationToken);
             console.log(validateEmail);
         }
