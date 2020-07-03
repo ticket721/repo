@@ -6,6 +6,7 @@ import { DateEntity }                                                           
 import { formatDay, formatHour }                                                         from '@frontend/core/lib/utils/date';
 import { useTranslation }                                                                from 'react-i18next';
 import { useHistory }                                                                    from 'react-router';
+import { getImgPath }                                                                    from '@frontend/core/lib/utils/images';
 
 export interface EventContainerProps {
     date: DateEntity;
@@ -26,8 +27,7 @@ const BgContainer = styled.div`
 
 export const EventContainer: React.FC<EventContainerProps> = (props: EventContainerProps): JSX.Element => {
 
-    const serverUrl = `${process.env.REACT_APP_T721_SERVER_PROTOCOL}://${process.env.REACT_APP_T721_SERVER_HOST}:${process.env.REACT_APP_T721_SERVER_PORT}/static`;
-    const imageUrl = `${serverUrl}/${props.date.metadata.avatar}`;
+    const imageUrl = getImgPath(props.date.metadata.avatar);
     const [t] = useTranslation('event');
     const history = useHistory();
 

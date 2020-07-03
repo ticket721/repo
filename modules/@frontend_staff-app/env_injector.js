@@ -1,0 +1,13 @@
+let output = `window.injectedEnv = {`;
+
+for (const varName of Object.keys(process.env)) {
+    if (varName.indexOf('REACT_APP_') === 0) {
+        output = `${output}
+    "${varName}":"${process.env[varName]}",`
+    }
+}
+
+output = `${output}
+};`;
+
+console.log(output);

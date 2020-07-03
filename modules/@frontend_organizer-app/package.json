@@ -54,11 +54,13 @@
         "react-scripts/**/jest": "24.9.0"
     },
     "scripts": {
+        "inject_env": "node env_injector.js > build/env.js",
         "start": "REACT_APP_ENV=dev PORT=3001 react-scripts start",
-        "build": "react-scripts --max_old_space_size=8192 build",
+        "build": "react-scripts --max_old_space_size=4096 build",
+        "build:prod": "react-scripts build",
         "test": "react-scripts test",
         "lint": "tslint --project .",
-        "build_and_serve": "yarn build && serve ./build",
+        "inject_env_and_serve": "yarn inject_env && serve ./build",
         "@lerna/postinstall": "echo '@frontend/organizer-app has no postinstall'",
         "@lerna/postclean": "echo '@frontend/organizer-app has no postclean'"
     },
