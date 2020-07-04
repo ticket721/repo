@@ -22,7 +22,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 const artifacts = await sdk.contracts.fetch();
 
                 const existingContract = artifacts.data.contracts['metamarketplace::MetaMarketplace_v0'];
-                const transactionHash = existingContract.networks[2702].transactionHash;
+                const transactionHash = existingContract.transactionHash;
 
                 const subscribedTx = await sdk.txs.subscribe(token, {
                     transaction_hash: transactionHash,
@@ -49,7 +49,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 const artifacts = await sdk.contracts.fetch();
 
                 const existingContract = artifacts.data.contracts['metamarketplace::MetaMarketplace_v0'];
-                const transactionHash = existingContract.networks[2702].transactionHash.slice(0, 10);
+                const transactionHash = existingContract.transactionHash.slice(0, 10);
 
                 await failWithCode(
                     sdk.txs.subscribe(token, {
@@ -75,7 +75,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 const artifacts = await sdk.contracts.fetch();
 
                 const existingContract = artifacts.data.contracts['metamarketplace::MetaMarketplace_v0'];
-                const transactionHash = existingContract.networks[2702].transactionHash;
+                const transactionHash = existingContract.transactionHash;
 
                 await failWithCode(
                     sdk.txs.subscribe(null, {
@@ -103,7 +103,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 const artifacts = await sdk.contracts.fetch();
 
                 const existingContract = artifacts.data.contracts['metamarketplace::MetaMarketplace_v0'];
-                const transactionHash = existingContract.networks[2702].transactionHash;
+                const transactionHash = existingContract.transactionHash;
 
                 const subscribedTx = await sdk.txs.subscribe(token, {
                     transaction_hash: transactionHash,
@@ -134,7 +134,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 const artifacts = await sdk.contracts.fetch();
 
                 const existingContract = artifacts.data.contracts['metamarketplace::MetaMarketplace_v0'];
-                const transactionHash = existingContract.networks[2702].transactionHash;
+                const transactionHash = existingContract.transactionHash;
 
                 await sdk.txs.subscribe(token, {
                     transaction_hash: transactionHash,
@@ -167,7 +167,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 const artifacts = await sdk.contracts.fetch();
 
                 const existingContract = artifacts.data.contracts['metamarketplace::MetaMarketplace_v0'];
-                const transactionHash = existingContract.networks[2702].transactionHash;
+                const transactionHash = existingContract.transactionHash;
 
                 const subscribedTx = await sdk.txs.subscribe(token, {
                     transaction_hash: transactionHash,
@@ -198,7 +198,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 const artifacts = await sdk.contracts.fetch();
 
                 const existingContract = artifacts.data.contracts['metamarketplace::MetaMarketplace_v0'];
-                const transactionHash = existingContract.networks[2702].transactionHash;
+                const transactionHash = existingContract.transactionHash;
 
                 await sdk.txs.subscribe(token, {
                     transaction_hash: transactionHash,
