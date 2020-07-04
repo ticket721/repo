@@ -1,6 +1,6 @@
 import React, { PropsWithChildren, useState } from 'react';
-import Joi                                    from '@hapi/joi';
-import { getEnv }                             from '../../utils/getEnv';
+import Joi from '@hapi/joi';
+import { getEnv } from '../../utils/getEnv';
 
 export interface IEnvValidatorInputProps {
     schema: Joi.ObjectSchema;
