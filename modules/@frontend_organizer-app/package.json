@@ -60,7 +60,7 @@
         "build:prod": "react-scripts build",
         "test": "react-scripts test",
         "lint": "tslint --project .",
-        "inject_env_and_serve": "yarn inject_env && serve ./build",
+        "inject_env_and_serve": "yarn inject_env && serve -l 5000 ./build",
         "@lerna/postinstall": "echo '@frontend/organizer-app has no postinstall'",
         "@lerna/postclean": "echo '@frontend/organizer-app has no postclean'"
     },

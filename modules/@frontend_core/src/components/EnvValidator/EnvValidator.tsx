@@ -1,5 +1,6 @@
 import React, { PropsWithChildren, useState } from 'react';
-import Joi from '@hapi/joi';
+import Joi                                    from '@hapi/joi';
+import { getEnv }                             from '../../utils/getEnv';
 
 export interface IEnvValidatorInputProps {
     schema: Joi.ObjectSchema;
@@ -9,15 +10,16 @@ export const EnvValidator: React.FC<IEnvValidatorInputProps> = (
     props: PropsWithChildren<IEnvValidatorInputProps>,
 ): React.ReactElement => {
     const [valid, setValidationResult] = useState(null);
+    const currentEnv = getEnv();
 
     if (valid === null) {
         // Validate provided schema
-        const validationResult = props.schema.validate(process.env);
+        const validationResult = props.schema.validate(currentEnv);
 
         // Override env values with schema validation result
         if (validationResult.value) {
             for (const key of Object.keys(validationResult.value)) {
-                process.env[key] = validationResult.value[key];
+                currentEnv[key] = validationResult.value[key];
             }
         }
 
