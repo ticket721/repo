@@ -1,20 +1,49 @@
 import Subspace from '@embarklabs/subspace';
-import contracts from './contract_artifacts.json';
-import { getEnv } from '../utils/getEnv';
+import { useRequest } from '../hooks/useRequest';
+import { ContractsFetchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/contracts/dto/ContractsFetchResponse.dto';
 
-export function getContract(subspace: Subspace, mod: string, contractName: string): any {
-    if (!contracts[mod]) {
-        throw new Error(`Modules ${mod} not loading into artifacts`);
+export interface SubspaceContractResponse {
+    contract: any;
+    error: any;
+    loading: boolean;
+}
+
+export function getContract(
+    subspace: Subspace,
+    mod: string,
+    contractName: string,
+    uuid: string,
+): SubspaceContractResponse {
+    const contractsReq = useRequest<ContractsFetchResponseDto>(
+        {
+            method: 'contracts.fetch',
+            args: [],
+            refreshRate: 1000,
+        },
+        uuid,
+    );
+
+    if (contractsReq.response.error || contractsReq.response.loading) {
+        return {
+            loading: contractsReq.response.loading,
+            error: contractsReq.response.error,
+            contract: null,
+        };
     }
 
-    if (!contracts[mod][`${contractName}.json`]) {
-        throw new Error(`Contract ${contractName} not loading into ${mod} module artifacts`);
+    const serverResponse = contractsReq.response.data.contracts;
+    const completeContractName = `${mod}::${contractName}`;
+
+    if (!serverResponse[completeContractName]) {
+        throw new Error(`Cannot find contract ${completeContractName}`);
     }
 
-    const networkId = parseInt(getEnv().REACT_APP_ETHEREUM_NETWORK_ID, 10);
-
-    return subspace.contract({
-        abi: contracts[mod][`${contractName}.json`].abi,
-        address: contracts[mod][`${contractName}.json`].networks[networkId].address,
-    });
+    return {
+        loading: false,
+        error: null,
+        contract: subspace.contract({
+            address: serverResponse[completeContractName].address,
+            abi: serverResponse[completeContractName].abi,
+        }),
+    };
 }
