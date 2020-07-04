@@ -1,5 +1,11 @@
 import React, { useState } from 'react';
-import { LinksContainer, ArrowLink } from '@frontend/flib-react/lib/components';
+import {
+    LinksContainer,
+    ArrowLink,
+    WalletHeader,
+    LanguageLink,
+    FullPageLoading,
+} from '@frontend/flib-react/lib/components';
 import { useRequest } from '../../../hooks/useRequest';
 import { MetadatasFetchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/metadatas/dto/MetadatasFetchResponse.dto';
 import { v4 } from 'uuid';
@@ -8,10 +14,10 @@ import { AppState } from '../../../redux';
 import { ActivitiesList } from '../Activities/ActivitiesList';
 import { Logout } from '../../../redux/ducks/auth';
 import { useHistory } from 'react-router';
-import { WalletHeader, LanguageLink } from '@frontend/flib-react/lib/components';
 import { getContract } from '../../../subspace/getContract';
 import { useTranslation } from 'react-i18next';
 import '../locales';
+
 // tslint:disable-next-line:no-var-requires
 const { observe, useSubspace } = require('@embarklabs/subspace-react');
 
@@ -28,8 +34,7 @@ const ProfileRoot = (): JSX.Element => {
     const dispatch = useDispatch();
     const history = useHistory();
     const subspace = useSubspace();
-    const T721TokenContract = getContract(subspace, 't721token', 'T721Token');
-    const $balance = T721TokenContract.methods.balanceOf(address).track();
+    const T721TokenContract = getContract(subspace, 't721token', 'T721Token', uuid);
     const [t, i18n] = useTranslation('profile');
 
     const activityResponse = useRequest<MetadatasFetchResponseDto>(
@@ -59,6 +64,16 @@ const ProfileRoot = (): JSX.Element => {
         },
         uuid,
     ).response;
+
+    if (T721TokenContract.loading) {
+        return <FullPageLoading />;
+    }
+
+    if (T721TokenContract.error) {
+        return <p>Unable to recover contracts</p>;
+    }
+
+    const $balance = T721TokenContract.contract.methods.balanceOf(address).track();
 
     return (
         <>
