@@ -9,6 +9,7 @@ import { getPriceRange }               from '../../../utils/prices';
 import { SingleEvent }                 from '@frontend/flib-react/lib/components';
 import { formatShort }                 from '@frontend/core/lib/utils/date';
 import { useHistory }                  from 'react-router';
+import { getImgPath }                  from '@frontend/core/lib/utils/images';
 
 interface SearchViewAllResultEventProps {
     date: DateEntity;
@@ -17,8 +18,7 @@ interface SearchViewAllResultEventProps {
 
 export const SearchViewAllResultEvent: React.FC<SearchViewAllResultEventProps> = (props: SearchViewAllResultEventProps): JSX.Element => {
 
-    const serverUrl = `${process.env.REACT_APP_T721_SERVER_PROTOCOL}://${process.env.REACT_APP_T721_SERVER_HOST}:${process.env.REACT_APP_T721_SERVER_PORT}/static`;
-    const imageUrl = `${serverUrl}/${props.date.metadata.avatar}`;
+    const imageUrl = getImgPath(props.date.metadata.avatar);
     const [uuid] = useState(v4());
     const token = useSelector((state: AppState): string => state.auth.token?.value);
     const history = useHistory();

@@ -10,8 +10,8 @@ import { setupSaga } from './ducks/setup/sagas';
 import { history } from './ducks';
 import { cacheSaga } from './ducks/cache/sagas';
 import { authSaga } from './ducks/auth/sagas';
-
 import { Saga } from '@redux-saga/types';
+import { getEnv } from '../utils/getEnv';
 
 const sagaMiddleware = createSagaMiddleware();
 
@@ -21,7 +21,7 @@ export const configureStore = <AdditionalState>(
     additionalSagas?: Saga[],
 ): Store<AppState & AdditionalState> => {
     const composeEnhancer =
-        (process.env.NODE_ENV !== 'production' && global.window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) || compose;
+        (getEnv().NODE_ENV !== 'production' && global.window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) || compose;
 
     const middlewares = applyMiddleware(sagaMiddleware, routerMiddleware(history));
 
