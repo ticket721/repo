@@ -46,6 +46,17 @@ jobs:
               run: yarn setup:submodules:clone
 
             #
+            # Cache T721 CLI
+            #
+
+            - name: "CACHE cli"
+              uses: actions/cache@v1
+              id: cli_cache
+              with:
+                path: ./cli/node_modules
+                key: ${{ runner.os }}-${{ hashFiles('cli/yarn.lock') }}-cli
+
+          #
             # Cache Yarn Workspaces
             #
 
@@ -182,6 +193,9 @@ jobs:
             # Run Complete install
             #
 
+            - name: "FULL Install cli dependencies (cd cli && yarn install)"
+              if: steps.cli_cache.outputs.cache-hit != 'true'
+              run: "cd cli && yarn install"
 
             - name: "FULL Install all dependencies (yarn @install)"
               if: steps.root_cache.outputs.cache-hit != 'true'
@@ -227,6 +241,16 @@ jobs:
             - name: "Install required tools globally (npm install -g yarn)"
               run: npm install -g yarn@1.22.4
 
+            - name: "CACHE cli"
+              uses: actions/cache@v1
+              id: cli_cache
+              with:
+                path: ./cli/node_modules
+                key: ${{ runner.os }}-${{ hashFiles('cli/yarn.lock') }}-cli
+
+            - name: "Add cli to PATH"
+              run: echo "::add-path::$GITHUB_WORKSPACE/cli/bin"
+
             #
             # Cache Coverage Directory
             #
@@ -259,15 +283,15 @@ jobs:
 
             - name: "Build @ticket721sources/global (yarn build in modules/@common_global)"
               working-directory: modules/@common_global
-              run: yarn build
+              run: t721cli ci_exec @common_global yarn build
 
             - name: "TSLint @ticket721sources/global (yarn lint in modules/@common_global)"
               working-directory: modules/@common_global
-              run: yarn lint
+              run: t721cli ci_exec @common_global yarn lint
 
             - name: "Test @ticket721sources/global (yarn test:cov in modules/@common_global)"
               working-directory: modules/@common_global
-              run: yarn test:cov
+              run: t721cli ci_exec @common_global yarn test:cov
 
 #     /$$$$  /$$$$$$   /$$$$$$  /$$$$
 #    | $$_/ /$$__  $$ /$$__  $$|_  $$

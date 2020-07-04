@@ -2,7 +2,7 @@ const { join } = require('path');
 
 const goroot = () => {
 
-    const ret = __dirname;
+    const ret = process.cwd();
     const dest = join(__dirname, '..', '..');
 
     process.chdir(dest);
