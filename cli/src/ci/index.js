@@ -13,12 +13,12 @@ const ciexec = async (module, commands) => {
             console.log(`No diff found in ${modulePath}`);
             process.exit(0);
         }
+        await run(commands.join(' '))
     } catch (e) {
         console.error(e);
         goback(path)
     }
 
-    await run(commands.join(' '))
 };
 
 module.exports = function(program) {
