@@ -238,9 +238,6 @@ jobs:
               with:
                   node-version: 12.x
 
-            - name: "Install required tools globally (npm install -g yarn)"
-              run: npm install -g yarn@1.22.4
-
             - name: "CACHE cli"
               uses: actions/cache@v1
               id: cli_cache
@@ -251,12 +248,25 @@ jobs:
             - name: "Add cli to PATH"
               run: echo "::add-path::$GITHUB_WORKSPACE/cli/bin"
 
+            - name: "Check if diffs exist for current build"
+              if: github.ref != 'refs/heads/develop'
+              run: t721cli ci_exec @common_global echo "::set-env SHOULD_RUN=true"
+
+            - name: "Force checks if main branch"
+              if: github.ref == 'refs/heads/develop'
+              run: echo "::set-env SHOULD_RUN=true"
+
+            - name: "Install required tools globally (npm install -g yarn)"
+              if: ${{ env.SHOULD_RUN }} == 'true'
+              run: npm install -g yarn@1.22.4
+
             #
             # Cache Coverage Directory
             #
 
             - name: "CACHE @common/global/coverage"
               uses: actions/cache@v1
+              if: ${{ env.SHOULD_RUN }} == 'true'
               with:
                   path: modules/@common_global/coverage
                   key: ${{ runner.os }}-common_global-coverage-${{ github.sha }}
@@ -267,12 +277,14 @@ jobs:
 
             - name: "CACHE root"
               uses: actions/cache@v1
+              if: ${{ env.SHOULD_RUN }} == 'true'
               with:
                   path: ./node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-root
 
             - name: "CACHE @common_global"
               uses: actions/cache@v1
+              if: ${{ env.SHOULD_RUN }} == 'true'
               with:
                   path: ./modules/@common_global/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_global
@@ -282,16 +294,18 @@ jobs:
             #
 
             - name: "Build @ticket721sources/global (yarn build in modules/@common_global)"
+              if: ${{ env.SHOULD_RUN }} == 'true'
               working-directory: modules/@common_global
-              run: t721cli ci_exec @common_global yarn build
+              run: yarn build
 
             - name: "TSLint @ticket721sources/global (yarn lint in modules/@common_global)"
+              if: ${{ env.SHOULD_RUN }} == 'true'
               working-directory: modules/@common_global
-              run: t721cli ci_exec @common_global yarn lint
+              run: yarn lint
 
             - name: "Test @ticket721sources/global (yarn test:cov in modules/@common_global)"
               working-directory: modules/@common_global
-              run: t721cli ci_exec @common_global yarn test:cov
+              run: yarn test:cov
 
 #     /$$$$  /$$$$$$   /$$$$$$  /$$$$
 #    | $$_/ /$$__  $$ /$$__  $$|_  $$
