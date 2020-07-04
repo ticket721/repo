@@ -1276,7 +1276,15 @@ jobs:
               with:
                   node-version: 12.x
 
+            - uses: technote-space/get-diff-action@v2
+              id: git_diff
+              with:
+                PREFIX_FILTER: |
+                  modules/@backend_nest
+                  modules/@common_global
+
             - name: "Install required tools globally (npm install -g yarn)"
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               run: npm install -g yarn@1.22.4
 
             #
@@ -1284,24 +1292,28 @@ jobs:
             #
 
             - name: "CACHE root"
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               uses: actions/cache@v1
               with:
                   path: ./node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-root
 
             - name: "CACHE @backend_nest/coverage-server-e2e"
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               uses: actions/cache@v1
               with:
                   path: modules/@backend_nest/coverage-server-e2e
                   key: ${{ runner.os }}-backend_nest-coverage-server-e2e${{ github.sha }}
 
             - name: "CACHE @backend_nest/coverage"
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               uses: actions/cache@v1
               with:
                   path: modules/@backend_nest/coverage
                   key: ${{ runner.os }}-backend_nest-coverage-${{ github.sha }}
 
             - name: "CACHE @common/global/coverage"
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               uses: actions/cache@v1
               with:
                   path: modules/@common_global/coverage
@@ -1312,6 +1324,7 @@ jobs:
             #
 
             - name: "Codecov (yarn codecov:upload)"
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               run: yarn codecov:upload
               env:
                   CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
