@@ -50,6 +50,7 @@ const SuggestionContainer = styled.div`
 `;
 
 export interface LocationInputProps {
+    googleApiKey: string;
     name: string;
     label: string;
     onSelect: (selection: any) => void;
@@ -64,6 +65,7 @@ export interface LocationInputProps {
 
 export const LocationInput: React.FC<LocationInputProps> = (props: LocationInputProps) => (
     <GooglePlacesAutocomplete
+        apiKey={props.googleApiKey}
         debounce={500}
         initialValue={props.initialValue}
         placeholder={props.placeholder}
