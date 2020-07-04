@@ -1,37 +1,24 @@
-import React, { Suspense } from 'react';
+import React, { lazy, Suspense } from 'react';
 
 import { Redirect, Route, Switch, withRouter } from 'react-router-dom';
 
 import ProtectedRoute               from '@frontend/core/lib/components/ProtectedRoute';
 import ToastStacker                 from '@frontend/core/lib/components/ToastStacker';
 import styled                       from 'styled-components';
-import { StatusBarMargin }          from './utils/StatusBarMargin';
-import { NavbarMargin }             from './utils/NavbarMargin';
-import { Login, Register, ValidateRoute }          from '@frontend/core/lib/components';
-import Home                         from './screens/Home';
-import { InvisibleStatusBarMargin } from './utils/InvisibleStatusBarMargin';
-import { TopNavMargin }             from './utils/TopNavMargin';
-import Activities                   from '@frontend/core/lib/components/Profile/Activities';
-import ProfileRoot                  from '@frontend/core/lib/components/Profile/Root';
-import SearchViewAll                from './screens/SearchViewAll';
-import Search                       from './screens/Search';
-import Tags                         from './screens/Tags';
-import Wallet                       from './screens/Wallet';
-import Event                        from './screens/Event';
 import { FullPageLoading }          from '@frontend/flib-react/lib/components';
-import TicketSelection              from './screens/TicketSelection';
 
-const LoginPage = StatusBarMargin(NavbarMargin(Login));
-const RegisterPage = StatusBarMargin(NavbarMargin(Register));
-const HomePage = StatusBarMargin(NavbarMargin(Home));
-const ProfileActivitiesPage = InvisibleStatusBarMargin(TopNavMargin(Activities));
-const ProfilePage = StatusBarMargin(NavbarMargin(ProfileRoot));
-const SearchViewAllPage = InvisibleStatusBarMargin(TopNavMargin(SearchViewAll));
-const EventPage = Event;
-const TicketSelectionPage = InvisibleStatusBarMargin(TopNavMargin(TicketSelection));
-const SearchPage = StatusBarMargin(Search);
-const TagsPage = StatusBarMargin(Tags);
-const WalletPage = StatusBarMargin(Wallet);
+const LoginPage = lazy(() => import('./routes/Login'));
+const RegisterPage = lazy(() => import('./routes/Register'));
+const HomePage = lazy(() => import('./routes/Home'));
+const ProfileActivitiesPage = lazy(() => import('./routes/Activities'));
+const ProfileLanguagePage = lazy(() => import('./routes/Language'));
+const ProfilePage = lazy(() => import('./routes/Profile'));
+const SearchViewAllPage = lazy(() => import('./routes/SearchViewAll'));
+const EventPage = lazy(() => import('./routes/Event'));
+const TicketSelectionPage = lazy(() => import('./routes/TicketSelection'));
+const SearchPage = lazy(() => import('./routes/Search'));
+const TagsPage = lazy(() => import('./routes/Tags'));
+const WalletPage = lazy(() => import('./routes/Wallet'));
 
 const App: React.FC = () => {
 
@@ -45,9 +32,6 @@ const App: React.FC = () => {
                 <Route path={'/register'} exact={true}>
                     <RegisterPage/>
                 </Route>
-                <Route path={'/validate-email'} exact={true}>
-                    <ValidateRoute/>
-                </Route>
 
                 <Route path={'/home'} exact={true}>
                     <HomePage/>
@@ -55,6 +39,10 @@ const App: React.FC = () => {
 
                 <ProtectedRoute path={'/profile/activities'} exact={true}>
                     <ProfileActivitiesPage/>
+                </ProtectedRoute>
+
+                <ProtectedRoute path={'/profile/language'} exact={true}>
+                    <ProfileLanguagePage/>
                 </ProtectedRoute>
 
                 <ProtectedRoute path={'/profile'} exact={true}>
