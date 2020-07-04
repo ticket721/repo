@@ -16,7 +16,8 @@ import { locationValidationSchema }    from './validationSchema';
 import { InputDateLocation }           from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
 import { Coordinates }                 from '@common/global';
 import { useDeepEffect }               from '@frontend/core/lib/hooks/useDeepEffect';
-import { isEqual } from 'lodash';
+import { isEqual }                     from 'lodash';
+import { getEnv }                      from '@frontend/core/lib/utils/getEnv';
 
 interface LocationFormProps {
     uuid: string;
@@ -123,6 +124,7 @@ export const LocationForm: React.FC<LocationFormProps> = (props: LocationFormPro
     return (
         <Form onSubmit={formik.handleSubmit}>
             <LocationInput
+                googleApiKey={getEnv().REACT_APP_GOOGLE_PLACES_API_KEY}
                 name={'location'}
                 initialValue={formik.values.locationLabel}
                 label={t('location_label')}
