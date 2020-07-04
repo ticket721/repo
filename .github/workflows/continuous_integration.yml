@@ -34,88 +34,90 @@ jobs:
               with:
                   node-version: 12.x
 
+          #
+          # Cache Yarn Workspaces
+          #
+
+            - name: "CACHE @backend_migrations"
+              id: temoin_cache
+              uses: actions/cache@v1
+              with:
+                path: ./modules/@backend_migrations/node_modules
+                key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-backend_migrations
+
             - name: "Setup SSH Agent"
+              if: steps.temoin_cache.outputs.cache-hit != 'true'
               uses: webfactory/ssh-agent@v0.1.1
               with:
                   ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
             - name: "Install required tools globally (npm install -g lerna lcov-result-merger yarn)"
+              if: steps.temoin_cache.outputs.cache-hit != 'true'
               run: npm install -g lerna@3.16.4 lcov-result-merger@3.1.0 yarn@1.22.4
 
             - name: "Recover submodules (yarn setup:submodules:clone)"
+              if: steps.temoin_cache.outputs.cache-hit != 'true'
               run: yarn setup:submodules:clone
 
-            #
-            # Cache T721 CLI
-            #
-
-            - name: "CACHE cli"
-              uses: actions/cache@v1
-              id: cli_cache
-              with:
-                path: ./cli/node_modules
-                key: ${{ runner.os }}-${{ hashFiles('cli/yarn.lock') }}-cli
-
-          #
-            # Cache Yarn Workspaces
-            #
 
             - name: "CACHE root"
+              if: steps.temoin_cache.outputs.cache-hit != 'true'
               uses: actions/cache@v1
-              id: root_cache
               with:
                   path: ./node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-root
 
-            - name: "CACHE @backend_migrations"
-              uses: actions/cache@v1
-              with:
-                  path: ./modules/@backend_migrations/node_modules
-                  key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-backend_migrations
-
             - name: "CACHE @backend_nest"
+              if: steps.temoin_cache.outputs.cache-hit != 'true'
               uses: actions/cache@v1
               with:
                   path: ./modules/@backend_nest/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-backend_nest
 
             - name: "CACHE @backend_simulation"
+              if: steps.temoin_cache.outputs.cache-hit != 'true'
               uses: actions/cache@v1
               with:
                   path: ./modules/@backend_simulation/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-backend_simulation
 
             - name: "CACHE @common_global"
+              if: steps.temoin_cache.outputs.cache-hit != 'true'
               uses: actions/cache@v1
               with:
                   path: ./modules/@common_global/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_global
 
             - name: "CACHE @common_sdk"
+              if: steps.temoin_cache.outputs.cache-hit != 'true'
               uses: actions/cache@v1
               with:
                   path: ./modules/@common_sdk/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_sdk
 
             - name: "CACHE @frontend_flib-react"
+              if: steps.temoin_cache.outputs.cache-hit != 'true'
               uses: actions/cache@v1
               with:
                   path: ./modules/@frontend_flib-react/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-frontend_flib-react
 
             - name: "CACHE @frontend_core"
+              if: steps.temoin_cache.outputs.cache-hit != 'true'
               uses: actions/cache@v1
               with:
                   path: ./modules/@frontend_core/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-frontend_core
 
             - name: "CACHE @frontend_t721-app"
+              if: steps.temoin_cache.outputs.cache-hit != 'true'
               uses: actions/cache@v1
               with:
                 path: ./modules/@frontend_t721-app/node_modules
                 key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-frontend_t721-app
 
             - name: "CACHE @frontend_organizer-app"
+              if: steps.temoin_cache.outputs.cache-hit != 'true'
               uses: actions/cache@v1
               with:
                 path: ./modules/@frontend_organizer-app/node_modules
@@ -126,24 +128,28 @@ jobs:
             #
 
             - name: "CACHE @public_dosojin"
+              if: steps.temoin_cache.outputs.cache-hit != 'true'
               uses: actions/cache@v1
               with:
                   path: ./modules/@public_dosojin/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('modules/@public_dosojin/yarn.lock') }}-public_dosojin
 
             - name: "CACHE @public_e712"
+              if: steps.temoin_cache.outputs.cache-hit != 'true'
               uses: actions/cache@v1
               with:
                   path: ./modules/@public_e712/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('modules/@public_e712/yarn.lock') }}-public_e712
 
             - name: "CACHE @public_erc2280"
+              if: steps.temoin_cache.outputs.cache-hit != 'true'
               uses: actions/cache@v1
               with:
                   path: ./modules/@public_erc2280/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('modules/@public_erc2280/yarn.lock') }}-public_erc2280
 
             - name: "CACHE @public_ethvtx"
+              if: steps.temoin_cache.outputs.cache-hit != 'true'
               uses: actions/cache@v1
               with:
                   path: ./modules/@public_ethvtx/node_modules
@@ -154,36 +160,42 @@ jobs:
             #
 
             - name: "CACHE @contracts_metamarketplace"
+              if: steps.temoin_cache.outputs.cache-hit != 'true'
               uses: actions/cache@v1
               with:
                   path: ./modules/@contracts_metamarketplace/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-@contracts_metamarketplace
 
             - name: "CACHE @contracts_refract"
+              if: steps.temoin_cache.outputs.cache-hit != 'true'
               uses: actions/cache@v1
               with:
                   path: ./modules/@contracts_refract/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-@contracts_refract
 
             - name: "CACHE @contracts_t721admin"
+              if: steps.temoin_cache.outputs.cache-hit != 'true'
               uses: actions/cache@v1
               with:
                   path: ./modules/@contracts_t721admin/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-@contracts_t721admin
 
             - name: "CACHE @contracts_t721controller"
+              if: steps.temoin_cache.outputs.cache-hit != 'true'
               uses: actions/cache@v1
               with:
                   path: ./modules/@contracts_t721controller/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-@contracts_t721controller
 
             - name: "CACHE @contracts_t721token"
+              if: steps.temoin_cache.outputs.cache-hit != 'true'
               uses: actions/cache@v1
               with:
                   path: ./modules/@contracts_t721token/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-@contracts_t721token
 
             - name: "CACHE @contracts_ticketforge"
+              if: steps.temoin_cache.outputs.cache-hit != 'true'
               uses: actions/cache@v1
               with:
                   path: ./modules/@contracts_ticketforge/node_modules
@@ -193,17 +205,9 @@ jobs:
             # Run Complete install
             #
 
-            - name: "FULL Install cli dependencies (cd cli && yarn install)"
-              if: steps.cli_cache.outputs.cache-hit != 'true'
-              run: "cd cli && yarn install"
-
             - name: "FULL Install all dependencies (yarn @install)"
-              if: steps.root_cache.outputs.cache-hit != 'true'
+              if: steps.temoin_cache.outputs.cache-hit != 'true'
               run: "yarn @install"
-
-            # - name: "PARTIAL Install all dependencies (yarn @install)"
-            #   if: steps.root_cache.outputs.cache-hit = 'true'
-            #   run: "yarn @hitinstall"
 
 #     /$$$$  /$$$$$$   /$$$$$$  /$$$$
 #    | $$_/ /$$__  $$ /$$__  $$|_  $$
