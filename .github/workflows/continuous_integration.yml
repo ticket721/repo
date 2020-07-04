@@ -248,7 +248,7 @@ jobs:
                 PREFIX_FILTER: modules/@common_global/
 
             - name: "Install required tools globally (npm install -g yarn)"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               run: npm install -g yarn@1.22.4
 
             #
@@ -257,7 +257,7 @@ jobs:
 
             - name: "CACHE @common/global/coverage"
               uses: actions/cache@v1
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               with:
                   path: modules/@common_global/coverage
                   key: ${{ runner.os }}-common_global-coverage-${{ github.sha }}
@@ -268,14 +268,14 @@ jobs:
 
             - name: "CACHE root"
               uses: actions/cache@v1
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               with:
                   path: ./node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-root
 
             - name: "CACHE @common_global"
               uses: actions/cache@v1
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               with:
                   path: ./modules/@common_global/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_global
@@ -285,17 +285,17 @@ jobs:
             #
 
             - name: "Build @ticket721sources/global (yarn build in modules/@common_global)"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               working-directory: modules/@common_global
               run: yarn build
 
             - name: "TSLint @ticket721sources/global (yarn lint in modules/@common_global)"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               working-directory: modules/@common_global
               run: yarn lint
 
             - name: "Test @ticket721sources/global (yarn test:cov in modules/@common_global)"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               working-directory: modules/@common_global
               run: yarn test:cov
 
@@ -337,7 +337,7 @@ jobs:
                 PREFIX_FILTER: modules/@common_sdk/
 
             - name: "Install required tools globally (npm install -g yarn)"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               run: npm install -g yarn@1.22.4
 
             #
@@ -345,28 +345,28 @@ jobs:
             #
 
             - name: "CACHE root"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               uses: actions/cache@v1
               with:
                   path: ./node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-root
 
             - name: "CACHE @common_global"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               uses: actions/cache@v1
               with:
                   path: ./modules/@common_global/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_global
 
             - name: "CACHE @common_sdk"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               uses: actions/cache@v1
               with:
                   path: ./modules/@common_sdk/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_sdk
 
             - name: "CACHE @backend_nest"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               uses: actions/cache@v1
               with:
                   path: ./modules/@backend_nest/node_modules
@@ -377,7 +377,7 @@ jobs:
             #
 
             - name: "Build @ticket721sources/global (npm run build in sources/global)"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               working-directory: modules/@common_global
               run: yarn build
 
@@ -386,12 +386,12 @@ jobs:
             #
 
             - name: "Build @ticket721sources/sdk (npm run build in sources/sdk)"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               working-directory: modules/@common_sdk
               run: yarn build
 
             - name: "TSLint @ticket721sources/sdk (npm run lint in sources/sdk)"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               working-directory: modules/@common_sdk
               run: yarn lint
 
@@ -436,17 +436,17 @@ jobs:
                 PREFIX_FILTER: modules/@backend_nest/
 
             - name: Setup SSH Agent
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               uses: webfactory/ssh-agent@v0.1.1
               with:
                   ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
             - name: "Install required tools globally (npm install -g yarn)"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               run: npm install -g yarn@1.22.4
 
             - name: "Setup submodules (yarn setup:submodules:clone)"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               run: yarn setup:submodules:clone
 
             #
@@ -454,14 +454,14 @@ jobs:
             #
 
             - name: "CACHE @public_dosojin"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               uses: actions/cache@v1
               with:
                   path: ./modules/@public_dosojin/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('modules/@public_dosojin/yarn.lock') }}-public_dosojin
 
             - name: "CACHE @public_e712"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               uses: actions/cache@v1
               with:
                   path: ./modules/@public_e712/node_modules
@@ -472,7 +472,7 @@ jobs:
             #
 
             - name: "CACHE @backend_nest/coverage"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               uses: actions/cache@v1
               with:
                   path: modules/@backend_nest/coverage
@@ -483,28 +483,28 @@ jobs:
             #
 
             - name: "CACHE root"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               uses: actions/cache@v1
               with:
                   path: ./node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-root
 
             - name: "CACHE @common_sdk"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               uses: actions/cache@v1
               with:
                   path: ./modules/@common_sdk/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_sdk
 
             - name: "CACHE @common_global"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               uses: actions/cache@v1
               with:
                   path: ./modules/@common_global/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_global
 
             - name: "CACHE @backend_nest"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               uses: actions/cache@v1
               with:
                   path: ./modules/@backend_nest/node_modules
@@ -515,7 +515,7 @@ jobs:
             #
 
             - name: "Setup portals (yarn setup:portals)"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               run: yarn setup:portals
 
             #
@@ -523,12 +523,12 @@ jobs:
             #
 
             - name: "Build @common_global (yarn build in modules/@common_global)"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               working-directory: modules/@common_global
               run: yarn build
 
             - name: "Build @common_sdk (yarn build in modules/@common_sdk)"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               working-directory: modules/@common_sdk
               run: yarn build
 
@@ -537,36 +537,36 @@ jobs:
             #
 
             - name: "Build @backend_nest @app/server"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               working-directory: modules/@backend_nest
               env:
                   NODE_ENV: production
               run: yarn build:server
 
             - name: "Build @backend_nest @app/worker"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               working-directory: modules/@backend_nest
               env:
                   NODE_ENV: production
               run: yarn build:worker
 
             - name: "Run @backend_nest @app/server, @app/worker, @lib/common unitary tests (yarn test:cov in modules/@backend_nest)"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               working-directory: modules/@backend_nest
               run: yarn test:cov
 
             - name: "Format check on @backend_nest"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               working-directory: modules/@backend_nest
               run: yarn format:check
 
             - name: "TSLint check on @backend_nest"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               working-directory: modules/@backend_nest
               run: yarn lint
 
             - name: "Compodoc Coverage check on @backend_nest"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               working-directory: modules/@backend_nest
               run: yarn doc:coverage
 
@@ -602,17 +602,17 @@ jobs:
                 PREFIX_FILTER: modules/@backend_nest/
 
             - name: "Setup SSH Agent"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               uses: webfactory/ssh-agent@v0.1.1
               with:
                   ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
             - name: "Install required tools globally (npm install -g yarn)"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               run: npm install -g yarn@1.22.4
 
             - name: "Setup submodules (yarn setup:submodules:clone)"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               run: yarn setup:submodules:clone
 
             #
@@ -620,42 +620,42 @@ jobs:
             #
 
             - name: "CACHE @contracts_metamarketplace"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               uses: actions/cache@v1
               with:
                   path: ./modules/@contracts_metamarketplace/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-@contracts_metamarketplace
 
             - name: "CACHE @contracts_refract"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               uses: actions/cache@v1
               with:
                   path: ./modules/@contracts_refract/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-@contracts_refract
 
             - name: "CACHE @contracts_t721admin"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               uses: actions/cache@v1
               with:
                   path: ./modules/@contracts_t721admin/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-@contracts_t721admin
 
             - name: "CACHE @contracts_t721controller"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               uses: actions/cache@v1
               with:
                   path: ./modules/@contracts_t721controller/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-@contracts_t721controller
 
             - name: "CACHE @contracts_t721token"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               uses: actions/cache@v1
               with:
                   path: ./modules/@contracts_t721token/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-@contracts_t721token
 
             - name: "CACHE @contracts_ticketforge"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               uses: actions/cache@v1
               with:
                   path: ./modules/@contracts_ticketforge/node_modules
@@ -666,14 +666,14 @@ jobs:
             #
 
             - name: "CACHE @public_dosojin"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               uses: actions/cache@v1
               with:
                   path: ./modules/@public_dosojin/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('modules/@public_dosojin/yarn.lock') }}-public_dosojin
 
             - name: "CACHE @public_e712"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               uses: actions/cache@v1
               with:
                   path: ./modules/@public_e712/node_modules
@@ -684,7 +684,7 @@ jobs:
             #
 
             - name: "CACHE @backend_nest/coverage-server-e2e"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               uses: actions/cache@v1
               with:
                   path: modules/@backend_nest/coverage-server-e2e
@@ -695,35 +695,35 @@ jobs:
             #
 
             - name: "CACHE root"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               uses: actions/cache@v1
               with:
                   path: ./node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-root
 
             - name: "CACHE @common_sdk"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               uses: actions/cache@v1
               with:
                   path: ./modules/@common_sdk/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_sdk
 
             - name: "CACHE @common_global"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               uses: actions/cache@v1
               with:
                   path: ./modules/@common_global/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_global
 
             - name: "CACHE @backend_nest"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               uses: actions/cache@v1
               with:
                   path: ./modules/@backend_nest/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-backend_nest
-                  
+
             - name: "CACHE @backend_simulation"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               uses: actions/cache@v1
               with:
                   path: ./modules/@backend_simulation/node_modules
@@ -734,7 +734,7 @@ jobs:
             #
 
             - name: "Setup portals (yarn setup:portals)"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               run: yarn setup:portals
 
             #
@@ -742,12 +742,12 @@ jobs:
             #
 
             - name: "Build @common_global (yarn build in modules/@common_global)"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               working-directory: modules/@common_global
               run: yarn build
 
             - name: "Build @common_sdk (yarn build in modules/@common_sdk)"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               working-directory: modules/@common_sdk
               run: yarn build
 
@@ -756,7 +756,7 @@ jobs:
             #
 
             - name: "Run @backend_nest @app/server e2e tests (yarn test:server:e2e:cov in modules/@backend_nest)"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               run: sudo sysctl -w vm.max_map_count=262144 && cd modules/@backend_nest && yarn test:server:e2e:cov
               env:
                   DEPLOY: true
@@ -801,7 +801,7 @@ jobs:
                 PREFIX_FILTER: modules/@frontend_flib-react/
 
             - name: "Install required tools globally (npm install -g yarn)"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               run: npm install -g yarn@1.22.4
 
             #
@@ -809,14 +809,14 @@ jobs:
             #
 
             - name: "CACHE root"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               uses: actions/cache@v1
               with:
                   path: ./node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-root
 
             - name: "CACHE @frontend_flib-react"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               uses: actions/cache@v1
               with:
                   path: ./modules/@frontend_flib-react/node_modules
@@ -827,22 +827,22 @@ jobs:
             #
 
             - name: "Build @frontend/flib-react (yarn build in modules/@frontend_flib-react)"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               working-directory: modules/@frontend_flib-react
               run: yarn build
 
             - name: "Build Storybook @frontend/flib-react (yarn build-storybook in modules/@frontend_flib-react)"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               working-directory: modules/@frontend_flib-react
               run: yarn build-storybook
 
             - name: "Lint @frontend/flib-react (yarn lint in modules/@frontend_flib-react)"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               working-directory: modules/@frontend_flib-react
               run: yarn lint
 
             - name: "Format check @frontend/flib-react (yarn format:check in modules/@frontend_flib-react)"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               working-directory: modules/@frontend_flib-react
               run: yarn format:check
 
@@ -884,7 +884,7 @@ jobs:
             PREFIX_FILTER: modules/@frontend_t721-app/
 
         - name: "Install required tools globally (npm install -g yarn)"
-          if: steps.git_diff.outputs.diff
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           run: npm install -g yarn@1.22.4
 
         #
@@ -892,49 +892,49 @@ jobs:
         #
 
         - name: "CACHE root"
-          if: steps.git_diff.outputs.diff
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           uses: actions/cache@v1
           with:
             path: ./node_modules
             key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-root
 
         - name: "CACHE @common_global"
-          if: steps.git_diff.outputs.diff
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           uses: actions/cache@v1
           with:
             path: ./modules/@common_global/node_modules
             key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_global
 
         - name: "CACHE @common_sdk"
-          if: steps.git_diff.outputs.diff
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           uses: actions/cache@v1
           with:
             path: ./modules/@common_sdk/node_modules
             key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_sdk
 
         - name: "CACHE @frontend_flib-react"
-          if: steps.git_diff.outputs.diff
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           uses: actions/cache@v1
           with:
             path: ./modules/@frontend_flib-react/node_modules
             key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-frontend_flib-react
 
         - name: "CACHE @frontend_core"
-          if: steps.git_diff.outputs.diff
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           uses: actions/cache@v1
           with:
             path: ./modules/@frontend_core/node_modules
             key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-frontend_core
 
         - name: "CACHE @frontend_t721-app"
-          if: steps.git_diff.outputs.diff
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           uses: actions/cache@v1
           with:
             path: ./modules/@frontend_t721-app/node_modules
             key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-frontend_t721-app
 
         - name: "CACHE @backend_nest"
-          if: steps.git_diff.outputs.diff
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           uses: actions/cache@v1
           with:
             path: ./modules/@backend_nest/node_modules
@@ -946,22 +946,22 @@ jobs:
         #
 
         - name: "Build @common_global (yarn build in modules/@common_global)"
-          if: steps.git_diff.outputs.diff
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           working-directory: modules/@common_global
           run: yarn build
 
         - name: "Build @common_sdk (yarn build in modules/@common_sdk)"
-          if: steps.git_diff.outputs.diff
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           working-directory: modules/@common_sdk
           run: yarn build
 
         - name: "Build @frontend_flib-react (yarn build in modules/@frontend_flib-react)"
-          if: steps.git_diff.outputs.diff
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           working-directory: modules/@frontend_flib-react
           run: yarn build
 
         - name: "Build @frontend_core (yarn build in modules/@frontend_core)"
-          if: steps.git_diff.outputs.diff
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           working-directory: modules/@frontend_core
           run: yarn build
 
@@ -970,15 +970,15 @@ jobs:
         #
 
         - name: "Build @frontend/t721-app (yarn build in modules/@frontend_t721-app)"
-          if: steps.git_diff.outputs.diff
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           working-directory: modules/@frontend_t721-app
           run: yarn build
 
         - name: "Lint @frontend/t721-app (yarn lint in modules/@frontend_t721-app)"
-          if: steps.git_diff.outputs.diff
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           working-directory: modules/@frontend_t721-app
           run: yarn lint
-          
+
   #     /$$$$  /$$$$$$   /$$$$$$  /$$$$
   #    | $$_/ /$$__  $$ /$$__  $$|_  $$
   #    | $$  | $$  \__/|__/  \ $$  | $$
@@ -1017,7 +1017,7 @@ jobs:
             PREFIX_FILTER: modules/@frontend_organizer-app/
 
         - name: "Install required tools globally (npm install -g yarn)"
-          if: steps.git_diff.outputs.diff
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           run: npm install -g yarn@1.22.4
 
         #
@@ -1025,49 +1025,49 @@ jobs:
         #
 
         - name: "CACHE root"
-          if: steps.git_diff.outputs.diff
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           uses: actions/cache@v1
           with:
             path: ./node_modules
             key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-root
 
         - name: "CACHE @common_global"
-          if: steps.git_diff.outputs.diff
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           uses: actions/cache@v1
           with:
             path: ./modules/@common_global/node_modules
             key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_global
 
         - name: "CACHE @common_sdk"
-          if: steps.git_diff.outputs.diff
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           uses: actions/cache@v1
           with:
             path: ./modules/@common_sdk/node_modules
             key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_sdk
 
         - name: "CACHE @frontend_flib-react"
-          if: steps.git_diff.outputs.diff
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           uses: actions/cache@v1
           with:
             path: ./modules/@frontend_flib-react/node_modules
             key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-frontend_flib-react
 
         - name: "CACHE @frontend_core"
-          if: steps.git_diff.outputs.diff
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           uses: actions/cache@v1
           with:
             path: ./modules/@frontend_core/node_modules
             key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-frontend_core
 
         - name: "CACHE @frontend_organizer-app"
-          if: steps.git_diff.outputs.diff
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           uses: actions/cache@v1
           with:
             path: ./modules/@frontend_organizer-app/node_modules
             key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-frontend_organizer-app
 
         - name: "CACHE @backend_nest"
-          if: steps.git_diff.outputs.diff
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           uses: actions/cache@v1
           with:
             path: ./modules/@backend_nest/node_modules
@@ -1079,22 +1079,22 @@ jobs:
         #
 
         - name: "Build @common_global (yarn build in modules/@common_global)"
-          if: steps.git_diff.outputs.diff
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           working-directory: modules/@common_global
           run: yarn build
 
         - name: "Build @common_sdk (yarn build in modules/@common_sdk)"
-          if: steps.git_diff.outputs.diff
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           working-directory: modules/@common_sdk
           run: yarn build
 
         - name: "Build @frontend_flib-react (yarn build in modules/@frontend_flib-react)"
-          if: steps.git_diff.outputs.diff
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           working-directory: modules/@frontend_flib-react
           run: yarn build
 
         - name: "Build @frontend_core (yarn build in modules/@frontend_core)"
-          if: steps.git_diff.outputs.diff
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           working-directory: modules/@frontend_core
           run: yarn build
 
@@ -1103,12 +1103,12 @@ jobs:
         #
 
         - name: "Build @frontend/organizer-app (yarn build in modules/@frontend_organizer-app)"
-          if: steps.git_diff.outputs.diff
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           working-directory: modules/@frontend_organizer-app
           run: yarn build
 
         - name: "Lint @frontend/organizer-app (yarn lint in modules/@frontend_organizer-app)"
-          if: steps.git_diff.outputs.diff
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           working-directory: modules/@frontend_organizer-app
           run: yarn lint
 
@@ -1152,7 +1152,7 @@ jobs:
                 PREFIX_FILTER: modules/@frontend_core/
 
             - name: "Install required tools globally (npm install -g yarn)"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               run: npm install -g yarn@1.22.4
 
             #
@@ -1160,42 +1160,42 @@ jobs:
             #
 
             - name: "CACHE root"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               uses: actions/cache@v1
               with:
                   path: ./node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-root
 
             - name: "CACHE @common_global"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               uses: actions/cache@v1
               with:
                   path: ./modules/@common_global/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_global
 
             - name: "CACHE @common_sdk"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               uses: actions/cache@v1
               with:
                   path: ./modules/@common_sdk/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_sdk
 
             - name: "CACHE @frontend_flib-react"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               uses: actions/cache@v1
               with:
                   path: ./modules/@frontend_flib-react/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-frontend_flib-react
 
             - name: "CACHE @frontend_core"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               uses: actions/cache@v1
               with:
                   path: ./modules/@frontend_core/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-frontend_core
 
             - name: "CACHE @backend_nest"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               uses: actions/cache@v1
               with:
                   path: ./modules/@backend_nest/node_modules
@@ -1207,17 +1207,17 @@ jobs:
           #
 
             - name: "Build @common_global (yarn build in modules/@common_global)"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               working-directory: modules/@common_global
               run: yarn build
 
             - name: "Build @common_sdk (yarn build in modules/@common_sdk)"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               working-directory: modules/@common_sdk
               run: yarn build
 
             - name: "Build @frontend_flib-react (yarn build in modules/@frontend_flib-react)"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               working-directory: modules/@frontend_flib-react
               run: yarn build
 
@@ -1226,22 +1226,22 @@ jobs:
             #
 
             - name: "Build @frontend/core (yarn build in modules/@frontend_core)"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               working-directory: modules/@frontend_core
               run: yarn build
 
             - name: "Lint @frontend/core (yarn lint in modules/@frontend_core)"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               working-directory: modules/@frontend_core
               run: yarn lint
 
             - name: "Format check @frontend/core (yarn format:check in modules/@frontend_core)"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               working-directory: modules/@frontend_core
               run: yarn format:check
 
             - name: "Tests @frontend/core (yarn test in modules/@frontend_core)"
-              if: steps.git_diff.outputs.diff
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               working-directory: modules/@frontend_core
               run: yarn test
 
@@ -1276,7 +1276,15 @@ jobs:
               with:
                   node-version: 12.x
 
+            - uses: technote-space/get-diff-action@v2
+              id: git_diff
+              with:
+                PREFIX_FILTER: |
+                  modules/@backend_nest
+                  modules/@common_global
+
             - name: "Install required tools globally (npm install -g yarn)"
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               run: npm install -g yarn@1.22.4
 
             #
@@ -1284,24 +1292,28 @@ jobs:
             #
 
             - name: "CACHE root"
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               uses: actions/cache@v1
               with:
                   path: ./node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-root
 
             - name: "CACHE @backend_nest/coverage-server-e2e"
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               uses: actions/cache@v1
               with:
                   path: modules/@backend_nest/coverage-server-e2e
                   key: ${{ runner.os }}-backend_nest-coverage-server-e2e${{ github.sha }}
 
             - name: "CACHE @backend_nest/coverage"
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               uses: actions/cache@v1
               with:
                   path: modules/@backend_nest/coverage
                   key: ${{ runner.os }}-backend_nest-coverage-${{ github.sha }}
 
             - name: "CACHE @common/global/coverage"
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               uses: actions/cache@v1
               with:
                   path: modules/@common_global/coverage
@@ -1312,6 +1324,7 @@ jobs:
             #
 
             - name: "Codecov (yarn codecov:upload)"
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               run: yarn codecov:upload
               env:
                   CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
@@ -1338,29 +1351,29 @@ jobs:
             PREFIX_FILTER: modules/@infra_
 
         - name: "Setup SSH Agent"
-          if: steps.git_diff.outputs.diff
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           uses: webfactory/ssh-agent@v0.1.1
           with:
             ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
         - name: "Install required tools globally (npm install -g lerna lcov-result-merger yarn)"
-          if: steps.git_diff.outputs.diff
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           run: npm install -g lerna@3.16.4 lcov-result-merger@3.1.0 yarn@1.22.4
 
         - name: "Recover submodules (yarn setup:submodules:clone)"
-          if: steps.git_diff.outputs.diff
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           run: yarn setup:submodules:clone
 
         - name: "Setup aws CLI"
-          if: steps.git_diff.outputs.diff
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           uses: chrislennon/action-aws-cli@v1.1
 
         - name: "Setup kubectl"
-          if: steps.git_diff.outputs.diff
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           run: curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.18.0/bin/linux/amd64/kubectl && chmod +x kubectl && sudo mv ./kubectl /usr/local/bin/kubectl
 
         - name: "Setup kubeconfig"
-          if: steps.git_diff.outputs.diff
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           run: aws eks update-kubeconfig --name ${CONFIG_STAGING_CLUSTER_NAME}
           env:
             AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -1370,19 +1383,19 @@ jobs:
             CONFIG_STAGING_CLUSTER_NAME: ${{ secrets.CONFIG_STAGING_CLUSTER_NAME }}
 
         - name: "Setup Helm + Helm Diff"
-          if: steps.git_diff.outputs.diff
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           run: curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash && helm plugin install https://github.com/databus23/helm-diff --version master
 
         - name: "Setup Helmsman"
-          if: steps.git_diff.outputs.diff
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           run: curl -L https://github.com/Praqma/helmsman/releases/download/v3.4.2/helmsman_3.4.2_linux_amd64.tar.gz | tar zx && chmod +x helmsman && sudo mv ./helmsman /usr/local/bin/helmsman
 
         - name: "Fetch Helm Repos and Dependencies"
-          if: steps.git_diff.outputs.diff
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           run: ./helm_prepare.sh
 
         - name: "Helmsman on staging infra (dry-run)"
-          if: steps.git_diff.outputs.diff
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           run: ./helmsman.dryrun.staging.sh
           env:
             CONFIG_STAGING_STRIPE_APIKEY: ${{ secrets.CONFIG_STAGING_STRIPE_APIKEY }}
