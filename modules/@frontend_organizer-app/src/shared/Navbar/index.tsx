@@ -1,5 +1,5 @@
-import React                  from 'react';
-import styled                 from 'styled-components';
+import React, { useState } from 'react';
+import styled              from 'styled-components';
 import { Icon, WalletHeader } from '@frontend/flib-react/lib/components';
 
 import DrawerAccount                         from '../DrawerAccount';
@@ -7,12 +7,13 @@ import { useTranslation }                    from 'react-i18next';
 import { blurAndDarkenBackground, truncate } from '@frontend/core/lib/utils';
 import { useHistory }                        from 'react-router';
 import { NavLink }                           from 'react-router-dom';
-import { useSelector }          from 'react-redux';
+import { useSelector }                       from 'react-redux';
 import { computeProfilePath }                from '@frontend/core/lib/utils/computeProfilePath';
 import { appendProfilePath }                 from '@frontend/core/lib/utils/appendProfilePath';
 import { AppState }                          from '@frontend/core/lib/redux';
 import { getContract }                       from '@frontend/core/lib/subspace/getContract';
 import './locales';
+import { v4 }                                from 'uuid';
 
 // tslint:disable-next-line:no-var-requires
 const { observe, useSubspace } = require('@embarklabs/subspace-react');
@@ -21,10 +22,14 @@ const NavBar: React.FC = () => {
     const { t } = useTranslation('navbar');
     const history = useHistory();
     const user = useSelector((state: AppState) => state.auth.user);
+    const [uuid] = useState(v4());
 
     const subspace = useSubspace();
-    const T721TokenContract = getContract(subspace, 't721token', 'T721Token');
-    const $balance = T721TokenContract.methods.balanceOf(user?.address).track();
+    const T721TokenContract = getContract(subspace, 't721token', 'T721Token', uuid);
+
+    const $balance = (T721TokenContract.loading || T721TokenContract.error)
+        ? '...'
+        : T721TokenContract.contract.methods.balanceOf(user?.address).track();
 
     const drawerOnClose = () => {
         if (computeProfilePath(history.location.pathname).startsWith('/profile')) {
@@ -44,9 +49,9 @@ const NavBar: React.FC = () => {
             <ActionContainer>
                 <NavLink
                     to='/create-event'>
-                  {
-                    t('create_event')
-                  }
+                    {
+                        t('create_event')
+                    }
                 </NavLink>
                 <Profile
                     onClick={
