@@ -24,7 +24,7 @@ export async function geolocFuzzySearch(
 ): Promise<AxiosResponse<GeolocFuzzySearchResponseDto>> {
     const self: T721SDK = this;
 
-    return self.post<GeolocFuzzySearchInputDto>(`/geoloc/closest-city`, {
+    return self.post<GeolocFuzzySearchInputDto>(`/geoloc/fuzzy-search`, {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
     }, query);
