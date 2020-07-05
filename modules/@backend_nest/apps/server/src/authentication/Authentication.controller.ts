@@ -507,7 +507,6 @@ export class AuthenticationController {
                     );
                 }
 
-                default:
                 case 'invalid signature': {
                     throw new HttpException(
                         {
@@ -515,6 +514,16 @@ export class AuthenticationController {
                             message: 'invalid_signature',
                         },
                         StatusCodes.Unauthorized,
+                    );
+                }
+
+                default: {
+                    throw new HttpException(
+                        {
+                            status: StatusCodes.InternalServerError,
+                            message: e.message,
+                        },
+                        StatusCodes.InternalServerError,
                     );
                 }
             }

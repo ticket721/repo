@@ -1362,13 +1362,13 @@ describe('Authentication Controller', function() {
 
             await expect(authenticationController.validateEmail({ token: 'test_token' })).rejects.toMatchObject({
                 response: {
-                    status: 401,
-                    message: 'invalid_signature',
+                    status: 500,
+                    message: 'unknown error',
                 },
-                status: 401,
+                status: 500,
                 message: {
-                    status: 401,
-                    message: 'invalid_signature',
+                    status: 500,
+                    message: 'unknown error',
                 },
             });
         });

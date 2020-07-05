@@ -1,0 +1,18 @@
+{
+    "headers": [
+        {
+            "source" : "**/*.@(js|css|otf|woff|eot|ttf|woff2|svg|html)",
+            "headers" : [{
+                "key" : "Cache-Control",
+                "value" : "no-cache"
+            }]
+        },
+        {
+            "source" : "static/**/*.@(js|css|otf|woff|eot|ttf|woff2|svg)",
+            "headers" : [{
+                "key" : "Cache-Control",
+                "value" : "max-age=31536000"
+            }]
+        }
+    ]
+}

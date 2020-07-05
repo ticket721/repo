@@ -27,44 +27,55 @@ const App: React.FC = () => {
     }, [authState.user]);
 
     return (
-        <Suspense fallback={FullPageLoading}>
+        <Suspense fallback={<FullPageLoading/>}>
             <AppContainer>
                 <MediaQuery minDeviceWidth={1224}>
                     {
                         validated &&
-                        location.pathname !== '/register' && location.pathname !== '/login' &&
-                        <Navbar/>
+                        location.pathname !== '/register' && location.pathname !== '/login'
+
+                            ?
+                            <Navbar/>
+
+                            :
+                            null
                     }
                 </MediaQuery>
-                <Suspense fallback={FullPageLoading}>
+                <Suspense fallback={<FullPageLoading/>}>
                     <Switch>
                         {
-                            appStatus === AppStatus.Ready && routes.map((route, idx) => {
+                            appStatus === AppStatus.Ready
 
-                                const page: JSX.Element = (
-                                    <PageWrapper>
-                                        {
-                                            route.path.match(/^\/group\/:groupId\/(date|event)/) ?
-                                                <EventPageWrapper>
-                                                    <EventMenu/>
-                                                    <div>
-                                                        <route.page/>
-                                                    </div>
-                                                </EventPageWrapper> :
-                                                <route.page/>
-                                        }
-                                    </PageWrapper>
-                                );
+                                ?
+                                routes.map((route, idx) => {
 
-                                if (route.protected) {
-                                    return <ProtectedRoute exact={true} path={route.path} key={idx}>
-                                        {page}
-                                    </ProtectedRoute>;
-                                }
-                                return <Route exact={true} key={idx} path={route.path}>
-                                    <route.page/>
-                                </Route>;
-                            })
+                                    const page: JSX.Element = (
+                                        <PageWrapper>
+                                            {
+                                                route.path.match(/^\/group\/:groupId\/(date|event)/) ?
+                                                    <EventPageWrapper>
+                                                        <EventMenu/>
+                                                        <div>
+                                                            <route.page/>
+                                                        </div>
+                                                    </EventPageWrapper> :
+                                                    <route.page/>
+                                            }
+                                        </PageWrapper>
+                                    );
+
+                                    if (route.protected) {
+                                        return <ProtectedRoute exact={true} path={route.path} key={idx}>
+                                            {page}
+                                        </ProtectedRoute>;
+                                    }
+                                    return <Route exact={true} key={idx} path={route.path}>
+                                        <route.page/>
+                                    </Route>;
+                                })
+
+                                :
+                                null
                         }
                         <Redirect to={'/'}/>
                     </Switch>

@@ -14,3 +14,4 @@ export { Coordinates, closestCity, City, citiesList }                           
 export { uuidEq, toB32, leftPad, serialize, toHex, decimalToHex, isFutureDateRange, isValidDateRange, log2 } from './utils';
 export { isTransactionHash, toAcceptedTransactionHashFormat }                                                from './transactions';
 export { getT721ControllerGroupID, encode }                                                                  from './abi';
+export { b64Encode, b64Decode }                                                                              from './encoding';

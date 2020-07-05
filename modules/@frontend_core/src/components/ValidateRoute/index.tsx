@@ -7,6 +7,7 @@ import { useRequest } from '../../hooks/useRequest';
 import { useHistory } from 'react-router';
 import { PushNotification } from '../../redux/ducks/notifications';
 import { useDispatch } from 'react-redux';
+import { b64Decode } from '@common/global';
 
 export const ValidateRoute: React.FC = () => {
     const history = useHistory();
@@ -14,10 +15,12 @@ export const ValidateRoute: React.FC = () => {
     const [uuid] = useState<string>(v4() + '@validate-route');
     const { t } = useTranslation('validate_route');
 
+    const parsedQuery = new URLSearchParams(history.location.search);
+
     const { response: validateEmailResp } = useRequest(
         {
             method: 'validateEmail',
-            args: [history.location.search.match(/token=(([a-zA-Z0-9]|\.)+)/)[1]],
+            args: [b64Decode(parsedQuery.get('token'))],
             refreshRate: 0,
         },
         uuid,

@@ -9,6 +9,7 @@ import { InstanceSignature, OutrospectionService } from '@lib/common/outrospecti
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 import { ResetPasswordTaskDto } from '@app/server/authentication/dto/ResetPasswordTask.dto';
 import { NestError } from '@lib/common/utils/NestError';
+import { b64Encode } from '@common/global';
 
 /**
  * Task collection for the Authentication module
@@ -64,7 +65,9 @@ export class AuthenticationTasks implements OnModuleInit {
         });
 
         await job.progress(50);
-        const validationLink = `${this.configService.get('VALIDATION_URL')}?token=${encodeURIComponent(signature)}`;
+        const validationLink = `${this.configService.get('VALIDATION_URL')}?token=${encodeURIComponent(
+            b64Encode(signature),
+        )}`;
         const res = await this.emailService.send({
             template: 'validate',
             to: job.data.email,
@@ -93,7 +96,9 @@ export class AuthenticationTasks implements OnModuleInit {
         });
 
         await job.progress(50);
-        const validationLink = `${this.configService.get('RESET_PASSWORD_URL')}?token=${encodeURIComponent(signature)}`;
+        const validationLink = `${this.configService.get('RESET_PASSWORD_URL')}?token=${encodeURIComponent(
+            b64Encode(signature),
+        )}`;
         const res = await this.emailService.send({
             template: 'passwordReset',
             to: job.data.email,
