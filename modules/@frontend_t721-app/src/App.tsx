@@ -22,7 +22,7 @@ const WalletPage = lazy(() => import('./routes/Wallet'));
 
 const App: React.FC = () => {
 
-    return <Suspense fallback={FullPageLoading}>
+    return <Suspense fallback={<FullPageLoading/>}>
         <AppContainer>
             <Switch>
                 <Route path={'/login'} exact={true}>
