@@ -45,14 +45,14 @@ const MobileApp: React.FC = () => {
     const location = useLocation();
     const history = useHistory();
 
-    return <Suspense fallback={FullPageLoading}>
+    return <Suspense fallback={<FullPageLoading/>}>
         <AppContainer>
             {
                 location.pathname.lastIndexOf('/') !== 0 ?
                     <TopNavWrapper back={history.goBack}/>
                     : null
             }
-            <Suspense fallback={FullPageLoading}>
+            <Suspense fallback={<FullPageLoading/>}>
                 <Switch>
                     <Route path={'/login'} exact={true}>
                         <LoginPage/>
