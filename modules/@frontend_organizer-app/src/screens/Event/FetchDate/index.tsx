@@ -36,9 +36,8 @@ const FetchDate = (): JSX.Element => {
   );
 
   useDeepEffect(() => {
-    if (groupId.match(/0x(([a-zA-Z]|[0-9])+)/)) {
       if (!datesResp.loading && !datesResp.error && datesResp.data.dates) {
-        const filteredDate = datesResp.data.dates?.filter(d => d.parent_type === 'event' || d.parent_type === 'date')
+        const filteredDate = datesResp.data.dates?.filter(d => d.parent_type === 'event' || d.parent_type === 'date');
         if (filteredDate?.[0]?.id) {
           history.push(`/group/${groupId}/date/${filteredDate?.[0]?.id}`);
         } else {
@@ -46,7 +45,7 @@ const FetchDate = (): JSX.Element => {
         }
       }
     }
-  }, [datesResp]);
+  , [datesResp]);
 
   if (groupId.match(/0x(([a-zA-Z]|[0-9])+)/)) {
     return (

@@ -2,12 +2,11 @@ import React                        from 'react';
 import { useParams }                from 'react-router';
 import styled                       from 'styled-components';
 
-import { Dropdown }                 from './Dropdown';
-import { DateSubMenu }              from './DateSubMenu';
-import { GlobalSubMenu }            from './GlobalSubMenu';
-import { DateActions }              from './DateActions';
-import { Actions }                  from './Actions';
-import './Actions/locales';
+import { Dropdown }      from './Dropdown';
+import { DateSubMenu }   from './DateSubMenu';
+import { GlobalSubMenu } from './GlobalSubMenu';
+import { DateActions }   from './DateActions';
+import { DeleteAction }  from './DeleteAction';
 
 export const EventMenu: React.FC = () => {
     const { dateId } = useParams();
@@ -20,16 +19,26 @@ export const EventMenu: React.FC = () => {
                     <>
                         <DateActions/>
                         <Separator/>
+                    </>
+            }
+            <Scrollable>
+                {
+                    dateId &&
+                    <>
                         <DateSubMenu/>
                         <Separator/>
                     </>
-            }
-            <GlobalSubMenu/>
-            {
-                dateId && (
-                  <Actions />
-                )
-            }
+                }
+                <GlobalSubMenu/>
+                {
+                    dateId && (
+                        <>
+                            <Separator/>
+                            <DeleteAction/>
+                        </>
+                    )
+                }
+            </Scrollable>
         </Container>
     )
 };
@@ -42,13 +51,17 @@ const Container = styled.div`
   position: fixed;
   left: 0;
   top: 81px;
-  padding: ${props => props.theme.biggerSpacing} 0;
+  padding-top: ${props => props.theme.biggerSpacing};
   background-color: ${(props) => props.theme.darkerBg};
   z-index: 3;
 
   button {
     outline: none;
   }
+`;
+
+const Scrollable = styled.div`
+    overflow-y: scroll;
 `;
 
 const Separator = styled.div`

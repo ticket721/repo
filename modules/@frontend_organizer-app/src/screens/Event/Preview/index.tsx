@@ -235,7 +235,7 @@ const Container = styled.div`
 const PreviewContainer = styled.div`
   .smartphone {
       position: relative;
-      width: 353px;
+      width: 352px;
       height: 630px;
       margin: auto;
       border: 16px white solid;
