@@ -88,6 +88,13 @@ jobs:
                   path: ./modules/@common_global/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_global
 
+            - name: "CACHE @common_geoloc"
+              uses: actions/cache@v1
+              if: steps.temoin_cache.outputs.cache-hit != 'true'
+              with:
+                path: ./modules/@common_geoloc/node_modules
+                key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_geoloc
+
             - name: "CACHE @common_sdk"
               if: steps.temoin_cache.outputs.cache-hit != 'true'
               uses: actions/cache@v1
@@ -218,6 +225,96 @@ jobs:
 #    | $$$$|  $$$$$$/| $$$$$$$$ /$$$$
 #    |____/ \______/ |________/|____/
 #
+#    @common_geoloc - build, lint & test
+#
+#    Recovers required dependencies from cache
+#    Builds sources to verify everything still transpiles properly
+#    Lints sources to verify everything is formatted properly
+#    Runs unitary tests to verify logic is kept
+#
+
+    geoloc:
+      name: "[S2] [@common/geoloc] build, lint & test"
+      needs: install
+      runs-on: ubuntu-latest
+      steps:
+
+        #
+        # Initial Setup
+        #
+
+        - uses: actions/checkout@v1
+        - name: "Use Node.js 12.x"
+          uses: actions/setup-node@v1.2.0
+          with:
+            node-version: 12.x
+
+        - uses: technote-space/get-diff-action@v2
+          id: git_diff
+          with:
+            PREFIX_FILTER: modules/@common_geoloc/
+
+        - name: "Install required tools globally (npm install -g yarn)"
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
+          run: npm install -g yarn@1.22.4
+
+        #
+        # Cache Coverage Directory
+        #
+
+        - name: "CACHE @common/geoloc/coverage"
+          uses: actions/cache@v1
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
+          with:
+            path: modules/@common_geoloc/coverage
+            key: ${{ runner.os }}-common_geoloc-coverage-${{ github.sha }}
+
+        #
+        # Cache Yarn Workspaces
+        #
+
+        - name: "CACHE root"
+          uses: actions/cache@v1
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
+          with:
+            path: ./node_modules
+            key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-root
+
+        - name: "CACHE @common_geoloc"
+          uses: actions/cache@v1
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
+          with:
+            path: ./modules/@common_geoloc/node_modules
+            key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_geoloc
+
+        #
+        # Build, Lint & Test @common_geoloc
+        #
+
+        - name: "Build @ticket721sources/geoloc (yarn build in modules/@common_geoloc)"
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
+          working-directory: modules/@common_geoloc
+          run: yarn build
+
+        - name: "TSLint @ticket721sources/geoloc (yarn lint in modules/@common_geoloc)"
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
+          working-directory: modules/@common_geoloc
+          run: yarn lint
+
+        - name: "Test @ticket721sources/geoloc (yarn test:cov in modules/@common_geoloc)"
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
+          working-directory: modules/@common_geoloc
+          run: yarn test:cov
+
+#     /$$$$  /$$$$$$   /$$$$$$  /$$$$
+#    | $$_/ /$$__  $$ /$$__  $$|_  $$
+#    | $$  | $$  \__/|__/  \ $$  | $$
+#    | $$  |  $$$$$$   /$$$$$$/  | $$
+#    | $$   \____  $$ /$$____/   | $$
+#    | $$   /$$  \ $$| $$        | $$
+#    | $$$$|  $$$$$$/| $$$$$$$$ /$$$$
+#    |____/ \______/ |________/|____/
+#
 #    @common_global - build, lint & test
 #
 #    Recovers required dependencies from cache
@@ -227,77 +324,77 @@ jobs:
 #
 
     global:
-        name: "[S2] [@common/global] build, lint & test"
-        needs: install
-        runs-on: ubuntu-latest
-        steps:
+      name: "[S2] [@common/global] build, lint & test"
+      needs: install
+      runs-on: ubuntu-latest
+      steps:
 
-            #
-            # Initial Setup
-            #
+          #
+          # Initial Setup
+          #
 
-            - uses: actions/checkout@v1
-            - name: "Use Node.js 12.x"
-              uses: actions/setup-node@v1.2.0
-              with:
-                  node-version: 12.x
+          - uses: actions/checkout@v1
+          - name: "Use Node.js 12.x"
+            uses: actions/setup-node@v1.2.0
+            with:
+                node-version: 12.x
 
-            - uses: technote-space/get-diff-action@v2
-              id: git_diff
-              with:
-                PREFIX_FILTER: modules/@common_global/
+          - uses: technote-space/get-diff-action@v2
+            id: git_diff
+            with:
+              PREFIX_FILTER: modules/@common_global/
 
-            - name: "Install required tools globally (npm install -g yarn)"
-              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-              run: npm install -g yarn@1.22.4
+          - name: "Install required tools globally (npm install -g yarn)"
+            if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
+            run: npm install -g yarn@1.22.4
 
-            #
-            # Cache Coverage Directory
-            #
+          #
+          # Cache Coverage Directory
+          #
 
-            - name: "CACHE @common/global/coverage"
-              uses: actions/cache@v1
-              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-              with:
-                  path: modules/@common_global/coverage
-                  key: ${{ runner.os }}-common_global-coverage-${{ github.sha }}
+          - name: "CACHE @common/global/coverage"
+            uses: actions/cache@v1
+            if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
+            with:
+                path: modules/@common_global/coverage
+                key: ${{ runner.os }}-common_global-coverage-${{ github.sha }}
 
-            #
-            # Cache Yarn Workspaces
-            #
+          #
+          # Cache Yarn Workspaces
+          #
 
-            - name: "CACHE root"
-              uses: actions/cache@v1
-              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-              with:
-                  path: ./node_modules
-                  key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-root
+          - name: "CACHE root"
+            uses: actions/cache@v1
+            if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
+            with:
+                path: ./node_modules
+                key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-root
 
-            - name: "CACHE @common_global"
-              uses: actions/cache@v1
-              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-              with:
-                  path: ./modules/@common_global/node_modules
-                  key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_global
+          - name: "CACHE @common_global"
+            uses: actions/cache@v1
+            if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
+            with:
+                path: ./modules/@common_global/node_modules
+                key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_global
 
-            #
-            # Build, Lint & Test @common_global
-            #
+          #
+          # Build, Lint & Test @common_global
+          #
 
-            - name: "Build @ticket721sources/global (yarn build in modules/@common_global)"
-              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-              working-directory: modules/@common_global
-              run: yarn build
+          - name: "Build @ticket721sources/global (yarn build in modules/@common_global)"
+            if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
+            working-directory: modules/@common_global
+            run: yarn build
 
-            - name: "TSLint @ticket721sources/global (yarn lint in modules/@common_global)"
-              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-              working-directory: modules/@common_global
-              run: yarn lint
+          - name: "TSLint @ticket721sources/global (yarn lint in modules/@common_global)"
+            if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
+            working-directory: modules/@common_global
+            run: yarn lint
 
-            - name: "Test @ticket721sources/global (yarn test:cov in modules/@common_global)"
-              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-              working-directory: modules/@common_global
-              run: yarn test:cov
+          - name: "Test @ticket721sources/global (yarn test:cov in modules/@common_global)"
+            if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
+            working-directory: modules/@common_global
+            run: yarn test:cov
 
 #     /$$$$  /$$$$$$   /$$$$$$  /$$$$
 #    | $$_/ /$$__  $$ /$$__  $$|_  $$
@@ -358,6 +455,13 @@ jobs:
                   path: ./modules/@common_global/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_global
 
+            - name: "CACHE @common_geoloc"
+              uses: actions/cache@v1
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
+              with:
+                path: ./modules/@common_geoloc/node_modules
+                key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_geoloc
+
             - name: "CACHE @common_sdk"
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               uses: actions/cache@v1
@@ -379,6 +483,11 @@ jobs:
             - name: "Build @ticket721sources/global (npm run build in sources/global)"
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               working-directory: modules/@common_global
+              run: yarn build
+
+            - name: "Build @ticket721sources/geoloc (npm run build in sources/geoloc)"
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
+              working-directory: modules/@common_geoloc
               run: yarn build
 
             #
@@ -503,6 +612,13 @@ jobs:
                   path: ./modules/@common_global/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_global
 
+            - name: "CACHE @common_geoloc"
+              uses: actions/cache@v1
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
+              with:
+                path: ./modules/@common_geoloc/node_modules
+                key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_geoloc
+
             - name: "CACHE @backend_nest"
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               uses: actions/cache@v1
@@ -525,6 +641,11 @@ jobs:
             - name: "Build @common_global (yarn build in modules/@common_global)"
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               working-directory: modules/@common_global
+              run: yarn build
+
+            - name: "Build @common_geoloc (yarn build in modules/@common_geoloc)"
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
+              working-directory: modules/@common_geoloc
               run: yarn build
 
             - name: "Build @common_sdk (yarn build in modules/@common_sdk)"
@@ -715,6 +836,13 @@ jobs:
                   path: ./modules/@common_global/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_global
 
+            - name: "CACHE @common_geoloc"
+              uses: actions/cache@v1
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
+              with:
+                path: ./modules/@common_geoloc/node_modules
+                key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_geoloc
+
             - name: "CACHE @backend_nest"
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               uses: actions/cache@v1
@@ -744,6 +872,11 @@ jobs:
             - name: "Build @common_global (yarn build in modules/@common_global)"
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               working-directory: modules/@common_global
+              run: yarn build
+
+            - name: "Build @common_geoloc (yarn build in modules/@common_geoloc)"
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
+              working-directory: modules/@common_geoloc
               run: yarn build
 
             - name: "Build @common_sdk (yarn build in modules/@common_sdk)"
@@ -905,6 +1038,13 @@ jobs:
             path: ./modules/@common_global/node_modules
             key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_global
 
+        - name: "CACHE @common_geoloc"
+          uses: actions/cache@v1
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
+          with:
+            path: ./modules/@common_geoloc/node_modules
+            key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_geoloc
+
         - name: "CACHE @common_sdk"
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           uses: actions/cache@v1
@@ -948,6 +1088,11 @@ jobs:
         - name: "Build @common_global (yarn build in modules/@common_global)"
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           working-directory: modules/@common_global
+          run: yarn build
+          
+        - name: "Build @common_geoloc (yarn build in modules/@common_geoloc)"
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
+          working-directory: modules/@common_geoloc
           run: yarn build
 
         - name: "Build @common_sdk (yarn build in modules/@common_sdk)"
@@ -1173,6 +1318,13 @@ jobs:
                   path: ./modules/@common_global/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_global
 
+            - name: "CACHE @common_geoloc"
+              uses: actions/cache@v1
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
+              with:
+                path: ./modules/@common_geoloc/node_modules
+                key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_geoloc
+
             - name: "CACHE @common_sdk"
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               uses: actions/cache@v1
@@ -1209,6 +1361,11 @@ jobs:
             - name: "Build @common_global (yarn build in modules/@common_global)"
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               working-directory: modules/@common_global
+              run: yarn build
+
+            - name: "Build @common_geoloc (yarn build in modules/@common_geoloc)"
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
+              working-directory: modules/@common_geoloc
               run: yarn build
 
             - name: "Build @common_sdk (yarn build in modules/@common_sdk)"
@@ -1318,6 +1475,13 @@ jobs:
               with:
                   path: modules/@common_global/coverage
                   key: ${{ runner.os }}-common_global-coverage-${{ github.sha }}
+
+            - name: "CACHE @common/geoloc/coverage"
+              uses: actions/cache@v1
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
+              with:
+                path: modules/@common_geoloc/coverage
+                key: ${{ runner.os }}-common_geoloc-coverage-${{ github.sha }}
 
             #
             # Run coverage upload script

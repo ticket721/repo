@@ -2,7 +2,8 @@ import { ActionSetsService, Progress } from '@lib/common/actionsets/ActionSets.s
 import { ActionSet } from '@lib/common/actionsets/helper/ActionSet.class';
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import Joi from '@hapi/joi';
-import { City, closestCity, serialize, Coordinates } from '@common/global';
+import { City, closestCity, Coordinates } from '@common/geoloc';
+import { serialize } from '@common/global';
 import { ImagesService } from '@lib/common/images/Images.service';
 import { ChecksRunnerUtil } from '@lib/common/actionsets/helper/ChecksRunner.util';
 import { EventCreationActions } from '@lib/common/events/acset_builders/EventCreate.acsetbuilder.helper';

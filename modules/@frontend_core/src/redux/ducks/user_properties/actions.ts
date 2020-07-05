@@ -1,5 +1,5 @@
 import { UserPropertiesActionTypes } from './types';
-import { City } from '@common/global';
+import { City } from '@common/geoloc';
 import { Action } from 'redux';
 
 export interface IGetDevice extends Action<string> {

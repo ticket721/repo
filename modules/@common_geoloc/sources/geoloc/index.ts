@@ -1,3 +1,4 @@
+import { QuickScore } from 'quick-score';
 // tslint:disable-next-line:no-var-requires
 const cities = require('./cities.json');
 
@@ -126,6 +127,46 @@ export function closestCity(pos: Coordinates): City {
     }
 
     return rawToStruct(result);
+}
+
+/**
+ * ParseCities for the fuzzy search query
+ */
+const parsedCities = cities.cities.map(rawToStruct);
+
+/**
+ * QuickSearch Instance
+ */
+const qs = new QuickScore(parsedCities, {
+    keys: ['nameAscii', 'nameAdmin'],
+});
+
+/**
+ * Fuzzy Search Result
+ */
+export interface MatchingCity {
+    /**
+     * Score of the result
+     */
+    score: number;
+
+    /**
+     * Resulting city
+     */
+    city: City;
+}
+
+/**
+ * Performs a fuzzy search on the city database
+ *
+ * @param query
+ * @param limit
+ */
+export function fuzzySearch(query: string, limit: number = 10): MatchingCity[] {
+    return qs.search(query).slice(0, limit).map((r: any): MatchingCity => ({
+        score: r.score,
+        city: r.item
+    }));
 }
 
 export const citiesList = cities;

@@ -11,8 +11,6 @@
         "test": "jest --expand --verbose",
         "test:cov": "yarn test --coverage",
         "build": "tsc",
-        "postbuild": "yarn copy_cities",
-        "copy_cities": "mkdir -p lib/geoloc && cp sources/geoloc/cities.json lib/geoloc/",
         "watch": "watch 'yarn build && echo \"Done !\"' sources",
         "lint": "tslint --project .",
         "@lerna/postinstall": "yarn build",
