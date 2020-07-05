@@ -455,6 +455,13 @@ jobs:
                   path: ./modules/@common_global/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_global
 
+            - name: "CACHE @common_geoloc"
+              uses: actions/cache@v1
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
+              with:
+                path: ./modules/@common_geoloc/node_modules
+                key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_geoloc
+
             - name: "CACHE @common_sdk"
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               uses: actions/cache@v1
@@ -476,6 +483,11 @@ jobs:
             - name: "Build @ticket721sources/global (npm run build in sources/global)"
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               working-directory: modules/@common_global
+              run: yarn build
+
+            - name: "Build @ticket721sources/geoloc (npm run build in sources/geoloc)"
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
+              working-directory: modules/@common_geoloc
               run: yarn build
 
             #

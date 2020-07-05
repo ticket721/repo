@@ -25,6 +25,7 @@ import TxsControllerTestSuite from '@app/server/controllers/txs/Txs.controller.r
 import RightsControllerTestSuite from '@app/server/controllers/rights/Rights.controller.routes-spec';
 import MetadatasControllerTestSuite from '@app/server/controllers/metadatas/Metadatas.controller.routes-spec';
 import TicketsControllerTestSuite from '@app/server/controllers/tickets/Tickets.controller.routes-spec';
+import GeolocControllerTestSuite from '@app/server/controllers/geoloc/Geoloc.controller.routes-spec';
 
 import { instance } from 'ts-mockito';
 
@@ -119,19 +120,20 @@ describe('AppController (e2e)', () => {
         console.log('FINISHED');
     }, 60000);
 
-    describe('Server Controller', ServerControllerTestSuite(getCtx));
-    describe('Users Controller', UsersControllerTestSuite(getCtx));
-    describe('Authentication Controller', AuthenticationControllerTestSuite(getCtx));
-    describe('ActionSets Controller', ActionSetsControllerTestSuite(getCtx));
-    describe('Categories Controller', CategoriesControllerTestSuite(getCtx));
-    describe('Rights Controller', RightsControllerTestSuite(getCtx));
-    describe('Contracts Controller', ContractsControllerTestSuite(getCtx));
-    describe('Dates Controller', DatesControllerTestSuite(getCtx));
-    describe('Images Controller', ImagesControllerTestSuite(getCtx));
-    describe('Events Controller', EventsControllerTestSuite(getCtx));
-    describe('Txs Controller', TxsControllerTestSuite(getCtx));
-    describe('Metadatas Controller', MetadatasControllerTestSuite(getCtx));
-    describe('Checkout Controller', CheckoutControllerTestSuite(getCtx));
-    describe('Dosojin Controller', DosojinControllerTestSuite(getCtx));
-    describe('Tickets Controller', TicketsControllerTestSuite(getCtx));
+    // describe('Server Controller', ServerControllerTestSuite(getCtx));
+    // describe('Users Controller', UsersControllerTestSuite(getCtx));
+    // describe('Authentication Controller', AuthenticationControllerTestSuite(getCtx));
+    // describe('ActionSets Controller', ActionSetsControllerTestSuite(getCtx));
+    // describe('Categories Controller', CategoriesControllerTestSuite(getCtx));
+    // describe('Rights Controller', RightsControllerTestSuite(getCtx));
+    // describe('Contracts Controller', ContractsControllerTestSuite(getCtx));
+    // describe('Dates Controller', DatesControllerTestSuite(getCtx));
+    // describe('Images Controller', ImagesControllerTestSuite(getCtx));
+    // describe('Events Controller', EventsControllerTestSuite(getCtx));
+    // describe('Txs Controller', TxsControllerTestSuite(getCtx));
+    // describe('Metadatas Controller', MetadatasControllerTestSuite(getCtx));
+    // describe('Checkout Controller', CheckoutControllerTestSuite(getCtx));
+    // describe('Dosojin Controller', DosojinControllerTestSuite(getCtx));
+    // describe('Tickets Controller', TicketsControllerTestSuite(getCtx));
+    describe('Geoloc Controller', GeolocControllerTestSuite(getCtx));
 });

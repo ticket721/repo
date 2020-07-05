@@ -61,6 +61,7 @@ import { TicketsController } from '@app/server/controllers/tickets/Tickets.contr
 import { TicketsModule } from '@lib/common/tickets/Tickets.module';
 import { UsersController } from '@app/server/controllers/users/Users.controller';
 import { toHeaderFormat } from '@lib/common/utils/toHeaderFormat';
+import { GeolocController } from '@app/server/controllers/geoloc/Geoloc.controller';
 
 @Module({
     imports: [
@@ -178,6 +179,7 @@ import { toHeaderFormat } from '@lib/common/utils/toHeaderFormat';
         MetadatasController,
         TicketsController,
         UsersController,
+        GeolocController,
     ],
     providers: [
         ServerService,
