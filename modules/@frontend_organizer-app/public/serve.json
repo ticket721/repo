@@ -14,5 +14,11 @@
                 "value" : "max-age=31536000"
             }]
         }
+    ],
+    "rewrites": [
+        {
+            "source": "*",
+            "destination": "/"
+        }
     ]
 }
