@@ -82,6 +82,8 @@ function* synchronizedActions(action: IUpdateItemData): IterableIterator<any> {
     if (eventCreationState.sync) {
         const authState: AuthState = yield select(getAuthState);
 
+        if (!authState.token) return;
+
         const acsetCacheKey = CacheCore.key(
             'actions.search',
             [
