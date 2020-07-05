@@ -812,7 +812,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: generatePassword(),
                 };
 
-                await failWithCode(sdk.validateEmail(user.email), StatusCodes.Unauthorized);
+                await failWithCode(sdk.validateEmail(user.email), StatusCodes.InternalServerError, 'jwt malformed');
             });
         });
 
