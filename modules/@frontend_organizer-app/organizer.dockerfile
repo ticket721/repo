@@ -13,6 +13,7 @@ COPY --from=DEPENDENCIES "/repo/modules/@frontend_flib-react/node_modules" "/rep
 WORKDIR "/repo/modules/@frontend_organizer-app"
 
 ENV NODE_ENV production
+ENV GENERATE_SOURCEMAP false
 
 RUN cd ../@common_global && yarn build \
  && cd ../@common_sdk && yarn build \
