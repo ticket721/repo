@@ -272,6 +272,8 @@ apps:
       config.frontEthereumNode.networkId: "3"
       config.frontEthereumNode.headers: '\{\\"Authorization\\": \\"Bearer ${CONFIG_STAGING_ROCKSIDE_TOKEN}\\"\}'
 
+      config.organizer.segmentApiKey: "${CONFIG_STAGING_ORGANIZER_SEGMENT_API_KEY}"
+
       server.image.repository: "097558125954.dkr.ecr.eu-west-3.amazonaws.com/ticket721/server"
       server.image.tag: "${TAG}"
 
