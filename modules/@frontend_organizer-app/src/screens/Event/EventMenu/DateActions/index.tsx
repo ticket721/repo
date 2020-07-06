@@ -38,7 +38,7 @@ export const DateActions: React.FC = () => {
     return (
         <Container>
             {
-                dateResp.data?.dates && dateResp.data?.dates[0].status === 'preview' ?
+                dateResp.data?.dates && dateResp.data?.dates?.[0]?.status === 'preview' ?
                     <Button
                         variant={dateId ? 'primary' : 'disabled'}
                         title={t('publish_label')}
