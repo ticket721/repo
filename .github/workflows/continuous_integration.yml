@@ -1183,6 +1183,13 @@ jobs:
             path: ./modules/@common_global/node_modules
             key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_global
 
+        - name: "CACHE @common_geoloc"
+          uses: actions/cache@v1
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
+          with:
+            path: ./modules/@common_geoloc/node_modules
+            key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_geoloc
+
         - name: "CACHE @common_sdk"
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           uses: actions/cache@v1
@@ -1226,6 +1233,11 @@ jobs:
         - name: "Build @common_global (yarn build in modules/@common_global)"
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           working-directory: modules/@common_global
+          run: yarn build
+
+        - name: "Build @common_geoloc (yarn build in modules/@common_geoloc)"
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
+          working-directory: modules/@common_geoloc
           run: yarn build
 
         - name: "Build @common_sdk (yarn build in modules/@common_sdk)"
