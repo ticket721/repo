@@ -20,8 +20,6 @@ const customStyles = {
         fontSize: 14,
         fontWeight: 500,
         paddingBottom: 12,
-        paddingLeft: 24,
-        paddingRight: 24,
         paddingTop: 12,
         transition: 'all 300ms ease',
 
@@ -96,7 +94,7 @@ const customStyles = {
     }),
 };
 
-export interface SelectProps extends React.ComponentProps<any> {
+export interface SelectProps {
     defaultValue?: object;
     error?: string | undefined;
     label?: string;
@@ -107,6 +105,8 @@ export interface SelectProps extends React.ComponentProps<any> {
     multiple?: boolean;
     value?: Array<object>;
     className?: string;
+    onChange?: (val: any) => void;
+    menu?: boolean;
 }
 
 const StyledLabel = styled.label`
@@ -137,7 +137,7 @@ const Error = styled.span`
     position: absolute;
 `;
 
-const StyledInputContainer = styled.div<SelectProps>`
+const StyledInputContainer = styled.div<Partial<SelectProps>>`
     background-color: ${(props) => props.theme.componentColor};
     border-radius: ${(props) => props.theme.defaultRadius};
     display: flex;

@@ -1,8 +1,10 @@
 import * as React from 'react';
 import styled from '../../../config/styled';
 import Select from '../../inputs/select';
+import Icon from '../../icon';
 
 export interface CategoryQtyProps extends React.ComponentProps<any> {
+    starred?: boolean;
     color?: string;
     gradient?: string[];
     categoryName: string;
@@ -10,6 +12,8 @@ export interface CategoryQtyProps extends React.ComponentProps<any> {
     price: string;
     date: string;
     options: { value: any; label: string }[];
+    selectedOption: { value: any; label: string };
+    onChange: (val: { value: any; label: string }) => void;
 }
 
 const Container = styled.article<CategoryQtyProps>`
@@ -79,24 +83,38 @@ const ImgContainer = styled.div`
     }
 `;
 
-const EventTitle = styled.h3``;
+const EventTitle = styled.h3`
+    font-size: 16px;
+`;
 
 const InfoContainer = styled.div`
     width: calc(100% - 80px - ${(props) => props.theme.smallSpacing});
 `;
 
 const PriceDateContainer = styled.div`
-    height: calc(100% - ${(props) => props.theme.regularSpacing});
+    padding-left: ${(props) => props.theme.smallSpacing};
     margin-top: ${(props) => props.theme.regularSpacing};
+    margin-bottom: ${(props) => props.theme.regularSpacing};
+    height: calc(100% - ${(props) => props.theme.regularSpacing});
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    border-left: 2px solid ${(props) => props.theme.componentColorLight};
 `;
 
 const PriceDateSelectContainer = styled.div`
     display: flex;
     align-items: center;
     justify-content: space-between;
+`;
+
+const StarIcon = styled(Icon)`
+    margin-right: ${(props) => props.theme.smallSpacing};
+`;
+
+const TitleContainer = styled.div`
+    display: flex;
+    align-items: center;
 `;
 
 export const CategoryQty: React.FunctionComponent<CategoryQtyProps> = (props: CategoryQtyProps): JSX.Element => {
@@ -106,13 +124,22 @@ export const CategoryQty: React.FunctionComponent<CategoryQtyProps> = (props: Ca
                 <img src={props.image} />
             </ImgContainer>
             <InfoContainer>
-                <EventTitle>{props.categoryName}</EventTitle>
+                <TitleContainer>
+                    {props.starred ? <StarIcon icon={'star'} size={'16px'} color={props.color} /> : null}
+                    <EventTitle>{props.categoryName}</EventTitle>
+                </TitleContainer>
                 <PriceDateSelectContainer>
                     <PriceDateContainer>
-                        <span>{props.price}</span>
+                        <span style={{ marginBottom: 5 }}>{props.price}</span>
                         <span>{props.date}</span>
                     </PriceDateContainer>
-                    <Select defaultValue={props.options[0]} options={props.options} menu searchable={false} />
+                    <Select
+                        defaultValue={props.selectedOption || props.options[0]}
+                        options={props.options}
+                        menu
+                        searchable={false}
+                        onChange={props.onChange}
+                    />
                 </PriceDateSelectContainer>
             </InfoContainer>
         </Container>
