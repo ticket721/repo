@@ -26,13 +26,13 @@ const ProtectedByRights = ({ children, type, value }: Props): JSX.Element => {
 
     useEffect(() => {
         if (type && value) {
-            lazyRequest([token, { entity_type: { $eq: type }, entity_value: { $eq: params[value] } }]);
+            lazyRequest([token, { entity_type: { $eq: type }, entity_value: { $eq: params[value] } }], { force: true });
         } else if (type) {
-            lazyRequest([token, { entity_type: { $eq: type } }]);
+            lazyRequest([token, { entity_type: { $eq: type } }], { force: true });
         } else if (value) {
-            lazyRequest([token, { entity_value: { $eq: params[value] } }]);
+            lazyRequest([token, { entity_value: { $eq: params[value] } }], { force: true });
         } else {
-            lazyRequest([token, {}]);
+            lazyRequest([token, {}], { force: true });
         }
         // eslint-disable-next-line
     }, []);
