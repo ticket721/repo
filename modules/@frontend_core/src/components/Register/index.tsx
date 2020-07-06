@@ -45,7 +45,7 @@ export const Register: React.FC<RegisterProps> = (props: RegisterProps) => {
             }
 
             if (auth.user?.validated) {
-                history.push('/');
+                history.replace('/');
             }
         }
     }, [auth.loading, auth.user]);
@@ -102,7 +102,7 @@ export const Register: React.FC<RegisterProps> = (props: RegisterProps) => {
                                     if (props.onLogin) {
                                         props.onLogin();
                                     } else {
-                                        history.push('/login');
+                                        history.replace('/login');
                                     }
                                 }}
                             >
