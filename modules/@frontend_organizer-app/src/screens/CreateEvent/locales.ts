@@ -12,9 +12,7 @@ i18n.addResourceBundle('en', 'create_event', {
     general_infos__tags_description: 'Add tags to improve the referencing of your event.',
     styles_description: 'Set a style for your event and customize your user experience thanks to your "signature colors"',
     dates_description: 'Tell your future participants where and when your event takes place',
-    categories_description: 'Create a Ticket.\n\nIf you only have one date:\n- Create one or several categories linked to this date\n\nIf you have several dates:\n' +
-    '- Create one or several categories linked to multiple dates. If you select "All dates" your categories will be replicated on all previously established dates.' +
-    '\n\nOtherwise you can create specific categories for specific dates',
+    event_create_success: 'Event created with success',
 });
 
 i18n.addResourceBundle('fr', 'create_event', {
@@ -29,7 +27,5 @@ i18n.addResourceBundle('fr', 'create_event', {
     general_infos__tags_description: 'Ajoutez des tags pour améliorer le référencement de votre événement.',
     styles_description: 'Donnez un style à vos événements et personnalisez l\'expérience de vos utilisateurs grâce à vos "signature colors"',
     dates_description: 'Indiquez à vos futures participants quand, où et à quelle heure votre événement prend place.',
-    categories_description: 'Créez un billet.\n\nSi vous avez qu\'une seule date:\n- Créez une ou plusieurs catégories liée(s) à cette date\n\nSi vous avez plusieurs dates:\n' +
-      '- Créez une ou plusieurs catégories liée(s) à plusieurs dates. Si vous sélectionner l\'onglet "toutes les dates" les catégories seront répliqués pour toutes les dates préalablement établies.' +
-      '\n\nSinon vous pouvez faire des catégories spécifiques à certaines dates.',
+    event_create_success: 'Evènement créé avec succès',
 });
