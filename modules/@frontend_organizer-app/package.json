@@ -1,6 +1,6 @@
 {
     "name": "@frontend/organizer-app",
-    "description": "Ticket721 Organizer Application",
+    "description": "Ticket721 Organizer Application.",
     "version": "0.0.1",
     "private": true,
     "dependencies": {
