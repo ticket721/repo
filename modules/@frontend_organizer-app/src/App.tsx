@@ -1,6 +1,6 @@
 import React, { Suspense, useEffect, useState } from 'react';
 
-import { Redirect, Route, Switch, useLocation, withRouter } from 'react-router-dom';
+import { Redirect, Route, Switch, useLocation, withRouter, useParams } from 'react-router-dom';
 
 import Navbar       from './shared/Navbar';
 import { AppState } from '@frontend/core/lib/redux';
@@ -12,16 +12,18 @@ import styled              from 'styled-components';
 import { AppStatus }       from '@frontend/core/lib/redux/ducks/statuses';
 import ToastStacker        from '@frontend/core/lib/components/ToastStacker';
 import './core/event_creation/locales';
-import { EventMenu }       from './screens/Event/EventMenu';
-import MediaQuery          from 'react-responsive';
-import { routes }          from './routes';
-import { FullPageLoading } from '@frontend/flib-react/lib/components';
+import { EventMenu }        from './screens/Event/EventMenu';
+import MediaQuery           from 'react-responsive';
+import { routes }           from './routes';
+import { FullPageLoading }  from '@frontend/flib-react/lib/components';
+import './shared/Translations/global';
 
 const App: React.FC = () => {
     const [validated, setValidated] = useState(true);
     const authState = useSelector(((state: AppState) => state.auth));
     const appStatus = useSelector(((state: AppState) => state.statuses.appStatus));
     const location = useLocation();
+    const { groupId } = useParams();
 
     useEffect(() => {
         setValidated(authState.user?.validated);
@@ -50,27 +52,23 @@ const App: React.FC = () => {
                                 ?
                                 routes.map((route, idx) => {
 
-                                    const page: JSX.Element = (
-                                        <PageWrapper>
-                                            {
-                                                route.path.match(/^\/group\/:groupId\/(date|event)/) ?
-                                                    <ProtectedByRights>
-                                                        <EventPageWrapper>
-                                                            <EventMenu/>
-                                                            <div>
-                                                                <route.page/>
-                                                            </div>
-                                                        </EventPageWrapper>
-                                                    </ProtectedByRights>
-                                                :
-                                                    <route.page/>
-                                            }
-                                        </PageWrapper>
-                                    );
-
                                     if (route.protected) {
                                         return <ProtectedRoute exact={true} path={route.path} key={idx}>
-                                            {page}
+                                            <PageWrapper>
+                                                {
+                                                    route.path.match(/^\/group\/:groupId/) ?
+                                                        <ProtectedByRights type={route.entityType} value={groupId}>
+                                                            <EventPageWrapper>
+                                                                <EventMenu/>
+                                                                <div>
+                                                                    <route.page/>
+                                                                </div>
+                                                          </EventPageWrapper>
+                                                        </ProtectedByRights>
+                                                    :
+                                                        <route.page/>
+                                                }
+                                            </PageWrapper>
                                         </ProtectedRoute>;
                                     }
                                     return <Route exact={true} key={idx} path={route.path}>

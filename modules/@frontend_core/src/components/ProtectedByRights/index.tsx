@@ -1,44 +1,57 @@
-import React, { useState }         from 'react';
-import { useParams, useHistory }   from 'react-router';
-import { v4 }                      from 'uuid';
-import { useSelector }             from 'react-redux';
+import React, { useState, useEffect } from 'react';
+import { Redirect } from 'react-router-dom';
+import { v4 } from 'uuid';
+import { useSelector } from 'react-redux';
 
 import { RightsSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/rights/dto/RightsSearchResponse.dto';
 
-import { useRequest }              from '../../hooks/useRequest';
-import { AppState }                from '../../redux/ducks';
+import { useLazyRequest } from '../../hooks/useLazyRequest';
+import { useDeepEffect } from '../../hooks/useDeepEffect';
+import { AppState } from '../../redux/ducks';
 
-const ProtectedByRights = ({ children }: { children: React.ReactNode }): JSX.Element => {
-  const { groupId } = useParams();
-  const history = useHistory();
-
-  const [uuid] = useState(v4() + '@protectedByRights');
-  const token = useSelector((state: AppState): string => state.auth.token.value);
-
-  const { response: eventRights } = useRequest<RightsSearchResponseDto>({
-      method: 'rights.search',
-      args: [
-        token,
-        {
-          entity_type: {
-            $eq: 'event'
-          }
-        }
-      ],
-      refreshRate: 5
-    },
-  uuid);
-
-  if (eventRights.loading) {
-    return <>Loading...</>;
-  }
-  if (eventRights.data.rights.find(r => r.entity_value === groupId)?.rights.owner === true) {
-    return <>{ children }</>
-  } else {
-    history.push('/');
-    return <></>;
-  }
-
+interface Props {
+    children: React.ReactNode;
+    type?: string;
+    value?: string;
 }
+
+const ProtectedByRights = ({ children, type, value }: Props): JSX.Element => {
+    const [uuid] = useState(v4() + '@protectedByRights');
+    const token = useSelector((state: AppState): string => state.auth.token.value);
+    const [currentRights, setCurrentRights] = useState();
+
+    const { lazyRequest, response: rights } = useLazyRequest<RightsSearchResponseDto>('rights.search', uuid);
+
+    useEffect(() => {
+        if (type && value) {
+            lazyRequest([token, { entity_type: { $eq: type }, entity_value: { $eq: value } }]);
+        } else if (type) {
+            lazyRequest([token, { entity_type: { $eq: type } }]);
+        } else if (value) {
+            lazyRequest([token, { entity_value: { $eq: value } }]);
+        } else {
+            lazyRequest([token, {}]);
+        }
+        // eslint-disable-next-line
+    }, []);
+
+    useDeepEffect(() => {
+        if (rights.called && !rights.loading && rights.data) {
+            setCurrentRights(rights.data.rights.filter((r) => r.rights.owner === true));
+        }
+    }, [rights.called, rights.loading]);
+
+    if (rights.called && rights.loading) {
+        return <>Loading...</>;
+    }
+
+    if (currentRights && currentRights.length > 0) {
+        return <>{children}</>;
+    } else if (currentRights && currentRights.length === 0) {
+        return <Redirect to={'/'} />;
+    } else {
+        return <></>;
+    }
+};
 
 export default ProtectedByRights;
