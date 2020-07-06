@@ -16,8 +16,9 @@ import { DatesSearchResponseDto }      from '@common/sdk/lib/@backend_nest/apps/
 import { DateEntity, DateMetadata }    from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
 import { formatShort }                 from '@frontend/core/lib/utils/date';
 import { CartState, SetTickets }       from '../../redux/ducks/cart';
-import { Price }                       from '@common/sdk/lib/@backend_nest/libs/common/src/currencies/Currencies.service';
 import { useTranslation }              from 'react-i18next';
+import { getT721TokenPrice }           from '../../utils/prices';
+import { getImgPath }                  from '@frontend/core/lib/utils/images';
 
 export interface SyncedCardSelectGroupIdProps {
     cart: ActionSetEntity;
@@ -71,16 +72,6 @@ const EventTitle = styled.h3`
     text-overflow: ellipsis;
 `;
 
-const getT721TokenPrice = (category: CategoryEntity): number => {
-    const t721tokenIdx = category.prices.findIndex((price: Price): boolean => price.currency === 'T721Token');
-
-    if (t721tokenIdx === -1) {
-        return 0;
-    }
-
-    return parseInt(category.prices[t721tokenIdx].value, 10) / 100;
-};
-
 export interface SyncedCartEventCategoryProps {
     category: CategoryEntity;
     tickets: TicketMintingFormat[]
@@ -104,15 +95,14 @@ export const SyncedCartEventCategory: React.FC<SyncedCartEventCategoryProps> = (
     const metadatas = props.dates.response.data.dates
         .map((date: DateEntity): DateMetadata => date.metadata);
 
-    const serverUrl = `${process.env.REACT_APP_T721_SERVER_PROTOCOL}://${process.env.REACT_APP_T721_SERVER_HOST}:${process.env.REACT_APP_T721_SERVER_PORT}/static`;
-    const imageUrl = `${serverUrl}/${metadatas[0].avatar}`;
+    const imageUrl = getImgPath(metadatas[0].avatar);
 
     return <SingleStarEvent
         customMarginBottom={'0px'}
         id={props.category.id}
         name={`${props.tickets.length} ${props.category.display_name}`}
         color={metadatas[0].signature_colors[0]}
-        price={getT721TokenPrice(props.category)}
+        price={getT721TokenPrice(props.category.prices)}
         date={t('select_group_id_dates', {count: props.dates.response.data.dates.length})}
         image={imageUrl}
     />;
@@ -152,7 +142,7 @@ export const SyncedCartDateCategory: React.FC<SyncedCartDateCategoryProps> = (pr
         id={dateEntity.id}
         name={`${props.tickets.length} ${props.category.display_name}`}
         color={dateEntity.metadata.signature_colors[0]}
-        price={getT721TokenPrice(props.category)}
+        price={getT721TokenPrice(props.category.prices)}
         date={formatShort(new Date(dateEntity.timestamps.event_begin))}
         image={imageUrl}
     />;
@@ -314,7 +304,7 @@ const getOptionTotalPrice = (cart: CartState, categories: TicketMintingFormat[])
     let total = 0;
 
     for (const cat of categories) {
-        total += getT721TokenPrice(getCategoryEntity(cart, cat.categoryId));
+        total += getT721TokenPrice(getCategoryEntity(cart, cat.categoryId).prices);
     }
 
     return total;
