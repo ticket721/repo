@@ -1,5 +1,5 @@
-import React, { useState }             from 'react';
-import styled                          from 'styled-components';
+import React, { useState } from 'react';
+import styled                         from 'styled-components';
 import { useTranslation }              from 'react-i18next';
 import { useParams, useHistory }       from 'react-router';
 import { v4 }                          from 'uuid';
@@ -27,37 +27,41 @@ import {
 }                                      from '@frontend/core/lib/utils/date';
 import { getImgPath }                  from '@frontend/core/lib/utils/images';
 
-import { MergedAppState }              from '../../../index';
-import { getPriceRange }               from '../../../utils/functions';
+import { MergedAppState } from '../../../index';
+import { getPriceRange }  from '../../../utils/functions';
 
 import './locales';
 
 interface DatePreview {
     name: string;
-    description: string;
-    eventStart: Date;
-    eventEnd: Date;
-    cover: string;
-    colors: string[];
+    about: string;
+    startDate: string;
+    startTime: string;
+    endDate: string;
+    endTime: string;
+    image: string;
+    mainColor: string;
+    gradients: string[];
     location: string;
     coord: { lon: number, lat: number };
-    tags: string[];
-    categoryName: string | null;
-    prices: number[];
+    tags: { id: string, label: string }[];
+    resale: boolean;
 }
 
 const formatDatePreview = (date: DateEntity): DatePreview => ({
     name: date.metadata.name,
-    description: date.metadata.description,
-    eventStart: date.timestamps.event_begin,
-    eventEnd: date.timestamps.event_end,
-    cover: getImgPath(date.metadata.avatar),
-    colors: date.metadata.signature_colors,
+    about: date.metadata.description,
+    startDate: displayDate(checkFormatDate(date.timestamps.event_begin)),
+    startTime: displayTime(checkFormatDate(date.timestamps.event_begin)),
+    endDate: displayDate(checkFormatDate(date.timestamps.event_end)),
+    endTime: displayTime(checkFormatDate(date.timestamps.event_end)),
+    image: getImgPath(date.metadata.avatar),
+    mainColor: date.metadata.signature_colors[0],
+    gradients: date.metadata.signature_colors,
     location: date.location.location_label,
     coord: date.location.location,
-    tags: date.metadata.tags,
-    categoryName: null,
-    prices: []
+    tags: date.metadata.tags.map(tag => ({ id: tag, label: tag })),
+    resale: false,
 });
 
 const Preview: React.FC = () => {
@@ -67,6 +71,7 @@ const Preview: React.FC = () => {
     const [uuid] = useState(v4() + '@event-preview');
     const token = useSelector((state: MergedAppState) => state.auth.token.value);
     const [ datePreview, setDatePreview ] = useState<DatePreview>(null);
+    const [ priceRange, setPriceRange ] = useState<number[]>([]);
     const { response: dateResp } = useRequest<DatesSearchResponseDto>(
         {
             method: 'dates.search',
@@ -105,79 +110,53 @@ const Preview: React.FC = () => {
             if (dateResp.data.dates.filter(d => d.parent_type === 'event' || d.parent_type === 'date').length === 0) {
                 history.push('/');
             } else {
-                setDatePreview(formatDatePreview(dateResp.data.dates.filter(d => d.parent_type === 'event' || d.parent_type === 'date')?.[0]));
+                setDatePreview(formatDatePreview(
+                    dateResp.data.dates.filter(d => d.parent_type === 'event' || d.parent_type === 'date')?.[0],
+                ));
             }
         }
     }, [dateResp.data]);
 
     useDeepEffect(() => {
-        if (categoryResp.data && datePreview?.name) {
-            setDatePreview({
-                ...datePreview,
-                categoryName: categoryResp.data.categories[0]?.display_name,
-                prices: getPriceRange(categoryResp.data.categories),
-            });
+        if (categoryResp.data?.categories?.length > 0) {
+            setPriceRange(getPriceRange(categoryResp.data.categories));
         }
-    }, [categoryResp.data, datePreview]);
-
-    let ticket;
-    let priceRange;
-    // tslint:disable-next-line
-    const doNothing = () => {};
-
-    if (datePreview && datePreview.name && categoryResp.data) {
-        ticket = {
-            name: datePreview.name,
-            image: datePreview.cover,
-            mainColor: datePreview.colors[0],
-            location: datePreview.location,
-            gradients: datePreview.colors,
-            about: datePreview.description,
-            startDate: displayDate(checkFormatDate(datePreview.eventStart)),
-            endDate: displayDate(checkFormatDate(datePreview.eventEnd)),
-            startTime: displayTime(checkFormatDate(datePreview.eventStart)),
-            endTime: displayTime(checkFormatDate(datePreview.eventEnd)),
-            tags: datePreview.tags.map(tag => ({ id: tag, label: tag })),
-            resale: false
-        };
-        priceRange = datePreview.prices[1] !== null ?
-          `${t('from')} ${datePreview.prices[0]}€ ${t('to')} ${datePreview.prices[1]}€ ${t('each')}`
-          :
-          `${datePreview.prices[0]}€ ${t('each')}`
-        if (datePreview.prices[0] === null) {
-            priceRange = t('free_ticket')
-        }
-    }
+    }, [categoryResp.data]);
 
     return (
         <Container>
             <Title>{t('title')}</Title>
             <PreviewContainer>
                 {
-                    ticket ?
+                    datePreview ?
                     <div className='smartphone'>
                           <div className='content'>
-                                <Gradient values={datePreview.colors} blurOnly />
+                                <Gradient values={datePreview.gradients} blurOnly />
                                 <EventHeader
-                                    event={ticket}
-                                    subtitle={priceRange}
+                                    event={{...datePreview}}
+                                    subtitle={
+                                        priceRange[0] ? priceRange[1] ?
+                                        `${t('from')} ${priceRange[0]}€ ${t('to')} ${priceRange[1]}€ ${t('each')}` :
+                                        `${priceRange[0]}€ ${t('each')}` :
+                                        t('free_ticket')
+                                    }
                                     buttonTitle={t('get_tickets')}
-                                    onChange={doNothing}
-                                    onClick={doNothing}
+                                    onChange={() => console.log}
+                                    onClick={() => console.log}
                                 />
                                 <>
                                     <DateTimeCard
-                                        iconColor={ticket.mainColor}
-                                        endDate={ticket.endDate}
-                                        endTime={ticket.endTime}
-                                        startDate={ticket.startDate}
-                                        startTime={ticket.startTime}
+                                        iconColor={datePreview.mainColor}
+                                        startDate={datePreview.startDate}
+                                        startTime={datePreview.startTime}
+                                        endDate={datePreview.endDate}
+                                        endTime={datePreview.endTime}
                                         removeBg
                                     />
                                     <LocationCard
                                         address={''}
-                                        iconColor={ticket.mainColor}
-                                        location={ticket.location}
+                                        iconColor={datePreview.mainColor}
+                                        location={datePreview.location}
                                         removeBg
                                     />
                                     <LeafletMap
@@ -186,9 +165,9 @@ const Preview: React.FC = () => {
                                       coords={datePreview.coord}/>
                                     <Separator />
                                     <ReadMore
-                                        readMoreColor={ticket.mainColor}
+                                        readMoreColor={datePreview.mainColor}
                                         title='About'
-                                        text={ticket.about === '' ? t('no_description') : ticket.about}
+                                        text={datePreview.about === '' ? t('no_description') : datePreview.about}
                                         showLabel='Read more'
                                         hideLabel='Show less'
                                         removeBg
@@ -196,9 +175,9 @@ const Preview: React.FC = () => {
                                     <Separator />
                                     <TagsListCard
                                         label={t('tags')}
-                                        handleToggle={doNothing}
+                                        handleToggle={() => console.log}
                                         showAll={true}
-                                        tags={ticket.tags}
+                                        tags={datePreview.tags}
                                         hideLabel='Hide'
                                         removeBg
                                     />
@@ -206,9 +185,14 @@ const Preview: React.FC = () => {
                                     <EventBottomBand
                                         ctaLabel={t('get_tickets')}
                                         title={t('tickets_from')}
-                                        onClick={doNothing}
-                                        subtitle={priceRange}
-                                        gradients={ticket.gradients}
+                                        onClick={() => console.log}
+                                        subtitle={
+                                            priceRange[0] ? priceRange[1] ?
+                                            `${t('from')} ${priceRange[0]}€ ${t('to')} ${priceRange[1]}€ ${t('each')}` :
+                                            `${priceRange[0]}€ ${t('each')}` :
+                                            t('free_ticket')
+                                        }
+                                        gradients={datePreview.gradients}
                                         show={true}
                                     />
                                 </>

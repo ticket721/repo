@@ -20,8 +20,6 @@ import '../../../shared/Translations/global';
 import DateForm from '../../../components/DateForm';
 
 import { completeDateValidation }  from './validationSchema';
-import { EventsSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsSearchResponse.dto';
-import { useRequest }              from '@frontend/core/lib/hooks/useRequest';
 import { Metadata }                from './Metadata';
 import { Styles }                  from './Styles';
 
@@ -32,20 +30,6 @@ const NewDate = (): JSX.Element => {
     const dispatch = useDispatch();
     const [uuid] = React.useState(v4() + '@new-date');
     const token = useSelector((state: AppState): string => state.auth.token.value);
-
-    const { response: eventResp } = useRequest<EventsSearchResponseDto>({
-        method: 'events.search',
-        args: [
-            token,
-            {
-                id: {
-                    $eq: eventId
-                }
-            }
-        ],
-        refreshRate: 5,
-    },
-        uuid);
     const { lazyRequest: createDate, response: createResponse } = useLazyRequest<DatesCreateResponseDto>('dates.create', uuid);
     const { lazyRequest: addDate, response: addResponse } = useLazyRequest<DatesCreateResponseDto>('events.addDates', uuid);
 
@@ -112,7 +96,7 @@ const NewDate = (): JSX.Element => {
         }
     }, [addResponse.data]);
 
-    const renderFormActions = () => (<Button variant='primary' type='submit' title={t('validate')}/>);
+    const renderFormActions = () => (<Button variant='primary' type='submit' title={t('global:validate')}/>);
 
     return (
         <Form onSubmit={formik.handleSubmit}>

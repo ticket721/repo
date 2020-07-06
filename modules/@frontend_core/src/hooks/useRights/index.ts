@@ -36,13 +36,12 @@ export const useRights = (params: RightsParams): RequestResp => {
                     entity_value: {
                         $eq: params.entityValue,
                     },
-                    page_size: params.pageSize ? params.pageSize : 10
+                    $page_size: params.pageSize ? params.pageSize : 10
                 },
             ],
             refreshRate: 5,
         },
         uuid);
-
     return {
         entities: rightsResp.data?.rights,
         error: rightsResp.error,
