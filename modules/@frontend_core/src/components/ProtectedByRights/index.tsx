@@ -13,7 +13,7 @@ import { useParams } from 'react-router';
 interface Props {
     children: React.ReactNode;
     type?: string;
-    value?: 'groupId' | 'dateId' | 'categoryId';
+    value?: 'groupId' | 'dateId' | 'categoryId' | 'eventId';
 }
 
 const ProtectedByRights = ({ children, type, value }: Props): JSX.Element => {

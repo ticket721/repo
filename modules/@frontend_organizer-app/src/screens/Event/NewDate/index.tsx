@@ -14,6 +14,8 @@ import { useDeepEffect } from '@frontend/core/lib/hooks/useDeepEffect';
 import {
     DatesCreateResponseDto
 } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesCreateResponse.dto';
+import { DatesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
+import { useRequest } from '@frontend/core/lib/hooks/useRequest';
 
 import '../../../shared/Translations/generalInfoForm';
 import '../../../shared/Translations/global';
@@ -28,8 +30,24 @@ const NewDate = (): JSX.Element => {
     const history = useHistory();
     const { groupId, eventId } = useParams();
     const dispatch = useDispatch();
+    const [uuidDates] = React.useState(v4() + '@new-date_dates.search');
     const [uuid] = React.useState(v4() + '@new-date');
     const token = useSelector((state: AppState): string => state.auth.token.value);
+    const { response: dateResp } = useRequest<DatesSearchResponseDto>(
+        {
+            method: 'dates.search',
+            args: [
+                token,
+                {
+                    parent_id: {
+                        $eq: eventId
+                    }
+                }
+            ],
+          refreshRate: 1,
+        },
+        uuidDates
+    );
     const { lazyRequest: createDate, response: createResponse } = useLazyRequest<DatesCreateResponseDto>('dates.create', uuid);
     const { lazyRequest: addDate, response: addResponse } = useLazyRequest<DatesCreateResponseDto>('events.addDates', uuid);
 
@@ -95,6 +113,12 @@ const NewDate = (): JSX.Element => {
             history.push(`/group/${groupId}/date/${createResponse.data.date.id}`);
         }
     }, [addResponse.data]);
+
+    useDeepEffect(() => {
+        if (!dateResp.loading && dateResp.data && dateResp.data.dates.length === 0) {
+            history.push('/');
+        }
+    }, [dateResp.data]);
 
     const renderFormActions = () => (<Button variant='primary' type='submit' title={t('global:validate')}/>);
 

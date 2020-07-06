@@ -8,6 +8,7 @@ import { useTranslation }           from 'react-i18next';
 import './locales';
 import { useDispatch, useSelector } from 'react-redux';
 import { MergedAppState }           from '../../../../index';
+import { useDeepEffect }            from '@frontend/core/lib/hooks/useDeepEffect';
 import { useRequest }               from '@frontend/core/lib/hooks/useRequest';
 import { DatesSearchResponseDto }   from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
 import { v4 }                       from 'uuid';
@@ -34,6 +35,12 @@ export const DateActions: React.FC = () => {
         refreshRate: 2,
     },
         uuid);
+
+    useDeepEffect(() => {
+        if (dateResp.data && dateResp.data.dates.length === 0) {
+            history.push('/');
+        }
+    }, [dateResp.data]);
 
     return (
         <Container>

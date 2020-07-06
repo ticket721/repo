@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
 import { useRequest }                 from '@frontend/core/lib/hooks/useRequest';
 import { v4 }                          from 'uuid';
-import { useParams }                   from 'react-router';
+import { useParams, useHistory }       from 'react-router';
 import { useSelector }                 from 'react-redux';
 import { MergedAppState }              from '../../../index';
 import { CategoriesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/categories/dto/CategoriesSearchResponse.dto';
 import { UpdateCategoryForm }          from './Form';
 import { DatesSearchResponseDto }      from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
+import { useDeepEffect } from '@frontend/core/lib/hooks/useDeepEffect';
 import { checkFormatDate }             from '@frontend/core/lib/utils/date';
 
 const UpdateCategory: React.FC = () => {
     const { dateId, categoryId } = useParams();
+    const history = useHistory();
 
     const [uuid] = useState(v4() + '@update-category');
     const token = useSelector((state: MergedAppState) => state.auth.token.value);
@@ -44,6 +46,12 @@ const UpdateCategory: React.FC = () => {
         },
         uuid
     );
+
+    useDeepEffect(() => {
+        if (categoryResp.data && categoryResp.data.categories.length === 0) {
+            history.push('/');
+        }
+    }, [categoryResp.data]);
 
     if (categoryResp.data?.categories[0]) {
         return (

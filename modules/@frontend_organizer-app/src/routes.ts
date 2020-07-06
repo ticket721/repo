@@ -6,7 +6,7 @@ export interface RouteDatum {
     topBar?: React.ReactElement;
     protected?: boolean;
     entityType?: string;
-    paramId?: 'groupId' | 'dateId' | 'categoryId';
+    paramId?: 'groupId' | 'dateId' | 'categoryId' | 'eventId';
 }
 
 export const routes: RouteDatum[] = [

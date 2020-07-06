@@ -96,6 +96,12 @@ const NewGlobalCategory: React.FC = () => {
         }
     }, [createResp.error, addCategoryResp.error]);
 
+    useDeepEffect(() => {
+        if (dateResp.data && dateResp.data.dates.length === 0) {
+            history.push('/');
+        }
+    }, [dateResp.data]);
+
     return (
         <CategoryForm
             maxDate={dateResp.data?.dates.length > 0 ?

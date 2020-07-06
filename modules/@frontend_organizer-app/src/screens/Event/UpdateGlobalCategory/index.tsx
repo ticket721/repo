@@ -1,16 +1,18 @@
-import React, { useEffect, useState }  from 'react';
+import React, { useState }             from 'react';
 import { useRequest }                  from '@frontend/core/lib/hooks/useRequest';
 import { v4 }                          from 'uuid';
-import { useParams }                   from 'react-router';
+import { useParams, useHistory }       from 'react-router';
 import { useSelector }                 from 'react-redux';
 import { MergedAppState }              from '../../../index';
 import { CategoriesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/categories/dto/CategoriesSearchResponse.dto';
 import { UpdateGlobalCategoryForm }          from './Form';
 import { DatesSearchResponseDto }      from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
 import { checkFormatDate }             from '@frontend/core/lib/utils/date';
+import { useDeepEffect } from '@frontend/core/lib/hooks/useDeepEffect';
 
 const UpdateGlobalCategory: React.FC = () => {
     const { eventId, categoryId } = useParams();
+    const history = useHistory();
 
     const [uuid] = useState(v4() + '@update-global-category');
     const token = useSelector((state: MergedAppState) => state.auth.token.value);
@@ -47,11 +49,23 @@ const UpdateGlobalCategory: React.FC = () => {
         uuid
     );
 
-    useEffect(() => {
+    useDeepEffect(() => {
         if (datesResp.data) {
             const sortedDates = datesResp.data.dates.sort((dateA, dateB) =>
                 checkFormatDate(dateB.timestamps.event_end).getTime() - checkFormatDate(dateA.timestamps.event_end).getTime());
-            setMaxDate(checkFormatDate(sortedDates[0].timestamps.event_end));
+            setMaxDate(checkFormatDate(sortedDates?.[0]?.timestamps.event_end));
+        }
+    }, [datesResp.data]);
+
+    useDeepEffect(() => {
+        if (categoryResp.data && categoryResp.data.categories.length === 0) {
+            history.push('/');
+        }
+    }, [categoryResp.data]);
+
+    useDeepEffect(() => {
+        if (datesResp.data && datesResp.data.dates.length === 0) {
+            history.push('/');
         }
     }, [datesResp.data]);
 

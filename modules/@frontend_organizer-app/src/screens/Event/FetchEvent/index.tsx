@@ -14,7 +14,6 @@ import { CategoriesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/
 import { PushNotification }            from '@frontend/core/lib/redux/ducks/notifications';
 import './locales';
 import { EventsSearchResponseDto }     from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsSearchResponse.dto';
-import { useRights }                   from '@frontend/core/lib/hooks/useRights';
 
 const FetchEvent = (): JSX.Element => {
     const [ t ] = useTranslation(['fetch_event', 'global']);
@@ -23,12 +22,7 @@ const FetchEvent = (): JSX.Element => {
     const { groupId } = useParams();
     const history = useHistory();
     const dispatch = useDispatch();
-    const [ rightValid, setRightValid ] = useState<boolean>(false);
     const [ emptyDateFetched, setEmptyDateFetched ] = useState<boolean>(false);
-    const { empty: noRights } = useRights({
-        entityValue: groupId,
-        entityType: 'event',
-    });
 
     const { response: eventsResp } = useRequest<EventsSearchResponseDto>(
         {
@@ -82,25 +76,16 @@ const FetchEvent = (): JSX.Element => {
     );
 
     useDeepEffect(() => {
-        if (noRights) {
-            dispatch(PushNotification(t('no_rights_over_event'), 'error'));
-            history.push('/');
-        } else {
-            setRightValid(true);
-        }
-    }, [noRights]);
-
-    useDeepEffect(() => {
-        if (rightValid && datesResp.data?.dates) {
+        if (datesResp.data?.dates) {
             if (datesResp.data.dates.length > 0) {
-                history.push(`/group/${groupId}/date/${datesResp.data.dates[0].id}`);
+                history.push(`/group/${groupId}/date/${datesResp.data.dates[0]?.id}`);
             } else {
                 dispatch(PushNotification(t('no_dates_on_event'), 'warning'));
                 setEmptyDateFetched(true);
             }
         }
     }
-    , [datesResp.data, rightValid]);
+    , [datesResp.data]);
 
     useDeepEffect(() => {
             if (emptyDateFetched && globalCategoriesResp.data?.categories) {
