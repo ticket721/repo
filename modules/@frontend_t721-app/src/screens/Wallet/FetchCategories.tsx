@@ -1,11 +1,12 @@
 import React                    from 'react';
 import Flicking                 from '@egjs/react-flicking';
+import { useTranslation }       from 'react-i18next';
 import {
   Error,
   FullPageLoading,
 }                               from '@frontend/flib-react/lib/components';
 import FetchDates               from './FetchDates';
-
+import './locales';
 
 const userCategories = [
   {
@@ -47,6 +48,7 @@ const userCategories = [
 ];
 
 const FetchCategories = () => {
+    const { t } = useTranslation('wallet');
     const response = {
         data:  { categories: userCategories },
         loading: false,
@@ -62,7 +64,7 @@ const FetchCategories = () => {
         );
     }
     if (response.error) {
-      return (<Error message='Unable to get your tickets'/>);
+      return (<Error message={t('error')}/>);
     }
 
     const currentCategories = response.data.categories.filter(t => t.parent_type !== 'event');
@@ -80,7 +82,7 @@ const FetchCategories = () => {
                     }
                 </Flicking>
             }
-            { currentCategories.length === 0 && <span>You don't have any date specific ticket</span>}
+            { currentCategories.length === 0 ? <span>{t('no_dates_ticket')}</span> : null }
         </>
     );
 };

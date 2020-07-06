@@ -1,10 +1,12 @@
 import React                    from 'react';
 import styled                   from 'styled-components';
+import { useTranslation }       from 'react-i18next';
 import {
   Error,
   FullPageLoading,
 }                               from '@frontend/flib-react/lib/components';
 import FetchCategories from './FetchCategories';
+import './locales';
 
 const userTickets = [
   {
@@ -39,6 +41,7 @@ const userTickets = [
   }
 ];
 const Wallet: React.FC = () => {
+    const { t } = useTranslation('wallet');
     const response = {
         data:  { tickets: userTickets },
         loading: false,
@@ -54,15 +57,15 @@ const Wallet: React.FC = () => {
         );
     }
     if (response.error) {
-        return (<Error message='Unable to get your tickets'/>);
+        return (<Error message={t('error')}/>);
     }
 
     const currentTickets = response.data.tickets.filter(t => t.status !== 'canceled');
     return (
         <div className='Wallet'>
             <Title>My Tickets</Title>
-            { currentTickets.length > 0 && <FetchCategories />}
-            { currentTickets.length === 0 && <span>You don't have any ticket</span>}
+            { currentTickets.length > 0 ? <FetchCategories /> : null }
+            { currentTickets.length === 0 ? <span>{t('no_ticket')}</span> : null}
         </div>
     );
 }

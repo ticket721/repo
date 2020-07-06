@@ -28,7 +28,6 @@ const PullUp = styled.div`
 const Container = styled.div`
     border-bottom-left-radius: 8px;
     border-bottom-right-radius: 8px;
-    margin: 1rem;
     overflow: hidden;
 `;
 

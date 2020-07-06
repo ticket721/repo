@@ -1,14 +1,15 @@
-import React                    from 'react';
-import styled                   from 'styled-components';
+import React                         from 'react';
+import styled                        from 'styled-components';
+import { useTranslation }            from 'react-i18next';
 import {
   Error,
   FullPageLoading,
-}                               from '@frontend/flib-react/lib/components';
-import { getImgPath }           from '@frontend/core/lib/utils/images';
-import TicketCard               from '../../components/Card';
-import { formatDateForDisplay } from '../../utils/date';
-import { Ticket } from '../../types/ticket';
-
+}                                    from '@frontend/flib-react/lib/components';
+import { getImgPath }                from '@frontend/core/lib/utils/images';
+import { displayDate, displayTime }  from '@frontend/core/lib/utils/date';
+import TicketCard                    from '../../components/Card';
+import { Ticket }                    from '../../types/ticket';
+import './locales';
 
 const userDates = [
   {
@@ -41,10 +42,10 @@ const formatTicket = (data: any, ticketType: string): Ticket => ({
     name: data.name,
     location: data.location.location_label,
     ticketType,
-    startDate: formatDateForDisplay(data.timestamps.event_begin, 'day'),
-    startTime: formatDateForDisplay(data.timestamps.event_begin, 'time'),
-    endDate: formatDateForDisplay(data.timestamps.event_end, 'day'),
-    endTime: formatDateForDisplay(data.timestamps.event_end, 'time'),
+    startDate: displayDate(data.timestamps.event_begin),
+    startTime: displayTime(data.timestamps.event_begin),
+    endDate: displayDate(data.timestamps.event_end),
+    endTime: displayTime(data.timestamps.event_end),
     ticketId: data.id,
     gradients: data.metadata.signature_colors,
     mainColor: data.metadata.signature_colors[0],
@@ -53,6 +54,7 @@ const formatTicket = (data: any, ticketType: string): Ticket => ({
 });
 
 const FetchDates = ({ parentId, ticketType }: Props) => {
+    const { t } = useTranslation('wallet');
     const response = {
         data:  { dates: userDates },
         loading: false,
@@ -79,14 +81,15 @@ const FetchDates = ({ parentId, ticketType }: Props) => {
                     <TicketCard ticket={formatTicket(currentDate, ticketType)} />
                 </CardContainer>
             )}
-            { !currentDate && <span>You don't have any date specific ticket</span>}
+            { !currentDate ? <span>{t('no_dates_ticket')}</span> : null }
         </>
     );
 };
 
 const CardContainer = styled.div`
   display: flex;
-  width: 305px;
+  align-items: center;
+  width: 310px;
 `;
 
 export default FetchDates;
