@@ -130,7 +130,7 @@ export const TextInput: React.FunctionComponent<InputProps & { className?: strin
                     />
                 ) : (
                     <input
-                        autoComplete="off"
+                        autoComplete={'off'}
                         id={props.name}
                         name={props.name}
                         placeholder={props.placeholder}
