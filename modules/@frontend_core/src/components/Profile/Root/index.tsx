@@ -23,7 +23,11 @@ const { observe, useSubspace } = require('@embarklabs/subspace-react');
 
 const ConnectedWalletHeader = observe(WalletHeader);
 
-const ProfileRoot = (): JSX.Element => {
+export interface ProfileRootProps {
+    desktop?: boolean;
+}
+
+const ProfileRoot: React.FC<ProfileRootProps> = ({ desktop }: ProfileRootProps): JSX.Element => {
     const [uuid] = useState(v4());
     const { token, userUuid, username, address } = useSelector((state: AppState) => ({
         token: state.auth.token.value,
@@ -83,14 +87,14 @@ const ProfileRoot = (): JSX.Element => {
                 error={activityResponse.error}
                 data={activityResponse.data}
                 limit={3}
-                link={'/activities'}
+                link={desktop ? history.location.pathname + '?profile=activities' : 'profile/activities'}
             />
             <LinksContainer title={t('account')}>
                 <LanguageLink
                     label={t('language')}
                     currentLanguage={t(i18n.language.slice(0, 2))}
                     onClick={() => {
-                        history.push('/profile/language');
+                        history.push(desktop ? history.location.pathname + '?profile=language' : 'profile/language');
                     }}
                 />
                 <ArrowLink

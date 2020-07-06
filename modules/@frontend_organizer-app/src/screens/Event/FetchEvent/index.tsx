@@ -1,0 +1,127 @@
+import React, { useState }             from 'react';
+import { useParams, useHistory }       from 'react-router';
+import { useTranslation }           from 'react-i18next';
+import { useDispatch, useSelector } from 'react-redux';
+import { v4 }                       from 'uuid';
+
+import { useDeepEffect }               from '@frontend/core/lib/hooks/useDeepEffect';
+import { useRequest }                  from '@frontend/core/lib/hooks/useRequest';
+import { AppState }                    from '@frontend/core/src/redux/ducks';
+import { DatesSearchResponseDto }      from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
+
+import '../../../shared/Translations/global';
+import { CategoriesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/categories/dto/CategoriesSearchResponse.dto';
+import { PushNotification }            from '@frontend/core/lib/redux/ducks/notifications';
+import './locales';
+import { EventsSearchResponseDto }     from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsSearchResponse.dto';
+import { useRights }                   from '@frontend/core/lib/hooks/useRights';
+
+const FetchEvent = (): JSX.Element => {
+    const [ t ] = useTranslation(['fetch_event', 'global']);
+    const [uuid] = useState(v4() + '@fetchDate');
+    const token = useSelector((state: AppState): string => state.auth.token.value);
+    const { groupId } = useParams();
+    const history = useHistory();
+    const dispatch = useDispatch();
+    const [ rightValid, setRightValid ] = useState<boolean>(false);
+    const [ emptyDateFetched, setEmptyDateFetched ] = useState<boolean>(false);
+    const { empty: noRights } = useRights({
+        entityValue: groupId,
+        entityType: 'event',
+    });
+
+    const { response: eventsResp } = useRequest<EventsSearchResponseDto>(
+        {
+            method: 'events.search',
+            args: [
+                token,
+                {
+                    group_id: {
+                        $eq: groupId,
+                    }
+                },
+            ],
+            refreshRate: 5,
+        },
+        uuid
+    );
+
+    const { response: datesResp } = useRequest<DatesSearchResponseDto>(
+        {
+            method: 'dates.search',
+            args: [
+                token,
+                {
+                    group_id: {
+                        $eq: groupId,
+                    }
+                },
+            ],
+            refreshRate: 5,
+        },
+        uuid
+    );
+
+    const { response: globalCategoriesResp } = useRequest<CategoriesSearchResponseDto>(
+        {
+            method: 'categories.search',
+            args: [
+                token,
+                {
+                    group_id: {
+                        $eq: groupId,
+                    },
+                    parent_type: {
+                        $eq: 'event',
+                    }
+                },
+            ],
+            refreshRate: 5,
+        },
+        uuid
+    );
+
+    useDeepEffect(() => {
+        if (noRights) {
+            dispatch(PushNotification(t('no_rights_over_event'), 'error'));
+            history.push('/');
+        } else {
+            setRightValid(true);
+        }
+    }, [noRights]);
+
+    useDeepEffect(() => {
+        if (rightValid && datesResp.data?.dates) {
+            if (datesResp.data.dates.length > 0) {
+                history.push(`/group/${groupId}/date/${datesResp.data.dates[0].id}`);
+            } else {
+                dispatch(PushNotification(t('no_dates_on_event'), 'warning'));
+                setEmptyDateFetched(true);
+            }
+        }
+    }
+    , [datesResp.data, rightValid]);
+
+    useDeepEffect(() => {
+            if (emptyDateFetched && globalCategoriesResp.data?.categories) {
+                if (globalCategoriesResp.data.categories.length > 0) {
+                    const defaultGlobalCategory = globalCategoriesResp.data.categories[0];
+                    history.push(`/group/${groupId}/event/${defaultGlobalCategory.parent_id}/category/${defaultGlobalCategory.id}`);
+                } else {
+                    if (eventsResp.data.events) {
+                        dispatch(PushNotification(t('empty_event'), 'warning'));
+                        history.push(`/group/${groupId}/event/${eventsResp.data.events[0].id}/date`);
+                    }
+                }
+            }
+        }
+        , [globalCategoriesResp.data, emptyDateFetched, eventsResp.data]);
+
+    return (
+      <>
+        {t('global:loading')}
+      </>
+    );
+};
+
+export default FetchEvent;
