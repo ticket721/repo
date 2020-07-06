@@ -160,6 +160,7 @@ export const Location: React.FunctionComponent<LocationProps> = (props: Location
         <StyledInputContainer className={props.className}>
             <StyledLabel>{props.label}</StyledLabel>
             <Select
+                autoComplete='off'
                 components={components}
                 defaultValue={props.defaultValue}
                 dropdownIndicator={false}
