@@ -8,7 +8,6 @@ import { AppState }                from '@frontend/core/src/redux/ducks';
 import './locales';
 import { RightsSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/rights/dto/RightsSearchResponse.dto';
 import { EventsFetcher }           from './EventsFetcher';
-import { useHistory }              from 'react-router';
 import { PushNotification }        from '@frontend/core/lib/redux/ducks/notifications';
 
 import { useTranslation } from 'react-i18next';
@@ -16,7 +15,6 @@ import './locales';
 import { useDeepEffect }  from '@frontend/core/lib/hooks/useDeepEffect';
 
 const Dashboard: React.FC = () => {
-    const history = useHistory();
     const dispatch = useDispatch();
     const [ t ] = useTranslation('dashboard');
 
@@ -24,21 +22,19 @@ const Dashboard: React.FC = () => {
     const token = useSelector((state: AppState): string => state.auth.token.value);
     const [ groupIds, setGroupIds ] = useState<string[]>();
 
-    const { response: eventRights } = useRequest<RightsSearchResponseDto>(
-        {
-            method: 'rights.search',
-            args: [
-                token,
-                {
-                    entity_type: {
-                        $eq: 'event'
-                    }
+    const { response: eventRights } = useRequest<RightsSearchResponseDto>({
+        method: 'rights.search',
+        args: [
+            token,
+            {
+                entity_type: {
+                    $eq: 'event'
                 }
-            ],
-            refreshRate: 1
-        },
-        uuid,
-    );
+            }
+        ],
+        refreshRate: 5
+    },
+        uuid);
 
     useDeepEffect(() => {
         if (eventRights.data && eventRights.data.rights.length > 0) {
@@ -51,7 +47,6 @@ const Dashboard: React.FC = () => {
             && eventRights.data?.rights.length === 0
         ) {
             dispatch(PushNotification(t('no_result_notif'), 'info'));
-            history.push('/create-event');
         }
 
         if (eventRights.error) {
@@ -67,7 +62,7 @@ const Dashboard: React.FC = () => {
                     token={token}
                     uuid={uuid}
                     groupIds={groupIds}/> :
-                    null
+                    <span>{t('no_result_notif')}</span>
             }
             {
                 eventRights.loading ?

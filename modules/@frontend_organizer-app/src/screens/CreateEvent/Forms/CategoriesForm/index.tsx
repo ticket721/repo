@@ -68,6 +68,7 @@ const CategoriesForm: React.FC<FormProps> = ({ onComplete }) => {
     return (
         <>
             <AppBar position='static' ref={reference}>
+                <Border />
                 <Tabs
                 value={tabIdx}
                 onChange={(e: any, idx: number) => setTabIdx(idx)}
@@ -93,7 +94,7 @@ const CategoriesForm: React.FC<FormProps> = ({ onComplete }) => {
             aria-labelledby={`simple-tab-${0}`}>
                 {tabIdx === 0 && (
                     <>
-                        <Description>A Normal ticket corresponds to a category which can be applied to several dates</Description>
+                        <Description>{t('date_specific_desc')}</Description>
                         <DateSpecificCategories
                             categories={eventCreationFormik.values.dates}
                             onCategoriesChange={dateSpecificCategoriesChange}/>
@@ -107,7 +108,7 @@ const CategoriesForm: React.FC<FormProps> = ({ onComplete }) => {
             aria-labelledby={`simple-tab-${1}`}>
                 {tabIdx === 1 && (
                     <>
-                        <Description>A Global Category corresponds to a ticket valid for all dates</Description>
+                        <Description>{t('global_desc')}</Description>
                         <GlobalCategories
                             categories={eventCreationFormik.values.global}
                             onCategoriesChange={globalCategoriesChange} />
@@ -130,6 +131,7 @@ const Tabs = styled(MuiTabs)`
 
 const AppBar = styled(MuiAppBar)`
     && {
+        box-shadow: none;
         background-color: transparent;
         div > div > span {
             background-color: ${(props) => props.theme.primaryColor.hex};
@@ -137,12 +139,20 @@ const AppBar = styled(MuiAppBar)`
     }
 `;
 
-const Description = styled.span`
-    display: block;
-    margin: ${props => props.theme.doubleSpacing} 0 ${props => props.theme.regularSpacing};
-    font-size: 14px;
+const Border = styled.div`
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    border-bottom: 2px solid ${props => props.theme.componentColorLight};
+`;
+
+const Description = styled.h2`
     font-weight: 500;
-    color: rgba(255, 255, 255, 0.6);
+    font-size: 14px;
+    line-height: 20px;
+    color: ${props => props.theme.textColorDark};
+    margin: ${props => props.theme.biggerSpacing} 0;
+    white-space: pre-wrap;
 `;
 
 export default CategoriesForm;

@@ -8,6 +8,7 @@ import { ConfigService } from '@lib/common/config/Config.service';
 import { getQueueToken } from '@nestjs/bull';
 import { OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
+import { b64Encode } from '@common/global';
 
 class QueueMock<T = any> {
     add(name: string, data: T, opts?: JobOptions): Promise<Job<T>> {
@@ -110,7 +111,7 @@ describe('Authentication Tasks', function() {
                 template: 'validate',
                 locale,
                 locals: {
-                    validationLink: `${validationUrl}?token=${encodeURIComponent(signature)}`,
+                    validationLink: `${validationUrl}?token=${encodeURIComponent(b64Encode(signature))}`,
                     token: signature,
                 },
             };
@@ -184,7 +185,7 @@ describe('Authentication Tasks', function() {
                 template: 'validate',
                 locale,
                 locals: {
-                    validationLink: `${validationUrl}?token=${encodeURIComponent(signature)}`,
+                    validationLink: `${validationUrl}?token=${encodeURIComponent(b64Encode(signature))}`,
                     token: signature,
                 },
             };
@@ -261,7 +262,7 @@ describe('Authentication Tasks', function() {
                 template: 'passwordReset',
                 locale,
                 locals: {
-                    validationLink: `${validationUrl}?token=${encodeURIComponent(signature)}`,
+                    validationLink: `${validationUrl}?token=${encodeURIComponent(b64Encode(signature))}`,
                     token: signature,
                 },
             };
@@ -334,7 +335,7 @@ describe('Authentication Tasks', function() {
                 template: 'passwordReset',
                 locale,
                 locals: {
-                    validationLink: `${validationUrl}?token=${encodeURIComponent(signature)}`,
+                    validationLink: `${validationUrl}?token=${encodeURIComponent(b64Encode(signature))}`,
                     token: signature,
                 },
             };

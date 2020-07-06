@@ -53,26 +53,27 @@ export const GlobalCategories: React.FC<GlobalCategoriesProps> = (props: GlobalC
         <StyledGlobal>
             <CategoriesContainer>
                 {
-                  props.categories.map((globalCategory: CategoryItem, idx: number) => (
-                      <Fragment key={`globalCategory-${idx}`}>
-                          <CategoryCard
-                          name={globalCategory.name}
-                          price={parseInt(globalCategory.currencies[0].price, 10) / 100}
-                          saleBegin={checkFormatDate(globalCategory.saleBegin)}
-                          saleEnd={checkFormatDate(globalCategory.saleEnd)}
-                          seats={globalCategory.seats}
-                          edit={editIdx === idx}
-                          editable={editIdx === null}
-                          setEdit={() => setEditIdx(idx)}>
-                              <CategoryForm
-                              initialValues={globalCategory}
-                              maxDate={checkFormatDate(maxDate)}
-                              delete={deleteCategory}
-                              cancel={resetEdition}
-                              confirm={updateCategory}/>
-                          </CategoryCard>
-                      </Fragment>
-                ))
+                    props.categories.map((globalCategory: CategoryItem, idx: number) => (
+                        <Fragment key={`globalCategory-${idx}`}>
+                            <CategoryCard
+                                name={globalCategory.name}
+                                price={parseInt(globalCategory.currencies[0].price, 10) / 100}
+                                saleBegin={checkFormatDate(globalCategory.saleBegin)}
+                                saleEnd={checkFormatDate(globalCategory.saleEnd)}
+                                seats={globalCategory.seats}
+                                edit={editIdx === idx}
+                                editable={editIdx === null}
+                                setEdit={() => setEditIdx(idx)}>
+                                    <CategoryForm
+                                        initialValues={globalCategory}
+                                        maxDate={checkFormatDate(maxDate)}
+                                        delete={deleteCategory}
+                                        cancel={resetEdition}
+                                        confirm={updateCategory}
+                                    />
+                            </CategoryCard>
+                        </Fragment>
+                    ))
                 }
             </CategoriesContainer>
             <CreateGlobalCategory

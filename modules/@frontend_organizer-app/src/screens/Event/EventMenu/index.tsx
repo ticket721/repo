@@ -1,11 +1,13 @@
-import React  from 'react';
-import styled                         from 'styled-components';
-import { useParams }     from 'react-router';
+import React                        from 'react';
+import { useParams }                from 'react-router';
+import styled                       from 'styled-components';
 
-import { Dropdown }      from './Dropdown';
-import { DateSubMenu }   from './DateSubMenu';
-import { GlobalSubMenu } from './GlobalSubMenu';
-import { DateActions }   from './DateActions';
+import { Dropdown }                 from './Dropdown';
+import { DateSubMenu }              from './DateSubMenu';
+import { GlobalSubMenu }            from './GlobalSubMenu';
+import { DateActions }              from './DateActions';
+import { Actions }                  from './Actions';
+import './Actions/locales';
 
 export const EventMenu: React.FC = () => {
     const { dateId } = useParams();
@@ -14,16 +16,20 @@ export const EventMenu: React.FC = () => {
         <Container>
             <Dropdown/>
             {
-                dateId ?
+                dateId &&
                     <>
-                    <DateActions/>
-                    <Separator/>
-                    <DateSubMenu/>
-                    <Separator/>
-                    </> :
-                    null
+                        <DateActions/>
+                        <Separator/>
+                        <DateSubMenu/>
+                        <Separator/>
+                    </>
             }
             <GlobalSubMenu/>
+            {
+                dateId && (
+                  <Actions />
+                )
+            }
         </Container>
     )
 };

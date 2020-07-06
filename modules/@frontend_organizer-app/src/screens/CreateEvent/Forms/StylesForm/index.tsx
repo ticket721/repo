@@ -18,7 +18,7 @@ import { ImageEntity }                                 from '@common/sdk/lib/@ba
 import { PushNotification }                            from '@frontend/core/lib/redux/ducks/notifications';
 
 import { useTranslation } from 'react-i18next';
-import './locales';
+import '../../../../shared/Translations/StylesForm';
 import '@frontend/core/lib/components/ToastStacker/locales';
 import { ColorPickers }   from '../../../../components/ColorPickers';
 import { getImgPath }     from '@frontend/core/lib/utils/images';

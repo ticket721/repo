@@ -138,6 +138,11 @@ apps:
       hosts[0].paths[0].serviceName: "platform-staging--server--svc"
       hosts[0].paths[0].servicePort: "80"
 
+      hosts[1].name: "organizer.staging.ticket721.com"
+      hosts[1].paths[0].route: "/"
+      hosts[1].paths[0].serviceName: "platform-staging--organizer--svc"
+      hosts[1].paths[0].servicePort: "80"
+
       route53.keyId: "${CONFIG_STAGING_ROUTE53_KEY}"
       route53.hostedzone: "${CONFIG_STAGING_ROUTE53_HOSTEDZONE}"
       route53.region: "eu-west-3"
@@ -218,8 +223,8 @@ apps:
       config.cassandra.host: "elassandra-staging-cassandra"
       config.cassandra.port: "9042"
 
-      config.redirections.emailValidationUrl: "http://localhost:3000/validate"
-      config.redirections.passwordResetUrl: "http://localhost:3000/validate/password/reset"
+      config.redirections.emailValidationUrl: "https://organizer.staging.ticket721.com/validate-email"
+      config.redirections.passwordResetUrl: "https://organizer.staging.ticket721.com/validate/password/reset"
 
       config.elasticsearch.host: "elassandra-staging-elasticsearch"
       config.elasticsearch.port: "9200"
@@ -258,6 +263,17 @@ apps:
       config.rockside.network_id: "3"
       config.rockside.network_name: "ropsten"
 
+      config.googleGeocodingApiKey: "${CONFIG_STAGING_GCLOUD_GEOLOC_APIKEY}"
+      config.serverEndpoint.host: "api.staging.ticket721.com"
+      config.serverEndpoint.port: "443"
+      config.serverEndpoint.protocol: "https"
+
+      config.frontEthereumNode.url: "https://api.rockside.io/ethereum/ropsten/jsonrpc"
+      config.frontEthereumNode.networkId: "3"
+      config.frontEthereumNode.headers: '\{\\"Authorization\\": \\"Bearer ${CONFIG_STAGING_ROCKSIDE_TOKEN}\\"\}'
+
+      config.organizer.segmentApiKey: "${CONFIG_STAGING_ORGANIZER_SEGMENT_API_KEY}"
+
       server.image.repository: "097558125954.dkr.ecr.eu-west-3.amazonaws.com/ticket721/server"
       server.image.tag: "${TAG}"
 
@@ -266,4 +282,7 @@ apps:
 
       migrations.image.repository: "097558125954.dkr.ecr.eu-west-3.amazonaws.com/ticket721/migrations"
       migrations.image.tag: "${TAG}"
+
+      organizer.image.repository: "097558125954.dkr.ecr.eu-west-3.amazonaws.com/ticket721/organizer"
+      organizer.image.tag: "${TAG}"
 

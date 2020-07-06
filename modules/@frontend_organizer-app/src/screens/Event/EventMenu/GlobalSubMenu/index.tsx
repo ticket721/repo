@@ -93,7 +93,7 @@ export const GlobalSubMenu: React.FC = () => {
                                 <Tile
                                     key={category.id + '-global'}
                                     active={activeTile === category.id}
-                                    onClick={() => history.push(`/${groupId}/event/${category.parent_id}/category/${category.id}`, {
+                                    onClick={() => history.push(`/group/${groupId}/event/${category.parent_id}/category/${category.id}`, {
                                         showingGlobalCategories,
                                     })}>
                                     <span>{category.display_name}</span>
@@ -104,7 +104,7 @@ export const GlobalSubMenu: React.FC = () => {
                             eventResp.data?.events ?
                                 <Tile
                                 active={activeTile === 'category'}
-                                key={'new-global-category'} onClick={() => history.push(`/${groupId}/event/${eventResp.data.events[0].id}/category`, {
+                                key={'new-global-category'} onClick={() => history.push(`/group/${groupId}/event/${eventResp.data.events[0].id}/category`, {
                                 showingGlobalCategories,
                                 })}>
                                     {t('new_global_category_subtitle')}
@@ -136,13 +136,13 @@ const TileHeader = styled.div`
     display: flex;
     justify-content: space-between;
     align-items: center;
-    cursor: inherit;
+    cursor: pointer;
 `;
 
 const Title = styled.span`
     font-weight: 500;
     font-size: 13px;
-    cursor: inherit;
+    cursor: pointer;
     color: rgba(255, 255, 255, 0.9);
 `;
 
@@ -159,7 +159,7 @@ const Tile = styled.span<{ active?: boolean }>`
     justify-content: space-between;
     font-weight: 500;
     font-size: 13px;
-    cursor: inherit;
+    cursor: pointer;
     margin: ${props => props.theme.smallSpacing} 0;
     color: ${(props) => props.active ? props.theme.textColor : props.theme.textColorDarker};
 

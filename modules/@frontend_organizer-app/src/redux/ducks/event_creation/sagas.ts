@@ -31,7 +31,7 @@ const getEventCreationState = (state: OrganizerState): EventCreationState => sta
 
 function* initEventAcset(action: IInitEventAcset): IterableIterator<any> {
     const authState: AuthState = yield select(getAuthState);
-
+console.log(action);
     let acsetId = yield EventCreationCore.getAcsetId(authState.token.value);
 
     if (!acsetId) {
@@ -81,6 +81,8 @@ function* synchronizedActions(action: IUpdateItemData): IterableIterator<any> {
 
     if (eventCreationState.sync) {
         const authState: AuthState = yield select(getAuthState);
+
+        if (!authState.token) return;
 
         const acsetCacheKey = CacheCore.key(
             'actions.search',

@@ -1,7 +1,7 @@
 import React, { useState }             from 'react';
 import styled                          from 'styled-components';
 import { useTranslation }              from 'react-i18next';
-import { useParams }                   from 'react-router';
+import { useParams, useHistory }       from 'react-router';
 import { v4 }                          from 'uuid';
 import { useSelector }                 from 'react-redux';
 
@@ -63,6 +63,7 @@ const formatDatePreview = (date: DateEntity): DatePreview => ({
 const Preview: React.FC = () => {
     const [ t ] = useTranslation('preview_event');
     const { dateId } = useParams();
+    const history = useHistory();
     const [uuid] = useState(v4() + '@event-preview');
     const token = useSelector((state: MergedAppState) => state.auth.token.value);
     const [ datePreview, setDatePreview ] = useState<DatePreview>(null);
@@ -101,7 +102,11 @@ const Preview: React.FC = () => {
 
     useDeepEffect(() => {
         if (dateResp.data) {
-            setDatePreview(formatDatePreview(dateResp.data.dates[0]));
+            if (dateResp.data.dates.filter(d => d.parent_type === 'event' || d.parent_type === 'date').length === 0) {
+                history.push('/');
+            } else {
+                setDatePreview(formatDatePreview(dateResp.data.dates.filter(d => d.parent_type === 'event' || d.parent_type === 'date')?.[0]));
+            }
         }
     }, [dateResp.data]);
 
@@ -140,7 +145,7 @@ const Preview: React.FC = () => {
           :
           `${datePreview.prices[0]}€ ${t('each')}`
         if (datePreview.prices[0] === null) {
-            priceRange = t('unknown_prices')
+            priceRange = t('free_ticket')
         }
     }
 
@@ -233,11 +238,10 @@ const PreviewContainer = styled.div`
       width: 353px;
       height: 630px;
       margin: auto;
-      border: 16px black solid;
+      border: 16px white solid;
       border-top-width: 60px;
       border-bottom-width: 60px;
       border-radius: 36px;
-      z-index: 2;
   }
 
 /* The horizontal line on the top of the device */
@@ -250,7 +254,7 @@ const PreviewContainer = styled.div`
       top: -30px;
       left: 50%;
       transform: translate(-50%, -50%);
-      background: #333;
+      background: #aaa;
       border-radius: 10px;
   }
 
@@ -264,7 +268,7 @@ const PreviewContainer = styled.div`
       left: 50%;
       bottom: -65px;
       transform: translate(-50%, -50%);
-      background: #333;
+      background: #aaa;
       border-radius: 50%;
   }
 

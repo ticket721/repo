@@ -15,5 +15,5 @@ i18n.addResourceBundle('fr', 'date_sub_menu', {
     styles_subtitle: 'Styles',
     location_subtitle: 'Emplacement',
     categories_title: 'Catégories',
-    new_date_category_subtitle: '+ Nouvelle catégorie',
+    new_category_subtitle: '+ Nouvelle catégorie',
 });

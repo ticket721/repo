@@ -8,6 +8,7 @@ import { UsersMeResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/sr
 import { AxiosResponse } from 'axios';
 import { AppState } from '../index';
 import { PushNotification } from '../notifications';
+import { getEnv } from '../../../utils/getEnv';
 
 const getAuthState = (state: AppState): AuthState => state.auth;
 
@@ -42,7 +43,7 @@ function* localRegister(action: ILocalRegister): IterableIterator<any> {
             ),
         );
 
-        if (process.env.REACT_APP_ENV === 'dev') {
+        if (getEnv().REACT_APP_ENV === 'dev') {
             const validateEmail = yield global.window.t721Sdk.validateEmail(registerData.validationToken);
             console.log(validateEmail);
         }
@@ -52,7 +53,13 @@ function* localRegister(action: ILocalRegister): IterableIterator<any> {
         } else {
             const errorData = e.response.data;
             if (errorData.statusCode === 409) {
-                yield put(SetErrors({ email: errorData.message }));
+                if (errorData.message === 'username_already_in_use') {
+                    yield put(SetErrors({ username: errorData.message }));
+                }
+
+                if (errorData.message === 'email_already_in_use') {
+                    yield put(SetErrors({ email: errorData.message }));
+                }
             } else {
                 yield put(PushNotification('internal_server_error', 'error'));
             }

@@ -37,9 +37,7 @@
         "@embarklabs/subspace": "2.0.3",
         "@embarklabs/subspace-react": "1.0.4",
         "react-i18next": "11.3.3",
-        "rxjs": "6.5.5"
-    },
-    "devDependencies": {
+        "rxjs": "6.5.5",
         "@capacitor/cli": "2.0.1",
         "react-scripts": "3.4.1",
         "tslint": "6.0.0"
@@ -48,6 +46,7 @@
         "react-scripts/**/jest": "24.9.0"
     },
     "scripts": {
+        "inject_env": "node env_injector.js > build/env.js",
         "start": "react-scripts start",
         "build": "react-scripts build",
         "test": "react-scripts test",

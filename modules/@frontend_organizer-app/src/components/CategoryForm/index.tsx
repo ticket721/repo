@@ -1,19 +1,18 @@
-import React, { useEffect } from 'react';
+import React                                                     from 'react';
 import {
     CustomDatePicker,
     CustomTimePicker,
     TextInput
-}                                     from '@frontend/flib-react/lib/components';
-import styled                       from 'styled-components';
-import { useFormik }                from 'formik';
+}                                                                from '@frontend/flib-react/lib/components';
+import styled                                                    from 'styled-components';
+import { useFormik }                                             from 'formik';
+import { useDeepEffect }                                         from '@frontend/core/lib/hooks/useDeepEffect';
+import { isEqual }                                               from 'lodash';
 import { categoryValidationSchema }                              from './validationSchema';
 import { checkFormatDate, compareDates, day, minute, TimeScale } from '@frontend/core/lib/utils/date';
 import { FormActions, FormActionsProps }                         from '../FormActions';
-
-import { useTranslation } from 'react-i18next';
+import { useTranslation }                                        from 'react-i18next';
 import './locales';
-import { useDeepEffect }  from '@frontend/core/lib/hooks/useDeepEffect';
-import { isEqual } from 'lodash';
 
 export interface CategoryItem {
     name: string;
@@ -119,17 +118,6 @@ export const CategoryForm: React.FC<CategoryFormProps> = (props: CategoryFormPro
           undefined;
     };
 
-    useEffect(() => {
-        if (formik.values.saleBegin > props.maxDate) {
-            formik.setFieldValue('saleBegin', new Date(props.maxDate.getTime() - 30 * minute));
-        }
-
-        if (formik.values.saleEnd > props.maxDate) {
-            formik.setFieldValue('saleEnd', props.maxDate);
-        }
-        // eslint-disable-next-line
-    }, [props.maxDate]);
-
     useDeepEffect(() => {
         if (formik.initialValues) {
             formik.setValues(checkedInitialValues);
@@ -138,9 +126,7 @@ export const CategoryForm: React.FC<CategoryFormProps> = (props: CategoryFormPro
 
     return (
         <Form onSubmit={formik.handleSubmit}>
-            <Title>
-                Category informations
-            </Title>
+            <Title>{t('category_title')}</Title>
             <TextInput
                 className={'category-line-field'}
                 label={t('category_label')}
@@ -171,11 +157,10 @@ export const CategoryForm: React.FC<CategoryFormProps> = (props: CategoryFormPro
                         t(computeError('seats'))
                     } />
             </div>
-            <Title>
-                Sales dates range
-            </Title>
+            <Title>{t('sales_dates_range')}</Title>
             <div className={'category-line-field date-container'}>
                 <CustomDatePicker
+                    className={formik.values.saleBegin > props.maxDate ? 'errorBorder' : ''}
                     label={t('start_sale_date_label')}
                     name={'saleDateBegin'}
                     dateFormat={'iii, MMM do, yyyy'}
@@ -189,6 +174,7 @@ export const CategoryForm: React.FC<CategoryFormProps> = (props: CategoryFormPro
                         t(computeError('saleBegin'))
                     }/>
                 <CustomTimePicker
+                    className={formik.values.saleBegin > props.maxDate ? 'errorBorder' : ''}
                     label={t('start_sale_time_label')}
                     name={'saleTimeBegin'}
                     maxTime={compareDates(
@@ -207,6 +193,7 @@ export const CategoryForm: React.FC<CategoryFormProps> = (props: CategoryFormPro
                 className={'category-line-field date-container'}
                 disabled={!formik.values.saleBegin}>
                 <CustomDatePicker
+                    className={formik.values.saleEnd > props.maxDate ? 'errorBorder' : ''}
                     disabled={!formik.values.saleBegin}
                     label={t('end_sale_date_label')}
                     name={'saleEndDate'}
@@ -221,6 +208,7 @@ export const CategoryForm: React.FC<CategoryFormProps> = (props: CategoryFormPro
                         t(computeError('saleEnd'))
                     }/>
                 <CustomTimePicker
+                  className={formik.values.saleEnd > props.maxDate ? 'errorBorder' : ''}
                     disabled={!formik.values.saleBegin}
                     label={t('end_sale_time_label')}
                     name={'saleEndTime'}
@@ -270,6 +258,9 @@ const Form = styled.form`
 
         & > div:last-child {
             width: 35%;
+        }
+        .errorBorder {
+          border: 1px ${props => props.theme.errorColor.hex} solid;
         }
     }
 

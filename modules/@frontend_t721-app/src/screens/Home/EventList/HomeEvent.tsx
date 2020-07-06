@@ -9,6 +9,7 @@ import { SingleImage }                 from '@frontend/flib-react/lib/components
 import { DateEntity }                  from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
 import { getPriceRange }               from '../../../utils/prices';
 import { useHistory }                  from 'react-router';
+import { getImgPath }                  from '@frontend/core/lib/utils/images';
 
 export interface HomeEventProps {
     date: DateEntity;
@@ -17,8 +18,7 @@ export interface HomeEventProps {
 
 export const HomeEvent: React.FC<HomeEventProps> = (props: HomeEventProps): JSX.Element => {
 
-    const serverUrl = `${process.env.REACT_APP_T721_SERVER_PROTOCOL}://${process.env.REACT_APP_T721_SERVER_HOST}:${process.env.REACT_APP_T721_SERVER_PORT}/static`;
-    const imageUrl = `${serverUrl}/${props.date.metadata.avatar}`;
+    const imageUrl = getImgPath(props.date.metadata.avatar);
     const eventBegin = formatShort(new Date(props.date.timestamps.event_begin));
     const eventEnd = formatShort(new Date(props.date.timestamps.event_end));
     const [uuid] = useState(v4());

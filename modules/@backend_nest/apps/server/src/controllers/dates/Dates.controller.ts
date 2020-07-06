@@ -33,7 +33,8 @@ import { DatesCountInputDto } from '@app/server/controllers/dates/dto/DatesCount
 import { RightsService } from '@lib/common/rights/Rights.service';
 import { AuthGuard } from '@nestjs/passport';
 import { Roles, RolesGuard } from '@app/server/authentication/guards/RolesGuard.guard';
-import { closestCity, uuidEq } from '@common/global';
+import { uuidEq } from '@common/global';
+import { closestCity } from '@common/geoloc';
 import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
 import { CategoriesService } from '@lib/common/categories/Categories.service';
 import { isFutureDateRange, isValidDateRange } from '@common/global';

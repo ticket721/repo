@@ -41,7 +41,7 @@ export const HomeEventList: React.FC<HomeEventListProps> = (props: HomeEventList
     }
 
     if (dates.response.error) {
-        return <Error message={dates.response.error}/>
+        return <Error message={JSON.stringify(dates.response.error)}/>
     }
 
     return <div style={{padding: '5%'}}>

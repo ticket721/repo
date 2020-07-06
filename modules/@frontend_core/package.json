@@ -26,6 +26,7 @@
         "lodash.get": "4.4.2",
         "react": "16.13.1",
         "react-dom": "16.13.1",
+        "react-router": "5.1.2",
         "react-i18next": "11.3.3",
         "react-redux": "7.2.0",
         "redux": "4.0.5",
@@ -61,7 +62,7 @@
         "ts-mockito": "2.5.0"
     },
     "scripts": {
-        "build": "rm -rf lib && ./create_empty_contract_artifacts.sh && tsc",
+        "build": "rm -rf lib && tsc",
         "watch": "watch 'npx tsc && echo \"Done !\"' src",
         "test": "jest --expand --verbose",
         "lint": "tslint --project .",
