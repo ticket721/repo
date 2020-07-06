@@ -55,7 +55,7 @@ export const routes: RouteDatum[] = [
     },
     {
         path: '/group/:groupId',
-        page: lazy(() => import('./routes/FetchDate')),
+        page: lazy(() => import('./routes/FetchEvent')),
         protected: true
     },
     {
