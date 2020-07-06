@@ -8,27 +8,29 @@ import { RightsSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/serv
 import { useLazyRequest } from '../../hooks/useLazyRequest';
 import { useDeepEffect } from '../../hooks/useDeepEffect';
 import { AppState } from '../../redux/ducks';
+import { useParams } from 'react-router';
 
 interface Props {
     children: React.ReactNode;
     type?: string;
-    value?: string;
+    value?: 'groupId' | 'dateId' | 'categoryId';
 }
 
 const ProtectedByRights = ({ children, type, value }: Props): JSX.Element => {
     const [uuid] = useState(v4() + '@protectedByRights');
     const token = useSelector((state: AppState): string => state.auth.token.value);
     const [currentRights, setCurrentRights] = useState();
+    const params = useParams();
 
     const { lazyRequest, response: rights } = useLazyRequest<RightsSearchResponseDto>('rights.search', uuid);
 
     useEffect(() => {
         if (type && value) {
-            lazyRequest([token, { entity_type: { $eq: type }, entity_value: { $eq: value } }]);
+            lazyRequest([token, { entity_type: { $eq: type }, entity_value: { $eq: params[value] } }]);
         } else if (type) {
             lazyRequest([token, { entity_type: { $eq: type } }]);
         } else if (value) {
-            lazyRequest([token, { entity_value: { $eq: value } }]);
+            lazyRequest([token, { entity_value: { $eq: params[value] } }]);
         } else {
             lazyRequest([token, {}]);
         }

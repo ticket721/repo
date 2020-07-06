@@ -110,7 +110,7 @@ const FetchEvent = (): JSX.Element => {
                 } else {
                     if (eventsResp.data.events) {
                         dispatch(PushNotification(t('empty_event'), 'warning'));
-                        history.push(`/group/${groupId}/event/${eventsResp.data.events[0].id}/date`);
+                        history.push(`/group/${groupId}/event/${eventsResp.data.events?.[0]?.id}/date`);
                     }
                 }
             }

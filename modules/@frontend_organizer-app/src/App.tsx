@@ -9,7 +9,6 @@ import {
     Switch,
     useLocation,
     withRouter,
-    useParams
 }                           from 'react-router-dom';
 import Navbar               from './shared/Navbar';
 import { AppState }         from '@frontend/core/lib/redux';
@@ -31,7 +30,6 @@ const App: React.FC = () => {
     const authState = useSelector(((state: AppState) => state.auth));
     const appStatus = useSelector(((state: AppState) => state.statuses.appStatus));
     const location = useLocation();
-    const { groupId } = useParams();
 
     useEffect(() => {
         setValidated(authState.user?.validated);
@@ -65,7 +63,7 @@ const App: React.FC = () => {
                                             <PageWrapper>
                                                 {
                                                     route.path.match(/^\/group\/:groupId/) ?
-                                                        <ProtectedByRights type={route.entityType} value={groupId}>
+                                                        <ProtectedByRights type={route.entityType} value={route.paramId}>
                                                             <EventPageWrapper>
                                                                 <EventMenu/>
                                                                 <div>
