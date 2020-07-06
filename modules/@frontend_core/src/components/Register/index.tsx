@@ -29,7 +29,7 @@ export const Register: React.FC<RegisterProps> = (props: RegisterProps) => {
         },
         validationSchema: registerValidationSchema,
         onSubmit: async (values) => {
-            dispatch(LocalRegister(values.email, values.password, values.username, 'fr'));
+            dispatch(LocalRegister(values.email.toLowerCase(), values.password, values.username, 'fr'));
         },
     });
     const history = useHistory();

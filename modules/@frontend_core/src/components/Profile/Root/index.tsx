@@ -30,7 +30,7 @@ export interface ProfileRootProps {
 const ProfileRoot: React.FC<ProfileRootProps> = ({ desktop }: ProfileRootProps): JSX.Element => {
     const [uuid] = useState(v4());
     const { token, userUuid, username, address } = useSelector((state: AppState) => ({
-        token: state.auth.token.value,
+        token: state.auth.token?.value,
         userUuid: state.auth.user?.uuid,
         username: state.auth.user?.username,
         address: state.auth.user?.address,
@@ -41,7 +41,7 @@ const ProfileRoot: React.FC<ProfileRootProps> = ({ desktop }: ProfileRootProps):
     const T721TokenContract = getContract(subspace, 't721token', 'T721Token', uuid);
     const [t, i18n] = useTranslation('profile');
 
-    const activityResponse = useRequest<MetadatasFetchResponseDto>(
+    const { response: activityResponse } = useRequest<MetadatasFetchResponseDto>(
         {
             method: 'metadatas.fetch',
             args: [
@@ -67,7 +67,7 @@ const ProfileRoot: React.FC<ProfileRootProps> = ({ desktop }: ProfileRootProps):
             refreshRate: 50,
         },
         uuid,
-    ).response;
+    );
 
     if (T721TokenContract.loading) {
         return <FullPageLoading />;

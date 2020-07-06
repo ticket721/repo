@@ -28,7 +28,7 @@ export const Login: React.FC<LoginProps> = (props: LoginProps) => {
         },
         validationSchema: loginValidationSchema,
         onSubmit: async (values) => {
-            dispatch(LocalLogin(values.email, values.password));
+            dispatch(LocalLogin(values.email.toLowerCase(), values.password));
         },
     });
     const isTabletOrMobile = useMediaQuery({ maxWidth: 1224 });

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useRequest }                 from '@frontend/core/lib/hooks/useRequest';
+import React, { useState }                                                             from 'react';
+import { useRequest }                                                                  from '@frontend/core/lib/hooks/useRequest';
 import { EventsSearchResponseDto }                                                     from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsSearchResponse.dto';
 import { DatesSearchResponseDto }                                                      from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
 import { CategoriesSearchResponseDto }                                                 from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/categories/dto/CategoriesSearchResponse.dto';
@@ -8,6 +8,12 @@ import { EventDashboard, formatDatesAndCovers, formatEventName, formatPricesAndS
 import { EventCard }                                                                   from './EventCard';
 import styled                                                                          from 'styled-components';
 import { useHistory }                                                                  from 'react-router';
+import { FullPageLoading }                                                             from '@frontend/flib-react/lib/components';
+import { PushNotification }                                                            from '@frontend/core/lib/redux/ducks/notifications';
+
+import { useTranslation } from 'react-i18next';
+import './locales';
+import { useDispatch }    from 'react-redux';
 
 interface EventsFetcherProps {
     token: string;
@@ -17,6 +23,9 @@ interface EventsFetcherProps {
 
 export const EventsFetcher: React.FC<EventsFetcherProps> = ({ token, uuid, groupIds }) => {
     const history = useHistory();
+    const [ t ] = useTranslation('dashboard');
+    const dispatch = useDispatch();
+
     const [ formattedEvents, setFormattedEvents ] = useState<EventDashboard[]>([]);
     const { response: eventsResp } = useRequest<EventsSearchResponseDto>(
         {
@@ -26,7 +35,11 @@ export const EventsFetcher: React.FC<EventsFetcherProps> = ({ token, uuid, group
                 {
                     group_id: {
                         $in: groupIds,
-                    }
+                    },
+                    $sort: [{
+                        $field_name: 'updated_at',
+                        $order: 'desc'
+                    }]
                 },
             ],
             refreshRate: 5,
@@ -74,7 +87,7 @@ export const EventsFetcher: React.FC<EventsFetcherProps> = ({ token, uuid, group
 
     useDeepEffect(() => {
         if (formattedEvents.length > 0 && datesResp.data) {
-            const filteredDates = datesResp.data.dates.filter(d => d.parent_type === 'event' || d.parent_type === 'date');
+            const filteredDates = datesResp.data.dates.filter(d => d.parent_type === 'event');
             if (filteredDates.length > 0) {
                 setFormattedEvents(formatDatesAndCovers(filteredDates, formattedEvents));
             }
@@ -85,17 +98,24 @@ export const EventsFetcher: React.FC<EventsFetcherProps> = ({ token, uuid, group
         if (
             formattedEvents.length > 0 &&
             formattedEvents[0].datesRange &&
-            categoriesResp.data &&
-            categoriesResp.data.categories.length > 0
+            categoriesResp.data?.categories
         ) {
             setFormattedEvents(formatPricesAndSeats(categoriesResp.data.categories, formattedEvents));
         }
     }, [formattedEvents, categoriesResp.data]);
 
+    useDeepEffect(() => {
+        if (eventsResp.error || datesResp.error || categoriesResp.error) {
+            dispatch(PushNotification(t('error_notif'), 'error'));
+        }
+    }, [eventsResp.error, datesResp.error, categoriesResp.error]);
+
     return (
         <Cards>
             {
-                (formattedEvents.length > 0 && formattedEvents[0].datesRange &&
+                eventsResp.loading || datesResp.loading || categoriesResp.loading ?
+                    <FullPageLoading /> :
+                formattedEvents.length > 0 ?
                     formattedEvents.map((event) => (
                         <div
                         key={event.groupId}
@@ -103,8 +123,8 @@ export const EventsFetcher: React.FC<EventsFetcherProps> = ({ token, uuid, group
                             <EventCard
                             {...event}/>
                         </div>
-                    ))) || (formattedEvents.length === 0 && <span>You don't have any event</span>) ||
-                    <span>Loading...</span>
+                    )) :
+                    <ReloadMsg>{t('reload_msg')}</ReloadMsg>
             }
         </Cards>
     );
@@ -119,4 +139,9 @@ const Cards = styled.div`
         width: fit-content;
         margin: ${props => props.theme.regularSpacing} 0;
     }
+`;
+
+const ReloadMsg = styled.span`
+    width: 100%;
+    text-align: center;
 `;
