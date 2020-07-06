@@ -5,16 +5,17 @@ import { Redirect, Route, Switch, useLocation, withRouter } from 'react-router-d
 import Navbar       from './shared/Navbar';
 import { AppState } from '@frontend/core/lib/redux';
 
-import ProtectedRoute      from '@frontend/core/lib/components/ProtectedRoute';
-import { useSelector }     from 'react-redux';
-import styled              from 'styled-components';
-import { AppStatus }       from '@frontend/core/lib/redux/ducks/statuses';
-import ToastStacker        from '@frontend/core/lib/components/ToastStacker';
+import ProtectedRoute       from '@frontend/core/lib/components/ProtectedRoute';
+import { useSelector }      from 'react-redux';
+import styled               from 'styled-components';
+import { AppStatus }        from '@frontend/core/lib/redux/ducks/statuses';
+import ToastStacker         from '@frontend/core/lib/components/ToastStacker';
 import './core/event_creation/locales';
-import { EventMenu }       from './screens/Event/EventMenu';
-import MediaQuery          from 'react-responsive';
-import { routes }          from './routes';
-import { FullPageLoading } from '@frontend/flib-react/lib/components';
+import { EventMenu }        from './screens/Event/EventMenu';
+import MediaQuery           from 'react-responsive';
+import { routes }           from './routes';
+import { FullPageLoading }  from '@frontend/flib-react/lib/components';
+import './shared/Translations/global';
 
 const App: React.FC = () => {
     const [validated, setValidated] = useState(true);
@@ -49,24 +50,20 @@ const App: React.FC = () => {
                                 ?
                                 routes.map((route, idx) => {
 
-                                    const page: JSX.Element = (
-                                        <PageWrapper>
-                                            {
-                                                route.path.match(/^\/group\/:groupId\/(date|event)/) ?
-                                                    <EventPageWrapper>
-                                                        <EventMenu/>
-                                                        <div>
-                                                            <route.page/>
-                                                        </div>
-                                                    </EventPageWrapper> :
-                                                    <route.page/>
-                                            }
-                                        </PageWrapper>
-                                    );
-
                                     if (route.protected) {
                                         return <ProtectedRoute exact={true} path={route.path} key={idx}>
-                                            {page}
+                                            <PageWrapper>
+                                                {
+                                                    route.path.match(/^\/group\/:groupId/) ?
+                                                        <EventPageWrapper>
+                                                            <EventMenu/>
+                                                            <div>
+                                                                <route.page/>
+                                                            </div>
+                                                        </EventPageWrapper> :
+                                                    <route.page/>
+                                                }
+                                            </PageWrapper>
                                         </ProtectedRoute>;
                                     }
                                     return <Route exact={true} key={idx} path={route.path}>

@@ -42,7 +42,7 @@ export const Login: React.FC<LoginProps> = (props: LoginProps) => {
     useEffect(() => {
         if (!auth.loading) {
             if (auth.user?.validated || (auth.submit && !auth.errors && auth.token)) {
-                history.push(from);
+                history.replace(from);
             } else {
                 if (auth.errors) {
                     formik.setErrors(auth.errors);
@@ -85,7 +85,7 @@ export const Login: React.FC<LoginProps> = (props: LoginProps) => {
                                 if (props.onRegister) {
                                     props.onRegister();
                                 } else {
-                                    history.push('/register');
+                                    history.replace('/register');
                                 }
                             }}
                         >
