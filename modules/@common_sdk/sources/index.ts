@@ -37,6 +37,8 @@ import {
     datesSearch,
     datesUpdate,
 } from './app/api/dates';
+
+// EVENTS
 import {
     eventsAddCategories, eventsAddDates, eventsCount,
     eventsCreate, eventsCreateAdminsConfiguration, eventsCreateCategoriesConfiguration,
@@ -44,18 +46,41 @@ import {
     eventsCreateModulesConfiguration,
     eventsCreateTextMetadata, eventsDeleteCategories, eventsDeleteDates,
     eventsSearch, eventsStart, eventsUpdate, eventsWithdraw,
-}                                                      from './app/api/events';
-import { txsCount, txsInfos, txsSearch, txsSubscribe } from './app/api/txs';
-import { contractsFetch }                              from './app/api/contracts';
+} from './app/api/events';
 
+// TXS
+import { txsCount, txsInfos, txsSearch, txsSubscribe } from './app/api/txs';
+
+// CONTRACTS
+import { contractsFetch } from './app/api/contracts';
+
+// CATEGORIES
 import { categoriesCount, categoriesCreate, categoriesSearch, categoriesUpdate } from './app/api/categories';
-import { rightsSearch }                                                          from './app/api/rights';
-import { metadatasFetch }                                                 from './app/api/metadatas';
-import { cartModulesConfiguration, cartTicketSelections }                 from './app/api/cart';
+
+// RIGHTS
+import { rightsSearch } from './app/api/rights';
+
+// METADATAS
+import { metadatasFetch } from './app/api/metadatas';
+
+// CART
+import { cartModulesConfiguration, cartTicketSelections } from './app/api/cart';
+
+// CHECKOUT
 import { checkoutCartCommitStripe, checkoutResolveCartWithPaymentIntent } from './app/api/checkout';
-import { dosojinSearch, dosojinCount }                                                  from './app/api/dosojin';
-import { ticketsSearch, ticketsCount }                                    from './app/api/tickets';
-import { usersMe }                                                        from './app/api/users';
+
+// DOSOJIN
+import { dosojinSearch, dosojinCount } from './app/api/dosojin';
+
+// TICKETS
+import { ticketsSearch, ticketsCount } from './app/api/tickets';
+
+// USERS
+import { usersMe } from './app/api/users';
+
+// GEOLOC
+
+import { geolocClosestCity, geolocFuzzySearch } from './app/api/geoloc';
 
 export { FailedRegisterReport } from './app/api/authentication';
 
@@ -145,6 +170,9 @@ export class T721SDK {
 
         this.tickets.search = this.tickets.search.bind(this);
         this.tickets.count = this.tickets.count.bind(this);
+
+        this.geoloc.closestCity = this.geoloc.closestCity.bind(this);
+        this.geoloc.fuzzySearch = this.geoloc.fuzzySearch.bind(this);
     }
 
     connect(host: string, port: number, protocol: 'http' | 'https' = 'http') {
@@ -244,7 +272,7 @@ export class T721SDK {
     public validateResetPassword = validateResetPassword;
 
     public users = {
-        me: usersMe
+        me: usersMe,
     };
 
     public actions = {
@@ -325,12 +353,12 @@ export class T721SDK {
     public checkout = {
         cart: {
             commit: {
-                stripe: checkoutCartCommitStripe
+                stripe: checkoutCartCommitStripe,
             },
             resolve: {
-                paymentIntent: checkoutResolveCartWithPaymentIntent
-            }
-        }
+                paymentIntent: checkoutResolveCartWithPaymentIntent,
+            },
+        },
     };
 
     public dosojin = {
@@ -341,5 +369,10 @@ export class T721SDK {
     public tickets = {
         search: ticketsSearch,
         count: ticketsCount,
+    };
+
+    public geoloc = {
+        closestCity: geolocClosestCity,
+        fuzzySearch: geolocFuzzySearch,
     }
 }
