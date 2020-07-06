@@ -33,9 +33,9 @@ const NewDate = (): JSX.Element => {
     const [uuidDates] = React.useState(v4() + '@new-date_dates.search');
     const [uuid] = React.useState(v4() + '@new-date');
     const token = useSelector((state: AppState): string => state.auth.token.value);
-    const { response: dateResp } = useRequest<DatesSearchResponseDto>(
+    const { response: eventsResp } = useRequest<DatesSearchResponseDto>(
         {
-            method: 'dates.search',
+            method: 'events.search',
             args: [
                 token,
                 {
@@ -115,10 +115,10 @@ const NewDate = (): JSX.Element => {
     }, [addResponse.data]);
 
     useDeepEffect(() => {
-        if (!dateResp.loading && dateResp.data && dateResp.data.dates.length === 0) {
+        if (!eventsResp.loading && eventsResp.data && eventsResp.data.dates.length === 0) {
             history.push('/');
         }
-    }, [dateResp.data]);
+    }, [eventsResp.data]);
 
     const renderFormActions = () => (<Button variant='primary' type='submit' title={t('global:validate')}/>);
 
