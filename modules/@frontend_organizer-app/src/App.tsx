@@ -6,6 +6,7 @@ import Navbar       from './shared/Navbar';
 import { AppState } from '@frontend/core/lib/redux';
 
 import ProtectedRoute      from '@frontend/core/lib/components/ProtectedRoute';
+import ProtectedByRights   from '@frontend/core/lib/components/ProtectedByRights';
 import { useSelector }     from 'react-redux';
 import styled              from 'styled-components';
 import { AppStatus }       from '@frontend/core/lib/redux/ducks/statuses';
@@ -53,12 +54,15 @@ const App: React.FC = () => {
                                         <PageWrapper>
                                             {
                                                 route.path.match(/^\/group\/:groupId\/(date|event)/) ?
-                                                    <EventPageWrapper>
-                                                        <EventMenu/>
-                                                        <div>
-                                                            <route.page/>
-                                                        </div>
-                                                    </EventPageWrapper> :
+                                                    <ProtectedByRights>
+                                                        <EventPageWrapper>
+                                                            <EventMenu/>
+                                                            <div>
+                                                                <route.page/>
+                                                            </div>
+                                                        </EventPageWrapper>
+                                                    </ProtectedByRights>
+                                                :
                                                     <route.page/>
                                             }
                                         </PageWrapper>
