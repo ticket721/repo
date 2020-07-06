@@ -1,11 +1,9 @@
 import { useSelector } from 'react-redux';
-import { AppState }                               from '../../redux/ducks';
-import { useRequest }                             from '../useRequest';
-import { useState }                               from 'react';
-import { v4 }                                     from 'uuid';
-import {
-    RightsSearchResponseDto
-}                from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/rights/dto/RightsSearchResponse.dto';
+import { AppState } from '../../redux/ducks';
+import { useRequest } from '../useRequest';
+import { useState } from 'react';
+import { v4 } from 'uuid';
+import { RightsSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/rights/dto/RightsSearchResponse.dto';
 
 interface RightsParams {
     entityValue?: string;
@@ -36,12 +34,13 @@ export const useRights = (params: RightsParams): RequestResp => {
                     entity_value: {
                         $eq: params.entityValue,
                     },
-                    $page_size: params.pageSize ? params.pageSize : 10
+                    $page_size: params.pageSize ? params.pageSize : 10,
                 },
             ],
             refreshRate: 5,
         },
-        uuid);
+        uuid,
+    );
     return {
         entities: rightsResp.data?.rights,
         error: rightsResp.error,

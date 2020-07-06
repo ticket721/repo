@@ -15,11 +15,9 @@ import { EventMenu }        from './screens/Event/EventMenu';
 import MediaQuery           from 'react-responsive';
 import { routes }           from './routes';
 import { FullPageLoading }  from '@frontend/flib-react/lib/components';
-import { useTranslation }           from 'react-i18next';
 import './shared/Translations/global';
 
 const App: React.FC = () => {
-    const [ t ] = useTranslation('notify');
     const [validated, setValidated] = useState(true);
     const authState = useSelector(((state: AppState) => state.auth));
     const appStatus = useSelector(((state: AppState) => state.statuses.appStatus));
