@@ -18,11 +18,11 @@ const userDates = [
         lon: 0,
         lat: 0,
       },
-      location_label: "221 avenue Jean Jaurès, Paris"
+      location_label: '221 avenue Jean Jaurès, Paris'
     },
     timestamps: {
-      event_end: "2020-07-16T09:10:00.000Z",
-      event_begin: "2020-07-17T08:40:00.000Z"
+      event_end: '2020-07-16T09:10:00.000Z',
+      event_begin: '2020-07-17T08:40:00.000Z'
     },
     metadata: {
       name: 'Super Event Name',

@@ -122,11 +122,7 @@ export const PreviewInfos: React.FunctionComponent<PreviewInfosProps> = (props: 
                     startTime={props.ticket.startTime}
                     removeBg
                 />
-                <Location
-                    iconColor={props.ticket.mainColor}
-                    location={props.ticket.location}
-                    removeBg
-                />
+                <Location iconColor={props.ticket.mainColor} location={props.ticket.location} removeBg />
                 {props.ticket.addOns ? (
                     <div>
                         <Subtitle>{props.ticket.addOns} add-ons purchased</Subtitle>
