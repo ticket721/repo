@@ -6,37 +6,48 @@ import { useSelector, useDispatch } from 'react-redux';
 import { v4 } from 'uuid';
 import { useParams, useHistory } from 'react-router';
 
-import {Button, Textarea, TextInput, Tags, DropError, FilesUploader} from '@frontend/flib-react/lib/components';
+import {Button } from '@frontend/flib-react/lib/components';
 import { AppState } from '@frontend/core/src/redux/ducks';
 import { useLazyRequest } from '@frontend/core/lib/hooks/useLazyRequest';
 import { PushNotification } from '@frontend/core/lib/redux/ducks/notifications';
 import { useDeepEffect } from '@frontend/core/lib/hooks/useDeepEffect';
-import { ImageEntity }              from '@common/sdk/lib/@backend_nest/libs/common/src/images/entities/Image.entity';
-import { getImgPath }               from '@frontend/core/lib/utils/images';
 import {
     DatesCreateResponseDto
 } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesCreateResponse.dto';
 
-import { EventCreationCore }        from '../../../core/event_creation/EventCreationCore';
-import { ColorPickers }             from '../../../components/ColorPickers';
 import '../../../shared/Translations/generalInfoForm';
 import '../../../shared/Translations/global';
 import DateForm from '../../../components/DateForm';
 
-import { completeDateValidation } from './validationSchema';
+import { completeDateValidation }  from './validationSchema';
+import { EventsSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsSearchResponse.dto';
+import { useRequest }              from '@frontend/core/lib/hooks/useRequest';
+import { Metadata }                from './Metadata';
+import { Styles }                  from './Styles';
 
 const NewDate = (): JSX.Element => {
     const [ t ] = useTranslation(['general_infos', 'notify', 'global', 'event_creation_styles']);
     const history = useHistory();
     const { groupId, eventId } = useParams();
-    const [ inputTag, setInputTag ] = React.useState('');
     const dispatch = useDispatch();
-    const [uuiAdd] = React.useState(v4() + '@new-date-add');
-    const [uuidCreate] = React.useState(v4() + '@new-date-create');
+    const [uuid] = React.useState(v4() + '@new-date');
     const token = useSelector((state: AppState): string => state.auth.token.value);
 
-    const { lazyRequest: createDate, response: createResponse } = useLazyRequest<DatesCreateResponseDto>('dates.create', uuidCreate);
-    const { lazyRequest: addDate, response: addResponse } = useLazyRequest<DatesCreateResponseDto>('events.addDates', uuiAdd);
+    const { response: eventResp } = useRequest<EventsSearchResponseDto>({
+        method: 'events.search',
+        args: [
+            token,
+            {
+                id: {
+                    $eq: eventId
+                }
+            }
+        ],
+        refreshRate: 5,
+    },
+        uuid);
+    const { lazyRequest: createDate, response: createResponse } = useLazyRequest<DatesCreateResponseDto>('dates.create', uuid);
+    const { lazyRequest: addDate, response: addResponse } = useLazyRequest<DatesCreateResponseDto>('events.addDates', uuid);
 
     const formik = useFormik({
         initialValues: {
@@ -93,6 +104,7 @@ const NewDate = (): JSX.Element => {
             dispatch(PushNotification(t(createResponse.error), 'error'));
         }
     }, [addResponse.error]);
+
     useDeepEffect(() => {
         if (addResponse.data) {
             dispatch(PushNotification(t('success'), 'success'));
@@ -100,141 +112,13 @@ const NewDate = (): JSX.Element => {
         }
     }, [addResponse.data]);
 
-
-    const onTagsKeyDown = (e: React.KeyboardEvent<HTMLElement>, tag: string) => {
-        if(!inputTag) {
-            if (formik.values.tags?.length === 5) {
-                e.preventDefault();
-            }
-
-            return;
-        }
-
-        switch (e.key) {
-            case 'Enter':
-            case 'Tab':
-                if (!formik.touched.tags) {
-                    formik.setFieldTouched('tags');
-                }
-                if (formik.values.tags.indexOf(tag) > -1) {
-                    formik.setFieldError('tags', 'tag_already_added');
-                } else if (inputTag.length < 3) {
-                    formik.setFieldError('tags', 'tag_too_short');
-                } else if (inputTag.length > 16) {
-                    formik.setFieldError('tags', 'tag_too_long');
-                } else {
-                    setInputTag('');
-                    formik.setFieldValue('tags', [
-                        ...formik.values.tags,
-                        tag,
-                    ]);
-                }
-                e.preventDefault();
-        }
-    };
-
-    const [ preview, setPreview ] = React.useState('');
-
-    const uploadImages = (files: File[], previews: string[]) => {
-        const formData = new FormData();
-        files.forEach((file) => formData.append('images', file));
-        EventCreationCore.uploadImages(token, formData, {})
-          .then((ids: ImageEntity[]) => {
-              formik.setFieldTouched('avatar');
-              formik.setFieldValue('avatar', ids[0].id);
-          }).catch((error) => {
-            dispatch(PushNotification(t('error_notifications:' + error.message), 'error'));
-        });
-    };
-
-    const removeImage = () => {
-        formik.setFieldValue('avatar', '');
-        formik.setFieldValue('signature_colors', []);
-        setPreview('');
-    };
-
-    const handleDropErrors = (errors: DropError[]) => {
-        let finalError: string = '';
-        for (const err of errors[0].errorCodes) {
-            finalError = finalError.concat(' ' + t('react_dropzone_errors:' + err));
-        }
-
-        formik.setFieldError('avatar', finalError);
-    };
-
-    const computeError = (field: string) => formik.touched[field] && formik.errors[field] ? 'validation:' + formik.errors[field] : '';
-
-    React.useEffect(() => {
-        if (formik.values.avatar) {
-            setPreview(getImgPath(formik.values.avatar));
-        }
-    }, [formik.values.avatar]);
-
     const renderFormActions = () => (<Button variant='primary' type='submit' title={t('validate')}/>);
 
     return (
         <Form onSubmit={formik.handleSubmit}>
             <div className={'form-container'}>
-                <TextInput
-                    name='name'
-                    label={t('name_label')}
-                    placeholder={t('name_placeholder')}
-                    {...formik.getFieldProps('name')}
-                    error={
-                        computeError('name')
-                        && t(computeError('name'))
-                    }
-                />
-                <Textarea
-                    name='description'
-                    label={t('description_label')}
-                    placeholder={t('description_placeholder')}
-                    maxChar={1000}
-                    {...formik.getFieldProps('description')}
-                    error={
-                        computeError('description')
-                        && t(computeError('description'))
-                    }
-                />
-                <Tags
-                    name='tags'
-                    label={t('tags_label')}
-                    placeholder={t('tags_placeholder')}
-                    currentTagsNumber={formik.values?.tags ? formik.values?.tags.length : 0}
-                    maxTags={5}
-                    inputValue={inputTag}
-                    onInputChange={(val: string) => setInputTag(val)}
-                    onKeyDown={onTagsKeyDown}
-                    value={formik.values.tags}
-                    onChange={(tags: string[]) => formik.setFieldValue('tags', tags)}
-                    onFocus={(v) => { console.log('focus');}}
-                    onBlur={(e: any) => { console.log('focus');}}
-                    error={
-                        computeError('tags')
-                        && t(computeError('tags'))
-                    }
-                />
-                <FilesUploader
-                  name={'avatar'}
-                  multiple={false}
-                  browseLabel={t('browse')}
-                  dragDropLabel={t('drag_and_drop')}
-                  uploadRecommendations={t('image_recommendation')}
-                  onDrop={uploadImages}
-                  onDropRejected={handleDropErrors}
-                  onRemove={removeImage}
-                  width={'600px'}
-                  height={'300px'}
-                  previewPaths={[preview]}
-                  error={
-                      computeError('avatar') &&
-                      t(computeError('avatar'))
-                  }
-                />
-                <ColorPickers
-                  srcImage={preview}
-                  colors={formik.values.signature_colors}
-                  onColorsChange={(colors) => formik.setFieldValue('signature_colors', colors)}/>
+                <Metadata formik={formik}/>
+                <Styles formik={formik}/>
                 <DateForm
                     formik={formik}
                     formActions={renderFormActions}
