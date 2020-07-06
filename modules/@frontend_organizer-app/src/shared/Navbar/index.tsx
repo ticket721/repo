@@ -1,15 +1,13 @@
-import React, { useState } from 'react';
-import styled              from 'styled-components';
+import React, { useEffect, useState } from 'react';
+import styled                         from 'styled-components';
 import { Icon, WalletHeader } from '@frontend/flib-react/lib/components';
 
-import DrawerAccount                         from '../DrawerAccount';
-import { useTranslation }                    from 'react-i18next';
+import { DrawerAccount, ProfileRoute } from '../DrawerAccount';
+import { useTranslation }              from 'react-i18next';
 import { blurAndDarkenBackground, truncate } from '@frontend/core/lib/utils';
 import { useHistory }                        from 'react-router';
 import { NavLink }                           from 'react-router-dom';
 import { useSelector }                       from 'react-redux';
-import { computeProfilePath }                from '@frontend/core/lib/utils/computeProfilePath';
-import { appendProfilePath }                 from '@frontend/core/lib/utils/appendProfilePath';
 import { AppState }                          from '@frontend/core/lib/redux';
 import { getContract }                       from '@frontend/core/lib/subspace/getContract';
 import './locales';
@@ -23,22 +21,26 @@ const NavBar: React.FC = () => {
     const history = useHistory();
     const user = useSelector((state: AppState) => state.auth.user);
     const [uuid] = useState(v4());
-
     const subspace = useSubspace();
     const T721TokenContract = getContract(subspace, 't721token', 'T721Token', uuid);
+    const [ profileRoute, setProfileRoute ] = useState<ProfileRoute>();
 
     const $balance = (T721TokenContract.loading || T721TokenContract.error)
         ? '...'
         : T721TokenContract.contract.methods.balanceOf(user?.address).track();
 
-    const drawerOnClose = () => {
-        if (computeProfilePath(history.location.pathname).startsWith('/profile')) {
-            history.push('/');
+    useEffect(() => {
+        if (history.location.search.match(/[?|&]profile=(root|activities|language)$/)) {
+            const route = history.location.search.match(/[?|&]profile=(root|activities|language)$/)[1];
+            if (route === 'root' || route === 'activities' || route === 'language') {
+                setProfileRoute(route);
+            } else {
+                setProfileRoute(null);
+            }
         } else {
-            const computedProfilePath = computeProfilePath(history.location.pathname);
-            history.push(computedProfilePath.substr(0, computedProfilePath.length - 7));
+            setProfileRoute(null);
         }
-    };
+    }, [history.location.search]);
 
     return (
         <Container>
@@ -55,15 +57,15 @@ const NavBar: React.FC = () => {
                 </NavLink>
                 <Profile
                     onClick={
-                        () => history.push(appendProfilePath(history.location.pathname))
+                        () => history.push(history.location.pathname + '?profile=root')
                     }>
                     <ConnectedUserHeader username={user?.username} picture={'/favicon.ico'} balance={$balance}/>
                     <Chevron icon='chevron' color='#fff' size='7px'/>
                 </Profile>
             </ActionContainer>
             <DrawerAccount
-                open={computeProfilePath(history.location.pathname) !== '/'}
-                onClose={drawerOnClose}/>
+                route={profileRoute}
+                onClose={() => history.push(history.location.pathname)}/>
         </Container>
     );
 };

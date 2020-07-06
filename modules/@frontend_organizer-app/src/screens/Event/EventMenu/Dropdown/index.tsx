@@ -147,7 +147,7 @@ export const Dropdown: React.FC = () => {
                                         });
                                 }
                             } else if (dateOpt.value === 'new-date') {
-                                history.push(`/group/${groupId}/event/${eventId}/date`);
+                                history.push(`/group/${groupId}/event/${eventResp.data.events[0].id}/date`);
                             } else {
                                 history.push(`/group/${groupId}/date/${dateOpt.value}`, {
                                     showingInfos: true,

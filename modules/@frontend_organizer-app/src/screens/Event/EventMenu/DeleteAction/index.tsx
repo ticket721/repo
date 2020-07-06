@@ -13,11 +13,12 @@ import { PushNotification }         from '@frontend/core/lib/redux/ducks/notific
 import { DateEntity }               from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
 import { Button }                   from '@frontend/flib-react/lib/components';
 import { MergedAppState }           from '../../../../index';
+import './locales';
 
-export const Actions = () => {
+export const DeleteAction = () => {
   const { dateId, groupId } = useParams();
   const history = useHistory();
-  const [ t ] = useTranslation(['date_actions']);
+  const [ t ] = useTranslation('delete_action');
   const [uuid] = useState<string>(v4() + '@event-menu-dates.search');
   const [uuidDelete] = useState<string>(v4() + '@event-menu-dates.delete');
   const token = useSelector((state: MergedAppState) => state.auth.token.value);
@@ -63,13 +64,7 @@ export const Actions = () => {
 
   return (
     <>
-      <Separator/>
       <ButtonContainer>
-        <Button
-          title={t('add_label')}
-          variant='primary'
-          onClick={() => history.push(`/group/${groupId}/event/${eventId}/date`)}
-        />
         <Button
           variant={dateId ? 'danger' : 'disabled'}
           title={datesResp.data?.dates?.length > 1 ? t('delete_date_label') : t('delete_event_label')}
@@ -81,12 +76,5 @@ export const Actions = () => {
 };
 
 const ButtonContainer = styled.div`
-  margin: 0 ${props => props.theme.biggerSpacing};
-`;
-
-const Separator = styled.div`
-  height: 2px;
-  width: 100%;
-  margin: 12px 0;
-  background: rgba(10, 8, 18, 0.3);
+  margin: 12px ${props => props.theme.biggerSpacing};
 `;

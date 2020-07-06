@@ -3,49 +3,54 @@ import styled                                                 from 'styled-compo
 import { detect }                                             from 'detect-browser';
 import { Drawer as MUIDrawer, DrawerProps as MUIDrawerProps } from '@material-ui/core';
 import { blurAndDarkenBackground }                            from '@frontend/core/lib/utils/style';
-import { Route, Switch }                                      from 'react-router-dom';
-import { drawerRoutes }                                       from './drawerRoutes';
 import { useHistory }                                         from 'react-router';
 import { ArrowBackIos }                                       from '@material-ui/icons';
-import { computeProfilePath }                                 from '@frontend/core/lib/utils/computeProfilePath';
+import Activities                                             from '@frontend/core/lib/components/Profile/Activities';
+import ProfileRoot                                            from '@frontend/core/lib/components/Profile/Root';
+import Language                                               from '@frontend/core/lib/components/Profile/Language';
 
-interface Props {
-    open: boolean,
+export type ProfileRoute = 'root' | 'activities' | 'language';
+
+interface DrawerAccountProps {
+    route: ProfileRoute;
     onClose: () => void;
 }
 
-const DrawerAccount = ({open, onClose}: Props): JSX.Element => {
+export const DrawerAccount: React.FC<DrawerAccountProps> = ({route, onClose}: DrawerAccountProps) => {
     const history = useHistory();
     const browser = detect();
 
-    const topBar = (path: string) => {
-        if (path === '/') {
-            return null;
-        }
-
-        return <BackArrow style={{marginTop: 24}} onClick={() => history.push(computeProfilePath(history.location.pathname))}>
-            <ArrowBackIos />
-            <span>Back</span>
-        </BackArrow>
-    };
-
     return (
-        <Drawer anchor='right' open={open} onClose={onClose} browsername={browser?.name}>
-            <Switch>
-                {
-                    drawerRoutes.map((route, idx) => (
-                        <Route
-                            key={idx}
-                            path={computeProfilePath(history.location.pathname, route.path)}>
-                            {
-                                topBar(route.path)
-                            }
-                            <route.component />
-
-                        </Route>
-                    ))
-                }
-            </Switch>
+        <Drawer anchor='right' open={route !== null} onClose={onClose} browsername={browser?.name}>
+            {
+                route === 'root' ?
+                    <ProfileRoot desktop={true}/> :
+                    null
+            }
+            {
+                route === 'activities' ?
+                    <>
+                        <BackArrow
+                            onClick={() => history.push(history.location.pathname + '?profile=root')}>
+                            <ArrowBackIos />
+                            <span>Back</span>
+                        </BackArrow>
+                        <Activities/>
+                    </> :
+                    null
+            }
+            {
+                route === 'language' ?
+                    <>
+                        <BackArrow
+                            onClick={() => history.push(history.location.pathname + '?profile=root')}>
+                            <ArrowBackIos />
+                            <span>Back</span>
+                        </BackArrow>
+                        <Language/>
+                    </> :
+                    null
+            }
         </Drawer>
     );
 };
@@ -71,10 +76,9 @@ const BackArrow = styled.div`
     width: fit-content;
     cursor: pointer;
     margin-left: 22px;
+    margin-top: 24px;
 
     span {
         margin-top: 3px;
     }
 `;
-
-export default DrawerAccount;
