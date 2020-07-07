@@ -10,7 +10,6 @@ export default interface Ticket {
     endDate: string;
     endTime: string;
     ticketId: string;
-    addOns?: number;
     image: string;
     seat?: SeatProps;
     purchase_date?: string;

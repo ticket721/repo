@@ -9,6 +9,5 @@ export interface Ticket {
   endTime: string;
   gradients: string[];
   mainColor: string;
-  addOns: number;
   image: string;
 }

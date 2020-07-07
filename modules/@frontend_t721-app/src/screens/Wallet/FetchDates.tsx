@@ -49,7 +49,6 @@ const formatTicket = (data: any, ticketType: string): Ticket => ({
     ticketId: data.id,
     gradients: data.metadata.signature_colors,
     mainColor: data.metadata.signature_colors[0],
-    addOns: 0,
     image: getImgPath(data.metadata.avatar),
 });
 

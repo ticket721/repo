@@ -68,7 +68,7 @@ const Wallet: React.FC = () => {
     const currentTickets = response.data.tickets.filter(ticket => ticket.status !== 'canceled');
     return (
         <div className='Wallet'>
-            <Title>My Tickets</Title>
+            <Title>{t('my_tickets')}</Title>
             { currentTickets.length > 0 ? <FetchCategories /> : null }
             { currentTickets.length === 0 ? <span>{t('no_ticket')}</span> : null}
         </div>
