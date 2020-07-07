@@ -17,7 +17,7 @@ export enum TimeScale {
 export const displayTime = (date: Date | string): string => {
     let dateToFormat: Date;
     if (typeof date === 'string') {
-        dateToFormat = new Date (date);
+        dateToFormat = new Date(date);
     } else {
         dateToFormat = date;
     }
@@ -28,7 +28,7 @@ export const displayTime = (date: Date | string): string => {
 export const displayDate = (date: Date | string): string => {
     let dateToFormat: Date;
     if (typeof date === 'string') {
-        dateToFormat = new Date (date);
+        dateToFormat = new Date(date);
     } else {
         dateToFormat = date;
     }
