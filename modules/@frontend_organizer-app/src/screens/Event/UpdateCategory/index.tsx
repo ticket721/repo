@@ -53,6 +53,12 @@ const UpdateCategory: React.FC = () => {
         }
     }, [categoryResp.data]);
 
+    useDeepEffect(() => {
+        if (dateResp.data && dateResp.data.dates.length === 0) {
+            history.push('/');
+        }
+    }, [dateResp.data]);
+
     if (categoryResp.data?.categories[0]) {
         return (
             <UpdateCategoryForm

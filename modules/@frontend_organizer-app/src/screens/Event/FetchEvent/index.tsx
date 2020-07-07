@@ -95,8 +95,12 @@ const FetchEvent = (): JSX.Element => {
                     history.push(`/group/${groupId}/event/${defaultGlobalCategory.parent_id}/category/${defaultGlobalCategory.id}`);
                 } else {
                     if (eventsResp.data.events) {
-                        dispatch(PushNotification(t('empty_event'), 'warning'));
-                        history.push(`/group/${groupId}/event/${eventsResp.data.events?.[0]?.id}/date`);
+                        if (eventsResp.data.events.length === 0) {
+                            history.push('/');
+                        } else {
+                            dispatch(PushNotification(t('empty_event'), 'warning'));
+                            history.push(`/group/${groupId}/event/${eventsResp.data.events[0].id}/date`);
+                        }
                     }
                 }
             }

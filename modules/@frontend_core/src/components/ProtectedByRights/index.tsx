@@ -10,13 +10,13 @@ import { useDeepEffect } from '../../hooks/useDeepEffect';
 import { AppState } from '../../redux/ducks';
 import { useParams } from 'react-router';
 
-interface Props {
+interface ProtectedByRightsProps {
     children: React.ReactNode;
     type?: string;
     value?: 'groupId' | 'dateId' | 'categoryId' | 'eventId';
 }
 
-const ProtectedByRights = ({ children, type, value }: Props): JSX.Element => {
+const ProtectedByRights = ({ children, type, value }: ProtectedByRightsProps): JSX.Element => {
     const [uuid] = useState(v4() + '@protectedByRights');
     const token = useSelector((state: AppState): string => state.auth.token.value);
     const [currentRights, setCurrentRights] = useState();
