@@ -87,7 +87,7 @@ const FetchCategories = () => {
             { currentCategories.length > 0 &&
                 <Flicking
                     collectStatistics={false}
-                    gap={24}
+                    gap={16}
                 >
                     {
                         currentCategories.map(c =>
@@ -103,8 +103,10 @@ const FetchCategories = () => {
 
 const Container = styled.div`
   .eg-flick-viewport {
-    overflow: unset;
-    height: calc(100vh - 200px);
+    overflow: unset !important;
+    height: calc(100vh - 200px) !important;
+    width: calc(100% + 16px) !important;
+    left: -15px;
   }
 
   .eg-flick-camera {
