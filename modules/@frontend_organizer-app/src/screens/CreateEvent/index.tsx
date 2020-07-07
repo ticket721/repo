@@ -57,11 +57,6 @@ const CreateEvent: React.FC = () => {
         ));
 
     useEffect(() => {
-        console.log('here');
-        if (!eventAcsetId) {
-            dispatch(InitEventAcset());
-        }
-
         if (eventAcsetId && stepIdx === null && actionsStatuses.length > 0) {
             setStepIdx(actionsStatuses.lastIndexOf('complete') + 1);
         }
@@ -95,6 +90,11 @@ const CreateEvent: React.FC = () => {
         eventAcsetId,
         token,
     ]);
+
+    useEffect(() => {
+        dispatch(InitEventAcset());
+        setStepIdx(null);
+    }, [dispatch]);
 
     return (
         <Container>
@@ -164,7 +164,10 @@ const CreateEvent: React.FC = () => {
                             onClick={() => global.window.t721Sdk.events.create.create(
                                 token,
                                 {completedActionSet: eventAcsetId}
-                            ).then(() => history.push('/'))
+                            ).then(() => {
+                                dispatch(PushNotification(t('event_create_success'), 'success'));
+                                history.push('/')
+                            })
                                 .catch((e) => dispatch(PushNotification(e.message, 'error')))
                             }
                         />

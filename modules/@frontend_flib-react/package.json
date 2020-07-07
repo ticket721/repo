@@ -11,7 +11,7 @@
     }
   },
   "scripts": {
-    "build": "rm -rf lib && tsc && echo \"Components compiled !\" && mkdir -p lib/assets && cp -r static/assets/fonts lib/assets/fonts && yarn gen-icons",
+    "build": "rm -rf lib && tsc && echo \"Components compiled !\" && mkdir -p lib/assets && cp -r static/assets/fonts lib/assets/fonts && cp -r static/assets/media lib/assets/media && yarn gen-icons",
     "watch": "watch 'npx tsc && echo \"Done !\"' src",
     "gen-icons": "rm -rf static/t721-icons && node scripts/svgtofont.js",
     "storybook": "start-storybook -p 6007 -s ./static",
