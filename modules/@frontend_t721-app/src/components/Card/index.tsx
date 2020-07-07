@@ -35,6 +35,7 @@ const Container = styled.div`
     border-bottom-left-radius: 8px;
     border-bottom-right-radius: 8px;
     overflow: hidden;
+    width: 100%;
 `;
 
 export default TicketCard;
