@@ -17,7 +17,6 @@ interface ComponentsPreviewProps {
 }
 
 const prevTicket: TicketInterface = {
-    addOns: 0,
     location: '200 Foo Street',
     endDate: 'XXXX/XX/XX',
     endTime: 'X:XXpm',
