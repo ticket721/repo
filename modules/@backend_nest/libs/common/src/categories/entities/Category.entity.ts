@@ -73,7 +73,7 @@ export class CategoryEntity {
     @Column({
         type: 'text',
     })
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     group_id: string;
 
     /**
@@ -82,7 +82,7 @@ export class CategoryEntity {
     @Column({
         type: 'text',
     })
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     category_name: string;
 
     /**
@@ -91,7 +91,7 @@ export class CategoryEntity {
     @Column({
         type: 'text',
     })
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     display_name: string;
 
     /**
@@ -100,7 +100,7 @@ export class CategoryEntity {
     @Column({
         type: 'timestamp',
     })
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     sale_begin: Date;
 
     /**
@@ -109,7 +109,7 @@ export class CategoryEntity {
     @Column({
         type: 'timestamp',
     })
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     sale_end: Date;
 
     /**
@@ -118,7 +118,7 @@ export class CategoryEntity {
     @Column({
         type: 'timestamp',
     })
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     resale_begin: Date;
 
     /**
@@ -127,7 +127,7 @@ export class CategoryEntity {
     @Column({
         type: 'timestamp',
     })
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     resale_end: Date;
 
     /**
@@ -169,7 +169,7 @@ export class CategoryEntity {
     @Column({
         type: 'uuid',
     })
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     parent_id: string;
 
     /**
@@ -178,21 +178,21 @@ export class CategoryEntity {
     @Column({
         type: 'text',
     })
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     parent_type: string;
 
     /**
      * Creation timestamp
      */
     @CreateDateColumn()
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     created_at: Date;
 
     /**
      * Update timestamp
      */
     @UpdateDateColumn()
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     updated_at: Date;
 
     /**
@@ -226,11 +226,11 @@ export class CategoryEntity {
             });
         }
 
-        if ((cat.seats - cat.reserved) < amount) {
+        if (cat.seats - cat.reserved < amount) {
             errors.push({
                 category: cat,
-                reason: 'category_sold_out'
-            })
+                reason: 'category_sold_out',
+            });
         }
 
         return errors;
