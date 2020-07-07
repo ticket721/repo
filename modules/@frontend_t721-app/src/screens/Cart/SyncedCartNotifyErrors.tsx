@@ -84,7 +84,7 @@ export const SyncedCartNotifyErrors: React.FC<SyncedCartNotifyErrorsProps> = (pr
                 key={error}
                 error={error}
                 categoriesById={sortedCategories[error]}
-            />,
+            />
         );
 
     }
@@ -95,10 +95,10 @@ export const SyncedCartNotifyErrors: React.FC<SyncedCartNotifyErrorsProps> = (pr
         const errorClone = [...props.errors];
 
         for (const errorTicket of errorClone) {
+            const firstIdx = res.findIndex((_v: CategoryEntity) => _v.id === errorTicket.category.id);
             res = res
                 .filter((v: CategoryEntity, idx: number): boolean => {
-                    return !(v.id === errorTicket.category.id &&
-                        idx === res.findIndex((_v: CategoryEntity) => _v.id === errorTicket.category.id));
+                    return !(v.id === errorTicket.category.id && idx === firstIdx);
                 });
         }
 
