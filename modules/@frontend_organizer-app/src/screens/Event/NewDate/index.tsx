@@ -14,7 +14,7 @@ import { useDeepEffect } from '@frontend/core/lib/hooks/useDeepEffect';
 import {
     DatesCreateResponseDto
 } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesCreateResponse.dto';
-import { DatesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
+import { EventsSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsSearchResponse.dto';
 import { useRequest } from '@frontend/core/lib/hooks/useRequest';
 
 import '../../../shared/Translations/generalInfoForm';
@@ -30,23 +30,23 @@ const NewDate = (): JSX.Element => {
     const history = useHistory();
     const { groupId, eventId } = useParams();
     const dispatch = useDispatch();
-    const [uuidDates] = React.useState(v4() + '@new-date_dates.search');
+    const [uuidEvent] = React.useState(v4() + '@new-date_events.search');
     const [uuid] = React.useState(v4() + '@new-date');
     const token = useSelector((state: AppState): string => state.auth.token.value);
-    const { response: eventsResp } = useRequest<DatesSearchResponseDto>(
+    const { response: eventsResp } = useRequest<EventsSearchResponseDto>(
         {
             method: 'events.search',
             args: [
                 token,
                 {
-                    parent_id: {
+                    id: {
                         $eq: eventId
                     }
                 }
             ],
           refreshRate: 1,
         },
-        uuidDates
+        uuidEvent
     );
     const { lazyRequest: createDate, response: createResponse } = useLazyRequest<DatesCreateResponseDto>('dates.create', uuid);
     const { lazyRequest: addDate, response: addResponse } = useLazyRequest<DatesCreateResponseDto>('events.addDates', uuid);
@@ -115,7 +115,7 @@ const NewDate = (): JSX.Element => {
     }, [addResponse.data]);
 
     useDeepEffect(() => {
-        if (!eventsResp.loading && eventsResp.data && eventsResp.data.dates.length === 0) {
+        if (!eventsResp.loading && eventsResp.data && eventsResp.data.events.length === 0) {
             history.push('/');
         }
     }, [eventsResp.data]);

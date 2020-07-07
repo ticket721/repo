@@ -7,6 +7,7 @@ import { MergedAppState }              from '../../../index';
 import { CategoriesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/categories/dto/CategoriesSearchResponse.dto';
 import { UpdateGlobalCategoryForm }          from './Form';
 import { DatesSearchResponseDto }      from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
+import { EventsSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsSearchResponse.dto';
 import { checkFormatDate }             from '@frontend/core/lib/utils/date';
 import { useDeepEffect } from '@frontend/core/lib/hooks/useDeepEffect';
 
@@ -14,9 +15,26 @@ const UpdateGlobalCategory: React.FC = () => {
     const { eventId, categoryId } = useParams();
     const history = useHistory();
 
-    const [uuid] = useState(v4() + '@update-global-category');
+    const [uuid] = useState(v4() + '@update-global-category-events.search');
+    const [uuidDate] = useState(v4() + '@update-global-category-dates.search');
+    const [uuidCategory] = useState(v4() + '@update-global-category-categories.search');
     const token = useSelector((state: MergedAppState) => state.auth.token.value);
     const [ maxDate, setMaxDate ] = useState<Date>(null);
+    const { response: eventResp } = useRequest<EventsSearchResponseDto>(
+        {
+            method: 'events.search',
+            args: [
+                token,
+                {
+                    id: {
+                        $eq: eventId
+                    }
+                }
+            ],
+            refreshRate: 1,
+        },
+        uuid
+    );
     const { response: datesResp } = useRequest<DatesSearchResponseDto>(
         {
             method: 'dates.search',
@@ -30,7 +48,7 @@ const UpdateGlobalCategory: React.FC = () => {
             ],
             refreshRate: 1,
         },
-        uuid
+        uuidDate
     );
 
     const { response: categoryResp } = useRequest<CategoriesSearchResponseDto>(
@@ -46,7 +64,7 @@ const UpdateGlobalCategory: React.FC = () => {
             ],
             refreshRate: 1,
         },
-        uuid
+        uuidCategory
     );
 
     useDeepEffect(() => {
@@ -64,10 +82,10 @@ const UpdateGlobalCategory: React.FC = () => {
     }, [categoryResp.data]);
 
     useDeepEffect(() => {
-        if (datesResp.data && datesResp.data.dates.length === 0) {
+        if (eventResp.data && eventResp.data.events.length === 0) {
             history.push('/');
         }
-    }, [datesResp.data]);
+    }, [eventResp.data]);
 
     if (categoryResp.data?.categories[0] && maxDate) {
         return (
