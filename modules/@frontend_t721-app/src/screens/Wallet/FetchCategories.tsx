@@ -102,7 +102,15 @@ const FetchCategories = () => {
 };
 
 const Container = styled.div`
-  height: 400px;
+  .eg-flick-viewport {
+    overflow: unset;
+    height: calc(100vh - 200px);
+  }
+
+  .eg-flick-camera {
+    display: flex;
+    align-items: center;
+  }
 `;
 
 export default FetchCategories;

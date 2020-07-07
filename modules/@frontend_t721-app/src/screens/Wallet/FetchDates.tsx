@@ -89,7 +89,8 @@ const FetchDates = ({ parentId, ticketType }: Props) => {
 const CardContainer = styled.div`
   display: flex;
   align-items: center;
-  width: 310px;
+  max-width: 500px;
+  width: 85%;
 `;
 
 export default FetchDates;
