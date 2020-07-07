@@ -1,6 +1,7 @@
 import React                    from 'react';
 import Flicking                 from '@egjs/react-flicking';
 import { useTranslation }       from 'react-i18next';
+import styled                   from 'styled-components';
 import {
   Error,
   FullPageLoading,
@@ -11,37 +12,49 @@ import './locales';
 const userCategories = [
   {
     id: 'ticket1',
-    parent_id: 'dateOrEventId',
+    parent_id: 'dateOrEventId1',
     parent_type: 'date',
     display_name: 'Classic'
   },
   {
     id: 'ticket2',
-    parent_id: 'dateOrEventId',
+    parent_id: 'dateOrEventId2',
     parent_type: 'event',
     display_name: 'Gold'
   },
   {
     id: 'ticket3',
-    parent_id: 'dateOrEventId',
+    parent_id: 'dateOrEventId3',
     parent_type: 'date',
     display_name: 'VIP'
   },
   {
     id: 'ticket4',
-    parent_id: 'dateOrEventId',
-    parent_type: 'event',
+    parent_id: 'dateOrEventId4',
+    parent_type: 'date',
+    display_name: 'Regular'
+  },
+  {
+    id: 'ticket4Bis',
+    parent_id: 'dateOrEventId4',
+    parent_type: 'date',
     display_name: 'Regular'
   },
   {
     id: 'ticket5',
-    parent_id: 'dateOrEventId',
+    parent_id: 'dateOrEventId5',
     parent_type: 'date',
     display_name: '2 Days Pass'
   },
   {
     id: 'ticket6',
-    parent_id: 'dateOrEventId',
+    parent_id: 'dateOrEventIdSame',
+    parent_type: 'event',
+    display_name: 'Gold'
+  },
+  {
+    id: 'ticket7',
+    parent_id: 'dateOrEventIdSsame',
     parent_type: 'event',
     display_name: 'Gold'
   }
@@ -67,13 +80,14 @@ const FetchCategories = () => {
       return (<Error message={t('error')}/>);
     }
 
-    const currentCategories = response.data.categories.filter(t => t.parent_type !== 'event');
+    const currentCategories = response.data.categories.filter(ticket => ticket.parent_type !== 'event');
+
     return (
-        <>
+        <Container>
             { currentCategories.length > 0 &&
                 <Flicking
                     collectStatistics={false}
-                    gap={8}
+                    gap={24}
                 >
                     {
                         currentCategories.map(c =>
@@ -83,8 +97,12 @@ const FetchCategories = () => {
                 </Flicking>
             }
             { currentCategories.length === 0 ? <span>{t('no_dates_ticket')}</span> : null }
-        </>
+        </Container>
     );
 };
+
+const Container = styled.div`
+  height: 400px;
+`;
 
 export default FetchCategories;

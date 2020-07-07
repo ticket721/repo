@@ -11,13 +11,19 @@ interface CardProps {
 const TicketCard = ({ ticket }: CardProps) => {
     return (
         <Container>
-            <TicketHeader cover={ticket.image} />
+            <Header cover={ticket.image}/>
             <PullUp>
-                <TicketPreview ticket={ticket} />
+                <TicketPreview ticket={ticket}/>
             </PullUp>
         </Container>
     );
 }
+
+const Header = styled(TicketHeader)`
+    && {
+        height: 30vh;
+    }
+`;
 
 const PullUp = styled.div`
     margin-top: -94px;

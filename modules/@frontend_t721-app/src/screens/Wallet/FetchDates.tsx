@@ -39,7 +39,7 @@ interface Props {
 }
 
 const formatTicket = (data: any, ticketType: string): Ticket => ({
-    name: data.name,
+    name: data.metadata.name,
     location: data.location.location_label,
     ticketType,
     startDate: displayDate(data.timestamps.event_begin),

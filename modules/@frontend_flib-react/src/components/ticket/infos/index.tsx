@@ -123,9 +123,9 @@ export const PreviewInfos: React.FunctionComponent<PreviewInfosProps> = (props: 
                     removeBg
                 />
                 <Location iconColor={props.ticket.mainColor} location={props.ticket.location} removeBg />
-                {props.ticket.addOns ? (
+                {props.ticket.addOns !== undefined ? (
                     <div>
-                        <Subtitle>{props.ticket.addOns} add-ons purchased</Subtitle>
+                        <Subtitle>{props.ticket.addOns === 0 ? 'No' : props.ticket.addOns} add-ons purchased</Subtitle>
                     </div>
                 ) : null}
             </PreviewContainer>

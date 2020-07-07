@@ -38,6 +38,11 @@ const userTickets = [
     id: 'ticket6',
     category: 'categoryId',
     status: 'canceled'
+  },
+  {
+    id: 'ticket7',
+    category: 'categoryId',
+    status: 'minting'
   }
 ];
 const Wallet: React.FC = () => {
@@ -60,7 +65,7 @@ const Wallet: React.FC = () => {
         return (<Error message={t('error')}/>);
     }
 
-    const currentTickets = response.data.tickets.filter(t => t.status !== 'canceled');
+    const currentTickets = response.data.tickets.filter(ticket => ticket.status !== 'canceled');
     return (
         <div className='Wallet'>
             <Title>My Tickets</Title>
