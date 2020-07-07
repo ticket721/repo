@@ -181,6 +181,7 @@ export class CartInputHandlers implements OnModuleInit {
                 const maxSize = parseInt(this.configService.get('CART_MAX_TICKET_PER_CART'), 10);
 
                 const groupIds: { [key: string]: TicketMintingFormat[] } = {};
+                const categoriesCount: {[key: string]: number} = {};
 
                 let saleErrors: CategorySelectionError[] = [];
 
@@ -201,13 +202,20 @@ export class CartInputHandlers implements OnModuleInit {
                         break;
                     }
 
+                    if (categoriesCount[categorySearchRes.response[0].id] === undefined) {
+                        categoriesCount[categorySearchRes.response[0].id] = 0;
+                    }
+
                     saleErrors = [
                         ...saleErrors,
                         ...CategoryEntity.checkCategoryErrors(
                             this.timeToolService.now(),
                             categorySearchRes.response[0],
-                        ),
+                            categoriesCount[categorySearchRes.response[0].id]
+                        )
                     ];
+
+                    categoriesCount[categorySearchRes.response[0].id] += 1;
 
                     groupIds[categorySearchRes.response[0].group_id] = [
                         ...(groupIds[categorySearchRes.response[0].group_id] || []),

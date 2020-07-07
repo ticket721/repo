@@ -32,6 +32,7 @@ const DescriptionHighlightText = styled.span`
 `;
 
 const DescriptionHighlightGlowText = styled.span`
+    display: block;
     color: ${props => props.color};
     text-shadow: 0 0 2px ${props => props.color};
 `;

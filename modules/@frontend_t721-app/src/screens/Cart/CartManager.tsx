@@ -13,6 +13,7 @@ import { CategoryEntity }           from '@common/sdk/lib/@backend_nest/libs/com
 import { InputPrice, Price }        from '@common/sdk/lib/@backend_nest/libs/common/src/currencies/Currencies.service';
 import { SyncedCartSelectGroupId }  from './SyncedCartSelectGroupId';
 import { SyncedCartRemoveTickets }  from './SyncedCartRemoveTickets';
+import { SyncedCartNotifyErrors }   from './SyncedCartNotifyErrors';
 
 export interface CartManagerProps {
     cart: ActionSetEntity;
@@ -116,6 +117,9 @@ export const SyncedCartManager: React.FC<SyncedCartManagerProps> = (props: Synce
             }
             case 'cannot_purchase_multiple_group_id': {
                 return <SyncedCartSelectGroupId cart={props.cart}/>;
+            }
+            case 'cannot_purchase_tickets': {
+                return <SyncedCartNotifyErrors errors={errorData.details}/>;
             }
             default: {
                 return <Error message={'unexpected error'}/>;

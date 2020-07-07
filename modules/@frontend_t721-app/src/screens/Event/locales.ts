@@ -15,8 +15,8 @@ i18n.addResourceBundle('en', 'event', {
 i18n.addResourceBundle('fr', 'event', {
     get_ticket_pricing_range: '{{minPrice}} € a {{maxPrice}} €',
     get_ticket_pricing_solo: '{{price}} €',
-    tickets_from: 'Tickets a partir de',
-    get_tickets: 'Achetez vos tickets',
+    tickets_from: 'A partir de',
+    get_tickets: 'Acheter',
     tags_title: 'Tags',
     tags_hide: 'Reduire',
     photos_videos_title: 'Photos & Videos',

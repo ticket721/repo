@@ -29,10 +29,34 @@ export default {
                 lat: 48.863110,
                 lon: 2.370870
             }
+        },
+        {
+            name: 'Bataclan again',
+            eventBegin: new Date(Date.now() + 5 * DAY),
+            eventEnd: new Date(Date.now() + 6 * DAY),
+            location: {
+                label: '50 Boulevard Voltaire, 75011 Paris',
+                lat: 48.863110,
+                lon: 2.370870
+            }
         }
     ],
     categories: {
         global: [
+            {
+                name: 'pre-VIP Tickets',
+                saleBegin: new Date(Date.now()),
+                saleEnd: new Date(Date.now() + 23 * HOUR),
+                resaleBegin: new Date(Date.now()),
+                resaleEnd: new Date(Date.now() + 23 * HOUR),
+                seats: 100,
+                currencies: [
+                    {
+                        currency: 'Fiat',
+                        price: '20000'
+                    }
+                ]
+            },
             {
                 name: 'VIP Tickets',
                 saleBegin: new Date(Date.now() + HOUR),
@@ -49,6 +73,50 @@ export default {
             }
         ],
         dates: [
+            [
+                {
+                    name: 'Regular Tickets',
+                    saleBegin: new Date(Date.now() + 30 * SECOND),
+                    saleEnd: new Date(Date.now() + 23 * HOUR),
+                    resaleBegin: new Date(Date.now() + HOUR),
+                    resaleEnd: new Date(Date.now() + 23 * HOUR),
+                    seats: 200,
+                    currencies: [
+                        {
+                            currency: 'Fiat',
+                            price: '10000'
+                        }
+                    ]
+                },
+                {
+                    name: 'Super Tickets',
+                    saleBegin: new Date(Date.now() + HOUR),
+                    saleEnd: new Date(Date.now() + 23 * HOUR),
+                    resaleBegin: new Date(Date.now() + HOUR),
+                    resaleEnd: new Date(Date.now() + 23 * HOUR),
+                    seats: 200,
+                    currencies: [
+                        {
+                            currency: 'Fiat',
+                            price: '15000'
+                        }
+                    ]
+                },
+                {
+                    name: 'Hyper Tickets',
+                    saleBegin: new Date(Date.now() + 30 * SECOND),
+                    saleEnd: new Date(Date.now() + 31 * SECOND),
+                    resaleBegin: new Date(Date.now() + HOUR),
+                    resaleEnd: new Date(Date.now() + 23 * HOUR),
+                    seats: 200,
+                    currencies: [
+                        {
+                            currency: 'Fiat',
+                            price: '30000'
+                        }
+                    ]
+                }
+            ],
             [
                 {
                     name: 'Regular Tickets',

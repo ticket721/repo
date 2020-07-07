@@ -5,17 +5,15 @@ import Button from '../../button';
 
 const browser = detect();
 
-export interface EventCtaProps extends React.ComponentProps<any> {
+export interface FullButtonCtaProps extends React.ComponentProps<any> {
     ctaLabel: string;
-    title: string;
-    subtitle: string;
+    variant?: string;
     show?: boolean;
     gradients?: string[];
-    disabled?: boolean;
     onClick: () => void;
 }
 
-const CtaContainer = styled.div<EventCtaProps>`
+const CtaContainer = styled.div<FullButtonCtaProps>`
   align-items: center;
   background-color: ${browser?.name === 'firefox' ? 'rgba(33, 29, 45, 0.95)' : 'rgba(33, 29, 45, 0.6)'};
 
@@ -61,22 +59,17 @@ const CtaContainer = styled.div<EventCtaProps>`
 
   button {
     margin: 0;
-    max-width: 50%;
   }
 `;
 
-export const EventCta: React.FunctionComponent<EventCtaProps & { className?: string }> = (
-    props: EventCtaProps,
+export const FullButtonCta: React.FunctionComponent<FullButtonCtaProps & { className?: string }> = (
+    props: FullButtonCtaProps,
 ): JSX.Element => {
     return (
         <CtaContainer show={props.show} className={props.className}>
-            <div>
-                <h4 className={'uppercase'}>{props.title}</h4>
-                <span>{props.subtitle}</span>
-            </div>
             <Button
                 title={props.ctaLabel}
-                variant={props.disabled ? 'disabled' : 'custom'}
+                variant={(props.variant as any) || 'custom'}
                 gradients={props.gradients}
                 onClick={props.onClick}
             />
@@ -84,8 +77,8 @@ export const EventCta: React.FunctionComponent<EventCtaProps & { className?: str
     );
 };
 
-EventCta.defaultProps = {
+FullButtonCta.defaultProps = {
     gradients: ['#079CF0', '#2143AB'],
 };
 
-export default EventCta;
+export default FullButtonCta;

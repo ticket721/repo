@@ -8,6 +8,11 @@ import { v4 }                       from 'uuid';
 import { FullPageLoading, Error }   from '@frontend/flib-react/lib/components';
 import { CartCreation }             from './CartCreation';
 import { CartManager }              from './CartManager';
+import styled                       from 'styled-components';
+
+const CartContainer = styled.div`
+    padding-bottom: calc(80px + ${props => props.theme.regularSpacing});
+`;
 
 const Cart: React.FC = () => {
 
@@ -45,7 +50,9 @@ const Cart: React.FC = () => {
     const cart = cartResponse.response.data.actionsets[0];
 
     return (
-        <CartManager cart={cart}/>
+        <CartContainer>
+            <CartManager cart={cart}/>
+        </CartContainer>
     );
 };
 
