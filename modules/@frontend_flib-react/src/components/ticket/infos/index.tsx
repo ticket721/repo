@@ -1,13 +1,12 @@
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 import styled from '../../../config/styled';
 import TicketInterface from '../../../shared/ticketInterface';
 import LocationCard from '../cards/location';
 import DateTimeCard from '../cards/datetime';
-import './locales';
 
 export interface PreviewInfosProps extends React.ComponentProps<any> {
     ticket: TicketInterface;
+    addonsPurchased?: string;
     bgColor?: string;
 }
 
@@ -108,7 +107,6 @@ const Subtitle = styled.span`
 `;
 
 export const PreviewInfos: React.FunctionComponent<PreviewInfosProps> = (props: PreviewInfosProps): JSX.Element => {
-  const [ t ] = useTranslation('ticket');
     return (
         <Wrapper>
             <TicketHeaderInfos>
@@ -127,7 +125,7 @@ export const PreviewInfos: React.FunctionComponent<PreviewInfosProps> = (props: 
                 />
                 <Location iconColor={props.ticket.mainColor} location={props.ticket.location} removeBg />
                 <div>
-                    <Subtitle>{t('no_addons')}</Subtitle>
+                    <Subtitle>{props.addonsPurchased}</Subtitle>
                 </div>
             </PreviewContainer>
             <Gradient ticket={props.ticket} />

@@ -2,18 +2,22 @@ import React                    from 'react';
 import styled                   from 'styled-components';
 import { TicketHeader }         from '@frontend/flib-react/lib/components/ticket';
 import TicketPreview            from '@frontend/flib-react/lib/components/ticket/infos';
+import { useTranslation }       from 'react-i18next';
 import { Ticket }               from '../../types/ticket';
+import './locales';
 
 interface CardProps {
     ticket: Ticket
 }
 
 const TicketCard = ({ ticket }: CardProps) => {
+  const [t] = useTranslation('ticket');
+
     return (
         <Container>
             <Header cover={ticket.image}/>
             <PullUp>
-                <TicketPreview ticket={ticket}/>
+                <TicketPreview ticket={ticket} addonsPurchased={t('no_addons')}/>
             </PullUp>
         </Container>
     );
