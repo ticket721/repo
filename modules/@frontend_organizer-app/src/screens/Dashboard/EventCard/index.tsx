@@ -6,6 +6,7 @@ import { checkFormatDate, displayCompleteDate } from '@frontend/core/lib/utils/d
 import { formatEuro }     from '@frontend/core/lib/utils/price';
 
 import { EventDashboard } from '../formatters';
+import placeholderT721 from '@frontend/flib-react/lib/assets/media/placeholderT721.png';
 
 import './locales';
 
@@ -14,21 +15,19 @@ export const EventCard: React.FC<EventDashboard> = (props: EventDashboard) => {
     return (
         <StyledCard>
             <HoverFilter />
-            <img src={props.covers[0]} alt={'cover'}/>
+            <img src={props.covers ? props.covers[0] : placeholderT721} alt={'cover'}/>
             <Content>
                 <Name>{props.name}</Name>
-                <PriceAndDate color={props.colors[0]}>
-                    {
-                        props.startPrice && props.totalSeats ?
-                            <>
-                                <span>{formatEuro(props.startPrice)}</span>
-                                ·
-                                <span>{displayCompleteDate(checkFormatDate(props.datesRange[0]))}</span>
-                            </> :
-                            <span>{t('no_category')}</span>
-                    }
+                <PriceAndDate color={props.colors ? props.colors[0] : '#'}>
+                    <span>{formatEuro(props.startPrice || '0')}</span>
+                    ·
+                    <span>{
+                        props.datesRange ?
+                            displayCompleteDate(checkFormatDate(props.datesRange[0])) :
+                            t('no_date')
+                    }</span>
                 </PriceAndDate>
-                <Seats>{props.totalSeats} {t('tickets_remaining')}</Seats>
+                <Seats>{props.totalSeats ? props.totalSeats + ' ' + t('tickets_remaining') : t('no_category')}</Seats>
             </Content>
         </StyledCard>
     );
@@ -43,8 +42,8 @@ const HoverFilter = styled.div`
 
 const StyledCard = styled.div`
     position: relative;
-    width: calc(50vw - 75px);
-    height: calc(25vw - 37px);
+    width: calc(33vw - 50px);
+    height: calc(16.5vw - 25px);
     overflow: hidden;
     cursor: pointer;
     border-radius: ${props => props.theme.defaultRadius};

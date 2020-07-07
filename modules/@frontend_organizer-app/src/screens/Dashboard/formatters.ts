@@ -36,7 +36,7 @@ const formatDatesAndCovers = (dates: DateEntity[], events: EventDashboard[]): Ev
     events?.map((event) => {
         const filteredDates = dates.filter((date) => date.group_id === event.groupId);
         if (filteredDates.length === 0) {
-          return undefined;
+          return event;
         }
         const startDate: Date = checkFormatDate(
             filteredDates.sort((dateA, dateB) =>
@@ -58,14 +58,14 @@ const formatDatesAndCovers = (dates: DateEntity[], events: EventDashboard[]): Ev
             colors: filteredDates.map((date) => date.metadata.signature_colors[0]),
             pastEvent: endDate < new Date(),
         }
-    }).filter(e => e !== undefined)
+    })
 );
 
 const formatPricesAndSeats = (categories: CategoryEntity[], events: EventDashboard[]): EventDashboard[] => (
     events?.map((event) => {
         const filteredCategories = categories.filter((category) => category.group_id === event.groupId);
         if (filteredCategories.length === 0) {
-          return undefined;
+            return event;
         }
         const seatsCount: number = filteredCategories
             .map((category) => category.seats)
@@ -81,7 +81,7 @@ const formatPricesAndSeats = (categories: CategoryEntity[], events: EventDashboa
             startPrice: sortedPrices[0],
             totalSeats: seatsCount,
         }
-    }).filter(c => c !== undefined)
+    })
 );
 
 export { formatEventName, formatDatesAndCovers, formatPricesAndSeats };

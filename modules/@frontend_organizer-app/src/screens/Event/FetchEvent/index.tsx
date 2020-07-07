@@ -77,10 +77,10 @@ const FetchEvent = (): JSX.Element => {
 
     useDeepEffect(() => {
         if (datesResp.data?.dates) {
-            if (datesResp.data.dates.length > 0) {
-                history.push(`/group/${groupId}/date/${datesResp.data.dates[0]?.id}`);
+            const filteredDates = datesResp.data.dates.filter(d => d.parent_type === 'event');
+            if (filteredDates.length > 0) {
+                history.push(`/group/${groupId}/date/${datesResp.data.dates[0].id}`);
             } else {
-                dispatch(PushNotification(t('no_dates_on_event'), 'warning'));
                 setEmptyDateFetched(true);
             }
         }
@@ -91,6 +91,7 @@ const FetchEvent = (): JSX.Element => {
             if (emptyDateFetched && globalCategoriesResp.data?.categories) {
                 if (globalCategoriesResp.data.categories.length > 0) {
                     const defaultGlobalCategory = globalCategoriesResp.data.categories[0];
+                    dispatch(PushNotification(t('no_dates_on_event'), 'warning'));
                     history.push(`/group/${groupId}/event/${defaultGlobalCategory.parent_id}/category/${defaultGlobalCategory.id}`);
                 } else {
                     if (eventsResp.data.events) {

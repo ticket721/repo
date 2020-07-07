@@ -107,11 +107,11 @@ const Preview: React.FC = () => {
 
     useDeepEffect(() => {
         if (dateResp.data) {
-            if (dateResp.data.dates.filter(d => d.parent_type === 'event' || d.parent_type === 'date').length === 0) {
+            if (dateResp.data.dates.filter(d => d.parent_type === 'event').length === 0) {
                 history.push('/');
             } else {
                 setDatePreview(formatDatePreview(
-                    dateResp.data.dates.filter(d => d.parent_type === 'event' || d.parent_type === 'date')?.[0],
+                    dateResp.data.dates.filter(d => d.parent_type === 'event')?.[0],
                 ));
             }
         }
@@ -222,7 +222,7 @@ const PreviewContainer = styled.div`
       width: 352px;
       height: 630px;
       margin: auto;
-      border: 16px white solid;
+      border: 16px #282531 solid;
       border-top-width: 60px;
       border-bottom-width: 60px;
       border-radius: 36px;

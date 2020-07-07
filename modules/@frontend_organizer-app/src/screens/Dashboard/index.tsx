@@ -10,9 +10,11 @@ import { RightsSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/serv
 import { EventsFetcher }           from './EventsFetcher';
 import { PushNotification }        from '@frontend/core/lib/redux/ducks/notifications';
 
-import { useTranslation } from 'react-i18next';
+import { useTranslation }  from 'react-i18next';
 import './locales';
-import { useDeepEffect }  from '@frontend/core/lib/hooks/useDeepEffect';
+import { useDeepEffect }   from '@frontend/core/lib/hooks/useDeepEffect';
+import { FullPageLoading } from '@frontend/flib-react/lib/components';
+import styled              from 'styled-components';
 
 const Dashboard: React.FC = () => {
     const dispatch = useDispatch();
@@ -41,14 +43,6 @@ const Dashboard: React.FC = () => {
             setGroupIds(eventRights.data.rights.map((right) => right.entity_value));
         }
 
-        if (
-            !eventRights.loading
-            && !eventRights.error
-            && eventRights.data?.rights.length === 0
-        ) {
-            dispatch(PushNotification(t('no_result_notif'), 'info'));
-        }
-
         if (eventRights.error) {
             dispatch(PushNotification(t('error_notif'), 'error'));
         }
@@ -62,15 +56,17 @@ const Dashboard: React.FC = () => {
                     token={token}
                     uuid={uuid}
                     groupIds={groupIds}/> :
-                    <span>{t('no_result_notif')}</span>
-            }
-            {
                 eventRights.loading ?
-                    <span>{t('loading_label')}</span> :
-                    null
+                    <FullPageLoading /> :
+                    <NoEventMsg>{t('no_event')}</NoEventMsg>
             }
         </>
     )
 };
+
+const NoEventMsg = styled.span`
+    width: 100%;
+    text-align: center;
+`;
 
 export default Dashboard;
