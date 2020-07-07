@@ -59,7 +59,7 @@
     "slugify": "1.4.0",
     "styled-components": "5.1.0",
     "styled-components-breakpoint": "3.0.0-preview.20",
-    "@types/node": "14.0.4",
+    "@types/node": "14.0.19",
     "@svgr/webpack": "5.4.0",
     "@babel/core": "7.9.6",
     "@emotion/styled-base": "10.0.31",
