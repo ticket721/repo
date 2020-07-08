@@ -98,8 +98,7 @@ export class CartInputHandlers implements OnModuleInit {
                         price: Joi.string().required(),
                     }).optional(),
                 }),
-            )
-            .min(1),
+            ).min(0)
     });
 
     /**
@@ -176,7 +175,8 @@ export class CartInputHandlers implements OnModuleInit {
 
             case undefined: {
                 let valid = true;
-                const totalPrices: { [key: string]: Price } = {};
+                const prices = [];
+                const fees = [];
 
                 const maxSize = parseInt(this.configService.get('CART_MAX_TICKET_PER_CART'), 10);
 
@@ -184,6 +184,17 @@ export class CartInputHandlers implements OnModuleInit {
                 const categoriesCount: { [key: string]: number } = {};
 
                 let saleErrors: CategorySelectionError[] = [];
+
+                if (data.tickets.length === 0) {
+                    actionset.action.setError({
+                        details: null,
+                        error: 'no_tickets_in_cart'
+                    });
+                    actionset.action.setStatus('error');
+                    actionset.setStatus('input:error');
+                    valid = false;
+
+                }
 
                 for (const ticket of data.tickets) {
                     const categorySearchRes = await this.categoriesService.search({
@@ -240,36 +251,10 @@ export class CartInputHandlers implements OnModuleInit {
                     }
 
                     for (const resolvedCurrency of resolvedCurrencies[2]) {
-                        if (totalPrices[resolvedCurrency.currency]) {
-                            totalPrices[resolvedCurrency.currency].value = new BigNumber(
-                                totalPrices[resolvedCurrency.currency].value,
-                            )
-                                .plus(new BigNumber(resolvedCurrency.value))
-                                .toString();
-                        } else {
-                            totalPrices[resolvedCurrency.currency] = {
-                                ...resolvedCurrency,
-                            };
-                        }
+                        prices.push(resolvedCurrency);
+                        fees.push(await this.currenciesService.computeFee(resolvedCurrency.currency, resolvedCurrency.value))
                     }
 
-                    const returnPrices: Price[] = [];
-
-                    for (const curr of Object.keys(totalPrices)) {
-                        returnPrices.push(totalPrices[curr]);
-                    }
-
-                    const fees: string[] = [];
-
-                    for (const returnPrice of returnPrices) {
-                        fees.push(await this.currenciesService.computeFee(returnPrice.currency, returnPrice.value));
-                    }
-
-                    actionset.action.setData({
-                        ...actionset.action.data,
-                        total: returnPrices,
-                        fees,
-                    });
                 }
 
                 if (saleErrors.length) {
@@ -302,13 +287,18 @@ export class CartInputHandlers implements OnModuleInit {
                     actionset.action.setStatus('error');
                     actionset.setStatus('input:error');
 
-                    valid = false;
                     break;
                 }
 
                 if (valid) {
+                    actionset.action.setData({
+                        ...actionset.action.data,
+                        total: prices,
+                        fees,
+                    });
                     actionset.next();
                 }
+
                 break;
             }
         }

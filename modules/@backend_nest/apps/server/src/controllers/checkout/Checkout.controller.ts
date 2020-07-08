@@ -124,7 +124,7 @@ export class CheckoutController extends ControllerBasics<StripeResourceEntity> {
             oldAuthorizations: authorizationsData ? authorizationsData.authorizations : null,
             commitType: 'stripe',
             expirationTime: 2 * DAY,
-            prices: ticketSelectionsData.total,
+            prices: ticketSelectionsData.total.map(i => parseInt(i, 10)),
             fees: ticketSelectionsData.fees,
             signatureReadable: false,
             grantee: user,
