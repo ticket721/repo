@@ -1,13 +1,13 @@
 import { CategoryEntity }                            from '@common/sdk/lib/@backend_nest/libs/common/src/categories/entities/Category.entity';
 import React, { useState }                           from 'react';
 import { useSelector }                               from 'react-redux';
-import { T721AppState }                              from '../../redux';
+import { T721AppState }                              from '../../../redux';
 import { v4 }                                        from 'uuid';
 import { getImgPath }                                from '@frontend/core/lib/utils/images';
 import { useRequest }                                from '@frontend/core/lib/hooks/useRequest';
 import { DatesSearchResponseDto }                    from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
 import { Error, FullPageLoading, GlobalCategoryQty } from '@frontend/flib-react/lib/components';
-import { getT721TokenPrice }                         from '../../utils/prices';
+import { getT721TokenPrice }                         from '../../../utils/prices';
 import { formatShort }                               from '@frontend/core/lib/utils/date';
 import { DateEntity }                                from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
 

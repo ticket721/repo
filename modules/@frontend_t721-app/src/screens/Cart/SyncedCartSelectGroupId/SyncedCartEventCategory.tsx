@@ -7,7 +7,7 @@ import { useTranslation }                   from 'react-i18next';
 import { Error, SingleStarEvent, Skeleton } from '@frontend/flib-react/lib/components';
 import { DateEntity, DateMetadata }         from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
 import { getImgPath }                       from '@frontend/core/lib/utils/images';
-import { getT721TokenPrice }                from '../../utils/prices';
+import { getT721TokenPrice }                from '../../../utils/prices';
 
 export interface SyncedCartEventCategoryProps {
     category: CategoryEntity;

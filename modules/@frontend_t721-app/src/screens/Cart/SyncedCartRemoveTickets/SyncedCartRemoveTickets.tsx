@@ -3,11 +3,11 @@ import React, { useState }                    from 'react';
 import { ActionSetEntity }                    from '@common/sdk/lib/@backend_nest/libs/common/src/actionsets/entities/ActionSet.entity';
 import { EventCta }                           from '@frontend/flib-react/lib/components';
 import { useDispatch, useSelector }           from 'react-redux';
-import { T721AppState }                       from '../../redux';
+import { T721AppState }                       from '../../../redux';
 import { CategoryEntity }                     from '@common/sdk/lib/@backend_nest/libs/common/src/categories/entities/Category.entity';
-import { SetTickets }                         from '../../redux/ducks/cart';
+import { SetTickets }                         from '../../../redux/ducks/cart';
 import { useTranslation }                     from 'react-i18next';
-import { getTotalPrice }                      from '../../utils/prices';
+import { getTotalPrice }                      from '../../../utils/prices';
 import { SyncedCartTicketCountDisplay }       from './SyncedCartTicketCountDisplay';
 import { SyncedCartGlobalTicketCountDisplay } from './SyncedCartGlobalTicketCountDisplay';
 

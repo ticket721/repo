@@ -11,9 +11,9 @@ import { useDeepEffect }            from '@frontend/core/lib/hooks/useDeepEffect
 import { TicketMintingFormat }      from '@common/sdk/lib/@backend_nest/libs/common/src/utils/Cart.type';
 import { CategoryEntity }           from '@common/sdk/lib/@backend_nest/libs/common/src/categories/entities/Category.entity';
 import { InputPrice, Price }        from '@common/sdk/lib/@backend_nest/libs/common/src/currencies/Currencies.service';
-import { SyncedCartSelectGroupId }  from './SyncedCartSelectGroupId';
-import { SyncedCartRemoveTickets }  from './SyncedCartRemoveTickets';
-import { SyncedCartNotifyErrors }   from './SyncedCartNotifyErrors';
+import { SyncedCartSelectGroupId }  from './SyncedCartSelectGroupId/SyncedCartSelectGroupId';
+import { SyncedCartRemoveTickets }  from './SyncedCartRemoveTickets/SyncedCartRemoveTickets';
+import { SyncedCartNotifyErrors }   from './SyncedCartNotifyErrors/SyncedCartNotifyErrors';
 
 export interface CartManagerProps {
     cart: ActionSetEntity;

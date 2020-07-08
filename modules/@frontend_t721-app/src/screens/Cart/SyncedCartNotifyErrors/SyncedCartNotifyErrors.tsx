@@ -1,10 +1,10 @@
 import styled                           from 'styled-components';
 import React                            from 'react';
 import { useDispatch, useSelector }     from 'react-redux';
-import { T721AppState }                 from '../../redux';
+import { T721AppState }                 from '../../../redux';
 import { CategoryEntity }               from '@common/sdk/lib/@backend_nest/libs/common/src/categories/entities/Category.entity';
 import { useTranslation }               from 'react-i18next';
-import { SetTickets }                   from '../../redux/ducks/cart';
+import { SetTickets }                   from '../../../redux/ducks/cart';
 import { SyncedCartTicketErrorDisplay } from './SyncedCartTicketErrorDisplay';
 import { FullButtonCta }                from '@frontend/flib-react/lib/components';
 

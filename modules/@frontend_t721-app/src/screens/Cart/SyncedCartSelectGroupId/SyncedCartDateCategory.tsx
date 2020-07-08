@@ -6,7 +6,7 @@ import React                            from 'react';
 import { Error, SingleEvent, Skeleton } from '@frontend/flib-react/lib/components';
 import { DateEntity }                   from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
 import { uuidEq }                       from '@common/global';
-import { getT721TokenPrice }            from '../../utils/prices';
+import { getT721TokenPrice }            from '../../../utils/prices';
 import { formatShort }                  from '@frontend/core/lib/utils/date';
 
 export interface SyncedCartDateCategoryProps {

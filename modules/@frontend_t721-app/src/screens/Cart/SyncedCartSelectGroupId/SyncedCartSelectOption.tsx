@@ -1,7 +1,7 @@
 import { TicketMintingFormat }         from '@common/sdk/lib/@backend_nest/libs/common/src/utils/Cart.type';
 import React, { useState }             from 'react';
 import { useSelector }                 from 'react-redux';
-import { T721AppState }                from '../../redux';
+import { T721AppState }                from '../../../redux';
 import { v4 }                          from 'uuid';
 import { useTranslation }              from 'react-i18next';
 import { useRequest }                  from '@frontend/core/lib/hooks/useRequest';

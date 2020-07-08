@@ -4,12 +4,12 @@ import { ActionSetEntity }          from '@common/sdk/lib/@backend_nest/libs/com
 import { EventCta }                 from '@frontend/flib-react/lib/components';
 import { TicketMintingFormat }      from '@common/sdk/lib/@backend_nest/libs/common/src/utils/Cart.type';
 import { useDispatch, useSelector } from 'react-redux';
-import { T721AppState }             from '../../redux';
+import { T721AppState }             from '../../../redux';
 import { CategoryEntity }           from '@common/sdk/lib/@backend_nest/libs/common/src/categories/entities/Category.entity';
 import { uuidEq }                   from '@common/global';
-import { CartState, SetTickets }    from '../../redux/ducks/cart';
+import { CartState, SetTickets }    from '../../../redux/ducks/cart';
 import { useTranslation }           from 'react-i18next';
-import { getT721TokenPrice }        from '../../utils/prices';
+import { getT721TokenPrice }        from '../../../utils/prices';
 import { SyncedCartSelectOption }   from './SyncedCartSelectOption';
 
 export interface SyncedCardSelectGroupIdProps {
