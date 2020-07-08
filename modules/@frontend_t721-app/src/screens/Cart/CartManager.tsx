@@ -14,6 +14,8 @@ import { InputPrice, Price }        from '@common/sdk/lib/@backend_nest/libs/com
 import { SyncedCartSelectGroupId }  from './SyncedCartSelectGroupId/SyncedCartSelectGroupId';
 import { SyncedCartRemoveTickets }  from './SyncedCartRemoveTickets/SyncedCartRemoveTickets';
 import { SyncedCartNotifyErrors }   from './SyncedCartNotifyErrors/SyncedCartNotifyErrors';
+import { SyncedCart }               from './SyncedCart/SyncedCart';
+import { SyncedCartEmpty }          from './SyncedCartEmpty/SyncedCartEmpty';
 
 export interface CartManagerProps {
     cart: ActionSetEntity;
@@ -103,23 +105,28 @@ export const CartAddPendingTickets: React.FC<CartAddPendingTIcketsProps> = (prop
 };
 
 export interface SyncedCartManagerProps {
-    cart: ActionSetEntity;
+    remoteCart: ActionSetEntity;
+    cart: CartState;
 }
 
 export const SyncedCartManager: React.FC<SyncedCartManagerProps> = (props: SyncedCartManagerProps): JSX.Element => {
-    const ticketSelectionsAction = props.cart.actions[0];
+    const ticketSelectionsAction = props.remoteCart.actions[0];
 
     if (ticketSelectionsAction.error) {
         const errorData = JSON.parse(ticketSelectionsAction.error);
+        console.log(errorData);
         switch (errorData.error) {
             case 'cart_too_big': {
-                return <SyncedCartRemoveTickets cart={props.cart}/>;
+                return <SyncedCartRemoveTickets cart={props.remoteCart}/>;
             }
             case 'cannot_purchase_multiple_group_id': {
-                return <SyncedCartSelectGroupId cart={props.cart}/>;
+                return <SyncedCartSelectGroupId cart={props.remoteCart}/>;
             }
             case 'cannot_purchase_tickets': {
                 return <SyncedCartNotifyErrors errors={errorData.details}/>;
+            }
+            case 'no_tickets_in_cart': {
+                return <SyncedCartEmpty/>
             }
             default: {
                 return <Error message={'unexpected error'}/>;
@@ -127,7 +134,7 @@ export const SyncedCartManager: React.FC<SyncedCartManagerProps> = (props: Synce
         }
     }
 
-    return <p>Synced but maybe not ok</p>;
+    return <SyncedCart cart={props.cart} remoteCart={props.remoteCart}/>
 };
 
 export const CartManager: React.FC<CartManagerProps> = (props: CartManagerProps): JSX.Element => {
@@ -143,5 +150,5 @@ export const CartManager: React.FC<CartManagerProps> = (props: CartManagerProps)
 
     }
 
-    return <SyncedCartManager cart={props.cart}/>
+    return <SyncedCartManager remoteCart={props.cart} cart={cart}/>
 };
