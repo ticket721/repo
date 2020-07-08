@@ -2,23 +2,28 @@ import * as React from 'react';
 import styled from '../../../config/styled';
 import Select from '../../inputs/select';
 
+interface Option {
+  label: string;
+  value: any;
+}
+
 export interface TicketQtyProps extends React.ComponentProps<any> {
-    color?: string;
-    gradient?: string[];
-    description: string;
-    feesIncluded?: boolean;
-    selected?: boolean;
-    price: string;
-    title?: string;
-    ticketsLeft: number;
-    typeName: string;
-    feeIncludedLabel: string;
-    feeNotIncludedLabel: string;
+  color?: string;
+  fees: string;
+  gradient?: string[];
+  selected?: boolean;
+  price: string;
+  title?: string;
+  ticketsLeft: number;
+  typeName: string;
+  options: Option[];
+  onChange: (opt: Option) => void;
+  initialOption: Option;
 }
 
 const Container = styled.article<TicketQtyProps>`
     background-color: ${(props) => props.theme.darkerBg};
-    border-bottom: 2px solid #000;
+    border-bottom: 2px solid #120f1a;
     font-size: 14px;
     font-weight: 500;
     padding: ${(props) => props.theme.biggerSpacing};
@@ -68,38 +73,23 @@ const Container = styled.article<TicketQtyProps>`
 `;
 
 export const TicketQty: React.FunctionComponent<TicketQtyProps> = (props: TicketQtyProps): JSX.Element => {
-    const options = [
-        {
-            value: '1',
-            label: '1',
-        },
-        {
-            value: '2',
-            label: '2',
-        },
-        {
-            value: '3',
-            label: '3',
-        },
-    ];
 
-    return (
-        <Container selected={props.selected} gradient={props.gradient}>
-            {props.title && <h4 className={'uppercase'}>{props.title}</h4>}
-            <div className={'row jcsb'}>
-                <h3>{props.typeName}</h3>
-                <Select defaultValue={options[0]} options={options} menu searchable={false} />
-            </div>
-            <h4>{props.price} /each</h4>
-            <span>{props.feesIncluded ? props.feeIncludedLabel : props.feeNotIncludedLabel}</span>
-            <p>{props.description}</p>
-        </Container>
-    );
+  return (
+    <Container selected={props.selected} gradient={props.gradient}>
+      {props.title && <h4 className={'uppercase'}>{props.title}</h4>}
+      <div className={'row jcsb'}>
+        <h3>{props.typeName}</h3>
+        <Select defaultValue={props.initialOption} options={props.options} menu searchable={false} onChange={props.onChange}/>
+      </div>
+      <h4>{props.price}</h4>
+      <span>{props.fees}</span>
+    </Container>
+  );
 };
 
 TicketQty.defaultProps = {
-    color: '#079CF0',
-    gradient: ['#079CF0', '#2143AB'],
+  color: '#079CF0',
+  gradient: ['#079CF0', '#2143AB'],
 };
 
 export default TicketQty;

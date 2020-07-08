@@ -6,3 +6,4 @@ export * from './gradient';
 export * from './separator';
 export * from './user-header';
 export * from './full-button-cta';
+export * from './border';

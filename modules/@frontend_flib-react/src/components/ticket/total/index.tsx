@@ -1,35 +1,20 @@
 import * as React from 'react';
 import styled from '../../../config/styled';
 import CardContainer from '../../elements/card-container';
-import Icon from '../../icon';
+
+interface Item {
+  name: string;
+  price: number;
+}
 
 export interface PurchaseTotalProps extends React.ComponentProps<any> {
-    label: string;
-    total: number;
-    tickets: Tickets;
-    taxes: number;
-    subtotal: number;
-    fees?: Fee[];
-    addOns?: AddOn[];
+  totalLabel: string;
+  subtotalLabel: string;
+  label: string;
+  total: Item[];
+  fees: Item[];
 }
 
-interface AddOn {
-    id: string | number;
-    name: string;
-    quantity: number;
-    price: number;
-}
-
-interface Fee {
-    id: string | number;
-    name: string;
-    price: number;
-}
-
-interface Tickets {
-    quantity: number;
-    price: number;
-}
 
 const Title = styled.h4`
     color: ${(props) => props.theme.textColorDarker};
@@ -63,98 +48,101 @@ const Separator = styled.span`
     margin: ${(props) => props.theme.smallSpacing} 0 ${(props) => props.theme.regularSpacing} -24px;
     width: calc(100% + 24px);
 `;
-const Collapsed = styled.div<PurchaseTotalProps>`
-    max-height: ${(props) => (props.showFees ? '1000px' : 0)};
-    opacity: ${(props) => (props.showFees ? 1 : 0)};
-    overflow: hidden;
-    transition: all 300ms ease;
-`;
-
-const CollapsedContainer = styled.section<PurchaseTotalProps>`
-    cursor: pointer;
-    width: 100%;
-
-    svg {
-        position: relative;
-        right: -8px;
-        top: 1px;
-        transform: ${(props) => (props.showFees ? 'rotate(270deg)' : 'rotate(90deg)')};
-    }
-`;
 
 export const PurchaseTotal: React.FunctionComponent<PurchaseTotalProps> = (props: PurchaseTotalProps): JSX.Element => {
-    const [showFees, setShowFees] = React.useState(false);
-
-    const feesTotal = () => {
-        let amount = 0;
-
-        props.fees?.map((fee: Fee) => {
-            amount += fee.price;
-        });
-
-        return amount.toFixed(2);
-    };
-
-    return (
-        <CardContainer>
-            <Title className={'uppercase'}>{props.label}</Title>
-            <h2>{props.total}€</h2>
-            <Row>
-                <span>Tickets x{props.tickets.quantity}</span>
-                <span>{props.tickets.price.toFixed(2)}€</span>
-            </Row>
-            {props.addOns?.map((addOn: AddOn) => {
-                return (
-                    <Row key={addOn.id}>
+  return (
+    <CardContainer>
+      <Title className={'uppercase'}>{props.label}</Title>
+      <h2>{
+        [
+          ...props.total,
+          ...props.fees
+        ]
+          .map(a => a.price)
+          .reduce((a, b): number => a + b)
+          .toFixed(2)
+      }€</h2>
+      {props.total?.map((item: Item, idx: number) => {
+        return (
+          <Row key={`${idx}`}>
                         <span>
-                            {addOn.name} x{addOn.quantity}
+                            {item.name}
                         </span>
-                        <div>{addOn.price.toFixed(2)}€</div>
-                    </Row>
-                );
-            })}
-            <Separator />
-            <Row>
-                <span>Subtotal</span>
-                <span>{props.subtotal.toFixed(2)}€</span>
-            </Row>
-            {props.fees && (
-                <CollapsedContainer showFees={showFees}>
-                    <Row>
-                        <span
-                            className={'row'}
-                            onClick={() => {
-                                setShowFees(!showFees);
-                            }}
-                        >
-                            Fees
-                            <Icon icon={'chevron'} size={'10px'} color={'rgba( 255, 255, 255, 0.6)'} />
+            <div>{item.price.toFixed(2)}€</div>
+          </Row>
+        );
+      })}
+      <Separator />
+      <Row>
+        <span>{props.subtotalLabel}</span>
+        <span>{
+          props.total
+            .map(a => a.price)
+            .reduce((a, b): number => a + b)
+            .toFixed(2)
+        }€</span>
+      </Row>
+      {props.fees?.map((item: Item, idx: number) => {
+        return (
+          <Row key={`${idx}`}>
+                        <span>
+                            {item.name}
                         </span>
-                        <span>{feesTotal()}€</span>
-                    </Row>
-                    <Collapsed showFees={showFees}>
-                        {props.fees.map((fee: Fee) => {
-                            return (
-                                <Row key={fee.id}>
-                                    <span>{fee.name}</span>
-                                    <span>{fee.price.toFixed(2)}</span>
-                                </Row>
-                            );
-                        })}
-                    </Collapsed>
-                </CollapsedContainer>
-            )}
-            <Row>
-                <span>Taxes</span>
-                <span>{props.taxes.toFixed(2)}€</span>
-            </Row>
-            <Separator />
-            <Row className={'highlight'}>
-                <span>Total</span>
-                <span>{props.total.toFixed(2)}€</span>
-            </Row>
-        </CardContainer>
-    );
+            <div>{item.price.toFixed(2)}€</div>
+          </Row>
+        );
+      })}
+      <Separator />
+      <Row>
+        <span>{props.totalLabel}</span>
+        <span>{
+          [
+            ...props.total,
+            ...props.fees
+          ]
+            .map(a => a.price)
+            .reduce((a, b): number => a + b)
+            .toFixed(2)
+        }€</span>
+      </Row>
+    </CardContainer>
+  );
 };
+
+// {props.fees && (
+//   <CollapsedContainer showFees={showFees}>
+//     <Row>
+//                         <span
+//                           className={'row'}
+//                           onClick={() => {
+//                             setShowFees(!showFees);
+//                           }}
+//                         >
+//                             Fees
+//                             <Icon icon={'chevron'} size={'10px'} color={'rgba( 255, 255, 255, 0.6)'} />
+//                         </span>
+//       <span>{feesTotal()}€</span>
+//     </Row>
+//     <Collapsed showFees={showFees}>
+//       {props.fees.map((fee: Fee, idx: number) => {
+//         return (
+//           <Row key={`${fee.id}${idx}`}>
+//             <span>{fee.name}</span>
+//             <span>{fee.price.toFixed(2)}</span>
+//           </Row>
+//         );
+//       })}
+//     </Collapsed>
+//   </CollapsedContainer>
+// )}
+// <Row>
+//   <span>Taxes</span>
+//   <span>{props.taxes.toFixed(2)}€</span>
+// </Row>
+// <Separator />
+// <Row className={'highlight'}>
+//   <span>Total</span>
+//   <span>{props.total.toFixed(2)}€</span>
+// </Row>
 
 export default PurchaseTotal;
