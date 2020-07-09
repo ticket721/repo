@@ -122,6 +122,8 @@ export const showcase = () => (
                     iconColor={defaultTicket.mainColor}
                     price={defaultTicket.price}
                     wSeparator
+                    priceLabel={'price'}
+                    purchasedLabel={'purchased date'}
                 />
                 <SponsorsCard sponsors={sponsorsList} title={'Sponsors'} wSeparator />
                 <TitleText title={'2x beers'} text={'Quisque at risus molestie, interdum lectus sed, ultrices quam.'} />
