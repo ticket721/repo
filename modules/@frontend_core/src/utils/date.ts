@@ -107,13 +107,13 @@ const DTFormatShort = new Intl.DateTimeFormat('default', {
 });
 
 const DTFormatDay = new Intl.DateTimeFormat('default', {
-    month: 'long',
+    month: 'short',
     day: 'numeric',
     year: 'numeric',
 });
 
 const DTFormatHour = new Intl.DateTimeFormat('default', {
-    hour12: true,
+    hour12: false,
     hour: '2-digit',
     minute: '2-digit',
 });

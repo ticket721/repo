@@ -1,6 +1,5 @@
 import * as React from 'react';
 import styled from '../../../../config/styled';
-import Icon from '../../../icon';
 
 export interface TicketInfosCardProps extends React.ComponentProps<any> {
     ticketID?: string;
@@ -108,7 +107,6 @@ export const TicketInfosCard: React.FunctionComponent<TicketInfosCardProps> = (
                 <TicketId>{props.ticketID}</TicketId>
                 <h2>{props.eventName}</h2>
                 <h3>{props.ticketType}</h3>
-                <Icon icon={'t721'} size={'48px'} color={'rgba(255, 255, 255, 0.38)'} />
             </TopInfo>
             {props.seatInfo && (
                 <BottomInfos>

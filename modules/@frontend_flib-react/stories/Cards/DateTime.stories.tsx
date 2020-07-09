@@ -12,22 +12,14 @@ export default {
 
 export const DateTimeOnly = () => (
     <DateTimeCard
-        endDate={text('End date', '2020/02/15')}
-        endTime={text('End time', '4:00PM')}
+        dates={[
+            {
+                startDate: text('Start date', '2020/02/14'),
+                endDate: text('End date', '2020/02/15'),
+                startTime: text('Start time', '2:00PM'),
+                endTime: text('End time', '4:00PM'),
+            },
+        ]}
         iconColor={text('Icon color: ', '#EBBC16')}
-        startDate={text('Start date', '2020/02/14')}
-        startTime={text('Start time', '2:00PM')}
-    />
-);
-
-export const DateTimeWithLink = () => (
-    <DateTimeCard
-        endDate={text('End date', '2020/02/15')}
-        endTime={text('End time', '4:00PM')}
-        iconColor={text('Icon color: ', '#EBBC16')}
-        startDate={text('Start date', '2020/02/14')}
-        startTime={text('Start time', '2:00PM')}
-        link={'linkto'}
-        linkLabel={text('Link label', 'Get more informations')}
     />
 );

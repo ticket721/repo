@@ -49,11 +49,15 @@ export const EventInfos: React.FunctionComponent<EventInfosProps> = (props: Even
         <Container pullUp={props.pullUp}>
             <h2>{props.name}</h2>
             <DateTime
-                startDate={props.startDate}
-                startTime={props.startTime}
-                endDate={props.endDate}
-                endTime={props.endTime}
-                iconColor={props.mainColor}
+                dates={[
+                    {
+                        startDate: props.event.startDate,
+                        endDate: props.event.endDate,
+                        startTime: props.event.startTime,
+                        endTime: props.event.endTime,
+                    },
+                ]}
+                iconColor={props.event.mainColor}
             />
             <Location iconColor={props.mainColor} location={props.location} subtitle={props.getDirections} />
         </Container>
