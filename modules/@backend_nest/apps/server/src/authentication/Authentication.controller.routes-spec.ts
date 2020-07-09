@@ -51,6 +51,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     token: response.data.token,
                     user: {
                         address: user.wallet.address,
+                        device_address: null,
                         email: user.email,
                         id: response.data.user.id,
                         locale: 'en',
@@ -95,6 +96,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     token: response.data.token,
                     user: {
                         address: user.wallet.address,
+                        device_address: null,
                         email: user.email,
                         id: response.data.user.id,
                         locale: 'fr',
@@ -580,6 +582,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     token: response.data.token,
                     user: {
                         address: response.data.user.address,
+                        device_address: null,
                         email: user.email,
                         id: response.data.user.id,
                         locale: 'en',
@@ -613,6 +616,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     token: response.data.token,
                     user: {
                         address: response.data.user.address,
+                        device_address: null,
                         email: user.email,
                         id: response.data.user.id,
                         locale: 'fr',
