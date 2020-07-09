@@ -135,7 +135,9 @@ const SyncedCartDateSection: React.FC<SyncedCartDateSectionProps> = (props: Sync
                         <TicketQty
                             options={[...new Array(sortedCategories[categoryId].length + 5)].map((u, i) => ({label: i.toString(), value: i}))}
                             onChange={(opt) => {
-                                dispatch(SetTickets(completeCartRecomputingOnDateTicketChange(props.convertedCart, props.date, categoryId, opt.value)))
+                                dispatch(
+                                    SetTickets(completeCartRecomputingOnDateTicketChange(props.convertedCart, props.date, categoryId, opt.value))
+                                )
                             }}
                             initialOption={{
                                 value: sortedCategories[categoryId].length,
@@ -199,7 +201,7 @@ const ImageWrapper = styled.div`
   cursor: pointer;
   position: relative;
   margin-left: ${props => props.theme.regularSpacing};
-  
+
   & div {
     top: 0;
     left: 0;
@@ -345,7 +347,9 @@ const SyncedCartGlobalSection: React.FC<SyncedCartGlobalSectionProps> = (props: 
                             key={categoryId}
                             options={[...new Array(sortedCategories[categoryId].length + 5)].map((u, i) => ({label: i.toString(), value: i}))}
                             onChange={(opt) => {
-                                dispatch(SetTickets(completeCartRecomputingOnGlobalTicketChange(props.convertedCart, props.group, categoryId, opt.value)))
+                                dispatch(
+                                    SetTickets(completeCartRecomputingOnGlobalTicketChange(props.convertedCart, props.group, categoryId, opt.value))
+                                )
                             }}
                             initialOption={{
                                 value: sortedCategories[categoryId].length,
