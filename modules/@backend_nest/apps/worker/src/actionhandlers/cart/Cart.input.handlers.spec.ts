@@ -199,6 +199,62 @@ describe('Cart Input Handlers Spec', function() {
             verify(context.currenciesServiceMock.computeFee('T721Token', '100')).called();
         });
 
+        it('should fail on empty cart', async function() {
+            const acsetbuilder = new CartAcsetbuilderHelper();
+            const caller = {
+                id: 'user_id',
+            } as UserDto;
+
+            const actionSetRes = await acsetbuilder.buildActionSet(caller, {});
+
+            const actionSet = actionSetRes.response;
+
+            actionSet.action.setData({
+                tickets: [],
+            });
+
+            const handlerResult = await context.cartInputHandlers.ticketSelectionsHandler(
+                context.cartInputHandlers.ticketSelectionsFields,
+                actionSet,
+                async () => {},
+            );
+
+            expect(handlerResult[0].raw).toEqual({
+                name: '@cart/creation',
+                consumed: false,
+                dispatched_at: handlerResult[0].raw.dispatched_at,
+                actions: [
+                    {
+                        type: 'input',
+                        name: '@cart/ticketSelections',
+                        data: '{"tickets":[]}',
+                        error: '{"details":null,"error":"no_tickets_in_cart"}',
+                        status: 'error',
+                        private: false,
+                    },
+                    {
+                        type: 'input',
+                        name: '@cart/modulesConfiguration',
+                        data: null,
+                        error: null,
+                        status: 'in progress',
+                        private: false,
+                    },
+                    {
+                        type: 'input',
+                        name: '@cart/authorizations',
+                        data: null,
+                        error: null,
+                        status: 'in progress',
+                        private: true,
+                    },
+                ],
+                current_action: 0,
+                current_status: 'input:error',
+            });
+            expect(handlerResult[1]).toEqual(true);
+        });
+
         it('should properly fulfill ticket selection step for 3 tickets', async function() {
             const acsetbuilder = new CartAcsetbuilderHelper();
             const caller = {
