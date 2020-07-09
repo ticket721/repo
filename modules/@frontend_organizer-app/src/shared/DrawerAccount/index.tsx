@@ -1,6 +1,7 @@
 import React                                                  from 'react';
 import styled                                                 from 'styled-components';
 import { detect }                                             from 'detect-browser';
+import { useTranslation }                                     from 'react-i18next';
 import { Drawer as MUIDrawer, DrawerProps as MUIDrawerProps } from '@material-ui/core';
 import { blurAndDarkenBackground }                            from '@frontend/core/lib/utils/style';
 import { useHistory }                                         from 'react-router';
@@ -8,6 +9,7 @@ import { ArrowBackIos }                                       from '@material-ui
 import Activities                                             from '@frontend/core/lib/components/Profile/Activities';
 import ProfileRoot                                            from '@frontend/core/lib/components/Profile/Root';
 import Language                                               from '@frontend/core/lib/components/Profile/Language';
+import '../Translations/global';
 
 export type ProfileRoute = 'root' | 'activities' | 'language';
 
@@ -17,6 +19,7 @@ interface DrawerAccountProps {
 }
 
 export const DrawerAccount: React.FC<DrawerAccountProps> = ({route, onClose}: DrawerAccountProps) => {
+    const [t] = useTranslation('global');
     const history = useHistory();
     const browser = detect();
 
@@ -33,7 +36,7 @@ export const DrawerAccount: React.FC<DrawerAccountProps> = ({route, onClose}: Dr
                         <BackArrow
                             onClick={() => history.push(history.location.pathname + '?profile=root')}>
                             <ArrowBackIos />
-                            <span>Back</span>
+                            <span>{t('back')}</span>
                         </BackArrow>
                         <Activities/>
                     </> :
@@ -45,7 +48,7 @@ export const DrawerAccount: React.FC<DrawerAccountProps> = ({route, onClose}: Dr
                         <BackArrow
                             onClick={() => history.push(history.location.pathname + '?profile=root')}>
                             <ArrowBackIos />
-                            <span>Back</span>
+                            <span>{t('back')}</span>
                         </BackArrow>
                         <Language/>
                     </> :
