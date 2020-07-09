@@ -108,6 +108,7 @@ export const showcase = () => (
                 />
                 <LocationCard
                     location={defaultTicket.location}
+                    subtitle={'Get direction'}
                     address={defaultTicket.address}
                     iconColor={defaultTicket.mainColor}
                     wSeparator

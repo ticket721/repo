@@ -15,7 +15,6 @@ interface Coords {
 export interface LocationCardProps extends React.ComponentProps<any> {
     location: string;
     iconColor?: string;
-    link?: string;
     linkLabel?: string;
     removeBg?: boolean;
     wSeparator?: boolean;
@@ -24,7 +23,6 @@ export interface LocationCardProps extends React.ComponentProps<any> {
 }
 
 const Info = styled.span`
-
     width: 100%;
     white-space: nowrap;
     overflow: hidden;
@@ -69,8 +67,8 @@ const Column = styled.div<LocationCardProps>`
         }
 
         ${(props) =>
-  props.iconColor &&
-  `
+            props.iconColor &&
+            `
       color: ${props.iconColor};
     `}
     }
@@ -95,35 +93,35 @@ const openMap = (location: string) => {
 };
 
 export const LocationCard: React.FunctionComponent<LocationCardProps & { className?: string }> = (
-  props: LocationCardProps,
+    props: LocationCardProps,
 ): JSX.Element => {
     return (
-      <ClickableContainer onClick={() => openMap(props.location)}>
-          <CardContainer className={props.className} removeBg={props.removeBg}>
-              <IconContainer>
-                  <Icon icon={'pin'} size={'16px'} color={props.iconColor} />
-              </IconContainer>
-              <Column iconColor={props.iconColor}>
-                  <Info>{props.location}</Info>
-                  <Info>{props.subtitle}</Info>
-              </Column>
-              {props.wSeparator && <Separator />}
-          </CardContainer>
-          {props.coords ? (
-            <>
-                <LeafletMap coords={props.coords} />
-                <CardContainer className={props.className} removeBg={props.removeBg}>
-                    <EndColumn textColor={props.iconColor}>
-                        <EndLinkSpan>Get directions</EndLinkSpan>
-                    </EndColumn>
-                    <IconContainer>
-                        <Icon icon={'arrow'} size={'16px'} color={props.iconColor} />
-                    </IconContainer>
-                    {props.wSeparator && <Separator />}
-                </CardContainer>
-            </>
-          ) : null}
-      </ClickableContainer>
+        <ClickableContainer onClick={() => openMap(props.location)}>
+            <CardContainer className={props.className} removeBg={props.removeBg}>
+                <IconContainer>
+                    <Icon icon={'pin'} size={'16px'} color={props.iconColor} />
+                </IconContainer>
+                <Column iconColor={props.iconColor}>
+                    <Info>{props.location}</Info>
+                    <Info>{props.subtitle}</Info>
+                </Column>
+                {props.wSeparator && <Separator />}
+            </CardContainer>
+            {props.coords ? (
+                <>
+                    <LeafletMap coords={props.coords} />
+                    <CardContainer className={props.className} removeBg={props.removeBg}>
+                        <EndColumn textColor={props.iconColor}>
+                            <EndLinkSpan>Get directions</EndLinkSpan>
+                        </EndColumn>
+                        <IconContainer>
+                            <Icon icon={'arrow'} size={'16px'} color={props.iconColor} />
+                        </IconContainer>
+                        {props.wSeparator && <Separator />}
+                    </CardContainer>
+                </>
+            ) : null}
+        </ClickableContainer>
     );
 };
 
@@ -139,23 +137,23 @@ const MapContainer = styled.div`
 `;
 
 const LeafletMap = withLeaflet((props: any) => (
-  <MapContainer>
-      <Map
-        center={{ lat: props.coords.lat, lng: props.coords.lon }}
-        zoom={18}
-        dragging={false}
-        keyboard={false}
-        doubleClickZoom={false}
-        tap={false}
-        scrollWheelZoom={false}
-        touchZoom={false}
-      >
-          <TileLayer
-            attribution={'&copy; <a href="http://osm.org/copyright"></a>'}
-            url={'https://{s}.tile.osm.org/{z}/{x}/{y}.png'}
-          />
-      </Map>
-  </MapContainer>
+    <MapContainer>
+        <Map
+            center={{ lat: props.coords.lat, lng: props.coords.lon }}
+            zoom={18}
+            dragging={false}
+            keyboard={false}
+            doubleClickZoom={false}
+            tap={false}
+            scrollWheelZoom={false}
+            touchZoom={false}
+        >
+            <TileLayer
+                attribution={'&copy; <a href="http://osm.org/copyright"></a>'}
+                url={'https://{s}.tile.osm.org/{z}/{x}/{y}.png'}
+            />
+        </Map>
+    </MapContainer>
 ));
 
 export default LocationCard;

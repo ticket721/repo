@@ -142,6 +142,7 @@ export const showcase = () => (
                         />
                         <LocationCard
                             address={eventDetails.location}
+                            subtitle={'Get directions'}
                             iconColor={eventDetails.mainColor}
                             location={eventDetails.location}
                             removeBg

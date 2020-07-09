@@ -3,18 +3,17 @@ import styled from '../../../config/styled';
 import CardContainer from '../../elements/card-container';
 
 interface Item {
-  name: string;
-  price: number;
+    name: string;
+    price: number;
 }
 
 export interface PurchaseTotalProps extends React.ComponentProps<any> {
-  totalLabel: string;
-  subtotalLabel: string;
-  label: string;
-  total: Item[];
-  fees: Item[];
+    totalLabel: string;
+    subtotalLabel: string;
+    label: string;
+    total: Item[];
+    fees: Item[];
 }
-
 
 const Title = styled.h4`
     color: ${(props) => props.theme.textColorDarker};
@@ -50,63 +49,56 @@ const Separator = styled.span`
 `;
 
 export const PurchaseTotal: React.FunctionComponent<PurchaseTotalProps> = (props: PurchaseTotalProps): JSX.Element => {
-  return (
-    <CardContainer>
-      <Title className={'uppercase'}>{props.label}</Title>
-      <h2>{
-        [
-          ...props.total,
-          ...props.fees
-        ]
-          .map(a => a.price)
-          .reduce((a, b): number => a + b)
-          .toFixed(2)
-      }€</h2>
-      {props.total?.map((item: Item, idx: number) => {
-        return (
-          <Row key={`${idx}`}>
-                        <span>
-                            {item.name}
-                        </span>
-            <div>{item.price.toFixed(2)}€</div>
-          </Row>
-        );
-      })}
-      <Separator />
-      <Row>
-        <span>{props.subtotalLabel}</span>
-        <span>{
-          props.total
-            .map(a => a.price)
-            .reduce((a, b): number => a + b)
-            .toFixed(2)
-        }€</span>
-      </Row>
-      {props.fees?.map((item: Item, idx: number) => {
-        return (
-          <Row key={`${idx}`}>
-                        <span>
-                            {item.name}
-                        </span>
-            <div>{item.price.toFixed(2)}€</div>
-          </Row>
-        );
-      })}
-      <Separator />
-      <Row>
-        <span>{props.totalLabel}</span>
-        <span>{
-          [
-            ...props.total,
-            ...props.fees
-          ]
-            .map(a => a.price)
-            .reduce((a, b): number => a + b)
-            .toFixed(2)
-        }€</span>
-      </Row>
-    </CardContainer>
-  );
+    return (
+        <CardContainer>
+            <Title className={'uppercase'}>{props.label}</Title>
+            <h2>
+                {[...props.total, ...props.fees]
+                    .map((a) => a.price)
+                    .reduce((a, b): number => a + b)
+                    .toFixed(2)}
+                €
+            </h2>
+            {props.total?.map((item: Item, idx: number) => {
+                return (
+                    <Row key={`${idx}`}>
+                        <span>{item.name}</span>
+                        <div>{item.price.toFixed(2)}€</div>
+                    </Row>
+                );
+            })}
+            <Separator />
+            <Row>
+                <span>{props.subtotalLabel}</span>
+                <span>
+                    {props.total
+                        .map((a) => a.price)
+                        .reduce((a, b): number => a + b)
+                        .toFixed(2)}
+                    €
+                </span>
+            </Row>
+            {props.fees?.map((item: Item, idx: number) => {
+                return (
+                    <Row key={`${idx}`}>
+                        <span>{item.name}</span>
+                        <div>{item.price.toFixed(2)}€</div>
+                    </Row>
+                );
+            })}
+            <Separator />
+            <Row>
+                <span>{props.totalLabel}</span>
+                <span>
+                    {[...props.total, ...props.fees]
+                        .map((a) => a.price)
+                        .reduce((a, b): number => a + b)
+                        .toFixed(2)}
+                    €
+                </span>
+            </Row>
+        </CardContainer>
+    );
 };
 
 // {props.fees && (
