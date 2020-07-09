@@ -6,6 +6,7 @@ import DateTimeCard from '../cards/datetime';
 
 export interface PreviewInfosProps extends React.ComponentProps<any> {
     ticket: TicketInterface;
+    addonsPurchased?: string;
     bgColor?: string;
 }
 
@@ -122,17 +123,10 @@ export const PreviewInfos: React.FunctionComponent<PreviewInfosProps> = (props: 
                     startTime={props.ticket.startTime}
                     removeBg
                 />
-                <Location
-                    iconColor={props.ticket.mainColor}
-                    location={props.ticket.location}
-                    address={props.ticket.address}
-                    removeBg
-                />
-                {props.ticket.addOns ? (
-                    <div>
-                        <Subtitle>{props.ticket.addOns} add-ons purchased</Subtitle>
-                    </div>
-                ) : null}
+                <Location iconColor={props.ticket.mainColor} location={props.ticket.location} removeBg />
+                <div>
+                    <Subtitle>{props.addonsPurchased}</Subtitle>
+                </div>
             </PreviewContainer>
             <Gradient ticket={props.ticket} />
         </Wrapper>

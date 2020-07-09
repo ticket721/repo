@@ -14,16 +14,28 @@ export enum TimeScale {
     year,
 }
 
-export const displayTime = (date: Date): string => {
-    const timeArray = date.toLocaleTimeString().split(':');
+export const displayTime = (date: Date | string): string => {
+    let dateToFormat: Date;
+    if (typeof date === 'string') {
+        dateToFormat = new Date(date);
+    } else {
+        dateToFormat = date;
+    }
+    const timeArray = dateToFormat.toLocaleTimeString().split(':');
     return `${timeArray[0]}:${timeArray[1]}`;
 };
 
-export const displayDate = (date: Date): string => {
-    return date.toLocaleDateString();
+export const displayDate = (date: Date | string): string => {
+    let dateToFormat: Date;
+    if (typeof date === 'string') {
+        dateToFormat = new Date(date);
+    } else {
+        dateToFormat = date;
+    }
+    return dateToFormat.toLocaleDateString();
 };
 
-export const displayCompleteDate = (date: Date): string => {
+export const displayCompleteDate = (date: Date | string): string => {
     return `${displayDate(date)} - ${displayTime(date)}`;
 };
 

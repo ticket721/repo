@@ -5,6 +5,7 @@ export interface TicketHeaderProps extends React.ComponentProps<any> {
     ticketQuantity?: number;
     cover: string;
     fullWidth?: boolean;
+    className?: string;
 }
 
 const TicketHeaderNumber = styled.div`
@@ -46,7 +47,7 @@ const Header = styled.header<TicketHeaderProps>`
   `}
 
   img {
-        height: 40vh;
+        height: 100%;
         object-fit: cover;
         width: 100%;
     }
@@ -54,7 +55,7 @@ const Header = styled.header<TicketHeaderProps>`
 
 export const TicketHeader: React.FunctionComponent<TicketHeaderProps> = (props: TicketHeaderProps): JSX.Element => {
     return (
-        <Header fullWidth={props.fullWidth}>
+        <Header fullWidth={props.fullWidth} className={props.className}>
             {!props.fullWidth && props.ticketQuantity ? (
                 <TicketHeaderNumber>x{props.ticketQuantity}</TicketHeaderNumber>
             ) : null}

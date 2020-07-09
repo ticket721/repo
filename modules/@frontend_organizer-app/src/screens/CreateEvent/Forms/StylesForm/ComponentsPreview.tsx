@@ -17,13 +17,11 @@ interface ComponentsPreviewProps {
 }
 
 const prevTicket: TicketInterface = {
-    addOns: 0,
-    address: '200 Foo Street',
+    location: '200 Foo Street',
     endDate: 'XXXX/XX/XX',
     endTime: 'X:XXpm',
     gradients: [],
     image: '',
-    location: 'Place of Foo',
     mainColor: '',
     name: 'Test Event',
     number: 0,
