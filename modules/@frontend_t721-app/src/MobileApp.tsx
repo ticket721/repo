@@ -35,6 +35,7 @@ const ProfileLanguagePage = lazy(() => import('./routes/Language'));
 const ProfilePage = lazy(() => import('./routes/Profile'));
 const SearchViewAllPage = lazy(() => import('./routes/SearchViewAll'));
 const EventPage = lazy(() => import('./routes/Event'));
+const TicketPage = lazy(() => import('./routes/Ticket'));
 const TicketSelectionPage = lazy(() => import('./routes/TicketSelection'));
 const SearchPage = lazy(() => import('./routes/Search'));
 const TagsPage = lazy(() => import('./routes/Tags'));
@@ -102,6 +103,10 @@ const MobileApp: React.FC = () => {
                     <Route path={'/tags'} exact={true}>
                         <TagsPage/>
                     </Route>
+
+                    <ProtectedRoute path={'/ticket/:id'} exact={true}>
+                        <TicketPage/>
+                    </ProtectedRoute>
 
                     <ProtectedRoute path={'/'} exact={true}>
                         <WalletPage/>

@@ -147,10 +147,12 @@ const Preview: React.FC = () => {
                                 <>
                                     <DateTimeCard
                                         iconColor={datePreview.mainColor}
-                                        startDate={datePreview.startDate}
-                                        startTime={datePreview.startTime}
-                                        endDate={datePreview.endDate}
-                                        endTime={datePreview.endTime}
+                                        dates={[{
+                                            startDate: datePreview.startDate,
+                                            endDate: datePreview.endDate,
+                                            startTime: datePreview.startTime,
+                                            endTime: datePreview.endTime,
+                                        }]}
                                         removeBg
                                     />
                                     <LocationCard
