@@ -160,7 +160,7 @@ const Preview: React.FC = () => {
                                         iconColor={datePreview.mainColor}
                                         location={datePreview.location}
                                         removeBg
-                                    />
+                                        subtitle={t('')}/>
                                     <LeafletMap
                                       width={'100%'}
                                       height={'300px'}
