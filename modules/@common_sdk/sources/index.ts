@@ -76,7 +76,7 @@ import { dosojinSearch, dosojinCount } from './app/api/dosojin';
 import { ticketsSearch, ticketsCount } from './app/api/tickets';
 
 // USERS
-import { usersMe } from './app/api/users';
+import { usersMe, usersSetDeviceAddress } from './app/api/users';
 
 // GEOLOC
 
@@ -108,6 +108,7 @@ export class T721SDK {
         this.validateResetPassword = this.validateResetPassword.bind(this);
 
         this.users.me = this.users.me.bind(this);
+        this.users.setDeviceAddress = this.users.setDeviceAddress.bind(this);
 
         this.actions.search = this.actions.search.bind(this);
         this.actions.count = this.actions.count.bind(this);
@@ -273,6 +274,7 @@ export class T721SDK {
 
     public users = {
         me: usersMe,
+        setDeviceAddress: usersSetDeviceAddress
     };
 
     public actions = {

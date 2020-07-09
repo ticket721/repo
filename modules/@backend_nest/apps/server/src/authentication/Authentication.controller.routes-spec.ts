@@ -793,6 +793,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     user: {
                         valid: true,
                         address: validationResponse.data.user.address,
+                        device_address: null,
                         role: 'authenticated',
                         id: validationResponse.data.user.id,
                         locale: 'en',
@@ -841,6 +842,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     id: expect.anything(),
                     email: user.email,
                     username: expect.anything(),
+                    device_address: null,
                     address: expect.anything(),
                     type: 't721',
                     role: 'authenticated',
