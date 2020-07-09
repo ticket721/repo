@@ -10,7 +10,7 @@ export default [
         contractName: 'T721Token',
         feeComputer: (amount: string) => {
             const price = BigInt(amount);
-            return ((price / BigInt(100)) + BigInt(100)).toString();
+            return (price / BigInt(100) + BigInt(100)).toString();
         },
     },
     {

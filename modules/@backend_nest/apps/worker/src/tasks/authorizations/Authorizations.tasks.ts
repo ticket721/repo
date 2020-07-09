@@ -347,7 +347,6 @@ export class AuthorizationsTasks implements OnModuleInit {
         );
 
         if (authorizationsCreationRes.error) {
-            console.error(authorizationsCreationRes.error);
             throw new NestError(`Error while creating authorizations`);
         }
 
