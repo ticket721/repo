@@ -12,11 +12,11 @@ import { formatDay, formatHour } from '@frontend/core/lib/utils/date';
 import { useTranslation }        from 'react-i18next';
 import './locales';
 import styled                    from 'styled-components';
-import cover                     from '../../../imgTempo/coverPale.jpeg';
 import { formatEuro }            from '@frontend/core/lib/utils/price';
 import { useHistory }            from 'react-router';
 
-import qrcodePreview from '../../../media/images/qrcodePreview.png';
+import qrcodePreview  from '../../../media/images/qrcodePreview.png';
+import { getImgPath } from '@frontend/core/lib/utils/images';
 
 interface EventDate {
     id: string;
@@ -54,7 +54,7 @@ export const TicketDetails: React.FC<TicketDetailsProps> = (props: TicketDetails
     }, []);
 
     return <>
-        <TicketHeader fullWidth cover={cover}/>
+        <TicketHeader fullWidth cover={getImgPath(props.image)}/>
         <TicketContent>
             <Gradient values={props.colors} />
             <Details>
@@ -103,7 +103,7 @@ export const TicketDetails: React.FC<TicketDetailsProps> = (props: TicketDetails
                             location={props.dates[0].location}
                             iconColor={props.colors[0]}
                             wSeparator
-                        /> :
+                            subtitle={t('get_directions')}/> :
                         null
                 }
                 <PurchaseInfosCard

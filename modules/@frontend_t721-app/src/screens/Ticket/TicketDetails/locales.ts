@@ -7,6 +7,7 @@ i18n.addResourceBundle('en', 'ticket_details', {
     event_link: 'event page',
     purchased_date: 'purchased date',
     price: 'price',
+    get_directions: 'Get directions',
 });
 i18n.addResourceBundle('fr', 'ticket_details', {
     show_all_dates_label: 'Voir toutes les dates',
@@ -15,4 +16,5 @@ i18n.addResourceBundle('fr', 'ticket_details', {
     event_link: 'page évènement',
     purchased_date: 'date d\'achat',
     price: 'prix',
+    get_directions: 'Obtenir l\'itinéraire',
 });
