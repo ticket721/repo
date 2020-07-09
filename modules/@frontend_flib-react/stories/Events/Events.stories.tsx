@@ -133,11 +133,15 @@ export const showcase = () => (
                     />
                     <BgContainer>
                         <DateTimeCard
+                            dates={[
+                                {
+                                    startDate: eventDetails.startDate,
+                                    endDate: eventDetails.endDate,
+                                    startTime: eventDetails.startTime,
+                                    endTime: eventDetails.endTime,
+                                },
+                            ]}
                             iconColor={eventDetails.mainColor}
-                            endDate={eventDetails.endDate}
-                            endTime={eventDetails.endTime}
-                            startDate={eventDetails.startDate}
-                            startTime={eventDetails.startTime}
                             removeBg
                         />
                         <LocationCard

@@ -99,11 +99,15 @@ export const showcase = () => (
                     seatInfo={defaultTicket.seat}
                 />
                 <DateTimeCard
-                    endDate={defaultTicket.endDate}
-                    endTime={defaultTicket.endTime}
+                    dates={[
+                        {
+                            startDate: defaultTicket.startDate,
+                            endDate: defaultTicket.endDate,
+                            startTime: defaultTicket.startTime,
+                            endTime: defaultTicket.endTime,
+                        },
+                    ]}
                     iconColor={defaultTicket.mainColor}
-                    startDate={defaultTicket.startDate}
-                    startTime={defaultTicket.startTime}
                     wSeparator
                 />
                 <LocationCard
