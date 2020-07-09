@@ -74,6 +74,7 @@ export const EventContainer: React.FC<EventContainerProps> = (props: EventContai
             <LocationCard
                 iconColor={eventDetails.mainColor}
                 location={eventDetails.location}
+                subtitle={t('get_directions')}
                 removeBg
                 coords={
                     props.date.location.location

@@ -57,7 +57,7 @@ export const DateTimeCard: React.FunctionComponent<DateTimeCardProps & { classNa
     return (
         <CardContainer removeBg={props.removeBg} className={props.className}>
             <IconContainer>
-                <Icon icon={'calendar'} size={'18px'} color={props.iconColor} />
+                <Icon icon={'calendar'} size={'16px'} color={props.iconColor} />
             </IconContainer>
             <Column iconColor={props.iconColor}>
                 {props.startDate === props.endDate ? (

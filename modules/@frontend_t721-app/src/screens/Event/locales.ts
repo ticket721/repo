@@ -10,17 +10,19 @@ i18n.addResourceBundle('en', 'event', {
     photos_videos_title: 'Photos & Videos',
     read_more_show_less: 'Show less',
     read_more_show_more: 'Show more',
-    read_more_title: 'About'
+    read_more_title: 'About',
+    get_directions: 'Click to get directions'
 });
 i18n.addResourceBundle('fr', 'event', {
     get_ticket_pricing_range: '{{minPrice}} € a {{maxPrice}} €',
     get_ticket_pricing_solo: '{{price}} €',
-    tickets_from: 'Tickets a partir de',
-    get_tickets: 'Achetez vos tickets',
+    tickets_from: 'A partir de',
+    get_tickets: 'Acheter',
     tags_title: 'Tags',
     tags_hide: 'Reduire',
     photos_videos_title: 'Photos & Videos',
     read_more_show_less: 'Reduire',
     read_more_show_more: 'Voir plus',
-    read_more_title: 'A Propos'
+    read_more_title: 'A Propos',
+    get_directions: 'Cliquez pour afficher l\'addresse'
 });

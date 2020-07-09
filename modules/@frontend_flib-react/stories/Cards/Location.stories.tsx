@@ -13,6 +13,7 @@ export default {
 export const LocationOnly = () => (
     <LocationCard
         location={text('Location: ', 'Philharmonie de Paris')}
+        subtitle={text('Subtitle', 'Get directions')}
         address={text('Address:', '221 avenue Jean Jaurès, Paris')}
         iconColor={text('Color:', '#EBBC16')}
     />
@@ -21,9 +22,8 @@ export const LocationOnly = () => (
 export const WithLink = () => (
     <LocationCard
         location={text('Location: ', 'Philharmonie de Paris')}
-        address={text('Address:', '221 avenue Jean Jaurès, Paris')}
+        subtitle={text('Subtitle', 'Get directions')}
         iconColor={text('Color:', '#EBBC16')}
-        link={'direction'}
         linkLabel={text('Direction label', 'Get directions')}
     />
 );

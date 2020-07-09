@@ -39,6 +39,7 @@ const TicketSelectionPage = lazy(() => import('./routes/TicketSelection'));
 const SearchPage = lazy(() => import('./routes/Search'));
 const TagsPage = lazy(() => import('./routes/Tags'));
 const WalletPage = lazy(() => import('./routes/Wallet'));
+const CartPage = lazy(() => import('./routes/Cart'));
 
 const MobileApp: React.FC = () => {
 
@@ -79,7 +80,7 @@ const MobileApp: React.FC = () => {
                     </ProtectedRoute>
 
                     <ProtectedRoute path={'/cart/checkout'} exact={true}>
-                        <p>Cart</p>
+                        <CartPage/>
                     </ProtectedRoute>
 
                     <Route path={'/search/events/:query'} exact={true}>

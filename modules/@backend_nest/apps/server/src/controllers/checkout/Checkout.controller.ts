@@ -22,13 +22,15 @@ import { CartAuthorizations, CartTicketSelections } from '@app/worker/actionhand
 import { DAY } from '@lib/common/utils/time';
 import { CheckoutResolveCartWithPaymentIntentInputDto } from '@app/server/controllers/checkout/dto/CheckoutResolveCartWithPaymentIntentInput.dto';
 import { CheckoutResolveCartWithPaymentIntentResponseDto } from '@app/server/controllers/checkout/dto/CheckoutResolveCartWithPaymentIntentResponse.dto';
-import { keccak256 } from '@common/global';
+import { keccak256, log2 } from '@common/global';
 import regionRestrictions from './restrictions/regionRestrictions.value';
 import methodsRestrictions from './restrictions/methodsRestrictions.value';
 import { GemOrderEntity } from '@lib/common/gemorders/entities/GemOrder.entity';
 import { CheckoutAcsetBuilderArgs } from '@lib/common/checkout/acset_builders/Checkout.acsetbuilder.helper';
 import { ValidGuard } from '@app/server/authentication/guards/ValidGuard.guard';
 import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
+import { Price } from '@lib/common/currencies/Currencies.service';
+import { Decimal } from 'decimal.js';
 
 /**
  * Checkout controller to create, update and resolve carts
@@ -54,6 +56,52 @@ export class CheckoutController extends ControllerBasics<StripeResourceEntity> {
         @InjectQueue('authorization') private readonly authorizationQueue: Queue,
     ) {
         super();
+    }
+
+    /**
+     * Factorize prices and fees by currencies
+     *
+     * @param prices
+     * @param fees
+     */
+    private factorizePrices(prices: Price[], fees: string[]): [Price[], string[]] {
+        const ret: [Price[], string[]] = [[], []];
+        let sortedPricesAndFees: { [key: string]: { price: Price; fee: string }[] } = {};
+
+        for (let idx = 0; idx < prices.length; ++idx) {
+            sortedPricesAndFees = {
+                ...sortedPricesAndFees,
+                [prices[idx].currency]: [
+                    ...(sortedPricesAndFees[prices[idx].currency] || []),
+                    {
+                        price: prices[idx],
+                        fee: fees[idx],
+                    },
+                ],
+            };
+        }
+
+        for (const currency of Object.keys(sortedPricesAndFees)) {
+            const total = sortedPricesAndFees[currency]
+                .map(spaf => new Decimal(spaf.price.value))
+                .reduce((a: Decimal, b: Decimal) => a.add(b))
+                .toString();
+
+            const fee = sortedPricesAndFees[currency]
+                .map(spaf => new Decimal(spaf.fee))
+                .reduce((a: Decimal, b: Decimal) => a.add(b))
+                .toString();
+
+            ret[0].push({
+                currency,
+                value: total,
+                log_value: log2(total),
+            });
+
+            ret[1].push(fee);
+        }
+
+        return ret;
     }
 
     /**
@@ -118,14 +166,19 @@ export class CheckoutController extends ControllerBasics<StripeResourceEntity> {
         const ticketSelectionsData: CartTicketSelections = actionSet.actions[0].data;
         const authorizationsData: CartAuthorizations = actionSet.actions[2].data;
 
+        const [prices, fees]: [Price[], string[]] = this.factorizePrices(
+            ticketSelectionsData.total,
+            ticketSelectionsData.fees,
+        );
+
         await this.authorizationQueue.add('generateMintingAuthorizations', {
             actionSetId: actionSet.id,
             authorizations: ticketSelectionsData.tickets,
             oldAuthorizations: authorizationsData ? authorizationsData.authorizations : null,
             commitType: 'stripe',
             expirationTime: 2 * DAY,
-            prices: ticketSelectionsData.total,
-            fees: ticketSelectionsData.fees,
+            prices,
+            fees,
             signatureReadable: false,
             grantee: user,
         });
@@ -189,6 +242,7 @@ export class CheckoutController extends ControllerBasics<StripeResourceEntity> {
         const authorizationData: CartAuthorizations = actionSet.actions[actionSet.actions.length - 1].data;
 
         const prices = authorizationData.total;
+        const fees = authorizationData.fees;
 
         // Not readlly testable with only one currency
         /* istanbul ignore next */
@@ -234,7 +288,7 @@ export class CheckoutController extends ControllerBasics<StripeResourceEntity> {
             .slice(2)
             .toLowerCase();
 
-        const total: number = parseInt(prices[0].value, 10);
+        const total: number = parseInt(prices[0].value, 10) + parseInt(fees[0], 10);
 
         await this._serviceCall(
             this.gemOrdersService.startGemOrder(

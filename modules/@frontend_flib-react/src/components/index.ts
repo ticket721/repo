@@ -21,3 +21,4 @@ export * from './animation';
 export * from './message';
 export * from './map';
 export * from './popup';
+export * from './loading';

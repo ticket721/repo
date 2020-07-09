@@ -3,13 +3,13 @@ import { PasswordlessUserDto } from '@app/server/authentication/dto/Passwordless
 import {
     createEvent,
     createEventWithUltraVIP,
+    createExpensiveEvent,
     createPaymentIntent,
     failWithCode,
     gemFail,
     getMocks,
     getSDKAndUser,
     getUser,
-    pause,
     setPaymentIntent,
     waitForActionSet,
     waitForTickets,
@@ -704,12 +704,15 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const event = await createEvent(token, sdk);
+                const event = await createExpensiveEvent(token, sdk);
+
+                const amountReceived = 10370;
 
                 const validPaymentIntentId = await createPaymentIntent({
                     charges: {
                         data: [
                             {
+                                amount_refunded: 89630,
                                 payment_method_details: {
                                     type: 'card',
                                     card: {
@@ -719,10 +722,118 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                             },
                         ],
                     } as Stripe.ApiList<Stripe.Charge>,
+                    amount: 100000,
                     payment_method_types: ['card'],
                     status: 'succeeded',
                     currency: 'eur',
-                    amount_received: 330,
+                    amount_received: amountReceived,
+                });
+
+                const cartActionSetRes = await sdk.actions.create(token, {
+                    name: 'cart_create',
+                    arguments: {},
+                });
+
+                const actionSetId = cartActionSetRes.data.actionset.id;
+
+                await sdk.cart.ticketSelections(token, actionSetId, {
+                    tickets: [
+                        ...[...Array(1)].map(() => ({
+                            categoryId: event.categories[0],
+                            price: {
+                                currency: 'Fiat',
+                                price: '10000',
+                            },
+                        })),
+                    ],
+                });
+
+                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+                    return as.current_action === 1;
+                });
+
+                await sdk.cart.modulesConfiguration(token, actionSetId, {});
+
+                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+                    return as.current_action === 2;
+                });
+
+                await sdk.checkout.cart.commit.stripe(token, {
+                    cart: actionSetId,
+                });
+
+                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+                    return as.current_status === 'complete';
+                });
+
+                const cartActionSetBeforeRes = await sdk.actions.search(token, {
+                    id: {
+                        $eq: actionSetId,
+                    },
+                });
+
+                expect(cartActionSetBeforeRes.data.actionsets[0].consumed).toEqual(false);
+
+                const res = await sdk.checkout.cart.resolve.paymentIntent(token, {
+                    cart: actionSetId,
+                    paymentIntentId: validPaymentIntentId,
+                });
+
+                const checkoutActionSetId = res.data.checkoutActionSetId;
+
+                await waitForActionSet(sdk, token, checkoutActionSetId, (as: ActionSetEntity): boolean => {
+                    return as.current_status === 'complete';
+                });
+
+                await waitForTickets(sdk, token, user.address, (tickets: TicketEntity[]): boolean => {
+                    return tickets.length === 1;
+                });
+
+                const cartActionSetFinalRes = await sdk.actions.search(token, {
+                    id: {
+                        $eq: actionSetId,
+                    },
+                });
+
+                expect(cartActionSetFinalRes.data.actionsets[0].consumed).toEqual(true);
+            });
+
+            test('should create, fill and commit cart with 3 tickets, then resolve with captured payment intent', async function() {
+                const {
+                    sdk,
+                    token,
+                    user,
+                    password,
+                }: {
+                    sdk: T721SDK;
+                    token: string;
+                    user: PasswordlessUserDto;
+                    password: string;
+                } = await getSDKAndUser(getCtx);
+
+                const event = await createExpensiveEvent(token, sdk);
+
+                const amountReceived = 31060;
+
+                const validPaymentIntentId = await createPaymentIntent({
+                    charges: {
+                        data: [
+                            {
+                                amount_refunded: 68940,
+                                payment_method_details: {
+                                    type: 'card',
+                                    card: {
+                                        country: 'FR',
+                                    },
+                                },
+                            },
+                        ],
+                    } as Stripe.ApiList<Stripe.Charge>,
+                    amount: 100000,
+                    payment_method_types: ['card'],
+                    status: 'succeeded',
+                    currency: 'eur',
+                    amount_received: amountReceived,
                 });
 
                 const cartActionSetRes = await sdk.actions.create(token, {
@@ -738,7 +849,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                             categoryId: event.categories[0],
                             price: {
                                 currency: 'Fiat',
-                                price: '100',
+                                price: '10000',
                             },
                         })),
                     ],
@@ -807,7 +918,9 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const event = await createEvent(token, sdk);
+                const event = await createExpensiveEvent(token, sdk);
+
+                const amountReceived = 10370;
 
                 const validPaymentIntent: Partial<Stripe.PaymentIntent> = {
                     charges: {
@@ -825,7 +938,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     payment_method_types: ['card'],
                     status: 'requires_capture',
                     currency: 'eur',
-                    amount_capturable: 500,
+                    amount_capturable: 100000,
                 };
 
                 const validPaymentIntentId = createPaymentIntent(validPaymentIntent);
@@ -836,14 +949,25 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     mocks[1].capture(
                         validPaymentIntentId,
                         deepEqual({
-                            amount_to_capture: 330,
+                            amount_to_capture: amountReceived,
                         }),
                     ),
                 ).thenCall(() => {
                     setPaymentIntent(validPaymentIntentId, {
                         ...validPaymentIntent,
                         status: 'succeeded',
-                        amount_received: 330,
+                        amount_received: amountReceived,
+                        amount: 100000,
+                        amount_capturable: 0,
+                        charges: {
+                            ...validPaymentIntent.charges,
+                            data: [
+                                {
+                                    ...validPaymentIntent.charges.data[0],
+                                    amount_refunded: 89630,
+                                },
+                            ],
+                        },
                     });
                 });
 
@@ -856,11 +980,11 @@ export default function(getCtx: () => { ready: Promise<void> }) {
 
                 await sdk.cart.ticketSelections(token, actionSetId, {
                     tickets: [
-                        ...[...Array(3)].map(() => ({
+                        ...[...Array(1)].map(() => ({
                             categoryId: event.categories[0],
                             price: {
                                 currency: 'Fiat',
-                                price: '100',
+                                price: '10000',
                             },
                         })),
                     ],
@@ -896,7 +1020,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 });
 
                 await waitForTickets(sdk, token, user.address, (tickets: TicketEntity[]): boolean => {
-                    return tickets.length === 3;
+                    return tickets.length === 1;
                 });
             });
 
