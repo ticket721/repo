@@ -1367,7 +1367,6 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 });
 
                 await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-                    console.log('error', as.actions[as.actions.length - 1].error);
                     return as.current_status === 'complete';
                 });
 

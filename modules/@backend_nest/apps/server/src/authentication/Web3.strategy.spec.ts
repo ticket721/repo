@@ -61,6 +61,7 @@ describe('Web3 Strategy', function() {
                         username,
                         email,
                         wallet: null,
+                        device_address: null,
                         address,
                         type: 'web3',
                         id: '0',
@@ -95,6 +96,7 @@ describe('Web3 Strategy', function() {
                 username,
                 email,
                 wallet: null,
+                device_address: null,
                 address,
                 type: 'web3',
                 id: '0',
@@ -113,8 +115,6 @@ describe('Web3 Strategy', function() {
             const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
             const web3TokensServiceMock: Web3TokensService = context.web3TokensServiceMock;
 
-            const email = 'test@test.com';
-            const username = 'salut';
             const wallet: Wallet = await createWallet();
             const address = toAcceptedAddressFormat(wallet.address);
             const web3LoginSigner: Web3LoginSigner = new Web3LoginSigner(1);
@@ -168,8 +168,6 @@ describe('Web3 Strategy', function() {
             const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
             const web3TokensServiceMock: Web3TokensService = context.web3TokensServiceMock;
 
-            const email = 'test@test.com';
-            const username = 'salut';
             const wallet: Wallet = await createWallet();
             const address = toAcceptedAddressFormat(wallet.address);
             const web3LoginSigner: Web3LoginSigner = new Web3LoginSigner(1);
@@ -223,8 +221,6 @@ describe('Web3 Strategy', function() {
             const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
             const web3TokensServiceMock: Web3TokensService = context.web3TokensServiceMock;
 
-            const email = 'test@test.com';
-            const username = 'salut';
             const wallet: Wallet = await createWallet();
             const address = toAcceptedAddressFormat(wallet.address);
             const web3LoginSigner: Web3LoginSigner = new Web3LoginSigner(1);
@@ -278,8 +274,6 @@ describe('Web3 Strategy', function() {
             const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
             const web3TokensServiceMock: Web3TokensService = context.web3TokensServiceMock;
 
-            const email = 'test@test.com';
-            const username = 'salut';
             const wallet: Wallet = await createWallet();
             const address = toAcceptedAddressFormat(wallet.address);
             const web3LoginSigner: Web3LoginSigner = new Web3LoginSigner(1);
@@ -333,8 +327,6 @@ describe('Web3 Strategy', function() {
             const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
             const web3TokensServiceMock: Web3TokensService = context.web3TokensServiceMock;
 
-            const email = 'test@test.com';
-            const username = 'salut';
             const wallet: Wallet = await createWallet();
             const address = toAcceptedAddressFormat(wallet.address);
             const web3LoginSigner: Web3LoginSigner = new Web3LoginSigner(1);
@@ -402,6 +394,7 @@ describe('Web3 Strategy', function() {
                     response: {
                         username,
                         email,
+                        device_address: null,
                         wallet: null,
                         address,
                         type: 'web3',
@@ -468,6 +461,7 @@ describe('Web3 Strategy', function() {
                         username,
                         email,
                         wallet: null,
+                        device_address: null,
                         address,
                         type: 'web3',
                         id: '0',
@@ -536,6 +530,7 @@ describe('Web3 Strategy', function() {
                         username,
                         email,
                         wallet: null,
+                        device_address: null,
                         address,
                         type: 'web3',
                         id: '0',
