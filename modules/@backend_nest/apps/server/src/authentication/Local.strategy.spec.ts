@@ -48,7 +48,6 @@ describe('Local Strategy', function() {
             const address = wallet.address;
             const hashedp = toAcceptedKeccak256Format(keccak256('salut'));
             const encrypted_string = await encryptWallet(wallet, hashedp);
-            const encrypted = JSON.parse(encrypted_string);
 
             when(authenticationServiceMock.validateUser(email, hashedp)).thenReturn(
                 Promise.resolve({
@@ -56,6 +55,7 @@ describe('Local Strategy', function() {
                         username,
                         email,
                         wallet: encrypted_string,
+                        device_address: null,
                         address: toAcceptedAddressFormat(address),
                         type: 't721',
                         id: '0',
@@ -73,6 +73,7 @@ describe('Local Strategy', function() {
                 username,
                 email,
                 wallet: encrypted_string,
+                device_address: null,
                 address: toAcceptedAddressFormat(address),
                 type: 't721',
                 id: '0',
@@ -89,12 +90,7 @@ describe('Local Strategy', function() {
             const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
 
             const email = 'test@test.com';
-            const username = 'salut';
-            const wallet: Wallet = await createWallet();
-            const address = wallet.address;
             const hashedp = toAcceptedKeccak256Format(keccak256('salut'));
-            const encrypted_string = await encryptWallet(wallet, hashedp);
-            const encrypted = JSON.parse(encrypted_string);
 
             when(authenticationServiceMock.validateUser(email, hashedp)).thenReturn(
                 Promise.resolve({
@@ -123,12 +119,7 @@ describe('Local Strategy', function() {
             const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
 
             const email = 'test@test.com';
-            const username = 'salut';
-            const wallet: Wallet = await createWallet();
-            const address = wallet.address;
             const hashedp = toAcceptedKeccak256Format(keccak256('salut'));
-            const encrypted_string = await encryptWallet(wallet, hashedp);
-            const encrypted = JSON.parse(encrypted_string);
 
             when(authenticationServiceMock.validateUser(email, hashedp)).thenReturn(
                 Promise.resolve({

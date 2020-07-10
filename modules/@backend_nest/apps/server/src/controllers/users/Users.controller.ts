@@ -1,5 +1,5 @@
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { Controller, Get, HttpCode, UseFilters, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Put, UseFilters, UseGuards } from '@nestjs/common';
 import { ControllerBasics } from '@lib/common/utils/ControllerBasics.base';
 import { TxEntity } from '@lib/common/txs/entities/Tx.entity';
 import { HttpExceptionFilter } from '@app/server/utils/HttpException.filter';
@@ -10,6 +10,9 @@ import { UserDto } from '@lib/common/users/dto/User.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { Roles, RolesGuard } from '@app/server/authentication/guards/RolesGuard.guard';
 import { UsersMeResponseDto } from '@app/server/controllers/users/dto/UsersMeResponse.dto';
+import { UsersSetDeviceAddressInputDto } from '@app/server/controllers/users/dto/UsersSetDeviceAddressInput.dto';
+import { UsersSetDeviceAddressResponseDto } from '@app/server/controllers/users/dto/UsersSetDeviceAddressResponse.dto';
+import { UsersService } from '@lib/common/users/Users.service';
 
 /**
  * Users Controller. Fetch and recover users related information
@@ -18,6 +21,15 @@ import { UsersMeResponseDto } from '@app/server/controllers/users/dto/UsersMeRes
 @ApiTags('users')
 @Controller('users')
 export class UsersController extends ControllerBasics<TxEntity> {
+    /**
+     * Dependency Injection
+     *
+     * @param usersService
+     */
+    constructor(private readonly usersService: UsersService) {
+        super();
+    }
+
     /**
      * Recover Authenticated user infos
      */
@@ -31,6 +43,29 @@ export class UsersController extends ControllerBasics<TxEntity> {
         delete user.password;
         return {
             user,
+        };
+    }
+
+    /**
+     * Recover Authenticated user infos
+     */
+    @Put('device-address')
+    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.OK)
+    @Roles('authenticated')
+    @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized])
+    async setDeviceAddress(
+        @Body() body: UsersSetDeviceAddressInputDto,
+        @User() user: UserDto,
+    ): Promise<UsersSetDeviceAddressResponseDto> {
+        const updatedUser = await this._serviceCall(
+            this.usersService.setDeviceAddress(user.id, body.deviceAddress),
+            StatusCodes.InternalServerError,
+        );
+
+        return {
+            user: updatedUser,
         };
     }
 }
