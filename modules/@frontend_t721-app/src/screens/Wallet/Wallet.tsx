@@ -1,27 +1,32 @@
-import React, { useState }                        from 'react';
-import styled                       from 'styled-components';
+import React, { useEffect, useState } from 'react';
+import styled                         from 'styled-components';
 import { useTranslation }           from 'react-i18next';
 import {
     Icon,
     Error,
     FullPageLoading,
-}                                   from '@frontend/flib-react/lib/components';
+}                                           from '@frontend/flib-react/lib/components';
 import './locales';
-import { useRequest }               from '@frontend/core/lib/hooks/useRequest';
-import { TicketsSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/tickets/dto/TicketsSearchResponse.dto';
-import { useSelector }              from 'react-redux';
-import { T721AppState }             from '../../redux';
-import { v4 }                       from 'uuid';
-import { CategoryFetcher }          from './CategoryFetcher';
-import Flicking                     from '@egjs/react-flicking';
-import { useHistory }               from 'react-router';
+import { useRequest }                       from '@frontend/core/lib/hooks/useRequest';
+import { useLazyRequest }                   from '@frontend/core/lib/hooks/useLazyRequest';
+import { TicketsSearchResponseDto }         from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/tickets/dto/TicketsSearchResponse.dto';
+import { useSelector }                      from 'react-redux';
+import { T721AppState }                     from '../../redux';
+import { v4 }                               from 'uuid';
+import { CategoryFetcher }                  from './CategoryFetcher';
+import Flicking                             from '@egjs/react-flicking';
+import { useHistory }                       from 'react-router';
+import { UsersSetDeviceAddressResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/users/dto/UsersSetDeviceAddressResponse.dto';
 
 const Wallet: React.FC = () => {
     const history = useHistory();
     const [ ticketIdx, setTicketIdx ] = useState<number>(0);
     const { t } = useTranslation('wallet');
     const [ token, address ] = useSelector((state: T721AppState) => [ state.auth.token.value, state.auth.user.address ]);
+    const devicePk = useSelector((state: T721AppState) => state.deviceWallet.pk);
     const [uuid] = useState<string>(v4() + '@wallet');
+
+    const { lazyRequest: postAddress } = useLazyRequest<UsersSetDeviceAddressResponseDto>('users.setDeviceAddress', uuid);
 
     const { response: ticketsResp } = useRequest<TicketsSearchResponseDto>({
         method: 'tickets.search',
@@ -43,6 +48,17 @@ const Wallet: React.FC = () => {
         refreshRate: 5,
     },
     uuid);
+
+    useEffect(() => {
+        if (devicePk) {
+            postAddress([
+                token,
+                {
+                    deviceAddress: localStorage.getItem('deviceAddress')
+                },
+            ]);
+        }
+    }, [token, devicePk, postAddress]);
 
     if (ticketsResp.loading) {
         return (
