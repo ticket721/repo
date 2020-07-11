@@ -188,7 +188,7 @@ export class MintingTasks implements OnModuleInit {
             return '0';
         }
 
-        if (cartAuthorizations.total.length > 1) {
+        if (cartAuthorizations.total.length > 1 || cartAuthorizations.fees.length > 1) {
             throw new NestError('Multiple currencies not allowed');
         }
 
@@ -202,7 +202,9 @@ export class MintingTasks implements OnModuleInit {
                 .call()
         ).toString();
 
-        const totalRequiredAmount = cartAuthorizations.total[0].value;
+        const totalRequiredAmount = new BigNumber(cartAuthorizations.total[0].value)
+            .plus(new BigNumber(cartAuthorizations.fees[0]))
+            .toString(10);
 
         if (new BigNumber(currentlyAuthorizedAmount).gte(new BigNumber(totalRequiredAmount))) {
             return '0';

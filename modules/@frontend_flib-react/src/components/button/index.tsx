@@ -21,7 +21,7 @@ const StyledButton = styled.button<ButtonProps>`
         background-color: ${rgba('#FFFFFF', 0.1)};
         transition: background-color 300ms ease;
         cursor: default;
-        &::before {
+        &::be{
             display: none;
         }
     `};

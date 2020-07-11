@@ -3,6 +3,7 @@ import { PasswordlessUserDto } from '@app/server/authentication/dto/Passwordless
 import {
     createEvent,
     createEventWithUltraVIP,
+    createExpensiveEvent,
     createPaymentIntent,
     failWithCode,
     gemFail,
@@ -33,12 +34,15 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const event = await createEvent(token, sdk);
+                const event = await createExpensiveEvent(token, sdk);
+
+                const amountReceived = 10370;
 
                 const validPaymentIntentId = await createPaymentIntent({
                     charges: {
                         data: [
                             {
+                                amount_refunded: 89630,
                                 payment_method_details: {
                                     type: 'card',
                                     card: {
@@ -48,10 +52,11 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                             },
                         ],
                     } as Stripe.ApiList<Stripe.Charge>,
+                    amount: 100000,
                     payment_method_types: ['card'],
                     status: 'succeeded',
                     currency: 'eur',
-                    amount_received: 330,
+                    amount_received: amountReceived,
                 });
 
                 const cartActionSetRes = await sdk.actions.create(token, {
@@ -63,11 +68,11 @@ export default function(getCtx: () => { ready: Promise<void> }) {
 
                 await sdk.cart.ticketSelections(token, actionSetId, {
                     tickets: [
-                        ...[...Array(3)].map(() => ({
+                        ...[...Array(1)].map(() => ({
                             categoryId: event.categories[0],
                             price: {
                                 currency: 'Fiat',
-                                price: '100',
+                                price: '10000',
                             },
                         })),
                     ],
@@ -111,7 +116,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 });
 
                 await waitForTickets(sdk, token, user.address, (tickets: TicketEntity[]): boolean => {
-                    return tickets.length === 3;
+                    return tickets.length === 1;
                 });
 
                 const cartActionSetFinalRes = await sdk.actions.search(token, {
@@ -140,12 +145,15 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const event = await createEvent(token, sdk);
+                const event = await createExpensiveEvent(token, sdk);
+
+                const amountReceived = 10370;
 
                 const validPaymentIntentId = await createPaymentIntent({
                     charges: {
                         data: [
                             {
+                                amount_refunded: 89630,
                                 payment_method_details: {
                                     type: 'card',
                                     card: {
@@ -155,10 +163,11 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                             },
                         ],
                     } as Stripe.ApiList<Stripe.Charge>,
+                    amount: 100000,
                     payment_method_types: ['card'],
                     status: 'succeeded',
                     currency: 'eur',
-                    amount_received: 330,
+                    amount_received: amountReceived,
                 });
 
                 const cartActionSetRes = await sdk.actions.create(token, {
@@ -170,11 +179,11 @@ export default function(getCtx: () => { ready: Promise<void> }) {
 
                 await sdk.cart.ticketSelections(token, actionSetId, {
                     tickets: [
-                        ...[...Array(3)].map(() => ({
+                        ...[...Array(1)].map(() => ({
                             categoryId: event.categories[0],
                             price: {
                                 currency: 'Fiat',
-                                price: '100',
+                                price: '10000',
                             },
                         })),
                     ],
@@ -218,7 +227,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 });
 
                 await waitForTickets(sdk, token, user.address, (tickets: TicketEntity[]): boolean => {
-                    return tickets.length === 3;
+                    return tickets.length === 1;
                 });
 
                 const cartActionSetFinalRes = await sdk.actions.search(token, {

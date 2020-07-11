@@ -8,6 +8,8 @@ export interface PurchaseInfosCardProps extends React.ComponentProps<any> {
     date: string;
     iconColor: string;
     price: string;
+    purchasedLabel: string;
+    priceLabel: string;
     removeBg?: boolean;
     wSeparator?: boolean;
 }
@@ -39,11 +41,11 @@ export const PurchaseInfosCard: React.FunctionComponent<PurchaseInfosCardProps> 
                 <Icon icon={'ticket'} size={'18px'} color={props.iconColor} />
             </IconContainer>
             <div>
-                <Label>Date purchased</Label>
+                <Label>{props.purchasedLabel}</Label>
                 <Info>{props.date}</Info>
             </div>
             <div>
-                <Label>Price</Label>
+                <Label>{props.priceLabel}</Label>
                 <Info>{props.price}</Info>
             </div>
             {props.wSeparator && <Separator />}

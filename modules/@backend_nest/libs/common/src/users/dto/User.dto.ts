@@ -33,6 +33,12 @@ export class UserDto {
     address: string;
 
     /**
+     * Address of the account
+     */
+    // tslint:disable-next-line:variable-name
+    device_address: string;
+
+    /**
      * Account role
      */
     role: 'authenticated' | 'admin';

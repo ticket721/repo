@@ -5,13 +5,6 @@ import styled from '../../../config/styled';
 const customStyles = {
     container: () => ({
         position: 'relative' as 'relative',
-
-        '& > div': {
-            paddingTop: '10px',
-            paddingRight: '9px',
-            paddingBottom: ' 8.5px',
-            paddingLeft: ' 12px',
-        },
     }),
     option: () => ({
         backgroundColor: 'transparent',
@@ -20,10 +13,11 @@ const customStyles = {
         fontSize: 14,
         fontWeight: 500,
         paddingBottom: 12,
-        paddingLeft: 24,
-        paddingRight: 24,
         paddingTop: 12,
         transition: 'all 300ms ease',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
 
         ':hover': {
             backgroundColor: 'rgba(255, 255, 255, 0.04)',
@@ -32,15 +26,12 @@ const customStyles = {
     }),
     control: () => ({
         display: 'flex',
-        paddingBottom: 24,
-        paddingLeft: 24,
-        paddingRight: 24,
-        paddingTop: 16,
     }),
     indicatorsContainer: () => ({
         display: 'flex',
         position: 'relative' as 'relative',
         top: '-1px',
+        padding: 6,
 
         '& > div': {
             padding: 0,
@@ -54,6 +45,7 @@ const customStyles = {
         fontSize: 14,
     }),
     menu: () => ({
+        zIndex: 9999,
         backgroundColor: '#262331',
         borderRadius: 8,
         marginTop: 8,
@@ -85,18 +77,18 @@ const customStyles = {
         alignItems: 'center',
         display: 'flex',
         flex: 1,
-        padding: 0,
+        padding: 6,
         flexWrap: 'wrap' as 'wrap',
     }),
     singleValue: () => ({
         fontSize: 14,
         fontWeight: 500,
-        marginRight: 8,
+        padding: 4,
         opacity: 0.9,
     }),
 };
 
-export interface SelectProps extends React.ComponentProps<any> {
+export interface SelectProps {
     defaultValue?: object;
     error?: string | undefined;
     label?: string;
@@ -107,6 +99,8 @@ export interface SelectProps extends React.ComponentProps<any> {
     multiple?: boolean;
     value?: Array<object>;
     className?: string;
+    onChange?: (val: any) => void;
+    menu?: boolean;
 }
 
 const StyledLabel = styled.label`
@@ -137,7 +131,7 @@ const Error = styled.span`
     position: absolute;
 `;
 
-const StyledInputContainer = styled.div<SelectProps>`
+const StyledInputContainer = styled.div<Partial<SelectProps>>`
     background-color: ${(props) => props.theme.componentColor};
     border-radius: ${(props) => props.theme.defaultRadius};
     display: flex;
@@ -160,13 +154,8 @@ const StyledInputContainer = styled.div<SelectProps>`
         }
     }
 
-    & > div > div {
-        padding-left: ${(props) => props.theme.biggerSpacing};
-    }
-
     & > div > div[class$='Menu'] {
         background-color: rgb(34, 32, 41);
-        z-index: 1;
     }
 
     & > div > div > div[class$='ValueContainer'] > div[class$='multiValue'] {

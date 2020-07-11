@@ -20,7 +20,9 @@ const GradientBar = styled.div<GradientProps>`
     ${(props) =>
         !props.blurOnly &&
         `
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0), ${props.values.join(', ')});
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0), ${props.values[0]} ${
+            props.theme.doubleSpacing
+        }, ${props.values.slice(1).join(', ')});
   `}
     bottom: 0;
     content: '';
@@ -30,18 +32,7 @@ const GradientBar = styled.div<GradientProps>`
     transform: matrix(-1, 0, 0, 1, 0, 0);
     user-select: none;
     width: ${(props) => (props.blurOnly ? '0px' : '8px')};
-    z-index: 0;
-
-    &::after {
-        background: linear-gradient(180deg, ${(props) => props.values.join(', ')});
-        content: '';
-        display: block;
-        filter: blur(100px);
-        height: 100%;
-        opacity: 0.12;
-        transform: matrix(-1, 0, 0, 1, 0, 0);
-        width: 150px;
-    }
+    z-index: 1;
 `;
 
 export const Gradient: React.FunctionComponent<GradientProps> = (props: GradientProps): JSX.Element => {

@@ -15,16 +15,27 @@ interface Coords {
 export interface LocationCardProps extends React.ComponentProps<any> {
     location: string;
     iconColor?: string;
-    link?: string;
     linkLabel?: string;
     removeBg?: boolean;
     wSeparator?: boolean;
     coords?: Coords;
+    subtitle: string;
 }
 
 const Info = styled.span`
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 16px;
+
     &:first-of-type {
         margin-top: 2px;
+    }
+
+    &:last-of-type {
+        color: ${(props) => props.theme.textColorDark};
+        margin-top: 8px;
     }
 `;
 
@@ -92,6 +103,7 @@ export const LocationCard: React.FunctionComponent<LocationCardProps & { classNa
                 </IconContainer>
                 <Column iconColor={props.iconColor}>
                     <Info>{props.location}</Info>
+                    <Info>{props.subtitle}</Info>
                 </Column>
                 {props.wSeparator && <Separator />}
             </CardContainer>

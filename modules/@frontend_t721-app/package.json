@@ -47,8 +47,8 @@
     },
     "scripts": {
         "inject_env": "node env_injector.js > build/env.js",
-        "start": "react-scripts start",
-        "build": "react-scripts build",
+        "start": "PORT=8100 react-scripts start",
+        "build": "react-scripts --max_old_space_size=4096 build",
         "test": "react-scripts test",
         "lint": "tslint --project .",
         "@lerna/postinstall": "echo '@frontend/t721-app has no postinstall'",

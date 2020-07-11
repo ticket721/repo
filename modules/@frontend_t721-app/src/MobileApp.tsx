@@ -35,10 +35,12 @@ const ProfileLanguagePage = lazy(() => import('./routes/Language'));
 const ProfilePage = lazy(() => import('./routes/Profile'));
 const SearchViewAllPage = lazy(() => import('./routes/SearchViewAll'));
 const EventPage = lazy(() => import('./routes/Event'));
+const TicketPage = lazy(() => import('./routes/Ticket'));
 const TicketSelectionPage = lazy(() => import('./routes/TicketSelection'));
 const SearchPage = lazy(() => import('./routes/Search'));
 const TagsPage = lazy(() => import('./routes/Tags'));
 const WalletPage = lazy(() => import('./routes/Wallet'));
+const CartPage = lazy(() => import('./routes/Cart'));
 
 const MobileApp: React.FC = () => {
 
@@ -79,7 +81,7 @@ const MobileApp: React.FC = () => {
                     </ProtectedRoute>
 
                     <ProtectedRoute path={'/cart/checkout'} exact={true}>
-                        <p>Cart</p>
+                        <CartPage/>
                     </ProtectedRoute>
 
                     <Route path={'/search/events/:query'} exact={true}>
@@ -101,6 +103,10 @@ const MobileApp: React.FC = () => {
                     <Route path={'/tags'} exact={true}>
                         <TagsPage/>
                     </Route>
+
+                    <ProtectedRoute path={'/ticket/:id'} exact={true}>
+                        <TicketPage/>
+                    </ProtectedRoute>
 
                     <ProtectedRoute path={'/'} exact={true}>
                         <WalletPage/>
