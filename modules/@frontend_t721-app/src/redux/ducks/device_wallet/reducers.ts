@@ -1,12 +1,22 @@
 import { Reducer }                                      from 'redux';
 import { DeviceWalletTypes, DeviceWalletState }                                                                                from './types';
-import { DeviceWalletAction, INextGen, IPushSig, IResetTicket, ISetPk, ISetRegenIntervalId, ISetSeconds, IStartRegenInterval } from './actions';
+import {
+    DeviceWalletAction,
+    INextGen,
+    IPushLastItem,
+    IResetTicket,
+    ISetPk,
+    ISetRegenIntervalId,
+    ISetSeconds,
+    IStartRegenInterval,
+} from './actions';
 
 export const deviceWalletInitialState: DeviceWalletState = {
     pk: null,
     currentTicketId: null,
     regenIntervalId: null,
     signatures: [],
+    timestamps: [],
     sigCount: 2,
     seconds: 5,
 };
@@ -42,17 +52,22 @@ const NextGenReducer: Reducer<DeviceWalletState, INextGen> = (
 ): DeviceWalletState => ({
     ...state,
     signatures: state.signatures.slice(1),
+    timestamps: state.timestamps.slice(1),
 });
 
-const PushSigReducer: Reducer<DeviceWalletState, IPushSig> = (
+const PushLastItemReducer: Reducer<DeviceWalletState, IPushLastItem> = (
     state: DeviceWalletState,
-    action: IPushSig,
+    action: IPushLastItem,
 ): DeviceWalletState => ({
     ...state,
     signatures: [
         ...state.signatures,
         action.signature,
-    ]
+    ],
+    timestamps: [
+        ...state.timestamps,
+        action.timestamp
+    ],
 });
 
 const ResetTicketReducer: Reducer<DeviceWalletState, IResetTicket> = (
@@ -87,8 +102,8 @@ export const DeviceWalletReducer: Reducer<DeviceWalletState, DeviceWalletAction>
             return SetRegenIntervalReducer(state, action as ISetRegenIntervalId);
         case DeviceWalletTypes.NextGen:
             return NextGenReducer(state, action as INextGen);
-        case DeviceWalletTypes.PushSig:
-            return PushSigReducer(state, action as IPushSig);
+        case DeviceWalletTypes.PushLastItem:
+            return PushLastItemReducer(state, action as IPushLastItem);
         case DeviceWalletTypes.ResetTicket:
             return ResetTicketReducer(state, action as IResetTicket);
         case DeviceWalletTypes.SetSeconds:

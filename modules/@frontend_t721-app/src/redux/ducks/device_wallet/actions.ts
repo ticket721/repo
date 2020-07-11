@@ -47,14 +47,16 @@ export const NextGen = (): INextGen => ({
     type: DeviceWalletTypes.NextGen,
 });
 
-export interface IPushSig extends Action<string> {
-    type: DeviceWalletTypes.PushSig;
+export interface IPushLastItem extends Action<string> {
+    type: DeviceWalletTypes.PushLastItem;
     signature: string;
+    timestamp: number;
 }
 
-export const PushSig = (signature: string): IPushSig => ({
-    type: DeviceWalletTypes.PushSig,
+export const PushLastItem = (signature: string, timestamp: number): IPushLastItem => ({
+    type: DeviceWalletTypes.PushLastItem,
     signature,
+    timestamp,
 });
 
 export interface IResetTicket extends Action<string> {
@@ -81,6 +83,6 @@ export type DeviceWalletAction =
     | IStartRegenInterval
     | ISetRegenIntervalId
     | INextGen
-    | IPushSig
+    | IPushLastItem
     | IResetTicket
     | ISetSeconds;

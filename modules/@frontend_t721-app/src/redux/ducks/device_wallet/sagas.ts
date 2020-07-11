@@ -1,20 +1,26 @@
-import { SagaIterator }                              from '@redux-saga/types';
-import { takeEvery, put, select, call, take, cancel }        from 'redux-saga/effects';
-import { DeviceWalletState, DeviceWalletTypes }                                       from './types';
-import { IStartRegenInterval, NextGen, PushSig, SetPk, SetRegenInterval, SetSeconds } from './actions';
-import { createWallet, loadWallet }                                                   from '@common/global';
-import { T721AppState } from '../../index';
-import { eventChannel, END }          from 'redux-saga';
-import { SetupActionTypes } from '@frontend/core/lib/redux/ducks/setup';
+import { SagaIterator }                                                                    from '@redux-saga/types';
+import { takeEvery, put, select, call, take, cancel }                                      from 'redux-saga/effects';
+import { DeviceWalletState, DeviceWalletTypes }                                            from './types';
+import { IStartRegenInterval, NextGen, PushLastItem, SetPk, SetRegenInterval, SetSeconds } from './actions';
+import { createWallet, loadWallet }                                                        from '@common/global';
+import { T721AppState }                                                                    from '../../index';
+import { eventChannel }                                                               from 'redux-saga';
+import { SetupActionTypes }                                                                from '@frontend/core/lib/redux/ducks/setup';
+import { Wallet }                                                                          from 'ethers';
 
 const getDeviceWalletState = (state: T721AppState): DeviceWalletState => state.deviceWallet;
 
 function* getPk(): SagaIterator {
+    let wallet: Wallet;
     if (!localStorage.getItem('deviceWalletPk')) {
-        const wallet = yield call(createWallet);
+        wallet = yield call(createWallet);
         localStorage.setItem('deviceWalletPk', wallet.privateKey);
+    } else {
+        wallet = yield call(loadWallet, localStorage.getItem('deviceWalletPk'));
     }
 
+    // const deviceAddress = yield call(wallet.address);
+    localStorage.setItem('deviceAddress', wallet.address);
     yield put(SetPk(localStorage.getItem('deviceWalletPk')));
 }
 
@@ -25,10 +31,11 @@ function* startRegenSignatureInterval(action: IStartRegenInterval): SagaIterator
     let initialSig: string;
 
     for (let i = 0; i < deviceWalletState.sigCount; i++) {
+        const timestamp = new Date(Date.now() + 5000 * i).getTime();
         initialSig = yield call(
             wallet.signMessage.bind(wallet),
-            deviceWalletState.currentTicketId + new Date(Date.now() + 5000 * i).getTime());
-        yield put(PushSig(initialSig));
+            deviceWalletState.currentTicketId + timestamp);
+        yield put(PushLastItem(initialSig, timestamp));
     }
 
     const chan = yield call(regenSignatureChannel, deviceWalletState.seconds);
@@ -56,11 +63,13 @@ function* startRegenSignatureInterval(action: IStartRegenInterval): SagaIterator
         if (seconds === 0) {
             yield put(NextGen());
 
+            const timestamp = new Date(Date.now() + 5000 * (deviceWalletState.sigCount - 1)).getTime();
+
             const sig = yield call(
                 wallet.signMessage.bind(wallet),
-                deviceWalletState.currentTicketId + new Date(Date.now() + 5000 * (deviceWalletState.sigCount - 1)).getTime());
+                deviceWalletState.currentTicketId + timestamp);
 
-            yield put(PushSig(sig));
+            yield put(PushLastItem(sig, timestamp));
         }
     }
 }

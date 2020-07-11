@@ -4,7 +4,7 @@ export enum DeviceWalletTypes {
     StartRegenInterval = '@@devicewallet/startregeninterval',
     SetRegenIntervalId = '@@devicewallet/setregenintervaid',
     NextGen = '@@devicewallet/nextgen',
-    PushSig = '@@devicewallet/pushsig',
+    PushLastItem = '@@devicewallet/pushlastitem',
     ResetTicket = '@@devicewallet/resetticket',
     SetSeconds = '@@devicewallet/setseconds',
 }
@@ -13,6 +13,7 @@ export interface DeviceWalletState {
     regenIntervalId: number;
     pk: string;
     signatures: string[];
+    timestamps: number[];
     currentTicketId: string;
     sigCount: number;
     seconds: number;
