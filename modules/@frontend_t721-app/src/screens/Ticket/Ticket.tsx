@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
-import { useRequest }                 from '@frontend/core/lib/hooks/useRequest';
-import { TicketsSearchResponseDto }        from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/tickets/dto/TicketsSearchResponse.dto';
-import { useSelector }        from 'react-redux';
-import { T721AppState }                    from '../../redux';
-import { Redirect, useParams } from 'react-router';
-import { v4 }                              from 'uuid';
-import { useTranslation }                  from 'react-i18next';
-import { CategoryFetcher }        from './CategoryFetcher';
-import { Error, FullPageLoading } from '@frontend/flib-react/lib/components';
-import { checkFormatDate }        from '@frontend/core/lib/utils/date';
+import React, { useState }          from 'react';
+import { useRequest }               from '@frontend/core/lib/hooks/useRequest';
+import { TicketsSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/tickets/dto/TicketsSearchResponse.dto';
+import { useSelector }              from 'react-redux';
+import { T721AppState }             from '../../redux';
+import { Redirect, useParams }      from 'react-router';
+import { v4 }                       from 'uuid';
+import { useTranslation }           from 'react-i18next';
+import { CategoryFetcher }          from './CategoryFetcher';
+import { Error, FullPageLoading }   from '@frontend/flib-react/lib/components';
+import { checkFormatDate }          from '@frontend/core/lib/utils/date';
 
 const Ticket: React.FC = () => {
     const { id } = useParams();

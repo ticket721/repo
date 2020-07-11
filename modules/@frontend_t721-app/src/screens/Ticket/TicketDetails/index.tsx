@@ -15,11 +15,13 @@ import styled                    from 'styled-components';
 import { formatEuro }            from '@frontend/core/lib/utils/price';
 import { useHistory }            from 'react-router';
 
-import qrcodePreview                from '../../../media/images/qrcodePreview.png';
-import { getImgPath }               from '@frontend/core/lib/utils/images';
-import { useDispatch, useSelector } from 'react-redux';
-import { T721AppState }                    from '../../../redux';
-import { ResetTicket, StartRegenInterval } from '../../../redux/ducks/device_wallet';
+import qrcodePreview                                       from '../../../media/images/qrcodePreview.png';
+import qrcodePreview2                                       from '../../../media/images/qrcodePreview2.png';
+import { getImgPath }                                      from '@frontend/core/lib/utils/images';
+import { useDispatch, useSelector }                        from 'react-redux';
+import { T721AppState }                                    from '../../../redux';
+import { ResetTicket, StartRegenInterval }                 from '../../../redux/ducks/device_wallet';
+import { DynamicQrCode }                                   from '../DynamicQrCode';
 
 interface EventDate {
     id: string;
@@ -47,11 +49,20 @@ export const TicketDetails: React.FC<TicketDetailsProps> = (props: TicketDetails
     const seconds = useSelector((state: T721AppState) => state.deviceWallet.seconds);
     const dispatch = useDispatch();
 
+    const [ qrPrev, setQrPrev ] = useState<string>(qrcodePreview);
+    const [ qrOpened, setQrOpened ] = useState<boolean>(false);
+
     useEffect(() => {
         dispatch(StartRegenInterval(props.ticketId));
 
         return () => dispatch(ResetTicket());
-    }, []);
+    }, [props.ticketId, dispatch]);
+
+    useEffect(() => {
+        if (seconds === 0) {
+            setQrPrev(qrPrev === qrcodePreview ? qrcodePreview2 : qrcodePreview);
+        }
+    }, [seconds, qrPrev]);
 
     return <>
         <TicketHeader fullWidth cover={getImgPath(props.image)}/>
@@ -61,12 +72,12 @@ export const TicketDetails: React.FC<TicketDetailsProps> = (props: TicketDetails
                 <TicketInfosCard
                     eventName={props.name}
                     ticketType={props.categoryName}
-                    ticketID={props.ticketId}
+                    ticketID={props.ticketId.slice(0, 13)}
                 />
                 <Banner>
                     <QrLink>
-                        <Btn onClick={() => console.log('qrcode')}>
-                            <img src={qrcodePreview} alt={'qrPreview'}/>
+                        <Btn onClick={() => setQrOpened(true)}>
+                            <img src={qrPrev} alt={'qrPreview'}/>
                             <Timer>
                                 <span>{t('next_gen_label')}</span>
                                 <span>{seconds}</span>
@@ -115,6 +126,13 @@ export const TicketDetails: React.FC<TicketDetailsProps> = (props: TicketDetails
                 />
             </Details>
         </TicketContent>
+        <DynamicQrCode
+        qrOpened={qrOpened}
+        name={props.name}
+        category={props.categoryName}
+        ticketId={props.ticketId.slice(0, 13)}
+        color={props.colors[0]}
+        onClose={() => setQrOpened(false)}/>
     </>;
 };
 
