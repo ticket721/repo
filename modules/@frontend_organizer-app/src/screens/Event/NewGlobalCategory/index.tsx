@@ -14,6 +14,7 @@ import {
     CategoriesCreateResponseDto
 }    from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/categories/dto/CategoriesCreateResponse.dto';
 import { EventsAddCategoriesResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsAddCategoriesResponse.dto';
+import { EventsSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsSearchResponse.dto';
 
 const NewGlobalCategory: React.FC = () => {
     const history = useHistory();
@@ -21,7 +22,10 @@ const NewGlobalCategory: React.FC = () => {
 
     const [ loadingState, setLoadingState ] = useState<boolean>(false);
     const dispatch = useDispatch();
-    const [uuid] = useState(v4() + '@create-global-category');
+    const [uuid] = useState(v4() + '@create-global-category-dates.search');
+    const [uuidEvent] = useState(v4() + '@create-global-category-events.search');
+    const [uuidCreate] = useState(v4() + '@create-global-category-create');
+    const [uuidAdd] = useState(v4() + '@create-global-category-add');
     const token = useSelector((state: MergedAppState) => state.auth.token.value);
     const { response: dateResp } = useRequest<DatesSearchResponseDto>(
         {
@@ -38,9 +42,24 @@ const NewGlobalCategory: React.FC = () => {
         },
         uuid
     );
+    const { response: eventResp } = useRequest<EventsSearchResponseDto>(
+        {
+            method: 'events.search',
+            args: [
+                token,
+                {
+                    id: {
+                        $eq: eventId
+                    }
+                }
+            ],
+            refreshRate: 1,
+        },
+        uuidEvent
+    );
 
-    const { lazyRequest: createCategory, response: createResp } = useLazyRequest<CategoriesCreateResponseDto>('categories.create', uuid);
-    const { lazyRequest: addCategory, response: addCategoryResp } = useLazyRequest<EventsAddCategoriesResponseDto>('events.addCategories', uuid);
+    const { lazyRequest: createCategory, response: createResp } = useLazyRequest<CategoriesCreateResponseDto>('categories.create', uuidCreate);
+    const { lazyRequest: addCategory, response: addCategoryResp } = useLazyRequest<EventsAddCategoriesResponseDto>('events.addCategories', uuidAdd);
 
     const create = (values: CategoryItem) => {
         setLoadingState(true);
@@ -95,6 +114,12 @@ const NewGlobalCategory: React.FC = () => {
             dispatch(PushNotification('Create failed. Please retry', 'error'));
         }
     }, [createResp.error, addCategoryResp.error]);
+
+    useDeepEffect(() => {
+        if (eventResp.data && eventResp.data.events.length === 0) {
+            history.push('/');
+        }
+    }, [eventResp.data]);
 
     return (
         <CategoryForm
