@@ -15,8 +15,11 @@ import styled                    from 'styled-components';
 import { formatEuro }            from '@frontend/core/lib/utils/price';
 import { useHistory }            from 'react-router';
 
-import qrcodePreview  from '../../../media/images/qrcodePreview.png';
-import { getImgPath } from '@frontend/core/lib/utils/images';
+import qrcodePreview                from '../../../media/images/qrcodePreview.png';
+import { getImgPath }               from '@frontend/core/lib/utils/images';
+import { useDispatch, useSelector } from 'react-redux';
+import { T721AppState }                    from '../../../redux';
+import { ResetTicket, StartRegenInterval } from '../../../redux/ducks/device_wallet';
 
 interface EventDate {
     id: string;
@@ -41,16 +44,13 @@ export interface TicketDetailsProps {
 export const TicketDetails: React.FC<TicketDetailsProps> = (props: TicketDetailsProps) => {
     const history = useHistory();
     const [ t ] = useTranslation('ticket_details');
-    const [ seconds, setSeconds ] = useState<number>(10);
+    const seconds = useSelector((state: T721AppState) => state.deviceWallet.seconds);
+    const dispatch = useDispatch();
 
     useEffect(() => {
-        setInterval(() => setSeconds(secs => {
-            if (secs > 0) {
-                return secs - 1;
-            }
+        dispatch(StartRegenInterval(props.ticketId));
 
-            return 10;
-        }), 1000);
+        return () => dispatch(ResetTicket());
     }, []);
 
     return <>
