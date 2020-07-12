@@ -113,7 +113,12 @@ const configurationStep = (
     setStatus('modules_configuration_upload');
 };
 
-const commitStripeCheck = (commitStripeCall: RequestBag<CheckoutCartCommitStripeResponseDto>, token: string, remoteCart: ActionSetEntity, setStatus: (status: string) => void) => {
+const commitStripeCheck = (
+    commitStripeCall: RequestBag<CheckoutCartCommitStripeResponseDto>,
+    token: string,
+    remoteCart: ActionSetEntity,
+    setStatus: (status: string) => void
+) => {
 
     if (remoteCart.actions[0].status === 'complete' && remoteCart.actions[1].status === 'complete') {
 
@@ -216,9 +221,6 @@ const whilePayment = (
 
 };
 
-const notWhilePayment = () => {
-};
-
 export const SyncedCart: React.FC<SyncedCartProps> = (props: SyncedCartProps): JSX.Element => {
     const [t] = useTranslation('cart');
 
@@ -252,8 +254,6 @@ export const SyncedCart: React.FC<SyncedCartProps> = (props: SyncedCartProps): J
                 props.remoteCart,
                 setStatus,
             );
-        } else {
-            notWhilePayment();
         }
 
     }, [
