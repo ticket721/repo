@@ -53,6 +53,7 @@ const TopInfo = styled.div`
     }
 
     h2 {
+        line-height: 24px;
         text-transform: uppercase;
     }
 
