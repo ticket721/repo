@@ -1,11 +1,12 @@
-import React     from 'react';
+import React                   from 'react';
 import styled                  from 'styled-components';
 import t721logo                from '../../../media/images/721.png';
 import { useSelector }         from 'react-redux';
 import { T721AppState }        from '../../../redux';
 import QrCode                  from 'qrcode.react';
 import { Icon }                from '@frontend/flib-react/lib/components';
-import { useWindowDimensions } from '@frontend/core/lib/hooks/useWindowDimensions';
+import { useWindowDimensions }    from '@frontend/core/lib/hooks/useWindowDimensions';
+import { hashMessage, keccak256 } from 'ethers/utils';
 
 export interface DynamicQrCodeProps {
     qrOpened: boolean;
@@ -40,6 +41,7 @@ export const DynamicQrCode: React.FC<DynamicQrCodeProps> = (props: DynamicQrCode
                         fgColor={'#FFFFFF'}
                         size={width}
                         renderAs={'svg'}
+                        level={'L'}
                         imageSettings={{
                             src: t721logo,
                             x: null,
@@ -50,7 +52,7 @@ export const DynamicQrCode: React.FC<DynamicQrCodeProps> = (props: DynamicQrCode
                         }}/>
                         <span>{seconds}</span>
                 </QrCodeContainer>
-                <TicketId>{props.ticketId}</TicketId>
+                <TicketId>{keccak256(hashMessage(props.ticketId)).slice(0, 20)}</TicketId>
             </div>
             <Close onClick={props.onClose}>
                 <Icon icon={'close'} size={'32px'} color={'rgba(255,255,255,0.9)'}/>

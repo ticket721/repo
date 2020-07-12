@@ -58,7 +58,8 @@ const Wallet: React.FC = () => {
                 },
             ]);
         }
-    }, [token, devicePk, postAddress]);
+        // eslint-disable-next-line
+    }, [token, devicePk]);
 
     if (ticketsResp.loading) {
         return (
