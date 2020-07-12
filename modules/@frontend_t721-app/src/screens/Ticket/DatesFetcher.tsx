@@ -16,6 +16,7 @@ interface DatesFetcherProps {
     entityType: 'id' | 'groupId';
     entityId: string;
     ticketId: string;
+    transactionHash: string;
     categoryName: string;
     price: string;
     purchasedDate: Date;
@@ -27,6 +28,7 @@ export const DatesFetcher: React.FC<DatesFetcherProps> = (
         entityType,
         entityId,
         ticketId,
+        transactionHash,
         categoryName,
         price,
         purchasedDate,
@@ -79,6 +81,7 @@ export const DatesFetcher: React.FC<DatesFetcherProps> = (
             dateId={defaultDate.id}
             categoryName={categoryName}
             ticketId={ticketId}
+            transactionHash={transactionHash}
             dates={datesResp.data.dates.map(date => ({
                 id: date.id,
                 name: date.metadata.name,

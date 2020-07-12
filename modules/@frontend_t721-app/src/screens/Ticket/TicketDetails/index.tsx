@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
+    Icon,
     Button,
     Gradient,
     TicketHeader,
@@ -39,6 +40,7 @@ export interface TicketDetailsProps {
     colors: string[];
     categoryName: string;
     ticketId: string;
+    transactionHash: string;
     dates: EventDate[];
     price: string;
     purchasedDate: Date;
@@ -129,6 +131,12 @@ export const TicketDetails: React.FC<TicketDetailsProps> = (props: TicketDetails
                 />
             </Details>
         </TicketContent>
+        <TransactionBtn
+            target={'_blank'}
+            href={process.env.REACT_APP_ETHERSCAN_URL + '/' + props.transactionHash}>
+            <span>{t('transaction_btn_label')}</span>
+            <Icon icon={'right-chevron'} size={'14px'} color={'rgba(255,255,255,0.9)'}/>
+        </TransactionBtn>
         <DynamicQrCode
         qrOpened={qrOpened}
         name={props.name}
@@ -223,4 +231,22 @@ const EventLink = styled.div`
             padding-top: 0 !important;
         }
     }
+`;
+
+const TransactionBtn = styled.a`
+    background-color: rgba(255,255,255,0.1);
+    transition: background-color 300ms ease;
+    align-items: center;
+    border-radius: 8px;
+    color: rgba(255,255,255,0.9);
+    display: inline-flex;
+    font-size: 15px;
+    font-weight: 500;
+    justify-content: space-between;
+    line-height: 1em;
+    margin: 32px;
+    overflow: hidden;
+    padding: 16px;
+    position: relative;
+    width: calc(100% - 64px);
 `;

@@ -8,6 +8,7 @@ i18n.addResourceBundle('en', 'ticket_details', {
     purchased_date: 'purchased date',
     price: 'price',
     get_directions: 'Get directions',
+    transaction_btn_label: 'View transaction on etherscan',
 });
 i18n.addResourceBundle('fr', 'ticket_details', {
     show_all_dates_label: 'Voir toutes les dates',
@@ -17,4 +18,5 @@ i18n.addResourceBundle('fr', 'ticket_details', {
     purchased_date: 'date d\'achat',
     price: 'prix',
     get_directions: 'Obtenir l\'itinéraire',
+    transaction_btn_label: 'Voir la transaction sur etherscan',
 });
