@@ -9,6 +9,7 @@ export interface FullButtonCtaProps extends React.ComponentProps<any> {
     ctaLabel: string;
     variant?: string;
     show?: boolean;
+    loading?: boolean;
     gradients?: string[];
     onClick: () => void;
 }
@@ -68,10 +69,11 @@ export const FullButtonCta: React.FunctionComponent<FullButtonCtaProps & { class
     return (
         <CtaContainer show={props.show} className={props.className}>
             <Button
+                loadingState={props.loading}
                 title={props.ctaLabel}
-                variant={(props.variant as any) || 'custom'}
+                variant={props.loading ? 'disabled' : ((props.variant as any) || 'custom')}
                 gradients={props.gradients}
-                onClick={props.onClick}
+                onClick={props.loading ? undefined : props.onClick}
             />
         </CtaContainer>
     );
