@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import styled                         from 'styled-components';
+import styled                                                       from 'styled-components';
 import { useTranslation }           from 'react-i18next';
 import {
     Icon,
@@ -87,7 +87,7 @@ const Wallet: React.FC = () => {
                             <Flicking
                                 overflow={true}
                                 collectStatistics={false}
-                                gap={24}
+                                gap={32}
                                 bound={true}
                                 onChange={(e) => setTicketIdx(e.index)}
                             >
@@ -146,8 +146,9 @@ const TicketList = styled.div`
     display: flex;
     flex-direction: column;
     justify-content: center;
-    height: calc(100vh - 102px);
-    margin: 0 20px;
+    padding: 0 ${props => props.theme.biggerSpacing};
+    overflow: hidden;
+    height: calc(100vh - 3 * ${props => props.theme.doubleSpacing});
 `;
 
 const Dots = styled.div`

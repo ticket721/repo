@@ -144,9 +144,7 @@ const loaderRotation = keyframes`
 const BtnIcon = styled(Icon)<{ loading: boolean }>`
     position: absolute;
     right: 20px;
-    ${props => props.loading &&
-        `animation: ${loaderRotation} 1s linear infinite;`
-    }
+    ${(props) => props.loading && `animation: ${loaderRotation} 1s linear infinite;`}
 `;
 
 export const Button: React.FunctionComponent<ButtonProps> = (props: ButtonProps): JSX.Element => {
@@ -162,13 +160,14 @@ export const Button: React.FunctionComponent<ButtonProps> = (props: ButtonProps)
                 {...props}
             >
                 <span>{props.title}</span>
-                {props.loadingState || props.icon ?
-                  <BtnIcon
-                    loading={props.loadingState}
-                    icon={props.loadingState ? 'loader' : props.icon}
-                    size={props.iconSize || '20px'}
-                    color={'rgba(255,255,255,0.9)'}/> :
-                  null}
+                {props.loadingState || props.icon ? (
+                    <BtnIcon
+                        loading={props.loadingState}
+                        icon={props.loadingState ? 'loader' : props.icon}
+                        size={props.iconSize || '20px'}
+                        color={'rgba(255,255,255,0.9)'}
+                    />
+                ) : null}
             </StyledButton>
         );
     }

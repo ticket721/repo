@@ -42,6 +42,7 @@ const Ticket: React.FC = () => {
         uuid={uuid}
         categoryId={ticketResp.data.tickets[0].category}
         ticketId={ticketResp.data.tickets[0].id}
+        transactionHash={ticketResp.data.tickets[0].transaction_hash}
         purchasedDate={checkFormatDate(ticketResp.data.tickets[0].updated_at)}/>;
     } else {
         return <Redirect to={'/'}/>;
