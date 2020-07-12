@@ -214,6 +214,7 @@ const EventLink = styled.div`
     }
 
     & > button {
+        height: calc(${props => props.theme.doubleSpacing} * 2);
         padding-top: 12px;
         padding-bottom: 12px;
 
