@@ -49,11 +49,11 @@ export default {
                 saleEnd: new Date(Date.now() + 23 * HOUR),
                 resaleBegin: new Date(Date.now()),
                 resaleEnd: new Date(Date.now() + 23 * HOUR),
-                seats: 100,
+                seats: 5,
                 currencies: [
                     {
                         currency: 'Fiat',
-                        price: '20000'
+                        price: '1000'
                     }
                 ]
             },

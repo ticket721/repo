@@ -12,7 +12,7 @@ import { getImgPath }                                  from '@frontend/core/lib/
 
 interface DatesFetcherProps {
     uuid: string;
-    entityType: 'id' | 'groupId';
+    entityType: 'id' | 'group_id';
     entityId: string;
     ticketId: string;
     categoryName: string;
@@ -36,10 +36,10 @@ export const DatesFetcher: React.FC<DatesFetcherProps> = (
                     [entityType]: {
                         $eq: entityId
                     },
-                    $sort: {
+                    $sort: [{
                         $field_name: 'timestamps.event_begin',
                         $order: 'asc',
-                    }
+                    }]
                 }
             ],
             refreshRate: 5,

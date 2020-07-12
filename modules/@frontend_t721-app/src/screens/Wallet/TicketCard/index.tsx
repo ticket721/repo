@@ -5,8 +5,7 @@ import TicketPreview           from '@frontend/flib-react/lib/components/ticket/
 import { useTranslation }      from 'react-i18next';
 import { Ticket }              from '../../../types/ticket';
 import './locales';
-import { useHistory }          from 'react-router';
-import { getImgPath }          from '@frontend/core/lib/utils/images';
+import { useHistory }     from 'react-router';
 
 interface TicketCardProps {
     ticket: Ticket
@@ -18,7 +17,7 @@ const TicketCard = ({ ticket }: TicketCardProps) => {
 
     return (
         <Container onClick={() => history.push(`/ticket/${ticket.ticketId}`)}>
-            <TicketHeader cover={getImgPath(ticket.image)}/>
+            <TicketHeader cover={ticket.image}/>
             <PullUp>
                 <TicketPreview ticket={ticket} addonsPurchased={t('no_addons')}/>
             </PullUp>
