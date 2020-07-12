@@ -1890,6 +1890,9 @@ describe('Cart Input Handlers Spec', function() {
                         log_value: 0,
                     },
                 ],
+                paymentIntentId: 'payment_intent_id',
+                checkoutActionSetId: 'checkout_acset_id',
+                clientSecret: 'client_secret',
             });
 
             const handlerResult = await context.cartInputHandlers.authorizationsHandler(
@@ -1922,7 +1925,7 @@ describe('Cart Input Handlers Spec', function() {
                     {
                         type: 'input',
                         name: '@cart/authorizations',
-                        data: `{\"authorizations\":[{\"categoryId\":\"category_id\",\"price\":{\"currency\":\"Fiat\",\"price\":\"100\"},\"authorizationId\":\"authorization_id\",\"groupId\":\"group_id\",\"categoryName\":\"category_name\",\"granter\":\"granter\",\"grantee\":\"grantee\",\"granterController\":\"granter_controller\",\"expiration\":\"${handlerResult[0].action.data.authorizations[0].expiration}\"}],\"commitType\":\"stripe\",\"fees\":[\"0\"],\"total\":[{\"currency\":\"Fiat\",\"value\":\"100\",\"log_value\":0}]}`,
+                        data: `{\"authorizations\":[{\"categoryId\":\"category_id\",\"price\":{\"currency\":\"Fiat\",\"price\":\"100\"},\"authorizationId\":\"authorization_id\",\"groupId\":\"group_id\",\"categoryName\":\"category_name\",\"granter\":\"granter\",\"grantee\":\"grantee\",\"granterController\":\"granter_controller\",\"expiration\":\"${handlerResult[0].action.data.authorizations[0].expiration}\"}],\"commitType\":\"stripe\",\"fees\":[\"0\"],\"total\":[{\"currency\":\"Fiat\",\"value\":\"100\",\"log_value\":0}],\"paymentIntentId\":\"payment_intent_id\",\"checkoutActionSetId\":\"checkout_acset_id\",\"clientSecret\":\"client_secret\"}`,
                         error: null,
                         status: 'complete',
                         private: true,
@@ -1986,6 +1989,9 @@ describe('Cart Input Handlers Spec', function() {
                         log_value: 0,
                     },
                 ],
+                paymentIntentId: 'payment_intent_id',
+                checkoutActionSetId: 'checkout_acset_id',
+                clientSecret: 'client_secret',
             });
 
             const handlerResult = await context.cartInputHandlers.authorizationsHandler(
@@ -2018,8 +2024,8 @@ describe('Cart Input Handlers Spec', function() {
                     {
                         type: 'input',
                         name: '@cart/authorizations',
-                        data: `{\"extra\":\"field\",\"authorizations\":[{\"categoryId\":\"category_id\",\"price\":{\"currency\":\"Fiat\",\"price\":\"100\"},\"authorizationId\":\"authorization_id\",\"groupId\":\"group_id\",\"categoryName\":\"category_name\",\"granter\":\"granter\",\"grantee\":\"grantee\",\"granterController\":\"granter_controller\",\"expiration\":\"${handlerResult[0].action.data.authorizations[0].expiration}\"}],\"commitType\":\"stripe\",\"fees\":[\"0\"],\"total\":[{\"currency\":\"Fiat\",\"value\":\"100\",\"log_value\":0}]}`,
-                        error: `{\"details\":{\"_original\":{\"extra\":\"field\",\"authorizations\":[{\"categoryId\":\"category_id\",\"price\":{\"currency\":\"Fiat\",\"price\":\"100\"},\"authorizationId\":\"authorization_id\",\"groupId\":\"group_id\",\"categoryName\":\"category_name\",\"granter\":\"granter\",\"grantee\":\"grantee\",\"granterController\":\"granter_controller\",\"expiration\":\"${handlerResult[0].action.data.authorizations[0].expiration}\"}],\"commitType\":\"stripe\",\"fees\":[\"0\"],\"total\":[{\"currency\":\"Fiat\",\"value\":\"100\",\"log_value\":0}]},\"details\":[{\"message\":\"\\\"extra\\\" is not allowed\",\"path\":[\"extra\"],\"type\":\"object.unknown\",\"context\":{\"child\":\"extra\",\"label\":\"extra\",\"value\":\"field\",\"key\":\"extra\"}}]},\"error\":\"validation_error\"}`,
+                        data: `{\"extra\":\"field\",\"authorizations\":[{\"categoryId\":\"category_id\",\"price\":{\"currency\":\"Fiat\",\"price\":\"100\"},\"authorizationId\":\"authorization_id\",\"groupId\":\"group_id\",\"categoryName\":\"category_name\",\"granter\":\"granter\",\"grantee\":\"grantee\",\"granterController\":\"granter_controller\",\"expiration\":\"${handlerResult[0].action.data.authorizations[0].expiration}\"}],\"commitType\":\"stripe\",\"fees\":[\"0\"],\"total\":[{\"currency\":\"Fiat\",\"value\":\"100\",\"log_value\":0}],\"paymentIntentId\":\"payment_intent_id\",\"checkoutActionSetId\":\"checkout_acset_id\",\"clientSecret\":\"client_secret\"}`,
+                        error: `{\"details\":{\"_original\":{\"extra\":\"field\",\"authorizations\":[{\"categoryId\":\"category_id\",\"price\":{\"currency\":\"Fiat\",\"price\":\"100\"},\"authorizationId\":\"authorization_id\",\"groupId\":\"group_id\",\"categoryName\":\"category_name\",\"granter\":\"granter\",\"grantee\":\"grantee\",\"granterController\":\"granter_controller\",\"expiration\":\"${handlerResult[0].action.data.authorizations[0].expiration}\"}],\"commitType\":\"stripe\",\"fees\":[\"0\"],\"total\":[{\"currency\":\"Fiat\",\"value\":\"100\",\"log_value\":0}],\"paymentIntentId\":\"payment_intent_id\",\"checkoutActionSetId\":\"checkout_acset_id\",\"clientSecret\":\"client_secret\"},\"details\":[{\"message\":\"\\\"extra\\\" is not allowed\",\"path\":[\"extra\"],\"type\":\"object.unknown\",\"context\":{\"child\":\"extra\",\"label\":\"extra\",\"value\":\"field\",\"key\":\"extra\"}}]},\"error\":\"validation_error\"}`,
                         status: 'error',
                         private: true,
                     },
@@ -2065,6 +2071,9 @@ describe('Cart Input Handlers Spec', function() {
                     },
                 ],
                 fees: ['0'],
+                paymentIntentId: 'payment_intent_id',
+                checkoutActionSetId: 'checkout_acset_id',
+                clientSecret: 'client_secret',
             });
 
             const handlerResult = await context.cartInputHandlers.authorizationsHandler(
@@ -2098,7 +2107,7 @@ describe('Cart Input Handlers Spec', function() {
                         type: 'input',
                         name: '@cart/authorizations',
                         data:
-                            '{"commitType":"stripe","total":[{"currency":"Fiat","value":"100","log_value":0}],"fees":["0"]}',
+                            '{"commitType":"stripe","total":[{"currency":"Fiat","value":"100","log_value":0}],"fees":["0"],"paymentIntentId":"payment_intent_id","checkoutActionSetId":"checkout_acset_id","clientSecret":"client_secret"}',
                         error: '{"details":["authorizations"],"error":"incomplete_error"}',
                         status: 'incomplete',
                         private: true,
@@ -2161,6 +2170,9 @@ describe('Cart Input Handlers Spec', function() {
                         log_value: 0,
                     },
                 ],
+                paymentIntentId: 'payment_intent_id',
+                checkoutActionSetId: 'checkout_acset_id',
+                clientSecret: 'client_secret',
             });
 
             const handlerResult = await context.cartInputHandlers.authorizationsHandler(
@@ -2193,7 +2205,7 @@ describe('Cart Input Handlers Spec', function() {
                     {
                         type: 'input',
                         name: '@cart/authorizations',
-                        data: `{\"authorizations\":[{\"categoryId\":\"category_id\",\"price\":{\"currency\":\"Fiat\",\"price\":\"101\"},\"authorizationId\":\"authorization_id\",\"groupId\":\"group_id\",\"categoryName\":\"category_name\",\"granter\":\"granter\",\"grantee\":\"grantee\",\"granterController\":\"granter_controller\",\"expiration\":\"${handlerResult[0].action.data.authorizations[0].expiration}\"}],\"commitType\":\"stripe\",\"fees\":[\"0\"],\"total\":[{\"currency\":\"Fiat\",\"value\":\"101\",\"log_value\":0}]}`,
+                        data: `{\"authorizations\":[{\"categoryId\":\"category_id\",\"price\":{\"currency\":\"Fiat\",\"price\":\"101\"},\"authorizationId\":\"authorization_id\",\"groupId\":\"group_id\",\"categoryName\":\"category_name\",\"granter\":\"granter\",\"grantee\":\"grantee\",\"granterController\":\"granter_controller\",\"expiration\":\"${handlerResult[0].action.data.authorizations[0].expiration}\"}],\"commitType\":\"stripe\",\"fees\":[\"0\"],\"total\":[{\"currency\":\"Fiat\",\"value\":\"101\",\"log_value\":0}],\"paymentIntentId\":\"payment_intent_id\",\"checkoutActionSetId\":\"checkout_acset_id\",\"clientSecret\":\"client_secret\"}`,
                         error: '{"error":"authorizations_not_matching"}',
                         status: 'error',
                         private: true,

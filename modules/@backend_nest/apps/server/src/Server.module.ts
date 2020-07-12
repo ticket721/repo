@@ -62,6 +62,7 @@ import { TicketsModule } from '@lib/common/tickets/Tickets.module';
 import { UsersController } from '@app/server/controllers/users/Users.controller';
 import { toHeaderFormat } from '@lib/common/utils/toHeaderFormat';
 import { GeolocController } from '@app/server/controllers/geoloc/Geoloc.controller';
+import { StripeModule } from '@lib/common/stripe/Stripe.module';
 
 @Module({
     imports: [
@@ -102,6 +103,7 @@ import { GeolocController } from '@app/server/controllers/geoloc/Geoloc.controll
 
         CheckoutModule,
         CartModule,
+        StripeModule.register(),
 
         // User Management Modules
         AuthenticationModule,

@@ -19,7 +19,7 @@ import { ActionSet } from '@lib/common/actionsets/helper/ActionSet.class';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
 import { CartAuthorizations, CartTicketSelections } from '@app/worker/actionhandlers/cart/Cart.input.handlers';
-import { DAY } from '@lib/common/utils/time';
+import { DAY, HOUR } from '@lib/common/utils/time';
 import { CheckoutResolveCartWithPaymentIntentInputDto } from '@app/server/controllers/checkout/dto/CheckoutResolveCartWithPaymentIntentInput.dto';
 import { CheckoutResolveCartWithPaymentIntentResponseDto } from '@app/server/controllers/checkout/dto/CheckoutResolveCartWithPaymentIntentResponse.dto';
 import { keccak256, log2 } from '@common/global';
@@ -31,6 +31,13 @@ import { ValidGuard } from '@app/server/authentication/guards/ValidGuard.guard';
 import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
 import { Price } from '@lib/common/currencies/Currencies.service';
 import { Decimal } from 'decimal.js';
+import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
+import { CategoriesService } from '@lib/common/categories/Categories.service';
+import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
+import { TimeToolService } from '@lib/common/toolbox/Time.tool.service';
+import { AuthorizationsService } from '@lib/common/authorizations/Authorizations.service';
+import { StripeService } from '@lib/common/stripe/Stripe.service';
+import { Stripe } from 'stripe';
 
 /**
  * Checkout controller to create, update and resolve carts
@@ -46,14 +53,22 @@ export class CheckoutController extends ControllerBasics<StripeResourceEntity> {
      * @param gemOrdersService
      * @param actionSetsService
      * @param rightsService
+     * @param categoriesService
+     * @param timeToolService
+     * @param authorizationsService
      * @param authorizationQueue
+     * @param stripeService
      */
     constructor(
         private readonly stripeResourcesService: StripeResourcesService,
         private readonly gemOrdersService: GemOrdersService,
         private readonly actionSetsService: ActionSetsService,
         private readonly rightsService: RightsService,
+        private readonly categoriesService: CategoriesService,
+        private readonly timeToolService: TimeToolService,
+        private readonly authorizationsService: AuthorizationsService,
         @InjectQueue('authorization') private readonly authorizationQueue: Queue,
+        private readonly stripeService: StripeService,
     ) {
         super();
     }
@@ -176,7 +191,7 @@ export class CheckoutController extends ControllerBasics<StripeResourceEntity> {
             authorizations: ticketSelectionsData.tickets,
             oldAuthorizations: authorizationsData ? authorizationsData.authorizations : null,
             commitType: 'stripe',
-            expirationTime: 2 * DAY,
+            expirationTime: 2 * HOUR,
             prices,
             fees,
             signatureReadable: false,
@@ -188,7 +203,108 @@ export class CheckoutController extends ControllerBasics<StripeResourceEntity> {
         };
     }
 
+    /**
+     * Restriction on currencies
+     */
     private readonly allowedCurrenciesForStripeCheckout: string[] = ['T721Token'];
+
+    /**
+     * Update reserved count on categories being bought
+     *
+     * @param authorizations
+     */
+    async updateReserved(authorizations: CartAuthorizations): Promise<ServiceResponse<void>> {
+        let counts: { [key: string]: number } = {};
+
+        for (const authorization of authorizations.authorizations) {
+            counts = {
+                ...counts,
+                [authorization.categoryId]: (counts[authorization.categoryId] || 0) + 1,
+            };
+
+            const authorizationEntityRes = await this.authorizationsService.search({
+                id: authorization.authorizationId,
+            });
+
+            if (authorizationEntityRes.error || authorizationEntityRes.response.length === 0) {
+                return {
+                    error: authorizationEntityRes.error || 'cannot_find_authorization',
+                    response: null,
+                };
+            }
+
+            const authorizationEntity = authorizationEntityRes.response[0];
+
+            if (authorizationEntity.user_expiration.getTime() < this.timeToolService.now().getTime()) {
+                return {
+                    error: 'authorization_expired',
+                    response: null,
+                };
+            }
+        }
+
+        for (const category of Object.keys(counts)) {
+            const categoryEntityRes = await this.categoriesService.search({
+                id: category,
+            });
+
+            if (categoryEntityRes.error || categoryEntityRes.response.length === 0) {
+                return {
+                    error: categoryEntityRes.error || 'cannot_find_category',
+                    response: null,
+                };
+            }
+
+            const categoryEntity: CategoryEntity = categoryEntityRes.response[0];
+
+            if (counts[category] > categoryEntity.seats - categoryEntity.reserved) {
+                return {
+                    error: 'no_seats_left',
+                    response: null,
+                };
+            }
+
+            const categoryUpdateRes = await this.categoriesService.update(
+                {
+                    id: category,
+                },
+                {
+                    reserved: categoryEntity.reserved + counts[category],
+                },
+            );
+
+            if (categoryUpdateRes.error) {
+                return {
+                    error: 'cannot_update_category',
+                    response: null,
+                };
+            }
+        }
+
+        return {
+            error: null,
+            response: null,
+        };
+    }
+
+    /**
+     * Check if country of card payment if valid
+     *
+     * @param paymentIntent
+     */
+    checkCountry(paymentIntent: Stripe.PaymentIntent): string {
+        try {
+            const country = paymentIntent.charges.data[0].payment_method_details.card.country;
+
+            if (regionRestrictions[country] === undefined) {
+                return 'region_not_supported';
+            }
+        } catch (e) {
+            return 'unable_to_retrieve_country';
+        }
+
+        return null;
+    }
 
     /**
      * Resolves a cart with a stripe payment intent
@@ -202,7 +318,7 @@ export class CheckoutController extends ControllerBasics<StripeResourceEntity> {
     @HttpCode(StatusCodes.OK)
     @Roles('authenticated')
     @ApiResponses([StatusCodes.OK, StatusCodes.InternalServerError, StatusCodes.Conflict])
-    async resolveCartWithPaymentIntent(
+    async resolveCartWithPaymentMethod(
         @Body() body: CheckoutResolveCartWithPaymentIntentInputDto,
         @User() user: UserDto,
     ): Promise<CheckoutResolveCartWithPaymentIntentResponseDto> {
@@ -240,6 +356,32 @@ export class CheckoutController extends ControllerBasics<StripeResourceEntity> {
         }
 
         const authorizationData: CartAuthorizations = actionSet.actions[actionSet.actions.length - 1].data;
+        const stripe: Stripe = this.stripeService.get();
+
+        const paymentIntent = await stripe.paymentIntents.retrieve(authorizationData.paymentIntentId);
+
+        if (paymentIntent.status !== 'requires_capture') {
+            throw new HttpException(
+                {
+                    status: StatusCodes.BadRequest,
+                    message: 'invalid_payment_intent_status',
+                },
+                StatusCodes.BadRequest,
+            );
+        }
+
+        const regionCheck = this.checkCountry(paymentIntent);
+
+        if (regionCheck) {
+            await stripe.paymentIntents.cancel(paymentIntent.id);
+            throw new HttpException(
+                {
+                    status: StatusCodes.BadRequest,
+                    message: regionCheck,
+                },
+                StatusCodes.BadRequest,
+            );
+        }
 
         const prices = authorizationData.total;
         const fees = authorizationData.fees;
@@ -247,6 +389,7 @@ export class CheckoutController extends ControllerBasics<StripeResourceEntity> {
         // Not readlly testable with only one currency
         /* istanbul ignore next */
         if (prices.length !== 1 || this.allowedCurrenciesForStripeCheckout.indexOf(prices[0].currency)) {
+            await stripe.paymentIntents.cancel(paymentIntent.id);
             throw new HttpException(
                 {
                     status: StatusCodes.BadRequest,
@@ -256,97 +399,107 @@ export class CheckoutController extends ControllerBasics<StripeResourceEntity> {
             );
         }
 
-        const stripeResourceEntities: StripeResourceEntity[] = await this._get<StripeResourceEntity>(
-            this.stripeResourcesService,
-            {
-                id: body.paymentIntentId.toLowerCase(),
-            },
-        );
-
-        if (stripeResourceEntities.length > 0) {
-            throw new HttpException(
-                {
-                    status: StatusCodes.Conflict,
-                    message: 'stripe_resource_already_used',
-                },
-                StatusCodes.Conflict,
-            );
-        }
-
-        await this._new<StripeResourceEntity>(
-            this.stripeResourcesService,
-            {
-                id: body.paymentIntentId.toLowerCase(),
-                used_by: user.id,
-            },
-            {
-                if_not_exist: true,
-            },
-        );
-
-        const gemId: string = keccak256(body.paymentIntentId)
+        const gemId: string = keccak256(authorizationData.paymentIntentId)
             .slice(2)
             .toLowerCase();
 
         const total: number = parseInt(prices[0].value, 10) + parseInt(fees[0], 10);
 
-        await this._serviceCall(
-            this.gemOrdersService.startGemOrder(
-                'token_minting',
-                user.id,
-                {
-                    paymentIntentId: body.paymentIntentId,
-                    currency: 'eur',
-                    amount: total,
-                    regionRestrictions,
-                    methodsRestrictions,
-                    userId: user.id,
-                },
-                gemId,
-            ),
-            StatusCodes.InternalServerError,
-            'gem_order_creation_error',
+        const startGemOrder = await this.gemOrdersService.startGemOrder(
+            'token_minting',
+            user.id,
+            {
+                paymentIntentId: authorizationData.paymentIntentId,
+                currency: 'eur',
+                amount: total,
+                regionRestrictions,
+                methodsRestrictions,
+                userId: user.id,
+            },
+            gemId,
         );
 
-        const gemOrder = await this._getOne<GemOrderEntity>(this.gemOrdersService, {
+        if (startGemOrder.error) {
+            await stripe.paymentIntents.cancel(paymentIntent.id);
+            throw new HttpException(
+                {
+                    status: StatusCodes.InternalServerError,
+                    message: 'gem_order_creation_error',
+                },
+                StatusCodes.InternalServerError,
+            );
+        }
+
+        const gemOrderReq = await this.gemOrdersService.search({
             id: gemId,
         });
 
-        const checkoutActionSet = await this._serviceCall(
-            this.actionSetsService.build<CheckoutAcsetBuilderArgs>('checkout_create', user, {}, true),
-            StatusCodes.InternalServerError,
-            'checkout_acset_creation_error',
-        );
-
-        await this._serviceCall(
-            this.actionSetsService.updateAction(checkoutActionSet.id, 0, {
-                cartId: cart.id,
-                commitType: 'stripe',
-                buyer: user.address,
-                stripe: {
-                    paymentIntentId: body.paymentIntentId,
-                    gemOrderId: gemOrder.id,
-                },
-            }),
-            StatusCodes.InternalServerError,
-            'checkout_acset_update_error',
-        );
-
-        await this._crudCall<ActionSetEntity>(
-            this.actionSetsService.update(
+        if (gemOrderReq.error || gemOrderReq.response.length === 0) {
+            await stripe.paymentIntents.cancel(paymentIntent.id);
+            throw new HttpException(
                 {
-                    id: cart.id,
+                    status: StatusCodes.InternalServerError,
+                    message: 'gem_order_not_found',
                 },
+                StatusCodes.InternalServerError,
+            );
+        }
+
+        const gemOrder = gemOrderReq.response[0];
+
+        const checkoutAcsetReq = await this.actionSetsService.search({
+            id: authorizationData.checkoutActionSetId,
+        });
+
+        if (checkoutAcsetReq.error || checkoutAcsetReq.response.length === 0) {
+            await stripe.paymentIntents.cancel(paymentIntent.id);
+            throw new HttpException(
                 {
-                    consumed: true,
+                    status: StatusCodes.InternalServerError,
+                    message: 'checkout_actionset_not_found',
                 },
-            ),
-            StatusCodes.InternalServerError,
-            'unable_to_consume_action_set',
-        );
+                StatusCodes.InternalServerError,
+            );
+        }
+
+        const checkoutAcset = checkoutAcsetReq.response[0];
+
+        const acsetUpdateRes = await this.actionSetsService.updateAction(checkoutAcset.id, 0, {
+            cartId: cart.id,
+            commitType: 'stripe',
+            buyer: user.address,
+            stripe: {
+                paymentIntentId: authorizationData.paymentIntentId,
+                gemOrderId: gemOrder.id,
+            },
+        });
+
+        if (acsetUpdateRes.error) {
+            await stripe.paymentIntents.cancel(paymentIntent.id);
+            throw new HttpException(
+                {
+                    status: StatusCodes.InternalServerError,
+                    message: 'checkout_acsert_update_error',
+                },
+                StatusCodes.InternalServerError,
+            );
+        }
+
+        const categorySeatsUpdate = await this.updateReserved(authorizationData);
+
+        if (categorySeatsUpdate.error) {
+            await stripe.paymentIntents.cancel(paymentIntent.id);
+            throw new HttpException(
+                {
+                    status: StatusCodes.InternalServerError,
+                    message: categorySeatsUpdate.error,
+                },
+                StatusCodes.InternalServerError,
+            );
+        }
 
         return {
-            checkoutActionSetId: checkoutActionSet.id,
+            checkoutActionSetId: checkoutAcset.id,
             gemOrderId: gemOrder.id,
         };
     }

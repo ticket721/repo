@@ -4,7 +4,6 @@ import {
     createEvent,
     createEventActionSet,
     createExpensiveEvent,
-    createFreeEventActionSet,
     createPaymentIntent,
     editEventActionSet,
     failWithCode,
@@ -163,42 +162,6 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 expect(actionSetEntityAfterRes.data.actionsets[0].consumed).toEqual(true);
             });
 
-            test('should convert action set to event with free tickets', async function() {
-                const {
-                    sdk,
-                    token,
-                    user,
-                    password,
-                }: {
-                    sdk: T721SDK;
-                    token: string;
-                    user: PasswordlessUserDto;
-                    password: string;
-                } = await getSDKAndUser(getCtx);
-
-                const eventActionSetId = await createFreeEventActionSet(token, sdk);
-
-                const actionSetEntityBeforeRes = await sdk.actions.search(token, {
-                    id: {
-                        $eq: eventActionSetId,
-                    },
-                });
-
-                expect(actionSetEntityBeforeRes.data.actionsets[0].consumed).toEqual(false);
-
-                await sdk.events.create.create(token, {
-                    completedActionSet: eventActionSetId,
-                });
-
-                const actionSetEntityAfterRes = await sdk.actions.search(token, {
-                    id: {
-                        $eq: eventActionSetId,
-                    },
-                });
-
-                expect(actionSetEntityAfterRes.data.actionsets[0].consumed).toEqual(true);
-            });
-
             test('should properly edit actionset then create event', async function() {
                 const {
                     sdk,
@@ -238,171 +201,6 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                         completedActionSet: null,
                     }),
                     StatusCodes.Unauthorized,
-                );
-            });
-
-            test('should fail by invalid price', async function() {
-                const {
-                    sdk,
-                    token,
-                    user,
-                    password,
-                }: {
-                    sdk: T721SDK;
-                    token: string;
-                    user: PasswordlessUserDto;
-                    password: string;
-                } = await getSDKAndUser(getCtx);
-
-                const initialArgument = {};
-
-                const actionSetName = 'event_create';
-
-                const eventCreationActionSetRes = await sdk.actions.create(token, {
-                    name: actionSetName,
-                    arguments: initialArgument,
-                });
-
-                const actionSetId = eventCreationActionSetRes.data.actionset.id;
-
-                await sdk.events.create.textMetadata(token, actionSetId, {
-                    name: 'myEvent',
-                    description: 'This is my event',
-                    tags: ['test', 'event'],
-                });
-
-                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-                    return as.current_action === 1;
-                });
-
-                const form = new FormData();
-
-                form.append('images', fs.readFileSync(__dirname + '/test_resources/test_avatar.png'), {
-                    filename: 'avatar.png',
-                });
-
-                const imageUploadRes: AxiosResponse<ImagesUploadResponseDto> = await sdk.images.upload(
-                    token,
-                    form.getBuffer(),
-                    form.getHeaders(),
-                );
-
-                const avatarId = imageUploadRes.data.ids[0].id;
-
-                await sdk.events.create.imagesMetadata(token, actionSetId, {
-                    avatar: avatarId,
-                    signatureColors: ['#00ff00', '#ff0000'],
-                });
-
-                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-                    return as.current_action === 2;
-                });
-
-                await sdk.events.create.modulesConfiguration(token, actionSetId, {});
-
-                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-                    return as.current_action === 3;
-                });
-
-                await sdk.events.create.datesConfiguration(token, actionSetId, {
-                    dates: [
-                        {
-                            name: 'first date',
-                            eventBegin: new Date(Date.now() + 1000000),
-                            eventEnd: new Date(Date.now() + 2000000),
-                            location: {
-                                lat: 40.75901,
-                                lon: -73.984474,
-                                label: 'Times Square',
-                            },
-                        },
-                        {
-                            name: 'second date',
-                            eventBegin: new Date(Date.now() + 1000000),
-                            eventEnd: new Date(Date.now() + 2000000),
-                            location: {
-                                lat: 40.75901,
-                                lon: -73.984474,
-                                label: 'Times Square',
-                            },
-                        },
-                    ],
-                });
-
-                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-                    return as.current_action === 4;
-                });
-
-                await sdk.events.create.categoriesConfiguration(token, actionSetId, {
-                    global: [
-                        {
-                            name: 'VIP Tickets',
-                            saleBegin: new Date(Date.now() + 1000000),
-                            saleEnd: new Date(Date.now() + 23 * 1000000),
-                            resaleBegin: new Date(Date.now() + 1000000),
-                            resaleEnd: new Date(Date.now() + 23 * 1000000),
-                            seats: 100,
-                            currencies: [
-                                {
-                                    currency: 'Fiat Punto',
-                                    price: '100',
-                                },
-                            ],
-                        },
-                    ],
-                    dates: [
-                        [
-                            {
-                                name: 'Regular Tickets',
-                                saleBegin: new Date(Date.now() + 1000000),
-                                saleEnd: new Date(Date.now() + 23 * 1000000),
-                                resaleBegin: new Date(Date.now() + 1000000),
-                                resaleEnd: new Date(Date.now() + 23 * 1000000),
-                                seats: 200,
-                                currencies: [
-                                    {
-                                        currency: 'Fiat',
-                                        price: '100',
-                                    },
-                                ],
-                            },
-                        ],
-                        [
-                            {
-                                name: 'Regular Tickets',
-                                saleBegin: new Date(Date.now() + 1000000),
-                                saleEnd: new Date(Date.now() + 23 * 1000000),
-                                resaleBegin: new Date(Date.now() + 1000000),
-                                resaleEnd: new Date(Date.now() + 23 * 1000000),
-                                seats: 200,
-                                currencies: [
-                                    {
-                                        currency: 'Fiat',
-                                        price: '100',
-                                    },
-                                ],
-                            },
-                        ],
-                    ],
-                });
-
-                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-                    return as.current_action === 5;
-                });
-
-                await sdk.events.create.adminsConfiguration(token, actionSetId, {
-                    admins: [],
-                });
-
-                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-                    return as.current_status === 'complete';
-                });
-
-                await failWithCode(
-                    sdk.events.create.create(token, {
-                        completedActionSet: actionSetId,
-                    }),
-                    StatusCodes.InternalServerError,
                 );
             });
 
@@ -783,7 +581,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     prices: [
                         {
                             currency: 'Fiat',
-                            price: '100',
+                            price: '200',
                         },
                     ],
                     seats: 100,
@@ -821,7 +619,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     prices: [
                         {
                             currency: 'Fiat',
-                            price: '100',
+                            price: '200',
                         },
                     ],
                     seats: 100,
@@ -862,7 +660,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     prices: [
                         {
                             currency: 'Fiat',
-                            price: '100',
+                            price: '200',
                         },
                     ],
                     seats: 100,
@@ -951,7 +749,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     prices: [
                         {
                             currency: 'Fiat',
-                            price: '100',
+                            price: '200',
                         },
                     ],
                     seats: 100,

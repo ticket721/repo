@@ -8,8 +8,7 @@ import {
     OperationStatusNames,
     TransferConnectorStatusNames,
 } from 'dosojin';
-import { Inject, Injectable } from '@nestjs/common';
-import { Stripe } from 'stripe';
+import { Injectable } from '@nestjs/common';
 import { T721AdminService } from '@lib/common/contracts/T721Admin.service';
 import { UsersService } from '@lib/common/users/Users.service';
 import { TokenMinterArguments } from '@app/worker/dosojinrunner/circuits/tokenminter/TokenMinter.circuit';
@@ -19,6 +18,7 @@ import { ConfigService } from '@lib/common/config/Config.service';
 import { TxEntity } from '@lib/common/txs/entities/Tx.entity';
 import { T721TokenService } from '@lib/common/contracts/T721Token.service';
 import { NestError } from '@lib/common/utils/NestError';
+import { StripeService } from '@lib/common/stripe/Stripe.service';
 
 /**
  * Extra State Arguments added by the TokenMinter Operation
@@ -93,6 +93,8 @@ export class TokenMinterOperation extends Operation {
         const [authorization, code, sender, minter] = authorizationCreationRes.response;
 
         const rawInstance = await this.t721AdminService.get();
+
+        console.log('AMOUNT MINTED', amount);
 
         const encodedTransactionCall = rawInstance.methods
             .redeemTokens(userAddress, amount, minter, code, authorization.signature)
@@ -366,7 +368,7 @@ export class StripeTokenMinterDosojin extends GenericStripeDosojin {
     /**
      * Dependency Injection
      *
-     * @param stripe
+     * @param stripeService
      * @param t721AdminService
      * @param t721TokenService
      * @param usersService
@@ -374,14 +376,14 @@ export class StripeTokenMinterDosojin extends GenericStripeDosojin {
      * @param configService
      */
     constructor(
-        @Inject('STRIPE_INSTANCE') stripe: Stripe,
+        stripeService: StripeService,
         t721AdminService: T721AdminService,
         t721TokenService: T721TokenService,
         usersService: UsersService,
         txsService: TxsService,
         configService: ConfigService,
     ) {
-        super('StripeTokenMinter', stripe);
+        super('StripeTokenMinter', stripeService.get());
         this.addOperation(
             new TokenMinterOperation(
                 'TokenMinterOperation',

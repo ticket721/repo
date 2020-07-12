@@ -14,12 +14,12 @@ export class CheckoutResolveCartWithPaymentIntentInputDto {
     @IsUUID()
     cart: string;
 
-    /**
-     * Payment Intent ID containing the payment
-     */
-    @ApiProperty({
-        description: 'Payment Intent to use to resolve the current cart',
-    })
-    @IsString()
-    paymentIntentId: string;
+    // /**
+    //  * Payment Intent ID to use for the payment
+    //  */
+    // @ApiProperty({
+    //     description: 'Payment Intent ID to create the Payment Intent',
+    // })
+    // @IsString()
+    // paymentIntentId: string;
 }

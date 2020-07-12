@@ -126,6 +126,8 @@ export class AuthorizationsService extends CRUDExtension<AuthorizationsRepositor
             fee: string;
         }[] = [];
 
+        console.log('feeees', fees);
+
         for (let idx = 0; idx < prices.length; ++idx) {
             const price = prices[idx];
             const currency = (await this.currenciesService.get(price.currency)) as ERC20Currency;

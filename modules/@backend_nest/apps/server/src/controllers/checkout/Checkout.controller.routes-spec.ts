@@ -51,7 +51,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                             categoryId: event.categories[0],
                             price: {
                                 currency: 'Fiat',
-                                price: '100',
+                                price: '200',
                             },
                         })),
                     ],
@@ -104,7 +104,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                             categoryId: event.categories[0],
                             price: {
                                 currency: 'Fiat',
-                                price: '100',
+                                price: '200',
                             },
                         })),
                     ],
@@ -134,7 +134,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                             categoryId: event.categories[0],
                             price: {
                                 currency: 'Fiat',
-                                price: '100',
+                                price: '200',
                             },
                         })),
                     ],
@@ -173,7 +173,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                             categoryId: event.categories[0],
                             price: {
                                 currency: 'Fiat',
-                                price: '100',
+                                price: '200',
                             },
                         })),
                     ],
@@ -203,7 +203,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                             categoryId: event.categories[0],
                             price: {
                                 currency: 'Fiat',
-                                price: '100',
+                                price: '200',
                             },
                         })),
                     ],
@@ -255,7 +255,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                             categoryId: event.categories[0],
                             price: {
                                 currency: 'Fiat',
-                                price: '100',
+                                price: '200',
                             },
                         })),
                     ],
@@ -339,7 +339,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                             categoryId: event.categories[0],
                             price: {
                                 currency: 'Fiat',
-                                price: '100',
+                                price: '200',
                             },
                         })),
                     ],
@@ -388,7 +388,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                             categoryId: event.categories[0],
                             price: {
                                 currency: 'Fiat',
-                                price: '100',
+                                price: '200',
                             },
                         })),
                     ],
@@ -440,7 +440,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                             categoryId: event.categories[0],
                             price: {
                                 currency: 'Fiat',
-                                price: '100',
+                                price: '200',
                             },
                         })),
                     ],
@@ -482,7 +482,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                             categoryId: event.categories[1],
                             price: {
                                 currency: 'Fiat',
-                                price: '100',
+                                price: '200',
                             },
                         })),
                     ],
@@ -589,7 +589,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                             categoryId: event.categories[0],
                             price: {
                                 currency: 'Fiat',
-                                price: '100',
+                                price: '200',
                             },
                         })),
                     ],
@@ -652,7 +652,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                             categoryId: event.categories[0],
                             price: {
                                 currency: 'Fiat',
-                                price: '100',
+                                price: '200',
                             },
                         })),
                     ],
@@ -748,6 +748,14 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     ],
                 });
 
+                const category = await sdk.categories.search(token, {
+                    id: {
+                        $eq: event.categories[0],
+                    },
+                });
+
+                const reservedCount = category.data.categories[0].reserved;
+
                 await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
                     return as.current_action === 1;
                 });
@@ -796,6 +804,14 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 });
 
                 expect(cartActionSetFinalRes.data.actionsets[0].consumed).toEqual(true);
+
+                const editedCategory = await sdk.categories.search(token, {
+                    id: {
+                        $eq: event.categories[0],
+                    },
+                });
+
+                expect(editedCategory.data.categories[0].reserved).toEqual(reservedCount + 1);
             });
 
             test('should create, fill and commit cart with 3 tickets, then resolve with captured payment intent', async function() {
@@ -1073,7 +1089,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                             categoryId: event.categories[0],
                             price: {
                                 currency: 'Fiat',
-                                price: '100',
+                                price: '200',
                             },
                         })),
                     ],
@@ -1170,7 +1186,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                             categoryId: event.categories[0],
                             price: {
                                 currency: 'Fiat',
-                                price: '100',
+                                price: '200',
                             },
                         })),
                     ],
@@ -1276,7 +1292,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                             categoryId: event.categories[0],
                             price: {
                                 currency: 'Fiat',
-                                price: '100',
+                                price: '200',
                             },
                         })),
                     ],
