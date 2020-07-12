@@ -15,7 +15,9 @@ export class StripeModule {
                     provide: 'STRIPE_INSTANCE',
                     useFactory: async (moduleRef: ModuleRef, configService: ConfigService): Promise<Stripe> => {
                         try {
-                            return await moduleRef.get('STRIPE_MOCK_INSTANCE', { strict: false });
+                            const stripeMockInstance = await moduleRef.get('STRIPE_MOCK_INSTANCE', { strict: false });
+                            console.warn('Loaded Stripe Mock Instance');
+                            return stripeMockInstance;
                         } catch (
                             e
                             // tslint:disable-next-line:no-empty

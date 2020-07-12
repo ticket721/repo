@@ -94,8 +94,6 @@ export class TokenMinterOperation extends Operation {
 
         const rawInstance = await this.t721AdminService.get();
 
-        console.log('AMOUNT MINTED', amount);
-
         const encodedTransactionCall = rawInstance.methods
             .redeemTokens(userAddress, amount, minter, code, authorization.signature)
             .encodeABI();

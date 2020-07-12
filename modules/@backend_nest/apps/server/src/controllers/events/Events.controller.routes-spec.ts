@@ -1170,7 +1170,6 @@ export default function(getCtx: () => { ready: Promise<void> }) {
 
                 const res = await sdk.checkout.cart.resolve.paymentIntent(token, {
                     cart: actionSetId,
-                    paymentIntentId: validPaymentIntentId,
                 });
 
                 const checkoutActionSetId = res.data.checkoutActionSetId;
@@ -1270,7 +1269,6 @@ export default function(getCtx: () => { ready: Promise<void> }) {
 
                 const res = await sdk.checkout.cart.resolve.paymentIntent(token, {
                     cart: actionSetId,
-                    paymentIntentId: validPaymentIntentId,
                 });
 
                 const checkoutActionSetId = res.data.checkoutActionSetId;
@@ -1370,7 +1368,6 @@ export default function(getCtx: () => { ready: Promise<void> }) {
 
                 const res = await sdk.checkout.cart.resolve.paymentIntent(token, {
                     cart: actionSetId,
-                    paymentIntentId: validPaymentIntentId,
                 });
 
                 const checkoutActionSetId = res.data.checkoutActionSetId;
@@ -1470,7 +1467,6 @@ export default function(getCtx: () => { ready: Promise<void> }) {
 
                 const res = await sdk.checkout.cart.resolve.paymentIntent(token, {
                     cart: actionSetId,
-                    paymentIntentId: validPaymentIntentId,
                 });
 
                 const checkoutActionSetId = res.data.checkoutActionSetId;
@@ -1571,7 +1567,6 @@ export default function(getCtx: () => { ready: Promise<void> }) {
 
                 const res = await sdk.checkout.cart.resolve.paymentIntent(token, {
                     cart: actionSetId,
-                    paymentIntentId: validPaymentIntentId,
                 });
 
                 const checkoutActionSetId = res.data.checkoutActionSetId;

@@ -126,8 +126,6 @@ export class AuthorizationsService extends CRUDExtension<AuthorizationsRepositor
             fee: string;
         }[] = [];
 
-        console.log('feeees', fees);
-
         for (let idx = 0; idx < prices.length; ++idx) {
             const price = prices[idx];
             const currency = (await this.currenciesService.get(price.currency)) as ERC20Currency;
@@ -210,7 +208,6 @@ export class AuthorizationsService extends CRUDExtension<AuthorizationsRepositor
             try {
                 signature = await signer.sign(rocksideSigner, payload);
             } catch (e) {
-                console.error(e);
                 return {
                     error: 'rockside_signature_failure',
                     response: null,

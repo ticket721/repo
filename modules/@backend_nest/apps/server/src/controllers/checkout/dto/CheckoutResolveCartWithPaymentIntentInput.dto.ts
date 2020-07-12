@@ -1,4 +1,4 @@
-import { IsString, IsUUID } from 'class-validator';
+import { IsUUID } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 /**
@@ -13,13 +13,4 @@ export class CheckoutResolveCartWithPaymentIntentInputDto {
     })
     @IsUUID()
     cart: string;
-
-    // /**
-    //  * Payment Intent ID to use for the payment
-    //  */
-    // @ApiProperty({
-    //     description: 'Payment Intent ID to create the Payment Intent',
-    // })
-    // @IsString()
-    // paymentIntentId: string;
 }

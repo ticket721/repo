@@ -2,12 +2,10 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Body, Controller, HttpCode, HttpException, Post, UseFilters, UseGuards } from '@nestjs/common';
 import { UserDto } from '@lib/common/users/dto/User.dto';
 import { User } from '@app/server/authentication/decorators/User.controller.decorator';
-import { StripeResourcesService } from '@lib/common/striperesources/StripeResources.service';
 import { StatusCodes } from '@lib/common/utils/codes.value';
 import { GemOrdersService } from '@lib/common/gemorders/GemOrders.service';
 import { AuthGuard } from '@nestjs/passport';
 import { Roles, RolesGuard } from '@app/server/authentication/guards/RolesGuard.guard';
-import { StripeResourceEntity } from '@lib/common/striperesources/entities/StripeResource.entity';
 import { ControllerBasics } from '@lib/common/utils/ControllerBasics.base';
 import { HttpExceptionFilter } from '@app/server/utils/HttpException.filter';
 import { ApiResponses } from '@app/server/utils/ApiResponses.controller.decorator';
@@ -19,16 +17,13 @@ import { ActionSet } from '@lib/common/actionsets/helper/ActionSet.class';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
 import { CartAuthorizations, CartTicketSelections } from '@app/worker/actionhandlers/cart/Cart.input.handlers';
-import { DAY, HOUR } from '@lib/common/utils/time';
+import { HOUR } from '@lib/common/utils/time';
 import { CheckoutResolveCartWithPaymentIntentInputDto } from '@app/server/controllers/checkout/dto/CheckoutResolveCartWithPaymentIntentInput.dto';
 import { CheckoutResolveCartWithPaymentIntentResponseDto } from '@app/server/controllers/checkout/dto/CheckoutResolveCartWithPaymentIntentResponse.dto';
 import { keccak256, log2 } from '@common/global';
 import regionRestrictions from './restrictions/regionRestrictions.value';
 import methodsRestrictions from './restrictions/methodsRestrictions.value';
-import { GemOrderEntity } from '@lib/common/gemorders/entities/GemOrder.entity';
-import { CheckoutAcsetBuilderArgs } from '@lib/common/checkout/acset_builders/Checkout.acsetbuilder.helper';
 import { ValidGuard } from '@app/server/authentication/guards/ValidGuard.guard';
-import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
 import { Price } from '@lib/common/currencies/Currencies.service';
 import { Decimal } from 'decimal.js';
 import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
@@ -45,11 +40,10 @@ import { Stripe } from 'stripe';
 @ApiBearerAuth()
 @ApiTags('checkout')
 @Controller('checkout')
-export class CheckoutController extends ControllerBasics<StripeResourceEntity> {
+export class CheckoutController extends ControllerBasics<any> {
     /**
      * Dependency Injection
      *
-     * @param stripeResourcesService
      * @param gemOrdersService
      * @param actionSetsService
      * @param rightsService
@@ -60,7 +54,6 @@ export class CheckoutController extends ControllerBasics<StripeResourceEntity> {
      * @param stripeService
      */
     constructor(
-        private readonly stripeResourcesService: StripeResourcesService,
         private readonly gemOrdersService: GemOrdersService,
         private readonly actionSetsService: ActionSetsService,
         private readonly rightsService: RightsService,

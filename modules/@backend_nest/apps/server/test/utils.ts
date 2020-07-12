@@ -1679,6 +1679,21 @@ export const setupStripeMock = (): Stripe => {
     when(stripeMock.payouts).thenReturn(instance(payoutsResourceMock));
     when(stripeMock.refunds).thenReturn(instance(refundsResourceMock));
 
+    when(paymentIntentsResourceMock.create(anything())).thenCall(
+        async (pi: Stripe.PaymentIntentCreateParams): Promise<Stripe.PaymentIntent> => {
+            console.log('creating', pi);
+            const client_secret = Crypto.randomBytes(32).toString('base64');
+            const id = createPaymentIntent(pi as Stripe.PaymentIntent);
+
+            return {
+                id,
+                ...pi,
+                status: 'requires_payment_method',
+                client_secret,
+            } as Stripe.PaymentIntent;
+        },
+    );
+
     return stripeMock;
 };
 
@@ -1695,11 +1710,42 @@ export const createPaymentIntent = (content: Partial<Stripe.PaymentIntent>): str
         ...content,
         id,
     } as Stripe.PaymentIntent);
+    when(paymentIntentsResourceMock.retrieve(id)).thenResolve({
+        ...content,
+        id,
+    } as Stripe.PaymentIntent);
+    when(paymentIntentsResourceMock.capture(id, anything())).thenCall(
+        async (id, amount): Promise<any> => {
+            const pi = await instance(paymentIntentsResourceMock).retrieve(id);
+            const newPi = {
+                ...pi,
+                amount_capturable: 0,
+                amount_received: amount.amount_to_capture,
+                status: 'succeeded',
+                charges: {
+                    data: [
+                        {
+                            ...(pi.charges?.data[0] || {}),
+                            amount_refunded: pi.amount - amount.amount_to_capture,
+                        },
+                    ],
+                } as any,
+            };
+
+            setPaymentIntent(id, newPi as any);
+
+            return newPi;
+        },
+    );
 
     return id;
 };
 
 export const setPaymentIntent = (id: string, content: Partial<Stripe.PaymentIntent>): void => {
+    when(paymentIntentsResourceMock.retrieve(id)).thenResolve({
+        ...content,
+        id,
+    } as Stripe.PaymentIntent);
     when(paymentIntentsResourceMock.retrieve(id, anything())).thenResolve({
         ...content,
         id,
@@ -1728,4 +1774,35 @@ export const gemFail = async (sdk: T721SDK, token: string, id: string, body: any
     const gem = gemReq.data.gemOrders[0].gem;
 
     expect(gem.error_info).toMatchObject(body);
+};
+
+export const getPIFromCart = async (sdk: T721SDK, token: string, cart: string): Promise<string> => {
+    const cartActionSetBeforeRes = await sdk.actions.search(token, {
+        id: {
+            $eq: cart,
+        },
+    });
+    const cartEntity = cartActionSetBeforeRes.data.actionsets[0];
+    return JSON.parse(cartEntity.actions[2].data).paymentIntentId;
+};
+
+export const validateCardPayment = async (pi: string): Promise<void> => {
+    const storedPi = await instance(getMocks()[1]).retrieve(pi);
+    setPaymentIntent(pi, {
+        ...storedPi,
+        amount_capturable: storedPi.amount,
+        charges: {
+            data: [
+                {
+                    payment_method_details: {
+                        type: 'card',
+                        card: {
+                            country: 'FR',
+                        },
+                    },
+                },
+            ],
+        },
+        status: 'requires_capture',
+    } as any);
 };

@@ -44,7 +44,6 @@ import { EmailModule } from '@lib/common/email/Email.module';
 import { DosojinController } from '@app/server/controllers/dosojin/Dosojin.controller';
 import { GemOrdersModule } from '@lib/common/gemorders/GemOrders.module';
 import { CheckoutController } from '@app/server/controllers/checkout/Checkout.controller';
-import { StripeResourcesModule } from '@lib/common/striperesources/StripeResources.module';
 import { ToolBoxModule } from '@lib/common/toolbox/ToolBox.module';
 import { CategoriesModule } from '@lib/common/categories/Categories.module';
 import { RightsModule } from '@lib/common/rights/Rights.module';
@@ -95,7 +94,6 @@ import { StripeModule } from '@lib/common/stripe/Stripe.module';
         RightsModule,
         EventsModule,
         GemOrdersModule,
-        StripeResourcesModule,
         MetadatasModule,
         AuthorizationsModule,
         CurrenciesModule,
