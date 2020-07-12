@@ -30,9 +30,11 @@ const TicketHeaderInfos = styled.div`
     border-top-right-radius: ${(props) => props.theme.defaultRadius};
     padding: ${(props) => props.theme.doubleSpacing} ${(props) => props.theme.biggerSpacing}
         ${(props) => props.theme.biggerSpacing};
-    width: calc(100% - 8px);
 
     h2 {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
         color: ${(props) => props.theme.textColor};
         font-size: 1rem;
         text-transform: uppercase;
