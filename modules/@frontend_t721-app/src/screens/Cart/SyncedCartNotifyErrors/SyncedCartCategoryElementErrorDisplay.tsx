@@ -10,6 +10,7 @@ import { getImgPath }                                                           
 import { getT721TokenPrice }                                                        from '../../../utils/prices';
 import { formatShort }                                                              from '@frontend/core/lib/utils/date';
 import { DateEntity }                                                               from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
+import { useTranslation }                                                           from 'react-i18next';
 
 interface SyncedCartCategoryRegularCategoryErrorDisplayProps {
     category: CategoryEntity;
@@ -20,6 +21,7 @@ const SyncedCartCategoryRegularCategoryErrorDisplay: React.FC<SyncedCartCategory
     (props: SyncedCartCategoryRegularCategoryErrorDisplayProps): JSX.Element => {
         const { token } = useSelector((state: T721AppState) => ({ token: state.auth.token?.value }));
         const [uuid] = useState(v4());
+        const [t] = useTranslation(['cart', 'common']);
 
         const dateReq = useRequest<DatesSearchResponseDto>({
             method: 'dates.search',
@@ -39,7 +41,7 @@ const SyncedCartCategoryRegularCategoryErrorDisplay: React.FC<SyncedCartCategory
         }
 
         if (dateReq.response.error || dateReq.response.data.dates.length === 0) {
-            return <Error message={'Cannot fetch event'}/>;
+            return <Error message={t('error_cannot_fetch_event')} retryLabel={t('common:retrying_in')} onRefresh={dateReq.force}/>;
         }
 
         const dateEntity = dateReq.response.data.dates[0];
@@ -64,6 +66,7 @@ const SyncedCartCategoryGlobalCategoryErrorDisplay: React.FC<SyncedCartCategoryG
     (props: SyncedCartCategoryRegularCategoryErrorDisplayProps): JSX.Element => {
         const { token } = useSelector((state: T721AppState) => ({ token: state.auth.token?.value }));
         const [uuid] = useState(v4());
+        const [t] = useTranslation(['cart', 'common']);
 
         const datesRequest = useRequest<DatesSearchResponseDto>({
             method: 'dates.search',
@@ -86,7 +89,7 @@ const SyncedCartCategoryGlobalCategoryErrorDisplay: React.FC<SyncedCartCategoryG
         }
 
         if (datesRequest.response.error || datesRequest.response.data.dates.length === 0) {
-            return <Error message={'Cannot fetch date'}/>;
+            return <Error message={t('error_cannot_fetch_dates')} retryLabel={t('common:retrying_in')} onRefresh={datesRequest.force}/>;
         }
 
         const dateEntities = datesRequest.response.data.dates;

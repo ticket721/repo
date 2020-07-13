@@ -25,6 +25,7 @@ export type RequestBag<ReturnType> = {
     response: RequestResp<ReturnType>;
     registerEntity: (uuid: string, refreshRates?: number) => void;
     unregisterEntity: (uuid: string) => void;
+    force: () => void;
 };
 
 export const useRequest = <ReturnType>(call: RequestParams, initialUuid: string): RequestBag<ReturnType> => {
@@ -51,6 +52,11 @@ export const useRequest = <ReturnType>(call: RequestParams, initialUuid: string)
     const unregisterEntity = (uuid: string): void =>
         void dispatch(UnregisterEntity(CacheCore.key(call.method, call.args), uuid));
 
+    const force = (): void => {
+        console.log('Force Requesting', call.method);
+        dispatch(ManualFetchItem(CacheCore.key(call.method, call.args), call.method, call.args));
+    };
+
     useDeepEffect(() => {
         if (call.options && call.options.force) {
             dispatch(ManualFetchItem(CacheCore.key(call.method, call.args), call.method, call.args));
@@ -67,5 +73,6 @@ export const useRequest = <ReturnType>(call: RequestParams, initialUuid: string)
         },
         registerEntity,
         unregisterEntity,
+        force,
     };
 };

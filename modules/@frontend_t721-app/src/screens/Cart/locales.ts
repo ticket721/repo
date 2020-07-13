@@ -64,7 +64,13 @@ i18n.addResourceBundle('en', 'cart', {
     cart_checkout_card_cvc: 'cvc',
     cart_checkout_full_name: 'Full Name',
     region_not_supported: 'Card region not supported yet',
-    cart_checkout_cancel: 'Cancel'
+    cart_checkout_cancel: 'Cancel',
+
+    error_cannot_fetch_dates: 'Cannot fetch event',
+    error_cannot_fetch_cart: 'Cannot recover cart',
+    error_cannot_fetch_event: 'Cannot fetch event',
+    error_cannot_fetch_categories: 'Cannot fetch categories',
+    error_cannot_update_cart: 'Cannot update cart',
 });
 
 i18n.addResourceBundle('fr', 'cart', {
@@ -131,5 +137,11 @@ i18n.addResourceBundle('fr', 'cart', {
     cart_checkout_card_cvc: 'cvc',
     cart_checkout_full_name: 'Nom Complet',
     region_not_supported: 'Provenence de la carte non supportee',
-    cart_checkout_cancel: 'Annuler'
+    cart_checkout_cancel: 'Annuler',
+
+    error_cannot_fetch_event: 'Informations indisponibles',
+    error_cannot_fetch_dates: 'Informations indisponibles',
+    error_cannot_fetch_cart: 'Informations indisponibles',
+    error_cannot_fetch_categories: 'Informations indisponibles',
+    error_cannot_update_cart: 'Panier indisponible',
 });

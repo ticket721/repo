@@ -70,7 +70,7 @@ export const TicketGlobalCategoryList: React.FC<TicketGlobalCategoryListProps> =
 
     const { token } = useSelector((state: T721AppState) => ({ token: state.auth.token?.value }));
     const [uuid] = useState(v4());
-    const [t] = useTranslation('event_ticket_list');
+    const [t] = useTranslation(['event_ticket_list', 'common']);
 
     const globalCategories = useRequest<CategoriesSearchResponseDto>({
         method: 'categories.search',
@@ -121,8 +121,16 @@ export const TicketGlobalCategoryList: React.FC<TicketGlobalCategoryListProps> =
         return <FullPageLoading width={250} height={250}/>;
     }
 
-    if (globalCategories.response.error || event.response.error || event.response.data.events.length === 0 || dates.response.error) {
-        return <Error message={'Error while fetching categories'}/>;
+    if (globalCategories.response.error) {
+        return <Error message={t('error_cannot_fetch_global_categories')} retryLabel={t('common:retrying_in')} onRefresh={globalCategories.force}/>;
+    }
+
+    if (event.response.error || event.response.data.events.length === 0) {
+        return <Error message={t('error_cannot_fetch_event')} retryLabel={t('common:retrying_in')} onRefresh={event.force}/>;
+    }
+
+    if (dates.response.error) {
+        return <Error message={t('error_cannot_fetch_dates')} retryLabel={t('common:retrying_in')} onRefresh={dates.force}/>;
     }
 
     const eventEntity = event.response.data.events[0];

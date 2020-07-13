@@ -76,7 +76,7 @@ export const SyncedCartSelectOption: React.FC<SyncedCartSelectOptionProps> = (pr
 
     const { token } = useSelector((state: T721AppState) => ({ token: state.auth.token?.value }));
     const [uuid] = useState(v4());
-    const [t] = useTranslation('cart');
+    const [t] = useTranslation(['cart', 'common']);
 
     const eventReq = useRequest<EventsSearchResponseDto>({
         method: 'events.search',
@@ -138,7 +138,7 @@ export const SyncedCartSelectOption: React.FC<SyncedCartSelectOptionProps> = (pr
 
     if (eventReq.response.error || eventReq.response.data.events.length === 0) {
         return <Container selected={props.selected} gradient={['#ffffff', '#aaaaaa']} onClick={props.onClick}>
-            <Error message={'Unable to recover event'}/>
+            <Error message={t('error_cannot_fetch_event')} retryLabel={t('common:retrying_in')} onRefresh={eventReq.force}/>
         </Container>;
     }
 

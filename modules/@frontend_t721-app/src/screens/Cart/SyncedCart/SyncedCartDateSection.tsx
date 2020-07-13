@@ -28,7 +28,7 @@ export const SyncedCartDateSection: React.FC<SyncedCartDateSectionProps> = (prop
     const { token } = useSelector((state: T721AppState) => ({ token: state.auth.token?.value }));
     const [uuid] = useState(v4());
     const dispatch = useDispatch();
-    const [t] = useTranslation('cart');
+    const [t] = useTranslation(['cart', 'common']);
 
     const dateReq = useRequest<DatesSearchResponseDto>({
         method: 'dates.search',
@@ -48,7 +48,7 @@ export const SyncedCartDateSection: React.FC<SyncedCartDateSectionProps> = (prop
     }
 
     if (dateReq.response.error || dateReq.response.data.dates.length === 0) {
-        return <Error message={'Cannot fetch date'}/>;
+        return <Error message={t('error_cannot_fetch_dates')} retryLabel={t('common:retrying_in')} onRefresh={dateReq.force}/>;
     }
 
     const date = dateReq.response.data.dates[0];

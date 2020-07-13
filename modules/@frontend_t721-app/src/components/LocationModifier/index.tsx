@@ -18,6 +18,7 @@ export interface LocationModifierListProps {
 const LocationModifierList: React.FC<LocationModifierListProps> = (props: LocationModifierListProps): JSX.Element => {
 
     const [uuid] = useState(v4());
+    const [t] = useTranslation(['location_modifier', 'common']);
 
     const locationRequest = useRequest<GeolocFuzzySearchResponseDto>({
         method: 'geoloc.fuzzySearch',
@@ -36,7 +37,7 @@ const LocationModifierList: React.FC<LocationModifierListProps> = (props: Locati
     }
 
     if (locationRequest.response.error) {
-        return <Error message={'Location request failed'}/>;
+        return <Error message={t('error_location_request_fail')} retryLabel={t('common:retrying_in')} onRefresh={locationRequest.force}/>;
     }
 
     const results: { label: string; value: City; idx: number; }[] = locationRequest.response.data.cities.map((mc: MatchingCity, idx: number) => ({

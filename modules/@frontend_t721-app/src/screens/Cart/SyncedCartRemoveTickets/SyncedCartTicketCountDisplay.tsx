@@ -9,6 +9,7 @@ import { CategoryQty, Error, FullPageLoading } from '@frontend/flib-react/lib/co
 import { getImgPath }                          from '@frontend/core/lib/utils/images';
 import { getT721TokenPrice }                   from '../../../utils/prices';
 import { formatShort }                         from '@frontend/core/lib/utils/date';
+import { useTranslation }                      from 'react-i18next';
 
 export interface SyncedCartTicketCountDisplayProps {
     ticket: CategoryEntity;
@@ -19,6 +20,7 @@ export interface SyncedCartTicketCountDisplayProps {
 export const SyncedCartTicketCountDisplay: React.FC<SyncedCartTicketCountDisplayProps> = (props: SyncedCartTicketCountDisplayProps): JSX.Element => {
     const { token } = useSelector((state: T721AppState) => ({ token: state.auth.token?.value }));
     const [uuid] = useState(v4());
+    const [t] = useTranslation(['cart', 'common']);
 
     const dateRequest = useRequest<DatesSearchResponseDto>({
         method: 'dates.search',
@@ -38,7 +40,7 @@ export const SyncedCartTicketCountDisplay: React.FC<SyncedCartTicketCountDisplay
     }
 
     if (dateRequest.response.error || dateRequest.response.data.dates.length === 0) {
-        return <Error message={'Cannot fetch date'}/>;
+        return <Error message={t('error_cannot_fetch_dates')} retryLabel={t('common:retrying_in')} onRefresh={dateRequest.force}/>;
     }
 
     const dateEntity = dateRequest.response.data.dates[0];

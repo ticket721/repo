@@ -10,6 +10,7 @@ import { Error, FullPageLoading, GlobalCategoryQty } from '@frontend/flib-react/
 import { getT721TokenPrice }                         from '../../../utils/prices';
 import { formatShort }                               from '@frontend/core/lib/utils/date';
 import { DateEntity }                                from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
+import { useTranslation }                            from 'react-i18next';
 
 export interface SyncedCartGlobalTicketCountDisplayProps {
   ticket: CategoryEntity;
@@ -21,6 +22,7 @@ export const SyncedCartGlobalTicketCountDisplay: React.FC<SyncedCartGlobalTicket
   (props: SyncedCartGlobalTicketCountDisplayProps): JSX.Element => {
     const { token } = useSelector((state: T721AppState) => ({ token: state.auth.token?.value }));
     const [uuid] = useState(v4());
+    const [t] = useTranslation(['cart', 'common'])
 
     const options = [...(new Array(props.amount + 10))].map((v, idx: number) => ({
       label: idx.toString(),
@@ -48,7 +50,7 @@ export const SyncedCartGlobalTicketCountDisplay: React.FC<SyncedCartGlobalTicket
     }
 
     if (datesRequest.response.error || datesRequest.response.data.dates.length === 0) {
-      return <Error message={'Cannot fetch date'}/>;
+      return <Error message={t('error_cannot_fetch_dates')} onRefresh={datesRequest.force} retryLabel={t('common:retrying_in')}/>;
     }
 
     const dateEntities = datesRequest.response.data.dates;

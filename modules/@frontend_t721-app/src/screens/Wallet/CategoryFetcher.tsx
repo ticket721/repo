@@ -15,8 +15,8 @@ interface CategoryFetcherProps {
 
 export const CategoryFetcher: React.FC<CategoryFetcherProps> = ({ uuid, categoryId, ticketId }: CategoryFetcherProps) => {
     const token = useSelector((state: T721AppState) => state.auth.token.value);
-    const [ t ] = useTranslation('ticket');
-    const { response: categoryResp } = useRequest<CategoriesSearchResponseDto>({
+    const [ t ] = useTranslation(['ticket', 'common']);
+    const { response: categoryResp, force } = useRequest<CategoriesSearchResponseDto>({
         method: 'categories.search',
         args: [
             token,
@@ -31,7 +31,7 @@ export const CategoryFetcher: React.FC<CategoryFetcherProps> = ({ uuid, category
     uuid);
 
     if (categoryResp.error || categoryResp.data?.categories?.length === 0) {
-        return (<Error message={t('fetch_error')}/>);
+        return (<Error message={t('fetch_error')} retryLabel={t('common:retrying_in')} onRefresh={force}/>);
     }
 
     if (categoryResp.loading) {

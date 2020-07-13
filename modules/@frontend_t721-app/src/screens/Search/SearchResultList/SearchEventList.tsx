@@ -22,7 +22,7 @@ export const SearchEventList: React.FC<SearchEventListProps> = (props: SearchEve
     const [uuid] = useState(v4());
     const token = useSelector((state: T721AppState): string => state.auth.token?.value);
     const history = useHistory();
-    const [t] = useTranslation('search');
+    const [t] = useTranslation(['search', 'common']);
 
     const dates = useRequest<DatesSearchResponseDto>(
         {
@@ -48,7 +48,7 @@ export const SearchEventList: React.FC<SearchEventListProps> = (props: SearchEve
     }
 
     if (dates.response.error) {
-        return <Error message={dates.response.error}/>;
+        return <Error message={t('error_cannot_fetch_dates')} retryLabel={t('common:retrying_in')} onRefresh={dates.force}/>;
     }
 
     const formattedDates = dates.response.data.dates
