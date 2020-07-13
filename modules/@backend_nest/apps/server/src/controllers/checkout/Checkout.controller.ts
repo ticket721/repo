@@ -33,6 +33,7 @@ import { TimeToolService } from '@lib/common/toolbox/Time.tool.service';
 import { AuthorizationsService } from '@lib/common/authorizations/Authorizations.service';
 import { StripeService } from '@lib/common/stripe/Stripe.service';
 import { Stripe } from 'stripe';
+import { AuthorizationEntity } from '@lib/common/authorizations/entities/Authorization.entity';
 
 /**
  * Checkout controller to create, update and resolve carts
@@ -215,18 +216,9 @@ export class CheckoutController extends ControllerBasics<any> {
                 [authorization.categoryId]: (counts[authorization.categoryId] || 0) + 1,
             };
 
-            const authorizationEntityRes = await this.authorizationsService.search({
+            const authorizationEntity = await this._getOne<AuthorizationEntity>(this.authorizationsService, {
                 id: authorization.authorizationId,
             });
-
-            if (authorizationEntityRes.error || authorizationEntityRes.response.length === 0) {
-                return {
-                    error: authorizationEntityRes.error || 'cannot_find_authorization',
-                    response: null,
-                };
-            }
-
-            const authorizationEntity = authorizationEntityRes.response[0];
 
             if (authorizationEntity.user_expiration.getTime() < this.timeToolService.now().getTime()) {
                 return {
@@ -237,18 +229,9 @@ export class CheckoutController extends ControllerBasics<any> {
         }
 
         for (const category of Object.keys(counts)) {
-            const categoryEntityRes = await this.categoriesService.search({
+            const categoryEntity = await this._getOne<CategoryEntity>(this.categoriesService, {
                 id: category,
             });
-
-            if (categoryEntityRes.error || categoryEntityRes.response.length === 0) {
-                return {
-                    error: categoryEntityRes.error || 'cannot_find_category',
-                    response: null,
-                };
-            }
-
-            const categoryEntity: CategoryEntity = categoryEntityRes.response[0];
 
             if (counts[category] > categoryEntity.seats - categoryEntity.reserved) {
                 return {
@@ -257,21 +240,18 @@ export class CheckoutController extends ControllerBasics<any> {
                 };
             }
 
-            const categoryUpdateRes = await this.categoriesService.update(
-                {
-                    id: category,
-                },
-                {
-                    reserved: categoryEntity.reserved + counts[category],
-                },
+            await this._crudCall(
+                this.categoriesService.update(
+                    {
+                        id: category,
+                    },
+                    {
+                        reserved: categoryEntity.reserved + counts[category],
+                    },
+                ),
+                StatusCodes.InternalServerError,
+                'cannot_update_category_reserved',
             );
-
-            if (categoryUpdateRes.error) {
-                return {
-                    error: 'cannot_update_category',
-                    response: null,
-                };
-            }
         }
 
         return {

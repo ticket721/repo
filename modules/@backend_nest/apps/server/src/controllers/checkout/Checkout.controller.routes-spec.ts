@@ -4,14 +4,12 @@ import {
     createEvent,
     createEventWithUltraVIP,
     createExpensiveEvent,
+    createLimitedEvent,
     createPaymentIntent,
     failWithCode,
-    gemFail,
-    getMocks,
     getPIFromCart,
     getSDKAndUser,
     getUser,
-    setPaymentIntent,
     validateCardPayment,
     waitForActionSet,
     waitForTickets,
@@ -20,7 +18,6 @@ import { Stripe } from 'stripe';
 import { StatusCodes } from '@lib/common/utils/codes.value';
 import { TicketEntity } from '@lib/common/tickets/entities/Ticket.entity';
 import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
-import { instance, when } from 'ts-mockito';
 
 export default function(getCtx: () => { ready: Promise<void> }) {
     return function() {
@@ -690,91 +687,6 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 });
 
                 expect(editedCategory.data.categories[0].reserved).toEqual(reservedCount + 1);
-            });
-
-            test('should create, fill and commit cart with 3 tickets, then resolve with captured payment intent', async function() {
-                const {
-                    sdk,
-                    token,
-                    user,
-                    password,
-                }: {
-                    sdk: T721SDK;
-                    token: string;
-                    user: PasswordlessUserDto;
-                    password: string;
-                } = await getSDKAndUser(getCtx);
-
-                const event = await createExpensiveEvent(token, sdk);
-
-                const cartActionSetRes = await sdk.actions.create(token, {
-                    name: 'cart_create',
-                    arguments: {},
-                });
-
-                const actionSetId = cartActionSetRes.data.actionset.id;
-
-                await sdk.cart.ticketSelections(token, actionSetId, {
-                    tickets: [
-                        ...[...Array(3)].map(() => ({
-                            categoryId: event.categories[0],
-                            price: {
-                                currency: 'Fiat',
-                                price: '10000',
-                            },
-                        })),
-                    ],
-                });
-
-                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-                    return as.current_action === 1;
-                });
-
-                await sdk.cart.modulesConfiguration(token, actionSetId, {});
-
-                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-                    return as.current_action === 2;
-                });
-
-                await sdk.checkout.cart.commit.stripe(token, {
-                    cart: actionSetId,
-                });
-
-                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-                    return as.current_status === 'complete';
-                });
-
-                const cartActionSetBeforeRes = await sdk.actions.search(token, {
-                    id: {
-                        $eq: actionSetId,
-                    },
-                });
-
-                expect(cartActionSetBeforeRes.data.actionsets[0].consumed).toEqual(false);
-
-                await validateCardPayment(await getPIFromCart(sdk, token, actionSetId));
-
-                const res = await sdk.checkout.cart.resolve.paymentIntent(token, {
-                    cart: actionSetId,
-                });
-
-                const checkoutActionSetId = res.data.checkoutActionSetId;
-
-                await waitForActionSet(sdk, token, checkoutActionSetId, (as: ActionSetEntity): boolean => {
-                    return as.current_status === 'complete';
-                });
-
-                await waitForTickets(sdk, token, user.address, (tickets: TicketEntity[]): boolean => {
-                    return tickets.length === 3;
-                });
-
-                const cartActionSetFinalRes = await sdk.actions.search(token, {
-                    id: {
-                        $eq: actionSetId,
-                    },
-                });
-
-                expect(cartActionSetFinalRes.data.actionsets[0].consumed).toEqual(true);
             });
         });
     };

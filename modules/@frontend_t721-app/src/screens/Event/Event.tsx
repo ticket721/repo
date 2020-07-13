@@ -1,16 +1,14 @@
 import './locales';
-import React             from 'react';
-import { useRouteMatch } from 'react-router';
-import { EventDetails }  from './EventDetails';
+import React            from 'react';
+import { useParams }    from 'react-router';
+import { EventDetails } from './EventDetails';
 
 const Event: React.FC = () => {
 
-    const match = useRouteMatch();
-
-    const eventId = (match.params as any).id;
+    const { id } = useParams();
 
     return (
-        <EventDetails id={eventId}/>
+        <EventDetails id={id}/>
     );
 };
 

@@ -1665,6 +1665,553 @@ describe('Event Input Handlers', function() {
             });
         });
 
+        it('should error on free global category', async function() {
+            const created_at = new Date(Date.now());
+            const updated_at = created_at;
+            const dispatched_at = created_at;
+
+            const datesConfiguration = {
+                dates: [
+                    {
+                        name: 'Bataclan',
+                        eventBegin: created_at,
+                        eventEnd: new Date(created_at.getTime() + 1000 * 60 * 60 * 24),
+                        location: {
+                            label: '50 Boulevard Voltaire, 75011 Paris',
+                            lat: 48.86311,
+                            lon: 2.37087,
+                        },
+                    },
+                ],
+            };
+
+            const resaleBegin = new Date(created_at.getTime() - 1000 * 60 * 60 * 24);
+
+            const saleBegin = new Date(created_at.getTime() - 1000 * 60 * 60 * 24);
+
+            const categoriesConfiguration = {
+                global: [
+                    {
+                        name: 'regular',
+                        resaleBegin,
+                        resaleEnd: created_at,
+                        saleBegin,
+                        saleEnd: created_at,
+                        seats: 1000,
+                        currencies: [],
+                    },
+                ],
+                dates: [[]],
+            };
+
+            const resultingCategoriesConfiguration = {
+                global: [
+                    {
+                        name: 'regular',
+                        resaleBegin,
+                        resaleEnd: created_at,
+                        saleBegin,
+                        saleEnd: created_at,
+                        seats: 1000,
+                        currencies: [],
+                    },
+                ],
+                dates: [[]],
+            };
+
+            const actionSetEntity: ActionSetEntity = {
+                id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
+                actions: [
+                    {
+                        status: 'complete',
+                        name: '@events/textMetadata',
+                        data: '{}',
+                        type: 'input',
+                        error: null,
+                        private: false,
+                    },
+                    {
+                        status: 'complete',
+                        name: '@events/imagesMetadata',
+                        data: '{}',
+                        type: 'input',
+                        error: null,
+                        private: false,
+                    },
+                    {
+                        status: 'complete',
+                        name: '@events/modulesConfiguration',
+                        data: '{}',
+                        type: 'input',
+                        error: null,
+                        private: false,
+                    },
+                    {
+                        status: 'complete',
+                        name: '@events/datesConfiguration',
+                        data: JSON.stringify(datesConfiguration),
+                        type: 'input',
+                        error: null,
+                        private: false,
+                    },
+                    {
+                        status: 'waiting',
+                        name: '@events/categoriesConfiguration',
+                        data: JSON.stringify(categoriesConfiguration),
+                        type: 'input',
+                        error: null,
+                        private: false,
+                    },
+                ],
+                links: [],
+                current_action: 4,
+                current_status: 'input:waiting',
+                name: '@event/creation',
+                created_at,
+                updated_at,
+                dispatched_at,
+            };
+
+            const actionSet: ActionSet = new ActionSet().load(actionSetEntity);
+            const progress = async (p: number) => {};
+
+            const [resActionSet, update] = await context.eventsInputHandler.categoriesConfigurationHandler(
+                context.eventsInputHandler.categoriesConfigurationFields,
+                actionSet,
+                progress,
+            );
+
+            expect(update).toEqual(true);
+            expect(resActionSet.raw).toEqual({
+                id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
+                actions: [
+                    {
+                        status: 'complete',
+                        name: '@events/textMetadata',
+                        data: '{}',
+                        type: 'input',
+                        error: null,
+                        private: false,
+                    },
+                    {
+                        status: 'complete',
+                        name: '@events/imagesMetadata',
+                        data: '{}',
+                        type: 'input',
+                        error: null,
+                        private: false,
+                    },
+                    {
+                        status: 'complete',
+                        name: '@events/modulesConfiguration',
+                        data: '{}',
+                        type: 'input',
+                        error: null,
+                        private: false,
+                    },
+                    {
+                        status: 'complete',
+                        name: '@events/datesConfiguration',
+                        data: JSON.stringify(datesConfiguration),
+                        type: 'input',
+                        error: null,
+                        private: false,
+                    },
+                    {
+                        status: 'error',
+                        name: '@events/categoriesConfiguration',
+                        data: JSON.stringify(resultingCategoriesConfiguration),
+                        type: 'input',
+                        error: '{"details":null,"error":"free_category_unavailable"}',
+                        private: false,
+                    },
+                ],
+                links: [],
+                current_action: 4,
+                current_status: 'input:error',
+                name: '@event/creation',
+                created_at,
+                updated_at,
+                dispatched_at,
+            });
+        });
+
+        it('should error on multi currency global category', async function() {
+            const created_at = new Date(Date.now());
+            const updated_at = created_at;
+            const dispatched_at = created_at;
+
+            const datesConfiguration = {
+                dates: [
+                    {
+                        name: 'Bataclan',
+                        eventBegin: created_at,
+                        eventEnd: new Date(created_at.getTime() + 1000 * 60 * 60 * 24),
+                        location: {
+                            label: '50 Boulevard Voltaire, 75011 Paris',
+                            lat: 48.86311,
+                            lon: 2.37087,
+                        },
+                    },
+                ],
+            };
+
+            const resaleBegin = new Date(created_at.getTime() - 1000 * 60 * 60 * 24);
+
+            const saleBegin = new Date(created_at.getTime() - 1000 * 60 * 60 * 24);
+
+            const categoriesConfiguration = {
+                global: [
+                    {
+                        name: 'regular',
+                        resaleBegin,
+                        resaleEnd: created_at,
+                        saleBegin,
+                        saleEnd: created_at,
+                        seats: 1000,
+                        currencies: [
+                            {
+                                currency: 'T721Token',
+                                price: '200',
+                            },
+                            {
+                                currency: 'Fiat',
+                                price: '300',
+                            },
+                        ],
+                    },
+                ],
+                dates: [[]],
+            };
+
+            const resultingCategoriesConfiguration = {
+                global: [
+                    {
+                        name: 'regular',
+                        resaleBegin,
+                        resaleEnd: created_at,
+                        saleBegin,
+                        saleEnd: created_at,
+                        seats: 1000,
+                        currencies: [
+                            {
+                                currency: 'T721Token',
+                                price: '200',
+                            },
+                            {
+                                currency: 'Fiat',
+                                price: '300',
+                            },
+                        ],
+                    },
+                ],
+                dates: [[]],
+            };
+
+            const actionSetEntity: ActionSetEntity = {
+                id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
+                actions: [
+                    {
+                        status: 'complete',
+                        name: '@events/textMetadata',
+                        data: '{}',
+                        type: 'input',
+                        error: null,
+                        private: false,
+                    },
+                    {
+                        status: 'complete',
+                        name: '@events/imagesMetadata',
+                        data: '{}',
+                        type: 'input',
+                        error: null,
+                        private: false,
+                    },
+                    {
+                        status: 'complete',
+                        name: '@events/modulesConfiguration',
+                        data: '{}',
+                        type: 'input',
+                        error: null,
+                        private: false,
+                    },
+                    {
+                        status: 'complete',
+                        name: '@events/datesConfiguration',
+                        data: JSON.stringify(datesConfiguration),
+                        type: 'input',
+                        error: null,
+                        private: false,
+                    },
+                    {
+                        status: 'waiting',
+                        name: '@events/categoriesConfiguration',
+                        data: JSON.stringify(categoriesConfiguration),
+                        type: 'input',
+                        error: null,
+                        private: false,
+                    },
+                ],
+                links: [],
+                current_action: 4,
+                current_status: 'input:waiting',
+                name: '@event/creation',
+                created_at,
+                updated_at,
+                dispatched_at,
+            };
+
+            const actionSet: ActionSet = new ActionSet().load(actionSetEntity);
+            const progress = async (p: number) => {};
+
+            const [resActionSet, update] = await context.eventsInputHandler.categoriesConfigurationHandler(
+                context.eventsInputHandler.categoriesConfigurationFields,
+                actionSet,
+                progress,
+            );
+
+            expect(update).toEqual(true);
+            expect(resActionSet.raw).toEqual({
+                id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
+                actions: [
+                    {
+                        status: 'complete',
+                        name: '@events/textMetadata',
+                        data: '{}',
+                        type: 'input',
+                        error: null,
+                        private: false,
+                    },
+                    {
+                        status: 'complete',
+                        name: '@events/imagesMetadata',
+                        data: '{}',
+                        type: 'input',
+                        error: null,
+                        private: false,
+                    },
+                    {
+                        status: 'complete',
+                        name: '@events/modulesConfiguration',
+                        data: '{}',
+                        type: 'input',
+                        error: null,
+                        private: false,
+                    },
+                    {
+                        status: 'complete',
+                        name: '@events/datesConfiguration',
+                        data: JSON.stringify(datesConfiguration),
+                        type: 'input',
+                        error: null,
+                        private: false,
+                    },
+                    {
+                        status: 'error',
+                        name: '@events/categoriesConfiguration',
+                        data: JSON.stringify(resultingCategoriesConfiguration),
+                        type: 'input',
+                        error: '{"details":null,"error":"multi_currency_unavailable"}',
+                        private: false,
+                    },
+                ],
+                links: [],
+                current_action: 4,
+                current_status: 'input:error',
+                name: '@event/creation',
+                created_at,
+                updated_at,
+                dispatched_at,
+            });
+        });
+
+        it('should error on global price too low', async function() {
+            const created_at = new Date(Date.now());
+            const updated_at = created_at;
+            const dispatched_at = created_at;
+
+            const datesConfiguration = {
+                dates: [
+                    {
+                        name: 'Bataclan',
+                        eventBegin: created_at,
+                        eventEnd: new Date(created_at.getTime() + 1000 * 60 * 60 * 24),
+                        location: {
+                            label: '50 Boulevard Voltaire, 75011 Paris',
+                            lat: 48.86311,
+                            lon: 2.37087,
+                        },
+                    },
+                ],
+            };
+
+            const resaleBegin = new Date(created_at.getTime() - 1000 * 60 * 60 * 24);
+
+            const saleBegin = new Date(created_at.getTime() - 1000 * 60 * 60 * 24);
+
+            const categoriesConfiguration = {
+                global: [
+                    {
+                        name: 'regular',
+                        resaleBegin,
+                        resaleEnd: created_at,
+                        saleBegin,
+                        saleEnd: created_at,
+                        seats: 1000,
+                        currencies: [
+                            {
+                                currency: 'Fiat',
+                                price: '199',
+                            },
+                        ],
+                    },
+                ],
+                dates: [[]],
+            };
+
+            const resultingCategoriesConfiguration = {
+                global: [
+                    {
+                        name: 'regular',
+                        resaleBegin,
+                        resaleEnd: created_at,
+                        saleBegin,
+                        saleEnd: created_at,
+                        seats: 1000,
+                        currencies: [
+                            {
+                                currency: 'Fiat',
+                                price: '199',
+                            },
+                        ],
+                    },
+                ],
+                dates: [[]],
+            };
+
+            const actionSetEntity: ActionSetEntity = {
+                id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
+                actions: [
+                    {
+                        status: 'complete',
+                        name: '@events/textMetadata',
+                        data: '{}',
+                        type: 'input',
+                        error: null,
+                        private: false,
+                    },
+                    {
+                        status: 'complete',
+                        name: '@events/imagesMetadata',
+                        data: '{}',
+                        type: 'input',
+                        error: null,
+                        private: false,
+                    },
+                    {
+                        status: 'complete',
+                        name: '@events/modulesConfiguration',
+                        data: '{}',
+                        type: 'input',
+                        error: null,
+                        private: false,
+                    },
+                    {
+                        status: 'complete',
+                        name: '@events/datesConfiguration',
+                        data: JSON.stringify(datesConfiguration),
+                        type: 'input',
+                        error: null,
+                        private: false,
+                    },
+                    {
+                        status: 'waiting',
+                        name: '@events/categoriesConfiguration',
+                        data: JSON.stringify(categoriesConfiguration),
+                        type: 'input',
+                        error: null,
+                        private: false,
+                    },
+                ],
+                links: [],
+                current_action: 4,
+                current_status: 'input:waiting',
+                name: '@event/creation',
+                created_at,
+                updated_at,
+                dispatched_at,
+            };
+
+            const actionSet: ActionSet = new ActionSet().load(actionSetEntity);
+            const progress = async (p: number) => {};
+
+            const [resActionSet, update] = await context.eventsInputHandler.categoriesConfigurationHandler(
+                context.eventsInputHandler.categoriesConfigurationFields,
+                actionSet,
+                progress,
+            );
+
+            expect(update).toEqual(true);
+            expect(resActionSet.raw).toEqual({
+                id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                consumed: false,
+                actions: [
+                    {
+                        status: 'complete',
+                        name: '@events/textMetadata',
+                        data: '{}',
+                        type: 'input',
+                        error: null,
+                        private: false,
+                    },
+                    {
+                        status: 'complete',
+                        name: '@events/imagesMetadata',
+                        data: '{}',
+                        type: 'input',
+                        error: null,
+                        private: false,
+                    },
+                    {
+                        status: 'complete',
+                        name: '@events/modulesConfiguration',
+                        data: '{}',
+                        type: 'input',
+                        error: null,
+                        private: false,
+                    },
+                    {
+                        status: 'complete',
+                        name: '@events/datesConfiguration',
+                        data: JSON.stringify(datesConfiguration),
+                        type: 'input',
+                        error: null,
+                        private: false,
+                    },
+                    {
+                        status: 'error',
+                        name: '@events/categoriesConfiguration',
+                        data: JSON.stringify(resultingCategoriesConfiguration),
+                        type: 'input',
+                        error: '{"details":null,"error":"price_under_minimum_allowed"}',
+                        private: false,
+                    },
+                ],
+                links: [],
+                current_action: 4,
+                current_status: 'input:error',
+                name: '@event/creation',
+                created_at,
+                updated_at,
+                dispatched_at,
+            });
+        });
+
         it('should incomplete on missing payload', async function() {
             const created_at = new Date(Date.now());
             const updated_at = created_at;
