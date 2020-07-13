@@ -73,11 +73,7 @@ const App: React.FC = () => {
                 <Route path={'/tags'} exact={true}>
                     <TagsPage/>
                 </Route>
-
-                <ProtectedRoute path={'/'} exact={true}>
-                    <WalletPage/>
-                </ProtectedRoute>
-                <Redirect to={'/'}/>
+                <Redirect to={'/home'}/>
             </Switch>
             <ToastStacker additionalLocales={[]}/>
         </AppContainer>
