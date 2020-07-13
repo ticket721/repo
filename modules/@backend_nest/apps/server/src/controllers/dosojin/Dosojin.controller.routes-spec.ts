@@ -8,9 +8,11 @@ import {
     failWithCode,
     gemFail,
     getMocks,
+    getPIFromCart,
     getSDKAndUser,
     getUser,
     setPaymentIntent,
+    validateCardPayment,
     waitForActionSet,
     waitForTickets,
 } from '../../../test/utils';
@@ -101,6 +103,8 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                         $eq: actionSetId,
                     },
                 });
+
+                await validateCardPayment(await getPIFromCart(sdk, token, actionSetId));
 
                 expect(cartActionSetBeforeRes.data.actionsets[0].consumed).toEqual(false);
 
@@ -211,6 +215,8 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                         $eq: actionSetId,
                     },
                 });
+
+                await validateCardPayment(await getPIFromCart(sdk, token, actionSetId));
 
                 expect(cartActionSetBeforeRes.data.actionsets[0].consumed).toEqual(false);
 

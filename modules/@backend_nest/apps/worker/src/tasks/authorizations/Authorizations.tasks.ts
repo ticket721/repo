@@ -411,8 +411,6 @@ export class AuthorizationsTasks implements OnModuleInit {
             capture_method: 'manual',
         });
 
-        console.log('result', paymentIntent);
-
         const actionSetUpdate = await this.actionSetsService.updateAction(authorizationData.actionSetId, 2, {
             commitType: 'stripe',
             total: authorizationData.prices,
