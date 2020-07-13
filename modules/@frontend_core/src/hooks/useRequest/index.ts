@@ -1,19 +1,24 @@
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { AppState } from '../../redux/ducks';
 import { CacheCore } from '../../cores/cache/CacheCore';
-import { RegisterEntity, UnregisterEntity } from '../../redux/ducks/cache';
+import { ManualFetchItem, RegisterEntity, UnregisterEntity } from '../../redux/ducks/cache';
 import { useDeepEffect } from '../useDeepEffect';
 
 interface RequestParams {
     method: string;
     args: any[];
     refreshRate: number;
+    options?: Partial<LazyRequestOptions>;
 }
 
 interface RequestResp<ReturnType> {
     data: ReturnType;
     error: any;
     loading: boolean;
+}
+
+export interface LazyRequestOptions {
+    force: boolean;
 }
 
 export type RequestBag<ReturnType> = {
@@ -47,6 +52,9 @@ export const useRequest = <ReturnType>(call: RequestParams, initialUuid: string)
         void dispatch(UnregisterEntity(CacheCore.key(call.method, call.args), uuid));
 
     useDeepEffect(() => {
+        if (call.options && call.options.force) {
+            dispatch(ManualFetchItem(CacheCore.key(call.method, call.args), call.method, call.args));
+        }
         registerEntity(initialUuid);
 
         return () => unregisterEntity(initialUuid);
