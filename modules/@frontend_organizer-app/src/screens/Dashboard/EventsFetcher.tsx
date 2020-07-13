@@ -132,12 +132,16 @@ export const EventsFetcher: React.FC<EventsFetcherProps> = ({ token, uuid, group
 
 const Cards = styled.div`
     display: flex;
-    justify-content: space-between;
     flex-wrap: wrap;
 
     & > div {
         width: fit-content;
-        margin: ${props => props.theme.regularSpacing} 0;
+        margin-bottom: ${props => props.theme.doubleSpacing};
+    }
+
+    & > div:nth-child(3n+2) {
+        margin-left: ${props => props.theme.doubleSpacing};
+        margin-right: ${props => props.theme.doubleSpacing};
     }
 `;
 

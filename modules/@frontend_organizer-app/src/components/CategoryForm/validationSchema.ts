@@ -10,7 +10,7 @@ const seats = yup.number()
     .positive('seats_positive_number')
     .moreThan(0, 'seats_more_than_zero');
 const price = yup.number()
-    .min(0, 'price_positive_number');
+    .min(2, 'price_more_than_two');
 
 export const categoryValidationSchema = yup.object().shape({
     name,

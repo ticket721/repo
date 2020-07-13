@@ -18,7 +18,6 @@ const EventPage = lazy(() => import('./routes/Event'));
 const TicketSelectionPage = lazy(() => import('./routes/TicketSelection'));
 const SearchPage = lazy(() => import('./routes/Search'));
 const TagsPage = lazy(() => import('./routes/Tags'));
-const WalletPage = lazy(() => import('./routes/Wallet'));
 const CartPage = lazy(() => import('./routes/Cart'));
 
 const App: React.FC = () => {
@@ -73,11 +72,7 @@ const App: React.FC = () => {
                 <Route path={'/tags'} exact={true}>
                     <TagsPage/>
                 </Route>
-
-                <ProtectedRoute path={'/'} exact={true}>
-                    <WalletPage/>
-                </ProtectedRoute>
-                <Redirect to={'/'}/>
+                <Redirect to={'/home'}/>
             </Switch>
             <ToastStacker additionalLocales={[]}/>
         </AppContainer>

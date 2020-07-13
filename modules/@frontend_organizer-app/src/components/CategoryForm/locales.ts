@@ -35,7 +35,7 @@ i18n.addResourceBundle('en', 'validation', {
     category_name_required: 'Category name is required',
     seats_positive_number: 'quantity cannot be a negative number',
     seats_more_than_zero: 'quantity cannot be 0',
-    price_positive_number: 'price cannot be a negative number',
+    price_more_than_two: 'price cannot be less than 2 euros',
 });
 
 i18n.addResourceBundle('fr', 'validation', {
@@ -43,5 +43,5 @@ i18n.addResourceBundle('fr', 'validation', {
     category_name_required: 'nom de catégorie requis',
     seats_positive_number: 'le nombre de places ne peut pas être négatif',
     seats_more_than_zero: 'le nombre de places doit être plus grand que 0',
-    price_positive_number: 'le prix doit être un nombre positif',
+    price_more_than_two: 'le prix doit être plus grand ou égal à 2 euros',
 });

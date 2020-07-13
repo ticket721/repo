@@ -1,5 +1,5 @@
 import React, { lazy, Suspense, useEffect, useState }         from 'react';
-import { Route, Switch, useHistory, useLocation, withRouter } from 'react-router-dom';
+import { Route, Switch, useHistory, useLocation, withRouter, Redirect } from 'react-router-dom';
 import { FullPageLoading, TopNav }                            from '@frontend/flib-react/lib/components';
 import ProtectedRoute                                         from '@frontend/core/lib/components/ProtectedRoute';
 import ToastStacker                                           from '@frontend/core/lib/components/ToastStacker';
@@ -112,6 +112,7 @@ const MobileApp: React.FC = () => {
                     <ProtectedRoute path={'/'} exact={true}>
                         <WalletPage/>
                     </ProtectedRoute>
+                    <Redirect to={'/'}/>
                 </Switch>
             </Suspense>
             <ToastStacker additionalLocales={[]}/>

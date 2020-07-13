@@ -20,10 +20,12 @@ import { ResetEventCreateForm }          from './ResetEventCreateForm';
 import { ActionSetStatus, ActionStatus } from '@common/sdk/lib/@backend_nest/libs/common/src/actionsets/entities/ActionSet.entity';
 import { PushNotification }              from '@frontend/core/lib/redux/ducks/notifications';
 import { useHistory }                    from 'react-router';
+import { FullPageLoading }                from '@frontend/flib-react/lib/components';
 
 export interface FormProps {
     onComplete: (valid: boolean) => void;
 }
+
 const CreateEvent: React.FC = () => {
     const [ t ] = useTranslation('create_event');
     const FormRefs = [
@@ -95,6 +97,10 @@ const CreateEvent: React.FC = () => {
         dispatch(InitEventAcset());
         setStepIdx(null);
     }, [dispatch]);
+
+    if (!acsetStatus) {
+        return <FullPageLoading/>;
+    }
 
     return (
         <Container>

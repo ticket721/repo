@@ -159,12 +159,7 @@ export const Button: React.FunctionComponent<ButtonProps> = (props: ButtonProps)
             >
                 <span>{props.title}</span>
                 {props.loadingState ? (
-                    <LoaderIcon
-                        loading={props.loadingState}
-                        icon={'loader'}
-                        size={'20px'}
-                        color={'rgba(255,255,255,0.9)'}
-                    />
+                    <LoaderIcon icon={'loader'} size={'20px'} color={'rgba(255,255,255,0.9)'} />
                 ) : null}
             </StyledButton>
         );
