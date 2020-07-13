@@ -77,7 +77,7 @@
         "ts-loader": "6.1.1",
         "typescript": "3.8.3",
         "@rocksideio/rockside-wallet-sdk": "0.3.4",
-        "@types/node": "13.7.7",
+        "@types/node": "14.0.22",
         "@types/bull": "3.10.6",
         "@types/dotenv": "8.2.0",
         "@types/express": "4.17.1",
