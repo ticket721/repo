@@ -1,12 +1,19 @@
 import * as React from 'react';
 import styled from '../../../config/styled';
-import eventInterface from '../../../shared/eventInterface';
 import LocationCard from '../../ticket/cards/location';
 import DateTimeCard from '../../ticket/cards/datetime';
 
 export interface EventInfosProps extends React.ComponentProps<any> {
-    event: eventInterface;
     pullUp?: boolean;
+    name: string;
+    mainColor: string;
+    location: string;
+    startDate: string;
+    gradients: string[];
+    startTime: string;
+    endDate: string;
+    endTime: string;
+    getDirections: string;
 }
 
 const Container = styled.div<EventInfosProps>`
@@ -40,15 +47,19 @@ const Location = styled(LocationCard)`
 export const EventInfos: React.FunctionComponent<EventInfosProps> = (props: EventInfosProps): JSX.Element => {
     return (
         <Container pullUp={props.pullUp}>
-            <h2>{props.event.name}</h2>
+            <h2>{props.name}</h2>
             <DateTime
-                startDate={props.event.startDate}
-                startTime={props.event.startTime}
-                endDate={props.event.endDate}
-                endTime={props.event.endTime}
+                dates={[
+                    {
+                        startDate: props.event.startDate,
+                        endDate: props.event.endDate,
+                        startTime: props.event.startTime,
+                        endTime: props.event.endTime,
+                    },
+                ]}
                 iconColor={props.event.mainColor}
             />
-            <Location iconColor={props.event.mainColor} location={props.event.location} />
+            <Location iconColor={props.mainColor} location={props.location} subtitle={props.getDirections} />
         </Container>
     );
 };

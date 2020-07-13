@@ -64,6 +64,15 @@ export class UserEntity {
     address: string;
 
     /**
+     * Device address
+     */
+    @Column({
+        type: 'text',
+    })
+    // tslint:disable-next-line:variable-name
+    device_address: string;
+
+    /**
      * Account role
      */
     @Column({

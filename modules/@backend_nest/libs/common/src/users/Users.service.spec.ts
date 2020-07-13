@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { anyFunction, anything, deepEqual, instance, mock, verify, when } from 'ts-mockito';
+import { anyFunction, anything, deepEqual, instance, mock, spy, verify, when } from 'ts-mockito';
 import { keccak256, toAcceptedAddressFormat, toAcceptedKeccak256Format } from '@common/global';
 import { UsersService } from './Users.service';
 import { UserEntity } from './entities/User.entity';
@@ -9,6 +9,7 @@ import { CreateUserServiceInputDto } from './dto/CreateUserServiceInput.dto';
 import { uuid } from '@iaminfinity/express-cassandra';
 import { ESSearchHit, ESSearchReturn } from '@lib/common/utils/ESSearchReturn.type';
 import { NestError } from '@lib/common/utils/NestError';
+import { UserDto } from '@lib/common/users/dto/User.dto';
 
 class UserEntityModelMock {
     search(options: EsSearchOptionsStatic, callback?: (err: any, ret: any) => void): void {
@@ -68,6 +69,7 @@ describe('Users Service', function() {
                     username,
                     email,
                     address: finalAddress,
+                    device_address: finalAddress,
                     password: hashedp,
                     id,
                     type: 't721',
@@ -92,6 +94,7 @@ describe('Users Service', function() {
                 username,
                 email,
                 address: finalAddress,
+                device_address: finalAddress,
                 password: hashedp,
                 id,
                 type: 't721',
@@ -139,6 +142,7 @@ describe('Users Service', function() {
                     username,
                     email,
                     address: finalAddress,
+                    device_address: finalAddress,
                     password: hashedp,
                     id,
                     type: 't721',
@@ -195,6 +199,7 @@ describe('Users Service', function() {
                                     username,
                                     email,
                                     password: hashedp,
+                                    device_address: finalAddress,
                                     address: toAcceptedAddressFormat(finalAddress),
                                     id: '0',
                                     type: 't721',
@@ -227,6 +232,7 @@ describe('Users Service', function() {
             expect(res.response).toEqual({
                 username,
                 email,
+                device_address: finalAddress,
                 address: toAcceptedAddressFormat(finalAddress),
                 id: '0',
                 type: 't721',
@@ -397,6 +403,7 @@ describe('Users Service', function() {
                                     username,
                                     email,
                                     password: hashedp,
+                                    device_address: finalAddress,
                                     address: toAcceptedAddressFormat(finalAddress),
                                     id: '0',
                                     type: 't721',
@@ -429,6 +436,7 @@ describe('Users Service', function() {
             expect(res.response).toEqual({
                 username,
                 email,
+                device_address: finalAddress,
                 address: toAcceptedAddressFormat(finalAddress),
                 id: '0',
                 type: 't721',
@@ -591,6 +599,7 @@ describe('Users Service', function() {
                                     username,
                                     email,
                                     password: hashedp,
+                                    device_address: finalAddress,
                                     address: toAcceptedAddressFormat(finalAddress),
                                     id: '0',
                                     type: 't721',
@@ -623,6 +632,7 @@ describe('Users Service', function() {
             expect(res.response).toEqual({
                 username,
                 email,
+                device_address: finalAddress,
                 address: toAcceptedAddressFormat(finalAddress),
                 id: '0',
                 type: 't721',
@@ -766,6 +776,7 @@ describe('Users Service', function() {
                 username,
                 email,
                 password: hashedp,
+                device_address: finalAddress,
                 address: toAcceptedAddressFormat(finalAddress),
                 type: 't721',
                 locale: 'en',
@@ -811,6 +822,7 @@ describe('Users Service', function() {
                 username,
                 email,
                 password: hashedp,
+                device_address: finalAddress,
                 address: toAcceptedAddressFormat(finalAddress),
                 type: 't721',
                 role: 'authenticated',
@@ -840,6 +852,84 @@ describe('Users Service', function() {
         });
     });
 
+    describe('setDeviceAddress', function() {
+        it('should update user device address', async function() {
+            const usersService: UsersService = context.usersService;
+
+            const id = '00000000-0000-0000-0000-000000000000';
+            const newAddress = '0x6CFA8B8b815747fF09Eb454E8b120E9d11a80cb6';
+
+            const spiedService = spy(usersService);
+
+            when(
+                spiedService.update(
+                    deepEqual({
+                        id,
+                        device_address: newAddress,
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: {
+                    id,
+                    device_address: newAddress,
+                } as UserDto,
+            });
+
+            const res = await usersService.setDeviceAddress(id, newAddress);
+
+            expect(res.error).toEqual(null);
+            expect(res.response).toEqual({
+                id,
+                device_address: newAddress,
+            });
+
+            verify(
+                spiedService.update(
+                    deepEqual({
+                        id,
+                        device_address: newAddress,
+                    }),
+                ),
+            ).times(1);
+        });
+
+        it('should properly forward update error', async function() {
+            const usersService: UsersService = context.usersService;
+
+            const id = '00000000-0000-0000-0000-000000000000';
+            const newAddress = '0x6CFA8B8b815747fF09Eb454E8b120E9d11a80cb6';
+
+            const spiedService = spy(usersService);
+
+            when(
+                spiedService.update(
+                    deepEqual({
+                        id,
+                        device_address: newAddress,
+                    }),
+                ),
+            ).thenResolve({
+                error: 'unexpected error',
+                response: null,
+            });
+
+            const res = await usersService.setDeviceAddress(id, newAddress);
+
+            expect(res.error).toEqual('unexpected error');
+            expect(res.response).toEqual(null);
+
+            verify(
+                spiedService.update(
+                    deepEqual({
+                        id,
+                        device_address: newAddress,
+                    }),
+                ),
+            ).times(1);
+        });
+    });
+
     describe('update', function() {
         it('should update user', async function() {
             const usersService: UsersService = context.usersService;
@@ -855,6 +945,7 @@ describe('Users Service', function() {
                     username,
                     email,
                     address: finalAddress,
+                    device_address: finalAddress,
                     password: hashedp,
                     id,
                     type: 't721',
@@ -897,6 +988,7 @@ describe('Users Service', function() {
                 username,
                 email,
                 address: finalAddress,
+                device_address: finalAddress,
                 password: hashedp,
                 id,
                 type: 't721',

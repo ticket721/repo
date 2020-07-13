@@ -200,8 +200,9 @@ export class CategoryEntity {
      *
      * @param now
      * @param cat
+     * @param amount
      */
-    static checkCategoryErrors(now: Date, cat: CategoryEntity): CategorySelectionError[] {
+    static checkCategoryErrors(now: Date, cat: CategoryEntity, amount: number): CategorySelectionError[] {
         const errors: CategorySelectionError[] = [];
 
         if (now.getTime() > new Date(cat.sale_end).getTime()) {
@@ -222,6 +223,13 @@ export class CategoryEntity {
             errors.push({
                 category: cat,
                 reason: 'category_not_available',
+            });
+        }
+
+        if (cat.seats - cat.reserved < amount) {
+            errors.push({
+                category: cat,
+                reason: 'category_sold_out',
             });
         }
 

@@ -11,6 +11,7 @@ export interface EventCtaProps extends React.ComponentProps<any> {
     subtitle: string;
     show?: boolean;
     gradients?: string[];
+    disabled?: boolean;
     onClick: () => void;
 }
 
@@ -73,7 +74,12 @@ export const EventCta: React.FunctionComponent<EventCtaProps & { className?: str
                 <h4 className={'uppercase'}>{props.title}</h4>
                 <span>{props.subtitle}</span>
             </div>
-            <Button title={props.ctaLabel} variant={'custom'} gradients={props.gradients} onClick={props.onClick} />
+            <Button
+                title={props.ctaLabel}
+                variant={props.disabled ? 'disabled' : 'custom'}
+                gradients={props.gradients}
+                onClick={props.onClick}
+            />
         </CtaContainer>
     );
 };

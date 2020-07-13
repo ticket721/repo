@@ -175,6 +175,7 @@ export class CircuitContainerBase<InitialArguments = any> implements OnModuleIni
                     updatedRawGemEntity.gem_status
                 }`,
             );
+            this.logger.warn(`${JSON.stringify(updatedRawGemEntity.error_info, null, 4)}`);
         }
     }
 

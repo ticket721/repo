@@ -33,3 +33,22 @@ export const getPriceRange = (categories: CategoryEntity[]): [number, number] =>
     }
 
 };
+
+export const getTotalPrice = (categories: CategoryEntity[]): number => {
+    if (categories.length === 0) {
+        return 0;
+    }
+
+    let total = 0;
+
+    for (const ticket of categories) {
+        const price = getT721TokenPrice(ticket.prices);
+        if (!price) {
+            total += 0;
+        } else {
+            total += price
+        }
+    }
+
+    return total;
+}

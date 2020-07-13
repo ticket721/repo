@@ -11,5 +11,11 @@ export default {
 };
 
 export const showcase = () => (
-    <PurchaseInfosCard date={'2020/30/10'} iconColor={text('Main color', '#D19F02')} price={text('Price', '$45')} />
+    <PurchaseInfosCard
+        date={'2020/30/10'}
+        iconColor={text('Main color', '#D19F02')}
+        price={text('Price', '$45')}
+        priceLabel={text('Price label', 'Price')}
+        purchasedLabel={text('Purchased label', 'Purchased date')}
+    />
 );
