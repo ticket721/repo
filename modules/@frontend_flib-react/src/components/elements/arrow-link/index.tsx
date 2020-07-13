@@ -3,11 +3,11 @@ import styled from '../../../config/styled';
 import Icon from '../../../components/icon';
 
 export interface ArrowLinkProps extends React.ComponentProps<any> {
-  image?: string;
-  label: string;
-  location?: string;
-  onClick?: () => void;
-  badged?: boolean;
+    image?: string;
+    label: string;
+    location?: string;
+    onClick?: () => void;
+    badged?: boolean;
 }
 
 const LinkContainer = styled.div`
@@ -75,43 +75,35 @@ const IconContainer = styled.div`
 
 const Badge = styled.div`
     border-radius: 50%;
-    width: ${props => props.theme.smallSpacing};
-    height: ${props => props.theme.smallSpacing};
-    background-color: ${props => props.theme.badgeColor.hex};
-    margin-left: ${props => props.theme.smallSpacing};
+    width: ${(props) => props.theme.smallSpacing};
+    height: ${(props) => props.theme.smallSpacing};
+    background-color: ${(props) => props.theme.badgeColor.hex};
+    margin-left: ${(props) => props.theme.smallSpacing};
 `;
 
 export const ArrowLink: React.FunctionComponent<ArrowLinkProps & { className?: string }> = (
-  props: ArrowLinkProps,
+    props: ArrowLinkProps,
 ): JSX.Element => {
-  // TODO -- Update to use link from react-router
-  return (
-    <LinkContainer onClick={props.onClick} style={{ cursor: props.onClick ? 'pointer' : undefined }}>
-      <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
-        <span>{props.label}</span>
-        {
-          props.badged
-
-            ?
-            <Badge/>
-
-            :
-            null
-        }
-      </div>
-      {props.location ? (
-        <LocationContainer>
-          <Icon icon={'location'} size={'16px'} />
-          <span>{props.location}</span>
-          <Chevron icon={'chevron'} size={'9px'} color={'rgba(255, 255, 255, 0.9)'} />
-        </LocationContainer>
-      ) : (
-        <IconContainer>
-          <Arrow icon={'arrow'} size={'16px'} color={'rgba(255, 255, 255, 0.9)'} />
-        </IconContainer>
-      )}
-    </LinkContainer>
-  );
+    // TODO -- Update to use link from react-router
+    return (
+        <LinkContainer onClick={props.onClick} style={{ cursor: props.onClick ? 'pointer' : undefined }}>
+            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+                <span>{props.label}</span>
+                {props.badged ? <Badge /> : null}
+            </div>
+            {props.location ? (
+                <LocationContainer>
+                    <Icon icon={'location'} size={'16px'} />
+                    <span>{props.location}</span>
+                    <Chevron icon={'chevron'} size={'9px'} color={'rgba(255, 255, 255, 0.9)'} />
+                </LocationContainer>
+            ) : (
+                <IconContainer>
+                    <Arrow icon={'arrow'} size={'16px'} color={'rgba(255, 255, 255, 0.9)'} />
+                </IconContainer>
+            )}
+        </LinkContainer>
+    );
 };
 
 export default ArrowLink;

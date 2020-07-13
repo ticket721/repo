@@ -71,7 +71,7 @@ export const FullButtonCta: React.FunctionComponent<FullButtonCtaProps & { class
             <Button
                 loadingState={props.loading}
                 title={props.ctaLabel}
-                variant={props.loading ? 'disabled' : ((props.variant as any) || 'custom')}
+                variant={props.loading ? 'disabled' : (props.variant as any) || 'custom'}
                 gradients={props.gradients}
                 onClick={props.loading ? undefined : props.onClick}
             />

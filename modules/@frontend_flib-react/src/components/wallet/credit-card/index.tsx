@@ -1,12 +1,12 @@
-import * as React             from 'react';
-import styled                 from '../../../config/styled';
-import TextInput              from '../../inputs/text';
+import * as React from 'react';
+import styled from '../../../config/styled';
+import TextInput from '../../inputs/text';
 
 export interface WalletCreditCardProps extends React.ComponentProps<any> {
-  onCCCodeChange: (code: string) => void;
-  onCCCCVChange: (ccv: string) => void;
-  onCCExpirationDateChange: (expiration: string) => void;
-  onCCNameChange: (name: string) => void;
+    onCCCodeChange: (code: string) => void;
+    onCCCCVChange: (ccv: string) => void;
+    onCCExpirationDateChange: (expiration: string) => void;
+    onCCNameChange: (name: string) => void;
 }
 
 const Input = styled(TextInput)`
@@ -42,37 +42,41 @@ const Container = styled.section`
 `;
 
 const eventExtracter = (e: any): string => {
-  return e.target.value;
+    return e.target.value;
 };
 
 export const WalletCreditCard: React.FunctionComponent<WalletCreditCardProps> = (
-  props: WalletCreditCardProps,
+    props: WalletCreditCardProps,
 ): JSX.Element => {
-  return (
-    <Container>
-      <Input
-        label={'Card number'}
-        placeholder={'5555 5555 5555 5555'}
-        options={{ creditCard: true }}
-        onChange={(e: any) => props.onCCCodeChange(eventExtracter(e))}
-      />
-      <div className={'row jcsb'}>
-        <Input
-          label={'Expiration date'}
-          placeholder={'02/21'}
-          options={{ date: true, datePattern: ['m', 'd'] }}
-          onChange={(e: any) => props.onCCCCVChange(eventExtracter(e))}
-        />
-        <Input
-          label={'Security number'}
-          placeholder={'CVC'}
-          options={{ blocks: [3], numericOnly: true }}
-          onChange={(e: any) => props.onCCExpirationDateChange(eventExtracter(e))}
-        />
-      </div>
-      <Input label={'Name on card'} placeholder={'Add your full name'} onChange={(e: any) => props.onCCNameChange(eventExtracter(e))} />
-    </Container>
-  );
+    return (
+        <Container>
+            <Input
+                label={'Card number'}
+                placeholder={'5555 5555 5555 5555'}
+                options={{ creditCard: true }}
+                onChange={(e: any) => props.onCCCodeChange(eventExtracter(e))}
+            />
+            <div className={'row jcsb'}>
+                <Input
+                    label={'Expiration date'}
+                    placeholder={'02/21'}
+                    options={{ date: true, datePattern: ['m', 'd'] }}
+                    onChange={(e: any) => props.onCCCCVChange(eventExtracter(e))}
+                />
+                <Input
+                    label={'Security number'}
+                    placeholder={'CVC'}
+                    options={{ blocks: [3], numericOnly: true }}
+                    onChange={(e: any) => props.onCCExpirationDateChange(eventExtracter(e))}
+                />
+            </div>
+            <Input
+                label={'Name on card'}
+                placeholder={'Add your full name'}
+                onChange={(e: any) => props.onCCNameChange(eventExtracter(e))}
+            />
+        </Container>
+    );
 };
 
 export default WalletCreditCard;

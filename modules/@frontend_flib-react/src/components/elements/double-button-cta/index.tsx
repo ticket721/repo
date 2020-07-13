@@ -1,19 +1,19 @@
 import * as React from 'react';
-import styled     from '../../../config/styled';
+import styled from '../../../config/styled';
 import { detect } from 'detect-browser';
-import Button     from '../../button';
+import Button from '../../button';
 
 const browser = detect();
 
 export interface DoubleButtonCtaProps extends React.ComponentProps<any> {
-  secondaryLabel: string;
-  ctaLabel: string;
-  variant?: string;
-  show?: boolean;
-  loading?: boolean;
-  gradients?: string[];
-  onClick: () => void;
-  onSecondaryClick: () => void;
+    secondaryLabel: string;
+    ctaLabel: string;
+    variant?: string;
+    show?: boolean;
+    loading?: boolean;
+    gradients?: string[];
+    onClick: () => void;
+    onSecondaryClick: () => void;
 }
 
 const CtaContainer = styled.div<DoubleButtonCtaProps>`
@@ -21,11 +21,11 @@ const CtaContainer = styled.div<DoubleButtonCtaProps>`
   background-color: ${browser?.name === 'firefox' ? 'rgba(33, 29, 45, 0.95)' : 'rgba(33, 29, 45, 0.6)'};
 
   ${
-  browser?.name !== 'firefox' &&
-  `
+      browser?.name !== 'firefox' &&
+      `
     backdrop-filter: blur(40px);
   `
-}
+  }
 
   border-top-left-radius: ${(props) => props.theme.bigRadius};
   border-top-right-radius: ${(props) => props.theme.bigRadius};
@@ -44,8 +44,8 @@ const CtaContainer = styled.div<DoubleButtonCtaProps>`
   z-index: 9999;
 
   ${(props) =>
-  props.show &&
-  `
+      props.show &&
+      `
     opacity: 1;
     transform: translateY(0%);
   `}
@@ -65,32 +65,32 @@ const ButtonWrapper = styled.div`
 `;
 
 const TextButton = styled.p`
-  text-decoration: underline;
-  color: ${props => props.theme.errorColor.hex};
-  opacity: 0.8;
+    text-decoration: underline;
+    color: ${(props) => props.theme.errorColor.hex};
+    opacity: 0.8;
 `;
 
 export const DoubleButtonCta: React.FunctionComponent<DoubleButtonCtaProps & { className?: string }> = (
-  props: DoubleButtonCtaProps,
+    props: DoubleButtonCtaProps,
 ): JSX.Element => {
-  return (
-    <CtaContainer show={props.show} className={props.className}>
-      <TextButton onClick={props.onSecondaryClick} >{props.secondaryLabel}</TextButton>
-      <ButtonWrapper>
-        <Button
-          loadingState={props.loading}
-          title={props.ctaLabel}
-          variant={props.loading ? 'disabled' : ((props.variant as any) || 'custom')}
-          gradients={props.gradients}
-          onClick={props.loading ? undefined : props.onClick}
-        />
-      </ButtonWrapper>
-    </CtaContainer>
-  );
+    return (
+        <CtaContainer show={props.show} className={props.className}>
+            <TextButton onClick={props.onSecondaryClick}>{props.secondaryLabel}</TextButton>
+            <ButtonWrapper>
+                <Button
+                    loadingState={props.loading}
+                    title={props.ctaLabel}
+                    variant={props.loading ? 'disabled' : (props.variant as any) || 'custom'}
+                    gradients={props.gradients}
+                    onClick={props.loading ? undefined : props.onClick}
+                />
+            </ButtonWrapper>
+        </CtaContainer>
+    );
 };
 
 DoubleButtonCta.defaultProps = {
-  gradients: ['#079CF0', '#2143AB'],
+    gradients: ['#079CF0', '#2143AB'],
 };
 
 export default DoubleButtonCta;
