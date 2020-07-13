@@ -28,12 +28,13 @@ export interface DateTimeCardProps extends React.ComponentProps<any> {
 
 const TileContainer = styled.div<{ datesHeight: string }>`
     height: auto;
-    width: calc(100% - ${(props) => props.theme.doubleSpacing} - 1px);
+    width: 100%;
     overflow: hidden;
     max-height: ${(props) => props.datesHeight};
     transition: max-height 300ms ease-out;
 
     &.collapsed {
+        width: calc(100% - ${(props) => props.theme.doubleSpacing} - 1px);
         max-height: 38px;
     }
 `;
@@ -58,16 +59,22 @@ const DateItem = styled.div`
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: ${(props) => props.theme.regularSpacing} 0;
-    padding-left: ${(props) => props.theme.regularSpacing};
+    padding: ${(props) => props.theme.regularSpacing};
 `;
 
 const DateDetails = styled.div`
     display: flex;
     flex-direction: column;
+    width: calc(100% - 12px);
 `;
 
-const DateName = styled.h2``;
+const DateName = styled.h2`
+    font-size: 16px;
+    text-transform: uppercase;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+`;
 
 const Range = styled.div`
     display: flex;
@@ -86,8 +93,14 @@ const DatesAndTimes = styled.div`
 const DateLocation = styled.div`
     display: flex;
 
-    span {
+    span:first-child {
         margin-right: ${(props) => props.theme.smallSpacing};
+    }
+
+    span:last-child {
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
     }
 `;
 
@@ -191,7 +204,7 @@ export const DateTimeCard: React.FunctionComponent<DateTimeCardProps & { classNa
                                             size={'16px'}
                                             color={props.iconColor ? props.iconColor : '#FFF'}
                                         />
-                                        {date.location}
+                                        <span>{date.location}</span>
                                     </DateLocation>
                                 </DateDetails>
                                 <Arrow icon={'chevron'} size={'12px'} color={'#FFF'} />

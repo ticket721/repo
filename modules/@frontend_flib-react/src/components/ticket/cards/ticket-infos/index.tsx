@@ -53,12 +53,13 @@ const TopInfo = styled.div`
     }
 
     h2 {
+        line-height: 24px;
         text-transform: uppercase;
     }
 
     h3 {
         color: ${(props) => props.theme.textColorDark};
-        margin-top: ${(props) => props.theme.regularSpacing};
+        margin-top: ${(props) => props.theme.smallSpacing};
     }
 `;
 
@@ -95,7 +96,8 @@ const TicketId = styled.span`
     color: ${(props) => props.theme.textColorDarker};
     display: block;
     font-size: 10px;
-    margin-bottom: 8px;
+    margin-bottom: ${(props) => props.theme.regularSpacing};
+    text-transform: uppercase;
 `;
 
 export const TicketInfosCard: React.FunctionComponent<TicketInfosCardProps> = (

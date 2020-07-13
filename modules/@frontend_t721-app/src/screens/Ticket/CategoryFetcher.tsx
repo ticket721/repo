@@ -14,10 +14,16 @@ interface CategoryFetcherProps {
     uuid: string;
     categoryId: string;
     ticketId: string;
+    transactionHash: string;
     purchasedDate: Date;
 }
 
-export const CategoryFetcher: React.FC<CategoryFetcherProps> = ({ uuid, categoryId, ticketId, purchasedDate }: CategoryFetcherProps) => {
+export const CategoryFetcher: React.FC<CategoryFetcherProps> = ({
+    uuid,
+    categoryId,
+    ticketId,
+    transactionHash,
+    purchasedDate }: CategoryFetcherProps) => {
     const dispatch = useDispatch();
     const token = useSelector((state: T721AppState) => state.auth.token.value);
     const [ t ] = useTranslation('ticket');
@@ -52,6 +58,7 @@ export const CategoryFetcher: React.FC<CategoryFetcherProps> = ({ uuid, category
             entityType={cat.parent_type === 'date' ? 'id' : 'groupId'}
             entityId={cat.parent_type === 'date' ? cat.parent_id : cat.group_id}
             ticketId={ticketId}
+            transactionHash={transactionHash}
             categoryName={cat.display_name}
             price={cat.prices.filter(price => price.currency === 'T721Token')[0].value}
             purchasedDate={purchasedDate}

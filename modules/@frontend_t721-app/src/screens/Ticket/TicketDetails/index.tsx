@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
+    Icon,
     Button,
     Gradient,
     TicketHeader,
@@ -15,8 +16,14 @@ import styled                    from 'styled-components';
 import { formatEuro }            from '@frontend/core/lib/utils/price';
 import { useHistory }            from 'react-router';
 
-import qrcodePreview  from '../../../media/images/qrcodePreview.png';
-import { getImgPath } from '@frontend/core/lib/utils/images';
+import qrcodePreview                       from '../../../media/images/qrcodePreview.png';
+import qrcodePreview2                      from '../../../media/images/qrcodePreview2.png';
+import { getImgPath }                      from '@frontend/core/lib/utils/images';
+import { useDispatch, useSelector }        from 'react-redux';
+import { T721AppState }                    from '../../../redux';
+import { ResetTicket, StartRegenInterval } from '../../../redux/ducks/device_wallet';
+import { DynamicQrCode }       from '../DynamicQrCode';
+import { hashMessage, keccak256 } from 'ethers/utils';
 
 interface EventDate {
     id: string;
@@ -33,6 +40,7 @@ export interface TicketDetailsProps {
     colors: string[];
     categoryName: string;
     ticketId: string;
+    transactionHash: string;
     dates: EventDate[];
     price: string;
     purchasedDate: Date;
@@ -41,17 +49,25 @@ export interface TicketDetailsProps {
 export const TicketDetails: React.FC<TicketDetailsProps> = (props: TicketDetailsProps) => {
     const history = useHistory();
     const [ t ] = useTranslation('ticket_details');
-    const [ seconds, setSeconds ] = useState<number>(10);
+    const seconds = useSelector((state: T721AppState) => state.deviceWallet.seconds);
+    const dispatch = useDispatch();
+
+    const [ qrPrev, setQrPrev ] = useState<string>(qrcodePreview);
+    const [ qrOpened, setQrOpened ] = useState<boolean>(false);
 
     useEffect(() => {
-        setInterval(() => setSeconds(secs => {
-            if (secs > 0) {
-                return secs - 1;
-            }
+        dispatch(StartRegenInterval(props.ticketId));
 
-            return 10;
-        }), 1000);
-    }, []);
+        return () => dispatch(ResetTicket());
+        // eslint-disable-next-line
+    }, [props.ticketId]);
+
+    useEffect(() => {
+        if (seconds === 0) {
+            setQrPrev(qrPrev === qrcodePreview ? qrcodePreview2 : qrcodePreview);
+        }
+        // eslint-disable-next-line
+    }, [seconds]);
 
     return <>
         <TicketHeader fullWidth cover={getImgPath(props.image)}/>
@@ -61,12 +77,12 @@ export const TicketDetails: React.FC<TicketDetailsProps> = (props: TicketDetails
                 <TicketInfosCard
                     eventName={props.name}
                     ticketType={props.categoryName}
-                    ticketID={props.ticketId}
+                    ticketID={keccak256(hashMessage(props.ticketId)).slice(0, 20)}
                 />
                 <Banner>
                     <QrLink>
-                        <Btn onClick={() => console.log('qrcode')}>
-                            <img src={qrcodePreview} alt={'qrPreview'}/>
+                        <Btn onClick={() => setQrOpened(true)}>
+                            <img src={qrPrev} alt={'qrPreview'}/>
                             <Timer>
                                 <span>{t('next_gen_label')}</span>
                                 <span>{seconds}</span>
@@ -115,6 +131,23 @@ export const TicketDetails: React.FC<TicketDetailsProps> = (props: TicketDetails
                 />
             </Details>
         </TicketContent>
+        {
+            props.transactionHash ?
+              <TransactionBtn
+                target={'_blank'}
+                href={process.env.REACT_APP_ETHERSCAN_URL + '/' + props.transactionHash}>
+                  <span>{t('transaction_btn_label')}</span>
+                  <Icon icon={'right-chevron'} size={'14px'} color={'rgba(255,255,255,0.9)'}/>
+              </TransactionBtn> :
+              null
+        }
+        <DynamicQrCode
+        qrOpened={qrOpened}
+        name={props.name}
+        category={props.categoryName}
+        ticketId={props.ticketId}
+        color={props.colors[0]}
+        onClose={() => setQrOpened(false)}/>
     </>;
 };
 
@@ -193,6 +226,7 @@ const EventLink = styled.div`
     }
 
     & > button {
+        height: calc(${props => props.theme.doubleSpacing} * 2);
         padding-top: 12px;
         padding-bottom: 12px;
 
@@ -201,4 +235,22 @@ const EventLink = styled.div`
             padding-top: 0 !important;
         }
     }
+`;
+
+const TransactionBtn = styled.a`
+    background-color: rgba(255,255,255,0.1);
+    transition: background-color 300ms ease;
+    align-items: center;
+    border-radius: 8px;
+    color: rgba(255,255,255,0.9);
+    display: inline-flex;
+    font-size: 15px;
+    font-weight: 500;
+    justify-content: space-between;
+    line-height: 1em;
+    margin: 32px;
+    overflow: hidden;
+    padding: 16px;
+    position: relative;
+    width: calc(100% - 64px);
 `;

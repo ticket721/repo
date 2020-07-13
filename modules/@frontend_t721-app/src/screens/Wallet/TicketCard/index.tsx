@@ -1,12 +1,12 @@
-import React              from 'react';
-import styled             from 'styled-components';
-import { TicketHeader }   from '@frontend/flib-react/lib/components/ticket';
-import TicketPreview      from '@frontend/flib-react/lib/components/ticket/infos';
-import { useTranslation } from 'react-i18next';
-import { Ticket }         from '../../../types/ticket';
+import React                   from 'react';
+import styled                  from 'styled-components';
+import { TicketHeader }        from '@frontend/flib-react/lib/components/ticket';
+import TicketPreview           from '@frontend/flib-react/lib/components/ticket/infos';
+import { useTranslation }      from 'react-i18next';
+import { Ticket }              from '../../../types/ticket';
 import './locales';
-import { useHistory }     from 'react-router';
-import { getImgPath }     from '@frontend/core/lib/utils/images';
+import { useHistory }          from 'react-router';
+import { getImgPath }          from '@frontend/core/lib/utils/images';
 
 interface TicketCardProps {
     ticket: Ticket
@@ -29,8 +29,7 @@ const TicketCard = ({ ticket }: TicketCardProps) => {
 const Container = styled.div`
     border-bottom-left-radius: ${props => props.theme.smallSpacing};
     border-bottom-right-radius: ${props => props.theme.smallSpacing};
-    overflow: hidden;
-    width: calc(100% - 24px);
+    width: calc(100vw - ${props => props.theme.biggerSpacing} * 3 - ${props => props.theme.smallSpacing});
 `;
 
 const PullUp = styled.div`
