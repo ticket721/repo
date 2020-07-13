@@ -4,7 +4,9 @@ import {
     createExpensiveEvent,
     createPaymentIntent,
     failWithCode,
+    getPIFromCart,
     getSDKAndUser,
+    validateCardPayment,
     waitForActionSet,
     waitForTickets,
 } from '../../../test/utils';
@@ -92,9 +94,10 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     return as.current_status === 'complete';
                 });
 
+                await validateCardPayment(await getPIFromCart(sdk, token, actionSetId));
+
                 const res = await sdk.checkout.cart.resolve.paymentIntent(token, {
                     cart: actionSetId,
-                    paymentIntentId: validPaymentIntentId,
                 });
 
                 const checkoutActionSetId = res.data.checkoutActionSetId;
@@ -191,9 +194,10 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     return as.current_status === 'complete';
                 });
 
+                await validateCardPayment(await getPIFromCart(sdk, token, actionSetId));
+
                 const res = await sdk.checkout.cart.resolve.paymentIntent(token, {
                     cart: actionSetId,
-                    paymentIntentId: validPaymentIntentId,
                 });
 
                 const checkoutActionSetId = res.data.checkoutActionSetId;
@@ -293,9 +297,10 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     return as.current_status === 'complete';
                 });
 
+                await validateCardPayment(await getPIFromCart(sdk, token, actionSetId));
+
                 const res = await sdk.checkout.cart.resolve.paymentIntent(token, {
                     cart: actionSetId,
-                    paymentIntentId: validPaymentIntentId,
                 });
 
                 const checkoutActionSetId = res.data.checkoutActionSetId;
@@ -392,9 +397,10 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     return as.current_status === 'complete';
                 });
 
+                await validateCardPayment(await getPIFromCart(sdk, token, actionSetId));
+
                 const res = await sdk.checkout.cart.resolve.paymentIntent(token, {
                     cart: actionSetId,
-                    paymentIntentId: validPaymentIntentId,
                 });
 
                 const checkoutActionSetId = res.data.checkoutActionSetId;

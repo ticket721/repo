@@ -11,7 +11,6 @@ import { CartManager }              from './CartManager';
 import styled                       from 'styled-components';
 
 const CartContainer = styled.div`
-    padding-bottom: calc(80px + ${props => props.theme.regularSpacing});
 `;
 
 const Cart: React.FC = () => {
@@ -30,6 +29,10 @@ const Cart: React.FC = () => {
                 name: {
                     $eq: '@cart/creation',
                 },
+                $sort: [{
+                    $field_name: 'created_at',
+                    $order: 'asc'
+                }]
             },
         ],
         refreshRate: 3,

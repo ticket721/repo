@@ -12,8 +12,6 @@ export interface ButtonProps extends React.ComponentProps<any> {
     hidden?: boolean;
     variant: 'primary' | 'secondary' | 'custom' | 'warning' | 'danger' | 'disabled';
     type?: string;
-    icon?: string;
-    iconSize?: string;
 }
 
 const StyledButton = styled.button<ButtonProps>`
@@ -141,10 +139,10 @@ const loaderRotation = keyframes`
     }
 `;
 
-const BtnIcon = styled(Icon)<{ loading: boolean }>`
+const LoaderIcon = styled(Icon)`
     position: absolute;
     right: 20px;
-    ${(props) => props.loading && `animation: ${loaderRotation} 1s linear infinite;`}
+    animation: ${loaderRotation} 1s linear infinite;
 `;
 
 export const Button: React.FunctionComponent<ButtonProps> = (props: ButtonProps): JSX.Element => {
@@ -160,11 +158,11 @@ export const Button: React.FunctionComponent<ButtonProps> = (props: ButtonProps)
                 {...props}
             >
                 <span>{props.title}</span>
-                {props.loadingState || props.icon ? (
-                    <BtnIcon
+                {props.loadingState ? (
+                    <LoaderIcon
                         loading={props.loadingState}
-                        icon={props.loadingState ? 'loader' : props.icon}
-                        size={props.iconSize || '20px'}
+                        icon={'loader'}
+                        size={'20px'}
                         color={'rgba(255,255,255,0.9)'}
                     />
                 ) : null}

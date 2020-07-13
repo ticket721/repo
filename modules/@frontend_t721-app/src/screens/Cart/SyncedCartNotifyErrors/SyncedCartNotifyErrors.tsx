@@ -1,6 +1,6 @@
-import styled                           from 'styled-components';
-import React                            from 'react';
-import { useDispatch, useSelector }     from 'react-redux';
+import styled                       from 'styled-components';
+import React, { useEffect }         from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { T721AppState }                 from '../../../redux';
 import { CategoryEntity }               from '@common/sdk/lib/@backend_nest/libs/common/src/categories/entities/Category.entity';
 import { useTranslation }               from 'react-i18next';
@@ -67,11 +67,19 @@ const groupByError = (errors: { category: CategoryEntity; reason: string; }[]): 
 
 };
 
+const Container = styled.div`
+    padding-bottom: calc(80px + ${props => props.theme.regularSpacing});
+`;
+
 export const SyncedCartNotifyErrors: React.FC<SyncedCartNotifyErrorsProps> = (props: SyncedCartNotifyErrorsProps): JSX.Element => {
 
     const [t] = useTranslation('cart');
     const dispatch = useDispatch();
     const { cart } = useSelector((state: T721AppState) => ({ cart: state.cart }));
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
 
     const sortedCategories: SortedCategoriesErrors = groupByError(props.errors);
 
@@ -106,11 +114,11 @@ export const SyncedCartNotifyErrors: React.FC<SyncedCartNotifyErrorsProps> = (pr
 
     };
 
-    return <>
+    return <Container>
         <RemoveTicketsTitle>{t('errors_tickets_title')}</RemoveTicketsTitle>
         <h4 style={{ marginLeft: 24, opacity: 0.7, fontWeight: 200, marginBottom: 12, marginTop: 12 }}>{t('errors_tickets_explainer')}</h4>
         {categories}
         <FullButtonCta ctaLabel={t('errors_validate')} onClick={onValidate} show={true} variant={'danger'}/>
 
-    </>;
+    </Container>;
 };

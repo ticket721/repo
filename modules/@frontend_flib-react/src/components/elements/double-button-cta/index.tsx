@@ -5,16 +5,18 @@ import Button from '../../button';
 
 const browser = detect();
 
-export interface FullButtonCtaProps extends React.ComponentProps<any> {
+export interface DoubleButtonCtaProps extends React.ComponentProps<any> {
+    secondaryLabel: string;
     ctaLabel: string;
     variant?: string;
     show?: boolean;
     loading?: boolean;
     gradients?: string[];
     onClick: () => void;
+    onSecondaryClick: () => void;
 }
 
-const CtaContainer = styled.div<FullButtonCtaProps>`
+const CtaContainer = styled.div<DoubleButtonCtaProps>`
   align-items: center;
   background-color: ${browser?.name === 'firefox' ? 'rgba(33, 29, 45, 0.95)' : 'rgba(33, 29, 45, 0.6)'};
 
@@ -31,7 +33,7 @@ const CtaContainer = styled.div<FullButtonCtaProps>`
   display: flex;
   font-size: 14px;
   font-weight: 500;
-  justify-content: center;
+  justify-content: space-around;
   left: 0;
   opacity: 0;
   padding: ${(props) => props.theme.regularSpacing} ${(props) => props.theme.biggerSpacing};
@@ -53,34 +55,42 @@ const CtaContainer = styled.div<FullButtonCtaProps>`
     margin-bottom: ${(props) => props.theme.smallSpacing};
   }
 
-  div {
-    padding-right: 24px;
-    width: 50%;
-  }
-
   button {
     margin: 0;
   }
 `;
 
-export const FullButtonCta: React.FunctionComponent<FullButtonCtaProps & { className?: string }> = (
-    props: FullButtonCtaProps,
+const ButtonWrapper = styled.div`
+    width: 70%;
+`;
+
+const TextButton = styled.p`
+    text-decoration: underline;
+    color: ${(props) => props.theme.errorColor.hex};
+    opacity: 0.8;
+`;
+
+export const DoubleButtonCta: React.FunctionComponent<DoubleButtonCtaProps & { className?: string }> = (
+    props: DoubleButtonCtaProps,
 ): JSX.Element => {
     return (
         <CtaContainer show={props.show} className={props.className}>
-            <Button
-                loadingState={props.loading}
-                title={props.ctaLabel}
-                variant={props.loading ? 'disabled' : (props.variant as any) || 'custom'}
-                gradients={props.gradients}
-                onClick={props.loading ? undefined : props.onClick}
-            />
+            <TextButton onClick={props.onSecondaryClick}>{props.secondaryLabel}</TextButton>
+            <ButtonWrapper>
+                <Button
+                    loadingState={props.loading}
+                    title={props.ctaLabel}
+                    variant={props.loading ? 'disabled' : (props.variant as any) || 'custom'}
+                    gradients={props.gradients}
+                    onClick={props.loading ? undefined : props.onClick}
+                />
+            </ButtonWrapper>
         </CtaContainer>
     );
 };
 
-FullButtonCta.defaultProps = {
+DoubleButtonCta.defaultProps = {
     gradients: ['#079CF0', '#2143AB'],
 };
 
-export default FullButtonCta;
+export default DoubleButtonCta;

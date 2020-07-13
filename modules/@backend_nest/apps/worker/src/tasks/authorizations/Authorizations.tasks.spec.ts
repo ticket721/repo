@@ -8,7 +8,7 @@ import {
     AuthorizationsTasks,
     GenerateMintingAuthorizationsTaskInput,
 } from '@app/worker/tasks/authorizations/Authorizations.tasks';
-import { deepEqual, instance, mock, verify, when } from 'ts-mockito';
+import { anything, deepEqual, instance, mock, verify, when } from 'ts-mockito';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getQueueToken } from '@nestjs/bull';
 import { AuthorizedTicketMintingFormat, TicketMintingFormat } from '@lib/common/utils/Cart.type';
@@ -19,6 +19,9 @@ import { CategoryEntity } from '@lib/common/categories/entities/Category.entity'
 import { MintAuthorization, toB32 } from '@common/global';
 import { AuthorizationEntity } from '@lib/common/authorizations/entities/Authorization.entity';
 import { NestError } from '@lib/common/utils/NestError';
+import { StripeService } from '@lib/common/stripe/Stripe.service';
+import { Stripe } from 'stripe';
+import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
 
 class QueueMock<T = any> {
     add(name: string, data: T, opts?: JobOptions): Promise<Job<T>> {
@@ -29,6 +32,9 @@ class QueueMock<T = any> {
 describe('Authorization Tasks', function() {
     const context: {
         authorizationTasks: AuthorizationsTasks;
+        stripeServiceMock: StripeService;
+        stripeMock: Stripe;
+        stripePIMock: Stripe.PaymentIntentsResource;
         actionSetsServiceMock: ActionSetsService;
         authorizationQueueMock: QueueMock;
         outrospectionServiceMock: OutrospectionService;
@@ -37,6 +43,9 @@ describe('Authorization Tasks', function() {
         authorizationsServiceMock: AuthorizationsService;
     } = {
         authorizationTasks: null,
+        stripeServiceMock: null,
+        stripePIMock: null,
+        stripeMock: null,
         actionSetsServiceMock: null,
         authorizationQueueMock: null,
         outrospectionServiceMock: null,
@@ -47,6 +56,9 @@ describe('Authorization Tasks', function() {
 
     beforeEach(async function() {
         context.actionSetsServiceMock = mock(ActionSetsService);
+        context.stripeServiceMock = mock(StripeService);
+        context.stripeMock = mock(Stripe);
+        context.stripePIMock = mock(Stripe.PaymentIntentsResource);
         context.authorizationsServiceMock = mock(AuthorizationsService);
         context.authorizationQueueMock = mock(QueueMock);
         context.outrospectionServiceMock = mock(OutrospectionService);
@@ -54,8 +66,15 @@ describe('Authorization Tasks', function() {
         context.categoriesServiceMock = mock(CategoriesService);
         context.authorizationsServiceMock = mock(AuthorizationsService);
 
+        when(context.stripeServiceMock.get()).thenReturn(instance(context.stripeMock));
+        when(context.stripeMock.paymentIntents).thenReturn(instance(context.stripePIMock));
+
         const module: TestingModule = await Test.createTestingModule({
             providers: [
+                {
+                    provide: StripeService,
+                    useValue: instance(context.stripeServiceMock),
+                },
                 {
                     provide: ActionSetsService,
                     useValue: instance(context.actionSetsServiceMock),
@@ -266,6 +285,30 @@ describe('Authorization Tasks', function() {
             });
 
             when(
+                context.actionSetsServiceMock.build('checkout_create', deepEqual(grantee), deepEqual({}), true),
+            ).thenResolve({
+                error: null,
+                response: {
+                    id: 'checkout_acset_id',
+                } as ActionSetEntity,
+            });
+
+            when(
+                context.stripePIMock.create(
+                    deepEqual({
+                        amount: 127,
+                        currency: 'eur',
+                        metadata: anything(),
+                        payment_method_types: ['card'],
+                        capture_method: 'manual',
+                    }),
+                ),
+            ).thenResolve({
+                id: 'payment_intent_id',
+                client_secret: 'client_secret',
+            } as Stripe.PaymentIntent);
+
+            when(
                 context.actionSetsServiceMock.updateAction(
                     actionSetId,
                     2,
@@ -274,6 +317,9 @@ describe('Authorization Tasks', function() {
                         total: prices,
                         authorizations: validatedAuthorizations,
                         fees,
+                        paymentIntentId: 'payment_intent_id',
+                        clientSecret: 'client_secret',
+                        checkoutActionSetId: 'checkout_acset_id',
                     }),
                 ),
             ).thenResolve({
@@ -345,6 +391,22 @@ describe('Authorization Tasks', function() {
             ).called();
 
             verify(
+                context.actionSetsServiceMock.build('checkout_create', deepEqual(grantee), deepEqual({}), true),
+            ).once();
+
+            verify(
+                context.stripePIMock.create(
+                    deepEqual({
+                        amount: 127,
+                        currency: 'eur',
+                        metadata: anything(),
+                        payment_method_types: ['card'],
+                        capture_method: 'manual',
+                    }),
+                ),
+            ).once();
+
+            verify(
                 context.actionSetsServiceMock.updateAction(
                     actionSetId,
                     2,
@@ -353,9 +415,12 @@ describe('Authorization Tasks', function() {
                         total: prices,
                         authorizations: validatedAuthorizations,
                         fees,
+                        paymentIntentId: 'payment_intent_id',
+                        clientSecret: 'client_secret',
+                        checkoutActionSetId: 'checkout_acset_id',
                     }),
                 ),
-            ).called();
+            ).once();
         });
 
         it('should properly generate authorization with matching oldAuthorizations', async function() {
@@ -827,6 +892,30 @@ describe('Authorization Tasks', function() {
             });
 
             when(
+                context.actionSetsServiceMock.build('checkout_create', deepEqual(grantee), deepEqual({}), true),
+            ).thenResolve({
+                error: null,
+                response: {
+                    id: 'checkout_acset_id',
+                } as ActionSetEntity,
+            });
+
+            when(
+                context.stripePIMock.create(
+                    deepEqual({
+                        amount: 127,
+                        currency: 'eur',
+                        metadata: anything(),
+                        payment_method_types: ['card'],
+                        capture_method: 'manual',
+                    }),
+                ),
+            ).thenResolve({
+                id: 'payment_intent_id',
+                client_secret: 'client_secret',
+            } as Stripe.PaymentIntent);
+
+            when(
                 context.actionSetsServiceMock.updateAction(
                     actionSetId,
                     2,
@@ -835,6 +924,9 @@ describe('Authorization Tasks', function() {
                         total: prices,
                         authorizations: validatedAuthorizations,
                         fees,
+                        paymentIntentId: 'payment_intent_id',
+                        clientSecret: 'client_secret',
+                        checkoutActionSetId: 'checkout_acset_id',
                     }),
                 ),
             ).thenResolve({
@@ -966,6 +1058,22 @@ describe('Authorization Tasks', function() {
             ).called();
 
             verify(
+                context.actionSetsServiceMock.build('checkout_create', deepEqual(grantee), deepEqual({}), true),
+            ).once();
+
+            verify(
+                context.stripePIMock.create(
+                    deepEqual({
+                        amount: 127,
+                        currency: 'eur',
+                        metadata: anything(),
+                        payment_method_types: ['card'],
+                        capture_method: 'manual',
+                    }),
+                ),
+            ).once();
+
+            verify(
                 context.actionSetsServiceMock.updateAction(
                     actionSetId,
                     2,
@@ -974,9 +1082,12 @@ describe('Authorization Tasks', function() {
                         total: prices,
                         authorizations: validatedAuthorizations,
                         fees,
+                        paymentIntentId: 'payment_intent_id',
+                        clientSecret: 'client_secret',
+                        checkoutActionSetId: 'checkout_acset_id',
                     }),
                 ),
-            ).called();
+            ).once();
         });
 
         it('should fail on category fetch request error', async function() {
@@ -3819,6 +3930,30 @@ describe('Authorization Tasks', function() {
             });
 
             when(
+                context.actionSetsServiceMock.build('checkout_create', deepEqual(grantee), deepEqual({}), true),
+            ).thenResolve({
+                error: null,
+                response: {
+                    id: 'checkout_acset_id',
+                } as ActionSetEntity,
+            });
+
+            when(
+                context.stripePIMock.create(
+                    deepEqual({
+                        amount: 127,
+                        currency: 'eur',
+                        metadata: anything(),
+                        payment_method_types: ['card'],
+                        capture_method: 'manual',
+                    }),
+                ),
+            ).thenResolve({
+                id: 'payment_intent_id',
+                client_secret: 'client_secret',
+            } as Stripe.PaymentIntent);
+
+            when(
                 context.actionSetsServiceMock.updateAction(
                     actionSetId,
                     2,
@@ -3827,6 +3962,9 @@ describe('Authorization Tasks', function() {
                         total: prices,
                         authorizations: validatedAuthorizations,
                         fees,
+                        paymentIntentId: 'payment_intent_id',
+                        clientSecret: 'client_secret',
+                        checkoutActionSetId: 'checkout_acset_id',
                     }),
                 ),
             ).thenResolve({
@@ -3960,6 +4098,22 @@ describe('Authorization Tasks', function() {
             ).called();
 
             verify(
+                context.actionSetsServiceMock.build('checkout_create', deepEqual(grantee), deepEqual({}), true),
+            ).once();
+
+            verify(
+                context.stripePIMock.create(
+                    deepEqual({
+                        amount: 127,
+                        currency: 'eur',
+                        metadata: anything(),
+                        payment_method_types: ['card'],
+                        capture_method: 'manual',
+                    }),
+                ),
+            ).once();
+
+            verify(
                 context.actionSetsServiceMock.updateAction(
                     actionSetId,
                     2,
@@ -3968,9 +4122,12 @@ describe('Authorization Tasks', function() {
                         total: prices,
                         authorizations: validatedAuthorizations,
                         fees,
+                        paymentIntentId: 'payment_intent_id',
+                        clientSecret: 'client_secret',
+                        checkoutActionSetId: 'checkout_acset_id',
                     }),
                 ),
-            ).called();
+            ).once();
         });
 
         it('should properly take into account (multiple) new seats freed by old authorization', async function() {
@@ -4379,6 +4536,30 @@ describe('Authorization Tasks', function() {
             });
 
             when(
+                context.actionSetsServiceMock.build('checkout_create', deepEqual(grantee), deepEqual({}), true),
+            ).thenResolve({
+                error: null,
+                response: {
+                    id: 'checkout_acset_id',
+                } as ActionSetEntity,
+            });
+
+            when(
+                context.stripePIMock.create(
+                    deepEqual({
+                        amount: 127,
+                        currency: 'eur',
+                        metadata: anything(),
+                        payment_method_types: ['card'],
+                        capture_method: 'manual',
+                    }),
+                ),
+            ).thenResolve({
+                id: 'payment_intent_id',
+                client_secret: 'client_secret',
+            } as Stripe.PaymentIntent);
+
+            when(
                 context.actionSetsServiceMock.updateAction(
                     actionSetId,
                     2,
@@ -4387,6 +4568,9 @@ describe('Authorization Tasks', function() {
                         total: prices,
                         authorizations: validatedAuthorizations,
                         fees,
+                        paymentIntentId: 'payment_intent_id',
+                        clientSecret: 'client_secret',
+                        checkoutActionSetId: 'checkout_acset_id',
                     }),
                 ),
             ).thenResolve({
@@ -4563,6 +4747,22 @@ describe('Authorization Tasks', function() {
             ).called();
 
             verify(
+                context.actionSetsServiceMock.build('checkout_create', deepEqual(grantee), deepEqual({}), true),
+            ).once();
+
+            verify(
+                context.stripePIMock.create(
+                    deepEqual({
+                        amount: 127,
+                        currency: 'eur',
+                        metadata: anything(),
+                        payment_method_types: ['card'],
+                        capture_method: 'manual',
+                    }),
+                ),
+            ).once();
+
+            verify(
                 context.actionSetsServiceMock.updateAction(
                     actionSetId,
                     2,
@@ -4571,9 +4771,1212 @@ describe('Authorization Tasks', function() {
                         total: prices,
                         authorizations: validatedAuthorizations,
                         fees,
+                        paymentIntentId: 'payment_intent_id',
+                        clientSecret: 'client_secret',
+                        checkoutActionSetId: 'checkout_acset_id',
+                    }),
+                ),
+            ).once();
+        });
+
+        it('should fail on checkout acset creation fail', async function() {
+            const actionSetId = 'actionset_id';
+
+            const authorizations: TicketMintingFormat[] = [
+                {
+                    categoryId: 'category_one_id',
+                    price: {
+                        currency: 'Fiat',
+                        price: '100',
+                    },
+                },
+                {
+                    categoryId: 'category_two_id',
+                    price: {
+                        currency: 'Fiat',
+                        price: '100',
+                    },
+                },
+            ];
+
+            const validatedAuthorizations: AuthorizedTicketMintingFormat[] = [
+                {
+                    categoryId: 'category_one_id',
+                    price: {
+                        currency: 'Fiat',
+                        price: '100',
+                    },
+                    authorizationId: 'authorization_one_id',
+                    groupId: 'group_id',
+                    categoryName: 'vip',
+                    granter: '0xgranteraddress',
+                    grantee: '0xuseraddress',
+                    granterController: 'granter_controller_name',
+                    expiration: new Date(Date.now() + 2 * DAY),
+                },
+                {
+                    categoryId: 'category_two_id',
+                    price: {
+                        currency: 'Fiat',
+                        price: '100',
+                    },
+                    authorizationId: 'authorization_two_id',
+                    groupId: 'group_id',
+                    categoryName: 'vip_extra',
+                    granter: '0xgranteraddress',
+                    grantee: '0xuseraddress',
+                    granterController: 'granter_controller_name',
+                    expiration: new Date(Date.now() + 2 * DAY),
+                },
+            ];
+
+            const oldAuthorizations: AuthorizedTicketMintingFormat[] = [
+                {
+                    categoryId: 'category_one_id',
+                    price: {
+                        currency: 'Fiat',
+                        price: '100',
+                    },
+                    authorizationId: 'authorization_one_id',
+                    groupId: 'group_id',
+                    categoryName: 'vip',
+                    granter: '0xgranteraddress',
+                    grantee: '0xuseraddress',
+                    granterController: 'granter_controller_name',
+                    expiration: new Date(Date.now() + 2 * DAY),
+                },
+                {
+                    categoryId: 'category_one_id',
+                    price: {
+                        currency: 'Fiat',
+                        price: '100',
+                    },
+                    authorizationId: 'authorization_two_id',
+                    groupId: 'group_id',
+                    categoryName: 'vip',
+                    granter: '0xgranteraddress',
+                    grantee: '0xuseraddress',
+                    granterController: 'granter_controller_name',
+                    expiration: new Date(Date.now() + 2 * DAY),
+                },
+            ];
+
+            const prices: Price[] = [
+                {
+                    currency: 'T721Token',
+                    value: '100',
+                    log_value: 0,
+                },
+            ];
+
+            const commitType = 'stripe';
+
+            const expirationTime = 2 * DAY;
+
+            const signatureReadable = false;
+
+            const grantee: UserDto = {
+                id: 'user_id',
+                address: '0xuseraddress',
+            } as UserDto;
+
+            const pricesWithFees = [
+                {
+                    currency: '0xEA674fdDe714fd979de3EdF0F56AA9716B898ec8',
+                    value: '100',
+                    log_value: 0,
+                    fee: '0',
+                },
+            ];
+
+            const authorizationEntities: { [key: string]: AuthorizationEntity } = {
+                authorization_one_id: {
+                    id: 'authorization_one_id',
+                    granter: '0xgranteraddress',
+                    grantee: '0xuseraddress',
+                    mode: 'mint',
+                    codes: MintAuthorization.toCodesFormat('123'),
+                    selectors: MintAuthorization.toSelectorFormat('group_id', 'vip'),
+                    args: MintAuthorization.toArgsFormat(
+                        MintAuthorization.encodePrices(pricesWithFees),
+                        'group_id',
+                        'vip',
+                        '123',
+                        Math.floor((Date.now() + expirationTime) / 1000),
+                    ),
+                    signature: '0xsignature',
+                    readable_signature: false,
+                    cancelled: false,
+                    dispatched: false,
+                    consumed: false,
+                    user_expiration: new Date(Date.now() + expirationTime),
+                    be_expiration: new Date(Date.now() + expirationTime + HOUR),
+                    created_at: new Date(Date.now()),
+                    updated_at: new Date(Date.now()),
+                },
+                authorization_two_id: {
+                    id: 'authorization_two_id',
+                    granter: '0xgranteraddress',
+                    grantee: '0xuseraddress',
+                    mode: 'mint',
+                    codes: MintAuthorization.toCodesFormat('124'),
+                    selectors: MintAuthorization.toSelectorFormat('group_id', 'vip'),
+                    args: MintAuthorization.toArgsFormat(
+                        MintAuthorization.encodePrices(pricesWithFees),
+                        'group_id',
+                        'vip',
+                        '124',
+                        Math.floor((Date.now() + expirationTime) / 1000),
+                    ),
+                    signature: '0xsignature',
+                    readable_signature: false,
+                    cancelled: false,
+                    dispatched: false,
+                    consumed: false,
+                    user_expiration: new Date(Date.now() + expirationTime),
+                    be_expiration: new Date(Date.now() + expirationTime + HOUR),
+                    created_at: new Date(Date.now()),
+                    updated_at: new Date(Date.now()),
+                },
+            };
+
+            const fees = ['0'];
+
+            const input: GenerateMintingAuthorizationsTaskInput = {
+                actionSetId,
+                authorizations,
+                oldAuthorizations,
+                prices,
+                commitType,
+                expirationTime,
+                signatureReadable,
+                grantee,
+                fees,
+            };
+
+            const job: Job<GenerateMintingAuthorizationsTaskInput> = {
+                data: input,
+                progress: async () => {},
+            } as Job<GenerateMintingAuthorizationsTaskInput>;
+
+            when(
+                context.categoriesServiceMock.search(
+                    deepEqual({
+                        id: 'category_one_id',
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: [
+                    {
+                        id: 'category_one_id',
+                        seats: 100,
+                        reserved: 90,
+                        category_name: 'vip',
+                        group_id: 'group_id',
+                    } as CategoryEntity,
+                ],
+            });
+
+            when(
+                context.categoriesServiceMock.search(
+                    deepEqual({
+                        id: 'category_two_id',
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: [
+                    {
+                        id: 'category_two_id',
+                        seats: 10,
+                        reserved: 5,
+                        category_name: 'vip_extra',
+                        group_id: 'group_id',
+                    } as CategoryEntity,
+                ],
+            });
+
+            when(
+                context.authorizationsServiceMock.search(
+                    deepEqual({
+                        id: 'authorization_one_id',
+                        mode: 'mint',
+                        granter: '0xgranteraddress',
+                        grantee: '0xuseraddress',
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: [authorizationEntities['authorization_one_id']],
+            });
+
+            when(
+                context.authorizationsServiceMock.update(
+                    deepEqual({
+                        id: 'authorization_one_id',
+                        granter: '0xgranteraddress',
+                        grantee: '0xuseraddress',
+                        mode: 'mint',
+                    }),
+                    deepEqual({
+                        signature: null,
+                        cancelled: true,
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: null,
+            });
+
+            when(
+                context.authorizationsServiceMock.search(
+                    deepEqual({
+                        id: 'authorization_two_id',
+                        mode: 'mint',
+                        granter: '0xgranteraddress',
+                        grantee: '0xuseraddress',
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: [authorizationEntities['authorization_two_id']],
+            });
+
+            when(
+                context.authorizationsServiceMock.update(
+                    deepEqual({
+                        id: 'authorization_two_id',
+                        granter: '0xgranteraddress',
+                        grantee: '0xuseraddress',
+                        mode: 'mint',
+                    }),
+                    deepEqual({
+                        signature: null,
+                        cancelled: true,
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: null,
+            });
+
+            when(
+                context.authorizationsServiceMock.countElastic(
+                    deepEqual({
+                        body: {
+                            query: {
+                                bool: {
+                                    filter: {
+                                        range: {
+                                            be_expiration: {
+                                                gt: 'now',
+                                            },
+                                        },
+                                    },
+                                    must: [
+                                        {
+                                            term: {
+                                                selectors: MintAuthorization.toSelectorFormat(
+                                                    'group_id',
+                                                    toB32('vip_extra'),
+                                                ),
+                                            },
+                                        },
+                                        {
+                                            term: {
+                                                cancelled: false,
+                                            },
+                                        },
+                                        {
+                                            term: {
+                                                consumed: false,
+                                            },
+                                        },
+                                        {
+                                            term: {
+                                                dispatched: false,
+                                            },
+                                        },
+                                    ],
+                                },
+                            },
+                        },
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: {
+                    count: 3,
+                    _shards: {
+                        total: 1,
+                        successful: 1,
+                        skipped: 0,
+                        failed: 0,
+                    },
+                },
+            });
+
+            when(
+                context.authorizationsServiceMock.countElastic(
+                    deepEqual({
+                        body: {
+                            query: {
+                                bool: {
+                                    filter: {
+                                        range: {
+                                            be_expiration: {
+                                                gt: 'now',
+                                            },
+                                        },
+                                    },
+                                    must: [
+                                        {
+                                            term: {
+                                                selectors: MintAuthorization.toSelectorFormat('group_id', toB32('vip')),
+                                            },
+                                        },
+                                        {
+                                            term: {
+                                                cancelled: false,
+                                            },
+                                        },
+                                        {
+                                            term: {
+                                                consumed: false,
+                                            },
+                                        },
+                                        {
+                                            term: {
+                                                dispatched: false,
+                                            },
+                                        },
+                                    ],
+                                },
+                            },
+                        },
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: {
+                    count: 3,
+                    _shards: {
+                        total: 1,
+                        successful: 1,
+                        skipped: 0,
+                        failed: 0,
+                    },
+                },
+            });
+
+            when(
+                context.authorizationsServiceMock.validateTicketAuthorizations(
+                    deepEqual(authorizations),
+                    deepEqual(prices),
+                    fees,
+                    expirationTime,
+                    grantee.address,
+                    signatureReadable,
+                ),
+            ).thenResolve({
+                error: null,
+                response: validatedAuthorizations,
+            });
+
+            when(
+                context.actionSetsServiceMock.build('checkout_create', deepEqual(grantee), deepEqual({}), true),
+            ).thenResolve({
+                error: 'unexpected_error',
+                response: null,
+            });
+
+            await expect(context.authorizationTasks.generateMintingAuthorizationsTask(job)).rejects.toMatchObject(
+                new NestError('Error while creating checkout action set'),
+            );
+
+            verify(
+                context.categoriesServiceMock.search(
+                    deepEqual({
+                        id: 'category_one_id',
                     }),
                 ),
             ).called();
+
+            verify(
+                context.categoriesServiceMock.search(
+                    deepEqual({
+                        id: 'category_two_id',
+                    }),
+                ),
+            ).called();
+
+            verify(
+                context.authorizationsServiceMock.search(
+                    deepEqual({
+                        id: 'authorization_one_id',
+                        mode: 'mint',
+                        granter: '0xgranteraddress',
+                        grantee: '0xuseraddress',
+                    }),
+                ),
+            ).called();
+
+            verify(
+                context.authorizationsServiceMock.update(
+                    deepEqual({
+                        id: 'authorization_one_id',
+                        granter: '0xgranteraddress',
+                        grantee: '0xuseraddress',
+                        mode: 'mint',
+                    }),
+                    deepEqual({
+                        signature: null,
+                        cancelled: true,
+                    }),
+                ),
+            ).called();
+
+            verify(
+                context.authorizationsServiceMock.search(
+                    deepEqual({
+                        id: 'authorization_two_id',
+                        mode: 'mint',
+                        granter: '0xgranteraddress',
+                        grantee: '0xuseraddress',
+                    }),
+                ),
+            ).called();
+
+            verify(
+                context.authorizationsServiceMock.update(
+                    deepEqual({
+                        id: 'authorization_two_id',
+                        granter: '0xgranteraddress',
+                        grantee: '0xuseraddress',
+                        mode: 'mint',
+                    }),
+                    deepEqual({
+                        signature: null,
+                        cancelled: true,
+                    }),
+                ),
+            ).called();
+
+            verify(
+                context.authorizationsServiceMock.countElastic(
+                    deepEqual({
+                        body: {
+                            query: {
+                                bool: {
+                                    filter: {
+                                        range: {
+                                            be_expiration: {
+                                                gt: 'now',
+                                            },
+                                        },
+                                    },
+                                    must: [
+                                        {
+                                            term: {
+                                                selectors: MintAuthorization.toSelectorFormat(
+                                                    'group_id',
+                                                    toB32('vip_extra'),
+                                                ),
+                                            },
+                                        },
+                                        {
+                                            term: {
+                                                cancelled: false,
+                                            },
+                                        },
+                                        {
+                                            term: {
+                                                consumed: false,
+                                            },
+                                        },
+                                        {
+                                            term: {
+                                                dispatched: false,
+                                            },
+                                        },
+                                    ],
+                                },
+                            },
+                        },
+                    }),
+                ),
+            ).called();
+
+            verify(
+                context.authorizationsServiceMock.countElastic(
+                    deepEqual({
+                        body: {
+                            query: {
+                                bool: {
+                                    filter: {
+                                        range: {
+                                            be_expiration: {
+                                                gt: 'now',
+                                            },
+                                        },
+                                    },
+                                    must: [
+                                        {
+                                            term: {
+                                                selectors: MintAuthorization.toSelectorFormat('group_id', toB32('vip')),
+                                            },
+                                        },
+                                        {
+                                            term: {
+                                                cancelled: false,
+                                            },
+                                        },
+                                        {
+                                            term: {
+                                                consumed: false,
+                                            },
+                                        },
+                                        {
+                                            term: {
+                                                dispatched: false,
+                                            },
+                                        },
+                                    ],
+                                },
+                            },
+                        },
+                    }),
+                ),
+            ).called();
+
+            verify(
+                context.authorizationsServiceMock.validateTicketAuthorizations(
+                    deepEqual(authorizations),
+                    deepEqual(prices),
+                    fees,
+                    expirationTime,
+                    grantee.address,
+                    signatureReadable,
+                ),
+            ).called();
+
+            verify(
+                context.actionSetsServiceMock.build('checkout_create', deepEqual(grantee), deepEqual({}), true),
+            ).once();
+        });
+
+        it('should fail on payment intent creation', async function() {
+            const actionSetId = 'actionset_id';
+
+            const authorizations: TicketMintingFormat[] = [
+                {
+                    categoryId: 'category_one_id',
+                    price: {
+                        currency: 'Fiat',
+                        price: '100',
+                    },
+                },
+                {
+                    categoryId: 'category_two_id',
+                    price: {
+                        currency: 'Fiat',
+                        price: '100',
+                    },
+                },
+            ];
+
+            const validatedAuthorizations: AuthorizedTicketMintingFormat[] = [
+                {
+                    categoryId: 'category_one_id',
+                    price: {
+                        currency: 'Fiat',
+                        price: '100',
+                    },
+                    authorizationId: 'authorization_one_id',
+                    groupId: 'group_id',
+                    categoryName: 'vip',
+                    granter: '0xgranteraddress',
+                    grantee: '0xuseraddress',
+                    granterController: 'granter_controller_name',
+                    expiration: new Date(Date.now() + 2 * DAY),
+                },
+                {
+                    categoryId: 'category_two_id',
+                    price: {
+                        currency: 'Fiat',
+                        price: '100',
+                    },
+                    authorizationId: 'authorization_two_id',
+                    groupId: 'group_id',
+                    categoryName: 'vip_extra',
+                    granter: '0xgranteraddress',
+                    grantee: '0xuseraddress',
+                    granterController: 'granter_controller_name',
+                    expiration: new Date(Date.now() + 2 * DAY),
+                },
+            ];
+
+            const oldAuthorizations: AuthorizedTicketMintingFormat[] = [
+                {
+                    categoryId: 'category_one_id',
+                    price: {
+                        currency: 'Fiat',
+                        price: '100',
+                    },
+                    authorizationId: 'authorization_one_id',
+                    groupId: 'group_id',
+                    categoryName: 'vip',
+                    granter: '0xgranteraddress',
+                    grantee: '0xuseraddress',
+                    granterController: 'granter_controller_name',
+                    expiration: new Date(Date.now() + 2 * DAY),
+                },
+                {
+                    categoryId: 'category_one_id',
+                    price: {
+                        currency: 'Fiat',
+                        price: '100',
+                    },
+                    authorizationId: 'authorization_two_id',
+                    groupId: 'group_id',
+                    categoryName: 'vip',
+                    granter: '0xgranteraddress',
+                    grantee: '0xuseraddress',
+                    granterController: 'granter_controller_name',
+                    expiration: new Date(Date.now() + 2 * DAY),
+                },
+            ];
+
+            const prices: Price[] = [
+                {
+                    currency: 'T721Token',
+                    value: '100',
+                    log_value: 0,
+                },
+            ];
+
+            const commitType = 'stripe';
+
+            const expirationTime = 2 * DAY;
+
+            const signatureReadable = false;
+
+            const grantee: UserDto = {
+                id: 'user_id',
+                address: '0xuseraddress',
+            } as UserDto;
+
+            const pricesWithFees = [
+                {
+                    currency: '0xEA674fdDe714fd979de3EdF0F56AA9716B898ec8',
+                    value: '100',
+                    log_value: 0,
+                    fee: '0',
+                },
+            ];
+
+            const authorizationEntities: { [key: string]: AuthorizationEntity } = {
+                authorization_one_id: {
+                    id: 'authorization_one_id',
+                    granter: '0xgranteraddress',
+                    grantee: '0xuseraddress',
+                    mode: 'mint',
+                    codes: MintAuthorization.toCodesFormat('123'),
+                    selectors: MintAuthorization.toSelectorFormat('group_id', 'vip'),
+                    args: MintAuthorization.toArgsFormat(
+                        MintAuthorization.encodePrices(pricesWithFees),
+                        'group_id',
+                        'vip',
+                        '123',
+                        Math.floor((Date.now() + expirationTime) / 1000),
+                    ),
+                    signature: '0xsignature',
+                    readable_signature: false,
+                    cancelled: false,
+                    dispatched: false,
+                    consumed: false,
+                    user_expiration: new Date(Date.now() + expirationTime),
+                    be_expiration: new Date(Date.now() + expirationTime + HOUR),
+                    created_at: new Date(Date.now()),
+                    updated_at: new Date(Date.now()),
+                },
+                authorization_two_id: {
+                    id: 'authorization_two_id',
+                    granter: '0xgranteraddress',
+                    grantee: '0xuseraddress',
+                    mode: 'mint',
+                    codes: MintAuthorization.toCodesFormat('124'),
+                    selectors: MintAuthorization.toSelectorFormat('group_id', 'vip'),
+                    args: MintAuthorization.toArgsFormat(
+                        MintAuthorization.encodePrices(pricesWithFees),
+                        'group_id',
+                        'vip',
+                        '124',
+                        Math.floor((Date.now() + expirationTime) / 1000),
+                    ),
+                    signature: '0xsignature',
+                    readable_signature: false,
+                    cancelled: false,
+                    dispatched: false,
+                    consumed: false,
+                    user_expiration: new Date(Date.now() + expirationTime),
+                    be_expiration: new Date(Date.now() + expirationTime + HOUR),
+                    created_at: new Date(Date.now()),
+                    updated_at: new Date(Date.now()),
+                },
+            };
+
+            const fees = ['0'];
+
+            const input: GenerateMintingAuthorizationsTaskInput = {
+                actionSetId,
+                authorizations,
+                oldAuthorizations,
+                prices,
+                commitType,
+                expirationTime,
+                signatureReadable,
+                grantee,
+                fees,
+            };
+
+            const job: Job<GenerateMintingAuthorizationsTaskInput> = {
+                data: input,
+                progress: async () => {},
+            } as Job<GenerateMintingAuthorizationsTaskInput>;
+
+            when(
+                context.categoriesServiceMock.search(
+                    deepEqual({
+                        id: 'category_one_id',
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: [
+                    {
+                        id: 'category_one_id',
+                        seats: 100,
+                        reserved: 90,
+                        category_name: 'vip',
+                        group_id: 'group_id',
+                    } as CategoryEntity,
+                ],
+            });
+
+            when(
+                context.categoriesServiceMock.search(
+                    deepEqual({
+                        id: 'category_two_id',
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: [
+                    {
+                        id: 'category_two_id',
+                        seats: 10,
+                        reserved: 5,
+                        category_name: 'vip_extra',
+                        group_id: 'group_id',
+                    } as CategoryEntity,
+                ],
+            });
+
+            when(
+                context.authorizationsServiceMock.search(
+                    deepEqual({
+                        id: 'authorization_one_id',
+                        mode: 'mint',
+                        granter: '0xgranteraddress',
+                        grantee: '0xuseraddress',
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: [authorizationEntities['authorization_one_id']],
+            });
+
+            when(
+                context.authorizationsServiceMock.update(
+                    deepEqual({
+                        id: 'authorization_one_id',
+                        granter: '0xgranteraddress',
+                        grantee: '0xuseraddress',
+                        mode: 'mint',
+                    }),
+                    deepEqual({
+                        signature: null,
+                        cancelled: true,
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: null,
+            });
+
+            when(
+                context.authorizationsServiceMock.search(
+                    deepEqual({
+                        id: 'authorization_two_id',
+                        mode: 'mint',
+                        granter: '0xgranteraddress',
+                        grantee: '0xuseraddress',
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: [authorizationEntities['authorization_two_id']],
+            });
+
+            when(
+                context.authorizationsServiceMock.update(
+                    deepEqual({
+                        id: 'authorization_two_id',
+                        granter: '0xgranteraddress',
+                        grantee: '0xuseraddress',
+                        mode: 'mint',
+                    }),
+                    deepEqual({
+                        signature: null,
+                        cancelled: true,
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: null,
+            });
+
+            when(
+                context.authorizationsServiceMock.countElastic(
+                    deepEqual({
+                        body: {
+                            query: {
+                                bool: {
+                                    filter: {
+                                        range: {
+                                            be_expiration: {
+                                                gt: 'now',
+                                            },
+                                        },
+                                    },
+                                    must: [
+                                        {
+                                            term: {
+                                                selectors: MintAuthorization.toSelectorFormat(
+                                                    'group_id',
+                                                    toB32('vip_extra'),
+                                                ),
+                                            },
+                                        },
+                                        {
+                                            term: {
+                                                cancelled: false,
+                                            },
+                                        },
+                                        {
+                                            term: {
+                                                consumed: false,
+                                            },
+                                        },
+                                        {
+                                            term: {
+                                                dispatched: false,
+                                            },
+                                        },
+                                    ],
+                                },
+                            },
+                        },
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: {
+                    count: 3,
+                    _shards: {
+                        total: 1,
+                        successful: 1,
+                        skipped: 0,
+                        failed: 0,
+                    },
+                },
+            });
+
+            when(
+                context.authorizationsServiceMock.countElastic(
+                    deepEqual({
+                        body: {
+                            query: {
+                                bool: {
+                                    filter: {
+                                        range: {
+                                            be_expiration: {
+                                                gt: 'now',
+                                            },
+                                        },
+                                    },
+                                    must: [
+                                        {
+                                            term: {
+                                                selectors: MintAuthorization.toSelectorFormat('group_id', toB32('vip')),
+                                            },
+                                        },
+                                        {
+                                            term: {
+                                                cancelled: false,
+                                            },
+                                        },
+                                        {
+                                            term: {
+                                                consumed: false,
+                                            },
+                                        },
+                                        {
+                                            term: {
+                                                dispatched: false,
+                                            },
+                                        },
+                                    ],
+                                },
+                            },
+                        },
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: {
+                    count: 3,
+                    _shards: {
+                        total: 1,
+                        successful: 1,
+                        skipped: 0,
+                        failed: 0,
+                    },
+                },
+            });
+
+            when(
+                context.authorizationsServiceMock.validateTicketAuthorizations(
+                    deepEqual(authorizations),
+                    deepEqual(prices),
+                    fees,
+                    expirationTime,
+                    grantee.address,
+                    signatureReadable,
+                ),
+            ).thenResolve({
+                error: null,
+                response: validatedAuthorizations,
+            });
+
+            when(
+                context.actionSetsServiceMock.build('checkout_create', deepEqual(grantee), deepEqual({}), true),
+            ).thenResolve({
+                error: null,
+                response: {
+                    id: 'checkout_acset_id',
+                } as ActionSetEntity,
+            });
+
+            when(
+                context.stripePIMock.create(
+                    deepEqual({
+                        amount: 127,
+                        currency: 'eur',
+                        metadata: anything(),
+                        payment_method_types: ['card'],
+                        capture_method: 'manual',
+                    }),
+                ),
+            ).thenReject(new Error('unexpected error'));
+
+            await expect(context.authorizationTasks.generateMintingAuthorizationsTask(job)).rejects.toMatchObject(
+                new NestError('unexpected error'),
+            );
+
+            verify(
+                context.categoriesServiceMock.search(
+                    deepEqual({
+                        id: 'category_one_id',
+                    }),
+                ),
+            ).called();
+
+            verify(
+                context.categoriesServiceMock.search(
+                    deepEqual({
+                        id: 'category_two_id',
+                    }),
+                ),
+            ).called();
+
+            verify(
+                context.authorizationsServiceMock.search(
+                    deepEqual({
+                        id: 'authorization_one_id',
+                        mode: 'mint',
+                        granter: '0xgranteraddress',
+                        grantee: '0xuseraddress',
+                    }),
+                ),
+            ).called();
+
+            verify(
+                context.authorizationsServiceMock.update(
+                    deepEqual({
+                        id: 'authorization_one_id',
+                        granter: '0xgranteraddress',
+                        grantee: '0xuseraddress',
+                        mode: 'mint',
+                    }),
+                    deepEqual({
+                        signature: null,
+                        cancelled: true,
+                    }),
+                ),
+            ).called();
+
+            verify(
+                context.authorizationsServiceMock.search(
+                    deepEqual({
+                        id: 'authorization_two_id',
+                        mode: 'mint',
+                        granter: '0xgranteraddress',
+                        grantee: '0xuseraddress',
+                    }),
+                ),
+            ).called();
+
+            verify(
+                context.authorizationsServiceMock.update(
+                    deepEqual({
+                        id: 'authorization_two_id',
+                        granter: '0xgranteraddress',
+                        grantee: '0xuseraddress',
+                        mode: 'mint',
+                    }),
+                    deepEqual({
+                        signature: null,
+                        cancelled: true,
+                    }),
+                ),
+            ).called();
+
+            verify(
+                context.authorizationsServiceMock.countElastic(
+                    deepEqual({
+                        body: {
+                            query: {
+                                bool: {
+                                    filter: {
+                                        range: {
+                                            be_expiration: {
+                                                gt: 'now',
+                                            },
+                                        },
+                                    },
+                                    must: [
+                                        {
+                                            term: {
+                                                selectors: MintAuthorization.toSelectorFormat(
+                                                    'group_id',
+                                                    toB32('vip_extra'),
+                                                ),
+                                            },
+                                        },
+                                        {
+                                            term: {
+                                                cancelled: false,
+                                            },
+                                        },
+                                        {
+                                            term: {
+                                                consumed: false,
+                                            },
+                                        },
+                                        {
+                                            term: {
+                                                dispatched: false,
+                                            },
+                                        },
+                                    ],
+                                },
+                            },
+                        },
+                    }),
+                ),
+            ).called();
+
+            verify(
+                context.authorizationsServiceMock.countElastic(
+                    deepEqual({
+                        body: {
+                            query: {
+                                bool: {
+                                    filter: {
+                                        range: {
+                                            be_expiration: {
+                                                gt: 'now',
+                                            },
+                                        },
+                                    },
+                                    must: [
+                                        {
+                                            term: {
+                                                selectors: MintAuthorization.toSelectorFormat('group_id', toB32('vip')),
+                                            },
+                                        },
+                                        {
+                                            term: {
+                                                cancelled: false,
+                                            },
+                                        },
+                                        {
+                                            term: {
+                                                consumed: false,
+                                            },
+                                        },
+                                        {
+                                            term: {
+                                                dispatched: false,
+                                            },
+                                        },
+                                    ],
+                                },
+                            },
+                        },
+                    }),
+                ),
+            ).called();
+
+            verify(
+                context.authorizationsServiceMock.validateTicketAuthorizations(
+                    deepEqual(authorizations),
+                    deepEqual(prices),
+                    fees,
+                    expirationTime,
+                    grantee.address,
+                    signatureReadable,
+                ),
+            ).called();
+
+            verify(
+                context.actionSetsServiceMock.build('checkout_create', deepEqual(grantee), deepEqual({}), true),
+            ).once();
+
+            verify(
+                context.stripePIMock.create(
+                    deepEqual({
+                        amount: 127,
+                        currency: 'eur',
+                        metadata: anything(),
+                        payment_method_types: ['card'],
+                        capture_method: 'manual',
+                    }),
+                ),
+            ).once();
         });
 
         it('should fail because no seats are left', async function() {

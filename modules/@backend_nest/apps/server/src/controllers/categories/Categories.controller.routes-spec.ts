@@ -35,7 +35,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     prices: [
                         {
                             currency: 'Fiat',
-                            price: '100',
+                            price: '200',
                         },
                     ],
                     seats: 100,
@@ -49,8 +49,8 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     prices: [
                         {
                             currency: 'T721Token',
-                            log_value: 6.643856189774724,
-                            value: '100',
+                            log_value: 7.643856189774724,
+                            value: '200',
                         },
                     ],
                     resale_begin: newCategory.data.category.resale_begin,
@@ -60,6 +60,119 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     scope: 'ticket721_0',
                     seats: 100,
                 });
+            });
+
+            test('should fail on free category', async function() {
+                const {
+                    sdk,
+                    token,
+                    user,
+                    password,
+                }: {
+                    sdk: T721SDK;
+                    token: string;
+                    user: PasswordlessUserDto;
+                    password: string;
+                } = await getSDKAndUser(getCtx);
+
+                const groupID = `0x${generateUserName()}`;
+
+                await admin_addRight(user.id, 'category', groupID, "{ 'owner' : true }");
+
+                await failWithCode(
+                    sdk.categories.create(token, {
+                        group_id: groupID,
+                        display_name: 'VIP',
+                        sale_begin: new Date(Date.now() + 1000000),
+                        sale_end: new Date(Date.now() + 2000000),
+                        resale_begin: new Date(Date.now() + 1000000),
+                        resale_end: new Date(Date.now() + 2000000),
+                        prices: [],
+                        seats: 100,
+                    }),
+                    StatusCodes.BadRequest,
+                    'free_category_unavailable',
+                );
+            });
+
+            test('should fail on multi currency', async function() {
+                const {
+                    sdk,
+                    token,
+                    user,
+                    password,
+                }: {
+                    sdk: T721SDK;
+                    token: string;
+                    user: PasswordlessUserDto;
+                    password: string;
+                } = await getSDKAndUser(getCtx);
+
+                const groupID = `0x${generateUserName()}`;
+
+                await admin_addRight(user.id, 'category', groupID, "{ 'owner' : true }");
+
+                await failWithCode(
+                    sdk.categories.create(token, {
+                        group_id: groupID,
+                        display_name: 'VIP',
+                        sale_begin: new Date(Date.now() + 1000000),
+                        sale_end: new Date(Date.now() + 2000000),
+                        resale_begin: new Date(Date.now() + 1000000),
+                        resale_end: new Date(Date.now() + 2000000),
+                        prices: [
+                            {
+                                currency: 'Fiat',
+                                price: '200',
+                            },
+                            {
+                                currency: 'T721Token',
+                                price: '200',
+                            },
+                        ],
+                        seats: 100,
+                    }),
+                    StatusCodes.BadRequest,
+                    'multi_currency_unavailable',
+                );
+            });
+
+            test('should fail on price under minimum', async function() {
+                const {
+                    sdk,
+                    token,
+                    user,
+                    password,
+                }: {
+                    sdk: T721SDK;
+                    token: string;
+                    user: PasswordlessUserDto;
+                    password: string;
+                } = await getSDKAndUser(getCtx);
+
+                const groupID = `0x${generateUserName()}`;
+
+                await admin_addRight(user.id, 'category', groupID, "{ 'owner' : true }");
+
+                await failWithCode(
+                    sdk.categories.create(token, {
+                        group_id: groupID,
+                        display_name: 'VIP',
+                        sale_begin: new Date(Date.now() + 1000000),
+                        sale_end: new Date(Date.now() + 2000000),
+                        resale_begin: new Date(Date.now() + 1000000),
+                        resale_end: new Date(Date.now() + 2000000),
+                        prices: [
+                            {
+                                currency: 'Fiat',
+                                price: '199',
+                            },
+                        ],
+                        seats: 100,
+                    }),
+                    StatusCodes.BadRequest,
+                    'price_under_minimum_allowed',
+                );
             });
 
             test('should fail creating cateogory without rights', async function() {
@@ -88,7 +201,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                         prices: [
                             {
                                 currency: 'Fiat',
-                                price: '100',
+                                price: '200',
                             },
                         ],
                         seats: 100,
@@ -124,7 +237,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     prices: [
                         {
                             currency: 'Fiat',
-                            price: '100',
+                            price: '200',
                         },
                     ],
                     seats: 100,
@@ -141,7 +254,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                         prices: [
                             {
                                 currency: 'Fiat',
-                                price: '100',
+                                price: '200',
                             },
                         ],
                         seats: 100,
@@ -178,7 +291,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                         prices: [
                             {
                                 currency: 'Fiat Punto',
-                                price: '100',
+                                price: '200',
                             },
                         ],
                         seats: 100,
@@ -215,7 +328,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                         prices: [
                             {
                                 currency: 'Fiat',
-                                price: '100',
+                                price: '200',
                             },
                         ],
                         seats: 100,
@@ -252,7 +365,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                         prices: [
                             {
                                 currency: 'Fiat',
-                                price: '100',
+                                price: '200',
                             },
                         ],
                         seats: 100,
@@ -290,7 +403,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     prices: [
                         {
                             currency: 'Fiat',
-                            price: '100',
+                            price: '200',
                         },
                     ],
                     seats: 100,
@@ -308,8 +421,8 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     prices: [
                         {
                             currency: 'T721Token',
-                            log_value: 6.643856189774724,
-                            value: '100',
+                            log_value: 7.643856189774724,
+                            value: '200',
                         },
                     ],
                     resale_begin: editedCategory.data.category.resale_begin,
@@ -319,6 +432,146 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     scope: 'ticket721_0',
                     seats: 100,
                 });
+            });
+
+            test('should fail on free category', async function() {
+                const {
+                    sdk,
+                    token,
+                    user,
+                    password,
+                }: {
+                    sdk: T721SDK;
+                    token: string;
+                    user: PasswordlessUserDto;
+                    password: string;
+                } = await getSDKAndUser(getCtx);
+
+                const groupID = `0x${generateUserName()}`;
+
+                await admin_addRight(user.id, 'category', groupID, "{ 'owner' : true }");
+
+                const newCategory = await sdk.categories.create(token, {
+                    group_id: groupID,
+                    display_name: 'VIP',
+                    sale_begin: new Date(Date.now() + 1000000),
+                    sale_end: new Date(Date.now() + 2000000),
+                    resale_begin: new Date(Date.now() + 1000000),
+                    resale_end: new Date(Date.now() + 2000000),
+                    prices: [
+                        {
+                            currency: 'Fiat',
+                            price: '200',
+                        },
+                    ],
+                    seats: 100,
+                });
+
+                await failWithCode(
+                    sdk.categories.update(token, newCategory.data.category.id, {
+                        prices: [],
+                    }),
+                    StatusCodes.BadRequest,
+                    'free_category_unavailable',
+                );
+            });
+
+            test('should fail on multi currency', async function() {
+                const {
+                    sdk,
+                    token,
+                    user,
+                    password,
+                }: {
+                    sdk: T721SDK;
+                    token: string;
+                    user: PasswordlessUserDto;
+                    password: string;
+                } = await getSDKAndUser(getCtx);
+
+                const groupID = `0x${generateUserName()}`;
+
+                await admin_addRight(user.id, 'category', groupID, "{ 'owner' : true }");
+
+                const newCategory = await sdk.categories.create(token, {
+                    group_id: groupID,
+                    display_name: 'VIP',
+                    sale_begin: new Date(Date.now() + 1000000),
+                    sale_end: new Date(Date.now() + 2000000),
+                    resale_begin: new Date(Date.now() + 1000000),
+                    resale_end: new Date(Date.now() + 2000000),
+                    prices: [
+                        {
+                            currency: 'Fiat',
+                            price: '200',
+                        },
+                    ],
+                    seats: 100,
+                });
+
+                await failWithCode(
+                    sdk.categories.update(token, newCategory.data.category.id, {
+                        prices: [
+                            {
+                                currency: 'Fiat',
+                                price: '200',
+                            },
+                            {
+                                currency: 'T721Token',
+                                price: '200',
+                            },
+                        ],
+                    }),
+                    StatusCodes.BadRequest,
+                    'multi_currency_unavailable',
+                );
+            });
+
+            test('should fail on under minimum price', async function() {
+                const {
+                    sdk,
+                    token,
+                    user,
+                    password,
+                }: {
+                    sdk: T721SDK;
+                    token: string;
+                    user: PasswordlessUserDto;
+                    password: string;
+                } = await getSDKAndUser(getCtx);
+
+                const groupID = `0x${generateUserName()}`;
+
+                await admin_addRight(user.id, 'category', groupID, "{ 'owner' : true }");
+
+                const newCategory = await sdk.categories.create(token, {
+                    group_id: groupID,
+                    display_name: 'VIP',
+                    sale_begin: new Date(Date.now() + 1000000),
+                    sale_end: new Date(Date.now() + 2000000),
+                    resale_begin: new Date(Date.now() + 1000000),
+                    resale_end: new Date(Date.now() + 2000000),
+                    prices: [
+                        {
+                            currency: 'Fiat',
+                            price: '200',
+                        },
+                    ],
+                    seats: 100,
+                });
+
+                await failWithCode(
+                    sdk.categories.update(token, newCategory.data.category.id, {
+                        prices: [
+                            {
+                                currency: 'Fiat',
+                                price: '199',
+                            },
+                        ],
+                    }),
+                    StatusCodes.BadRequest,
+                    'price_under_minimum_allowed',
+                );
             });
 
             test('should update price', async function() {
@@ -348,7 +601,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     prices: [
                         {
                             currency: 'Fiat',
-                            price: '100',
+                            price: '200',
                         },
                     ],
                     seats: 100,
@@ -413,7 +666,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     prices: [
                         {
                             currency: 'Fiat',
-                            price: '100',
+                            price: '200',
                         },
                     ],
                     seats: 100,
@@ -434,8 +687,8 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     prices: [
                         {
                             currency: 'T721Token',
-                            log_value: 6.643856189774724,
-                            value: '100',
+                            log_value: 7.643856189774724,
+                            value: '200',
                         },
                     ],
                     sale_begin: new Date(now + 2000000).toISOString(),
@@ -476,7 +729,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     prices: [
                         {
                             currency: 'Fiat',
-                            price: '100',
+                            price: '200',
                         },
                     ],
                     seats: 100,
@@ -495,8 +748,8 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     prices: [
                         {
                             currency: 'T721Token',
-                            log_value: 6.643856189774724,
-                            value: '100',
+                            log_value: 7.643856189774724,
+                            value: '200',
                         },
                     ],
                     sale_begin: new Date(now + 1000000).toISOString(),
@@ -537,7 +790,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     prices: [
                         {
                             currency: 'Fiat',
-                            price: '100',
+                            price: '200',
                         },
                     ],
                     seats: 100,
@@ -583,7 +836,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     prices: [
                         {
                             currency: 'Fiat',
-                            price: '100',
+                            price: '200',
                         },
                     ],
                     seats: 100,
@@ -624,7 +877,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     prices: [
                         {
                             currency: 'Fiat',
-                            price: '100',
+                            price: '200',
                         },
                     ],
                     seats: 100,
@@ -666,7 +919,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     prices: [
                         {
                             currency: 'Fiat',
-                            price: '100',
+                            price: '200',
                         },
                     ],
                     seats: 100,
@@ -708,7 +961,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     prices: [
                         {
                             currency: 'Fiat',
-                            price: '100',
+                            price: '200',
                         },
                     ],
                     seats: 100,
@@ -719,7 +972,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                         prices: [
                             {
                                 currency: 'Fiat Punto',
-                                price: '100',
+                                price: '200',
                             },
                         ],
                     }),
@@ -756,7 +1009,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     prices: [
                         {
                             currency: 'Fiat',
-                            price: '100',
+                            price: '200',
                         },
                     ],
                     seats: 100,
@@ -808,7 +1061,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     prices: [
                         {
                             currency: 'Fiat',
-                            price: '100',
+                            price: '200',
                         },
                     ],
                     seats: 100,
@@ -852,7 +1105,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     prices: [
                         {
                             currency: 'Fiat',
-                            price: '100',
+                            price: '200',
                         },
                     ],
                     seats: 100,

@@ -45,7 +45,26 @@ i18n.addResourceBundle('en', 'cart', {
     synced_cart_payment_fees: 'Payment fees',
     synced_cart_total: 'Total',
     synced_cart_subtotal: 'Subtotal',
-    synced_cart_payment_button: 'Proceed to payment'
+    synced_cart_payment_button: 'Proceed to payment',
+
+    ticket_selection_waiting_refresh: 'Waiting for response',
+    commit_stripe_called: 'Preparing payment',
+    modules_configuration_upload: 'Uploading configuration',
+
+    cart_checkout_cta_pay: 'Pay now',
+    cart_checkout_cta_error: 'Payment error',
+    cart_checkout_cta_waiting_response: 'Waiting for response',
+    cart_checkout_cta_delivering_ticket: 'Delivering tickets',
+    cart_checkout_tickets_created: 'Tickets created',
+    cart_checkout_expired: 'Cart expired',
+    cart_checkout_title: 'Proceed to payment',
+    cart_checkout_expires_in: 'Cart expires in',
+    cart_checkout_card_number: 'Card Number',
+    cart_checkout_card_expiry: 'Expiration',
+    cart_checkout_card_cvc: 'cvc',
+    cart_checkout_full_name: 'Full Name',
+    region_not_supported: 'Card region not supported yet',
+    cart_checkout_cancel: 'Cancel'
 });
 
 i18n.addResourceBundle('fr', 'cart', {
@@ -93,5 +112,24 @@ i18n.addResourceBundle('fr', 'cart', {
     synced_cart_payment_fees: 'Taxes de paiement',
     synced_cart_total: 'Total',
     synced_cart_subtotal: 'Sous-total',
-    synced_cart_payment_button: 'Acceder au paiement'
+    synced_cart_payment_button: 'Acceder au paiement',
+
+    ticket_selection_waiting_refresh: 'En attente du serveur',
+    commit_stripe_called: 'Preparation du paiement',
+    modules_configuration_upload: 'Configuration des modules',
+
+    cart_checkout_cta_pay: 'Payer',
+    cart_checkout_cta_error: 'Erreur de paiement',
+    cart_checkout_cta_waiting_response: 'En attente du serveur',
+    cart_checkout_cta_delivering_ticket: 'Envoi des tickets',
+    cart_checkout_tickets_created: 'Tickets crees',
+    cart_checkout_expired: 'Panier expire',
+    cart_checkout_title: 'Procedez au paiement',
+    cart_checkout_expires_in: 'Le panier expire dans',
+    cart_checkout_card_number: 'Numero de Carte',
+    cart_checkout_card_expiry: 'Expiration',
+    cart_checkout_card_cvc: 'cvc',
+    cart_checkout_full_name: 'Nom Complet',
+    region_not_supported: 'Provenence de la carte non supportee',
+    cart_checkout_cancel: 'Annuler'
 });

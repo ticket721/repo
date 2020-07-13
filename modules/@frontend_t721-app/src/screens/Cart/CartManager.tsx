@@ -5,17 +5,18 @@ import { T721AppState }             from '../../redux';
 import { v4 }                       from 'uuid';
 import { useLazyRequest }           from '@frontend/core/lib/hooks/useLazyRequest';
 import { ActionsUpdateResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/actionsets/dto/ActionsUpdateResponse.dto';
-import { CartState }                from '../../redux/ducks/cart';
-import { FullPageLoading, Error }   from '@frontend/flib-react/lib/components';
-import { useDeepEffect }            from '@frontend/core/lib/hooks/useDeepEffect';
-import { TicketMintingFormat }      from '@common/sdk/lib/@backend_nest/libs/common/src/utils/Cart.type';
-import { CategoryEntity }           from '@common/sdk/lib/@backend_nest/libs/common/src/categories/entities/Category.entity';
-import { InputPrice, Price }        from '@common/sdk/lib/@backend_nest/libs/common/src/currencies/Currencies.service';
-import { SyncedCartSelectGroupId }  from './SyncedCartSelectGroupId/SyncedCartSelectGroupId';
-import { SyncedCartRemoveTickets }  from './SyncedCartRemoveTickets/SyncedCartRemoveTickets';
-import { SyncedCartNotifyErrors }   from './SyncedCartNotifyErrors/SyncedCartNotifyErrors';
-import { SyncedCart }               from './SyncedCart/SyncedCart';
-import { SyncedCartEmpty }          from './SyncedCartEmpty/SyncedCartEmpty';
+import { CartState }               from '../../redux/ducks/cart';
+import { FullPageLoading, Error }  from '@frontend/flib-react/lib/components';
+import { useDeepEffect }           from '@frontend/core/lib/hooks/useDeepEffect';
+import { TicketMintingFormat }     from '@common/sdk/lib/@backend_nest/libs/common/src/utils/Cart.type';
+import { CategoryEntity }          from '@common/sdk/lib/@backend_nest/libs/common/src/categories/entities/Category.entity';
+import { InputPrice, Price }       from '@common/sdk/lib/@backend_nest/libs/common/src/currencies/Currencies.service';
+import { SyncedCartSelectGroupId } from './SyncedCartSelectGroupId/SyncedCartSelectGroupId';
+import { SyncedCartRemoveTickets } from './SyncedCartRemoveTickets/SyncedCartRemoveTickets';
+import { SyncedCartNotifyErrors }  from './SyncedCartNotifyErrors/SyncedCartNotifyErrors';
+import { SyncedCart }              from './SyncedCart/SyncedCart';
+import { SyncedCartEmpty }         from './SyncedCartEmpty/SyncedCartEmpty';
+import { StripeCheckout }          from './StripeCheckout/StripeCheckout';
 
 export interface CartManagerProps {
     cart: ActionSetEntity;
@@ -114,7 +115,6 @@ export const SyncedCartManager: React.FC<SyncedCartManagerProps> = (props: Synce
 
     if (ticketSelectionsAction.error) {
         const errorData = JSON.parse(ticketSelectionsAction.error);
-        console.log(errorData);
         switch (errorData.error) {
             case 'cart_too_big': {
                 return <SyncedCartRemoveTickets cart={props.remoteCart}/>;
@@ -145,9 +145,11 @@ export const CartManager: React.FC<CartManagerProps> = (props: CartManagerProps)
     const ticketSelectionsActionData = JSON.parse(ticketSelectionsAction.data);
 
     if (!isLocalTicketsInSyncWithActionSetTicket(cart, ticketSelectionsActionData)) {
-
         return <CartAddPendingTickets cart={props.cart} />;
+    }
 
+    if (props.cart.current_status === 'complete') {
+        return <StripeCheckout remoteCart={props.cart} cart={cart}/>;
     }
 
     return <SyncedCartManager remoteCart={props.cart} cart={cart}/>

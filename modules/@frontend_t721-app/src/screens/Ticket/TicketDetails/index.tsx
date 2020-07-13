@@ -167,6 +167,10 @@ const Details = styled.div`
 const Banner = styled.div`
     display: flex;
     background: linear-gradient(180deg, ${(props) => props.theme.darkBg}, ${(props) => props.theme.darkerBg});
+
+    & button:last-child {
+      text-transform: uppercase;
+    }
 `;
 
 const QrLink = styled.div`
@@ -219,19 +223,13 @@ const EventLink = styled.div`
     width: 50%;
     background-color: rgba(0,0,0,0.6);
 
-    & > span:last-child {
-        margin-left: 4px;
-        margin-bottom: 2px;
-        transform: rotate(-90deg);
-    }
-
     & > button {
         height: calc(${props => props.theme.doubleSpacing} * 2);
         padding-top: 12px;
         padding-bottom: 12px;
 
         & > span {
-            line-height: 20px;
+            font-weight: 600;
             padding-top: 0 !important;
         }
     }
