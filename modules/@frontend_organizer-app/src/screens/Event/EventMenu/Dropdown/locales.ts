@@ -6,6 +6,6 @@ i18n.addResourceBundle('en', 'options', {
 });
 
 i18n.addResourceBundle('fr', 'options', {
-  global_category: 'Categorie Global',
+  global_category: 'Catégorie Global',
   new_date: 'Nouvelle Date'
 });
