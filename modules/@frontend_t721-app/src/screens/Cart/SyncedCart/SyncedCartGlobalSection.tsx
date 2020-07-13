@@ -189,7 +189,7 @@ export const SyncedCartGlobalSection: React.FC<SyncedCartGlobalSectionProps> = (
                                 value: sortedCategories[categoryId].length,
                                 label: sortedCategories[categoryId].length.toString()
                             }}
-                            fees={`+ ${sortedCategories[categoryId][0].fees} € ${t('service_fees')} / ${t('each')}`}
+                            fees={`+ ${t('service_fees')}`}
                             price={`${sortedCategories[categoryId][0].price} € / ${t('each')}`}
                             ticketsLeft={sortedCategories[categoryId].length}
                             typeName={sortedCategories[categoryId][0].category.display_name}

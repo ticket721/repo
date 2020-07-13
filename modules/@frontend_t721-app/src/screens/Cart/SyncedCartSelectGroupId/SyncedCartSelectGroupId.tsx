@@ -1,6 +1,6 @@
-import styled                       from 'styled-components';
-import React, { useState }          from 'react';
-import { ActionSetEntity }          from '@common/sdk/lib/@backend_nest/libs/common/src/actionsets/entities/ActionSet.entity';
+import styled                         from 'styled-components';
+import React, { useEffect, useState } from 'react';
+import { ActionSetEntity }            from '@common/sdk/lib/@backend_nest/libs/common/src/actionsets/entities/ActionSet.entity';
 import { EventCta }                 from '@frontend/flib-react/lib/components';
 import { TicketMintingFormat }      from '@common/sdk/lib/@backend_nest/libs/common/src/utils/Cart.type';
 import { useDispatch, useSelector } from 'react-redux';
@@ -40,12 +40,21 @@ const getOptionTotalPrice = (cart: CartState, categories: TicketMintingFormat[])
     return total;
 };
 
+const Container = styled.div`
+    padding-bottom: calc(80px + ${props => props.theme.regularSpacing});
+`;
+
 export const SyncedCartSelectGroupId: React.FC<SyncedCardSelectGroupIdProps> = (props: SyncedCardSelectGroupIdProps): JSX.Element => {
 
     const error = JSON.parse(props.cart.actions[0].error);
     const [selection, setSelection] = useState(null);
     const { cart } = useSelector((state: T721AppState) => ({ cart: state.cart }));
     const [t] = useTranslation('cart');
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
+
 
     const dispatch = useDispatch();
 
@@ -70,12 +79,12 @@ export const SyncedCartSelectGroupId: React.FC<SyncedCardSelectGroupIdProps> = (
 
     const totalPrice = selection !== null ? getOptionTotalPrice(cart, error.details[Object.keys(error.details)[selection]]) : 0;
 
-    return <>
+    return <Container>
         <GroupSelectionTitle>{t('select_group_id_title')}</GroupSelectionTitle>
         <h4 style={{ marginLeft: 24, opacity: 0.7, fontWeight: 200, marginBottom: 12 }}>{t('select_group_id_explainer')}</h4>
         {choices}
         <EventCta ctaLabel={t('select_group_id_option', { number: selection + 1 })} onClick={onFinalChoice} show={selection !== null}
                   subtitle={t('select_group_id_price', { price: totalPrice })} title={t('select_group_id_total')}/>
 
-    </>;
+    </Container>;
 };

@@ -1,6 +1,6 @@
-import styled                                 from 'styled-components';
-import React, { useState }                    from 'react';
-import { ActionSetEntity }                    from '@common/sdk/lib/@backend_nest/libs/common/src/actionsets/entities/ActionSet.entity';
+import styled                         from 'styled-components';
+import React, { useEffect, useState } from 'react';
+import { ActionSetEntity }            from '@common/sdk/lib/@backend_nest/libs/common/src/actionsets/entities/ActionSet.entity';
 import { EventCta }                           from '@frontend/flib-react/lib/components';
 import { useDispatch, useSelector }           from 'react-redux';
 import { T721AppState }                       from '../../../redux';
@@ -45,12 +45,20 @@ const CountDisplayer = styled.h3<CountDisplayerProps>`
     margin: ${props => props.theme.regularSpacing};
 `;
 
+const Container = styled.div`
+    padding-bottom: calc(80px + ${props => props.theme.regularSpacing});
+`;
+
 export const SyncedCartRemoveTickets: React.FC<SyncedCartRemoveTicketsProps> = (props: SyncedCartRemoveTicketsProps): JSX.Element => {
 
     const [t] = useTranslation('cart');
     const { cart } = useSelector((state: T721AppState) => ({ cart: state.cart }));
     const [newCart, setNewCart] = useState(cart.tickets);
     const dispatch = useDispatch();
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
 
     let ticketGroups = {};
     for (const ticket of newCart) {
@@ -102,7 +110,7 @@ export const SyncedCartRemoveTickets: React.FC<SyncedCartRemoveTicketsProps> = (
 
     }
 
-    return <>
+    return <Container>
         <RemoveTicketsTitle>{t('remove_tickets_title')}</RemoveTicketsTitle>
         <h4 style={{ marginLeft: 24, opacity: 0.7, fontWeight: 200, marginBottom: 12, marginTop: 12 }}>{t('remove_tickets_explainer')}</h4>
         {
@@ -118,5 +126,5 @@ export const SyncedCartRemoveTickets: React.FC<SyncedCartRemoveTicketsProps> = (
         <EventCta ctaLabel={t('remove_validate')} onClick={onValidate} show={newCart.length - MAX_COUNT <= 0}
                   subtitle={`${getTotalPrice(newCart)} € + ${t('fees')}`} title={t('remove_tickets_cart_total')}/>
 
-    </>;
+    </Container>;
 };

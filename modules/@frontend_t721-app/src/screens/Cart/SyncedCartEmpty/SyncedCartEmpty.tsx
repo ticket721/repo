@@ -1,5 +1,5 @@
-import React              from 'react';
-import {Button}           from '@frontend/flib-react/lib/components';
+import React, { useEffect } from 'react';
+import {Button}             from '@frontend/flib-react/lib/components';
 import styled             from 'styled-components';
 import { useHistory }     from 'react-router';
 import { useTranslation } from 'react-i18next';
@@ -20,11 +20,14 @@ const Container = styled.div`
   flex-direction: column;
 `;
 
-
 export const SyncedCartEmpty = () => {
 
     const history = useHistory();
     const [t] = useTranslation('cart');
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
 
     return <Container>
         <EmptyCart>{t('cart_empty_title')}</EmptyCart>

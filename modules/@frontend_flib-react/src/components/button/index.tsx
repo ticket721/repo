@@ -139,7 +139,7 @@ const loaderRotation = keyframes`
     }
 `;
 
-const LoadingIcon = styled(Icon)`
+const LoaderIcon = styled(Icon)`
     position: absolute;
     right: 20px;
     animation: ${loaderRotation} 1s linear infinite;
@@ -159,8 +159,7 @@ export const Button: React.FunctionComponent<ButtonProps> = (props: ButtonProps)
             >
                 <span>{props.title}</span>
                 {props.loadingState ? (
-                    <LoadingIcon
-                        loading={props.loadingState}
+                    <LoaderIcon
                         icon={'loader'}
                         size={'20px'}
                         color={'rgba(255,255,255,0.9)'}

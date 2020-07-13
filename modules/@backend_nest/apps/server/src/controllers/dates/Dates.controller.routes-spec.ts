@@ -501,7 +501,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     prices: [
                         {
                             currency: 'Fiat',
-                            price: '100',
+                            price: '200',
                         },
                     ],
                     seats: 100,
@@ -564,7 +564,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     prices: [
                         {
                             currency: 'Fiat',
-                            price: '100',
+                            price: '200',
                         },
                     ],
                     seats: 100,
@@ -628,7 +628,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     prices: [
                         {
                             currency: 'Fiat',
-                            price: '100',
+                            price: '200',
                         },
                     ],
                     seats: 100,
@@ -718,7 +718,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     prices: [
                         {
                             currency: 'Fiat',
-                            price: '100',
+                            price: '200',
                         },
                     ],
                     seats: 100,
@@ -790,7 +790,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     prices: [
                         {
                             currency: 'Fiat',
-                            price: '100',
+                            price: '200',
                         },
                     ],
                     seats: 100,
@@ -856,7 +856,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     prices: [
                         {
                             currency: 'Fiat',
-                            price: '100',
+                            price: '200',
                         },
                     ],
                     seats: 100,
@@ -872,7 +872,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     prices: [
                         {
                             currency: 'Fiat',
-                            price: '100',
+                            price: '200',
                         },
                     ],
                     seats: 100,
@@ -939,7 +939,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     prices: [
                         {
                             currency: 'Fiat',
-                            price: '100',
+                            price: '200',
                         },
                     ],
                     seats: 100,
@@ -1007,7 +1007,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     prices: [
                         {
                             currency: 'Fiat',
-                            price: '100',
+                            price: '200',
                         },
                     ],
                     seats: 100,
@@ -1071,7 +1071,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     prices: [
                         {
                             currency: 'Fiat',
-                            price: '100',
+                            price: '200',
                         },
                     ],
                     seats: 100,

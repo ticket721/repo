@@ -1,9 +1,10 @@
-import React, { lazy, Suspense, useEffect, useState }                            from 'react';
-import { NavLink, Redirect, Route, Switch, useHistory, useLocation, withRouter } from 'react-router-dom';
-import { FullPageLoading, Navbar, Icon, TopNav }                                 from '@frontend/flib-react/lib/components';
-import ProtectedRoute                            from '@frontend/core/lib/components/ProtectedRoute';
-import ToastStacker                              from '@frontend/core/lib/components/ToastStacker';
-import styled                                    from 'styled-components';
+import React, { lazy, Suspense, useEffect, useState }         from 'react';
+import { Route, Switch, useHistory, useLocation, withRouter } from 'react-router-dom';
+import { FullPageLoading, TopNav }                            from '@frontend/flib-react/lib/components';
+import ProtectedRoute                                         from '@frontend/core/lib/components/ProtectedRoute';
+import ToastStacker                                           from '@frontend/core/lib/components/ToastStacker';
+import styled                                                 from 'styled-components';
+import { T721Navbar }                                         from './components/NavBar';
 
 const TopNavWrapper = (props: { back: () => void }): JSX.Element => {
 
@@ -119,28 +120,7 @@ const MobileApp: React.FC = () => {
                 location.pathname.lastIndexOf('/') === 0
 
                     ?
-                    <Navbar>
-                        <NavLink exact={true} to={'/home'}>
-                            <Icon icon={'home'} color='#FFFFFF' size={'22px'}/>
-                        </NavLink>
-
-                        <NavLink exact={true} to={'/search'}>
-                            <Icon icon={'search'} color='#FFFFFF' size={'22px'}/>
-                        </NavLink>
-
-                        <NavLink exact={true} to={'/'}>
-                            <Icon icon={'t721'} color='#FFFFFF' size={'22px'}/>
-                        </NavLink>
-
-                        <NavLink exact={true} to={'/tags'}>
-                            <Icon icon={'tags'} color='#FFFFFF' size={'22px'}/>
-                        </NavLink>
-
-                        <NavLink exact={true} to={'/profile'}>
-                            <Icon icon={'profile'} color='#FFFFFF' size={'22px'}/>
-                        </NavLink>
-
-                    </Navbar>
+                    <T721Navbar/>
 
                     :
                     null

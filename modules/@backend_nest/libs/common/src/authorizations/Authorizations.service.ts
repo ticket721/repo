@@ -208,7 +208,6 @@ export class AuthorizationsService extends CRUDExtension<AuthorizationsRepositor
             try {
                 signature = await signer.sign(rocksideSigner, payload);
             } catch (e) {
-                console.error(e);
                 return {
                     error: 'rockside_signature_failure',
                     response: null,
