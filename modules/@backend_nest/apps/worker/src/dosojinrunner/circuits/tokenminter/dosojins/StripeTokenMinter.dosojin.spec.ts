@@ -16,6 +16,7 @@ import { TxEntity } from '@lib/common/txs/entities/Tx.entity';
 import { T721TokenService } from '@lib/common/contracts/T721Token.service';
 import Stripe from 'stripe';
 import { AuthorizationEntity } from '@lib/common/authorizations/entities/Authorization.entity';
+import { StripeService } from '@lib/common/stripe/Stripe.service';
 
 describe('StripeTokenMinter Dosojin', function() {
     describe('TokenMinterOperation', function() {
@@ -1538,6 +1539,7 @@ describe('StripeTokenMinter Dosojin', function() {
         const context: {
             stripeTokenMinterDosojin: StripeTokenMinterDosojin;
             stripeMock: Stripe;
+            stripeServiceMock: StripeService;
             t721AdminServiceMock: T721AdminService;
             t721TokenServiceMock: T721TokenService;
             usersServiceMock: UsersService;
@@ -1546,6 +1548,7 @@ describe('StripeTokenMinter Dosojin', function() {
         } = {
             stripeTokenMinterDosojin: null,
             stripeMock: null,
+            stripeServiceMock: null,
             t721AdminServiceMock: null,
             t721TokenServiceMock: null,
             usersServiceMock: null,
@@ -1555,14 +1558,17 @@ describe('StripeTokenMinter Dosojin', function() {
 
         beforeEach(async function() {
             context.stripeMock = mock(Stripe);
+            context.stripeServiceMock = mock(StripeService);
             context.t721AdminServiceMock = mock(T721AdminService);
             context.t721TokenServiceMock = mock(T721TokenService);
             context.usersServiceMock = mock(UsersService);
             context.txsServiceMock = mock(TxsService);
             context.configServiceMock = mock(ConfigService);
 
+            when(context.stripeServiceMock.get()).thenReturn(instance(context.stripeMock));
+
             context.stripeTokenMinterDosojin = new StripeTokenMinterDosojin(
-                instance(context.stripeMock),
+                instance(context.stripeServiceMock),
                 instance(context.t721AdminServiceMock),
                 instance(context.t721TokenServiceMock),
                 instance(context.usersServiceMock),

@@ -46,6 +46,8 @@ export const Config: Joi.ObjectSchema = Joi.object({
 
     AUTH_SIGNATURE_TIMEOUT: Joi.number().default(30),
 
+    DOSOJIN_STRIPE_PRIVATE_KEY: Joi.string().required(),
+
     EMAIL_ENGINE: Joi.string()
         .valid('development', 'mailjet')
         .required(),

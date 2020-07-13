@@ -65,7 +65,15 @@ describe('AppController (e2e)', () => {
             await runMigrations(cassandraPort, elasticSearchPort);
         }
 
+        const stripeMock = setupStripeMock();
+
         const appFixture: TestingModule = await Test.createTestingModule({
+            providers: [
+                {
+                    provide: 'STRIPE_MOCK_INSTANCE',
+                    useValue: instance(stripeMock),
+                },
+            ],
             imports: [ServerModule],
         }).compile();
         appFixture.useLogger(new WinstonLoggerService('e2e-server'));
@@ -76,8 +84,6 @@ describe('AppController (e2e)', () => {
             console.log('Server & Worker Shut Down');
         });
         await app.listen(3000);
-
-        const stripeMock = setupStripeMock();
 
         const workerFixture: TestingModule = await Test.createTestingModule({
             providers: [
@@ -120,20 +126,20 @@ describe('AppController (e2e)', () => {
         console.log('FINISHED');
     }, 60000);
 
+    describe('Checkout Controller', CheckoutControllerTestSuite(getCtx));
+    describe('ActionSets Controller', ActionSetsControllerTestSuite(getCtx));
+    describe('Events Controller', EventsControllerTestSuite(getCtx));
+    describe('Dosojin Controller', DosojinControllerTestSuite(getCtx));
+    describe('Tickets Controller', TicketsControllerTestSuite(getCtx));
     describe('Server Controller', ServerControllerTestSuite(getCtx));
     describe('Users Controller', UsersControllerTestSuite(getCtx));
     describe('Authentication Controller', AuthenticationControllerTestSuite(getCtx));
-    describe('ActionSets Controller', ActionSetsControllerTestSuite(getCtx));
     describe('Categories Controller', CategoriesControllerTestSuite(getCtx));
     describe('Rights Controller', RightsControllerTestSuite(getCtx));
     describe('Contracts Controller', ContractsControllerTestSuite(getCtx));
     describe('Dates Controller', DatesControllerTestSuite(getCtx));
     describe('Images Controller', ImagesControllerTestSuite(getCtx));
-    describe('Events Controller', EventsControllerTestSuite(getCtx));
     describe('Txs Controller', TxsControllerTestSuite(getCtx));
     describe('Metadatas Controller', MetadatasControllerTestSuite(getCtx));
-    describe('Checkout Controller', CheckoutControllerTestSuite(getCtx));
-    describe('Dosojin Controller', DosojinControllerTestSuite(getCtx));
-    describe('Tickets Controller', TicketsControllerTestSuite(getCtx));
     describe('Geoloc Controller', GeolocControllerTestSuite(getCtx));
 });

@@ -20,13 +20,17 @@ export const CartCreation: React.FC = (): JSX.Element => {
                     name: 'cart_create',
                     arguments: {}
                 }
-            ])
+            ], {
+                force: true
+            })
         }
     }, [token, lazyCartCreation]);
 
     if (lazyCartCreation.response.error) {
         return <Error message={'Unable to create cart'}/>;
     }
+
+    console.log('creating a new cart');
 
     return <FullPageLoading/>
 };

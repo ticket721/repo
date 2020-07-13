@@ -13,7 +13,7 @@ import { checkFormatDate } from '@frontend/core/lib/utils/date';
 
 interface DatesFetcherProps {
     uuid: string;
-    entityType: 'id' | 'groupId';
+    entityType: 'id' | 'group_id';
     entityId: string;
     ticketId: string;
     transactionHash: string;
@@ -44,10 +44,10 @@ export const DatesFetcher: React.FC<DatesFetcherProps> = (
                     [entityType]: {
                         $eq: entityId
                     },
-                    $sort: {
+                    $sort: [{
                         $field_name: 'timestamps.event_begin',
                         $order: 'asc',
-                    }
+                    }]
                 }
             ],
             refreshRate: 5,

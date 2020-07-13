@@ -8,9 +8,11 @@ import {
     failWithCode,
     gemFail,
     getMocks,
+    getPIFromCart,
     getSDKAndUser,
     getUser,
     setPaymentIntent,
+    validateCardPayment,
     waitForActionSet,
     waitForTickets,
 } from '../../../test/utils';
@@ -102,11 +104,12 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     },
                 });
 
+                await validateCardPayment(await getPIFromCart(sdk, token, actionSetId));
+
                 expect(cartActionSetBeforeRes.data.actionsets[0].consumed).toEqual(false);
 
                 const res = await sdk.checkout.cart.resolve.paymentIntent(token, {
                     cart: actionSetId,
-                    paymentIntentId: validPaymentIntentId,
                 });
 
                 const checkoutActionSetId = res.data.checkoutActionSetId;
@@ -213,11 +216,12 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     },
                 });
 
+                await validateCardPayment(await getPIFromCart(sdk, token, actionSetId));
+
                 expect(cartActionSetBeforeRes.data.actionsets[0].consumed).toEqual(false);
 
                 const res = await sdk.checkout.cart.resolve.paymentIntent(token, {
                     cart: actionSetId,
-                    paymentIntentId: validPaymentIntentId,
                 });
 
                 const checkoutActionSetId = res.data.checkoutActionSetId;

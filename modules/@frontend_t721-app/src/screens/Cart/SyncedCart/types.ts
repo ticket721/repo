@@ -84,4 +84,39 @@ export const completeCartRecomputingOnDateTicketChange =
         return completeCartRecomputer(cart);
     };
 
+export interface Item {
+    name: string;
+    price: number;
+}
+
+export const getCartTotal = (cart: CategoryEntity[], prices: string[]): Item[] => {
+
+    const ret: Item[] = [];
+
+    for (let idx = 0; idx < cart.length; ++idx) {
+        ret.push({
+            name: `Ticket "${cart[idx].display_name}"`,
+            price: parseInt(prices[idx], 10) / 100,
+        });
+    }
+
+    return ret;
+};
+
+const reverseTotalAmountWithEuropeanFees = (total: number): number => {
+    return ((total + 0.25) / 0.986) - total;
+}
+
+export const getServiceFees = (title: string, fees: string[], prices: Item[]): Item[] => {
+
+    const totalFees = fees.map(f => parseInt(f, 10) / 100).reduce((a, b) => a + b);
+    const totalSum = prices.map(i => i.price).reduce((a, b) => a + b);
+
+    return [{
+        name: title,
+        price: totalFees + // T721 fees
+            reverseTotalAmountWithEuropeanFees(totalSum + totalFees), // Stripe fees
+    }];
+};
+
 

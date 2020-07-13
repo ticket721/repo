@@ -44,7 +44,6 @@ import { EmailModule } from '@lib/common/email/Email.module';
 import { DosojinController } from '@app/server/controllers/dosojin/Dosojin.controller';
 import { GemOrdersModule } from '@lib/common/gemorders/GemOrders.module';
 import { CheckoutController } from '@app/server/controllers/checkout/Checkout.controller';
-import { StripeResourcesModule } from '@lib/common/striperesources/StripeResources.module';
 import { ToolBoxModule } from '@lib/common/toolbox/ToolBox.module';
 import { CategoriesModule } from '@lib/common/categories/Categories.module';
 import { RightsModule } from '@lib/common/rights/Rights.module';
@@ -62,6 +61,7 @@ import { TicketsModule } from '@lib/common/tickets/Tickets.module';
 import { UsersController } from '@app/server/controllers/users/Users.controller';
 import { toHeaderFormat } from '@lib/common/utils/toHeaderFormat';
 import { GeolocController } from '@app/server/controllers/geoloc/Geoloc.controller';
+import { StripeModule } from '@lib/common/stripe/Stripe.module';
 
 @Module({
     imports: [
@@ -94,7 +94,6 @@ import { GeolocController } from '@app/server/controllers/geoloc/Geoloc.controll
         RightsModule,
         EventsModule,
         GemOrdersModule,
-        StripeResourcesModule,
         MetadatasModule,
         AuthorizationsModule,
         CurrenciesModule,
@@ -102,6 +101,7 @@ import { GeolocController } from '@app/server/controllers/geoloc/Geoloc.controll
 
         CheckoutModule,
         CartModule,
+        StripeModule.register(),
 
         // User Management Modules
         AuthenticationModule,

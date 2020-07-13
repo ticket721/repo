@@ -51,13 +51,13 @@ export const EventInfos: React.FunctionComponent<EventInfosProps> = (props: Even
             <DateTime
                 dates={[
                     {
-                        startDate: props.event.startDate,
-                        endDate: props.event.endDate,
-                        startTime: props.event.startTime,
-                        endTime: props.event.endTime,
+                        startDate: props.startDate,
+                        endDate: props.endDate,
+                        startTime: props.startTime,
+                        endTime: props.endTime,
                     },
                 ]}
-                iconColor={props.event.mainColor}
+                iconColor={props.mainColor}
             />
             <Location iconColor={props.mainColor} location={props.location} subtitle={props.getDirections} />
         </Container>

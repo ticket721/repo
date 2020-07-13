@@ -55,7 +55,7 @@ export const CategoryFetcher: React.FC<CategoryFetcherProps> = ({
         const cat = categoryResp.data.categories[0];
         return <DatesFetcher
             uuid={uuid}
-            entityType={cat.parent_type === 'date' ? 'id' : 'groupId'}
+            entityType={cat.parent_type === 'date' ? 'id' : 'group_id'}
             entityId={cat.parent_type === 'date' ? cat.parent_id : cat.group_id}
             ticketId={ticketId}
             transactionHash={transactionHash}

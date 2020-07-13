@@ -63,7 +63,7 @@ export const DynamicQrCode: React.FC<DynamicQrCodeProps> = (props: DynamicQrCode
 
 const QrCodeWrapper = styled.div<{ offsetTop: number, qrOpened: boolean }>`
     position: fixed;
-    top: ${props => props.qrOpened ? '0' : `-${props.offsetTop}px`};
+    top: ${props => props.qrOpened ? '0' : `${props.offsetTop}px` };
     left: 0;
     width: 100vw;
     height: 100vh;
@@ -75,7 +75,7 @@ const QrCodeWrapper = styled.div<{ offsetTop: number, qrOpened: boolean }>`
     background-color: rgba(36,31,51,0.8);
     backdrop-filter: blur(6px);
     padding: 6vh ${props => props.theme.biggerSpacing};
-    transition: top 400ms ease-out;
+    transition: top 300ms ease-in;
 `;
 
 const EventTitle = styled.div`

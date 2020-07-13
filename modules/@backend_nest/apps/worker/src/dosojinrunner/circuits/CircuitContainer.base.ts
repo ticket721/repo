@@ -212,6 +212,8 @@ export class CircuitContainerBase<InitialArguments = any> implements OnModuleIni
                 };
             }
 
+            this.logger.error(e);
+
             gem = new Gem().load(rawGemAfterError);
         }
 

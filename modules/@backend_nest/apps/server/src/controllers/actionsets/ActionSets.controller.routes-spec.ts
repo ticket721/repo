@@ -464,7 +464,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                             categoryId: event.categories[0],
                             price: {
                                 currency: 'Fiat',
-                                price: '100',
+                                price: '200',
                             },
                         })),
                     ],

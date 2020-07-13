@@ -60,6 +60,21 @@ export interface CartAuthorizations {
      * Fee for each currency paid
      */
     fees: string[];
+
+    /**
+     * Id of the payment intent already setup for the payment
+     */
+    paymentIntentId: string;
+
+    /**
+     * Secret id for the payment process
+     */
+    clientSecret: string;
+
+    /**
+     * Checkout actionset to use
+     */
+    checkoutActionSetId: string;
 }
 
 /**
@@ -216,6 +231,8 @@ export class CartInputHandlers implements OnModuleInit {
                         categoriesCount[categorySearchRes.response[0].id] = 0;
                     }
 
+                    categoriesCount[categorySearchRes.response[0].id] += 1;
+
                     saleErrors = [
                         ...saleErrors,
                         ...CategoryEntity.checkCategoryErrors(
@@ -224,8 +241,6 @@ export class CartInputHandlers implements OnModuleInit {
                             categoriesCount[categorySearchRes.response[0].id],
                         ),
                     ];
-
-                    categoriesCount[categorySearchRes.response[0].id] += 1;
 
                     groupIds[categorySearchRes.response[0].group_id] = [
                         ...(groupIds[categorySearchRes.response[0].group_id] || []),
@@ -399,12 +414,23 @@ export class CartInputHandlers implements OnModuleInit {
             }),
         ),
         fees: Joi.array().items(Joi.string()),
+        paymentIntentId: Joi.string(),
+        clientSecret: Joi.string(),
+        checkoutActionSetId: Joi.string(),
     });
 
     /**
      * Mandatory fields of the authorization steps
      */
-    authorizationsFields = ['authorizations', 'commitType', 'total', 'fees'];
+    authorizationsFields = [
+        'authorizations',
+        'commitType',
+        'total',
+        'fees',
+        'paymentIntentId',
+        'clientSecret',
+        'checkoutActionSetId',
+    ];
 
     /**
      * Input Handler of the Authorizations Step

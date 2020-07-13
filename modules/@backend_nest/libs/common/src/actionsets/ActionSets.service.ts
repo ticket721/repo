@@ -278,7 +278,7 @@ export class ActionSetsService extends CRUDExtension<ActionSetsRepository, Actio
         actionIdx: number,
         data: any,
     ): Promise<ServiceResponse<ActionSetEntity>> {
-        let actionSet;
+        let actionSet: ActionSet;
 
         if (typeof actionSetId === 'object') {
             actionSet = actionSetId;
@@ -308,6 +308,12 @@ export class ActionSetsService extends CRUDExtension<ActionSetsRepository, Actio
 
         actionSet.setStatus(`${actionSet.actions[actionIdx].type}:waiting` as ActionSetStatus);
         actionSet.actions[actionIdx].setStatus('waiting');
+
+        for (let idx = actionIdx; idx < actionSet.actions.length; ++idx) {
+            if (actionSet.actions[idx].status !== 'waiting') {
+                actionSet.actions[idx].setStatus('waiting');
+            }
+        }
 
         actionSet.setCurrentAction(actionIdx);
 
