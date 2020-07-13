@@ -20,6 +20,7 @@ export interface LocationCardProps extends React.ComponentProps<any> {
     wSeparator?: boolean;
     coords?: Coords;
     subtitle: string;
+    disabled?: boolean;
 }
 
 const Info = styled.span`
@@ -96,7 +97,7 @@ export const LocationCard: React.FunctionComponent<LocationCardProps & { classNa
     props: LocationCardProps,
 ): JSX.Element => {
     return (
-        <ClickableContainer onClick={() => openMap(props.location)}>
+        <ClickableContainer onClick={() => (!props.disabled ? openMap(props.location) : null)}>
             <CardContainer className={props.className} removeBg={props.removeBg}>
                 <IconContainer>
                     <Icon icon={'pin'} size={'16px'} color={props.iconColor} />
