@@ -131,12 +131,16 @@ export const TicketDetails: React.FC<TicketDetailsProps> = (props: TicketDetails
                 />
             </Details>
         </TicketContent>
-        <TransactionBtn
-            target={'_blank'}
-            href={process.env.REACT_APP_ETHERSCAN_URL + '/' + props.transactionHash}>
-            <span>{t('transaction_btn_label')}</span>
-            <Icon icon={'right-chevron'} size={'14px'} color={'rgba(255,255,255,0.9)'}/>
-        </TransactionBtn>
+        {
+            props.transactionHash ?
+              <TransactionBtn
+                target={'_blank'}
+                href={process.env.REACT_APP_ETHERSCAN_URL + '/' + props.transactionHash}>
+                  <span>{t('transaction_btn_label')}</span>
+                  <Icon icon={'right-chevron'} size={'14px'} color={'rgba(255,255,255,0.9)'}/>
+              </TransactionBtn> :
+              null
+        }
         <DynamicQrCode
         qrOpened={qrOpened}
         name={props.name}
