@@ -28,6 +28,7 @@ const TicketCard = ({ ticket }: TicketCardProps) => {
 const Container = styled.div`
     border-bottom-left-radius: ${props => props.theme.smallSpacing};
     border-bottom-right-radius: ${props => props.theme.smallSpacing};
+    overflow: hidden;
     width: calc(100vw - ${props => props.theme.biggerSpacing} * 3 - ${props => props.theme.smallSpacing});
 `;
 
