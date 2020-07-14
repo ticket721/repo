@@ -22,8 +22,9 @@ import { getImgPath }                      from '@frontend/core/lib/utils/images
 import { useDispatch, useSelector }        from 'react-redux';
 import { T721AppState }                    from '../../../redux';
 import { ResetTicket, StartRegenInterval } from '../../../redux/ducks/device_wallet';
-import { DynamicQrCode }       from '../DynamicQrCode';
-import { hashMessage, keccak256 } from 'ethers/utils';
+import { DynamicQrCode }                   from '../DynamicQrCode';
+import { hashMessage, keccak256 }          from 'ethers/utils';
+import { getEnv }                          from '@frontend/core/lib/src/utils/getEnv';
 
 interface EventDate {
     id: string;
@@ -135,7 +136,7 @@ export const TicketDetails: React.FC<TicketDetailsProps> = (props: TicketDetails
             props.transactionHash ?
               <TransactionBtn
                 target={'_blank'}
-                href={process.env.REACT_APP_ETHERSCAN_URL + '/' + props.transactionHash}>
+                href={getEnv().REACT_APP_ETHERSCAN_URL + '/' + props.transactionHash}>
                   <span>{t('transaction_btn_label')}</span>
                   <Icon icon={'right-chevron'} size={'14px'} color={'rgba(255,255,255,0.9)'}/>
               </TransactionBtn> :
