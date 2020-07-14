@@ -190,7 +190,7 @@ const forcedActionSetUpdate = (
 };
 
 const isForceUpdated = (remoteCart: ActionSetEntity, lastUpdate: Date) => {
-    return (lastUpdate !== null && new Date(remoteCart.updated_at).getTime() >= lastUpdate.getTime());
+    return (lastUpdate !== null && new Date(remoteCart.updated_at).getTime() >= lastUpdate.getTime() && remoteCart.actions[0].status === 'complete');
 };
 
 const whilePayment = (
@@ -269,6 +269,7 @@ export const SyncedCart: React.FC<SyncedCartProps> = (props: SyncedCartProps): J
     const parsedActionData = JSON.parse(props.remoteCart.actions[0].data);
 
     if (!parsedActionData.fees || !parsedActionData.total) {
+        console.log('ya r');
         return <FullPageLoading/>;
     }
 
