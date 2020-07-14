@@ -55,8 +55,11 @@
         "inject_env": "node env_injector.js > /tmp/index.html && cp /tmp/index.html ./build/index.html",
         "start": "PORT=8100 react-scripts start",
         "build": "react-scripts --max_old_space_size=4096 build",
+        "build:prod": "react-scripts build",
         "test": "react-scripts test",
         "lint": "tslint --project .",
+        "inject_segment_key": "sed -i -e \"s/__REACT_APP_SEGMENT_API_KEY__/${REACT_APP_SEGMENT_API_KEY}/g\" ./build/index.html",
+        "inject_env_and_serve": "yarn inject_env && yarn inject_segment_key && serve -l 5000 ./build",
         "@lerna/postinstall": "echo '@frontend/t721-app has no postinstall'",
         "@lerna/postclean": "echo '@frontend/t721-app has no postclean'"
     },
