@@ -143,6 +143,11 @@ apps:
       hosts[1].paths[0].serviceName: "platform-staging--organizer--svc"
       hosts[1].paths[0].servicePort: "80"
 
+      hosts[2].name: "staging.ticket721.com"
+      hosts[2].paths[0].route: "/"
+      hosts[2].paths[0].serviceName: "platform-staging--t721app--svc"
+      hosts[2].paths[0].servicePort: "80"
+
       route53.keyId: "${CONFIG_STAGING_ROUTE53_KEY}"
       route53.hostedzone: "${CONFIG_STAGING_ROUTE53_HOSTEDZONE}"
       route53.region: "eu-west-3"
@@ -273,6 +278,9 @@ apps:
       config.frontEthereumNode.headers: '\{\\"Authorization\\": \\"Bearer ${CONFIG_STAGING_ROCKSIDE_TOKEN}\\"\}'
 
       config.organizer.segmentApiKey: "${CONFIG_STAGING_ORGANIZER_SEGMENT_API_KEY}"
+      config.t721app.segmentApiKey: "${CONFIG_STAGING_T721APP_SEGMENT_API_KEY}"
+      config.t721app.publishableStripeApiKey: "${CONFIG_STAGING_T721APP_PUBLISHABLE_STRIPE_API_KEY}"
+      config.etherscanUrl: "${CONFIG_STAGING_ETHERSCAN_URL}"
 
       server.image.repository: "097558125954.dkr.ecr.eu-west-3.amazonaws.com/ticket721/server"
       server.image.tag: "${TAG}"
@@ -285,4 +293,7 @@ apps:
 
       organizer.image.repository: "097558125954.dkr.ecr.eu-west-3.amazonaws.com/ticket721/organizer"
       organizer.image.tag: "${TAG}"
+
+      t721app.image.repository: "097558125954.dkr.ecr.eu-west-3.amazonaws.com/ticket721/t721app"
+      t721app.image.tag: "${TAG}"
 
