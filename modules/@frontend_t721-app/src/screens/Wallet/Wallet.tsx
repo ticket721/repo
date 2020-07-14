@@ -85,6 +85,7 @@ const Wallet: React.FC = () => {
                     ticketsResp.data?.tickets?.length > 0 ?
                         <TicketList>
                             <Flicking
+                                classPrefix={'listing'}
                                 overflow={true}
                                 collectStatistics={false}
                                 gap={32}
@@ -149,12 +150,24 @@ const TicketList = styled.div`
     padding: 0 ${props => props.theme.biggerSpacing};
     overflow: hidden;
     height: calc(100vh - 3 * ${props => props.theme.doubleSpacing});
+
+    .listing-viewport {
+        height: calc(100vh - 3 * ${props => props.theme.doubleSpacing}) !important;
+
+        .listing-camera {
+            display: flex;
+            align-items: center;
+        }
+    }
 `;
 
 const Dots = styled.div`
+    position: absolute;
+    bottom: 3vh;
+    left: 0;
     display: flex;
     justify-content: center;
-    margin-top: ${props => props.theme.regularSpacing };
+    width: 100%;
 `;
 
 const Dot = styled.div<{ selected: boolean }>`
