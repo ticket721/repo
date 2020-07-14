@@ -12,10 +12,10 @@ import { checkFormatDate }          from '@frontend/core/lib/utils/date';
 
 const Ticket: React.FC = () => {
     const { id } = useParams();
-    const [ t ] = useTranslation('ticket');
+    const [ t ] = useTranslation(['ticket', 'common']);
     const token = useSelector((state: T721AppState) => state.auth.token.value);
     const [uuid] = useState<string>(v4() + '@ticket-details');
-    const { response: ticketResp } = useRequest<TicketsSearchResponseDto>({
+    const { response: ticketResp, force } = useRequest<TicketsSearchResponseDto>({
         method: 'tickets.search',
         args: [
             token,
@@ -29,12 +29,12 @@ const Ticket: React.FC = () => {
     },
     uuid);
 
-    if (ticketResp.error) {
-        return (<Error message={t('fetch_error')}/>);
-    }
-
     if (ticketResp.loading) {
         return <FullPageLoading/>;
+    }
+
+    if (ticketResp.error) {
+        return (<Error message={t('fetch_error')} retryLabel={t('common:retrying_in')} onRefresh={force}/>);
     }
 
     if (ticketResp.data?.tickets?.length > 0) {

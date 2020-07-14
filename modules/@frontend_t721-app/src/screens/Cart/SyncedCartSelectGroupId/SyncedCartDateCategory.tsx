@@ -8,6 +8,7 @@ import { DateEntity }                   from '@common/sdk/lib/@backend_nest/libs
 import { uuidEq }                       from '@common/global';
 import { getT721TokenPrice }            from '../../../utils/prices';
 import { formatShort }                  from '@frontend/core/lib/utils/date';
+import { useTranslation }               from 'react-i18next';
 
 export interface SyncedCartDateCategoryProps {
     category: CategoryEntity;
@@ -17,22 +18,20 @@ export interface SyncedCartDateCategoryProps {
 
 export const SyncedCartDateCategory: React.FC<SyncedCartDateCategoryProps> = (props: SyncedCartDateCategoryProps): JSX.Element => {
 
+    const [t] = useTranslation(['cart', 'common']);
+
     if (props.dates.response.loading) {
         return <Skeleton ready={false} showLoadingAnimation={true} type={'text'} rows={2}>
             <></>
         </Skeleton>;
     }
 
-    if (props.dates.response.error) {
-        return <Error message={'Cannot load date'}/>;
+    if (props.dates.response.error ||
+        props.dates.response.data.dates.findIndex((date: DateEntity): boolean => uuidEq(props.category.parent_id, date.id)) === -1) {
+        return <Error message={t('cannot_fetch_date')} retryLabel={t('common:retrying_in')} onRefresh={props.dates.force}/>;
     }
 
     const dateIdx = props.dates.response.data.dates.findIndex((date: DateEntity): boolean => uuidEq(props.category.parent_id, date.id));
-
-    if (dateIdx === -1) {
-        return <Error message={'Cannot find date'}/>;
-    }
-
     const dateEntity: DateEntity = props.dates.response.data.dates[dateIdx];
     const serverUrl = `${process.env.REACT_APP_T721_SERVER_PROTOCOL}://${process.env.REACT_APP_T721_SERVER_HOST}:${process.env.REACT_APP_T721_SERVER_PORT}/static`;
     const imageUrl = `${serverUrl}/${dateEntity.metadata.avatar}`;

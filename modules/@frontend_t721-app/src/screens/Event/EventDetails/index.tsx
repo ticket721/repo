@@ -2,14 +2,15 @@ import React, { useState } from 'react';
 import {
     Error,
     FullPageLoading,
-}                                      from '@frontend/flib-react/lib/components';
-import { useRequest }                  from '@frontend/core/lib/hooks/useRequest';
-import { useSelector }                 from 'react-redux';
-import { T721AppState }                from '../../../redux';
-import { v4 }                          from 'uuid';
-import { DatesSearchResponseDto }      from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
-import { DateEntity }                  from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
-import { EventCategoryFetcher }        from './EventCategoryFetcher';
+}                                 from '@frontend/flib-react/lib/components';
+import { useRequest }             from '@frontend/core/lib/hooks/useRequest';
+import { useSelector }            from 'react-redux';
+import { T721AppState }           from '../../../redux';
+import { v4 }                     from 'uuid';
+import { DatesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
+import { DateEntity }             from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
+import { EventCategoryFetcher }   from './EventCategoryFetcher';
+import { useTranslation }         from 'react-i18next';
 
 export interface EventDetailsProps {
     id: string;
@@ -19,6 +20,7 @@ export const EventDetails: React.FC<EventDetailsProps> = (props: EventDetailsPro
 
     const {token} = useSelector((state: T721AppState) => ({token: state.auth.token?.value}));
     const [uuid] = useState(v4());
+    const [t] = useTranslation(['event', 'common']);
 
     const dateQuery = useRequest<DatesSearchResponseDto>({
         method: 'dates.search',
@@ -38,14 +40,13 @@ export const EventDetails: React.FC<EventDetailsProps> = (props: EventDetailsPro
     }
 
     if (dateQuery.response.error) {
-        return <Error message={'Cannot find event'}/>
+        return <Error message={t('error_cannot_fetch_dates')} retryLabel={t('common:retrying_in')} onRefresh={dateQuery.force}/>
     }
-
 
     const date: DateEntity = dateQuery.response.data.dates.length ? dateQuery.response.data.dates[0] : null;
 
     if (date === null) {
-        return <Error message={'Cannot find event'}/>
+        return <Error message={t('error_cannot_fetch_dates')} retryLabel={t('common:retrying_in')} onRefresh={dateQuery.force}/>
     }
 
     return <EventCategoryFetcher date={date}/>

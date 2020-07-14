@@ -1,6 +1,6 @@
-import { ActionSetEntity }            from '@common/sdk/lib/@backend_nest/libs/common/src/actionsets/entities/ActionSet.entity';
-import React, { useState } from 'react';
-import { useSelector }   from 'react-redux';
+import { ActionSetEntity }              from '@common/sdk/lib/@backend_nest/libs/common/src/actionsets/entities/ActionSet.entity';
+import React, { useCallback, useState } from 'react';
+import { useSelector }                  from 'react-redux';
 import { T721AppState }             from '../../redux';
 import { v4 }                       from 'uuid';
 import { useLazyRequest }           from '@frontend/core/lib/hooks/useLazyRequest';
@@ -17,6 +17,7 @@ import { SyncedCartNotifyErrors }  from './SyncedCartNotifyErrors/SyncedCartNoti
 import { SyncedCart }              from './SyncedCart/SyncedCart';
 import { SyncedCartEmpty }         from './SyncedCartEmpty/SyncedCartEmpty';
 import { StripeCheckout }          from './StripeCheckout/StripeCheckout';
+import { useTranslation }          from 'react-i18next';
 
 export interface CartManagerProps {
     cart: ActionSetEntity;
@@ -79,27 +80,32 @@ export const CartAddPendingTickets: React.FC<CartAddPendingTIcketsProps> = (prop
     const [uuid] = useState(v4());
     const { token, cart } = useSelector((state: T721AppState) => ({ token: state.auth.token?.value, cart: state.cart }));
     const ticketsSelection = useLazyRequest<ActionsUpdateResponseDto>('cart.ticketSelections', `CartManager@${uuid}`);
+    const [t] = useTranslation(['cart', 'common']);
+
+    const lazyReq = useCallback(() => {
+        const tickets = convertPendingToMintingFormat(cart);
+
+        ticketsSelection.lazyRequest([
+            token,
+            props.cart.id,
+            {
+                tickets,
+            },
+        ], {
+            force: true
+        });
+    }, [ticketsSelection, cart, token, props.cart]);
 
     useDeepEffect(() => {
 
-        const tickets = convertPendingToMintingFormat(cart);
-
         if (!ticketsSelection.response.called) {
-            ticketsSelection.lazyRequest([
-                token,
-                props.cart.id,
-                {
-                    tickets,
-                },
-            ], {
-                force: true
-            });
+            lazyReq();
         }
 
-    }, [props.cart]);
+    }, [ticketsSelection, lazyReq]);
 
     if (ticketsSelection.response.error) {
-        return <Error message={'Cannot update cart'}/>;
+        return <Error message={t('error_cannot_update_cart')} retryLabel={t('common:retrying_in')} onRefresh={lazyReq}/>;
     }
 
     return <FullPageLoading/>;
@@ -112,6 +118,7 @@ export interface SyncedCartManagerProps {
 
 export const SyncedCartManager: React.FC<SyncedCartManagerProps> = (props: SyncedCartManagerProps): JSX.Element => {
     const ticketSelectionsAction = props.remoteCart.actions[0];
+    const [t] = useTranslation(['cart', 'common']);
 
     if (ticketSelectionsAction.error) {
         const errorData = JSON.parse(ticketSelectionsAction.error);
@@ -129,7 +136,7 @@ export const SyncedCartManager: React.FC<SyncedCartManagerProps> = (props: Synce
                 return <SyncedCartEmpty/>
             }
             default: {
-                return <Error message={'unexpected error'}/>;
+                return <Error message={t('error_cannot_fetch_cart')}/>;
             }
         }
     }

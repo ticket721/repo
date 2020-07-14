@@ -17,7 +17,7 @@ export interface SyncedCartEventCategoryProps {
 
 export const SyncedCartEventCategory: React.FC<SyncedCartEventCategoryProps> = (props: SyncedCartEventCategoryProps): JSX.Element => {
 
-    const [t] = useTranslation('cart');
+    const [t] = useTranslation(['cart', 'common']);
 
     if (props.dates.response.loading) {
         return <Skeleton ready={false} showLoadingAnimation={true} type={'text'} rows={2}>
@@ -26,7 +26,7 @@ export const SyncedCartEventCategory: React.FC<SyncedCartEventCategoryProps> = (
     }
 
     if (props.dates.response.error) {
-        return <Error message={'Cannot load date'}/>;
+        return <Error message={t('error_cannot_fetch_dates')} retryLabel={t('common:retrying_in')} onRefresh={props.dates.force}/>;
     }
 
     const metadatas = props.dates.response.data.dates

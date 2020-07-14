@@ -94,7 +94,7 @@ export const SyncedCartGlobalSection: React.FC<SyncedCartGlobalSectionProps> = (
     const [selection, setSelection] = useState(0);
     const [manual, setManual] = useState(false);
     const dispatch = useDispatch();
-    const [t] = useTranslation('cart');
+    const [t] = useTranslation(['cart', 'common']);
 
     useEffect(() => {
         const timeoutId = setTimeout(() => {
@@ -125,7 +125,7 @@ export const SyncedCartGlobalSection: React.FC<SyncedCartGlobalSectionProps> = (
     }
 
     if (dateReq.response.error || dateReq.response.data.dates.length === 0) {
-        return <Error message={'Cannot fetch date'}/>;
+        return <Error message={t('error_cannot_fetch_dates')} retryLabel={t('common:retrying_in')} onRefresh={dateReq.force}/>;
     }
 
     const date = dateReq.response.data.dates[getIdx(dateReq.response.data.dates.length, selection)];

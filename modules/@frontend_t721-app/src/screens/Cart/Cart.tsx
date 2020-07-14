@@ -9,6 +9,7 @@ import { FullPageLoading, Error }   from '@frontend/flib-react/lib/components';
 import { CartCreation }             from './CartCreation';
 import { CartManager }              from './CartManager';
 import styled                       from 'styled-components';
+import { useTranslation }           from 'react-i18next';
 
 const CartContainer = styled.div`
 `;
@@ -17,6 +18,7 @@ const Cart: React.FC = () => {
 
     const { token } = useSelector((state: T721AppState) => ({ token: state.auth.token?.value }));
     const [uuid] = useState(v4());
+    const [t] = useTranslation(['cart', 'common']);
 
     const cartResponse = useRequest<ActionsSearchResponseDto>({
         method: 'actions.search',
@@ -43,7 +45,7 @@ const Cart: React.FC = () => {
     }
 
     if (cartResponse.response.error) {
-        return <Error message={'Cannot recover cart'}/>;
+        return <Error message={t('error_cannot_fetch_cart')} retryLabel={t('common:retrying_in')} onRefresh={cartResponse.force}/>;
     }
 
     if (cartResponse.response.data.actionsets.length === 0) {

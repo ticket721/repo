@@ -64,7 +64,7 @@ export const WalletHeader: React.FunctionComponent<WalletHeaderProps & { classNa
             <div>
                 {props.profileHeader ? <h1>{props.username}</h1> : <h3>{props.username}</h3>}
                 <Amount>
-                    <span>€</span> {props.balance || '...'}
+                    <span>€</span> {props.balance ? parseInt(props.balance, 10) / 100 : '...'}
                 </Amount>
             </div>
         </Container>

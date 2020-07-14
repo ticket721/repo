@@ -144,6 +144,7 @@ const UpdateItemDataReducer: Reducer<CacheState, IUpdateItemData> = (
         [action.key]: {
             ...state.items[action.key],
             data: action.data,
+            error: undefined,
         },
     },
 });
@@ -158,6 +159,7 @@ const UpdateItemErrorReducer: Reducer<CacheState, IUpdateItemError> = (
         [action.key]: {
             ...state.items[action.key],
             error: action.error,
+            data: undefined,
         },
     },
 });

@@ -27,8 +27,8 @@ export const DatesFetcher: React.FC<DatesFetcherProps> = (
         categoryName,
     }: DatesFetcherProps) => {
     const token = useSelector((state: T721AppState) => state.auth.token.value);
-    const [ t ] = useTranslation('wallet');
-    const { response: datesResp } = useRequest<DatesSearchResponseDto>({
+    const [ t ] = useTranslation(['wallet', 'common']);
+    const { response: datesResp, force } = useRequest<DatesSearchResponseDto>({
             method: 'dates.search',
             args: [
                 token,
@@ -47,7 +47,7 @@ export const DatesFetcher: React.FC<DatesFetcherProps> = (
         uuid);
 
     if (datesResp.error || datesResp.data?.dates?.length === 0) {
-        return (<Error message={t('fetch_error')}/>);
+        return (<Error message={t('fetch_error')} retryLabel={t('common:retrying_in')} onRefresh={force}/>);
     }
 
     if (datesResp.loading) {

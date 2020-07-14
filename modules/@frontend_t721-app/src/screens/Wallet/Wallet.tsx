@@ -21,14 +21,14 @@ import { UsersSetDeviceAddressResponseDto } from '@common/sdk/lib/@backend_nest/
 const Wallet: React.FC = () => {
     const history = useHistory();
     const [ ticketIdx, setTicketIdx ] = useState<number>(0);
-    const { t } = useTranslation('wallet');
+    const { t } = useTranslation(['wallet', 'common']);
     const [ token, address ] = useSelector((state: T721AppState) => [ state.auth.token.value, state.auth.user.address ]);
     const devicePk = useSelector((state: T721AppState) => state.deviceWallet.pk);
     const [uuid] = useState<string>(v4() + '@wallet');
 
     const { lazyRequest: postAddress } = useLazyRequest<UsersSetDeviceAddressResponseDto>('users.setDeviceAddress', uuid);
 
-    const { response: ticketsResp } = useRequest<TicketsSearchResponseDto>({
+    const { response: ticketsResp, force } = useRequest<TicketsSearchResponseDto>({
         method: 'tickets.search',
         args: [
             token,
@@ -71,7 +71,7 @@ const Wallet: React.FC = () => {
     }
 
     if (ticketsResp.error) {
-        return (<Error message={t('fetch_error')}/>);
+        return (<Error message={t('fetch_error')} retryLabel={t('common:retrying_in')} onRefresh={force}/>);
     }
 
     return (
