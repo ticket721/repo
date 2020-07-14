@@ -24,7 +24,7 @@ import { T721AppState }                    from '../../../redux';
 import { ResetTicket, StartRegenInterval } from '../../../redux/ducks/device_wallet';
 import { DynamicQrCode }                   from '../DynamicQrCode';
 import { hashMessage, keccak256 }          from 'ethers/utils';
-import { getEnv }                          from '@frontend/core/lib/src/utils/getEnv';
+import { getEnv }                          from '@frontend/core/lib/utils/getEnv';
 
 interface EventDate {
     id: string;

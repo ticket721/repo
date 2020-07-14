@@ -9,7 +9,7 @@ import { uuidEq }                       from '@common/global';
 import { getT721TokenPrice }            from '../../../utils/prices';
 import { formatShort }                  from '@frontend/core/lib/utils/date';
 import { useTranslation }               from 'react-i18next';
-import { getImgPath }                   from '@frontend/core/lib/src/utils/images';
+import { getImgPath }                   from '@frontend/core/lib/utils/images';
 
 export interface SyncedCartDateCategoryProps {
     category: CategoryEntity;

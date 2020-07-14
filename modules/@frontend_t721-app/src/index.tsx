@@ -28,7 +28,7 @@ import { cartInitialState, CartReducer, cartSaga }                         from 
 import { deviceWalletInitialState, DeviceWalletReducer, deviceWalletSaga } from './redux/ducks/device_wallet';
 import {Elements}                                                          from '@stripe/react-stripe-js';
 import {loadStripe}                                                        from '@stripe/stripe-js';
-import { getEnv }                                                          from '@frontend/core/lib/src/utils/getEnv';
+import { getEnv }                                                          from '@frontend/core/lib/utils/getEnv';
 // tslint:disable-next-line:no-var-requires
 const { SubspaceProvider } = require('@embarklabs/subspace-react');
 
