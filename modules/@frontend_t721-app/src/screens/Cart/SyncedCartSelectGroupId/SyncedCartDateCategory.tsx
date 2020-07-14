@@ -9,6 +9,7 @@ import { uuidEq }                       from '@common/global';
 import { getT721TokenPrice }            from '../../../utils/prices';
 import { formatShort }                  from '@frontend/core/lib/utils/date';
 import { useTranslation }               from 'react-i18next';
+import { getImgPath }                   from '@frontend/core/lib/utils/images';
 
 export interface SyncedCartDateCategoryProps {
     category: CategoryEntity;
@@ -33,8 +34,7 @@ export const SyncedCartDateCategory: React.FC<SyncedCartDateCategoryProps> = (pr
 
     const dateIdx = props.dates.response.data.dates.findIndex((date: DateEntity): boolean => uuidEq(props.category.parent_id, date.id));
     const dateEntity: DateEntity = props.dates.response.data.dates[dateIdx];
-    const serverUrl = `${process.env.REACT_APP_T721_SERVER_PROTOCOL}://${process.env.REACT_APP_T721_SERVER_HOST}:${process.env.REACT_APP_T721_SERVER_PORT}/static`;
-    const imageUrl = `${serverUrl}/${dateEntity.metadata.avatar}`;
+    const imageUrl = getImgPath(dateEntity.metadata.avatar);
 
     return <SingleEvent
         customMarginBottom={'0px'}

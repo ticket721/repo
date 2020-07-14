@@ -9,6 +9,7 @@ import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 import * as express from 'express';
 import { InstanceSignature, OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
 import cors from 'cors';
+import { json } from 'body-parser';
 
 /**
  * Core Logger
@@ -36,6 +37,8 @@ async function main() {
     );
 
     app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
+
+    app.use(json({ limit: '6mb' }));
 
     app.use(
         '/static',

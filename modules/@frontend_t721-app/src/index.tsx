@@ -17,21 +17,22 @@ import { GlobalStyles }                                        from '@frontend/f
 import { customThemes }                                        from '@frontend/flib-react/lib/config/theme';
 import { EnvValidator }                                        from '@frontend/core/lib/components/EnvValidator';
 import { T721AppEnvSchema }                                    from './utils/env';
-import MediaQuery                                              from 'react-responsive';
-import MobileApp                                               from './MobileApp';
-import Web3                                                    from 'web3';
-import { getWeb3 }                                             from '@frontend/core/lib/subspace/getWeb3';
-import { LocationReducer, locationInitialState, locationSaga } from './redux/ducks/location';
-import { T721AppState }                                        from './redux';
-import { searchInitialState, SearchReducer }                   from './redux/ducks/search';
+import MediaQuery                                                          from 'react-responsive';
+import MobileApp                                                           from './MobileApp';
+import Web3                                                                from 'web3';
+import { getWeb3 }                                                         from '@frontend/core/lib/subspace/getWeb3';
+import { LocationReducer, locationInitialState, locationSaga }             from './redux/ducks/location';
+import { T721AppState }                                                    from './redux';
+import { searchInitialState, SearchReducer }                               from './redux/ducks/search';
 import { cartInitialState, CartReducer, cartSaga }                         from './redux/ducks/cart';
 import { deviceWalletInitialState, DeviceWalletReducer, deviceWalletSaga } from './redux/ducks/device_wallet';
-import {Elements}                                              from '@stripe/react-stripe-js';
-import {loadStripe}                                            from '@stripe/stripe-js';
+import {Elements}                                                          from '@stripe/react-stripe-js';
+import {loadStripe}                                                        from '@stripe/stripe-js';
+import { getEnv }                                                          from '@frontend/core/lib/utils/getEnv';
 // tslint:disable-next-line:no-var-requires
 const { SubspaceProvider } = require('@embarklabs/subspace-react');
 
-const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_API_KEY);
+const stripePromise = loadStripe(getEnv().REACT_APP_STRIPE_API_KEY);
 
 const store: Store<T721AppState> = configureStore<any>({
     location: LocationReducer,
