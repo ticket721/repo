@@ -1,5 +1,4 @@
 import {
-    BN,
     Connector,
     Dosojin,
     Gem,
@@ -98,34 +97,11 @@ export class TokenMinterOperation extends Operation {
             .redeemTokens(userAddress, amount, minter, code, authorization.signature)
             .encodeABI();
 
-        const gasLimitEstimation = await this.txsService.estimateGasLimit(
-            sender,
-            rawInstance._address,
-            encodedTransactionCall,
-        );
-
-        if (gasLimitEstimation.error) {
-            return gem.error(this.dosojin, `Cannot estimate gas limit: ${gasLimitEstimation.error}`);
-        }
-
-        const gasPriceEstimation = await this.txsService.estimateGasPrice(gasLimitEstimation.response);
-
-        if (gasPriceEstimation.error) {
-            return gem.error(this.dosojin, `Cannot estimate gas price: ${gasPriceEstimation.error}`);
-        }
-
         const tx = await this.txsService.sendRawTransaction(sender, rawInstance._address, '0', encodedTransactionCall);
 
         if (tx.error) {
             return gem.error(this.dosojin, `An error occured while trying to create transaction: ${tx.error}`);
         }
-
-        gem.addCost(
-            this.dosojin,
-            new BN(gasPriceEstimation.response).mul(new BN(gasLimitEstimation.response)),
-            'crypto_eth',
-            `Token Minting Transaction Fees`,
-        );
 
         gem.setState<TokenMinterArguments & TokenMinterTx>(this.dosojin, {
             ...state,
