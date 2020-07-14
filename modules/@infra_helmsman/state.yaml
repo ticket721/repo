@@ -249,7 +249,7 @@ apps:
       config.jwt.secret: "${CONFIG_STAGING_JWT_SECRET}"
       config.jwt.expiration: "12h"
 
-      config.txs.blockThreshold: "2"
+      config.txs.blockThreshold: "0"
       config.txs.blockPollingRate: "1000"
       config.txs.targetGasPrice: "15"
       config.txs.gasLimit: "1000000"
