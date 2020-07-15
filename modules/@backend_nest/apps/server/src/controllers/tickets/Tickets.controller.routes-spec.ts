@@ -34,29 +34,6 @@ export default function(getCtx: () => { ready: Promise<void> }) {
 
                 const event = await createExpensiveEvent(token, sdk);
 
-                const amountReceived = 10370;
-
-                const validPaymentIntentId = await createPaymentIntent({
-                    charges: {
-                        data: [
-                            {
-                                amount_refunded: 89630,
-                                payment_method_details: {
-                                    type: 'card',
-                                    card: {
-                                        country: 'FR',
-                                    },
-                                },
-                            },
-                        ],
-                    } as Stripe.ApiList<Stripe.Charge>,
-                    amount: 100000,
-                    payment_method_types: ['card'],
-                    status: 'succeeded',
-                    currency: 'eur',
-                    amount_received: amountReceived,
-                });
-
                 const cartActionSetRes = await sdk.actions.create(token, {
                     name: 'cart_create',
                     arguments: {},
@@ -133,29 +110,6 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 } = await getSDKAndUser(getCtx);
 
                 const event = await createExpensiveEvent(token, sdk);
-
-                const amountReceived = 10370;
-
-                const validPaymentIntentId = await createPaymentIntent({
-                    charges: {
-                        data: [
-                            {
-                                amount_refunded: 89630,
-                                payment_method_details: {
-                                    type: 'card',
-                                    card: {
-                                        country: 'FR',
-                                    },
-                                },
-                            },
-                        ],
-                    } as Stripe.ApiList<Stripe.Charge>,
-                    amount: 100000,
-                    payment_method_types: ['card'],
-                    status: 'succeeded',
-                    currency: 'eur',
-                    amount_received: amountReceived,
-                });
 
                 const cartActionSetRes = await sdk.actions.create(token, {
                     name: 'cart_create',
@@ -237,29 +191,6 @@ export default function(getCtx: () => { ready: Promise<void> }) {
 
                 const event = await createExpensiveEvent(token, sdk);
 
-                const amountReceived = 10370;
-
-                const validPaymentIntentId = await createPaymentIntent({
-                    charges: {
-                        data: [
-                            {
-                                amount_refunded: 89630,
-                                payment_method_details: {
-                                    type: 'card',
-                                    card: {
-                                        country: 'FR',
-                                    },
-                                },
-                            },
-                        ],
-                    } as Stripe.ApiList<Stripe.Charge>,
-                    amount: 100000,
-                    payment_method_types: ['card'],
-                    status: 'succeeded',
-                    currency: 'eur',
-                    amount_received: amountReceived,
-                });
-
                 const cartActionSetRes = await sdk.actions.create(token, {
                     name: 'cart_create',
                     arguments: {},
@@ -336,29 +267,6 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 } = await getSDKAndUser(getCtx);
 
                 const event = await createExpensiveEvent(token, sdk);
-
-                const amountReceived = 10370;
-
-                const validPaymentIntentId = await createPaymentIntent({
-                    charges: {
-                        data: [
-                            {
-                                amount_refunded: 89630,
-                                payment_method_details: {
-                                    type: 'card',
-                                    card: {
-                                        country: 'FR',
-                                    },
-                                },
-                            },
-                        ],
-                    } as Stripe.ApiList<Stripe.Charge>,
-                    amount: 100000,
-                    payment_method_types: ['card'],
-                    status: 'succeeded',
-                    currency: 'eur',
-                    amount_received: amountReceived,
-                });
 
                 const cartActionSetRes = await sdk.actions.create(token, {
                     name: 'cart_create',

@@ -35,7 +35,7 @@ export class SearchableField<FieldType> {
     })
     @IsArray()
     @IsOptional()
-    $in?: [FieldType];
+    $in?: FieldType[];
 
     /**
      * Non-inclusion requirement
