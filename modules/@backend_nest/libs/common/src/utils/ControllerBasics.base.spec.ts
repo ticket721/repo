@@ -691,24 +691,6 @@ describe('Controller Basics', function() {
                 entity_value: 'abcd',
             } as RightEntity;
 
-            const entityQuery = {
-                body: {
-                    query: {
-                        bool: {
-                            must: {
-                                terms: {
-                                    id: ['abcd'],
-                                },
-                            },
-                        },
-                    },
-                },
-            };
-
-            const entity = {
-                id: 'abcd',
-            };
-
             const query: EventEntity = {
                 address: 'mdr',
                 categories: [],

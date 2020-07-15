@@ -4731,6 +4731,18 @@
     ethereumjs-wallet "^0.6.3"
     json-rpc-engine "^5.1.8"
 
+"@rocksideio/rockside-wallet-sdk@ticket721/rockside-wallet-sdk-js#master":
+  version "0.3.7"
+  resolved "https://codeload.github.com/ticket721/rockside-wallet-sdk-js/tar.gz/cf0e1a05f09e5eb4fd9d2c2f4f31d2b2ab58a8f4"
+  dependencies:
+    bip39 "^3.0.2"
+    cross-fetch "^3.0.4"
+    eth-json-rpc-middleware "^4.4.1"
+    eth-sig-util "^2.5.2"
+    ethereumjs-util "^6.2.0"
+    ethereumjs-wallet "^0.6.3"
+    json-rpc-engine "^5.1.8"
+
 "@sambego/storybook-state@2.0.1":
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/@sambego/storybook-state/-/storybook-state-2.0.1.tgz#862096913e708cbdeae32b0d2256fc59c254699b"
