@@ -68,7 +68,7 @@ cd modules/@backend_migrations && env CASSANDRA_HOSTS=127.0.0.1 CASSANDRA_PORT=3
 
 ### 5. Starting the backend stack
 
-To start the backend stack, you will need to do the steps `1`, `2`, `3` and `4`. Running these manually can be pretty time consumming. I advise you to create a terminal shortcut in order to directly run the proper commands and get the stack up and running quickly.
+To start the backend stack, you will need to do the steps `1`, `2` and `3`. Running these manually can be pretty time consumming. I advise you to create a terminal shortcut in order to directly run the proper commands and get the stack up and running quickly.
 
 In the first terminal setup, this is what you should do:
 
@@ -88,15 +88,15 @@ ________________________________________________________________________________
 |                                                                                            |
 |                                                                                            |
 |____________________________________________________________________________________________|
-| $> cd modules/@common_global && yarn watch   | $> cd modules/@common_sdk && yarn watch     |
-|    (step 2)                                  |    (step 2)                                 |
-|                                              |                                             |
-|                                              |                                             |
-|                                              |                                             |
-|                                              |                                             |
-|                                              |                                             |
-|______________________________________________|_____________________________________________|
 ```
+
+Run the watchers with t721cli with the following command: `(step 2)`
+
+```t721cli repo_run_watchers```
+
+You can also install `multitail` to monitor watcher logs with:
+
+```multitail -s 2 $(t721cli repo_log_watchers)```
 
 Keep these always open. You will have to wait for the docker-compose command to show you when `elassandra` is ready. The console will clearly state `Elassandra is ready`. Should take ~1 minute, perfect timing to get a coffee ! Once `elassandra` and your coffee are ready, we need to run the migrations.
 

@@ -3,7 +3,7 @@ const { goback, goroot } = require('../root');
 const path = require('path')
 
 const dependencies = async () => {
-    await run('npm install --global lerna yarn truffle@5.0.18\n');
+    await run('npm install --global lerna yarn truffle@5.0.18 pm2');
 };
 
 const submodules = async () => {
