@@ -1,5 +1,5 @@
-import { StatusBarMargin }          from '../utils/StatusBarMargin';
-import { NavbarMargin }             from '../utils/NavbarMargin';
+import { StatusBarMargin } from '@frontend/core/lib/utils/StatusBarMargin';
+import { NavbarMargin } from '@frontend/core/lib/utils/NavbarMargin';
 import ProfileRoot                  from '@frontend/core/lib/components/Profile/Root';
 import React, { useState }          from 'react';
 import { useSelector }              from 'react-redux';
