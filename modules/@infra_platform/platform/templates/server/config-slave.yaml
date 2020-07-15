@@ -61,5 +61,6 @@ data:
     ROCKSIDE_OPTS_BASE_URL={{ required "[server] Missing config.rockside.baseUrl value" .Values.config.rockside.baseUrl }}
     ROCKSIDE_OPTS_NETWORK_ID={{ required "[server] Missing config.rockside.network_id value" .Values.config.rockside.network_id }}
     ROCKSIDE_OPTS_NETWORK_NAME={{ required "[server] Missing config.rockside.network_name value" .Values.config.rockside.network_name }}
+    ROCKSIDE_FORWARDER_ADDRESS={{ required "[server] Missing config.rockside.forwarder_address value" .Values.config.rockside.forwarder_address }}
 
     MINTER_INDEX=0
