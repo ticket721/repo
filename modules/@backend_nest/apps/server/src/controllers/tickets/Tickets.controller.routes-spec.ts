@@ -34,7 +34,6 @@ export default function(getCtx: () => { ready: Promise<void> }) {
 
                 const event = await createExpensiveEvent(token, sdk);
 
-
                 const cartActionSetRes = await sdk.actions.create(token, {
                     name: 'cart_create',
                     arguments: {},
@@ -330,7 +329,6 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     }),
                     StatusCodes.Unauthorized,
                 );
-
             });
         });
     };

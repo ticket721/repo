@@ -330,8 +330,11 @@ export class RocksideMock
     /**
      * Mock method
      */
-    async getRelayParams(identity: string, account: string, channel: number): Promise<{ nonce: number, relayer: string }> {
+    async getRelayParams(
+        identity: string,
+        account: string,
+        channel: number,
+    ): Promise<{ nonce: number; relayer: string }> {
         throw new NestError(`Un-mocked method`);
     }
-
 }

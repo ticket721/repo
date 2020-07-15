@@ -1,10 +1,10 @@
-import { RocksideService }                         from '@lib/common/rockside/Rockside.service';
-import { RocksideApi }                                  from '@rocksideio/rockside-wallet-sdk/lib/api';
+import { RocksideService } from '@lib/common/rockside/Rockside.service';
+import { RocksideApi } from '@rocksideio/rockside-wallet-sdk/lib/api';
 import { deepEqual, instance, mock, spy, verify, when } from 'ts-mockito';
-import { Test }                                         from '@nestjs/testing';
-import { keccak256FromBuffer }                     from '@common/global';
-import { NestError }                               from '@lib/common/utils/NestError';
-import { ConfigService }                           from '@lib/common/config/Config.service';
+import { Test } from '@nestjs/testing';
+import { keccak256FromBuffer } from '@common/global';
+import { NestError } from '@lib/common/utils/NestError';
+import { ConfigService } from '@lib/common/config/Config.service';
 
 describe('Rockside Service', function() {
     const context: {
@@ -29,7 +29,7 @@ describe('Rockside Service', function() {
                 },
                 {
                     provide: ConfigService,
-                    useValue: instance(context.configServiceMock)
+                    useValue: instance(context.configServiceMock),
                 },
                 RocksideService,
             ],
@@ -146,8 +146,8 @@ describe('Rockside Service', function() {
             when(spied.createEOA()).thenResolve({
                 error: null,
                 response: {
-                    address: account
-                }
+                    address: account,
+                },
             });
             when(context.rocksideApiMock.createIdentity(forwarder, account)).thenResolve({
                 transactionHash,
@@ -181,10 +181,12 @@ describe('Rockside Service', function() {
             when(spied.createEOA()).thenResolve({
                 error: null,
                 response: {
-                    address: account
-                }
+                    address: account,
+                },
             });
-            when(context.rocksideApiMock.createIdentity(forwarder, account)).thenThrow(new NestError('an error occured'));
+            when(context.rocksideApiMock.createIdentity(forwarder, account)).thenThrow(
+                new NestError('an error occured'),
+            );
 
             // TRIGGER
             const res = await context.rocksideService.createIdentity();
@@ -208,7 +210,7 @@ describe('Rockside Service', function() {
             // MOCK
             when(spied.createEOA()).thenResolve({
                 error: 'eoa_creation_failure',
-                response: null
+                response: null,
             });
 
             // TRIGGER
@@ -221,7 +223,6 @@ describe('Rockside Service', function() {
             // CHECK CALLS
             verify(spied.createEOA()).once();
         });
-
     });
 
     describe('sendTransaction', function() {
