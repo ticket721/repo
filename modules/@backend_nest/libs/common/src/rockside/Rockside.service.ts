@@ -4,6 +4,7 @@ import { EIP712Signature, ExternalSigner } from '@ticket721/e712/lib';
 import { keccak256FromBuffer } from '@common/global';
 import { RocksideApi, TransactionOpts } from '@rocksideio/rockside-wallet-sdk/lib/api';
 import { ConfigService } from '@lib/common/config/Config.service';
+import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
 
 /**
  * Data model returned when creating an EAO
@@ -37,6 +38,11 @@ export class RocksideService {
      * @param configService
      */
     constructor(private readonly rockside: RocksideApi, private readonly configService: ConfigService) {}
+
+    /**
+     * Logger for the rockside service
+     */
+    private readonly logger = new WinstonLoggerService('rockside');
 
     /**
      * Utility to create an EOA using the Rockside API
@@ -120,6 +126,8 @@ export class RocksideService {
      * @param tx
      */
     async sendTransaction(tx: Omit<TransactionOpts, 'nonce' | 'gas'>): Promise<ServiceResponse<string>> {
+        this.logger.log(`Broadcasting transaction with following arguments: ${JSON.stringify(tx, null, 4)}`);
+
         try {
             const transactionCreationResponse = await this.rockside.sendTransaction(tx);
             return {

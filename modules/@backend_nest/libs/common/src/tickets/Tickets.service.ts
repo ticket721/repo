@@ -1,17 +1,17 @@
-import { Injectable }                               from '@nestjs/common';
-import { CRUDExtension }                            from '@lib/common/crud/CRUDExtension.base';
+import { Injectable } from '@nestjs/common';
+import { CRUDExtension } from '@lib/common/crud/CRUDExtension.base';
 import { BaseModel, InjectModel, InjectRepository } from '@iaminfinity/express-cassandra';
-import { TicketsRepository }  from '@lib/common/tickets/Tickets.repository';
-import { TicketEntity }       from '@lib/common/tickets/entities/Ticket.entity';
-import { ServiceResponse }    from '@lib/common/utils/ServiceResponse.type';
+import { TicketsRepository } from '@lib/common/tickets/Tickets.repository';
+import { TicketEntity } from '@lib/common/tickets/entities/Ticket.entity';
+import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
 import { TicketforgeService } from '@lib/common/contracts/Ticketforge.service';
-import BigNumber              from 'bignumber.js';
+import BigNumber from 'bignumber.js';
 import { contractCallHelper } from '@lib/common/utils/contractCall.helper';
-import { CategoriesService }  from '@lib/common/categories/Categories.service';
-import { MetadatasService }   from '@lib/common/metadatas/Metadatas.service';
-import { UsersService }       from '@lib/common/users/Users.service';
-import { UserDto }            from '@lib/common/users/dto/User.dto';
-import { RightsService }      from '@lib/common/rights/Rights.service';
+import { CategoriesService } from '@lib/common/categories/Categories.service';
+import { MetadatasService } from '@lib/common/metadatas/Metadatas.service';
+import { UsersService } from '@lib/common/users/Users.service';
+import { UserDto } from '@lib/common/users/dto/User.dto';
+import { RightsService } from '@lib/common/rights/Rights.service';
 
 /**
  * Data model required when pre-generating the tickets
@@ -56,9 +56,9 @@ export class TicketsService extends CRUDExtension<TicketsRepository, TicketEntit
      */
     constructor(
         @InjectRepository(TicketsRepository)
-            ticketsRepository: TicketsRepository,
+        ticketsRepository: TicketsRepository,
         @InjectModel(TicketEntity)
-            ticketEntity: BaseModel<TicketEntity>,
+        ticketEntity: BaseModel<TicketEntity>,
         private readonly ticketforgeService: TicketforgeService,
         private readonly categoriesService: CategoriesService,
         private readonly rightsService: RightsService,
@@ -165,8 +165,8 @@ export class TicketsService extends CRUDExtension<TicketsRepository, TicketEntit
             if (userRes.error) {
                 return {
                     error: userRes.error,
-                    response: null
-                }
+                    response: null,
+                };
             }
 
             const user: UserDto = userRes.response;
@@ -181,6 +181,13 @@ export class TicketsService extends CRUDExtension<TicketsRepository, TicketEntit
                 },
             ]);
 
+            if (rights.error) {
+                return {
+                    error: rights.error,
+                    response: null,
+                };
+            }
+
             const creationMetadataRes = await this.metadatasService.attach(
                 'ownership',
                 'ticket',
@@ -189,14 +196,14 @@ export class TicketsService extends CRUDExtension<TicketsRepository, TicketEntit
                         type: 'ticket',
                         id: ticketIDRes.response.toString(),
                         field: 'id',
-                    }
+                    },
                 ],
                 [
                     {
                         type: 'ticket',
                         id: ticketIDRes.response.toString(),
                         field: 'id',
-                    }
+                    },
                 ],
                 [],
                 {
@@ -208,15 +215,22 @@ export class TicketsService extends CRUDExtension<TicketsRepository, TicketEntit
                         email: user.email,
                         ticket: ticketIDRes.response.toString(),
                         address: user.address,
-                        categoryId: input.categoryId
+                        categoryId: input.categoryId,
                     },
                     bool: {
-                        valid: true
-                    }
+                        valid: true,
+                    },
                 },
                 user,
-                this
+                this,
             );
+
+            if (creationMetadataRes.error) {
+                return {
+                    error: creationMetadataRes.error,
+                    response: null,
+                };
+            }
 
             res.push(ticketEntityCreationRes.response);
 

@@ -49,22 +49,21 @@ import { EventsDeleteDatesResponseDto } from '@app/server/controllers/events/dto
 import { RightsService } from '@lib/common/rights/Rights.service';
 import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
 import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
-import { ApiResponses }                               from '@app/server/utils/ApiResponses.controller.decorator';
-import { MetadatasService }                           from '@lib/common/metadatas/Metadatas.service';
+import { ApiResponses } from '@app/server/utils/ApiResponses.controller.decorator';
+import { MetadatasService } from '@lib/common/metadatas/Metadatas.service';
 import { RocksideCreateEOAResponse, RocksideService } from '@lib/common/rockside/Rockside.service';
-import { ValidGuard }                 from '@app/server/authentication/guards/ValidGuard.guard';
-import { EventsCountInputDto }        from '@app/server/controllers/events/dto/EventsCountInput.dto';
-import { EventsCountResponseDto }     from '@app/server/controllers/events/dto/EventsCountResponse.dto';
-import { EventsWithdrawInputDto }     from '@app/server/controllers/events/dto/EventsWithdrawInput.dto';
-import { EventsWithdrawResponseDto }  from '@app/server/controllers/events/dto/EventsWithdrawResponse.dto';
-import { contractCallHelper }         from '@lib/common/utils/contractCall.helper';
-import { T721ControllerV0Service }    from '@lib/common/contracts/t721controller/T721Controller.V0.service';
-import { AuthorizationsService }      from '@lib/common/authorizations/Authorizations.service';
-import { EventsGuestlistInputDto }                from '@app/server/controllers/events/dto/EventsGuestlistInput.dto';
+import { ValidGuard } from '@app/server/authentication/guards/ValidGuard.guard';
+import { EventsCountInputDto } from '@app/server/controllers/events/dto/EventsCountInput.dto';
+import { EventsCountResponseDto } from '@app/server/controllers/events/dto/EventsCountResponse.dto';
+import { EventsWithdrawInputDto } from '@app/server/controllers/events/dto/EventsWithdrawInput.dto';
+import { EventsWithdrawResponseDto } from '@app/server/controllers/events/dto/EventsWithdrawResponse.dto';
+import { contractCallHelper } from '@lib/common/utils/contractCall.helper';
+import { T721ControllerV0Service } from '@lib/common/contracts/t721controller/T721Controller.V0.service';
+import { AuthorizationsService } from '@lib/common/authorizations/Authorizations.service';
+import { EventsGuestlistInputDto } from '@app/server/controllers/events/dto/EventsGuestlistInput.dto';
 import { EventsGuestlistResponseDto, GuestInfos } from '@app/server/controllers/events/dto/EventsGuestlistResponse.dto';
-import { SearchInputType }                        from '@lib/common/utils/SearchInput.type';
-import { TicketsService }             from '@lib/common/tickets/Tickets.service';
-import { MetadataEntity }             from '@lib/common/metadatas/entities/Metadata.entity';
+import { SearchInputType } from '@lib/common/utils/SearchInput.type';
+import { MetadataEntity } from '@lib/common/metadatas/entities/Metadata.entity';
 
 /**
  * Events controller to create and fetch events
@@ -88,7 +87,6 @@ export class EventsController extends ControllerBasics<EventEntity> {
      * @param rocksideService
      * @param t721ControllerV0Service
      * @param authorizationsService
-     * @param ticketsService
      */
     constructor(
         private readonly eventsService: EventsService,
@@ -103,7 +101,6 @@ export class EventsController extends ControllerBasics<EventEntity> {
         private readonly rocksideService: RocksideService,
         private readonly t721ControllerV0Service: T721ControllerV0Service,
         private readonly authorizationsService: AuthorizationsService,
-        private readonly ticketsService: TicketsService,
     ) {
         super();
     }
@@ -1133,7 +1130,6 @@ export class EventsController extends ControllerBasics<EventEntity> {
         @Param('eventId') eventId: string,
         @User() user: UserDto,
     ): Promise<EventsGuestlistResponseDto> {
-
         const eventEntity: EventEntity = await this._authorizeOne(
             this.rightsService,
             this.eventsService,
@@ -1147,19 +1143,17 @@ export class EventsController extends ControllerBasics<EventEntity> {
 
         let dateIds: string[];
 
-        const dates = await this._search<DateEntity>(this.datesService,
-            {
-                group_id: {
-                    $eq: eventEntity.group_id
-                },
-                parent_type: {
-                    $eq: 'event'
-                },
-                parent_id: {
-                    $eq: eventEntity.id
-                }
-            } as SearchInputType<DateEntity>
-        );
+        const dates = await this._search<DateEntity>(this.datesService, {
+            group_id: {
+                $eq: eventEntity.group_id,
+            },
+            parent_type: {
+                $eq: 'event',
+            },
+            parent_id: {
+                $eq: eventEntity.id,
+            },
+        } as SearchInputType<DateEntity>);
 
         if (body.dateIds.length === 0) {
             dateIds = dates.map((d: DateEntity) => d.id);
@@ -1180,105 +1174,94 @@ export class EventsController extends ControllerBasics<EventEntity> {
 
         let ownerships: GuestInfos[] = [];
 
-        const dateCategoryEntities = await this._search<CategoryEntity>(
-            this.categoriesService,
-            {
-                parent_type: {
-                    $eq: 'date'
-                },
-                parent_id: {
-                    $in: [
-                        ...dateIds
-                    ]
-                }
-            } as SearchInputType<CategoryEntity>
-        );
+        const dateCategoryEntities = await this._search<CategoryEntity>(this.categoriesService, {
+            parent_type: {
+                $eq: 'date',
+            },
+            parent_id: {
+                $in: [...dateIds],
+            },
+        } as SearchInputType<CategoryEntity>);
 
-        const globalCategoryEntities = await this._search<CategoryEntity>(
-            this.categoriesService,
-            {
-                parent_type: {
-                    $eq: 'event'
-                },
-                parent_id: {
-                    $eq: eventEntity.id
-                }
-            } as SearchInputType<CategoryEntity>
-        );
+        const globalCategoryEntities = await this._search<CategoryEntity>(this.categoriesService, {
+            parent_type: {
+                $eq: 'event',
+            },
+            parent_id: {
+                $eq: eventEntity.id,
+            },
+        } as SearchInputType<CategoryEntity>);
 
         for (const dateCategory of dateCategoryEntities) {
-
             ownerships = [
                 ...ownerships,
-                ...(await this._search<MetadataEntity>(
-                    this.metadatasService,
-                    {
+                ...(
+                    await this._search<MetadataEntity>(this.metadatasService, {
                         class_name: {
-                            $eq: 'ownership'
+                            $eq: 'ownership',
                         },
                         type_name: {
-                            $eq: 'ticket'
+                            $eq: 'ticket',
                         },
                         bool_: {
                             $eq: {
-                                valid: true
-                            }
+                                valid: true,
+                            },
                         },
                         str_: {
                             $eq: {
-                                categoryId: dateCategory.id
-                            }
-                        }
-                    } as any
-                )).map((m: MetadataEntity): GuestInfos => ({
-                    address: m.str_.address,
-                    category: m.str_.categoryId,
-                    username: m.str_.username,
-                    ticket: m.str_.ticket,
-                    email: m.str_.email,
-                }))
+                                categoryId: dateCategory.id,
+                            },
+                        },
+                    } as any)
+                ).map(
+                    (m: MetadataEntity): GuestInfos => ({
+                        address: m.str_.address,
+                        category: m.str_.categoryId,
+                        username: m.str_.username,
+                        ticket: m.str_.ticket,
+                        email: m.str_.email,
+                    }),
+                ),
             ];
-
         }
 
         for (const globalCategory of globalCategoryEntities) {
-
             ownerships = [
                 ...ownerships,
-                ...(await this._search<MetadataEntity>(
-                    this.metadatasService,
-                    {
+                ...(
+                    await this._search<MetadataEntity>(this.metadatasService, {
                         class_name: {
-                            $eq: 'ownership'
+                            $eq: 'ownership',
                         },
                         type_name: {
-                            $eq: 'ticket'
+                            $eq: 'ticket',
                         },
                         bool_: {
                             $eq: {
-                                valid: true
-                            }
+                                valid: true,
+                            },
                         },
                         str_: {
                             $eq: {
-                                categoryId: globalCategory.id
-                            }
-                        }
-                    } as any
-                )).map((m: MetadataEntity): GuestInfos => ({
-                    address: m.str_.address,
-                    category: m.str_.categoryId,
-                    username: m.str_.username,
-                    ticket: m.str_.ticket,
-                    email: m.str_.email,
-                }))
+                                categoryId: globalCategory.id,
+                            },
+                        },
+                    } as any)
+                ).map(
+                    (m: MetadataEntity): GuestInfos => ({
+                        address: m.str_.address,
+                        category: m.str_.categoryId,
+                        username: m.str_.username,
+                        ticket: m.str_.ticket,
+                        email: m.str_.email,
+                    }),
+                ),
             ];
-
         }
 
         return {
-            guests: ownerships
-        }
+            guests: ownerships,
+        };
     }
-
 }

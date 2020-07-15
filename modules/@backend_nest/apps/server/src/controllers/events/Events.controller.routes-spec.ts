@@ -1,4 +1,4 @@
-import { T721SDK }             from '@common/sdk';
+import { T721SDK } from '@common/sdk';
 import { PasswordlessUserDto } from '@app/server/authentication/dto/PasswordlessUser.dto';
 import {
     createExpensiveEvent,
@@ -8,12 +8,12 @@ import {
     validateCardPayment,
     waitForActionSet,
     waitForTickets,
-}                              from '../../../test/utils';
-import { ActionSetEntity }     from '@lib/common/actionsets/entities/ActionSet.entity';
-import { StatusCodes }         from '@lib/common/utils/codes.value';
-import { TicketEntity }        from '@lib/common/tickets/entities/Ticket.entity';
-import { CategoryEntity }      from '@lib/common/categories/entities/Category.entity';
-import { DateEntity }          from '@lib/common/dates/entities/Date.entity';
+} from '../../../test/utils';
+import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
+import { StatusCodes } from '@lib/common/utils/codes.value';
+import { TicketEntity } from '@lib/common/tickets/entities/Ticket.entity';
+import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
+import { DateEntity } from '@lib/common/dates/entities/Date.entity';
 
 export default function(getCtx: () => { ready: Promise<void> }) {
     return function() {
@@ -1593,7 +1593,6 @@ export default function(getCtx: () => { ready: Promise<void> }) {
         // });
 
         describe('guestlist (POST /events/:eventId/guestlist)', function() {
-
             test('should search for ticket list of event', async function() {
                 const {
                     sdk,
@@ -1609,7 +1608,6 @@ export default function(getCtx: () => { ready: Promise<void> }) {
 
                 const event = await createExpensiveEvent(token, sdk);
 
-
                 const cartActionSetRes = await sdk.actions.create(token, {
                     name: 'cart_create',
                     arguments: {},
@@ -1617,14 +1615,16 @@ export default function(getCtx: () => { ready: Promise<void> }) {
 
                 const actionSetId = cartActionSetRes.data.actionset.id;
 
-                const categoryIds = (await sdk.categories.search(token, {
-                    group_id: {
-                        $eq: event.group_id
-                    },
-                    parent_type: {
-                        $eq: 'date'
-                    }
-                })).data.categories.map((c: CategoryEntity) => c.id);
+                const categoryIds = (
+                    await sdk.categories.search(token, {
+                        group_id: {
+                            $eq: event.group_id,
+                        },
+                        parent_type: {
+                            $eq: 'date',
+                        },
+                    })
+                ).data.categories.map((c: CategoryEntity) => c.id);
 
                 await sdk.cart.ticketSelections(token, actionSetId, {
                     tickets: [
@@ -1695,11 +1695,10 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 expect(tickets.data.tickets.length).toEqual(5);
 
                 const guestlist = await sdk.events.guestlist(token, event.id, {
-                    dateIds: []
+                    dateIds: [],
                 });
 
                 expect(guestlist.data.guests.length).toEqual(5);
-
             });
 
             test('should search for ticket list of specific date', async function() {
@@ -1717,7 +1716,6 @@ export default function(getCtx: () => { ready: Promise<void> }) {
 
                 const event = await createExpensiveEvent(token, sdk);
 
-
                 const cartActionSetRes = await sdk.actions.create(token, {
                     name: 'cart_create',
                     arguments: {},
@@ -1725,14 +1723,16 @@ export default function(getCtx: () => { ready: Promise<void> }) {
 
                 const actionSetId = cartActionSetRes.data.actionset.id;
 
-                const categoryIds = (await sdk.categories.search(token, {
-                    group_id: {
-                        $eq: event.group_id
-                    },
-                    parent_type: {
-                        $eq: 'date'
-                    }
-                })).data.categories.map((c: CategoryEntity) => c.id);
+                const categoryIds = (
+                    await sdk.categories.search(token, {
+                        group_id: {
+                            $eq: event.group_id,
+                        },
+                        parent_type: {
+                            $eq: 'date',
+                        },
+                    })
+                ).data.categories.map((c: CategoryEntity) => c.id);
 
                 await sdk.cart.ticketSelections(token, actionSetId, {
                     tickets: [
@@ -1802,23 +1802,22 @@ export default function(getCtx: () => { ready: Promise<void> }) {
 
                 expect(tickets.data.tickets.length).toEqual(5);
 
-                const dateIds = (await sdk.dates.search(token, {
-                    group_id: {
-                        $eq: event.group_id
-                    },
-                    parent_type: {
-                        $eq: 'event'
-                    }
-                })).data.dates.map((d: DateEntity) => d.id);
+                const dateIds = (
+                    await sdk.dates.search(token, {
+                        group_id: {
+                            $eq: event.group_id,
+                        },
+                        parent_type: {
+                            $eq: 'event',
+                        },
+                    })
+                ).data.dates.map((d: DateEntity) => d.id);
 
                 const guestlist = await sdk.events.guestlist(token, event.id, {
-                    dateIds: [
-                        dateIds[0]
-                    ]
+                    dateIds: [dateIds[0]],
                 });
 
                 expect(guestlist.data.guests.length).toEqual(4);
-
             });
 
             test('should fail for invalid date id', async function() {
@@ -1836,7 +1835,6 @@ export default function(getCtx: () => { ready: Promise<void> }) {
 
                 const event = await createExpensiveEvent(token, sdk);
 
-
                 const cartActionSetRes = await sdk.actions.create(token, {
                     name: 'cart_create',
                     arguments: {},
@@ -1844,14 +1842,16 @@ export default function(getCtx: () => { ready: Promise<void> }) {
 
                 const actionSetId = cartActionSetRes.data.actionset.id;
 
-                const categoryIds = (await sdk.categories.search(token, {
-                    group_id: {
-                        $eq: event.group_id
-                    },
-                    parent_type: {
-                        $eq: 'date'
-                    }
-                })).data.categories.map((c: CategoryEntity) => c.id);
+                const categoryIds = (
+                    await sdk.categories.search(token, {
+                        group_id: {
+                            $eq: event.group_id,
+                        },
+                        parent_type: {
+                            $eq: 'date',
+                        },
+                    })
+                ).data.categories.map((c: CategoryEntity) => c.id);
 
                 await sdk.cart.ticketSelections(token, actionSetId, {
                     tickets: [
@@ -1923,16 +1923,12 @@ export default function(getCtx: () => { ready: Promise<void> }) {
 
                 await failWithCode(
                     sdk.events.guestlist(token, event.id, {
-                    dateIds: [
-                        categoryIds[0]
-                    ]
-                }),
+                        dateIds: [categoryIds[0]],
+                    }),
                     StatusCodes.Forbidden,
-                    'date_id_not_in_event'
+                    'date_id_not_in_event',
                 );
-
             });
-
         });
     };
 }
