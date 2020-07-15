@@ -49,17 +49,19 @@ import { EventsDeleteDatesResponseDto } from '@app/server/controllers/events/dto
 import { RightsService } from '@lib/common/rights/Rights.service';
 import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
 import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
-import { ApiResponses } from '@app/server/utils/ApiResponses.controller.decorator';
-import { MetadatasService } from '@lib/common/metadatas/Metadatas.service';
+import { ApiResponses }                               from '@app/server/utils/ApiResponses.controller.decorator';
+import { MetadatasService }                           from '@lib/common/metadatas/Metadatas.service';
 import { RocksideCreateEOAResponse, RocksideService } from '@lib/common/rockside/Rockside.service';
-import { ValidGuard } from '@app/server/authentication/guards/ValidGuard.guard';
-import { EventsCountInputDto } from '@app/server/controllers/events/dto/EventsCountInput.dto';
-import { EventsCountResponseDto } from '@app/server/controllers/events/dto/EventsCountResponse.dto';
-import { EventsWithdrawInputDto } from '@app/server/controllers/events/dto/EventsWithdrawInput.dto';
-import { EventsWithdrawResponseDto } from '@app/server/controllers/events/dto/EventsWithdrawResponse.dto';
-import { contractCallHelper } from '@lib/common/utils/contractCall.helper';
-import { T721ControllerV0Service } from '@lib/common/contracts/t721controller/T721Controller.V0.service';
-import { AuthorizationsService } from '@lib/common/authorizations/Authorizations.service';
+import { ValidGuard }                                 from '@app/server/authentication/guards/ValidGuard.guard';
+import { EventsCountInputDto }                        from '@app/server/controllers/events/dto/EventsCountInput.dto';
+import { EventsCountResponseDto }                     from '@app/server/controllers/events/dto/EventsCountResponse.dto';
+import { EventsWithdrawInputDto }                     from '@app/server/controllers/events/dto/EventsWithdrawInput.dto';
+import { EventsWithdrawResponseDto }                  from '@app/server/controllers/events/dto/EventsWithdrawResponse.dto';
+import { contractCallHelper }                         from '@lib/common/utils/contractCall.helper';
+import { T721ControllerV0Service }                    from '@lib/common/contracts/t721controller/T721Controller.V0.service';
+import { AuthorizationsService }                      from '@lib/common/authorizations/Authorizations.service';
+import { EventsGuestlistInputDto }                    from '@app/server/controllers/events/dto/EventsGuestlistInput.dto';
+import { EventsGuestlistResponseDto }                 from '@app/server/controllers/events/dto/EventsGuestlistResponse.dto';
 
 /**
  * Events controller to create and fetch events
@@ -1102,4 +1104,82 @@ export class EventsController extends ControllerBasics<EventEntity> {
             txSeqId: txSeq.txSeq.id,
         };
     }
+
+    /**
+     * Recover guest list for one of multiple dates of an event
+     *
+     * @param body
+     * @param eventId
+     * @param user
+     */
+    @Post('/:eventId/guestlist')
+    @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
+    @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.Created)
+    @Roles('authenticated')
+    @ApiResponses([
+        StatusCodes.Created,
+        StatusCodes.NotFound,
+        StatusCodes.Unauthorized,
+        StatusCodes.InternalServerError,
+    ])
+    async guestlist(
+        @Body() body: EventsGuestlistInputDto,
+        @Param('eventId') eventId: string,
+        @User() user: UserDto,
+    ): Promise<EventsGuestlistResponseDto> {
+
+        const eventEntity: EventEntity = await this._authorizeOne(
+            this.rightsService,
+            this.eventsService,
+            user,
+            {
+                id: eventId,
+            },
+            'group_id',
+            ['owner'],
+        );
+
+        let dateIds: string[];
+
+        if (body.dateIds.length === 0) {
+            const dates = await this._search<DateEntity>(this.datesService,
+                {
+                    group_id: {
+                        $eq: eventEntity.group_id
+                    },
+                    parent_type: {
+                        $eq: 'event'
+                    },
+                    parent_id: {
+                        $eq: eventEntity.id
+                    }
+                }
+            );
+
+            dateIds = dates.map((d: DateEntity) => d.id);
+        } else {
+            dateIds = body.dateIds;
+        }
+
+        const dateCategoryEntities = await this._search<CategoryEntity>(
+            this.categoriesService,
+            {
+                parent_type: {
+                    $eq: 'date'
+                },
+                parent_id: {
+                    $in: [
+                        ...dateIds
+                    ]
+                }
+            }
+        );
+
+        console.log(dateIds);
+        console.log(dateCategoryEntities);
+
+        return null;
+    }
+
 }

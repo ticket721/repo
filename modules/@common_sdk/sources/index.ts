@@ -46,6 +46,7 @@ import {
     eventsCreateModulesConfiguration,
     eventsCreateTextMetadata, eventsDeleteCategories, eventsDeleteDates,
     eventsSearch, eventsStart, eventsUpdate, eventsWithdraw,
+    eventsGuestlist
 } from './app/api/events';
 
 // TXS
@@ -141,6 +142,7 @@ export class T721SDK {
         this.events.deleteDates = this.events.deleteDates.bind(this);
         this.events.addDates = this.events.addDates.bind(this);
         this.events.withdraw = this.events.withdraw.bind(this);
+        this.events.guestlist = this.events.guestlist.bind(this);
 
         this.categories.create = this.categories.create.bind(this);
         this.categories.count = this.categories.count.bind(this);
@@ -315,6 +317,7 @@ export class T721SDK {
         deleteDates: eventsDeleteDates,
         addDates: eventsAddDates,
         withdraw: eventsWithdraw,
+        guestlist: eventsGuestlist
     };
 
     public rights = {
