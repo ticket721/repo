@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import React  from 'react';
+import React from 'react';
 
 const NavbarMarginContainer = styled.div`
     margin-bottom: 70px;
@@ -7,8 +7,10 @@ const NavbarMarginContainer = styled.div`
 
 export const NavbarMargin = (Comp: React.ComponentType): React.FC => {
     return () => {
-        return <NavbarMarginContainer>
-                <Comp/>
+        return (
+            <NavbarMarginContainer>
+                <Comp />
             </NavbarMarginContainer>
-    }
+        );
+    };
 };

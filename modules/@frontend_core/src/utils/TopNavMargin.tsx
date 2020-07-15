@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import React  from 'react';
+import React from 'react';
 
 const TopNavMarginContainer = styled.div`
     margin-top: 48px;
@@ -7,8 +7,10 @@ const TopNavMarginContainer = styled.div`
 
 export const TopNavMargin = (Comp: React.ComponentType): React.FC => {
     return () => {
-        return <TopNavMarginContainer>
-                <Comp/>
+        return (
+            <TopNavMarginContainer>
+                <Comp />
             </TopNavMarginContainer>
-    }
+        );
+    };
 };

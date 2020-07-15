@@ -1,4 +1,4 @@
-import React  from 'react';
+import React from 'react';
 import styled from 'styled-components';
 
 const StatusBarPaddingContainer = styled.div`
@@ -8,10 +8,12 @@ const StatusBarPaddingContainer = styled.div`
 
 export const InvisibleStatusBarMargin = (Comp: React.ComponentType): React.FC => {
     return () => {
-        return <>
-            <StatusBarPaddingContainer>
-                <Comp/>
-            </StatusBarPaddingContainer>
-        </>
-    }
+        return (
+            <>
+                <StatusBarPaddingContainer>
+                    <Comp />
+                </StatusBarPaddingContainer>
+            </>
+        );
+    };
 };

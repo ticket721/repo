@@ -26,21 +26,16 @@ import './core/event_creation/locales';
 import './shared/Translations/global';
 
 const App: React.FC = () => {
-    const [validated, setValidated] = useState(true);
     const authState = useSelector(((state: AppState) => state.auth));
     const appStatus = useSelector(((state: AppState) => state.statuses.appStatus));
     const location = useLocation();
-
-    useEffect(() => {
-        setValidated(authState.user?.validated);
-    }, [authState.user]);
 
     return (
         <Suspense fallback={<FullPageLoading/>}>
             <AppContainer>
                 <MediaQuery minDeviceWidth={1224}>
                     {
-                        validated &&
+                        authState.user?.validated &&
                         location.pathname !== '/register' && location.pathname !== '/login'
 
                             ?
