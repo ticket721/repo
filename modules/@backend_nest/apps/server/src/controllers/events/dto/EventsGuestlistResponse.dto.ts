@@ -1,8 +1,9 @@
-interface GuestInfos {
+export interface GuestInfos {
     address: string;
     username: string;
     email: string;
-    global: boolean;
+    ticket: string;
+    category: string;
 }
 
 export class EventsGuestlistResponseDto {
