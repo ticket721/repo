@@ -30,7 +30,7 @@ const defaultInitialValues = {
     saleBegin: new Date(),
     saleEnd: new Date(Date.now() + day),
     seats: 0,
-    price: 0,
+    price: 2,
 };
 
 export interface CategoryFormProps extends FormActionsProps {
@@ -141,6 +141,7 @@ export const CategoryForm: React.FC<CategoryFormProps> = (props: CategoryFormPro
                     type='number'
                     label={t('price_label')}
                     icon={'euro'}
+                    minimum={2}
                     placeholder={t('price_placeholder')}
                     {...formik.getFieldProps('price')}
                     error={

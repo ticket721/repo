@@ -8,7 +8,9 @@ i18n.addResourceBundle('en', 'search', {
     view_all_events: 'View all {{count}} events',
     input_placeholder: 'Event name ...',
     event_section_title: 'Events',
-    no_results: 'No results'
+    no_results: 'No results',
+
+    error_cannot_fetch_dates: 'Cannot fetch event'
 });
 i18n.addResourceBundle('fr', 'search', {
     searching_events_in: 'Recherche d\'evenements a',
@@ -18,5 +20,7 @@ i18n.addResourceBundle('fr', 'search', {
     view_all_events: 'Voir les {{count}} evenements',
     input_placeholder: 'Nom d\'un evenement ...',
     event_section_title: 'Evenements',
-    no_results: 'Aucun resultat'
+    no_results: 'Aucun resultat',
+
+    error_cannot_fetch_dates: 'Informations indisponibles'
 });

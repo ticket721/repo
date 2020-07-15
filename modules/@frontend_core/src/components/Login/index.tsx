@@ -14,9 +14,11 @@ import './locales';
 
 export interface LoginProps {
     onRegister?: () => void;
+    externalRegister?: string;
 }
 
 export const Login: React.FC<LoginProps> = (props: LoginProps) => {
+    console.log(props.externalRegister);
     const [t] = useTranslation('login');
     const auth = useSelector((state: AppState): AuthState => state.auth);
     const history = useHistory();
@@ -85,7 +87,11 @@ export const Login: React.FC<LoginProps> = (props: LoginProps) => {
                                 if (props.onRegister) {
                                     props.onRegister();
                                 } else {
-                                    history.replace('/register');
+                                    if (props.externalRegister) {
+                                        window.open(props.externalRegister);
+                                    } else {
+                                        history.replace('/register');
+                                    }
                                 }
                             }}
                         >

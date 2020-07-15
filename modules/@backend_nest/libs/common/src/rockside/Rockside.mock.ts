@@ -252,7 +252,7 @@ export class RocksideMock
         const sentTransaction = await orchestratorWallet.sendTransaction({
             to: identitiesMockInstance._address,
             data: encodedCall,
-            gasPrice: decimalToHex(tx.gasPrice as string),
+            gasPrice: tx.gasPrice ? decimalToHex(tx.gasPrice as string) : null,
         });
 
         return {

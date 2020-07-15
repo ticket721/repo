@@ -175,6 +175,7 @@ export class CircuitContainerBase<InitialArguments = any> implements OnModuleIni
                     updatedRawGemEntity.gem_status
                 }`,
             );
+            this.logger.warn(`${JSON.stringify(updatedRawGemEntity.error_info, null, 4)}`);
         }
     }
 
@@ -210,6 +211,8 @@ export class CircuitContainerBase<InitialArguments = any> implements OnModuleIni
                     message: 'initialization_error',
                 };
             }
+
+            this.logger.error(e);
 
             gem = new Gem().load(rawGemAfterError);
         }

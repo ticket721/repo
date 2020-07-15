@@ -20,9 +20,9 @@ const TicketHeaderNumber = styled.div`
     top: 0;
 `;
 const Header = styled.header<TicketHeaderProps>`
-    height: 40vh;
-    overflow: hidden;
     position: relative;
+    padding-top: 62.5%;
+    overflow: hidden;
 
     ${(props) =>
         !props.fullWidth &&
@@ -40,26 +40,37 @@ const Header = styled.header<TicketHeaderProps>`
       display: block;
       height: 100%;
       left: 0;
-      position :absolute;
+      position: absolute;
       top: 0;
       width: 100%;
     }
   `}
 
   img {
+        width: 100%;
         height: 100%;
         object-fit: cover;
-        width: 100%;
     }
+`;
+
+const Content = styled.div`
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    width: 100%;
 `;
 
 export const TicketHeader: React.FunctionComponent<TicketHeaderProps> = (props: TicketHeaderProps): JSX.Element => {
     return (
         <Header fullWidth={props.fullWidth} className={props.className}>
-            {!props.fullWidth && props.ticketQuantity ? (
-                <TicketHeaderNumber>x{props.ticketQuantity}</TicketHeaderNumber>
-            ) : null}
-            <img src={props.cover} alt={'cover'} />
+            <Content>
+                {!props.fullWidth && props.ticketQuantity ? (
+                    <TicketHeaderNumber>x{props.ticketQuantity}</TicketHeaderNumber>
+                ) : null}
+                <img src={props.cover} alt={'cover'} />
+            </Content>
         </Header>
     );
 };

@@ -36,6 +36,13 @@ export class CreateUserServiceInputDto {
     address: string;
 
     /**
+     * Address
+     */
+    @IsString()
+    // tslint:disable-next-line:variable-name
+    device_address: string;
+
+    /**
      * Account type
      */
     @IsString()

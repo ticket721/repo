@@ -65,15 +65,18 @@ export const EventContainer: React.FC<EventContainerProps> = (props: EventContai
         <BgContainer>
             <DateTimeCard
                 iconColor={eventDetails.mainColor}
-                endDate={eventDetails.endDate}
-                endTime={eventDetails.endTime}
-                startDate={eventDetails.startDate}
-                startTime={eventDetails.startTime}
+                dates={[{
+                    startDate: eventDetails.startDate,
+                    endDate: eventDetails.endDate,
+                    startTime: eventDetails.startTime,
+                    endTime: eventDetails.endTime,
+                }]}
                 removeBg
             />
             <LocationCard
                 iconColor={eventDetails.mainColor}
                 location={eventDetails.location}
+                subtitle={t('get_directions')}
                 removeBg
                 coords={
                     props.date.location.location

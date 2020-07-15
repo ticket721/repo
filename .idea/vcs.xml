@@ -3,13 +3,10 @@
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/modules/@contracts_metamarketplace" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/modules/@contracts_refract" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/modules/@contracts_t721admin" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/modules/@contracts_t721controller" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/modules/@contracts_t721token" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/modules/@contracts_ticketforge" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/modules/@frontend_flib-react" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/modules/@infra_ingress/kubernetes-ingress" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/modules/@public_dosojin" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/modules/@public_e712" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/modules/@public_erc2280" vcs="Git" />

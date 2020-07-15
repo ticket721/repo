@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled                         from 'styled-components';
+import { useTranslation }             from 'react-i18next';
 
 import { useHistory, useParams } from 'react-router';
 
@@ -16,6 +17,7 @@ import { DateEntity }                   from '@common/sdk/lib/@backend_nest/libs
 import { EventsSearchResponseDto }     from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsSearchResponse.dto';
 import { MergedAppState }              from '../../../../index';
 import { CategoriesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/categories/dto/CategoriesSearchResponse.dto';
+import './locales';
 
 interface DateOption {
     label: string;
@@ -26,6 +28,7 @@ const formatDateLabel = (date: string | Date): string =>
     `${displayCompleteDate(checkFormatDate(date))}`;
 
 export const Dropdown: React.FC = () => {
+    const [t] = useTranslation('options');
     const history = useHistory();
     const [uuid] = useState<string>(v4() + '@event-menu');
     const token = useSelector((state: MergedAppState) => state.auth.token.value);
@@ -89,12 +92,12 @@ export const Dropdown: React.FC = () => {
             }
         } else if (eventId) {
             setSelectedItem({
-                label: 'Global category',
+                label: t('global_category'),
                 value: 'global',
             });
         } else {
             setSelectedItem({
-                label: 'New Date',
+                label: t('new_date'),
                 value: 'new-date',
             });
         }
@@ -110,11 +113,11 @@ export const Dropdown: React.FC = () => {
                     })
                 ),
                 {
-                    label: 'New Date',
+                    label: t('new_date'),
                     value: 'new-date',
                 },
                 {
-                    label: 'Global category',
+                    label: t('global_category'),
                     value: 'global',
                 },
             ]);

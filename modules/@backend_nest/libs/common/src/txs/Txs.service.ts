@@ -228,30 +228,11 @@ export class TxsService extends CRUDExtension<TxsRepository, TxEntity> {
         value: string,
         data: string,
     ): Promise<ServiceResponse<TxEntity>> {
-        const gasLimitEstimationRes = await this.estimateGasLimit(from, to, data);
-
-        if (gasLimitEstimationRes.error) {
-            return {
-                error: gasLimitEstimationRes.error,
-                response: null,
-            };
-        }
-
-        const gasPriceEstimationRes = await this.estimateGasPrice(gasLimitEstimationRes.response);
-
-        if (gasPriceEstimationRes.error) {
-            return {
-                error: gasPriceEstimationRes.error,
-                response: null,
-            };
-        }
-
         const sentTransactionRes = await this.rocksideService.sendTransaction({
             from,
             to,
             value,
             data,
-            gasPrice: gasPriceEstimationRes.response,
         });
 
         if (sentTransactionRes.error) {

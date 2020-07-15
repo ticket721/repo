@@ -10,19 +10,20 @@ export interface ProtectedRouteProps {
 
 interface ProtectedRouteRState {
     authenticated: boolean;
+    expired: boolean;
     validated: boolean;
 }
 
 type MergedProps = ProtectedRouteProps & ProtectedRouteRState;
 
 const ProtectedRoute: React.FC<PropsWithChildren<MergedProps>> = (props: PropsWithChildren<MergedProps>) => {
-    const { path, authenticated, validated, exact } = props;
+    const { path, authenticated, expired, validated, exact } = props;
 
     const location = useLocation();
 
     return (
         <Route path={path} exact={exact}>
-            {!authenticated || (validated !== undefined && !validated) ? (
+            {!authenticated || expired || (validated !== undefined && !validated) ? (
                 <Redirect
                     to={{
                         pathname: '/login',
@@ -40,6 +41,7 @@ const ProtectedRoute: React.FC<PropsWithChildren<MergedProps>> = (props: PropsWi
 
 const mapStateToProps = (state: AppState): ProtectedRouteRState => ({
     authenticated: !!state.auth.token,
+    expired: state.auth.token?.expiration.getTime() < Date.now(),
     validated: state.auth.user?.validated,
 });
 

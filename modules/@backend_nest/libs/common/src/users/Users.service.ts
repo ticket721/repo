@@ -253,4 +253,29 @@ export class UsersService {
             error: null,
         };
     }
+
+    /**
+     * Set device address of user
+     *
+     * @param id
+     * @param address
+     */
+    async setDeviceAddress(id: string, address: string): Promise<ServiceResponse<UserDto>> {
+        const userUpdateResponse = await this.update({
+            id,
+            device_address: address,
+        });
+
+        if (userUpdateResponse.error) {
+            return {
+                error: userUpdateResponse.error,
+                response: null,
+            };
+        }
+
+        return {
+            error: null,
+            response: userUpdateResponse.response,
+        };
+    }
 }

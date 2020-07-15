@@ -27,6 +27,7 @@ export interface Theme {
     warningColor: ColorDefinition;
     errorColor: ColorDefinition;
     successColor: ColorDefinition;
+    badgeColor: ColorDefinition;
 }
 
 export interface Themes {
@@ -80,6 +81,12 @@ export const customThemes: Themes = {
             r: 29,
             g: 201,
             b: 106,
+        },
+        badgeColor: {
+            hex: '#ff1d30',
+            r: 255,
+            g: 29,
+            b: 48,
         },
     },
 };

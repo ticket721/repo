@@ -4,7 +4,7 @@ import { EventCta }         from '@frontend/flib-react/lib/components';
 import { Price }            from '@common/sdk/lib/@backend_nest/libs/common/src/currencies/Currencies.service';
 import { useTranslation }   from 'react-i18next';
 import { useDispatch }      from 'react-redux';
-import { AddPendingTicket } from '../../redux/ducks/cart';
+import { AddTicket } from '../../redux/ducks/cart';
 import { useHistory }       from 'react-router';
 
 export interface TicketSelectionCtaProps {
@@ -29,7 +29,7 @@ export const TicketSelectionCta: React.FC<TicketSelectionCtaProps> = (props: Tic
     const dispatch = useDispatch();
     const history = useHistory();
     const addToCart = () => {
-        dispatch(AddPendingTicket(props.category));
+        dispatch(AddTicket(props.category));
         history.push('/cart/checkout');
     };
 

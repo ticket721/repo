@@ -72,12 +72,7 @@ const TokenMinterVerifier: ObjectSchema<TokenMinterArguments> = object({
         .valid('eur')
         .required(),
     amount: number().required(),
-    regionRestrictions: object({
-        FR: object({
-            variable_fee: number().required(),
-            fix_fee: number().required(),
-        }),
-    }),
+    regionRestrictions: object(),
     methodsRestrictions: object({
         card: object({
             country_resolution_path: string().required(),

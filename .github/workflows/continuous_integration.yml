@@ -431,7 +431,9 @@ jobs:
             - uses: technote-space/get-diff-action@v2
               id: git_diff
               with:
-                PREFIX_FILTER: modules/@common_sdk/
+                PREFIX_FILTER: |
+                  modules/@common_sdk/
+                  modules/@common_global/
 
             - name: "Install required tools globally (npm install -g yarn)"
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
@@ -542,7 +544,12 @@ jobs:
             - uses: technote-space/get-diff-action@v2
               id: git_diff
               with:
-                PREFIX_FILTER: modules/@backend_nest/
+                PREFIX_FILTER: |
+                  modules/@backend_nest/
+                  modules/@common_global/
+                  modules/@common_geoloc/
+                  modules/@common_sdk/
+
 
             - name: Setup SSH Agent
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
@@ -720,7 +727,11 @@ jobs:
             - uses: technote-space/get-diff-action@v2
               id: git_diff
               with:
-                PREFIX_FILTER: modules/@backend_nest/
+                PREFIX_FILTER: |
+                  modules/@backend_nest/
+                  modules/@common_global/
+                  modules/@common_geoloc/
+                  modules/@common_sdk/
 
             - name: "Setup SSH Agent"
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
@@ -1014,7 +1025,11 @@ jobs:
         - uses: technote-space/get-diff-action@v2
           id: git_diff
           with:
-            PREFIX_FILTER: modules/@frontend_t721-app/
+            PREFIX_FILTER: |
+              modules/@frontend_t721-app/
+              modules/@common_global/
+              modules/@common_sdk/
+              modules/@frontend_core/
 
         - name: "Install required tools globally (npm install -g yarn)"
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
@@ -1159,7 +1174,11 @@ jobs:
         - uses: technote-space/get-diff-action@v2
           id: git_diff
           with:
-            PREFIX_FILTER: modules/@frontend_organizer-app/
+            PREFIX_FILTER: |
+              modules/@frontend_organizer-app/
+              modules/@common_global/
+              modules/@common_sdk/
+              modules/@frontend_core/
 
         - name: "Install required tools globally (npm install -g yarn)"
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
@@ -1306,7 +1325,10 @@ jobs:
             - uses: technote-space/get-diff-action@v2
               id: git_diff
               with:
-                PREFIX_FILTER: modules/@frontend_core/
+                PREFIX_FILTER: |
+                  modules/@frontend_core/
+                  modules/@common_global/
+                  modules/@common_sdk/
 
             - name: "Install required tools globally (npm install -g yarn)"
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
@@ -1451,6 +1473,7 @@ jobs:
                 PREFIX_FILTER: |
                   modules/@backend_nest
                   modules/@common_global
+                  modules/@common_geoloc
 
             - name: "Install required tools globally (npm install -g yarn)"
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
@@ -1575,7 +1598,8 @@ jobs:
           run: ./helmsman.dryrun.staging.sh
           env:
             CONFIG_STAGING_STRIPE_APIKEY: ${{ secrets.CONFIG_STAGING_STRIPE_APIKEY }}
-            CONFIG_STAGING_ROCKSIDE_TOKEN: ${{ secrets.CONFIG_STAGING_ROCKSIDE_TOKEN }}
+            CONFIG_STAGING_T721APP_ROCKSIDE_TOKEN: ${{ secrets.CONFIG_STAGING_T721APP_ROCKSIDE_TOKEN }}
+            CONFIG_STAGING_ORGANIZER_ROCKSIDE_TOKEN: ${{ secrets.CONFIG_STAGING_ORGANIZER_ROCKSIDE_TOKEN }}
             CONFIG_STAGING_ROCKSIDE_APIKEY: ${{ secrets.CONFIG_STAGING_ROCKSIDE_APIKEY }}
             CONFIG_STAGING_MAILJET_APIKEY: ${{ secrets.CONFIG_STAGING_MAILJET_APIKEY }}
             CONFIG_STAGING_MAILJET_APISECRET: ${{ secrets.CONFIG_STAGING_MAILJET_APISECRET }}
@@ -1586,6 +1610,9 @@ jobs:
             CONFIG_STAGING_ACME_SERVER: ${{ secrets.CONFIG_STAGING_ACME_SERVER }}
             CONFIG_STAGING_GCLOUD_GEOLOC_APIKEY: ${{ secrets.CONFIG_STAGING_GCLOUD_GEOLOC_APIKEY }}
             CONFIG_STAGING_ORGANIZER_SEGMENT_API_KEY: ${{ secrets.CONFIG_STAGING_ORGANIZER_SEGMENT_API_KEY }}
+            CONFIG_STAGING_T721APP_SEGMENT_API_KEY: ${{ secrets.CONFIG_STAGING_T721APP_SEGMENT_API_KEY }}
+            CONFIG_STAGING_T721APP_PUBLISHABLE_STRIPE_API_KEY: ${{ secrets.CONFIG_STAGING_T721APP_PUBLISHABLE_STRIPE_API_KEY }}
+            CONFIG_STAGING_ETHERSCAN_URL: ${{ secrets.CONFIG_STAGING_ETHERSCAN_URL }}
 
             AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
             AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -1697,7 +1724,8 @@ jobs:
           run: ./helmsman.apply.staging.sh
           env:
             CONFIG_STAGING_STRIPE_APIKEY: ${{ secrets.CONFIG_STAGING_STRIPE_APIKEY }}
-            CONFIG_STAGING_ROCKSIDE_TOKEN: ${{ secrets.CONFIG_STAGING_ROCKSIDE_TOKEN }}
+            CONFIG_STAGING_T721APP_ROCKSIDE_TOKEN: ${{ secrets.CONFIG_STAGING_T721APP_ROCKSIDE_TOKEN }}
+            CONFIG_STAGING_ORGANIZER_ROCKSIDE_TOKEN: ${{ secrets.CONFIG_STAGING_ORGANIZER_ROCKSIDE_TOKEN }}
             CONFIG_STAGING_ROCKSIDE_APIKEY: ${{ secrets.CONFIG_STAGING_ROCKSIDE_APIKEY }}
             CONFIG_STAGING_MAILJET_APIKEY: ${{ secrets.CONFIG_STAGING_MAILJET_APIKEY }}
             CONFIG_STAGING_MAILJET_APISECRET: ${{ secrets.CONFIG_STAGING_MAILJET_APISECRET }}
@@ -1708,6 +1736,9 @@ jobs:
             CONFIG_STAGING_ACME_SERVER: ${{ secrets.CONFIG_STAGING_ACME_SERVER }}
             CONFIG_STAGING_GCLOUD_GEOLOC_APIKEY: ${{ secrets.CONFIG_STAGING_GCLOUD_GEOLOC_APIKEY }}
             CONFIG_STAGING_ORGANIZER_SEGMENT_API_KEY: ${{ secrets.CONFIG_STAGING_ORGANIZER_SEGMENT_API_KEY }}
+            CONFIG_STAGING_T721APP_SEGMENT_API_KEY: ${{ secrets.CONFIG_STAGING_T721APP_SEGMENT_API_KEY }}
+            CONFIG_STAGING_T721APP_PUBLISHABLE_STRIPE_API_KEY: ${{ secrets.CONFIG_STAGING_T721APP_PUBLISHABLE_STRIPE_API_KEY }}
+            CONFIG_STAGING_ETHERSCAN_URL: ${{ secrets.CONFIG_STAGING_ETHERSCAN_URL }}
 
             AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
             AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

@@ -50,7 +50,7 @@ data:
     EMAIL_TEMPLATE_PATH=../@backend_email-templates
 
     IMAGE_MAX_SIZE=5
-    IMAGE_SERVE_DIRECTORY=./images
+    IMAGE_SERVE_DIRECTORY=/repo/modules/@backend_nest/images
 
     GLOBAL_CONFIG_BLOCK_NUMBER_FETCHING_RATE={{ required "[server] Missing config.globalConfig.blockNumberFetchingRate value" .Values.config.globalConfig.blockNumberFetchingRate }}
     GLOBAL_CONFIG_ETHEREUM_PRICE_FETCHING_RATE={{ required "[server] Missing config.globalConfig.ethereumPriceFetchingRate value" .Values.config.globalConfig.ethereumPriceFetchingRate }}

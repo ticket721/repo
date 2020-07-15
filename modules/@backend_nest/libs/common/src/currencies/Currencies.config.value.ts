@@ -8,7 +8,10 @@ export default [
         dollarPeg: 1,
         moduleName: 't721token',
         contractName: 'T721Token',
-        feeComputer: (amount: string) => '0',
+        feeComputer: (amount: string) => {
+            const price = BigInt(amount);
+            return (price / BigInt(100) + BigInt(100)).toString();
+        },
     },
     {
         name: 'Fiat',

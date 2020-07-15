@@ -3,6 +3,7 @@ import styled from '../../../config/styled';
 import TicketInterface from '../../../shared/ticketInterface';
 import LocationCard from '../cards/location';
 import DateTimeCard from '../cards/datetime';
+import Gradient from '../../elements/gradient';
 
 export interface PreviewInfosProps extends React.ComponentProps<any> {
     ticket: TicketInterface;
@@ -29,9 +30,11 @@ const TicketHeaderInfos = styled.div`
     border-top-right-radius: ${(props) => props.theme.defaultRadius};
     padding: ${(props) => props.theme.doubleSpacing} ${(props) => props.theme.biggerSpacing}
         ${(props) => props.theme.biggerSpacing};
-    width: calc(100% - 8px);
 
     h2 {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
         color: ${(props) => props.theme.textColor};
         font-size: 1rem;
         text-transform: uppercase;
@@ -68,28 +71,6 @@ const Separator = styled.div<{ bgColor: string | undefined }>`
     }
 `;
 
-const Gradient = styled.div<PreviewInfosProps>`
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0), ${(props) => props.ticket.gradients.join(', ')});
-    bottom: 0;
-    content: '';
-    height: 100%;
-    position: absolute;
-    right: 0;
-    transform: matrix(-1, 0, 0, 1, 0, 0);
-    width: 8px;
-
-    &::after {
-        background: linear-gradient(180deg, ${(props) => props.ticket.gradients.join(', ')});
-        content: '';
-        display: block;
-        filter: blur(100px);
-        height: 100%;
-        opacity: 0.12;
-        transform: matrix(-1, 0, 0, 1, 0, 0);
-        width: 150px;
-    }
-`;
-
 const DateTime = styled(DateTimeCard)`
     padding-bottom: 12px;
 `;
@@ -116,19 +97,24 @@ export const PreviewInfos: React.FunctionComponent<PreviewInfosProps> = (props: 
             <Separator bgColor={props.bgColor} />
             <PreviewContainer>
                 <DateTime
-                    endDate={props.ticket.endDate}
-                    endTime={props.ticket.endTime}
+                    dates={[
+                        {
+                            startDate: props.ticket.startDate,
+                            endDate: props.ticket.endDate,
+                            startTime: props.ticket.startTime,
+                            endTime: props.ticket.endTime,
+                        },
+                    ]}
                     iconColor={props.ticket.mainColor}
-                    startDate={props.ticket.startDate}
-                    startTime={props.ticket.startTime}
                     removeBg
+                    small
                 />
-                <Location iconColor={props.ticket.mainColor} location={props.ticket.location} removeBg />
+                <Location disabled iconColor={props.ticket.mainColor} location={props.ticket.location} removeBg />
                 <div>
                     <Subtitle>{props.addonsPurchased}</Subtitle>
                 </div>
             </PreviewContainer>
-            <Gradient ticket={props.ticket} />
+            <Gradient values={props.ticket.gradients} />
         </Wrapper>
     );
 };

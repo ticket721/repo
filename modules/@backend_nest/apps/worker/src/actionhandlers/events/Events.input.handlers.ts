@@ -691,6 +691,56 @@ export class EventsInputHandlers implements OnModuleInit {
     }
 
     /**
+     * Utility to check prices for provided categories
+     *
+     * @param data
+     */
+    checkPrices(data: EventsCreateCategoriesConfiguration): string {
+        const allowed = ['T721Token', 'Fiat'];
+        const minimum = 200;
+
+        for (const globalCategory of data.global) {
+            if (globalCategory.currencies.length === 0) {
+                return 'free_category_unavailable';
+            }
+            if (globalCategory.currencies.length > 1) {
+                return 'multi_currency_unavailable';
+            }
+            for (const currency of globalCategory.currencies) {
+                if (allowed.indexOf(currency.currency) === -1) {
+                    return 'currency_unavailable';
+                }
+
+                if (parseInt(currency.price, 10) < minimum) {
+                    return 'price_under_minimum_allowed';
+                }
+            }
+        }
+
+        for (const date of data.dates) {
+            for (const dateCategory of date) {
+                if (dateCategory.currencies.length === 0) {
+                    return 'free_category_unavailable';
+                }
+                if (dateCategory.currencies.length > 1) {
+                    return 'multi_currency_unavailable';
+                }
+                for (const currency of dateCategory.currencies) {
+                    if (allowed.indexOf(currency.currency) === -1) {
+                        return 'currency_unavailable';
+                    }
+
+                    if (parseInt(currency.price, 10) < minimum) {
+                        return 'price_under_minimum_allowed';
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * events/categoriesConfiguration handler
      */
     async categoriesConfigurationHandler(
@@ -762,6 +812,19 @@ export class EventsInputHandlers implements OnModuleInit {
                     actionset.action.setError({
                         details: null,
                         error: datesChecks,
+                    });
+                    actionset.action.setStatus('error');
+                    actionset.setStatus('input:error');
+                    await progress(100);
+                    return [actionset, true];
+                }
+
+                const priceChecks = this.checkPrices(data);
+
+                if (priceChecks) {
+                    actionset.action.setError({
+                        details: null,
+                        error: priceChecks,
                     });
                     actionset.action.setStatus('error');
                     actionset.setStatus('input:error');

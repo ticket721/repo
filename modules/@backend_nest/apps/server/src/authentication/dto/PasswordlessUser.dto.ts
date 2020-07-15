@@ -28,6 +28,12 @@ export class PasswordlessUserDto {
     address: string;
 
     /**
+     * Address of the device
+     */
+    // tslint:disable-next-line:variable-name
+    device_address: string;
+
+    /**
      * Role of the account
      */
     role: 'authenticated' | 'admin';
