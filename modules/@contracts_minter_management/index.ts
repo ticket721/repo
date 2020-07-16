@@ -42,7 +42,12 @@ async function prepare_minters(config: ContractsConfig, args?: any): Promise<Scr
             });
 
             for (let idx = 0; idx < args.count; ++idx) {
-                const identity = await api.createIdentity();
+
+                const forwarder = process.env[args.forwarder];
+
+                const identityEoa = await api.createEOA();
+                contracts_log.success(`MinterManagement | generated identity eoa => ${identityEoa.address}`);
+                const identity = await api.createIdentity(forwarder, identityEoa.address);
                 identityRet.push(utils.getAddress(identity.address));
                 contracts_log.success(`MinterManagement | generated identity => ${identity.address}`);
 

@@ -640,11 +640,6 @@
           "internalType": "uint256",
           "name": "ticketId",
           "type": "uint256"
-        },
-        {
-          "internalType": "bytes",
-          "name": "_data",
-          "type": "bytes"
         }
       ],
       "name": "safeTransferFrom",
@@ -670,6 +665,11 @@
           "internalType": "uint256",
           "name": "ticketId",
           "type": "uint256"
+        },
+        {
+          "internalType": "bytes",
+          "name": "_data",
+          "type": "bytes"
         }
       ],
       "name": "safeTransferFrom",
@@ -19618,7 +19618,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.9",
-  "updatedAt": "2020-05-20T14:16:08.469Z",
+  "updatedAt": "2020-07-16T15:56:41.999Z",
   "devdoc": {
     "methods": {
       "approve(address,uint256)": {

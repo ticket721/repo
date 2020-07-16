@@ -1373,12 +1373,12 @@
     "3": {
       "events": {},
       "links": {},
-      "address": "0x6bf1a18FD7C7011387C0C9D9c85bBC40ea17663b",
-      "transactionHash": "0xd22161a9749da7ce5e597e271e7462c116f40bc3277c2a36b21fd03d9be894a5"
+      "address": "0xc67C6cD4840354a579FBD175d540dB3f9727884c",
+      "transactionHash": "0xddb90124d5830981003ceb10a03765f6a51ac639285cd6d85173169c0eef33e8"
     }
   },
   "schemaVersion": "3.0.9",
-  "updatedAt": "2020-05-20T14:16:08.482Z",
+  "updatedAt": "2020-07-16T15:56:42.011Z",
   "devdoc": {
     "methods": {}
   },

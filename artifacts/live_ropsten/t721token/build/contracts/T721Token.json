@@ -2642,12 +2642,12 @@
     "3": {
       "events": {},
       "links": {},
-      "address": "0x94BE8b18F197D32cB3bdB98318A71382C6a202d4",
-      "transactionHash": "0xbe9a2dd4dd33346f1c3109a759a3f79be76725e8fde409cf2001e05629bd866c"
+      "address": "0xC8dc2DA30AB1Bb63CF3D16158F9Aadb61ec9782A",
+      "transactionHash": "0xefdd5fbebb31d5421bec085679198ad3a6684d9658b66b3df499a43e232ff3d0"
     }
   },
   "schemaVersion": "3.0.9",
-  "updatedAt": "2020-05-20T14:34:13.193Z",
+  "updatedAt": "2020-07-16T16:02:54.359Z",
   "devdoc": {
     "methods": {
       "allowance(address,address)": {
