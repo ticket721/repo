@@ -1,0 +1,18 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.14.1
+ignore: {}
+# patches apply the minimum changes required to fix a vulnerability
+patch:
+  SNYK-JS-LODASH-567746:
+    - '@rocksideio/rockside-wallet-sdk > json-rpc-engine > async > lodash':
+        patched: '2020-05-29T17:42:52.558Z'
+    - '@rocksideio/rockside-wallet-sdk > eth-json-rpc-middleware > ethereumjs-block > async > lodash':
+        patched: '2020-05-29T17:42:52.558Z'
+    - '@rocksideio/rockside-wallet-sdk > eth-json-rpc-middleware > ethereumjs-vm > async > lodash':
+        patched: '2020-05-29T17:42:52.558Z'
+    - '@rocksideio/rockside-wallet-sdk > eth-json-rpc-middleware > json-rpc-engine > async > lodash':
+        patched: '2020-05-29T17:42:52.558Z'
+    - '@rocksideio/rockside-wallet-sdk > eth-json-rpc-middleware > ethereumjs-vm > async-eventemitter > async > lodash':
+        patched: '2020-05-29T17:42:52.558Z'
+    - '@rocksideio/rockside-wallet-sdk > eth-json-rpc-middleware > ethereumjs-vm > ethereumjs-block > async > lodash':
+        patched: '2020-05-29T17:42:52.558Z'
