@@ -25,9 +25,10 @@ const ConnectedWalletHeader = observe(WalletHeader);
 
 export interface ProfileRootProps {
     desktop?: boolean;
+    extraButtons?: JSX.Element[];
 }
 
-const ProfileRoot: React.FC<ProfileRootProps> = ({ desktop }: ProfileRootProps): JSX.Element => {
+const ProfileRoot: React.FC<ProfileRootProps> = ({ desktop, extraButtons }: ProfileRootProps): JSX.Element => {
     const [uuid] = useState(v4());
     const { token, userUuid, username, address } = useSelector((state: AppState) => ({
         token: state.auth.token?.value,
@@ -90,6 +91,7 @@ const ProfileRoot: React.FC<ProfileRootProps> = ({ desktop }: ProfileRootProps):
                 link={desktop ? history.location.pathname + '?profile=activities' : 'profile/activities'}
             />
             <LinksContainer title={t('account')}>
+                {extraButtons || null}
                 <LanguageLink
                     label={t('language')}
                     currentLanguage={t(i18n.language.slice(0, 2))}

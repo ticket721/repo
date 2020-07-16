@@ -39,4 +39,17 @@ const eventDetails = {
     photos: ['assets/images/event-1.jpg', 'assets/images/event-2.jpg', 'assets/images/event-3.jpg'],
 };
 
-export const showcase = () => <EventInfos event={eventDetails} />;
+export const showcase = () => (
+    <EventInfos
+        pullUp={true}
+        name={eventDetails.name}
+        mainColor={eventDetails.mainColor}
+        location={eventDetails.location}
+        startDate={eventDetails.startDate}
+        gradients={eventDetails.gradients}
+        startTime={eventDetails.startTime}
+        endDate={eventDetails.endDate}
+        endTime={eventDetails.endTime}
+        getDirections={'Get directions'}
+    />
+);

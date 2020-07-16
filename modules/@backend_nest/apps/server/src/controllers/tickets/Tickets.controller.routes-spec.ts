@@ -1,9 +1,12 @@
 import { T721SDK } from '@common/sdk';
 import {
     createEvent,
+    createExpensiveEvent,
     createPaymentIntent,
     failWithCode,
+    getPIFromCart,
     getSDKAndUser,
+    validateCardPayment,
     waitForActionSet,
     waitForTickets,
 } from '../../../test/utils';
@@ -29,26 +32,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const event = await createEvent(token, sdk);
-
-                const validPaymentIntentId = await createPaymentIntent({
-                    charges: {
-                        data: [
-                            {
-                                payment_method_details: {
-                                    type: 'card',
-                                    card: {
-                                        country: 'FR',
-                                    },
-                                },
-                            },
-                        ],
-                    } as Stripe.ApiList<Stripe.Charge>,
-                    payment_method_types: ['card'],
-                    status: 'succeeded',
-                    currency: 'eur',
-                    amount_received: 330,
-                });
+                const event = await createExpensiveEvent(token, sdk);
 
                 const cartActionSetRes = await sdk.actions.create(token, {
                     name: 'cart_create',
@@ -59,11 +43,11 @@ export default function(getCtx: () => { ready: Promise<void> }) {
 
                 await sdk.cart.ticketSelections(token, actionSetId, {
                     tickets: [
-                        ...[...Array(3)].map(() => ({
+                        ...[...Array(1)].map(() => ({
                             categoryId: event.categories[0],
                             price: {
                                 currency: 'Fiat',
-                                price: '100',
+                                price: '10000',
                             },
                         })),
                     ],
@@ -87,9 +71,10 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     return as.current_status === 'complete';
                 });
 
+                await validateCardPayment(await getPIFromCart(sdk, token, actionSetId));
+
                 const res = await sdk.checkout.cart.resolve.paymentIntent(token, {
                     cart: actionSetId,
-                    paymentIntentId: validPaymentIntentId,
                 });
 
                 const checkoutActionSetId = res.data.checkoutActionSetId;
@@ -99,7 +84,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 });
 
                 await waitForTickets(sdk, token, user.address, (tickets: TicketEntity[]): boolean => {
-                    return tickets.length === 3;
+                    return tickets.length === 1;
                 });
 
                 const tickets = await sdk.tickets.search(token, {
@@ -108,7 +93,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     },
                 });
 
-                expect(tickets.data.tickets.length).toEqual(3);
+                expect(tickets.data.tickets.length).toEqual(1);
             });
 
             test('should search for created tickets unauthenticated', async function() {
@@ -124,26 +109,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const event = await createEvent(token, sdk);
-
-                const validPaymentIntentId = await createPaymentIntent({
-                    charges: {
-                        data: [
-                            {
-                                payment_method_details: {
-                                    type: 'card',
-                                    card: {
-                                        country: 'FR',
-                                    },
-                                },
-                            },
-                        ],
-                    } as Stripe.ApiList<Stripe.Charge>,
-                    payment_method_types: ['card'],
-                    status: 'succeeded',
-                    currency: 'eur',
-                    amount_received: 330,
-                });
+                const event = await createExpensiveEvent(token, sdk);
 
                 const cartActionSetRes = await sdk.actions.create(token, {
                     name: 'cart_create',
@@ -154,11 +120,11 @@ export default function(getCtx: () => { ready: Promise<void> }) {
 
                 await sdk.cart.ticketSelections(token, actionSetId, {
                     tickets: [
-                        ...[...Array(3)].map(() => ({
+                        ...[...Array(1)].map(() => ({
                             categoryId: event.categories[0],
                             price: {
                                 currency: 'Fiat',
-                                price: '100',
+                                price: '10000',
                             },
                         })),
                     ],
@@ -182,9 +148,10 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     return as.current_status === 'complete';
                 });
 
+                await validateCardPayment(await getPIFromCart(sdk, token, actionSetId));
+
                 const res = await sdk.checkout.cart.resolve.paymentIntent(token, {
                     cart: actionSetId,
-                    paymentIntentId: validPaymentIntentId,
                 });
 
                 const checkoutActionSetId = res.data.checkoutActionSetId;
@@ -194,7 +161,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 });
 
                 await waitForTickets(sdk, token, user.address, (tickets: TicketEntity[]): boolean => {
-                    return tickets.length === 3;
+                    return tickets.length === 1;
                 });
 
                 await failWithCode(
@@ -222,26 +189,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const event = await createEvent(token, sdk);
-
-                const validPaymentIntentId = await createPaymentIntent({
-                    charges: {
-                        data: [
-                            {
-                                payment_method_details: {
-                                    type: 'card',
-                                    card: {
-                                        country: 'FR',
-                                    },
-                                },
-                            },
-                        ],
-                    } as Stripe.ApiList<Stripe.Charge>,
-                    payment_method_types: ['card'],
-                    status: 'succeeded',
-                    currency: 'eur',
-                    amount_received: 330,
-                });
+                const event = await createExpensiveEvent(token, sdk);
 
                 const cartActionSetRes = await sdk.actions.create(token, {
                     name: 'cart_create',
@@ -252,11 +200,11 @@ export default function(getCtx: () => { ready: Promise<void> }) {
 
                 await sdk.cart.ticketSelections(token, actionSetId, {
                     tickets: [
-                        ...[...Array(3)].map(() => ({
+                        ...[...Array(1)].map(() => ({
                             categoryId: event.categories[0],
                             price: {
                                 currency: 'Fiat',
-                                price: '100',
+                                price: '10000',
                             },
                         })),
                     ],
@@ -280,9 +228,10 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     return as.current_status === 'complete';
                 });
 
+                await validateCardPayment(await getPIFromCart(sdk, token, actionSetId));
+
                 const res = await sdk.checkout.cart.resolve.paymentIntent(token, {
                     cart: actionSetId,
-                    paymentIntentId: validPaymentIntentId,
                 });
 
                 const checkoutActionSetId = res.data.checkoutActionSetId;
@@ -292,7 +241,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 });
 
                 await waitForTickets(sdk, token, user.address, (tickets: TicketEntity[]): boolean => {
-                    return tickets.length === 3;
+                    return tickets.length === 1;
                 });
 
                 const tickets = await sdk.tickets.count(token, {
@@ -301,7 +250,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     },
                 });
 
-                expect(tickets.data.tickets.count).toEqual(3);
+                expect(tickets.data.tickets.count).toEqual(1);
             });
 
             test('should count for created tickets unauthenticated', async function() {
@@ -317,26 +266,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                const event = await createEvent(token, sdk);
-
-                const validPaymentIntentId = await createPaymentIntent({
-                    charges: {
-                        data: [
-                            {
-                                payment_method_details: {
-                                    type: 'card',
-                                    card: {
-                                        country: 'FR',
-                                    },
-                                },
-                            },
-                        ],
-                    } as Stripe.ApiList<Stripe.Charge>,
-                    payment_method_types: ['card'],
-                    status: 'succeeded',
-                    currency: 'eur',
-                    amount_received: 330,
-                });
+                const event = await createExpensiveEvent(token, sdk);
 
                 const cartActionSetRes = await sdk.actions.create(token, {
                     name: 'cart_create',
@@ -347,11 +277,11 @@ export default function(getCtx: () => { ready: Promise<void> }) {
 
                 await sdk.cart.ticketSelections(token, actionSetId, {
                     tickets: [
-                        ...[...Array(3)].map(() => ({
+                        ...[...Array(1)].map(() => ({
                             categoryId: event.categories[0],
                             price: {
                                 currency: 'Fiat',
-                                price: '100',
+                                price: '10000',
                             },
                         })),
                     ],
@@ -375,9 +305,10 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     return as.current_status === 'complete';
                 });
 
+                await validateCardPayment(await getPIFromCart(sdk, token, actionSetId));
+
                 const res = await sdk.checkout.cart.resolve.paymentIntent(token, {
                     cart: actionSetId,
-                    paymentIntentId: validPaymentIntentId,
                 });
 
                 const checkoutActionSetId = res.data.checkoutActionSetId;
@@ -387,7 +318,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 });
 
                 await waitForTickets(sdk, token, user.address, (tickets: TicketEntity[]): boolean => {
-                    return tickets.length === 3;
+                    return tickets.length === 1;
                 });
 
                 await failWithCode(

@@ -26,7 +26,7 @@ describe('Password', function() {
         test('check "password123"', async function() {
             const report: PasswordStrengthReport = getPasswordStrength('password123');
             expect(report.score).toEqual(0);
-            expect(report.feedback.warning).toEqual('warning_common_password');
+            expect(report.feedback.warning).toEqual('warning_top_100_common_password');
             expect(report.feedback.suggestions).toEqual([
                 'suggestion_too_weak'
             ]);

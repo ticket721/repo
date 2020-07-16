@@ -13,6 +13,8 @@ import { CategoryEntity } from '@lib/common/categories/entities/Category.entity'
 import { MintAuthorization, toB32 } from '@common/global';
 import { ActionSetsService } from '@lib/common/actionsets/ActionSets.service';
 import { NestError } from '@lib/common/utils/NestError';
+import { StripeService } from '@lib/common/stripe/Stripe.service';
+import { Stripe } from 'stripe';
 
 /**
  * Input for the authorization generation task
@@ -78,6 +80,7 @@ export class AuthorizationsTasks implements OnModuleInit {
      * @param shutdownService
      * @param categoriesService
      * @param authorizationsService
+     * @param stripeService
      */
     constructor(
         private readonly actionSetsService: ActionSetsService,
@@ -86,6 +89,7 @@ export class AuthorizationsTasks implements OnModuleInit {
         private readonly shutdownService: ShutdownService,
         private readonly categoriesService: CategoriesService,
         private readonly authorizationsService: AuthorizationsService,
+        private readonly stripeService: StripeService,
     ) {}
 
     /**
@@ -295,6 +299,15 @@ export class AuthorizationsTasks implements OnModuleInit {
     }
 
     /**
+     * Utility to compute fees
+     *
+     * @param total
+     */
+    hardCodedEuropeanFees = (total: number): number => {
+        return Math.ceil((total + 25) / 0.986);
+    };
+
+    /**
      * Bull task in charge of the authorization generation
      *
      * @param job
@@ -347,15 +360,65 @@ export class AuthorizationsTasks implements OnModuleInit {
         );
 
         if (authorizationsCreationRes.error) {
-            console.error(authorizationsCreationRes.error);
             throw new NestError(`Error while creating authorizations`);
         }
+
+        const total: number = [...authorizationData.prices.map((p: Price) => p.value), ...authorizationData.fees]
+            .map((v: string) => parseInt(v, 10))
+            .reduce((a: number, b: number) => a + b);
+
+        const checkoutAcset = await this.actionSetsService.build(
+            'checkout_create',
+            authorizationData.grantee,
+            {},
+            true,
+        );
+
+        if (checkoutAcset.error) {
+            throw new NestError('Error while creating checkout action set');
+        }
+
+        const t721Fees: number = [...authorizationData.fees]
+            .map((v: string) => parseInt(v, 10))
+            .reduce((a: number, b: number) => a + b);
+
+        const stripe: Stripe = this.stripeService.get();
+
+        const ticketFields = {
+            ticketCount: authorizationData.authorizations.length,
+        };
+
+        for (let idx = 0; idx < authorizationData.authorizations.length; ++idx) {
+            const authorization = authorizationData.authorizations[idx];
+
+            ticketFields[`ticket_${idx}_category`] = authorization.categoryId;
+            ticketFields[`ticket_${idx}_name`] = categories[authorization.categoryId].display_name;
+            ticketFields[`ticket_${idx}_price`] = authorization.price.price;
+        }
+        const paymentIntent = await stripe.paymentIntents.create({
+            amount: this.hardCodedEuropeanFees(total),
+            currency: 'eur',
+            metadata: {
+                cartId: authorizationData.actionSetId,
+                checkoutId: checkoutAcset.response.id,
+                userId: authorizationData.grantee.id,
+                userEmail: authorizationData.grantee.email,
+                fees: t721Fees,
+                groupId: categories[authorizationData.authorizations[0].categoryId].group_id,
+                ...ticketFields,
+            },
+            payment_method_types: ['card'],
+            capture_method: 'manual',
+        });
 
         const actionSetUpdate = await this.actionSetsService.updateAction(authorizationData.actionSetId, 2, {
             commitType: 'stripe',
             total: authorizationData.prices,
             fees: authorizationData.fees,
             authorizations: authorizationsCreationRes.response,
+            paymentIntentId: paymentIntent.id,
+            clientSecret: paymentIntent.client_secret,
+            checkoutActionSetId: checkoutAcset.response.id,
         });
 
         if (actionSetUpdate.error) {

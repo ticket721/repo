@@ -21,7 +21,7 @@ const StyledButton = styled.button<ButtonProps>`
         background-color: ${rgba('#FFFFFF', 0.1)};
         transition: background-color 300ms ease;
         cursor: default;
-        &::before {
+        &::be{
             display: none;
         }
     `};
@@ -121,7 +121,7 @@ const StyledButton = styled.button<ButtonProps>`
         }
     }
 
-    & > span:last-child {
+    & > span:first-child {
         display: flex;
         justify-content: center;
         padding-top: 1px;
@@ -157,8 +157,10 @@ export const Button: React.FunctionComponent<ButtonProps> = (props: ButtonProps)
                 disabled={props.variant === 'disabled'}
                 {...props}
             >
-                {props.loadingState ? <LoaderIcon icon={'loader'} size={'20px'} color={'#FFF'} /> : null}
                 <span>{props.title}</span>
+                {props.loadingState ? (
+                    <LoaderIcon icon={'loader'} size={'20px'} color={'rgba(255,255,255,0.9)'} />
+                ) : null}
             </StyledButton>
         );
     }

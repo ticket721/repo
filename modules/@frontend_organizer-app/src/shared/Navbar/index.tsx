@@ -84,9 +84,7 @@ const Container = styled.div`
 
 const ActionContainer = styled.div`
     display: flex;
-    justify-content: space-evenly;
     align-items: center;
-    width: 335px;
     && button {
         outline: none;
         font-size: 13px;
@@ -97,6 +95,7 @@ const ActionContainer = styled.div`
 const Profile = styled.div`
     display: flex;
     width: 170px;
+    margin-left: ${props => props.theme.biggerSpacing};
     align-items: center;
     justify-content: space-between;
     background-color: rgba(255, 255, 255, 0.06);

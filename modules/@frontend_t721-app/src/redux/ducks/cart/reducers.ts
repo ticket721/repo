@@ -1,22 +1,37 @@
-import { Reducer }                                                                                       from 'redux';
+import { Reducer }                                      from 'redux';
 import { CartActionTypes, CartState }                                from './types';
-import { CartAction, IAddPendingTicket } from './actions';
+import { CartAction, IAddTicket, ICompleteCartRestore, ISetTickets } from './actions';
 
 export const cartInitialState: CartState = {
-    ticketsToAdd: [],
-    addedTickets: [],
-    id: null,
+    tickets: [],
 };
 
-const AddPendingTicketReducer: Reducer<CartState, IAddPendingTicket> = (
+const AddTicketReducer: Reducer<CartState, IAddTicket> = (
     state: CartState,
-    action: IAddPendingTicket,
+    action: IAddTicket,
 ): CartState => ({
     ...state,
-    ticketsToAdd: [
-        ...state.ticketsToAdd,
+    tickets: [
+        ...state.tickets,
         action.category
     ]
+});
+
+const SetTicketsReducer: Reducer<CartState, ISetTickets> = (
+    state: CartState,
+    action: ISetTickets,
+): CartState => ({
+    ...state,
+    tickets: [
+        ...action.tickets
+    ]
+});
+
+const CompleteCartRestoreReducer: Reducer<CartState, ICompleteCartRestore> = (
+    state: CartState,
+    action: ICompleteCartRestore,
+): CartState => ({
+    ...action.cart
 });
 
 export const CartReducer: Reducer<CartState, CartAction> = (
@@ -24,8 +39,12 @@ export const CartReducer: Reducer<CartState, CartAction> = (
     action: CartAction,
 ): CartState => {
     switch (action.type) {
-        case CartActionTypes.AddPendingTicket:
-            return AddPendingTicketReducer(state, action as IAddPendingTicket);
+        case CartActionTypes.AddTicket:
+            return AddTicketReducer(state, action as IAddTicket);
+        case CartActionTypes.CompleteCartRestore:
+            return CompleteCartRestoreReducer(state, action as ICompleteCartRestore);
+        case CartActionTypes.SetTickets:
+            return SetTicketsReducer(state, action as ISetTickets);
         default:
             return state;
     }

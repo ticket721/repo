@@ -14,10 +14,18 @@ i18n.addResourceBundle('fr', 'notify', {
 
 i18n.addResourceBundle('en', 'global', {
     validate: 'Validate',
-    loading: 'Loading...'
+    loading: 'Loading...',
+    back: 'Back',
+    delete_item: 'Delete item',
+    cancel: 'Cancel',
+    save_changes: 'Save Changes',
 });
 
 i18n.addResourceBundle('fr', 'global', {
     validate: 'Valider',
-    loading: 'Chargement...'
+    loading: 'Chargement...',
+    back: 'Retour',
+    delete_item: 'Supprimer',
+    cancel: 'Annuler',
+    save_changes: 'Sauvegarder les changements',
 });

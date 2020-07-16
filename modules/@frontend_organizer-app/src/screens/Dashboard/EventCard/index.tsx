@@ -42,8 +42,8 @@ const HoverFilter = styled.div`
 
 const StyledCard = styled.div`
     position: relative;
-    width: calc(33vw - 50px);
-    height: calc(16.5vw - 25px);
+    width: calc((100vw - 100px - (${props => props.theme.doubleSpacing} * 2)) / 3);
+    height: calc((100vw - 100px - (${props => props.theme.doubleSpacing} * 2)) / 6);
     overflow: hidden;
     cursor: pointer;
     border-radius: ${props => props.theme.defaultRadius};

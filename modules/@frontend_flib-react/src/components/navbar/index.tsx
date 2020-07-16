@@ -9,7 +9,7 @@ const StyledNavbar = styled.nav`
     border-top-right-radius: ${(props) => props.theme.doubleSpacing};
     bottom: 0;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     left: 0;
     padding: calc(${(props) => props.theme.regularSpacing} * 1.5) ${(props) => props.theme.doubleSpacing};
     position: fixed;
@@ -21,7 +21,6 @@ const StyledNavbar = styled.nav`
         color: #fff;
         display: inline-flex;
         opacity: 0.6;
-        padding: 0 1.25rem;
         position: relative;
         text-decoration: none;
         transition: opacity 300ms ease;

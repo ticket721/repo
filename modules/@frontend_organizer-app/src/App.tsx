@@ -1,38 +1,39 @@
-import React, { Suspense, useEffect, useState } from 'react';
-
-import { Redirect, Route, Switch, useLocation, withRouter } from 'react-router-dom';
-
-import Navbar       from './shared/Navbar';
-import { AppState } from '@frontend/core/lib/redux';
-
+import React, {
+    Suspense,
+}                           from 'react';
+import {
+    Redirect,
+    Route,
+    Switch,
+    useLocation,
+    withRouter,
+}                           from 'react-router-dom';
+import Navbar               from './shared/Navbar';
+import { AppState }         from '@frontend/core/lib/redux';
 import ProtectedRoute       from '@frontend/core/lib/components/ProtectedRoute';
+import ProtectedByRights    from '@frontend/core/lib/components/ProtectedByRights';
 import { useSelector }      from 'react-redux';
 import styled               from 'styled-components';
 import { AppStatus }        from '@frontend/core/lib/redux/ducks/statuses';
 import ToastStacker         from '@frontend/core/lib/components/ToastStacker';
-import './core/event_creation/locales';
 import { EventMenu }        from './screens/Event/EventMenu';
 import MediaQuery           from 'react-responsive';
 import { routes }           from './routes';
 import { FullPageLoading }  from '@frontend/flib-react/lib/components';
+import './core/event_creation/locales';
 import './shared/Translations/global';
 
 const App: React.FC = () => {
-    const [validated, setValidated] = useState(true);
     const authState = useSelector(((state: AppState) => state.auth));
     const appStatus = useSelector(((state: AppState) => state.statuses.appStatus));
     const location = useLocation();
-
-    useEffect(() => {
-        setValidated(authState.user?.validated);
-    }, [authState.user]);
 
     return (
         <Suspense fallback={<FullPageLoading/>}>
             <AppContainer>
                 <MediaQuery minDeviceWidth={1224}>
                     {
-                        validated &&
+                        authState.user?.validated &&
                         location.pathname !== '/register' && location.pathname !== '/login'
 
                             ?
@@ -55,13 +56,16 @@ const App: React.FC = () => {
                                             <PageWrapper>
                                                 {
                                                     route.path.match(/^\/group\/:groupId/) ?
-                                                        <EventPageWrapper>
-                                                            <EventMenu/>
-                                                            <div>
-                                                                <route.page/>
-                                                            </div>
-                                                        </EventPageWrapper> :
-                                                    <route.page/>
+                                                        <ProtectedByRights type={route.entityType} value={route.paramId}>
+                                                            <EventPageWrapper>
+                                                                <EventMenu/>
+                                                                <div>
+                                                                    <route.page/>
+                                                                </div>
+                                                          </EventPageWrapper>
+                                                        </ProtectedByRights>
+                                                    :
+                                                        <route.page/>
                                                 }
                                             </PageWrapper>
                                         </ProtectedRoute>;

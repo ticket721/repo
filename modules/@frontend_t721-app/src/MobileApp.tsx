@@ -1,9 +1,10 @@
-import React, { lazy, Suspense, useEffect, useState } from 'react';
-import { NavLink, Route, Switch, useHistory, useLocation, withRouter } from 'react-router-dom';
-import { FullPageLoading, Navbar, Icon, TopNav } from '@frontend/flib-react/lib/components';
-import ProtectedRoute                            from '@frontend/core/lib/components/ProtectedRoute';
-import ToastStacker                              from '@frontend/core/lib/components/ToastStacker';
-import styled                                    from 'styled-components';
+import React, { lazy, Suspense, useEffect, useState }         from 'react';
+import { Route, Switch, useHistory, useLocation, withRouter, Redirect } from 'react-router-dom';
+import { FullPageLoading, TopNav }                            from '@frontend/flib-react/lib/components';
+import ProtectedRoute                                         from '@frontend/core/lib/components/ProtectedRoute';
+import ToastStacker                                           from '@frontend/core/lib/components/ToastStacker';
+import styled                                                 from 'styled-components';
+import { T721Navbar }                                         from './components/NavBar';
 
 const TopNavWrapper = (props: { back: () => void }): JSX.Element => {
 
@@ -35,10 +36,12 @@ const ProfileLanguagePage = lazy(() => import('./routes/Language'));
 const ProfilePage = lazy(() => import('./routes/Profile'));
 const SearchViewAllPage = lazy(() => import('./routes/SearchViewAll'));
 const EventPage = lazy(() => import('./routes/Event'));
+const TicketPage = lazy(() => import('./routes/Ticket'));
 const TicketSelectionPage = lazy(() => import('./routes/TicketSelection'));
 const SearchPage = lazy(() => import('./routes/Search'));
 const TagsPage = lazy(() => import('./routes/Tags'));
 const WalletPage = lazy(() => import('./routes/Wallet'));
+const CartPage = lazy(() => import('./routes/Cart'));
 
 const MobileApp: React.FC = () => {
 
@@ -79,7 +82,7 @@ const MobileApp: React.FC = () => {
                     </ProtectedRoute>
 
                     <ProtectedRoute path={'/cart/checkout'} exact={true}>
-                        <p>Cart</p>
+                        <CartPage/>
                     </ProtectedRoute>
 
                     <Route path={'/search/events/:query'} exact={true}>
@@ -102,9 +105,14 @@ const MobileApp: React.FC = () => {
                         <TagsPage/>
                     </Route>
 
+                    <ProtectedRoute path={'/ticket/:id'} exact={true}>
+                        <TicketPage/>
+                    </ProtectedRoute>
+
                     <ProtectedRoute path={'/'} exact={true}>
                         <WalletPage/>
                     </ProtectedRoute>
+                    <Redirect to={'/'}/>
                 </Switch>
             </Suspense>
             <ToastStacker additionalLocales={[]}/>
@@ -112,28 +120,7 @@ const MobileApp: React.FC = () => {
                 location.pathname.lastIndexOf('/') === 0
 
                     ?
-                    <Navbar>
-                        <NavLink exact={true} to={'/home'}>
-                            <Icon icon={'home'} color='#FFFFFF' size={'22px'}/>
-                        </NavLink>
-
-                        <NavLink exact={true} to={'/search'}>
-                            <Icon icon={'search'} color='#FFFFFF' size={'22px'}/>
-                        </NavLink>
-
-                        <NavLink exact={true} to={'/'}>
-                            <Icon icon={'t721'} color='#FFFFFF' size={'22px'}/>
-                        </NavLink>
-
-                        <NavLink exact={true} to={'/tags'}>
-                            <Icon icon={'tags'} color='#FFFFFF' size={'22px'}/>
-                        </NavLink>
-
-                        <NavLink exact={true} to={'/profile'}>
-                            <Icon icon={'profile'} color='#FFFFFF' size={'22px'}/>
-                        </NavLink>
-
-                    </Navbar>
+                    <T721Navbar/>
 
                     :
                     null

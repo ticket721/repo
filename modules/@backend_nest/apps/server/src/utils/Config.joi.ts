@@ -46,6 +46,8 @@ export const Config: Joi.ObjectSchema = Joi.object({
 
     AUTH_SIGNATURE_TIMEOUT: Joi.number().default(30),
 
+    DOSOJIN_STRIPE_PRIVATE_KEY: Joi.string().required(),
+
     EMAIL_ENGINE: Joi.string()
         .valid('development', 'mailjet')
         .required(),
@@ -82,6 +84,7 @@ export const Config: Joi.ObjectSchema = Joi.object({
     ROCKSIDE_OPTS_API_KEY: Joi.string().required(),
     ROCKSIDE_OPTS_NETWORK_ID: Joi.number().required(),
     ROCKSIDE_OPTS_NETWORK_NAME: Joi.string().required(),
+    ROCKSIDE_FORWARDER_ADDRESS: Joi.string().required(),
 
     ROCKSIDE_MOCK_OPTS_ORCHESTRATOR_PRIVATE_KEY: Joi.string().when('NODE_ENV', {
         is: 'development',

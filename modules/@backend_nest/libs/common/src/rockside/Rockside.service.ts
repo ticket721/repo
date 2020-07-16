@@ -3,6 +3,7 @@ import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
 import { EIP712Signature, ExternalSigner } from '@ticket721/e712/lib';
 import { keccak256FromBuffer } from '@common/global';
 import { RocksideApi, TransactionOpts } from '@rocksideio/rockside-wallet-sdk/lib/api';
+import { ConfigService } from '@lib/common/config/Config.service';
 
 /**
  * Data model returned when creating an EAO
@@ -33,8 +34,9 @@ export class RocksideService {
      * Dependency Injection
      *
      * @param rockside
+     * @param configService
      */
-    constructor(private readonly rockside: RocksideApi) {}
+    constructor(private readonly rockside: RocksideApi, private readonly configService: ConfigService) {}
 
     /**
      * Utility to create an EOA using the Rockside API
@@ -83,8 +85,22 @@ export class RocksideService {
      * Utility to create an identity with the Rockside API
      */
     async createIdentity(): Promise<ServiceResponse<RocksideCreateIdentityResponse>> {
+        const userEoa = await this.createEOA();
+
+        if (userEoa.error) {
+            return {
+                error: 'eoa_creation_error',
+                response: null,
+            };
+        }
+
+        const forwarderAddress = this.configService.get('ROCKSIDE_FORWARDER_ADDRESS');
+
         try {
-            const identityCreationResponse = await this.rockside.createIdentity();
+            const identityCreationResponse = await this.rockside.createIdentity(
+                forwarderAddress,
+                userEoa.response.address,
+            );
             return {
                 error: null,
                 response: identityCreationResponse,

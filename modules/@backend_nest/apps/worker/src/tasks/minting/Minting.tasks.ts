@@ -188,7 +188,7 @@ export class MintingTasks implements OnModuleInit {
             return '0';
         }
 
-        if (cartAuthorizations.total.length > 1) {
+        if (cartAuthorizations.total.length > 1 || cartAuthorizations.fees.length > 1) {
             throw new NestError('Multiple currencies not allowed');
         }
 
@@ -202,7 +202,9 @@ export class MintingTasks implements OnModuleInit {
                 .call()
         ).toString();
 
-        const totalRequiredAmount = cartAuthorizations.total[0].value;
+        const totalRequiredAmount = new BigNumber(cartAuthorizations.total[0].value)
+            .plus(new BigNumber(cartAuthorizations.fees[0]))
+            .toString(10);
 
         if (new BigNumber(currentlyAuthorizedAmount).gte(new BigNumber(totalRequiredAmount))) {
             return '0';
@@ -426,6 +428,44 @@ export class MintingTasks implements OnModuleInit {
     }
 
     /**
+     * Set consumed flag to true on cart and checkout actionset
+     *
+     * @param cartId
+     * @param checkoutId
+     */
+    private async consumeCartAndCheckout(cartId: string, checkoutId: string): Promise<ServiceResponse<void>> {
+        const cartConsumedUpdate = await this.actionSetsService.update(
+            {
+                id: cartId,
+            },
+            {
+                consumed: true,
+            },
+        );
+
+        const checkoutConsumedUpdate = await this.actionSetsService.update(
+            {
+                id: checkoutId,
+            },
+            {
+                consumed: true,
+            },
+        );
+
+        if (cartConsumedUpdate.error || checkoutConsumedUpdate.error) {
+            return {
+                error: cartConsumedUpdate.error || checkoutConsumedUpdate.error,
+                response: null,
+            };
+        }
+
+        return {
+            error: null,
+            response: null,
+        };
+    }
+
+    /**
      * Ticket Minting task. Handling transaction sequence creation
      *
      * @param job
@@ -480,6 +520,12 @@ export class MintingTasks implements OnModuleInit {
 
         if (txSeqHandler.error) {
             throw new NestError(`Unable to create tx sequence actionset: ${txSeqHandler.error}`);
+        }
+
+        const consumed = await this.consumeCartAndCheckout(cart.id, checkout.id);
+
+        if (consumed.error) {
+            throw new NestError(`Unable to consume actionsets: ${consumed.error}`);
         }
     }
 

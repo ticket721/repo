@@ -1,3 +1,5 @@
+const fs = require('fs');
+
 let output = `window.injectedEnv = {`;
 
 for (const varName of Object.keys(process.env)) {
@@ -10,4 +12,9 @@ for (const varName of Object.keys(process.env)) {
 output = `${output}
 };`;
 
-console.log(output);
+const indexHtml = fs.readFileSync('./build/index.html');
+
+const replacedIndexHtml = indexHtml.toString().replace('console.log("// {{ ENV }} //")', output);
+
+console.log(replacedIndexHtml);
+

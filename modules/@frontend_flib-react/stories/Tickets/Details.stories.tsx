@@ -99,15 +99,20 @@ export const showcase = () => (
                     seatInfo={defaultTicket.seat}
                 />
                 <DateTimeCard
-                    endDate={defaultTicket.endDate}
-                    endTime={defaultTicket.endTime}
+                    dates={[
+                        {
+                            startDate: defaultTicket.startDate,
+                            endDate: defaultTicket.endDate,
+                            startTime: defaultTicket.startTime,
+                            endTime: defaultTicket.endTime,
+                        },
+                    ]}
                     iconColor={defaultTicket.mainColor}
-                    startDate={defaultTicket.startDate}
-                    startTime={defaultTicket.startTime}
                     wSeparator
                 />
                 <LocationCard
                     location={defaultTicket.location}
+                    subtitle={'Get direction'}
                     address={defaultTicket.address}
                     iconColor={defaultTicket.mainColor}
                     wSeparator
@@ -117,6 +122,8 @@ export const showcase = () => (
                     iconColor={defaultTicket.mainColor}
                     price={defaultTicket.price}
                     wSeparator
+                    priceLabel={'price'}
+                    purchasedLabel={'purchased date'}
                 />
                 <SponsorsCard sponsors={sponsorsList} title={'Sponsors'} wSeparator />
                 <TitleText title={'2x beers'} text={'Quisque at risus molestie, interdum lectus sed, ultrices quam.'} />

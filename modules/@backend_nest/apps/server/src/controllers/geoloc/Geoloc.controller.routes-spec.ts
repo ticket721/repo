@@ -3,7 +3,6 @@ import { PasswordlessUserDto } from '@app/server/authentication/dto/Passwordless
 import {
     createEvent,
     createEventActionSet,
-    createFreeEventActionSet,
     createPaymentIntent,
     editEventActionSet,
     failWithCode,

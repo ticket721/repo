@@ -36,5 +36,11 @@ services:
       args:
         - "TAG=$TAG"
     image: "organizer:$TAG"
-
+  t721app:
+    build:
+      context: ./modules/@frontend_t721-app
+      dockerfile: t721app.dockerfile
+      args:
+        - "TAG=$TAG"
+    image: "t721app:$TAG"
 
