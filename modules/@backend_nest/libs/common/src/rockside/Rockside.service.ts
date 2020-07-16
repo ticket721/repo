@@ -50,6 +50,7 @@ export class RocksideService {
     async createEOA(): Promise<ServiceResponse<RocksideCreateEOAResponse>> {
         try {
             const addressCreationResponse = await this.rockside.createEOA();
+            this.logger.log(`Created a new eoa ${addressCreationResponse.address}`);
             return {
                 error: null,
                 response: {
@@ -101,6 +102,10 @@ export class RocksideService {
         }
 
         const forwarderAddress = this.configService.get('ROCKSIDE_FORWARDER_ADDRESS');
+
+        this.logger.log(
+            `Creating a new identity with eoa ${userEoa.response.address} and forwarder ${forwarderAddress}`,
+        );
 
         try {
             const identityCreationResponse = await this.rockside.createIdentity(

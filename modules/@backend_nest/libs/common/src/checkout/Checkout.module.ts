@@ -2,9 +2,11 @@ import { Module } from '@nestjs/common';
 import { CheckoutAcsetbuilderHelper } from '@lib/common/checkout/acset_builders/Checkout.acsetbuilder.helper';
 import { CheckoutAcsetlifecycleHelper } from '@lib/common/checkout/acset_lifecycles/Checkout.acsetlifecycles.helper';
 import { MintingModule } from '@lib/common/minting/Minting.module';
+import { ActionSetsModule } from '@lib/common/actionsets/ActionSets.module';
+import { CategoriesModule } from '@lib/common/categories/Categories.module';
 
 @Module({
-    imports: [MintingModule],
+    imports: [MintingModule, ActionSetsModule, CategoriesModule],
     providers: [
         {
             provide: `ACTION_SET_BUILDER/checkout_create`,

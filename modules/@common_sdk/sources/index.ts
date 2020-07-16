@@ -74,7 +74,7 @@ import { checkoutCartCommitStripe, checkoutResolveCartWithPaymentIntent } from '
 import { dosojinSearch, dosojinCount } from './app/api/dosojin';
 
 // TICKETS
-import { ticketsSearch, ticketsCount } from './app/api/tickets';
+import { ticketsSearch, ticketsCount, ticketsValidate } from './app/api/tickets';
 
 // USERS
 import { usersMe, usersSetDeviceAddress } from './app/api/users';
@@ -173,6 +173,7 @@ export class T721SDK {
 
         this.tickets.search = this.tickets.search.bind(this);
         this.tickets.count = this.tickets.count.bind(this);
+        this.tickets.validate = this.tickets.validate.bind(this);
 
         this.geoloc.closestCity = this.geoloc.closestCity.bind(this);
         this.geoloc.fuzzySearch = this.geoloc.fuzzySearch.bind(this);
@@ -374,6 +375,7 @@ export class T721SDK {
     public tickets = {
         search: ticketsSearch,
         count: ticketsCount,
+        validate: ticketsValidate
     };
 
     public geoloc = {

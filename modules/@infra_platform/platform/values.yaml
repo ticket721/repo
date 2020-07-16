@@ -32,6 +32,12 @@ organizer:
 
 server:
 
+  slave:
+    replicas: 0
+
+  master:
+    replicas: 1
+
   fsName: ""
 
   image:
@@ -44,6 +50,13 @@ server:
     port: 80
 
 worker:
+
+  slave:
+    replicas: 0
+
+  master:
+    replicas: 1
+
   image:
     repository: worker
     pullPolicy: IfNotPresent
