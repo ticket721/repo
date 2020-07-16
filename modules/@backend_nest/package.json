@@ -66,7 +66,7 @@
         "bignumber.js": "9.0.0",
         "ethereum-address": "0.0.4",
         "ethers": "4.0.45",
-        "lodash": "4.17.15",
+        "lodash": "4.17.19",
         "web3": "1.2.6",
         "@types/hapi__joi": "16.0.12",
         "@nestjs/cli": "7.0.0",
