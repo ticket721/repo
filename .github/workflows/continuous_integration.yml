@@ -391,14 +391,6 @@ jobs:
           env:
             VERBOSE: true
           run: npm run test:coverage
-
-        - name: Coveralls
-          uses: coverallsapp/github-action@master
-          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-          working-directory: modules/@contracts_t721controller
-          with:
-            github-token: ${{ secrets.github_token }}
-
         
 
 #     /$$$$  /$$$$$$   /$$$$$$  /$$$$
