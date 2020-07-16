@@ -6,6 +6,8 @@ import ts from 'typescript';
 import { ActionSet } from '@lib/common/actionsets/helper/ActionSet.class';
 import { Action } from '@lib/common/actionsets/helper/Action.class';
 import { getQueueToken } from '@nestjs/bull';
+import { ActionSetsService } from '@lib/common/actionsets/ActionSets.service';
+import { CategoriesService } from '@lib/common/categories/Categories.service';
 
 class QueueMock<T = any> {
     add(name: string, data: T, opts?: JobOptions): Promise<Job<T>> {
@@ -25,19 +27,33 @@ describe('Checkout Acsetlifecycle Helper', function() {
     const context: {
         checkoutAcsetlifecycleHelper: CheckoutAcsetlifecycleHelper;
         mintingQueueMock: QueueMock;
+        actionSetsServiceMock: ActionSetsService;
+        categoriesServiceMock: CategoriesService;
     } = {
         checkoutAcsetlifecycleHelper: null,
         mintingQueueMock: null,
+        actionSetsServiceMock: null,
+        categoriesServiceMock: null,
     };
 
     beforeEach(async function() {
         context.mintingQueueMock = mock(QueueMock);
+        context.actionSetsServiceMock = mock(ActionSetsService);
+        context.categoriesServiceMock = mock(CategoriesService);
 
         const app: TestingModule = await Test.createTestingModule({
             providers: [
                 {
                     provide: getQueueToken('minting'),
                     useValue: instance(context.mintingQueueMock),
+                },
+                {
+                    provide: ActionSetsService,
+                    useValue: instance(context.actionSetsServiceMock),
+                },
+                {
+                    provide: CategoriesService,
+                    useValue: instance(context.categoriesServiceMock),
                 },
                 CheckoutAcsetlifecycleHelper,
             ],

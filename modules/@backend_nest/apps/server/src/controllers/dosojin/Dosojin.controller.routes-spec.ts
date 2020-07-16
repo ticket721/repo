@@ -119,7 +119,10 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 });
 
                 await waitForTickets(sdk, token, user.address, (tickets: TicketEntity[]): boolean => {
-                    return tickets.length === 1;
+                    return (
+                        tickets.length === 1 &&
+                        tickets.filter((t: TicketEntity): boolean => t.status === 'ready').length === tickets.length
+                    );
                 });
 
                 const cartActionSetFinalRes = await sdk.actions.search(token, {
@@ -231,7 +234,10 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 });
 
                 await waitForTickets(sdk, token, user.address, (tickets: TicketEntity[]): boolean => {
-                    return tickets.length === 1;
+                    return (
+                        tickets.length === 1 &&
+                        tickets.filter((t: TicketEntity): boolean => t.status === 'ready').length === tickets.length
+                    );
                 });
 
                 const cartActionSetFinalRes = await sdk.actions.search(token, {

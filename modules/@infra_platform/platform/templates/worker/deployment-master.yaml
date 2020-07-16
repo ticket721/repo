@@ -7,7 +7,7 @@ metadata:
     name: {{ include "platform.fullname" . }}--worker-master--d
     chart: {{ .Chart.Name }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.worker.master.replicas }}
   strategy:
     type: RollingUpdate
     rollingUpdate:

@@ -60,6 +60,10 @@ import { EventsWithdrawResponseDto } from '@app/server/controllers/events/dto/Ev
 import { contractCallHelper } from '@lib/common/utils/contractCall.helper';
 import { T721ControllerV0Service } from '@lib/common/contracts/t721controller/T721Controller.V0.service';
 import { AuthorizationsService } from '@lib/common/authorizations/Authorizations.service';
+import { EventsGuestlistInputDto } from '@app/server/controllers/events/dto/EventsGuestlistInput.dto';
+import { EventsGuestlistResponseDto, GuestInfos } from '@app/server/controllers/events/dto/EventsGuestlistResponse.dto';
+import { SearchInputType } from '@lib/common/utils/SearchInput.type';
+import { MetadataEntity } from '@lib/common/metadatas/entities/Metadata.entity';
 
 /**
  * Events controller to create and fetch events
@@ -1100,6 +1104,164 @@ export class EventsController extends ControllerBasics<EventEntity> {
 
         return {
             txSeqId: txSeq.txSeq.id,
+        };
+    }
+
+    /**
+     * Recover guest list for one of multiple dates of an event
+     *
+     * @param body
+     * @param eventId
+     * @param user
+     */
+    @Post('/:eventId/guestlist')
+    @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
+    @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.Created)
+    @Roles('authenticated')
+    @ApiResponses([
+        StatusCodes.Created,
+        StatusCodes.NotFound,
+        StatusCodes.Unauthorized,
+        StatusCodes.InternalServerError,
+    ])
+    async guestlist(
+        @Body() body: EventsGuestlistInputDto,
+        @Param('eventId') eventId: string,
+        @User() user: UserDto,
+    ): Promise<EventsGuestlistResponseDto> {
+        const eventEntity: EventEntity = await this._authorizeOne(
+            this.rightsService,
+            this.eventsService,
+            user,
+            {
+                id: eventId,
+            },
+            'group_id',
+            ['owner'],
+        );
+
+        let dateIds: string[];
+
+        const dates = await this._search<DateEntity>(this.datesService, {
+            group_id: {
+                $eq: eventEntity.group_id,
+            },
+            parent_type: {
+                $eq: 'event',
+            },
+            parent_id: {
+                $eq: eventEntity.id,
+            },
+        } as SearchInputType<DateEntity>);
+
+        if (body.dateIds.length === 0) {
+            dateIds = dates.map((d: DateEntity) => d.id);
+        } else {
+            for (const date of body.dateIds) {
+                if (dates.findIndex((d: DateEntity): boolean => d.id === date) === -1) {
+                    throw new HttpException(
+                        {
+                            status: StatusCodes.Forbidden,
+                            message: 'date_id_not_in_event',
+                        },
+                        StatusCodes.Forbidden,
+                    );
+                }
+            }
+            dateIds = body.dateIds;
+        }
+
+        let ownerships: GuestInfos[] = [];
+
+        const dateCategoryEntities = await this._search<CategoryEntity>(this.categoriesService, {
+            parent_type: {
+                $eq: 'date',
+            },
+            parent_id: {
+                $in: [...dateIds],
+            },
+        } as SearchInputType<CategoryEntity>);
+
+        const globalCategoryEntities = await this._search<CategoryEntity>(this.categoriesService, {
+            parent_type: {
+                $eq: 'event',
+            },
+            parent_id: {
+                $eq: eventEntity.id,
+            },
+        } as SearchInputType<CategoryEntity>);
+
+        for (const dateCategory of dateCategoryEntities) {
+            ownerships = [
+                ...ownerships,
+                ...(
+                    await this._search<MetadataEntity>(this.metadatasService, {
+                        class_name: {
+                            $eq: 'ownership',
+                        },
+                        type_name: {
+                            $eq: 'ticket',
+                        },
+                        bool_: {
+                            $eq: {
+                                valid: true,
+                            },
+                        },
+                        str_: {
+                            $eq: {
+                                categoryId: dateCategory.id,
+                            },
+                        },
+                    } as any)
+                ).map(
+                    (m: MetadataEntity): GuestInfos => ({
+                        address: m.str_.address,
+                        category: m.str_.categoryId,
+                        username: m.str_.username,
+                        ticket: m.str_.ticket,
+                        email: m.str_.email,
+                    }),
+                ),
+            ];
+        }
+
+        for (const globalCategory of globalCategoryEntities) {
+            ownerships = [
+                ...ownerships,
+                ...(
+                    await this._search<MetadataEntity>(this.metadatasService, {
+                        class_name: {
+                            $eq: 'ownership',
+                        },
+                        type_name: {
+                            $eq: 'ticket',
+                        },
+                        bool_: {
+                            $eq: {
+                                valid: true,
+                            },
+                        },
+                        str_: {
+                            $eq: {
+                                categoryId: globalCategory.id,
+                            },
+                        },
+                    } as any)
+                ).map(
+                    (m: MetadataEntity): GuestInfos => ({
+                        address: m.str_.address,
+                        category: m.str_.categoryId,
+                        username: m.str_.username,
+                        ticket: m.str_.ticket,
+                        email: m.str_.email,
+                    }),
+                ),
+            ];
+        }
+
+        return {
+            guests: ownerships,
         };
     }
 }

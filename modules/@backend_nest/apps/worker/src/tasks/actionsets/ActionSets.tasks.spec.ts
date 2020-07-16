@@ -154,6 +154,10 @@ describe('ActionSets Tasks', function() {
             const job: Job = new JobMock(actionSet) as Job;
 
             when(context.actionSetsServiceMock.getInputHandler('first')).thenReturn(handler);
+            when(context.actionSetsServiceMock.onFailure(anything())).thenResolve({
+                error: null,
+                response: null,
+            });
 
             await context.actionSetsTasks.input(job);
 
@@ -208,17 +212,11 @@ describe('ActionSets Tasks', function() {
 
             when(context.actionSetsServiceMock.getInputHandler('first')).thenReturn(handler);
             when(context.actionSetsServiceMock.getInputHandler('second')).thenReturn(handler);
-            when(context.actionSetsServiceMock.onComplete(anything())).thenResolve({
-                error: null,
-                response: null,
-            });
 
             await context.actionSetsTasks.input(job);
 
             verify(context.actionSetsServiceMock.getInputHandler('first')).twice();
             verify(context.actionSetsServiceMock.getInputHandler('second')).twice();
-            verify(context.actionSetsServiceMock.update(anything(), anything())).never();
-            verify(context.actionSetsServiceMock.onComplete(anything())).called();
         });
 
         it('should fail on input fetch error', async function() {
