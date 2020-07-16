@@ -4,6 +4,7 @@ import { EIP712Signature, ExternalSigner } from '@ticket721/e712/lib';
 import { keccak256FromBuffer } from '@common/global';
 import { RocksideApi, TransactionOpts } from '@rocksideio/rockside-wallet-sdk/lib/api';
 import { ConfigService } from '@lib/common/config/Config.service';
+import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
 
 /**
  * Data model returned when creating an EAO
@@ -39,11 +40,17 @@ export class RocksideService {
     constructor(private readonly rockside: RocksideApi, private readonly configService: ConfigService) {}
 
     /**
+     * Logger for the rockside service
+     */
+    private readonly logger = new WinstonLoggerService('rockside');
+
+    /**
      * Utility to create an EOA using the Rockside API
      */
     async createEOA(): Promise<ServiceResponse<RocksideCreateEOAResponse>> {
         try {
             const addressCreationResponse = await this.rockside.createEOA();
+            this.logger.log(`Created a new eoa ${addressCreationResponse.address}`);
             return {
                 error: null,
                 response: {
@@ -96,6 +103,10 @@ export class RocksideService {
 
         const forwarderAddress = this.configService.get('ROCKSIDE_FORWARDER_ADDRESS');
 
+        this.logger.log(
+            `Creating a new identity with eoa ${userEoa.response.address} and forwarder ${forwarderAddress}`,
+        );
+
         try {
             const identityCreationResponse = await this.rockside.createIdentity(
                 forwarderAddress,
@@ -120,6 +131,8 @@ export class RocksideService {
      * @param tx
      */
     async sendTransaction(tx: Omit<TransactionOpts, 'nonce' | 'gas'>): Promise<ServiceResponse<string>> {
+        this.logger.log(`Broadcasting transaction with following arguments: ${JSON.stringify(tx, null, 4)}`);
+
         try {
             const transactionCreationResponse = await this.rockside.sendTransaction(tx);
             return {

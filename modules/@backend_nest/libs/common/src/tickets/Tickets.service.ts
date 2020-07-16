@@ -8,6 +8,10 @@ import { TicketforgeService } from '@lib/common/contracts/Ticketforge.service';
 import BigNumber from 'bignumber.js';
 import { contractCallHelper } from '@lib/common/utils/contractCall.helper';
 import { CategoriesService } from '@lib/common/categories/Categories.service';
+import { MetadatasService } from '@lib/common/metadatas/Metadatas.service';
+import { UsersService } from '@lib/common/users/Users.service';
+import { UserDto } from '@lib/common/users/dto/User.dto';
+import { RightsService } from '@lib/common/rights/Rights.service';
 
 /**
  * Data model required when pre-generating the tickets
@@ -46,6 +50,9 @@ export class TicketsService extends CRUDExtension<TicketsRepository, TicketEntit
      * @param ticketEntity
      * @param ticketforgeService
      * @param categoriesService
+     * @param rightsService
+     * @param metadatasService
+     * @param usersService
      */
     constructor(
         @InjectRepository(TicketsRepository)
@@ -54,6 +61,9 @@ export class TicketsService extends CRUDExtension<TicketsRepository, TicketEntit
         ticketEntity: BaseModel<TicketEntity>,
         private readonly ticketforgeService: TicketforgeService,
         private readonly categoriesService: CategoriesService,
+        private readonly rightsService: RightsService,
+        private readonly metadatasService: MetadatasService,
+        private readonly usersService: UsersService,
     ) {
         super(
             ticketEntity,
@@ -146,6 +156,78 @@ export class TicketsService extends CRUDExtension<TicketsRepository, TicketEntit
             if (ticketEntityCreationRes.error) {
                 return {
                     error: ticketEntityCreationRes.error,
+                    response: null,
+                };
+            }
+
+            const userRes = await this.usersService.findByAddress(input.buyer);
+
+            if (userRes.error) {
+                return {
+                    error: userRes.error,
+                    response: null,
+                };
+            }
+
+            const user: UserDto = userRes.response;
+
+            const rights = await this.rightsService.addRights(user, [
+                {
+                    entity: 'ticket',
+                    entityValue: ticketIDRes.response.toString(),
+                    rights: {
+                        owner: true,
+                    },
+                },
+            ]);
+
+            if (rights.error) {
+                return {
+                    error: rights.error,
+                    response: null,
+                };
+            }
+
+            const creationMetadataRes = await this.metadatasService.attach(
+                'ownership',
+                'ticket',
+                [
+                    {
+                        type: 'ticket',
+                        id: ticketIDRes.response.toString(),
+                        field: 'id',
+                    },
+                ],
+                [
+                    {
+                        type: 'ticket',
+                        id: ticketIDRes.response.toString(),
+                        field: 'id',
+                    },
+                ],
+                [],
+                {
+                    date: {
+                        at: new Date(Date.now()),
+                    },
+                    str: {
+                        username: user.username,
+                        email: user.email,
+                        ticket: ticketIDRes.response.toString(),
+                        address: user.address,
+                        categoryId: input.categoryId,
+                    },
+                    bool: {
+                        valid: true,
+                    },
+                },
+                user,
+                this,
+            );
+
+            if (creationMetadataRes.error) {
+                return {
+                    error: creationMetadataRes.error,
                     response: null,
                 };
             }

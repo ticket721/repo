@@ -113,7 +113,7 @@ then
 fi
 
 cd ..
-echo "0001/END"
+echo "0005/END"
 echo
 
 sleep 1
@@ -132,8 +132,28 @@ then
 fi
 
 cd ..
-echo "0004/END"
+echo "0006/END"
 echo
 
 sleep 1
+
+###########################################################
+
+echo
+echo "0007/ Add missing ticket mapping and metadata sync settings"
+cd elasticsearch
+npm run elastic-migrate-up 20200715201757
+
+if [ ! $? -eq 0 ]
+then
+  echo "An error occured on an elasticsearch migration step (20200715201757)"
+  exit 1
+fi
+
+cd ..
+echo "0007/END"
+echo
+
+sleep 1
+
 

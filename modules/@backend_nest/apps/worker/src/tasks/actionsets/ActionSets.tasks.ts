@@ -48,6 +48,19 @@ export class ActionSetsTasks implements OnModuleInit {
                 }
                 break;
             }
+            case 'input:error':
+            case 'event:error':
+            case 'error': {
+                const failureLifecycleCallbackRes = await this.actionSetsService.onFailure(actionSet);
+
+                if (failureLifecycleCallbackRes.error) {
+                    throw new NestError(
+                        `Error while running onFailure actionset lifecycle: ${failureLifecycleCallbackRes.error}`,
+                    );
+                }
+
+                break;
+            }
             default: {
                 break;
             }
@@ -88,10 +101,10 @@ export class ActionSetsTasks implements OnModuleInit {
                 const body = updatedActionSet.withoutQuery();
 
                 await this.actionSetsService.update(query, body);
-            }
 
-            if (updatedActionSet.status !== beforeStatus) {
-                await this.onStatusChanged(updatedActionSet);
+                if (updatedActionSet.status !== beforeStatus) {
+                    await this.onStatusChanged(updatedActionSet);
+                }
             }
 
             if (

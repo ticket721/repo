@@ -1,4 +1,14 @@
-import { Body, Controller, HttpCode, Injectable, Post, UseFilters, UseGuards } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    HttpCode,
+    HttpException,
+    Injectable,
+    Param,
+    Post,
+    UseFilters,
+    UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { StatusCodes } from '@lib/common/utils/codes.value';
 import { User } from '@app/server/authentication/decorators/User.controller.decorator';
@@ -15,6 +25,12 @@ import { TicketsSearchResponseDto } from '@app/server/controllers/tickets/dto/Ti
 import { ValidGuard } from '@app/server/authentication/guards/ValidGuard.guard';
 import { TicketsCountInputDto } from '@app/server/controllers/tickets/dto/TicketsCountInput.dto';
 import { TicketsCountResponseDto } from '@app/server/controllers/tickets/dto/TicketsCountResponse.dto';
+import { TicketsValidateTicketResponseDto } from '@app/server/controllers/tickets/dto/TicketsValidateTicketResponse.dto';
+import { TicketsValidateTicketInputDto } from '@app/server/controllers/tickets/dto/TicketsValidateTicketInput.dto';
+import { EventsService } from '@lib/common/events/Events.service';
+import { RightsService } from '@lib/common/rights/Rights.service';
+import { UsersService } from '@lib/common/users/Users.service';
+import { toAcceptedAddressFormat } from '@common/global';
 
 /**
  * Controller Handling Tickets
@@ -28,8 +44,16 @@ export class TicketsController extends ControllerBasics<TicketEntity> {
      * Dependency Injection
      *
      * @param ticketsService
+     * @param eventsService
+     * @param rightsService
+     * @param usersService
      */
-    constructor(private readonly ticketsService: TicketsService) {
+    constructor(
+        private readonly ticketsService: TicketsService,
+        private readonly eventsService: EventsService,
+        private readonly rightsService: RightsService,
+        private readonly usersService: UsersService,
+    ) {
         super();
     }
 
@@ -71,5 +95,68 @@ export class TicketsController extends ControllerBasics<TicketEntity> {
         return {
             tickets,
         };
+    }
+
+    /**
+     * Validate a ticket ownership linked to an address
+     * @param body
+     * @param user
+     * @param eventId
+     */
+    @Post('/:eventId/validate-ticket')
+    @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
+    @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.OK)
+    @Roles('authenticated')
+    @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized, StatusCodes.InternalServerError, StatusCodes.BadRequest])
+    async validateTicket(
+        @Body() body: TicketsValidateTicketInputDto,
+        @User() user: UserDto,
+        @Param('eventId') eventId: string,
+    ): Promise<TicketsValidateTicketResponseDto> {
+        await this._authorizeOne(
+            this.rightsService,
+            this.eventsService,
+            user,
+            {
+                id: eventId,
+            },
+            'group_id',
+            ['admin'],
+        );
+
+        const ticket = await this._getOne<TicketEntity>(this.ticketsService, {
+            id: body.ticketId,
+        });
+
+        const ticketOwnerRes = await this.usersService.findByAddress(ticket.owner);
+
+        if (ticketOwnerRes.error) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.InternalServerError,
+                    message: 'cannot_find_ticket_owner',
+                },
+                StatusCodes.InternalServerError,
+            );
+        }
+
+        const ticketOwner = ticketOwnerRes.response;
+
+        if (toAcceptedAddressFormat(ticketOwner.device_address) === toAcceptedAddressFormat(body.address)) {
+            return {
+                info: {
+                    address: ticketOwner.address,
+                    username: ticketOwner.username,
+                    email: ticketOwner.email,
+                    ticket: ticket.id,
+                    category: ticket.category,
+                },
+            };
+        } else {
+            return {
+                info: null,
+            };
+        }
     }
 }

@@ -23,6 +23,8 @@ import { TicketEntity } from '@lib/common/tickets/entities/Ticket.entity';
 import { TicketsSearchResponseDto } from '@app/server/controllers/tickets/dto/TicketsSearchResponse.dto';
 import { NestError } from '@lib/common/utils/NestError';
 import { EventEntity } from '@lib/common/events/entities/Event.entity';
+import { CategoriesSearchResponseDto } from '@app/server/controllers/categories/dto/CategoriesSearchResponse.dto';
+import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
 
 let docker_compose_up_proc = null;
 
@@ -540,6 +542,26 @@ export const waitForTickets = async (
     } while (!checker(tickets.data.tickets));
 
     return tickets.data.tickets;
+};
+
+export const waitForCategory = async (
+    sdk: T721SDK,
+    token: string,
+    id: string,
+    checker: (as: CategoryEntity) => boolean,
+): Promise<CategoryEntity> => {
+    let category: AxiosResponse<CategoriesSearchResponseDto>;
+
+    do {
+        category = await sdk.categories.search(token, {
+            id: {
+                $eq: id,
+            },
+        });
+        await pause(10);
+    } while (!checker(category.data.categories[0]));
+
+    return category.data.categories[0];
 };
 
 export const waitForActionSet = async (
@@ -1935,6 +1957,27 @@ export const getPIFromCart = async (sdk: T721SDK, token: string, cart: string): 
     });
     const cartEntity = cartActionSetBeforeRes.data.actionsets[0];
     return JSON.parse(cartEntity.actions[2].data).paymentIntentId;
+};
+
+export const invalidateCardPayment = async (pi: string): Promise<void> => {
+    const storedPi = await instance(getMocks()[1]).retrieve(pi);
+    setPaymentIntent(pi, {
+        ...storedPi,
+        amount_capturable: storedPi.amount / 2,
+        charges: {
+            data: [
+                {
+                    payment_method_details: {
+                        type: 'card',
+                        card: {
+                            country: 'FR',
+                        },
+                    },
+                },
+            ],
+        },
+        status: 'requires_capture',
+    } as any);
 };
 
 export const validateCardPayment = async (pi: string): Promise<void> => {

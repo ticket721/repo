@@ -258,6 +258,7 @@ export class MetadatasService extends CRUDExtension<MetadatasRepository, Metadat
                     }
 
                     if (rightsCheckRes.error || rightsCheckRes.response === false) {
+                        console.log(rightsCheckRes.error);
                         return {
                             error: `unauthorized_entity_${linkType}_link`,
                             response: null,
@@ -394,7 +395,6 @@ export class MetadatasService extends CRUDExtension<MetadatasRepository, Metadat
         });
 
         if (metadataEntityRes.error) {
-            console.log(metadataEntityRes);
             return {
                 error: 'metadata_creation_error',
                 response: null,
