@@ -1,10 +1,12 @@
 export enum CurrentEventTypes {
+    SetupDate = '@@currentevent/setupdate',
     SetEventId = '@@currentevent/seteventid',
-    SetDateId = '@@currentevent/setdateid',
+    SetDate = '@@currentevent/setdate',
 }
 
 export interface CurrentEventState {
     eventId: string;
     dateId: string;
+    dateName: string;
 }
 

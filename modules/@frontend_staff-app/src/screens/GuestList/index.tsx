@@ -10,9 +10,9 @@ import { EventsDatesFetcher }      from './EventsDatesFetcher';
 import '../locales';
 import styled                      from 'styled-components';
 
-const Stats: React.FC = () => {
+const GuestList: React.FC = () => {
     const [ t ] = useTranslation(['fetch_errors', 'common']);
-    const [uuid] = useState(v4() + '@stats-page');
+    const [uuid] = useState(v4() + '@guestlist-page');
     const token = useSelector((state: StaffAppState) => state.auth.token.value);
 
     const rightsReq = useRequest<RightsSearchResponseDto>({
@@ -50,4 +50,4 @@ const NoEvent = styled.span`
     text-align: center;
 `;
 
-export default Stats;
+export default GuestList;

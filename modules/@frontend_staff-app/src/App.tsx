@@ -1,21 +1,27 @@
-import React, { lazy, Suspense }       from 'react';
+import React, { lazy, Suspense, useEffect }                 from 'react';
 import { Switch, useLocation, withRouter, Redirect, Route } from 'react-router-dom';
-import { FullPageLoading }                          from '@frontend/flib-react/lib/components';
+import { FullPageLoading }                                  from '@frontend/flib-react/lib/components';
 import ProtectedRoute                                       from '@frontend/core/lib/components/ProtectedRoute';
 import ToastStacker                                         from '@frontend/core/lib/components/ToastStacker';
 import styled                                               from 'styled-components';
 import { StaffNavbar }                                      from './shared/NavBar';
 import { useSelector }                                      from 'react-redux';
 import { AppState }                                         from '@frontend/core/lib/redux';
+import { useDispatch }                                      from 'react-redux';
+import { SetupDate }                                        from './redux/ducks/current_event';
 
 const LoginPage = lazy(() => import('./routes/Login'));
 const ScanPage = lazy(() => import('./routes/Scan'));
-const ListPage = lazy(() => import('./routes/List'));
+const GuestListPage = lazy(() => import('./routes/GuestList'));
 const StatsPage = lazy(() => import('./routes/Stats'));
 
 const App: React.FC = () => {
+    const dispatch = useDispatch();
     const authState = useSelector(((state: AppState) => state.auth));
     const location = useLocation();
+
+    // eslint-disable-next-line
+    useEffect(() => void dispatch(SetupDate()), []);
 
     return <Suspense fallback={<FullPageLoading/>}>
         <AppContainer>
@@ -30,7 +36,7 @@ const App: React.FC = () => {
                     </ProtectedRoute>
 
                     <ProtectedRoute path={'/list'} exact={true}>
-                        <ListPage/>
+                        <GuestListPage/>
                     </ProtectedRoute>
 
                     <ProtectedRoute path={'/ticket/scanner'} exact={true}>
