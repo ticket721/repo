@@ -569,11 +569,6 @@
           "internalType": "uint256",
           "name": "scopeIndex",
           "type": "uint256"
-        },
-        {
-          "internalType": "string",
-          "name": "tokenUri",
-          "type": "string"
         }
       ],
       "name": "mint",
@@ -600,6 +595,11 @@
           "internalType": "uint256",
           "name": "scopeIndex",
           "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "tokenUri",
+          "type": "string"
         }
       ],
       "name": "mint",
@@ -656,11 +656,6 @@
           "internalType": "uint256",
           "name": "ticketId",
           "type": "uint256"
-        },
-        {
-          "internalType": "bytes",
-          "name": "_data",
-          "type": "bytes"
         }
       ],
       "name": "safeTransferFrom",
@@ -686,6 +681,11 @@
           "internalType": "uint256",
           "name": "ticketId",
           "type": "uint256"
+        },
+        {
+          "internalType": "bytes",
+          "name": "_data",
+          "type": "bytes"
         }
       ],
       "name": "safeTransferFrom",
@@ -19540,7 +19540,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.9",
-  "updatedAt": "2020-05-20T14:06:25.351Z",
+  "updatedAt": "2020-07-16T15:54:18.505Z",
   "devdoc": {
     "methods": {
       "approve(address,uint256)": {
