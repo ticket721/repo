@@ -16,12 +16,14 @@ import { StaffAppState }                                 from './redux';
 import { currentEventInitialState, CurrentEventReducer } from './redux/ducks/current_event';
 import { EnvValidator }                                  from '@frontend/core/lib/components/EnvValidator';
 import { StaffAppEnvSchema }                             from './utils/env';
+import './locales';
+import { currentEventSaga }                              from './redux/ducks/current_event/sagas';
 
 const store: Store<StaffAppState> = configureStore<any>({
     currentEvent: CurrentEventReducer,
 }, {
     currentEvent: currentEventInitialState,
-}, []);
+}, [currentEventSaga]);
 
 ReactDOM.render(
     <EnvValidator schema={StaffAppEnvSchema}>

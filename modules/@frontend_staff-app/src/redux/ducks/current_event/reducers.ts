@@ -1,27 +1,37 @@
 import { Reducer }                                                                                   from 'redux';
 import { CurrentEventState, CurrentEventTypes }                          from './types';
-import { ISetEventId, ISetDateId, CurrentEventAction } from './actions';
+import { ISetEventId, ISetDate, CurrentEventAction } from './actions';
 
 export const currentEventInitialState: CurrentEventState = {
     eventId: '',
     dateId: '',
+    dateName: '',
 };
 
 const SetEventIdReducer: Reducer<CurrentEventState, ISetEventId> = (
     state: CurrentEventState,
     action: ISetEventId,
-): CurrentEventState => ({
-    ...state,
-    eventId: action.eventId
-});
+): CurrentEventState => {
+    localStorage.setItem('currentEvent', action.eventId);
+    return {
+        ...state,
+        eventId: action.eventId
+    }
+};
 
-const SetDateIdReducer: Reducer<CurrentEventState, ISetDateId> = (
+const SetDateIdReducer: Reducer<CurrentEventState, ISetDate> = (
     state: CurrentEventState,
-    action: ISetDateId,
-): CurrentEventState => ({
-    ...state,
-    dateId: action.dateId
-});
+    action: ISetDate,
+): CurrentEventState => {
+    localStorage.setItem('currentDateId', action.dateId);
+    localStorage.setItem('currentDateName', action.dateName);
+
+    return {
+        ...state,
+        dateId: action.dateId,
+        dateName: action.dateName,
+    }
+};
 
 export const CurrentEventReducer: Reducer<CurrentEventState, CurrentEventAction> = (
     state: CurrentEventState = currentEventInitialState,
@@ -30,8 +40,8 @@ export const CurrentEventReducer: Reducer<CurrentEventState, CurrentEventAction>
     switch (action.type) {
         case CurrentEventTypes.SetEventId:
             return SetEventIdReducer(state, action as ISetEventId);
-        case CurrentEventTypes.SetDateId:
-            return SetDateIdReducer(state, action as ISetDateId);
+        case CurrentEventTypes.SetDate:
+            return SetDateIdReducer(state, action as ISetDate);
         default:
             return state;
     }

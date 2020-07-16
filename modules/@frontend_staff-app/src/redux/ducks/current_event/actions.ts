@@ -1,6 +1,14 @@
 import { Action }                     from 'redux';
 import { CurrentEventTypes } from './types';
 
+export interface ISetupDate extends Action<string> {
+    type: CurrentEventTypes.SetupDate;
+}
+
+export const SetupDate = (): ISetupDate => ({
+    type: CurrentEventTypes.SetupDate,
+});
+
 export interface ISetEventId extends Action<string> {
     type: CurrentEventTypes.SetEventId;
     eventId: string;
@@ -11,14 +19,16 @@ export const SetEventId = (eventId: string): ISetEventId => ({
     eventId,
 });
 
-export interface ISetDateId extends Action<string> {
-    type: CurrentEventTypes.SetDateId;
+export interface ISetDate extends Action<string> {
+    type: CurrentEventTypes.SetDate;
     dateId: string;
+    dateName: string;
 }
 
-export const SetDateId = (dateId: string): ISetDateId => ({
-    type: CurrentEventTypes.SetDateId,
+export const SetDate = (dateId: string, dateName: string): ISetDate => ({
+    type: CurrentEventTypes.SetDate,
     dateId,
+    dateName,
 });
 
-export type CurrentEventAction = ISetEventId | ISetDateId;
+export type CurrentEventAction = ISetupDate | ISetEventId | ISetDate;
