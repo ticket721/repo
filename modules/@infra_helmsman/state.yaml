@@ -247,7 +247,7 @@ apps:
 
       config.jwt.rounds: "9"
       config.jwt.secret: "${CONFIG_STAGING_JWT_SECRET}"
-      config.jwt.expiration: "12h"
+      config.jwt.expiration: "30d"
 
       config.txs.blockThreshold: "0"
       config.txs.blockPollingRate: "1000"
@@ -267,6 +267,7 @@ apps:
       config.rockside.apiKey: "${CONFIG_STAGING_ROCKSIDE_APIKEY}"
       config.rockside.network_id: "3"
       config.rockside.network_name: "ropsten"
+      config.rockside.forwarder_address: "${CONFIG_STAGING_FORWARDER_ADDRESS}"
 
       config.googleGeocodingApiKey: "${CONFIG_STAGING_GCLOUD_GEOLOC_APIKEY}"
       config.serverEndpoint.host: "api.staging.ticket721.com"

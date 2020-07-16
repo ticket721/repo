@@ -198,7 +198,7 @@ export class RocksideMock
     /**
      * Mock method
      */
-    async createIdentity(): Promise<IdentityResponse> {
+    async createIdentity(forwarder: string, account: string): Promise<IdentityResponse> {
         const wallet = await this.generateWallet();
         const hash = keccak256FromBuffer(Buffer.from(wallet.address.slice(2), 'hex'));
 
@@ -324,6 +324,17 @@ export class RocksideMock
      * Mock method
      */
     getToken(): string {
+        throw new NestError(`Un-mocked method`);
+    }
+
+    /**
+     * Mock method
+     */
+    async getRelayParams(
+        identity: string,
+        account: string,
+        channel: number,
+    ): Promise<{ nonce: number; relayer: string }> {
         throw new NestError(`Un-mocked method`);
     }
 }
