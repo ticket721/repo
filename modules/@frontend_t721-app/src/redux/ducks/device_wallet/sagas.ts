@@ -19,7 +19,6 @@ function* getPk(): SagaIterator {
         wallet = yield call(loadWallet, localStorage.getItem('deviceWalletPk'));
     }
 
-    // const deviceAddress = yield call(wallet.address);
     localStorage.setItem('deviceAddress', wallet.address);
     yield put(SetPk(localStorage.getItem('deviceWalletPk')));
 }
