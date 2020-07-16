@@ -306,6 +306,101 @@ jobs:
           working-directory: modules/@common_geoloc
           run: yarn test:cov
 
+  #     /$$$$  /$$$$$$   /$$$$$$  /$$$$
+  #    | $$_/ /$$__  $$ /$$__  $$|_  $$
+  #    | $$  | $$  \__/|__/  \ $$  | $$
+  #    | $$  |  $$$$$$   /$$$$$$/  | $$
+  #    | $$   \____  $$ /$$____/   | $$
+  #    | $$   /$$  \ $$| $$        | $$
+  #    | $$$$|  $$$$$$/| $$$$$$$$ /$$$$
+  #    |____/ \______/ |________/|____/
+  #
+  #    @contracts_t721controller - build, lint & test
+  #
+  #    Recovers required dependencies from cache
+  #    Builds sources to verify everything still transpiles properly
+  #    Lints sources to verify everything is formatted properly
+  #    Runs unitary tests to verify logic is kept
+  #
+
+    t721controller:
+      name: "[S2] [@contracts_t721controller] build, lint & test"
+      needs: install
+      runs-on: ubuntu-latest
+      steps:
+
+        #
+        # Initial Setup
+        #
+
+        - uses: actions/checkout@v1
+        - name: "Use Node.js 12.x"
+          uses: actions/setup-node@v1.2.0
+          with:
+            node-version: 12.x
+
+        - uses: technote-space/get-diff-action@v2
+          id: git_diff
+          with:
+            PREFIX_FILTER: modules/@contracts_t721controller/
+
+        - name: "Install required tools globally (npm install -g yarn)"
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
+          run: npm install -g yarn@1.22.4
+
+        #
+        # Cache Yarn Workspaces
+        #
+
+        - name: "CACHE root"
+          uses: actions/cache@v1
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
+          with:
+            path: ./node_modules
+            key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-root
+
+        - name: "CACHE @contracts_t721controller"
+          uses: actions/cache@v1
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
+          with:
+            path: ./modules/@contracts_t721controller/node_modules
+            key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-contracts_t721controller
+
+        #
+        # Build, Lint & Test @contracts_t721controller
+        #
+
+        - name: Install dependencies
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
+          working-directory: modules/@contracts_t721controller
+          run: npm install
+
+        - name: Run Editorconfig checks
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
+          working-directory: modules/@contracts_t721controller
+          run: npm run test:editorconfig
+
+        - name: Run SolHint checks
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
+          working-directory: modules/@contracts_t721controller
+          run: npm run test:lint
+
+        - name: Run Truffle test suite
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
+          working-directory: modules/@contracts_t721controller
+          env:
+            VERBOSE: true
+          run: npm run test:coverage
+
+        - name: Coveralls
+          uses: coverallsapp/github-action@master
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
+          working-directory: modules/@contracts_t721controller
+          with:
+            github-token: ${{ secrets.github_token }}
+
+        
+
 #     /$$$$  /$$$$$$   /$$$$$$  /$$$$
 #    | $$_/ /$$__  $$ /$$__  $$|_  $$
 #    | $$  | $$  \__/|__/  \ $$  | $$
