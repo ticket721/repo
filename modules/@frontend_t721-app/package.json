@@ -41,7 +41,7 @@
         "@embarklabs/subspace-react": "1.0.4",
         "react-i18next": "11.3.3",
         "rxjs": "6.5.5",
-        "@capacitor/cli": "2.0.1",
+        "@capacitor/cli": "2.2.1",
         "react-scripts": "3.4.1",
         "tslint": "6.0.0",
         "react-countdown": "2.2.1",
