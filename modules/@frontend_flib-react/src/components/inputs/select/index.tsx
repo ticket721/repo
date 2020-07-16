@@ -12,12 +12,10 @@ const customStyles = {
         cursor: 'pointer',
         fontSize: 14,
         fontWeight: 500,
-        paddingBottom: 12,
-        paddingTop: 12,
+        padding: 12,
         transition: 'all 300ms ease',
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center',
 
         ':hover': {
             backgroundColor: 'rgba(255, 255, 255, 0.04)',
@@ -77,7 +75,7 @@ const customStyles = {
         alignItems: 'center',
         display: 'flex',
         flex: 1,
-        padding: 6,
+        paddingLeft: 8,
         flexWrap: 'wrap' as 'wrap',
     }),
     singleValue: () => ({
@@ -100,6 +98,7 @@ export interface SelectProps {
     value?: Array<object>;
     className?: string;
     onChange?: (val: any) => void;
+    grouped?: boolean;
     menu?: boolean;
 }
 
@@ -168,6 +167,16 @@ const StyledInputContainer = styled.div<Partial<SelectProps>>`
     }
 `;
 
+const GroupLabel = styled.div`
+    text-transform: uppercase;
+
+    &:first-child {
+        margin-top: ${(props) => props.theme.smallSpacing};
+    }
+`;
+
+const formatGroupLabel = (data: any) => <GroupLabel>{data.label}</GroupLabel>;
+
 export const SelectInput: React.FunctionComponent<SelectProps> = (props: SelectProps): JSX.Element => {
     return (
         <StyledInputContainer label={props.label} className={props.className}>
@@ -179,6 +188,7 @@ export const SelectInput: React.FunctionComponent<SelectProps> = (props: SelectP
                 defaultValue={props.defaultValue}
                 noOptionsMessage={() => 'No values available'}
                 options={props.options}
+                formatGroupLabel={props.grouped ? formatGroupLabel : undefined}
                 placeholder={props.placeholder}
                 isSearchable={props.searchable}
                 styles={customStyles}
