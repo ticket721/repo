@@ -11,6 +11,6 @@
   "license": "ISC",
   "dependencies": {
       "@rocksideio/rockside-wallet-sdk": "ticket721/rockside-wallet-sdk-js#master",
-      "ethers": "4.0.45"
+      "ethers": "5.0.5"
   }
 }
