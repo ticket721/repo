@@ -114,7 +114,7 @@ export class TicketsController extends ControllerBasics<TicketEntity> {
         @User() user: UserDto,
         @Param('eventId') eventId: string,
     ): Promise<TicketsValidateTicketResponseDto> {
-        await this._authorizeOne(
+        const event = await this._authorizeOne(
             this.rightsService,
             this.eventsService,
             user,
@@ -128,6 +128,16 @@ export class TicketsController extends ControllerBasics<TicketEntity> {
         const ticket = await this._getOne<TicketEntity>(this.ticketsService, {
             id: body.ticketId,
         });
+
+        if (ticket.group_id !== event.group_id) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.Forbidden,
+                    message: 'unauthorized_scan',
+                },
+                StatusCodes.Forbidden,
+            );
+        }
 
         const ticketOwnerRes = await this.usersService.findByAddress(ticket.owner);
 

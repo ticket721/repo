@@ -1,8 +1,6 @@
 import { T721SDK } from '@common/sdk';
 import {
-    createEvent,
     createExpensiveEvent,
-    createPaymentIntent,
     failWithCode,
     getPIFromCart,
     getSDKAndUser,
@@ -13,7 +11,6 @@ import {
 } from '../../../test/utils';
 import { PasswordlessUserDto } from '@app/server/authentication/dto/PasswordlessUser.dto';
 import { TicketEntity } from '@lib/common/tickets/entities/Ticket.entity';
-import { Stripe } from 'stripe';
 import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
 import { StatusCodes } from '@lib/common/utils/codes.value';
 
@@ -536,6 +533,107 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 });
 
                 expect(resp.data.info).toEqual(null);
+            });
+
+            test('should fail for invalid event id', async function() {
+                const {
+                    sdk,
+                    token,
+                    user,
+                    password,
+                }: {
+                    sdk: T721SDK;
+                    token: string;
+                    user: PasswordlessUserDto;
+                    password: string;
+                } = await getSDKAndUser(getCtx);
+
+                const otherUser = await getUser(sdk);
+
+                const event = await createExpensiveEvent(token, sdk);
+
+                const otherEvent = await createExpensiveEvent(token, sdk);
+
+                const cartActionSetRes = await sdk.actions.create(token, {
+                    name: 'cart_create',
+                    arguments: {},
+                });
+
+                const actionSetId = cartActionSetRes.data.actionset.id;
+
+                await sdk.cart.ticketSelections(token, actionSetId, {
+                    tickets: [
+                        ...[...Array(1)].map(() => ({
+                            categoryId: event.categories[0],
+                            price: {
+                                currency: 'Fiat',
+                                price: '10000',
+                            },
+                        })),
+                    ],
+                });
+
+                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+                    return as.current_action === 1;
+                });
+
+                await sdk.cart.modulesConfiguration(token, actionSetId, {});
+
+                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+                    return as.current_action === 2;
+                });
+
+                await sdk.checkout.cart.commit.stripe(token, {
+                    cart: actionSetId,
+                });
+
+                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+                    return as.current_status === 'complete';
+                });
+
+                await validateCardPayment(await getPIFromCart(sdk, token, actionSetId));
+
+                const res = await sdk.checkout.cart.resolve.paymentIntent(token, {
+                    cart: actionSetId,
+                });
+
+                const checkoutActionSetId = res.data.checkoutActionSetId;
+
+                await waitForActionSet(sdk, token, checkoutActionSetId, (as: ActionSetEntity): boolean => {
+                    return as.current_status === 'complete';
+                });
+
+                await waitForTickets(sdk, token, user.address, (tickets: TicketEntity[]): boolean => {
+                    return (
+                        tickets.length === 1 &&
+                        tickets.filter((t: TicketEntity): boolean => t.status === 'ready').length === tickets.length
+                    );
+                });
+
+                const tickets = await sdk.tickets.search(token, {
+                    owner: {
+                        $eq: user.address,
+                    },
+                });
+
+                expect(tickets.data.tickets.length).toEqual(1);
+
+                const deviceAddress = user.address;
+
+                await sdk.users.setDeviceAddress(token, {
+                    deviceAddress,
+                });
+
+                const ticketId = tickets.data.tickets[0].id;
+
+                await failWithCode(
+                    sdk.tickets.validate(token, otherEvent.id, {
+                        address: otherUser.user.address,
+                        ticketId,
+                    }),
+                    StatusCodes.Forbidden,
+                    'unauthorized_scan',
+                );
             });
         });
     };
