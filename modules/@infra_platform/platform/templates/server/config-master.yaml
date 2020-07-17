@@ -56,7 +56,7 @@ data:
     GLOBAL_CONFIG_ETHEREUM_PRICE_FETCHING_RATE={{ required "[server] Missing config.globalConfig.ethereumPriceFetchingRate value" .Values.config.globalConfig.ethereumPriceFetchingRate }}
     GLOBAL_CONFIG_BINANCE_MOCK={{ required "[server] Missing config.globalConfig.binanceMock value" .Values.config.globalConfig.binanceMock }}
 
-    CART_MAX_TICKET_PER_CART=3
+    CART_MAX_TICKET_PER_CART=5
 
     ROCKSIDE_OPTS_BASE_URL={{ required "[server] Missing config.rockside.baseUrl value" .Values.config.rockside.baseUrl }}
     ROCKSIDE_OPTS_NETWORK_ID={{ required "[server] Missing config.rockside.network_id value" .Values.config.rockside.network_id }}
