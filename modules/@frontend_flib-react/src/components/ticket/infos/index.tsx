@@ -26,6 +26,7 @@ const PreviewContainer = styled.main`
 `;
 
 const TicketHeaderInfos = styled.div`
+    width: calc(100% - 8px);
     background-image: linear-gradient(180deg, ${(props) => props.theme.darkBg}, ${(props) => props.theme.darkerBg});
     border-top-right-radius: ${(props) => props.theme.defaultRadius};
     padding: ${(props) => props.theme.doubleSpacing} ${(props) => props.theme.biggerSpacing}
@@ -52,7 +53,7 @@ const Separator = styled.div<{ bgColor: string | undefined }>`
     display: block;
     height: 2px;
     position: relative;
-    width: calc(100% + 8px);
+    width: 100%;
     z-index: 100;
 
     &::before {
