@@ -57,7 +57,7 @@ data:
     GLOBAL_CONFIG_ETHEREUM_PRICE_FETCHING_RATE={{ required "[worker] Missing config.globalConfig.ethereumPriceFetchingRate value" .Values.config.globalConfig.ethereumPriceFetchingRate }}
     GLOBAL_CONFIG_BINANCE_MOCK={{ required "[worker] Missing config.globalConfig.binanceMock value" .Values.config.globalConfig.binanceMock }}
 
-    CART_MAX_TICKET_PER_CART=3
+    CART_MAX_TICKET_PER_CART=5
 
     ACSET_EVENT_BATCH_SIZE=1000
 
