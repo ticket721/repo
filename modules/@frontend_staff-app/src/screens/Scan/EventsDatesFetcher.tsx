@@ -29,7 +29,7 @@ export const EventsDatesFetcher: React.FC<EventsDatesFetcherProps> = ({ uuid, en
                 }
             }
         ],
-        refreshRate: 5,
+        refreshRate: 15,
     }, uuid);
 
     const datesReq = useRequest<DatesSearchResponseDto>({
@@ -42,7 +42,7 @@ export const EventsDatesFetcher: React.FC<EventsDatesFetcherProps> = ({ uuid, en
                 }
             }
         ],
-        refreshRate: 5,
+        refreshRate: 15,
     }, uuid);
 
     if (eventsReq.response.loading || datesReq.response.loading) {

@@ -35,9 +35,10 @@ interface EventSelectionProps {
         name: string;
     }[];
     dates: DateItem[];
+    hideCalendar?: boolean;
 }
 
-export const EventSelection: React.FC<EventSelectionProps> = ({ events, dates }: EventSelectionProps) => {
+export const EventSelection: React.FC<EventSelectionProps> = ({ events, dates, hideCalendar }: EventSelectionProps) => {
     const dispatch = useDispatch();
     const [ currentDateId, currentDateName ] = useSelector((state: StaffAppState) =>
         [state.currentEvent.dateId, state.currentEvent.dateName]);
@@ -70,11 +71,15 @@ export const EventSelection: React.FC<EventSelectionProps> = ({ events, dates }:
         setSelectOptions(dateOpts);
     }, [events, dates]);
 
-    return <DropdownWrapper>
+    return <DropdownWrapper hideCalendar={hideCalendar}>
         {
-            selectOptions.length > 0 && defaultOpt ?
+            selectOptions.length > 0 ?
                 <>
-                    <Calendar icon={'calendar'} size={'16px'}/>
+                    {
+                        !hideCalendar ?
+                          <Calendar icon={'calendar'} size={'16px'}/> :
+                          null
+                    }
                     <SelectInput
                         defaultValue={typeof defaultOpt !== 'string' && defaultOpt}
                         grouped={true}
@@ -89,14 +94,21 @@ export const EventSelection: React.FC<EventSelectionProps> = ({ events, dates }:
     </DropdownWrapper>;
 };
 
-const DropdownWrapper = styled.div`
+const DropdownWrapper = styled.div<{ hideCalendar: boolean }>`
     display: flex;
     justify-content: space-between;
     align-items: center;
 
     & > div {
-        width: calc(100% - ${props => props.theme.smallSpacing});
+        width: calc(100% - ${props => props.hideCalendar ? '0px' : props.theme.smallSpacing});
         background-color: transparent;
+    }
+
+    [class$=SingleValue] {
+        width: calc(100% - 2px);
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
     }
 `;
 
