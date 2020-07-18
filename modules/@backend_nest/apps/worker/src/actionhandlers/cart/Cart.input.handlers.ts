@@ -115,7 +115,7 @@ export class CartInputHandlers implements OnModuleInit {
             )
             .min(0),
         fees: Joi.array().optional(),
-        total: Joi.array().optional()
+        total: Joi.array().optional(),
     });
 
     /**
