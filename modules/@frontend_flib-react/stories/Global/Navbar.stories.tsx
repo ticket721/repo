@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { withKnobs } from '@storybook/addon-knobs';
+import { boolean, withKnobs } from '@storybook/addon-knobs';
 import Navbar from '../../src/components/navbar';
 import Icon from '../../src/components/icon';
 import { MemoryRouter, NavLink } from 'react-router-dom';
@@ -12,9 +12,9 @@ export default {
 
 export const showcase = () => (
     <MemoryRouter>
-        <Navbar>
+        <Navbar iconHeight={'22px'} visible={boolean('Visible', true)}>
             <NavLink to={'/home'}>
-                <Icon icon={'home'} size={'24px'} color={'#fff'} />
+                <Icon icon={'home'} size={'22px'} color={'#fff'} />
             </NavLink>
             <NavLink to={'/search'}>
                 <Icon icon={'search'} size={'22px'} color={'#fff'} />
