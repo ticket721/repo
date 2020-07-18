@@ -2,8 +2,12 @@ import React            from 'react';
 import { Icon, Navbar } from '@frontend/flib-react/lib/components';
 import { NavLink }      from 'react-router-dom';
 
-export const AnonymousNavbar: React.FC = (): JSX.Element => {
-    return <Navbar>
+interface AnonymousNavbarProps {
+    visible: boolean;
+}
+
+export const AnonymousNavbar: React.FC<AnonymousNavbarProps> = (props: AnonymousNavbarProps): JSX.Element => {
+    return <Navbar iconHeight={'22px'} visible={props.visible}>
         <NavLink exact={true} to={'/home'}>
             <Icon icon={'home'} color='#FFFFFF' size={'22px'}/>
         </NavLink>

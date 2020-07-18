@@ -18,7 +18,11 @@ const Badge = styled.div`
   right: -${props => props.theme.smallSpacing};
 `;
 
-export const LoginNavbar: React.FC = (): JSX.Element => {
+interface LoginNavbarProps {
+    visible: boolean;
+}
+
+export const LoginNavbar: React.FC<LoginNavbarProps> = (props: LoginNavbarProps): JSX.Element => {
     const { token } = useSelector((state: T721AppState) => ({ token: state.auth.token?.value }));
     const [uuid] = useState(v4());
 
@@ -50,7 +54,7 @@ export const LoginNavbar: React.FC = (): JSX.Element => {
         cartBadge = ticketSelectionData.tickets?.length > 0;
     }
 
-    return <Navbar>
+    return <Navbar iconHeight={'22px'} visible={props.visible}>
         <NavLink exact={true} to={'/home'}>
             <Icon icon={'home'} color='#FFFFFF' size={'22px'}/>
         </NavLink>

@@ -23,7 +23,7 @@ const CenteredDiv = styled.div`
     margin-top: calc(48px + constant(safe-area-inset-top) + ${(props) => props.theme.regularSpacing});
     margin-top: calc(48px + env(safe-area-inset-top) + ${(props) => props.theme.regularSpacing});
     background-color: ${(props) => props.theme.componentColor};
-    height: 20vh;
+    padding: ${props => props.theme.regularSpacing};
     display: flex;
     align-items: center;
     justify-content: center;
