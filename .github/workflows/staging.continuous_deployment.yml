@@ -1,0 +1,136 @@
+name: T721 Monorepo Staging CD
+
+on:
+  schedule:
+    - cron:  '0 8 * * *'
+  push:
+    tags:
+      - staging-*
+
+jobs:
+
+    docker:
+      name: "[S3] docker"
+      needs: [global, sdk, server, server-e2e, flib-react, frontend-organizer-app, frontend-t721-app, frontend-staff-app, frontend-core]
+      runs-on: ubuntu-latest
+      steps:
+
+        #
+        # Initial Setup
+        #
+
+        - uses: actions/checkout@v1
+        - name: "Use Node.js 12.x"
+          uses: actions/setup-node@v1.2.0
+          with:
+            node-version: 12.x
+
+        - name: "Setup SSH Agent"
+          uses: webfactory/ssh-agent@v0.1.1
+          with:
+            ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+        - name: "Install required tools globally (npm install -g lerna lcov-result-merger yarn)"
+          run: npm install -g lerna@3.16.4 lcov-result-merger@3.1.0 yarn@1.22.4
+
+        - name: "Recover submodules (yarn setup:submodules:clone)"
+          run: yarn setup:submodules:clone
+
+        - name: "Setup aws CLI"
+          uses: chrislennon/action-aws-cli@v1.1
+
+        - name: "Authenticate Docker"
+          run: ./aws-ecr-login.sh
+          env:
+            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            AWS_USER_ID: ${{ secrets.AWS_USER_ID }}
+            AWS_REGION: ${{ secrets.AWS_REGION }}
+
+        - name: "Build all docker images"
+          run: yarn @docker:build:github
+
+        - name: "Publish to Elastic Container Registry"
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            AWS_USER_ID: ${{ secrets.AWS_USER_ID }}
+            AWS_REGION: ${{ secrets.AWS_REGION }}
+          run: yarn @docker:deploy:github
+
+    infra:
+      name: "[S4] infra (staging)"
+      needs: docker
+      runs-on: ubuntu-latest
+      steps:
+
+        #
+        # Initial Setup
+        #
+
+        - uses: actions/checkout@v1
+        - name: "Use Node.js 12.x"
+          uses: actions/setup-node@v1.2.0
+          with:
+            node-version: 12.x
+
+        - name: "Setup SSH Agent"
+          uses: webfactory/ssh-agent@v0.1.1
+          with:
+            ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+        - name: "Install required tools globally (npm install -g lerna lcov-result-merger yarn)"
+          run: npm install -g lerna@3.16.4 lcov-result-merger@3.1.0 yarn@1.22.4
+
+        - name: "Recover submodules (yarn setup:submodules:clone)"
+          run: yarn setup:submodules:clone
+
+        - name: "Setup aws CLI"
+          uses: chrislennon/action-aws-cli@v1.1
+
+        - name: "Setup kubectl"
+          run: curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.18.0/bin/linux/amd64/kubectl && chmod +x kubectl && sudo mv ./kubectl /usr/local/bin/kubectl
+
+        - name: "Setup kubeconfig"
+          run: aws eks update-kubeconfig --name ${CONFIG_STAGING_CLUSTER_NAME}
+          env:
+            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            AWS_USER_ID: ${{ secrets.AWS_USER_ID }}
+            AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
+            CONFIG_STAGING_CLUSTER_NAME: ${{ secrets.CONFIG_STAGING_CLUSTER_NAME }}
+
+        - name: "Setup Helm + Helm Diff"
+          run: curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash && helm plugin install https://github.com/databus23/helm-diff --version master
+
+        - name: "Setup Helmsman"
+          run: curl -L https://github.com/Praqma/helmsman/releases/download/v3.4.2/helmsman_3.4.2_linux_amd64.tar.gz | tar zx && chmod +x helmsman && sudo mv ./helmsman /usr/local/bin/helmsman
+
+        - name: "Fetch Helm Repos and Dependencies"
+          run: ./helm_prepare.sh
+
+        - name: "Helmsman on staging infra"
+          run: ./helmsman.apply.staging.sh
+          env:
+            CONFIG_STAGING_STRIPE_APIKEY: ${{ secrets.CONFIG_STAGING_STRIPE_APIKEY }}
+            CONFIG_STAGING_T721APP_ROCKSIDE_TOKEN: ${{ secrets.CONFIG_STAGING_T721APP_ROCKSIDE_TOKEN }}
+            CONFIG_STAGING_ORGANIZER_ROCKSIDE_TOKEN: ${{ secrets.CONFIG_STAGING_ORGANIZER_ROCKSIDE_TOKEN }}
+            CONFIG_STAGING_ROCKSIDE_APIKEY: ${{ secrets.CONFIG_STAGING_ROCKSIDE_APIKEY }}
+            CONFIG_STAGING_MAILJET_APIKEY: ${{ secrets.CONFIG_STAGING_MAILJET_APIKEY }}
+            CONFIG_STAGING_MAILJET_APISECRET: ${{ secrets.CONFIG_STAGING_MAILJET_APISECRET }}
+            CONFIG_STAGING_JWT_SECRET: ${{ secrets.CONFIG_STAGING_JWT_SECRET }}
+            CONFIG_STAGING_ROUTE53_KEY: ${{ secrets.CONFIG_STAGING_ROUTE53_KEY }}
+            CONFIG_STAGING_ROUTE53_SECRET: ${{ secrets.CONFIG_STAGING_ROUTE53_SECRET }}
+            CONFIG_STAGING_ROUTE53_HOSTEDZONE: ${{ secrets.CONFIG_STAGING_ROUTE53_HOSTEDZONE }}
+            CONFIG_STAGING_ACME_SERVER: ${{ secrets.CONFIG_STAGING_ACME_SERVER }}
+            CONFIG_STAGING_GCLOUD_GEOLOC_APIKEY: ${{ secrets.CONFIG_STAGING_GCLOUD_GEOLOC_APIKEY }}
+            CONFIG_STAGING_ORGANIZER_SEGMENT_API_KEY: ${{ secrets.CONFIG_STAGING_ORGANIZER_SEGMENT_API_KEY }}
+            CONFIG_STAGING_T721APP_SEGMENT_API_KEY: ${{ secrets.CONFIG_STAGING_T721APP_SEGMENT_API_KEY }}
+            CONFIG_STAGING_T721APP_PUBLISHABLE_STRIPE_API_KEY: ${{ secrets.CONFIG_STAGING_T721APP_PUBLISHABLE_STRIPE_API_KEY }}
+            CONFIG_STAGING_ETHERSCAN_URL: ${{ secrets.CONFIG_STAGING_ETHERSCAN_URL }}
+            CONFIG_STAGING_FORWARDER_ADDRESS: ${{ secrets.CONFIG_STAGING_FORWARDER_ADDRESS }}
+
+            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            AWS_USER_ID: ${{ secrets.AWS_USER_ID }}
+            AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
+
