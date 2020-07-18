@@ -76,7 +76,7 @@ const QrCodeWrapper = styled.div<{ offsetTop: number, qrOpened: boolean }>`
     background-color: rgba(36,31,51,0.8);
     backdrop-filter: blur(6px);
     padding: 6vh ${props => props.theme.biggerSpacing};
-    transition: top 300ms ease-in;
+    transition: top 600ms ease-in-out;
 `;
 
 const EventTitle = styled.div`

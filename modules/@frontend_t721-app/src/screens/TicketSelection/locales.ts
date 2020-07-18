@@ -1,6 +1,7 @@
 import i18n from '@frontend/core/lib/utils/i18n'
 
 i18n.addResourceBundle('en', 'event_ticket_list', {
+    title: 'Select a category',
     ticket_for_event: 'Ticket for event ',
     ticket_for_event_on: ' on ',
     ticket_for_event_and: ' and ',
@@ -21,6 +22,7 @@ i18n.addResourceBundle('en', 'event_ticket_list', {
     error_cannot_fetch_dates: 'Cannot fetch event',
 });
 i18n.addResourceBundle('fr', 'event_ticket_list', {
+    title: 'Selectionnez une categorie',
     ticket_for_event: 'Ticket pour l\'evenement ',
     ticket_for_event_on: ' le ',
     ticket_for_event_and: ' et ',

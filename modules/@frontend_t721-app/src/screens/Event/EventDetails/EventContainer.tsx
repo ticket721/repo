@@ -22,7 +22,6 @@ const Container = styled.div`
 
 const BgContainer = styled.div`
     background-color: #1b1726;
-    margin-bottom: 90px;
 `;
 
 export const EventContainer: React.FC<EventContainerProps> = (props: EventContainerProps): JSX.Element => {

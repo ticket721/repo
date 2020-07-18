@@ -18,7 +18,6 @@ export interface LoginProps {
 }
 
 export const Login: React.FC<LoginProps> = (props: LoginProps) => {
-    console.log(props.externalRegister);
     const [t] = useTranslation('login');
     const auth = useSelector((state: AppState): AuthState => state.auth);
     const history = useHistory();
@@ -54,7 +53,7 @@ export const Login: React.FC<LoginProps> = (props: LoginProps) => {
     }, [auth.loading, auth.user]);
 
     return (
-        <LoginWrapper>
+        <LoginWrapper mobile={isTabletOrMobile}>
             <LoginContainer mobile={isTabletOrMobile}>
                 <IconContainer>
                     <Icon icon={'ticket721'} size={'40px'} color={'#fff'} />
@@ -104,11 +103,15 @@ export const Login: React.FC<LoginProps> = (props: LoginProps) => {
     );
 };
 
-const LoginWrapper = styled.div`
+interface LoginWrapperProps {
+    mobile: boolean;
+}
+
+const LoginWrapper = styled.div<LoginWrapperProps>`
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    height: ${(props) => (props.mobile ? 'none' : '100vh')};
 `;
 
 interface ILoginContainerInputProps {
@@ -121,10 +124,9 @@ const LoginContainer = styled.div`
     justify-content: space-between;
     align-items: center;
     width: 480px;
-    max-height: 100vh;
     background: ${(props: ILoginContainerInputProps) =>
         props.mobile ? 'none' : 'linear-gradient(91.44deg, #241f33 0.31%, #1b1726 99.41%)'};
-    padding: 40px;
+    padding: ${(props) => (props.mobile ? props.theme.regularSpacing : '40px')};
     border-radius: 15px;
 `;
 

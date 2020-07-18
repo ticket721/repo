@@ -27,7 +27,13 @@
         "react-router-dom": "5.1.2",
         "redux": "4.0.5",
         "styled-components": "5.1.0",
-        "typescript": "3.8.3"
+        "typescript": "3.8.3",
+        "serve": "11.3.2",
+        "cordova-plugin-screen-orientation": "3.0.2",
+        "@ionic-native/screen-orientation": "5.27.0",
+        "@ionic-native/core": "5.27.0",
+        "cordova-res": "0.15.1",
+        "es6-promise-plugin": "4.2.2"
     },
     "scripts": {
         "inject_env": "node env_injector.js > build/env.js",
@@ -35,6 +41,7 @@
         "build": "react-scripts build",
         "test": "react-scripts test",
         "lint": "tslint --project .",
+        "resources": "cordova-res ios && cordova-res android && node scripts/resources.js",
         "@lerna/postinstall": "echo '@frontend/staff-app has no postinstall'",
         "@lerna/postclean": "echo '@frontend/staff-app has no postclean'"
     },
