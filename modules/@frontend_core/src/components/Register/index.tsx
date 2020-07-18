@@ -124,7 +124,7 @@ const RegisterWrapper = styled.div<RegisterWrapperProps>`
     display: flex;
     justify-content: center;
     align-items: center;
-    height: ${props => props.mobile ? 'none' : '100vh'};
+    height: ${(props) => (props.mobile ? 'none' : '100vh')};
 `;
 
 interface IRegisterContainerInputProps {
@@ -139,7 +139,7 @@ const RegisterContainer = styled.div`
     width: 480px;
     background: ${(props: IRegisterContainerInputProps) =>
         props.mobile ? 'none' : 'linear-gradient(91.44deg, #241f33 0.31%, #1b1726 99.41%)'};
-    padding: ${props => props.mobile ? props.theme.regularSpacing : '40px'};
+    padding: ${(props) => (props.mobile ? props.theme.regularSpacing : '40px')};
     border-radius: 15px;
 `;
 

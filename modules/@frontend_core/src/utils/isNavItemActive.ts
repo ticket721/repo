@@ -4,4 +4,3 @@ export const isNavItemActive = (expected: string, location: any): string => {
     }
     return undefined;
 };
-

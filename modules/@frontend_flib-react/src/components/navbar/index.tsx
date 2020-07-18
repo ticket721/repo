@@ -2,8 +2,8 @@ import * as React from 'react';
 import styled from '../../config/styled';
 
 interface StyledNavbar {
-  visible: boolean;
-  iconHeight: string;
+    visible: boolean;
+    iconHeight: string;
 }
 
 const StyledNavbar = styled.nav<StyledNavbar>`
@@ -13,14 +13,10 @@ const StyledNavbar = styled.nav<StyledNavbar>`
     border-top-left-radius: ${(props) => props.theme.doubleSpacing};
     border-top-right-radius: ${(props) => props.theme.doubleSpacing};
     transition: bottom 500ms ease;
-    bottom: ${props =>
-  props.visible
-    ?
-    '0'
-
-    :
-    `calc(-${props.theme.regularSpacing} * 3 - env(safe-area-inset-bottom) - ${props.iconHeight})`
-};
+    bottom: ${(props) =>
+        props.visible
+            ? '0'
+            : `calc(-${props.theme.regularSpacing} * 3 - env(safe-area-inset-bottom) - ${props.iconHeight})`};
     display: flex;
     justify-content: space-between;
     left: 0;
@@ -66,12 +62,16 @@ const StyledNavbar = styled.nav<StyledNavbar>`
 `;
 
 export interface NavbarProps {
-  visible: boolean;
-  iconHeight: string;
+    visible: boolean;
+    iconHeight: string;
 }
 
 export const Navbar: React.FunctionComponent<NavbarProps> = (props): JSX.Element => {
-  return <StyledNavbar visible={props.visible} iconHeight={props.iconHeight}>{props.children}</StyledNavbar>;
+    return (
+        <StyledNavbar visible={props.visible} iconHeight={props.iconHeight}>
+            {props.children}
+        </StyledNavbar>
+    );
 };
 
 export default Navbar;

@@ -20,7 +20,7 @@ interface SubNavObject {
 }
 
 interface SafeOffsetContainerProps {
-  visible: boolean;
+    visible: boolean;
 }
 
 const SafeOffsetContainer = styled.div<SafeOffsetContainerProps>`
@@ -34,8 +34,8 @@ const SafeOffsetContainer = styled.div<SafeOffsetContainerProps>`
     left: 0;
     padding: ${(props) => props.theme.regularSpacing} ${(props) => props.theme.biggerSpacing};
     position: fixed;
-    top: ${props => props.visible ? 0 : 'calc(-48px - constant(safe-area-inset-top))'};
-    top: ${props => props.visible ? 0 : 'calc(-48px - env(safe-area-inset-top))'};
+    top: ${(props) => (props.visible ? 0 : 'calc(-48px - constant(safe-area-inset-top))')};
+    top: ${(props) => (props.visible ? 0 : 'calc(-48px - env(safe-area-inset-top))')};
     transition: backdrop-filter 300ms ease, top 500ms ease;
     height: calc(48px + constant(safe-area-inset-top));
     height: calc(48px + env(safe-area-inset-top));
@@ -49,7 +49,7 @@ const SafeOffsetContainer = styled.div<SafeOffsetContainerProps>`
 `;
 
 interface ContainerProps {
-  visible: boolean;
+    visible: boolean;
 }
 
 const Container = styled.div<ContainerProps>`
@@ -62,8 +62,9 @@ const Container = styled.div<ContainerProps>`
     justify-content: space-between;
     left: 0;
     padding: ${(props) => props.theme.regularSpacing} ${(props) => props.theme.biggerSpacing};
-    top: ${props => props.visible ? 'constant(safe-area-inset-top)' : 'calc(-48px - constant(safe-area-inset-top))'};
-    top: ${props => props.visible ? 'env(safe-area-inset-top)' : 'calc(-48px - env(safe-area-inset-top))'};
+    top: ${(props) =>
+        props.visible ? 'constant(safe-area-inset-top)' : 'calc(-48px - constant(safe-area-inset-top))'};
+    top: ${(props) => (props.visible ? 'env(safe-area-inset-top)' : 'calc(-48px - env(safe-area-inset-top))')};
     transition: top 500ms ease;
     position: fixed;
     width: 100%;

@@ -111,10 +111,7 @@ export const CartAddPendingTickets: React.FC<CartAddPendingTIcketsProps> = (prop
     return <FullPageLoading/>;
 };
 
-interface UnhandledErrorCartResetProps {
-}
-
-export const UnhandledErrorCartReset: React.FC<UnhandledErrorCartResetProps> = (props: UnhandledErrorCartResetProps): JSX.Element => {
+export const UnhandledErrorCartReset: React.FC = (): JSX.Element => {
 
     const [elapsed, setElapsed] = useState(false);
     const [t] = useTranslation(['cart', 'common']);

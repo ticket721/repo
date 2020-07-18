@@ -6,13 +6,13 @@ import Button from '../../button';
 const browser = detect();
 
 export interface EventCtaProps extends React.ComponentProps<any> {
-  ctaLabel: string;
-  title: string;
-  subtitle: string;
-  show?: boolean;
-  gradients?: string[];
-  disabled?: boolean;
-  onClick: () => void;
+    ctaLabel: string;
+    title: string;
+    subtitle: string;
+    show?: boolean;
+    gradients?: string[];
+    disabled?: boolean;
+    onClick: () => void;
 }
 
 const CtaContainer = styled.div<EventCtaProps>`
@@ -20,11 +20,11 @@ const CtaContainer = styled.div<EventCtaProps>`
   background-color: ${browser?.name === 'firefox' ? 'rgba(33, 29, 45, 0.95)' : 'rgba(33, 29, 45, 0.6)'};
 
   ${
-  browser?.name !== 'firefox' &&
-  `
+      browser?.name !== 'firefox' &&
+      `
     backdrop-filter: blur(40px);
   `
-}
+  }
 
   border-top-left-radius: ${(props) => props.theme.bigRadius};
   border-top-right-radius: ${(props) => props.theme.bigRadius};
@@ -45,8 +45,8 @@ const CtaContainer = styled.div<EventCtaProps>`
   z-index: 9999;
 
   ${(props) =>
-  props.show &&
-  `
+      props.show &&
+      `
     opacity: 1;
     transform: translateY(0%);
   `}
@@ -68,26 +68,26 @@ const CtaContainer = styled.div<EventCtaProps>`
 `;
 
 export const EventCta: React.FunctionComponent<EventCtaProps & { className?: string }> = (
-  props: EventCtaProps,
+    props: EventCtaProps,
 ): JSX.Element => {
-  return (
-    <CtaContainer show={props.show} className={props.className}>
-      <div>
-        <h4 className={'uppercase'}>{props.title}</h4>
-        <span>{props.subtitle}</span>
-      </div>
-      <Button
-        title={props.ctaLabel}
-        variant={props.disabled ? 'disabled' : 'custom'}
-        gradients={props.gradients}
-        onClick={props.onClick}
-      />
-    </CtaContainer>
-  );
+    return (
+        <CtaContainer show={props.show} className={props.className}>
+            <div>
+                <h4 className={'uppercase'}>{props.title}</h4>
+                <span>{props.subtitle}</span>
+            </div>
+            <Button
+                title={props.ctaLabel}
+                variant={props.disabled ? 'disabled' : 'custom'}
+                gradients={props.gradients}
+                onClick={props.onClick}
+            />
+        </CtaContainer>
+    );
 };
 
 EventCta.defaultProps = {
-  gradients: ['#079CF0', '#2143AB'],
+    gradients: ['#079CF0', '#2143AB'],
 };
 
 export default EventCta;
