@@ -52,7 +52,7 @@ export const Register: React.FC<RegisterProps> = (props: RegisterProps) => {
     const isTabletOrMobile = useMediaQuery({ maxWidth: 1224 });
 
     return (
-        <RegisterWrapper>
+        <RegisterWrapper mobile={isTabletOrMobile}>
             {!auth.loading && auth.submit && auth.token ? (
                 <ValidateEmail />
             ) : (
@@ -116,11 +116,15 @@ export const Register: React.FC<RegisterProps> = (props: RegisterProps) => {
     );
 };
 
-const RegisterWrapper = styled.div`
+interface RegisterWrapperProps {
+    mobile: boolean;
+}
+
+const RegisterWrapper = styled.div<RegisterWrapperProps>`
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    height: ${props => props.mobile ? 'none' : '100vh'};
 `;
 
 interface IRegisterContainerInputProps {
@@ -133,10 +137,9 @@ const RegisterContainer = styled.div`
     justify-content: space-between;
     align-items: center;
     width: 480px;
-    max-height: 100vh;
     background: ${(props: IRegisterContainerInputProps) =>
         props.mobile ? 'none' : 'linear-gradient(91.44deg, #241f33 0.31%, #1b1726 99.41%)'};
-    padding: 40px;
+    padding: ${props => props.mobile ? props.theme.regularSpacing : '40px'};
     border-radius: 15px;
 `;
 

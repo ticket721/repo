@@ -59,7 +59,7 @@ const MobileApp: React.FC = () => {
                     <RegisterPage/>
                 </Route>
 
-                <Route path={'/home'} exact={true}>
+                <Route path={'/'} exact={true}>
                     <HomePage/>
                 </Route>
 
@@ -103,9 +103,10 @@ const MobileApp: React.FC = () => {
                     <TicketPage/>
                 </ProtectedRoute>
 
-                <ProtectedRoute path={'/'} exact={true}>
+                <ProtectedRoute path={'/wallet'} exact={true}>
                     <WalletPage/>
                 </ProtectedRoute>
+
                 <Redirect to={'/'}/>
             </Switch>
             <ToastStacker additionalLocales={[]}/>

@@ -27,6 +27,11 @@ const CartReviewOrderTitle = styled.h1`
   margin-left: ${props => props.theme.regularSpacing};
 `;
 
+const SyncedCartContainer = styled.div`
+  margin-bottom: env(safe-area-inset-bottom);
+  margin-bottom: constant(safe-area-inset-bottom);
+`;
+
 interface RemoteTicketInfo {
     categoryId: string;
 }
@@ -159,6 +164,8 @@ const forcedActionSetUpdate = (
 
         ticketsSelectionCall.lazyRequest([token, remoteCart.id, {
             tickets: ticketsSelectionData.tickets,
+            fees: ticketsSelectionData.fees,
+            total: ticketsSelectionData.total
         }], {
             force: true,
         });
@@ -288,7 +295,7 @@ export const SyncedCart: React.FC<SyncedCartProps> = (props: SyncedCartProps): J
         paymentCalled(true);
     };
 
-    return <>
+    return <SyncedCartContainer>
         <CartReviewOrderTitle>{t('synced_cart_review_title')}</CartReviewOrderTitle>
         {
             Object
@@ -323,5 +330,5 @@ export const SyncedCart: React.FC<SyncedCartProps> = (props: SyncedCartProps): J
                 variant={payment ? 'secondary' : 'primary'}
             />
         </PurchaseButtonWrapper>
-    </>;
+    </SyncedCartContainer>;
 };

@@ -1,11 +1,10 @@
-import React, { lazy, Suspense } from 'react';
+import React from 'react';
 
 import { Redirect, Route, Switch, withRouter } from 'react-router-dom';
 
 import ProtectedRoute               from '@frontend/core/lib/components/ProtectedRoute';
 import ToastStacker                 from '@frontend/core/lib/components/ToastStacker';
 import styled                       from 'styled-components';
-import { FullPageLoading }          from '@frontend/flib-react/lib/components';
 import LoginPage from './routes/Login';
 import RegisterPage from './routes/Register';
 import HomePage from './routes/Home';
@@ -21,7 +20,7 @@ import CartPage from './routes/Cart';
 
 const App: React.FC = () => {
 
-    return <Suspense fallback={<FullPageLoading/>}>
+    return <>
         <AppContainer>
             <Switch>
                 <Route path={'/login'} exact={true}>
@@ -75,7 +74,7 @@ const App: React.FC = () => {
             </Switch>
             <ToastStacker additionalLocales={[]}/>
         </AppContainer>
-    </Suspense>;
+    </>;
 };
 
 const AppContainer = styled.div`

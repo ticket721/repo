@@ -265,7 +265,8 @@ export const StripeCheckout: React.FC<StripeCheckoutProps> = (props: StripeCheck
     // Callback to clear the cart
     const clearCart = useCallback(() => {
         dispatch(SetTickets([]));
-        history.replace('/');
+        history.go(-history.length);
+        history.push('/wallet');
     }, [dispatch, history]);
 
     useEffect(() => {
