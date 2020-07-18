@@ -130,6 +130,13 @@ jobs:
                 path: ./modules/@frontend_organizer-app/node_modules
                 key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-frontend_organizer-app
 
+            - name: "CACHE @frontend_staff-app"
+              if: steps.temoin_cache.outputs.cache-hit != 'true'
+              uses: actions/cache@v1
+              with:
+                path: ./modules/@frontend_staff-app/node_modules
+                key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-frontend_staff-app
+
           #
             # Cache Public Modules
             #
@@ -1296,6 +1303,155 @@ jobs:
   #    | $$   /$$  \ $$| $$        | $$
   #    | $$$$|  $$$$$$/| $$$$$$$$ /$$$$
   #    |____/ \______/ |________/|____/
+  #
+  #    @frontend_staff-app - build & lint
+  #
+  #    Recovers required dependencies from cache
+  #    Builds sources to verify everything still transpiles properly
+  #    Lints sources to verify everything is formatted properly
+  #
+
+    frontend-staff-app:
+      name: "[S2] [@frontend/staff-app] build, lint, format check & tests"
+      needs: install
+      runs-on: ubuntu-latest
+      steps:
+
+        #
+        # Initial Setup
+        #
+
+        - uses: actions/checkout@v1
+        - name: "Use Node.js 12.x"
+          uses: actions/setup-node@v1.2.0
+          with:
+            node-version: 12.x
+
+        - uses: technote-space/get-diff-action@v2
+          id: git_diff
+          with:
+            PREFIX_FILTER: |
+              modules/@frontend_staff-app/
+              modules/@common_global/
+              modules/@common_sdk/
+              modules/@frontend_core/
+
+        - name: "Install required tools globally (npm install -g yarn)"
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
+          run: npm install -g yarn@1.22.4
+
+        #
+        # Cache Yarn Workspaces
+        #
+
+        - name: "CACHE root"
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
+          uses: actions/cache@v1
+          with:
+            path: ./node_modules
+            key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-root
+
+        - name: "CACHE @common_global"
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
+          uses: actions/cache@v1
+          with:
+            path: ./modules/@common_global/node_modules
+            key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_global
+
+        - name: "CACHE @common_geoloc"
+          uses: actions/cache@v1
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
+          with:
+            path: ./modules/@common_geoloc/node_modules
+            key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_geoloc
+
+        - name: "CACHE @common_sdk"
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
+          uses: actions/cache@v1
+          with:
+            path: ./modules/@common_sdk/node_modules
+            key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_sdk
+
+        - name: "CACHE @frontend_flib-react"
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
+          uses: actions/cache@v1
+          with:
+            path: ./modules/@frontend_flib-react/node_modules
+            key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-frontend_flib-react
+
+        - name: "CACHE @frontend_core"
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
+          uses: actions/cache@v1
+          with:
+            path: ./modules/@frontend_core/node_modules
+            key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-frontend_core
+
+        - name: "CACHE @frontend_staff-app"
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
+          uses: actions/cache@v1
+          with:
+            path: ./modules/@frontend_staff-app/node_modules
+            key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-frontend_staff-app
+
+        - name: "CACHE @backend_nest"
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
+          uses: actions/cache@v1
+          with:
+            path: ./modules/@backend_nest/node_modules
+            key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-backend_nest
+
+
+        #
+        # Build dependencies
+        #
+
+        - name: "Build @common_global (yarn build in modules/@common_global)"
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
+          working-directory: modules/@common_global
+          run: yarn build
+
+        - name: "Build @common_geoloc (yarn build in modules/@common_geoloc)"
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
+          working-directory: modules/@common_geoloc
+          run: yarn build
+
+        - name: "Build @common_sdk (yarn build in modules/@common_sdk)"
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
+          working-directory: modules/@common_sdk
+          run: yarn build
+
+        - name: "Build @frontend_flib-react (yarn build in modules/@frontend_flib-react)"
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
+          working-directory: modules/@frontend_flib-react
+          run: yarn build
+
+        - name: "Build @frontend_core (yarn build in modules/@frontend_core)"
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
+          working-directory: modules/@frontend_core
+          run: yarn build
+
+        #
+        # Build, Lint, Format check & Tests @frontend_core
+        #
+
+        - name: "Build @frontend/staff-app (yarn build in modules/@frontend_staff-app)"
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
+          working-directory: modules/@frontend_staff-app
+          run: yarn build
+
+        - name: "Lint @frontend/staff-app (yarn lint in modules/@frontend_staff-app)"
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
+          working-directory: modules/@frontend_staff-app
+          run: yarn lint
+
+  #     /$$$$  /$$$$$$   /$$$$$$  /$$$$
+  #    | $$_/ /$$__  $$ /$$__  $$|_  $$
+  #    | $$  | $$  \__/|__/  \ $$  | $$
+  #    | $$  |  $$$$$$   /$$$$$$/  | $$
+  #    | $$   \____  $$ /$$____/   | $$
+  #    | $$   /$$  \ $$| $$        | $$
+  #    | $$$$|  $$$$$$/| $$$$$$$$ /$$$$
+  #    |____/ \______/ |________/|____/
 #
 #    @frontend_core - build, lint, format check & tests
 #
@@ -1453,7 +1609,7 @@ jobs:
 
     coverage:
         name: "[S3] [@repo] upload coverage data"
-        needs: [global, sdk, server, server-e2e, flib-react, frontend-organizer-app, frontend-t721-app, frontend-core]
+        needs: [global, sdk, server, server-e2e, flib-react, frontend-organizer-app, frontend-t721-app, frontend-staff-app, frontend-core]
         runs-on: ubuntu-latest
         steps:
 
@@ -1530,7 +1686,7 @@ jobs:
 
     infra-dry-run:
       name: "[S3] infra (staging) dry run"
-      needs: [global, sdk, server, server-e2e, flib-react, frontend-organizer-app, frontend-t721-app, frontend-core]
+      needs: [global, sdk, server, server-e2e, flib-react, frontend-organizer-app, frontend-t721-app, frontend-staff-app, frontend-core]
       runs-on: ubuntu-latest
       steps:
 
@@ -1622,7 +1778,7 @@ jobs:
 
     docker:
       name: "[S3] docker"
-      needs: [global, sdk, server, server-e2e, flib-react, frontend-organizer-app, frontend-t721-app, frontend-core]
+      needs: [global, sdk, server, server-e2e, flib-react, frontend-organizer-app, frontend-t721-app, frontend-staff-app, frontend-core]
       if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
       runs-on: ubuntu-latest
       steps:
