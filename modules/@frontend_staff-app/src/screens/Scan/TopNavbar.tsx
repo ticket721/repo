@@ -53,7 +53,7 @@ const SafeOffsetContainer = styled.div<{ status: Status }>`
         props.status === 'success' ? `rgba(${props.theme.successColor.r}, ${props.theme.successColor.g}, ${props.theme.successColor.b}, 0.1)` :
         'rgba(0, 0, 0, 0)'
     };
-    backdrop-filter: blur(16px);
+    backdrop-filter: blur(40px);
 `;
 
 const NavbarWrapper = styled.div`

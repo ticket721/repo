@@ -1,5 +1,5 @@
-import { Action }                     from 'redux';
-import { CurrentEventTypes } from './types';
+import { Action }                      from 'redux';
+import { CategoryItem, CurrentEventTypes } from './types';
 
 export interface ISetupDate extends Action<string> {
     type: CurrentEventTypes.SetupDate;
@@ -31,4 +31,40 @@ export const SetDate = (dateId: string, dateName: string): ISetDate => ({
     dateName,
 });
 
-export type CurrentEventAction = ISetupDate | ISetEventId | ISetDate;
+export interface ISetFilteredCategories extends Action<string> {
+    type: CurrentEventTypes.SetFilteredCategories;
+    categories: CategoryItem[];
+}
+
+export const SetFilteredCategories = (categories: CategoryItem[]): ISetFilteredCategories => ({
+    type: CurrentEventTypes.SetFilteredCategories,
+    categories,
+});
+
+export interface IPushCategory extends Action<string> {
+    type: CurrentEventTypes.PushCategory;
+    category: CategoryItem;
+}
+
+export const PushCategory = (category: CategoryItem): IPushCategory => ({
+    type: CurrentEventTypes.PushCategory,
+    category,
+});
+
+export interface IRemoveCategory extends Action<string> {
+    type: CurrentEventTypes.RemoveCategory;
+    categoryId: string;
+}
+
+export const RemoveCategory = (categoryId: string): IRemoveCategory => ({
+    type: CurrentEventTypes.RemoveCategory,
+    categoryId,
+});
+
+export type CurrentEventAction =
+    ISetupDate |
+    ISetEventId |
+    ISetDate |
+    ISetFilteredCategories |
+    IPushCategory |
+    IRemoveCategory;

@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import QrReader                        from 'react-qr-reader';
+import React, { useEffect, useState } from 'react';
+import QrReader                       from 'react-qr-reader';
 import styled  from 'styled-components';
-import { TopNavbar }                   from './TopNavbar';
-import { FullPageLoading }            from '@frontend/flib-react/lib/components';
-import { DateItem }                         from '../../components/EventSelection';
+import { TopNavbar }              from './TopNavbar';
+import { Error, FullPageLoading } from '@frontend/flib-react/lib/components';
+import { DateItem }               from '../../components/EventSelection';
 import { useSelector }                      from 'react-redux';
 import { StaffAppState }                    from '../../redux';
 import { verifyMessage, BigNumber }         from 'ethers/utils';
@@ -11,14 +11,18 @@ import { second }                           from '@frontend/core/lib/utils/date'
 import { useLazyRequest }                   from '@frontend/core/lib/hooks/useLazyRequest';
 import { v4 }                               from 'uuid';
 import { TicketsValidateTicketResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/tickets/dto/TicketsValidateTicketResponse.dto';
-import { PushNotification }                 from '@frontend/core/lib/redux/ducks/notifications';
-import { useDispatch }                      from 'react-redux';
-import { useTranslation }                   from 'react-i18next';
-import { useDeepEffect }                    from '@frontend/core/lib/hooks/useDeepEffect';
+import { PushNotification }            from '@frontend/core/lib/redux/ducks/notifications';
+import { useDispatch }                 from 'react-redux';
+import { useTranslation }              from 'react-i18next';
+import { useDeepEffect }               from '@frontend/core/lib/hooks/useDeepEffect';
 import './locales';
-import { CacheCore }                        from '@frontend/core/lib/cores/cache/CacheCore';
-import { UpdateItemData }                   from '@frontend/core/lib/redux/ducks/cache';
-import { ScannerZone }                      from './ScannerZone';
+import { CacheCore }                   from '@frontend/core/lib/cores/cache/CacheCore';
+import { UpdateItemData }              from '@frontend/core/lib/redux/ducks/cache';
+import { ScannerZone }                 from './ScannerZone';
+import { useRequest }                  from '@frontend/core/lib/hooks/useRequest';
+import { CategoriesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/categories/dto/CategoriesSearchResponse.dto';
+import { CategoriesFetcher }           from '../../components/Filters/CategoriesFetcher';
+import { Icon }                            from '@frontend/flib-react/lib/components';
 
 export type Status = 'error' | 'success' | 'verifying' | 'scanning';
 
@@ -40,24 +44,40 @@ export const Scanner: React.FC<ScannerProps> = ({ events, dates }: ScannerProps)
     const [
         token,
         eventId,
-        dateId ] = useSelector((state: StaffAppState) =>
+        dateId,
+        filteredCategories,
+    ] = useSelector((state: StaffAppState) =>
         [
             state.auth.token.value,
             state.currentEvent.eventId,
             state.currentEvent.dateId,
+            state.currentEvent.filteredCategories,
         ]);
 
     const [ loaded, setLoaded ] = useState<boolean>(false);
     const [ status, setStatus ] = useState<Status>('scanning');
     const [ timestampRange, setTimestampRange ] = useState<number[]>([]);
-    // const [ categoryFilters, setCategoryFilters ] = useState<string[]>([]);
     const [ scannedTicket, setScannedTicket ] = useState<QrPayload>(null);
     const [ statusMsg, setStatusMsg ] = useState<string>(null);
+    const [ filtersOpened, setFiltersOpened ] = useState<boolean>(false);
 
     const [uuid] = useState(v4() + '@scanner');
 
     const [ t ] = useTranslation(['scanner', 'verify_errors']);
     const dispatch = useDispatch();
+
+    const categoriesReq = useRequest<CategoriesSearchResponseDto>({
+        method: 'categories.search',
+        args: [
+            token,
+            {
+                parent_id: {
+                    $in: [eventId, dateId]
+                }
+            }
+        ],
+        refreshRate: 30,
+    }, uuid + ':' + dateId);
 
     const { lazyRequest: validateTicket, response: validationResp } = useLazyRequest<TicketsValidateTicketResponseDto>('tickets.validate', uuid);
 
@@ -106,6 +126,9 @@ export const Scanner: React.FC<ScannerProps> = ({ events, dates }: ScannerProps)
                 case 'entity_not_found':
                     setStatusMsg('verify_errors:ticket_not_found');
                     break;
+                case 'unauthorized_scan':
+                    setStatusMsg('verify_errors:invalid_event');
+                    break;
                 default:
                     dispatch(PushNotification(t('verify_errors:internal_server_error'), 'error'));
                     setStatusMsg('retry');
@@ -114,13 +137,25 @@ export const Scanner: React.FC<ScannerProps> = ({ events, dates }: ScannerProps)
     }, [validationResp.error]);
 
     useDeepEffect(() => {
-        console.log('validationResp', validationResp.data);
         if (validationResp.data) {
             if (validationResp.data.info) {
-                // if (categoryFilters.findIndex((category) => category === validationResp.data.info.category) === -1) {
-                //     setStatus('error');
-                //     setStatusMsg('verify_errors:invalid_category');
-                // }
+                if (
+                    categoriesReq.response.data.categories
+                    .findIndex(category => category.id === validationResp.data.info.category) === -1
+                ) {
+                    setStatus('error');
+                    setStatusMsg('verify_errors:invalid_date');
+                    return;
+                }
+
+                if (
+                    filteredCategories.length > 0 &&
+                    filteredCategories.findIndex((category) => category === validationResp.data.info.category) === -1
+                ) {
+                    setStatus('error');
+                    setStatusMsg('verify_errors:invalid_category');
+                    return;
+                }
 
                 if (scannedTicket.timestamp < timestampRange[0]) {
                     setStatus('error');
@@ -143,6 +178,20 @@ export const Scanner: React.FC<ScannerProps> = ({ events, dates }: ScannerProps)
             }
         }
     }, [validationResp.data]);
+
+    useEffect(() => {
+        if (filteredCategories.length === 0) {
+            setFiltersOpened(true);
+        }
+    }, [filteredCategories]);
+
+    if (categoriesReq.response.loading) {
+        return <FullPageLoading/>;
+    }
+
+    if (categoriesReq.response.error) {
+        return <Error message={t('error_cannot_fetch_categories')} retryLabel={t('common:retrying_in')} onRefresh={categoriesReq.force}/>;
+    }
 
     return (
         <ScannerWrapper>
@@ -174,6 +223,21 @@ export const Scanner: React.FC<ScannerProps> = ({ events, dates }: ScannerProps)
                     null
             }
             {
+                status === 'scanning' ?
+                    <FilterBtn onClick={() => setFiltersOpened(true)}>
+                        <Icon icon={'filter'} size={'24px'} color={'#FFF'}/>
+                        <BtnLabel>
+                            <span>{t('filter_btn_label')}</span>
+                            <span>{
+                                filteredCategories.length === categoriesReq.response.data.categories.length ?
+                                    t('every_categories') :
+                                    t('category', {count: filteredCategories.length})
+                            }</span>
+                        </BtnLabel>
+                    </FilterBtn> :
+                    null
+            }
+            {
                 dateId ?
                     <QrReader
                         onScan={verifyTicket}
@@ -188,6 +252,7 @@ export const Scanner: React.FC<ScannerProps> = ({ events, dates }: ScannerProps)
                         showViewFinder={false} /> :
                     null
             }
+            <CategoriesFetcher open={filtersOpened} onClose={() => setFiltersOpened(false)}/>
         </ScannerWrapper>
     );
 };
@@ -213,4 +278,37 @@ const TapToScan = styled.div`
     border-radius: 50%;
     text-align: center;
     font-weight: 500;
+`;
+
+const FilterBtn = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    padding: ${props => props.theme.regularSpacing};
+    bottom: ${props => props.theme.biggerSpacing};
+    left: ${props => props.theme.biggerSpacing};
+    z-index: 4;
+    border-radius: ${props => props.theme.defaultRadius};
+    width: calc(100vw - 2 * ${props => props.theme.biggerSpacing});
+    background-color: ${props => props.theme.componentColorLighter};
+    backdrop-filter: blur(40px);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+`;
+
+const BtnLabel = styled.div`
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin-left: ${props => props.theme.regularSpacing};
+    margin-top: 4px;
+    height: 30px;
+    font-weight: 500;
+
+    & > span:last-child {
+        font-size: 12px;
+        color: ${props => props.theme.textColorDark};
+    }
 `;
