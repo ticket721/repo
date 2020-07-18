@@ -1,9 +1,6 @@
 {
-    "appName": "t721",
+    "appName": "Ticket721",
     "appId": "com.ticket721.t721",
     "webDir": "build",
-    "npmClient": "yarn",
-    "server": {
-        "url": "http://127.0.0.1:8100"
-    }
+    "npmClient": "yarn"
 }

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">T721 Staff</string>
+    <string name="title_activity_main">T721 Staff</string>
+    <string name="package_name">com.ticket721.staff</string>
+    <string name="custom_url_scheme">com.ticket721.staff</string>
+</resources>
