@@ -5,7 +5,7 @@ i18n.addResourceBundle('en', 'wallet', {
     fetch_error: 'Unable to get your tickets',
     empty_wallet: 'Empty wallet',
     return_to_search: 'Return to Search',
-    my_tickets: 'My Tickets'
+    my_tickets: 'My Tickets',
 });
 
 i18n.addResourceBundle('fr', 'wallet', {

@@ -12,6 +12,8 @@ const StyledNavbar = styled.nav`
     justify-content: space-between;
     left: 0;
     padding: calc(${(props) => props.theme.regularSpacing} * 1.5) ${(props) => props.theme.doubleSpacing};
+    padding-bottom: calc(${(props) => props.theme.regularSpacing} * 1.5 + env(safe-area-inset-bottom));
+    padding-bottom: calc(${(props) => props.theme.regularSpacing} * 1.5 + constant(safe-area-inset-bottom));
     position: fixed;
     width: 100%;
     z-index: 9999;

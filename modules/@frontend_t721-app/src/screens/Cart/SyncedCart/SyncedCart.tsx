@@ -269,7 +269,7 @@ export const SyncedCart: React.FC<SyncedCartProps> = (props: SyncedCartProps): J
     const parsedActionData = JSON.parse(props.remoteCart.actions[0].data);
 
     if (!parsedActionData.fees || !parsedActionData.total) {
-        console.log('ya r');
+        console.log('ya r mais pk ?');
         return <FullPageLoading/>;
     }
 

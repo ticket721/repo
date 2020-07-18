@@ -1,3 +1,4 @@
-import Event from '../screens/Event';
+import Event         from '../screens/Event';
+import { CtaMargin } from '../utils/CtaMargin';
 
-export default Event;
+export default CtaMargin(Event);

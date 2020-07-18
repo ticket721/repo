@@ -37,6 +37,8 @@ const CtaContainer = styled.div<DoubleButtonCtaProps>`
   left: 0;
   opacity: 0;
   padding: ${(props) => props.theme.regularSpacing} ${(props) => props.theme.biggerSpacing};
+  padding-bottom: calc(${(props) => props.theme.regularSpacing} + env(safe-area-inset-bottom));
+  padding-bottom: calc(${(props) => props.theme.regularSpacing} + constant(safe-area-inset-bottom));
   position: fixed;
   transform: translateY(100%);
   transition: all 300ms ease, opacity 450ms ease;

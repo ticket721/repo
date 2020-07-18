@@ -15,7 +15,7 @@ const Badge = styled.div`
   height: ${props => props.theme.smallSpacing};
   background-color: ${props => props.theme.badgeColor.hex};
   top: 0;
-  right: calc(1.25rem - ${props => props.theme.smallSpacing});
+  right: -${props => props.theme.smallSpacing};
 `;
 
 export const LoginNavbar: React.FC = (): JSX.Element => {

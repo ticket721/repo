@@ -53,7 +53,7 @@ i18n.addResourceBundle('en', 'cart', {
 
     cart_checkout_cta_pay: 'Pay now',
     cart_checkout_cta_error: 'Payment error',
-    cart_checkout_cta_waiting_response: 'Waiting for response',
+    cart_checkout_cta_waiting_response: 'Waiting for Ethereum',
     cart_checkout_cta_delivering_ticket: 'Delivering tickets',
     cart_checkout_tickets_created: 'Tickets created',
     cart_checkout_expired: 'Cart expired',
@@ -126,7 +126,7 @@ i18n.addResourceBundle('fr', 'cart', {
 
     cart_checkout_cta_pay: 'Payer',
     cart_checkout_cta_error: 'Erreur de paiement',
-    cart_checkout_cta_waiting_response: 'En attente du serveur',
+    cart_checkout_cta_waiting_response: 'En attente d\'Ethereum',
     cart_checkout_cta_delivering_ticket: 'Envoi des tickets',
     cart_checkout_tickets_created: 'Tickets crees',
     cart_checkout_expired: 'Panier expire',
