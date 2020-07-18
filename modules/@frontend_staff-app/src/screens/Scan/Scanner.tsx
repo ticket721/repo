@@ -1,11 +1,30 @@
-import React, { useState }       from 'react';
-import QrReader                  from 'react-qr-reader';
-import styled                    from 'styled-components';
-import { TopNavbar }             from './TopNavbar';
-import { FullPageLoading, Icon } from '@frontend/flib-react/lib/components';
-import { DateItem }              from '../../components/EventSelection';
-import { useSelector }           from 'react-redux';
-import { StaffAppState }         from '../../redux';
+import React, { useEffect, useState } from 'react';
+import QrReader                       from 'react-qr-reader';
+import styled  from 'styled-components';
+import { TopNavbar }              from './TopNavbar';
+import { Error, FullPageLoading } from '@frontend/flib-react/lib/components';
+import { DateItem }               from '../../components/EventSelection';
+import { useSelector }                      from 'react-redux';
+import { StaffAppState }                    from '../../redux';
+import { verifyMessage, BigNumber }         from 'ethers/utils';
+import { second }                           from '@frontend/core/lib/utils/date';
+import { useLazyRequest }                   from '@frontend/core/lib/hooks/useLazyRequest';
+import { v4 }                               from 'uuid';
+import { TicketsValidateTicketResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/tickets/dto/TicketsValidateTicketResponse.dto';
+import { PushNotification }            from '@frontend/core/lib/redux/ducks/notifications';
+import { useDispatch }                 from 'react-redux';
+import { useTranslation }              from 'react-i18next';
+import { useDeepEffect }               from '@frontend/core/lib/hooks/useDeepEffect';
+import './locales';
+import { CacheCore }                   from '@frontend/core/lib/cores/cache/CacheCore';
+import { UpdateItemData }              from '@frontend/core/lib/redux/ducks/cache';
+import { ScannerZone }                 from './ScannerZone';
+import { useRequest }                  from '@frontend/core/lib/hooks/useRequest';
+import { CategoriesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/categories/dto/CategoriesSearchResponse.dto';
+import { CategoriesFetcher }           from '../../components/Filters/CategoriesFetcher';
+import { Icon }                            from '@frontend/flib-react/lib/components';
+
+export type Status = 'error' | 'success' | 'verifying' | 'scanning';
 
 interface ScannerProps {
     events: {
@@ -15,39 +34,216 @@ interface ScannerProps {
     dates: DateItem[];
 }
 
+interface QrPayload {
+    address: string;
+    ticketId: string;
+    timestamp: number;
+}
+
 export const Scanner: React.FC<ScannerProps> = ({ events, dates }: ScannerProps) => {
-    const dateId = useSelector((state: StaffAppState) => state.currentEvent.dateId);
+    const [
+        token,
+        eventId,
+        dateId,
+        filteredCategories,
+    ] = useSelector((state: StaffAppState) =>
+        [
+            state.auth.token.value,
+            state.currentEvent.eventId,
+            state.currentEvent.dateId,
+            state.currentEvent.filteredCategories,
+        ]);
+
     const [ loaded, setLoaded ] = useState<boolean>(false);
+    const [ status, setStatus ] = useState<Status>('scanning');
+    const [ timestampRange, setTimestampRange ] = useState<number[]>([]);
+    const [ scannedTicket, setScannedTicket ] = useState<QrPayload>(null);
+    const [ statusMsg, setStatusMsg ] = useState<string>(null);
+    const [ filtersOpened, setFiltersOpened ] = useState<boolean>(false);
+
+    const [uuid] = useState(v4() + '@scanner');
+
+    const [ t ] = useTranslation(['scanner', 'verify_errors']);
+    const dispatch = useDispatch();
+
+    const categoriesReq = useRequest<CategoriesSearchResponseDto>({
+        method: 'categories.search',
+        args: [
+            token,
+            {
+                parent_id: {
+                    $in: [eventId, dateId]
+                }
+            }
+        ],
+        refreshRate: 30,
+    }, uuid + ':' + dateId);
+
+    const { lazyRequest: validateTicket, response: validationResp } = useLazyRequest<TicketsValidateTicketResponseDto>('tickets.validate', uuid);
+
+    const verifyTicket = (data: string) => {
+        if (status === 'scanning' && data) {
+            setStatus('verifying');
+            const timestamps = [
+                new Date(Date.now() - 15 * second).getTime(),
+                new Date(Date.now() + 15 * second).getTime(),
+            ];
+            setTimestampRange(timestamps);
+
+            if (
+                data.length === 194 + timestamps[0].toString().length ||
+                data.length === 194 + timestamps[1].toString().length
+            ) {
+                const sig = '0x' + data.slice(0, 130);
+                const ticketId = new BigNumber('0x' + data.slice(130, 194)).toString();
+                const timestamp = parseInt(data.slice(194), 10);
+                const address = verifyMessage(ticketId + timestamp, sig);
+
+                setScannedTicket({
+                    address,
+                    ticketId,
+                    timestamp,
+                });
+
+                validateTicket([
+                    token,
+                    eventId,
+                    {
+                        ticketId,
+                        address,
+                    }
+                ], {
+                    force: true
+                });
+            }
+        }
+    };
+
+    useDeepEffect(() => {
+        if (validationResp.error) {
+            setStatus('error');
+            switch (validationResp.error.response.data.message) {
+                case 'entity_not_found':
+                    setStatusMsg('verify_errors:ticket_not_found');
+                    break;
+                case 'unauthorized_scan':
+                    setStatusMsg('verify_errors:invalid_event');
+                    break;
+                default:
+                    dispatch(PushNotification(t('verify_errors:internal_server_error'), 'error'));
+                    setStatusMsg('retry');
+            }
+        }
+    }, [validationResp.error]);
+
+    useDeepEffect(() => {
+        if (validationResp.data) {
+            if (validationResp.data.info) {
+                if (
+                    categoriesReq.response.data.categories
+                    .findIndex(category => category.id === validationResp.data.info.category) === -1
+                ) {
+                    setStatus('error');
+                    setStatusMsg('verify_errors:invalid_date');
+                    return;
+                }
+
+                if (
+                    filteredCategories.length > 0 &&
+                    filteredCategories.findIndex((category) => category === validationResp.data.info.category) === -1
+                ) {
+                    setStatus('error');
+                    setStatusMsg('verify_errors:invalid_category');
+                    return;
+                }
+
+                if (scannedTicket.timestamp < timestampRange[0]) {
+                    setStatus('error');
+                    setStatusMsg('verify_errors:expired_qr');
+                    return;
+                }
+
+                if (scannedTicket.timestamp > timestampRange[1]) {
+                    setStatus('error');
+                    setStatusMsg('verify_errors:invalid_time_zone');
+                    return;
+                }
+
+                setStatus('success');
+                setStatusMsg(t('valid'));
+            } else {
+                setStatus('error');
+                setStatusMsg('verify_errors:invalid_user');
+                return;
+            }
+        }
+    }, [validationResp.data]);
+
+    useEffect(() => {
+        if (filteredCategories.length === 0) {
+            setFiltersOpened(true);
+        }
+    }, [filteredCategories]);
+
+    if (categoriesReq.response.loading) {
+        return <FullPageLoading/>;
+    }
+
+    if (categoriesReq.response.error) {
+        return <Error message={t('error_cannot_fetch_categories')} retryLabel={t('common:retrying_in')} onRefresh={categoriesReq.force}/>;
+    }
 
     return (
         <ScannerWrapper>
-        <TopNavbar events={events} dates={dates}/>
-        {
-            dateId && !loaded ?
-                <FullPageLoading/> :
-                null
-        }
-        <ScannerZone>
-            <TopContainer>
-                <TopLeftCorner/>
-                <TopRightCorner/>
-            </TopContainer>
-            <BottomContainer>
-                <BottomLeftCorner/>
-                <BottomRightCorner/>
-            </BottomContainer>
-            <ScanIcon
-                icon={'scan'}
-                size={'50px'}
-                color={'rgba(255,255,255,0.6)'}/>
-        </ScannerZone>
+            <TopNavbar status={status} msg={t(statusMsg)} events={events} dates={dates}/>
+            {
+                dateId && !loaded ?
+                    <FullPageLoading/> :
+                    null
+            }
+            <ScannerZone status={status}/>
+            {
+                status === 'error' || status === 'success' ?
+                    <TapToScan onClick={() => {
+                        if (status === 'error' || status === 'success') {
+                            setTimestampRange([]);
+                            setStatusMsg(null);
+                            setScannedTicket(null);
+                            setStatus('scanning');
+                            dispatch(UpdateItemData(CacheCore.key('tickets.validate', [
+                                token,
+                                eventId,
+                                {
+                                    ticketId: scannedTicket.ticketId,
+                                    address: scannedTicket.address,
+                                }
+                            ]), null));
+                        }
+                    }}>{t('scan_again')}</TapToScan> :
+                    null
+            }
+            {
+                status === 'scanning' ?
+                    <FilterBtn onClick={() => setFiltersOpened(true)}>
+                        <Icon icon={'filter'} size={'24px'} color={'#FFF'}/>
+                        <BtnLabel>
+                            <span>{t('filter_btn_label')}</span>
+                            <span>{
+                                filteredCategories.length === categoriesReq.response.data.categories.length ?
+                                    t('every_categories') :
+                                    t('category', {count: filteredCategories.length})
+                            }</span>
+                        </BtnLabel>
+                    </FilterBtn> :
+                    null
+            }
             {
                 dateId ?
                     <QrReader
-                        onScan={(data) => console.log}
+                        onScan={verifyTicket}
                         onError={(err) => console.log(err)}
                         onLoad={() => setLoaded(true)}
-                        delay={100}
+                        delay={300}
                         facingMode={'environment'}
                         style={{
                             'width': '100vw',
@@ -56,8 +252,9 @@ export const Scanner: React.FC<ScannerProps> = ({ events, dates }: ScannerProps)
                         showViewFinder={false} /> :
                     null
             }
+            <CategoriesFetcher open={filtersOpened} onClose={() => setFiltersOpened(false)}/>
         </ScannerWrapper>
-);
+    );
 };
 
 const ScannerWrapper = styled.div`
@@ -66,77 +263,52 @@ const ScannerWrapper = styled.div`
     }
 `;
 
-const ScannerZone = styled.div`
+const TapToScan = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    bottom: calc(19vh - 25vw + ${props => props.theme.regularSpacing});
+    left: calc(50% - 6vh);
+    width: 12vh;
+    height: 12vh;
+    font-size: 2vh;
+    z-index: 3;
+    background-color: ${props => props.theme.darkerBg};
+    border-radius: 50%;
+    text-align: center;
+    font-weight: 500;
+`;
+
+const FilterBtn = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    padding: ${props => props.theme.regularSpacing};
+    bottom: ${props => props.theme.biggerSpacing};
+    left: ${props => props.theme.biggerSpacing};
+    z-index: 4;
+    border-radius: ${props => props.theme.defaultRadius};
+    width: calc(100vw - 2 * ${props => props.theme.biggerSpacing});
+    background-color: ${props => props.theme.componentColorLighter};
+    backdrop-filter: blur(40px);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+`;
+
+const BtnLabel = styled.div`
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    position: fixed;
-    top: calc((-100vh - 100vw + 2 * ${props => props.theme.doubleSpacing}) / 2);
-    left: calc((-200vh + 2 * ${props => props.theme.doubleSpacing}) / 2);
-    width: calc(100vw - 2 * ${props => props.theme.doubleSpacing});
-    height: calc(100vw - 2 * ${props => props.theme.doubleSpacing});
-    border: 100vh solid rgba(0,0,0,0.3);
-    border-radius: calc(100vh + ${props => props.theme.regularSpacing});
-    z-index: 1;
-    box-sizing: content-box;
-`;
+    margin-left: ${props => props.theme.regularSpacing};
+    margin-top: 4px;
+    height: 30px;
+    font-weight: 500;
 
-const TopContainer = styled.div`
-    position: relative;
-    top: -2px;
-    left: -2px;
-    width: calc(100% + 4px);
-    display: flex;
-    justify-content: space-between;
-    height: 25%;
-    box-sizing: border-box;
-`;
-
-const BottomContainer = styled.div`
-    position: relative;
-    bottom: -2px;
-    left: -2px;
-    width: calc(100% + 4px);
-    display: flex;
-    justify-content: space-between;
-    height: 25%;
-    box-sizing: border-box;
-`;
-
-const TopLeftCorner = styled.div`
-    width: 25%;
-    height: 100;
-    border-left: 5px solid ${props => props.theme.textColorDark};
-    border-top: 5px solid ${props => props.theme.textColorDark};
-    border-radius: ${props => props.theme.regularSpacing} 0 0 0;
-`;
-
-const TopRightCorner = styled.div`
-    width: 25%;
-    height: 100%;
-    border-right: 5px solid ${props => props.theme.textColorDark};
-    border-top: 5px solid ${props => props.theme.textColorDark};
-    border-radius: 0 ${props => props.theme.regularSpacing} 0 0;
-`;
-
-const BottomRightCorner = styled.div`
-    width: 25%;
-    height: 100%;
-    border-right: 5px solid ${props => props.theme.textColorDark};
-    border-bottom: 5px solid ${props => props.theme.textColorDark};
-    border-radius: 0 0 ${props => props.theme.regularSpacing} 0;
-`;
-
-const BottomLeftCorner = styled.div`
-    width: 25%;
-    height: 100%;
-    border-left: 5px solid ${props => props.theme.textColorDark};
-    border-bottom: 5px solid ${props => props.theme.textColorDark};
-    border-radius: 0 0 0 ${props => props.theme.regularSpacing};
-`;
-
-const ScanIcon = styled(Icon)`
-    position: absolute;
-    top: calc(50% - 25px);
-    left: calc(50% - 25px);
+    & > span:last-child {
+        font-size: 12px;
+        color: ${props => props.theme.textColorDark};
+    }
 `;

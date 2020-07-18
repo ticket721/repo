@@ -1,12 +1,13 @@
-import React                   from 'react';
-import styled                  from 'styled-components';
-import t721logo                from '../../../media/images/721.png';
-import { useSelector }         from 'react-redux';
-import { T721AppState }        from '../../../redux';
-import QrCode                  from 'qrcode.react';
-import { Icon }                from '@frontend/flib-react/lib/components';
+import React                      from 'react';
+import styled                     from 'styled-components';
+import t721logo                   from '../../../media/images/721.png';
+import { useSelector }            from 'react-redux';
+import { T721AppState }           from '../../../redux';
+import QrCode                     from 'qrcode.react';
+import { Icon }                   from '@frontend/flib-react/lib/components';
 import { useWindowDimensions }    from '@frontend/core/lib/hooks/useWindowDimensions';
 import { hashMessage, keccak256 } from 'ethers/utils';
+import { decimalToHex }           from '@common/global/lib/utils';
 
 export interface DynamicQrCodeProps {
     qrOpened: boolean;
@@ -24,7 +25,7 @@ export const DynamicQrCode: React.FC<DynamicQrCodeProps> = (props: DynamicQrCode
         qrcodeContent,
     ] = useSelector((state: T721AppState) => [
         state.deviceWallet.seconds,
-        state.deviceWallet.signatures[0]?.slice(2) + props.ticketId + state.deviceWallet.timestamps[0],
+        state.deviceWallet.signatures[0]?.slice(2) + decimalToHex(props.ticketId).slice(2) + state.deviceWallet.timestamps[0],
     ]);
 
     return (
