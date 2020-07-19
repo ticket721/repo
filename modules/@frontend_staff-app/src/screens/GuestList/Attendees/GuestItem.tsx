@@ -38,23 +38,25 @@ const GuestWrapper = styled.div`
     align-items: center;
     width: 100%;
     padding: ${props => props.theme.biggerSpacing};
+    margin-bottom: 2px;
     background-color: ${props => props.theme.darkerBg};
 `;
 
 const GuestInfos = styled.div`
     display: flex;
     flex-direction: column;
+    font-weight: 500;
 `;
 
 const Username = styled.span``;
 
 const Email = styled.span`
+    margin: ${props => props.theme.smallSpacing} 0 ${props => props.theme.regularSpacing};
     font-size: 12px;
-    color: ${props => props.theme.textColorDark};
+    color: ${props => props.theme.textColorDarker};
 `;
 
 const Category = styled.span`
-    margin-top: ${props => props.theme.smallSpacing};
     color: ${props => props.theme.textColorDark};
 `;
 
@@ -62,9 +64,11 @@ const Timestamp = styled.div`
     display: flex;
     flex-direction: column;
     text-align: right;
+    color: ${props => props.theme.textColorDark};
+    font-weight: 500;
 
     span:last-child {
         margin-top: ${props => props.theme.smallSpacing};
-        color: ${props => props.theme.textColorDark};
+        color: ${props => props.theme.textColorDarker};
     }
 `;

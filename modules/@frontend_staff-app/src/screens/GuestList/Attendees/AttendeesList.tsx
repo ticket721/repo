@@ -27,19 +27,21 @@ export const AttendeesList: React.FC<AttendeesListProps> = ({ guests, ticketsCou
 
     const [ activeTab, setActiveTab ] = useState<string>('pending');
     return <>
-        <Title>{t('attendees_title')}</Title>
-        <TabsBtn>
-            <div
-                className={activeTab === 'pending' ? 'active' : null}
-                onClick={() => setActiveTab('pending')}>
-                {t('pending_label')} ({ticketsCount - checkedGuests.length})
-            </div>
-            <div
-                className={activeTab === 'checked' ? 'active' : null}
-                onClick={() => setActiveTab('checked')}>
-                {t('checked_label')} ({checkedGuests.length})
-            </div>
-        </TabsBtn>
+        <Header>
+            <Title>{t('attendees_title')}</Title>
+            <TabsBtn>
+                <div
+                    className={activeTab === 'pending' ? 'active' : null}
+                    onClick={() => setActiveTab('pending')}>
+                    {t('pending_label')} ({ticketsCount - checkedGuests.length})
+                </div>
+                <div
+                    className={activeTab === 'checked' ? 'active' : null}
+                    onClick={() => setActiveTab('checked')}>
+                    {t('checked_label')} ({checkedGuests.length})
+                </div>
+            </TabsBtn>
+        </Header>
         {
             activeTab === 'pending' ?
                 guests
@@ -72,8 +74,16 @@ export const AttendeesList: React.FC<AttendeesListProps> = ({ guests, ticketsCou
     </>
 };
 
+const Header = styled.div`
+    position: sticky;
+    top: 0;
+    margin-top: calc(2 * ${props => props.theme.biggerSpacing});
+    padding: ${props => props.theme.regularSpacing} 0;
+    background: linear-gradient(91.44deg,#0a0812 0.31%,#120f1a 99.41%);
+`;
+
 const Title = styled.h2`
-    margin: calc(2 * ${props => props.theme.biggerSpacing}) ${props => props.theme.biggerSpacing} ${props => props.theme.biggerSpacing};
+    margin: 0 ${props => props.theme.biggerSpacing} ${props => props.theme.regularSpacing};
     font-size: 24px;
     line-height: 30px;
     font-weight: 600;
@@ -81,14 +91,17 @@ const Title = styled.h2`
 
 const TabsBtn = styled.div`
     display: flex;
-    margin: ${props => props.theme.biggerSpacing};
+    margin: ${props => props.theme.regularSpacing} ${props => props.theme.biggerSpacing} 0;
 
     & > div {
-        padding: ${props => props.theme.regularSpacing};
+        padding: 12px ${props => props.theme.regularSpacing};
         transition: background-color 300ms, color 300ms;
         color: ${props => props.theme.textColorDark};
+        border-radius: ${props => props.theme.defaultRadius};
+        font-weight: 500;
+        font-size: 14px;
 
-        .active {
+        &.active {
             background-color: ${props => props.theme.componentColor};
             color: ${props => props.theme.textColor};
         }

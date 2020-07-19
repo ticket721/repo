@@ -1,10 +1,12 @@
-import React                        from 'react';
+import React, { useState }          from 'react';
 import { DateItem, EventSelection } from '../../components/EventSelection';
 import { useSelector }              from 'react-redux';
 import { StaffAppState }            from '../../redux';
 import { useTranslation }           from 'react-i18next';
 import styled                       from 'styled-components';
 import { GuestListFetcher }         from './Attendees/GuestListFetcher';
+import { CategoriesFetcher }        from '../../components/Filters/CategoriesFetcher';
+import { Icon  }                        from '@frontend/flib-react/lib/components';
 
 interface GuestListPageProps {
     events: {
@@ -24,22 +26,37 @@ export const GuestListPage: React.FC<GuestListPageProps> = ({ events, dates }: G
             state.currentEvent.dateName
         ]);
     const [ t ] = useTranslation('dropdown');
+
+    const [ filterOpened, setFilterOpened ] = useState<boolean>(false);
+
     return (
         <>
-            <DropdownContainer>
-                <span>{dateName || t('choose_event')}</span>
-                <EventSelection events={events} dates={dates}/>
-            </DropdownContainer>
+            <FiltersContainer>
+                <DropdownContainer>
+                    <span>{dateName || t('choose_event')}</span>
+                    <EventSelection events={events} dates={dates}/>
+                </DropdownContainer>
+                <div onClick={() => setFilterOpened(true)}>
+                    <Icon icon={'filter'} size={'12px'} color={'#FFF'}/>
+                </div>
+            </FiltersContainer>
             {
                 dateId ?
                     <GuestListFetcher/> :
                     null
             }
+            <CategoriesFetcher open={filterOpened} onClose={() => setFilterOpened(false)}/>
         </>
     );
 };
 
+const FiltersContainer = styled.div`
+    display: flex;
+    align-items: center;
+`;
+
 const DropdownContainer = styled.div`
+    width: calc(100% - 40px);
     padding: ${props => props.theme.regularSpacing};
 
     & > span {
@@ -49,7 +66,8 @@ const DropdownContainer = styled.div`
         font-weight: 500;
         color: ${props => props.theme.textColorDark};
     }
-`;
 
-const GuestListingContainer = styled.div`
+    [class$=indicatorContainer] {
+        display: none;
+    }
 `;
