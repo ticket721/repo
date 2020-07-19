@@ -10,7 +10,6 @@ export interface TopNavProps extends React.ComponentProps<any> {
     showSubNav?: boolean;
     subNav?: SubNavObject[];
     onPress?: () => void;
-    visible?: boolean;
 }
 
 interface SubNavObject {
@@ -19,11 +18,7 @@ interface SubNavObject {
     to: string;
 }
 
-interface SafeOffsetContainerProps {
-    visible: boolean;
-}
-
-const SafeOffsetContainer = styled.div<SafeOffsetContainerProps>`
+const SafeOffsetContainer = styled.div`
     align-items: center;
     background-color: transparent;
     display: flex;
@@ -34,9 +29,8 @@ const SafeOffsetContainer = styled.div<SafeOffsetContainerProps>`
     left: 0;
     padding: ${(props) => props.theme.regularSpacing} ${(props) => props.theme.biggerSpacing};
     position: fixed;
-    top: ${(props) => (props.visible ? 0 : 'calc(-48px - constant(safe-area-inset-top))')};
-    top: ${(props) => (props.visible ? 0 : 'calc(-48px - env(safe-area-inset-top))')};
-    transition: backdrop-filter 300ms ease, top 500ms ease;
+    top: 0;
+    transition: backdrop-filter 300ms ease;
     height: calc(48px + constant(safe-area-inset-top));
     height: calc(48px + env(safe-area-inset-top));
     width: 100%;
@@ -48,11 +42,7 @@ const SafeOffsetContainer = styled.div<SafeOffsetContainerProps>`
     }
 `;
 
-interface ContainerProps {
-    visible: boolean;
-}
-
-const Container = styled.div<ContainerProps>`
+const Container = styled.div`
     align-items: center;
     background-color: transparent;
     display: flex;
@@ -62,9 +52,8 @@ const Container = styled.div<ContainerProps>`
     justify-content: space-between;
     left: 0;
     padding: ${(props) => props.theme.regularSpacing} ${(props) => props.theme.biggerSpacing};
-    top: ${(props) =>
-        props.visible ? 'constant(safe-area-inset-top)' : 'calc(-48px - constant(safe-area-inset-top))'};
-    top: ${(props) => (props.visible ? 'env(safe-area-inset-top)' : 'calc(-48px - env(safe-area-inset-top))')};
+    top: constant(safe-area-inset-top);
+    top: env(safe-area-inset-top);
     transition: top 500ms ease;
     position: fixed;
     width: 100%;
@@ -103,8 +92,8 @@ export const TopNav: React.FunctionComponent<TopNavProps> = (props: TopNavProps)
     const [showSub, setshowSub] = React.useState(false);
 
     return (
-        <SafeOffsetContainer className={props.scrolled ? 'scrolled' : ''} visible={!!props.visible}>
-            <Container visible={!!props.visible}>
+        <SafeOffsetContainer className={props.scrolled ? 'scrolled' : ''}>
+            <Container>
                 <a onClick={props.onPress}>
                     <Icon icon={'back-arrow'} size={'16px'} color={'rgba(255, 255, 255, 0.9)'} />
                 </a>

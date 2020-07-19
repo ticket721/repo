@@ -20,7 +20,7 @@ import TagsPage                                                         from './
 import WalletPage                                                       from './routes/Wallet';
 import CartPage                                                         from './routes/Cart';
 
-const TopNavWrapper = (props: { back: () => void, visible: boolean }): JSX.Element => {
+const TopNavWrapper = (props: { back: () => void}): JSX.Element => {
 
     const [scrolled, setScrolled] = useState(false);
 
@@ -39,7 +39,7 @@ const TopNavWrapper = (props: { back: () => void, visible: boolean }): JSX.Eleme
         };
     });
 
-    return <TopNav label={''} onPress={props.back} scrolled={scrolled} visible={props.visible}/>;
+    return <TopNav label={''} onPress={props.back} scrolled={scrolled} />;
 };
 
 const MobileApp: React.FC = () => {
@@ -49,7 +49,15 @@ const MobileApp: React.FC = () => {
 
     return <>
         <AppContainer>
-            <TopNavWrapper back={history.goBack} visible={location.pathname.lastIndexOf('/') !== 0}/>
+            {
+                location.pathname.lastIndexOf('/') !== 0
+
+                    ?
+                    <TopNavWrapper back={history.goBack}/>
+
+                    :
+                    null
+            }
             <Switch>
                 <Route path={'/login'} exact={true}>
                     <LoginPage/>

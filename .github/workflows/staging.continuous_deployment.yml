@@ -73,7 +73,7 @@ jobs:
       needs: docker
       runs-on: ubuntu-latest
       steps:
-        -
+
         - name: Wait for build to succeed
           uses: fountainhead/action-wait-for-check@v1.0.0
           id: wait-for-build
