@@ -4,8 +4,9 @@ import { useSelector }              from 'react-redux';
 import { StaffAppState }            from '../../redux';
 import { useTranslation }           from 'react-i18next';
 import styled                       from 'styled-components';
+import { GuestListFetcher }         from './Attendees/GuestListFetcher';
 
-interface GuestListingProps {
+interface GuestListPageProps {
     events: {
         id: string;
         name: string;
@@ -13,8 +14,15 @@ interface GuestListingProps {
     dates: DateItem[];
 }
 
-export const GuestListing: React.FC<GuestListingProps> = ({ events, dates }: GuestListingProps) => {
-    const dateName = useSelector((state: StaffAppState) => state.currentEvent.dateName);
+export const GuestListPage: React.FC<GuestListPageProps> = ({ events, dates }: GuestListPageProps) => {
+    const [
+        dateId,
+        dateName
+    ] = useSelector((state: StaffAppState) =>
+        [
+            state.currentEvent.dateId,
+            state.currentEvent.dateName
+        ]);
     const [ t ] = useTranslation('dropdown');
     return (
         <>
@@ -22,8 +30,11 @@ export const GuestListing: React.FC<GuestListingProps> = ({ events, dates }: Gue
                 <span>{dateName || t('choose_event')}</span>
                 <EventSelection events={events} dates={dates}/>
             </DropdownContainer>
-            <GuestListingContainer>
-            </GuestListingContainer>
+            {
+                dateId ?
+                    <GuestListFetcher/> :
+                    null
+            }
         </>
     );
 };

@@ -7,8 +7,8 @@ import { useSelector }             from 'react-redux';
 import { Error, FullPageLoading }  from '@frontend/flib-react/lib/components';
 import styled                      from 'styled-components';
 import { useTranslation }          from 'react-i18next';
-import { formatDateItems }         from '../../utils/formatDateItems';
-import { GuestListing }              from './GuestListing';
+import { formatDateItems } from '../../utils/formatDateItems';
+import { GuestListPage }   from './GuestListPage';
 
 interface EventsDatesFetcherProps {
     uuid: string;
@@ -61,7 +61,7 @@ export const EventsDatesFetcher: React.FC<EventsDatesFetcherProps> = ({ uuid, en
         return <NoEvent>{t('no_event')}</NoEvent>
     }
 
-    return <GuestListing
+    return <GuestListPage
         events={eventsReq.response.data.events.map(event => ({
             id: event.id,
             name: event.name,

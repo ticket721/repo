@@ -22,7 +22,8 @@ import { ScannerZone }                 from './ScannerZone';
 import { useRequest }                  from '@frontend/core/lib/hooks/useRequest';
 import { CategoriesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/categories/dto/CategoriesSearchResponse.dto';
 import { CategoriesFetcher }           from '../../components/Filters/CategoriesFetcher';
-import { Icon }                            from '@frontend/flib-react/lib/components';
+import { Icon }                        from '@frontend/flib-react/lib/components';
+import { PushGuest }                   from '../../redux/ducks/current_event';
 
 export type Status = 'error' | 'success' | 'verifying' | 'scanning';
 
@@ -150,7 +151,7 @@ export const Scanner: React.FC<ScannerProps> = ({ events, dates }: ScannerProps)
 
                 if (
                     filteredCategories.length > 0 &&
-                    filteredCategories.findIndex((category) => category === validationResp.data.info.category) === -1
+                    filteredCategories.findIndex((category) => category.id === validationResp.data.info.category) === -1
                 ) {
                     setStatus('error');
                     setStatusMsg('verify_errors:invalid_category');
@@ -171,6 +172,13 @@ export const Scanner: React.FC<ScannerProps> = ({ events, dates }: ScannerProps)
 
                 setStatus('success');
                 setStatusMsg(t('valid'));
+                dispatch(PushGuest({
+                    ticketId: validationResp.data.info.ticket,
+                    email: validationResp.data.info.email,
+                    name: validationResp.data.info.username,
+                    category: validationResp.data.info.category,
+                    checkedTimestamp: Date.now(),
+                }));
             } else {
                 setStatus('error');
                 setStatusMsg('verify_errors:invalid_user');

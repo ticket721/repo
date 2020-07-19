@@ -1,12 +1,22 @@
 import { Reducer }                                                                                   from 'redux';
-import { CurrentEventState, CurrentEventTypes }                                                              from './types';
-import { ISetEventId, ISetDate, CurrentEventAction, ISetFilteredCategories, IPushCategory, IRemoveCategory } from './actions';
+import { CurrentEventState, CurrentEventTypes }                                                                                 from './types';
+import {
+    ISetEventId,
+    ISetDate,
+    CurrentEventAction,
+    ISetFilteredCategories,
+    IPushCategory,
+    IRemoveCategory,
+    ISetCheckedGuests,
+    IPushGuest, IRemoveGuest,
+} from './actions';
 
 export const currentEventInitialState: CurrentEventState = {
     eventId: '',
     dateId: '',
     dateName: '',
     filteredCategories: [],
+    checkedGuests: [],
 };
 
 const SetEventIdReducer: Reducer<CurrentEventState, ISetEventId> = (
@@ -78,6 +88,50 @@ const RemoveCategoryReducer: Reducer<CurrentEventState, IRemoveCategory> = (
     }
 };
 
+const SetChekedGuestsReducer: Reducer<CurrentEventState, ISetCheckedGuests> = (
+    state: CurrentEventState,
+    action: ISetCheckedGuests,
+): CurrentEventState => {
+    localStorage.setItem(`date:${state.dateId}/checkedGuests`, JSON.stringify(action.guests));
+
+    return {
+        ...state,
+        checkedGuests: action.guests,
+    }
+};
+
+const PushGuestReducer: Reducer<CurrentEventState, IPushGuest> = (
+    state: CurrentEventState,
+    action: IPushGuest,
+): CurrentEventState => {
+    const checkedGuests = [
+        ...state.checkedGuests,
+        action.guest,
+    ];
+
+    localStorage.setItem(`date:${state.dateId}/checkedGuests`, JSON.stringify(checkedGuests));
+
+    return {
+        ...state,
+        checkedGuests,
+    }
+};
+
+const RemoveGuestReducer: Reducer<CurrentEventState, IRemoveGuest> = (
+    state: CurrentEventState,
+    action: IRemoveGuest,
+): CurrentEventState => {
+    const checkedGuests = state.checkedGuests
+        .filter(guest => guest.ticketId !== action.ticketId);
+
+    localStorage.setItem(`date:${state.dateId}/checkedGuests`, JSON.stringify(checkedGuests));
+
+    return {
+        ...state,
+        checkedGuests,
+    }
+};
+
 export const CurrentEventReducer: Reducer<CurrentEventState, CurrentEventAction> = (
     state: CurrentEventState = currentEventInitialState,
     action: CurrentEventAction,
@@ -93,6 +147,12 @@ export const CurrentEventReducer: Reducer<CurrentEventState, CurrentEventAction>
             return PushCategoryReducer(state, action as IPushCategory);
         case CurrentEventTypes.RemoveCategory:
             return RemoveCategoryReducer(state, action as IRemoveCategory);
+        case CurrentEventTypes.SetCheckedGuests:
+            return SetChekedGuestsReducer(state, action as ISetCheckedGuests);
+        case CurrentEventTypes.PushGuest:
+            return PushGuestReducer(state, action as IPushGuest);
+        case CurrentEventTypes.RemoveGuest:
+            return RemoveGuestReducer(state, action as IRemoveGuest);
         default:
             return state;
     }
