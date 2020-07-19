@@ -26,6 +26,8 @@ i18n.addResourceBundle('en', 'verify_errors', {
     invalid_category: 'Error #6: Invalid Category',
     expired_qr: 'Error #7: Expired qrcode',
     invalid_time_zone: 'Error #8: Invalid timezone',
+    already_checked: 'Error #9: Already checked',
+    invalid_qrcode: 'Error #10: Invalid qrcode',
     retry: 'Retry',
 });
 i18n.addResourceBundle('fr', 'verify_errors', {
@@ -37,5 +39,7 @@ i18n.addResourceBundle('fr', 'verify_errors', {
     invalid_category: 'Error #6: Catégorie invalide',
     expired_qr: 'Error #7: Qrcode expiré',
     invalid_time_zone: 'Error #8: Timezone invalide',
+    already_checked: 'Error #9: Déjà vérifié',
+    invalid_qrcode: 'Error #10: Qrcode invalide',
     retry: 'Essayez à nouveau',
 });

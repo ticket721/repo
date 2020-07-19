@@ -1,7 +1,13 @@
 import { SagaIterator }               from '@redux-saga/types';
 import { takeEvery, put }                        from 'redux-saga/effects';
-import { CurrentEventTypes }                                    from './types';
-import { ISetDate, SetDate, SetEventId, SetFilteredCategories } from './actions';
+import { CurrentEventTypes }                                                      from './types';
+import {
+    ISetDate,
+    SetCheckedGuests,
+    SetDate,
+    SetEventId,
+    SetFilteredCategories
+} from './actions';
 
 function* setupDateSaga(): SagaIterator {
     const currentEvent = localStorage.getItem('currentEvent');
@@ -34,6 +40,14 @@ function* setDateSaga(action: ISetDate): SagaIterator {
         yield put(SetFilteredCategories(JSON.parse(filteredCategories)));
     } else {
         yield put(SetFilteredCategories([]));
+    }
+
+    const checkedGuests = localStorage.getItem(`date:${action.dateId}/checkedGuests`);
+
+    if (checkedGuests) {
+        yield put(SetCheckedGuests(JSON.parse(checkedGuests)));
+    } else {
+        yield put(SetCheckedGuests([]));
     }
 }
 

@@ -22,7 +22,8 @@ import { ScannerZone }                 from './ScannerZone';
 import { useRequest }                  from '@frontend/core/lib/hooks/useRequest';
 import { CategoriesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/categories/dto/CategoriesSearchResponse.dto';
 import { CategoriesFetcher }           from '../../components/Filters/CategoriesFetcher';
-import { Icon }                            from '@frontend/flib-react/lib/components';
+import { Icon }                        from '@frontend/flib-react/lib/components';
+import { PushGuest }                   from '../../redux/ducks/current_event';
 
 export type Status = 'error' | 'success' | 'verifying' | 'scanning';
 
@@ -46,12 +47,14 @@ export const Scanner: React.FC<ScannerProps> = ({ events, dates }: ScannerProps)
         eventId,
         dateId,
         filteredCategories,
+        checkedGuests,
     ] = useSelector((state: StaffAppState) =>
         [
             state.auth.token.value,
             state.currentEvent.eventId,
             state.currentEvent.dateId,
             state.currentEvent.filteredCategories,
+            state.currentEvent.checkedGuests,
         ]);
 
     const [ loaded, setLoaded ] = useState<boolean>(false);
@@ -95,7 +98,7 @@ export const Scanner: React.FC<ScannerProps> = ({ events, dates }: ScannerProps)
                 data.length === 194 + timestamps[1].toString().length
             ) {
                 const sig = '0x' + data.slice(0, 130);
-                const ticketId = new BigNumber('0x' + data.slice(130, 194)).toString();
+                const ticketId = '0x' + data.slice(130, 194);
                 const timestamp = parseInt(data.slice(194), 10);
                 const address = verifyMessage(ticketId + timestamp, sig);
 
@@ -109,12 +112,15 @@ export const Scanner: React.FC<ScannerProps> = ({ events, dates }: ScannerProps)
                     token,
                     eventId,
                     {
-                        ticketId,
+                        ticketId: new BigNumber(ticketId).toString(),
                         address,
                     }
                 ], {
                     force: true
                 });
+            } else {
+                setStatus('error');
+                setStatusMsg('verify_errors:invalid_qrcode');
             }
         }
     };
@@ -150,7 +156,7 @@ export const Scanner: React.FC<ScannerProps> = ({ events, dates }: ScannerProps)
 
                 if (
                     filteredCategories.length > 0 &&
-                    filteredCategories.findIndex((category) => category === validationResp.data.info.category) === -1
+                    filteredCategories.findIndex((category) => category.id === validationResp.data.info.category) === -1
                 ) {
                     setStatus('error');
                     setStatusMsg('verify_errors:invalid_category');
@@ -169,8 +175,21 @@ export const Scanner: React.FC<ScannerProps> = ({ events, dates }: ScannerProps)
                     return;
                 }
 
+                if (checkedGuests.findIndex(checkedGuest => checkedGuest.ticketId === validationResp.data.info.ticket) !== -1) {
+                    setStatus('error');
+                    setStatusMsg('verify_errors:already_checked');
+                    return;
+                }
+
                 setStatus('success');
                 setStatusMsg(t('valid'));
+                dispatch(PushGuest({
+                    ticketId: validationResp.data.info.ticket,
+                    email: validationResp.data.info.email,
+                    name: validationResp.data.info.username,
+                    category: validationResp.data.info.category,
+                    checkedTimestamp: Date.now(),
+                }));
             } else {
                 setStatus('error');
                 setStatusMsg('verify_errors:invalid_user');
