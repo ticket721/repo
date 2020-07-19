@@ -1,19 +1,17 @@
-import React                      from 'react';
-import styled                     from 'styled-components';
+import React  from 'react';
+import styled               from 'styled-components';
 import t721logo                   from '../../../media/images/721.png';
 import { useSelector }            from 'react-redux';
 import { T721AppState }           from '../../../redux';
 import QrCode                     from 'qrcode.react';
 import { Icon }                   from '@frontend/flib-react/lib/components';
-import { useWindowDimensions }    from '@frontend/core/lib/hooks/useWindowDimensions';
-import { hashMessage, keccak256 } from 'ethers/utils';
-import { decimalToHex }           from '@common/global/lib/utils';
+import { useWindowDimensions }                   from '@frontend/core/lib/hooks/useWindowDimensions';
+import { keccak256 } from 'ethers/utils';
 
 export interface DynamicQrCodeProps {
     qrOpened: boolean;
     name: string;
     category: string;
-    ticketId: string;
     color: string;
     onClose: () => void;
 }
@@ -23,9 +21,11 @@ export const DynamicQrCode: React.FC<DynamicQrCodeProps> = (props: DynamicQrCode
     const [
         seconds,
         qrcodeContent,
+        ticketId,
     ] = useSelector((state: T721AppState) => [
         state.deviceWallet.seconds,
-        state.deviceWallet.signatures[0]?.slice(2) + decimalToHex(props.ticketId).slice(2) + state.deviceWallet.timestamps[0],
+        state.deviceWallet.signatures[0]?.slice(2) + state.deviceWallet.currentTicketId?.slice(2) + state.deviceWallet.timestamps[0],
+        state.deviceWallet.currentTicketId,
     ]);
 
     return (
@@ -53,7 +53,11 @@ export const DynamicQrCode: React.FC<DynamicQrCodeProps> = (props: DynamicQrCode
                         }}/>
                         <span>{seconds}</span>
                 </QrCodeContainer>
-                <TicketId>{keccak256(hashMessage(props.ticketId)).slice(0, 20)}</TicketId>
+                {
+                    ticketId ?
+                        <TicketId>{keccak256(ticketId).slice(0, 20)}</TicketId> :
+                        null
+                }
             </div>
             <Close onClick={props.onClose}>
                 <Icon icon={'close'} size={'32px'} color={'rgba(255,255,255,0.9)'}/>
