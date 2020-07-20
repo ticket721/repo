@@ -89,7 +89,7 @@ const SingleResult = styled.article<React.ComponentProps<any>>`
 `;
 
 const CategorySection = styled.section`
-    padding: ${(props) => props.theme.regularSpacing} ${(props) => props.theme.biggerSpacing};
+    padding: ${(props) => props.theme.biggerSpacing} ${(props) => props.theme.biggerSpacing};
 
     h2 {
         margin-bottom: ${(props) => props.theme.regularSpacing};

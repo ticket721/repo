@@ -6,9 +6,10 @@ import { StaffAppState }           from '../../redux';
 import { useRequest }              from '@frontend/core/lib/hooks/useRequest';
 import { useTranslation }          from 'react-i18next';
 import { RightsSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/rights/dto/RightsSearchResponse.dto';
-import { EventsDatesFetcher }      from './EventsDatesFetcher';
+import { EventsDatesFetcher }      from '../EventsDatesFetcher';
 import '../locales';
 import styled                      from 'styled-components';
+import { StatisticsFetcher }       from './StatisticsFetcher';
 
 const Stats: React.FC = () => {
     const [ t ] = useTranslation(['fetch_errors', 'common']);
@@ -41,7 +42,9 @@ const Stats: React.FC = () => {
     }
 
     return (
-        <EventsDatesFetcher uuid={uuid} entities={rightsReq.response.data.rights.map(right => right.entity_value)}/>
+        <EventsDatesFetcher uuid={uuid} entities={rightsReq.response.data.rights.map(right => right.entity_value)}>
+            <StatisticsFetcher/>
+        </EventsDatesFetcher>
     );
 };
 
