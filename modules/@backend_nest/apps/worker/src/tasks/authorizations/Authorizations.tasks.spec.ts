@@ -8,7 +8,7 @@ import {
     AuthorizationsTasks,
     GenerateMintingAuthorizationsTaskInput,
 } from '@app/worker/tasks/authorizations/Authorizations.tasks';
-import { anything, deepEqual, instance, mock, verify, when } from 'ts-mockito';
+import { anyString, anything, deepEqual, instance, mock, verify, when } from 'ts-mockito';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getQueueToken } from '@nestjs/bull';
 import { AuthorizedTicketMintingFormat, TicketMintingFormat } from '@lib/common/utils/Cart.type';
@@ -177,6 +177,7 @@ describe('Authorization Tasks', function() {
             const grantee: UserDto = {
                 id: 'user_id',
                 address: '0xuseraddress',
+                email: 'user@ticket721.com',
             } as UserDto;
 
             const fees = ['0'];
@@ -301,6 +302,7 @@ describe('Authorization Tasks', function() {
                         metadata: anything(),
                         payment_method_types: ['card'],
                         capture_method: 'manual',
+                        receipt_email: 'user@ticket721.com',
                     }),
                 ),
             ).thenResolve({
@@ -402,6 +404,7 @@ describe('Authorization Tasks', function() {
                         metadata: anything(),
                         payment_method_types: ['card'],
                         capture_method: 'manual',
+                        receipt_email: 'user@ticket721.com',
                     }),
                 ),
             ).once();
@@ -491,6 +494,7 @@ describe('Authorization Tasks', function() {
             const grantee: UserDto = {
                 id: 'user_id',
                 address: '0xuseraddress',
+                email: 'user@ticket721.com',
             } as UserDto;
 
             const fees = ['0'];
@@ -650,6 +654,7 @@ describe('Authorization Tasks', function() {
             const grantee: UserDto = {
                 id: 'user_id',
                 address: '0xuseraddress',
+                email: 'user@ticket721.com',
             } as UserDto;
 
             const authorizationEntities: { [key: string]: AuthorizationEntity } = {
@@ -908,6 +913,7 @@ describe('Authorization Tasks', function() {
                         metadata: anything(),
                         payment_method_types: ['card'],
                         capture_method: 'manual',
+                        receipt_email: 'user@ticket721.com',
                     }),
                 ),
             ).thenResolve({
@@ -1069,6 +1075,7 @@ describe('Authorization Tasks', function() {
                         metadata: anything(),
                         payment_method_types: ['card'],
                         capture_method: 'manual',
+                        receipt_email: 'user@ticket721.com',
                     }),
                 ),
             ).once();
@@ -1160,6 +1167,7 @@ describe('Authorization Tasks', function() {
             const grantee: UserDto = {
                 id: 'user_id',
                 address: '0xuseraddress',
+                email: 'user@ticket721.com',
             } as UserDto;
 
             const fees = ['0'];
@@ -1275,6 +1283,7 @@ describe('Authorization Tasks', function() {
             const grantee: UserDto = {
                 id: 'user_id',
                 address: '0xuseraddress',
+                email: 'user@ticket721.com',
             } as UserDto;
 
             const fees = ['0'];
@@ -1374,6 +1383,7 @@ describe('Authorization Tasks', function() {
             const grantee: UserDto = {
                 id: 'user_id',
                 address: '0xuseraddress',
+                email: 'user@ticket721.com',
             } as UserDto;
 
             const fees = ['0'];
@@ -1500,6 +1510,7 @@ describe('Authorization Tasks', function() {
             const grantee: UserDto = {
                 id: 'user_id',
                 address: '0xuseraddress',
+                email: 'user@ticket721.com',
             } as UserDto;
 
             const fees = ['0'];
@@ -1671,6 +1682,7 @@ describe('Authorization Tasks', function() {
             const grantee: UserDto = {
                 id: 'user_id',
                 address: '0xuseraddress',
+                email: 'user@ticket721.com',
             } as UserDto;
 
             const pricesWithFees = [
@@ -1935,6 +1947,7 @@ describe('Authorization Tasks', function() {
             const grantee: UserDto = {
                 id: 'user_id',
                 address: '0xuseraddress',
+                email: 'user@ticket721.com',
             } as UserDto;
 
             const pricesWithFees = [
@@ -2199,6 +2212,7 @@ describe('Authorization Tasks', function() {
             const grantee: UserDto = {
                 id: 'user_id',
                 address: '0xuseraddress',
+                email: 'user@ticket721.com',
             } as UserDto;
 
             const pricesWithFees = [
@@ -2496,6 +2510,7 @@ describe('Authorization Tasks', function() {
             const grantee: UserDto = {
                 id: 'user_id',
                 address: '0xuseraddress',
+                email: 'user@ticket721.com',
             } as UserDto;
 
             const pricesWithFees = [
@@ -2762,6 +2777,7 @@ describe('Authorization Tasks', function() {
             const grantee: UserDto = {
                 id: 'user_id',
                 address: '0xuseraddress',
+                email: 'user@ticket721.com',
             } as UserDto;
 
             const pricesWithFees = [
@@ -3204,6 +3220,7 @@ describe('Authorization Tasks', function() {
             const grantee: UserDto = {
                 id: 'user_id',
                 address: '0xuseraddress',
+                email: 'user@ticket721.com',
             } as UserDto;
 
             const pricesWithFees = [
@@ -3679,6 +3696,7 @@ describe('Authorization Tasks', function() {
             const grantee: UserDto = {
                 id: 'user_id',
                 address: '0xuseraddress',
+                email: 'user@ticket721.com',
             } as UserDto;
 
             const pricesWithFees = [
@@ -3946,6 +3964,7 @@ describe('Authorization Tasks', function() {
                         metadata: anything(),
                         payment_method_types: ['card'],
                         capture_method: 'manual',
+                        receipt_email: 'user@ticket721.com',
                     }),
                 ),
             ).thenResolve({
@@ -4109,6 +4128,7 @@ describe('Authorization Tasks', function() {
                         metadata: anything(),
                         payment_method_types: ['card'],
                         capture_method: 'manual',
+                        receipt_email: 'user@ticket721.com',
                     }),
                 ),
             ).once();
@@ -4229,6 +4249,7 @@ describe('Authorization Tasks', function() {
             const grantee: UserDto = {
                 id: 'user_id',
                 address: '0xuseraddress',
+                email: 'user@ticket721.com',
             } as UserDto;
 
             const pricesWithFees = [
@@ -4552,6 +4573,7 @@ describe('Authorization Tasks', function() {
                         metadata: anything(),
                         payment_method_types: ['card'],
                         capture_method: 'manual',
+                        receipt_email: 'user@ticket721.com',
                     }),
                 ),
             ).thenResolve({
@@ -4758,6 +4780,7 @@ describe('Authorization Tasks', function() {
                         metadata: anything(),
                         payment_method_types: ['card'],
                         capture_method: 'manual',
+                        receipt_email: 'user@ticket721.com',
                     }),
                 ),
             ).once();
@@ -4878,6 +4901,7 @@ describe('Authorization Tasks', function() {
             const grantee: UserDto = {
                 id: 'user_id',
                 address: '0xuseraddress',
+                email: 'user@ticket721.com',
             } as UserDto;
 
             const pricesWithFees = [
@@ -5465,6 +5489,7 @@ describe('Authorization Tasks', function() {
             const grantee: UserDto = {
                 id: 'user_id',
                 address: '0xuseraddress',
+                email: 'user@ticket721.com',
             } as UserDto;
 
             const pricesWithFees = [
@@ -5788,6 +5813,7 @@ describe('Authorization Tasks', function() {
                         metadata: anything(),
                         payment_method_types: ['card'],
                         capture_method: 'manual',
+                        receipt_email: 'user@ticket721.com',
                     }),
                 ),
             ).thenReject(new Error('unexpected error'));
@@ -5974,6 +6000,7 @@ describe('Authorization Tasks', function() {
                         metadata: anything(),
                         payment_method_types: ['card'],
                         capture_method: 'manual',
+                        receipt_email: 'user@ticket721.com',
                     }),
                 ),
             ).once();
@@ -6049,6 +6076,7 @@ describe('Authorization Tasks', function() {
             const grantee: UserDto = {
                 id: 'user_id',
                 address: '0xuseraddress',
+                email: 'user@ticket721.com',
             } as UserDto;
 
             const fees = ['0'];
@@ -6272,6 +6300,7 @@ describe('Authorization Tasks', function() {
             const grantee: UserDto = {
                 id: 'user_id',
                 address: '0xuseraddress',
+                email: 'user@ticket721.com',
             } as UserDto;
 
             const fees = ['0'];

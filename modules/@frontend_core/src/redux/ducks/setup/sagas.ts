@@ -26,6 +26,8 @@ function* startSaga(action: IStart): IterableIterator<any> {
     yield put(GetCity());
     yield put(SetAppStatus(AppStatus.Ready));
     yield put(StartRefreshInterval());
+
+    console.log('Serving App From', window.location.href);
 }
 
 function* handleUser(): IterableIterator<any> {

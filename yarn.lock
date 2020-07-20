@@ -1652,6 +1652,13 @@
   dependencies:
     tslib "^1.9.0"
 
+"@capacitor/core@latest":
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/@capacitor/core/-/core-2.3.0.tgz#e8a16226d8f0873d73e259b96d32ab1f845f02b4"
+  integrity sha512-hiU6Im1R195NB/7U5Zdli5UVUje0JztgwE7r5zaRQKUXyEyHsQ4bOTo2qqPZv9XYXa1QrulfKAgMzBQzt41bVg==
+  dependencies:
+    tslib "^1.9.0"
+
 "@capacitor/ios@2.0.1":
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/@capacitor/ios/-/ios-2.0.1.tgz#1f1cd3736dcf00373e3303d89a0164f2f168d24e"
@@ -10168,6 +10175,19 @@ caniuse-lite@^1.0.0, caniuse-lite@^1.0.30000844, caniuse-lite@^1.0.30000981, can
   version "1.0.30001062"
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001062.tgz#d814b648338504b315222ace6f1a533d9a55e390"
   integrity sha512-ei9ZqeOnN7edDrb24QfJ0OZicpEbsWxv7WusOiQGz/f2SfvBgHHbOEwBJ8HKGVSyx8Z6ndPjxzR6m0NQq+0bfw==
+
+capacitor-plugin-ios-swipe-back@silviokennecke/capacitor-plugin-ios-swipe-back#master:
+  version "1.0.4"
+  resolved "https://codeload.github.com/silviokennecke/capacitor-plugin-ios-swipe-back/tar.gz/8c99a5d4c10e4e98e4b0b29791d17d4fd3ba381f"
+  dependencies:
+    "@capacitor/core" latest
+
+capacitor-stripe@1.0.0-beta.4:
+  version "1.0.0-beta.4"
+  resolved "https://registry.yarnpkg.com/capacitor-stripe/-/capacitor-stripe-1.0.0-beta.4.tgz#57ebbe7f0b14ff9302790216ffa55406cad544fd"
+  integrity sha512-z2/mG7U3fTJTVaqsO5/4qRAvIf70DsPb9Y8F5hFCboCGtARa1s+h1A12iyGz+jULo3PMlleBYyZy6sbruWKG5w==
+  dependencies:
+    "@capacitor/core" latest
 
 capture-exit@^2.0.0:
   version "2.0.0"

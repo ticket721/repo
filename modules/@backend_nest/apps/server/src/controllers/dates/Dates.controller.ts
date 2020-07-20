@@ -118,7 +118,7 @@ export class DatesController extends ControllerBasics<DateEntity> {
                 script: {
                     source: `
                         double distance = doc['location.location'].arcDistance(params.lat, params.lon) / 1000;
-                        double time = (doc['timestamps.event_begin'].getValue().toInstant().toEpochMilli() - params.now) / 3600000;
+                        double time = (doc['timestamps.event_end'].getValue().toInstant().toEpochMilli() - params.now) / 3600000;
                         return distance + time;
                     `,
                     params: {
@@ -173,7 +173,7 @@ export class DatesController extends ControllerBasics<DateEntity> {
             status: {
                 $eq: 'live',
             },
-            'timestamps.event_end': {
+            'timestamps.event_begin': {
                 $gt: hour,
             },
         } as SortablePagedSearch);
@@ -202,7 +202,7 @@ export class DatesController extends ControllerBasics<DateEntity> {
                 script: {
                     source: `
                         double distance = doc['location.location'].arcDistance(params.lat, params.lon) / 1000;
-                        double time = (doc['timestamps.event_end'].getValue().toInstant().toEpochMilli() - params.now) / 3600000;
+                        double time = (doc['timestamps.event_begin'].getValue().toInstant().toEpochMilli() - params.now) / 3600000;
                         return distance + time;
                     `,
                     params: {
