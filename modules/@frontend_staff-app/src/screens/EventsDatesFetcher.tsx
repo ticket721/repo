@@ -8,7 +8,7 @@ import { Error, FullPageLoading }  from '@frontend/flib-react/lib/components';
 import styled                      from 'styled-components';
 import { useTranslation }          from 'react-i18next';
 import { formatDateItems }         from '../../utils/formatDateItems';
-import { Statistics }              from './Statistics';
+import { StatisticsFetcher }              from './StatisticsFetcher';
 
 interface EventsDatesFetcherProps {
     uuid: string;
@@ -61,7 +61,7 @@ export const EventsDatesFetcher: React.FC<EventsDatesFetcherProps> = ({ uuid, en
         return <NoEvent>{t('no_event')}</NoEvent>
     }
 
-    return <Statistics
+    return <StatisticsFetcher
         events={eventsReq.response.data.events.map(event => ({
             id: event.id,
             name: event.name,

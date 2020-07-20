@@ -4,6 +4,7 @@ import { useTranslation }                  from 'react-i18next';
 import { useSelector }                     from 'react-redux';
 import { HomeEventList }                   from './HomeEventList';
 import { LocationState, T721AppState }     from '../../../redux';
+import styled                              from 'styled-components';
 
 export interface EventListProps {
     enableFilter: () => void;
@@ -23,7 +24,7 @@ export const EventList: React.FC<EventListProps> = (props: EventListProps): JSX.
 
     const providedLocation = location.customLocation || location.location;
 
-    return <div>
+    return <EventListWrapper>
         <LocationHeader
             location={location.requesting ? '...' : locationString}
             title={t('browsing_events_in')}
@@ -41,6 +42,10 @@ export const EventList: React.FC<EventListProps> = (props: EventListProps): JSX.
                     height={250}
                 />
         }
-    </div>;
+    </EventListWrapper>;
 
 };
+
+const EventListWrapper = styled.div`
+    margin-top: ${props => props.theme.biggerSpacing};
+`;

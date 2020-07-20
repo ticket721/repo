@@ -37,7 +37,7 @@ export const AttendeesList: React.FC<AttendeesListProps> = ({ guests, ticketsCou
                 </div>
                 <div
                     className={activeTab === 'checked' ? 'active' : null}
-                    onClick={() => setActiveTab('checked')}>
+                    onClick={() => checkedGuests.length > 0 ? setActiveTab('checked') : null}>
                     {t('checked_label')} ({checkedGuests.length})
                 </div>
             </TabsBtn>
