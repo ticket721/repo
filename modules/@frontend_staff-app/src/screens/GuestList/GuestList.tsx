@@ -3,16 +3,16 @@ import { GuestInfos }      from '@common/sdk/lib/@backend_nest/apps/server/src/c
 import styled              from 'styled-components';
 import { useTranslation }  from 'react-i18next';
 import './locales';
-import { StaffAppState }   from '../../../redux';
+import { StaffAppState }   from '../../redux';
 import { useSelector }     from 'react-redux';
 import { GuestItem }       from './GuestItem';
 
-interface AttendeesListProps {
+interface GuestListProps {
     guests: GuestInfos[];
     ticketsCount: number;
 }
 
-export const AttendeesList: React.FC<AttendeesListProps> = ({ guests, ticketsCount }: AttendeesListProps) => {
+export const GuestList: React.FC<GuestListProps> = ({ guests, ticketsCount }: GuestListProps) => {
     const [ t ] = useTranslation('guestlist');
     const [
         filteredCategories,

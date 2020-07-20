@@ -199,10 +199,10 @@ export const Scanner: React.FC<ScannerProps> = ({ events, dates }: ScannerProps)
     }, [validationResp.data]);
 
     useEffect(() => {
-        if (filteredCategories.length === 0) {
+        if (dateId && filteredCategories.length === 0) {
             setFiltersOpened(true);
         }
-    }, [filteredCategories]);
+    }, [filteredCategories, dateId]);
 
     if (categoriesReq.response.loading) {
         return <FullPageLoading/>;

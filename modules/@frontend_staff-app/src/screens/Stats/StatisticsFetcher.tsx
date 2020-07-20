@@ -1,44 +1,31 @@
 import React, { useState }          from 'react';
-import { DateItem, EventSelection } from '../../components/EventSelection';
 import { useSelector }              from 'react-redux';
 import { StaffAppState }            from '../../redux';
 import { useTranslation }           from 'react-i18next';
+import './locales';
 import styled                       from 'styled-components';
-import { Icon }                     from '@frontend/flib-react/lib/components';
-import { CategoriesFetcher }        from '../../components/Filters/CategoriesFetcher';
 import { useRequest }               from '@frontend/core/lib/hooks/useRequest';
 import { TicketsCountResponseDto }  from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/tickets/dto/TicketsCountResponse.dto';
 import { v4 }                       from 'uuid';
 import { TicketCategoryCount }      from './TicketCategoryCount/TicketCategoryCount';
 
-interface StatisticsProps {
-    events: {
-        id: string;
-        name: string;
-    }[];
-    dates: DateItem[];
-}
-
-export const StatisticsFetcher: React.FC<StatisticsProps> = ({ events, dates }: StatisticsProps) => {
+export const StatisticsFetcher: React.FC = () => {
     const [
         token,
         eventId,
         dateId,
-        dateName,
         filteredCategories,
         checkedGuests,
     ] = useSelector((state: StaffAppState) => [
         state.auth.token.value,
         state.currentEvent.eventId,
         state.currentEvent.dateId,
-        state.currentEvent.dateName,
         state.currentEvent.filteredCategories,
         state.currentEvent.checkedGuests,
     ]);
 
     const [t] = useTranslation('statistics');
 
-    const [ filterOpened, setFilterOpened ] = useState<boolean>(false);
     const [uuid] = useState(v4() + '@statistics');
 
     const totalTicketCountReq = useRequest<TicketsCountResponseDto>({
@@ -56,18 +43,8 @@ export const StatisticsFetcher: React.FC<StatisticsProps> = ({ events, dates }: 
 
     return (
         <>
-            <FiltersContainer>
-                <DropdownContainer>
-                    <span>{dateName || t('choose_event')}</span>
-                    <EventSelection events={events} dates={dates}/>
-                </DropdownContainer>
-                <div onClick={() => setFilterOpened(true)}>
-                    <Icon icon={'filter'} size={'12px'} color={'#FFF'}/>
-                </div>
-            </FiltersContainer>
             <StatisticsContainer>
                 <TotalTicket>
-                    <TotalTitle>{t('total_title')}</TotalTitle>
                     <TotalDetails>
                         <span>{checkedGuests.length}</span>
                         <span>{totalTicketCountReq.response.data?.tickets?.count ?
@@ -75,16 +52,17 @@ export const StatisticsFetcher: React.FC<StatisticsProps> = ({ events, dates }: 
                             null
                         }</span>
                     </TotalDetails>
+                    <TotalTitle>{t('total_title')}</TotalTitle>
                 </TotalTicket>
                 <CountDetails>
                     <Header>
                         <span>{t('category_label')}</span>
-                        <span>{t('remaining_label')}</span>
-                        <span>{t('total_label')}</span>
+                        <span>{t('total_scanned_label')}</span>
                     </Header>
                     {
                         filteredCategories.map(category => (
                             <TicketCategoryCount
+                                key={category.id}
                                 uuid={uuid}
                                 categoryName={category.name}
                                 categoryId={category.id}
@@ -93,49 +71,49 @@ export const StatisticsFetcher: React.FC<StatisticsProps> = ({ events, dates }: 
                     }
                 </CountDetails>
             </StatisticsContainer>
-            <CategoriesFetcher open={filterOpened} onClose={() => setFilterOpened(false)}/>
         </>
     );
 };
 
-const FiltersContainer = styled.div`
-    display: flex;
-    align-items: center;
-`;
-
-const DropdownContainer = styled.div`
-    padding: ${props => props.theme.regularSpacing};
-
-    & > span {
-        display: block;
-        margin-bottom: ${props => props.theme.smallSpacing};
-        font-size: 13px;
-        font-weight: 500;
-        color: ${props => props.theme.textColorDark};
-    }
-
-    [class$=indicatorContainer] {
-        display: none;
-    }
-`;
-
 const StatisticsContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: ${props => props.theme.biggerSpacing};
 `;
 
 const TotalTicket = styled.div`
-
+    display: flex;
+    flex-direction: column;
+    text-align: center;
 `;
 
 const TotalTitle = styled.span`
+    color: ${props => props.theme.textColorDark};
+    margin-top: ${props => props.theme.smallSpacing};
+    font-size: 12px;
+    font-weight: 500;
 `;
 
 const TotalDetails = styled.div`
+    font-weight: 600;
+    color: ${props => props.theme.textColorDark};
+
+    span:first-child {
+        color: ${props => props.theme.textColor};
+        font-size: 30px;
+    }
 `;
 
 const CountDetails = styled.div`
-
+    width: 100%;
+    margin-top: ${props => props.theme.biggerSpacing};
 `;
 
 const Header = styled.div`
-
+    display: flex;
+    justify-content: space-between;
+    padding: ${props => props.theme.regularSpacing} ${props => props.theme.biggerSpacing};
+    font-size: 14px;
+    font-weight: 500;
 `;

@@ -1,23 +1,25 @@
-import React                       from 'react';
-import { useRequest }              from '@frontend/core/lib/hooks/useRequest';
+import React, { useState } from 'react';
+import { useRequest }      from '@frontend/core/lib/hooks/useRequest';
 import { DatesSearchResponseDto }  from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
 import { EventsSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsSearchResponse.dto';
-import { StaffAppState }           from '../../redux';
-import { useSelector }             from 'react-redux';
-import { Error, FullPageLoading }  from '@frontend/flib-react/lib/components';
-import styled                      from 'styled-components';
+import { StaffAppState }           from '../redux';
+import { useSelector }                  from 'react-redux';
+import { Error, FullPageLoading, Icon } from '@frontend/flib-react/lib/components';
+import styled                           from 'styled-components';
 import { useTranslation }          from 'react-i18next';
-import { formatDateItems }         from '../../utils/formatDateItems';
-import { StatisticsFetcher }              from './StatisticsFetcher';
+import { formatDateItems }         from '../utils/formatDateItems';
+import { EventSelection }          from '../components/EventSelection';
+import { CategoriesFetcher }       from '../components/Filters/CategoriesFetcher';
 
-interface EventsDatesFetcherProps {
+interface EventsDatesFetcherProps extends React.ComponentProps<any> {
     uuid: string;
     entities: string[];
 }
 
-export const EventsDatesFetcher: React.FC<EventsDatesFetcherProps> = ({ uuid, entities }: EventsDatesFetcherProps) => {
-    const [ t ] = useTranslation(['fetch_errors', 'common']);
-    const token = useSelector((state: StaffAppState) => state.auth.token.value);
+export const EventsDatesFetcher: React.FC<EventsDatesFetcherProps> = ({ children, uuid, entities }: EventsDatesFetcherProps) => {
+    const [ t ] = useTranslation(['fetch_errors', 'dropdown']);
+    const [ token, dateName ] = useSelector((state: StaffAppState) => [ state.auth.token.value, state.currentEvent.dateName ]);
+    const [ filterOpened, setFilterOpened ] = useState<boolean>(false);
 
     const eventsReq = useRequest<EventsSearchResponseDto>({
         method: 'events.search',
@@ -61,15 +63,49 @@ export const EventsDatesFetcher: React.FC<EventsDatesFetcherProps> = ({ uuid, en
         return <NoEvent>{t('no_event')}</NoEvent>
     }
 
-    return <StatisticsFetcher
-        events={eventsReq.response.data.events.map(event => ({
-            id: event.id,
-            name: event.name,
-        }))}
-        dates={formatDateItems(datesReq.response.data.dates)}/>;
+    return <>
+        <FiltersContainer>
+            <DropdownContainer>
+                <span>{dateName || t('dropdown:choose_event')}</span>
+                <EventSelection
+                    events={eventsReq.response.data.events.map(event => ({
+                        id: event.id,
+                        name: event.name,
+                    }))}
+                    dates={formatDateItems(datesReq.response.data.dates)}/>
+            </DropdownContainer>
+            <div onClick={() => setFilterOpened(true)}>
+                <Icon icon={'filter'} size={'12px'} color={'#FFF'}/>
+            </div>
+        </FiltersContainer>
+        {children}
+        <CategoriesFetcher open={filterOpened} onClose={() => setFilterOpened(false)}/>
+    </>;
 };
 
 const NoEvent = styled.span`
     width: 100%;
     text-align: center;
+`;
+
+const FiltersContainer = styled.div`
+    display: flex;
+    align-items: center;
+`;
+
+const DropdownContainer = styled.div`
+    width: calc(100% - 40px);
+    padding: ${props => props.theme.regularSpacing};
+
+    & > span {
+        display: block;
+        margin-bottom: ${props => props.theme.smallSpacing};
+        font-size: 13px;
+        font-weight: 500;
+        color: ${props => props.theme.textColorDark};
+    }
+
+    [class$=indicatorContainer] {
+        display: none;
+    }
 `;

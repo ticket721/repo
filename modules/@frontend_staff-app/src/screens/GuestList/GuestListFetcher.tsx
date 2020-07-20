@@ -1,6 +1,6 @@
 import React, { useState }            from 'react';
 import { useSelector }                from 'react-redux';
-import { StaffAppState }              from '../../../redux';
+import { StaffAppState }              from '../../redux';
 import { useRequest }                 from '@frontend/core/lib/hooks/useRequest';
 import { EventsGuestlistResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsGuestlistResponse.dto';
 import { v4 }                         from 'uuid';
@@ -8,7 +8,7 @@ import { Error, FullPageLoading }     from '@frontend/flib-react/lib/components'
 import { useTranslation }             from 'react-i18next';
 import './locales';
 import styled                         from 'styled-components';
-import { AttendeesList }              from './AttendeesList';
+import { GuestList }              from './GuestList';
 import { TicketsCountResponseDto }    from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/tickets/dto/TicketsCountResponse.dto';
 
 export const GuestListFetcher: React.FC = () => {
@@ -71,7 +71,7 @@ export const GuestListFetcher: React.FC = () => {
         return <NoGuestList>{t('no_guestlist')}</NoGuestList>
     }
 
-    return <AttendeesList
+    return <GuestList
         guests={
             guestListReq.response.data.guests
                 .filter(guest =>
