@@ -1,0 +1,7 @@
+version: '3'
+services:
+  ganache:
+    image: "trufflesuite/ganache-cli:v6.9.1"
+    ports:
+      - "38545:8545"
+    command: ganache-cli -i 2702 -m "cross uniform panic climb universe awful surprise list dutch ability label cat" -l 8000000 -e 0xffffffffffffffff
