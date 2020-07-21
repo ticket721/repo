@@ -409,6 +409,7 @@ export class AuthorizationsTasks implements OnModuleInit {
             },
             payment_method_types: ['card'],
             capture_method: 'manual',
+            receipt_email: authorizationData.grantee.email,
         });
 
         const actionSetUpdate = await this.actionSetsService.updateAction(authorizationData.actionSetId, 2, {

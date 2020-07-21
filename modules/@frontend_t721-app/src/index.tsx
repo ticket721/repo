@@ -26,13 +26,8 @@ import { T721AppState }                                                    from 
 import { searchInitialState, SearchReducer }                               from './redux/ducks/search';
 import { cartInitialState, CartReducer, cartSaga }                         from './redux/ducks/cart';
 import { deviceWalletInitialState, DeviceWalletReducer, deviceWalletSaga } from './redux/ducks/device_wallet';
-import {Elements}                                                          from '@stripe/react-stripe-js';
-import {loadStripe}                                                        from '@stripe/stripe-js';
-import { getEnv }                                                          from '@frontend/core/lib/utils/getEnv';
 // tslint:disable-next-line:no-var-requires
 const { SubspaceProvider } = require('@embarklabs/subspace-react');
-
-const stripePromise = loadStripe(getEnv().REACT_APP_STRIPE_API_KEY);
 
 const store: Store<T721AppState> = configureStore<any>({
     location: LocationReducer,
@@ -54,27 +49,25 @@ const web3: Web3 = getWeb3();
 
 ReactDOM.render(
     <EnvValidator schema={T721AppEnvSchema}>
-        <Elements stripe={stripePromise}>
-            <SubspaceProvider web3={web3}>
-                <Provider store={store}>
-                    <ConnectedRouter history={history}>
-                        <ThemeProvider theme={customThemes['t721']}>
-                            <GlobalStyles/>
-                            <BrowserRouter>
-                                <ScrollToTop>
-                                    <MediaQuery maxDeviceWidth={1224}>
-                                        <MobileApp/>
-                                    </MediaQuery>
-                                    <MediaQuery minDeviceWidth={1224}>
-                                        <App/>
-                                    </MediaQuery>
-                                </ScrollToTop>
-                            </BrowserRouter>
-                        </ThemeProvider>
-                    </ConnectedRouter>
-                </Provider>
-            </SubspaceProvider>
-        </Elements>
+        <SubspaceProvider web3={web3}>
+            <Provider store={store}>
+                <ConnectedRouter history={history}>
+                    <ThemeProvider theme={customThemes['t721']}>
+                        <GlobalStyles/>
+                        <BrowserRouter>
+                            <ScrollToTop>
+                                <MediaQuery maxDeviceWidth={1224}>
+                                    <MobileApp/>
+                                </MediaQuery>
+                                <MediaQuery minDeviceWidth={1224}>
+                                    <App/>
+                                </MediaQuery>
+                            </ScrollToTop>
+                        </BrowserRouter>
+                    </ThemeProvider>
+                </ConnectedRouter>
+            </Provider>
+        </SubspaceProvider>
     </EnvValidator>,
     document.getElementById('root'),
 );

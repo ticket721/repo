@@ -51,6 +51,8 @@
         "cordova-plugin-screen-orientation": "3.0.2",
         "@ionic-native/screen-orientation": "5.27.0",
         "@ionic-native/core": "5.27.0",
+        "capacitor-stripe": "1.0.0-beta.4",
+        "capacitor-plugin-ios-swipe-back": "silviokennecke/capacitor-plugin-ios-swipe-back#master",
         "cordova-res": "0.15.1",
         "es6-promise-plugin": "4.2.2"
     },
@@ -66,6 +68,7 @@
         "lint": "tslint --project .",
         "inject_segment_key": "sed -i -e \"s/__REACT_APP_SEGMENT_API_KEY__/${REACT_APP_SEGMENT_API_KEY}/g\" ./build/index.html",
         "inject_env_and_serve": "yarn inject_env && yarn inject_segment_key && serve -l 5000 ./build",
+        "ionic:build:after": "yarn inject_env && yarn inject_segment_key",
         "resources": "cordova-res ios && cordova-res android && node scripts/resources.js",
         "@lerna/postinstall": "echo '@frontend/t721-app has no postinstall'",
         "@lerna/postclean": "echo '@frontend/t721-app has no postclean'"

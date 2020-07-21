@@ -31,7 +31,7 @@ const App: React.FC = () => {
                     <RegisterPage/>
                 </Route>
 
-                <Route path={'/home'} exact={true}>
+                <Route path={'/'} exact={true}>
                     <HomePage/>
                 </Route>
 
@@ -70,7 +70,7 @@ const App: React.FC = () => {
                 <Route path={'/tags'} exact={true}>
                     <TagsPage/>
                 </Route>
-                <Redirect to={'/home'}/>
+                <Redirect to={'/'}/>
             </Switch>
             <ToastStacker additionalLocales={[]}/>
         </AppContainer>
