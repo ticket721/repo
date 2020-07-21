@@ -1,5 +1,5 @@
-import React, { useState }                from 'react';
-import { useSelector }                    from 'react-redux';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useDispatch, useSelector }       from 'react-redux';
 import { T721AppState }                   from '../../../redux';
 import { v4 }                             from 'uuid';
 import { useTranslation }                 from 'react-i18next';
@@ -7,6 +7,9 @@ import { useRequest }                     from '@frontend/core/lib/hooks/useRequ
 import { DoubleButtonCta, FullButtonCta } from '@frontend/flib-react/lib/components';
 import { ActionsSearchResponseDto }       from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/actionsets/dto/ActionsSearchResponse.dto';
 import { ActionSetEntity }                from '@common/sdk/lib/@backend_nest/libs/common/src/actionsets/entities/ActionSet.entity';
+import { PushNotification }               from '@frontend/core/lib/redux/ducks/notifications';
+import { SetTickets }                     from '../../../redux/ducks/cart';
+import { useHistory }                     from 'react-router';
 
 interface PayCtaProps {
     onClick: () => void;
@@ -24,6 +27,8 @@ export const PayCta: React.FC<PayCtaProps> = (props: PayCtaProps): JSX.Element =
     const authorizationData = JSON.parse(props.cart.actions[2].data);
     const [clicked, setClicked] = useState(false);
     const [t] = useTranslation('cart');
+    const dispatch = useDispatch();
+    const history = useHistory();
 
     const checkoutAcset = useRequest<ActionsSearchResponseDto>({
         method: 'actions.search',
@@ -52,20 +57,36 @@ export const PayCta: React.FC<PayCtaProps> = (props: PayCtaProps): JSX.Element =
 
             const checkout = checkoutAcset.response.data.actionsets[0];
 
-            const resolveStep = JSON.parse(checkout.actions[0].data);
             const progressStep = JSON.parse(checkout.actions[1].data);
 
-            if (resolveStep.status !== 'complete') {
+            if (progressStep.status !== 'complete') {
                 loading = true;
                 label = 'cart_checkout_cta_waiting_response';
-            } else if (progressStep.status !== 'complete') {
+            } else {
                 loading = true;
-                label = 'cart_checkout_cta_delivering_ticket'
+                label = 'cart_checkout_cta_delivering_ticket';
             }
         } else if (props.disabled) {
             variant = 'disabled';
         }
     }
+    // Callback to clear the cart
+    const clearCart = useCallback(() => {
+        dispatch(SetTickets([]));
+        history.go(-history.length);
+        history.push('/wallet');
+    }, [dispatch, history]);
+
+
+    useEffect(() => {
+        return () => {
+            if (props.submitted) {
+                clearCart();
+                dispatch(PushNotification(t('cart_checkout_tickets_created'), 'success'));
+            }
+        }
+    }, [props.submitted, clearCart, dispatch, t]);
+
 
     const onClick = () => {
         setClicked(true);

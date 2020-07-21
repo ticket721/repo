@@ -195,29 +195,11 @@ export const StripeCheckoutNative: React.FC<StripeCheckoutNativeProps> = (props:
 
     }, [cardCcv, stripe]);
 
-    // Callback to clear the cart
-    const clearCart = useCallback(() => {
-        dispatch(SetTickets([]));
-        history.go(-history.length);
-        history.push('/wallet');
-    }, [dispatch, history]);
-
     useEffect(() => {
 
         window.scrollTo(0, 0);
 
     }, []);
-
-    // Final callback on component destruction
-    useEffect(() => {
-
-        return () => {
-            if (submitted) {
-                clearCart();
-                dispatch(PushNotification(t('cart_checkout_tickets_created'), 'success'));
-            }
-        };
-    }, [submitted, clearCart, dispatch, t]);
 
     // Compute the expiration time
     useDeepEffect(() => {
