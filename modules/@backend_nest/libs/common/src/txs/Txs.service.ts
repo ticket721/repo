@@ -1,14 +1,14 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { CRUDExtension } from '@lib/common/crud/CRUDExtension.base';
-import { TxsRepository } from '@lib/common/txs/Txs.repository';
-import { TxEntity } from '@lib/common/txs/entities/Tx.entity';
+import { Inject, Injectable }                       from '@nestjs/common';
+import { CRUDExtension }                            from '@lib/common/crud/CRUDExtension.base';
+import { TxsRepository }                            from '@lib/common/txs/Txs.repository';
+import { TxEntity }                                 from '@lib/common/txs/entities/Tx.entity';
 import { BaseModel, InjectModel, InjectRepository } from '@iaminfinity/express-cassandra';
-import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
-import { isTransactionHash } from '@common/global';
-import { Web3Service } from '@lib/common/web3/Web3.service';
-import { GlobalConfigService } from '@lib/common/globalconfig/GlobalConfig.service';
-import Decimal from 'decimal.js';
-import { RocksideService } from '@lib/common/rockside/Rockside.service';
+import { ServiceResponse }                          from '@lib/common/utils/ServiceResponse.type';
+import { isTransactionHash, isTrackingId }          from '@common/global';
+import { Web3Service }                              from '@lib/common/web3/Web3.service';
+import { GlobalConfigService }                      from '@lib/common/globalconfig/GlobalConfig.service';
+import Decimal                                      from 'decimal.js';
+import { RocksideService }                          from '@lib/common/rockside/Rockside.service';
 
 /**
  * Configuration Options
@@ -67,9 +67,9 @@ export class TxsService extends CRUDExtension<TxsRepository, TxEntity> {
      */
     constructor(
         @InjectRepository(TxsRepository)
-        txsRepository: TxsRepository,
+            txsRepository: TxsRepository,
         @InjectModel(TxEntity)
-        txEntity: BaseModel<TxEntity>,
+            txEntity: BaseModel<TxEntity>,
         @Inject('TXS_MODULE_OPTIONS')
         private readonly txOptions: TxsServiceOptions,
         private readonly globalConfigService: GlobalConfigService,
@@ -93,20 +93,28 @@ export class TxsService extends CRUDExtension<TxsRepository, TxEntity> {
     /**
      * Method to subscribe to a transaction hash
      *
-     * @param txhash
+     * @param txHashOrTrackingId
+     * @param realTxHash
      */
-    async subscribe(txhash: string): Promise<ServiceResponse<TxEntity>> {
-        txhash = txhash.toLowerCase();
+    async subscribe(txHashOrTrackingId: string, realTxHash?: string): Promise<ServiceResponse<TxEntity>> {
+        txHashOrTrackingId = txHashOrTrackingId.toLowerCase();
 
-        if (!isTransactionHash(txhash)) {
+        if (!isTransactionHash(txHashOrTrackingId) && !isTrackingId(txHashOrTrackingId)) {
             return {
-                error: 'invalid_tx_hash_format',
+                error: 'invalid_tx_hash_or_tracking_id_format',
                 response: null,
             };
         }
 
+        if (realTxHash && !isTransactionHash(realTxHash)) {
+            return {
+                error: 'invalid_real_tx_hash_format',
+                response: null,
+            }
+        }
+
         const duplicate = await this.search({
-            transaction_hash: txhash,
+            transaction_hash: txHashOrTrackingId,
         });
 
         if (duplicate.error) {
@@ -124,9 +132,10 @@ export class TxsService extends CRUDExtension<TxsRepository, TxEntity> {
         }
 
         const createdTx = await this.create({
-            transaction_hash: txhash,
+            transaction_hash: txHashOrTrackingId,
             confirmed: false,
             block_number: 0,
+            real_transaction_hash: realTxHash ? realTxHash : undefined,
         });
 
         if (createdTx.error) {
@@ -228,6 +237,7 @@ export class TxsService extends CRUDExtension<TxsRepository, TxEntity> {
         value: string,
         data: string,
     ): Promise<ServiceResponse<TxEntity>> {
+
         const sentTransactionRes = await this.rocksideService.sendTransaction({
             from,
             to,
@@ -242,7 +252,13 @@ export class TxsService extends CRUDExtension<TxsRepository, TxEntity> {
             };
         }
 
-        const subscriptionRes = await this.subscribe(sentTransactionRes.response);
+        let subscriptionRes;
+
+        if (sentTransactionRes.response.tracking_id) {
+            subscriptionRes = await this.subscribe(sentTransactionRes.response.tracking_id, sentTransactionRes.response.transaction_hash);
+        } else {
+            subscriptionRes = await this.subscribe(sentTransactionRes.response.transaction_hash);
+        }
 
         if (subscriptionRes.error) {
             return {

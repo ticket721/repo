@@ -2,17 +2,18 @@ import { TxsScheduler } from '@app/worker/schedulers/txs/Txs.scheduler';
 import { Web3Service } from '@lib/common/web3/Web3.service';
 import { TxsService, TxsServiceOptions } from '@lib/common/txs/Txs.service';
 import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
-import { Schedule } from 'nest-schedule';
+import { Schedule }                                from 'nest-schedule';
 import { deepEqual, instance, mock, verify, when } from 'ts-mockito';
-import { Test, TestingModule } from '@nestjs/testing';
-import { GlobalConfigService } from '@lib/common/globalconfig/GlobalConfig.service';
-import { GlobalEntity } from '@lib/common/globalconfig/entities/Global.entity';
-import { ESSearchReturn } from '@lib/common/utils/ESSearchReturn.type';
-import { TxEntity } from '@lib/common/txs/entities/Tx.entity';
-import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
-import { toAcceptedAddressFormat } from '@common/global';
-import { OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
-import { NestError } from '@lib/common/utils/NestError';
+import { Test, TestingModule }                     from '@nestjs/testing';
+import { GlobalConfigService }                     from '@lib/common/globalconfig/GlobalConfig.service';
+import { GlobalEntity }                            from '@lib/common/globalconfig/entities/Global.entity';
+import { ESSearchReturn }                          from '@lib/common/utils/ESSearchReturn.type';
+import { TxEntity }                                from '@lib/common/txs/entities/Tx.entity';
+import { ShutdownService }                         from '@lib/common/shutdown/Shutdown.service';
+import { toAcceptedAddressFormat }                 from '@common/global';
+import { OutrospectionService }                    from '@lib/common/outrospection/Outrospection.service';
+import { NestError }                               from '@lib/common/utils/NestError';
+import { RocksideService }                         from '@lib/common/rockside/Rockside.service';
 
 describe('Txs Scheduler', function() {
     const context: {
@@ -25,6 +26,7 @@ describe('Txs Scheduler', function() {
         scheduleMock: Schedule;
         txsServiceOptions: TxsServiceOptions;
         outrospectionService: OutrospectionService;
+        rocksideServiceMock: RocksideService;
     } = {
         txsScheduler: null,
         globalConfigServiceMock: null,
@@ -35,6 +37,7 @@ describe('Txs Scheduler', function() {
         scheduleMock: null,
         txsServiceOptions: null,
         outrospectionService: null,
+        rocksideServiceMock: null
     };
 
     beforeEach(async function() {
@@ -54,6 +57,7 @@ describe('Txs Scheduler', function() {
             targetGasPrice: 150,
         };
         context.outrospectionService = mock(OutrospectionService);
+        context.rocksideServiceMock = mock(RocksideService);
 
         const app: TestingModule = await Test.createTestingModule({
             providers: [
@@ -88,6 +92,10 @@ describe('Txs Scheduler', function() {
                 {
                     provide: OutrospectionService,
                     useValue: instance(context.outrospectionService),
+                },
+                {
+                    provide: RocksideService,
+                    useValue: instance(context.rocksideServiceMock)
                 },
                 TxsScheduler,
             ],

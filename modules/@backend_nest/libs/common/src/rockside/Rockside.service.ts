@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
 import { EIP712Signature, ExternalSigner } from '@ticket721/e712/lib';
 import { keccak256FromBuffer } from '@common/global';
-import { RocksideApi, TransactionOpts } from '@rocksideio/rockside-wallet-sdk/lib/api';
+import { RocksideApi, TransactionOpts, TransactionInfosResponse } from '@rocksideio/rockside-wallet-sdk/lib/api';
 import { ConfigService } from '@lib/common/config/Config.service';
 import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
 
@@ -24,6 +24,21 @@ export interface RocksideCreateIdentityResponse {
      * Identity address
      */
     address: string;
+}
+
+/**
+ * Result of transaction
+ */
+export interface RocksideSendTransactionResponse {
+    /**
+     * Transaction hash at the moment of the transaction
+     */
+    transaction_hash: string;
+
+    /**
+     * Unique tracking id
+     */
+    tracking_id: string;
 }
 
 /**
@@ -130,21 +145,42 @@ export class RocksideService {
      *
      * @param tx
      */
-    async sendTransaction(tx: Omit<TransactionOpts, 'nonce' | 'gas'>): Promise<ServiceResponse<string>> {
+    async sendTransaction(tx: Omit<TransactionOpts, 'nonce' | 'gas'>): Promise<ServiceResponse<RocksideSendTransactionResponse>> {
         this.logger.log(`Broadcasting transaction with following arguments: ${JSON.stringify(tx, null, 4)}`);
 
         try {
             const transactionCreationResponse = await this.rockside.sendTransaction(tx);
             return {
                 error: null,
-                response: transactionCreationResponse.transaction_hash,
+                response: transactionCreationResponse
             };
         } catch (e) {
-            console.error(e);
+            this.logger.error(e);
             return {
                 error: e.message,
                 response: null,
             };
+        }
+    }
+
+    /**
+     * Recover transaction info
+     *
+     * @param txOrTracking
+     */
+    async getTransactionInfos(txOrTracking: string): Promise<ServiceResponse<TransactionInfosResponse>> {
+        try {
+            const transactionInfosResponse = await this.rockside.getTransaction(txOrTracking);
+            return {
+                error: null,
+                response: transactionInfosResponse
+            }
+        } catch (e) {
+            this.logger.error(e);
+            return {
+                error: e.message,
+                response: null
+            }
         }
     }
 }

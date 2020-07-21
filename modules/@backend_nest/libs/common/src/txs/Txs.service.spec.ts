@@ -127,6 +127,7 @@ describe('Txs Service', function() {
                         transaction_hash: transactionHash,
                         block_number: 0,
                         confirmed: false,
+                        real_transaction_hash: undefined
                     }),
                 ),
             ).thenResolve({
@@ -155,6 +156,7 @@ describe('Txs Service', function() {
                         transaction_hash: transactionHash,
                         block_number: 0,
                         confirmed: false,
+                        real_transaction_hash: undefined
                     }),
                 ),
             ).called();
@@ -231,7 +233,7 @@ describe('Txs Service', function() {
             const res = await context.txsService.subscribe(transactionHash);
 
             expect(res).toEqual({
-                error: 'invalid_tx_hash_format',
+                error: 'invalid_tx_hash_or_tracking_id_format',
                 response: null,
             });
         });
@@ -275,11 +277,6 @@ describe('Txs Service', function() {
         it('should fail on creation error', async function() {
             const transactionHash = '0x642d048892f14c556d16dcbbdc5567bafee2d9bae40226d13807e72e097d59b8';
             const spied = spy(context.txsService);
-            const txentiy = {
-                transaction_hash: '0x93e56b205c2ca911b754536d2474a75b9823e0b3d2b3537d08457ebd5f8f8cce',
-                confirmed: false,
-                block_number: 0,
-            };
 
             when(
                 spied.search(
@@ -298,6 +295,7 @@ describe('Txs Service', function() {
                         transaction_hash: transactionHash,
                         block_number: 0,
                         confirmed: false,
+                        real_transaction_hash: undefined
                     }),
                 ),
             ).thenResolve({
@@ -326,6 +324,7 @@ describe('Txs Service', function() {
                         transaction_hash: transactionHash,
                         block_number: 0,
                         confirmed: false,
+                        real_transaction_hash: undefined
                     }),
                 ),
             ).called();
@@ -529,6 +528,7 @@ describe('Txs Service', function() {
             const data = '0x';
             const value = '0';
             const transactionHash = '0x39647e8d441a5140e4c6776b59565c3aaab1087702b3256985d8c0200ca68021';
+            const trackingId = '01AA01AAAAAAA01AA01AAAAAAA';
             const spiedService = spy(context.txsService);
 
             // MOCK
@@ -543,12 +543,15 @@ describe('Txs Service', function() {
                 ),
             ).thenResolve({
                 error: null,
-                response: transactionHash,
-            });
-            when(spiedService.subscribe(transactionHash)).thenResolve({
-                error: null,
                 response: {
                     transaction_hash: transactionHash,
+                    tracking_id: trackingId
+                },
+            });
+            when(spiedService.subscribe(trackingId, transactionHash)).thenResolve({
+                error: null,
+                response: {
+                    transaction_hash: trackingId,
                 } as TxEntity,
             });
 
@@ -558,7 +561,7 @@ describe('Txs Service', function() {
             // CHECK RETURNS
             expect(res.error).toEqual(null);
             expect(res.response).toEqual({
-                transaction_hash: transactionHash,
+                transaction_hash: trackingId,
             });
 
             // CHECK CALLS
@@ -572,7 +575,7 @@ describe('Txs Service', function() {
                     }),
                 ),
             ).once();
-            verify(spiedService.subscribe(transactionHash)).once();
+            verify(spiedService.subscribe(trackingId, transactionHash)).once();
         });
 
         it('should fail on tx error', async function() {
@@ -624,6 +627,7 @@ describe('Txs Service', function() {
             const data = '0x';
             const value = '0';
             const transactionHash = '0x39647e8d441a5140e4c6776b59565c3aaab1087702b3256985d8c0200ca68021';
+            const trackingId = '01AA01AAAAAAA01AA01AAAAAAA';
             const spiedService = spy(context.txsService);
 
             // MOCK
@@ -638,9 +642,12 @@ describe('Txs Service', function() {
                 ),
             ).thenResolve({
                 error: null,
-                response: transactionHash,
+                response: {
+                    transaction_hash: transactionHash,
+                    tracking_id: trackingId
+                },
             });
-            when(spiedService.subscribe(transactionHash)).thenResolve({
+            when(spiedService.subscribe(trackingId, transactionHash)).thenResolve({
                 error: 'unexpected_error',
                 response: null,
             });
@@ -663,7 +670,7 @@ describe('Txs Service', function() {
                     }),
                 ),
             ).once();
-            verify(spiedService.subscribe(transactionHash)).once();
+            verify(spiedService.subscribe(trackingId, transactionHash)).once();
         });
     });
 });

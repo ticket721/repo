@@ -18,6 +18,14 @@ export class TxsSearchInputDto implements SearchInputType<TxEntity> {
     transaction_hash: SearchableField<string>;
 
     /**
+     * Searchable field to search by transaction_hash
+     */
+    @ApiPropertyOptional()
+    @IsOptional()
+        // tslint:disable-next-line:variable-name
+    real_transaction_hash: SearchableField<string>;
+
+    /**
      * Searchable field to search by confirmed
      */
     @ApiPropertyOptional()

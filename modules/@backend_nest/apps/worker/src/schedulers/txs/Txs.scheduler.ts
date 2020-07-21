@@ -1,17 +1,18 @@
-import { Inject, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
-import { InjectSchedule, Schedule } from 'nest-schedule';
-import { TxsService, TxsServiceOptions } from '@lib/common/txs/Txs.service';
-import { GlobalConfigService } from '@lib/common/globalconfig/GlobalConfig.service';
-import { ESSearchBodyBuilder } from '@lib/common/utils/ESSearchBodyBuilder.helper';
-import { SortablePagedSearch } from '@lib/common/utils/SortablePagedSearch.type';
-import { fromES } from '@lib/common/utils/fromES.helper';
-import { Log, TxEntity } from '@lib/common/txs/entities/Tx.entity';
-import { Web3Service } from '@lib/common/web3/Web3.service';
-import { toAcceptedAddressFormat, log2 } from '@common/global';
-import { WinstonLoggerService } from '@lib/common/logger/WinstonLogger.service';
-import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
-import { OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
-import { NestError } from '@lib/common/utils/NestError';
+import { Inject, OnModuleDestroy, OnModuleInit }       from '@nestjs/common';
+import { InjectSchedule, Schedule }                    from 'nest-schedule';
+import { TxsService, TxsServiceOptions }               from '@lib/common/txs/Txs.service';
+import { GlobalConfigService }                         from '@lib/common/globalconfig/GlobalConfig.service';
+import { ESSearchBodyBuilder }                         from '@lib/common/utils/ESSearchBodyBuilder.helper';
+import { SortablePagedSearch }                         from '@lib/common/utils/SortablePagedSearch.type';
+import { fromES }                                      from '@lib/common/utils/fromES.helper';
+import { Log, TxEntity }                               from '@lib/common/txs/entities/Tx.entity';
+import { Web3Service }                                 from '@lib/common/web3/Web3.service';
+import { toAcceptedAddressFormat, log2, isTrackingId } from '@common/global';
+import { WinstonLoggerService }                        from '@lib/common/logger/WinstonLogger.service';
+import { ShutdownService }                             from '@lib/common/shutdown/Shutdown.service';
+import { OutrospectionService }                        from '@lib/common/outrospection/Outrospection.service';
+import { NestError }                                   from '@lib/common/utils/NestError';
+import { RocksideService }                             from '@lib/common/rockside/Rockside.service';
 
 /**
  * Txs task scheduler
@@ -28,6 +29,7 @@ export class TxsScheduler implements OnModuleInit, OnModuleDestroy {
      * @param schedule
      * @param txsOptions
      * @param outrospectionService
+     * @param rocksideService
      */
     constructor(
         private readonly globalConfigService: GlobalConfigService,
@@ -39,7 +41,9 @@ export class TxsScheduler implements OnModuleInit, OnModuleDestroy {
         @Inject('TXS_MODULE_OPTIONS')
         private readonly txsOptions: TxsServiceOptions,
         private readonly outrospectionService: OutrospectionService,
-    ) {}
+        private readonly rocksideService: RocksideService,
+    ) {
+    }
 
     /**
      * Last fetched block number
@@ -101,6 +105,7 @@ export class TxsScheduler implements OnModuleInit, OnModuleDestroy {
                     }
 
                     this.loggerService.log(`Confirmed Transaction ${parsed.transaction_hash}`);
+
                 }
             }
         }
@@ -147,47 +152,102 @@ export class TxsScheduler implements OnModuleInit, OnModuleDestroy {
             for (const hit of pendingTransactions.response.hits.hits) {
                 const parsed = fromES<TxEntity>(hit);
 
-                const txReceipt = await web3.eth.getTransactionReceipt(parsed.transaction_hash);
+                if (isTrackingId(parsed.transaction_hash)) {
 
-                const txInfos = await web3.eth.getTransaction(parsed.transaction_hash);
+                    const txInfos = await this.rocksideService.getTransactionInfos(parsed.transaction_hash);
 
-                if (txReceipt === null || txInfos === null) {
-                    continue;
-                }
+                    if (txInfos.error) {
+                        this.loggerService.error(txInfos.error);
+                        continue;
+                    }
 
-                parsed.status = txReceipt.status;
-                parsed.block_number = txReceipt.blockNumber;
-                parsed.block_hash = txReceipt.blockHash.toLowerCase();
-                parsed.contract_address = txReceipt.contractAddress
-                    ? toAcceptedAddressFormat(txReceipt.contractAddress)
-                    : null;
-                parsed.cumulative_gas_used = txReceipt.cumulativeGasUsed.toString();
-                parsed.cumulative_gas_used_ln = log2(txReceipt.cumulativeGasUsed);
-                parsed.gas_used = txReceipt.gasUsed.toString();
-                parsed.gas_used_ln = log2(txReceipt.gasUsed);
-                parsed.gas_price = txInfos.gasPrice.toString();
-                parsed.gas_price_ln = log2(txInfos.gasPrice);
-                parsed.from_ = txReceipt.from;
-                parsed.to_ = txReceipt.to;
-                parsed.transaction_index = txReceipt.transactionIndex;
-                parsed.logs_bloom = txReceipt.logsBloom.toLowerCase();
-                parsed.logs = txReceipt.logs.map(
-                    (log: any): Log => ({
-                        address: toAcceptedAddressFormat(log.address),
-                        block_hash: log.blockHash.toLowerCase(),
-                        block_number: log.blockNumber,
-                        data: log.data.toLowerCase(),
-                        log_index: log.logIndex,
-                        removed: log.removed || false,
-                        topics: log.topics.map((topic: string): string => topic.toLowerCase()),
-                        transaction_hash: log.transactionHash.toLowerCase(),
-                        transaction_index: log.transactionIndex,
-                        id: log.id,
-                    }),
-                );
+                    const txReceipt = txInfos.response.receipt;
 
-                if (globalConfig.block_number - txReceipt.blockNumber >= this.txsOptions.blockThreshold) {
-                    parsed.confirmed = true;
+                    if (txReceipt === null) {
+                        continue;
+                    }
+
+                    parsed.status = !!txReceipt.status;
+                    parsed.block_number = txReceipt.block_number;
+                    parsed.block_hash = txReceipt.block_hash.toLowerCase();
+                    parsed.contract_address = txReceipt.contract_address
+                        ? toAcceptedAddressFormat(txReceipt.contract_address)
+                        : null;
+                    parsed.cumulative_gas_used = txReceipt.gas_used.toString();
+                    parsed.cumulative_gas_used_ln = log2(txReceipt.gas_used.toString());
+                    parsed.gas_used = txReceipt.gas_used.toString();
+                    parsed.gas_used_ln = log2(txReceipt.gas_used.toString());
+                    parsed.gas_price = txInfos.response.gas_price.toString();
+                    parsed.gas_price_ln = log2(txInfos.response.gas_price.toString());
+                    parsed.from_ = txInfos.response.from;
+                    parsed.to_ = txInfos.response.to;
+                    parsed.transaction_index = txReceipt.transaction_index;
+                    parsed.logs_bloom = null;
+                    parsed.logs = txReceipt.logs.map(
+                        (log: any): Log => ({
+                            address: toAcceptedAddressFormat(log.address),
+                            block_hash: log.blockHash.toLowerCase(),
+                            block_number: log.blockNumber,
+                            data: log.data.toLowerCase(),
+                            log_index: log.logIndex,
+                            removed: log.removed || false,
+                            topics: log.topics.map((topic: string): string => topic.toLowerCase()),
+                            transaction_hash: log.transactionHash.toLowerCase(),
+                            transaction_index: log.transactionIndex,
+                            id: log.id,
+                        }),
+                    );
+                    parsed.real_transaction_hash = txInfos.response.transaction_hash;
+
+                    if (globalConfig.block_number - txReceipt.block_number >= this.txsOptions.blockThreshold) {
+                        parsed.confirmed = true;
+                    }
+
+                } else {
+
+                    const txReceipt = await web3.eth.getTransactionReceipt(parsed.transaction_hash);
+
+                    const txInfos = await web3.eth.getTransaction(parsed.transaction_hash);
+
+                    if (txReceipt === null || txInfos === null) {
+                        continue;
+                    }
+
+                    parsed.status = !!txReceipt.status;
+                    parsed.block_number = txReceipt.blockNumber;
+                    parsed.block_hash = txReceipt.blockHash.toLowerCase();
+                    parsed.contract_address = txReceipt.contractAddress
+                        ? toAcceptedAddressFormat(txReceipt.contractAddress)
+                        : null;
+                    parsed.cumulative_gas_used = txReceipt.cumulativeGasUsed.toString();
+                    parsed.cumulative_gas_used_ln = log2(txReceipt.cumulativeGasUsed);
+                    parsed.gas_used = txReceipt.gasUsed.toString();
+                    parsed.gas_used_ln = log2(txReceipt.gasUsed);
+                    parsed.gas_price = txInfos.gasPrice.toString();
+                    parsed.gas_price_ln = log2(txInfos.gasPrice);
+                    parsed.from_ = txReceipt.from;
+                    parsed.to_ = txReceipt.to;
+                    parsed.transaction_index = txReceipt.transactionIndex;
+                    parsed.logs_bloom = txReceipt.logsBloom.toLowerCase();
+                    parsed.logs = txReceipt.logs.map(
+                        (log: any): Log => ({
+                            address: toAcceptedAddressFormat(log.address),
+                            block_hash: log.blockHash.toLowerCase(),
+                            block_number: log.blockNumber,
+                            data: log.data.toLowerCase(),
+                            log_index: log.logIndex,
+                            removed: log.removed || false,
+                            topics: log.topics.map((topic: string): string => topic.toLowerCase()),
+                            transaction_hash: log.transactionHash.toLowerCase(),
+                            transaction_index: log.transactionIndex,
+                            id: log.id,
+                        }),
+                    );
+
+                    if (globalConfig.block_number - txReceipt.blockNumber >= this.txsOptions.blockThreshold) {
+                        parsed.confirmed = true;
+                    }
+
                 }
 
                 const thash = parsed.transaction_hash;

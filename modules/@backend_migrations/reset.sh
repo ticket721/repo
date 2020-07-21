@@ -1,5 +1,43 @@
 #!/usr/bin/env bash
 
+echo
+echo "Revert 0009/Elasticsearch Tx Real Trsanction Hash Field"
+cd elasticsearch
+npm run elastic-migrate-down 20200721134007
+
+if [ ! $? -eq 0 ]
+then
+  echo "An error occured on an elasticsearch migration step (20200721134007)"
+  exit 1
+fi
+
+cd ..
+echo "0009/END"
+echo
+
+sleep 1
+
+###########################################################
+
+echo
+echo "Revert 0008/Cassandra Tx Real Trsanction Hash Field"
+export CASSANDRA_KEYSPACE="ticket721"
+
+cd cassandra
+npm run cassandra-migrate-down 1595338599
+
+if [ ! $? -eq 0 ]
+then
+  echo "An error occured on a cassandra migration step (1595338599)"
+  exit 1
+fi
+
+cd ..
+echo "0008/END"
+echo
+
+sleep 1
+
 ###########################################################
 
 echo
