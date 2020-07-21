@@ -307,7 +307,13 @@ export const StripeCheckoutNative: React.FC<StripeCheckoutNativeProps> = (props:
                     }}
                 />
                 <div/>
-                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginTop: theme.regularSpacing}}>
+                <div style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginTop: theme.regularSpacing
+                }}>
                     <div>
                         <TextInput
                             label={t('cart_checkout_card_expiry')}
@@ -347,9 +353,13 @@ export const StripeCheckoutNative: React.FC<StripeCheckoutNativeProps> = (props:
                     </div>
                 </div>
                 <div style={{marginTop: theme.regularSpacing}}>
-                    <TextInput label={t('cart_checkout_full_name')} name={t('cart_checkout_full_name')} placeholder={'ex: Jane Doe'} onChange={(e) => {
-                        setFullName(e.target.value);
-                    }}/>
+                    <TextInput
+                        label={t('cart_checkout_full_name')}
+                        name={t('cart_checkout_full_name')}
+                        placeholder={'ex: Jane Doe'}
+                        onChange={(e) => {
+                            setFullName(e.target.value);
+                        }}/>
                 </div>
             </div>
         </CreditCardWrapper>
