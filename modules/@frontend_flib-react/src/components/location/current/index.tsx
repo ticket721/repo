@@ -12,7 +12,7 @@ const Item = styled.li`
     background-color: transparent;
     cursor: pointer;
     display: flex;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 500;
     padding: ${(props) => props.theme.regularSpacing} ${(props) => props.theme.biggerSpacing};
     transition: background-color 300ms ease;
@@ -35,7 +35,7 @@ export const CurrentLocation: React.FunctionComponent<CurrentLocationProps> = (
 ): JSX.Element => {
     return (
         <Item onClick={props.getCurrentLocation}>
-            <LocationIcon icon={'location'} size={'16px'} color={'rgba(255, 255, 255, 0.38)'} />
+            <LocationIcon icon={'location'} size={'14px'} color={'rgba(255, 255, 255, 0.38)'} />
             {props.label}
             <ChevronIcon icon={'chevron'} size={'8px'} color={'rgba(255, 255, 255, 0.9)'} />
         </Item>

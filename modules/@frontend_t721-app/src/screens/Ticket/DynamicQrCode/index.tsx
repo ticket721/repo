@@ -36,22 +36,27 @@ export const DynamicQrCode: React.FC<DynamicQrCodeProps> = (props: DynamicQrCode
             </EventTitle>
             <div>
                 <QrCodeContainer>
-                    <QrCode
-                        value={qrcodeContent}
-                        bgColor={'#241F33'}
-                        fgColor={'#FFFFFF'}
-                        size={width}
-                        renderAs={'svg'}
-                        level={'L'}
-                        imageSettings={{
-                            src: t721logo,
-                            x: null,
-                            y: null,
-                            height: 42,
-                            width: 42,
-                            excavate: true,
-                        }}/>
-                        <span>{seconds}</span>
+                    {
+                        qrcodeContent ?
+                        <QrCode
+                            value={qrcodeContent}
+                            bgColor={'#241F33'}
+                            fgColor={'#FFFFFF'}
+                            size={width}
+                            renderAs={'svg'}
+                            level={'L'}
+                            imageSettings={{
+                                src: t721logo,
+                                x: null,
+                                y: null,
+                                height: 42,
+                                width: 42,
+                                excavate: true,
+                            }}/> :
+                            null
+                    }
+
+                <span>{seconds}</span>
                 </QrCodeContainer>
                 {
                     ticketId ?

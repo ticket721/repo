@@ -13,7 +13,7 @@ const Container = styled.section`
     align-items: center;
     display: flex;
     justify-content: space-between;
-    padding: ${(props) => props.theme.biggerSpacing} ${(props) => props.theme.biggerSpacing} 0;
+    padding: 0 ${(props) => props.theme.biggerSpacing};
     width: 100%;
 
     h4 {
@@ -27,21 +27,22 @@ const LocationIcon = styled(Icon)`
     margin-right: ${(props) => props.theme.smallSpacing};
 `;
 
+const Location = styled.span`
+    border-bottom: 2px solid ${(props) => props.theme.textColorDarker};
+`;
+
 export const LocationHeader: React.FunctionComponent<LocationHeaderProps> = (
     props: LocationHeaderProps,
 ): JSX.Element => {
     return (
-        <Container>
+        <Container onClick={props.onFilter}>
             <div>
                 <h4>{props.title}</h4>
                 <h3 className={'row'}>
                     <LocationIcon icon={'location'} size={'16px'} color={props.mainColor} />
-                    {props.location}
+                    <Location>{props.location}</Location>
                 </h3>
             </div>
-            <button type={'button'} onClick={props.onFilter}>
-                <Icon icon={'filter'} size={'16px'} color={'rgba(255, 255, 255, 0.9)'} />
-            </button>
         </Container>
     );
 };
