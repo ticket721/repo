@@ -7,3 +7,6 @@ project(':capacitor-stripe').projectDir = new File('../../../node_modules/capaci
 
 include ':capacitor-plugin-ios-swipe-back'
 project(':capacitor-plugin-ios-swipe-back').projectDir = new File('../../../node_modules/capacitor-plugin-ios-swipe-back/android')
+
+include ':jairemix-capacitor-segment'
+project(':jairemix-capacitor-segment').projectDir = new File('../../../node_modules/@jairemix/capacitor-segment/android')

@@ -56,7 +56,8 @@
         "cordova-res": "0.15.1",
         "es6-promise-plugin": "4.2.2",
         "cordova-plugin-brightness": "0.2.0",
-        "@ionic-native/brightness": "5.27.0"
+        "@ionic-native/brightness": "5.27.0",
+        "@jairemix/capacitor-segment": "1.0.3"
     },
     "resolutions": {
         "react-scripts/**/jest": "24.9.0"

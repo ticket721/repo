@@ -29,6 +29,8 @@ function* localRegister(action: ILocalRegister): IterableIterator<any> {
         yield put(SetToken(token));
         yield put(PushNotification('successfully_registered', 'success'));
 
+        yield identifyUser(registerData.user.id, registerData.user.email);
+
         if (getEnv().REACT_APP_ENV === 'dev') {
             const validateEmail = yield global.window.t721Sdk.validateEmail(registerData.validationToken);
             console.log(validateEmail);
@@ -71,6 +73,8 @@ function* localLogin(action: ILocalRegister): IterableIterator<any> {
         localStorage.setItem('token', JSON.stringify(token));
 
         yield put(SetToken(token));
+
+        yield identifyUser(loginData.user.id, loginData.user.email);
     } catch (e) {
         if (e.message === 'Network Error') {
             yield put(PushNotification('cannot_reach_server', 'error'));

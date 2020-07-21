@@ -9,3 +9,5 @@ data:
   proxy-protocol: "True"
   real-ip-header: "proxy_protocol"
   set-real-ip-from: "0.0.0.0/0"
+  client-max-body-size: 6m
+  proxy-body-size: 6m

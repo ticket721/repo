@@ -11,6 +11,7 @@ apply from: "../capacitor-cordova-android-plugins/cordova.variables.gradle"
 dependencies {
     implementation project(':capacitor-stripe')
     implementation project(':capacitor-plugin-ios-swipe-back')
+    implementation project(':jairemix-capacitor-segment')
 
 }
 

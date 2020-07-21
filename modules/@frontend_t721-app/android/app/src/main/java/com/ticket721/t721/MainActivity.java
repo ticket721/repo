@@ -7,6 +7,7 @@ import com.getcapacitor.Plugin;
 
 import java.util.ArrayList;
 import ca.zyra.capacitor.stripe.Stripe;
+import com.jairemix.capacitor.segment.SegmentPlugin;
 
 public class MainActivity extends BridgeActivity {
   @Override
@@ -18,6 +19,7 @@ public class MainActivity extends BridgeActivity {
       // Additional plugins you've installed go here
       // Ex: add(TotallyAwesomePlugin.class);
       add(Stripe.class);
+      add(SegmentPlugin.class);
     }});
   }
 }
