@@ -75,7 +75,7 @@
     "webpack-cli": "3.3.11",
     "@types/react-dom": "16.9.8",
     "@types/react-test-renderer": "16.9.2",
-    "@types/webpack": "4.41.13",
+    "@types/webpack": "4.41.21",
     "@types/html-webpack-plugin": "3.2.3",
     "@types/react": "16.9.35",
     "cpx": "1.5.0",
