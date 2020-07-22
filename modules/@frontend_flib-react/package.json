@@ -41,7 +41,7 @@
     "@types/react-datepicker": "2.11.0",
     "@types/react-router": "5.1.7",
     "@types/react-router-dom": "5.1.5",
-    "@types/react-select": "3.0.13",
+    "@types/react-select": "3.0.14",
     "@types/styled-components": "5.1.0",
     "@types/react-color": "3.0.1",
     "cleave.js": "1.6.0",
