@@ -93,7 +93,7 @@
         "ts-node": "8.4.1",
         "tsconfig-paths": "3.9.0",
         "tslint": "6.0.0",
-        "jest": "25.1.0",
+        "jest": "26.1.0",
         "@compodoc/compodoc": "1.1.11",
         "jimp": "0.10.0",
         "form-data": "3.0.0"
