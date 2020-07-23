@@ -1,18 +1,17 @@
-import React                   from 'react';
-import styled                  from 'styled-components';
-import t721logo                from '../../../media/images/721.png';
-import { useSelector }         from 'react-redux';
-import { T721AppState }        from '../../../redux';
-import QrCode                  from 'qrcode.react';
-import { Icon }                from '@frontend/flib-react/lib/components';
-import { useWindowDimensions }    from '@frontend/core/lib/hooks/useWindowDimensions';
-import { hashMessage, keccak256 } from 'ethers/utils';
+import React  from 'react';
+import styled               from 'styled-components';
+import t721logo                   from '../../../media/images/721.png';
+import { useSelector }            from 'react-redux';
+import { T721AppState }           from '../../../redux';
+import QrCode                     from 'qrcode.react';
+import { Icon }                   from '@frontend/flib-react/lib/components';
+import { useWindowDimensions }                   from '@frontend/core/lib/hooks/useWindowDimensions';
+import { keccak256 } from 'ethers/utils';
 
 export interface DynamicQrCodeProps {
     qrOpened: boolean;
     name: string;
     category: string;
-    ticketId: string;
     color: string;
     onClose: () => void;
 }
@@ -22,9 +21,11 @@ export const DynamicQrCode: React.FC<DynamicQrCodeProps> = (props: DynamicQrCode
     const [
         seconds,
         qrcodeContent,
+        ticketId,
     ] = useSelector((state: T721AppState) => [
         state.deviceWallet.seconds,
-        state.deviceWallet.signatures[0]?.slice(2) + props.ticketId + state.deviceWallet.timestamps[0],
+        state.deviceWallet.signatures[0]?.slice(2) + state.deviceWallet.currentTicketId?.slice(2) + state.deviceWallet.timestamps[0],
+        state.deviceWallet.currentTicketId,
     ]);
 
     return (
@@ -35,24 +36,33 @@ export const DynamicQrCode: React.FC<DynamicQrCodeProps> = (props: DynamicQrCode
             </EventTitle>
             <div>
                 <QrCodeContainer>
-                    <QrCode
-                        value={qrcodeContent}
-                        bgColor={'#241F33'}
-                        fgColor={'#FFFFFF'}
-                        size={width}
-                        renderAs={'svg'}
-                        level={'L'}
-                        imageSettings={{
-                            src: t721logo,
-                            x: null,
-                            y: null,
-                            height: 42,
-                            width: 42,
-                            excavate: true,
-                        }}/>
-                        <span>{seconds}</span>
+                    {
+                        qrcodeContent ?
+                        <QrCode
+                            value={qrcodeContent}
+                            bgColor={'#241F33'}
+                            fgColor={'#FFFFFF'}
+                            size={width}
+                            renderAs={'svg'}
+                            level={'L'}
+                            imageSettings={{
+                                src: t721logo,
+                                x: null,
+                                y: null,
+                                height: 42,
+                                width: 42,
+                                excavate: true,
+                            }}/> :
+                            null
+                    }
+
+                <span>{seconds}</span>
                 </QrCodeContainer>
-                <TicketId>{keccak256(hashMessage(props.ticketId)).slice(0, 20)}</TicketId>
+                {
+                    ticketId ?
+                        <TicketId>{keccak256(ticketId).slice(0, 20)}</TicketId> :
+                        null
+                }
             </div>
             <Close onClick={props.onClose}>
                 <Icon icon={'close'} size={'32px'} color={'rgba(255,255,255,0.9)'}/>
@@ -75,7 +85,7 @@ const QrCodeWrapper = styled.div<{ offsetTop: number, qrOpened: boolean }>`
     background-color: rgba(36,31,51,0.8);
     backdrop-filter: blur(6px);
     padding: 6vh ${props => props.theme.biggerSpacing};
-    transition: top 300ms ease-in;
+    transition: top 600ms ease-in-out;
 `;
 
 const EventTitle = styled.div`

@@ -6,14 +6,15 @@ import { StaffAppState }           from '../../redux';
 import { useRequest }              from '@frontend/core/lib/hooks/useRequest';
 import { useTranslation }          from 'react-i18next';
 import { RightsSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/rights/dto/RightsSearchResponse.dto';
-import { EventsDatesFetcher }      from './EventsDatesFetcher';
-import '../locales';
+import { EventsDatesFetcher }      from '../EventsDatesFetcher';
 import styled                      from 'styled-components';
+import { GuestListFetcher }        from './GuestListFetcher';
+import '../locales';
 
 const GuestList: React.FC = () => {
     const [ t ] = useTranslation(['fetch_errors', 'common']);
     const [uuid] = useState(v4() + '@guestlist-page');
-    const token = useSelector((state: StaffAppState) => state.auth.token.value);
+    const [ token, dateId ] = useSelector((state: StaffAppState) => [ state.auth.token.value, state.currentEvent.dateId ]);
 
     const rightsReq = useRequest<RightsSearchResponseDto>({
         method: 'rights.search',
@@ -41,7 +42,13 @@ const GuestList: React.FC = () => {
     }
 
     return (
-        <EventsDatesFetcher uuid={uuid} entities={rightsReq.response.data.rights.map(right => right.entity_value)}/>
+        <EventsDatesFetcher uuid={uuid} entities={rightsReq.response.data.rights.map(right => right.entity_value)}>
+            {
+                dateId ?
+                    <GuestListFetcher/> :
+                    null
+            }
+        </EventsDatesFetcher>
     );
 };
 

@@ -25,7 +25,7 @@ const Scan: React.FC = () => {
                 }
             }
         ],
-        refreshRate: 1,
+        refreshRate: 15,
     }, uuid);
 
     if (rightsReq.response.loading) {

@@ -16,14 +16,12 @@ import {
 } from '../../../test/utils';
 import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
 import { StatusCodes } from '@lib/common/utils/codes.value';
-import { Stripe } from 'stripe';
 import { TicketEntity } from '@lib/common/tickets/entities/Ticket.entity';
+import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
+import { DateEntity } from '@lib/common/dates/entities/Date.entity';
 import { SortablePagedSearch } from '@lib/common/utils/SortablePagedSearch.type';
 import { uuidEq } from '@common/global';
-import { AxiosResponse } from 'axios';
-import { ImagesUploadResponseDto } from '@app/server/controllers/images/dto/ImagesUploadResponse.dto';
-import fs from 'fs';
-import FormData from 'form-data';
+import { Stripe } from 'stripe';
 
 export default function(getCtx: () => { ready: Promise<void> }) {
     return function() {
@@ -1598,6 +1596,354 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     }),
                     StatusCodes.Unauthorized,
                     'unauthorized_action',
+                );
+            });
+        });
+
+        describe('guestlist (POST /events/:eventId/guestlist)', function() {
+            test('should search for ticket list of event', async function() {
+                const {
+                    sdk,
+                    token,
+                    user,
+                    password,
+                }: {
+                    sdk: T721SDK;
+                    token: string;
+                    user: PasswordlessUserDto;
+                    password: string;
+                } = await getSDKAndUser(getCtx);
+
+                const event = await createExpensiveEvent(token, sdk);
+
+                const cartActionSetRes = await sdk.actions.create(token, {
+                    name: 'cart_create',
+                    arguments: {},
+                });
+
+                const actionSetId = cartActionSetRes.data.actionset.id;
+
+                const categoryIds = (
+                    await sdk.categories.search(token, {
+                        group_id: {
+                            $eq: event.group_id,
+                        },
+                        parent_type: {
+                            $eq: 'date',
+                        },
+                    })
+                ).data.categories.map((c: CategoryEntity) => c.id);
+
+                await sdk.cart.ticketSelections(token, actionSetId, {
+                    tickets: [
+                        ...[...Array(1)].map(() => ({
+                            categoryId: categoryIds[0],
+                            price: {
+                                currency: 'Fiat',
+                                price: '10000',
+                            },
+                        })),
+                        ...[...Array(1)].map(() => ({
+                            categoryId: categoryIds[1],
+                            price: {
+                                currency: 'Fiat',
+                                price: '10000',
+                            },
+                        })),
+                        ...[...Array(3)].map(() => ({
+                            categoryId: event.categories[0],
+                            price: {
+                                currency: 'Fiat',
+                                price: '10000',
+                            },
+                        })),
+                    ],
+                });
+
+                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+                    return as.current_action === 1;
+                });
+
+                await sdk.cart.modulesConfiguration(token, actionSetId, {});
+
+                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+                    return as.current_action === 2;
+                });
+
+                await sdk.checkout.cart.commit.stripe(token, {
+                    cart: actionSetId,
+                });
+
+                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+                    return as.current_status === 'complete';
+                });
+
+                await validateCardPayment(await getPIFromCart(sdk, token, actionSetId));
+
+                const res = await sdk.checkout.cart.resolve.paymentIntent(token, {
+                    cart: actionSetId,
+                });
+
+                const checkoutActionSetId = res.data.checkoutActionSetId;
+
+                await waitForActionSet(sdk, token, checkoutActionSetId, (as: ActionSetEntity): boolean => {
+                    return as.current_status === 'complete';
+                });
+
+                await waitForTickets(sdk, token, user.address, (tickets: TicketEntity[]): boolean => {
+                    return (
+                        tickets.length === 5 &&
+                        tickets.filter((t: TicketEntity): boolean => t.status === 'ready').length === tickets.length
+                    );
+                });
+
+                const tickets = await sdk.tickets.search(token, {
+                    owner: {
+                        $eq: user.address,
+                    },
+                });
+
+                expect(tickets.data.tickets.length).toEqual(5);
+
+                const guestlist = await sdk.events.guestlist(token, event.id, {
+                    dateIds: [],
+                });
+
+                expect(guestlist.data.guests.length).toEqual(5);
+            });
+
+            test('should search for ticket list of specific date', async function() {
+                const {
+                    sdk,
+                    token,
+                    user,
+                    password,
+                }: {
+                    sdk: T721SDK;
+                    token: string;
+                    user: PasswordlessUserDto;
+                    password: string;
+                } = await getSDKAndUser(getCtx);
+
+                const event = await createExpensiveEvent(token, sdk);
+
+                const cartActionSetRes = await sdk.actions.create(token, {
+                    name: 'cart_create',
+                    arguments: {},
+                });
+
+                const actionSetId = cartActionSetRes.data.actionset.id;
+
+                const categoryIds = (
+                    await sdk.categories.search(token, {
+                        group_id: {
+                            $eq: event.group_id,
+                        },
+                        parent_type: {
+                            $eq: 'date',
+                        },
+                    })
+                ).data.categories.map((c: CategoryEntity) => c.id);
+
+                await sdk.cart.ticketSelections(token, actionSetId, {
+                    tickets: [
+                        ...[...Array(1)].map(() => ({
+                            categoryId: categoryIds[0],
+                            price: {
+                                currency: 'Fiat',
+                                price: '10000',
+                            },
+                        })),
+                        ...[...Array(1)].map(() => ({
+                            categoryId: categoryIds[1],
+                            price: {
+                                currency: 'Fiat',
+                                price: '10000',
+                            },
+                        })),
+                        ...[...Array(3)].map(() => ({
+                            categoryId: event.categories[0],
+                            price: {
+                                currency: 'Fiat',
+                                price: '10000',
+                            },
+                        })),
+                    ],
+                });
+
+                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+                    return as.current_action === 1;
+                });
+
+                await sdk.cart.modulesConfiguration(token, actionSetId, {});
+
+                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+                    return as.current_action === 2;
+                });
+
+                await sdk.checkout.cart.commit.stripe(token, {
+                    cart: actionSetId,
+                });
+
+                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+                    return as.current_status === 'complete';
+                });
+
+                await validateCardPayment(await getPIFromCart(sdk, token, actionSetId));
+
+                const res = await sdk.checkout.cart.resolve.paymentIntent(token, {
+                    cart: actionSetId,
+                });
+
+                const checkoutActionSetId = res.data.checkoutActionSetId;
+
+                await waitForActionSet(sdk, token, checkoutActionSetId, (as: ActionSetEntity): boolean => {
+                    return as.current_status === 'complete';
+                });
+
+                await waitForTickets(sdk, token, user.address, (tickets: TicketEntity[]): boolean => {
+                    return (
+                        tickets.length === 5 &&
+                        tickets.filter((t: TicketEntity): boolean => t.status === 'ready').length === tickets.length
+                    );
+                });
+
+                const tickets = await sdk.tickets.search(token, {
+                    owner: {
+                        $eq: user.address,
+                    },
+                });
+
+                expect(tickets.data.tickets.length).toEqual(5);
+
+                const dateIds = (
+                    await sdk.dates.search(token, {
+                        group_id: {
+                            $eq: event.group_id,
+                        },
+                        parent_type: {
+                            $eq: 'event',
+                        },
+                    })
+                ).data.dates.map((d: DateEntity) => d.id);
+
+                const guestlist = await sdk.events.guestlist(token, event.id, {
+                    dateIds: [dateIds[0]],
+                });
+
+                expect(guestlist.data.guests.length).toEqual(4);
+            });
+
+            test('should fail for invalid date id', async function() {
+                const {
+                    sdk,
+                    token,
+                    user,
+                    password,
+                }: {
+                    sdk: T721SDK;
+                    token: string;
+                    user: PasswordlessUserDto;
+                    password: string;
+                } = await getSDKAndUser(getCtx);
+
+                const event = await createExpensiveEvent(token, sdk);
+
+                const cartActionSetRes = await sdk.actions.create(token, {
+                    name: 'cart_create',
+                    arguments: {},
+                });
+
+                const actionSetId = cartActionSetRes.data.actionset.id;
+
+                const categoryIds = (
+                    await sdk.categories.search(token, {
+                        group_id: {
+                            $eq: event.group_id,
+                        },
+                        parent_type: {
+                            $eq: 'date',
+                        },
+                    })
+                ).data.categories.map((c: CategoryEntity) => c.id);
+
+                await sdk.cart.ticketSelections(token, actionSetId, {
+                    tickets: [
+                        ...[...Array(1)].map(() => ({
+                            categoryId: categoryIds[0],
+                            price: {
+                                currency: 'Fiat',
+                                price: '10000',
+                            },
+                        })),
+                        ...[...Array(1)].map(() => ({
+                            categoryId: categoryIds[1],
+                            price: {
+                                currency: 'Fiat',
+                                price: '10000',
+                            },
+                        })),
+                        ...[...Array(3)].map(() => ({
+                            categoryId: event.categories[0],
+                            price: {
+                                currency: 'Fiat',
+                                price: '10000',
+                            },
+                        })),
+                    ],
+                });
+
+                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+                    return as.current_action === 1;
+                });
+
+                await sdk.cart.modulesConfiguration(token, actionSetId, {});
+
+                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+                    return as.current_action === 2;
+                });
+
+                await sdk.checkout.cart.commit.stripe(token, {
+                    cart: actionSetId,
+                });
+
+                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+                    return as.current_status === 'complete';
+                });
+
+                await validateCardPayment(await getPIFromCart(sdk, token, actionSetId));
+
+                const res = await sdk.checkout.cart.resolve.paymentIntent(token, {
+                    cart: actionSetId,
+                });
+
+                const checkoutActionSetId = res.data.checkoutActionSetId;
+
+                await waitForActionSet(sdk, token, checkoutActionSetId, (as: ActionSetEntity): boolean => {
+                    return as.current_status === 'complete';
+                });
+
+                await waitForTickets(sdk, token, user.address, (tickets: TicketEntity[]): boolean => {
+                    return (
+                        tickets.length === 5 &&
+                        tickets.filter((t: TicketEntity): boolean => t.status === 'ready').length === tickets.length
+                    );
+                });
+
+                const tickets = await sdk.tickets.search(token, {
+                    owner: {
+                        $eq: user.address,
+                    },
+                });
+
+                expect(tickets.data.tickets.length).toEqual(5);
+
+                await failWithCode(
+                    sdk.events.guestlist(token, event.id, {
+                        dateIds: [categoryIds[0]],
+                    }),
+                    StatusCodes.Forbidden,
+                    'date_id_not_in_event',
                 );
             });
         });

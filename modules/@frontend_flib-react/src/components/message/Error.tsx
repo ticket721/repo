@@ -1,8 +1,7 @@
 import React, { useCallback, useState } from 'react';
-import styled, { useTheme } from 'styled-components';
+import styled, { keyframes, useTheme } from 'styled-components';
 import Icon from '../icon';
 import { Theme } from '../../config/theme';
-import Countdown from 'react-countdown';
 
 export interface ErrorProps {
     message: string;
@@ -23,7 +22,7 @@ const CenteredDiv = styled.div`
     margin-top: calc(48px + constant(safe-area-inset-top) + ${(props) => props.theme.regularSpacing});
     margin-top: calc(48px + env(safe-area-inset-top) + ${(props) => props.theme.regularSpacing});
     background-color: ${(props) => props.theme.componentColor};
-    height: 20vh;
+    padding: ${(props) => props.theme.regularSpacing};
     display: flex;
     align-items: center;
     justify-content: center;
@@ -35,53 +34,49 @@ const SadIcon = styled(Icon)`
     margin-bottom: ${(props) => props.theme.regularSpacing};
 `;
 
-const CountdownText = styled.h4`
+const RefreshText = styled.span`
     font-weight: 300;
     font-size: 12px;
     text-transform: uppercase;
 `;
 
-const renderer = (
-    retryingInLabel: string,
-    { hours, minutes, seconds, completed }: { hours: number; minutes: number; seconds: number; completed: boolean },
-) => {
-    if (completed) {
-        return null;
-    } else {
-        return (
-            <CountdownText>
-                {retryingInLabel} {seconds}
-            </CountdownText>
-        );
+const loaderRotation = keyframes`
+    from {
+        transform: rotate(0deg);
     }
-};
+
+    to {
+        transform: rotate(360deg);
+    }
+`;
+
+const LoaderIcon = styled(Icon)`
+    animation: ${loaderRotation} 1s ease-in-out infinite;
+`;
 
 export const Error: React.FC<ErrorProps> = (props: ErrorProps): JSX.Element => {
     const theme = useTheme() as Theme;
-
-    const [end, setEnd] = useState(Date.now() + 5000);
-    const [countdown, setCountdown] = useState(true);
+    const [pressed, onPressed] = useState(false);
 
     const onComplete = useCallback(() => {
-        setCountdown(false);
-
-        setTimeout(() => {
-            setEnd(Date.now() + 5000);
-            setCountdown(true);
-        }, 1000);
-
+        onPressed(true);
         if (props.onRefresh) {
             props.onRefresh();
         }
-    }, [end, countdown]);
+        setTimeout(() => {
+            onPressed(false);
+        }, 5000);
+    }, [props]);
 
     return (
-        <CenteredDiv>
+        <CenteredDiv onClick={pressed ? undefined : onComplete}>
             <SadIcon icon={'sad'} size={'50px'} color={theme.textColor} />
             <ErrorText>{props.message}</ErrorText>
-            {props.onRefresh && countdown ? (
-                <Countdown date={end} renderer={renderer.bind(null, props.retryLabel)} onComplete={onComplete} />
-            ) : null}
+            {pressed ? (
+                <LoaderIcon icon={'loader'} size={'12px'} color={'rgba(255,255,255,0.9)'} />
+            ) : (
+                <RefreshText>{props.retryLabel}</RefreshText>
+            )}
         </CenteredDiv>
     );
 };

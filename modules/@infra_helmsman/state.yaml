@@ -65,7 +65,7 @@ apps:
     name: "ingress-monitoring"
     description: "Ingress, managing all incoming traffic and properly redirecting on services for the monitoring namespace"
     namespace: "monitoring"
-    enabled: true
+    enabled: false
     group: "critical"
     chart: "../@infra_ingress/ingress"
     version: "0.1.0"
@@ -95,7 +95,7 @@ apps:
     name: "prometheus-monitoring"
     description: "Prometheus gathers metrics about the cluster"
     namespace: "monitoring"
-    enabled: true
+    enabled: false
     group: "critical"
     chart: "../@infra_prometheus/prometheus"
     version: "0.1.0"

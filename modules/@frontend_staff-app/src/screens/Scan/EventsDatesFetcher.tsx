@@ -26,10 +26,14 @@ export const EventsDatesFetcher: React.FC<EventsDatesFetcherProps> = ({ uuid, en
             {
                 group_id: {
                     $in: entities
-                }
+                },
+                $sort: [{
+                    $field_name: 'updated_at',
+                    $order: 'desc',
+                }]
             }
         ],
-        refreshRate: 5,
+        refreshRate: 30,
     }, uuid);
 
     const datesReq = useRequest<DatesSearchResponseDto>({
@@ -39,10 +43,14 @@ export const EventsDatesFetcher: React.FC<EventsDatesFetcherProps> = ({ uuid, en
             {
                 group_id: {
                     $in: entities
-                }
+                },
+                $sort: [{
+                    $field_name: 'updated_at',
+                    $order: 'desc',
+                }]
             }
         ],
-        refreshRate: 5,
+        refreshRate: 30,
     }, uuid);
 
     if (eventsReq.response.loading || datesReq.response.loading) {

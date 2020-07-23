@@ -1,28 +1,26 @@
-import React, { lazy, Suspense } from 'react';
+import React from 'react';
 
 import { Redirect, Route, Switch, withRouter } from 'react-router-dom';
 
 import ProtectedRoute               from '@frontend/core/lib/components/ProtectedRoute';
 import ToastStacker                 from '@frontend/core/lib/components/ToastStacker';
 import styled                       from 'styled-components';
-import { FullPageLoading }          from '@frontend/flib-react/lib/components';
-
-const LoginPage = lazy(() => import('./routes/Login'));
-const RegisterPage = lazy(() => import('./routes/Register'));
-const HomePage = lazy(() => import('./routes/Home'));
-const ProfileActivitiesPage = lazy(() => import('./routes/Activities'));
-const ProfileLanguagePage = lazy(() => import('./routes/Language'));
-const ProfilePage = lazy(() => import('./routes/Profile'));
-const SearchViewAllPage = lazy(() => import('./routes/SearchViewAll'));
-const EventPage = lazy(() => import('./routes/Event'));
-const TicketSelectionPage = lazy(() => import('./routes/TicketSelection'));
-const SearchPage = lazy(() => import('./routes/Search'));
-const TagsPage = lazy(() => import('./routes/Tags'));
-const CartPage = lazy(() => import('./routes/Cart'));
+import LoginPage from './routes/Login';
+import RegisterPage from './routes/Register';
+import HomePage from './routes/Home';
+import ProfileActivitiesPage from './routes/Activities';
+import ProfileLanguagePage from './routes/Language';
+import ProfilePage from './routes/Profile';
+import SearchViewAllPage from './routes/SearchViewAll';
+import EventPage from './routes/Event';
+import TicketSelectionPage from './routes/TicketSelection';
+import SearchPage from './routes/Search';
+import TagsPage from './routes/Tags';
+import CartPage from './routes/Cart';
 
 const App: React.FC = () => {
 
-    return <Suspense fallback={<FullPageLoading/>}>
+    return <>
         <AppContainer>
             <Switch>
                 <Route path={'/login'} exact={true}>
@@ -33,7 +31,7 @@ const App: React.FC = () => {
                     <RegisterPage/>
                 </Route>
 
-                <Route path={'/home'} exact={true}>
+                <Route path={'/'} exact={true}>
                     <HomePage/>
                 </Route>
 
@@ -72,11 +70,11 @@ const App: React.FC = () => {
                 <Route path={'/tags'} exact={true}>
                     <TagsPage/>
                 </Route>
-                <Redirect to={'/home'}/>
+                <Redirect to={'/'}/>
             </Switch>
             <ToastStacker additionalLocales={[]}/>
         </AppContainer>
-    </Suspense>;
+    </>;
 };
 
 const AppContainer = styled.div`

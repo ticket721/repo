@@ -5,11 +5,13 @@ export interface CheckboxProps extends React.ComponentProps<any> {
     label: string;
     name: string;
     onChange: (checked: boolean, id: string, e: React.ChangeEvent<HTMLElement>) => void;
+    checked?: boolean;
 }
 
 const StyledLabel = styled.label`
     cursor: pointer;
     display: inline-flex;
+    align-items: center;
     font-size: 14px;
     font-weight: 500;
     line-height: 150%;
@@ -78,6 +80,7 @@ export const Checkbox: React.FunctionComponent<CheckboxProps> = (props: Checkbox
                 type={'checkbox'}
                 name={props.name}
                 id={props.name}
+                checked={props.checked}
                 onChange={(e) => {
                     props.onChange(e.target.checked, props.name, e);
                 }}

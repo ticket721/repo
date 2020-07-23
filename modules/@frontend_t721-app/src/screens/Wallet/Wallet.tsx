@@ -163,7 +163,7 @@ const TicketList = styled.div`
 
 const Dots = styled.div`
     position: absolute;
-    bottom: 3vh;
+    bottom: ${props => props.theme.biggerSpacing};
     left: 0;
     display: flex;
     justify-content: center;

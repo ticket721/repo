@@ -46,17 +46,11 @@ const App: React.FC = () => {
                 </Switch>
             </Suspense>
             <ToastStacker additionalLocales={[]}/>
-            {
+            <StaffNavbar visible={
                 authState.user?.validated &&
                 location.pathname !== '/register' && location.pathname !== '/login' &&
                 location.pathname.lastIndexOf('/') === 0
-
-                    ?
-                    <StaffNavbar/>
-
-                    :
-                    null
-            }
+            }/>
         </AppContainer>
     </Suspense>;
 };

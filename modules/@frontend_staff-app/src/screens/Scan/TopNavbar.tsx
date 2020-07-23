@@ -5,7 +5,8 @@ import { useHistory }               from 'react-router';
 import { useTranslation }           from 'react-i18next';
 import { DateItem, EventSelection } from '../../components/EventSelection';
 import { StaffAppState }            from '../../redux';
-import { useSelector } from 'react-redux';
+import { useSelector }              from 'react-redux';
+import { Status }                   from './Scanner';
 
 interface TopNavbarProps {
     events: {
@@ -13,40 +14,46 @@ interface TopNavbarProps {
         name: string;
     }[];
     dates: DateItem[];
+    status: Status;
+    msg?: string;
 }
 
-export const TopNavbar: React.FC<TopNavbarProps> = ({ events, dates }: TopNavbarProps) => {
+export const TopNavbar: React.FC<TopNavbarProps> = ({ events, dates, status, msg }: TopNavbarProps) => {
     const dateName = useSelector((state: StaffAppState) => state.currentEvent.dateName);
     const [ t ] = useTranslation('dropdown');
     const history = useHistory();
 
     return (
-        <SafeOffsetContainer>
+        <SafeOffsetContainer status={status}>
+            <EventSelection hideCalendar={true} events={events} dates={dates}/>
             <NavbarWrapper>
                 <div onClick={() => history.push('/stats')}>
-                    <Icon icon={'stats'} size={'16px'} color={'rgba(255, 255, 255, 0.9)'} />
+                    <Icon icon={'stats'} size={'22px'} color={'rgba(255, 255, 255, 0.9)'} />
                 </div>
-                <span>{dateName || t('choose_event')}</span>
+                <Title status={status}>{msg || dateName || t('choose_event')}</Title>
                 <div onClick={() => history.push('/list')}>
-                    <Icon icon={'attendees'} size={'16px'} color={'rgba(255, 255, 255, 0.9)'} />
+                    <Icon icon={'attendees'} size={'22px'} color={'rgba(255, 255, 255, 0.9)'} />
                 </div>
             </NavbarWrapper>
-            <EventSelection events={events} dates={dates}/>
         </SafeOffsetContainer>
     );
 };
 
-const SafeOffsetContainer = styled.div`
+const SafeOffsetContainer = styled.div<{ status: Status }>`
     display: flex;
     flex-direction: column;
-    padding: ${(props) => props.theme.regularSpacing} ${(props) => props.theme.biggerSpacing};
+    padding: ${(props) => props.theme.regularSpacing} ${(props) => props.theme.biggerSpacing} ${(props) => props.theme.smallSpacing};
     position: fixed;
-    padding-top: calc(${(props) => props.theme.regularSpacing} + constant(safe-area-inset-top));
-    padding-top: calc(${(props) => props.theme.regularSpacing} + env(safe-area-inset-top));
+    padding-top: calc(${(props) => props.theme.smallSpacing} + constant(safe-area-inset-top));
+    padding-top: calc(${(props) => props.theme.smallSpacing} + env(safe-area-inset-top));
     width: 100%;
     z-index: 10;
-    background-color: rgba(0, 0, 0, 0);
-    backdrop-filter: blur(16px);
+    background-color: ${
+    props => props.status === 'error' ? `rgba(${props.theme.errorColor.r}, ${props.theme.errorColor.g}, ${props.theme.errorColor.b}, 0.1)` :
+        props.status === 'success' ? `rgba(${props.theme.successColor.r}, ${props.theme.successColor.g}, ${props.theme.successColor.b}, 0.1)` :
+        'rgba(0, 0, 0, 0)'
+    };
+    backdrop-filter: blur(40px);
 `;
 
 const NavbarWrapper = styled.div`
@@ -55,14 +62,20 @@ const NavbarWrapper = styled.div`
     align-items: center;
     font-size: 14px;
     font-weight: 500;
-    margin-bottom: ${props => props.theme.regularSpacing};
+    margin-top: ${props => props.theme.smallSpacing};
+`;
 
-    & > span {
-        font-size: 13px;
-        font-weight: 500;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        margin: 0 ${props => props.theme.smallSpacing};
-        overflow: hidden;
-    }
+const Title = styled.span<{ status: string }>`
+    font-size: 12px;
+    line-height: 14px;
+    font-weight: 500;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin: 0 ${props => props.theme.biggerSpacing};
+    overflow: hidden;
+    color: ${props => props.status === 'error' ?
+        props.theme.errorColor.hex :
+            props.status === 'success' ?
+        props.theme.successColor.hex :
+        props.theme.textColor};
 `;

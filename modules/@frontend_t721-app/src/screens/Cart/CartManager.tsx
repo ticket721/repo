@@ -1,12 +1,12 @@
 import { ActionSetEntity }              from '@common/sdk/lib/@backend_nest/libs/common/src/actionsets/entities/ActionSet.entity';
 import React, { useCallback, useState } from 'react';
-import { useSelector }                  from 'react-redux';
-import { T721AppState }             from '../../redux';
+import { useDispatch, useSelector }     from 'react-redux';
+import { T721AppState }                 from '../../redux';
 import { v4 }                       from 'uuid';
 import { useLazyRequest }           from '@frontend/core/lib/hooks/useLazyRequest';
 import { ActionsUpdateResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/actionsets/dto/ActionsUpdateResponse.dto';
-import { CartState }               from '../../redux/ducks/cart';
-import { FullPageLoading, Error }  from '@frontend/flib-react/lib/components';
+import { CartState, SetTickets }    from '../../redux/ducks/cart';
+import { FullPageLoading, Error }   from '@frontend/flib-react/lib/components';
 import { useDeepEffect }           from '@frontend/core/lib/hooks/useDeepEffect';
 import { TicketMintingFormat }     from '@common/sdk/lib/@backend_nest/libs/common/src/utils/Cart.type';
 import { CategoryEntity }          from '@common/sdk/lib/@backend_nest/libs/common/src/categories/entities/Category.entity';
@@ -111,6 +111,27 @@ export const CartAddPendingTickets: React.FC<CartAddPendingTIcketsProps> = (prop
     return <FullPageLoading/>;
 };
 
+export const UnhandledErrorCartReset: React.FC = (): JSX.Element => {
+
+    const [elapsed, setElapsed] = useState(false);
+    const [t] = useTranslation(['cart', 'common']);
+    const dispatch = useDispatch();
+
+    useDeepEffect(() => {
+
+        if (elapsed) {
+            dispatch(SetTickets([]));
+        } else {
+            setTimeout(() => {
+                setElapsed(true)
+            }, 3000);
+        }
+
+    }, [elapsed]);
+
+    return <Error message={t('error_cannot_fetch_cart')}/>;
+};
+
 export interface SyncedCartManagerProps {
     remoteCart: ActionSetEntity;
     cart: CartState;
@@ -118,7 +139,6 @@ export interface SyncedCartManagerProps {
 
 export const SyncedCartManager: React.FC<SyncedCartManagerProps> = (props: SyncedCartManagerProps): JSX.Element => {
     const ticketSelectionsAction = props.remoteCart.actions[0];
-    const [t] = useTranslation(['cart', 'common']);
 
     if (ticketSelectionsAction.error) {
         const errorData = JSON.parse(ticketSelectionsAction.error);
@@ -136,7 +156,7 @@ export const SyncedCartManager: React.FC<SyncedCartManagerProps> = (props: Synce
                 return <SyncedCartEmpty/>
             }
             default: {
-                return <Error message={t('error_cannot_fetch_cart')}/>;
+                return <UnhandledErrorCartReset/>;
             }
         }
     }

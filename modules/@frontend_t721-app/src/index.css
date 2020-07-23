@@ -36,3 +36,26 @@ html {
 body {
     -moz-osx-font-smoothing: grayscale;
 }
+
+.fade-exit {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    transform: translateX(0%);
+}
+
+.fade-exit-active {
+    transform: translateX(-100%);
+}
+
+.switch-wrapper {
+    position: relative;
+}
+
+.switch-wrapper > div {
+    position: absolute;
+    width: 100%;
+    top: 0;
+    left: 0;
+}

@@ -23,8 +23,9 @@ import { useDispatch, useSelector }        from 'react-redux';
 import { T721AppState }                    from '../../../redux';
 import { ResetTicket, StartRegenInterval } from '../../../redux/ducks/device_wallet';
 import { DynamicQrCode }                   from '../DynamicQrCode';
-import { hashMessage, keccak256 }          from 'ethers/utils';
+import { keccak256 }          from 'ethers/utils';
 import { getEnv }                          from '@frontend/core/lib/utils/getEnv';
+import { decimalToHex }                    from '@common/global/lib/utils';
 
 interface EventDate {
     id: string;
@@ -78,7 +79,7 @@ export const TicketDetails: React.FC<TicketDetailsProps> = (props: TicketDetails
                 <TicketInfosCard
                     eventName={props.name}
                     ticketType={props.categoryName}
-                    ticketID={keccak256(hashMessage(props.ticketId)).slice(0, 20)}
+                    ticketID={keccak256(decimalToHex(props.ticketId)).slice(0, 20)}
                 />
                 <Banner>
                     <QrLink>
@@ -146,7 +147,6 @@ export const TicketDetails: React.FC<TicketDetailsProps> = (props: TicketDetails
         qrOpened={qrOpened}
         name={props.name}
         category={props.categoryName}
-        ticketId={props.ticketId}
         color={props.colors[0]}
         onClose={() => setQrOpened(false)}/>
     </>;

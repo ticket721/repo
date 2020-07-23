@@ -1,12 +1,26 @@
-import React, { lazy, Suspense, useEffect, useState }         from 'react';
+import React, { useEffect, useState }                                   from 'react';
 import { Route, Switch, useHistory, useLocation, withRouter, Redirect } from 'react-router-dom';
-import { FullPageLoading, TopNav }                            from '@frontend/flib-react/lib/components';
-import ProtectedRoute                                         from '@frontend/core/lib/components/ProtectedRoute';
-import ToastStacker                                           from '@frontend/core/lib/components/ToastStacker';
-import styled                                                 from 'styled-components';
-import { T721Navbar }                                         from './components/NavBar';
+import { TopNav }                                                       from '@frontend/flib-react/lib/components';
+import ProtectedRoute                                                   from '@frontend/core/lib/components/ProtectedRoute';
+import ToastStacker                                                     from '@frontend/core/lib/components/ToastStacker';
+import styled                                                           from 'styled-components';
+import { T721Navbar }                                                   from './components/NavBar';
+import LoginPage                                                        from './routes/Login';
+import RegisterPage                                                     from './routes/Register';
+import HomePage                                                         from './routes/Home';
+import ProfileActivitiesPage                                            from './routes/Activities';
+import ProfileLanguagePage                                              from './routes/Language';
+import ProfilePage                                                      from './routes/Profile';
+import SearchViewAllPage                                                from './routes/SearchViewAll';
+import EventPage                                                        from './routes/Event';
+import TicketPage                                                       from './routes/Ticket';
+import TicketSelectionPage                                              from './routes/TicketSelection';
+import SearchPage                                                       from './routes/Search';
+import TagsPage                                                         from './routes/Tags';
+import WalletPage                                                       from './routes/Wallet';
+import CartPage                                                         from './routes/Cart';
 
-const TopNavWrapper = (props: { back: () => void }): JSX.Element => {
+const TopNavWrapper = (props: { back: () => void}): JSX.Element => {
 
     const [scrolled, setScrolled] = useState(false);
 
@@ -25,108 +39,88 @@ const TopNavWrapper = (props: { back: () => void }): JSX.Element => {
         };
     });
 
-    return <TopNav label={''} onPress={props.back} scrolled={scrolled}/>;
+    return <TopNav label={''} onPress={props.back} scrolled={scrolled} />;
 };
-
-const LoginPage = lazy(() => import('./routes/Login'));
-const RegisterPage = lazy(() => import('./routes/Register'));
-const HomePage = lazy(() => import('./routes/Home'));
-const ProfileActivitiesPage = lazy(() => import('./routes/Activities'));
-const ProfileLanguagePage = lazy(() => import('./routes/Language'));
-const ProfilePage = lazy(() => import('./routes/Profile'));
-const SearchViewAllPage = lazy(() => import('./routes/SearchViewAll'));
-const EventPage = lazy(() => import('./routes/Event'));
-const TicketPage = lazy(() => import('./routes/Ticket'));
-const TicketSelectionPage = lazy(() => import('./routes/TicketSelection'));
-const SearchPage = lazy(() => import('./routes/Search'));
-const TagsPage = lazy(() => import('./routes/Tags'));
-const WalletPage = lazy(() => import('./routes/Wallet'));
-const CartPage = lazy(() => import('./routes/Cart'));
 
 const MobileApp: React.FC = () => {
 
     const location = useLocation();
     const history = useHistory();
 
-    return <Suspense fallback={<FullPageLoading/>}>
+    return <>
         <AppContainer>
             {
-                location.pathname.lastIndexOf('/') !== 0 ?
-                    <TopNavWrapper back={history.goBack}/>
-                    : null
-            }
-            <Suspense fallback={<FullPageLoading/>}>
-                <Switch>
-                    <Route path={'/login'} exact={true}>
-                        <LoginPage/>
-                    </Route>
-
-                    <Route path={'/register'} exact={true}>
-                        <RegisterPage/>
-                    </Route>
-
-                    <Route path={'/home'} exact={true}>
-                        <HomePage/>
-                    </Route>
-
-                    <ProtectedRoute path={'/profile/activities'} exact={true}>
-                        <ProfileActivitiesPage/>
-                    </ProtectedRoute>
-
-                    <ProtectedRoute path={'/profile/language'} exact={true}>
-                        <ProfileLanguagePage/>
-                    </ProtectedRoute>
-
-                    <ProtectedRoute path={'/profile'} exact={true}>
-                        <ProfilePage/>
-                    </ProtectedRoute>
-
-                    <ProtectedRoute path={'/cart/checkout'} exact={true}>
-                        <CartPage/>
-                    </ProtectedRoute>
-
-                    <Route path={'/search/events/:query'} exact={true}>
-                        <SearchViewAllPage/>
-                    </Route>
-
-                    <Route path={'/event/:id/selection'} exact={true}>
-                        <TicketSelectionPage/>
-                    </Route>
-
-                    <Route path={'/event/:id'} exact={true}>
-                        <EventPage/>
-                    </Route>
-
-                    <Route path={'/search'} exact={true}>
-                        <SearchPage/>
-                    </Route>
-
-                    <Route path={'/tags'} exact={true}>
-                        <TagsPage/>
-                    </Route>
-
-                    <ProtectedRoute path={'/ticket/:id'} exact={true}>
-                        <TicketPage/>
-                    </ProtectedRoute>
-
-                    <ProtectedRoute path={'/'} exact={true}>
-                        <WalletPage/>
-                    </ProtectedRoute>
-                    <Redirect to={'/'}/>
-                </Switch>
-            </Suspense>
-            <ToastStacker additionalLocales={[]}/>
-            {
-                location.pathname.lastIndexOf('/') === 0
+                location.pathname.lastIndexOf('/') !== 0
 
                     ?
-                    <T721Navbar/>
+                    <TopNavWrapper back={history.goBack}/>
 
                     :
                     null
             }
+            <Switch>
+                <Route path={'/login'} exact={true}>
+                    <LoginPage/>
+                </Route>
+
+                <Route path={'/register'} exact={true}>
+                    <RegisterPage/>
+                </Route>
+
+                <Route path={'/'} exact={true}>
+                    <HomePage/>
+                </Route>
+
+                <ProtectedRoute path={'/profile/activities'} exact={true}>
+                    <ProfileActivitiesPage/>
+                </ProtectedRoute>
+
+                <ProtectedRoute path={'/profile/language'} exact={true}>
+                    <ProfileLanguagePage/>
+                </ProtectedRoute>
+
+                <ProtectedRoute path={'/profile'} exact={true}>
+                    <ProfilePage/>
+                </ProtectedRoute>
+
+                <ProtectedRoute path={'/cart/checkout'} exact={true}>
+                    <CartPage/>
+                </ProtectedRoute>
+
+                <Route path={'/search/events/:query'} exact={true}>
+                    <SearchViewAllPage/>
+                </Route>
+
+                <Route path={'/event/:id/selection'} exact={true}>
+                    <TicketSelectionPage/>
+                </Route>
+
+                <Route path={'/event/:id'} exact={true}>
+                    <EventPage/>
+                </Route>
+
+                <Route path={'/search'} exact={true}>
+                    <SearchPage/>
+                </Route>
+
+                <Route path={'/tags'} exact={true}>
+                    <TagsPage/>
+                </Route>
+
+                <ProtectedRoute path={'/ticket/:id'} exact={true}>
+                    <TicketPage/>
+                </ProtectedRoute>
+
+                <ProtectedRoute path={'/wallet'} exact={true}>
+                    <WalletPage/>
+                </ProtectedRoute>
+
+                <Redirect to={'/'}/>
+            </Switch>
+            <ToastStacker additionalLocales={[]}/>
+            <T721Navbar visible={location.pathname.lastIndexOf('/') === 0}/>
         </AppContainer>
-    </Suspense>;
+    </>;
 };
 
 const AppContainer = styled.div`

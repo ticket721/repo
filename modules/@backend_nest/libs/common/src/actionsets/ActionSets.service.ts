@@ -211,6 +211,26 @@ export class ActionSetsService extends CRUDExtension<ActionSetsRepository, Actio
     }
 
     /**
+     * Utility to extract the lifecycle callback from the provider if it exists, or do nothing
+     *
+     * @param actionSet
+     */
+    async onFailure(actionSet: ActionSet): Promise<ServiceResponse<void>> {
+        let lifecycles: ActionSetLifecyclesBase;
+
+        try {
+            lifecycles = await this.moduleRef.get(`ACTION_SET_LIFECYCLES/${actionSet.name}`, { strict: false });
+        } catch (e) {
+            return {
+                error: null,
+                response: null,
+            };
+        }
+
+        return lifecycles.onFailure(actionSet);
+    }
+
+    /**
      * Sets a specific step into error mode
      *
      * @param actionSetId
