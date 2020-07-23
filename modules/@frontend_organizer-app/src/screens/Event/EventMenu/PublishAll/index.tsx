@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styled                         from 'styled-components';
 
-import { useHistory, useParams } from 'react-router';
+import { useParams } from 'react-router';
 import { Button }  from '@frontend/flib-react/lib/components';
 
 import { useTranslation }           from 'react-i18next';
@@ -16,37 +16,36 @@ import { PushNotification }         from '@frontend/core/lib/redux/ducks/notific
 import { useLazyRequest }           from '@frontend/core/lib/hooks/useLazyRequest';
 import { EventsStartResponseDto }   from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsStartResponse.dto';
 
-export const DateActions: React.FC = () => {
-    const [ t ] = useTranslation('date_actions');
-    const history = useHistory();
+export const PublishAll: React.FC = () => {
+    const [ t ] = useTranslation('publish_all');
     const dispatch = useDispatch();
     const token = useSelector((state: MergedAppState): string => state.auth.token.value);
-    const [uuid] = useState<string>(v4() + '@date-actions');
-    const { groupId, dateId } = useParams();
+    const [uuid] = useState<string>(v4() + '@publish-all');
+    const { groupId } = useParams();
 
     const [ publishLoading, setPublishLoading ] = useState<boolean>(false);
 
     const { lazyRequest: publishEvent, response: publishResp } = useLazyRequest<EventsStartResponseDto>('events.start', uuid);
 
-    const { response: dateResp } = useRequest<DatesSearchResponseDto>({
+    const { response: notPublishedResp } = useRequest<DatesSearchResponseDto>({
             method: 'dates.search',
             args: [
                 token,
                 {
-                    id: {
-                        $eq: dateId
-                    }
+                    group_id: {
+                        $eq: groupId
+                    },
+                    status: {
+                        $eq: 'preview'
+                    },
+                    parent_type: {
+                        $eq: 'event'
+                    },
                 }
             ],
             refreshRate: 30,
         },
         uuid);
-
-    useDeepEffect(() => {
-        if (dateResp.data && dateResp.data.dates.length === 0) {
-            history.push('/');
-        }
-    }, [dateResp.data]);
 
     useDeepEffect(() => {
         if (publishResp.error) {
@@ -63,42 +62,35 @@ export const DateActions: React.FC = () => {
     }, [publishResp.data]);
 
     return (
-        <Container>
+        <>
             {
-                dateResp.data?.dates && dateResp.data?.dates?.[0]?.status === 'preview' ?
-                    <Button
-                        variant={dateId ? 'primary' : 'disabled'}
-                        title={t('publish_label')}
-                        loadingState={publishLoading}
-                        onClick={() => {
-                            setPublishLoading(true);
-                            publishEvent([
-                                token,
-                                {
-                                    event: dateResp.data.dates[0].parent_id,
-                                    dates: [dateId],
-                                }
-                            ], {
-                                force: true
-                            })
-                        }}
-                    /> :
+                notPublishedResp.data?.dates.length > 0 ?
+                    <Container>
+                        <Button
+                            variant={'primary'}
+                            title={t('publish_all_label')}
+                            loadingState={publishLoading}
+                            onClick={() => {
+                                setPublishLoading(true);
+                                publishEvent([
+                                    token,
+                                    {
+                                        event: notPublishedResp.data.dates[0].parent_id,
+                                        dates: notPublishedResp.data.dates.map((date) => date.id),
+                                    }
+                                ], {
+                                    force: true
+                                })
+                            }}
+                        />
+                    </Container>
+                    :
                     null
             }
-            <Button
-                variant={dateId ? 'secondary' : 'disabled'}
-                title={t('preview_label')}
-                onClick={() => history.push(`/group/${groupId}/date/${dateId}`)}
-            />
-        </Container>
+        </>
     )
 };
 
 const Container = styled.div`
-    margin: 0 ${props => props.theme.biggerSpacing};
-
-    & > button {
-        margin: 0 0 ${props => props.theme.smallSpacing};
-        width: 100%;
-    }
+    margin: 0 ${props => props.theme.biggerSpacing} ${props => props.theme.biggerSpacing};
 `;

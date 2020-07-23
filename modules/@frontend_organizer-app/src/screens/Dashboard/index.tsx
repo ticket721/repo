@@ -4,8 +4,6 @@ import { v4 }                         from 'uuid';
 
 import { useRequest }              from '@frontend/core/lib/hooks/useRequest';
 import { AppState }                from '@frontend/core/src/redux/ducks';
-
-import './locales';
 import { RightsSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/rights/dto/RightsSearchResponse.dto';
 import { EventsFetcher }           from './EventsFetcher';
 import { PushNotification }        from '@frontend/core/lib/redux/ducks/notifications';

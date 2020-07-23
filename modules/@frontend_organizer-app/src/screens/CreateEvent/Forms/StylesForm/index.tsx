@@ -34,9 +34,10 @@ const defaultValues: EventsCreateImagesMetadata = {
 const StylesForm: React.FC<FormProps> = ({ onComplete }) => {
     const reference = useRef(null);
     const dispatch = useDispatch();
-    const [ t ] = useTranslation(['event_creation_styles', 'react_dropzone_errors', 'error_notifications', 'validation']);
+    const [ t ] = useTranslation(['event_styles', 'react_dropzone_errors', 'error_notifications', 'validation']);
     const token: string = useSelector((state: MergedAppState) => state.auth.token.value);
     const cover: string = useSelector((state: OrganizerState) => state.eventCreation.imagesMetadata.avatar);
+    const [ loadingImg, setLoadingImg ] = useState<boolean>(false);
     const eventCreationFormik = useEventCreation<EventsCreateImagesMetadata>(
         EventCreationSteps.Styles,
         EventCreationActions.ImagesMetadata,
@@ -47,6 +48,7 @@ const StylesForm: React.FC<FormProps> = ({ onComplete }) => {
     const [ preview, setPreview ] = useState('');
 
     const uploadImages = (files: File[], previews: string[]) => {
+        setLoadingImg(true);
         eventCreationFormik.handleFocus('');
         const formData = new FormData();
         files.forEach((file) => formData.append('images', file));
@@ -63,6 +65,7 @@ const StylesForm: React.FC<FormProps> = ({ onComplete }) => {
     };
 
     const removeImage = () => {
+        eventCreationFormik.setFieldTouched('avatar');
         eventCreationFormik.handleFocus('');
         eventCreationFormik.update({
             avatar: '',
@@ -72,12 +75,19 @@ const StylesForm: React.FC<FormProps> = ({ onComplete }) => {
     };
 
     const handleDropErrors = (errors: DropError[]) => {
-        let finalError: string = '';
-        for (const err of errors[0].errorCodes) {
-            finalError = finalError.concat(' ' + t('react_dropzone_errors:' + err));
-        }
+        eventCreationFormik.setFieldError('avatar', 'react_dropzone_errors:' + errors[0].errorCodes[0]);
+    };
 
-        eventCreationFormik.setFieldError('avatar', finalError);
+    const handleCoverError = () => {
+        if (eventCreationFormik.errors.avatar) {
+            if (eventCreationFormik.errors.avatar.startsWith('react_dropzone_errors')) {
+                return t(eventCreationFormik.errors.avatar);
+            }
+
+            if (eventCreationFormik.touched.avatar) {
+                return t('validation:' + eventCreationFormik.errors.avatar);
+            }
+        }
     };
 
     const updateColor = (signatureColors: string[]) => {
@@ -91,6 +101,7 @@ const StylesForm: React.FC<FormProps> = ({ onComplete }) => {
     useEffect(() => {
         if (cover) {
             setPreview(getImgPath(cover));
+            setLoadingImg(false);
         }
     }, [cover]);
 
@@ -124,10 +135,8 @@ const StylesForm: React.FC<FormProps> = ({ onComplete }) => {
             width={'600px'}
             height={'300px'}
             previewPaths={[preview]}
-            error={
-                eventCreationFormik.computeError('avatar') &&
-                t(eventCreationFormik.computeError('avatar'))
-            }
+            error={handleCoverError()}
+            loading={loadingImg}
             />
 
             <ColorPickers

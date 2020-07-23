@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { SketchPicker, ColorResult } from 'react-color';
 import styled from '../../config/styled';
-import { ChangeEvent } from 'react';
+import { ChangeEvent, useEffect, useRef } from 'react';
+import { useClickOutside } from '../../utils/useClickOutside';
 
 export interface ColorPickerProps extends React.ComponentProps<any> {
     label: string;
@@ -145,8 +146,16 @@ const ColorLabel = styled.span`
 
 export const ColorPicker: React.FunctionComponent<ColorPickerProps> = (props: ColorPickerProps): JSX.Element => {
     const [showPicker, setShowPicker] = React.useState(false);
+    const pickerRef = useRef(null);
+    const clickOutside = useClickOutside(pickerRef);
+
+    useEffect(() => {
+        if (clickOutside) {
+            setShowPicker(false);
+        }
+    }, [clickOutside]);
     return (
-        <div>
+        <div ref={pickerRef}>
             <StyledContainer
                 onClick={() => {
                     if (showPicker && props.onBlur) {

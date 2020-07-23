@@ -102,6 +102,12 @@ const DateForm = ({ formik, formActions, className }: Props) => {
     };
 
     const computeError = (field: string): string => {
+        if (field === 'location') {
+            return formik.touched.location && formik.errors.location?.label ?
+                'validation:' + formik.errors.location.label :
+                undefined;
+        }
+
         return formik.touched[field] && formik.errors[field] ?
             'validation:' + formik.errors[field] :
             undefined;

@@ -8,6 +8,7 @@ import { useParams }              from 'react-router';
 import { StylesForm }             from './Form';
 import { MergedAppState }         from '../../../index';
 import { DateMetadata }           from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
+import { FullPageLoading }           from '@frontend/flib-react/lib/components';
 
 const UpdateStyles: React.FC = () => {
     const [ metadata, setMetadata ] = useState<DateMetadata>(null);
@@ -45,7 +46,7 @@ const UpdateStyles: React.FC = () => {
             initialValues={metadata}/>
         )
     } else {
-        return (<span>Loading...</span>)
+        return <FullPageLoading/>
     }
 };
 

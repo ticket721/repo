@@ -21,6 +21,7 @@ export const singleFile = () => (
         onDrop={(files: File[]) => console.log('file: ', files[0])}
         onDropRejected={(errors: DropError[]) => console.log('errors: ', errors)}
         onRemove={() => console.log('remove')}
+        loading={false}
     />
 );
 
@@ -39,5 +40,6 @@ export const multipleFiles = () => (
         onDrop={(files: File[]) => console.log('files: ', files)}
         onDropRejected={(errors: DropError[]) => console.log('errors: ', errors)}
         onRemove={() => console.log('remove')}
+        loading={false}
     />
 );

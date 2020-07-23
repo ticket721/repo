@@ -4,7 +4,7 @@ import styled                                                          from 'sty
 import { imagesMetadataValidationSchema } from './validationSchema';
 
 import { useTranslation } from 'react-i18next';
-import './locales';
+import '../../../shared/Translations/StylesForm';
 
 import { useFormik }                from 'formik';
 import { useDispatch, useSelector } from 'react-redux';
@@ -33,8 +33,10 @@ interface Styles {
 export const StylesForm: React.FC<StylesFormProps> = (props: StylesFormProps) => {
     const [ lastInitialValues, setLastInitialValues ] = useState<Styles>(null);
     const [ updatable, setUpdatable ] = useState<boolean>(false);
+    const [ loadingImg, setLoadingImg ] = useState<boolean>(false);
+
     const dispatch = useDispatch();
-    const [ t ] = useTranslation(['update_styles', 'validation']);
+    const [ t ] = useTranslation(['event_styles', 'validation', 'react_dropzone_errors']);
 
     const token = useSelector((state: MergedAppState): string => state.auth.token.value);
     const { lazyRequest: updateStyles, response: updateResponse } = useLazyRequest('dates.update', props.uuid);
@@ -64,6 +66,7 @@ export const StylesForm: React.FC<StylesFormProps> = (props: StylesFormProps) =>
 
     const uploadImages = (files: File[], previews: string[]) => {
         const formData = new FormData();
+        setLoadingImg(true);
         files.forEach((file) => formData.append('images', file));
         EventCreationCore.uploadImages(token, formData, {})
             .then((ids: ImageEntity[]) => {
@@ -83,19 +86,23 @@ export const StylesForm: React.FC<StylesFormProps> = (props: StylesFormProps) =>
     };
 
     const handleDropErrors = (errors: DropError[]) => {
-        let finalError: string = '';
-        for (const err of errors[0].errorCodes) {
-            finalError = finalError.concat(' ' + t('react_dropzone_errors:' + err));
-        }
-
-        formik.setFieldError('avatar', finalError);
+        formik.setFieldError('avatar', 'react_dropzone_errors:' + errors[0].errorCodes[0]);
     };
 
-    const computeError = (field: string) => formik.touched[field] && formik.errors[field] ? 'validation:' + formik.errors[field] : '';
+    const handleCoverError = () => {
+        if (formik.errors.avatar) {
+            if (formik.errors.avatar.startsWith('react_dropzone_errors')) {
+                return t(formik.errors.avatar);
+            }
+
+            return t('validation:' + formik.errors.avatar);
+        }
+    };
 
     useEffect(() => {
         if (formik.values.avatar) {
             setPreview(getImgPath(formik.values.avatar));
+            setLoadingImg(false);
         }
     }, [formik.values.avatar]);
 
@@ -136,10 +143,8 @@ export const StylesForm: React.FC<StylesFormProps> = (props: StylesFormProps) =>
                 width={'600px'}
                 height={'300px'}
                 previewPaths={[preview]}
-                error={
-                    computeError('avatar') &&
-                    t(computeError('avatar'))
-                }
+                error={handleCoverError()}
+                loading={loadingImg}
             />
 
             <ColorPickers

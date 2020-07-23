@@ -92,7 +92,7 @@ export const Dropdown: React.FC = () => {
             }
         } else if (eventId) {
             setSelectedItem({
-                label: t('global_category'),
+                label: t('global_label'),
                 value: 'global',
             });
         } else {
@@ -117,7 +117,7 @@ export const Dropdown: React.FC = () => {
                     value: 'new-date',
                 },
                 {
-                    label: t('global_category'),
+                    label: t('global_label'),
                     value: 'global',
                 },
             ]);
@@ -126,7 +126,7 @@ export const Dropdown: React.FC = () => {
 
     return (
         <EntitiesDropdown>
-            <Title>{dateId && currentDate ? currentDate.metadata.name : eventId ? 'Global Categories' : 'New Date'}</Title>
+            <Title>{dateId && currentDate ? currentDate.metadata.name : eventId ? t('all_dates') : t('new_date')}</Title>
             {
                 datesResp.data?.dates && eventResp.data?.events && globalCategoriesResp.data?.categories ?
                     <DateSelect

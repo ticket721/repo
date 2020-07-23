@@ -139,6 +139,7 @@ export const TextInput: React.FunctionComponent<InputProps & { className?: strin
                         onFocus={props.onFocus}
                         onKeyDown={props.onKeyDown}
                         value={props.value}
+                        step={'.01'}
                         type={props.type || 'text'}
                         onChange={props.onChange}
                         onBlur={props.onBlur}
