@@ -91,9 +91,8 @@ export class EventsController extends ControllerBasics<EventEntity> {
         private readonly uuidToolService: UUIDToolService,
         private readonly rightsService: RightsService,
         private readonly metadatasService: MetadatasService,
-        private readonly rocksideService: RocksideService, // private readonly t721ControllerV0Service: T721ControllerV0Service,
-    ) // private readonly authorizationsService: AuthorizationsService,
-    {
+        private readonly rocksideService: RocksideService,
+    ) {
         super();
     }
 
