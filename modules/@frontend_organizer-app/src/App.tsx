@@ -1,6 +1,6 @@
 import React, {
     Suspense,
-}                           from 'react';
+} from 'react';
 import {
     Redirect,
     Route,
@@ -12,14 +12,14 @@ import Navbar               from './shared/Navbar';
 import { AppState }         from '@frontend/core/lib/redux';
 import ProtectedRoute       from '@frontend/core/lib/components/ProtectedRoute';
 import ProtectedByRights    from '@frontend/core/lib/components/ProtectedByRights';
-import { useSelector }      from 'react-redux';
-import styled               from 'styled-components';
-import { AppStatus }        from '@frontend/core/lib/redux/ducks/statuses';
-import ToastStacker         from '@frontend/core/lib/components/ToastStacker';
-import { EventMenu }        from './screens/Event/EventMenu';
-import MediaQuery           from 'react-responsive';
-import { routes }           from './routes';
-import { FullPageLoading }  from '@frontend/flib-react/lib/components';
+import { useSelector }     from 'react-redux';
+import styled              from 'styled-components';
+import { AppStatus }       from '@frontend/core/lib/redux/ducks/statuses';
+import ToastStacker        from '@frontend/core/lib/components/ToastStacker';
+import { EventMenu }       from './screens/Event/EventMenu';
+import MediaQuery          from 'react-responsive';
+import { routes }          from './routes';
+import { FullPageLoading } from '@frontend/flib-react/lib/components';
 import './core/event_creation/locales';
 import './shared/Translations/global';
 

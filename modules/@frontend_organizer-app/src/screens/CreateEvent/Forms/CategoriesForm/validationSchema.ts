@@ -11,7 +11,7 @@ const seats = yup.number()
     .moreThan(0, 'seats_more_than_zero');
 const currencies = yup.array().of(yup.object().shape({
     currency: yup.string().required(),
-    price: yup.number().integer().positive(),
+    price: yup.number().positive().min(2, 'price_more_than_two'),
 }));
 
 const global = yup.array().of(yup.object().shape({

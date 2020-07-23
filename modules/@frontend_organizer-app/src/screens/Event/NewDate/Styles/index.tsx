@@ -1,5 +1,5 @@
-import React from 'react';
-import { useTranslation } from 'react-i18next';
+import React, { useState } from 'react';
+import { useTranslation }  from 'react-i18next';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { DropError, FilesUploader} from '@frontend/flib-react/lib/components';
@@ -19,13 +19,14 @@ interface StylesProps {
 }
 
 export const Styles: React.FC<StylesProps> = ({ formik }) => {
-    const [ t ] = useTranslation(['event_creation_styles', 'react_dropzone_errors', 'validation']);
+    const [ t ] = useTranslation(['event_styles', 'react_dropzone_errors', 'validation']);
     const dispatch = useDispatch();
     const token = useSelector((state: AppState): string => state.auth.token.value);
-
+    const [ loadingImg, setLoadingImg ] = useState<boolean>(false);
     const [ preview, setPreview ] = React.useState('');
 
     const uploadImages = (files: File[], previews: string[]) => {
+        setLoadingImg(true);
         const formData = new FormData();
         files.forEach((file) => formData.append('images', file));
         EventCreationCore.uploadImages(token, formData, {})
@@ -38,25 +39,32 @@ export const Styles: React.FC<StylesProps> = ({ formik }) => {
     };
 
     const removeImage = () => {
+        formik.setFieldTouched('avatar');
         formik.setFieldValue('avatar', '');
         formik.setFieldValue('signature_colors', []);
         setPreview('');
     };
 
     const handleDropErrors = (errors: DropError[]) => {
-        let finalError: string = '';
-        for (const err of errors[0].errorCodes) {
-            finalError = finalError.concat(' ' + t('react_dropzone_errors:' + err));
-        }
-
-        formik.setFieldError('avatar', finalError);
+        formik.setFieldError('avatar', 'react_dropzone_errors:' + errors[0].errorCodes[0]);
     };
 
-    const computeError = (field: string) => formik.touched[field] && formik.errors[field] ? 'validation:' + formik.errors[field] : '';
+    const handleCoverError = () => {
+        if (formik.errors.avatar) {
+            if (formik.errors.avatar.startsWith('react_dropzone_errors')) {
+                return t(formik.errors.avatar);
+            }
+
+            if (formik.touched.avatar) {
+                return t('validation:' + formik.errors.avatar);
+            }
+        }
+    };
 
     React.useEffect(() => {
         if (formik.values.avatar) {
             setPreview(getImgPath(formik.values.avatar));
+            setLoadingImg(false);
         }
     }, [formik.values.avatar]);
 
@@ -74,10 +82,8 @@ export const Styles: React.FC<StylesProps> = ({ formik }) => {
                 width={'600px'}
                 height={'300px'}
                 previewPaths={[preview]}
-                error={
-                    computeError('avatar') &&
-                    t(computeError('avatar'))
-                }
+                error={handleCoverError()}
+                loading={loadingImg}
             />
             <ColorPickers
                 srcImage={preview}
