@@ -108,7 +108,7 @@ export class TxEntity {
     @Column({
         type: 'text',
     })
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     transaction_hash: string;
 
     /**
@@ -117,7 +117,7 @@ export class TxEntity {
     @Column({
         type: 'text',
     })
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     real_transaction_hash: string;
 
     /**
@@ -142,7 +142,7 @@ export class TxEntity {
     @Column({
         type: 'text',
     })
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     block_hash: string;
 
     /**
@@ -151,7 +151,7 @@ export class TxEntity {
     @Column({
         type: 'int',
     })
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     block_number: number;
 
     /**
@@ -160,7 +160,7 @@ export class TxEntity {
     @Column({
         type: 'int',
     })
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     transaction_index: number;
 
     /**
@@ -169,7 +169,7 @@ export class TxEntity {
     @Column({
         type: 'text',
     })
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     from_: string;
 
     /**
@@ -178,7 +178,7 @@ export class TxEntity {
     @Column({
         type: 'text',
     })
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     to_: string;
 
     /**
@@ -187,7 +187,7 @@ export class TxEntity {
     @Column({
         type: 'text',
     })
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     contract_address: string;
 
     /**
@@ -196,7 +196,7 @@ export class TxEntity {
     @Column({
         type: 'text',
     })
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     cumulative_gas_used: string;
 
     /**
@@ -205,7 +205,7 @@ export class TxEntity {
     @Column({
         type: 'double',
     })
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     cumulative_gas_used_ln: number;
 
     /**
@@ -214,7 +214,7 @@ export class TxEntity {
     @Column({
         type: 'text',
     })
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     gas_used: string;
 
     /**
@@ -223,7 +223,7 @@ export class TxEntity {
     @Column({
         type: 'double',
     })
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     gas_used_ln: number;
 
     /**
@@ -232,7 +232,7 @@ export class TxEntity {
     @Column({
         type: 'text',
     })
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     gas_price: string;
 
     /**
@@ -241,7 +241,7 @@ export class TxEntity {
     @Column({
         type: 'double',
     })
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     gas_price_ln: number;
 
     /**
@@ -251,7 +251,7 @@ export class TxEntity {
         type: 'list',
         typeDef: '<tx_log>',
     })
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     logs: Log[];
 
     /**
@@ -260,20 +260,20 @@ export class TxEntity {
     @Column({
         type: 'text',
     })
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     logs_bloom: string;
 
     /**
      * Creation timestamp
      */
     @CreateDateColumn()
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     created_at: Date;
 
     /**
      * Update timestamp
      */
     @UpdateDateColumn()
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     updated_at: Date;
 }

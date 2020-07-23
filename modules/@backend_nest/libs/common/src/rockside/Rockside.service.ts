@@ -145,14 +145,16 @@ export class RocksideService {
      *
      * @param tx
      */
-    async sendTransaction(tx: Omit<TransactionOpts, 'nonce' | 'gas'>): Promise<ServiceResponse<RocksideSendTransactionResponse>> {
+    async sendTransaction(
+        tx: Omit<TransactionOpts, 'nonce' | 'gas'>,
+    ): Promise<ServiceResponse<RocksideSendTransactionResponse>> {
         this.logger.log(`Broadcasting transaction with following arguments: ${JSON.stringify(tx, null, 4)}`);
 
         try {
             const transactionCreationResponse = await this.rockside.sendTransaction(tx);
             return {
                 error: null,
-                response: transactionCreationResponse
+                response: transactionCreationResponse,
             };
         } catch (e) {
             this.logger.error(e);
@@ -173,14 +175,14 @@ export class RocksideService {
             const transactionInfosResponse = await this.rockside.getTransaction(txOrTracking);
             return {
                 error: null,
-                response: transactionInfosResponse
-            }
+                response: transactionInfosResponse,
+            };
         } catch (e) {
             this.logger.error(e);
             return {
                 error: e.message,
-                response: null
-            }
+                response: null,
+            };
         }
     }
 }

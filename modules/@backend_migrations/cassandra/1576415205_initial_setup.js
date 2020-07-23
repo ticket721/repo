@@ -3,7 +3,7 @@ var migration1576415205 = {
     up : async function (db, handler) {
 
         const user_table_creation = {
-            query: `CREATE TABLE ticket721.user ( 
+            query: `CREATE TABLE IF NOT EXISTS ticket721.user ( 
                     id UUID PRIMARY KEY, 
                     email text,
                     username text,
@@ -18,7 +18,7 @@ var migration1576415205 = {
         };
 
         const web3token_table_creation = {
-            query: `CREATE TABLE ticket721.web3token ( 
+            query: `CREATE TABLE IF NOT EXISTS ticket721.web3token ( 
                     timestamp bigint,
                     address text,
                     PRIMARY KEY((timestamp, address))
@@ -27,7 +27,7 @@ var migration1576415205 = {
         };
 
         const image_table_creation = {
-            query: `CREATE TABLE ticket721.image (
+            query: `CREATE TABLE IF NOT EXISTS ticket721.image (
                     id UUID PRIMARY KEY,
                     mimetype text,
                     size int,
@@ -41,7 +41,7 @@ var migration1576415205 = {
         };
 
         const action_type_creation = {
-            query: `CREATE TYPE ticket721.action (
+            query: `CREATE TYPE IF NOT EXISTS ticket721.action (
                     status text,
                     name text,
                     data text,
@@ -53,7 +53,7 @@ var migration1576415205 = {
         };
 
         const actionset_table_creation = {
-            query: `CREATE TABLE ticket721.actionset (
+            query: `CREATE TABLE IF NOT EXISTS ticket721.actionset (
                     id UUID PRIMARY KEY,
                     links list<frozen<ticket721.link>>,
                     current_action int,
@@ -68,7 +68,7 @@ var migration1576415205 = {
         };
 
         const geo_point_type_creation = {
-            query: `CREATE TYPE ticket721.geo_point (
+            query: `CREATE TYPE IF NOT EXISTS ticket721.geo_point (
                     lat double,
                     lon double
                     );`,
@@ -76,7 +76,7 @@ var migration1576415205 = {
         };
 
         const link_type_creation = {
-            query: `CREATE TYPE ticket721.link (
+            query: `CREATE TYPE IF NOT EXISTS ticket721.link (
                         id text,
                         type text,
                         field text
@@ -85,7 +85,7 @@ var migration1576415205 = {
         };
 
         const price_type_creation = {
-            query: `CREATE TYPE ticket721.price (
+            query: `CREATE TYPE IF NOT EXISTS ticket721.price (
                         currency text,
                         value text,
                         log_value double
@@ -94,7 +94,7 @@ var migration1576415205 = {
         };
 
         const right_table_creation = {
-            query: `CREATE TABLE ticket721.right (
+            query: `CREATE TABLE IF NOT EXISTS ticket721.right (
                         grantee_id uuid,
                         entity_type text,
                         entity_value text,
@@ -107,7 +107,7 @@ var migration1576415205 = {
         };
 
         const category_table_creation = {
-            query: `CREATE TABLE ticket721.category (
+            query: `CREATE TABLE IF NOT EXISTS ticket721.category (
                         id UUID PRIMARY KEY,
                         group_id text,
                         category_name text,
@@ -129,7 +129,7 @@ var migration1576415205 = {
         };
 
         const date_metadata_type_creation = {
-            query: `CREATE TYPE ticket721.date_metadata (
+            query: `CREATE TYPE IF NOT EXISTS ticket721.date_metadata (
                         name text,
                         description text,
                         tags list<text>,
@@ -140,7 +140,7 @@ var migration1576415205 = {
         };
 
         const date_timestamps_type_creation = {
-            query: `CREATE TYPE ticket721.date_timestamps (
+            query: `CREATE TYPE IF NOT EXISTS ticket721.date_timestamps (
                         event_begin timestamp,
                         event_end timestamp
                     );`,
@@ -148,7 +148,7 @@ var migration1576415205 = {
         };
 
         const date_location_type_creation = {
-            query: `CREATE TYPE ticket721.date_location (
+            query: `CREATE TYPE IF NOT EXISTS ticket721.date_location (
                         location frozen<ticket721.geo_point>,
                         location_label text,
                         assigned_city int
@@ -157,7 +157,7 @@ var migration1576415205 = {
         };
 
         const date_table_creation = {
-            query: `CREATE TABLE ticket721.date (
+            query: `CREATE TABLE IF NOT EXISTS ticket721.date (
                         id UUID PRIMARY KEY,
                         group_id text,
                         categories list<uuid>,
@@ -174,7 +174,7 @@ var migration1576415205 = {
         };
 
         const event_table_creation = {
-            query: `CREATE TABLE ticket721.event (
+            query: `CREATE TABLE IF NOT EXISTS ticket721.event (
                         id UUID PRIMARY KEY,
                         group_id text,
                         name text,
@@ -189,7 +189,7 @@ var migration1576415205 = {
         };
 
         const tx_log_type_creation = {
-            query: `CREATE TYPE ticket721.tx_log (
+            query: `CREATE TYPE IF NOT EXISTS ticket721.tx_log (
                         address text,
                         block_hash text,
                         block_number int,
@@ -205,7 +205,7 @@ var migration1576415205 = {
         };
 
         const tx_table_creation = {
-            query: `CREATE TABLE ticket721.tx (
+            query: `CREATE TABLE IF NOT EXISTS ticket721.tx (
                         transaction_hash text PRIMARY KEY,
                         confirmed boolean,
                         status boolean,
@@ -230,7 +230,7 @@ var migration1576415205 = {
         };
 
         const global_table_creation = {
-            query: `CREATE TABLE ticket721.global (
+            query: `CREATE TABLE IF NOT EXISTS ticket721.global (
                         id text PRIMARY KEY,
                         block_number int,
                         processed_block_number int,
@@ -261,7 +261,7 @@ var migration1576415205 = {
         };
 
         const evm_event_type_creation = {
-            query: `CREATE TYPE ticket721.evmevent (
+            query: `CREATE TYPE IF NOT EXISTS ticket721.evmevent (
                         return_values text,
                         raw_data text,
                         raw_topics list<text>,
@@ -278,7 +278,7 @@ var migration1576415205 = {
         };
 
         const evm_eventset_table_creation = {
-            query: `CREATE TABLE ticket721.evmeventset (
+            query: `CREATE TABLE IF NOT EXISTS ticket721.evmeventset (
                         artifact_name text,
                         event_name text,
                         block_number int,
@@ -291,7 +291,7 @@ var migration1576415205 = {
         };
 
         const dry_response_type_creation = {
-            query: `CREATE TYPE ticket721.dryresponse (
+            query: `CREATE TYPE IF NOT EXISTS ticket721.dryresponse (
                         query text,
                         params list<text>
                     );`,
@@ -299,7 +299,7 @@ var migration1576415205 = {
         };
 
         const evm_block_rollback_table_creation = {
-            query: `CREATE TABLE ticket721.evmblockrollback (
+            query: `CREATE TABLE IF NOT EXISTS ticket721.evmblockrollback (
                         block_number int PRIMARY KEY,
                          rollback_queries list<frozen<ticket721.dryresponse>>,
                         created_at timestamp,
@@ -309,7 +309,7 @@ var migration1576415205 = {
         };
 
         const gem__operation_status_type_creation = {
-            query: `CREATE TYPE ticket721.gem__operation_status (
+            query: `CREATE TYPE IF NOT EXISTS ticket721.gem__operation_status (
                         status text,
                         layer int,
                         dosojin text,
@@ -319,7 +319,7 @@ var migration1576415205 = {
         };
 
         const gem__transfer_entity_status_type_creation = {
-            query: `CREATE TYPE ticket721.gem__transfer_entity_status (
+            query: `CREATE TYPE IF NOT EXISTS ticket721.gem__transfer_entity_status (
                         status text,
                         layer int,
                         dosojin text,
@@ -329,7 +329,7 @@ var migration1576415205 = {
         };
 
         const gem__transfer_status_type_creation = {
-            query: `CREATE TYPE ticket721.gem__transfer_status (
+            query: `CREATE TYPE IF NOT EXISTS ticket721.gem__transfer_status (
                         connector frozen<ticket721.gem__transfer_entity_status>,
                         receptacle frozen<ticket721.gem__transfer_entity_status>
             );`,
@@ -337,7 +337,7 @@ var migration1576415205 = {
         };
 
         const gem__payload_cost_type_creation = {
-            query: `CREATE TYPE ticket721.gem__payload_cost (
+            query: `CREATE TYPE IF NOT EXISTS ticket721.gem__payload_cost (
                         value text,
                         scope text,
                         dosojin text,
@@ -350,7 +350,7 @@ var migration1576415205 = {
         };
 
         const gem__payload_type_creation = {
-            query: `CREATE TYPE ticket721.gem__payload (
+            query: `CREATE TYPE IF NOT EXISTS ticket721.gem__payload (
                     values text,
                     costs list<frozen<ticket721.gem__payload_cost>>
             );`,
@@ -358,7 +358,7 @@ var migration1576415205 = {
         };
 
         const gem__error_info_type_creation = {
-            query: `CREATE TYPE ticket721.gem__error_info (
+            query: `CREATE TYPE IF NOT EXISTS ticket721.gem__error_info (
                         dosojin text,
                         entity_name text,
                         entity_type text,
@@ -369,7 +369,7 @@ var migration1576415205 = {
         };
 
         const gem__route_history_type_creation = {
-            query: `CREATE TYPE ticket721.gem__route_history (
+            query: `CREATE TYPE IF NOT EXISTS ticket721.gem__route_history (
                         layer int,
                         dosojin text,
                         entity_name text,
@@ -380,7 +380,7 @@ var migration1576415205 = {
         };
 
         const gem_type_creation = {
-            query: `CREATE TYPE ticket721.gem (
+            query: `CREATE TYPE IF NOT EXISTS ticket721.gem (
                         action_type text,
                         operation_status frozen<ticket721.gem__operation_status>,
                         transfer_status frozen<ticket721.gem__transfer_status>,
@@ -395,7 +395,7 @@ var migration1576415205 = {
         };
 
         const gem_order_table_creation = {
-            query: `CREATE TABLE ticket721.gemorder (
+            query: `CREATE TABLE IF NOT EXISTS ticket721.gemorder (
                         id text PRIMARY KEY,
                         distribution_id bigint,
                         circuit_name text,
@@ -410,7 +410,7 @@ var migration1576415205 = {
         };
 
         const stripe_resource_table_creation = {
-            query: `CREATE TABLE ticket721.striperesource (
+            query: `CREATE TABLE IF NOT EXISTS ticket721.striperesource (
                         id text PRIMARY KEY,
                         used_by uuid,
                         created_at timestamp,
@@ -420,7 +420,7 @@ var migration1576415205 = {
         };
 
         const metadata_table_creation = {
-            query: `CREATE TABLE ticket721.metadata (
+            query: `CREATE TABLE IF NOT EXISTS ticket721.metadata (
                         id UUID PRIMARY KEY,
                         class_name text,
                         type_name text,
@@ -441,7 +441,7 @@ var migration1576415205 = {
         };
 
         const authorization_table_creation = {
-            query: `CREATE TABLE ticket721.authorization ( 
+            query: `CREATE TABLE IF NOT EXISTS ticket721.authorization ( 
                         id uuid,
                         granter text,
                         grantee text,
@@ -464,7 +464,7 @@ var migration1576415205 = {
         };
 
         const ticket_table_creation = {
-            query: `CREATE TABLE ticket721.ticket ( 
+            query: `CREATE TABLE IF NOT EXISTS ticket721.ticket ( 
                         id text PRIMARY KEY,
                         authorization uuid,
                         owner text,

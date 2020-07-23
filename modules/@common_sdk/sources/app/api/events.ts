@@ -255,19 +255,19 @@ export async function eventsAddDates(
 
 }
 
-export async function eventsWithdraw(
-    token: string,
-    event: string,
-    query: EventsWithdrawInputDto
-): Promise<AxiosResponse<EventsWithdrawResponseDto>> {
-
-    const self: T721SDK = this;
-
-    return self.post<EventsWithdrawInputDto>(`/events/${event}/withdraw`, {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-    }, query);
-}
+// export async function eventsWithdraw(
+//     token: string,
+//     event: string,
+//     query: EventsWithdrawInputDto
+// ): Promise<AxiosResponse<EventsWithdrawResponseDto>> {
+//
+//     const self: T721SDK = this;
+//
+//     return self.post<EventsWithdrawInputDto>(`/events/${event}/withdraw`, {
+//         Authorization: `Bearer ${token}`,
+//         'Content-Type': 'application/json',
+//     }, query);
+// }
 
 export async function eventsGuestlist(
     token: string,

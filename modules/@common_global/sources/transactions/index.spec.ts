@@ -17,7 +17,7 @@ describe('Transactions', function() {
     describe('isTrackingId', function() {
 
         it('should verify valid tracking id', function() {
-            expect(isTrackingId('01AA01AAAAAAA01AA01AAAAAAA')).toBeTruthy();
+            expect(isTrackingId('01E9ZSDHMYYFMW3E1CVQ9ADVHK')).toBeTruthy();
         });
 
         it('should detect invalid tracking id', function() {

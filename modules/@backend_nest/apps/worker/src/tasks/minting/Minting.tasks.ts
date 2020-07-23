@@ -5,10 +5,8 @@ import { Job, Queue } from 'bull';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 import { ActionSet } from '@lib/common/actionsets/helper/ActionSet.class';
 import { ActionSetsService } from '@lib/common/actionsets/ActionSets.service';
-import { T721TokenService } from '@lib/common/contracts/T721Token.service';
 import { CheckoutResolve } from '@app/worker/actionhandlers/checkout/Checkout.input.handlers';
 import { CartAuthorizations } from '@app/worker/actionhandlers/cart/Cart.input.handlers';
-import BigNumber from 'bignumber.js';
 import { MintAuthorization, TransactionParameters } from '@common/global';
 import { ScopeBinding, TicketforgeService } from '@lib/common/contracts/Ticketforge.service';
 import { ConfigService } from '@lib/common/config/Config.service';
@@ -118,7 +116,7 @@ export class MintingTasks implements OnModuleInit {
         private readonly outrospectionService: OutrospectionService,
         private readonly shutdownService: ShutdownService,
         private readonly actionSetsService: ActionSetsService,
-        private readonly t721TokenService: T721TokenService,
+        // private readonly t721TokenService: T721TokenService,
         private readonly t721AdminService: T721AdminService,
         private readonly ticketforgeService: TicketforgeService,
         private readonly configService: ConfigService,
@@ -168,78 +166,78 @@ export class MintingTasks implements OnModuleInit {
         return new ActionSet().load(cartActionSetRes.response[0]);
     }
 
-    /**
-     * Internal utility to compute the amount of tokens to approve
-     *
-     * @param checkout
-     * @param cart
-     * @param t721Controller
-     */
-    private async evaluateTokenAmountToAuthorize(
-        checkout: ActionSet,
-        cart: ActionSet,
-        t721Controller: ContractsControllerBase,
-    ): Promise<string> {
-        const checkoutInputData: CheckoutResolve = checkout.actions[0].data;
-        const cartAuthorizations: CartAuthorizations = cart.actions[cart.actions.length - 1].data;
-        const t721ControllerAddress = (await t721Controller.get())._address;
+    // /**
+    //  * Internal utility to compute the amount of tokens to approve
+    //  *
+    //  * @param checkout
+    //  * @param cart
+    //  * @param t721Controller
+    //  */
+    // private async evaluateTokenAmountToAuthorize(
+    //     checkout: ActionSet,
+    //     cart: ActionSet,
+    //     t721Controller: ContractsControllerBase,
+    // ): Promise<string> {
+    //     const checkoutInputData: CheckoutResolve = checkout.actions[0].data;
+    //     const cartAuthorizations: CartAuthorizations = cart.actions[cart.actions.length - 1].data;
+    //     const t721ControllerAddress = (await t721Controller.get())._address;
+    //
+    //     if (cartAuthorizations.total.length === 0) {
+    //         return '0';
+    //     }
+    //
+    //     if (cartAuthorizations.total.length > 1 || cartAuthorizations.fees.length > 1) {
+    //         throw new NestError('Multiple currencies not allowed');
+    //     }
+    //
+    //     if (cartAuthorizations.total[0].currency !== 'T721Token') {
+    //         throw new NestError('Only T721Token allowed');
+    //     }
+    //
+    //     const currentlyAuthorizedAmount = (
+    //         await (await this.t721TokenService.get()).methods
+    //             .allowance(checkoutInputData.buyer, t721ControllerAddress)
+    //             .call()
+    //     ).toString();
+    //
+    //     const totalRequiredAmount = new BigNumber(cartAuthorizations.total[0].value)
+    //         .plus(new BigNumber(cartAuthorizations.fees[0]))
+    //         .toString(10);
+    //
+    //     if (new BigNumber(currentlyAuthorizedAmount).gte(new BigNumber(totalRequiredAmount))) {
+    //         return '0';
+    //     }
+    //
+    //     return new BigNumber(totalRequiredAmount).minus(new BigNumber(currentlyAuthorizedAmount)).toString();
+    // }
 
-        if (cartAuthorizations.total.length === 0) {
-            return '0';
-        }
-
-        if (cartAuthorizations.total.length > 1 || cartAuthorizations.fees.length > 1) {
-            throw new NestError('Multiple currencies not allowed');
-        }
-
-        if (cartAuthorizations.total[0].currency !== 'T721Token') {
-            throw new NestError('Only T721Token allowed');
-        }
-
-        const currentlyAuthorizedAmount = (
-            await (await this.t721TokenService.get()).methods
-                .allowance(checkoutInputData.buyer, t721ControllerAddress)
-                .call()
-        ).toString();
-
-        const totalRequiredAmount = new BigNumber(cartAuthorizations.total[0].value)
-            .plus(new BigNumber(cartAuthorizations.fees[0]))
-            .toString(10);
-
-        if (new BigNumber(currentlyAuthorizedAmount).gte(new BigNumber(totalRequiredAmount))) {
-            return '0';
-        }
-
-        return new BigNumber(totalRequiredAmount).minus(new BigNumber(currentlyAuthorizedAmount)).toString();
-    }
-
-    /**
-     * Internal utility to generate the transaction payload
-     *
-     * @param amount
-     * @param buyer
-     * @param t721Controller
-     */
-    private async getTokenAuthorizationPayload(
-        amount: string,
-        buyer: string,
-        t721Controller: ContractsControllerBase,
-    ): Promise<TransactionParameters> {
-        try {
-            const parameters: TransactionParameters = {
-                from: buyer,
-                to: (await this.t721TokenService.get())._address,
-                data: (await this.t721TokenService.get()).methods
-                    .approve((await t721Controller.get())._address, amount)
-                    .encodeABI(),
-                value: '0',
-            };
-
-            return parameters;
-        } catch (e) {
-            throw new NestError(`Unable to create token approval call: ${e.message}`);
-        }
-    }
+    // /**
+    //  * Internal utility to generate the transaction payload
+    //  *
+    //  * @param amount
+    //  * @param buyer
+    //  * @param t721Controller
+    //  */
+    // private async getTokenAuthorizationPayload(
+    //     amount: string,
+    //     buyer: string,
+    //     t721Controller: ContractsControllerBase,
+    // ): Promise<TransactionParameters> {
+    //     try {
+    //         const parameters: TransactionParameters = {
+    //             from: buyer,
+    //             to: (await this.t721TokenService.get())._address,
+    //             data: (await this.t721TokenService.get()).methods
+    //                 .approve((await t721Controller.get())._address, amount)
+    //                 .encodeABI(),
+    //             value: '0',
+    //         };
+    //
+    //         return parameters;
+    //     } catch (e) {
+    //         throw new NestError(`Unable to create token approval call: ${e.message}`);
+    //     }
+    // }
 
     /**
      * Internal utility to generate the ticket minting transaction parameters
@@ -482,19 +480,19 @@ export class MintingTasks implements OnModuleInit {
         const cart: ActionSet = await this.fetchAndVerifyCart(job.data.cartActionSetId);
         const checkout: ActionSet = await this.fetchAndVerifyCheckout(job.data.checkoutActionSetId);
 
-        const amountToAuthorize = await this.evaluateTokenAmountToAuthorize(checkout, cart, t721Controller);
+        // const amountToAuthorize = await this.evaluateTokenAmountToAuthorize(checkout, cart, t721Controller);
 
         const transactions: (TransactionParameters & Partial<TransactionLifecycles>)[] = [];
 
         const buyer: string = (checkout.actions[0].data as CheckoutResolve).buyer;
         const cartAuthorizations: CartAuthorizations = cart.actions[cart.actions.length - 1].data as CartAuthorizations;
 
-        transactions.push(await this.getTokenAuthorizationPayload(amountToAuthorize, buyer, t721Controller));
+        // transactions.push(await this.getTokenAuthorizationPayload(amountToAuthorize, buyer, t721Controller));
         transactions.push(
             await this.generateTicketMintingTransactions(
                 cartAuthorizations.authorizations,
-                cartAuthorizations.total,
-                cartAuthorizations.fees,
+                [] /* cartAuthorizations.total */,
+                [] /* cartAuthorizations.fees */,
                 t721Controller,
             ),
         );

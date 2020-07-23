@@ -1092,514 +1092,514 @@ export default function(getCtx: () => { ready: Promise<void> }) {
             });
         });
 
-        describe('withdraw (POST /events/:eventId/withdraw)', function() {
-            test('should properly recover tokens from user purchases', async function() {
-                const {
-                    sdk,
-                    token,
-                    user,
-                    password,
-                }: {
-                    sdk: T721SDK;
-                    token: string;
-                    user: PasswordlessUserDto;
-                    password: string;
-                } = await getSDKAndUser(getCtx);
-
-                const event = await createExpensiveEvent(token, sdk);
-
-                const amountReceived = 10370;
-
-                const validPaymentIntentId = await createPaymentIntent({
-                    charges: {
-                        data: [
-                            {
-                                amount_refunded: 89630,
-                                payment_method_details: {
-                                    type: 'card',
-                                    card: {
-                                        country: 'FR',
-                                    },
-                                },
-                            },
-                        ],
-                    } as Stripe.ApiList<Stripe.Charge>,
-                    amount: 100000,
-                    payment_method_types: ['card'],
-                    status: 'succeeded',
-                    currency: 'eur',
-                    amount_received: amountReceived,
-                });
-
-                const cartActionSetRes = await sdk.actions.create(token, {
-                    name: 'cart_create',
-                    arguments: {},
-                });
-
-                const actionSetId = cartActionSetRes.data.actionset.id;
-
-                await sdk.cart.ticketSelections(token, actionSetId, {
-                    tickets: [
-                        ...[...Array(1)].map(() => ({
-                            categoryId: event.categories[0],
-                            price: {
-                                currency: 'Fiat',
-                                price: '10000',
-                            },
-                        })),
-                    ],
-                });
-
-                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-                    return as.current_action === 1;
-                });
-
-                await sdk.cart.modulesConfiguration(token, actionSetId, {});
-
-                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-                    return as.current_action === 2;
-                });
-
-                await sdk.checkout.cart.commit.stripe(token, {
-                    cart: actionSetId,
-                });
-
-                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-                    return as.current_status === 'complete';
-                });
-
-                await validateCardPayment(await getPIFromCart(sdk, token, actionSetId));
-
-                const res = await sdk.checkout.cart.resolve.paymentIntent(token, {
-                    cart: actionSetId,
-                });
-
-                const checkoutActionSetId = res.data.checkoutActionSetId;
-
-                await waitForActionSet(sdk, token, checkoutActionSetId, (as: ActionSetEntity): boolean => {
-                    return as.current_status === 'complete';
-                });
-
-                await waitForTickets(sdk, token, user.address, (tickets: TicketEntity[]): boolean => {
-                    return tickets.filter((ticket: TicketEntity): boolean => ticket.status === 'ready').length === 1;
-                });
-
-                const withdrawReceipt = await sdk.events.withdraw(token, event.id, {
-                    currency: 'T721Token',
-                    amount: '10000',
-                });
-
-                await waitForActionSet(sdk, token, withdrawReceipt.data.txSeqId, (as: ActionSetEntity): boolean => {
-                    return as.current_status === 'complete';
-                });
-            });
-
-            test('should fail for amount too high', async function() {
-                const {
-                    sdk,
-                    token,
-                    user,
-                    password,
-                }: {
-                    sdk: T721SDK;
-                    token: string;
-                    user: PasswordlessUserDto;
-                    password: string;
-                } = await getSDKAndUser(getCtx);
-
-                const event = await createExpensiveEvent(token, sdk);
-
-                const amountReceived = 10370;
-
-                const validPaymentIntentId = await createPaymentIntent({
-                    charges: {
-                        data: [
-                            {
-                                amount_refunded: 89630,
-                                payment_method_details: {
-                                    type: 'card',
-                                    card: {
-                                        country: 'FR',
-                                    },
-                                },
-                            },
-                        ],
-                    } as Stripe.ApiList<Stripe.Charge>,
-                    amount: 100000,
-                    payment_method_types: ['card'],
-                    status: 'succeeded',
-                    currency: 'eur',
-                    amount_received: amountReceived,
-                });
-
-                const cartActionSetRes = await sdk.actions.create(token, {
-                    name: 'cart_create',
-                    arguments: {},
-                });
-
-                const actionSetId = cartActionSetRes.data.actionset.id;
-
-                await sdk.cart.ticketSelections(token, actionSetId, {
-                    tickets: [
-                        ...[...Array(1)].map(() => ({
-                            categoryId: event.categories[0],
-                            price: {
-                                currency: 'Fiat',
-                                price: '10000',
-                            },
-                        })),
-                    ],
-                });
-
-                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-                    return as.current_action === 1;
-                });
-
-                await sdk.cart.modulesConfiguration(token, actionSetId, {});
-
-                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-                    return as.current_action === 2;
-                });
-
-                await sdk.checkout.cart.commit.stripe(token, {
-                    cart: actionSetId,
-                });
-
-                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-                    return as.current_status === 'complete';
-                });
-
-                await validateCardPayment(await getPIFromCart(sdk, token, actionSetId));
-
-                const res = await sdk.checkout.cart.resolve.paymentIntent(token, {
-                    cart: actionSetId,
-                });
-
-                const checkoutActionSetId = res.data.checkoutActionSetId;
-
-                await waitForActionSet(sdk, token, checkoutActionSetId, (as: ActionSetEntity): boolean => {
-                    return as.current_status === 'complete';
-                });
-
-                await waitForTickets(sdk, token, user.address, (tickets: TicketEntity[]): boolean => {
-                    return tickets.filter((ticket: TicketEntity): boolean => ticket.status === 'ready').length === 1;
-                });
-
-                await failWithCode(
-                    sdk.events.withdraw(token, event.id, {
-                        currency: 'T721Token',
-                        amount: '10001',
-                    }),
-                    StatusCodes.Forbidden,
-                    'requested_amount_too_high',
-                );
-            });
-
-            test('should fail for invalid currency withdraw request', async function() {
-                const {
-                    sdk,
-                    token,
-                    user,
-                    password,
-                }: {
-                    sdk: T721SDK;
-                    token: string;
-                    user: PasswordlessUserDto;
-                    password: string;
-                } = await getSDKAndUser(getCtx);
-
-                const event = await createExpensiveEvent(token, sdk);
-
-                const amountReceived = 10370;
-
-                const validPaymentIntentId = await createPaymentIntent({
-                    charges: {
-                        data: [
-                            {
-                                amount_refunded: 89630,
-                                payment_method_details: {
-                                    type: 'card',
-                                    card: {
-                                        country: 'FR',
-                                    },
-                                },
-                            },
-                        ],
-                    } as Stripe.ApiList<Stripe.Charge>,
-                    amount: 100000,
-                    payment_method_types: ['card'],
-                    status: 'succeeded',
-                    currency: 'eur',
-                    amount_received: amountReceived,
-                });
-
-                const cartActionSetRes = await sdk.actions.create(token, {
-                    name: 'cart_create',
-                    arguments: {},
-                });
-
-                const actionSetId = cartActionSetRes.data.actionset.id;
-
-                await sdk.cart.ticketSelections(token, actionSetId, {
-                    tickets: [
-                        ...[...Array(1)].map(() => ({
-                            categoryId: event.categories[0],
-                            price: {
-                                currency: 'Fiat',
-                                price: '10000',
-                            },
-                        })),
-                    ],
-                });
-
-                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-                    return as.current_action === 1;
-                });
-
-                await sdk.cart.modulesConfiguration(token, actionSetId, {});
-
-                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-                    return as.current_action === 2;
-                });
-
-                await sdk.checkout.cart.commit.stripe(token, {
-                    cart: actionSetId,
-                });
-
-                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-                    return as.current_status === 'complete';
-                });
-
-                await validateCardPayment(await getPIFromCart(sdk, token, actionSetId));
-
-                const res = await sdk.checkout.cart.resolve.paymentIntent(token, {
-                    cart: actionSetId,
-                });
-
-                const checkoutActionSetId = res.data.checkoutActionSetId;
-
-                await waitForActionSet(sdk, token, checkoutActionSetId, (as: ActionSetEntity): boolean => {
-                    return as.current_status === 'complete';
-                });
-
-                await waitForTickets(sdk, token, user.address, (tickets: TicketEntity[]): boolean => {
-                    return tickets.filter((ticket: TicketEntity): boolean => ticket.status === 'ready').length === 1;
-                });
-
-                await failWithCode(
-                    sdk.events.withdraw(token, event.id, {
-                        currency: 'Fiat',
-                        amount: '10000',
-                    }),
-                    StatusCodes.Forbidden,
-                    'invalid_currency_to_withdraw',
-                );
-            });
-
-            test('should fail for unknown currency withdraw request', async function() {
-                const {
-                    sdk,
-                    token,
-                    user,
-                    password,
-                }: {
-                    sdk: T721SDK;
-                    token: string;
-                    user: PasswordlessUserDto;
-                    password: string;
-                } = await getSDKAndUser(getCtx);
-
-                const event = await createExpensiveEvent(token, sdk);
-
-                const amountReceived = 10370;
-
-                const validPaymentIntentId = await createPaymentIntent({
-                    charges: {
-                        data: [
-                            {
-                                amount_refunded: 89630,
-                                payment_method_details: {
-                                    type: 'card',
-                                    card: {
-                                        country: 'FR',
-                                    },
-                                },
-                            },
-                        ],
-                    } as Stripe.ApiList<Stripe.Charge>,
-                    amount: 100000,
-                    payment_method_types: ['card'],
-                    status: 'succeeded',
-                    currency: 'eur',
-                    amount_received: amountReceived,
-                });
-
-                const cartActionSetRes = await sdk.actions.create(token, {
-                    name: 'cart_create',
-                    arguments: {},
-                });
-
-                const actionSetId = cartActionSetRes.data.actionset.id;
-
-                await sdk.cart.ticketSelections(token, actionSetId, {
-                    tickets: [
-                        ...[...Array(1)].map(() => ({
-                            categoryId: event.categories[0],
-                            price: {
-                                currency: 'Fiat',
-                                price: '10000',
-                            },
-                        })),
-                    ],
-                });
-
-                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-                    return as.current_action === 1;
-                });
-
-                await sdk.cart.modulesConfiguration(token, actionSetId, {});
-
-                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-                    return as.current_action === 2;
-                });
-
-                await sdk.checkout.cart.commit.stripe(token, {
-                    cart: actionSetId,
-                });
-
-                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-                    return as.current_status === 'complete';
-                });
-
-                await validateCardPayment(await getPIFromCart(sdk, token, actionSetId));
-
-                const res = await sdk.checkout.cart.resolve.paymentIntent(token, {
-                    cart: actionSetId,
-                });
-
-                const checkoutActionSetId = res.data.checkoutActionSetId;
-
-                await waitForActionSet(sdk, token, checkoutActionSetId, (as: ActionSetEntity): boolean => {
-                    return as.current_status === 'complete';
-                });
-
-                await waitForTickets(sdk, token, user.address, (tickets: TicketEntity[]): boolean => {
-                    return tickets.filter((ticket: TicketEntity): boolean => ticket.status === 'ready').length === 1;
-                });
-
-                await failWithCode(
-                    sdk.events.withdraw(token, event.id, {
-                        currency: 'Fiat Punto',
-                        amount: '10000',
-                    }),
-                    StatusCodes.NotFound,
-                    'cannot_find_currency',
-                );
-            });
-
-            test('should fail for missing rights', async function() {
-                const {
-                    sdk,
-                    token,
-                    user,
-                    password,
-                }: {
-                    sdk: T721SDK;
-                    token: string;
-                    user: PasswordlessUserDto;
-                    password: string;
-                } = await getSDKAndUser(getCtx);
-
-                const event = await createExpensiveEvent(token, sdk);
-                const otherUser = await getUser(sdk);
-
-                const amountReceived = 10370;
-
-                const validPaymentIntentId = await createPaymentIntent({
-                    charges: {
-                        data: [
-                            {
-                                amount_refunded: 89630,
-                                payment_method_details: {
-                                    type: 'card',
-                                    card: {
-                                        country: 'FR',
-                                    },
-                                },
-                            },
-                        ],
-                    } as Stripe.ApiList<Stripe.Charge>,
-                    amount: 100000,
-                    payment_method_types: ['card'],
-                    status: 'succeeded',
-                    currency: 'eur',
-                    amount_received: amountReceived,
-                });
-
-                const cartActionSetRes = await sdk.actions.create(token, {
-                    name: 'cart_create',
-                    arguments: {},
-                });
-
-                const actionSetId = cartActionSetRes.data.actionset.id;
-
-                await sdk.cart.ticketSelections(token, actionSetId, {
-                    tickets: [
-                        ...[...Array(1)].map(() => ({
-                            categoryId: event.categories[0],
-                            price: {
-                                currency: 'Fiat',
-                                price: '10000',
-                            },
-                        })),
-                    ],
-                });
-
-                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-                    return as.current_action === 1;
-                });
-
-                await sdk.cart.modulesConfiguration(token, actionSetId, {});
-
-                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-                    return as.current_action === 2;
-                });
-
-                await sdk.checkout.cart.commit.stripe(token, {
-                    cart: actionSetId,
-                });
-
-                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-                    return as.current_status === 'complete';
-                });
-
-                await validateCardPayment(await getPIFromCart(sdk, token, actionSetId));
-
-                const res = await sdk.checkout.cart.resolve.paymentIntent(token, {
-                    cart: actionSetId,
-                });
-
-                const checkoutActionSetId = res.data.checkoutActionSetId;
-
-                await waitForActionSet(sdk, token, checkoutActionSetId, (as: ActionSetEntity): boolean => {
-                    return as.current_status === 'complete';
-                });
-
-                await waitForTickets(sdk, token, user.address, (tickets: TicketEntity[]): boolean => {
-                    return tickets.filter((ticket: TicketEntity): boolean => ticket.status === 'ready').length === 1;
-                });
-
-                await failWithCode(
-                    sdk.events.withdraw(otherUser.token, event.id, {
-                        currency: 'T721Token',
-                        amount: '10000',
-                    }),
-                    StatusCodes.Unauthorized,
-                    'unauthorized_action',
-                );
-            });
-        });
-
+        // describe('withdraw (POST /events/:eventId/withdraw)', function() {
+        //     test('should properly recover tokens from user purchases', async function() {
+        //         const {
+        //             sdk,
+        //             token,
+        //             user,
+        //             password,
+        //         }: {
+        //             sdk: T721SDK;
+        //             token: string;
+        //             user: PasswordlessUserDto;
+        //             password: string;
+        //         } = await getSDKAndUser(getCtx);
+        //
+        //         const event = await createExpensiveEvent(token, sdk);
+        //
+        //         const amountReceived = 10370;
+        //
+        //         const validPaymentIntentId = await createPaymentIntent({
+        //             charges: {
+        //                 data: [
+        //                     {
+        //                         amount_refunded: 89630,
+        //                         payment_method_details: {
+        //                             type: 'card',
+        //                             card: {
+        //                                 country: 'FR',
+        //                             },
+        //                         },
+        //                     },
+        //                 ],
+        //             } as Stripe.ApiList<Stripe.Charge>,
+        //             amount: 100000,
+        //             payment_method_types: ['card'],
+        //             status: 'succeeded',
+        //             currency: 'eur',
+        //             amount_received: amountReceived,
+        //         });
+        //
+        //         const cartActionSetRes = await sdk.actions.create(token, {
+        //             name: 'cart_create',
+        //             arguments: {},
+        //         });
+        //
+        //         const actionSetId = cartActionSetRes.data.actionset.id;
+        //
+        //         await sdk.cart.ticketSelections(token, actionSetId, {
+        //             tickets: [
+        //                 ...[...Array(1)].map(() => ({
+        //                     categoryId: event.categories[0],
+        //                     price: {
+        //                         currency: 'Fiat',
+        //                         price: '10000',
+        //                     },
+        //                 })),
+        //             ],
+        //         });
+        //
+        //         await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+        //             return as.current_action === 1;
+        //         });
+        //
+        //         await sdk.cart.modulesConfiguration(token, actionSetId, {});
+        //
+        //         await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+        //             return as.current_action === 2;
+        //         });
+        //
+        //         await sdk.checkout.cart.commit.stripe(token, {
+        //             cart: actionSetId,
+        //         });
+        //
+        //         await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+        //             return as.current_status === 'complete';
+        //         });
+        //
+        //         await validateCardPayment(await getPIFromCart(sdk, token, actionSetId));
+        //
+        //         const res = await sdk.checkout.cart.resolve.paymentIntent(token, {
+        //             cart: actionSetId,
+        //         });
+        //
+        //         const checkoutActionSetId = res.data.checkoutActionSetId;
+        //
+        //         await waitForActionSet(sdk, token, checkoutActionSetId, (as: ActionSetEntity): boolean => {
+        //             return as.current_status === 'complete';
+        //         });
+        //
+        //         await waitForTickets(sdk, token, user.address, (tickets: TicketEntity[]): boolean => {
+        //             return tickets.filter((ticket: TicketEntity): boolean => ticket.status === 'ready').length === 1;
+        //         });
+        //
+        //         const withdrawReceipt = await sdk.events.withdraw(token, event.id, {
+        //             currency: 'T721Token',
+        //             amount: '10000',
+        //         });
+        //
+        //         await waitForActionSet(sdk, token, withdrawReceipt.data.txSeqId, (as: ActionSetEntity): boolean => {
+        //             return as.current_status === 'complete';
+        //         });
+        //     });
+        //
+        //     test('should fail for amount too high', async function() {
+        //         const {
+        //             sdk,
+        //             token,
+        //             user,
+        //             password,
+        //         }: {
+        //             sdk: T721SDK;
+        //             token: string;
+        //             user: PasswordlessUserDto;
+        //             password: string;
+        //         } = await getSDKAndUser(getCtx);
+        //
+        //         const event = await createExpensiveEvent(token, sdk);
+        //
+        //         const amountReceived = 10370;
+        //
+        //         const validPaymentIntentId = await createPaymentIntent({
+        //             charges: {
+        //                 data: [
+        //                     {
+        //                         amount_refunded: 89630,
+        //                         payment_method_details: {
+        //                             type: 'card',
+        //                             card: {
+        //                                 country: 'FR',
+        //                             },
+        //                         },
+        //                     },
+        //                 ],
+        //             } as Stripe.ApiList<Stripe.Charge>,
+        //             amount: 100000,
+        //             payment_method_types: ['card'],
+        //             status: 'succeeded',
+        //             currency: 'eur',
+        //             amount_received: amountReceived,
+        //         });
+        //
+        //         const cartActionSetRes = await sdk.actions.create(token, {
+        //             name: 'cart_create',
+        //             arguments: {},
+        //         });
+        //
+        //         const actionSetId = cartActionSetRes.data.actionset.id;
+        //
+        //         await sdk.cart.ticketSelections(token, actionSetId, {
+        //             tickets: [
+        //                 ...[...Array(1)].map(() => ({
+        //                     categoryId: event.categories[0],
+        //                     price: {
+        //                         currency: 'Fiat',
+        //                         price: '10000',
+        //                     },
+        //                 })),
+        //             ],
+        //         });
+        //
+        //         await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+        //             return as.current_action === 1;
+        //         });
+        //
+        //         await sdk.cart.modulesConfiguration(token, actionSetId, {});
+        //
+        //         await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+        //             return as.current_action === 2;
+        //         });
+        //
+        //         await sdk.checkout.cart.commit.stripe(token, {
+        //             cart: actionSetId,
+        //         });
+        //
+        //         await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+        //             return as.current_status === 'complete';
+        //         });
+        //
+        //         await validateCardPayment(await getPIFromCart(sdk, token, actionSetId));
+        //
+        //         const res = await sdk.checkout.cart.resolve.paymentIntent(token, {
+        //             cart: actionSetId,
+        //         });
+        //
+        //         const checkoutActionSetId = res.data.checkoutActionSetId;
+        //
+        //         await waitForActionSet(sdk, token, checkoutActionSetId, (as: ActionSetEntity): boolean => {
+        //             return as.current_status === 'complete';
+        //         });
+        //
+        //         await waitForTickets(sdk, token, user.address, (tickets: TicketEntity[]): boolean => {
+        //             return tickets.filter((ticket: TicketEntity): boolean => ticket.status === 'ready').length === 1;
+        //         });
+        //
+        //         await failWithCode(
+        //             sdk.events.withdraw(token, event.id, {
+        //                 currency: 'T721Token',
+        //                 amount: '10001',
+        //             }),
+        //             StatusCodes.Forbidden,
+        //             'requested_amount_too_high',
+        //         );
+        //     });
+        //
+        //     test('should fail for invalid currency withdraw request', async function() {
+        //         const {
+        //             sdk,
+        //             token,
+        //             user,
+        //             password,
+        //         }: {
+        //             sdk: T721SDK;
+        //             token: string;
+        //             user: PasswordlessUserDto;
+        //             password: string;
+        //         } = await getSDKAndUser(getCtx);
+        //
+        //         const event = await createExpensiveEvent(token, sdk);
+        //
+        //         const amountReceived = 10370;
+        //
+        //         const validPaymentIntentId = await createPaymentIntent({
+        //             charges: {
+        //                 data: [
+        //                     {
+        //                         amount_refunded: 89630,
+        //                         payment_method_details: {
+        //                             type: 'card',
+        //                             card: {
+        //                                 country: 'FR',
+        //                             },
+        //                         },
+        //                     },
+        //                 ],
+        //             } as Stripe.ApiList<Stripe.Charge>,
+        //             amount: 100000,
+        //             payment_method_types: ['card'],
+        //             status: 'succeeded',
+        //             currency: 'eur',
+        //             amount_received: amountReceived,
+        //         });
+        //
+        //         const cartActionSetRes = await sdk.actions.create(token, {
+        //             name: 'cart_create',
+        //             arguments: {},
+        //         });
+        //
+        //         const actionSetId = cartActionSetRes.data.actionset.id;
+        //
+        //         await sdk.cart.ticketSelections(token, actionSetId, {
+        //             tickets: [
+        //                 ...[...Array(1)].map(() => ({
+        //                     categoryId: event.categories[0],
+        //                     price: {
+        //                         currency: 'Fiat',
+        //                         price: '10000',
+        //                     },
+        //                 })),
+        //             ],
+        //         });
+        //
+        //         await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+        //             return as.current_action === 1;
+        //         });
+        //
+        //         await sdk.cart.modulesConfiguration(token, actionSetId, {});
+        //
+        //         await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+        //             return as.current_action === 2;
+        //         });
+        //
+        //         await sdk.checkout.cart.commit.stripe(token, {
+        //             cart: actionSetId,
+        //         });
+        //
+        //         await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+        //             return as.current_status === 'complete';
+        //         });
+        //
+        //         await validateCardPayment(await getPIFromCart(sdk, token, actionSetId));
+        //
+        //         const res = await sdk.checkout.cart.resolve.paymentIntent(token, {
+        //             cart: actionSetId,
+        //         });
+        //
+        //         const checkoutActionSetId = res.data.checkoutActionSetId;
+        //
+        //         await waitForActionSet(sdk, token, checkoutActionSetId, (as: ActionSetEntity): boolean => {
+        //             return as.current_status === 'complete';
+        //         });
+        //
+        //         await waitForTickets(sdk, token, user.address, (tickets: TicketEntity[]): boolean => {
+        //             return tickets.filter((ticket: TicketEntity): boolean => ticket.status === 'ready').length === 1;
+        //         });
+        //
+        //         await failWithCode(
+        //             sdk.events.withdraw(token, event.id, {
+        //                 currency: 'Fiat',
+        //                 amount: '10000',
+        //             }),
+        //             StatusCodes.Forbidden,
+        //             'invalid_currency_to_withdraw',
+        //         );
+        //     });
+        //
+        //     test('should fail for unknown currency withdraw request', async function() {
+        //         const {
+        //             sdk,
+        //             token,
+        //             user,
+        //             password,
+        //         }: {
+        //             sdk: T721SDK;
+        //             token: string;
+        //             user: PasswordlessUserDto;
+        //             password: string;
+        //         } = await getSDKAndUser(getCtx);
+        //
+        //         const event = await createExpensiveEvent(token, sdk);
+        //
+        //         const amountReceived = 10370;
+        //
+        //         const validPaymentIntentId = await createPaymentIntent({
+        //             charges: {
+        //                 data: [
+        //                     {
+        //                         amount_refunded: 89630,
+        //                         payment_method_details: {
+        //                             type: 'card',
+        //                             card: {
+        //                                 country: 'FR',
+        //                             },
+        //                         },
+        //                     },
+        //                 ],
+        //             } as Stripe.ApiList<Stripe.Charge>,
+        //             amount: 100000,
+        //             payment_method_types: ['card'],
+        //             status: 'succeeded',
+        //             currency: 'eur',
+        //             amount_received: amountReceived,
+        //         });
+        //
+        //         const cartActionSetRes = await sdk.actions.create(token, {
+        //             name: 'cart_create',
+        //             arguments: {},
+        //         });
+        //
+        //         const actionSetId = cartActionSetRes.data.actionset.id;
+        //
+        //         await sdk.cart.ticketSelections(token, actionSetId, {
+        //             tickets: [
+        //                 ...[...Array(1)].map(() => ({
+        //                     categoryId: event.categories[0],
+        //                     price: {
+        //                         currency: 'Fiat',
+        //                         price: '10000',
+        //                     },
+        //                 })),
+        //             ],
+        //         });
+        //
+        //         await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+        //             return as.current_action === 1;
+        //         });
+        //
+        //         await sdk.cart.modulesConfiguration(token, actionSetId, {});
+        //
+        //         await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+        //             return as.current_action === 2;
+        //         });
+        //
+        //         await sdk.checkout.cart.commit.stripe(token, {
+        //             cart: actionSetId,
+        //         });
+        //
+        //         await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+        //             return as.current_status === 'complete';
+        //         });
+        //
+        //         await validateCardPayment(await getPIFromCart(sdk, token, actionSetId));
+        //
+        //         const res = await sdk.checkout.cart.resolve.paymentIntent(token, {
+        //             cart: actionSetId,
+        //         });
+        //
+        //         const checkoutActionSetId = res.data.checkoutActionSetId;
+        //
+        //         await waitForActionSet(sdk, token, checkoutActionSetId, (as: ActionSetEntity): boolean => {
+        //             return as.current_status === 'complete';
+        //         });
+        //
+        //         await waitForTickets(sdk, token, user.address, (tickets: TicketEntity[]): boolean => {
+        //             return tickets.filter((ticket: TicketEntity): boolean => ticket.status === 'ready').length === 1;
+        //         });
+        //
+        //         await failWithCode(
+        //             sdk.events.withdraw(token, event.id, {
+        //                 currency: 'Fiat Punto',
+        //                 amount: '10000',
+        //             }),
+        //             StatusCodes.NotFound,
+        //             'cannot_find_currency',
+        //         );
+        //     });
+        //
+        //     test('should fail for missing rights', async function() {
+        //         const {
+        //             sdk,
+        //             token,
+        //             user,
+        //             password,
+        //         }: {
+        //             sdk: T721SDK;
+        //             token: string;
+        //             user: PasswordlessUserDto;
+        //             password: string;
+        //         } = await getSDKAndUser(getCtx);
+        //
+        //         const event = await createExpensiveEvent(token, sdk);
+        //         const otherUser = await getUser(sdk);
+        //
+        //         const amountReceived = 10370;
+        //
+        //         const validPaymentIntentId = await createPaymentIntent({
+        //             charges: {
+        //                 data: [
+        //                     {
+        //                         amount_refunded: 89630,
+        //                         payment_method_details: {
+        //                             type: 'card',
+        //                             card: {
+        //                                 country: 'FR',
+        //                             },
+        //                         },
+        //                     },
+        //                 ],
+        //             } as Stripe.ApiList<Stripe.Charge>,
+        //             amount: 100000,
+        //             payment_method_types: ['card'],
+        //             status: 'succeeded',
+        //             currency: 'eur',
+        //             amount_received: amountReceived,
+        //         });
+        //
+        //         const cartActionSetRes = await sdk.actions.create(token, {
+        //             name: 'cart_create',
+        //             arguments: {},
+        //         });
+        //
+        //         const actionSetId = cartActionSetRes.data.actionset.id;
+        //
+        //         await sdk.cart.ticketSelections(token, actionSetId, {
+        //             tickets: [
+        //                 ...[...Array(1)].map(() => ({
+        //                     categoryId: event.categories[0],
+        //                     price: {
+        //                         currency: 'Fiat',
+        //                         price: '10000',
+        //                     },
+        //                 })),
+        //             ],
+        //         });
+        //
+        //         await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+        //             return as.current_action === 1;
+        //         });
+        //
+        //         await sdk.cart.modulesConfiguration(token, actionSetId, {});
+        //
+        //         await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+        //             return as.current_action === 2;
+        //         });
+        //
+        //         await sdk.checkout.cart.commit.stripe(token, {
+        //             cart: actionSetId,
+        //         });
+        //
+        //         await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+        //             return as.current_status === 'complete';
+        //         });
+        //
+        //         await validateCardPayment(await getPIFromCart(sdk, token, actionSetId));
+        //
+        //         const res = await sdk.checkout.cart.resolve.paymentIntent(token, {
+        //             cart: actionSetId,
+        //         });
+        //
+        //         const checkoutActionSetId = res.data.checkoutActionSetId;
+        //
+        //         await waitForActionSet(sdk, token, checkoutActionSetId, (as: ActionSetEntity): boolean => {
+        //             return as.current_status === 'complete';
+        //         });
+        //
+        //         await waitForTickets(sdk, token, user.address, (tickets: TicketEntity[]): boolean => {
+        //             return tickets.filter((ticket: TicketEntity): boolean => ticket.status === 'ready').length === 1;
+        //         });
+        //
+        //         await failWithCode(
+        //             sdk.events.withdraw(otherUser.token, event.id, {
+        //                 currency: 'T721Token',
+        //                 amount: '10000',
+        //             }),
+        //             StatusCodes.Unauthorized,
+        //             'unauthorized_action',
+        //         );
+        //     });
+        // });
+        //
         describe('guestlist (POST /events/:eventId/guestlist)', function() {
             test('should search for ticket list of event', async function() {
                 const {

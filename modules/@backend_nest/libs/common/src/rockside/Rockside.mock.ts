@@ -5,7 +5,8 @@ import {
     RocksideApiOpts,
     EncryptedWallet,
     TransactionOpts,
-    RocksideApi, TransactionInfosResponse,
+    RocksideApi,
+    TransactionInfosResponse,
 } from '@rocksideio/rockside-wallet-sdk/lib/api';
 import { ContractsControllerBase } from '@lib/common/contracts/ContractsController.base';
 import {
@@ -15,15 +16,14 @@ import {
     Wallet,
     decimalToHex,
     encode,
-}                             from '@common/global';
-import { FSService }          from '@lib/common/fs/FS.service';
-import { Web3Service }        from '@lib/common/web3/Web3.service';
-import { Web3Provider }       from 'ethers/providers';
-import { utils }              from 'ethers';
-import BN                     from 'bn.js';
-import { ContractArtifact }   from '@lib/common/contracts/Contracts.service';
-import { NestError }          from '@lib/common/utils/NestError';
-import { TransactionReceipt } from '@rocksideio/rockside-wallet-sdk/src/api';
+} from '@common/global';
+import { FSService } from '@lib/common/fs/FS.service';
+import { Web3Service } from '@lib/common/web3/Web3.service';
+import { Web3Provider } from 'ethers/providers';
+import { utils } from 'ethers';
+import BN from 'bn.js';
+import { ContractArtifact } from '@lib/common/contracts/Contracts.service';
+import { NestError } from '@lib/common/utils/NestError';
 
 /**
  * Mock Options for the Rockside api mock
@@ -263,7 +263,6 @@ export class RocksideMock
     }
 
     async getTransaction(txOrTrackingId: string): Promise<TransactionInfosResponse> {
-
         const web3Instance = await this.mockOpts.web3Service.get();
 
         const transaction = await web3Instance.eth.getTransaction(txOrTrackingId);
@@ -281,7 +280,7 @@ export class RocksideMock
             gas_price: transaction.gasPrice,
             chain_id: 2702,
             receipt: transactionReceipt,
-            status: transaction.success
+            status: transaction.success,
         };
     }
 
@@ -333,7 +332,10 @@ export class RocksideMock
     /**
      * Mock method
      */
-    async relayTransaction(identity: string, tx: ExecuteTransaction): Promise<{ transaction_hash: string; tracking_id: string }> {
+    async relayTransaction(
+        identity: string,
+        tx: ExecuteTransaction,
+    ): Promise<{ transaction_hash: string; tracking_id: string }> {
         throw new NestError(`Un-mocked method`);
     }
 

@@ -127,7 +127,7 @@ describe('Txs Service', function() {
                         transaction_hash: transactionHash,
                         block_number: 0,
                         confirmed: false,
-                        real_transaction_hash: undefined
+                        real_transaction_hash: undefined,
                     }),
                 ),
             ).thenResolve({
@@ -156,7 +156,7 @@ describe('Txs Service', function() {
                         transaction_hash: transactionHash,
                         block_number: 0,
                         confirmed: false,
-                        real_transaction_hash: undefined
+                        real_transaction_hash: undefined,
                     }),
                 ),
             ).called();
@@ -295,7 +295,7 @@ describe('Txs Service', function() {
                         transaction_hash: transactionHash,
                         block_number: 0,
                         confirmed: false,
-                        real_transaction_hash: undefined
+                        real_transaction_hash: undefined,
                     }),
                 ),
             ).thenResolve({
@@ -324,7 +324,7 @@ describe('Txs Service', function() {
                         transaction_hash: transactionHash,
                         block_number: 0,
                         confirmed: false,
-                        real_transaction_hash: undefined
+                        real_transaction_hash: undefined,
                     }),
                 ),
             ).called();
@@ -545,7 +545,7 @@ describe('Txs Service', function() {
                 error: null,
                 response: {
                     transaction_hash: transactionHash,
-                    tracking_id: trackingId
+                    tracking_id: trackingId,
                 },
             });
             when(spiedService.subscribe(trackingId, transactionHash)).thenResolve({
@@ -644,7 +644,7 @@ describe('Txs Service', function() {
                 error: null,
                 response: {
                     transaction_hash: transactionHash,
-                    tracking_id: trackingId
+                    tracking_id: trackingId,
                 },
             });
             when(spiedService.subscribe(trackingId, transactionHash)).thenResolve({

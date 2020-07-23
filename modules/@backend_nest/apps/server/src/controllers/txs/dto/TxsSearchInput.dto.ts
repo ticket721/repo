@@ -22,7 +22,7 @@ export class TxsSearchInputDto implements SearchInputType<TxEntity> {
      */
     @ApiPropertyOptional()
     @IsOptional()
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     real_transaction_hash: SearchableField<string>;
 
     /**
