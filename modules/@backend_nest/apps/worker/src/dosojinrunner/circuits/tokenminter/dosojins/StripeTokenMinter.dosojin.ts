@@ -19,6 +19,9 @@ import { T721TokenService } from '@lib/common/contracts/T721Token.service';
 import { NestError } from '@lib/common/utils/NestError';
 import { StripeService } from '@lib/common/stripe/Stripe.service';
 
+/**
+ * Placeholder operation
+ */
 export class TokenMinterOperationPlaceholder extends Operation {
     /**
      * Deoendency Injection

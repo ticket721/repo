@@ -262,6 +262,11 @@ export class RocksideMock
         };
     }
 
+    /**
+     * Recover transaction info
+     *
+     * @param txOrTrackingId
+     */
     async getTransaction(txOrTrackingId: string): Promise<TransactionInfosResponse> {
         const web3Instance = await this.mockOpts.web3Service.get();
 
