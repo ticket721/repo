@@ -1,8 +1,6 @@
 name: T721 Monorepo Staging CD
 
 on:
-  schedule:
-    - cron:  '0 8 * * *'
   push:
     tags:
       - staging-*
