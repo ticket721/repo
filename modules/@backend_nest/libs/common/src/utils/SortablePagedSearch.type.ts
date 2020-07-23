@@ -31,7 +31,7 @@ export class SortablePagedSearch {
     @IsNumber()
     @IsOptional()
     // tslint:disable-next-line:variable-name
-    $page_size?: number = 10;
+    $page_size?: number;
 
     /**
      * Specifies the required page
@@ -43,5 +43,5 @@ export class SortablePagedSearch {
     @IsNumber()
     @IsOptional()
     // tslint:disable-next-line:variable-name
-    $page_index?: number = 0;
+    $page_index?: number;
 }

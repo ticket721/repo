@@ -167,7 +167,7 @@ export class TxSeqEventHandlers implements OnModuleInit {
                         if (tx.status === false) {
                             if (data.transaction.onFailure) {
                                 await this.txQueue.add(data.transaction.onFailure.name, {
-                                    transactionHash: data.transactionHash,
+                                    transactionHash: tx.real_transaction_hash,
                                     ...data.transaction.onFailure.jobData,
                                 });
                             }
@@ -181,7 +181,7 @@ export class TxSeqEventHandlers implements OnModuleInit {
                         } else {
                             if (data.transaction.onConfirm) {
                                 await this.txQueue.add(data.transaction.onConfirm.name, {
-                                    transactionHash: data.transactionHash,
+                                    transactionHash: tx.real_transaction_hash,
                                     ...data.transaction.onConfirm.jobData,
                                 });
                             }

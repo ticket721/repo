@@ -440,7 +440,6 @@ function sortNestedManager(field: Sort[], body: Partial<EsSearchOptionsStatic>):
  */
 export function ESSearchBodyBuilder(req: Partial<SortablePagedSearch>): ServiceResponse<EsSearchOptionsStatic> {
     let body: Partial<EsSearchOptionsStatic> = {};
-
     for (const field of Object.keys(req)) {
         if (['$sort', '$page_size', '$page_index'].indexOf(field) === -1) {
             body = SearchableFieldConverter(field, req[field], body);

@@ -33,7 +33,7 @@ const throwWith = async (promise: Promise<any>, code: StatusCodes, message: stri
     await expect(promise).rejects.toMatchObject({});
 };
 
-const syncThrowWith = async (call: () => void): Promise<void> => {
+const syncThrowWith = (call: () => void): void => {
     expect(call).toThrow();
 };
 
@@ -1167,6 +1167,8 @@ describe('Controller Basics', function() {
 
             expect(context.controllerBasics._esQueryBuilder(query)).toEqual({
                 body: {
+                    from: 0,
+                    size: 10000,
                     query: {
                         bool: {
                             must: {
@@ -1218,6 +1220,8 @@ describe('Controller Basics', function() {
                 service.searchElastic(
                     deepEqual({
                         body: {
+                            from: 0,
+                            size: 10000,
                             query: {
                                 bool: {
                                     must: {
@@ -1261,6 +1265,8 @@ describe('Controller Basics', function() {
                 service.searchElastic(
                     deepEqual({
                         body: {
+                            from: 0,
+                            size: 10000,
                             query: {
                                 bool: {
                                     must: {

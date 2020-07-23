@@ -27,8 +27,6 @@ import { EventsAddDatesInputDto }         from '@app/server/controllers/events/d
 import { EventsAddDatesResponseDto }      from '@app/server/controllers/events/dto/EventsAddDatesResponse.dto';
 import { EventsCountInputDto }            from '@app/server/controllers/events/dto/EventsCountInput.dto';
 import { EventsCountResponseDto }         from '@app/server/controllers/events/dto/EventsCountResponse.dto';
-import { EventsWithdrawInputDto }         from '@app/server/controllers/events/dto/EventsWithdrawInput.dto';
-import { EventsWithdrawResponseDto }      from '@app/server/controllers/events/dto/EventsWithdrawResponse.dto';
 import { EventsGuestlistInputDto }        from '@app/server/controllers/events/dto/EventsGuestlistInput.dto';
 import { EventsGuestlistResponseDto }     from '@app/server/controllers/events/dto/EventsGuestlistResponse.dto';
 
@@ -255,19 +253,19 @@ export async function eventsAddDates(
 
 }
 
-export async function eventsWithdraw(
-    token: string,
-    event: string,
-    query: EventsWithdrawInputDto
-): Promise<AxiosResponse<EventsWithdrawResponseDto>> {
-
-    const self: T721SDK = this;
-
-    return self.post<EventsWithdrawInputDto>(`/events/${event}/withdraw`, {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-    }, query);
-}
+// export async function eventsWithdraw(
+//     token: string,
+//     event: string,
+//     query: EventsWithdrawInputDto
+// ): Promise<AxiosResponse<EventsWithdrawResponseDto>> {
+//
+//     const self: T721SDK = this;
+//
+//     return self.post<EventsWithdrawInputDto>(`/events/${event}/withdraw`, {
+//         Authorization: `Bearer ${token}`,
+//         'Content-Type': 'application/json',
+//     }, query);
+// }
 
 export async function eventsGuestlist(
     token: string,

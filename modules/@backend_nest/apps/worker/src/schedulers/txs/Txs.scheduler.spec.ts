@@ -13,6 +13,7 @@ import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 import { toAcceptedAddressFormat } from '@common/global';
 import { OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
 import { NestError } from '@lib/common/utils/NestError';
+import { RocksideService } from '@lib/common/rockside/Rockside.service';
 
 describe('Txs Scheduler', function() {
     const context: {
@@ -25,6 +26,7 @@ describe('Txs Scheduler', function() {
         scheduleMock: Schedule;
         txsServiceOptions: TxsServiceOptions;
         outrospectionService: OutrospectionService;
+        rocksideServiceMock: RocksideService;
     } = {
         txsScheduler: null,
         globalConfigServiceMock: null,
@@ -35,6 +37,7 @@ describe('Txs Scheduler', function() {
         scheduleMock: null,
         txsServiceOptions: null,
         outrospectionService: null,
+        rocksideServiceMock: null,
     };
 
     beforeEach(async function() {
@@ -54,6 +57,7 @@ describe('Txs Scheduler', function() {
             targetGasPrice: 150,
         };
         context.outrospectionService = mock(OutrospectionService);
+        context.rocksideServiceMock = mock(RocksideService);
 
         const app: TestingModule = await Test.createTestingModule({
             providers: [
@@ -88,6 +92,10 @@ describe('Txs Scheduler', function() {
                 {
                     provide: OutrospectionService,
                     useValue: instance(context.outrospectionService),
+                },
+                {
+                    provide: RocksideService,
+                    useValue: instance(context.rocksideServiceMock),
                 },
                 TxsScheduler,
             ],
@@ -2062,6 +2070,7 @@ describe('Txs Scheduler', function() {
             };
 
             const txentity = {
+                real_transaction_hash: transactionHash,
                 updated_at: '2020-02-20T14:30:17.175Z',
                 block_number: 36,
                 created_at: '2020-02-20T14:30:17.175Z',
@@ -2438,6 +2447,7 @@ describe('Txs Scheduler', function() {
 
             const txentity = {
                 updated_at: '2020-02-20T14:30:17.175Z',
+                real_transaction_hash: transactionHash,
                 block_number: 36,
                 created_at: '2020-02-20T14:30:17.175Z',
                 confirmed: true,
@@ -2812,6 +2822,7 @@ describe('Txs Scheduler', function() {
             };
 
             const txentity = {
+                real_transaction_hash: transactionHash,
                 updated_at: '2020-02-20T14:30:17.175Z',
                 block_number: 100,
                 created_at: '2020-02-20T14:30:17.175Z',
@@ -4220,6 +4231,7 @@ describe('Txs Scheduler', function() {
             };
 
             const txentity = {
+                real_transaction_hash: transactionHash,
                 updated_at: '2020-02-20T14:30:17.175Z',
                 block_number: 36,
                 created_at: '2020-02-20T14:30:17.175Z',

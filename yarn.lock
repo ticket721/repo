@@ -4759,7 +4759,7 @@
 
 "@rocksideio/rockside-wallet-sdk@ticket721/rockside-wallet-sdk-js#master":
   version "0.3.7"
-  resolved "https://codeload.github.com/ticket721/rockside-wallet-sdk-js/tar.gz/cf0e1a05f09e5eb4fd9d2c2f4f31d2b2ab58a8f4"
+  resolved "https://codeload.github.com/ticket721/rockside-wallet-sdk-js/tar.gz/0bba5055e5298aff682e5d823eeb4aeb23808142"
   dependencies:
     bip39 "^3.0.2"
     cross-fetch "^3.0.4"

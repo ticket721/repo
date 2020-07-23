@@ -2,7 +2,7 @@ import { CRUDExtension } from '@lib/common/crud/CRUDExtension.base';
 import { BaseModel, InjectModel, InjectRepository } from '@iaminfinity/express-cassandra';
 import { AuthorizationsRepository } from '@lib/common/authorizations/Authorizations.repository';
 import { AuthorizationEntity } from '@lib/common/authorizations/entities/Authorization.entity';
-import { CurrenciesService, ERC20Currency, Price } from '@lib/common/currencies/Currencies.service';
+import { Price } from '@lib/common/currencies/Currencies.service';
 import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
 import { CategoriesService } from '@lib/common/categories/Categories.service';
 import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
@@ -36,7 +36,6 @@ export class AuthorizationsService extends CRUDExtension<AuthorizationsRepositor
      * @param authorizationEntity
      * @param categoriesService
      * @param t721ControllerV0Service
-     * @param currenciesService
      * @param web3Service
      * @param bytesToolService
      * @param timeToolService
@@ -51,7 +50,7 @@ export class AuthorizationsService extends CRUDExtension<AuthorizationsRepositor
         authorizationEntity: BaseModel<AuthorizationEntity>,
         private readonly categoriesService: CategoriesService,
         private readonly t721ControllerV0Service: T721ControllerV0Service,
-        private readonly currenciesService: CurrenciesService,
+        // private readonly currenciesService: CurrenciesService,
         private readonly web3Service: Web3Service,
         private readonly bytesToolService: BytesToolService,
         private readonly timeToolService: TimeToolService,
@@ -120,24 +119,24 @@ export class AuthorizationsService extends CRUDExtension<AuthorizationsRepositor
 
         const ret: AuthorizedTicketMintingFormat[] = [];
 
-        const resolvedPrices: {
-            currency: string;
-            value: string;
-            fee: string;
-        }[] = [];
+        // const resolvedPrices: {
+        //     currency: string;
+        //     value: string;
+        //     fee: string;
+        // }[] = [];
 
-        for (let idx = 0; idx < prices.length; ++idx) {
-            const price = prices[idx];
-            const currency = (await this.currenciesService.get(price.currency)) as ERC20Currency;
+        // for (let idx = 0; idx < prices.length; ++idx) {
+        //     const price = prices[idx];
+        //     const currency = (await this.currenciesService.get(price.currency)) as ERC20Currency;
 
-            resolvedPrices.push({
-                currency: currency.address,
-                value: price.value,
-                fee: fees[idx],
-            });
-        }
+        //     resolvedPrices.push({
+        //         currency: currency.address,
+        //         value: price.value,
+        //         fee: fees[idx],
+        //     });
+        // }
 
-        const encodedPrices = MintAuthorization.encodePrices(resolvedPrices);
+        const encodedPrices = MintAuthorization.encodePrices([] /* resolvedPrices */);
 
         const signer = new MintAuthorization(
             (await this.t721ControllerV0Service.get())._address,

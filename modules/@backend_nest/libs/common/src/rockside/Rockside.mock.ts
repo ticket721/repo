@@ -6,6 +6,7 @@ import {
     EncryptedWallet,
     TransactionOpts,
     RocksideApi,
+    TransactionInfosResponse,
 } from '@rocksideio/rockside-wallet-sdk/lib/api';
 import { ContractsControllerBase } from '@lib/common/contracts/ContractsController.base';
 import {
@@ -257,7 +258,34 @@ export class RocksideMock
 
         return {
             transaction_hash: sentTransaction.hash,
-            tracking_id: `tr_${sentTransaction.hash}`,
+            tracking_id: sentTransaction.hash,
+        };
+    }
+
+    /**
+     * Recover transaction info
+     *
+     * @param txOrTrackingId
+     */
+    async getTransaction(txOrTrackingId: string): Promise<TransactionInfosResponse> {
+        const web3Instance = await this.mockOpts.web3Service.get();
+
+        const transaction = await web3Instance.eth.getTransaction(txOrTrackingId);
+
+        const transactionReceipt = await web3Instance.eth.getTransactionReceipt(txOrTrackingId);
+
+        return {
+            transaction_hash: transaction.transactionHash,
+            tracking_id: transaction.transactionHash,
+            from: transaction.from,
+            to: transaction.to,
+            data_length: transaction.data.length,
+            value: transaction.value,
+            gas: transaction.gas,
+            gas_price: transaction.gasPrice,
+            chain_id: 2702,
+            receipt: transactionReceipt,
+            status: transaction.success,
         };
     }
 
@@ -309,7 +337,10 @@ export class RocksideMock
     /**
      * Mock method
      */
-    async relayTransaction(identity: string, tx: ExecuteTransaction): Promise<string> {
+    async relayTransaction(
+        identity: string,
+        tx: ExecuteTransaction,
+    ): Promise<{ transaction_hash: string; tracking_id: string }> {
         throw new NestError(`Un-mocked method`);
     }
 

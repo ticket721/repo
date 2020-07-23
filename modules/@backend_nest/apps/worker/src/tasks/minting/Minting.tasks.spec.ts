@@ -311,13 +311,7 @@ describe('Minting Tasks', function() {
                 signature: '0xsignature',
                 codes: MintAuthorization.toCodesFormat(code),
                 args: MintAuthorization.toArgsFormat(
-                    MintAuthorization.encodePrices([
-                        {
-                            currency: t721TokenAddress,
-                            value: price.value,
-                            fee: '0',
-                        },
-                    ]),
+                    MintAuthorization.encodePrices([]),
                     groupId,
                     toB32(categoryOneName),
                     code,
@@ -339,12 +333,6 @@ describe('Minting Tasks', function() {
                 } as TicketEntity,
             ];
             const transactions = [
-                {
-                    from: buyerAddress,
-                    to: t721TokenAddress,
-                    data: approveEncoded,
-                    value: '0',
-                },
                 {
                     from: buyerAddress,
                     to: t721ControllerAddress,
@@ -518,12 +506,9 @@ describe('Minting Tasks', function() {
                     }),
                 ),
             ).once();
-            // => evaluateTokenAmountToAuthorize
-            verify(context.t721TokenServiceMock.get()).times(3);
             // => getTokenAuthorizationPayload
-            verify(t721c.get()).times(4);
+            verify(t721c.get()).times(2);
             // => generateTicketMintingTransactions
-            verify(context.currenciesServiceMock.get('T721Token')).once();
             verify(
                 context.authorizationsServiceMock.search(
                     deepEqual({
@@ -755,13 +740,7 @@ describe('Minting Tasks', function() {
                 signature: '0xsignature',
                 codes: MintAuthorization.toCodesFormat(code),
                 args: MintAuthorization.toArgsFormat(
-                    MintAuthorization.encodePrices([
-                        {
-                            currency: t721TokenAddress,
-                            value: price.value,
-                            fee: '0',
-                        },
-                    ]),
+                    MintAuthorization.encodePrices([]),
                     groupId,
                     toB32(categoryOneName),
                     code,
@@ -773,13 +752,7 @@ describe('Minting Tasks', function() {
                 signature: '0xsignature',
                 codes: MintAuthorization.toCodesFormat(code),
                 args: MintAuthorization.toArgsFormat(
-                    MintAuthorization.encodePrices([
-                        {
-                            currency: t721TokenAddress,
-                            value: price.value,
-                            fee: '0',
-                        },
-                    ]),
+                    MintAuthorization.encodePrices([]),
                     groupId,
                     toB32(categoryOneName),
                     code,
@@ -811,12 +784,6 @@ describe('Minting Tasks', function() {
                 } as TicketEntity,
             ];
             const transactions = [
-                {
-                    from: buyerAddress,
-                    to: t721TokenAddress,
-                    data: approveEncoded,
-                    value: '0',
-                },
                 {
                     from: buyerAddress,
                     to: t721ControllerAddress,
@@ -1019,12 +986,9 @@ describe('Minting Tasks', function() {
                     }),
                 ),
             ).once();
-            // => evaluateTokenAmountToAuthorize
-            verify(context.t721TokenServiceMock.get()).times(3);
             // => getTokenAuthorizationPayload
-            verify(t721c.get()).times(4);
+            verify(t721c.get()).times(2);
             // => generateTicketMintingTransactions
-            verify(context.currenciesServiceMock.get('T721Token')).once();
             verify(
                 context.authorizationsServiceMock.search(
                     deepEqual({
@@ -1264,13 +1228,7 @@ describe('Minting Tasks', function() {
                 signature: '0xsignature',
                 codes: MintAuthorization.toCodesFormat(code),
                 args: MintAuthorization.toArgsFormat(
-                    MintAuthorization.encodePrices([
-                        {
-                            currency: t721TokenAddress,
-                            value: price.value,
-                            fee: '0',
-                        },
-                    ]),
+                    MintAuthorization.encodePrices([]),
                     groupId,
                     toB32(categoryOneName),
                     code,
@@ -1292,12 +1250,6 @@ describe('Minting Tasks', function() {
                 } as TicketEntity,
             ];
             const transactions = [
-                {
-                    from: buyerAddress,
-                    to: t721TokenAddress,
-                    data: approveEncoded,
-                    value: '0',
-                },
                 {
                     from: buyerAddress,
                     to: t721ControllerAddress,
@@ -1472,11 +1424,8 @@ describe('Minting Tasks', function() {
                 ),
             ).once();
             // => evaluateTokenAmountToAuthorize
-            verify(context.t721TokenServiceMock.get()).times(3);
-            // => getTokenAuthorizationPayload
-            verify(t721c.get()).times(4);
+            verify(t721c.get()).times(2);
             // => generateTicketMintingTransactions
-            verify(context.currenciesServiceMock.get('T721Token')).once();
             verify(
                 context.authorizationsServiceMock.search(
                     deepEqual({
@@ -1678,13 +1627,7 @@ describe('Minting Tasks', function() {
                 signature: '0xsignature',
                 codes: MintAuthorization.toCodesFormat(code),
                 args: MintAuthorization.toArgsFormat(
-                    MintAuthorization.encodePrices([
-                        {
-                            currency: t721TokenAddress,
-                            value: price.value,
-                            fee: '0',
-                        },
-                    ]),
+                    MintAuthorization.encodePrices([]),
                     groupId,
                     toB32(categoryOneName),
                     code,
@@ -1706,12 +1649,6 @@ describe('Minting Tasks', function() {
                 } as TicketEntity,
             ];
             const transactions = [
-                {
-                    from: buyerAddress,
-                    to: t721TokenAddress,
-                    data: approveEncoded,
-                    value: '0',
-                },
                 {
                     from: buyerAddress,
                     to: t721ControllerAddress,
@@ -1884,10 +1821,8 @@ describe('Minting Tasks', function() {
                     }),
                 ),
             ).once();
-            // => evaluateTokenAmountToAuthorize
-            verify(context.t721TokenServiceMock.get()).times(2);
             // => getTokenAuthorizationPayload
-            verify(t721c.get()).times(4);
+            verify(t721c.get()).times(2);
             // => generateTicketMintingTransactions
             verify(
                 context.authorizationsServiceMock.search(
@@ -1948,555 +1883,6 @@ describe('Minting Tasks', function() {
                     }),
                     deepEqual({
                         consumed: true,
-                    }),
-                ),
-            ).once();
-        });
-
-        it('should fail on multiple currencies in total', async function() {
-            // DECLARE
-            const cartActionSetId = 'cart_id';
-            const checkoutActionSetId = 'checkout_id';
-            const paymentIntentId = 'pi_laushfliaushfdliuahsdlifuhaslidfhu';
-            const clientSecret = 'cs_alsjdakjhsdkajhsdkjhaksdj';
-            const buyerAddress = '0xFD5d5dd6695c16E8c3f69aE2393770132225A194';
-            const controllerAddress = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
-            const t721ControllerAddress = '0x36928500Bc1dCd7af6a2B4008875CC336b927D57';
-            const t721TokenAddress = '0xC6CDE7C39eB2f0F0095F41570af89eFC2C1Ea828';
-            const t721AdminAddress = '0xC6CDE7C39eB2f0F0095F41570af89eFC2C1Ea828';
-            const gemOrderId = 'gem_order_id';
-            const buyerId = 'user_id';
-            const buyer: UserDto = {
-                id: buyerId,
-                address: buyerAddress,
-            } as UserDto;
-            const input: TicketMintingTransactionSequenceBuilderTaskInput = {
-                cartActionSetId,
-                checkoutActionSetId,
-                gemOrderId,
-            };
-            const scope = 'test_scope';
-            const mintingEncoded = '0xencodedminting';
-            const t721cInstance = {
-                _address: t721ControllerAddress,
-                methods: {
-                    mint: () => ({
-                        encodeABI: () => mintingEncoded,
-                    }),
-                },
-            };
-            const t721AdminInstance = {
-                _address: t721AdminAddress,
-            };
-            const t721c = mock(ContractsControllerBase);
-            const mmInstance = {
-                methods: {},
-            };
-            const approveEncoded = '0xencodedapprove';
-            const t721tokenInstance = {
-                _address: t721TokenAddress,
-                methods: {
-                    allowance: () => ({
-                        call: () => '0',
-                    }),
-                    approve: () => ({
-                        encodeABI: () => approveEncoded,
-                    }),
-                },
-            };
-            const mm = mock(ContractsControllerBase);
-            const ticketForgeInstance = {
-                methods: {
-                    getScope: () => ({
-                        call: () => ({
-                            exists: true,
-                            scope_index: 0,
-                        }),
-                    }),
-                },
-            };
-            const categoryOneId = 'category_one_id';
-            const categoryOneName = 'vip';
-            const groupId = '0x7361646661736466000000000000000000000000000000000000000000000000';
-            const authorizationOneId = 'authorization_one_id';
-            const expiration = new Date(Date.now() + 2 * DAY);
-            const price = {
-                currency: 'T721Token',
-                value: '100',
-                log_value: 0,
-            };
-            const cartAuthorizationsData: CartAuthorizations = {
-                authorizations: [
-                    {
-                        categoryId: categoryOneId,
-                        price: {
-                            currency: 'T721Token',
-                            price: '100',
-                        },
-                        authorizationId: authorizationOneId,
-                        groupId,
-                        categoryName: categoryOneName,
-                        granter: controllerAddress,
-                        grantee: buyerAddress,
-                        granterController: controllerAddress,
-                        expiration,
-                    },
-                ],
-                commitType: 'stripe',
-                total: [price, price],
-                fees: ['0'],
-                paymentIntentId,
-                checkoutActionSetId,
-                clientSecret,
-            };
-            const cartActionSet: Partial<ActionSetEntity> = {
-                id: cartActionSetId,
-                actions: [
-                    {} as ActionEntity,
-                    {} as ActionEntity,
-                    {
-                        status: 'complete',
-                        name: '@cart/authorizations',
-                        data: JSON.stringify(cartAuthorizationsData),
-                        type: 'input',
-                        error: null,
-                        private: true,
-                    },
-                ],
-                current_status: 'complete',
-                current_action: 1,
-            };
-            const checkoutResolveData: CheckoutResolve = {
-                cartId: cartActionSetId,
-                commitType: 'stripe',
-                buyer: buyerAddress,
-                stripe: {
-                    paymentIntentId,
-                    gemOrderId,
-                },
-            };
-            const checkoutActionSet: Partial<ActionSetEntity> = {
-                id: checkoutActionSetId,
-                actions: [
-                    {
-                        status: 'complete',
-                        name: '@checkout/resolve',
-                        data: JSON.stringify(checkoutResolveData),
-                        type: 'input',
-                        error: null,
-                        private: true,
-                    },
-                ],
-                current_status: 'complete',
-                current_action: 1,
-            };
-            const t721CurrencyERC20: ERC20Currency = {
-                type: 'erc20',
-                name: 'T721Token',
-                module: 't721',
-                address: t721TokenAddress,
-                dollarPeg: 1,
-                controller: instance(context.t721TokenServiceMock),
-                feeComputer: () => '0',
-            };
-            const code = '12345';
-            const authorizationOne: Partial<AuthorizationEntity> = {
-                id: authorizationOneId,
-                signature: '0xsignature',
-                codes: MintAuthorization.toCodesFormat(code),
-                args: MintAuthorization.toArgsFormat(
-                    MintAuthorization.encodePrices([
-                        {
-                            currency: t721TokenAddress,
-                            value: price.value,
-                            fee: '0',
-                        },
-                    ]),
-                    groupId,
-                    toB32(categoryOneName),
-                    code,
-                    Math.floor(expiration.getTime() / 1000),
-                ),
-            };
-            const ticketsPredictionInput = [
-                {
-                    buyer: buyerAddress,
-                    categoryId: categoryOneId,
-                    authorizationId: authorizationOneId,
-                    groupId: groupId,
-                },
-            ];
-            const ticketsPredictionOutput = [
-                {
-                    id: '181927450982374509823745',
-                    owner: buyerAddress,
-                } as TicketEntity,
-            ];
-            const transactions = [
-                {
-                    from: buyerAddress,
-                    to: t721TokenAddress,
-                    data: approveEncoded,
-                    value: '0',
-                },
-                {
-                    from: buyerAddress,
-                    to: t721ControllerAddress,
-                    data: mintingEncoded,
-                    value: '0',
-                    onConfirm: {
-                        name: '@minting/confirmation',
-                        jobData: {
-                            tickets: ticketsPredictionOutput.map((gtr: TicketEntity) => gtr.id),
-                            authorizations: cartAuthorizationsData.authorizations.map(
-                                (at: AuthorizedTicketMintingFormat) => [at.authorizationId, at.granter, at.grantee],
-                            ),
-                        },
-                    },
-                    onFailure: {
-                        name: '@minting/failure',
-                        jobData: {
-                            tickets: ticketsPredictionOutput.map((gtr: TicketEntity) => gtr.id),
-                            authorizations: cartAuthorizationsData.authorizations.map(
-                                (at: AuthorizedTicketMintingFormat) => [at.authorizationId, at.granter, at.grantee],
-                            ),
-                        },
-                    },
-                },
-            ];
-
-            // MOCK
-            when(context.configServiceMock.get('TICKETFORGE_SCOPE')).thenReturn(scope);
-            when(context.ticketforgeServiceMock.getScopeContracts(scope)).thenReturn({
-                mm: instance(mm),
-                t721c: instance(t721c),
-            });
-            // => fetchAndVerifyCart
-            when(
-                context.actionSetsServiceMock.search(
-                    deepEqual({
-                        id: cartActionSetId,
-                    }),
-                ),
-            ).thenResolve({
-                error: null,
-                response: [cartActionSet as ActionSetEntity],
-            });
-            // => fetchAndVerifyCheckout
-            when(
-                context.actionSetsServiceMock.search(
-                    deepEqual({
-                        id: checkoutActionSetId,
-                    }),
-                ),
-            ).thenResolve({
-                error: null,
-                response: [checkoutActionSet as ActionSetEntity],
-            });
-            // => evaluateTokenAmountToAuthorize
-            when(context.t721TokenServiceMock.get()).thenResolve(t721tokenInstance);
-            // => getTokenAuthorizationPayload
-            when(t721c.get()).thenResolve(t721cInstance);
-
-            // TRIGGER
-            await expect(
-                context.mintingTasks.ticketMintingTransactionSequenceBuilderTask({
-                    data: input,
-                } as Job<TicketMintingTransactionSequenceBuilderTaskInput>),
-            ).rejects.toMatchObject(new NestError(`Multiple currencies not allowed`));
-
-            // CHECK RETURNs
-
-            // CHECK CALLS
-            verify(context.configServiceMock.get('TICKETFORGE_SCOPE')).once();
-            verify(context.ticketforgeServiceMock.getScopeContracts(scope)).once();
-            // => fetchAndVerifyCart
-            verify(
-                context.actionSetsServiceMock.search(
-                    deepEqual({
-                        id: cartActionSetId,
-                    }),
-                ),
-            ).once();
-            // => fetchAndVerifyCheckout
-            verify(
-                context.actionSetsServiceMock.search(
-                    deepEqual({
-                        id: checkoutActionSetId,
-                    }),
-                ),
-            ).once();
-        });
-
-        it('should fail on not T721Token currency', async function() {
-            // DECLARE
-            const cartActionSetId = 'cart_id';
-            const checkoutActionSetId = 'checkout_id';
-            const paymentIntentId = 'pi_laushfliaushfdliuahsdlifuhaslidfhu';
-            const clientSecret = 'cs_alsjdakjhsdkajhsdkjhaksdj';
-            const buyerAddress = '0xFD5d5dd6695c16E8c3f69aE2393770132225A194';
-            const controllerAddress = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
-            const t721ControllerAddress = '0x36928500Bc1dCd7af6a2B4008875CC336b927D57';
-            const t721TokenAddress = '0xC6CDE7C39eB2f0F0095F41570af89eFC2C1Ea828';
-            const t721AdminAddress = '0xC6CDE7C39eB2f0F0095F41570af89eFC2C1Ea828';
-            const gemOrderId = 'gem_order_id';
-            const buyerId = 'user_id';
-            const buyer: UserDto = {
-                id: buyerId,
-                address: buyerAddress,
-            } as UserDto;
-            const input: TicketMintingTransactionSequenceBuilderTaskInput = {
-                cartActionSetId,
-                checkoutActionSetId,
-                gemOrderId,
-            };
-            const scope = 'test_scope';
-            const mintingEncoded = '0xencodedminting';
-            const t721cInstance = {
-                _address: t721ControllerAddress,
-                methods: {
-                    mint: () => ({
-                        encodeABI: () => mintingEncoded,
-                    }),
-                },
-            };
-            const t721AdminInstance = {
-                _address: t721AdminAddress,
-            };
-            const t721c = mock(ContractsControllerBase);
-            const mmInstance = {
-                methods: {},
-            };
-            const approveEncoded = '0xencodedapprove';
-            const t721tokenInstance = {
-                _address: t721TokenAddress,
-                methods: {
-                    allowance: () => ({
-                        call: () => '0',
-                    }),
-                    approve: () => ({
-                        encodeABI: () => approveEncoded,
-                    }),
-                },
-            };
-            const mm = mock(ContractsControllerBase);
-            const ticketForgeInstance = {
-                methods: {
-                    getScope: () => ({
-                        call: () => ({
-                            exists: true,
-                            scope_index: 0,
-                        }),
-                    }),
-                },
-            };
-            const categoryOneId = 'category_one_id';
-            const categoryOneName = 'vip';
-            const groupId = '0x7361646661736466000000000000000000000000000000000000000000000000';
-            const authorizationOneId = 'authorization_one_id';
-            const expiration = new Date(Date.now() + 2 * DAY);
-            const price = {
-                currency: 'T721TokenInvalid',
-                value: '100',
-                log_value: 0,
-            };
-            const cartAuthorizationsData: CartAuthorizations = {
-                authorizations: [
-                    {
-                        categoryId: categoryOneId,
-                        price: {
-                            currency: 'T721Token',
-                            price: '100',
-                        },
-                        authorizationId: authorizationOneId,
-                        groupId,
-                        categoryName: categoryOneName,
-                        granter: controllerAddress,
-                        grantee: buyerAddress,
-                        granterController: controllerAddress,
-                        expiration,
-                    },
-                ],
-                commitType: 'stripe',
-                total: [price],
-                fees: ['0'],
-                paymentIntentId,
-                clientSecret,
-                checkoutActionSetId,
-            };
-            const cartActionSet: Partial<ActionSetEntity> = {
-                id: cartActionSetId,
-                actions: [
-                    {} as ActionEntity,
-                    {} as ActionEntity,
-                    {
-                        status: 'complete',
-                        name: '@cart/authorizations',
-                        data: JSON.stringify(cartAuthorizationsData),
-                        type: 'input',
-                        error: null,
-                        private: true,
-                    },
-                ],
-                current_status: 'complete',
-                current_action: 1,
-            };
-            const checkoutResolveData: CheckoutResolve = {
-                cartId: cartActionSetId,
-                commitType: 'stripe',
-                buyer: buyerAddress,
-                stripe: {
-                    paymentIntentId,
-                    gemOrderId,
-                },
-            };
-            const checkoutActionSet: Partial<ActionSetEntity> = {
-                id: checkoutActionSetId,
-                actions: [
-                    {
-                        status: 'complete',
-                        name: '@checkout/resolve',
-                        data: JSON.stringify(checkoutResolveData),
-                        type: 'input',
-                        error: null,
-                        private: true,
-                    },
-                ],
-                current_status: 'complete',
-                current_action: 1,
-            };
-            const t721CurrencyERC20: ERC20Currency = {
-                type: 'erc20',
-                name: 'T721Token',
-                module: 't721',
-                address: t721TokenAddress,
-                dollarPeg: 1,
-                controller: instance(context.t721TokenServiceMock),
-                feeComputer: () => '0',
-            };
-            const code = '12345';
-            const authorizationOne: Partial<AuthorizationEntity> = {
-                id: authorizationOneId,
-                signature: '0xsignature',
-                codes: MintAuthorization.toCodesFormat(code),
-                args: MintAuthorization.toArgsFormat(
-                    MintAuthorization.encodePrices([
-                        {
-                            currency: t721TokenAddress,
-                            value: price.value,
-                            fee: '0',
-                        },
-                    ]),
-                    groupId,
-                    toB32(categoryOneName),
-                    code,
-                    Math.floor(expiration.getTime() / 1000),
-                ),
-            };
-            const ticketsPredictionInput = [
-                {
-                    buyer: buyerAddress,
-                    categoryId: categoryOneId,
-                    authorizationId: authorizationOneId,
-                    groupId: groupId,
-                },
-            ];
-            const ticketsPredictionOutput = [
-                {
-                    id: '181927450982374509823745',
-                    owner: buyerAddress,
-                } as TicketEntity,
-            ];
-            const transactions = [
-                {
-                    from: buyerAddress,
-                    to: t721TokenAddress,
-                    data: approveEncoded,
-                    value: '0',
-                },
-                {
-                    from: buyerAddress,
-                    to: t721ControllerAddress,
-                    data: mintingEncoded,
-                    value: '0',
-                    onConfirm: {
-                        name: '@minting/confirmation',
-                        jobData: {
-                            tickets: ticketsPredictionOutput.map((gtr: TicketEntity) => gtr.id),
-                            authorizations: cartAuthorizationsData.authorizations.map(
-                                (at: AuthorizedTicketMintingFormat) => [at.authorizationId, at.granter, at.grantee],
-                            ),
-                        },
-                    },
-                    onFailure: {
-                        name: '@minting/failure',
-                        jobData: {
-                            tickets: ticketsPredictionOutput.map((gtr: TicketEntity) => gtr.id),
-                            authorizations: cartAuthorizationsData.authorizations.map(
-                                (at: AuthorizedTicketMintingFormat) => [at.authorizationId, at.granter, at.grantee],
-                            ),
-                        },
-                    },
-                },
-            ];
-
-            // MOCK
-            when(context.configServiceMock.get('TICKETFORGE_SCOPE')).thenReturn(scope);
-            when(context.ticketforgeServiceMock.getScopeContracts(scope)).thenReturn({
-                mm: instance(mm),
-                t721c: instance(t721c),
-            });
-            // => fetchAndVerifyCart
-            when(
-                context.actionSetsServiceMock.search(
-                    deepEqual({
-                        id: cartActionSetId,
-                    }),
-                ),
-            ).thenResolve({
-                error: null,
-                response: [cartActionSet as ActionSetEntity],
-            });
-            // => fetchAndVerifyCheckout
-            when(
-                context.actionSetsServiceMock.search(
-                    deepEqual({
-                        id: checkoutActionSetId,
-                    }),
-                ),
-            ).thenResolve({
-                error: null,
-                response: [checkoutActionSet as ActionSetEntity],
-            });
-            // => evaluateTokenAmountToAuthorize
-            when(context.t721TokenServiceMock.get()).thenResolve(t721tokenInstance);
-            when(t721c.get()).thenResolve(t721cInstance);
-
-            // TRIGGER
-            await expect(
-                context.mintingTasks.ticketMintingTransactionSequenceBuilderTask({
-                    data: input,
-                } as Job<TicketMintingTransactionSequenceBuilderTaskInput>),
-            ).rejects.toMatchObject(new NestError(`Only T721Token allowed`));
-
-            // CHECK RETURNs
-
-            // CHECK CALLS
-            verify(context.configServiceMock.get('TICKETFORGE_SCOPE')).once();
-            verify(context.ticketforgeServiceMock.getScopeContracts(scope)).once();
-            // => fetchAndVerifyCart
-            verify(
-                context.actionSetsServiceMock.search(
-                    deepEqual({
-                        id: cartActionSetId,
-                    }),
-                ),
-            ).once();
-            // => fetchAndVerifyCheckout
-            verify(
-                context.actionSetsServiceMock.search(
-                    deepEqual({
-                        id: checkoutActionSetId,
                     }),
                 ),
             ).once();
@@ -2900,473 +2286,6 @@ describe('Minting Tasks', function() {
             ).once();
         });
 
-        it('should fail on approval throw', async function() {
-            // DECLARE
-            const cartActionSetId = 'cart_id';
-            const checkoutActionSetId = 'checkout_id';
-            const paymentIntentId = 'pi_laushfliaushfdliuahsdlifuhaslidfhu';
-            const clientSecret = 'cs_alsjdakjhsdkajhsdkjhaksdj';
-            const buyerAddress = '0xFD5d5dd6695c16E8c3f69aE2393770132225A194';
-            const controllerAddress = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
-            const t721ControllerAddress = '0x36928500Bc1dCd7af6a2B4008875CC336b927D57';
-            const t721TokenAddress = '0xC6CDE7C39eB2f0F0095F41570af89eFC2C1Ea828';
-            const gemOrderId = 'gem_order_id';
-            const input: TicketMintingTransactionSequenceBuilderTaskInput = {
-                cartActionSetId,
-                checkoutActionSetId,
-                gemOrderId,
-            };
-            const scope = 'test_scope';
-            const mintingEncoded = '0xencodedminting';
-            const t721cInstance = {
-                _address: t721ControllerAddress,
-                methods: {
-                    mint: () => ({
-                        encodeABI: () => mintingEncoded,
-                    }),
-                },
-            };
-            const t721c = mock(ContractsControllerBase);
-            const t721tokenInstance = {
-                _address: t721TokenAddress,
-                methods: {
-                    allowance: () => ({
-                        call: () => '0',
-                    }),
-                    approve: () => ({
-                        encodeABI: () => {
-                            throw new NestError(`reverted`);
-                        },
-                    }),
-                },
-            };
-            const mm = mock(ContractsControllerBase);
-            const categoryOneId = 'category_one_id';
-            const categoryOneName = 'vip';
-            const groupId = '0x7361646661736466000000000000000000000000000000000000000000000000';
-            const authorizationOneId = 'authorization_one_id';
-            const expiration = new Date(Date.now() + 2 * DAY);
-            const price = {
-                currency: 'T721Token',
-                value: '100',
-                log_value: 0,
-            };
-            const cartAuthorizationsData: CartAuthorizations = {
-                authorizations: [
-                    {
-                        categoryId: categoryOneId,
-                        price: {
-                            currency: 'T721Token',
-                            price: '100',
-                        },
-                        authorizationId: authorizationOneId,
-                        groupId,
-                        categoryName: categoryOneName,
-                        granter: controllerAddress,
-                        grantee: buyerAddress,
-                        granterController: controllerAddress,
-                        expiration,
-                    },
-                ],
-                commitType: 'stripe',
-                total: [price],
-                fees: ['0'],
-                paymentIntentId,
-                checkoutActionSetId,
-                clientSecret,
-            };
-            const cartActionSet: Partial<ActionSetEntity> = {
-                id: cartActionSetId,
-                actions: [
-                    {} as ActionEntity,
-                    {} as ActionEntity,
-                    {
-                        status: 'complete',
-                        name: '@cart/authorizations',
-                        data: JSON.stringify(cartAuthorizationsData),
-                        type: 'input',
-                        error: null,
-                        private: true,
-                    },
-                ],
-                current_status: 'complete',
-                current_action: 1,
-            };
-            const checkoutResolveData: CheckoutResolve = {
-                cartId: cartActionSetId,
-                commitType: 'stripe',
-                buyer: buyerAddress,
-                stripe: {
-                    paymentIntentId,
-                    gemOrderId,
-                },
-            };
-            const checkoutActionSet: Partial<ActionSetEntity> = {
-                id: checkoutActionSetId,
-                actions: [
-                    {
-                        status: 'complete',
-                        name: '@checkout/resolve',
-                        data: JSON.stringify(checkoutResolveData),
-                        type: 'input',
-                        error: null,
-                        private: true,
-                    },
-                ],
-                current_status: 'complete',
-                current_action: 1,
-            };
-
-            // MOCK
-            when(context.configServiceMock.get('TICKETFORGE_SCOPE')).thenReturn(scope);
-            when(context.ticketforgeServiceMock.getScopeContracts(scope)).thenReturn({
-                mm: instance(mm),
-                t721c: instance(t721c),
-            });
-            // => fetchAndVerifyCart
-            when(
-                context.actionSetsServiceMock.search(
-                    deepEqual({
-                        id: cartActionSetId,
-                    }),
-                ),
-            ).thenResolve({
-                error: null,
-                response: [cartActionSet as ActionSetEntity],
-            });
-            // => fetchAndVerifyCheckout
-            when(
-                context.actionSetsServiceMock.search(
-                    deepEqual({
-                        id: checkoutActionSetId,
-                    }),
-                ),
-            ).thenResolve({
-                error: null,
-                response: [checkoutActionSet as ActionSetEntity],
-            });
-            // => evaluateTokenAmountToAuthorize
-            when(context.t721TokenServiceMock.get()).thenResolve(t721tokenInstance);
-            // => getTokenAuthorizationPayload
-            when(t721c.get()).thenResolve(t721cInstance);
-
-            // TRIGGER
-            await expect(
-                context.mintingTasks.ticketMintingTransactionSequenceBuilderTask({
-                    data: input,
-                } as Job<TicketMintingTransactionSequenceBuilderTaskInput>),
-            ).rejects.toMatchObject(new NestError(`Unable to create token approval call: reverted`));
-
-            // CHECK RETURNs
-
-            // CHECK CALLS
-            verify(context.configServiceMock.get('TICKETFORGE_SCOPE')).once();
-            verify(context.ticketforgeServiceMock.getScopeContracts(scope)).once();
-            // => fetchAndVerifyCart
-            verify(
-                context.actionSetsServiceMock.search(
-                    deepEqual({
-                        id: cartActionSetId,
-                    }),
-                ),
-            ).once();
-            // => fetchAndVerifyCheckout
-            verify(
-                context.actionSetsServiceMock.search(
-                    deepEqual({
-                        id: checkoutActionSetId,
-                    }),
-                ),
-            ).once();
-            // => evaluateTokenAmountToAuthorize
-            verify(context.t721TokenServiceMock.get()).times(3);
-            // => getTokenAuthorizationPayload
-            verify(t721c.get()).times(2);
-        });
-
-        it('should fail currency type error', async function() {
-            // DECLARE
-            const cartActionSetId = 'cart_id';
-            const checkoutActionSetId = 'checkout_id';
-            const paymentIntentId = 'pi_laushfliaushfdliuahsdlifuhaslidfhu';
-            const clientSecret = 'cs_alsjdakjhsdkajhsdkjhaksdj';
-            const buyerAddress = '0xFD5d5dd6695c16E8c3f69aE2393770132225A194';
-            const controllerAddress = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
-            const t721ControllerAddress = '0x36928500Bc1dCd7af6a2B4008875CC336b927D57';
-            const t721TokenAddress = '0xC6CDE7C39eB2f0F0095F41570af89eFC2C1Ea828';
-            const t721AdminAddress = '0xC6CDE7C39eB2f0F0095F41570af89eFC2C1Ea828';
-            const gemOrderId = 'gem_order_id';
-            const buyerId = 'user_id';
-            const buyer: UserDto = {
-                id: buyerId,
-                address: buyerAddress,
-            } as UserDto;
-            const input: TicketMintingTransactionSequenceBuilderTaskInput = {
-                cartActionSetId,
-                checkoutActionSetId,
-                gemOrderId,
-            };
-            const scope = 'test_scope';
-            const mintingEncoded = '0xencodedminting';
-            const t721cInstance = {
-                _address: t721ControllerAddress,
-                methods: {
-                    mint: () => ({
-                        encodeABI: () => mintingEncoded,
-                    }),
-                },
-            };
-            const t721AdminInstance = {
-                _address: t721AdminAddress,
-            };
-            const t721c = mock(ContractsControllerBase);
-            const mmInstance = {
-                methods: {},
-            };
-            const approveEncoded = '0xencodedapprove';
-            const t721tokenInstance = {
-                _address: t721TokenAddress,
-                methods: {
-                    allowance: () => ({
-                        call: () => '0',
-                    }),
-                    approve: () => ({
-                        encodeABI: () => approveEncoded,
-                    }),
-                },
-            };
-            const mm = mock(ContractsControllerBase);
-            const ticketForgeInstance = {
-                methods: {
-                    getScope: () => ({
-                        call: () => ({
-                            exists: true,
-                            scope_index: 0,
-                        }),
-                    }),
-                },
-            };
-            const categoryOneId = 'category_one_id';
-            const categoryOneName = 'vip';
-            const groupId = '0x7361646661736466000000000000000000000000000000000000000000000000';
-            const authorizationOneId = 'authorization_one_id';
-            const expiration = new Date(Date.now() + 2 * DAY);
-            const price = {
-                currency: 'T721Token',
-                value: '100',
-                log_value: 0,
-            };
-            const cartAuthorizationsData: CartAuthorizations = {
-                authorizations: [
-                    {
-                        categoryId: categoryOneId,
-                        price: {
-                            currency: 'T721Token',
-                            price: '100',
-                        },
-                        authorizationId: authorizationOneId,
-                        groupId,
-                        categoryName: categoryOneName,
-                        granter: controllerAddress,
-                        grantee: buyerAddress,
-                        granterController: controllerAddress,
-                        expiration,
-                    },
-                ],
-                commitType: 'stripe',
-                total: [price],
-                fees: ['0'],
-                paymentIntentId,
-                clientSecret,
-                checkoutActionSetId,
-            };
-            const cartActionSet: Partial<ActionSetEntity> = {
-                id: cartActionSetId,
-                actions: [
-                    {} as ActionEntity,
-                    {} as ActionEntity,
-                    {
-                        status: 'complete',
-                        name: '@cart/authorizations',
-                        data: JSON.stringify(cartAuthorizationsData),
-                        type: 'input',
-                        error: null,
-                        private: true,
-                    },
-                ],
-                current_status: 'complete',
-                current_action: 1,
-            };
-            const checkoutResolveData: CheckoutResolve = {
-                cartId: cartActionSetId,
-                commitType: 'stripe',
-                buyer: buyerAddress,
-                stripe: {
-                    paymentIntentId,
-                    gemOrderId,
-                },
-            };
-            const checkoutActionSet: Partial<ActionSetEntity> = {
-                id: checkoutActionSetId,
-                actions: [
-                    {
-                        status: 'complete',
-                        name: '@checkout/resolve',
-                        data: JSON.stringify(checkoutResolveData),
-                        type: 'input',
-                        error: null,
-                        private: true,
-                    },
-                ],
-                current_status: 'complete',
-                current_action: 1,
-            };
-            const t721CurrencyERC20: ERC20Currency = {
-                type: 'set',
-                name: 'T721Token',
-                module: 't721',
-                address: t721TokenAddress,
-                dollarPeg: 1,
-                controller: instance(context.t721TokenServiceMock),
-                feeComputer: () => '0',
-            };
-            const code = '12345';
-            const authorizationOne: Partial<AuthorizationEntity> = {
-                id: authorizationOneId,
-                signature: '0xsignature',
-                codes: MintAuthorization.toCodesFormat(code),
-                args: MintAuthorization.toArgsFormat(
-                    MintAuthorization.encodePrices([
-                        {
-                            currency: t721TokenAddress,
-                            value: price.value,
-                            fee: '0',
-                        },
-                    ]),
-                    groupId,
-                    toB32(categoryOneName),
-                    code,
-                    Math.floor(expiration.getTime() / 1000),
-                ),
-            };
-            const ticketsPredictionInput = [
-                {
-                    buyer: buyerAddress,
-                    categoryId: categoryOneId,
-                    authorizationId: authorizationOneId,
-                    groupId: groupId,
-                },
-            ];
-            const ticketsPredictionOutput = [
-                {
-                    id: '181927450982374509823745',
-                    owner: buyerAddress,
-                } as TicketEntity,
-            ];
-            const transactions = [
-                {
-                    from: buyerAddress,
-                    to: t721TokenAddress,
-                    data: approveEncoded,
-                    value: '0',
-                },
-                {
-                    from: buyerAddress,
-                    to: t721ControllerAddress,
-                    data: mintingEncoded,
-                    value: '0',
-                    onConfirm: {
-                        name: '@minting/confirmation',
-                        jobData: {
-                            tickets: ticketsPredictionOutput.map((gtr: TicketEntity) => gtr.id),
-                            authorizations: cartAuthorizationsData.authorizations.map(
-                                (at: AuthorizedTicketMintingFormat) => [at.authorizationId, at.granter, at.grantee],
-                            ),
-                        },
-                    },
-                    onFailure: {
-                        name: '@minting/failure',
-                        jobData: {
-                            tickets: ticketsPredictionOutput.map((gtr: TicketEntity) => gtr.id),
-                            authorizations: cartAuthorizationsData.authorizations.map(
-                                (at: AuthorizedTicketMintingFormat) => [at.authorizationId, at.granter, at.grantee],
-                            ),
-                        },
-                    },
-                },
-            ];
-
-            // MOCK
-            when(context.configServiceMock.get('TICKETFORGE_SCOPE')).thenReturn(scope);
-            when(context.ticketforgeServiceMock.getScopeContracts(scope)).thenReturn({
-                mm: instance(mm),
-                t721c: instance(t721c),
-            });
-            // => fetchAndVerifyCart
-            when(
-                context.actionSetsServiceMock.search(
-                    deepEqual({
-                        id: cartActionSetId,
-                    }),
-                ),
-            ).thenResolve({
-                error: null,
-                response: [cartActionSet as ActionSetEntity],
-            });
-            // => fetchAndVerifyCheckout
-            when(
-                context.actionSetsServiceMock.search(
-                    deepEqual({
-                        id: checkoutActionSetId,
-                    }),
-                ),
-            ).thenResolve({
-                error: null,
-                response: [checkoutActionSet as ActionSetEntity],
-            });
-            // => evaluateTokenAmountToAuthorize
-            when(context.t721TokenServiceMock.get()).thenResolve(t721tokenInstance);
-            // => getTokenAuthorizationPayload
-            when(t721c.get()).thenResolve(t721cInstance);
-            // => generateTicketMintingTransactions
-            when(context.currenciesServiceMock.get('T721Token')).thenResolve(t721CurrencyERC20);
-
-            // TRIGGER
-            await expect(
-                context.mintingTasks.ticketMintingTransactionSequenceBuilderTask({
-                    data: input,
-                } as Job<TicketMintingTransactionSequenceBuilderTaskInput>),
-            ).rejects.toMatchObject(new NestError(`Invalid currency type on final step: set`));
-
-            // CHECK RETURNs
-
-            // CHECK CALLS
-            verify(context.configServiceMock.get('TICKETFORGE_SCOPE')).once();
-            verify(context.ticketforgeServiceMock.getScopeContracts(scope)).once();
-            // => fetchAndVerifyCart
-            verify(
-                context.actionSetsServiceMock.search(
-                    deepEqual({
-                        id: cartActionSetId,
-                    }),
-                ),
-            ).once();
-            // => fetchAndVerifyCheckout
-            verify(
-                context.actionSetsServiceMock.search(
-                    deepEqual({
-                        id: checkoutActionSetId,
-                    }),
-                ),
-            ).once();
-            // => evaluateTokenAmountToAuthorize
-            verify(context.t721TokenServiceMock.get()).times(3);
-            // => getTokenAuthorizationPayload
-            verify(t721c.get()).times(2);
-            // => generateTicketMintingTransactions
-            verify(context.currenciesServiceMock.get('T721Token')).once();
-        });
-
         it('should fail on authorization fetch error', async function() {
             // DECLARE
             const cartActionSetId = 'cart_id';
@@ -3519,13 +2438,7 @@ describe('Minting Tasks', function() {
                 signature: '0xsignature',
                 codes: MintAuthorization.toCodesFormat(code),
                 args: MintAuthorization.toArgsFormat(
-                    MintAuthorization.encodePrices([
-                        {
-                            currency: t721TokenAddress,
-                            value: price.value,
-                            fee: '0',
-                        },
-                    ]),
+                    MintAuthorization.encodePrices([]),
                     groupId,
                     toB32(categoryOneName),
                     code,
@@ -3545,38 +2458,6 @@ describe('Minting Tasks', function() {
                     id: '181927450982374509823745',
                     owner: buyerAddress,
                 } as TicketEntity,
-            ];
-            const transactions = [
-                {
-                    from: buyerAddress,
-                    to: t721TokenAddress,
-                    data: approveEncoded,
-                    value: '0',
-                },
-                {
-                    from: buyerAddress,
-                    to: t721ControllerAddress,
-                    data: mintingEncoded,
-                    value: '0',
-                    onConfirm: {
-                        name: '@minting/confirmation',
-                        jobData: {
-                            tickets: ticketsPredictionOutput.map((gtr: TicketEntity) => gtr.id),
-                            authorizations: cartAuthorizationsData.authorizations.map(
-                                (at: AuthorizedTicketMintingFormat) => [at.authorizationId, at.granter, at.grantee],
-                            ),
-                        },
-                    },
-                    onFailure: {
-                        name: '@minting/failure',
-                        jobData: {
-                            tickets: ticketsPredictionOutput.map((gtr: TicketEntity) => gtr.id),
-                            authorizations: cartAuthorizationsData.authorizations.map(
-                                (at: AuthorizedTicketMintingFormat) => [at.authorizationId, at.granter, at.grantee],
-                            ),
-                        },
-                    },
-                },
             ];
 
             // MOCK
@@ -3658,11 +2539,6 @@ describe('Minting Tasks', function() {
                 ),
             ).once();
             // => evaluateTokenAmountToAuthorize
-            verify(context.t721TokenServiceMock.get()).times(3);
-            // => getTokenAuthorizationPayload
-            verify(t721c.get()).times(2);
-            // => generateTicketMintingTransactions
-            verify(context.currenciesServiceMock.get('T721Token')).once();
             verify(
                 context.authorizationsServiceMock.search(
                     deepEqual({
@@ -3968,11 +2844,6 @@ describe('Minting Tasks', function() {
                 ),
             ).once();
             // => evaluateTokenAmountToAuthorize
-            verify(context.t721TokenServiceMock.get()).times(3);
-            // => getTokenAuthorizationPayload
-            verify(t721c.get()).times(2);
-            // => generateTicketMintingTransactions
-            verify(context.currenciesServiceMock.get('T721Token')).once();
             verify(
                 context.authorizationsServiceMock.search(
                     deepEqual({
@@ -4321,11 +3192,6 @@ describe('Minting Tasks', function() {
                 ),
             ).once();
             // => evaluateTokenAmountToAuthorize
-            verify(context.t721TokenServiceMock.get()).times(3);
-            // => getTokenAuthorizationPayload
-            verify(t721c.get()).times(2);
-            // => generateTicketMintingTransactions
-            verify(context.currenciesServiceMock.get('T721Token')).once();
             verify(
                 context.authorizationsServiceMock.search(
                     deepEqual({
@@ -4639,11 +3505,6 @@ describe('Minting Tasks', function() {
                 ),
             ).once();
             // => evaluateTokenAmountToAuthorize
-            verify(context.t721TokenServiceMock.get()).times(3);
-            // => getTokenAuthorizationPayload
-            verify(t721c.get()).times(2);
-            // => generateTicketMintingTransactions
-            verify(context.currenciesServiceMock.get('T721Token')).once();
             verify(
                 context.authorizationsServiceMock.search(
                     deepEqual({
@@ -4953,11 +3814,6 @@ describe('Minting Tasks', function() {
                 ),
             ).once();
             // => evaluateTokenAmountToAuthorize
-            verify(context.t721TokenServiceMock.get()).times(3);
-            // => getTokenAuthorizationPayload
-            verify(t721c.get()).times(2);
-            // => generateTicketMintingTransactions
-            verify(context.currenciesServiceMock.get('T721Token')).once();
             verify(
                 context.authorizationsServiceMock.search(
                     deepEqual({
@@ -5273,11 +4129,6 @@ describe('Minting Tasks', function() {
                 ),
             ).once();
             // => evaluateTokenAmountToAuthorize
-            verify(context.t721TokenServiceMock.get()).times(3);
-            // => getTokenAuthorizationPayload
-            verify(t721c.get()).times(2);
-            // => generateTicketMintingTransactions
-            verify(context.currenciesServiceMock.get('T721Token')).once();
             verify(
                 context.authorizationsServiceMock.search(
                     deepEqual({
@@ -5600,11 +4451,6 @@ describe('Minting Tasks', function() {
                 ),
             ).once();
             // => evaluateTokenAmountToAuthorize
-            verify(context.t721TokenServiceMock.get()).times(3);
-            // => getTokenAuthorizationPayload
-            verify(t721c.get()).times(4);
-            // => generateTicketMintingTransactions
-            verify(context.currenciesServiceMock.get('T721Token')).once();
             verify(
                 context.authorizationsServiceMock.search(
                     deepEqual({
@@ -5929,11 +4775,6 @@ describe('Minting Tasks', function() {
                 ),
             ).once();
             // => evaluateTokenAmountToAuthorize
-            verify(context.t721TokenServiceMock.get()).times(3);
-            // => getTokenAuthorizationPayload
-            verify(t721c.get()).times(4);
-            // => generateTicketMintingTransactions
-            verify(context.currenciesServiceMock.get('T721Token')).once();
             verify(
                 context.authorizationsServiceMock.search(
                     deepEqual({
@@ -6275,11 +5116,6 @@ describe('Minting Tasks', function() {
                 ),
             ).once();
             // => evaluateTokenAmountToAuthorize
-            verify(context.t721TokenServiceMock.get()).times(3);
-            // => getTokenAuthorizationPayload
-            verify(t721c.get()).times(4);
-            // => generateTicketMintingTransactions
-            verify(context.currenciesServiceMock.get('T721Token')).once();
             verify(
                 context.authorizationsServiceMock.search(
                     deepEqual({
@@ -6465,13 +5301,7 @@ describe('Minting Tasks', function() {
                 signature: '0xsignature',
                 codes: MintAuthorization.toCodesFormat(code),
                 args: MintAuthorization.toArgsFormat(
-                    MintAuthorization.encodePrices([
-                        {
-                            currency: t721TokenAddress,
-                            value: price.value,
-                            fee: '0',
-                        },
-                    ]),
+                    MintAuthorization.encodePrices([]),
                     groupId,
                     toB32(categoryOneName),
                     code,
@@ -6493,12 +5323,6 @@ describe('Minting Tasks', function() {
                 } as TicketEntity,
             ];
             const transactions = [
-                {
-                    from: buyerAddress,
-                    to: t721TokenAddress,
-                    data: approveEncoded,
-                    value: '0',
-                },
                 {
                     from: buyerAddress,
                     to: t721ControllerAddress,
@@ -6649,11 +5473,6 @@ describe('Minting Tasks', function() {
                 ),
             ).once();
             // => evaluateTokenAmountToAuthorize
-            verify(context.t721TokenServiceMock.get()).times(3);
-            // => getTokenAuthorizationPayload
-            verify(t721c.get()).times(4);
-            // => generateTicketMintingTransactions
-            verify(context.currenciesServiceMock.get('T721Token')).once();
             verify(
                 context.authorizationsServiceMock.search(
                     deepEqual({
@@ -6850,13 +5669,7 @@ describe('Minting Tasks', function() {
                 signature: '0xsignature',
                 codes: MintAuthorization.toCodesFormat(code),
                 args: MintAuthorization.toArgsFormat(
-                    MintAuthorization.encodePrices([
-                        {
-                            currency: t721TokenAddress,
-                            value: price.value,
-                            fee: '0',
-                        },
-                    ]),
+                    MintAuthorization.encodePrices([]),
                     groupId,
                     toB32(categoryOneName),
                     code,
@@ -6878,12 +5691,6 @@ describe('Minting Tasks', function() {
                 } as TicketEntity,
             ];
             const transactions = [
-                {
-                    from: buyerAddress,
-                    to: t721TokenAddress,
-                    data: approveEncoded,
-                    value: '0',
-                },
                 {
                     from: buyerAddress,
                     to: t721ControllerAddress,
@@ -7047,11 +5854,6 @@ describe('Minting Tasks', function() {
                 ),
             ).once();
             // => evaluateTokenAmountToAuthorize
-            verify(context.t721TokenServiceMock.get()).times(3);
-            // => getTokenAuthorizationPayload
-            verify(t721c.get()).times(4);
-            // => generateTicketMintingTransactions
-            verify(context.currenciesServiceMock.get('T721Token')).once();
             verify(
                 context.authorizationsServiceMock.search(
                     deepEqual({
@@ -7258,13 +6060,7 @@ describe('Minting Tasks', function() {
                 signature: '0xsignature',
                 codes: MintAuthorization.toCodesFormat(code),
                 args: MintAuthorization.toArgsFormat(
-                    MintAuthorization.encodePrices([
-                        {
-                            currency: t721TokenAddress,
-                            value: price.value,
-                            fee: '0',
-                        },
-                    ]),
+                    MintAuthorization.encodePrices([]),
                     groupId,
                     toB32(categoryOneName),
                     code,
@@ -7286,12 +6082,6 @@ describe('Minting Tasks', function() {
                 } as TicketEntity,
             ];
             const transactions = [
-                {
-                    from: buyerAddress,
-                    to: t721TokenAddress,
-                    data: approveEncoded,
-                    value: '0',
-                },
                 {
                     from: buyerAddress,
                     to: t721ControllerAddress,
@@ -7468,11 +6258,6 @@ describe('Minting Tasks', function() {
                 ),
             ).once();
             // => evaluateTokenAmountToAuthorize
-            verify(context.t721TokenServiceMock.get()).times(3);
-            // => getTokenAuthorizationPayload
-            verify(t721c.get()).times(4);
-            // => generateTicketMintingTransactions
-            verify(context.currenciesServiceMock.get('T721Token')).once();
             verify(
                 context.authorizationsServiceMock.search(
                     deepEqual({

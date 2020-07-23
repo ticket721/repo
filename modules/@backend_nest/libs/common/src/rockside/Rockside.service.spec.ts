@@ -260,7 +260,10 @@ describe('Rockside Service', function() {
 
             // CHECK RETURNs
             expect(res.error).toEqual(null);
-            expect(res.response).toEqual(transactionHash);
+            expect(res.response).toEqual({
+                transaction_hash: transactionHash,
+                tracking_id: trackingId,
+            });
 
             // CHECK CALLS
             verify(

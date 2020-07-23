@@ -1,5 +1,5 @@
 import { TicketMintingFormat } from '@lib/common/utils/Cart.type';
-import { CurrenciesService, ERC20Currency, Price } from '@lib/common/currencies/Currencies.service';
+import { CurrenciesService, Price } from '@lib/common/currencies/Currencies.service';
 import { DAY, HOUR } from '@lib/common/utils/time';
 import { AuthorizationsRepository } from '@lib/common/authorizations/Authorizations.repository';
 import { AuthorizationEntity } from '@lib/common/authorizations/entities/Authorization.entity';
@@ -12,7 +12,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from '@iaminfinity/express-cassandra/dist/utils/cassandra-orm.utils';
 import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
 import { BytesToolService } from '@lib/common/toolbox/Bytes.tool.service';
-import { encode, MintAuthorization, toB32, WithdrawAuthorization } from '@common/global';
+import { MintAuthorization, toB32, WithdrawAuthorization } from '@common/global';
 import { TimeToolService } from '@lib/common/toolbox/Time.tool.service';
 import { EsSearchOptionsStatic } from '@iaminfinity/express-cassandra/dist/orm/interfaces/externals/express-cassandra.interface';
 import { GroupService } from '@lib/common/group/Group.service';
@@ -147,29 +147,16 @@ describe('Authorizations Service', function() {
                 },
             ];
 
-            const prices: Price[] = [
-                {
-                    currency: 'T721Token',
-                    value: '100',
-                    log_value: 0,
-                },
-            ];
-
             const expirationTime = 2 * DAY;
 
             const signatureReadable = false;
 
-            const tokenAddress = '0x686b0122d2b93f62e8553d59adec2593d47570d2';
             const t721controllerAddress = '0x686b0122d2b93f62e8553d59adec2593d47570d3';
             const eventAddress = '0x686b0122d2b93f62e8553d59adec2593d47570d4';
             const userAddress = '0x686b0122d2b93f62e8553d59adec2593d47570d5';
             const groupId = '0xabcdef1234abcdef1234abcdef1234abcdef1234abcdef1234abcdef1234abcd';
 
             const grantee = userAddress;
-
-            when(context.currenciesServiceMock.get('T721Token')).thenResolve({
-                address: tokenAddress,
-            } as ERC20Currency);
 
             const t721Instance = {
                 _address: t721controllerAddress,
@@ -245,13 +232,7 @@ describe('Authorizations Service', function() {
                         dispatched: false,
                         codes: MintAuthorization.toCodesFormat(`0x${randomNum}`),
                         args: MintAuthorization.toArgsFormat(
-                            MintAuthorization.encodePrices([
-                                {
-                                    currency: tokenAddress,
-                                    value: encode(['uint256'], ['100']),
-                                    fee: '0',
-                                },
-                            ]),
+                            MintAuthorization.encodePrices([]),
                             groupId,
                             toB32('vip'),
                             `0x${randomNum}`,
@@ -276,13 +257,7 @@ describe('Authorizations Service', function() {
                     dispatched: false,
                     codes: MintAuthorization.toCodesFormat(`0x${randomNum}`),
                     args: MintAuthorization.toArgsFormat(
-                        MintAuthorization.encodePrices([
-                            {
-                                currency: tokenAddress,
-                                value: encode(['uint256'], ['100']),
-                                fee: '0',
-                            },
-                        ]),
+                        MintAuthorization.encodePrices([]),
                         groupId,
                         toB32('vip'),
                         `0x${randomNum}`,
@@ -300,8 +275,8 @@ describe('Authorizations Service', function() {
 
             const res = await context.authorizationsService.validateTicketAuthorizations(
                 authorizations,
-                prices,
-                fees,
+                [],
+                [],
                 expirationTime,
                 grantee,
                 signatureReadable,
@@ -324,8 +299,6 @@ describe('Authorizations Service', function() {
                     expiration: new Date(Math.floor((now.getTime() + expirationTime) / 1000) * 1000),
                 },
             ]);
-
-            verify(context.currenciesServiceMock.get('T721Token')).called();
 
             verify(context.t721ControllerV0ServiceMock.get()).called();
 
@@ -365,13 +338,7 @@ describe('Authorizations Service', function() {
                         dispatched: false,
                         codes: MintAuthorization.toCodesFormat(`0x${randomNum}`),
                         args: MintAuthorization.toArgsFormat(
-                            MintAuthorization.encodePrices([
-                                {
-                                    currency: tokenAddress,
-                                    value: encode(['uint256'], ['100']),
-                                    fee: '0',
-                                },
-                            ]),
+                            MintAuthorization.encodePrices([]),
                             groupId,
                             toB32('vip'),
                             `0x${randomNum}`,
@@ -396,29 +363,16 @@ describe('Authorizations Service', function() {
                 },
             ];
 
-            const prices: Price[] = [
-                {
-                    currency: 'T721Token',
-                    value: '100',
-                    log_value: 0,
-                },
-            ];
-
             const expirationTime = 2 * DAY;
 
             const signatureReadable = false;
 
-            const tokenAddress = '0x686b0122d2b93f62e8553d59adec2593d47570d2';
             const t721controllerAddress = '0x686b0122d2b93f62e8553d59adec2593d47570d3';
             const eventAddress = '0x686b0122d2b93f62e8553d59adec2593d47570d4';
             const userAddress = '0x686b0122d2b93f62e8553d59adec2593d47570d5';
             const groupId = '0xabcdef1234abcdef1234abcdef1234abcdef1234abcdef1234abcdef1234abcd';
 
             const grantee = userAddress;
-
-            when(context.currenciesServiceMock.get('T721Token')).thenResolve({
-                address: tokenAddress,
-            } as ERC20Currency);
 
             const t721Instance = {
                 _address: t721controllerAddress,
@@ -494,13 +448,7 @@ describe('Authorizations Service', function() {
                         dispatched: false,
                         codes: MintAuthorization.toCodesFormat(`0x${randomNum}`),
                         args: MintAuthorization.toArgsFormat(
-                            MintAuthorization.encodePrices([
-                                {
-                                    currency: tokenAddress,
-                                    value: encode(['uint256'], ['100']),
-                                    fee: '0',
-                                },
-                            ]),
+                            MintAuthorization.encodePrices([]),
                             groupId,
                             toB32('vip'),
                             `0x${randomNum}`,
@@ -525,13 +473,7 @@ describe('Authorizations Service', function() {
                     dispatched: false,
                     codes: MintAuthorization.toCodesFormat(`0x${randomNum}`),
                     args: MintAuthorization.toArgsFormat(
-                        MintAuthorization.encodePrices([
-                            {
-                                currency: tokenAddress,
-                                value: encode(['uint256'], ['100']),
-                                fee: '0',
-                            },
-                        ]),
+                        MintAuthorization.encodePrices([]),
                         groupId,
                         toB32('vip'),
                         `0x${randomNum}`,
@@ -545,12 +487,10 @@ describe('Authorizations Service', function() {
                 },
             });
 
-            const fees = ['0'];
-
             const res = await context.authorizationsService.validateTicketAuthorizations(
                 authorizations,
-                prices,
-                fees,
+                [],
+                [],
                 expirationTime,
                 grantee,
                 signatureReadable,
@@ -573,8 +513,6 @@ describe('Authorizations Service', function() {
                     expiration: new Date(Math.floor((now.getTime() + expirationTime) / 1000) * 1000),
                 },
             ]);
-
-            verify(context.currenciesServiceMock.get('T721Token')).called();
 
             verify(context.t721ControllerV0ServiceMock.get()).called();
 
@@ -614,13 +552,7 @@ describe('Authorizations Service', function() {
                         dispatched: false,
                         codes: MintAuthorization.toCodesFormat(`0x${randomNum}`),
                         args: MintAuthorization.toArgsFormat(
-                            MintAuthorization.encodePrices([
-                                {
-                                    currency: tokenAddress,
-                                    value: encode(['uint256'], ['100']),
-                                    fee: '0',
-                                },
-                            ]),
+                            MintAuthorization.encodePrices([]),
                             groupId,
                             toB32('vip'),
                             `0x${randomNum}`,
@@ -634,48 +566,6 @@ describe('Authorizations Service', function() {
             ).called();
         });
 
-        it('should fail on invalid fee length', async function() {
-            const authorizations: TicketMintingFormat[] = [
-                {
-                    categoryId: 'category_id',
-                    price: {
-                        currency: 'Fiat',
-                        price: '100',
-                    },
-                },
-            ];
-
-            const prices: Price[] = [
-                {
-                    currency: 'T721Token',
-                    value: '100',
-                    log_value: 0,
-                },
-            ];
-
-            const expirationTime = 2 * DAY;
-
-            const signatureReadable = false;
-
-            const userAddress = '0x686b0122d2b93f62e8553d59adec2593d47570d5';
-
-            const grantee = userAddress;
-
-            const fees = [];
-
-            const res = await context.authorizationsService.validateTicketAuthorizations(
-                authorizations,
-                prices,
-                fees,
-                expirationTime,
-                grantee,
-                signatureReadable,
-            );
-
-            expect(res.error).toEqual('invalid_fee_price_lengths');
-            expect(res.response).toEqual(null);
-        });
-
         it('should fail on categories fetch error', async function() {
             const authorizations: TicketMintingFormat[] = [
                 {
@@ -687,29 +577,14 @@ describe('Authorizations Service', function() {
                 },
             ];
 
-            const prices: Price[] = [
-                {
-                    currency: 'T721Token',
-                    value: '100',
-                    log_value: 0,
-                },
-            ];
-
             const expirationTime = 2 * DAY;
 
             const signatureReadable = false;
 
-            const tokenAddress = '0x686b0122d2b93f62e8553d59adec2593d47570d2';
             const t721controllerAddress = '0x686b0122d2b93f62e8553d59adec2593d47570d3';
-            const eventAddress = '0x686b0122d2b93f62e8553d59adec2593d47570d4';
             const userAddress = '0x686b0122d2b93f62e8553d59adec2593d47570d5';
-            const groupId = '0xabcdef1234abcdef1234abcdef1234abcdef1234abcdef1234abcdef1234abcd';
 
             const grantee = userAddress;
-
-            when(context.currenciesServiceMock.get('T721Token')).thenResolve({
-                address: tokenAddress,
-            } as ERC20Currency);
 
             const t721Instance = {
                 _address: t721controllerAddress,
@@ -743,8 +618,8 @@ describe('Authorizations Service', function() {
 
             const res = await context.authorizationsService.validateTicketAuthorizations(
                 authorizations,
-                prices,
-                fees,
+                [],
+                [],
                 expirationTime,
                 grantee,
                 signatureReadable,
@@ -752,8 +627,6 @@ describe('Authorizations Service', function() {
 
             expect(res.error).toEqual('unexpected_error');
             expect(res.response).toEqual(null);
-
-            verify(context.currenciesServiceMock.get('T721Token')).called();
 
             verify(context.t721ControllerV0ServiceMock.get()).called();
 
@@ -781,27 +654,12 @@ describe('Authorizations Service', function() {
                 },
             ];
 
-            const prices: Price[] = [
-                {
-                    currency: 'T721Token',
-                    value: '100',
-                    log_value: 0,
-                },
-            ];
-
             const expirationTime = 2 * DAY;
 
             const signatureReadable = false;
 
-            const tokenAddress = '0x686b0122d2b93f62e8553d59adec2593d47570d2';
             const t721controllerAddress = '0x686b0122d2b93f62e8553d59adec2593d47570d3';
-            const userAddress = '0x686b0122d2b93f62e8553d59adec2593d47570d5';
-
-            const grantee = userAddress;
-
-            when(context.currenciesServiceMock.get('T721Token')).thenResolve({
-                address: tokenAddress,
-            } as ERC20Currency);
+            const grantee = '0x686b0122d2b93f62e8553d59adec2593d47570d5';
 
             const t721Instance = {
                 _address: t721controllerAddress,
@@ -831,12 +689,10 @@ describe('Authorizations Service', function() {
                 response: [],
             });
 
-            const fees = ['0'];
-
             const res = await context.authorizationsService.validateTicketAuthorizations(
                 authorizations,
-                prices,
-                fees,
+                [],
+                [],
                 expirationTime,
                 grantee,
                 signatureReadable,
@@ -844,8 +700,6 @@ describe('Authorizations Service', function() {
 
             expect(res.error).toEqual('cannot_find_category');
             expect(res.response).toEqual(null);
-
-            verify(context.currenciesServiceMock.get('T721Token')).called();
 
             verify(context.t721ControllerV0ServiceMock.get()).called();
 
@@ -873,28 +727,15 @@ describe('Authorizations Service', function() {
                 },
             ];
 
-            const prices: Price[] = [
-                {
-                    currency: 'T721Token',
-                    value: '100',
-                    log_value: 0,
-                },
-            ];
-
             const expirationTime = 2 * DAY;
 
             const signatureReadable = false;
 
-            const tokenAddress = '0x686b0122d2b93f62e8553d59adec2593d47570d2';
             const t721controllerAddress = '0x686b0122d2b93f62e8553d59adec2593d47570d3';
             const userAddress = '0x686b0122d2b93f62e8553d59adec2593d47570d5';
             const groupId = '0xabcdef1234abcdef1234abcdef1234abcdef1234abcdef1234abcdef1234abcd';
 
             const grantee = userAddress;
-
-            when(context.currenciesServiceMock.get('T721Token')).thenResolve({
-                address: tokenAddress,
-            } as ERC20Currency);
 
             const t721Instance = {
                 _address: t721controllerAddress,
@@ -944,12 +785,10 @@ describe('Authorizations Service', function() {
                 error: 'unexpected_error',
             });
 
-            const fees = ['0'];
-
             const res = await context.authorizationsService.validateTicketAuthorizations(
                 authorizations,
-                prices,
-                fees,
+                [],
+                [],
                 expirationTime,
                 grantee,
                 signatureReadable,
@@ -957,8 +796,6 @@ describe('Authorizations Service', function() {
 
             expect(res.error).toEqual('unexpected_error');
             expect(res.response).toEqual(null);
-
-            verify(context.currenciesServiceMock.get('T721Token')).called();
 
             verify(context.t721ControllerV0ServiceMock.get()).called();
 
@@ -993,29 +830,16 @@ describe('Authorizations Service', function() {
                 },
             ];
 
-            const prices: Price[] = [
-                {
-                    currency: 'T721Token',
-                    value: '100',
-                    log_value: 0,
-                },
-            ];
-
             const expirationTime = 2 * DAY;
 
             const signatureReadable = false;
 
-            const tokenAddress = '0x686b0122d2b93f62e8553d59adec2593d47570d2';
             const t721controllerAddress = '0x686b0122d2b93f62e8553d59adec2593d47570d3';
             const eventAddress = '0x686b0122d2b93f62e8553d59adec2593d47570d4';
             const userAddress = '0x686b0122d2b93f62e8553d59adec2593d47570d5';
             const groupId = '0xabcdef1234abcdef1234abcdef1234abcdef1234abcdef1234abcdef1234abcd';
 
             const grantee = userAddress;
-
-            when(context.currenciesServiceMock.get('T721Token')).thenResolve({
-                address: tokenAddress,
-            } as ERC20Currency);
 
             const t721Instance = {
                 _address: t721controllerAddress,
@@ -1077,8 +901,8 @@ describe('Authorizations Service', function() {
 
             const res = await context.authorizationsService.validateTicketAuthorizations(
                 authorizations,
-                prices,
-                fees,
+                [],
+                [],
                 expirationTime,
                 grantee,
                 signatureReadable,
@@ -1086,8 +910,6 @@ describe('Authorizations Service', function() {
 
             expect(res.error).toEqual('rockside_signature_failure');
             expect(res.response).toEqual(null);
-
-            verify(context.currenciesServiceMock.get('T721Token')).called();
 
             verify(context.t721ControllerV0ServiceMock.get()).called();
 
@@ -1138,17 +960,12 @@ describe('Authorizations Service', function() {
 
             const signatureReadable = false;
 
-            const tokenAddress = '0x686b0122d2b93f62e8553d59adec2593d47570d2';
             const t721controllerAddress = '0x686b0122d2b93f62e8553d59adec2593d47570d3';
             const eventAddress = '0x686b0122d2b93f62e8553d59adec2593d47570d4';
             const userAddress = '0x686b0122d2b93f62e8553d59adec2593d47570d5';
             const groupId = '0xabcdef1234abcdef1234abcdef1234abcdef1234abcdef1234abcdef1234abcd';
 
             const grantee = userAddress;
-
-            when(context.currenciesServiceMock.get('T721Token')).thenResolve({
-                address: tokenAddress,
-            } as ERC20Currency);
 
             const t721Instance = {
                 _address: t721controllerAddress,
@@ -1224,13 +1041,7 @@ describe('Authorizations Service', function() {
                         dispatched: false,
                         codes: MintAuthorization.toCodesFormat(`0x${randomNum}`),
                         args: MintAuthorization.toArgsFormat(
-                            MintAuthorization.encodePrices([
-                                {
-                                    currency: tokenAddress,
-                                    value: encode(['uint256'], ['100']),
-                                    fee: '0',
-                                },
-                            ]),
+                            MintAuthorization.encodePrices([]),
                             groupId,
                             toB32('vip'),
                             `0x${randomNum}`,
@@ -1246,12 +1057,10 @@ describe('Authorizations Service', function() {
                 response: null,
             });
 
-            const fees = ['0'];
-
             const res = await context.authorizationsService.validateTicketAuthorizations(
                 authorizations,
-                prices,
-                fees,
+                [],
+                [],
                 expirationTime,
                 grantee,
                 signatureReadable,
@@ -1259,8 +1068,6 @@ describe('Authorizations Service', function() {
 
             expect(res.error).toEqual('unexpected_error');
             expect(res.response).toEqual(null);
-
-            verify(context.currenciesServiceMock.get('T721Token')).called();
 
             verify(context.t721ControllerV0ServiceMock.get()).called();
 
@@ -1300,13 +1107,7 @@ describe('Authorizations Service', function() {
                         dispatched: false,
                         codes: MintAuthorization.toCodesFormat(`0x${randomNum}`),
                         args: MintAuthorization.toArgsFormat(
-                            MintAuthorization.encodePrices([
-                                {
-                                    currency: tokenAddress,
-                                    value: encode(['uint256'], ['100']),
-                                    fee: '0',
-                                },
-                            ]),
+                            MintAuthorization.encodePrices([]),
                             groupId,
                             toB32('vip'),
                             `0x${randomNum}`,
