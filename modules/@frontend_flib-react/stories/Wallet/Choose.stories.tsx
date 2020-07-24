@@ -24,7 +24,7 @@ const user = {
 
 export const showcase = () => (
     <div>
-        <UserHeader username={'mortimr'} picture={'assets/images/user-1.jpg'} balance={'0'} />
+        <UserHeader username={'mortimr'} picture={'assets/images/user-1.jpg'} tickets={'2'} />
         <WalletPaymentTypes user={user} onChange={action('payment type changed')} />
     </div>
 );
