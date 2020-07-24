@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import {
     LinksContainer,
     ArrowLink,
@@ -17,6 +17,7 @@ import { useHistory } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import '../locales';
 import { TicketsCountResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/tickets/dto/TicketsCountResponse.dto';
+import { UserContext } from '../../../utils/UserContext';
 
 export interface ProfileRootProps {
     desktop?: boolean;
@@ -25,12 +26,10 @@ export interface ProfileRootProps {
 
 const ProfileRoot: React.FC<ProfileRootProps> = ({ desktop, extraButtons }: ProfileRootProps): JSX.Element => {
     const [uuid] = useState(v4());
-    const { token, userUuid, username, address } = useSelector((state: AppState) => ({
+    const { token } = useSelector((state: AppState) => ({
         token: state.auth.token?.value,
-        userUuid: state.auth.user?.uuid,
-        username: state.auth.user?.username,
-        address: state.auth.user?.address,
     }));
+    const user = useContext(UserContext);
     const dispatch = useDispatch();
     const history = useHistory();
     const [t, i18n] = useTranslation(['profile', 'common']);
@@ -43,14 +42,14 @@ const ProfileRoot: React.FC<ProfileRootProps> = ({ desktop, extraButtons }: Prof
                 {
                     useReadRights: [
                         {
-                            id: userUuid,
+                            id: user.id,
                             type: 'user',
                             field: 'id',
                         },
                     ],
                     withLinks: [
                         {
-                            id: userUuid,
+                            id: user.id,
                             type: 'user',
                             field: 'id',
                         },
@@ -70,7 +69,7 @@ const ProfileRoot: React.FC<ProfileRootProps> = ({ desktop, extraButtons }: Prof
                 token,
                 {
                     owner: {
-                        $eq: address,
+                        $eq: user.address,
                     },
                     status: {
                         $ne: 'canceled',
@@ -89,7 +88,7 @@ const ProfileRoot: React.FC<ProfileRootProps> = ({ desktop, extraButtons }: Prof
     return (
         <>
             <WalletHeader
-                username={username}
+                username={user.username}
                 picture={'/favicon.ico'}
                 tickets={tickets.response.error ? '?' : tickets.response.data.tickets.count}
             />

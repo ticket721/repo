@@ -20,7 +20,7 @@ import TagsPage                  from './routes/Tags';
 import WalletPage                from './routes/Wallet';
 import CartPage                  from './routes/Cart';
 import { useKeyboardVisibility } from '@frontend/core/lib/utils/useKeyboardVisibility';
-import { TokenLoadedGuard }      from '@frontend/core/lib/utils/TokenLoadedGuard';
+import { UserContextGuard }      from '@frontend/core/lib/utils/UserContext';
 
 const TopNavWrapper = (props: { back: () => void}): JSX.Element => {
 
@@ -51,7 +51,7 @@ const MobileApp: React.FC = () => {
     const keyboardIsVisible = useKeyboardVisibility();
 
     return <Suspense fallback={<FullPageLoading/>}>
-        <TokenLoadedGuard>
+        <UserContextGuard>
             <AppContainer>
                 {
                     location.pathname.lastIndexOf('/') !== 0
@@ -121,10 +121,10 @@ const MobileApp: React.FC = () => {
 
                     <Redirect to={'/'}/>
                 </Switch>
-                <ToastStacker additionalLocales={[]}/>
                 <T721Navbar visible={location.pathname.lastIndexOf('/') === 0 && !keyboardIsVisible}/>
             </AppContainer>
-        </TokenLoadedGuard>
+        </UserContextGuard>
+        <ToastStacker additionalLocales={[]}/>
     </Suspense>;
 };
 

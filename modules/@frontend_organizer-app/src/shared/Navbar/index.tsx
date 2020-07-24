@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import styled                                         from 'styled-components';
+import React, { useContext, useEffect, useState } from 'react';
+import styled                                     from 'styled-components';
 import { FullPageLoading, Icon, WalletHeader } from '@frontend/flib-react/lib/components';
 
 import { DrawerAccount, ProfileRoute }       from '../DrawerAccount';
@@ -12,17 +12,17 @@ import { AppState }                          from '@frontend/core/lib/redux';
 import './locales';
 import { v4 }                                from 'uuid';
 import { useRequest }                        from '@frontend/core/lib/hooks/useRequest';
-import { TicketsCountResponseDto }   from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/tickets/dto/TicketsCountResponse.dto';
+import { TicketsCountResponseDto }           from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/tickets/dto/TicketsCountResponse.dto';
+import { UserContext }                       from '@frontend/core/lib/utils/UserContext';
 
-const NavBar: React.FC = () => {
+const AuthNavBar: React.FC = () => {
     const { t } = useTranslation('navbar');
     const history = useHistory();
-    const user = useSelector((state: AppState) => state.auth.user);
     const [uuid] = useState(v4());
+    const user = useContext(UserContext);
     const [ profileRoute, setProfileRoute ] = useState<ProfileRoute>();
-    const { token, address } = useSelector((state: AppState) => ({
+    const { token } = useSelector((state: AppState) => ({
         token: state.auth.token?.value,
-        address: state.auth.user?.address,
     }));
 
     useEffect(() => {
@@ -44,7 +44,7 @@ const NavBar: React.FC = () => {
             token,
             {
                 owner: {
-                    $eq: address
+                    $eq: user.address
                 },
                 status: {
                     $ne: 'canceled',
@@ -138,4 +138,16 @@ const UserHeader = styled(WalletHeader)`
 const Chevron = styled(Icon)`
     transform: rotate(90deg);
 `;
+
+const NavBar = () => {
+    const user = useContext(UserContext);
+
+    if (user?.valid) {
+        return <AuthNavBar/>
+    } else {
+        return null
+    }
+
+};
+
 export default NavBar;

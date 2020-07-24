@@ -15,6 +15,6 @@ export const showcase = () => (
         username={'mortimr'}
         picture={'assets/images/user-1.jpg'}
         profileHeader={boolean('Profile header ?', false)}
-        balance={'0'}
+        tickets={'12'}
     />
 );

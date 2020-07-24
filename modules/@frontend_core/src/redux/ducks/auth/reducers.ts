@@ -8,14 +8,12 @@ import {
     ISetErrors,
     ISetLoading,
     ISetToken,
-    ISetUser,
 } from './actions';
 import { AuthActionTypes, AuthState } from './types';
 import { Reducer } from 'redux';
 
 export const authInitialState: AuthState = {
     token: undefined,
-    user: null,
     errors: null,
     loading: false,
     submit: false,
@@ -26,21 +24,8 @@ const SetTokenReducer: Reducer<AuthState, ISetToken> = (state: AuthState, action
     token: action.token,
 });
 
-const SetUserReducer: Reducer<AuthState, ISetUser> = (state: AuthState, action: ISetUser): AuthState => ({
-    ...state,
-    user: {
-        username: action.username,
-        kind: action.kind,
-        locale: action.locale,
-        validated: action.validated,
-        address: action.address,
-        uuid: action.uuid,
-    },
-});
-
 const LogoutReducer: Reducer<AuthState, ILogout> = (state: AuthState, action: ILogout): AuthState => ({
     token: null,
-    user: null,
     errors: null,
     loading: false,
     submit: false,
@@ -86,8 +71,6 @@ export const AuthReducer: Reducer<AuthState, AuthAction> = (
     switch (action.type) {
         case AuthActionTypes.SetToken:
             return SetTokenReducer(state, action as ISetToken);
-        case AuthActionTypes.SetUser:
-            return SetUserReducer(state, action as ISetUser);
         case AuthActionTypes.Logout:
             return LogoutReducer(state, action as ILogout);
         case AuthActionTypes.SetErrors:

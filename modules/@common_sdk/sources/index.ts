@@ -18,6 +18,7 @@ import {
     resetPassword,
     validateResetPassword,
     updatePassword,
+    resendValidation,
 } from './app/api/authentication';
 
 // ACTIONS
@@ -107,6 +108,7 @@ export class T721SDK {
         this.validateEmail = this.validateEmail.bind(this);
         this.resetPassword = this.resetPassword.bind(this);
         this.validateResetPassword = this.validateResetPassword.bind(this);
+        this.resendValidation = this.resendValidation.bind(this);
 
         this.users.me = this.users.me.bind(this);
         this.users.setDeviceAddress = this.users.setDeviceAddress.bind(this);
@@ -274,6 +276,7 @@ export class T721SDK {
     public validateEmail = validateEmail;
     public resetPassword = resetPassword;
     public validateResetPassword = validateResetPassword;
+    public resendValidation = resendValidation;
 
     public users = {
         me: usersMe,

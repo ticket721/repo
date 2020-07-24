@@ -44,12 +44,7 @@ const Amount = styled.h4`
     font-size: 14px;
 
     span {
-        background: linear-gradient(238.51deg, #11a869 0%, #0d8251 100%);
-        background-clip: text;
-        -webkit-background-clip: text;
-        -moz-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        -moz-text-fill-color: transparent;
+        margin-right: 10px;
     }
 `;
 
@@ -64,7 +59,8 @@ export const WalletHeader: React.FunctionComponent<WalletHeaderProps & { classNa
             <div>
                 {props.profileHeader ? <h1>{props.username}</h1> : <h3>{props.username}</h3>}
                 <Amount>
-                    <span>🎫</span> {props.tickets}
+                    <span>🎫</span>
+                    {props.tickets}
                 </Amount>
             </div>
         </Container>

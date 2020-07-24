@@ -18,12 +18,12 @@ import SearchPage            from './routes/Search';
 import TagsPage              from './routes/Tags';
 import CartPage              from './routes/Cart';
 import { FullPageLoading }   from '@frontend/flib-react/lib/components';
-import { TokenLoadedGuard }  from '@frontend/core/lib/utils/TokenLoadedGuard';
+import { UserContextGuard }  from '@frontend/core/lib/utils/UserContext';
 
 const App: React.FC = () => {
 
     return <Suspense fallback={<FullPageLoading/>}>
-        <TokenLoadedGuard>
+        <UserContextGuard>
             <AppContainer>
                 <Switch>
                     <Route path={'/login'} exact={true}>
@@ -75,9 +75,9 @@ const App: React.FC = () => {
                     </Route>
                     <Redirect to={'/'}/>
                 </Switch>
-                <ToastStacker additionalLocales={[]}/>
             </AppContainer>
-        </TokenLoadedGuard>
+        </UserContextGuard>
+        <ToastStacker additionalLocales={[]}/>
     </Suspense>;
 };
 
