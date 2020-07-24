@@ -25,7 +25,6 @@ import { ResetPasswordResponseDto }         from '@app/server/authentication/dto
 import { PasswordChangeDto }                from '@app/server/authentication/dto/PasswordChange.dto';
 import { PasswordlessUserDto }              from '@app/server/authentication/dto/PasswordlessUser.dto';
 import { ResendValidationResponseDto }      from '@app/server/authentication/dto/ResendValidationResponse.dto';
-import { ResendValidationInputDto }         from '@app/server/authentication/dto/ResendValidationInput.dto';
 
 export interface FailedRegisterReport {
     report_status: 'weak';
@@ -171,7 +170,7 @@ export async function validateEmail(token: string): Promise<AxiosResponse<EmailV
 export async function resendValidation(token: string) : Promise<AxiosResponse<ResendValidationResponseDto>> {
     const self: T721SDK = this;
 
-    return await self.post<ResendValidationInputDto>('/authentication/resend-validation',
+    return await self.post('/authentication/resend-validation',
         {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
