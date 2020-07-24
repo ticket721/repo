@@ -38,6 +38,7 @@
     "scripts": {
         "start": "PORT=3002 react-scripts start",
         "build": "react-scripts build",
+        "build:prod": "react-scripts build",
         "test": "react-scripts test",
         "lint": "tslint --project .",
         "inject_segment_key": "sed -i -e \"s/__REACT_APP_SEGMENT_API_KEY__/${REACT_APP_SEGMENT_API_KEY}/g\" ./build/index.html",
