@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "platform.fullname" . }}--staff--d
+  labels:
+    app: {{ include "platform.fullname" . }}--staff
+    name: {{ include "platform.fullname" . }}--staff--d
+    chart: {{ .Chart.Name }}
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: {{ include "platform.fullname" . }}--staff
+      name: {{ include "platform.fullname" . }}--staff
+      chart: {{ .Chart.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "platform.fullname" . }}--staff
+        name: {{ include "platform.fullname" . }}--staff
+        chart: {{ .Chart.Name }}
+    spec:
+      serviceAccountName: {{ include "platform.fullname" . }}--platform--sa
+      containers:
+        - name: {{ template  "platform.fullname" . }}--staff
+          image: "{{ .Values.staff.image.repository }}:{{ .Values.staff.image.tag }}"
+          imagePullPolicy: {{ .Values.staff.image.pullPolicy }}
+          env:
+            - name: NODE_ENV
+              value: production
+            - name: REACT_APP_T721_SERVER_HOST
+              value: '{{ required "[staff] Missing config.serverEndpoint.host value" .Values.config.serverEndpoint.host }}'
+            - name: REACT_APP_T721_SERVER_PORT
+              value: '{{ required "[staff] Missing config.serverEndpoint.port value" .Values.config.serverEndpoint.port }}'
+            - name: REACT_APP_T721_SERVER_PROTOCOL
+              value: '{{ required "[staff] Missing config.serverEndpoint.protocol value" .Values.config.serverEndpoint.protocol }}'
+            - name: REACT_APP_ARTIFACT_PATH
+              value: '../../artifacts/{{ required "[staff] Missing config.artifact value" .Values.config.artifact }}'
+            - name: REACT_APP_GOOGLE_PLACES_API_KEY
+              value: '{{ required "[staff] Missing config.googleGeocodingApiKey value" .Values.config.googleGeocodingApiKey }}'
+            - name: REACT_APP_SEGMENT_API_KEY
+              value: '{{ required "[staff] Missing config.staff.segmentApiKey value" .Values.config.staff.segmentApiKey }}'
+            - name: REACT_APP_T721_ORGANIZER_URL
+              value: '{{ required "[staff] Missing config.staff.organizerUrl value" .Values.config.staff.organizerUrl }}'
+          ports:
+            - name: http
+              containerPort: 5000
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+

@@ -148,6 +148,11 @@ apps:
       hosts[2].paths[0].serviceName: "platform-staging--t721app--svc"
       hosts[2].paths[0].servicePort: "80"
 
+      hosts[3].name: "staff.staging.ticket721.com"
+      hosts[3].paths[0].route: "/"
+      hosts[3].paths[0].serviceName: "platform-staging--staff--svc"
+      hosts[3].paths[0].servicePort: "80"
+
       route53.keyId: "${CONFIG_STAGING_ROUTE53_KEY}"
       route53.hostedzone: "${CONFIG_STAGING_ROUTE53_HOSTEDZONE}"
       route53.region: "eu-west-3"
@@ -276,6 +281,8 @@ apps:
 
       config.organizer.segmentApiKey: "${CONFIG_STAGING_ORGANIZER_SEGMENT_API_KEY}"
       config.t721app.segmentApiKey: "${CONFIG_STAGING_T721APP_SEGMENT_API_KEY}"
+      config.staff.segmentApiKey: "${CONFIG_STAGING_STAFF_SEGMENT_API_KEY}"
+      config.staff.organizerUrl: "https://organizer.staging.ticket721.com"
       config.t721app.publishableStripeApiKey: "${CONFIG_STAGING_T721APP_PUBLISHABLE_STRIPE_API_KEY}"
       config.etherscanUrl: "${CONFIG_STAGING_ETHERSCAN_URL}"
 
