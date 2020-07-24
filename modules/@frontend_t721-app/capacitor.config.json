@@ -6,6 +6,6 @@
     "server": {
         "iosScheme": "ios",
         "androidScheme": "http",
-        "url": "http://10.253.3.36:8100"
+        "url": "http://172.20.10.2:8100"
     }
 }

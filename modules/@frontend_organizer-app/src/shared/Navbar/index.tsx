@@ -1,33 +1,29 @@
 import React, { useEffect, useState } from 'react';
-import styled                         from 'styled-components';
-import { Icon, WalletHeader } from '@frontend/flib-react/lib/components';
+import styled                                         from 'styled-components';
+import { Error, FullPageLoading, Icon, WalletHeader } from '@frontend/flib-react/lib/components';
 
-import { DrawerAccount, ProfileRoute } from '../DrawerAccount';
-import { useTranslation }              from 'react-i18next';
+import { DrawerAccount, ProfileRoute }       from '../DrawerAccount';
+import { useTranslation }                    from 'react-i18next';
 import { blurAndDarkenBackground, truncate } from '@frontend/core/lib/utils';
 import { useHistory }                        from 'react-router';
 import { NavLink }                           from 'react-router-dom';
 import { useSelector }                       from 'react-redux';
 import { AppState }                          from '@frontend/core/lib/redux';
-import { getContract }                       from '@frontend/core/lib/subspace/getContract';
 import './locales';
 import { v4 }                                from 'uuid';
-
-// tslint:disable-next-line:no-var-requires
-const { observe, useSubspace } = require('@embarklabs/subspace-react');
+import { useRequest }                        from '@frontend/core/lib/hooks/useRequest';
+import { TicketsCountResponseDto }   from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/tickets/dto/TicketsCountResponse.dto';
 
 const NavBar: React.FC = () => {
     const { t } = useTranslation('navbar');
     const history = useHistory();
     const user = useSelector((state: AppState) => state.auth.user);
     const [uuid] = useState(v4());
-    const subspace = useSubspace();
-    const T721TokenContract = getContract(subspace, 't721token', 'T721Token', uuid);
     const [ profileRoute, setProfileRoute ] = useState<ProfileRoute>();
-
-    const $balance = (T721TokenContract.loading || T721TokenContract.error)
-        ? '...'
-        : T721TokenContract.contract.methods.balanceOf(user?.address).track();
+    const { token, address } = useSelector((state: AppState) => ({
+        token: state.auth.token?.value,
+        address: state.auth.user?.address,
+    }));
 
     useEffect(() => {
         if (history.location.search.match(/[?|&]profile=(root|activities|language)$/)) {
@@ -41,6 +37,31 @@ const NavBar: React.FC = () => {
             setProfileRoute(null);
         }
     }, [history.location.search]);
+
+    const tickets = useRequest<TicketsCountResponseDto>({
+        method: 'tickets.count',
+        args: [
+            token,
+            {
+                owner: {
+                    $eq: address
+                },
+                status: {
+                    $ne: 'canceled',
+                }
+            }
+        ],
+        refreshRate: 50,
+    }, uuid);
+
+    if (tickets.response.loading) {
+        return <FullPageLoading/>
+    }
+
+    if (tickets.response.error) {
+        return <Error retryLabel={t('common:retrying_in')} onRefresh={tickets.force} message={t('cannot_fetch_tickets')}/>
+    }
+
 
     return (
         <Container>
@@ -59,7 +80,7 @@ const NavBar: React.FC = () => {
                     onClick={
                         () => history.push(history.location.pathname + '?profile=root')
                     }>
-                    <ConnectedUserHeader username={user?.username} picture={'/favicon.ico'} balance={$balance}/>
+                    <UserHeader username={user?.username} picture={'/favicon.ico'} tickets={tickets.response.data.tickets.count}/>
                     <Chevron icon='chevron' color='#fff' size='7px'/>
                 </Profile>
             </ActionContainer>
@@ -115,8 +136,6 @@ const UserHeader = styled(WalletHeader)`
         font-size: 13px;
     }
 `;
-
-const ConnectedUserHeader = observe(UserHeader);
 
 const Chevron = styled(Icon)`
     transform: rotate(90deg);

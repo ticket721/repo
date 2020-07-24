@@ -13,5 +13,5 @@ i18n.addResourceBundle('fr', 'wallet', {
     fetch_error: 'Impossible de récuperer vos tickets',
     empty_wallet: 'Wallet vide',
     return_to_search: 'Retournez à la recherche',
-    my_tickets: 'Mes Tickets'
+    my_tickets: 'Mes Tickets',
 });

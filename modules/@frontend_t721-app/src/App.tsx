@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 
 import { Redirect, Route, Switch, withRouter } from 'react-router-dom';
 
@@ -6,21 +6,22 @@ import ProtectedRoute               from '@frontend/core/lib/components/Protecte
 import ToastStacker                 from '@frontend/core/lib/components/ToastStacker';
 import styled                       from 'styled-components';
 import LoginPage from './routes/Login';
-import RegisterPage from './routes/Register';
-import HomePage from './routes/Home';
+import RegisterPage          from './routes/Register';
+import HomePage              from './routes/Home';
 import ProfileActivitiesPage from './routes/Activities';
-import ProfileLanguagePage from './routes/Language';
-import ProfilePage from './routes/Profile';
-import SearchViewAllPage from './routes/SearchViewAll';
-import EventPage from './routes/Event';
-import TicketSelectionPage from './routes/TicketSelection';
-import SearchPage from './routes/Search';
-import TagsPage from './routes/Tags';
-import CartPage from './routes/Cart';
+import ProfileLanguagePage   from './routes/Language';
+import ProfilePage           from './routes/Profile';
+import SearchViewAllPage     from './routes/SearchViewAll';
+import EventPage             from './routes/Event';
+import TicketSelectionPage   from './routes/TicketSelection';
+import SearchPage            from './routes/Search';
+import TagsPage              from './routes/Tags';
+import CartPage              from './routes/Cart';
+import { FullPageLoading }   from '@frontend/flib-react/lib/components';
 
 const App: React.FC = () => {
 
-    return <>
+    return <Suspense fallback={<FullPageLoading/>}>
         <AppContainer>
             <Switch>
                 <Route path={'/login'} exact={true}>
@@ -74,7 +75,7 @@ const App: React.FC = () => {
             </Switch>
             <ToastStacker additionalLocales={[]}/>
         </AppContainer>
-    </>;
+    </Suspense>;
 };
 
 const AppContainer = styled.div`

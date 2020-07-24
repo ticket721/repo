@@ -1,6 +1,6 @@
-import React, { useEffect, useState }                                   from 'react';
+import React, { useEffect, useState, Suspense }                                   from 'react';
 import { Route, Switch, useHistory, useLocation, withRouter, Redirect } from 'react-router-dom';
-import { TopNav }                                                       from '@frontend/flib-react/lib/components';
+import { TopNav, FullPageLoading }                                                       from '@frontend/flib-react/lib/components';
 import ProtectedRoute                                                   from '@frontend/core/lib/components/ProtectedRoute';
 import ToastStacker                                                     from '@frontend/core/lib/components/ToastStacker';
 import styled                                                           from 'styled-components';
@@ -8,17 +8,17 @@ import { T721Navbar }                                                   from './
 import LoginPage                                                        from './routes/Login';
 import RegisterPage                                                     from './routes/Register';
 import HomePage                                                         from './routes/Home';
-import ProfileActivitiesPage                                            from './routes/Activities';
-import ProfileLanguagePage                                              from './routes/Language';
-import ProfilePage                                                      from './routes/Profile';
-import SearchViewAllPage                                                from './routes/SearchViewAll';
-import EventPage                                                        from './routes/Event';
-import TicketPage                                                       from './routes/Ticket';
-import TicketSelectionPage                                              from './routes/TicketSelection';
-import SearchPage                                                       from './routes/Search';
-import TagsPage                                                         from './routes/Tags';
-import WalletPage                                                       from './routes/Wallet';
-import CartPage                                                         from './routes/Cart';
+import ProfileActivitiesPage from './routes/Activities';
+import ProfileLanguagePage   from './routes/Language';
+import ProfilePage           from './routes/Profile';
+import SearchViewAllPage     from './routes/SearchViewAll';
+import EventPage             from './routes/Event';
+import TicketPage            from './routes/Ticket';
+import TicketSelectionPage   from './routes/TicketSelection';
+import SearchPage            from './routes/Search';
+import TagsPage              from './routes/Tags';
+import WalletPage            from './routes/Wallet';
+import CartPage              from './routes/Cart';
 
 const TopNavWrapper = (props: { back: () => void}): JSX.Element => {
 
@@ -47,7 +47,7 @@ const MobileApp: React.FC = () => {
     const location = useLocation();
     const history = useHistory();
 
-    return <>
+    return <Suspense fallback={<FullPageLoading/>}>
         <AppContainer>
             {
                 location.pathname.lastIndexOf('/') !== 0
@@ -120,7 +120,7 @@ const MobileApp: React.FC = () => {
             <ToastStacker additionalLocales={[]}/>
             <T721Navbar visible={location.pathname.lastIndexOf('/') === 0}/>
         </AppContainer>
-    </>;
+    </Suspense>;
 };
 
 const AppContainer = styled.div`

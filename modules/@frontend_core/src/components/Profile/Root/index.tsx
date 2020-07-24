@@ -5,6 +5,7 @@ import {
     WalletHeader,
     LanguageLink,
     FullPageLoading,
+    Error,
 } from '@frontend/flib-react/lib/components';
 import { useRequest } from '../../../hooks/useRequest';
 import { MetadatasFetchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/metadatas/dto/MetadatasFetchResponse.dto';
@@ -14,14 +15,9 @@ import { AppState } from '../../../redux';
 import { ActivitiesList } from '../Activities/ActivitiesList';
 import { Logout } from '../../../redux/ducks/auth';
 import { useHistory } from 'react-router';
-import { getContract } from '../../../subspace/getContract';
 import { useTranslation } from 'react-i18next';
 import '../locales';
-
-// tslint:disable-next-line:no-var-requires
-const { observe, useSubspace } = require('@embarklabs/subspace-react');
-
-const ConnectedWalletHeader = observe(WalletHeader);
+import { TicketsCountResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/tickets/dto/TicketsCountResponse.dto';
 
 export interface ProfileRootProps {
     desktop?: boolean;
@@ -38,11 +34,9 @@ const ProfileRoot: React.FC<ProfileRootProps> = ({ desktop, extraButtons }: Prof
     }));
     const dispatch = useDispatch();
     const history = useHistory();
-    const subspace = useSubspace();
-    const T721TokenContract = getContract(subspace, 't721token', 'T721Token', uuid);
-    const [t, i18n] = useTranslation('profile');
+    const [t, i18n] = useTranslation(['profile', 'common']);
 
-    const { response: activityResponse } = useRequest<MetadatasFetchResponseDto>(
+    const { response: activityResponse, force } = useRequest<MetadatasFetchResponseDto>(
         {
             method: 'metadatas.fetch',
             args: [
@@ -70,23 +64,43 @@ const ProfileRoot: React.FC<ProfileRootProps> = ({ desktop, extraButtons }: Prof
         uuid,
     );
 
-    if (T721TokenContract.loading) {
+    const tickets = useRequest<TicketsCountResponseDto>(
+        {
+            method: 'tickets.count',
+            args: [
+                token,
+                {
+                    owner: {
+                        $eq: address,
+                    },
+                    status: {
+                        $ne: 'canceled',
+                    },
+                },
+            ],
+            refreshRate: 50,
+        },
+        uuid,
+    );
+
+    if (tickets.response.loading) {
         return <FullPageLoading />;
     }
 
-    if (T721TokenContract.error) {
-        return <p>Unable to recover contracts</p>;
+    if (tickets.response.error) {
+        return (
+            <Error retryLabel={t('common:retrying_in')} onRefresh={tickets.force} message={t('cannot_fetch_tickets')} />
+        );
     }
-
-    const $balance = T721TokenContract.contract.methods.balanceOf(address).track();
 
     return (
         <>
-            <ConnectedWalletHeader username={username} picture={'/favicon.ico'} balance={$balance} />
+            <WalletHeader username={username} picture={'/favicon.ico'} tickets={tickets.response.data.tickets.count} />
             <ActivitiesList
                 loading={activityResponse.loading}
                 error={activityResponse.error}
                 data={activityResponse.data}
+                force={force}
                 limit={3}
                 link={desktop ? history.location.pathname + '?profile=activities' : 'profile/activities'}
             />

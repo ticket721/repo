@@ -274,11 +274,6 @@ apps:
       config.serverEndpoint.port: "443"
       config.serverEndpoint.protocol: "https"
 
-      config.frontEthereumNode.url: "https://api.rockside.io/ethereum/ropsten/jsonrpc"
-      config.frontEthereumNode.networkId: "3"
-      config.organizer.frontEthereumNodeHeaders: '\{\\"Authorization\\": \\"Bearer ${CONFIG_STAGING_ORGANIZER_ROCKSIDE_TOKEN}\\"\}'
-      config.t721app.frontEthereumNodeHeaders: '\{\\"Authorization\\": \\"Bearer ${CONFIG_STAGING_T721APP_ROCKSIDE_TOKEN}\\"\}'
-
       config.organizer.segmentApiKey: "${CONFIG_STAGING_ORGANIZER_SEGMENT_API_KEY}"
       config.t721app.segmentApiKey: "${CONFIG_STAGING_T721APP_SEGMENT_API_KEY}"
       config.t721app.publishableStripeApiKey: "${CONFIG_STAGING_T721APP_PUBLISHABLE_STRIPE_API_KEY}"
