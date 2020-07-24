@@ -8,17 +8,18 @@ import { T721Navbar }                                                   from './
 import LoginPage                                                        from './routes/Login';
 import RegisterPage                                                     from './routes/Register';
 import HomePage                                                         from './routes/Home';
-import ProfileActivitiesPage from './routes/Activities';
-import ProfileLanguagePage   from './routes/Language';
-import ProfilePage           from './routes/Profile';
-import SearchViewAllPage     from './routes/SearchViewAll';
-import EventPage             from './routes/Event';
-import TicketPage            from './routes/Ticket';
-import TicketSelectionPage   from './routes/TicketSelection';
-import SearchPage            from './routes/Search';
-import TagsPage              from './routes/Tags';
-import WalletPage            from './routes/Wallet';
-import CartPage              from './routes/Cart';
+import ProfileActivitiesPage     from './routes/Activities';
+import ProfileLanguagePage       from './routes/Language';
+import ProfilePage               from './routes/Profile';
+import SearchViewAllPage         from './routes/SearchViewAll';
+import EventPage                 from './routes/Event';
+import TicketPage                from './routes/Ticket';
+import TicketSelectionPage       from './routes/TicketSelection';
+import SearchPage                from './routes/Search';
+import TagsPage                  from './routes/Tags';
+import WalletPage                from './routes/Wallet';
+import CartPage                  from './routes/Cart';
+import { useKeyboardVisibility } from '@frontend/core/lib/utils/useKeyboardVisibility';
 
 const TopNavWrapper = (props: { back: () => void}): JSX.Element => {
 
@@ -46,6 +47,7 @@ const MobileApp: React.FC = () => {
 
     const location = useLocation();
     const history = useHistory();
+    const keyboardIsVisible = useKeyboardVisibility();
 
     return <Suspense fallback={<FullPageLoading/>}>
         <AppContainer>
@@ -118,7 +120,7 @@ const MobileApp: React.FC = () => {
                 <Redirect to={'/'}/>
             </Switch>
             <ToastStacker additionalLocales={[]}/>
-            <T721Navbar visible={location.pathname.lastIndexOf('/') === 0}/>
+            <T721Navbar visible={location.pathname.lastIndexOf('/') === 0 && !keyboardIsVisible}/>
         </AppContainer>
     </Suspense>;
 };

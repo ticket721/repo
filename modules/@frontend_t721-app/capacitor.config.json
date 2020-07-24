@@ -5,7 +5,11 @@
     "npmClient": "yarn",
     "server": {
         "iosScheme": "ios",
-        "androidScheme": "http",
-        "url": "http://172.20.10.2:8100"
+        "androidScheme": "http"
+    },
+    "plugins": {
+        "Keyboard": {
+            "style": "dark"
+        }
     }
 }
