@@ -8,6 +8,17 @@ migrations:
     pullPolicy: IfNotPresent
     tag: "DEVELOPMENT"
 
+staff:
+
+  image:
+    repository: staff
+    pullPolicy: IfNotPresent
+    tag: "DEVELOPMENT"
+
+  service:
+    type: LoadBalancer
+    port: 80
+
 t721app:
 
   image:
