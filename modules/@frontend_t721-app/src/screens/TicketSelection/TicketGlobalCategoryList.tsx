@@ -85,7 +85,7 @@ export const TicketGlobalCategoryList: React.FC<TicketGlobalCategoryListProps> =
                 },
             },
         ],
-        refreshRate: 100,
+        refreshRate: 5,
     }, `HomeEvent@${uuid}`);
 
     const event = useRequest<EventsSearchResponseDto>({

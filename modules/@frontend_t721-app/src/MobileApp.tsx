@@ -20,6 +20,7 @@ import TagsPage                  from './routes/Tags';
 import WalletPage                from './routes/Wallet';
 import CartPage                  from './routes/Cart';
 import { useKeyboardVisibility } from '@frontend/core/lib/utils/useKeyboardVisibility';
+import { TokenLoadedGuard }      from '@frontend/core/lib/utils/TokenLoadedGuard';
 
 const TopNavWrapper = (props: { back: () => void}): JSX.Element => {
 
@@ -50,78 +51,80 @@ const MobileApp: React.FC = () => {
     const keyboardIsVisible = useKeyboardVisibility();
 
     return <Suspense fallback={<FullPageLoading/>}>
-        <AppContainer>
-            {
-                location.pathname.lastIndexOf('/') !== 0
+        <TokenLoadedGuard>
+            <AppContainer>
+                {
+                    location.pathname.lastIndexOf('/') !== 0
 
-                    ?
-                    <TopNavWrapper back={history.goBack}/>
+                        ?
+                        <TopNavWrapper back={history.goBack}/>
 
-                    :
-                    null
-            }
-            <Switch>
-                <Route path={'/login'} exact={true}>
-                    <LoginPage/>
-                </Route>
+                        :
+                        null
+                }
+                <Switch>
+                    <Route path={'/login'} exact={true}>
+                        <LoginPage/>
+                    </Route>
 
-                <Route path={'/register'} exact={true}>
-                    <RegisterPage/>
-                </Route>
+                    <Route path={'/register'} exact={true}>
+                        <RegisterPage/>
+                    </Route>
 
-                <Route path={'/'} exact={true}>
-                    <HomePage/>
-                </Route>
+                    <Route path={'/'} exact={true}>
+                        <HomePage/>
+                    </Route>
 
-                <ProtectedRoute path={'/profile/activities'} exact={true}>
-                    <ProfileActivitiesPage/>
-                </ProtectedRoute>
+                    <ProtectedRoute path={'/profile/activities'} exact={true}>
+                        <ProfileActivitiesPage/>
+                    </ProtectedRoute>
 
-                <ProtectedRoute path={'/profile/language'} exact={true}>
-                    <ProfileLanguagePage/>
-                </ProtectedRoute>
+                    <ProtectedRoute path={'/profile/language'} exact={true}>
+                        <ProfileLanguagePage/>
+                    </ProtectedRoute>
 
-                <ProtectedRoute path={'/profile'} exact={true}>
-                    <ProfilePage/>
-                </ProtectedRoute>
+                    <ProtectedRoute path={'/profile'} exact={true}>
+                        <ProfilePage/>
+                    </ProtectedRoute>
 
-                <ProtectedRoute path={'/cart/checkout'} exact={true}>
-                    <CartPage/>
-                </ProtectedRoute>
+                    <ProtectedRoute path={'/cart/checkout'} exact={true}>
+                        <CartPage/>
+                    </ProtectedRoute>
 
-                <Route path={'/search/events/:query'} exact={true}>
-                    <SearchViewAllPage/>
-                </Route>
+                    <Route path={'/search/events/:query'} exact={true}>
+                        <SearchViewAllPage/>
+                    </Route>
 
-                <Route path={'/event/:id/selection'} exact={true}>
-                    <TicketSelectionPage/>
-                </Route>
+                    <Route path={'/event/:id/selection'} exact={true}>
+                        <TicketSelectionPage/>
+                    </Route>
 
-                <Route path={'/event/:id'} exact={true}>
-                    <EventPage/>
-                </Route>
+                    <Route path={'/event/:id'} exact={true}>
+                        <EventPage/>
+                    </Route>
 
-                <Route path={'/search'} exact={true}>
-                    <SearchPage/>
-                </Route>
+                    <Route path={'/search'} exact={true}>
+                        <SearchPage/>
+                    </Route>
 
-                <Route path={'/tags'} exact={true}>
-                    <TagsPage/>
-                </Route>
+                    <Route path={'/tags'} exact={true}>
+                        <TagsPage/>
+                    </Route>
 
-                <ProtectedRoute path={'/ticket/:id'} exact={true}>
-                    <TicketPage/>
-                </ProtectedRoute>
+                    <ProtectedRoute path={'/ticket/:id'} exact={true}>
+                        <TicketPage/>
+                    </ProtectedRoute>
 
-                <ProtectedRoute path={'/wallet'} exact={true}>
-                    <WalletPage/>
-                </ProtectedRoute>
+                    <ProtectedRoute path={'/wallet'} exact={true}>
+                        <WalletPage/>
+                    </ProtectedRoute>
 
-                <Redirect to={'/'}/>
-            </Switch>
-            <ToastStacker additionalLocales={[]}/>
-            <T721Navbar visible={location.pathname.lastIndexOf('/') === 0 && !keyboardIsVisible}/>
-        </AppContainer>
+                    <Redirect to={'/'}/>
+                </Switch>
+                <ToastStacker additionalLocales={[]}/>
+                <T721Navbar visible={location.pathname.lastIndexOf('/') === 0 && !keyboardIsVisible}/>
+            </AppContainer>
+        </TokenLoadedGuard>
     </Suspense>;
 };
 

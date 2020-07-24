@@ -14,7 +14,7 @@ import { AuthActionTypes, AuthState } from './types';
 import { Reducer } from 'redux';
 
 export const authInitialState: AuthState = {
-    token: null,
+    token: undefined,
     user: null,
     errors: null,
     loading: false,

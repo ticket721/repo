@@ -317,6 +317,7 @@ export class DatesController extends ControllerBasics<DateEntity> {
                 location_label: body.location.location_label,
                 assigned_city: closestCity(body.location.location).id,
             },
+            status: 'preview',
         });
 
         await this._serviceCall(

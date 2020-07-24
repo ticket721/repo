@@ -58,11 +58,6 @@ const NavBar: React.FC = () => {
         return <FullPageLoading/>
     }
 
-    if (tickets.response.error) {
-        return <Error retryLabel={t('common:retrying_in')} onRefresh={tickets.force} message={t('cannot_fetch_tickets')}/>
-    }
-
-
     return (
         <Container>
             <NavLink
@@ -80,7 +75,10 @@ const NavBar: React.FC = () => {
                     onClick={
                         () => history.push(history.location.pathname + '?profile=root')
                     }>
-                    <UserHeader username={user?.username} picture={'/favicon.ico'} tickets={tickets.response.data.tickets.count}/>
+                    <UserHeader
+                        username={user?.username}
+                        picture={'/favicon.ico'}
+                        tickets={tickets.response.error ? '?' : tickets.response.data.tickets.count}/>
                     <Chevron icon='chevron' color='#fff' size='7px'/>
                 </Profile>
             </ActionContainer>

@@ -18,6 +18,7 @@ i18n.addResourceBundle('en', 'event', {
     error_cannot_fetch_event: 'Cannot fetch event',
     error_cannot_fetch_categories: 'Cannot fetch categories',
     error_cannot_update_cart: 'Cannot update cart',
+    error_unavailable_date: 'This Event is unavailable'
 });
 i18n.addResourceBundle('fr', 'event', {
     get_ticket_pricing_range: '{{minPrice}} € a {{maxPrice}} €',
@@ -37,4 +38,5 @@ i18n.addResourceBundle('fr', 'event', {
     error_cannot_fetch_cart: 'Informations indisponibles',
     error_cannot_fetch_categories: 'Informations indisponibles',
     error_cannot_update_cart: 'Panier indisponible',
+    error_unavailable_date: 'Evenement indisponible'
 });

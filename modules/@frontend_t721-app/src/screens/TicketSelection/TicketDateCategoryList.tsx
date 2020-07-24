@@ -56,7 +56,7 @@ export const TicketDateCategoryList: React.FC<TicketDateCategoryListProps> = (pr
                 $in: props.date.categories,
             },
         }],
-        refreshRate: 100,
+        refreshRate: 5,
     }, `HomeEvent@${uuid}`);
 
     if (categories.response.loading) {

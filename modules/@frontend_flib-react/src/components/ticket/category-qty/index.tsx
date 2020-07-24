@@ -93,19 +93,19 @@ const InfoContainer = styled.div`
 
 const PriceDateContainer = styled.div`
     padding-left: ${(props) => props.theme.smallSpacing};
-    margin-top: ${(props) => props.theme.regularSpacing};
-    margin-bottom: ${(props) => props.theme.regularSpacing};
     height: calc(100% - ${(props) => props.theme.regularSpacing});
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    border-left: 2px solid ${(props) => props.theme.componentColorLight};
 `;
 
 const PriceDateSelectContainer = styled.div`
+    margin-top: ${(props) => props.theme.regularSpacing};
+    margin-bottom: ${(props) => props.theme.regularSpacing};
     display: flex;
     align-items: center;
     justify-content: space-between;
+    border-left: 2px solid ${(props) => props.theme.componentColorLight};
 `;
 
 const StarIcon = styled(Icon)`
@@ -115,6 +115,18 @@ const StarIcon = styled(Icon)`
 const TitleContainer = styled.div`
     display: flex;
     align-items: center;
+`;
+
+const CancelIconButton = styled(Icon)`
+    padding: 9px;
+    width: 100%;
+    color: ${(props) => props.theme.errorColor.hex} !important;
+    background-color: ${(props) => props.theme.componentColor};
+    margin-top: ${(props) => props.theme.regularSpacing};
+    border-radius: ${(props) => props.theme.defaultRadius};
+    display: flex;
+    align-items: center;
+    justify-content: center;
 `;
 
 export const CategoryQty: React.FunctionComponent<CategoryQtyProps> = (props: CategoryQtyProps): JSX.Element => {
@@ -133,13 +145,18 @@ export const CategoryQty: React.FunctionComponent<CategoryQtyProps> = (props: Ca
                         <span style={{ marginBottom: 5 }}>{props.price}</span>
                         <span>{props.date}</span>
                     </PriceDateContainer>
-                    <Select
-                        defaultValue={props.selectedOption || props.options[0]}
-                        options={props.options}
-                        menu
-                        searchable={false}
-                        onChange={props.onChange}
-                    />
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+                        <Select
+                            defaultValue={props.selectedOption || props.options[0]}
+                            options={props.options}
+                            menu
+                            searchable={false}
+                            onChange={props.onChange}
+                        />
+                        {props.onCancel ? (
+                            <CancelIconButton icon={'close'} size={'14px'} onClick={props.onCancel} />
+                        ) : null}
+                    </div>
                 </PriceDateSelectContainer>
             </InfoContainer>
         </Container>

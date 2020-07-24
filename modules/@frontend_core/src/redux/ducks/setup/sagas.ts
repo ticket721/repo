@@ -57,6 +57,8 @@ function* handleUser(): IterableIterator<any> {
                 yield put(PushNotification('session_expired', 'warning'));
             }
         }
+    } else {
+        yield put(SetToken(null));
     }
 }
 

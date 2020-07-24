@@ -18,63 +18,66 @@ import SearchPage            from './routes/Search';
 import TagsPage              from './routes/Tags';
 import CartPage              from './routes/Cart';
 import { FullPageLoading }   from '@frontend/flib-react/lib/components';
+import { TokenLoadedGuard }  from '@frontend/core/lib/utils/TokenLoadedGuard';
 
 const App: React.FC = () => {
 
     return <Suspense fallback={<FullPageLoading/>}>
-        <AppContainer>
-            <Switch>
-                <Route path={'/login'} exact={true}>
-                    <LoginPage/>
-                </Route>
+        <TokenLoadedGuard>
+            <AppContainer>
+                <Switch>
+                    <Route path={'/login'} exact={true}>
+                        <LoginPage/>
+                    </Route>
 
-                <Route path={'/register'} exact={true}>
-                    <RegisterPage/>
-                </Route>
+                    <Route path={'/register'} exact={true}>
+                        <RegisterPage/>
+                    </Route>
 
-                <Route path={'/'} exact={true}>
-                    <HomePage/>
-                </Route>
+                    <Route path={'/'} exact={true}>
+                        <HomePage/>
+                    </Route>
 
-                <ProtectedRoute path={'/profile/activities'} exact={true}>
-                    <ProfileActivitiesPage/>
-                </ProtectedRoute>
+                    <ProtectedRoute path={'/profile/activities'} exact={true}>
+                        <ProfileActivitiesPage/>
+                    </ProtectedRoute>
 
-                <ProtectedRoute path={'/profile/language'} exact={true}>
-                    <ProfileLanguagePage/>
-                </ProtectedRoute>
+                    <ProtectedRoute path={'/profile/language'} exact={true}>
+                        <ProfileLanguagePage/>
+                    </ProtectedRoute>
 
-                <ProtectedRoute path={'/profile'} exact={true}>
-                    <ProfilePage/>
-                </ProtectedRoute>
+                    <ProtectedRoute path={'/profile'} exact={true}>
+                        <ProfilePage/>
+                    </ProtectedRoute>
 
-                <ProtectedRoute path={'/cart/checkout'} exact={true}>
-                    <CartPage/>
-                </ProtectedRoute>
+                    <ProtectedRoute path={'/cart/checkout'} exact={true}>
+                        <CartPage/>
+                    </ProtectedRoute>
 
-                <Route path={'/search/events/:query'} exact={true}>
-                    <SearchViewAllPage/>
-                </Route>
+                    <Route path={'/search/events/:query'} exact={true}>
+                        <SearchViewAllPage/>
+                    </Route>
 
-                <Route path={'/event/:id/selection'} exact={true}>
-                    <TicketSelectionPage/>
-                </Route>
+                    <Route path={'/event/:id/selection'} exact={true}>
+                        <TicketSelectionPage/>
+                    </Route>
 
-                <Route path={'/event/:id'} exact={true}>
-                    <EventPage/>
-                </Route>
+                    <Route path={'/event/:id'} exact={true}>
+                        <EventPage/>
+                    </Route>
 
-                <Route path={'/search'} exact={true}>
-                    <SearchPage/>
-                </Route>
+                    <Route path={'/search'} exact={true}>
+                        <SearchPage/>
+                    </Route>
 
-                <Route path={'/tags'} exact={true}>
-                    <TagsPage/>
-                </Route>
-                <Redirect to={'/'}/>
-            </Switch>
-            <ToastStacker additionalLocales={[]}/>
-        </AppContainer>
+                    <Route path={'/tags'} exact={true}>
+                        <TagsPage/>
+                    </Route>
+                    <Redirect to={'/'}/>
+                </Switch>
+                <ToastStacker additionalLocales={[]}/>
+            </AppContainer>
+        </TokenLoadedGuard>
     </Suspense>;
 };
 

@@ -6,11 +6,13 @@ export interface IconProps extends React.ComponentProps<any> {
     color?: string;
     icon: string;
     size: string;
+    onClick?: () => void;
 }
 
 export const Icon: React.FunctionComponent<IconProps & { className?: string }> = (props: IconProps): JSX.Element => {
     return (
         <IconSpan
+            onClick={props.onClick}
             className={`
     t721-icons-${props.icon}
     ${props.className ? props.className : ''}

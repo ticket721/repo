@@ -5,7 +5,6 @@ import {
     WalletHeader,
     LanguageLink,
     FullPageLoading,
-    Error,
 } from '@frontend/flib-react/lib/components';
 import { useRequest } from '../../../hooks/useRequest';
 import { MetadatasFetchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/metadatas/dto/MetadatasFetchResponse.dto';
@@ -87,15 +86,13 @@ const ProfileRoot: React.FC<ProfileRootProps> = ({ desktop, extraButtons }: Prof
         return <FullPageLoading />;
     }
 
-    if (tickets.response.error) {
-        return (
-            <Error retryLabel={t('common:retrying_in')} onRefresh={tickets.force} message={t('cannot_fetch_tickets')} />
-        );
-    }
-
     return (
         <>
-            <WalletHeader username={username} picture={'/favicon.ico'} tickets={tickets.response.data.tickets.count} />
+            <WalletHeader
+                username={username}
+                picture={'/favicon.ico'}
+                tickets={tickets.response.error ? '?' : tickets.response.data.tickets.count}
+            />
             <ActivitiesList
                 loading={activityResponse.loading}
                 error={activityResponse.error}
