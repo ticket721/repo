@@ -38,7 +38,7 @@
         "react-responsive": "8.1.0",
         "@embarklabs/subspace": "2.0.3",
         "@embarklabs/subspace-react": "1.0.4",
-        "rxjs": "6.5.5",
+        "rxjs": "6.6.0",
         "typescript": "3.7.5",
         "web3": "1.2.6",
         "axios": "0.19.2",
