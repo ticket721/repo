@@ -27,10 +27,13 @@ export const useCustomStripe = (): StripeSDK => {
             })
             .catch(e => {
                 console.warn(e);
-                setSDK({
-                    platform: 'web',
-                    stripe: loadStripe(getEnv().REACT_APP_STRIPE_API_KEY)
-                });
+                loadStripe(getEnv().REACT_APP_STRIPE_API_KEY)
+                    .then((stripe) => {
+                        setSDK({
+                            platform: 'web',
+                            stripe,
+                        });
+                    })
             });
 
     }, []);
