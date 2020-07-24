@@ -12,7 +12,14 @@ import { DateEntity }                                                         fr
 import { SetTickets }                                                         from '../../../redux/ducks/cart';
 import { CategoryEntity }                                                     from '@common/sdk/lib/@backend_nest/libs/common/src/categories/entities/Category.entity';
 import styled                                                                                                  from 'styled-components';
-import { BorderGradient, CartReviewOrderEventTitle, completeCartRecomputer, Container, ConvertedCart, Header } from './types';
+import {
+    BorderGradient,
+    CartReviewOrderEventTitle,
+    completeCartRecomputer,
+    Container,
+    ConvertedCart,
+    Header,
+} from './types';
 
 const completeCartRecomputingOnGlobalTicketChange = (cart: ConvertedCart, groupId: string, categoryId: string, count: number): CategoryEntity[] => {
     cart.global[groupId][categoryId] = [...new Array(count)].map(i => cart.global[groupId][categoryId][0]);
@@ -179,7 +186,12 @@ export const SyncedCartGlobalSection: React.FC<SyncedCartGlobalSectionProps> = (
                     .keys(sortedCategories)
                     .map((categoryId: string): JSX.Element => <TicketQty
                             key={categoryId}
-                            options={[...new Array(sortedCategories[categoryId].length + 5)].map((u, i) => ({label: i.toString(), value: i}))}
+                            options={[...new Array(5)].map((u, i) => ({label: (i + 1).toString(), value: i + 1}))}
+                            onCancel={() => {
+                                dispatch(
+                                    SetTickets(completeCartRecomputingOnGlobalTicketChange(props.convertedCart, props.group, categoryId, 0))
+                                )
+                            }}
                             onChange={(opt) => {
                                 dispatch(
                                     SetTickets(completeCartRecomputingOnGlobalTicketChange(props.convertedCart, props.group, categoryId, opt.value))

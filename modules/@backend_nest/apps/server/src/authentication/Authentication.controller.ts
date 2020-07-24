@@ -42,6 +42,7 @@ import { User } from '@app/server/authentication/decorators/User.controller.deco
 import { PasswordChangeDto } from '@app/server/authentication/dto/PasswordChange.dto';
 import { ValidGuard } from '@app/server/authentication/guards/ValidGuard.guard';
 import parse from 'parse-duration';
+import { ResendValidationResponseDto } from '@app/server/authentication/dto/ResendValidationResponse.dto';
 
 /**
  * Controller exposing the authentication routes
@@ -123,6 +124,35 @@ export class AuthenticationController {
                 StatusCodes.InternalServerError,
             );
         }
+    }
+
+    /**
+     *
+     * [POST /authentication/resend-validation] : Generates a new validation email
+     */
+    @Post('/resend-validation')
+    @UseGuards(AuthGuard('jwt'))
+    @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.OK)
+    @ApiResponses([StatusCodes.OK, StatusCodes.InternalServerError, StatusCodes.Unauthorized])
+    async resendValidation(@User() user: UserDto): Promise<ResendValidationResponseDto> {
+        if (!user.valid) {
+            await this.mailingQueue.add(
+                '@@mailing/validationEmail',
+                {
+                    email: user.email,
+                    username: user.username,
+                    locale: user.locale,
+                    id: user.id,
+                } as EmailValidationTaskDto,
+                {
+                    attempts: 5,
+                    backoff: 5000,
+                },
+            );
+        }
+
+        return {};
     }
 
     /**

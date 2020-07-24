@@ -335,7 +335,7 @@ export const StripeCheckoutNative: React.FC<StripeCheckoutNativeProps> = (props:
                     </div>
                     <div style={{marginLeft: theme.regularSpacing}}>
                         <TextInput
-                            label={t('cart_checkout_card_cvv')}
+                            label={t('cart_checkout_card_cvc')}
                             placeholder={'ex: 242'}
                             options={{
                                 blocks: [3],

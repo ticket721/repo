@@ -17,12 +17,18 @@ import { CategoryFetcher }                  from './CategoryFetcher';
 import Flicking                             from '@egjs/react-flicking';
 import { useHistory }                       from 'react-router';
 import { UsersSetDeviceAddressResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/users/dto/UsersSetDeviceAddressResponse.dto';
+import { PasswordlessUserDto }              from '@common/sdk/lib/@backend_nest/apps/server/src/authentication/dto/PasswordlessUser.dto';
+import { UsersMeResponseDto }               from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/users/dto/UsersMeResponse.dto';
 
-const Wallet: React.FC = () => {
+interface WalletProps {
+    user: PasswordlessUserDto;
+}
+
+const Wallet: React.FC<WalletProps> = (props: WalletProps) => {
     const history = useHistory();
     const [ ticketIdx, setTicketIdx ] = useState<number>(0);
     const { t } = useTranslation(['wallet', 'common']);
-    const [ token, address ] = useSelector((state: T721AppState) => [ state.auth.token.value, state.auth.user.address ]);
+    const token = useSelector((state: T721AppState) => state.auth.token.value);
     const devicePk = useSelector((state: T721AppState) => state.deviceWallet.pk);
     const [uuid] = useState<string>(v4() + '@wallet');
 
@@ -34,7 +40,7 @@ const Wallet: React.FC = () => {
             token,
             {
                 owner: {
-                    $eq: address
+                    $eq: props.user.address
                 },
                 status: {
                     $ne: 'canceled',
@@ -204,4 +210,28 @@ const EmptyWallet = styled.div`
     }
 `;
 
-export default Wallet;
+const UserFetcher = () => {
+    const token = useSelector((state: T721AppState) => state.auth.token.value);
+    const [uuid] = useState<string>(v4() + '@wallet');
+    const { t } = useTranslation(['wallet', 'common']);
+
+    const userReq = useRequest<UsersMeResponseDto>({
+        method: 'users.me',
+        args: [
+            token
+        ],
+        refreshRate: 10
+    }, uuid);
+
+    if (userReq.response.loading) {
+        return <FullPageLoading/>
+    }
+
+    if (userReq.response.error) {
+        return (<Error message={t('fetch_error')} retryLabel={t('common:retrying_in')} onRefresh={userReq.force}/>);
+    }
+
+    return <Wallet user={userReq.response.data.user}/>
+};
+
+export default UserFetcher;

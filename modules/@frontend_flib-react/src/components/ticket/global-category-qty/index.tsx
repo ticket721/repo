@@ -19,6 +19,7 @@ export interface GlobalCategoryQtyProps extends React.ComponentProps<any> {
     options: { value: any; label: string }[];
     selectedOption: { value: any; label: string };
     onChange: (val: { value: any; label: string }) => void;
+    onCancel: () => void;
 }
 
 const Container = styled.article<GlobalCategoryQtyProps>`
@@ -98,19 +99,19 @@ const InfoContainer = styled.div`
 
 const PriceDateContainer = styled.div`
     padding-left: ${(props) => props.theme.smallSpacing};
-    margin-top: ${(props) => props.theme.regularSpacing};
-    margin-bottom: ${(props) => props.theme.regularSpacing};
     height: calc(100% - ${(props) => props.theme.regularSpacing});
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    border-left: 2px solid ${(props) => props.theme.componentColorLight};
 `;
 
 const PriceDateSelectContainer = styled.div`
+    margin-top: ${(props) => props.theme.regularSpacing};
+    margin-bottom: ${(props) => props.theme.regularSpacing};
     display: flex;
     align-items: center;
     justify-content: space-between;
+    border-left: 2px solid ${(props) => props.theme.componentColorLight};
 `;
 
 const StarIcon = styled(Icon)`
@@ -139,6 +140,18 @@ const DateSpan = styled.span<DateSpanProps>`
 const getDateIdx = (max: number, idx: number) => {
     return idx % max;
 };
+
+const CancelIconButton = styled(Icon)`
+    padding: 9px;
+    width: 100%;
+    color: ${(props) => props.theme.errorColor.hex} !important;
+    background-color: ${(props) => props.theme.componentColor};
+    margin-top: ${(props) => props.theme.regularSpacing};
+    border-radius: ${(props) => props.theme.defaultRadius};
+    display: flex;
+    align-items: center;
+    justify-content: center;
+`;
 
 export const GlobalCategoryQty: React.FunctionComponent<GlobalCategoryQtyProps> = (
     props: GlobalCategoryQtyProps,
@@ -177,13 +190,18 @@ export const GlobalCategoryQty: React.FunctionComponent<GlobalCategoryQtyProps> 
                             </DateSpan>
                         ))}
                     </PriceDateContainer>
-                    <Select
-                        defaultValue={props.selectedOption || props.options[0]}
-                        options={props.options}
-                        menu
-                        searchable={false}
-                        onChange={props.onChange}
-                    />
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+                        <Select
+                            defaultValue={props.selectedOption || props.options[0]}
+                            options={props.options}
+                            menu
+                            searchable={false}
+                            onChange={props.onChange}
+                        />
+                        {props.onCancel ? (
+                            <CancelIconButton icon={'close'} size={'14px'} onClick={props.onCancel} />
+                        ) : null}
+                    </div>
                 </PriceDateSelectContainer>
             </InfoContainer>
         </Container>

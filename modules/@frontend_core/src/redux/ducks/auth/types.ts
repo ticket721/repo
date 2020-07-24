@@ -11,15 +11,6 @@ export enum AuthActionTypes {
     ResetSubmission = '@@auth/resetsubmission',
 }
 
-export interface User {
-    username: string;
-    kind: string;
-    locale: string;
-    validated: boolean;
-    address: string;
-    uuid: string;
-}
-
 export interface Token {
     value: string;
     expiration: Date;
@@ -30,7 +21,6 @@ export interface AuthErrors {
 }
 
 export interface AuthState {
-    user: User;
     token: Token;
     errors: AuthErrors;
     loading: boolean;

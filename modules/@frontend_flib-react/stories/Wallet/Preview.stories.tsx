@@ -49,7 +49,7 @@ export const showcase = () => (
                     toggleWallet={showWallet}
                     showPrev={boolean('Show previous', false)}
                 >
-                    <UserHeader username={'mortimr'} picture={'assets/images/user-1.jpg'} balance={'0'} />
+                    <UserHeader username={'mortimr'} picture={'assets/images/user-1.jpg'} tickets={'2'} />
                     <WalletOrder user={user} purchase={purchase} />
                     <WalletNav
                         ctaLabel={'Purchase'}

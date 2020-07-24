@@ -15,10 +15,6 @@ import { GlobalStyles }                                                         
 import { customThemes }                                                            from '@frontend/flib-react/lib/config/theme';
 import { EnvValidator }                                                            from '@frontend/core/lib/components/EnvValidator';
 import { OrganizerAppEnvSchema }                                                   from './utils/env';
-import Web3                                                                        from 'web3';
-import { getWeb3 }                                                                 from '@frontend/core/lib/subspace/getWeb3';
-// tslint:disable-next-line:no-var-requires
-const {SubspaceProvider} = require('@embarklabs/subspace-react');
 
 export type MergedAppState = AppState & OrganizerState;
 
@@ -27,11 +23,9 @@ export const store: Store<MergedAppState> = configureStore<OrganizerState>(
     organizerInitialState,
     organizerSagas
 );
-const web3: Web3 = getWeb3();
 
 ReactDOM.render(
     <EnvValidator schema={OrganizerAppEnvSchema}>
-        <SubspaceProvider web3={web3}>
             <Provider store={store}>
                 <ConnectedRouter history={history}>
                     <ThemeProvider theme={customThemes['t721']}>
@@ -44,7 +38,6 @@ ReactDOM.render(
                     </ThemeProvider>
                 </ConnectedRouter>
             </Provider>
-        </SubspaceProvider>
     </EnvValidator>,
     document.getElementById('root')
 );

@@ -1,6 +1,6 @@
-import React, { useEffect, useState }                                   from 'react';
+import React, { useEffect, useState, Suspense }                                   from 'react';
 import { Route, Switch, useHistory, useLocation, withRouter, Redirect } from 'react-router-dom';
-import { TopNav }                                                       from '@frontend/flib-react/lib/components';
+import { TopNav, FullPageLoading }                                                       from '@frontend/flib-react/lib/components';
 import ProtectedRoute                                                   from '@frontend/core/lib/components/ProtectedRoute';
 import ToastStacker                                                     from '@frontend/core/lib/components/ToastStacker';
 import styled                                                           from 'styled-components';
@@ -8,17 +8,19 @@ import { T721Navbar }                                                   from './
 import LoginPage                                                        from './routes/Login';
 import RegisterPage                                                     from './routes/Register';
 import HomePage                                                         from './routes/Home';
-import ProfileActivitiesPage                                            from './routes/Activities';
-import ProfileLanguagePage                                              from './routes/Language';
-import ProfilePage                                                      from './routes/Profile';
-import SearchViewAllPage                                                from './routes/SearchViewAll';
-import EventPage                                                        from './routes/Event';
-import TicketPage                                                       from './routes/Ticket';
-import TicketSelectionPage                                              from './routes/TicketSelection';
-import SearchPage                                                       from './routes/Search';
-import TagsPage                                                         from './routes/Tags';
-import WalletPage                                                       from './routes/Wallet';
-import CartPage                                                         from './routes/Cart';
+import ProfileActivitiesPage     from './routes/Activities';
+import ProfileLanguagePage       from './routes/Language';
+import ProfilePage               from './routes/Profile';
+import SearchViewAllPage         from './routes/SearchViewAll';
+import EventPage                 from './routes/Event';
+import TicketPage                from './routes/Ticket';
+import TicketSelectionPage       from './routes/TicketSelection';
+import SearchPage                from './routes/Search';
+import TagsPage                  from './routes/Tags';
+import WalletPage                from './routes/Wallet';
+import CartPage                  from './routes/Cart';
+import { useKeyboardVisibility } from '@frontend/core/lib/utils/useKeyboardVisibility';
+import { UserContextGuard }      from '@frontend/core/lib/utils/UserContext';
 
 const TopNavWrapper = (props: { back: () => void}): JSX.Element => {
 
@@ -46,81 +48,84 @@ const MobileApp: React.FC = () => {
 
     const location = useLocation();
     const history = useHistory();
+    const keyboardIsVisible = useKeyboardVisibility();
 
-    return <>
-        <AppContainer>
-            {
-                location.pathname.lastIndexOf('/') !== 0
+    return <Suspense fallback={<FullPageLoading/>}>
+        <UserContextGuard>
+            <AppContainer>
+                {
+                    location.pathname.lastIndexOf('/') !== 0
 
-                    ?
-                    <TopNavWrapper back={history.goBack}/>
+                        ?
+                        <TopNavWrapper back={history.goBack}/>
 
-                    :
-                    null
-            }
-            <Switch>
-                <Route path={'/login'} exact={true}>
-                    <LoginPage/>
-                </Route>
+                        :
+                        null
+                }
+                <Switch>
+                    <Route path={'/login'} exact={true}>
+                        <LoginPage/>
+                    </Route>
 
-                <Route path={'/register'} exact={true}>
-                    <RegisterPage/>
-                </Route>
+                    <Route path={'/register'} exact={true}>
+                        <RegisterPage/>
+                    </Route>
 
-                <Route path={'/'} exact={true}>
-                    <HomePage/>
-                </Route>
+                    <Route path={'/'} exact={true}>
+                        <HomePage/>
+                    </Route>
 
-                <ProtectedRoute path={'/profile/activities'} exact={true}>
-                    <ProfileActivitiesPage/>
-                </ProtectedRoute>
+                    <ProtectedRoute path={'/profile/activities'} exact={true}>
+                        <ProfileActivitiesPage/>
+                    </ProtectedRoute>
 
-                <ProtectedRoute path={'/profile/language'} exact={true}>
-                    <ProfileLanguagePage/>
-                </ProtectedRoute>
+                    <ProtectedRoute path={'/profile/language'} exact={true}>
+                        <ProfileLanguagePage/>
+                    </ProtectedRoute>
 
-                <ProtectedRoute path={'/profile'} exact={true}>
-                    <ProfilePage/>
-                </ProtectedRoute>
+                    <ProtectedRoute path={'/profile'} exact={true}>
+                        <ProfilePage/>
+                    </ProtectedRoute>
 
-                <ProtectedRoute path={'/cart/checkout'} exact={true}>
-                    <CartPage/>
-                </ProtectedRoute>
+                    <ProtectedRoute path={'/cart/checkout'} exact={true}>
+                        <CartPage/>
+                    </ProtectedRoute>
 
-                <Route path={'/search/events/:query'} exact={true}>
-                    <SearchViewAllPage/>
-                </Route>
+                    <Route path={'/search/events/:query'} exact={true}>
+                        <SearchViewAllPage/>
+                    </Route>
 
-                <Route path={'/event/:id/selection'} exact={true}>
-                    <TicketSelectionPage/>
-                </Route>
+                    <Route path={'/event/:id/selection'} exact={true}>
+                        <TicketSelectionPage/>
+                    </Route>
 
-                <Route path={'/event/:id'} exact={true}>
-                    <EventPage/>
-                </Route>
+                    <Route path={'/event/:id'} exact={true}>
+                        <EventPage/>
+                    </Route>
 
-                <Route path={'/search'} exact={true}>
-                    <SearchPage/>
-                </Route>
+                    <Route path={'/search'} exact={true}>
+                        <SearchPage/>
+                    </Route>
 
-                <Route path={'/tags'} exact={true}>
-                    <TagsPage/>
-                </Route>
+                    <Route path={'/tags'} exact={true}>
+                        <TagsPage/>
+                    </Route>
 
-                <ProtectedRoute path={'/ticket/:id'} exact={true}>
-                    <TicketPage/>
-                </ProtectedRoute>
+                    <ProtectedRoute path={'/ticket/:id'} exact={true}>
+                        <TicketPage/>
+                    </ProtectedRoute>
 
-                <ProtectedRoute path={'/wallet'} exact={true}>
-                    <WalletPage/>
-                </ProtectedRoute>
+                    <ProtectedRoute path={'/wallet'} exact={true}>
+                        <WalletPage/>
+                    </ProtectedRoute>
 
-                <Redirect to={'/'}/>
-            </Switch>
-            <ToastStacker additionalLocales={[]}/>
-            <T721Navbar visible={location.pathname.lastIndexOf('/') === 0}/>
-        </AppContainer>
-    </>;
+                    <Redirect to={'/'}/>
+                </Switch>
+                <T721Navbar visible={location.pathname.lastIndexOf('/') === 0 && !keyboardIsVisible}/>
+            </AppContainer>
+        </UserContextGuard>
+        <ToastStacker additionalLocales={[]}/>
+    </Suspense>;
 };
 
 const AppContainer = styled.div`
