@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styled                                         from 'styled-components';
-import { Error, FullPageLoading, Icon, WalletHeader } from '@frontend/flib-react/lib/components';
+import { FullPageLoading, Icon, WalletHeader } from '@frontend/flib-react/lib/components';
 
 import { DrawerAccount, ProfileRoute }       from '../DrawerAccount';
 import { useTranslation }                    from 'react-i18next';
