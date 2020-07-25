@@ -1,12 +1,13 @@
-import { SagaIterator } from '@redux-saga/types';
-import { takeEvery, put } from 'redux-saga/effects';
-import { AuthActionTypes, Token } from './types';
+import { SagaIterator }                                             from '@redux-saga/types';
+import { takeEvery, put, call }                                           from 'redux-saga/effects';
+import { AuthActionTypes, Token }                                   from './types';
 import { ILocalRegister, ILogout, SetErrors, SetLoading, SetToken } from './actions';
-import { LocalRegisterResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/authentication/dto/LocalRegisterResponse.dto';
-import { LocalLoginResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/authentication/dto/LocalLoginResponse.dto';
-import { AxiosResponse } from 'axios';
-import { PushNotification } from '../notifications';
-import { getEnv } from '../../../utils/getEnv';
+import { LocalRegisterResponseDto }                                 from '@common/sdk/lib/@backend_nest/apps/server/src/authentication/dto/LocalRegisterResponse.dto';
+import { LocalLoginResponseDto }                                    from '@common/sdk/lib/@backend_nest/apps/server/src/authentication/dto/LocalLoginResponse.dto';
+import { AxiosResponse }                                            from 'axios';
+import { PushNotification }                                         from '../notifications';
+import { getEnv }                                                   from '../../../utils/getEnv';
+import { identifyUser }                                             from '../../../utils/segment';
 
 function* localRegister(action: ILocalRegister): IterableIterator<any> {
     yield put(SetLoading(true));
@@ -28,12 +29,12 @@ function* localRegister(action: ILocalRegister): IterableIterator<any> {
         localStorage.setItem('token', JSON.stringify(token));
         yield put(SetToken(token));
         yield put(PushNotification('successfully_registered', 'success'));
-
-        yield identifyUser(registerData.user.id, registerData.user.email);
+        console.log('hi');
+        yield call(identifyUser, token?.value);
+        console.log('bye');
 
         if (getEnv().REACT_APP_ENV === 'dev') {
-            const validateEmail = yield global.window.t721Sdk.validateEmail(registerData.validationToken);
-            console.log(validateEmail);
+            yield global.window.t721Sdk.validateEmail(registerData.validationToken);
         }
     } catch (e) {
         if (e.message === 'Network Error') {
@@ -73,8 +74,8 @@ function* localLogin(action: ILocalRegister): IterableIterator<any> {
         localStorage.setItem('token', JSON.stringify(token));
 
         yield put(SetToken(token));
+        yield call(identifyUser, token?.value);
 
-        yield identifyUser(loginData.user.id, loginData.user.email);
     } catch (e) {
         if (e.message === 'Network Error') {
             yield put(PushNotification('cannot_reach_server', 'error'));

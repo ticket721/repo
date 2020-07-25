@@ -5,13 +5,14 @@ import { IStart } from './actions';
 import { GetCity, GetDevice } from '../user_properties';
 import { SetupActionTypes } from './types';
 
-import { StartRefreshInterval } from '../cache';
-import { SetToken } from '../auth';
+import { StartRefreshInterval }                 from '../cache';
+import { SetToken }                             from '../auth';
 import { isExpired, isValidFormat, parseToken } from '../../../utils/token';
-import { T721SDK } from '@common/sdk';
-import { AppStatus, SetAppStatus } from '../statuses';
-import { PushNotification } from '../notifications';
-import { getEnv } from '../../../utils/getEnv';
+import { T721SDK }                              from '@common/sdk';
+import { AppStatus, SetAppStatus }              from '../statuses';
+import { PushNotification }                     from '../notifications';
+import { getEnv }                               from '../../../utils/getEnv';
+import { identifyUser }                         from '../../../utils/segment';
 
 function* startSaga(action: IStart): IterableIterator<any> {
     global.window.t721Sdk = new T721SDK();
@@ -35,6 +36,9 @@ function* handleUser(): IterableIterator<any> {
         const token = parseToken(localStorage.getItem('token'));
         if (isValidFormat(token) && !isExpired(token)) {
             yield put(SetToken(token));
+            console.log('hi');
+            yield call(identifyUser, token?.value);
+            console.log('bye');
         } else {
             localStorage.removeItem('token');
             if (isExpired(token)) {
