@@ -300,4 +300,7 @@ apps:
 
       t721app.image.repository: "097558125954.dkr.ecr.eu-west-3.amazonaws.com/ticket721/t721app"
       t721app.image.tag: "${TAG}"
+      
+      staff.image.repository: "097558125954.dkr.ecr.eu-west-3.amazonaws.com/ticket721/staff"
+      staff.image.tag: "${TAG}"
 
