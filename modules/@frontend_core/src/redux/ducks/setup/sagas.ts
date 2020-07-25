@@ -39,6 +39,7 @@ function* handleUser(): IterableIterator<any> {
             localStorage.removeItem('token');
             if (isExpired(token)) {
                 yield put(PushNotification('session_expired', 'warning'));
+                yield put(SetToken(null));
             }
         }
     } else {
