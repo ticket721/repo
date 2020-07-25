@@ -13,7 +13,7 @@ const AuthStaffNavbar: React.FC<StaffNavbarProps> = (props: StaffNavbarProps): J
     const location = useLocation();
 
     return <Navbar visible={props.visible} iconHeight={'22px'}>
-        <Link replace={true} to={'/stats'} className={isNavItemActive('/', location)}>
+        <Link replace={true} to={'/stats'} className={isNavItemActive('/stats', location)}>
             <Icon icon={'stats'} color='#FFFFFF' size={'22px'}/>
         </Link>
 

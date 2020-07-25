@@ -27,11 +27,11 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({ events, dates, status, msg
         <SafeOffsetContainer status={status}>
             <EventSelection hideCalendar={true} events={events} dates={dates}/>
             <NavbarWrapper>
-                <div onClick={() => history.push('/stats')}>
+                <div onClick={() => history.replace('/stats')}>
                     <Icon icon={'stats'} size={'22px'} color={'rgba(255, 255, 255, 0.9)'} />
                 </div>
                 <Title status={status}>{msg || dateName || t('choose_event')}</Title>
-                <div onClick={() => history.push('/list')}>
+                <div onClick={() => history.replace('/list')}>
                     <Icon icon={'attendees'} size={'22px'} color={'rgba(255, 255, 255, 0.9)'} />
                 </div>
             </NavbarWrapper>

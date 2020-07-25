@@ -44,7 +44,7 @@ organizer:
 server:
 
   slave:
-    replicas: 0
+    replicas: 1
 
   master:
     replicas: 1
@@ -63,7 +63,7 @@ server:
 worker:
 
   slave:
-    replicas: 0
+    replicas: 1
 
   master:
     replicas: 1
