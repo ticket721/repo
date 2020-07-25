@@ -143,7 +143,7 @@ export const Scanner: React.FC<ScannerProps> = ({ events, dates }: ScannerProps)
     }, [validationResp.error]);
 
     useDeepEffect(() => {
-        if (validationResp.data) {
+        if (validationResp.data && scannedTicket) {
             if (validationResp.data.info) {
                 if (
                     categoriesReq.response.data.categories
@@ -196,7 +196,7 @@ export const Scanner: React.FC<ScannerProps> = ({ events, dates }: ScannerProps)
                 return;
             }
         }
-    }, [validationResp.data]);
+    }, [validationResp.data, scannedTicket]);
 
     useEffect(() => {
         if (dateId && filteredCategories.length === 0) {
@@ -227,7 +227,6 @@ export const Scanner: React.FC<ScannerProps> = ({ events, dates }: ScannerProps)
                         if (status === 'error' || status === 'success') {
                             setTimestampRange([]);
                             setStatusMsg(null);
-                            setScannedTicket(null);
                             setStatus('scanning');
                             dispatch(UpdateItemData(CacheCore.key('tickets.validate', [
                                 token,
@@ -237,6 +236,7 @@ export const Scanner: React.FC<ScannerProps> = ({ events, dates }: ScannerProps)
                                     address: scannedTicket.address,
                                 }
                             ]), null));
+                            setScannedTicket(null);
                         }
                     }}>{t('scan_again')}</TapToScan> :
                     null
