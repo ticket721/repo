@@ -1,12 +1,13 @@
-import React  from 'react';
-import styled               from 'styled-components';
-import t721logo                   from '../../../media/images/721.png';
-import { useSelector }            from 'react-redux';
-import { T721AppState }           from '../../../redux';
-import QrCode                     from 'qrcode.react';
-import { Icon }                   from '@frontend/flib-react/lib/components';
-import { useWindowDimensions }                   from '@frontend/core/lib/hooks/useWindowDimensions';
-import { keccak256 } from 'ethers/utils';
+import React, { useEffect, useState } from 'react';
+import styled, { useTheme }           from 'styled-components';
+import { useSelector }         from 'react-redux';
+import { T721AppState }        from '../../../redux';
+import QrCode                  from 'qrcode.react';
+import { Icon }                from '@frontend/flib-react/lib/components';
+import { useWindowDimensions } from '@frontend/core/lib/hooks/useWindowDimensions';
+import { keccak256 }           from 'ethers/utils';
+import { Theme }               from '@frontend/flib-react/lib/config/theme';
+import { Brightness } from '@ionic-native/brightness';
 
 export interface DynamicQrCodeProps {
     qrOpened: boolean;
@@ -16,17 +17,67 @@ export interface DynamicQrCodeProps {
     onClose: () => void;
 }
 
+const setBrightness = (value: number) => {
+
+    if (Brightness && Brightness.setBrightness) {
+        Brightness.setBrightness(value)
+            .catch(e => {
+                console.warn(e);
+            })
+    } else {
+        console.warn('Current device cannot set brightness');
+    }
+
+};
+
+const getBrightness = (): Promise<number> => {
+
+    if (Brightness && Brightness.getBrightness) {
+        return Brightness.getBrightness();
+    } else {
+        return Promise.resolve(null);
+    }
+
+};
+
 export const DynamicQrCode: React.FC<DynamicQrCodeProps> = (props: DynamicQrCodeProps) => {
     const { width, height } = useWindowDimensions();
+    const [initialBrightness, setInitialBrightness] = useState(null);
     const [
-        seconds,
         qrcodeContent,
         ticketId,
     ] = useSelector((state: T721AppState) => [
-        state.deviceWallet.seconds,
         state.deviceWallet.signatures[0]?.slice(2) + state.deviceWallet.currentTicketId?.slice(2) + state.deviceWallet.timestamps[0],
         state.deviceWallet.currentTicketId,
     ]);
+    const theme = useTheme() as Theme;
+
+    useEffect(() => {
+
+        if (props.qrOpened) {
+            getBrightness()
+                .then((val: number) => {
+                    setInitialBrightness(val);
+                })
+                .catch((e: Error) => {
+                    console.warn(e);
+                });
+        }
+
+    }, [props.qrOpened]);
+
+    useEffect(() => {
+
+        if (props.qrOpened) {
+            if (initialBrightness !== null) {
+                setBrightness(0.8);
+                return () => {
+                    setBrightness(initialBrightness)
+                }
+            }
+        }
+
+    }, [initialBrightness, props.qrOpened]);
 
     return (
         <QrCodeWrapper offsetTop={height} qrOpened={props.qrOpened}>
@@ -37,26 +88,23 @@ export const DynamicQrCode: React.FC<DynamicQrCodeProps> = (props: DynamicQrCode
             <div>
                 <QrCodeContainer>
                     {
-                        qrcodeContent ?
-                        <QrCode
-                            value={qrcodeContent}
-                            bgColor={'#241F33'}
-                            fgColor={'#FFFFFF'}
-                            size={width}
-                            renderAs={'svg'}
-                            level={'L'}
-                            imageSettings={{
-                                src: t721logo,
-                                x: null,
-                                y: null,
-                                height: 42,
-                                width: 42,
-                                excavate: true,
-                            }}/> :
+                        qrcodeContent
+
+                            ?
+                            <QrCode
+                                value={qrcodeContent}
+                                bgColor={'#FFFFFF'}
+                                fgColor={theme.darkerBg}
+                                size={width}
+                                renderAs={'svg'}
+                                level={'L'}
+                                includeMargin={true}
+                            />
+
+                            :
                             null
                     }
 
-                <span>{seconds}</span>
                 </QrCodeContainer>
                 {
                     ticketId ?
@@ -65,7 +113,7 @@ export const DynamicQrCode: React.FC<DynamicQrCodeProps> = (props: DynamicQrCode
                 }
             </div>
             <Close onClick={props.onClose}>
-                <Icon icon={'close'} size={'32px'} color={'rgba(255,255,255,0.9)'}/>
+                <Icon icon={'close'} size={'32px'} color={theme.darkerBg}/>
             </Close>
         </QrCodeWrapper>
     )
@@ -82,7 +130,7 @@ const QrCodeWrapper = styled.div<{ offsetTop: number, qrOpened: boolean }>`
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
-    background-color: rgba(36,31,51,0.8);
+    background-color: #ffffff;
     backdrop-filter: blur(6px);
     padding: 6vh ${props => props.theme.biggerSpacing};
     transition: top 600ms ease-in-out;
@@ -100,12 +148,13 @@ const EventName = styled.h2`
     text-align: center;
     line-height: 24px;
     text-transform: uppercase;
+    color: ${props => props.theme.darkerBg};
 `;
 
 const Category = styled.h3`
     margin-top: 10px;
     font-size: 18px;
-    color: ${props => props.theme.textColorDark};
+    color: ${props => props.theme.darkerBg};
 `;
 
 const QrCodeContainer = styled.div`
@@ -126,7 +175,8 @@ const QrCodeContainer = styled.div`
         align-items: center;
         width: 36px;
         height: 36px;
-        background-color: ${props => props.theme.darkBg};
+        color: #000000;
+        background-color: #ffffff;
     }
 `;
 
@@ -134,7 +184,7 @@ const TicketId = styled.span`
     display: block;
     font-weight: 500;
     margin-top: ${props => props.theme.regularSpacing};
-    color: ${props => props.theme.textColorDarker};
+    color: ${props => props.theme.darkerBg};
     text-align: center;
     text-transform: uppercase;
 `;

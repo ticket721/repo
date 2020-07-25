@@ -6,5 +6,9 @@
     <param name="ios-package" value="CDVOrientation"/>
   </feature>
 
+  <feature name="Brightness">
+    <param name="ios-package" value="Brightness"/>
+  </feature>
+
   
 </widget>
