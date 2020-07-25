@@ -80,7 +80,7 @@
     "@types/react": "16.9.35",
     "cpx": "1.5.0",
     "file-loader": "6.0.0",
-    "svgtofont": "1.6.0",
+    "svgtofont": "2.0.1",
     "themeprovider-storybook": "1.5.1",
     "react-responsive": "8.1.0",
     "@types/react-responsive": "8.0.2",
