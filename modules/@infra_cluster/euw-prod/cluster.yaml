@@ -22,7 +22,7 @@ managedNodeGroups:
         efs: true
   - name: core-3a
     instanceType: t2.small
-    minSize: 1
+    minSize: 2
     maxSize: 12
     privateNetworking: true
     availabilityZones: ["eu-west-3a"]

@@ -134,67 +134,67 @@ export class MintT721ControllerEVMAntenna extends EVMEventControllerBase {
         const receivedCode = encode(['uint256'], [decimalToHex(returnValues.code)]).toLowerCase();
 
         if (code !== receivedCode) {
-            throw new NestError(
+            this.loggerService.error(
                 `Invalid broadcasted authorization code: got ${receivedCode} but was expecting ${code}`,
             );
+        } else {
+            const authorizationDryUpdateRes = await this.authorizationsService.dryUpdate(
+                {
+                    id: ticketEntity.authorization,
+                    grantee: ticketEntity.owner,
+                    granter,
+                    mode: 'mint',
+                },
+                {
+                    consumed: true,
+                },
+            );
+
+            const ticketDryUpdateRes = await this.ticketsService.dryUpdate(
+                {
+                    id: ticketEntity.id,
+                },
+                {
+                    status: 'ready',
+                },
+            );
+
+            const authorizationRollbackDryUpdateRes = await this.authorizationsService.dryUpdate(
+                {
+                    id: ticketEntity.authorization,
+                    grantee: ticketEntity.owner,
+                    granter,
+                    mode: 'mint',
+                },
+                {
+                    consumed: false,
+                },
+            );
+
+            const ticketRollbackDryUpdateRes = await this.ticketsService.dryUpdate(
+                {
+                    id: ticketEntity.id,
+                },
+                {
+                    status: 'minting',
+                },
+            );
+
+            if (
+                authorizationDryUpdateRes.error ||
+                ticketDryUpdateRes.error ||
+                authorizationRollbackDryUpdateRes.error ||
+                ticketRollbackDryUpdateRes.error
+            ) {
+                throw new NestError(`Cannot create dry update payloads`);
+            }
+
+            append(authorizationDryUpdateRes.response, authorizationRollbackDryUpdateRes.response);
+
+            append(ticketDryUpdateRes.response, ticketRollbackDryUpdateRes.response);
+
+            this.loggerService.log(`Intercepted ticket blockchain incrustation for Ticket@${ticketEntity.id}`);
         }
-
-        const authorizationDryUpdateRes = await this.authorizationsService.dryUpdate(
-            {
-                id: ticketEntity.authorization,
-                grantee: ticketEntity.owner,
-                granter,
-                mode: 'mint',
-            },
-            {
-                consumed: true,
-            },
-        );
-
-        const ticketDryUpdateRes = await this.ticketsService.dryUpdate(
-            {
-                id: ticketEntity.id,
-            },
-            {
-                status: 'ready',
-            },
-        );
-
-        const authorizationRollbackDryUpdateRes = await this.authorizationsService.dryUpdate(
-            {
-                id: ticketEntity.authorization,
-                grantee: ticketEntity.owner,
-                granter,
-                mode: 'mint',
-            },
-            {
-                consumed: false,
-            },
-        );
-
-        const ticketRollbackDryUpdateRes = await this.ticketsService.dryUpdate(
-            {
-                id: ticketEntity.id,
-            },
-            {
-                status: 'minting',
-            },
-        );
-
-        if (
-            authorizationDryUpdateRes.error ||
-            ticketDryUpdateRes.error ||
-            authorizationRollbackDryUpdateRes.error ||
-            ticketRollbackDryUpdateRes.error
-        ) {
-            throw new NestError(`Cannot create dry update payloads`);
-        }
-
-        append(authorizationDryUpdateRes.response, authorizationRollbackDryUpdateRes.response);
-
-        append(ticketDryUpdateRes.response, ticketRollbackDryUpdateRes.response);
-
-        this.loggerService.log(`Intercepted ticket blockchain incrustation for Ticket@${ticketEntity.id}`);
     }
 
     /**
