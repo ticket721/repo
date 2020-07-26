@@ -34,7 +34,7 @@ export const Tickets: React.FC<TicketsProps> = ({ tickets }) => {
             autoResize={true}
             gap={32}
             bound={true}
-            onChange={(e) => history.push('/wallet?ticketIdx=' + e.index)}>
+            onChange={(e) => history.replace('/wallet?ticketIdx=' + e.index)}>
             {
                 tickets.map(ticket => (
                     <TicketCard key={ticket.ticketId} ticket={ticket}/>
