@@ -17,9 +17,15 @@ spec:
       # this solver uses ambient credentials (i.e. inferred from the environment or EC2 Metadata Service)
       # to assume a role in a different account
       - selector:
+          {{ if eq .Values.domainExtension "" }}
+          dnsZones:
+            - "{{ .Values.baseDomain }}"
+            - "*.{{ .Values.baseDomain }}"
+          {{ else }}
           dnsZones:
             - "{{ .Values.domainExtension }}.{{ .Values.baseDomain }}"
             - "*.{{ .Values.domainExtension }}.{{ .Values.baseDomain }}"
+          {{ end }}
         dns01:
           route53:
             region: {{ .Values.route53.region }}

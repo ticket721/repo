@@ -6,12 +6,13 @@ import { GetCity, GetDevice } from '../user_properties';
 import { SetupActionTypes } from './types';
 
 import { StartRefreshInterval } from '../cache';
-import { SetToken } from '../auth';
+import { AuthActionTypes, ISetToken, SetToken } from '../auth';
 import { isExpired, isValidFormat, parseToken } from '../../../utils/token';
 import { T721SDK } from '@common/sdk';
 import { AppStatus, SetAppStatus } from '../statuses';
 import { PushNotification } from '../notifications';
 import { getEnv } from '../../../utils/getEnv';
+import { identifyUser } from '../../../utils/segment';
 
 function* startSaga(action: IStart): IterableIterator<any> {
     global.window.t721Sdk = new T721SDK();
@@ -47,6 +48,13 @@ function* handleUser(): IterableIterator<any> {
     }
 }
 
+function* enableAnalytics(action: ISetToken): IterableIterator<any> {
+    if (action.token?.value) {
+        yield call(identifyUser, action.token.value);
+    }
+}
+
 export function* setupSaga(): SagaIterator {
     yield takeEvery(SetupActionTypes.Start, startSaga);
+    yield takeEvery(AuthActionTypes.SetToken, enableAnalytics);
 }

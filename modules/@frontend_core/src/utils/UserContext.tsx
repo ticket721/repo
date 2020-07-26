@@ -1,3 +1,4 @@
+import './locales';
 import React, { PropsWithChildren, useState } from 'react';
 import { AppState } from '@frontend-core/redux';
 import { useDispatch, useSelector } from 'react-redux';
@@ -8,6 +9,7 @@ import { useRequest } from '../hooks/useRequest';
 import { UsersMeResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/users/dto/UsersMeResponse.dto';
 import { PasswordlessUserDto } from '@common/sdk/lib/@backend_nest/apps/server/src/authentication/dto/PasswordlessUser.dto';
 import { useDeepEffect } from '../hooks/useDeepEffect';
+import { useTranslation } from 'react-i18next';
 
 export const UserContext = React.createContext<PasswordlessUserDto>(undefined);
 
@@ -20,6 +22,7 @@ const LoggedInUserGuard: React.FC<PropsWithChildren<LoggedOutUserGuardProps>> = 
 ) => {
     const [uuid] = useState<string>(v4() + '@userguard');
     const dispatch = useDispatch();
+    const [t] = useTranslation('utils');
 
     const userReq = useRequest<UsersMeResponseDto>(
         {
@@ -54,7 +57,7 @@ const LoggedInUserGuard: React.FC<PropsWithChildren<LoggedOutUserGuardProps>> = 
                 }
             }
         }
-        return <Error message={'unable to authenticate'} retryLabel={'retry'} onRefresh={userReq.force} />;
+        return <Error message={t('cannot_reach_server')} retryLabel={t('retrying_in')} onRefresh={userReq.force} />;
     }
 
     return <UserContext.Provider value={userReq.response.data.user}>{props.children}</UserContext.Provider>;

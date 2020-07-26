@@ -2,7 +2,7 @@ apiVersion: eksctl.io/v1alpha5
 kind: ClusterConfig
 
 metadata:
-  name: euw
+  name: euw-prod
   region: eu-west-3
 
 managedNodeGroups:

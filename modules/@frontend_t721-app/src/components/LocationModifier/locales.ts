@@ -8,7 +8,7 @@ i18n.addResourceBundle('en', 'location_modifier', {
     error_location_request_fail: 'Cannot fetch location'
 });
 i18n.addResourceBundle('fr', 'location_modifier', {
-    browsing_events_in: 'Liste d\'evenements a',
+    browsing_events_in: 'Liste d\'évènements à',
     search_city: 'Rechercher une ville',
     use_current_location: 'Utiliser position actuelle',
     cancel: 'Annuler',
