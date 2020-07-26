@@ -69,6 +69,7 @@ const BottomContainer = styled.div`
 const ScannerZoneWrapper = styled.div<{ status: Status }>`
     display: flex;
     flex-direction: column;
+    align-items: center;
     justify-content: space-between;
     position: fixed;
     top: calc((-100vh - 100vw + 2 * ${props => props.theme.doubleSpacing}) / 2);
