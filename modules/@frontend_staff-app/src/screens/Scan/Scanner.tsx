@@ -99,6 +99,7 @@ export const Scanner: React.FC<ScannerProps> = ({ events, dates }: ScannerProps)
                 const ticketId = '0x' + data.slice(130, 194);
                 const timestamp = parseInt(data.slice(194), 10);
                 const address = verifyMessage(ticketId + timestamp, sig);
+
                 setScannedTicket({
                     address,
                     ticketId,
