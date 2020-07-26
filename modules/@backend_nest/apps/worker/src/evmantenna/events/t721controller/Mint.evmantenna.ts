@@ -75,9 +75,10 @@ export class MintT721ControllerEVMAntenna extends EVMEventControllerBase {
         const returnValues = JSON.parse(event.return_values);
 
         if (ticketEntity.group_id !== returnValues.group) {
-            throw new NestError(
+            this.loggerService.error(
                 `Invalid group id received from event: ticket got ${ticketEntity.group_id} and event gives ${returnValues.group}`,
             );
+            return;
         }
 
         const categoryEntityRes = await this.categoriesService.search({
@@ -93,16 +94,18 @@ export class MintT721ControllerEVMAntenna extends EVMEventControllerBase {
         const category: CategoryEntity = categoryEntityRes.response[0];
 
         if (toB32(category.category_name).toLowerCase() !== returnValues.category.toLowerCase()) {
-            throw new NestError(
+            this.loggerService.error(
                 `Invalid category name received from event: ticket got ${toB32(
                     category.category_name,
                 ).toLowerCase()} and event gives ${returnValues.category.toLowerCase()}`,
             );
+            return;
         }
         if (toAcceptedAddressFormat(ticketEntity.owner) !== toAcceptedAddressFormat(returnValues.owner)) {
-            throw new NestError(
+            this.loggerService.error(
                 `Invalid owner address received from event: ticket got ${ticketEntity.owner} and event gives ${returnValues.owner}`,
             );
+            return;
         }
 
         const controllerFieldsRes = await this.groupService.getCategoryControllerFields<[string]>(category, [
