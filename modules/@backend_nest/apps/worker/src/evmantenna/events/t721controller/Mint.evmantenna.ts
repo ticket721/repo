@@ -134,11 +134,10 @@ export class MintT721ControllerEVMAntenna extends EVMEventControllerBase {
         const receivedCode = encode(['uint256'], [decimalToHex(returnValues.code)]).toLowerCase();
 
         if (code !== receivedCode) {
-
-            this.loggerService.error(`Invalid broadcasted authorization code: got ${receivedCode} but was expecting ${code}`);
-
+            this.loggerService.error(
+                `Invalid broadcasted authorization code: got ${receivedCode} but was expecting ${code}`,
+            );
         } else {
-
             const authorizationDryUpdateRes = await this.authorizationsService.dryUpdate(
                 {
                     id: ticketEntity.authorization,
@@ -195,9 +194,7 @@ export class MintT721ControllerEVMAntenna extends EVMEventControllerBase {
             append(ticketDryUpdateRes.response, ticketRollbackDryUpdateRes.response);
 
             this.loggerService.log(`Intercepted ticket blockchain incrustation for Ticket@${ticketEntity.id}`);
-
         }
-
     }
 
     /**
