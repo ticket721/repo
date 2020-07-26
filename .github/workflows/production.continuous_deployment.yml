@@ -1,4 +1,4 @@
-name: T721 Monorepo Staging CD
+name: T721 Monorepo Production CD
 
 on:
   push:
