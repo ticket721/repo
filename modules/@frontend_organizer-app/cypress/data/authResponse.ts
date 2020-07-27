@@ -1,4 +1,4 @@
-import { user } from './data';
+import { user } from './user';
 
 export const loginResponse = {
   200: {

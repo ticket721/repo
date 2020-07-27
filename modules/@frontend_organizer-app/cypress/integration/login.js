@@ -1,5 +1,5 @@
-import { user } from '../utils/data';
-import {loginResponse, registerResponse} from '../utils/authResponse';
+import { user } from '../data/user';
+import {loginResponse, registerResponse} from '../data/authResponse';
 
 const messages = {
     wrongCredentials: 'wrong email or password',
@@ -12,16 +12,14 @@ const messages = {
 describe('Login', () => {
     beforeEach(() => {
         cy.server();
+        cy.visit('/login');
     });
     it('successfully loads', () => {
-        cy.visit('/login')
         cy.get('input[name=email]').should('exist');
         cy.get('input[name=password]').should('exist');
         cy.get('button[name=Login]').should('exist');
     })
     it('visit register', function () {
-        cy.visit('/login');
-
         cy.get('form > div > span').contains(messages.register).click();
 
         cy.url().should('be', '/register');
@@ -33,7 +31,6 @@ describe('Login', () => {
 
     it('invalid credentials', function () {
         cy.route('POST', 'authentication/local/login', loginResponse["401"]).as('error');
-        cy.visit('/login');
 
         const { password } = user;
         cy.get('input[name=email]').type(`${password}@gmail.com`);
@@ -46,7 +43,6 @@ describe('Login', () => {
     })
     it('success login', function () {
         cy.route('POST', 'authentication/local/login', loginResponse["200"]).as('success');
-        cy.visit('/login');
 
         const { email, password, username } = user;
 
@@ -58,8 +54,6 @@ describe('Login', () => {
     })
 
     it('invalid email format', function () {
-        cy.visit('/login');
-
         const { password } = user;
         cy.get('input[name=email]').type(`${password}{enter}`);
 
@@ -67,24 +61,18 @@ describe('Login', () => {
         cy.get('span').should('contain', messages.invalidEmail);
     })
     it('email required', function () {
-        cy.visit('/login');
-
         cy.get('input[name=email]').type('{enter}')
 
         cy.url().should('be', '/login')
         cy.get('span').should('contain', messages.requiredEmail);
     })
     it('password required', function () {
-        cy.visit('/login');
-
         cy.get('input[name=password]').type('{enter}')
 
         cy.url().should('be', '/login')
         cy.get('span').should('contain', messages.requiredPassword);
     })
     it('fields required', function () {
-        cy.visit('/login');
-
         cy.get('input[name=email]').type('{enter}')
         cy.get('input[name=password]').type('{enter}')
 
