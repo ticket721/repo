@@ -9,7 +9,7 @@ helmRepos:
   jetstack: https://charts.jetstack.io
 
 namespaces:
-  staging:
+  production:
   monitoring:
   default:
 
@@ -271,7 +271,7 @@ apps:
       config.rockside.forwarder_address: "${CONFIG_PRODUCTION_FORWARDER_ADDRESS}"
 
       config.googleGeocodingApiKey: "${CONFIG_PRODUCTION_GCLOUD_GEOLOC_APIKEY}"
-      config.serverEndpoint.host: "api.staging.ticket721.com"
+      config.serverEndpoint.host: "api.ticket721.com"
       config.serverEndpoint.port: "443"
       config.serverEndpoint.protocol: "https"
 
