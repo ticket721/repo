@@ -79,7 +79,7 @@ const FetchEvent = (): JSX.Element => {
         if (datesResp.data?.dates) {
             const filteredDates = datesResp.data.dates.filter(d => d.parent_type === 'event');
             if (filteredDates.length > 0) {
-                history.push(`/group/${groupId}/date/${datesResp.data.dates[0].id}`);
+                history.push(`/group/${groupId}/date/${filteredDates[0].id}`);
             } else {
                 setEmptyDateFetched(true);
             }
