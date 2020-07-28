@@ -275,9 +275,16 @@ export const StripeCheckoutNative: React.FC<StripeCheckoutNativeProps> = (props:
 
     // Callback triggered when authorization expirations end
     const onExpirationComplete = useCallback(() => {
-        dispatch(SetTickets([]));
-        dispatch(PushNotification(t('cart_checkout_expired'), 'error'));
-        history.replace('/');
+        forceResetCart()
+            .then(() => {
+                dispatch(PushNotification(t('cart_checkout_expired'), 'error'));
+                history.replace('/');
+            })
+            .catch((e) => {
+                console.error(e);
+                dispatch(PushNotification(t('cart_checkout_expired'), 'error'));
+                history.replace('/');
+            });
     }, [dispatch, history, t]);
 
     useEffect(() => {
