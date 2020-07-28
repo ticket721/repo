@@ -47,7 +47,7 @@
         "rxjs": "6.5.5",
         "@capacitor/cli": "2.0.1",
         "react-scripts": "3.4.1",
-        "tslint": "6.0.0",
+        "tslint": "6.1.2",
         "serve": "11.3.2"
     },
     "resolutions": {
