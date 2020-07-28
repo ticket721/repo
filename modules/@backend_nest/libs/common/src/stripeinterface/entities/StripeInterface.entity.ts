@@ -7,8 +7,8 @@ import {
 }              from '@iaminfinity/express-cassandra';
 
 interface StripePaymentMethod {
-    card: string;
-    token: string;
+    type: string;
+    stripe_token: string;
 }
 
 /**
@@ -29,12 +29,13 @@ export class StripeInterfaceEntity {
      */
     constructor(sie?: StripeInterfaceEntity) {
         if (sie) {
-            this.id = sie.id;
-            this.owner = sie.owner;
+            this.id = sie.id ? sie.id.toString() : sie.id;
+            this.owner = sie.owner ? sie.owner.toString() : sie.owner;
             this.payment_methods = sie.payment_methods;
             this.connect_account = sie.connect_account;
             this.connect_account_business_type = sie.connect_account_business_type;
             this.connect_account_status = sie.connect_account_status;
+            this.connect_account_updated_at = sie.connect_account_updated_at;
             this.created_at = sie.created_at;
             this.updated_at = sie.updated_at;
         }
@@ -54,7 +55,7 @@ export class StripeInterfaceEntity {
 
     @Column({
         type: 'list',
-        typeDef: '<stripe_payment_method>',
+        typeDef: '<frozen<stripe_payment_method>>',
     })
         // tslint:disable-next-line:variable-name
     payment_methods: StripePaymentMethod[];
@@ -76,6 +77,12 @@ export class StripeInterfaceEntity {
     })
         // tslint:disable-next-line:variable-name
     connect_account_business_type: string;
+
+    @Column({
+        type: 'timestamp'
+    })
+        // tslint:disable-next-line:variable-name
+    connect_account_updated_at: Date;
 
     /**
      * Creation timestamp

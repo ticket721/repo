@@ -1,10 +1,19 @@
-import { Module }                 from '@nestjs/common';
-import { ExpressCassandraModule } from '@iaminfinity/express-cassandra';
-import { RightEntity }            from '@lib/common/rights/entities/Right.entity';
-import { RightsRepository }       from '@lib/common/rights/Rights.repository';
+import { Module }                     from '@nestjs/common';
+import { ExpressCassandraModule }     from '@iaminfinity/express-cassandra';
+import { StripeInterfaceEntity }      from '@lib/common/stripeinterface/entities/StripeInterface.entity';
+import { StripeInterfacesRepository } from '@lib/common/stripeinterface/StripeInterfaces.repository';
+import { StripeInterfacesService }    from '@lib/common/stripeinterface/StripeInterfaces.service';
 
 @Module({
-    imports: [ExpressCassandraModule.forFeature([RightEntity, RightsRepository])],
+    imports: [
+        ExpressCassandraModule.forFeature([StripeInterfaceEntity, StripeInterfacesRepository]),
+    ],
+    providers: [
+        StripeInterfacesService
+    ],
+    exports: [
+        StripeInterfacesService
+    ]
 })
 export class StripeInterfacesModule {
 
