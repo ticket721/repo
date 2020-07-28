@@ -65,7 +65,7 @@ const ImgContainer = styled.div`
     }
 `;
 
-const SingleResult = styled.article<SearchResultsProps>`
+const SingleResult = styled.article<React.ComponentProps<any>>`
     align-items: center;
     display: flex;
     font-size: 13px;
@@ -74,7 +74,7 @@ const SingleResult = styled.article<SearchResultsProps>`
     cursor: ${(props) => (props.clickable ? 'pointer' : 'default')};
 
     &:last-of-type {
-        margin-bottom: ${(props) => props.theme.biggerSpacing};
+        margin-bottom: ${(props) => props.customMarginBottom || props.theme.biggerSpacing};
     }
 
     span {
@@ -89,7 +89,7 @@ const SingleResult = styled.article<SearchResultsProps>`
 `;
 
 const CategorySection = styled.section`
-    padding: ${(props) => props.theme.regularSpacing} ${(props) => props.theme.biggerSpacing};
+    padding: ${(props) => props.theme.biggerSpacing} ${(props) => props.theme.biggerSpacing};
 
     h2 {
         margin-bottom: ${(props) => props.theme.regularSpacing};
@@ -117,14 +117,34 @@ const InfoContainer = styled.div`
     width: calc(90% - 80px);
 `;
 
-export const SingleEvent = (props: Event) => {
+export const SingleEvent = (props: Event & { customMarginBottom?: string }) => {
     return (
-        <SingleResult clickable={!!props.onClick} onClick={props.onClick}>
+        <SingleResult clickable={!!props.onClick} onClick={props.onClick} customMarginBottom={props.customMarginBottom}>
             <ImgContainer>
                 <img src={props.image} />
             </ImgContainer>
             <InfoContainer>
                 <EllipsedTitle className={'uppercase'}>{props.name}</EllipsedTitle>
+                <span>{props.date}</span>
+                <span style={{ color: props.color }}>{props.price}€</span>
+            </InfoContainer>
+        </SingleResult>
+    );
+};
+
+export const SingleStarEvent = (props: Event & { customMarginBottom?: string }) => {
+    return (
+        <SingleResult clickable={!!props.onClick} onClick={props.onClick} customMarginBottom={props.customMarginBottom}>
+            <ImgContainer>
+                <img src={props.image} />
+            </ImgContainer>
+            <InfoContainer>
+                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'baseline' }}>
+                    <Icon icon={'star'} size={'12px'} color={props.color} />
+                    <EllipsedTitle style={{ marginLeft: '6px' }} className={'uppercase'}>
+                        {props.name}
+                    </EllipsedTitle>
+                </div>
                 <span>{props.date}</span>
                 <span style={{ color: props.color }}>{props.price}€</span>
             </InfoContainer>
@@ -146,7 +166,7 @@ export const SingleLocation = (props: Location) => {
     );
 };
 
-const CategoryResults = (props: any) => {
+export const CategoryResult = (props: any) => {
     return (
         <CategorySection>
             <h2>{props.category.name}</h2>
@@ -165,7 +185,7 @@ export const SearchResults: React.FunctionComponent<SearchResultsProps & { class
         <Container className={props.className}>
             {props.searchResults.length ? (
                 props.searchResults.map((category: SearchCategory) => {
-                    return <CategoryResults key={category.id} category={category} />;
+                    return <CategoryResult key={category.id} category={category} />;
                 })
             ) : (
                 <CategorySection>

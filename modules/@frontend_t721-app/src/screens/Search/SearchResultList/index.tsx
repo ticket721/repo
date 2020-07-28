@@ -27,11 +27,6 @@ export const SearchResultList: React.FC<SearchResultListProps> = (props: SearchR
     const providedLocation = location.customLocation || location.location;
 
     return <div>
-        <LocationHeader
-            location={location.requesting ? '...' : locationString}
-            title={t('searching_events_in')}
-            onFilter={props.enableFilter}
-        />
         <SearchInput
             clearInput={() => {
                 setSearch('');
@@ -52,6 +47,11 @@ export const SearchResultList: React.FC<SearchResultListProps> = (props: SearchR
             value={search}
             cancelLabel={t('cancel')}
             autofocus={true}
+        />
+        <LocationHeader
+            location={location.requesting ? '...' : locationString}
+            title={t('searching_in')}
+            onFilter={props.enableFilter}
         />
         {
             query !== ''

@@ -1,6 +1,8 @@
 import React                  from 'react';
 import { Button }             from '@frontend/flib-react/lib/components';
 import styled                 from 'styled-components';
+import { useTranslation }     from 'react-i18next';
+import '../../shared/Translations/global';
 
 export interface FormActionsProps{
     cancel?: () => void;
@@ -10,36 +12,40 @@ export interface FormActionsProps{
     loadingState?: boolean;
 }
 
-export const FormActions = (props: FormActionsProps) => (
+export const FormActions = (props: FormActionsProps) => {
+  const [t] = useTranslation('global');
+
+  return (
     <StyledFormActions>
-        {
-            !props.newItem && props.delete &&
-            <div className={'delete-container'}>
-                <Button
-                title='Delete item'
+      {
+        !props.newItem && props.delete &&
+        <div className={'delete-container'}>
+            <Button
+                title={t('delete_item')}
                 variant={'danger'}
                 onClick={props.delete}
-                />
-            </div>
-        }
-        <div className={'sub-container'}>
-            {
-                props.cancel &&
-                <Button
-                title='Cancel'
-                variant={'secondary'}
-                onClick={props.cancel}
-                />
-            }
-            <Button
-            type='submit'
-            title='Save changes'
-            variant={props.disabled ? 'disabled' : 'primary'}
-            loadingState={props.loadingState}
             />
         </div>
+      }
+      <div className={'sub-container'}>
+        {
+          props.cancel &&
+          <Button
+              title={t('cancel')}
+              variant={'secondary'}
+              onClick={props.cancel}
+          />
+        }
+        <Button
+          type='submit'
+          title={t('save_changes')}
+          variant={props.disabled ? 'disabled' : 'primary'}
+          loadingState={props.loadingState}
+        />
+      </div>
     </StyledFormActions>
-);
+  );
+}
 
 const StyledFormActions = styled.div`
     display: flex;

@@ -4,7 +4,7 @@ import { TxsRepository } from '@lib/common/txs/Txs.repository';
 import { TxEntity } from '@lib/common/txs/entities/Tx.entity';
 import { BaseModel, InjectModel, InjectRepository } from '@iaminfinity/express-cassandra';
 import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
-import { isTransactionHash } from '@common/global';
+import { isTransactionHash, isTrackingId } from '@common/global';
 import { Web3Service } from '@lib/common/web3/Web3.service';
 import { GlobalConfigService } from '@lib/common/globalconfig/GlobalConfig.service';
 import Decimal from 'decimal.js';
@@ -93,20 +93,33 @@ export class TxsService extends CRUDExtension<TxsRepository, TxEntity> {
     /**
      * Method to subscribe to a transaction hash
      *
-     * @param txhash
+     * @param txHashOrTrackingId
+     * @param realTxHash
      */
-    async subscribe(txhash: string): Promise<ServiceResponse<TxEntity>> {
-        txhash = txhash.toLowerCase();
-
-        if (!isTransactionHash(txhash)) {
+    async subscribe(txHashOrTrackingId: string, realTxHash?: string): Promise<ServiceResponse<TxEntity>> {
+        if (!isTransactionHash(txHashOrTrackingId.toLowerCase()) && !isTrackingId(txHashOrTrackingId)) {
             return {
-                error: 'invalid_tx_hash_format',
+                error: 'invalid_tx_hash_or_tracking_id_format',
                 response: null,
             };
         }
 
+        if (isTransactionHash(txHashOrTrackingId)) {
+            txHashOrTrackingId = txHashOrTrackingId.toLowerCase();
+        }
+
+        if (realTxHash) {
+            realTxHash = realTxHash.toLowerCase();
+            if (!isTransactionHash(realTxHash)) {
+                return {
+                    error: 'invalid_real_tx_hash_format',
+                    response: null,
+                };
+            }
+        }
+
         const duplicate = await this.search({
-            transaction_hash: txhash,
+            transaction_hash: txHashOrTrackingId,
         });
 
         if (duplicate.error) {
@@ -124,9 +137,10 @@ export class TxsService extends CRUDExtension<TxsRepository, TxEntity> {
         }
 
         const createdTx = await this.create({
-            transaction_hash: txhash,
+            transaction_hash: txHashOrTrackingId,
             confirmed: false,
             block_number: 0,
+            real_transaction_hash: realTxHash ? realTxHash : undefined,
         });
 
         if (createdTx.error) {
@@ -228,30 +242,11 @@ export class TxsService extends CRUDExtension<TxsRepository, TxEntity> {
         value: string,
         data: string,
     ): Promise<ServiceResponse<TxEntity>> {
-        const gasLimitEstimationRes = await this.estimateGasLimit(from, to, data);
-
-        if (gasLimitEstimationRes.error) {
-            return {
-                error: gasLimitEstimationRes.error,
-                response: null,
-            };
-        }
-
-        const gasPriceEstimationRes = await this.estimateGasPrice(gasLimitEstimationRes.response);
-
-        if (gasPriceEstimationRes.error) {
-            return {
-                error: gasPriceEstimationRes.error,
-                response: null,
-            };
-        }
-
         const sentTransactionRes = await this.rocksideService.sendTransaction({
             from,
             to,
             value,
             data,
-            gasPrice: gasPriceEstimationRes.response,
         });
 
         if (sentTransactionRes.error) {
@@ -261,7 +256,16 @@ export class TxsService extends CRUDExtension<TxsRepository, TxEntity> {
             };
         }
 
-        const subscriptionRes = await this.subscribe(sentTransactionRes.response);
+        let subscriptionRes;
+
+        if (sentTransactionRes.response.tracking_id) {
+            subscriptionRes = await this.subscribe(
+                sentTransactionRes.response.tracking_id,
+                sentTransactionRes.response.transaction_hash,
+            );
+        } else {
+            subscriptionRes = await this.subscribe(sentTransactionRes.response.transaction_hash);
+        }
 
         if (subscriptionRes.error) {
             return {

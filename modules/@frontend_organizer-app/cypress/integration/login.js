@@ -1,5 +1,5 @@
-import { user } from '../data/user';
-import {loginResponse, registerResponse} from '../data/authResponse';
+import { me, user } from '../data/user';
+import { loginResponse, registerResponse } from '../data/authResponse';
 
 const messages = {
     wrongCredentials: 'wrong email or password',
@@ -13,6 +13,7 @@ describe('Login', () => {
     beforeEach(() => {
         cy.server();
         cy.visit('/login');
+        cy.route('GET', 'users/me', me).as('me');
     });
     it('successfully loads', () => {
         cy.get('input[name=email]').should('exist');
@@ -60,18 +61,7 @@ describe('Login', () => {
         cy.url().should('be', '/login');
         cy.get('span').should('contain', messages.invalidEmail);
     })
-    it('email required', function () {
-        cy.get('input[name=email]').type('{enter}')
 
-        cy.url().should('be', '/login')
-        cy.get('span').should('contain', messages.requiredEmail);
-    })
-    it('password required', function () {
-        cy.get('input[name=password]').type('{enter}')
-
-        cy.url().should('be', '/login')
-        cy.get('span').should('contain', messages.requiredPassword);
-    })
     it('fields required', function () {
         cy.get('input[name=email]').type('{enter}')
         cy.get('input[name=password]').type('{enter}')

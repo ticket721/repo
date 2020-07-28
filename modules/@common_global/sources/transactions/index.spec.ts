@@ -1,4 +1,4 @@
-import { isTransactionHash, toAcceptedTransactionHashFormat } from './index';
+import { isTrackingId, isTransactionHash, toAcceptedTransactionHashFormat } from './index';
 
 describe('Transactions', function() {
 
@@ -14,6 +14,17 @@ describe('Transactions', function() {
 
     });
 
+    describe('isTrackingId', function() {
+
+        it('should verify valid tracking id', function() {
+            expect(isTrackingId('01E9ZSDHMYYFMW3E1CVQ9ADVHK')).toBeTruthy();
+        });
+
+        it('should detect invalid tracking id', function() {
+            expect(isTrackingId('01AA01AAAAAAA01AA01AAAAAAx')).toBeFalsy();
+        });
+
+    });
     describe('toAcceptedTransactionHashFormat', function() {
 
         it('converts to accepted hash', function() {

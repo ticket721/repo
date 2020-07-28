@@ -320,6 +320,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                         avatar: null,
                         signature_colors: ['#00ff00', '#ff0000'],
                     },
+                    status: 'preview',
                 } as Partial<DateEntity>);
             });
 
@@ -501,7 +502,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     prices: [
                         {
                             currency: 'Fiat',
-                            price: '100',
+                            price: '200',
                         },
                     ],
                     seats: 100,
@@ -564,7 +565,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     prices: [
                         {
                             currency: 'Fiat',
-                            price: '100',
+                            price: '200',
                         },
                     ],
                     seats: 100,
@@ -628,7 +629,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     prices: [
                         {
                             currency: 'Fiat',
-                            price: '100',
+                            price: '200',
                         },
                     ],
                     seats: 100,
@@ -718,7 +719,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     prices: [
                         {
                             currency: 'Fiat',
-                            price: '100',
+                            price: '200',
                         },
                     ],
                     seats: 100,
@@ -790,7 +791,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     prices: [
                         {
                             currency: 'Fiat',
-                            price: '100',
+                            price: '200',
                         },
                     ],
                     seats: 100,
@@ -856,7 +857,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     prices: [
                         {
                             currency: 'Fiat',
-                            price: '100',
+                            price: '200',
                         },
                     ],
                     seats: 100,
@@ -872,7 +873,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     prices: [
                         {
                             currency: 'Fiat',
-                            price: '100',
+                            price: '200',
                         },
                     ],
                     seats: 100,
@@ -939,7 +940,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     prices: [
                         {
                             currency: 'Fiat',
-                            price: '100',
+                            price: '200',
                         },
                     ],
                     seats: 100,
@@ -1007,7 +1008,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     prices: [
                         {
                             currency: 'Fiat',
-                            price: '100',
+                            price: '200',
                         },
                     ],
                     seats: 100,
@@ -1071,7 +1072,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     prices: [
                         {
                             currency: 'Fiat',
-                            price: '100',
+                            price: '200',
                         },
                     ],
                     seats: 100,

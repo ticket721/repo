@@ -7,17 +7,14 @@ export interface CardContainerProps extends React.ComponentProps<any> {
 }
 
 const Container = styled.section<CardContainerProps>`
-    ${(props) =>
-        !props.removeBg &&
-        `
-    background-color: ${props.theme.darkerBg};
-  `}
+    background-color: ${(props) => (props.removeBg ? 'transparent' : props.theme.darkerBg)};
     display: flex;
     flex-wrap: wrap;
     font-size: 14px;
     font-weight: 500;
-    padding: ${(props) => (props.small ? '12px 16px' : props.theme.biggerSpacing)};
+    padding: ${(props) => (props.small ? '12px 24px' : props.theme.biggerSpacing)};
     position: relative;
+    transition: background-color 300ms;
 `;
 
 export const CardContainer: React.FunctionComponent<CardContainerProps & { className?: string }> = (

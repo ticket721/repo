@@ -1,5 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsNumber } from 'class-validator';
+import { IsNumber, IsOptional } from 'class-validator';
 
 /**
  * Input Dto extension to recover paging arguments
@@ -13,8 +13,9 @@ export class PagedSearch {
         description: 'Size of result page',
     })
     @IsNumber()
+    @IsOptional()
     // tslint:disable-next-line:variable-name
-    $page_size: number = 10;
+    $page_size?: number;
 
     /**
      * Specifies the required page
@@ -24,6 +25,7 @@ export class PagedSearch {
         description: 'Page index to return',
     })
     @IsNumber()
+    @IsOptional()
     // tslint:disable-next-line:variable-name
-    $page_index: number = 0;
+    $page_index?: number;
 }

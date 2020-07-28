@@ -40,21 +40,6 @@ export const registerResponse = {
     token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImNobG_DqSBiIiwic3ViIjoiMjkzNDU3YzktOGIwMi00NjViLWJlNGItMTIyOWQ0ZjZmNTU2IiwiaWF0IjoxNTk0ODg4MTYyLCJleHAiOjE1OTc0ODAxNjJ9.Z5pT5JJGi6YD7V03Yet70v_WsoN6PCqcGmqdZR78C3c",
     expiration: "2020-08-15T08:29:22.377Z"
   },
-  '201_validEmail': {
-    user: {
-      id: "293457c9-8b02-465b-be4b-1229d4f6f556",
-      email: user.email,
-      username: user.username,
-      type:"t721",
-      address: "0xc273DA3Cea27024AFa8d0aE094fDB1cB143daA51",
-      device_address: null,
-      role: "authenticated",
-      valid: true,
-      locale: "en"
-    },
-    token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImNobG_DqSBiIiwic3ViIjoiMjkzNDU3YzktOGIwMi00NjViLWJlNGItMTIyOWQ0ZjZmNTU2IiwiaWF0IjoxNTk0ODg4MTYyLCJleHAiOjE1OTc0ODAxNjJ9.Z5pT5JJGi6YD7V03Yet70v_WsoN6PCqcGmqdZR78C3c",
-    expiration: "2020-08-15T08:29:22.377Z"
-  },
   '409_email': {
     message: "email_already_in_use",
     name: "Conflict",

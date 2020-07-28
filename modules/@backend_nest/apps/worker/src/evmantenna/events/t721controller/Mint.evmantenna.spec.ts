@@ -536,11 +536,7 @@ describe('Mint EVMAntenna', function() {
             });
             // TRIGGER
 
-            await expect(context.mintEVMAntenna.convert(event, () => {})).rejects.toMatchObject(
-                new NestError(
-                    `Invalid group id received from event: ticket got ${groupId} and event gives 0xinvalidgroupid`,
-                ),
-            );
+            await context.mintEVMAntenna.convert(event, () => {});
 
             // CHECK RETURNs
 
@@ -807,13 +803,7 @@ describe('Mint EVMAntenna', function() {
             });
             // TRIGGER
 
-            await expect(context.mintEVMAntenna.convert(event, () => {})).rejects.toMatchObject(
-                new NestError(
-                    `Invalid category name received from event: ticket got ${toB32(
-                        categoryName,
-                    ).toLowerCase()} and event gives ${toB32('not the same').toLowerCase()}`,
-                ),
-            );
+            await context.mintEVMAntenna.convert(event, () => {});
 
             // CHECK RETURNs
 
@@ -904,11 +894,7 @@ describe('Mint EVMAntenna', function() {
             });
             // TRIGGER
 
-            await expect(context.mintEVMAntenna.convert(event, () => {})).rejects.toMatchObject(
-                new NestError(
-                    `Invalid owner address received from event: ticket got ${ownerAddress} and event gives ${invalidOwnerAddress}`,
-                ),
-            );
+            await context.mintEVMAntenna.convert(event, () => {});
 
             // CHECK RETURNs
 
@@ -1296,7 +1282,7 @@ describe('Mint EVMAntenna', function() {
             ).once();
         });
 
-        it('should fail on invalid code', async function() {
+        it('should ignore on invalid code', async function() {
             // DECLARE
             const ticketId = '9384759287435';
             const groupId = '0xgroupid';
@@ -1388,11 +1374,7 @@ describe('Mint EVMAntenna', function() {
             });
             // TRIGGER
 
-            await expect(context.mintEVMAntenna.convert(event, () => {})).rejects.toMatchObject(
-                new NestError(
-                    `Invalid broadcasted authorization code: got ${invalidCode.toLowerCase()} but was expecting ${code.toLowerCase()}`,
-                ),
-            );
+            await context.mintEVMAntenna.convert(event, () => {});
 
             // CHECK RETURNs
 

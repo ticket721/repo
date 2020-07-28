@@ -1,5 +1,4 @@
-import { ActivitiesContainer } from '@frontend/flib-react/lib/components';
-import Skeleton from '@frontend/flib-react/lib/components/loading/skeleton';
+import { ActivitiesContainer, FullPageLoading, Error } from '@frontend/flib-react/lib/components';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import './ActivitiesList.locales';
@@ -11,14 +10,23 @@ import { ActivityCard } from './ActivityCards';
 export interface ActivitiesListProps {
     loading: boolean;
     error: any;
+    force: () => void;
     data: MetadatasFetchResponseDto;
     limit?: number;
     link?: string;
 }
 
 export const ActivitiesList = (props: ActivitiesListProps): JSX.Element => {
-    const [t] = useTranslation('activities_list');
+    const [t] = useTranslation(['activities_list', 'common']);
     const history = useHistory();
+
+    if (props.loading) {
+        return <FullPageLoading />;
+    }
+
+    if (props.error) {
+        return <Error retryLabel={t('common:retrying_in')} message={t('fetch_error')} onRefresh={props.force} />;
+    }
 
     return (
         <ActivitiesContainer
@@ -26,18 +34,10 @@ export const ActivitiesList = (props: ActivitiesListProps): JSX.Element => {
             viewAllAction={props.link ? () => history.push(props.link) : undefined}
             viewAllLabel={props.link ? t('view_all') : undefined}
         >
-            {props.loading ? (
-                <Skeleton type={'text'} ready={false} showLoadingAnimation={true} children={null} />
-            ) : props.error || props.data.metadatas.length === 0 ? (
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <h3 style={{ opacity: 0.5 }}>{t(props.error ? 'fetch_error' : 'no_activity')}</h3>
-                </div>
-            ) : (
-                props.data.metadatas.map(
-                    (metadata: MetadataEntity, idx: number): JSX.Element => {
-                        return <ActivityCard type={metadata.type_name} metadata={metadata} key={idx} />;
-                    },
-                )
+            {props.data.metadatas.map(
+                (metadata: MetadataEntity, idx: number): JSX.Element => {
+                    return <ActivityCard type={metadata.type_name} metadata={metadata} key={idx} />;
+                },
             )}
         </ActivitiesContainer>
     );

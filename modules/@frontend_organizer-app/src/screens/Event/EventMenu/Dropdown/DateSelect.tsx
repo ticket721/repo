@@ -48,7 +48,7 @@ const customStyles = {
         backgroundColor: '#1B1726',
         borderRadius: 8,
         marginTop: 8,
-        zIndex: 3,
+        zIndex: 1400,
         position: 'absolute' as 'absolute',
         width: 'fit-content',
     }),

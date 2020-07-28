@@ -8,6 +8,28 @@ migrations:
     pullPolicy: IfNotPresent
     tag: "DEVELOPMENT"
 
+staff:
+
+  image:
+    repository: staff
+    pullPolicy: IfNotPresent
+    tag: "DEVELOPMENT"
+
+  service:
+    type: LoadBalancer
+    port: 80
+
+t721app:
+
+  image:
+    repository: t721app
+    pullPolicy: IfNotPresent
+    tag: "DEVELOPMENT"
+
+  service:
+    type: LoadBalancer
+    port: 80
+
 organizer:
 
   image:
@@ -21,6 +43,12 @@ organizer:
 
 server:
 
+  slave:
+    replicas: 1
+
+  master:
+    replicas: 1
+
   fsName: ""
 
   image:
@@ -33,6 +61,13 @@ server:
     port: 80
 
 worker:
+
+  slave:
+    replicas: 1
+
+  master:
+    replicas: 1
+
   image:
     repository: worker
     pullPolicy: IfNotPresent

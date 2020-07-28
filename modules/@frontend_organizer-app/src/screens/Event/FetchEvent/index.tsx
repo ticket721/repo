@@ -14,7 +14,6 @@ import { CategoriesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/
 import { PushNotification }            from '@frontend/core/lib/redux/ducks/notifications';
 import './locales';
 import { EventsSearchResponseDto }     from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsSearchResponse.dto';
-import { useRights }                   from '@frontend/core/lib/hooks/useRights';
 
 const FetchEvent = (): JSX.Element => {
     const [ t ] = useTranslation(['fetch_event', 'global']);
@@ -23,12 +22,7 @@ const FetchEvent = (): JSX.Element => {
     const { groupId } = useParams();
     const history = useHistory();
     const dispatch = useDispatch();
-    const [ rightValid, setRightValid ] = useState<boolean>(false);
     const [ emptyDateFetched, setEmptyDateFetched ] = useState<boolean>(false);
-    const { loading, empty: noRights } = useRights({
-        entityValue: groupId,
-        entityType: 'event',
-    });
 
     const { response: eventsResp } = useRequest<EventsSearchResponseDto>(
         {
@@ -82,27 +76,16 @@ const FetchEvent = (): JSX.Element => {
     );
 
     useDeepEffect(() => {
-        if (!loading) {
-            if (noRights) {
-                dispatch(PushNotification(t('no_rights_over_event'), 'error'));
-                history.push('/');
-            } else {
-                setRightValid(true);
-            }
-        }
-    }, [loading, noRights]);
-
-    useDeepEffect(() => {
-        if (rightValid && datesResp.data?.dates) {
+        if (datesResp.data?.dates) {
             const filteredDates = datesResp.data.dates.filter(d => d.parent_type === 'event');
             if (filteredDates.length > 0) {
-                history.push(`/group/${groupId}/date/${datesResp.data.dates[0].id}`);
+                history.push(`/group/${groupId}/date/${filteredDates[0].id}`);
             } else {
                 setEmptyDateFetched(true);
             }
         }
     }
-    , [datesResp.data, rightValid]);
+    , [datesResp.data]);
 
     useDeepEffect(() => {
             if (emptyDateFetched && globalCategoriesResp.data?.categories) {
@@ -112,8 +95,12 @@ const FetchEvent = (): JSX.Element => {
                     history.push(`/group/${groupId}/event/${defaultGlobalCategory.parent_id}/category/${defaultGlobalCategory.id}`);
                 } else {
                     if (eventsResp.data.events) {
-                        dispatch(PushNotification(t('empty_event'), 'warning'));
-                        history.push(`/group/${groupId}/event/${eventsResp.data.events[0].id}/date`);
+                        if (eventsResp.data.events.length === 0) {
+                            history.push('/');
+                        } else {
+                            dispatch(PushNotification(t('empty_event'), 'warning'));
+                            history.push(`/group/${groupId}/event/${eventsResp.data.events[0].id}/date`);
+                        }
                     }
                 }
             }

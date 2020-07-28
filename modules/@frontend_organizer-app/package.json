@@ -55,7 +55,7 @@
         "react-scripts/**/jest": "24.9.0"
     },
     "scripts": {
-        "inject_env": "node env_injector.js > build/env.js",
+        "inject_env": "node env_injector.js > /tmp/index.html && cp /tmp/index.html ./build/index.html",
         "start": "REACT_APP_ENV=dev PORT=3001 react-scripts start",
         "build": "react-scripts --max_old_space_size=4096 build",
         "inject_segment_key": "sed -i -e \"s/__REACT_APP_SEGMENT_API_KEY__/${REACT_APP_SEGMENT_API_KEY}/g\" ./build/index.html",

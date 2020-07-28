@@ -1,6 +1,7 @@
 import i18n from '@frontend/core/lib/utils/i18n'
 
 i18n.addResourceBundle('en', 'event_ticket_list', {
+    title: 'Select a category',
     ticket_for_event: 'Ticket for event ',
     ticket_for_event_on: ' on ',
     ticket_for_event_and: ' and ',
@@ -13,20 +14,31 @@ i18n.addResourceBundle('en', 'event_ticket_list', {
     global_category_description: 'These categories give you access to several events',
     checkout: 'Checkout',
     available_in: 'Available in',
-    sale_ends_in: 'Sale ends in'
+    sale_ends_in: 'Sale ends in',
+
+    error_cannot_fetch_global_categories: 'Cannot fetch event',
+    error_cannot_fetch_categories: 'Cannot fetch event',
+    error_cannot_fetch_event: 'Cannot fetch event',
+    error_cannot_fetch_dates: 'Cannot fetch event',
 });
 i18n.addResourceBundle('fr', 'event_ticket_list', {
-    ticket_for_event: 'Ticket pour l\'evenement ',
+    title: 'Sélectionnez une catégorie',
+    ticket_for_event: 'Ticket pour l\'évènement ',
     ticket_for_event_on: ' le ',
     ticket_for_event_and: ' et ',
-    ticket_for_event_other_events: ' autres evenements',
+    ticket_for_event_other_events: ' autres évènements',
     fees: 'taxes',
     total: 'Total',
-    sold_out: 'Epuise',
+    sold_out: 'Epuisé',
     left: 'restant',
-    regular_category_description: 'Ces categories donnent acces a un evenement',
-    global_category_description: 'Ces categories donnent acces a plusieurs evenements',
-    checkout: 'Checkout',
+    regular_category_description: 'Ces catégories donnent accès à un évènement',
+    global_category_description: 'Ces categories donnent accès à plusieurs évènements',
+    checkout: 'Paiement',
     available_in: 'Disponible dans',
-    sale_ends_in: 'Fin de la vente dans'
+    sale_ends_in: 'Fin de la vente dans',
+
+    error_cannot_fetch_global_categories: 'Informations indisponibles',
+    error_cannot_fetch_categories: 'Informations indisponibles',
+    error_cannot_fetch_event: 'Informations indisponibles',
+    error_cannot_fetch_dates: 'Informations indisponibles',
 });

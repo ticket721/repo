@@ -11,6 +11,7 @@ export interface EventCtaProps extends React.ComponentProps<any> {
     subtitle: string;
     show?: boolean;
     gradients?: string[];
+    disabled?: boolean;
     onClick: () => void;
 }
 
@@ -35,6 +36,8 @@ const CtaContainer = styled.div<EventCtaProps>`
   left: 0;
   opacity: 0;
   padding: ${(props) => props.theme.regularSpacing} ${(props) => props.theme.biggerSpacing};
+  padding-bottom: calc(${(props) => props.theme.regularSpacing} + env(safe-area-inset-bottom));
+  padding-bottom: calc(${(props) => props.theme.regularSpacing} + constant(safe-area-inset-bottom));
   position: fixed;
   transform: translateY(100%);
   transition: all 300ms ease, opacity 450ms ease;
@@ -73,7 +76,12 @@ export const EventCta: React.FunctionComponent<EventCtaProps & { className?: str
                 <h4 className={'uppercase'}>{props.title}</h4>
                 <span>{props.subtitle}</span>
             </div>
-            <Button title={props.ctaLabel} variant={'custom'} gradients={props.gradients} onClick={props.onClick} />
+            <Button
+                title={props.ctaLabel}
+                variant={props.disabled ? 'disabled' : 'custom'}
+                gradients={props.gradients}
+                onClick={props.onClick}
+            />
         </CtaContainer>
     );
 };

@@ -1,24 +1,31 @@
 import * as React from 'react';
 import styled from '../../../config/styled';
 import Select from '../../inputs/select';
+import Icon from '../../icon';
+
+interface Option {
+    label: string;
+    value: any;
+}
 
 export interface TicketQtyProps extends React.ComponentProps<any> {
     color?: string;
+    fees: string;
     gradient?: string[];
-    description: string;
-    feesIncluded?: boolean;
     selected?: boolean;
     price: string;
     title?: string;
     ticketsLeft: number;
     typeName: string;
-    feeIncludedLabel: string;
-    feeNotIncludedLabel: string;
+    options: Option[];
+    onChange: (opt: Option) => void;
+    onCancel?: () => void;
+    initialOption: Option;
 }
 
 const Container = styled.article<TicketQtyProps>`
     background-color: ${(props) => props.theme.darkerBg};
-    border-bottom: 2px solid #000;
+    border-bottom: 2px solid #120f1a;
     font-size: 14px;
     font-weight: 500;
     padding: ${(props) => props.theme.biggerSpacing};
@@ -67,32 +74,33 @@ const Container = styled.article<TicketQtyProps>`
     }
 `;
 
-export const TicketQty: React.FunctionComponent<TicketQtyProps> = (props: TicketQtyProps): JSX.Element => {
-    const options = [
-        {
-            value: '1',
-            label: '1',
-        },
-        {
-            value: '2',
-            label: '2',
-        },
-        {
-            value: '3',
-            label: '3',
-        },
-    ];
+const CancelIconButton = styled(Icon)`
+    padding: 9px;
+    color: ${(props) => props.theme.errorColor.hex} !important;
+    background-color: ${(props) => props.theme.componentColor};
+    margin-left: ${(props) => props.theme.regularSpacing};
+    border-radius: ${(props) => props.theme.defaultRadius};
+`;
 
+export const TicketQty: React.FunctionComponent<TicketQtyProps> = (props: TicketQtyProps): JSX.Element => {
     return (
         <Container selected={props.selected} gradient={props.gradient}>
             {props.title && <h4 className={'uppercase'}>{props.title}</h4>}
             <div className={'row jcsb'}>
                 <h3>{props.typeName}</h3>
-                <Select defaultValue={options[0]} options={options} menu searchable={false} />
+                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                    <Select
+                        defaultValue={props.initialOption}
+                        options={props.options}
+                        menu
+                        searchable={false}
+                        onChange={props.onChange}
+                    />
+                    {props.onCancel ? <CancelIconButton icon={'close'} size={'14px'} onClick={props.onCancel} /> : null}
+                </div>
             </div>
-            <h4>{props.price} /each</h4>
-            <span>{props.feesIncluded ? props.feeIncludedLabel : props.feeNotIncludedLabel}</span>
-            <p>{props.description}</p>
+            <h4>{props.price}</h4>
+            <span>{props.fees}</span>
         </Container>
     );
 };

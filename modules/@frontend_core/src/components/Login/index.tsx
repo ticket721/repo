@@ -1,19 +1,20 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useFormik } from 'formik';
 import { Button, TextInput, Icon, PasswordInput } from '@frontend/flib-react/lib/components';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
 import { AppState } from '../../redux/ducks';
-import { AuthState, LocalLogin, ResetSubmission } from '../../redux/ducks/auth';
+import { AuthState, LocalLogin } from '../../redux/ducks/auth';
 import styled from 'styled-components';
 import { loginValidationSchema } from './validation';
 import { useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
-
 import './locales';
+import { useDeepEffect } from '../../hooks/useDeepEffect';
 
 export interface LoginProps {
     onRegister?: () => void;
+    externalRegister?: string;
 }
 
 export const Login: React.FC<LoginProps> = (props: LoginProps) => {
@@ -35,13 +36,9 @@ export const Login: React.FC<LoginProps> = (props: LoginProps) => {
 
     const { from }: any = history.location.state || { from: '/' };
 
-    useEffect(() => {
-        return () => dispatch(ResetSubmission());
-    }, []);
-
-    useEffect(() => {
+    useDeepEffect(() => {
         if (!auth.loading) {
-            if (auth.user?.validated || (auth.submit && !auth.errors && auth.token)) {
+            if (auth.submit && !auth.errors && auth.token) {
                 history.replace(from);
             } else {
                 if (auth.errors) {
@@ -49,10 +46,10 @@ export const Login: React.FC<LoginProps> = (props: LoginProps) => {
                 }
             }
         }
-    }, [auth.loading, auth.user]);
+    }, [auth]);
 
     return (
-        <LoginWrapper>
+        <LoginWrapper mobile={isTabletOrMobile}>
             <LoginContainer mobile={isTabletOrMobile}>
                 <IconContainer>
                     <Icon icon={'ticket721'} size={'40px'} color={'#fff'} />
@@ -85,7 +82,11 @@ export const Login: React.FC<LoginProps> = (props: LoginProps) => {
                                 if (props.onRegister) {
                                     props.onRegister();
                                 } else {
-                                    history.replace('/register');
+                                    if (props.externalRegister) {
+                                        window.open(props.externalRegister);
+                                    } else {
+                                        history.replace('/register');
+                                    }
                                 }
                             }}
                         >
@@ -98,11 +99,15 @@ export const Login: React.FC<LoginProps> = (props: LoginProps) => {
     );
 };
 
-const LoginWrapper = styled.div`
+interface LoginWrapperProps {
+    mobile: boolean;
+}
+
+const LoginWrapper = styled.div<LoginWrapperProps>`
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    height: ${(props) => (props.mobile ? 'none' : '100vh')};
 `;
 
 interface ILoginContainerInputProps {
@@ -115,10 +120,9 @@ const LoginContainer = styled.div`
     justify-content: space-between;
     align-items: center;
     width: 480px;
-    max-height: 100vh;
     background: ${(props: ILoginContainerInputProps) =>
         props.mobile ? 'none' : 'linear-gradient(91.44deg, #241f33 0.31%, #1b1726 99.41%)'};
-    padding: 40px;
+    padding: ${(props) => (props.mobile ? props.theme.regularSpacing : '40px')};
     border-radius: 15px;
 `;
 

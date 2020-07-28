@@ -1,28 +1,25 @@
 import { Redirect, Route, useLocation } from 'react-router-dom';
-import React, { PropsWithChildren } from 'react';
-import { connect } from 'react-redux';
-import { AppState } from '../../redux/ducks';
+import React, { PropsWithChildren, useContext } from 'react';
+import { UserContext } from '../../utils/UserContext';
+import { ValidateEmail } from '../ValidateEmail';
 
 export interface ProtectedRouteProps {
     path: string;
     exact?: boolean;
 }
 
-interface ProtectedRouteRState {
-    authenticated: boolean;
-    validated: boolean;
-}
-
-type MergedProps = ProtectedRouteProps & ProtectedRouteRState;
+type MergedProps = ProtectedRouteProps;
 
 const ProtectedRoute: React.FC<PropsWithChildren<MergedProps>> = (props: PropsWithChildren<MergedProps>) => {
-    const { path, authenticated, validated, exact } = props;
+    const { path, exact } = props;
+
+    const user = useContext(UserContext);
 
     const location = useLocation();
 
-    return (
-        <Route path={path} exact={exact}>
-            {!authenticated || (validated !== undefined && !validated) ? (
+    if (user === null) {
+        return (
+            <Route path={path} exact={exact}>
                 <Redirect
                     to={{
                         pathname: '/login',
@@ -31,16 +28,23 @@ const ProtectedRoute: React.FC<PropsWithChildren<MergedProps>> = (props: PropsWi
                         },
                     }}
                 />
-            ) : (
-                props.children
-            )}
+            </Route>
+        );
+    }
+
+    if (user.valid === false) {
+        return (
+            <Route path={path} exact={exact}>
+                <ValidateEmail />
+            </Route>
+        );
+    }
+
+    return (
+        <Route path={path} exact={exact}>
+            {props.children}
         </Route>
     );
 };
 
-const mapStateToProps = (state: AppState): ProtectedRouteRState => ({
-    authenticated: !!state.auth.token,
-    validated: state.auth.user?.validated,
-});
-
-export default connect(mapStateToProps)(ProtectedRoute);
+export default ProtectedRoute;

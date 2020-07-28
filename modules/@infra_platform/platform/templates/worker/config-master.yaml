@@ -57,12 +57,13 @@ data:
     GLOBAL_CONFIG_ETHEREUM_PRICE_FETCHING_RATE={{ required "[worker] Missing config.globalConfig.ethereumPriceFetchingRate value" .Values.config.globalConfig.ethereumPriceFetchingRate }}
     GLOBAL_CONFIG_BINANCE_MOCK={{ required "[worker] Missing config.globalConfig.binanceMock value" .Values.config.globalConfig.binanceMock }}
 
-    CART_MAX_TICKET_PER_CART=3
+    CART_MAX_TICKET_PER_CART=5
 
     ACSET_EVENT_BATCH_SIZE=1000
 
     ROCKSIDE_OPTS_BASE_URL={{ required "[worker] Missing config.rockside.baseUrl value" .Values.config.rockside.baseUrl }}
     ROCKSIDE_OPTS_NETWORK_ID={{ required "[worker] Missing config.rockside.network_id value" .Values.config.rockside.network_id }}
     ROCKSIDE_OPTS_NETWORK_NAME={{ required "[worker] Missing config.rockside.network_name value" .Values.config.rockside.network_name }}
+    ROCKSIDE_FORWARDER_ADDRESS={{ required "[worker] Missing config.rockside.forwarder_address value" .Values.config.rockside.forwarder_address }}
 
     MINTER_INDEX=0

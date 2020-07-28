@@ -25,8 +25,8 @@ export const completeDateValidation = yup.object().shape({
   location: yup.object().shape({
     lat: yup.number(),
     lon: yup.number(),
-    label: yup.string().required('you need to provide a location'),
-  }).required('you need to provide a location'),
+    label: yup.string().required('location_required'),
+  }).required('location_required'),
   name,
   description,
   tags,

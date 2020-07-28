@@ -8,10 +8,13 @@ import { useTranslation }           from 'react-i18next';
 import './locales';
 import { useDispatch, useSelector } from 'react-redux';
 import { MergedAppState }           from '../../../../index';
+import { useDeepEffect }            from '@frontend/core/lib/hooks/useDeepEffect';
 import { useRequest }               from '@frontend/core/lib/hooks/useRequest';
 import { DatesSearchResponseDto }   from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
 import { v4 }                       from 'uuid';
 import { PushNotification }         from '@frontend/core/lib/redux/ducks/notifications';
+import { useLazyRequest }           from '@frontend/core/lib/hooks/useLazyRequest';
+import { EventsStartResponseDto }   from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsStartResponse.dto';
 
 export const DateActions: React.FC = () => {
     const [ t ] = useTranslation('date_actions');
@@ -21,39 +24,67 @@ export const DateActions: React.FC = () => {
     const [uuid] = useState<string>(v4() + '@date-actions');
     const { groupId, dateId } = useParams();
 
+    const [ publishLoading, setPublishLoading ] = useState<boolean>(false);
+
+    const { lazyRequest: publishEvent, response: publishResp } = useLazyRequest<EventsStartResponseDto>('events.start', uuid);
+
     const { response: dateResp } = useRequest<DatesSearchResponseDto>({
-        method: 'dates.search',
-        args: [
-            token,
-            {
-                id: {
-                    $eq: dateId
+            method: 'dates.search',
+            args: [
+                token,
+                {
+                    id: {
+                        $eq: dateId
+                    }
                 }
-            }
-        ],
-        refreshRate: 2,
-    },
+            ],
+            refreshRate: 30,
+        },
         uuid);
+
+    useDeepEffect(() => {
+        if (dateResp.data && dateResp.data.dates.length === 0) {
+            history.push('/');
+        }
+    }, [dateResp.data]);
+
+    useDeepEffect(() => {
+        if (publishResp.error) {
+            setPublishLoading(false);
+            dispatch(PushNotification(t('publish_failed_notif'), 'error'));
+        }
+    }, [publishResp.error]);
+
+    useDeepEffect(() => {
+        if (publishResp.data) {
+            setPublishLoading(false);
+            dispatch(PushNotification(t('published_notif'), 'success'));
+        }
+    }, [publishResp.data]);
 
     return (
         <Container>
             {
-                dateResp.data?.dates && dateResp.data?.dates[0].status === 'preview' ?
+                dateResp.data?.dates && dateResp.data?.dates?.[0]?.status === 'preview' ?
                     <Button
                         variant={dateId ? 'primary' : 'disabled'}
                         title={t('publish_label')}
-                        onClick={() => global.window.t721Sdk.events.start(token, {
-                            event: dateResp.data.dates[0].parent_id,
-                            dates: [dateId]
-                        }).then(() => {
-                            dispatch(PushNotification('Successfuly published !', 'success'));
-                        }).catch(() => {
-                            dispatch(PushNotification('Publish failed. Please try again later', 'error'));
-                        })}
+                        loadingState={publishLoading}
+                        onClick={() => {
+                            setPublishLoading(true);
+                            publishEvent([
+                                token,
+                                {
+                                    event: dateResp.data.dates[0].parent_id,
+                                    dates: [dateId],
+                                }
+                            ], {
+                                force: true
+                            })
+                        }}
                     /> :
                     null
             }
-
             <Button
                 variant={dateId ? 'secondary' : 'disabled'}
                 title={t('preview_label')}

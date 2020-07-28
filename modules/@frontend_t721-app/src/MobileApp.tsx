@@ -1,11 +1,28 @@
-import React, { lazy, Suspense, useEffect, useState } from 'react';
-import { NavLink, Route, Switch, useHistory, useLocation, withRouter } from 'react-router-dom';
-import { FullPageLoading, Navbar, Icon, TopNav } from '@frontend/flib-react/lib/components';
-import ProtectedRoute                            from '@frontend/core/lib/components/ProtectedRoute';
-import ToastStacker                              from '@frontend/core/lib/components/ToastStacker';
-import styled                                    from 'styled-components';
+import React, { useEffect, useState, Suspense }                                   from 'react';
+import { Route, Switch, useHistory, useLocation, withRouter, Redirect } from 'react-router-dom';
+import { TopNav, FullPageLoading }                                                       from '@frontend/flib-react/lib/components';
+import ProtectedRoute                                                   from '@frontend/core/lib/components/ProtectedRoute';
+import ToastStacker                                                     from '@frontend/core/lib/components/ToastStacker';
+import styled                                                           from 'styled-components';
+import { T721Navbar }                                                   from './components/NavBar';
+import LoginPage                                                        from './routes/Login';
+import RegisterPage                                                     from './routes/Register';
+import HomePage                                                         from './routes/Home';
+import ProfileActivitiesPage     from './routes/Activities';
+import ProfileLanguagePage       from './routes/Language';
+import ProfilePage               from './routes/Profile';
+import SearchViewAllPage         from './routes/SearchViewAll';
+import EventPage                 from './routes/Event';
+import TicketPage                from './routes/Ticket';
+import TicketSelectionPage       from './routes/TicketSelection';
+import SearchPage                from './routes/Search';
+import TagsPage                  from './routes/Tags';
+import WalletPage                from './routes/Wallet';
+import CartPage                  from './routes/Cart';
+import { useKeyboardVisibility } from '@frontend/core/lib/utils/useKeyboardVisibility';
+import { UserContextGuard }      from '@frontend/core/lib/utils/UserContext';
 
-const TopNavWrapper = (props: { back: () => void }): JSX.Element => {
+const TopNavWrapper = (props: { back: () => void}): JSX.Element => {
 
     const [scrolled, setScrolled] = useState(false);
 
@@ -24,35 +41,27 @@ const TopNavWrapper = (props: { back: () => void }): JSX.Element => {
         };
     });
 
-    return <TopNav label={''} onPress={props.back} scrolled={scrolled}/>;
+    return <TopNav label={''} onPress={props.back} scrolled={scrolled} />;
 };
-
-const LoginPage = lazy(() => import('./routes/Login'));
-const RegisterPage = lazy(() => import('./routes/Register'));
-const HomePage = lazy(() => import('./routes/Home'));
-const ProfileActivitiesPage = lazy(() => import('./routes/Activities'));
-const ProfileLanguagePage = lazy(() => import('./routes/Language'));
-const ProfilePage = lazy(() => import('./routes/Profile'));
-const SearchViewAllPage = lazy(() => import('./routes/SearchViewAll'));
-const EventPage = lazy(() => import('./routes/Event'));
-const TicketSelectionPage = lazy(() => import('./routes/TicketSelection'));
-const SearchPage = lazy(() => import('./routes/Search'));
-const TagsPage = lazy(() => import('./routes/Tags'));
-const WalletPage = lazy(() => import('./routes/Wallet'));
 
 const MobileApp: React.FC = () => {
 
     const location = useLocation();
     const history = useHistory();
+    const keyboardIsVisible = useKeyboardVisibility();
 
     return <Suspense fallback={<FullPageLoading/>}>
-        <AppContainer>
-            {
-                location.pathname.lastIndexOf('/') !== 0 ?
-                    <TopNavWrapper back={history.goBack}/>
-                    : null
-            }
-            <Suspense fallback={<FullPageLoading/>}>
+        <UserContextGuard>
+            <AppContainer>
+                {
+                    location.pathname.lastIndexOf('/') !== 0
+
+                        ?
+                        <TopNavWrapper back={history.goBack}/>
+
+                        :
+                        null
+                }
                 <Switch>
                     <Route path={'/login'} exact={true}>
                         <LoginPage/>
@@ -62,7 +71,7 @@ const MobileApp: React.FC = () => {
                         <RegisterPage/>
                     </Route>
 
-                    <Route path={'/home'} exact={true}>
+                    <Route path={'/'} exact={true}>
                         <HomePage/>
                     </Route>
 
@@ -79,7 +88,7 @@ const MobileApp: React.FC = () => {
                     </ProtectedRoute>
 
                     <ProtectedRoute path={'/cart/checkout'} exact={true}>
-                        <p>Cart</p>
+                        <CartPage/>
                     </ProtectedRoute>
 
                     <Route path={'/search/events/:query'} exact={true}>
@@ -102,43 +111,20 @@ const MobileApp: React.FC = () => {
                         <TagsPage/>
                     </Route>
 
-                    <ProtectedRoute path={'/'} exact={true}>
+                    <ProtectedRoute path={'/ticket/:id'} exact={true}>
+                        <TicketPage/>
+                    </ProtectedRoute>
+
+                    <ProtectedRoute path={'/wallet'} exact={true}>
                         <WalletPage/>
                     </ProtectedRoute>
+
+                    <Redirect to={'/'}/>
                 </Switch>
-            </Suspense>
-            <ToastStacker additionalLocales={[]}/>
-            {
-                location.pathname.lastIndexOf('/') === 0
-
-                    ?
-                    <Navbar>
-                        <NavLink exact={true} to={'/home'}>
-                            <Icon icon={'home'} color='#FFFFFF' size={'22px'}/>
-                        </NavLink>
-
-                        <NavLink exact={true} to={'/search'}>
-                            <Icon icon={'search'} color='#FFFFFF' size={'22px'}/>
-                        </NavLink>
-
-                        <NavLink exact={true} to={'/'}>
-                            <Icon icon={'t721'} color='#FFFFFF' size={'22px'}/>
-                        </NavLink>
-
-                        <NavLink exact={true} to={'/tags'}>
-                            <Icon icon={'tags'} color='#FFFFFF' size={'22px'}/>
-                        </NavLink>
-
-                        <NavLink exact={true} to={'/profile'}>
-                            <Icon icon={'profile'} color='#FFFFFF' size={'22px'}/>
-                        </NavLink>
-
-                    </Navbar>
-
-                    :
-                    null
-            }
-        </AppContainer>
+                <T721Navbar visible={location.pathname.lastIndexOf('/') === 0 && !keyboardIsVisible}/>
+            </AppContainer>
+        </UserContextGuard>
+        <ToastStacker additionalLocales={[]}/>
     </Suspense>;
 };
 

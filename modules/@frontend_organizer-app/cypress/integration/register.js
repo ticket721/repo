@@ -1,4 +1,4 @@
-import { user } from '../data/user';
+import { newUser, user } from '../data/user';
 import { registerResponse } from '../data/authResponse';
 
 const messages = {
@@ -19,11 +19,13 @@ const messages = {
     login: 'Already registered ? Login here !',
     success: 'successfully registered',
     emailSent: 'We sent you a validation email !',
+
 }
 
 describe('Register', () => {
     beforeEach(() => {
         cy.server();
+        cy.route('GET', 'users/me', newUser).as('me - newUser');
         cy.visit('/register');
     });
     it('successfully loads', () => {
@@ -41,7 +43,7 @@ describe('Register', () => {
         cy.get('button[name=Login]').should('exist');
     })
 
-    it('create a user (confirm email page)', function () {
+    it('create a user', function () {
         cy.route('POST', 'authentication/local/register', registerResponse["201"]).as('create user');
 
         const { email, username, password } = user;
@@ -51,20 +53,8 @@ describe('Register', () => {
         cy.get('input[name=password]').type(`${password}{enter}`);
 
         cy.url().should('be', '/');
-        cy.get('span').should('contain', messages.emailSent);
+        // cy.get('span').should('contain', messages.emailSent);
         cy.contains('.Toastify__toast', messages.success);
-    })
-    it('create a user (with valid email)', function () {
-        cy.route('POST', 'authentication/local/register', registerResponse["201_validEmail"]).as('create user');
-
-        const { email, username, password } = user;
-
-        cy.get('input[name=email]').type(email)
-        cy.get('input[name=username]').type(username)
-        cy.get('input[name=password]').type(`${password}{enter}`)
-
-        cy.url().should('be', '/')
-        cy.get('h3').should('contain', username)
     })
 
     it('email already in use', function () {
@@ -112,25 +102,6 @@ describe('Register', () => {
 
         cy.url().should('be', '/register');
         cy.get('span').should('contain', messages.longUsername);
-    })
-
-    it('email required', function () {
-        cy.get('input[name=email]').type('{enter}')
-
-        cy.url().should('be', '/register')
-        cy.get('span').should('contain', messages.requiredEmail);
-    })
-    it('password required', function () {
-        cy.get('input[name=password]').type('{enter}')
-
-        cy.url().should('be', '/register')
-        cy.get('span').should('contain', messages.requiredPassword);
-    })
-    it('username required', function () {
-        cy.get('input[name=username]').type('{enter}')
-
-        cy.url().should('be', '/register')
-        cy.get('span').should('contain', messages.requiredUsername);
     })
     it('fields required', function () {
         cy.get('input[name=email]').type('{enter}')

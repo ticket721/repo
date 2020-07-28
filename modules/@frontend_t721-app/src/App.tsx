@@ -1,81 +1,83 @@
-import React, { lazy, Suspense } from 'react';
+import React, { Suspense } from 'react';
 
 import { Redirect, Route, Switch, withRouter } from 'react-router-dom';
 
 import ProtectedRoute               from '@frontend/core/lib/components/ProtectedRoute';
 import ToastStacker                 from '@frontend/core/lib/components/ToastStacker';
 import styled                       from 'styled-components';
-import { FullPageLoading }          from '@frontend/flib-react/lib/components';
-
-const LoginPage = lazy(() => import('./routes/Login'));
-const RegisterPage = lazy(() => import('./routes/Register'));
-const HomePage = lazy(() => import('./routes/Home'));
-const ProfileActivitiesPage = lazy(() => import('./routes/Activities'));
-const ProfileLanguagePage = lazy(() => import('./routes/Language'));
-const ProfilePage = lazy(() => import('./routes/Profile'));
-const SearchViewAllPage = lazy(() => import('./routes/SearchViewAll'));
-const EventPage = lazy(() => import('./routes/Event'));
-const TicketSelectionPage = lazy(() => import('./routes/TicketSelection'));
-const SearchPage = lazy(() => import('./routes/Search'));
-const TagsPage = lazy(() => import('./routes/Tags'));
-const WalletPage = lazy(() => import('./routes/Wallet'));
+import LoginPage from './routes/Login';
+import RegisterPage          from './routes/Register';
+import HomePage              from './routes/Home';
+import ProfileActivitiesPage from './routes/Activities';
+import ProfileLanguagePage   from './routes/Language';
+import ProfilePage           from './routes/Profile';
+import SearchViewAllPage     from './routes/SearchViewAll';
+import EventPage             from './routes/Event';
+import TicketSelectionPage   from './routes/TicketSelection';
+import SearchPage            from './routes/Search';
+import TagsPage              from './routes/Tags';
+import CartPage              from './routes/Cart';
+import { FullPageLoading }   from '@frontend/flib-react/lib/components';
+import { UserContextGuard }  from '@frontend/core/lib/utils/UserContext';
 
 const App: React.FC = () => {
 
     return <Suspense fallback={<FullPageLoading/>}>
-        <AppContainer>
-            <Switch>
-                <Route path={'/login'} exact={true}>
-                    <LoginPage/>
-                </Route>
+        <UserContextGuard>
+            <AppContainer>
+                <Switch>
+                    <Route path={'/login'} exact={true}>
+                        <LoginPage/>
+                    </Route>
 
-                <Route path={'/register'} exact={true}>
-                    <RegisterPage/>
-                </Route>
+                    <Route path={'/register'} exact={true}>
+                        <RegisterPage/>
+                    </Route>
 
-                <Route path={'/home'} exact={true}>
-                    <HomePage/>
-                </Route>
+                    <Route path={'/'} exact={true}>
+                        <HomePage/>
+                    </Route>
 
-                <ProtectedRoute path={'/profile/activities'} exact={true}>
-                    <ProfileActivitiesPage/>
-                </ProtectedRoute>
+                    <ProtectedRoute path={'/profile/activities'} exact={true}>
+                        <ProfileActivitiesPage/>
+                    </ProtectedRoute>
 
-                <ProtectedRoute path={'/profile/language'} exact={true}>
-                    <ProfileLanguagePage/>
-                </ProtectedRoute>
+                    <ProtectedRoute path={'/profile/language'} exact={true}>
+                        <ProfileLanguagePage/>
+                    </ProtectedRoute>
 
-                <ProtectedRoute path={'/profile'} exact={true}>
-                    <ProfilePage/>
-                </ProtectedRoute>
+                    <ProtectedRoute path={'/profile'} exact={true}>
+                        <ProfilePage/>
+                    </ProtectedRoute>
 
-                <Route path={'/search/events/:query'} exact={true}>
-                    <SearchViewAllPage/>
-                </Route>
+                    <ProtectedRoute path={'/cart/checkout'} exact={true}>
+                        <CartPage/>
+                    </ProtectedRoute>
 
-                <Route path={'/event/:id/selection'} exact={true}>
-                    <TicketSelectionPage/>
-                </Route>
+                    <Route path={'/search/events/:query'} exact={true}>
+                        <SearchViewAllPage/>
+                    </Route>
 
-                <Route path={'/event/:id'} exact={true}>
-                    <EventPage/>
-                </Route>
+                    <Route path={'/event/:id/selection'} exact={true}>
+                        <TicketSelectionPage/>
+                    </Route>
 
-                <Route path={'/search'} exact={true}>
-                    <SearchPage/>
-                </Route>
+                    <Route path={'/event/:id'} exact={true}>
+                        <EventPage/>
+                    </Route>
 
-                <Route path={'/tags'} exact={true}>
-                    <TagsPage/>
-                </Route>
+                    <Route path={'/search'} exact={true}>
+                        <SearchPage/>
+                    </Route>
 
-                <ProtectedRoute path={'/'} exact={true}>
-                    <WalletPage/>
-                </ProtectedRoute>
-                <Redirect to={'/'}/>
-            </Switch>
-            <ToastStacker additionalLocales={[]}/>
-        </AppContainer>
+                    <Route path={'/tags'} exact={true}>
+                        <TagsPage/>
+                    </Route>
+                    <Redirect to={'/'}/>
+                </Switch>
+            </AppContainer>
+        </UserContextGuard>
+        <ToastStacker additionalLocales={[]}/>
     </Suspense>;
 };
 

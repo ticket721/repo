@@ -31,7 +31,8 @@
                             "network_id": 3,
                             "network_name": "ropsten",
                             "token_var_name": "ROCKSIDE_API_TOKEN",
-                            "count": 1
+                            "count": 1,
+                            "forwarder": "ROCKSIDE_FORWARDER"
                         }
                     },
                     {

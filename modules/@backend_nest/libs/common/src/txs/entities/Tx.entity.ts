@@ -95,6 +95,7 @@ export class TxEntity {
                     topics: ECAAG(l.topics),
                 }),
             );
+            this.real_transaction_hash = tx.real_transaction_hash;
             this.logs_bloom = tx.logs_bloom;
             this.created_at = tx.created_at;
             this.updated_at = tx.updated_at;
@@ -109,6 +110,15 @@ export class TxEntity {
     })
     // tslint:disable-next-line:variable-name
     transaction_hash: string;
+
+    /**
+     * Real transaction hash of the transaction
+     */
+    @Column({
+        type: 'text',
+    })
+    // tslint:disable-next-line:variable-name
+    real_transaction_hash: string;
 
     /**
      * Flag valid if transaction is confirmed

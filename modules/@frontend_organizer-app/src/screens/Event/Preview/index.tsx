@@ -12,8 +12,10 @@ import {
     LocationCard,
     ReadMore,
     EventCta,
-    LeafletMap
-}                                      from '@frontend/flib-react/lib/components';
+    LeafletMap,
+    Icon,
+    FullPageLoading,
+} from '@frontend/flib-react/lib/components';
 import TagsListCard                    from '@frontend/flib-react/lib/components/cards/tags-list';
 import { useRequest }                  from '@frontend/core/lib/hooks/useRequest';
 import { DatesSearchResponseDto }      from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
@@ -46,6 +48,7 @@ interface DatePreview {
     coord: { lon: number, lat: number };
     tags: { id: string, label: string }[];
     resale: boolean;
+    status: 'preview' | 'live';
 }
 
 const formatDatePreview = (date: DateEntity): DatePreview => ({
@@ -62,6 +65,7 @@ const formatDatePreview = (date: DateEntity): DatePreview => ({
     coord: date.location.location,
     tags: date.metadata.tags.map(tag => ({ id: tag, label: tag })),
     resale: false,
+    status: date.status,
 });
 
 const Preview: React.FC = () => {
@@ -72,6 +76,8 @@ const Preview: React.FC = () => {
     const token = useSelector((state: MergedAppState) => state.auth.token.value);
     const [ datePreview, setDatePreview ] = useState<DatePreview>(null);
     const [ priceRange, setPriceRange ] = useState<number[]>([]);
+    const [ hideBanner, setHideBanner ] = useState<boolean>(false);
+
     const { response: dateResp } = useRequest<DatesSearchResponseDto>(
         {
             method: 'dates.search',
@@ -124,96 +130,112 @@ const Preview: React.FC = () => {
     }, [categoryResp.data]);
 
     return (
-        <Container>
-            <Title>{t('title')}</Title>
-            <PreviewContainer>
-                {
-                    datePreview ?
-                    <div className='smartphone'>
-                          <div className='content'>
-                                <Gradient values={datePreview.gradients} blurOnly />
-                                <EventHeader
-                                    event={{...datePreview}}
-                                    subtitle={
-                                        priceRange[0] ? priceRange[1] ?
-                                        `${t('from')} ${priceRange[0]}€ ${t('to')} ${priceRange[1]}€ ${t('each')}` :
-                                        `${priceRange[0]}€ ${t('each')}` :
-                                        t('free_ticket')
-                                    }
-                                    buttonTitle={t('get_tickets')}
-                                    onChange={() => console.log}
-                                    onClick={() => console.log}
-                                />
-                                <>
-                                    <DateTimeCard
-                                        iconColor={datePreview.mainColor}
-                                        startDate={datePreview.startDate}
-                                        startTime={datePreview.startTime}
-                                        endDate={datePreview.endDate}
-                                        endTime={datePreview.endTime}
-                                        removeBg
-                                    />
-                                    <LocationCard
-                                        address={''}
-                                        iconColor={datePreview.mainColor}
-                                        location={datePreview.location}
-                                        removeBg
-                                    />
-                                    <LeafletMap
-                                      width={'100%'}
-                                      height={'300px'}
-                                      coords={datePreview.coord}/>
-                                    <Separator />
-                                    <ReadMore
-                                        readMoreColor={datePreview.mainColor}
-                                        title='About'
-                                        text={datePreview.about === '' ? t('no_description') : datePreview.about}
-                                        showLabel='Read more'
-                                        hideLabel='Show less'
-                                        removeBg
-                                    />
-                                    <Separator />
-                                    <TagsListCard
-                                        label={t('tags')}
-                                        handleToggle={() => console.log}
-                                        showAll={true}
-                                        tags={datePreview.tags}
-                                        hideLabel='Hide'
-                                        removeBg
-                                    />
-                                    <Separator />
-                                    <EventBottomBand
-                                        ctaLabel={t('get_tickets')}
-                                        title={t('tickets_from')}
-                                        onClick={() => console.log}
+        <>
+            {
+                datePreview?.status === 'preview' && !hideBanner ?
+                    <DraftBanner>
+                        <Close onClick={() => setHideBanner(true)}>
+                            <Icon icon={'close'} size={'10px'} color={'#FFF'}/>
+                        </Close>
+                        <DraftTitle>{t('draft_title')}</DraftTitle>
+                        <DraftDesc>{t('draft_desc')}</DraftDesc>
+                    </DraftBanner> :
+                    null
+            }
+            <Container banner={datePreview?.status === 'preview' && !hideBanner}>
+                <Title>{t('title')}</Title>
+                <PreviewContainer>
+                    {
+                        datePreview ?
+                        <div className='smartphone'>
+                              <div className='content'>
+                                    <Gradient values={datePreview.gradients} blurOnly />
+                                    <EventHeader
+                                        event={{...datePreview}}
                                         subtitle={
                                             priceRange[0] ? priceRange[1] ?
                                             `${t('from')} ${priceRange[0]}€ ${t('to')} ${priceRange[1]}€ ${t('each')}` :
                                             `${priceRange[0]}€ ${t('each')}` :
                                             t('free_ticket')
                                         }
-                                        gradients={datePreview.gradients}
-                                        show={true}
+                                        buttonTitle={t('get_tickets')}
+                                        onChange={() => console.log}
+                                        onClick={() => console.log}
                                     />
-                                </>
+                                    <>
+                                        <DateTimeCard
+                                            iconColor={datePreview.mainColor}
+                                            dates={[{
+                                                startDate: datePreview.startDate,
+                                                endDate: datePreview.endDate,
+                                                startTime: datePreview.startTime,
+                                                endTime: datePreview.endTime,
+                                            }]}
+                                            removeBg
+                                        />
+                                        <LocationCard
+                                            address={''}
+                                            iconColor={datePreview.mainColor}
+                                            location={datePreview.location}
+                                            removeBg
+                                            subtitle={t('')}/>
+                                        <LeafletMap
+                                          width={'100%'}
+                                          height={'300px'}
+                                          coords={datePreview.coord}/>
+                                        <Separator />
+                                        <ReadMore
+                                            readMoreColor={datePreview.mainColor}
+                                            title='About'
+                                            text={datePreview.about === '' ? t('no_description') : datePreview.about}
+                                            showLabel='Read more'
+                                            hideLabel='Show less'
+                                            removeBg
+                                        />
+                                        <Separator />
+                                        <TagsListCard
+                                            label={t('tags')}
+                                            handleToggle={() => console.log}
+                                            showAll={true}
+                                            tags={datePreview.tags}
+                                            hideLabel='Hide'
+                                            removeBg
+                                        />
+                                        <Separator />
+                                        <EventBottomBand
+                                            ctaLabel={t('get_tickets')}
+                                            title={t('tickets_from')}
+                                            onClick={() => console.log}
+                                            subtitle={
+                                                priceRange[0] ? priceRange[1] ?
+                                                `${t('from')} ${priceRange[0]}€ ${t('to')} ${priceRange[1]}€ ${t('each')}` :
+                                                `${priceRange[0]}€ ${t('each')}` :
+                                                t('free_ticket')
+                                            }
+                                            gradients={datePreview.gradients}
+                                            show={true}
+                                        />
+                                    </>
+                                </div>
                             </div>
-                        </div>
-                      :
-                      <span>Loading...</span>
-                }
-            </PreviewContainer>
-        </Container>
+                          :
+                          <FullPageLoading/>
+                    }
+                </PreviewContainer>
+            </Container>
+        </>
     );
 };
 
-const Container = styled.div`
-  display: flex;
-  width: 100%;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  border-bottom-left-radius: 8px;
-  border-bottom-right-radius: 8px;
+const Container = styled.div<{ banner: boolean }>`
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: ${props => props.banner ? '70px' : '0'};
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
 `;
 
 const PreviewContainer = styled.div`
@@ -266,24 +288,56 @@ const PreviewContainer = styled.div`
 `;
 
 const EventBottomBand = styled(EventCta)`
-  position: inherit;
+    position: inherit;
 `;
 
 const Title = styled.span`
-  width: 100%;
-  margin-bottom: 25px;
-  font-weight: 500;
-  font-size: 18px;
-  color: ${(props) => props.theme.textColor};
-  text-align: center;
+    width: 100%;
+    margin-bottom: 25px;
+    font-weight: 500;
+    font-size: 18px;
+    color: ${(props) => props.theme.textColor};
+    text-align: center;
 `;
 
 const Separator = styled.div`
-  height: 2px;
-  width: 100%;
-  margin: 12px 0;
-  background: rgba(10, 8, 18, 0.3);
+    height: 2px;
+    width: 100%;
+    margin: 12px 0;
+    background: rgba(10, 8, 18, 0.3);
 `;
 
+
+const DraftBanner = styled.div`
+    position: fixed;
+    top: 80px;
+    right: 0;
+    z-index: 1100;
+    width: calc(100vw - 280px);
+    overflow: hidden;
+    padding: ${props => props.theme.regularSpacing};
+    background-color: ${props => props.theme.primaryColorGradientEnd.hex};
+`;
+
+const Close = styled.div`
+    position: absolute;
+    top: ${props => props.theme.smallSpacing};
+    right: ${props => props.theme.smallSpacing};
+    cursor: pointer;
+`;
+
+const DraftTitle = styled.span`
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    margin-bottom: 10px;
+    font-weight: 500;
+`;
+
+const DraftDesc = styled.div`
+    padding: 0 18px;
+    font-size: 12px;
+    line-height: ${props => props.theme.regularSpacing};
+`;
 
 export default Preview;

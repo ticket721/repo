@@ -65,7 +65,7 @@ apps:
     name: "ingress-monitoring"
     description: "Ingress, managing all incoming traffic and properly redirecting on services for the monitoring namespace"
     namespace: "monitoring"
-    enabled: true
+    enabled: false
     group: "critical"
     chart: "../@infra_ingress/ingress"
     version: "0.1.0"
@@ -95,7 +95,7 @@ apps:
     name: "prometheus-monitoring"
     description: "Prometheus gathers metrics about the cluster"
     namespace: "monitoring"
-    enabled: true
+    enabled: false
     group: "critical"
     chart: "../@infra_prometheus/prometheus"
     version: "0.1.0"
@@ -142,6 +142,16 @@ apps:
       hosts[1].paths[0].route: "/"
       hosts[1].paths[0].serviceName: "platform-staging--organizer--svc"
       hosts[1].paths[0].servicePort: "80"
+
+      hosts[2].name: "app.staging.ticket721.com"
+      hosts[2].paths[0].route: "/"
+      hosts[2].paths[0].serviceName: "platform-staging--t721app--svc"
+      hosts[2].paths[0].servicePort: "80"
+
+      hosts[3].name: "staff.staging.ticket721.com"
+      hosts[3].paths[0].route: "/"
+      hosts[3].paths[0].serviceName: "platform-staging--staff--svc"
+      hosts[3].paths[0].servicePort: "80"
 
       route53.keyId: "${CONFIG_STAGING_ROUTE53_KEY}"
       route53.hostedzone: "${CONFIG_STAGING_ROUTE53_HOSTEDZONE}"
@@ -242,9 +252,9 @@ apps:
 
       config.jwt.rounds: "9"
       config.jwt.secret: "${CONFIG_STAGING_JWT_SECRET}"
-      config.jwt.expiration: "12h"
+      config.jwt.expiration: "30d"
 
-      config.txs.blockThreshold: "2"
+      config.txs.blockThreshold: "0"
       config.txs.blockPollingRate: "1000"
       config.txs.targetGasPrice: "15"
       config.txs.gasLimit: "1000000"
@@ -262,17 +272,19 @@ apps:
       config.rockside.apiKey: "${CONFIG_STAGING_ROCKSIDE_APIKEY}"
       config.rockside.network_id: "3"
       config.rockside.network_name: "ropsten"
+      config.rockside.forwarder_address: "${CONFIG_STAGING_FORWARDER_ADDRESS}"
 
       config.googleGeocodingApiKey: "${CONFIG_STAGING_GCLOUD_GEOLOC_APIKEY}"
       config.serverEndpoint.host: "api.staging.ticket721.com"
       config.serverEndpoint.port: "443"
       config.serverEndpoint.protocol: "https"
 
-      config.frontEthereumNode.url: "https://api.rockside.io/ethereum/ropsten/jsonrpc"
-      config.frontEthereumNode.networkId: "3"
-      config.frontEthereumNode.headers: '\{\\"Authorization\\": \\"Bearer ${CONFIG_STAGING_ROCKSIDE_TOKEN}\\"\}'
-
       config.organizer.segmentApiKey: "${CONFIG_STAGING_ORGANIZER_SEGMENT_API_KEY}"
+      config.t721app.segmentApiKey: "${CONFIG_STAGING_T721APP_SEGMENT_API_KEY}"
+      config.staff.segmentApiKey: "${CONFIG_STAGING_STAFF_SEGMENT_API_KEY}"
+      config.staff.organizerUrl: "https://organizer.staging.ticket721.com"
+      config.t721app.publishableStripeApiKey: "${CONFIG_STAGING_T721APP_PUBLISHABLE_STRIPE_API_KEY}"
+      config.etherscanUrl: "${CONFIG_STAGING_ETHERSCAN_URL}"
 
       server.image.repository: "097558125954.dkr.ecr.eu-west-3.amazonaws.com/ticket721/server"
       server.image.tag: "${TAG}"
@@ -285,4 +297,10 @@ apps:
 
       organizer.image.repository: "097558125954.dkr.ecr.eu-west-3.amazonaws.com/ticket721/organizer"
       organizer.image.tag: "${TAG}"
+
+      t721app.image.repository: "097558125954.dkr.ecr.eu-west-3.amazonaws.com/ticket721/t721app"
+      t721app.image.tag: "${TAG}"
+      
+      staff.image.repository: "097558125954.dkr.ecr.eu-west-3.amazonaws.com/ticket721/staff"
+      staff.image.tag: "${TAG}"
 

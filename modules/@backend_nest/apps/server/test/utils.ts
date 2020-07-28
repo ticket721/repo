@@ -23,6 +23,8 @@ import { TicketEntity } from '@lib/common/tickets/entities/Ticket.entity';
 import { TicketsSearchResponseDto } from '@app/server/controllers/tickets/dto/TicketsSearchResponse.dto';
 import { NestError } from '@lib/common/utils/NestError';
 import { EventEntity } from '@lib/common/events/entities/Event.entity';
+import { CategoriesSearchResponseDto } from '@app/server/controllers/categories/dto/CategoriesSearchResponse.dto';
+import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
 
 let docker_compose_up_proc = null;
 
@@ -542,6 +544,26 @@ export const waitForTickets = async (
     return tickets.data.tickets;
 };
 
+export const waitForCategory = async (
+    sdk: T721SDK,
+    token: string,
+    id: string,
+    checker: (as: CategoryEntity) => boolean,
+): Promise<CategoryEntity> => {
+    let category: AxiosResponse<CategoriesSearchResponseDto>;
+
+    do {
+        category = await sdk.categories.search(token, {
+            id: {
+                $eq: id,
+            },
+        });
+        await pause(10);
+    } while (!checker(category.data.categories[0]));
+
+    return category.data.categories[0];
+};
+
 export const waitForActionSet = async (
     sdk: T721SDK,
     token: string,
@@ -688,7 +710,7 @@ export const createEventWithUltraVIP = async (token: string, sdk: T721SDK): Prom
                 currencies: [
                     {
                         currency: 'Fiat',
-                        price: '100',
+                        price: '200',
                     },
                 ],
             },
@@ -702,7 +724,7 @@ export const createEventWithUltraVIP = async (token: string, sdk: T721SDK): Prom
                 currencies: [
                     {
                         currency: 'Fiat',
-                        price: '100',
+                        price: '200',
                     },
                 ],
             },
@@ -719,7 +741,7 @@ export const createEventWithUltraVIP = async (token: string, sdk: T721SDK): Prom
                     currencies: [
                         {
                             currency: 'Fiat',
-                            price: '100',
+                            price: '200',
                         },
                     ],
                 },
@@ -735,7 +757,7 @@ export const createEventWithUltraVIP = async (token: string, sdk: T721SDK): Prom
                     currencies: [
                         {
                             currency: 'Fiat',
-                            price: '100',
+                            price: '200',
                         },
                     ],
                 },
@@ -783,7 +805,7 @@ export const editEventActionSet = async (token: string, sdk: T721SDK, actionSetI
                 currencies: [
                     {
                         currency: 'Fiat',
-                        price: '100',
+                        price: '200',
                     },
                 ],
             },
@@ -800,7 +822,7 @@ export const editEventActionSet = async (token: string, sdk: T721SDK, actionSetI
                     currencies: [
                         {
                             currency: 'Fiat',
-                            price: '100',
+                            price: '200',
                         },
                     ],
                 },
@@ -816,7 +838,7 @@ export const editEventActionSet = async (token: string, sdk: T721SDK, actionSetI
                     currencies: [
                         {
                             currency: 'Fiat',
-                            price: '100',
+                            price: '200',
                         },
                     ],
                 },
@@ -890,154 +912,6 @@ export const editEventActionSet = async (token: string, sdk: T721SDK, actionSetI
         name: 'myEvent',
         description: 'This is my event',
         tags: ['test', 'event'],
-    });
-
-    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-        return as.current_status === 'complete';
-    });
-
-    return actionSetId;
-};
-
-export const createFreeEventActionSet = async (token: string, sdk: T721SDK): Promise<string> => {
-    const initialArgument = {};
-
-    const actionSetName = 'event_create';
-
-    const eventCreationActionSetRes = await sdk.actions.create(token, {
-        name: actionSetName,
-        arguments: initialArgument,
-    });
-
-    const actionSetId = eventCreationActionSetRes.data.actionset.id;
-
-    await sdk.events.create.textMetadata(token, actionSetId, {
-        name: 'myEvent',
-        description: 'This is my event',
-        tags: ['test', 'event'],
-    });
-
-    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-        return as.current_action === 1;
-    });
-
-    const form = new FormData();
-
-    form.append('images', fs.readFileSync(__dirname + '/../src/controllers/events/test_resources/test_avatar.png'), {
-        filename: 'avatar.png',
-    });
-
-    const imageUploadRes: AxiosResponse<ImagesUploadResponseDto> = await sdk.images.upload(
-        token,
-        form.getBuffer(),
-        form.getHeaders(),
-    );
-
-    const avatarId = imageUploadRes.data.ids[0].id;
-
-    await sdk.events.create.imagesMetadata(token, actionSetId, {
-        avatar: avatarId,
-        signatureColors: ['#ff0000', '#00ff00'],
-    });
-
-    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-        return as.current_action === 2;
-    });
-
-    await sdk.events.create.modulesConfiguration(token, actionSetId, {});
-
-    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-        return as.current_action === 3;
-    });
-
-    await sdk.events.create.datesConfiguration(token, actionSetId, {
-        dates: [
-            {
-                name: 'first date',
-                eventBegin: new Date(Date.now() + 1000000),
-                eventEnd: new Date(Date.now() + 2000000),
-                location: {
-                    lat: 40.75901,
-                    lon: -73.984474,
-                    label: 'Times Square',
-                },
-            },
-            {
-                name: 'second date',
-                eventBegin: new Date(Date.now() + 1000000),
-                eventEnd: new Date(Date.now() + 2000000),
-                location: {
-                    lat: 40.75901,
-                    lon: -73.984474,
-                    label: 'Times Square',
-                },
-            },
-        ],
-    });
-
-    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-        return as.current_action === 4;
-    });
-
-    await sdk.events.create.categoriesConfiguration(token, actionSetId, {
-        global: [
-            {
-                name: 'VIP Tickets',
-                saleBegin: new Date(Date.now() - 1000000),
-                saleEnd: new Date(Date.now() + 23 * 1000000),
-                resaleBegin: new Date(Date.now() - 1000000),
-                resaleEnd: new Date(Date.now() + 23 * 1000000),
-                seats: 100,
-                currencies: [
-                    {
-                        currency: 'Fiat',
-                        price: '0',
-                    },
-                ],
-            },
-        ],
-        dates: [
-            [
-                {
-                    name: 'Regular Tickets',
-                    saleBegin: new Date(Date.now() - 1000000),
-                    saleEnd: new Date(Date.now() + 23 * 1000000),
-                    resaleBegin: new Date(Date.now() - 1000000),
-                    resaleEnd: new Date(Date.now() + 23 * 1000000),
-                    seats: 200,
-                    currencies: [
-                        {
-                            currency: 'Fiat',
-                            price: '0',
-                        },
-                    ],
-                },
-            ],
-            [
-                {
-                    name: 'Regular Tickets',
-                    saleBegin: new Date(Date.now() - 1000000),
-                    saleEnd: new Date(Date.now() + 23 * 1000000),
-                    resaleBegin: new Date(Date.now() - 1000000),
-                    resaleEnd: new Date(Date.now() + 23 * 1000000),
-                    seats: 200,
-                    currencies: [
-                        {
-                            currency: 'Fiat',
-                            price: '0',
-                        },
-                    ],
-                },
-            ],
-        ],
-    });
-
-    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-        return as.current_action === 5;
-    });
-
-    await sdk.events.create.adminsConfiguration(token, actionSetId, {
-        admins: [],
     });
 
     await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
@@ -1139,7 +1013,7 @@ export const createEventActionSet = async (token: string, sdk: T721SDK): Promise
                 currencies: [
                     {
                         currency: 'Fiat',
-                        price: '100',
+                        price: '200',
                     },
                 ],
             },
@@ -1156,7 +1030,7 @@ export const createEventActionSet = async (token: string, sdk: T721SDK): Promise
                     currencies: [
                         {
                             currency: 'Fiat',
-                            price: '100',
+                            price: '200',
                         },
                     ],
                 },
@@ -1172,7 +1046,7 @@ export const createEventActionSet = async (token: string, sdk: T721SDK): Promise
                     currencies: [
                         {
                             currency: 'Fiat',
-                            price: '100',
+                            price: '200',
                         },
                     ],
                 },
@@ -1287,7 +1161,7 @@ export const createLostEvent = async (token: string, sdk: T721SDK): Promise<Even
                 currencies: [
                     {
                         currency: 'Fiat',
-                        price: '100',
+                        price: '200',
                     },
                 ],
             },
@@ -1304,7 +1178,7 @@ export const createLostEvent = async (token: string, sdk: T721SDK): Promise<Even
                     currencies: [
                         {
                             currency: 'Fiat',
-                            price: '100',
+                            price: '200',
                         },
                     ],
                 },
@@ -1320,7 +1194,7 @@ export const createLostEvent = async (token: string, sdk: T721SDK): Promise<Even
                     currencies: [
                         {
                             currency: 'Fiat',
-                            price: '100',
+                            price: '200',
                         },
                     ],
                 },
@@ -1443,7 +1317,7 @@ export const createFuzzyEvent = async (token: string, sdk: T721SDK): Promise<Eve
                 currencies: [
                     {
                         currency: 'Fiat',
-                        price: '100',
+                        price: '200',
                     },
                 ],
             },
@@ -1460,7 +1334,7 @@ export const createFuzzyEvent = async (token: string, sdk: T721SDK): Promise<Eve
                     currencies: [
                         {
                             currency: 'Fiat',
-                            price: '100',
+                            price: '200',
                         },
                     ],
                 },
@@ -1476,7 +1350,7 @@ export const createFuzzyEvent = async (token: string, sdk: T721SDK): Promise<Eve
                     currencies: [
                         {
                             currency: 'Fiat',
-                            price: '100',
+                            price: '200',
                         },
                     ],
                 },
@@ -1599,7 +1473,7 @@ export const createEvent = async (token: string, sdk: T721SDK): Promise<EventDto
                 currencies: [
                     {
                         currency: 'Fiat',
-                        price: '100',
+                        price: '200',
                     },
                 ],
             },
@@ -1616,7 +1490,7 @@ export const createEvent = async (token: string, sdk: T721SDK): Promise<EventDto
                     currencies: [
                         {
                             currency: 'Fiat',
-                            price: '100',
+                            price: '200',
                         },
                     ],
                 },
@@ -1632,7 +1506,311 @@ export const createEvent = async (token: string, sdk: T721SDK): Promise<EventDto
                     currencies: [
                         {
                             currency: 'Fiat',
-                            price: '100',
+                            price: '200',
+                        },
+                    ],
+                },
+            ],
+        ],
+    });
+
+    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+        return as.current_action === 5;
+    });
+
+    await sdk.events.create.adminsConfiguration(token, actionSetId, {
+        admins: [],
+    });
+
+    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+        return as.current_status === 'complete';
+    });
+
+    const eventEntityRes = await sdk.events.create.create(token, {
+        completedActionSet: actionSetId,
+    });
+
+    return eventEntityRes.data.event;
+};
+
+export const createExpensiveEvent = async (token: string, sdk: T721SDK): Promise<EventDto> => {
+    const initialArgument = {};
+
+    const actionSetName = 'event_create';
+
+    const eventCreationActionSetRes = await sdk.actions.create(token, {
+        name: actionSetName,
+        arguments: initialArgument,
+    });
+
+    const actionSetId = eventCreationActionSetRes.data.actionset.id;
+
+    await sdk.events.create.textMetadata(token, actionSetId, {
+        name: 'myEvent',
+        description: 'This is my event',
+        tags: ['test', 'event'],
+    });
+
+    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+        return as.current_action === 1;
+    });
+
+    const form = new FormData();
+
+    form.append('images', fs.readFileSync(__dirname + '/../src/controllers/events/test_resources/test_avatar.png'), {
+        filename: 'avatar.png',
+    });
+
+    const imageUploadRes: AxiosResponse<ImagesUploadResponseDto> = await sdk.images.upload(
+        token,
+        form.getBuffer(),
+        form.getHeaders(),
+    );
+
+    const avatarId = imageUploadRes.data.ids[0].id;
+
+    await sdk.events.create.imagesMetadata(token, actionSetId, {
+        avatar: avatarId,
+        signatureColors: ['#ff0000', '#00ff00'],
+    });
+
+    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+        return as.current_action === 2;
+    });
+
+    await sdk.events.create.modulesConfiguration(token, actionSetId, {});
+
+    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+        return as.current_action === 3;
+    });
+
+    await sdk.events.create.datesConfiguration(token, actionSetId, {
+        dates: [
+            {
+                name: 'first date',
+                eventBegin: new Date(Date.now() + 1000000),
+                eventEnd: new Date(Date.now() + 2000000),
+                location: {
+                    lat: 40.75901,
+                    lon: -73.984474,
+                    label: 'Times Square',
+                },
+            },
+            {
+                name: 'second date',
+                eventBegin: new Date(Date.now() + 1000000),
+                eventEnd: new Date(Date.now() + 2000000),
+                location: {
+                    lat: 40.75901,
+                    lon: -73.984474,
+                    label: 'Times Square',
+                },
+            },
+        ],
+    });
+
+    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+        return as.current_action === 4;
+    });
+
+    await sdk.events.create.categoriesConfiguration(token, actionSetId, {
+        global: [
+            {
+                name: 'VIP Tickets',
+                saleBegin: new Date(Date.now() - 1000000),
+                saleEnd: new Date(Date.now() + 23 * 1000000),
+                resaleBegin: new Date(Date.now() + 1000000),
+                resaleEnd: new Date(Date.now() + 23 * 1000000),
+                seats: 100,
+                currencies: [
+                    {
+                        currency: 'Fiat',
+                        price: '10000',
+                    },
+                ],
+            },
+        ],
+        dates: [
+            [
+                {
+                    name: 'Regular Tickets',
+                    saleBegin: new Date(Date.now() - 1000000),
+                    saleEnd: new Date(Date.now() + 23 * 1000000),
+                    resaleBegin: new Date(Date.now() + 1000000),
+                    resaleEnd: new Date(Date.now() + 23 * 1000000),
+                    seats: 200,
+                    currencies: [
+                        {
+                            currency: 'Fiat',
+                            price: '10000',
+                        },
+                    ],
+                },
+            ],
+            [
+                {
+                    name: 'Regular Tickets',
+                    saleBegin: new Date(Date.now() - 1000000),
+                    saleEnd: new Date(Date.now() + 23 * 1000000),
+                    resaleBegin: new Date(Date.now() + 1000000),
+                    resaleEnd: new Date(Date.now() + 23 * 1000000),
+                    seats: 200,
+                    currencies: [
+                        {
+                            currency: 'Fiat',
+                            price: '10000',
+                        },
+                    ],
+                },
+            ],
+        ],
+    });
+
+    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+        return as.current_action === 5;
+    });
+
+    await sdk.events.create.adminsConfiguration(token, actionSetId, {
+        admins: [],
+    });
+
+    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+        return as.current_status === 'complete';
+    });
+
+    const eventEntityRes = await sdk.events.create.create(token, {
+        completedActionSet: actionSetId,
+    });
+
+    return eventEntityRes.data.event;
+};
+
+export const createLimitedEvent = async (token: string, sdk: T721SDK): Promise<EventDto> => {
+    const initialArgument = {};
+
+    const actionSetName = 'event_create';
+
+    const eventCreationActionSetRes = await sdk.actions.create(token, {
+        name: actionSetName,
+        arguments: initialArgument,
+    });
+
+    const actionSetId = eventCreationActionSetRes.data.actionset.id;
+
+    await sdk.events.create.textMetadata(token, actionSetId, {
+        name: 'myEvent',
+        description: 'This is my event',
+        tags: ['test', 'event'],
+    });
+
+    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+        return as.current_action === 1;
+    });
+
+    const form = new FormData();
+
+    form.append('images', fs.readFileSync(__dirname + '/../src/controllers/events/test_resources/test_avatar.png'), {
+        filename: 'avatar.png',
+    });
+
+    const imageUploadRes: AxiosResponse<ImagesUploadResponseDto> = await sdk.images.upload(
+        token,
+        form.getBuffer(),
+        form.getHeaders(),
+    );
+
+    const avatarId = imageUploadRes.data.ids[0].id;
+
+    await sdk.events.create.imagesMetadata(token, actionSetId, {
+        avatar: avatarId,
+        signatureColors: ['#ff0000', '#00ff00'],
+    });
+
+    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+        return as.current_action === 2;
+    });
+
+    await sdk.events.create.modulesConfiguration(token, actionSetId, {});
+
+    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+        return as.current_action === 3;
+    });
+
+    await sdk.events.create.datesConfiguration(token, actionSetId, {
+        dates: [
+            {
+                name: 'first date',
+                eventBegin: new Date(Date.now() + 1000000),
+                eventEnd: new Date(Date.now() + 2000000),
+                location: {
+                    lat: 40.75901,
+                    lon: -73.984474,
+                    label: 'Times Square',
+                },
+            },
+            {
+                name: 'second date',
+                eventBegin: new Date(Date.now() + 1000000),
+                eventEnd: new Date(Date.now() + 2000000),
+                location: {
+                    lat: 40.75901,
+                    lon: -73.984474,
+                    label: 'Times Square',
+                },
+            },
+        ],
+    });
+
+    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+        return as.current_action === 4;
+    });
+
+    await sdk.events.create.categoriesConfiguration(token, actionSetId, {
+        global: [
+            {
+                name: 'VIP Tickets',
+                saleBegin: new Date(Date.now() - 1000000),
+                saleEnd: new Date(Date.now() + 23 * 1000000),
+                resaleBegin: new Date(Date.now() + 1000000),
+                resaleEnd: new Date(Date.now() + 23 * 1000000),
+                seats: 3,
+                currencies: [
+                    {
+                        currency: 'Fiat',
+                        price: '10000',
+                    },
+                ],
+            },
+        ],
+        dates: [
+            [
+                {
+                    name: 'Regular Tickets',
+                    saleBegin: new Date(Date.now() - 1000000),
+                    saleEnd: new Date(Date.now() + 23 * 1000000),
+                    resaleBegin: new Date(Date.now() + 1000000),
+                    resaleEnd: new Date(Date.now() + 23 * 1000000),
+                    seats: 200,
+                    currencies: [
+                        {
+                            currency: 'Fiat',
+                            price: '10000',
+                        },
+                    ],
+                },
+            ],
+            [
+                {
+                    name: 'Regular Tickets',
+                    saleBegin: new Date(Date.now() - 1000000),
+                    saleEnd: new Date(Date.now() + 23 * 1000000),
+                    resaleBegin: new Date(Date.now() + 1000000),
+                    resaleEnd: new Date(Date.now() + 23 * 1000000),
+                    seats: 200,
+                    currencies: [
+                        {
+                            currency: 'Fiat',
+                            price: '10000',
                         },
                     ],
                 },
@@ -1675,6 +1853,20 @@ export const setupStripeMock = (): Stripe => {
     when(stripeMock.payouts).thenReturn(instance(payoutsResourceMock));
     when(stripeMock.refunds).thenReturn(instance(refundsResourceMock));
 
+    when(paymentIntentsResourceMock.create(anything())).thenCall(
+        async (pi: Stripe.PaymentIntentCreateParams): Promise<Stripe.PaymentIntent> => {
+            const client_secret = Crypto.randomBytes(32).toString('base64');
+            const id = createPaymentIntent(pi as Stripe.PaymentIntent);
+
+            return {
+                id,
+                ...pi,
+                status: 'requires_payment_method',
+                client_secret,
+            } as Stripe.PaymentIntent;
+        },
+    );
+
     return stripeMock;
 };
 
@@ -1691,11 +1883,42 @@ export const createPaymentIntent = (content: Partial<Stripe.PaymentIntent>): str
         ...content,
         id,
     } as Stripe.PaymentIntent);
+    when(paymentIntentsResourceMock.retrieve(id)).thenResolve({
+        ...content,
+        id,
+    } as Stripe.PaymentIntent);
+    when(paymentIntentsResourceMock.capture(id, anything())).thenCall(
+        async (id, amount): Promise<any> => {
+            const pi = await instance(paymentIntentsResourceMock).retrieve(id);
+            const newPi = {
+                ...pi,
+                amount_capturable: 0,
+                amount_received: amount.amount_to_capture,
+                status: 'succeeded',
+                charges: {
+                    data: [
+                        {
+                            ...(pi.charges?.data[0] || {}),
+                            amount_refunded: pi.amount - amount.amount_to_capture,
+                        },
+                    ],
+                } as any,
+            };
+
+            setPaymentIntent(id, newPi as any);
+
+            return newPi;
+        },
+    );
 
     return id;
 };
 
 export const setPaymentIntent = (id: string, content: Partial<Stripe.PaymentIntent>): void => {
+    when(paymentIntentsResourceMock.retrieve(id)).thenResolve({
+        ...content,
+        id,
+    } as Stripe.PaymentIntent);
     when(paymentIntentsResourceMock.retrieve(id, anything())).thenResolve({
         ...content,
         id,
@@ -1724,4 +1947,56 @@ export const gemFail = async (sdk: T721SDK, token: string, id: string, body: any
     const gem = gemReq.data.gemOrders[0].gem;
 
     expect(gem.error_info).toMatchObject(body);
+};
+
+export const getPIFromCart = async (sdk: T721SDK, token: string, cart: string): Promise<string> => {
+    const cartActionSetBeforeRes = await sdk.actions.search(token, {
+        id: {
+            $eq: cart,
+        },
+    });
+    const cartEntity = cartActionSetBeforeRes.data.actionsets[0];
+    return JSON.parse(cartEntity.actions[2].data).paymentIntentId;
+};
+
+export const invalidateCardPayment = async (pi: string): Promise<void> => {
+    const storedPi = await instance(getMocks()[1]).retrieve(pi);
+    setPaymentIntent(pi, {
+        ...storedPi,
+        amount_capturable: storedPi.amount / 2,
+        charges: {
+            data: [
+                {
+                    payment_method_details: {
+                        type: 'card',
+                        card: {
+                            country: 'FR',
+                        },
+                    },
+                },
+            ],
+        },
+        status: 'requires_capture',
+    } as any);
+};
+
+export const validateCardPayment = async (pi: string): Promise<void> => {
+    const storedPi = await instance(getMocks()[1]).retrieve(pi);
+    setPaymentIntent(pi, {
+        ...storedPi,
+        amount_capturable: storedPi.amount,
+        charges: {
+            data: [
+                {
+                    payment_method_details: {
+                        type: 'card',
+                        card: {
+                            country: 'FR',
+                        },
+                    },
+                },
+            ],
+        },
+        status: 'requires_capture',
+    } as any);
 };

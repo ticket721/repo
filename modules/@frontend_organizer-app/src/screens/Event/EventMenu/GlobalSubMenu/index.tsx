@@ -17,7 +17,7 @@ import { EventsSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/serv
 
 export const GlobalSubMenu: React.FC = () => {
     const history = useHistory();
-    const { groupId } = useParams();
+    const { groupId, eventId } = useParams();
     const [activeTile, setActiveTile] = useState<string>(null);
     const [uuid] = useState<string>(v4() + '@global-submenu');
     const [ t ] = useTranslation('global_sub_menu');
@@ -79,15 +79,27 @@ export const GlobalSubMenu: React.FC = () => {
         },
         [globalCategoriesResp.data]);
 
+    useEffect(() => {
+        if (eventId) {
+            setShowingGlobalCategories(true);
+        }
+    }, [eventId]);
+
     return (
         <EditSection opened={showingGlobalCategories}>
-            <TileHeader onClick={() => setShowingGlobalCategories(!showingGlobalCategories)}>
-                <Title>{t('global_categories_title')}</Title>
-                <Icon icon='chevron' color='white' size='6px'/>
-            </TileHeader>
+            {
+                !eventId ?
+                    <TileHeader
+                        opened={showingGlobalCategories}
+                        onClick={() => setShowingGlobalCategories(!showingGlobalCategories)}>
+                        <Title>{t('global_categories_title')}</Title>
+                        <Icon icon='chevron' color='white' size='6px'/>
+                    </TileHeader> :
+                    null
+            }
             {
                 showingGlobalCategories ?
-                    <Tiles>
+                    <Tiles globalCategories={!!eventId}>
                         {
                             globalCategories.map((category) => (
                                 <Tile
@@ -125,18 +137,18 @@ const EditSection = styled.div<{ opened: boolean }>`
     border-radius: ${props => props.theme.defaultRadius};
     padding: ${props => `${props.theme.regularSpacing} ${props.theme.biggerSpacing}`};
     margin-bottom: ${props => props.theme.smallSpacing};
-
-    & > div:first-child > span:last-child {
-        transform: ${props => props.opened ? 'rotateX(180deg)' : null};
-        transition: 200ms transform;
-    }
 `;
 
-const TileHeader = styled.div`
+const TileHeader = styled.div<{ opened: boolean }>`
     display: flex;
     justify-content: space-between;
     align-items: center;
     cursor: pointer;
+
+    & > span:last-child {
+        transform: ${props => props.opened ? 'rotateX(180deg)' : null};
+        transition: 200ms transform;
+    }
 `;
 
 const Title = styled.span`
@@ -146,10 +158,10 @@ const Title = styled.span`
     color: rgba(255, 255, 255, 0.9);
 `;
 
-const Tiles = styled.div`
+const Tiles = styled.div<{ globalCategories: boolean }>`
     display: flex;
     flex-direction: column;
-    margin-top: ${props => props.theme.smallSpacing};
+    margin-top: ${props => (props.globalCategories ? '-' : '') + props.theme.smallSpacing};
     margin-left: ${props => props.theme.regularSpacing};
 `;
 

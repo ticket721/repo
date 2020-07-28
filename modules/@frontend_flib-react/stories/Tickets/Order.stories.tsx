@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { withKnobs } from '@storybook/addon-knobs';
+import { text, withKnobs } from '@storybook/addon-knobs';
 import { action } from '@storybook/addon-actions';
 import styled from '../../src/config/styled';
 
@@ -52,11 +52,6 @@ const event = {
     photos: ['assets/images/event-1.jpg', 'assets/images/event-2.jpg', 'assets/images/event-3.jpg'],
 };
 
-const ticket = {
-    quantity: 2,
-    price: 10.54,
-};
-
 const addOns = [
     {
         id: 'a12',
@@ -71,19 +66,6 @@ const addOns = [
         price: 150,
         description: 'Get VIP access',
         quantity: 3,
-    },
-];
-
-const fees = [
-    {
-        id: 1,
-        name: 'Skip line fees',
-        price: 21.0,
-    },
-    {
-        id: 3,
-        name: 'Admin fees',
-        price: 100.21,
     },
 ];
 
@@ -108,22 +90,39 @@ export const showcase = () => (
         <Container>
             <Gradient values={gradientsValues} blurOnly />
 
-            <EventInfos event={event} pullUp />
+            <EventInfos
+                pullUp={true}
+                name={event.name}
+                mainColor={event.mainColor}
+                location={event.location}
+                startDate={event.startDate}
+                gradients={event.gradients}
+                startTime={event.startTime}
+                endDate={event.endDate}
+                endTime={event.endTime}
+                getDirections={'Get directions'}
+            />
             <Border />
             <TicketQty
                 color={'#DB535B'}
-                gradient={gradientsValues}
-                description={
-                    'Sed ac mattis elit, aliquam lobortis puus dictumst. Suspendisse a ex et lorem mattis faucibus rhoncus at justo'
-                }
-                feesIncluded={false}
-                feeIncludedLabel={'Fees included'}
-                feeNotIncludedLabel={'+ fees'}
-                selected={false}
+                fees={'55 euro'}
+                selected={true}
                 price={'55€'}
-                ticketsLeft={10}
                 title={'Tickets'}
+                ticketsLeft={10}
                 typeName={'2 days VIP pass'}
+                options={[
+                    {
+                        label: '1',
+                        value: 1,
+                    },
+                ]}
+                initialOption={{
+                    label: '1',
+                    value: 1,
+                }}
+                gradient={gradientsValues}
+                onChange={action('onChange')}
             />
             <Border />
             <AddOns onChange={action('change')} title={'Add-ons'} addOns={addOns} gradient={gradientsValues} />
@@ -136,13 +135,21 @@ export const showcase = () => (
             />
             <Border />
             <PurchaseTotal
-                addOns={addOns}
-                label={'Total'}
-                tickets={ticket}
-                fees={fees}
-                taxes={20.0}
-                total={115.56}
-                subtotal={34.55}
+                totalLabel={text('Total', 'Total')}
+                subtotalLabel={text('Subtotal', 'Subtotal')}
+                label={text('Review Order', 'Review Order')}
+                total={[
+                    {
+                        name: 'Tickets',
+                        price: 100,
+                    },
+                ]}
+                fees={[
+                    {
+                        name: 'Tickets',
+                        price: 100,
+                    },
+                ]}
             />
         </Container>
         <EventCta ctaLabel={'Purchase'} onClick={action('click')} show subtitle={'150€'} title={'Total'} />

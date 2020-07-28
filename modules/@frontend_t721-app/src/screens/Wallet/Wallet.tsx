@@ -1,59 +1,91 @@
-import React                    from 'react';
-import styled                   from 'styled-components';
-import { useTranslation }       from 'react-i18next';
+import React, { useEffect, useState } from 'react';
+import styled                                                       from 'styled-components';
+import { useTranslation }           from 'react-i18next';
 import {
-  Error,
-  FullPageLoading,
-}                               from '@frontend/flib-react/lib/components';
-import FetchCategories from './FetchCategories';
+    Icon,
+    Error,
+    FullPageLoading,
+}                                           from '@frontend/flib-react/lib/components';
 import './locales';
+import { useRequest }                       from '@frontend/core/lib/hooks/useRequest';
+import { useLazyRequest }                   from '@frontend/core/lib/hooks/useLazyRequest';
+import { TicketsSearchResponseDto }         from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/tickets/dto/TicketsSearchResponse.dto';
+import { useSelector }                      from 'react-redux';
+import { T721AppState }                     from '../../redux';
+import { v4 }                               from 'uuid';
+import { CategoriesFetcher }                from './CategoriesFetcher';
+import { useHistory }                       from 'react-router';
+import { UsersSetDeviceAddressResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/users/dto/UsersSetDeviceAddressResponse.dto';
+import { PasswordlessUserDto }              from '@common/sdk/lib/@backend_nest/apps/server/src/authentication/dto/PasswordlessUser.dto';
+import { UsersMeResponseDto }               from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/users/dto/UsersMeResponse.dto';
+import { Ticket }                           from '../../types/ticket';
+import { TicketEntity }                     from '@common/sdk/lib/@backend_nest/libs/common/src/tickets/entities/Ticket.entity';
 
-const userTickets = [
-  {
-    id: 'ticket1',
-    category: 'categoryId',
-    status: 'minting'
-  },
-  {
-    id: 'ticket2',
-    category: 'categoryId',
-    status: 'ready'
-  },
-  {
-    id: 'ticket3',
-    category: 'categoryId',
-    status: 'canceled'
-  },
-  {
-    id: 'ticket4',
-    category: 'categoryId',
-    status: 'minting'
-  },
-  {
-    id: 'ticket5',
-    category: 'categoryId',
-    status: 'ready'
-  },
-  {
-    id: 'ticket6',
-    category: 'categoryId',
-    status: 'canceled'
-  },
-  {
-    id: 'ticket7',
-    category: 'categoryId',
-    status: 'minting'
-  }
-];
-const Wallet: React.FC = () => {
-    const { t } = useTranslation('wallet');
-    const response = {
-        data:  { tickets: userTickets },
-        loading: false,
-        error: undefined
-    };
+const formatTickets = (tickets: TicketEntity[]): Ticket[] =>
+    tickets.map(ticket => ({
+        name: null,
+        ticketId: ticket.id,
+        categoryId: ticket.category,
+        entityId: null,
+        ticketType: null,
+        location: null,
+        categoryName: null,
+        startDate: null,
+        startTime: null,
+        endDate: null,
+        endTime: null,
+        gradients: null,
+        mainColor: null,
+        image: null,
+    }));
 
-    if (response.loading) {
+interface WalletProps {
+    user: PasswordlessUserDto;
+}
+
+const Wallet: React.FC<WalletProps> = (props: WalletProps) => {
+    const history = useHistory();
+    const { t } = useTranslation(['wallet', 'common']);
+    const token = useSelector((state: T721AppState) => state.auth.token.value);
+    const devicePk = useSelector((state: T721AppState) => state.deviceWallet.pk);
+    const [uuid] = useState<string>(v4() + '@wallet');
+
+    const { lazyRequest: postAddress } = useLazyRequest<UsersSetDeviceAddressResponseDto>('users.setDeviceAddress', uuid);
+
+    const { response: ticketsResp, force } = useRequest<TicketsSearchResponseDto>({
+        method: 'tickets.search',
+        args: [
+            token,
+            {
+                owner: {
+                    $eq: props.user.address
+                },
+                status: {
+                    $ne: 'canceled',
+                },
+                $sort: [{
+                    $field_name: 'updated_at',
+                    $order: 'desc',
+                }]
+            }
+        ],
+        refreshRate: 5,
+    },
+    uuid);
+
+    useEffect(() => {
+        if (devicePk) {
+            postAddress([
+                token,
+                {
+                    deviceAddress: localStorage.getItem('deviceAddress')
+                },
+            ]);
+        }
+        // eslint-disable-next-line
+    }, [token, devicePk]);
+
+    if (ticketsResp.loading) {
         return (
             <FullPageLoading
                 width={250}
@@ -61,27 +93,94 @@ const Wallet: React.FC = () => {
             />
         );
     }
-    if (response.error) {
-        return (<Error message={t('error')}/>);
+
+    if (ticketsResp.error) {
+        return (<Error message={t('fetch_error')} retryLabel={t('common:retrying_in')} onRefresh={force}/>);
     }
 
-    const currentTickets = response.data.tickets.filter(ticket => ticket.status !== 'canceled');
     return (
-        <div className='Wallet'>
-            <Title>{t('my_tickets')}</Title>
-            { currentTickets.length > 0 ? <FetchCategories /> : null }
-            { currentTickets.length === 0 ? <span>{t('no_ticket')}</span> : null}
+        <div>
+            <Title>
+                <h1>
+                    {t('my_tickets')}
+                </h1>
+            </Title>
+            {
+                ticketsResp.data?.tickets?.length > 0 ?
+                    <CategoriesFetcher
+                        uuid={uuid}
+                        tickets={formatTickets(ticketsResp.data.tickets)}
+                    /> :
+                <EmptyWallet>
+                    <span>{t('empty_wallet')}</span>
+                    <div onClick={() => history.push('/search')}>
+                        <span>{t('return_to_search')}</span>
+                        <Icon icon={'chevron'} size={'8px'} color={'#2143AB'}/>
+                    </div>
+                </EmptyWallet>
+            }
         </div>
     );
-}
+};
 
-const Title = styled.h1`
-  font-weight: bold;
-  color: ${props => props.theme.textColor};
-  font-family: ${props => props.theme.fontStack};
-  margin-top: 56px;
-  margin-left: ${props => props.theme.biggerSpacing};
+const Title = styled.div`
+    font-weight: bold;
+    color: ${props => props.theme.textColor};
+    font-family: ${props => props.theme.fontStack};
+    margin-top: ${props => props.theme.regularSpacing};
+
+    h1 {
+        margin-bottom: 0;
+        text-align: center;
+        font-size: 16px;
+    }
 `;
 
+const EmptyWallet = styled.div`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: calc(100vh - 108px);
+    color: ${props => props.theme.textColorDark};
+    font-weight: 500;
 
-export default Wallet;
+    & > div {
+        display: flex;
+        color: ${props => props.theme.primaryColorGradientEnd.hex};
+        margin-top: ${props => props.theme.regularSpacing};
+
+        & > span:last-child {
+            margin-left: ${props => props.theme.smallSpacing};
+            margin-bottom: 2px;
+            transform: rotate(-90deg);
+        }
+    }
+`;
+
+const UserFetcher = () => {
+    const token = useSelector((state: T721AppState) => state.auth.token.value);
+    const [uuid] = useState<string>(v4() + '@wallet');
+    const { t } = useTranslation(['wallet', 'common']);
+
+    const userReq = useRequest<UsersMeResponseDto>({
+        method: 'users.me',
+        args: [
+            token
+        ],
+        refreshRate: 10
+    }, uuid);
+
+    if (userReq.response.loading) {
+        return <FullPageLoading/>
+    }
+
+    if (userReq.response.error) {
+        return (<Error message={t('fetch_error')} retryLabel={t('common:retrying_in')} onRefresh={userReq.force}/>);
+    }
+
+    return <Wallet user={userReq.response.data.user}/>
+};
+
+export default UserFetcher;

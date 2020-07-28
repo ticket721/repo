@@ -15,16 +15,28 @@ interface Coords {
 export interface LocationCardProps extends React.ComponentProps<any> {
     location: string;
     iconColor?: string;
-    link?: string;
     linkLabel?: string;
     removeBg?: boolean;
     wSeparator?: boolean;
     coords?: Coords;
+    subtitle: string;
+    disabled?: boolean;
 }
 
 const Info = styled.span`
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 16px;
+
     &:first-of-type {
         margin-top: 2px;
+    }
+
+    &:last-of-type {
+        color: ${(props) => props.theme.textColorDark};
+        margin-top: 8px;
     }
 `;
 
@@ -43,7 +55,7 @@ const EndColumn = styled.div<LocationCardProps>`
 const Column = styled.div<LocationCardProps>`
     display: flex;
     flex-direction: column;
-    max-width: 85%;
+    max-width: calc(100% - ${(props) => props.theme.regularSpacing} - 12px);
     color: ${(props) => props.textColor};
 
     a {
@@ -85,13 +97,14 @@ export const LocationCard: React.FunctionComponent<LocationCardProps & { classNa
     props: LocationCardProps,
 ): JSX.Element => {
     return (
-        <ClickableContainer onClick={() => openMap(props.location)}>
+        <ClickableContainer onClick={() => (!props.disabled ? openMap(props.location) : null)}>
             <CardContainer className={props.className} removeBg={props.removeBg}>
                 <IconContainer>
                     <Icon icon={'pin'} size={'16px'} color={props.iconColor} />
                 </IconContainer>
                 <Column iconColor={props.iconColor}>
                     <Info>{props.location}</Info>
+                    <Info>{props.subtitle}</Info>
                 </Column>
                 {props.wSeparator && <Separator />}
             </CardContainer>

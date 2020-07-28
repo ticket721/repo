@@ -3,6 +3,7 @@ import styled from '../../config/styled';
 import Icon from '../icon';
 import { FileRejection, useDropzone } from 'react-dropzone';
 import { Dispatch, useEffect, useState } from 'react';
+import { keyframes } from 'styled-components';
 
 export interface DropError {
     file: string;
@@ -30,6 +31,7 @@ export interface FilesUploaderProps extends React.ComponentProps<any> {
     multipleLabel?: string;
     maxFiles?: number;
     noFilesMsg?: string;
+    loading: boolean;
 }
 
 const InfosContainer = styled.div<{ width: string; height: string }>`
@@ -163,11 +165,40 @@ const ErrorMsg = styled(Disclaimer)`
     font-size: 13px;
 `;
 
+const Loading = styled.div`
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.3);
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2;
+`;
+
+const loaderRotation = keyframes`
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+`;
+
+const LoaderIcon = styled(Icon)`
+    animation: ${loaderRotation} 1s linear infinite;
+`;
+
 export const FilesUploader: React.FunctionComponent<FilesUploaderProps> = (props: FilesUploaderProps): JSX.Element => {
     const [files, setFiles]: [PreviewFile[], Dispatch<PreviewFile[]>] = useState([] as PreviewFile[]);
+
     const { getRootProps, getInputProps } = useDropzone({
         accept: 'image/*',
         multiple: props.multiple,
+        maxSize: 5242880,
         onDropAccepted: (acceptedFiles: File[]) => {
             const addedPreviews: PreviewFile[] = acceptedFiles.map((file) => ({
                 ...file,
@@ -225,12 +256,11 @@ export const FilesUploader: React.FunctionComponent<FilesUploaderProps> = (props
               </Thumb>
           ));
 
-    useEffect(
-        () => () => {
+    useEffect(() => {
+        return () => {
             files.forEach((file) => URL.revokeObjectURL(file.preview));
-        },
-        [files],
-    );
+        };
+    }, [files]);
 
     return (
         <StyledContainer>
@@ -250,6 +280,11 @@ export const FilesUploader: React.FunctionComponent<FilesUploaderProps> = (props
                     />
                     <span>{props.dragDropLabel}</span>
                     <span>{props.browseLabel}</span>
+                    {props.loading ? (
+                        <Loading>
+                            <LoaderIcon icon={'loader'} size={'32px'} color={'#FFF'} />
+                        </Loading>
+                    ) : null}
                 </InfosContainer>
             </DropZone>
             {!props.multiple &&
@@ -259,7 +294,7 @@ export const FilesUploader: React.FunctionComponent<FilesUploaderProps> = (props
                 </ThumbTile>
             ) : null}
             <Disclaimer>{props.uploadRecommendations}</Disclaimer>
-            {props.error && <ErrorMsg>{props.error}</ErrorMsg>}
+            {props.error ? <ErrorMsg>{props.error}</ErrorMsg> : null}
 
             {props.multiple && (
                 <PreviewsContainer>

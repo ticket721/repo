@@ -54,6 +54,7 @@ const Container = styled.div`
     padding: ${(props) => props.theme.regularSpacing} ${(props) => props.theme.biggerSpacing};
     top: constant(safe-area-inset-top);
     top: env(safe-area-inset-top);
+    transition: top 500ms ease;
     position: fixed;
     width: 100%;
     z-index: 9999;

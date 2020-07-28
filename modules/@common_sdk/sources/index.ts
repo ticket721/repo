@@ -18,6 +18,7 @@ import {
     resetPassword,
     validateResetPassword,
     updatePassword,
+    resendValidation,
 } from './app/api/authentication';
 
 // ACTIONS
@@ -45,7 +46,8 @@ import {
     eventsCreateDatesConfiguration, eventsCreateImagesMetadata,
     eventsCreateModulesConfiguration,
     eventsCreateTextMetadata, eventsDeleteCategories, eventsDeleteDates,
-    eventsSearch, eventsStart, eventsUpdate, eventsWithdraw,
+    eventsSearch, eventsStart, eventsUpdate, /*eventsWithdraw, */
+    eventsGuestlist
 } from './app/api/events';
 
 // TXS
@@ -73,10 +75,10 @@ import { checkoutCartCommitStripe, checkoutResolveCartWithPaymentIntent } from '
 import { dosojinSearch, dosojinCount } from './app/api/dosojin';
 
 // TICKETS
-import { ticketsSearch, ticketsCount } from './app/api/tickets';
+import { ticketsSearch, ticketsCount, ticketsValidate } from './app/api/tickets';
 
 // USERS
-import { usersMe } from './app/api/users';
+import { usersMe, usersSetDeviceAddress } from './app/api/users';
 
 // GEOLOC
 
@@ -106,8 +108,10 @@ export class T721SDK {
         this.validateEmail = this.validateEmail.bind(this);
         this.resetPassword = this.resetPassword.bind(this);
         this.validateResetPassword = this.validateResetPassword.bind(this);
+        this.resendValidation = this.resendValidation.bind(this);
 
         this.users.me = this.users.me.bind(this);
+        this.users.setDeviceAddress = this.users.setDeviceAddress.bind(this);
 
         this.actions.search = this.actions.search.bind(this);
         this.actions.count = this.actions.count.bind(this);
@@ -139,7 +143,8 @@ export class T721SDK {
         this.events.addCategories = this.events.addCategories.bind(this);
         this.events.deleteDates = this.events.deleteDates.bind(this);
         this.events.addDates = this.events.addDates.bind(this);
-        this.events.withdraw = this.events.withdraw.bind(this);
+        // this.events.withdraw = this.events.withdraw.bind(this);
+        this.events.guestlist = this.events.guestlist.bind(this);
 
         this.categories.create = this.categories.create.bind(this);
         this.categories.count = this.categories.count.bind(this);
@@ -170,6 +175,7 @@ export class T721SDK {
 
         this.tickets.search = this.tickets.search.bind(this);
         this.tickets.count = this.tickets.count.bind(this);
+        this.tickets.validate = this.tickets.validate.bind(this);
 
         this.geoloc.closestCity = this.geoloc.closestCity.bind(this);
         this.geoloc.fuzzySearch = this.geoloc.fuzzySearch.bind(this);
@@ -270,9 +276,11 @@ export class T721SDK {
     public validateEmail = validateEmail;
     public resetPassword = resetPassword;
     public validateResetPassword = validateResetPassword;
+    public resendValidation = resendValidation;
 
     public users = {
         me: usersMe,
+        setDeviceAddress: usersSetDeviceAddress
     };
 
     public actions = {
@@ -312,7 +320,8 @@ export class T721SDK {
         addCategories: eventsAddCategories,
         deleteDates: eventsDeleteDates,
         addDates: eventsAddDates,
-        withdraw: eventsWithdraw,
+        // withdraw: eventsWithdraw,
+        guestlist: eventsGuestlist
     };
 
     public rights = {
@@ -369,6 +378,7 @@ export class T721SDK {
     public tickets = {
         search: ticketsSearch,
         count: ticketsCount,
+        validate: ticketsValidate
     };
 
     public geoloc = {

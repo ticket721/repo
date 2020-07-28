@@ -13,6 +13,7 @@ import { EventsSearchResponseDto }            from '@common/sdk/lib/@backend_nes
 import { EventEntity }                        from '@common/sdk/lib/@backend_nest/libs/common/src/events/entities/Event.entity';
 import { useTranslation }                     from 'react-i18next';
 import { Price }                              from '@common/sdk/lib/@backend_nest/libs/common/src/currencies/Currencies.service';
+import { DatesSearchResponseDto }             from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
 
 export interface TicketGlobalCategoryListProps {
     date: DateEntity;
@@ -31,13 +32,28 @@ const DescriptionHighlightText = styled.span`
 `;
 
 const DescriptionHighlightGlowText = styled.span`
+    display: block;
     color: ${props => props.color};
     text-shadow: 0 0 2px ${props => props.color};
 `;
 
-const genDateCategoryDescription = (date: DateEntity, event: EventEntity, t: (...args: any[]) => string): JSX.Element => {
+const genDateCategoryDescription = (
+    date: DateEntity,
+    event: EventEntity,
+    allOtherDates: DateEntity[]
+): JSX.Element => {
+    const otherEvents = allOtherDates.map((d: DateEntity, idx: number): JSX.Element =>
+        <DescriptionHighlightGlowText key={idx} color={d.metadata.signature_colors[0]}>
+            {`+ ${formatShort(new Date(d.timestamps.event_begin))}`}
+        </DescriptionHighlightGlowText>);
     // tslint:disable-next-line:max-line-length
-    return <DescriptionText>{date.metadata.name}<DescriptionHighlightText color={date.metadata.signature_colors[0]}>{formatShort(new Date(date.timestamps.event_begin))}</DescriptionHighlightText><DescriptionHighlightGlowText color={date.metadata.signature_colors[0]}>{t('ticket_for_event_and')}{`${event.dates.length - 1}${t('ticket_for_event_other_events')}`}</DescriptionHighlightGlowText></DescriptionText>;
+    return <DescriptionText>
+        {date.metadata.name}
+        <DescriptionHighlightText color={date.metadata.signature_colors[0]}>
+            {formatShort(new Date(date.timestamps.event_begin))}
+        </DescriptionHighlightText>
+        {otherEvents.length ? otherEvents : null}
+    </DescriptionText>;
 };
 
 const getEuroPrice = (category: CategoryEntity): string => {
@@ -54,7 +70,7 @@ export const TicketGlobalCategoryList: React.FC<TicketGlobalCategoryListProps> =
 
     const { token } = useSelector((state: T721AppState) => ({ token: state.auth.token?.value }));
     const [uuid] = useState(v4());
-    const [t] = useTranslation('event_ticket_list');
+    const [t] = useTranslation(['event_ticket_list', 'common']);
 
     const globalCategories = useRequest<CategoriesSearchResponseDto>({
         method: 'categories.search',
@@ -69,7 +85,7 @@ export const TicketGlobalCategoryList: React.FC<TicketGlobalCategoryListProps> =
                 },
             },
         ],
-        refreshRate: 100,
+        refreshRate: 5,
     }, `HomeEvent@${uuid}`);
 
     const event = useRequest<EventsSearchResponseDto>({
@@ -85,15 +101,40 @@ export const TicketGlobalCategoryList: React.FC<TicketGlobalCategoryListProps> =
         refreshRate: 100
     }, `HomeEvent${uuid}`);
 
-    if (globalCategories.response.loading || event.response.loading) {
+    const dates = useRequest<DatesSearchResponseDto>({
+        method: 'dates.search',
+        args: [
+            token,
+            {
+                parent_type: {
+                    $eq: 'event'
+                },
+                group_id: {
+                    $eq: props.date.group_id
+                }
+            }
+        ],
+        refreshRate: 100
+    }, `HomeEvent@${uuid}`);
+
+    if (globalCategories.response.loading || event.response.loading || dates.response.loading) {
         return <FullPageLoading width={250} height={250}/>;
     }
 
-    if (globalCategories.response.error || event.response.error || event.response.data.events.length === 0) {
-        return <Error message={'Error while fetching categories'}/>;
+    if (globalCategories.response.error) {
+        return <Error message={t('error_cannot_fetch_global_categories')} retryLabel={t('common:retrying_in')} onRefresh={globalCategories.force}/>;
+    }
+
+    if (event.response.error || event.response.data.events.length === 0) {
+        return <Error message={t('error_cannot_fetch_event')} retryLabel={t('common:retrying_in')} onRefresh={event.force}/>;
+    }
+
+    if (dates.response.error) {
+        return <Error message={t('error_cannot_fetch_dates')} retryLabel={t('common:retrying_in')} onRefresh={dates.force}/>;
     }
 
     const eventEntity = event.response.data.events[0];
+    const allOtherDates = dates.response.data.dates.filter((date: DateEntity) => date.id !== props.date.id);
 
     let categoriesList = [];
 
@@ -104,7 +145,7 @@ export const TicketGlobalCategoryList: React.FC<TicketGlobalCategoryListProps> =
                 saleBegin={new Date(category.sale_begin)}
                 saleEnd={new Date(category.sale_end)}
                 onClick={() => props.setSelection({section: 'global', selection: idx, category})}
-                description={genDateCategoryDescription(props.date, eventEntity, t)}
+                description={genDateCategoryDescription(props.date, eventEntity, allOtherDates)}
                 gradient={props.date.metadata.signature_colors}
                 selected={props.section === 'global' && props.selection === idx}
                 price={`${getEuroPrice(category)} €`}

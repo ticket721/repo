@@ -1,27 +1,35 @@
 import { RocksideService } from '@lib/common/rockside/Rockside.service';
 import { RocksideApi } from '@rocksideio/rockside-wallet-sdk/lib/api';
-import { deepEqual, instance, mock, verify, when } from 'ts-mockito';
+import { deepEqual, instance, mock, spy, verify, when } from 'ts-mockito';
 import { Test } from '@nestjs/testing';
 import { keccak256FromBuffer } from '@common/global';
 import { NestError } from '@lib/common/utils/NestError';
+import { ConfigService } from '@lib/common/config/Config.service';
 
 describe('Rockside Service', function() {
     const context: {
         rocksideService: RocksideService;
         rocksideApiMock: RocksideApi;
+        configServiceMock: ConfigService;
     } = {
         rocksideService: null,
         rocksideApiMock: null,
+        configServiceMock: null,
     };
 
     beforeEach(async function() {
         context.rocksideApiMock = mock(RocksideApi);
+        context.configServiceMock = mock(ConfigService);
 
         const app = await Test.createTestingModule({
             providers: [
                 {
                     provide: RocksideApi,
                     useValue: instance(context.rocksideApiMock),
+                },
+                {
+                    provide: ConfigService,
+                    useValue: instance(context.configServiceMock),
                 },
                 RocksideService,
             ],
@@ -129,9 +137,19 @@ describe('Rockside Service', function() {
             // DECLARE
             const address = '0xA910f92ACdAf488fa6eF02174fb86208Ad7722ba';
             const transactionHash = '0x3fd04876718d6e5b376f63b13eaf239171f3de844508115ae3e91505658cfde7';
+            const forwarder = '0xA910f92ACdAf488fa6eF02174fb86208Ad7722ba';
+            const account = '0xA910f92ACdAf488fa6eF02174fb86208Ad7722ba';
+            const spied = spy(context.rocksideService);
 
             // MOCK
-            when(context.rocksideApiMock.createIdentity()).thenResolve({
+            when(context.configServiceMock.get('ROCKSIDE_FORWARDER_ADDRESS')).thenReturn(forwarder);
+            when(spied.createEOA()).thenResolve({
+                error: null,
+                response: {
+                    address: account,
+                },
+            });
+            when(context.rocksideApiMock.createIdentity(forwarder, account)).thenResolve({
                 transactionHash,
                 address,
             });
@@ -147,14 +165,28 @@ describe('Rockside Service', function() {
             });
 
             // CHECK CALLS
-            verify(context.rocksideApiMock.createIdentity()).once();
+            verify(context.configServiceMock.get('ROCKSIDE_FORWARDER_ADDRESS')).once();
+            verify(spied.createEOA()).once();
+            verify(context.rocksideApiMock.createIdentity(forwarder, account)).once();
         });
 
         it('should fail on api fail', async function() {
+            const forwarder = '0xA910f92ACdAf488fa6eF02174fb86208Ad7722ba';
+            const account = '0xA910f92ACdAf488fa6eF02174fb86208Ad7722ba';
+            const spied = spy(context.rocksideService);
             // DECLARE
 
             // MOCK
-            when(context.rocksideApiMock.createIdentity()).thenThrow(new NestError('an error occured'));
+            when(context.configServiceMock.get('ROCKSIDE_FORWARDER_ADDRESS')).thenReturn(forwarder);
+            when(spied.createEOA()).thenResolve({
+                error: null,
+                response: {
+                    address: account,
+                },
+            });
+            when(context.rocksideApiMock.createIdentity(forwarder, account)).thenThrow(
+                new NestError('an error occured'),
+            );
 
             // TRIGGER
             const res = await context.rocksideService.createIdentity();
@@ -164,7 +196,32 @@ describe('Rockside Service', function() {
             expect(res.response).toEqual(null);
 
             // CHECK CALLS
-            verify(context.rocksideApiMock.createIdentity()).once();
+            verify(context.configServiceMock.get('ROCKSIDE_FORWARDER_ADDRESS')).once();
+            verify(spied.createEOA()).once();
+            verify(context.rocksideApiMock.createIdentity(forwarder, account)).once();
+        });
+
+        it('should fail on eoa creation fail', async function() {
+            const forwarder = '0xA910f92ACdAf488fa6eF02174fb86208Ad7722ba';
+            const account = '0xA910f92ACdAf488fa6eF02174fb86208Ad7722ba';
+            const spied = spy(context.rocksideService);
+            // DECLARE
+
+            // MOCK
+            when(spied.createEOA()).thenResolve({
+                error: 'eoa_creation_failure',
+                response: null,
+            });
+
+            // TRIGGER
+            const res = await context.rocksideService.createIdentity();
+
+            // CHECK RETURNs
+            expect(res.error).toEqual('eoa_creation_error');
+            expect(res.response).toEqual(null);
+
+            // CHECK CALLS
+            verify(spied.createEOA()).once();
         });
     });
 
@@ -203,7 +260,10 @@ describe('Rockside Service', function() {
 
             // CHECK RETURNs
             expect(res.error).toEqual(null);
-            expect(res.response).toEqual(transactionHash);
+            expect(res.response).toEqual({
+                transaction_hash: transactionHash,
+                tracking_id: trackingId,
+            });
 
             // CHECK CALLS
             verify(

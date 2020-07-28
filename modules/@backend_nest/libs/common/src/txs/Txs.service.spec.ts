@@ -127,6 +127,7 @@ describe('Txs Service', function() {
                         transaction_hash: transactionHash,
                         block_number: 0,
                         confirmed: false,
+                        real_transaction_hash: undefined,
                     }),
                 ),
             ).thenResolve({
@@ -155,6 +156,7 @@ describe('Txs Service', function() {
                         transaction_hash: transactionHash,
                         block_number: 0,
                         confirmed: false,
+                        real_transaction_hash: undefined,
                     }),
                 ),
             ).called();
@@ -231,7 +233,7 @@ describe('Txs Service', function() {
             const res = await context.txsService.subscribe(transactionHash);
 
             expect(res).toEqual({
-                error: 'invalid_tx_hash_format',
+                error: 'invalid_tx_hash_or_tracking_id_format',
                 response: null,
             });
         });
@@ -275,11 +277,6 @@ describe('Txs Service', function() {
         it('should fail on creation error', async function() {
             const transactionHash = '0x642d048892f14c556d16dcbbdc5567bafee2d9bae40226d13807e72e097d59b8';
             const spied = spy(context.txsService);
-            const txentiy = {
-                transaction_hash: '0x93e56b205c2ca911b754536d2474a75b9823e0b3d2b3537d08457ebd5f8f8cce',
-                confirmed: false,
-                block_number: 0,
-            };
 
             when(
                 spied.search(
@@ -298,6 +295,7 @@ describe('Txs Service', function() {
                         transaction_hash: transactionHash,
                         block_number: 0,
                         confirmed: false,
+                        real_transaction_hash: undefined,
                     }),
                 ),
             ).thenResolve({
@@ -326,6 +324,7 @@ describe('Txs Service', function() {
                         transaction_hash: transactionHash,
                         block_number: 0,
                         confirmed: false,
+                        real_transaction_hash: undefined,
                     }),
                 ),
             ).called();
@@ -528,20 +527,11 @@ describe('Txs Service', function() {
             const to = '0x0EB246b377E6E267EBC36b2cE5730b5cc3414c8a';
             const data = '0x';
             const value = '0';
-            const gasLimit = '1000000';
-            const gasPrice = '1234';
             const transactionHash = '0x39647e8d441a5140e4c6776b59565c3aaab1087702b3256985d8c0200ca68021';
+            const trackingId = '01AA01AAAAAAA01AA01AAAAAAA';
             const spiedService = spy(context.txsService);
 
             // MOCK
-            when(spiedService.estimateGasLimit(from, to, data)).thenResolve({
-                error: null,
-                response: gasLimit,
-            });
-            when(spiedService.estimateGasPrice(gasLimit)).thenResolve({
-                error: null,
-                response: gasPrice,
-            });
             when(
                 context.rocksideService.sendTransaction(
                     deepEqual({
@@ -549,17 +539,19 @@ describe('Txs Service', function() {
                         to,
                         data,
                         value,
-                        gasPrice,
                     }),
                 ),
             ).thenResolve({
                 error: null,
-                response: transactionHash,
-            });
-            when(spiedService.subscribe(transactionHash)).thenResolve({
-                error: null,
                 response: {
                     transaction_hash: transactionHash,
+                    tracking_id: trackingId,
+                },
+            });
+            when(spiedService.subscribe(trackingId, transactionHash)).thenResolve({
+                error: null,
+                response: {
+                    transaction_hash: trackingId,
                 } as TxEntity,
             });
 
@@ -569,12 +561,10 @@ describe('Txs Service', function() {
             // CHECK RETURNS
             expect(res.error).toEqual(null);
             expect(res.response).toEqual({
-                transaction_hash: transactionHash,
+                transaction_hash: trackingId,
             });
 
             // CHECK CALLS
-            verify(spiedService.estimateGasLimit(from, to, data)).once();
-            verify(spiedService.estimateGasPrice(gasLimit)).once();
             verify(
                 context.rocksideService.sendTransaction(
                     deepEqual({
@@ -582,67 +572,10 @@ describe('Txs Service', function() {
                         to,
                         data,
                         value,
-                        gasPrice,
                     }),
                 ),
             ).once();
-            verify(spiedService.subscribe(transactionHash)).once();
-        });
-
-        it('should fail on limit estimation error', async function() {
-            // DECLARE
-            const from = '0x03B9dd9247B45CCec8B8cE5b2fEC768D9D32936c';
-            const to = '0x0EB246b377E6E267EBC36b2cE5730b5cc3414c8a';
-            const data = '0x';
-            const value = '0';
-            const spiedService = spy(context.txsService);
-
-            // MOCK
-            when(spiedService.estimateGasLimit(from, to, data)).thenResolve({
-                error: 'unexpected_error',
-                response: null,
-            });
-
-            // TRIGGER
-            const res = await context.txsService.sendRawTransaction(from, to, value, data);
-
-            // CHECK RETURNS
-            expect(res.error).toEqual('unexpected_error');
-            expect(res.response).toEqual(null);
-
-            // CHECK CALLS
-            verify(spiedService.estimateGasLimit(from, to, data)).once();
-        });
-
-        it('should fail on price estimation error', async function() {
-            // DECLARE
-            const from = '0x03B9dd9247B45CCec8B8cE5b2fEC768D9D32936c';
-            const to = '0x0EB246b377E6E267EBC36b2cE5730b5cc3414c8a';
-            const data = '0x';
-            const value = '0';
-            const gasLimit = '1000000';
-            const spiedService = spy(context.txsService);
-
-            // MOCK
-            when(spiedService.estimateGasLimit(from, to, data)).thenResolve({
-                error: null,
-                response: gasLimit,
-            });
-            when(spiedService.estimateGasPrice(gasLimit)).thenResolve({
-                error: 'unexpected_error',
-                response: null,
-            });
-
-            // TRIGGER
-            const res = await context.txsService.sendRawTransaction(from, to, value, data);
-
-            // CHECK RETURNS
-            expect(res.error).toEqual('unexpected_error');
-            expect(res.response).toEqual(null);
-
-            // CHECK CALLS
-            verify(spiedService.estimateGasLimit(from, to, data)).once();
-            verify(spiedService.estimateGasPrice(gasLimit)).once();
+            verify(spiedService.subscribe(trackingId, transactionHash)).once();
         });
 
         it('should fail on tx error', async function() {
@@ -651,20 +584,8 @@ describe('Txs Service', function() {
             const to = '0x0EB246b377E6E267EBC36b2cE5730b5cc3414c8a';
             const data = '0x';
             const value = '0';
-            const gasLimit = '1000000';
-            const gasPrice = '1234';
-            const transactionHash = '0x39647e8d441a5140e4c6776b59565c3aaab1087702b3256985d8c0200ca68021';
-            const spiedService = spy(context.txsService);
 
             // MOCK
-            when(spiedService.estimateGasLimit(from, to, data)).thenResolve({
-                error: null,
-                response: gasLimit,
-            });
-            when(spiedService.estimateGasPrice(gasLimit)).thenResolve({
-                error: null,
-                response: gasPrice,
-            });
             when(
                 context.rocksideService.sendTransaction(
                     deepEqual({
@@ -672,7 +593,6 @@ describe('Txs Service', function() {
                         to,
                         data,
                         value,
-                        gasPrice,
                     }),
                 ),
             ).thenResolve({
@@ -688,8 +608,6 @@ describe('Txs Service', function() {
             expect(res.response).toEqual(null);
 
             // CHECK CALLS
-            verify(spiedService.estimateGasLimit(from, to, data)).once();
-            verify(spiedService.estimateGasPrice(gasLimit)).once();
             verify(
                 context.rocksideService.sendTransaction(
                     deepEqual({
@@ -697,7 +615,6 @@ describe('Txs Service', function() {
                         to,
                         data,
                         value,
-                        gasPrice,
                     }),
                 ),
             ).once();
@@ -709,20 +626,11 @@ describe('Txs Service', function() {
             const to = '0x0EB246b377E6E267EBC36b2cE5730b5cc3414c8a';
             const data = '0x';
             const value = '0';
-            const gasLimit = '1000000';
-            const gasPrice = '1234';
             const transactionHash = '0x39647e8d441a5140e4c6776b59565c3aaab1087702b3256985d8c0200ca68021';
+            const trackingId = '01AA01AAAAAAA01AA01AAAAAAA';
             const spiedService = spy(context.txsService);
 
             // MOCK
-            when(spiedService.estimateGasLimit(from, to, data)).thenResolve({
-                error: null,
-                response: gasLimit,
-            });
-            when(spiedService.estimateGasPrice(gasLimit)).thenResolve({
-                error: null,
-                response: gasPrice,
-            });
             when(
                 context.rocksideService.sendTransaction(
                     deepEqual({
@@ -730,14 +638,16 @@ describe('Txs Service', function() {
                         to,
                         data,
                         value,
-                        gasPrice,
                     }),
                 ),
             ).thenResolve({
                 error: null,
-                response: transactionHash,
+                response: {
+                    transaction_hash: transactionHash,
+                    tracking_id: trackingId,
+                },
             });
-            when(spiedService.subscribe(transactionHash)).thenResolve({
+            when(spiedService.subscribe(trackingId, transactionHash)).thenResolve({
                 error: 'unexpected_error',
                 response: null,
             });
@@ -750,8 +660,6 @@ describe('Txs Service', function() {
             expect(res.response).toEqual(null);
 
             // CHECK CALLS
-            verify(spiedService.estimateGasLimit(from, to, data)).once();
-            verify(spiedService.estimateGasPrice(gasLimit)).once();
             verify(
                 context.rocksideService.sendTransaction(
                     deepEqual({
@@ -759,11 +667,10 @@ describe('Txs Service', function() {
                         to,
                         data,
                         value,
-                        gasPrice,
                     }),
                 ),
             ).once();
-            verify(spiedService.subscribe(transactionHash)).once();
+            verify(spiedService.subscribe(trackingId, transactionHash)).once();
         });
     });
 });

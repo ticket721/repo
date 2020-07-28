@@ -19,16 +19,16 @@ import { EventsUpdateInputDto }              from '@app/server/controllers/event
 import { EventsUpdateResponseDto }           from '@app/server/controllers/events/dto/EventsUpdateResponse.dto';
 import { EventsDeleteCategoriesInputDto }    from '@app/server/controllers/events/dto/EventsDeleteCategoriesInput.dto';
 import { EventsDeleteCategoriesResponseDto } from '@app/server/controllers/events/dto/EventsDeleteCategoriesResponse.dto';
-import { EventsAddCategoriesInputDto }       from '@app/server/controllers/events/dto/EventsAddCategoriesInput.dto';
-import { EventsAddCategoriesResponseDto }    from '@app/server/controllers/events/dto/EventsAddCategoriesResponse.dto';
-import { EventsDeleteDatesInputDto }         from '@app/server/controllers/events/dto/EventsDeleteDatesInput.dto';
-import { EventsDeleteDatesResponseDto }      from '@app/server/controllers/events/dto/EventsDeleteDatesResponse.dto';
-import { EventsAddDatesInputDto }            from '@app/server/controllers/events/dto/EventsAddDatesInput.dto';
-import { EventsAddDatesResponseDto }         from '@app/server/controllers/events/dto/EventsAddDatesResponse.dto';
-import { EventsCountInputDto }               from '@app/server/controllers/events/dto/EventsCountInput.dto';
-import { EventsCountResponseDto }            from '@app/server/controllers/events/dto/EventsCountResponse.dto';
-import { EventsWithdrawInputDto }            from '@app/server/controllers/events/dto/EventsWithdrawInput.dto';
-import { EventsWithdrawResponseDto }         from '@app/server/controllers/events/dto/EventsWithdrawResponse.dto';
+import { EventsAddCategoriesInputDto }    from '@app/server/controllers/events/dto/EventsAddCategoriesInput.dto';
+import { EventsAddCategoriesResponseDto } from '@app/server/controllers/events/dto/EventsAddCategoriesResponse.dto';
+import { EventsDeleteDatesInputDto }      from '@app/server/controllers/events/dto/EventsDeleteDatesInput.dto';
+import { EventsDeleteDatesResponseDto }   from '@app/server/controllers/events/dto/EventsDeleteDatesResponse.dto';
+import { EventsAddDatesInputDto }         from '@app/server/controllers/events/dto/EventsAddDatesInput.dto';
+import { EventsAddDatesResponseDto }      from '@app/server/controllers/events/dto/EventsAddDatesResponse.dto';
+import { EventsCountInputDto }            from '@app/server/controllers/events/dto/EventsCountInput.dto';
+import { EventsCountResponseDto }         from '@app/server/controllers/events/dto/EventsCountResponse.dto';
+import { EventsGuestlistInputDto }        from '@app/server/controllers/events/dto/EventsGuestlistInput.dto';
+import { EventsGuestlistResponseDto }     from '@app/server/controllers/events/dto/EventsGuestlistResponse.dto';
 
 export async function eventsSearch(
     token: string,
@@ -253,18 +253,30 @@ export async function eventsAddDates(
 
 }
 
-export async function eventsWithdraw(
+// export async function eventsWithdraw(
+//     token: string,
+//     event: string,
+//     query: EventsWithdrawInputDto
+// ): Promise<AxiosResponse<EventsWithdrawResponseDto>> {
+//
+//     const self: T721SDK = this;
+//
+//     return self.post<EventsWithdrawInputDto>(`/events/${event}/withdraw`, {
+//         Authorization: `Bearer ${token}`,
+//         'Content-Type': 'application/json',
+//     }, query);
+// }
+
+export async function eventsGuestlist(
     token: string,
     event: string,
-    query: EventsWithdrawInputDto
-): Promise<AxiosResponse<EventsWithdrawResponseDto>> {
+    query: EventsGuestlistInputDto
+): Promise<AxiosResponse<EventsGuestlistResponseDto>> {
 
     const self: T721SDK = this;
 
-    return self.post<EventsWithdrawInputDto>(`/events/${event}/withdraw`, {
+    return self.post<EventsGuestlistInputDto>(`/events/${event}/guestlist`, {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
     }, query);
 }
-
-

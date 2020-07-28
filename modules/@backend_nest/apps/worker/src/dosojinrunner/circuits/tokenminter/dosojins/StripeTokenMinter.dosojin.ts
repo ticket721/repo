@@ -1,5 +1,4 @@
 import {
-    BN,
     Connector,
     Dosojin,
     Gem,
@@ -8,8 +7,7 @@ import {
     OperationStatusNames,
     TransferConnectorStatusNames,
 } from 'dosojin';
-import { Inject, Injectable } from '@nestjs/common';
-import { Stripe } from 'stripe';
+import { Injectable } from '@nestjs/common';
 import { T721AdminService } from '@lib/common/contracts/T721Admin.service';
 import { UsersService } from '@lib/common/users/Users.service';
 import { TokenMinterArguments } from '@app/worker/dosojinrunner/circuits/tokenminter/TokenMinter.circuit';
@@ -19,7 +17,115 @@ import { ConfigService } from '@lib/common/config/Config.service';
 import { TxEntity } from '@lib/common/txs/entities/Tx.entity';
 import { T721TokenService } from '@lib/common/contracts/T721Token.service';
 import { NestError } from '@lib/common/utils/NestError';
+import { StripeService } from '@lib/common/stripe/Stripe.service';
 
+/**
+ * Placeholder operation
+ */
+export class TokenMinterOperationPlaceholder extends Operation {
+    /**
+     * Deoendency Injection
+     *
+     * @param name
+     * @param dosojin
+     */
+    constructor(name: string, dosojin: Dosojin) {
+        super(name, dosojin);
+    }
+
+    /**
+     * Run Method
+     *
+     * @param gem
+     */
+    public async run(gem: Gem): Promise<Gem> {
+        gem.setRefreshTimer(1000);
+
+        return gem.setOperationStatus(OperationStatusNames.OperationComplete);
+    }
+
+    /**
+     * Dry Run Method
+     *
+     * @param gem
+     */
+    /* istanbul ignore next */
+    public async dryRun(gem: Gem): Promise<Gem> {
+        throw new NestError('unimplemented dry run');
+    }
+
+    /**
+     * Method to recover scopes
+     *
+     * @param gem
+     */
+    public async scopes(gem: Gem): Promise<string[]> {
+        return ['fiat_eur'];
+    }
+}
+
+/**
+ * Connector to perform final token minting checks
+ */
+// tslint:disable-next-line:max-classes-per-file
+export class MintingTransactionConnectorPlaceholder extends Connector<any> {
+    /**
+     * Run Method
+     *
+     * @param gem
+     */
+    public async run(gem: Gem): Promise<Gem> {
+        gem.setRefreshTimer(1000);
+
+        return gem.setConnectorStatus(TransferConnectorStatusNames.TransferComplete);
+    }
+
+    /**
+     * Dry Run Method
+     *
+     * @param gem
+     */
+    public async dryRun(gem: Gem): Promise<Gem> {
+        throw new NestError('unimplemented dry run');
+    }
+
+    /**
+     * Method to recover scopes
+     *
+     * @param gem
+     */
+    public async scopes(gem: Gem): Promise<string[]> {
+        return ['fiat_eur'];
+    }
+
+    /**
+     * Method to recover Connector Info
+     *
+     * @param gem
+     */
+    public async getConnectorInfo(gem: Gem): Promise<any> {
+        return null;
+    }
+
+    /**
+     * Method to set receptacle Info
+     *
+     * @param info
+     */
+    public async setReceptacleInfo(info: any): Promise<void> {
+        return;
+    }
+
+    /**
+     * Dependency Injection
+     *
+     * @param name
+     * @param dosojin
+     */
+    constructor(name: string, dosojin: Dosojin) {
+        super(name, dosojin);
+    }
+}
 /**
  * Extra State Arguments added by the TokenMinter Operation
  */
@@ -98,34 +204,11 @@ export class TokenMinterOperation extends Operation {
             .redeemTokens(userAddress, amount, minter, code, authorization.signature)
             .encodeABI();
 
-        const gasLimitEstimation = await this.txsService.estimateGasLimit(
-            sender,
-            rawInstance._address,
-            encodedTransactionCall,
-        );
-
-        if (gasLimitEstimation.error) {
-            return gem.error(this.dosojin, `Cannot estimate gas limit: ${gasLimitEstimation.error}`);
-        }
-
-        const gasPriceEstimation = await this.txsService.estimateGasPrice(gasLimitEstimation.response);
-
-        if (gasPriceEstimation.error) {
-            return gem.error(this.dosojin, `Cannot estimate gas price: ${gasPriceEstimation.error}`);
-        }
-
         const tx = await this.txsService.sendRawTransaction(sender, rawInstance._address, '0', encodedTransactionCall);
 
         if (tx.error) {
             return gem.error(this.dosojin, `An error occured while trying to create transaction: ${tx.error}`);
         }
-
-        gem.addCost(
-            this.dosojin,
-            new BN(gasPriceEstimation.response).mul(new BN(gasLimitEstimation.response)),
-            'crypto_eth',
-            `Token Minting Transaction Fees`,
-        );
 
         gem.setState<TokenMinterArguments & TokenMinterTx>(this.dosojin, {
             ...state,
@@ -212,7 +295,7 @@ export class MintingTransactionConnector extends Connector<any> {
 
                 for (const event of events) {
                     if (
-                        event.transactionHash.toLowerCase() === tx.transaction_hash.toLowerCase() &&
+                        event.transactionHash.toLowerCase() === tx.real_transaction_hash.toLowerCase() &&
                         event.transactionIndex === tx.transaction_index
                     ) {
                         found = true;
@@ -366,7 +449,7 @@ export class StripeTokenMinterDosojin extends GenericStripeDosojin {
     /**
      * Dependency Injection
      *
-     * @param stripe
+     * @param stripeService
      * @param t721AdminService
      * @param t721TokenService
      * @param usersService
@@ -374,33 +457,16 @@ export class StripeTokenMinterDosojin extends GenericStripeDosojin {
      * @param configService
      */
     constructor(
-        @Inject('STRIPE_INSTANCE') stripe: Stripe,
+        stripeService: StripeService,
         t721AdminService: T721AdminService,
         t721TokenService: T721TokenService,
         usersService: UsersService,
         txsService: TxsService,
         configService: ConfigService,
     ) {
-        super('StripeTokenMinter', stripe);
-        this.addOperation(
-            new TokenMinterOperation(
-                'TokenMinterOperation',
-                this,
-                t721AdminService,
-                t721TokenService,
-                usersService,
-                txsService,
-            ),
-        );
-        this.addConnector(
-            new MintingTransactionConnector(
-                'MintingTransactionConnector',
-                this,
-                txsService,
-                t721TokenService,
-                usersService,
-            ),
-        );
+        super('StripeTokenMinter', stripeService.get());
+        this.addOperation(new TokenMinterOperationPlaceholder('TokenMinterOperation', this));
+        this.addConnector(new MintingTransactionConnectorPlaceholder('MintingTransactionConnector', this));
     }
 
     /**

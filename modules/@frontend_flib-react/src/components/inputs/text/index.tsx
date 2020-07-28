@@ -21,6 +21,7 @@ export interface InputProps extends React.ComponentProps<any> {
     className?: string;
     type?: string | undefined;
     icon?: string;
+    minimum?: number;
 }
 
 const Error = styled.span`
@@ -133,10 +134,12 @@ export const TextInput: React.FunctionComponent<InputProps & { className?: strin
                         autoComplete={'off'}
                         id={props.name}
                         name={props.name}
+                        min={props.minimum}
                         placeholder={props.placeholder}
                         onFocus={props.onFocus}
                         onKeyDown={props.onKeyDown}
                         value={props.value}
+                        step={'.01'}
                         type={props.type || 'text'}
                         onChange={props.onChange}
                         onBlur={props.onBlur}

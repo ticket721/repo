@@ -47,7 +47,7 @@ export const TicketDateCategoryList: React.FC<TicketDateCategoryListProps> = (pr
 
     const { token } = useSelector((state: T721AppState) => ({ token: state.auth.token?.value }));
     const [uuid] = useState(v4());
-    const [t] = useTranslation('event_ticket_list');
+    const [t] = useTranslation(['event_ticket_list', 'common']);
 
     const categories = useRequest<CategoriesSearchResponseDto>({
         method: 'categories.search',
@@ -56,7 +56,7 @@ export const TicketDateCategoryList: React.FC<TicketDateCategoryListProps> = (pr
                 $in: props.date.categories,
             },
         }],
-        refreshRate: 100,
+        refreshRate: 5,
     }, `HomeEvent@${uuid}`);
 
     if (categories.response.loading) {
@@ -64,7 +64,7 @@ export const TicketDateCategoryList: React.FC<TicketDateCategoryListProps> = (pr
     }
 
     if (categories.response.error) {
-        return <Error message={'Error while fetching categories'}/>;
+        return <Error message={t('error_cannot_fetch_categories')} retryLabel={t('common:retrying_in')} onRefresh={categories.force}/>;
     }
 
     let categoriesList = [];

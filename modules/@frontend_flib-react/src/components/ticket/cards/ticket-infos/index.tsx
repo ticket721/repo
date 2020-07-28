@@ -1,6 +1,5 @@
 import * as React from 'react';
 import styled from '../../../../config/styled';
-import Icon from '../../../icon';
 
 export interface TicketInfosCardProps extends React.ComponentProps<any> {
     ticketID?: string;
@@ -54,12 +53,13 @@ const TopInfo = styled.div`
     }
 
     h2 {
+        line-height: 24px;
         text-transform: uppercase;
     }
 
     h3 {
         color: ${(props) => props.theme.textColorDark};
-        margin-top: ${(props) => props.theme.regularSpacing};
+        margin-top: ${(props) => props.theme.smallSpacing};
     }
 `;
 
@@ -96,7 +96,8 @@ const TicketId = styled.span`
     color: ${(props) => props.theme.textColorDarker};
     display: block;
     font-size: 10px;
-    margin-bottom: 8px;
+    margin-bottom: ${(props) => props.theme.regularSpacing};
+    text-transform: uppercase;
 `;
 
 export const TicketInfosCard: React.FunctionComponent<TicketInfosCardProps> = (
@@ -108,7 +109,6 @@ export const TicketInfosCard: React.FunctionComponent<TicketInfosCardProps> = (
                 <TicketId>{props.ticketID}</TicketId>
                 <h2>{props.eventName}</h2>
                 <h3>{props.ticketType}</h3>
-                <Icon icon={'t721'} size={'48px'} color={'rgba(255, 255, 255, 0.38)'} />
             </TopInfo>
             {props.seatInfo && (
                 <BottomInfos>

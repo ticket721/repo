@@ -1,0 +1,36 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: euw-prod
+  region: eu-west-3
+
+managedNodeGroups:
+  - name: elassandra-3a
+    instanceType: t2.medium
+    minSize: 2
+    maxSize: 2
+    privateNetworking: true
+    availabilityZones: ["eu-west-3a"]
+    iam:
+      withAddonPolicies:
+        imageBuilder: true
+        autoScaler: true
+        externalDNS: true
+        certManager: true
+        albIngress: true
+        efs: true
+  - name: core-3a
+    instanceType: t2.small
+    minSize: 2
+    maxSize: 12
+    privateNetworking: true
+    availabilityZones: ["eu-west-3a"]
+    iam:
+      withAddonPolicies:
+        imageBuilder: true
+        autoScaler: true
+        externalDNS: true
+        certManager: true
+        albIngress: true
+        efs: true

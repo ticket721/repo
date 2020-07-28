@@ -1,17 +1,28 @@
 import * as React from 'react';
 import styled from '../../config/styled';
 
-const StyledNavbar = styled.nav`
+interface StyledNavbar {
+    visible: boolean;
+    iconHeight: string;
+}
+
+const StyledNavbar = styled.nav<StyledNavbar>`
     align-items: center;
     background-color: rgba(33, 29, 45, 0.6);
     backdrop-filter: blur(6px);
     border-top-left-radius: ${(props) => props.theme.doubleSpacing};
     border-top-right-radius: ${(props) => props.theme.doubleSpacing};
-    bottom: 0;
+    transition: bottom 500ms ease;
+    bottom: ${(props) =>
+        props.visible
+            ? '0'
+            : `calc(-${props.theme.regularSpacing} * 3 - env(safe-area-inset-bottom) - ${props.iconHeight})`};
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     left: 0;
     padding: calc(${(props) => props.theme.regularSpacing} * 1.5) ${(props) => props.theme.doubleSpacing};
+    padding-bottom: calc(${(props) => props.theme.regularSpacing} * 1.5 + env(safe-area-inset-bottom));
+    padding-bottom: calc(${(props) => props.theme.regularSpacing} * 1.5 + constant(safe-area-inset-bottom));
     position: fixed;
     width: 100%;
     z-index: 9999;
@@ -21,7 +32,6 @@ const StyledNavbar = styled.nav`
         color: #fff;
         display: inline-flex;
         opacity: 0.6;
-        padding: 0 1.25rem;
         position: relative;
         text-decoration: none;
         transition: opacity 300ms ease;
@@ -51,8 +61,17 @@ const StyledNavbar = styled.nav`
     }
 `;
 
-export const Navbar: React.FunctionComponent = (props): JSX.Element => {
-    return <StyledNavbar>{props.children}</StyledNavbar>;
+export interface NavbarProps {
+    visible: boolean;
+    iconHeight: string;
+}
+
+export const Navbar: React.FunctionComponent<NavbarProps> = (props): JSX.Element => {
+    return (
+        <StyledNavbar visible={props.visible} iconHeight={props.iconHeight}>
+            {props.children}
+        </StyledNavbar>
+    );
 };
 
 export default Navbar;

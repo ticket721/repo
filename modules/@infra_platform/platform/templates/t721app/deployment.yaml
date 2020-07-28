@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "platform.fullname" . }}--t721app--d
+  labels:
+    app: {{ include "platform.fullname" . }}--t721app
+    name: {{ include "platform.fullname" . }}--t721app--d
+    chart: {{ .Chart.Name }}
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: {{ include "platform.fullname" . }}--t721app
+      name: {{ include "platform.fullname" . }}--t721app
+      chart: {{ .Chart.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "platform.fullname" . }}--t721app
+        name: {{ include "platform.fullname" . }}--t721app
+        chart: {{ .Chart.Name }}
+    spec:
+      serviceAccountName: {{ include "platform.fullname" . }}--platform--sa
+      containers:
+        - name: {{ template  "platform.fullname" . }}--t721app
+          image: "{{ .Values.t721app.image.repository }}:{{ .Values.t721app.image.tag }}"
+          imagePullPolicy: {{ .Values.t721app.image.pullPolicy }}
+          env:
+            - name: NODE_ENV
+              value: production
+            - name: REACT_APP_T721_SERVER_HOST
+              value: '{{ required "[t721app] Missing config.serverEndpoint.host value" .Values.config.serverEndpoint.host }}'
+            - name: REACT_APP_T721_SERVER_PORT
+              value: '{{ required "[t721app] Missing config.serverEndpoint.port value" .Values.config.serverEndpoint.port }}'
+            - name: REACT_APP_T721_SERVER_PROTOCOL
+              value: '{{ required "[t721app] Missing config.serverEndpoint.protocol value" .Values.config.serverEndpoint.protocol }}'
+            - name: REACT_APP_ARTIFACT_PATH
+              value: '../../artifacts/{{ required "[t721app] Missing config.artifact value" .Values.config.artifact }}'
+            - name: REACT_APP_STRIPE_API_KEY
+              value: '{{ required "[t721app] Missing config.t721app.publishableStripeApiKey value" .Values.config.t721app.publishableStripeApiKey }}'
+            - name: REACT_APP_SEGMENT_API_KEY
+              value: '{{ required "[t721app] Missing config.t721app.segmentApiKey value" .Values.config.t721app.segmentApiKey }}'
+            - name: REACT_APP_ETHERSCAN_URL
+              value: '{{ required "[t721app] Missing config.etherscanUrl value" .Values.config.etherscanUrl }}'
+          ports:
+            - name: http
+              containerPort: 5000
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+

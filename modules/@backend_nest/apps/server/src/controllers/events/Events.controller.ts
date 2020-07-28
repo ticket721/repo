@@ -28,7 +28,7 @@ import { EventsBuildInputDto } from '@app/server/controllers/events/dto/EventsBu
 import { getT721ControllerGroupID, toAcceptedAddressFormat, uuidEq } from '@common/global';
 import { ActionSetToEventEntityConverter } from '@app/server/controllers/events/utils/ActionSetToEventEntityConverter.helper';
 import { ConfigService } from '@lib/common/config/Config.service';
-import { CurrenciesService, ERC20Currency } from '@lib/common/currencies/Currencies.service';
+import { CurrenciesService } from '@lib/common/currencies/Currencies.service';
 import { DatesService } from '@lib/common/dates/Dates.service';
 import { DateEntity } from '@lib/common/dates/entities/Date.entity';
 import { HttpExceptionFilter } from '@app/server/utils/HttpException.filter';
@@ -55,11 +55,10 @@ import { RocksideCreateEOAResponse, RocksideService } from '@lib/common/rockside
 import { ValidGuard } from '@app/server/authentication/guards/ValidGuard.guard';
 import { EventsCountInputDto } from '@app/server/controllers/events/dto/EventsCountInput.dto';
 import { EventsCountResponseDto } from '@app/server/controllers/events/dto/EventsCountResponse.dto';
-import { EventsWithdrawInputDto } from '@app/server/controllers/events/dto/EventsWithdrawInput.dto';
-import { EventsWithdrawResponseDto } from '@app/server/controllers/events/dto/EventsWithdrawResponse.dto';
-import { contractCallHelper } from '@lib/common/utils/contractCall.helper';
-import { T721ControllerV0Service } from '@lib/common/contracts/t721controller/T721Controller.V0.service';
-import { AuthorizationsService } from '@lib/common/authorizations/Authorizations.service';
+import { EventsGuestlistInputDto } from '@app/server/controllers/events/dto/EventsGuestlistInput.dto';
+import { EventsGuestlistResponseDto, GuestInfos } from '@app/server/controllers/events/dto/EventsGuestlistResponse.dto';
+import { SearchInputType } from '@lib/common/utils/SearchInput.type';
+import { MetadataEntity } from '@lib/common/metadatas/entities/Metadata.entity';
 
 /**
  * Events controller to create and fetch events
@@ -81,8 +80,6 @@ export class EventsController extends ControllerBasics<EventEntity> {
      * @param rightsService
      * @param metadatasService
      * @param rocksideService
-     * @param t721ControllerV0Service
-     * @param authorizationsService
      */
     constructor(
         private readonly eventsService: EventsService,
@@ -95,8 +92,6 @@ export class EventsController extends ControllerBasics<EventEntity> {
         private readonly rightsService: RightsService,
         private readonly metadatasService: MetadatasService,
         private readonly rocksideService: RocksideService,
-        private readonly t721ControllerV0Service: T721ControllerV0Service,
-        private readonly authorizationsService: AuthorizationsService,
     ) {
         super();
     }
@@ -1005,14 +1000,112 @@ export class EventsController extends ControllerBasics<EventEntity> {
         };
     }
 
+    // /**
+    //  * Withdraw tokens from the t721controller
+    //  *
+    //  * @param body
+    //  * @param eventId
+    //  * @param user
+    //  */
+    // @Post('/:eventId/withdraw')
+    // @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
+    // @UseFilters(new HttpExceptionFilter())
+    // @HttpCode(StatusCodes.Created)
+    // @Roles('authenticated')
+    // @ApiResponses([
+    //     StatusCodes.Created,
+    //     StatusCodes.NotFound,
+    //     StatusCodes.Unauthorized,
+    //     StatusCodes.InternalServerError,
+    // ])
+    // async withdraw(
+    //     @Body() body: EventsWithdrawInputDto,
+    //     @Param('eventId') eventId: string,
+    //     @User() user: UserDto,
+    // ): Promise<EventsWithdrawResponseDto> {
+    //     const eventEntity: EventEntity = await this._authorizeOne(
+    //         this.rightsService,
+    //         this.eventsService,
+    //         user,
+    //         {
+    //             id: eventId,
+    //         },
+    //         'group_id',
+    //         ['withdraw'],
+    //     );
+    //
+    //     const currency = await this.currenciesService.get(body.currency);
+    //
+    //     if (currency === undefined) {
+    //         throw new HttpException(
+    //             {
+    //                 status: StatusCodes.NotFound,
+    //                 message: 'cannot_find_currency',
+    //             },
+    //             StatusCodes.NotFound,
+    //         );
+    //     }
+    //
+    //     if (currency.type !== 'erc20') {
+    //         throw new HttpException(
+    //             {
+    //                 status: StatusCodes.Forbidden,
+    //                 message: 'invalid_currency_to_withdraw',
+    //             },
+    //             StatusCodes.Forbidden,
+    //         );
+    //     }
+    //
+    //     const erc20Currency: ERC20Currency = currency as ERC20Currency;
+    //     const groupId = eventEntity.group_id;
+    //
+    //     const balance = await this._serviceCall(
+    //         contractCallHelper(
+    //             await this.t721ControllerV0Service.get(),
+    //             'balanceOf',
+    //             {},
+    //             groupId,
+    //             erc20Currency.address,
+    //         ),
+    //         StatusCodes.InternalServerError,
+    //         'cannot_retrieve_balance',
+    //     );
+    //
+    //     if (BigInt(balance.toString()) < BigInt(body.amount)) {
+    //         throw new HttpException(
+    //             {
+    //                 status: StatusCodes.Forbidden,
+    //                 message: 'requested_amount_too_high',
+    //             },
+    //             StatusCodes.Forbidden,
+    //         );
+    //     }
+    //
+    //     const txSeq = await this._serviceCall(
+    //         this.authorizationsService.generateEventWithdrawAuthorizationAndTransactionSequence(
+    //             user,
+    //             eventEntity.address,
+    //             eventEntity.id.toLowerCase(),
+    //             erc20Currency.address,
+    //             body.amount,
+    //         ),
+    //         StatusCodes.InternalServerError,
+    //         'cannot_generate_authorization',
+    //     );
+    //
+    //     return {
+    //         txSeqId: txSeq.txSeq.id,
+    //     };
+    // }
+
     /**
-     * Withdraw tokens from the t721controller
+     * Recover guest list for one of multiple dates of an event
      *
      * @param body
      * @param eventId
      * @param user
      */
-    @Post('/:eventId/withdraw')
+    @Post('/:eventId/guestlist')
     @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
     @UseFilters(new HttpExceptionFilter())
     @HttpCode(StatusCodes.Created)
@@ -1023,11 +1116,11 @@ export class EventsController extends ControllerBasics<EventEntity> {
         StatusCodes.Unauthorized,
         StatusCodes.InternalServerError,
     ])
-    async withdraw(
-        @Body() body: EventsWithdrawInputDto,
+    async guestlist(
+        @Body() body: EventsGuestlistInputDto,
         @Param('eventId') eventId: string,
         @User() user: UserDto,
-    ): Promise<EventsWithdrawResponseDto> {
+    ): Promise<EventsGuestlistResponseDto> {
         const eventEntity: EventEntity = await this._authorizeOne(
             this.rightsService,
             this.eventsService,
@@ -1036,70 +1129,130 @@ export class EventsController extends ControllerBasics<EventEntity> {
                 id: eventId,
             },
             'group_id',
-            ['withdraw'],
+            ['owner'],
         );
 
-        const currency = await this.currenciesService.get(body.currency);
+        let dateIds: string[];
 
-        if (currency === undefined) {
-            throw new HttpException(
-                {
-                    status: StatusCodes.NotFound,
-                    message: 'cannot_find_currency',
-                },
-                StatusCodes.NotFound,
-            );
+        const dates = await this._search<DateEntity>(this.datesService, {
+            group_id: {
+                $eq: eventEntity.group_id,
+            },
+            parent_type: {
+                $eq: 'event',
+            },
+            parent_id: {
+                $eq: eventEntity.id,
+            },
+        } as SearchInputType<DateEntity>);
+
+        if (body.dateIds.length === 0) {
+            dateIds = dates.map((d: DateEntity) => d.id);
+        } else {
+            for (const date of body.dateIds) {
+                if (dates.findIndex((d: DateEntity): boolean => d.id === date) === -1) {
+                    throw new HttpException(
+                        {
+                            status: StatusCodes.Forbidden,
+                            message: 'date_id_not_in_event',
+                        },
+                        StatusCodes.Forbidden,
+                    );
+                }
+            }
+            dateIds = body.dateIds;
         }
 
-        if (currency.type !== 'erc20') {
-            throw new HttpException(
-                {
-                    status: StatusCodes.Forbidden,
-                    message: 'invalid_currency_to_withdraw',
-                },
-                StatusCodes.Forbidden,
-            );
+        let ownerships: GuestInfos[] = [];
+
+        const dateCategoryEntities = await this._search<CategoryEntity>(this.categoriesService, {
+            parent_type: {
+                $eq: 'date',
+            },
+            parent_id: {
+                $in: [...dateIds],
+            },
+        } as SearchInputType<CategoryEntity>);
+
+        const globalCategoryEntities = await this._search<CategoryEntity>(this.categoriesService, {
+            parent_type: {
+                $eq: 'event',
+            },
+            parent_id: {
+                $eq: eventEntity.id,
+            },
+        } as SearchInputType<CategoryEntity>);
+
+        for (const dateCategory of dateCategoryEntities) {
+            ownerships = [
+                ...ownerships,
+                ...(
+                    await this._search<MetadataEntity>(this.metadatasService, {
+                        class_name: {
+                            $eq: 'ownership',
+                        },
+                        type_name: {
+                            $eq: 'ticket',
+                        },
+                        bool_: {
+                            $eq: {
+                                valid: true,
+                            },
+                        },
+                        str_: {
+                            $eq: {
+                                categoryId: dateCategory.id,
+                            },
+                        },
+                    } as any)
+                ).map(
+                    (m: MetadataEntity): GuestInfos => ({
+                        address: m.str_.address,
+                        category: m.str_.categoryId,
+                        username: m.str_.username,
+                        ticket: m.str_.ticket,
+                        email: m.str_.email,
+                    }),
+                ),
+            ];
         }
 
-        const erc20Currency: ERC20Currency = currency as ERC20Currency;
-        const groupId = eventEntity.group_id;
-
-        const balance = await this._serviceCall(
-            contractCallHelper(
-                await this.t721ControllerV0Service.get(),
-                'balanceOf',
-                {},
-                groupId,
-                erc20Currency.address,
-            ),
-            StatusCodes.InternalServerError,
-            'cannot_retrieve_balance',
-        );
-
-        if (BigInt(balance.toString()) < BigInt(body.amount)) {
-            throw new HttpException(
-                {
-                    status: StatusCodes.Forbidden,
-                    message: 'requested_amount_too_high',
-                },
-                StatusCodes.Forbidden,
-            );
+        for (const globalCategory of globalCategoryEntities) {
+            ownerships = [
+                ...ownerships,
+                ...(
+                    await this._search<MetadataEntity>(this.metadatasService, {
+                        class_name: {
+                            $eq: 'ownership',
+                        },
+                        type_name: {
+                            $eq: 'ticket',
+                        },
+                        bool_: {
+                            $eq: {
+                                valid: true,
+                            },
+                        },
+                        str_: {
+                            $eq: {
+                                categoryId: globalCategory.id,
+                            },
+                        },
+                    } as any)
+                ).map(
+                    (m: MetadataEntity): GuestInfos => ({
+                        address: m.str_.address,
+                        category: m.str_.categoryId,
+                        username: m.str_.username,
+                        ticket: m.str_.ticket,
+                        email: m.str_.email,
+                    }),
+                ),
+            ];
         }
-
-        const txSeq = await this._serviceCall(
-            this.authorizationsService.generateEventWithdrawAuthorizationAndTransactionSequence(
-                user,
-                eventEntity.address,
-                eventEntity.id.toLowerCase(),
-                erc20Currency.address,
-                body.amount,
-            ),
-            StatusCodes.InternalServerError,
-            'cannot_generate_authorization',
-        );
 
         return {
-            txSeqId: txSeq.txSeq.id,
+            guests: ownerships,
         };
     }
 }

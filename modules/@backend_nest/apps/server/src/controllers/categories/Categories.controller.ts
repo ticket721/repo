@@ -27,7 +27,7 @@ import { CategoriesUpdateResponseDto } from '@app/server/controllers/categories/
 import { RightsService } from '@lib/common/rights/Rights.service';
 import { ConfigService } from '@lib/common/config/Config.service';
 import { serialize } from '@common/global';
-import { CurrenciesService, Price } from '@lib/common/currencies/Currencies.service';
+import { CurrenciesService, InputPrice, Price } from '@lib/common/currencies/Currencies.service';
 import { AuthGuard } from '@nestjs/passport';
 import { Roles, RolesGuard } from '@app/server/authentication/guards/RolesGuard.guard';
 import { isFutureDateRange, isValidDateRange } from '@common/global';
@@ -172,6 +172,18 @@ export class CategoriesController extends ControllerBasics<CategoryEntity> {
             );
         }
 
+        const priceChecks = this.checkPrices(body.prices);
+
+        if (priceChecks) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.BadRequest,
+                    message: priceChecks,
+                },
+                StatusCodes.BadRequest,
+            );
+        }
+
         const categoryEntity: CategoryEntity = await this._new<CategoryEntity>(this.categoriesService, {
             group_id: body.group_id,
             category_name: categoryName,
@@ -221,6 +233,36 @@ export class CategoriesController extends ControllerBasics<CategoryEntity> {
         return {
             category: categoryEntity,
         };
+    }
+
+    /**
+     * Utility to check prices provided for a creation / update of a currency
+     *
+     * @param prices
+     */
+    checkPrices(prices: InputPrice[]): string {
+        const allowed = ['T721Token', 'Fiat'];
+        const minimum = 200;
+
+        if (prices.length === 0) {
+            return 'free_category_unavailable';
+        }
+
+        if (prices.length > 1) {
+            return 'multi_currency_unavailable';
+        }
+
+        for (const price of prices) {
+            if (allowed.indexOf(price.currency) === -1) {
+                return 'currency_unavailable';
+            }
+
+            if (parseInt(price.price, 10) < minimum) {
+                return 'price_under_minimum_allowed';
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -291,6 +333,18 @@ export class CategoriesController extends ControllerBasics<CategoryEntity> {
         let newPrices: Price[] = [];
 
         if (body.prices) {
+            const priceChecks = this.checkPrices(body.prices);
+
+            if (priceChecks) {
+                throw new HttpException(
+                    {
+                        status: StatusCodes.BadRequest,
+                        message: priceChecks,
+                    },
+                    StatusCodes.BadRequest,
+                );
+            }
+
             const pricesResolverRes = await this.currenciesService.resolveInputPrices(body.prices);
 
             if (pricesResolverRes.error) {
@@ -304,6 +358,12 @@ export class CategoriesController extends ControllerBasics<CategoryEntity> {
             }
 
             newPrices = pricesResolverRes.response;
+        }
+
+        if (body.seats !== undefined) {
+            if (body.seats < categoryEntity.reserved) {
+                body.seats = categoryEntity.reserved;
+            }
         }
 
         await this._edit<CategoryEntity>(

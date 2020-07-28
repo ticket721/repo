@@ -211,6 +211,26 @@ export class ActionSetsService extends CRUDExtension<ActionSetsRepository, Actio
     }
 
     /**
+     * Utility to extract the lifecycle callback from the provider if it exists, or do nothing
+     *
+     * @param actionSet
+     */
+    async onFailure(actionSet: ActionSet): Promise<ServiceResponse<void>> {
+        let lifecycles: ActionSetLifecyclesBase;
+
+        try {
+            lifecycles = await this.moduleRef.get(`ACTION_SET_LIFECYCLES/${actionSet.name}`, { strict: false });
+        } catch (e) {
+            return {
+                error: null,
+                response: null,
+            };
+        }
+
+        return lifecycles.onFailure(actionSet);
+    }
+
+    /**
      * Sets a specific step into error mode
      *
      * @param actionSetId
@@ -278,7 +298,7 @@ export class ActionSetsService extends CRUDExtension<ActionSetsRepository, Actio
         actionIdx: number,
         data: any,
     ): Promise<ServiceResponse<ActionSetEntity>> {
-        let actionSet;
+        let actionSet: ActionSet;
 
         if (typeof actionSetId === 'object') {
             actionSet = actionSetId;
@@ -308,6 +328,12 @@ export class ActionSetsService extends CRUDExtension<ActionSetsRepository, Actio
 
         actionSet.setStatus(`${actionSet.actions[actionIdx].type}:waiting` as ActionSetStatus);
         actionSet.actions[actionIdx].setStatus('waiting');
+
+        for (let idx = actionIdx; idx < actionSet.actions.length; ++idx) {
+            if (actionSet.actions[idx].status !== 'waiting') {
+                actionSet.actions[idx].setStatus('waiting');
+            }
+        }
 
         actionSet.setCurrentAction(actionIdx);
 

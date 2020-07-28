@@ -7,12 +7,14 @@ import { DateSubMenu }   from './DateSubMenu';
 import { GlobalSubMenu } from './GlobalSubMenu';
 import { DateActions }   from './DateActions';
 import { DeleteAction }  from './DeleteAction';
+import { PublishAll }    from './PublishAll';
 
 export const EventMenu: React.FC = () => {
     const { dateId } = useParams();
 
     return (
         <Container>
+            <PublishAll/>
             <Dropdown/>
             {
                 dateId &&
