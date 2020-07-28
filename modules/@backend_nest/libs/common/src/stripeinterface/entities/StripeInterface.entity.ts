@@ -4,10 +4,20 @@ import {
     Entity,
     GeneratedUUidColumn,
     UpdateDateColumn,
-}              from '@iaminfinity/express-cassandra';
+} from '@iaminfinity/express-cassandra';
 
+/**
+ * Payment method from stripe
+ */
 interface StripePaymentMethod {
+    /**
+     * Type of payment method
+     */
     type: string;
+
+    /**
+     * Token of payment method
+     */
     stripe_token: string;
 }
 
@@ -42,59 +52,76 @@ export class StripeInterfaceEntity {
     }
 
     /**
-     * Grantee ID of the rights
+     * ID of the interface
      */
     @GeneratedUUidColumn()
-        // tslint:disable-next-line:variable-name
     id: string;
 
+    /**
+     * ID of the owner
+     */
     @Column({
-        type: 'uuid'
+        type: 'uuid',
     })
     owner: string;
 
+    /**
+     * List of available payment methods
+     */
     @Column({
         type: 'list',
         typeDef: '<frozen<stripe_payment_method>>',
     })
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     payment_methods: StripePaymentMethod[];
 
+    /**
+     * Connect account id
+     */
     @Column({
-        type: 'text'
+        type: 'text',
     })
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     connect_account: string;
 
+    /**
+     * Connect account status
+     */
     @Column({
-        type: 'text'
+        type: 'text',
     })
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     connect_account_status: string;
 
+    /**
+     * Connect account business type
+     */
     @Column({
-        type: 'text'
+        type: 'text',
     })
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     connect_account_business_type: string;
 
+    /**
+     * Connect account last update
+     */
     @Column({
-        type: 'timestamp'
+        type: 'timestamp',
     })
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     connect_account_updated_at: Date;
 
     /**
      * Creation timestamp
      */
     @CreateDateColumn()
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     created_at: Date;
 
     /**
      * Update timestamp
      */
     @UpdateDateColumn()
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     updated_at: Date;
 }

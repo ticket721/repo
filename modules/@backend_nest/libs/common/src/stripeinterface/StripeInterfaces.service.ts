@@ -1,8 +1,8 @@
-import { CRUDExtension }                                                          from '@lib/common/crud/CRUDExtension.base';
+import { CRUDExtension } from '@lib/common/crud/CRUDExtension.base';
 import { BaseModel, Connection, InjectConnection, InjectModel, InjectRepository } from '@iaminfinity/express-cassandra';
-import { ModuleRef }                                                              from '@nestjs/core';
-import { StripeInterfacesRepository }                                             from '@lib/common/stripeinterface/StripeInterfaces.repository';
-import { StripeInterfaceEntity }                                                  from '@lib/common/stripeinterface/entities/StripeInterface.entity';
+import { ModuleRef } from '@nestjs/core';
+import { StripeInterfacesRepository } from '@lib/common/stripeinterface/StripeInterfaces.repository';
+import { StripeInterfaceEntity } from '@lib/common/stripeinterface/entities/StripeInterface.entity';
 
 /**
  * Service to CRUD StripeInterfaceEntities
@@ -18,9 +18,9 @@ export class StripeInterfacesService extends CRUDExtension<StripeInterfacesRepos
      */
     constructor(
         @InjectRepository(StripeInterfacesRepository)
-            stripeInterfacesRepository: StripeInterfacesRepository,
+        stripeInterfacesRepository: StripeInterfacesRepository,
         @InjectModel(StripeInterfaceEntity)
-            stripeInterfaceEntity: BaseModel<StripeInterfaceEntity>,
+        stripeInterfaceEntity: BaseModel<StripeInterfaceEntity>,
         @InjectConnection() private readonly connection: Connection,
         private readonly moduleRef: ModuleRef,
     ) {
@@ -38,4 +38,3 @@ export class StripeInterfacesService extends CRUDExtension<StripeInterfacesRepos
         );
     }
 }
-
