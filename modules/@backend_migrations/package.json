@@ -14,7 +14,7 @@
     "author": "Iulian Rotaru",
     "license": "MIT",
     "dependencies": {
-        "cassandra-driver": "3.6.0",
+        "cassandra-driver": "4.5.2",
         "cassandra-migrate": "github:ticket721/cassandra-migrate#master",
         "elastic-migrate": "github:ticket721/elastic-migrate#master"
     }
