@@ -1,5 +1,5 @@
 import React, { useEffect, useState }        from 'react';
-import { Button, Tags, Textarea, TextInput } from '@frontend/flib-react/lib/components';
+import { Button, RichText, Tags, TextInput } from '@frontend/flib-react/lib/components';
 import styled                                from 'styled-components';
 import { textMetadataValidationSchema } from './validationSchema';
 
@@ -139,16 +139,17 @@ export const GeneralInfosForm: React.FC<GeneralInfosFormProps> = (props: General
                     && t(computeError('name'))
                 }
             />
-            <Textarea
-                name='description'
-                label={t('description_label')}
-                placeholder={t('description_placeholder')}
-                maxChar={1000}
-                {...formik.getFieldProps('description')}
-                error={
-                    computeError('description')
-                    && t(computeError('description'))
-                }
+            <RichText
+              name='description'
+              label={t('description_label')}
+              placeholder={t('description_placeholder')}
+              maxChar={900}
+              value={formik.getFieldProps('description').value}
+              onChange={(value) => formik.setFieldValue('description', value)}
+              error={
+                  computeError('description')
+                  && t(computeError('description'))
+              }
             />
             <Tags
                 name='tags'

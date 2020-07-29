@@ -1,4 +1,5 @@
 import * as React from 'react';
+import ReactMarkdown from 'react-markdown';
 import Separator from '../../elements/separator';
 import CardContainer from '../../elements/card-container';
 import styled from '../../../config/styled';
@@ -16,12 +17,15 @@ const H3 = styled.h3`
     margin-bottom: ${(props) => props.theme.regularSpacing};
     width: 100%;
 `;
-const Text = styled.p<ReadMoreProps>`
+const Text = styled(ReactMarkdown)<ReadMoreProps>`
     color: ${(props) => props.theme.textColorDark};
     max-height: ${(props) => (props.showText ? '500px' : '78px')};
     overflow: hidden;
     transition: max-height 300ms ease;
     width: 100%;
+    ul {
+      list-style: inside;
+    }
 `;
 
 const ReadMoreLabel = styled.span<ReadMoreProps>`
@@ -37,7 +41,7 @@ export const ReadMore: React.FunctionComponent<ReadMoreProps> = (props: ReadMore
     return (
         <CardContainer removeBg={props.removeBg}>
             <H3>{props.title}</H3>
-            <Text showText={show}>{props.text}</Text>
+            <Text showText={show} source={props.text}/>
             {props.text.length > 180 && (
                 <ReadMoreLabel onClick={() => setShow(!show)} readMoreColor={props.readMoreColor}>
                     {show ? props.hideLabel : props.showLabel}
