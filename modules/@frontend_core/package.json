@@ -20,7 +20,7 @@
         "connected-react-router": "6.8.0",
         "device-detect": "1.0.7",
         "formik": "2.1.4",
-        "i18next": "19.3.2",
+        "i18next": "19.6.3",
         "i18next-browser-languagedetector": "4.0.2",
         "i18next-xhr-backend": "3.2.2",
         "lodash.get": "4.4.2",
