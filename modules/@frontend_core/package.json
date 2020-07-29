@@ -50,7 +50,7 @@
         "@types/react-redux": "7.1.7",
         "@types/react-responsive": "8.0.2",
         "@types/styled-components": "5.1.0",
-        "@types/uuid": "7.0.3",
+        "@types/uuid": "8.0.0",
         "@types/yup": "0.28.0"
     },
     "devDependencies": {
