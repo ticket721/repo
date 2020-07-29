@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Textarea, TextInput, Tags } from '@frontend/flib-react/lib/components';
+import { TextInput, Tags, RichText } from '@frontend/flib-react/lib/components';
 import '../../../../shared/Translations/generalInfoForm';
 import '../../../../shared/Translations/global';
 
@@ -59,15 +59,16 @@ export const Metadata: React.FC<MetadataProps> = ({ formik }) => {
                         && t(computeError('name'))
                     }
                 />
-                <Textarea
+                <RichText
                     name='description'
                     label={t('description_label')}
                     placeholder={t('description_placeholder')}
-                    maxChar={1000}
-                    {...formik.getFieldProps('description')}
+                    maxChar={900}
+                    value={formik.getFieldProps('description').value}
+                    onChange={(value) => formik.setFieldValue('description', value)}
                     error={
-                        computeError('description')
-                        && t(computeError('description'))
+                      computeError('description')
+                      && t(computeError('description'))
                     }
                 />
                 <Tags
