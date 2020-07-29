@@ -44,6 +44,9 @@ export const EventsDatesFetcher: React.FC<EventsDatesFetcherProps> = ({ uuid, en
                 group_id: {
                     $in: entities
                 },
+                parent_type: {
+                    $eq: 'event'
+                },
                 $sort: [{
                     $field_name: 'updated_at',
                     $order: 'desc',

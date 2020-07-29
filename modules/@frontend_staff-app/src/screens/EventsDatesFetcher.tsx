@@ -41,6 +41,9 @@ export const EventsDatesFetcher: React.FC<EventsDatesFetcherProps> = ({ children
             {
                 group_id: {
                     $in: entities
+                },
+                parent_type: {
+                    $eq: 'event'
                 }
             }
         ],

@@ -409,11 +409,18 @@ describe('Group Service', function() {
                         body: {
                             query: {
                                 bool: {
-                                    must: {
-                                        term: {
-                                            group_id: groupId,
+                                    must: [
+                                        {
+                                            term: {
+                                                group_id: groupId,
+                                            },
                                         },
-                                    },
+                                        {
+                                            term: {
+                                                id: categoryId,
+                                            },
+                                        },
+                                    ],
                                 },
                             },
                         },
@@ -443,7 +450,7 @@ describe('Group Service', function() {
             });
 
             // TRIGGER
-            const res = await context.groupService.getGroupIDControllerFields(groupId, fields);
+            const res = await context.groupService.getGroupIDControllerFields(groupId, categoryId, fields);
 
             // CHECK RETURNs
             expect(res.error).toEqual(null);
@@ -456,11 +463,18 @@ describe('Group Service', function() {
                         body: {
                             query: {
                                 bool: {
-                                    must: {
-                                        term: {
-                                            group_id: groupId,
+                                    must: [
+                                        {
+                                            term: {
+                                                group_id: groupId,
+                                            },
                                         },
-                                    },
+                                        {
+                                            term: {
+                                                id: categoryId,
+                                            },
+                                        },
+                                    ],
                                 },
                             },
                         },
@@ -494,11 +508,18 @@ describe('Group Service', function() {
                         body: {
                             query: {
                                 bool: {
-                                    must: {
-                                        term: {
-                                            group_id: groupId,
+                                    must: [
+                                        {
+                                            term: {
+                                                group_id: groupId,
+                                            },
                                         },
-                                    },
+                                        {
+                                            term: {
+                                                id: categoryId,
+                                            },
+                                        },
+                                    ],
                                 },
                             },
                         },
@@ -510,7 +531,7 @@ describe('Group Service', function() {
             });
 
             // TRIGGER
-            const res = await context.groupService.getGroupIDControllerFields(groupId, fields);
+            const res = await context.groupService.getGroupIDControllerFields(groupId, categoryId, fields);
 
             // CHECK RETURNs
             expect(res.error).toEqual('unexpected_error');
@@ -523,11 +544,18 @@ describe('Group Service', function() {
                         body: {
                             query: {
                                 bool: {
-                                    must: {
-                                        term: {
-                                            group_id: groupId,
+                                    must: [
+                                        {
+                                            term: {
+                                                group_id: groupId,
+                                            },
                                         },
-                                    },
+                                        {
+                                            term: {
+                                                id: categoryId,
+                                            },
+                                        },
+                                    ],
                                 },
                             },
                         },
@@ -555,11 +583,18 @@ describe('Group Service', function() {
                         body: {
                             query: {
                                 bool: {
-                                    must: {
-                                        term: {
-                                            group_id: groupId,
+                                    must: [
+                                        {
+                                            term: {
+                                                group_id: groupId,
+                                            },
                                         },
-                                    },
+                                        {
+                                            term: {
+                                                id: categoryId,
+                                            },
+                                        },
+                                    ],
                                 },
                             },
                         },
@@ -576,7 +611,7 @@ describe('Group Service', function() {
             });
 
             // TRIGGER
-            const res = await context.groupService.getGroupIDControllerFields(groupId, fields);
+            const res = await context.groupService.getGroupIDControllerFields(groupId, categoryId, fields);
 
             // CHECK RETURNs
             expect(res.error).toEqual('no_categories_for_group_id');
@@ -589,11 +624,18 @@ describe('Group Service', function() {
                         body: {
                             query: {
                                 bool: {
-                                    must: {
-                                        term: {
-                                            group_id: groupId,
+                                    must: [
+                                        {
+                                            term: {
+                                                group_id: groupId,
+                                            },
                                         },
-                                    },
+                                        {
+                                            term: {
+                                                id: categoryId,
+                                            },
+                                        },
+                                    ],
                                 },
                             },
                         },

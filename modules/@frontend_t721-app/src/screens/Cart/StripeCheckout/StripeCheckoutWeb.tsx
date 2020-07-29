@@ -296,11 +296,11 @@ export const StripeCheckoutWeb: React.FC<StripeCheckoutWebProps> = (props: Strip
     }, [authorizationData]);
 
     // Callback to reset the cart completely
-    const forceResetCart = async () => {
+    const forceResetCart = useCallback(async () => {
         return (window as any).t721Sdk.actions.consumeUpdate(token, props.remoteCart.id, {
             consumed: true,
         });
-    };
+    }, [token, props.remoteCart]);
 
     // Callback to handle payment submission
     const handleSubmit = async () => {
@@ -342,10 +342,17 @@ export const StripeCheckoutWeb: React.FC<StripeCheckoutWebProps> = (props: Strip
 
     // Callback triggered when authorization expirations end
     const onExpirationComplete = useCallback(() => {
-        dispatch(SetTickets([]));
-        dispatch(PushNotification(t('cart_checkout_expired'), 'error'));
-        history.replace('/');
-    }, [dispatch, history, t]);
+        forceResetCart()
+            .then(() => {
+                dispatch(PushNotification(t('cart_checkout_expired'), 'error'));
+                history.replace('/');
+            })
+            .catch((e) => {
+                console.error(e);
+                dispatch(PushNotification(t('cart_checkout_expired'), 'error'));
+                history.replace('/');
+            });
+    }, [dispatch, history, t, forceResetCart]);
 
     useEffect(() => {
         if (closestExpiration === null) {
