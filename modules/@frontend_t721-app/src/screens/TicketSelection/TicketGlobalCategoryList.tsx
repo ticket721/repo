@@ -83,6 +83,10 @@ export const TicketGlobalCategoryList: React.FC<TicketGlobalCategoryListProps> =
                 parent_type: {
                     $eq: 'event',
                 },
+                $sort: [{
+                    $field_name: 'created_at',
+                    $order: 'asc'
+                }]
             },
         ],
         refreshRate: 5,
@@ -96,6 +100,10 @@ export const TicketGlobalCategoryList: React.FC<TicketGlobalCategoryListProps> =
                 group_id: {
                     $eq: props.date.group_id,
                 },
+                $sort: [{
+                    $field_name: 'created_at',
+                    $order: 'asc'
+                }]
             }
         ],
         refreshRate: 100
@@ -111,7 +119,11 @@ export const TicketGlobalCategoryList: React.FC<TicketGlobalCategoryListProps> =
                 },
                 group_id: {
                     $eq: props.date.group_id
-                }
+                },
+                $sort: [{
+                    $field_name: 'created_at',
+                    $order: 'asc'
+                }]
             }
         ],
         refreshRate: 100
