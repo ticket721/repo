@@ -78,7 +78,7 @@
         "typescript": "3.8.3",
         "@rocksideio/rockside-wallet-sdk": "ticket721/rockside-wallet-sdk-js#master",
         "@types/node": "13.7.7",
-        "@types/bull": "3.10.6",
+        "@types/bull": "3.14.0",
         "@types/dotenv": "8.2.0",
         "@types/express": "4.17.1",
         "@types/passport-jwt": "3.0.3",
