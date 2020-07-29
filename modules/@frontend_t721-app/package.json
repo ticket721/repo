@@ -34,7 +34,7 @@
         "react-router-dom": "5.1.2",
         "styled-components": "5.1.0",
         "typescript": "3.8.3",
-        "@hapi/joi": "17.1.0",
+        "@hapi/joi": "17.1.1",
         "react-responsive": "8.1.0",
         "@types/react-responsive": "8.0.2",
         "@embarklabs/subspace": "2.0.3",
