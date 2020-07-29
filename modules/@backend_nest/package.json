@@ -59,7 +59,7 @@
         "rxjs": "6.5.4",
         "stripe": "8.12.0",
         "swagger-ui-express": "4.1.3",
-        "winston": "3.2.1",
+        "winston": "3.3.3",
         "@hapi/joi": "17.1.0",
         "@ticket721/e712": "file:../@public_e712",
         "axios": "0.19.2",
