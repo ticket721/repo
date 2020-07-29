@@ -68,7 +68,7 @@ const StyledTextarea = styled.div<RichTextProps>`
         font-family: ${(props) => props.theme.fontStack};
     }
     .DraftEditor-root {
-      height: 300px;
+        height: 300px;
     }
 
     ${(props) =>
@@ -116,7 +116,13 @@ type StyleConfig = {
     style: string;
     className?: string;
 };
-type GroupName = 'INLINE_STYLE_BUTTONS' | 'BLOCK_TYPE_BUTTONS' | 'LINK_BUTTONS' | 'BLOCK_TYPE_DROPDOWN' | 'HISTORY_BUTTONS' | 'IMAGE_BUTTON';
+type GroupName =
+    | 'INLINE_STYLE_BUTTONS'
+    | 'BLOCK_TYPE_BUTTONS'
+    | 'LINK_BUTTONS'
+    | 'BLOCK_TYPE_DROPDOWN'
+    | 'HISTORY_BUTTONS'
+    | 'IMAGE_BUTTON';
 type ToolbarConfig = {
     display: Array<GroupName>;
     INLINE_STYLE_BUTTONS: Array<StyleConfig>;
@@ -125,11 +131,10 @@ type ToolbarConfig = {
 };
 
 export const RichText: React.FunctionComponent<RichTextProps> = (props: RichTextProps): JSX.Element => {
-    const [value, setValue] = React.useState(
-        () => (!props.value || props.value?.length === 0) ?
-            RichTextEditor.createEmptyValue()
-        :
-            RichTextEditor.createValueFromString(props.value, 'markdown')
+    const [value, setValue] = React.useState(() =>
+        !props.value || props.value?.length === 0
+            ? RichTextEditor.createEmptyValue()
+            : RichTextEditor.createValueFromString(props.value, 'markdown'),
     );
 
     const onChange = (editorvalue: EditorValue) => {
@@ -147,18 +152,16 @@ export const RichText: React.FunctionComponent<RichTextProps> = (props: RichText
     const toolbarConfig: ToolbarConfig = {
         display: ['INLINE_STYLE_BUTTONS', 'BLOCK_TYPE_BUTTONS', 'BLOCK_TYPE_DROPDOWN', 'HISTORY_BUTTONS'],
         INLINE_STYLE_BUTTONS: [
-            {label: 'Bold', style: 'BOLD'},
-            {label: 'Italic', style: 'ITALIC'},
+            { label: 'Bold', style: 'BOLD' },
+            { label: 'Italic', style: 'ITALIC' },
         ],
         BLOCK_TYPE_DROPDOWN: [
-            {label: 'Normal', style: 'unstyled'},
-            {label: 'Heading Large', style: 'header-one'},
-            {label: 'Heading Medium', style: 'header-two'},
-            {label: 'Heading Small', style: 'header-three'}
+            { label: 'Normal', style: 'unstyled' },
+            { label: 'Heading Large', style: 'header-one' },
+            { label: 'Heading Medium', style: 'header-two' },
+            { label: 'Heading Small', style: 'header-three' },
         ],
-        BLOCK_TYPE_BUTTONS: [
-            {label: 'UL', style: 'unordered-list-item'},
-        ]
+        BLOCK_TYPE_BUTTONS: [{ label: 'UL', style: 'unordered-list-item' }],
     };
 
     return (
@@ -166,9 +169,7 @@ export const RichText: React.FunctionComponent<RichTextProps> = (props: RichText
             <LabelsContainer>
                 <StyledLabel htmlFor={props.name}>{props.label}</StyledLabel>
                 {props.maxChar && value.toString('markdown').length >= props.maxChar - 20 && (
-                    <span>
-                        {props.maxChar - value.toString('markdown').length} char left
-                    </span>
+                    <span>{props.maxChar - value.toString('markdown').length} char left</span>
                 )}
             </LabelsContainer>
 

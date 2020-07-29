@@ -24,7 +24,7 @@ const Text = styled(ReactMarkdown)<ReadMoreProps>`
     transition: max-height 300ms ease;
     width: 100%;
     ul {
-      list-style: inside;
+        list-style: inside;
     }
 `;
 
@@ -41,7 +41,7 @@ export const ReadMore: React.FunctionComponent<ReadMoreProps> = (props: ReadMore
     return (
         <CardContainer removeBg={props.removeBg}>
             <H3>{props.title}</H3>
-            <Text showText={show} source={props.text}/>
+            <Text showText={show} source={props.text} />
             {props.text.length > 180 && (
                 <ReadMoreLabel onClick={() => setShow(!show)} readMoreColor={props.readMoreColor}>
                     {show ? props.hideLabel : props.showLabel}
