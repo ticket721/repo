@@ -23,6 +23,7 @@ export interface InputProps extends React.ComponentProps<any> {
     icon?: string;
     minimum?: number;
     autoComplete?: string;
+    inputMode?: 'none' | 'text' | 'tel' | 'url' | 'email' | 'numeric' | 'decimal' | 'search';
 }
 
 const Error = styled.span`
@@ -131,6 +132,7 @@ export const TextInput: React.FunctionComponent<InputProps & { className?: strin
                         onBlur={props.onBlur}
                         type={props.type || 'text'}
                         autoComplete={props.autoComplete || 'off'}
+                        inputMode={props.inputMode}
                     />
                 ) : (
                     <input
@@ -146,6 +148,7 @@ export const TextInput: React.FunctionComponent<InputProps & { className?: strin
                         type={props.type || 'text'}
                         onChange={props.onChange}
                         onBlur={props.onBlur}
+                        inputMode={props.inputMode}
                     />
                 )}
             </div>

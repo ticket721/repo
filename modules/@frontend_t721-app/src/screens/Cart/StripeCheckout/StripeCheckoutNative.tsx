@@ -300,7 +300,7 @@ export const StripeCheckoutNative: React.FC<StripeCheckoutNativeProps> = (props:
                 <TextInput
                     autoComplete={'cc-number'}
                     label={t('cart_checkout_card_number')}
-                    type={'number'}
+                    inputMode={'numeric'}
                     placeholder={'ex: 4242 4242 4242 4242'}
                     options={{creditCard: true}}
                     name={'test'}
@@ -325,7 +325,7 @@ export const StripeCheckoutNative: React.FC<StripeCheckoutNativeProps> = (props:
                         <TextInput
                             autoComplete={'cc-exp'}
                             label={t('cart_checkout_card_expiry')}
-                            type={'number'}
+                            inputMode={'numeric'}
                             placeholder={'ex: 02/42'}
                             options={{
                                 date: true,
@@ -346,7 +346,7 @@ export const StripeCheckoutNative: React.FC<StripeCheckoutNativeProps> = (props:
                         <TextInput
                             autoComplete={'cc-csc'}
                             label={t('cart_checkout_card_cvc')}
-                            type={'number'}
+                            inputMode={'numeric'}
                             placeholder={'ex: 242'}
                             options={{
                                 blocks: [3],
