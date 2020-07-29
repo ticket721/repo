@@ -41,7 +41,7 @@
         "redux": "4.0.5",
         "styled-components": "5.1.0",
         "typescript": "3.8.3",
-        "yup": "0.28.4",
+        "yup": "0.29.2",
         "@embarklabs/subspace": "2.0.3",
         "@embarklabs/subspace-react": "1.0.4",
         "rxjs": "6.5.5",
