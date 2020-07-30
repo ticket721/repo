@@ -196,3 +196,44 @@ echo
 
 sleep 1
 
+###########################################################
+
+echo
+echo "0010/Cassandra Create Stripe Interface"
+export CASSANDRA_KEYSPACE="ticket721"
+
+cd cassandra
+npm run cassandra-migrate-up 1595938079
+
+if [ ! $? -eq 0 ]
+then
+  echo "An error occured on a cassandra migration step (1595938079)"
+  sleep 30; exit 1
+fi
+
+cd ..
+echo "0010/END"
+echo
+
+sleep 1
+
+###########################################################
+
+echo
+echo "0011/Elasticsearch Create Stripe Interface"
+cd elasticsearch
+npm run elastic-migrate-up 20200728121356
+
+if [ ! $? -eq 0 ]
+then
+  echo "An error occured on an elasticsearch migration step (20200728121356)"
+  sleep 30; exit 1
+fi
+
+cd ..
+echo "0011/END"
+echo
+
+sleep 1
+
+
