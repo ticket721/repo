@@ -21,6 +21,7 @@ import WalletPage                from './routes/Wallet';
 import CartPage                  from './routes/Cart';
 import { useKeyboardVisibility } from '@frontend/core/lib/utils/useKeyboardVisibility';
 import { UserContextGuard }      from '@frontend/core/lib/utils/UserContext';
+import DeepLinksListener         from './components/DeepLinksListener';
 
 const TopNavWrapper = (props: { back: () => void}): JSX.Element => {
 
@@ -51,6 +52,8 @@ const MobileApp: React.FC = () => {
     const keyboardIsVisible = useKeyboardVisibility();
 
     return <Suspense fallback={<FullPageLoading/>}>
+        <DeepLinksListener/>
+        <ToastStacker additionalLocales={[]}/>
         <UserContextGuard>
             <AppContainer>
                 {
@@ -124,7 +127,6 @@ const MobileApp: React.FC = () => {
                 <T721Navbar visible={location.pathname.lastIndexOf('/') === 0 && !keyboardIsVisible}/>
             </AppContainer>
         </UserContextGuard>
-        <ToastStacker additionalLocales={[]}/>
     </Suspense>;
 };
 

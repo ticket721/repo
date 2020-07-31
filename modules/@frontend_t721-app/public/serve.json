@@ -17,7 +17,11 @@
     ],
     "rewrites": [
         {
-            "source": "*",
+            "source": "/!(.well-known)*/**",
+            "destination": "/index.html"
+        },
+        {
+            "source": "/!(.well-known)*",
             "destination": "/index.html"
         }
     ],
