@@ -4,7 +4,9 @@ import { Plugins } from '@capacitor/core';
 const { App: CapApp } = Plugins;
 
 const DeepLinksListener: React.FC<any> = () => {
+
     const history = useHistory();
+
     useEffect(() => {
         CapApp.addListener('appUrlOpen', (data: any) => {
 
@@ -15,7 +17,7 @@ const DeepLinksListener: React.FC<any> = () => {
             }
 
         });
-    }, []);
+    }, [history]);
 
     return null;
 };
