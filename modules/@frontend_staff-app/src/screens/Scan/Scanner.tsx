@@ -214,6 +214,7 @@ export const Scanner: React.FC<ScannerProps> = ({ events, dates }: ScannerProps)
 
                 setStatus('success');
                 setStatusTitle(t('valid'));
+                setStatusMsg(validationResp.data.info.username);
                 dispatch(PushGuest({
                     ticketId: validationResp.data.info.ticket,
                     email: validationResp.data.info.email,
