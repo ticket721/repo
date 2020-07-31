@@ -24,7 +24,7 @@ data:
       "relation": ["delegate_permission/common.handle_all_urls"],
       "target" : {
         "namespace": "android_app",
-        "package_name": "{{ .Values.config.t721app.androidAppId }}}",
+        "package_name": "{{ .Values.config.t721app.androidAppId }}",
         "sha256_cert_fingerprints": ["{{ .Values.config.t721app.androidCertificateSignature }}"]
       }
     }]
