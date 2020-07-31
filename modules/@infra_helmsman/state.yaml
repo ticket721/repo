@@ -284,6 +284,7 @@ apps:
       config.staff.segmentApiKey: "${CONFIG_STAGING_STAFF_SEGMENT_API_KEY}"
       config.staff.organizerUrl: "https://organizer.staging.ticket721.com"
       config.t721app.publishableStripeApiKey: "${CONFIG_STAGING_T721APP_PUBLISHABLE_STRIPE_API_KEY}"
+      config.t721app.itunesId: "${CONFIG_STAGING_T721APP_ITUNES_ID}"
       config.etherscanUrl: "${CONFIG_STAGING_ETHERSCAN_URL}"
 
       server.image.repository: "097558125954.dkr.ecr.eu-west-3.amazonaws.com/ticket721/server"

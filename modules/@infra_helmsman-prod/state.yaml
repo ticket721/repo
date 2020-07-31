@@ -281,6 +281,7 @@ apps:
       config.staff.organizerUrl: "https://organizer.ticket721.com"
       config.t721app.publishableStripeApiKey: "${CONFIG_PRODUCTION_T721APP_PUBLISHABLE_STRIPE_API_KEY}"
       config.t721app.iosAppId: "${CONFIG_PRODUCTION_T721APP_IOS_APPID}"
+      config.t721app.itunesId: "${CONFIG_PRODUCTION_T721APP_ITUNES_ID}"
       config.t721app.androidAppId: "${CONFIG_PRODUCTION_T721APP_ANDROID_APPID}"
       config.t721app.androidCertificateSignature: "${CONFIG_PRODUCTION_T721APP_ANDROID_CERTIFICATE_SIGNATURE}"
       config.etherscanUrl: "${CONFIG_PRODUCTION_ETHERSCAN_URL}"

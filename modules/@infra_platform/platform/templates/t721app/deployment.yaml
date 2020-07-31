@@ -49,6 +49,8 @@ spec:
               value: '{{ required "[t721app] Missing config.t721app.publishableStripeApiKey value" .Values.config.t721app.publishableStripeApiKey }}'
             - name: REACT_APP_SEGMENT_API_KEY
               value: '{{ required "[t721app] Missing config.t721app.segmentApiKey value" .Values.config.t721app.segmentApiKey }}'
+            - name: REACT_APP_ITUNES_ID
+              value: '{{ required "[t721app] Missing config.t721app.itunesId value" .Values.config.t721app.itunesId }}'
             - name: REACT_APP_ETHERSCAN_URL
               value: '{{ required "[t721app] Missing config.etherscanUrl value" .Values.config.etherscanUrl }}'
           ports:
