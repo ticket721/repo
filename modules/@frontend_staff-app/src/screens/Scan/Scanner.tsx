@@ -11,16 +11,18 @@ import { minute }                           from '@frontend/core/lib/utils/date'
 import { useLazyRequest }                   from '@frontend/core/lib/hooks/useLazyRequest';
 import { v4 }                               from 'uuid';
 import { TicketsValidateTicketResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/tickets/dto/TicketsValidateTicketResponse.dto';
-import { useDispatch }                      from 'react-redux';
-import { useTranslation }                   from 'react-i18next';
-import { useDeepEffect }                    from '@frontend/core/lib/hooks/useDeepEffect';
+import { useDispatch }                 from 'react-redux';
+import { useTranslation }              from 'react-i18next';
+import { useDeepEffect }               from '@frontend/core/lib/hooks/useDeepEffect';
 import './locales';
-import { ScannerZone }                      from './ScannerZone';
-import { useRequest }                       from '@frontend/core/lib/hooks/useRequest';
-import { CategoriesSearchResponseDto }      from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/categories/dto/CategoriesSearchResponse.dto';
-import { CategoriesFetcher }                from '../../components/Filters/CategoriesFetcher';
-import { Icon }                             from '@frontend/flib-react/lib/components';
-import { PushGuest }                        from '../../redux/ducks/current_event';
+import { ScannerZone }                 from './ScannerZone';
+import { useRequest }                  from '@frontend/core/lib/hooks/useRequest';
+import { CategoriesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/categories/dto/CategoriesSearchResponse.dto';
+import { CategoriesFetcher }           from '../../components/Filters/CategoriesFetcher';
+import { Icon }                        from '@frontend/flib-react/lib/components';
+import { PushGuest }                   from '../../redux/ducks/current_event';
+import { UpdateItemError, UpdateItemData }             from '@frontend/core/lib/redux/ducks/cache';
+import { CacheCore }                   from '@frontend/core/lib/cores/cache/CacheCore';
 
 export type Status = 'error' | 'success' | 'verifying' | 'scanning';
 
@@ -120,6 +122,29 @@ export const Scanner: React.FC<ScannerProps> = ({ events, dates }: ScannerProps)
                 setStatus('error');
                 setStatusTitle(t('verify_errors:error_title', {count: 10}));
                 setStatusMsg(t('verify_errors:invalid_qrcode'));
+            }
+        }
+    };
+
+    const resetScannedTicket = () => {
+        if (status === 'error' || status === 'success') {
+            const itemKey = CacheCore.key('tickets.validate', [
+                token,
+                eventId,
+                {
+                    ticketId: new BigNumber(scannedTicket.ticketId).toString(),
+                    address: scannedTicket.address,
+                }
+            ]);
+            setTimestampRange([]);
+            setStatusTitle(null);
+            setStatusMsg(null);
+            setStatus('scanning');
+            setScannedTicket(null);
+            if (status === 'error') {
+                dispatch(UpdateItemError(itemKey, null));
+            } else {
+                dispatch(UpdateItemData(itemKey, null));
             }
         }
     };
@@ -235,15 +260,7 @@ export const Scanner: React.FC<ScannerProps> = ({ events, dates }: ScannerProps)
             }
             {
                 status === 'error' || status === 'success' ?
-                    <TapToScan onClick={() => {
-                        if (status === 'error' || status === 'success') {
-                            setTimestampRange([]);
-                            setStatusTitle(null);
-                            setStatusMsg(null);
-                            setStatus('scanning');
-                            setScannedTicket(null);
-                        }
-                    }}>{t('scan_again')}</TapToScan> :
+                    <TapToScan onClick={resetScannedTicket}>{t('scan_again')}</TapToScan> :
                     null
             }
             {

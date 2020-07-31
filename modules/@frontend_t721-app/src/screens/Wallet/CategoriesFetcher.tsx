@@ -38,16 +38,16 @@ export const CategoriesFetcher: React.FC<CategoriesFetcherProps> = ({ uuid, tick
                 }
             }
         ],
-        refreshRate: 5,
+        refreshRate: 60,
     },
     uuid);
 
-    if (categoriesResp.error || categoriesResp.data?.categories?.length === 0) {
-        return (<Error message={t('fetch_error')} retryLabel={t('common:retrying_in')} onRefresh={force}/>);
-    }
-
     if (categoriesResp.loading) {
         return <FullPageLoading/>;
+    }
+
+    if (categoriesResp.error || categoriesResp.data?.categories?.length === 0) {
+        return (<Error message={t('fetch_error')} retryLabel={t('common:retrying_in')} onRefresh={force}/>);
     }
 
     if (categoriesResp.data?.categories?.length > 0) {
