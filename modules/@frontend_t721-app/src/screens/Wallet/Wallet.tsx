@@ -69,7 +69,7 @@ const Wallet: React.FC<WalletProps> = (props: WalletProps) => {
                 }]
             }
         ],
-        refreshRate: 5,
+        refreshRate: 60,
     },
     uuid);
 
@@ -86,12 +86,7 @@ const Wallet: React.FC<WalletProps> = (props: WalletProps) => {
     }, [token, devicePk]);
 
     if (ticketsResp.loading) {
-        return (
-            <FullPageLoading
-                width={250}
-                height={250}
-            />
-        );
+        return  <FullPageLoading/>;
     }
 
     if (ticketsResp.error) {

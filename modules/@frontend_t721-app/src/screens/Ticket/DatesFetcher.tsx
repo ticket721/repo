@@ -1,12 +1,10 @@
 import React  from 'react';
 import { useRequest }       from '@frontend/core/lib/hooks/useRequest';
-import { useDispatch, useSelector }    from 'react-redux';
+import { useSelector }    from 'react-redux';
 import { T721AppState }                from '../../redux';
-import { useDeepEffect }               from '@frontend/core/lib/hooks/useDeepEffect';
-import { PushNotification }            from '@frontend/core/lib/redux/ducks/notifications';
-import { useTranslation }              from 'react-i18next';
-import { FullPageLoading }             from '@frontend/flib-react/lib/components';
-import { Redirect }                    from 'react-router';
+import { useTranslation }         from 'react-i18next';
+import { Error, FullPageLoading } from '@frontend/flib-react/lib/components';
+import { Redirect }               from 'react-router';
 import { DatesSearchResponseDto }      from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
 import { TicketDetails }        from './TicketDetails';
 import { checkFormatDate } from '@frontend/core/lib/utils/date';
@@ -33,10 +31,9 @@ export const DatesFetcher: React.FC<DatesFetcherProps> = (
         price,
         purchasedDate,
     }: DatesFetcherProps) => {
-    const dispatch = useDispatch();
     const token = useSelector((state: T721AppState) => state.auth.token.value);
     const [ t ] = useTranslation('ticket_details');
-    const { response: datesResp } = useRequest<DatesSearchResponseDto>({
+    const { response: datesResp, force: forceDatesReq } = useRequest<DatesSearchResponseDto>({
             method: 'dates.search',
             args: [
                 token,
@@ -50,18 +47,16 @@ export const DatesFetcher: React.FC<DatesFetcherProps> = (
                     }]
                 }
             ],
-            refreshRate: 5,
+            refreshRate: 60,
         },
         uuid);
 
-    useDeepEffect(() => {
-        if (datesResp.error) {
-            dispatch(PushNotification(t('fetch_error'), 'error'));
-        }
-    }, [datesResp.error]);
-
     if (datesResp.loading) {
         return <FullPageLoading/>;
+    }
+
+    if (datesResp.error) {
+        return (<Error message={t('fetch_error')} retryLabel={t('common:retrying_in')} onRefresh={forceDatesReq}/>);
     }
 
     if (datesResp.data?.dates?.length > 0) {

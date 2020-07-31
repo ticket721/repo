@@ -137,9 +137,6 @@ const StyledInputContainer = styled.div<Partial<SelectProps>>`
     flex-direction: column;
     padding-top: ${(props) => (props.label ? props.theme.biggerSpacing : 0)};
     transition: background-color 300ms ease;
-    [class*='dummyInput'] {
-        display: none;
-    }
     &:hover {
         background-color: ${(props) => props.theme.componentColorLight};
     }
@@ -183,14 +180,13 @@ export const SelectInput: React.FunctionComponent<SelectProps> = (props: SelectP
             {props.label && <StyledLabel>{props.label}</StyledLabel>}
             <Select
                 isMulti={props.multiple}
-                isDisabled={props.disabled}
+                isSearchable={props.searchable}
                 value={props.value}
                 defaultValue={props.defaultValue}
                 noOptionsMessage={() => 'No values available'}
                 options={props.options}
                 formatGroupLabel={props.grouped ? formatGroupLabel : undefined}
                 placeholder={props.placeholder}
-                isSearchable={props.searchable}
                 styles={customStyles}
                 onChange={props.onChange}
             />

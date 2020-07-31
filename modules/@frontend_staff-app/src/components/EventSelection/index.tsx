@@ -83,6 +83,7 @@ export const EventSelection: React.FC<EventSelectionProps> = ({ events, dates, h
                     <SelectInput
                         defaultValue={typeof defaultOpt !== 'string' && defaultOpt}
                         grouped={true}
+                        searchable={false}
                         options={selectOptions}
                         onChange={(option) => {
                             dispatch(SetEventId(option.eventId));
