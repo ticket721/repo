@@ -26,6 +26,10 @@ spec:
         chart: {{ .Chart.Name }}
     spec:
       serviceAccountName: {{ include "platform.fullname" . }}--platform--sa
+      volumes:
+        - name: t721app-config-well-known
+          configMap:
+            name: {{ template "platform.fullname" . }}--t721app-config-well-known--cfmp
       containers:
         - name: {{ template  "platform.fullname" . }}--t721app
           image: "{{ .Values.t721app.image.repository }}:{{ .Values.t721app.image.tag }}"
@@ -51,6 +55,13 @@ spec:
             - name: http
               containerPort: 5000
               protocol: TCP
+          volumeMounts:
+            - name: t721app-config-well-known
+              mountPath: /repo/modules/@frontend_t721-app/build/.well-known/apple-app-site-association
+              subPath: apple-app-site-association
+            - name: t721app-config-well-known
+              mountPath: /repo/modules/@frontend_t721-app/build/.well-known/assetlinks.json
+              subPath: assetlinks.json
           livenessProbe:
             httpGet:
               path: /

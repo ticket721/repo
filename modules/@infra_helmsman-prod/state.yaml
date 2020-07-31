@@ -280,6 +280,9 @@ apps:
       config.staff.segmentApiKey: "${CONFIG_PRODUCTION_STAFF_SEGMENT_API_KEY}"
       config.staff.organizerUrl: "https://organizer.ticket721.com"
       config.t721app.publishableStripeApiKey: "${CONFIG_PRODUCTION_T721APP_PUBLISHABLE_STRIPE_API_KEY}"
+      config.t721app.iosAppId: "${CONFIG_PRODUCTION_T721APP_IOS_APPID}"
+      config.t721app.androidAppId: "${CONFIG_PRODUCTION_T721APP_ANDROID_APPID}"
+      config.t721app.androidCertificateSignature: "${CONFIG_PRODUCTION_T721APP_ANDROID_CERTIFICATE_SIGNATURE}"
       config.etherscanUrl: "${CONFIG_PRODUCTION_ETHERSCAN_URL}"
 
       server.image.repository: "097558125954.dkr.ecr.eu-west-3.amazonaws.com/ticket721/server"
