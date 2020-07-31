@@ -25,7 +25,7 @@ const Ticket: React.FC = () => {
                 },
             },
         ],
-        refreshRate: 5,
+        refreshRate: 60,
     },
     uuid);
 

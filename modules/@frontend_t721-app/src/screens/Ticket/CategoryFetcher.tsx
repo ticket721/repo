@@ -1,13 +1,11 @@
 import React  from 'react';
 import { useRequest }       from '@frontend/core/lib/hooks/useRequest';
 import { CategoriesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/categories/dto/CategoriesSearchResponse.dto';
-import { useDispatch, useSelector }    from 'react-redux';
+import { useSelector }    from 'react-redux';
 import { T721AppState }                from '../../redux';
-import { useDeepEffect }               from '@frontend/core/lib/hooks/useDeepEffect';
-import { PushNotification }            from '@frontend/core/lib/redux/ducks/notifications';
-import { useTranslation }              from 'react-i18next';
-import { FullPageLoading }             from '@frontend/flib-react/lib/components';
-import { Redirect }                    from 'react-router';
+import { useTranslation }         from 'react-i18next';
+import { Error, FullPageLoading } from '@frontend/flib-react/lib/components';
+import { Redirect }               from 'react-router';
 import { DatesFetcher }                 from './DatesFetcher';
 
 interface CategoryFetcherProps {
@@ -24,10 +22,9 @@ export const CategoryFetcher: React.FC<CategoryFetcherProps> = ({
     ticketId,
     transactionHash,
     purchasedDate }: CategoryFetcherProps) => {
-    const dispatch = useDispatch();
     const token = useSelector((state: T721AppState) => state.auth.token.value);
     const [ t ] = useTranslation('ticket');
-    const { response: categoryResp } = useRequest<CategoriesSearchResponseDto>({
+    const { response: categoryResp, force: forceCategoryReq } = useRequest<CategoriesSearchResponseDto>({
         method: 'categories.search',
         args: [
             token,
@@ -37,18 +34,16 @@ export const CategoryFetcher: React.FC<CategoryFetcherProps> = ({
                 }
             }
         ],
-        refreshRate: 5,
+        refreshRate: 60,
     },
     uuid);
 
-    useDeepEffect(() => {
-        if (categoryResp.error) {
-            dispatch(PushNotification(t('fetch_error'), 'error'));
-        }
-    }, [categoryResp.error]);
-
     if (categoryResp.loading) {
         return <FullPageLoading/>;
+    }
+
+    if (categoryResp.error) {
+        return (<Error message={t('fetch_error')} retryLabel={t('common:retrying_in')} onRefresh={forceCategoryReq}/>);
     }
 
     if (categoryResp.data?.categories?.length > 0) {

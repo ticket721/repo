@@ -82,6 +82,7 @@ export const ValidateEmail: React.FC = () => {
                     loadingState={lazyResendEmail.response.loading}
                     onClick={resendEmail}
                 />
+                {multiplicator > 1 ? <MaybeSpam>{t('maybe_spam')}</MaybeSpam> : null}
             </ValidateEmailContainer>
         </div>
     );
@@ -112,4 +113,11 @@ const MessageFirstLine = styled.span`
 
 const MailIcon = styled(Icon)`
     margin-bottom: 40px;
+`;
+
+const MaybeSpam = styled.span`
+    margin-top: ${(props) => props.theme.regularSpacing};
+    font-size: 12px;
+    color: ${(props) => props.theme.textColorDark};
+    text-align: center;
 `;
