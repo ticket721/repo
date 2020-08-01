@@ -4,7 +4,6 @@ import './index.css';
 import './native';
 import './routes/locales';
 import './locales';
-import App                                                     from './App';
 import * as serviceWorker                                      from './serviceWorker';
 import { Provider }                                            from 'react-redux';
 import { Store }                                               from 'redux';
@@ -17,7 +16,6 @@ import { GlobalStyles }                                        from '@frontend/f
 import { customThemes }                                        from '@frontend/flib-react/lib/config/theme';
 import { EnvValidator }                                        from '@frontend/core/lib/components/EnvValidator';
 import { T721AppEnvSchema }                                    from './utils/env';
-import MediaQuery                                                          from 'react-responsive';
 import MobileApp                                                           from './MobileApp';
 import { LocationReducer, locationInitialState, locationSaga }             from './redux/ducks/location';
 import { T721AppState }                                                    from './redux';
@@ -49,12 +47,7 @@ ReactDOM.render(
                     <GlobalStyles/>
                     <BrowserRouter>
                         <ScrollToTop>
-                            <MediaQuery maxDeviceWidth={1224}>
-                                <MobileApp/>
-                            </MediaQuery>
-                            <MediaQuery minDeviceWidth={1224}>
-                                <App/>
-                            </MediaQuery>
+                            <MobileApp/>
                         </ScrollToTop>
                     </BrowserRouter>
                 </ThemeProvider>

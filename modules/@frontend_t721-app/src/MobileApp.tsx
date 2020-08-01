@@ -1,4 +1,4 @@
-import React, { useEffect, useState, Suspense }                                   from 'react';
+import React, { useEffect, useState, Suspense, useCallback }            from 'react';
 import { Route, Switch, useHistory, useLocation, withRouter, Redirect } from 'react-router-dom';
 import { TopNav, FullPageLoading }                                                       from '@frontend/flib-react/lib/components';
 import ProtectedRoute                                                   from '@frontend/core/lib/components/ProtectedRoute';
@@ -22,6 +22,7 @@ import CartPage                  from './routes/Cart';
 import { useKeyboardVisibility } from '@frontend/core/lib/utils/useKeyboardVisibility';
 import { UserContextGuard }      from '@frontend/core/lib/utils/UserContext';
 import DeepLinksListener         from './components/DeepLinksListener';
+import MediaQuery                from 'react-responsive';
 
 const TopNavWrapper = (props: { back: () => void}): JSX.Element => {
 
@@ -51,20 +52,30 @@ const MobileApp: React.FC = () => {
     const history = useHistory();
     const keyboardIsVisible = useKeyboardVisibility();
 
+    const goBackOrHome = useCallback(() => {
+        if (history.length > 2) {
+            history.goBack();
+        } else {
+            history.replace('/');
+        }
+    }, [history]);
+
     return <Suspense fallback={<FullPageLoading/>}>
         <DeepLinksListener/>
         <ToastStacker additionalLocales={[]}/>
         <UserContextGuard>
             <AppContainer>
-                {
-                    location.pathname.lastIndexOf('/') !== 0
+                <MediaQuery maxDeviceWidth={1224}>
+                    {
+                        location.pathname.lastIndexOf('/') !== 0
 
-                        ?
-                        <TopNavWrapper back={history.goBack}/>
+                            ?
+                            <TopNavWrapper back={goBackOrHome}/>
 
-                        :
-                        null
-                }
+                            :
+                            null
+                    }
+                </MediaQuery>
                 <Switch>
                     <Route path={'/login'} exact={true}>
                         <LoginPage/>
@@ -124,7 +135,9 @@ const MobileApp: React.FC = () => {
 
                     <Redirect to={'/'}/>
                 </Switch>
-                <T721Navbar visible={location.pathname.lastIndexOf('/') === 0 && !keyboardIsVisible}/>
+                <MediaQuery maxDeviceWidth={1224}>
+                    <T721Navbar visible={location.pathname.lastIndexOf('/') === 0 && !keyboardIsVisible}/>
+                </MediaQuery>
             </AppContainer>
         </UserContextGuard>
     </Suspense>;

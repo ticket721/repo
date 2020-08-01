@@ -1,4 +1,5 @@
-import Event         from '../screens/Event';
-import { CtaMargin } from '../utils/CtaMargin';
+import Event              from '../screens/Event';
+import { CtaMargin }      from '../utils/CtaMargin';
+import { DesktopWarning } from '../utils/DesktopWarning';
 
-export default CtaMargin(Event);
+export default DesktopWarning(CtaMargin(Event));

@@ -53,6 +53,10 @@ spec:
               value: '{{ required "[t721app] Missing config.t721app.itunesId value" .Values.config.t721app.itunesId }}'
             - name: REACT_APP_ETHERSCAN_URL
               value: '{{ required "[t721app] Missing config.etherscanUrl value" .Values.config.etherscanUrl }}'
+            - name: REACT_APP_APPSTORE_LINK
+              value: '{{ required "[t721app] Missing config.t721app.appStoreLink value" .Values.config.t721app.appStoreLink }}'
+            - name: REACT_APP_PLAYSTORE_LINK
+              value: '{{ required "[t721app] Missing config.t721app.playStoreLink value" .Values.config.t721app.playStoreLink }}'
           ports:
             - name: http
               containerPort: 5000

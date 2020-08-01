@@ -1,7 +1,11 @@
-import {Plugins}  from '@capacitor/core';
+import { Capacitor, Plugins } from '@capacitor/core';
 
-if (Plugins.IosSwipeBack) {
-    Plugins.IosSwipeBack
-        .enable()
-        .catch(e => console.warn('Cannot set IOSSwipeBack'))
+if (Capacitor.isPluginAvailable('IosSwipeBack')) {
+
+    if (Plugins.IosSwipeBack) {
+        Plugins.IosSwipeBack
+            .enable()
+            .catch(e => console.warn('Cannot set IOSSwipeBack'))
+    }
+
 }
