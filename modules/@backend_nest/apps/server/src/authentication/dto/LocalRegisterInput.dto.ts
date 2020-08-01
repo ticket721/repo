@@ -41,4 +41,14 @@ export class LocalRegisterInputDto {
     @IsIn(['en', 'fr'])
     @IsOptional()
     locale?: string = 'en';
+
+    /**
+     * Redirection url of the validation email
+     */
+    @ApiPropertyOptional({
+        description: 'Url on which user is redirected for verification',
+    })
+    @IsString()
+    @IsOptional()
+    redirectUrl?: string;
 }

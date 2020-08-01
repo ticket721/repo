@@ -4,7 +4,6 @@ import { EmailValidationTaskDto } from '@app/server/authentication/dto/EmailVali
 import { EmailService } from '@lib/common/email/Email.service';
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@lib/common/config/Config.service';
 import { InstanceSignature, OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 import { ResetPasswordTaskDto } from '@app/server/authentication/dto/ResetPasswordTask.dto';
@@ -21,7 +20,6 @@ export class AuthenticationTasks implements OnModuleInit {
      *
      * @param emailService
      * @param jwtService
-     * @param configService
      * @param mailingQueue
      * @param outrospectionService
      * @param shutdownService
@@ -29,7 +27,6 @@ export class AuthenticationTasks implements OnModuleInit {
     constructor(
         private readonly emailService: EmailService,
         private readonly jwtService: JwtService,
-        private readonly configService: ConfigService,
         @InjectQueue('mailing') private readonly mailingQueue: Queue,
         private readonly outrospectionService: OutrospectionService,
         private readonly shutdownService: ShutdownService,
@@ -65,9 +62,7 @@ export class AuthenticationTasks implements OnModuleInit {
         });
 
         await job.progress(50);
-        const validationLink = `${this.configService.get('VALIDATION_URL')}?token=${encodeURIComponent(
-            b64Encode(signature),
-        )}`;
+        const validationLink = `${job.data.redirectUrl}?token=${encodeURIComponent(b64Encode(signature))}`;
         const res = await this.emailService.send({
             template: 'validate',
             to: job.data.email,
@@ -96,9 +91,7 @@ export class AuthenticationTasks implements OnModuleInit {
         });
 
         await job.progress(50);
-        const validationLink = `${this.configService.get('RESET_PASSWORD_URL')}?token=${encodeURIComponent(
-            b64Encode(signature),
-        )}`;
+        const validationLink = `${job.data.redirectUrl}?token=${encodeURIComponent(b64Encode(signature))}`;
         const res = await this.emailService.send({
             template: 'passwordReset',
             to: job.data.email,
