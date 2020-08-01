@@ -18,7 +18,6 @@ import { Web3RegisterInputDto }             from '@app/server/authentication/dto
 import { Web3LoginInputDto }                from '@app/server/authentication/dto/Web3LoginInput.dto';
 import { EmailValidationResponseDto }       from '@app/server/authentication/dto/EmailValidationResponse.dto';
 import { EmailValidationInputDto }          from '@app/server/authentication/dto/EmailValidationInput.dto';
-import { UserDto }                          from '@lib/common/users/dto/User.dto';
 import { ValidateResetPasswordResponseDto } from '@app/server/authentication/dto/ValidateResetPasswordResponse.dto';
 import { ValidateResetPasswordInputDto }    from '@app/server/authentication/dto/ValidateResetPasswordInput.dto';
 import { ResetPasswordResponseDto }         from '@app/server/authentication/dto/ResetPasswordResponse.dto';
