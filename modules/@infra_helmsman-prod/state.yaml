@@ -285,6 +285,8 @@ apps:
       config.t721app.androidAppId: "${CONFIG_PRODUCTION_T721APP_ANDROID_APPID}"
       config.t721app.androidCertificateSignature: "${CONFIG_PRODUCTION_T721APP_ANDROID_CERTIFICATE_SIGNATURE}"
       config.etherscanUrl: "${CONFIG_PRODUCTION_ETHERSCAN_URL}"
+      config.t721app.appStoreLink: "${CONFIG_PRODUCTION_T721APP_APPSTORE_LINK}"
+      config.t721app.playStoreLink: "${CONFIG_PRODUCTION_T721APP_PLAYSTORE_LINK}"
 
       server.image.repository: "097558125954.dkr.ecr.eu-west-3.amazonaws.com/ticket721/server"
       server.image.tag: "${TAG}"

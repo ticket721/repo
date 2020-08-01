@@ -1,4 +1,4 @@
-import { Plugins } from '@capacitor/core';
+import { Plugins, Capacitor } from '@capacitor/core';
 import { useEffect, useState } from 'react';
 
 const { Keyboard } = Plugins;
@@ -7,7 +7,7 @@ export const useKeyboardVisibility = (): boolean => {
     const [visible, setVisible] = useState(false);
 
     useEffect(() => {
-        if (Keyboard) {
+        if (Capacitor.isPluginAvailable('Keyboard')) {
             Keyboard.addListener('keyboardWillShow', () => {
                 setVisible(true);
             });
@@ -18,7 +18,7 @@ export const useKeyboardVisibility = (): boolean => {
         }
 
         return () => {
-            if (Keyboard) {
+            if (Capacitor.isPluginAvailable('Keyboard')) {
                 Keyboard.removeAllListeners();
             }
         };
