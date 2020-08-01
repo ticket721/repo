@@ -9,6 +9,7 @@ import { useSelector } from 'react-redux';
 import { AppState } from '@frontend-core/redux';
 import { v4 } from 'uuid';
 import { useDeepEffect } from '../../hooks/useDeepEffect';
+import { getEnv } from '../../utils/getEnv';
 
 const isElapsed = (elapsed: number, multiplicator: number): boolean => {
     return elapsed > multiplicator * 10;
@@ -49,7 +50,7 @@ export const ValidateEmail: React.FC = () => {
 
     const resendEmail = () => {
         if (!lazyResendEmail.response.called) {
-            lazyResendEmail.lazyRequest([token.value, multiplicator], {
+            lazyResendEmail.lazyRequest([token.value, `${getEnv().REACT_APP_SELF}/validate-email`, multiplicator], {
                 force: true,
             });
             setLastCalled(multiplicator);

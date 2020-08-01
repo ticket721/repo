@@ -21,4 +21,9 @@ export class EmailValidationTaskDto {
      * User id
      */
     id: string;
+
+    /**
+     * Redirection url
+     */
+    redirectUrl: string;
 }

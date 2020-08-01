@@ -1,5 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsOptional, IsString } from 'class-validator';
 
 /**
  * Input for reset password
@@ -13,4 +13,14 @@ export class ResetPasswordInputDto {
     })
     @IsString()
     email: string;
+
+    /**
+     * Redirection url of the validation email
+     */
+    @ApiPropertyOptional({
+        description: 'Url on which user is redirected for verification',
+    })
+    @IsString()
+    @IsOptional()
+    redirectUrl?: string;
 }

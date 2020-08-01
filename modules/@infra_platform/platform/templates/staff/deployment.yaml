@@ -47,6 +47,8 @@ spec:
               value: '{{ required "[staff] Missing config.staff.segmentApiKey value" .Values.config.staff.segmentApiKey }}'
             - name: REACT_APP_T721_ORGANIZER_URL
               value: '{{ required "[staff] Missing config.staff.organizerUrl value" .Values.config.staff.organizerUrl }}'
+            - name: REACT_APP_SELF
+              value: '{{ required "[staff] Missing config.staff.self value" .Values.config.staff.self }}'
           ports:
             - name: http
               containerPort: 5000

@@ -25,6 +25,8 @@ import { ResetPasswordResponseDto }         from '@app/server/authentication/dto
 import { PasswordChangeDto }                from '@app/server/authentication/dto/PasswordChange.dto';
 import { PasswordlessUserDto }              from '@app/server/authentication/dto/PasswordlessUser.dto';
 import { ResendValidationResponseDto }      from '@app/server/authentication/dto/ResendValidationResponse.dto';
+import { ResendValidationInputDto }         from '@app/server/authentication/dto/ResendValidationInput.dto';
+import { ResetPasswordInputDto }            from '@app/server/authentication/dto/ResetPasswordInputDto';
 
 export interface FailedRegisterReport {
     report_status: 'weak';
@@ -36,6 +38,7 @@ export async function localRegister(
     password: string,
     username: string,
     locale?: string,
+    redirectUrl?: string
 ): Promise<AxiosResponse<LocalRegisterResponseDto> | FailedRegisterReport> {
 
     const self: T721SDK = this;
@@ -56,6 +59,7 @@ export async function localRegister(
         password: hashed,
         email,
         locale,
+        redirectUrl
     };
 
     return self.post<LocalRegisterInputDto>('/authentication/local/register', {
@@ -86,6 +90,7 @@ export async function web3Register(
     address: string,
     signature: string,
     locale?: string,
+    redirectUrl?: string
 ): Promise<AxiosResponse<Web3RegisterResponseDto>> {
 
     const self: T721SDK = this;
@@ -97,6 +102,7 @@ export async function web3Register(
         address,
         signature,
         locale,
+        redirectUrl
     };
 
     return self.post<Web3RegisterInputDto>('/authentication/web3/register', {
@@ -167,28 +173,28 @@ export async function validateEmail(token: string): Promise<AxiosResponse<EmailV
     }, validationPayload);
 }
 
-export async function resendValidation(token: string) : Promise<AxiosResponse<ResendValidationResponseDto>> {
+export async function resendValidation(token: string, redirectUrl?: string) : Promise<AxiosResponse<ResendValidationResponseDto>> {
     const self: T721SDK = this;
 
-    return await self.post('/authentication/resend-validation',
+    return await self.post<ResendValidationInputDto>('/authentication/resend-validation',
         {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
-        }, null);
+        }, {
+            redirectUrl
+        });
 }
 
-export async function resetPassword(email: string) : Promise<AxiosResponse<ResetPasswordResponseDto>> {
+export async function resetPassword(email: string, redirectUrl?: string) : Promise<AxiosResponse<ResetPasswordResponseDto>> {
     const self: T721SDK = this;
 
-    const updateUser: Partial<UserDto> = {
-        email,
-        locale: 'en',
-    };
-
-    return await self.post<Partial<UserDto>>('/authentication/local/password/reset',
+    return await self.post<Partial<ResetPasswordInputDto>>('/authentication/local/password/reset',
         {
             'Content-Type': 'application/json',
-        }, updateUser);
+        }, {
+            email,
+            redirectUrl
+        });
 }
 
 export async function validateResetPassword(

@@ -17,6 +17,7 @@ function* localRegister(action: ILocalRegister): IterableIterator<any> {
             action.password,
             action.username,
             action.locale,
+            `${getEnv().REACT_APP_SELF}/validate-email`,
         );
 
         const registerData: LocalRegisterResponseDto = registerResponse.data;

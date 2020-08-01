@@ -1,6 +1,6 @@
 import React, { useEffect, useState, Suspense, useCallback }            from 'react';
 import { Route, Switch, useHistory, useLocation, withRouter, Redirect } from 'react-router-dom';
-import { TopNav, FullPageLoading }                                                       from '@frontend/flib-react/lib/components';
+import { TopNav, FullPageLoading }                                      from '@frontend/flib-react/lib/components';
 import ProtectedRoute                                                   from '@frontend/core/lib/components/ProtectedRoute';
 import ToastStacker                                                     from '@frontend/core/lib/components/ToastStacker';
 import styled                                                           from 'styled-components';
@@ -8,23 +8,24 @@ import { T721Navbar }                                                   from './
 import LoginPage                                                        from './routes/Login';
 import RegisterPage                                                     from './routes/Register';
 import HomePage                                                         from './routes/Home';
-import ProfileActivitiesPage     from './routes/Activities';
-import ProfileLanguagePage       from './routes/Language';
-import ProfilePage               from './routes/Profile';
-import SearchViewAllPage         from './routes/SearchViewAll';
-import EventPage                 from './routes/Event';
+import ProfileActivitiesPage                                            from './routes/Activities';
+import ProfileLanguagePage                                              from './routes/Language';
+import ProfilePage                                                      from './routes/Profile';
+import SearchViewAllPage                                                from './routes/SearchViewAll';
+import EventPage                                                        from './routes/Event';
 import TicketPage                from './routes/Ticket';
 import TicketSelectionPage       from './routes/TicketSelection';
 import SearchPage                from './routes/Search';
 import TagsPage                  from './routes/Tags';
 import WalletPage                from './routes/Wallet';
 import CartPage                  from './routes/Cart';
+import ValidateRoutePage         from './routes/ValidateRoute';
 import { useKeyboardVisibility } from '@frontend/core/lib/utils/useKeyboardVisibility';
 import { UserContextGuard }      from '@frontend/core/lib/utils/UserContext';
 import DeepLinksListener         from './components/DeepLinksListener';
 import MediaQuery                from 'react-responsive';
 
-const TopNavWrapper = (props: { back: () => void}): JSX.Element => {
+const TopNavWrapper = (props: { back: () => void }): JSX.Element => {
 
     const [scrolled, setScrolled] = useState(false);
 
@@ -43,7 +44,7 @@ const TopNavWrapper = (props: { back: () => void}): JSX.Element => {
         };
     });
 
-    return <TopNav label={''} onPress={props.back} scrolled={scrolled} />;
+    return <TopNav label={''} onPress={props.back} scrolled={scrolled}/>;
 };
 
 const MobileApp: React.FC = () => {
@@ -132,6 +133,10 @@ const MobileApp: React.FC = () => {
                     <ProtectedRoute path={'/wallet'} exact={true}>
                         <WalletPage/>
                     </ProtectedRoute>
+
+                    <Route path={'/validate-email'} exact={true}>
+                        <ValidateRoutePage/>
+                    </Route>
 
                     <Redirect to={'/'}/>
                 </Switch>
