@@ -21,7 +21,8 @@
         "@install:prod": "yarn @install/public/install && yarn @install/public/postinstall && yarn install --prod",
         "@docker:build": "docker-compose build",
         "@docker:build:github": "env TAG=$GITHUB_SHA yarn @docker:build",
-        "@docker:deploy:github": "env TAG=$GITHUB_SHA ./docker-push.sh"
+        "@docker:deploy:github": "env TAG=$GITHUB_SHA ./docker-push.sh",
+        "@docker:build:check": "env TAG=$GITHUB_SHA ./should_we_build.sh"
     },
     "workspaces": {
 
