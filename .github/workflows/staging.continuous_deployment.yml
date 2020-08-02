@@ -21,6 +21,25 @@ jobs:
             checkName: end
             ref: ${{ github.sha }}
 
+        - uses: actions/checkout@v1
+          if: (github.event_name == 'push' || steps.wait-for-build.outputs.conclusion == 'success')
+
+        - name: "Use Node.js 12.x"
+          if: (github.event_name == 'push' || steps.wait-for-build.outputs.conclusion == 'success')
+          uses: actions/setup-node@v1.2.0
+          with:
+            node-version: 12.x
+
+        - name: "Setup SSH Agent"
+          if: (github.event_name == 'push' || steps.wait-for-build.outputs.conclusion == 'success')
+          uses: webfactory/ssh-agent@v0.1.1
+          with:
+            ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+        - name: "Install required tools globally (npm install -g lerna lcov-result-merger yarn)"
+          if: (github.event_name == 'push' || steps.wait-for-build.outputs.conclusion == 'success')
+          run: npm install -g lerna@3.16.4 lcov-result-merger@3.1.0 yarn@1.22.4
+
         - name: Check if images already exist
           id: should_build
           run: yarn @docker:build:check
@@ -29,25 +48,6 @@ jobs:
             AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
             AWS_USER_ID: ${{ secrets.AWS_USER_ID }}
             AWS_REGION: ${{ secrets.AWS_REGION }}
-
-        - uses: actions/checkout@v1
-          if: (github.event_name == 'push' || steps.wait-for-build.outputs.conclusion == 'success') && steps.should_build.outputs.should_build == 'true'
-
-        - name: "Use Node.js 12.x"
-          if: (github.event_name == 'push' || steps.wait-for-build.outputs.conclusion == 'success') && steps.should_build.outputs.should_build == 'true'
-          uses: actions/setup-node@v1.2.0
-          with:
-            node-version: 12.x
-
-        - name: "Setup SSH Agent"
-          if: (github.event_name == 'push' || steps.wait-for-build.outputs.conclusion == 'success') && steps.should_build.outputs.should_build == 'true'
-          uses: webfactory/ssh-agent@v0.1.1
-          with:
-            ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-
-        - name: "Install required tools globally (npm install -g lerna lcov-result-merger yarn)"
-          if: (github.event_name == 'push' || steps.wait-for-build.outputs.conclusion == 'success') && steps.should_build.outputs.should_build == 'true'
-          run: npm install -g lerna@3.16.4 lcov-result-merger@3.1.0 yarn@1.22.4
 
         - name: "Recover submodules (yarn setup:submodules:clone)"
           if: (github.event_name == 'push' || steps.wait-for-build.outputs.conclusion == 'success') && steps.should_build.outputs.should_build == 'true'
