@@ -41,11 +41,11 @@ jobs:
           run: npm install -g lerna@3.16.4 lcov-result-merger@3.1.0 yarn@1.22.4
 
         - name: "Recover submodules (yarn setup:submodules:clone)"
-          if: (github.event_name == 'push' || steps.wait-for-build.outputs.conclusion == 'success') && steps.should_build.outputs.should_build == 'true'
+          if: (github.event_name == 'push' || steps.wait-for-build.outputs.conclusion == 'success')
           run: yarn setup:submodules:clone
 
         - name: "Setup aws CLI"
-          if: (github.event_name == 'push' || steps.wait-for-build.outputs.conclusion == 'success') && steps.should_build.outputs.should_build == 'true'
+          if: (github.event_name == 'push' || steps.wait-for-build.outputs.conclusion == 'success')
           uses: chrislennon/action-aws-cli@v1.1
 
         - name: Check if images already exist
