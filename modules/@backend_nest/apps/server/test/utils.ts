@@ -310,7 +310,7 @@ export const runMigrations = async (cassandraPort: number, elasticSearchPort: nu
         const current_dir = process.cwd();
         process.chdir('../@backend_migrations');
         const proc = spawn(`env`, [
-            ...`CASSANDRA_HOSTS=127.0.0.1 ELASTICSEARCH_HOST=127.0.0.1:${elasticSearchPort} CASSANDRA_PORT=${cassandraPort} ./migrate.sh`.split(
+            ...`CASSANDRA_HOSTS=127.0.0.1 ELASTICSEARCH_HOST=127.0.0.1:${elasticSearchPort} CASSANDRA_PORT=${cassandraPort} CASSANDRA_KEYSPACE=ticket721 node ./migrator.js up`.split(
                 ' ',
             ),
         ]);
