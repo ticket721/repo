@@ -29,20 +29,21 @@ const TopNavWrapper = (props: { back: () => void }): JSX.Element => {
 
     const [scrolled, setScrolled] = useState(false);
 
-    const setScrolledCallback = () => {
-        if (!scrolled && window.pageYOffset !== 0) {
+    const setScrolledCallback = useCallback(() => {
+        console.log(scrolled, window.scrollY);
+        if (!scrolled && window.scrollY !== 0) {
             setScrolled(true);
-        } else if (scrolled && window.pageYOffset === 0) {
+        } else if (scrolled && window.scrollY === 0) {
             setScrolled(false);
         }
-    };
+    }, [scrolled]);
 
     useEffect(() => {
         window.addEventListener('scroll', setScrolledCallback, { passive: true });
         return () => {
             window.removeEventListener('scroll', setScrolledCallback);
         };
-    });
+    }, [setScrolledCallback]);
 
     return <TopNav label={''} onPress={props.back} scrolled={scrolled}/>;
 };
@@ -62,8 +63,6 @@ const MobileApp: React.FC = () => {
     }, [history]);
 
     return <Suspense fallback={<FullPageLoading/>}>
-        <DeepLinksListener/>
-        <ToastStacker additionalLocales={[]}/>
         <UserContextGuard>
             <AppContainer>
                 <MediaQuery maxDeviceWidth={1224}>
@@ -143,8 +142,10 @@ const MobileApp: React.FC = () => {
                 <MediaQuery maxDeviceWidth={1224}>
                     <T721Navbar visible={location.pathname.lastIndexOf('/') === 0 && !keyboardIsVisible}/>
                 </MediaQuery>
+                <ToastStacker additionalLocales={[]}/>
             </AppContainer>
         </UserContextGuard>
+        <DeepLinksListener/>
     </Suspense>;
 };
 
