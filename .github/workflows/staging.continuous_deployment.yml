@@ -40,6 +40,14 @@ jobs:
           if: (github.event_name == 'push' || steps.wait-for-build.outputs.conclusion == 'success')
           run: npm install -g lerna@3.16.4 lcov-result-merger@3.1.0 yarn@1.22.4
 
+        - name: "Recover submodules (yarn setup:submodules:clone)"
+          if: (github.event_name == 'push' || steps.wait-for-build.outputs.conclusion == 'success') && steps.should_build.outputs.should_build == 'true'
+          run: yarn setup:submodules:clone
+
+        - name: "Setup aws CLI"
+          if: (github.event_name == 'push' || steps.wait-for-build.outputs.conclusion == 'success') && steps.should_build.outputs.should_build == 'true'
+          uses: chrislennon/action-aws-cli@v1.1
+
         - name: Check if images already exist
           id: should_build
           run: yarn @docker:build:check
@@ -48,14 +56,6 @@ jobs:
             AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
             AWS_USER_ID: ${{ secrets.AWS_USER_ID }}
             AWS_REGION: ${{ secrets.AWS_REGION }}
-
-        - name: "Recover submodules (yarn setup:submodules:clone)"
-          if: (github.event_name == 'push' || steps.wait-for-build.outputs.conclusion == 'success') && steps.should_build.outputs.should_build == 'true'
-          run: yarn setup:submodules:clone
-
-        - name: "Setup aws CLI"
-          if: (github.event_name == 'push' || steps.wait-for-build.outputs.conclusion == 'success') && steps.should_build.outputs.should_build == 'true'
-          uses: chrislennon/action-aws-cli@v1.1
 
         - name: "Authenticate Docker"
           if: (github.event_name == 'push' || steps.wait-for-build.outputs.conclusion == 'success') && steps.should_build.outputs.should_build == 'true'
