@@ -43,7 +43,7 @@ jobs:
           run: yarn setup:submodules:clone
 
         - name: "Setup aws CLI"
-          if: steps.wait-for-build.outputs.conclusion == 'success' && steps.should_build.outputs.should_build == 'true'
+          if: steps.wait-for-build.outputs.conclusion == 'success'
           uses: chrislennon/action-aws-cli@v1.1
 
         - name: Check if images already exist
