@@ -42,6 +42,10 @@ jobs:
           if: steps.wait-for-build.outputs.conclusion == 'success'
           run: yarn setup:submodules:clone
 
+        - name: "Setup aws CLI"
+          if: steps.wait-for-build.outputs.conclusion == 'success' && steps.should_build.outputs.should_build == 'true'
+          uses: chrislennon/action-aws-cli@v1.1
+
         - name: Check if images already exist
           id: should_build
           run: yarn @docker:build:check
@@ -50,10 +54,6 @@ jobs:
             AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
             AWS_USER_ID: ${{ secrets.AWS_USER_ID }}
             AWS_REGION: ${{ secrets.AWS_REGION }}
-
-        - name: "Setup aws CLI"
-          if: steps.wait-for-build.outputs.conclusion == 'success' && steps.should_build.outputs.should_build == 'true'
-          uses: chrislennon/action-aws-cli@v1.1
 
         - name: "Authenticate Docker"
           if: steps.wait-for-build.outputs.conclusion == 'success' && steps.should_build.outputs.should_build == 'true'
