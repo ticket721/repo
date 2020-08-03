@@ -207,17 +207,27 @@ export const GlobalStyles = createGlobalStyle<{ theme: Theme }>`
     }
   }
 
+  .Toastify__toast-container {
+      padding: ${(props) => props.theme.regularSpacing};
+  }
+
+  .Toastify__toast {
+      border-radius: ${(props) => props.theme.defaultRadius};
+      backdrop-filter: blur(8px);
+      box-shadow: none;
+  }
+
   .Toastify__toast--info {
-      background: ${(props: ThemeProps<Theme>) => props.theme.primaryColorGradientEnd.hex};
+      background: ${(props: ThemeProps<Theme>) => props.theme.primaryColorGradientEnd.hex}20;
   }
   .Toastify__toast--success {
-      background: ${(props: ThemeProps<Theme>) => props.theme.successColor.hex};
+      background: ${(props: ThemeProps<Theme>) => props.theme.successColor.hex}20;
   }
   .Toastify__toast--warning {
-      background: ${(props: ThemeProps<Theme>) => props.theme.warningColor.hex};
+      background: ${(props: ThemeProps<Theme>) => props.theme.warningColor.hex}20;
   }
   .Toastify__toast--error {
-      background: ${(props: ThemeProps<Theme>) => props.theme.errorColor.hex};
+      background: ${(props: ThemeProps<Theme>) => props.theme.errorColor.hex}20;
   }
 
 `;
