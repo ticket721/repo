@@ -76,7 +76,7 @@ export const DatesFetcher: React.FC<DatesFetcherProps> = (
                     }]
                 }
             ],
-            refreshRate: 5,
+            refreshRate: 60,
         },
         uuid);
 
@@ -94,9 +94,13 @@ export const DatesFetcher: React.FC<DatesFetcherProps> = (
                     }]
                 }
             ],
-            refreshRate: 5,
+            refreshRate: 60,
         },
         uuid);
+
+    if (datesResp.loading || globalDatesResp.loading) {
+        return <FullPageLoading/>;
+    }
 
     if (datesResp.error) {
         return (<Error message={t('fetch_error')} retryLabel={t('common:retrying_in')} onRefresh={forceDatesReq}/>);
@@ -104,10 +108,6 @@ export const DatesFetcher: React.FC<DatesFetcherProps> = (
 
     if (globalDatesResp.error) {
         return (<Error message={t('fetch_error')} retryLabel={t('common:retrying_in')} onRefresh={forceGlobalDatesReq}/>);
-    }
-
-    if (datesResp.loading || globalDatesResp.loading) {
-        return <FullPageLoading/>;
     }
 
     if (datesResp.data?.dates?.length > 0 || globalDatesResp.data?.dates?.length > 0) {

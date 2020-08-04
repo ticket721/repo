@@ -9,6 +9,9 @@ i18n.addResourceBundle('en', 'date_form', {
     location_label: 'Location',
     date_name_placeholder: 'Provide a name',
     location_placeholder: 'Provide a location',
+    start_time_input_label: 'Start Time',
+    end_time_input_label: 'End Time',
+    select_date: 'Select Date',
 });
 
 i18n.addResourceBundle('fr', 'date_form', {
@@ -20,6 +23,9 @@ i18n.addResourceBundle('fr', 'date_form', {
     location_label: 'Localisation',
     date_name_placeholder: 'Veuillez fournir un nom',
     location_placeholder: 'Veuillez fournir une adresse',
+    start_time_input_label: 'Heure de début',
+    end_time_input_label: 'Heure de fin',
+    select_date: 'Sélectionnez une Date',
 });
 
 i18n.addResourceBundle('en', 'validation', {
@@ -27,6 +33,7 @@ i18n.addResourceBundle('en', 'validation', {
     date_name_too_long: 'date name cannot be more than 50 chars long',
     date_name_required: 'date name is required',
     past_date_forbidden: 'cannot be a past date',
+    end_must_be_gt_start: 'end date less than start date',
     date_required: 'date is required',
     location_required: 'location required',
 });
@@ -36,6 +43,7 @@ i18n.addResourceBundle('fr', 'validation', {
     date_name_too_long: 'le nom de votre date ne doit pas dépasser 50 caractères',
     date_name_required: 'un nom pour votre date est requis',
     past_date_forbidden: 'la date fournie est passée',
+    end_must_be_gt_start: 'la date de fin arrive avant la date de début',
     date_required: 'date requise',
     location_required: 'addresse requise',
 });

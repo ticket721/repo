@@ -139,11 +139,13 @@ export class TxsScheduler implements OnModuleInit, OnModuleDestroy {
                                 parsed.confirmed = true;
                             }
 
+                            const transactionHash = parsed.transaction_hash;
+
                             delete parsed.transaction_hash;
 
                             const updateStatus = await this.txsService.update(
                                 {
-                                    transaction_hash: parsed.transaction_hash,
+                                    transaction_hash: transactionHash,
                                 },
                                 parsed,
                             );
@@ -174,7 +176,7 @@ export class TxsScheduler implements OnModuleInit, OnModuleDestroy {
                             }
                         }
 
-                        this.loggerService.log(`Confirmed Transaction ${parsed.transaction_hash}`);
+                        this.loggerService.log(`Confirmed Transaction ${parsed.real_transaction_hash}`);
                     }
                 }
             }

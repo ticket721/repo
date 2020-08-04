@@ -8,13 +8,13 @@ services:
       args:
         - "TAG=$TAG"
     image: "raw:$TAG"
-  server:
-    build:
-      context: ./modules/@backend_nest
-      dockerfile: server.dockerfile
-      args:
-        - "TAG=$TAG"
-    image: "server:$TAG"
+  # server:
+  #   build:
+  #     context: ./modules/@backend_nest
+  #     dockerfile: server.dockerfile
+  #     args:
+  #       - "TAG=$TAG"
+  #   image: "server:$TAG"
   worker:
     build:
       context: ./modules/@backend_nest
@@ -22,33 +22,33 @@ services:
       args:
         - "TAG=$TAG"
     image: "worker:$TAG"
-  migrations:
-    build:
-      context: ./modules/@backend_migrations
-      dockerfile: migrations.dockerfile
-      args:
-        - "TAG=$TAG"
-    image: "migrations:$TAG"
-  organizer:
-    build:
-      context: ./modules/@frontend_organizer-app
-      dockerfile: organizer.dockerfile
-      args:
-        - "TAG=$TAG"
-    image: "organizer:$TAG"
-  t721app:
-    build:
-      context: ./modules/@frontend_t721-app
-      dockerfile: t721app.dockerfile
-      args:
-        - "TAG=$TAG"
-    image: "t721app:$TAG"
-  staff:
-    build:
-      context: ./modules/@frontend_staff-app
-      dockerfile: staff.dockerfile
-      args:
-        - "TAG=$TAG"
-    image: "staff:$TAG"
+  # migrations:
+  #   build:
+  #     context: ./modules/@backend_migrations
+  #     dockerfile: migrations.dockerfile
+  #     args:
+  #       - "TAG=$TAG"
+  #   image: "migrations:$TAG"
+  # organizer:
+  #   build:
+  #     context: ./modules/@frontend_organizer-app
+  #     dockerfile: organizer.dockerfile
+  #     args:
+  #       - "TAG=$TAG"
+  #   image: "organizer:$TAG"
+  # t721app:
+  #   build:
+  #     context: ./modules/@frontend_t721-app
+  #     dockerfile: t721app.dockerfile
+  #     args:
+  #       - "TAG=$TAG"
+  #   image: "t721app:$TAG"
+  # staff:
+  #   build:
+  #     context: ./modules/@frontend_staff-app
+  #     dockerfile: staff.dockerfile
+  #     args:
+  #       - "TAG=$TAG"
+  #   image: "staff:$TAG"
 
 
