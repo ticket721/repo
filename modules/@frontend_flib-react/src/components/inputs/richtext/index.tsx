@@ -66,6 +66,10 @@ const StyledTextarea = styled.div<RichTextProps>`
         padding-top: ${(props) => props.theme.smallSpacing};
         color: ${(props) => props.theme.textColor};
         font-family: ${(props) => props.theme.fontStack};
+        input {
+          color: black;
+          font-family: ${(props) => props.theme.fontStack};
+        }
     }
     .DraftEditor-root {
         height: 300px;
@@ -150,7 +154,7 @@ export const RichText: React.FunctionComponent<RichTextProps> = (props: RichText
         }
     };
     const toolbarConfig: ToolbarConfig = {
-        display: ['INLINE_STYLE_BUTTONS', 'BLOCK_TYPE_BUTTONS', 'BLOCK_TYPE_DROPDOWN', 'HISTORY_BUTTONS'],
+        display: ['INLINE_STYLE_BUTTONS', 'BLOCK_TYPE_BUTTONS', 'BLOCK_TYPE_DROPDOWN', 'LINK_BUTTONS', 'HISTORY_BUTTONS'],
         INLINE_STYLE_BUTTONS: [
             { label: 'Bold', style: 'BOLD' },
             { label: 'Italic', style: 'ITALIC' },
