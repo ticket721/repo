@@ -49,6 +49,11 @@ export class UserDto {
     valid: boolean;
 
     /**
+     * True if admin
+     */
+    admin: boolean;
+
+    /**
      * Locale provided when registered
      */
     locale: string;

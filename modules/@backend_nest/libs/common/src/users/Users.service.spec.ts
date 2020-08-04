@@ -76,6 +76,7 @@ describe('Users Service', function() {
                     role: 'authenticated',
                     locale: 'en',
                     valid: false,
+                    admin: false,
                 };
             };
 
@@ -101,6 +102,7 @@ describe('Users Service', function() {
                 role: 'authenticated',
                 locale: 'en',
                 valid: false,
+                admin: false,
             });
         });
 
@@ -149,6 +151,7 @@ describe('Users Service', function() {
                     role: 'authenticated',
                     locale: 'en',
                     valid: false,
+                    admin: false,
                 };
             };
 
@@ -204,6 +207,7 @@ describe('Users Service', function() {
                                     id: '0',
                                     type: 't721',
                                     role: 'authenticated',
+                                    admin: false,
                                 },
                             } as ESSearchHit<UserEntity>,
                         ],
@@ -238,6 +242,7 @@ describe('Users Service', function() {
                 type: 't721',
                 password: hashedp,
                 role: 'authenticated',
+                admin: false,
             });
 
             verify(
@@ -408,6 +413,7 @@ describe('Users Service', function() {
                                     id: '0',
                                     type: 't721',
                                     role: 'authenticated',
+                                    admin: false,
                                 },
                             } as ESSearchHit<UserEntity>,
                         ],
@@ -442,6 +448,7 @@ describe('Users Service', function() {
                 type: 't721',
                 password: hashedp,
                 role: 'authenticated',
+                admin: false,
             });
 
             verify(
@@ -604,6 +611,7 @@ describe('Users Service', function() {
                                     id: '0',
                                     type: 't721',
                                     role: 'authenticated',
+                                    admin: false,
                                 },
                             } as ESSearchHit<UserEntity>,
                         ],
@@ -638,6 +646,7 @@ describe('Users Service', function() {
                 type: 't721',
                 password: hashedp,
                 role: 'authenticated',
+                admin: false,
             });
 
             verify(
@@ -781,6 +790,7 @@ describe('Users Service', function() {
                 type: 't721',
                 locale: 'en',
                 valid: false,
+                admin: false,
             } as Partial<UserEntity>;
 
             const entity = {
@@ -828,6 +838,7 @@ describe('Users Service', function() {
                 role: 'authenticated',
                 locale: 'en',
                 valid: false,
+                admin: false,
             } as Partial<UserEntity>;
 
             const entity = {
@@ -952,6 +963,7 @@ describe('Users Service', function() {
                     role: 'authenticated',
                     locale: 'en',
                     valid: false,
+                    admin: false,
                 };
             };
 
@@ -995,6 +1007,7 @@ describe('Users Service', function() {
                 role: 'authenticated',
                 locale: 'en',
                 valid: false,
+                admin: false,
             });
         });
 
