@@ -58,5 +58,10 @@ module.exports = [
         type: 'cassandra',
         name: 'user_admin_flag',
         timestamp: '1596112780'
+    },
+    {
+        type: 'elasticsearch',
+        name: 'user_admin_flag',
+        timestamp: '20200804131159'
     }
 ];
