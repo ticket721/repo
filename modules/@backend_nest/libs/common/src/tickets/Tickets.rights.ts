@@ -5,7 +5,6 @@ import { RightsConfig } from '@lib/common/rights/RightsConfig.type';
  */
 export const TicketsRightsConfig: RightsConfig = {
     owner: {
-        count: 1,
         can_edit_rights: true,
         countAs: ['admin'],
     },
