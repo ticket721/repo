@@ -62,6 +62,7 @@ describe('Local Strategy', function() {
                         role: 'authenticated',
                         locale: 'en',
                         valid: false,
+                        admin: false,
                     },
                     error: null,
                 }),
@@ -80,6 +81,7 @@ describe('Local Strategy', function() {
                 role: 'authenticated',
                 locale: 'en',
                 valid: false,
+                admin: false,
             });
 
             verify(authenticationServiceMock.validateUser(email, hashedp)).called();
