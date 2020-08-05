@@ -4,19 +4,43 @@ import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
 import { UserDto } from '@lib/common/users/dto/User.dto';
 import { ConfigService } from '@lib/common/config/Config.service';
 
+/**
+ * Flag content
+ */
 export interface Flag {
+    /**
+     * True if feature should be displayed
+     */
     active: boolean;
 }
 
+/**
+ * All flags
+ */
 export interface Flags {
     [key: string]: Flag;
 }
 
+/**
+ * Service to generate custom feature flags for each users
+ */
 @Injectable()
 export class FeatureFlagsService {
+    /**
+     * Dependency Injection
+     *
+     * @param fsService
+     * @param configService
+     */
     constructor(private readonly fsService: FSService, private readonly configService: ConfigService) {}
 
-    public computeFlags(user: UserDto, config: Flags) {
+    /**
+     * Compute flags values depending on configuration
+     *
+     * @param user
+     * @param config
+     */
+    public computeFlags(user: UserDto, config: Flags): Flags {
         // Admins should have all flags always active
         if (user.admin) {
             for (const key of Object.keys(config)) {
@@ -27,6 +51,11 @@ export class FeatureFlagsService {
         return config;
     }
 
+    /**
+     * Recover config and compute flags for specific user
+     *
+     * @param user
+     */
     public getFlags(user: UserDto): ServiceResponse<Flags> {
         const flagsPath = this.configService.get('FEATURE_FLAGS_CONFIG');
 
