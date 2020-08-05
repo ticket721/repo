@@ -26,6 +26,7 @@ import RightsControllerTestSuite from '@app/server/controllers/rights/Rights.con
 import MetadatasControllerTestSuite from '@app/server/controllers/metadatas/Metadatas.controller.routes-spec';
 import TicketsControllerTestSuite from '@app/server/controllers/tickets/Tickets.controller.routes-spec';
 import GeolocControllerTestSuite from '@app/server/controllers/geoloc/Geoloc.controller.routes-spec';
+import FeatureFlagsControllerTestSuite from '@app/server/controllers/featureflags/FeatureFlags.controller.routes-spec';
 
 import { instance } from 'ts-mockito';
 
@@ -142,4 +143,5 @@ describe('AppController (e2e)', () => {
     describe('Txs Controller', TxsControllerTestSuite(getCtx));
     describe('Metadatas Controller', MetadatasControllerTestSuite(getCtx));
     describe('Geoloc Controller', GeolocControllerTestSuite(getCtx));
+    describe('FeatureFlags Controller', FeatureFlagsControllerTestSuite(getCtx));
 });

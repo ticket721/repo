@@ -596,6 +596,22 @@ export const waitForActionSet = async (
     return actionSet.data.actionsets[0];
 };
 
+export const admin_setAdmin = async (user: string): Promise<void> => {
+    const client = new CassandraDriver.Client({
+        contactPoints: ['localhost'],
+        keyspace: 'ticket721',
+        protocolOptions: {
+            port: 32702,
+        },
+        queryOptions: {
+            consistency: 1,
+        },
+    });
+
+    const query = `UPDATE ticket721.user SET admin=true where id=${user};`;
+
+    await client.execute(query);
+};
 export const admin_addRight = async (
     user: string,
     entity: string,

@@ -93,4 +93,6 @@ export const Config: Joi.ObjectSchema = Joi.object({
     }),
 
     MINTER_INDEX: Joi.string().required(),
+
+    FEATURE_FLAGS_CONFIG: Joi.string().optional(),
 });
