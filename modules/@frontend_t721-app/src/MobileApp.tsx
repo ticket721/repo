@@ -5,6 +5,7 @@ import ProtectedRoute                                                   from '@f
 import ToastStacker                                                     from '@frontend/core/lib/components/ToastStacker';
 import styled                                                           from 'styled-components';
 import { T721Navbar }                                                   from './components/NavBar';
+import AdminRoutePage                                                   from './routes/Admin';
 import LoginPage                                                        from './routes/Login';
 import RegisterPage                                                     from './routes/Register';
 import HomePage                                                         from './routes/Home';
@@ -13,17 +14,18 @@ import ProfileLanguagePage                                              from './
 import ProfilePage                                                      from './routes/Profile';
 import SearchViewAllPage                                                from './routes/SearchViewAll';
 import EventPage                                                        from './routes/Event';
-import TicketPage                from './routes/Ticket';
-import TicketSelectionPage       from './routes/TicketSelection';
-import SearchPage                from './routes/Search';
-import TagsPage                  from './routes/Tags';
-import WalletPage                from './routes/Wallet';
-import CartPage                  from './routes/Cart';
-import ValidateRoutePage         from './routes/ValidateRoute';
-import { useKeyboardVisibility } from '@frontend/core/lib/utils/useKeyboardVisibility';
-import { UserContextGuard }      from '@frontend/core/lib/utils/UserContext';
-import DeepLinksListener         from './components/DeepLinksListener';
-import MediaQuery                from 'react-responsive';
+import TicketPage                                                       from './routes/Ticket';
+import TicketSelectionPage                                              from './routes/TicketSelection';
+import SearchPage                                                       from './routes/Search';
+import TagsPage                                                         from './routes/Tags';
+import WalletPage                                                       from './routes/Wallet';
+import CartPage                                                         from './routes/Cart';
+import ValidateRoutePage                                                from './routes/ValidateRoute';
+import { useKeyboardVisibility }                                        from '@frontend/core/lib/utils/useKeyboardVisibility';
+import { UserContextGuard }                                             from '@frontend/core/lib/utils/UserContext';
+import DeepLinksListener                                                from './components/DeepLinksListener';
+import MediaQuery                                                       from 'react-responsive';
+import { FeatureFlag }                                                  from '@frontend/core/lib/components/FeatureFlag';
 
 const TopNavWrapper = (props: { back: () => void }): JSX.Element => {
 
@@ -136,6 +138,12 @@ const MobileApp: React.FC = () => {
                     <Route path={'/validate-email'} exact={true}>
                         <ValidateRoutePage/>
                     </Route>
+
+                    <FeatureFlag flag={'admin_flag'}>
+                        <Route path={'/you/are/an/admin'} exact={true}>
+                            <AdminRoutePage/>
+                        </Route>
+                    </FeatureFlag>
 
                     <Redirect to={'/'}/>
                 </Switch>

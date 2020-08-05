@@ -18,7 +18,6 @@ const StatusBarPaddingContainer = styled.div`
 `;
 
 export const StatusBarMargin = (Comp: React.ComponentType): React.FC => {
-    console.log('properly rendered bro');
     return () => {
         return (
             <>
