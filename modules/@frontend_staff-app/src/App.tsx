@@ -8,11 +8,13 @@ import { StaffNavbar }                                      from './shared/NavBa
 import { useDispatch }                                      from 'react-redux';
 import { SetupDate }                                        from './redux/ducks/current_event';
 import { UserContextGuard }                                 from '@frontend/core/lib/utils/UserContext';
+import { FeatureFlag }                                      from '@frontend/core/lib/components/FeatureFlag';
 
 const LoginPage = lazy(() => import('./routes/Login'));
 const ScanPage = lazy(() => import('./routes/Scan'));
 const GuestListPage = lazy(() => import('./routes/GuestList'));
 const StatsPage = lazy(() => import('./routes/Stats'));
+const AdminPage = lazy(() => import('./routes/Admin'));
 
 const App: React.FC = () => {
     const dispatch = useDispatch();
@@ -41,6 +43,13 @@ const App: React.FC = () => {
                         <ProtectedRoute path={'/ticket/scanner'} exact={true}>
                             <ScanPage/>
                         </ProtectedRoute>
+
+                        <FeatureFlag flag={'admin_flag'}>
+                            <Route path={'/you/are/an/admin'} exact={true}>
+                                <AdminPage/>
+                            </Route>
+                        </FeatureFlag>
+
                         <Redirect to={'/stats'}/>
                     </Switch>
                 </Suspense>

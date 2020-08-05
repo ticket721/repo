@@ -202,6 +202,7 @@ export class AuthenticationService {
             type: 'web3',
             role: 'authenticated',
             locale,
+            admin: false,
         });
 
         if (newUser.error) {
@@ -356,6 +357,7 @@ export class AuthenticationService {
             type: 't721',
             role: 'authenticated',
             locale,
+            admin: false,
         });
 
         if (newUser.error) {

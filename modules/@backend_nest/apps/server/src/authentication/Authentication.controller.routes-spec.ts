@@ -59,6 +59,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                         type: 'web3',
                         username: user.username,
                         valid: false,
+                        admin: false,
                     },
                     validationToken: response.data.validationToken,
                     expiration: expect.anything(),
@@ -104,6 +105,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                         type: 'web3',
                         username: user.username,
                         valid: false,
+                        admin: false,
                     },
                     expiration: expect.anything(),
                     validationToken: response.data.validationToken,
@@ -441,6 +443,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                             type: 'web3',
                             username: user.username,
                             valid: true,
+                            admin: false,
                         },
                         expiration: expect.anything(),
                     } as LocalRegisterResponseDto);
@@ -590,6 +593,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                         type: 't721',
                         username: user.username,
                         valid: false,
+                        admin: false,
                     },
                     expiration: expect.anything(),
                     validationToken: response.data.validationToken,
@@ -624,6 +628,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                         type: 't721',
                         username: user.username,
                         valid: false,
+                        admin: false,
                     },
                     expiration: expect.anything(),
                     validationToken: response.data.validationToken,
@@ -734,6 +739,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                         type: 't721',
                         email: loginResponse.data.user.email,
                         username: loginResponse.data.user.username,
+                        admin: false,
                     },
                     expiration: expect.anything(),
                     token: loginResponse.data.token,
@@ -804,6 +810,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                         type: 't721',
                         email: validationResponse.data.user.email,
                         username: validationResponse.data.user.username,
+                        admin: false,
                     },
                 } as EmailValidationResponseDto);
             });
@@ -852,6 +859,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     role: 'authenticated',
                     valid: expect.anything(),
                     locale: expect.anything(),
+                    admin: false,
                 });
 
                 const loginResponse: AxiosResponse<LocalLoginResponseDto> = await sdk.localLogin(user.email, pass);
@@ -866,6 +874,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                         type: 't721',
                         email: loginResponse.data.user.email,
                         username: loginResponse.data.user.username,
+                        admin: false,
                     },
                     expiration: expect.anything(),
                     token: loginResponse.data.token,
@@ -962,6 +971,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                         type: 't721',
                         email: loginResponse.data.user.email,
                         username: loginResponse.data.user.username,
+                        admin: false,
                     },
                     expiration: expect.anything(),
                     token: loginResponse.data.token,
