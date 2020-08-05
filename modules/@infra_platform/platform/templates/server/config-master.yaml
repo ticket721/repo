@@ -64,3 +64,5 @@ data:
     ROCKSIDE_FORWARDER_ADDRESS={{ required "[server] Missing config.rockside.forwarder_address value" .Values.config.rockside.forwarder_address }}
 
     MINTER_INDEX=0
+
+    FEATURE_FLAGS_CONFIG=/config/feature-flags.json

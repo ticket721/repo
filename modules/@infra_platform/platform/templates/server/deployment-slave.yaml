@@ -27,6 +27,9 @@ spec:
     spec:
       serviceAccountName: {{ include "platform.fullname" . }}--platform--sa
       volumes:
+        - name: server-config-feature-flags
+          configMap:
+            name: {{ template "platform.fullname" . }}--server-config-feature-flags--cfmp
         - name: server-config
           configMap:
             name: {{ template "platform.fullname" . }}--server-config-slave--cfmp
@@ -61,6 +64,9 @@ spec:
               memory: "512Mi"
               cpu: "250m"
           volumeMounts:
+            - name: server-config-feature-flags
+              mountPath: /config/feature-flags.json
+              subPath: feature-flags.json
             - name: server-config
               mountPath: /config/production.env
               subPath: production.env
