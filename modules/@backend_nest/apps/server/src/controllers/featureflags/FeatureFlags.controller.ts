@@ -27,6 +27,10 @@ export class FeatureFlagsController extends ControllerBasics<any> {
         super();
     }
 
+    /**
+     * Route to recover feature flags
+     * @param user
+     */
     @Get('/')
     @UseFilters(new HttpExceptionFilter())
     @UseGuards(AuthGuard('jwt'))
