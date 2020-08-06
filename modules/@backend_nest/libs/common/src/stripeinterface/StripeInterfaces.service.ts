@@ -37,12 +37,12 @@ export class StripeInterfacesService extends CRUDExtension<StripeInterfacesRepos
         );
     }
 
-    async createAccountToken(businessType: string): Promise<ServiceResponse<string>> {
-        const newAccountToken = await this.stripeService.get().tokens.create({
-            account: {
-                tos_shown_and_accepted: true,
-                businessType,
-            }
-        })
-    }
+    // async createAccountToken(businessType: string): Promise<ServiceResponse<string>> {
+    //     const newAccountToken = await this.stripeService.get().tokens.create({
+    //         account: {
+    //             tos_shown_and_accepted: true,
+    //             businessType,
+    //         }
+    //     })
+    // }
 }

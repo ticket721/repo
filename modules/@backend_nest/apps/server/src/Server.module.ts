@@ -53,17 +53,18 @@ import { ServerController } from '@app/server/controllers/server/Server.controll
 import { MetadatasController } from '@app/server/controllers/metadatas/Metadatas.controller';
 import { MetadatasModule } from '@lib/common/metadatas/Metadatas.module';
 import { AuthorizationsModule } from '@lib/common/authorizations/Authorizations.module';
-import { CheckoutModule } from '@lib/common/checkout/Checkout.module';
-import { CartModule } from '@lib/common/cart/Cart.module';
-import { RocksideModule } from '@lib/common/rockside/Rockside.module';
-import { TicketsController } from '@app/server/controllers/tickets/Tickets.controller';
-import { TicketsModule } from '@lib/common/tickets/Tickets.module';
-import { UsersController } from '@app/server/controllers/users/Users.controller';
-import { toHeaderFormat } from '@lib/common/utils/toHeaderFormat';
-import { GeolocController } from '@app/server/controllers/geoloc/Geoloc.controller';
-import { StripeModule } from '@lib/common/stripe/Stripe.module';
-import { FeatureFlagsModule } from '@lib/common/featureflags/FeatureFlags.module';
+import { CheckoutModule }         from '@lib/common/checkout/Checkout.module';
+import { CartModule }             from '@lib/common/cart/Cart.module';
+import { RocksideModule }         from '@lib/common/rockside/Rockside.module';
+import { TicketsController }      from '@app/server/controllers/tickets/Tickets.controller';
+import { TicketsModule }          from '@lib/common/tickets/Tickets.module';
+import { UsersController }        from '@app/server/controllers/users/Users.controller';
+import { toHeaderFormat }         from '@lib/common/utils/toHeaderFormat';
+import { GeolocController }       from '@app/server/controllers/geoloc/Geoloc.controller';
+import { StripeModule }           from '@lib/common/stripe/Stripe.module';
+import { FeatureFlagsModule }     from '@lib/common/featureflags/FeatureFlags.module';
 import { FeatureFlagsController } from '@app/server/controllers/featureflags/FeatureFlags.controller';
+import { StripeInterfacesModule } from '@lib/common/stripeinterface/StripeInterfaces.module';
 
 @Module({
     imports: [
@@ -104,6 +105,7 @@ import { FeatureFlagsController } from '@app/server/controllers/featureflags/Fea
         CheckoutModule,
         CartModule,
         StripeModule.register(),
+        StripeInterfacesModule,
 
         // User Management Modules
         AuthenticationModule,
