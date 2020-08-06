@@ -6,7 +6,6 @@ import { SetFeatureFlags } from './actions';
 import { AuthActionTypes, ISetToken } from '../auth';
 
 function* fetchFlags(action: ISetToken): IterableIterator<any> {
-    console.log('allo');
     if (action.token?.value) {
         const flags = yield global.window.t721Sdk.featureFlags.fetch(action.token.value);
 

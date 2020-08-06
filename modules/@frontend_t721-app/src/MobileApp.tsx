@@ -21,6 +21,7 @@ import TagsPage                                                         from './
 import WalletPage                                                       from './routes/Wallet';
 import CartPage                                                         from './routes/Cart';
 import ValidateRoutePage                                                from './routes/ValidateRoute';
+import StripeSetupPage                                                  from './routes/StripeSetup';
 import { useKeyboardVisibility }                                        from '@frontend/core/lib/utils/useKeyboardVisibility';
 import { UserContextGuard }                                             from '@frontend/core/lib/utils/UserContext';
 import DeepLinksListener                                                from './components/DeepLinksListener';
@@ -79,6 +80,13 @@ const MobileApp: React.FC = () => {
                     }
                 </MediaQuery>
                 <Switch>
+
+                    <FeatureFlag flag={'stripe_interface_setup'}>
+                        <ProtectedRoute path={'/stripe/setup'} exact={true}>
+                            <StripeSetupPage/>
+                        </ProtectedRoute>
+                    </FeatureFlag>
+
                     <Route path={'/login'} exact={true}>
                         <LoginPage/>
                     </Route>
@@ -140,9 +148,9 @@ const MobileApp: React.FC = () => {
                     </Route>
 
                     <FeatureFlag flag={'admin_flag'}>
-                        <Route path={'/you/are/an/admin'} exact={true}>
+                        <ProtectedRoute path={'/you/are/an/admin'} exact={true}>
                             <AdminRoutePage/>
-                        </Route>
+                        </ProtectedRoute>
                     </FeatureFlag>
 
                     <Redirect to={'/'}/>

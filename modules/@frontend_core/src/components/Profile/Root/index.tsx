@@ -117,6 +117,14 @@ const ProfileRoot: React.FC<ProfileRootProps> = ({ desktop, extraButtons }: Prof
                         history.replace('/');
                     }}
                 />
+                <FeatureFlag flag={'stripe_interface_setup'}>
+                    <ArrowLink
+                        label={t('receive_money_with_stripe')}
+                        onClick={() => {
+                            history.push('/stripe/setup');
+                        }}
+                    />
+                </FeatureFlag>
                 <FeatureFlag flag={'admin_flag'}>
                     <ArrowLink
                         label={t('you_are_an_admin')}
