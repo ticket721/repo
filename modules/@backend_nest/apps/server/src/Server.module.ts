@@ -62,6 +62,8 @@ import { UsersController } from '@app/server/controllers/users/Users.controller'
 import { toHeaderFormat } from '@lib/common/utils/toHeaderFormat';
 import { GeolocController } from '@app/server/controllers/geoloc/Geoloc.controller';
 import { StripeModule } from '@lib/common/stripe/Stripe.module';
+import { FeatureFlagsModule } from '@lib/common/featureflags/FeatureFlags.module';
+import { FeatureFlagsController } from '@app/server/controllers/featureflags/FeatureFlags.controller';
 
 @Module({
     imports: [
@@ -110,6 +112,8 @@ import { StripeModule } from '@lib/common/stripe/Stripe.module';
         FSModule,
         ShutdownModule,
         ToolBoxModule,
+
+        FeatureFlagsModule,
 
         // Notification Modules
         EmailModule,
@@ -180,6 +184,7 @@ import { StripeModule } from '@lib/common/stripe/Stripe.module';
         TicketsController,
         UsersController,
         GeolocController,
+        FeatureFlagsController,
     ],
     providers: [
         ServerService,

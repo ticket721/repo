@@ -47,4 +47,9 @@ export class PasswordlessUserDto {
      * True if email has been validated
      */
     valid: boolean;
+
+    /**
+     * True if admin
+     */
+    admin: boolean;
 }

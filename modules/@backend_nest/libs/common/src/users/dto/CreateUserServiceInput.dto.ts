@@ -1,4 +1,4 @@
-import { IsEmail, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsEmail, IsOptional, IsString } from 'class-validator';
 
 /**
  * Input format when creating a user with the UserService
@@ -59,4 +59,10 @@ export class CreateUserServiceInputDto {
      */
     @IsString()
     locale: string;
+
+    /**
+     * True if user is admin
+     */
+    @IsBoolean()
+    admin: boolean;
 }

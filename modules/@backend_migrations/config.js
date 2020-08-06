@@ -53,5 +53,15 @@ module.exports = [
         type: 'elasticsearch',
         name: 'stripe_interface',
         timestamp: '20200728121356'
+    },
+    {
+        type: 'cassandra',
+        name: 'user_admin_flag',
+        timestamp: '1596112780'
+    },
+    {
+        type: 'elasticsearch',
+        name: 'user_admin_flag',
+        timestamp: '20200804131159'
     }
 ];

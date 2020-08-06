@@ -1,4 +1,5 @@
 import React, { lazy }                    from 'react';
+import Admin from './routes/Admin';
 
 export interface RouteDatum {
     path: string;
@@ -7,6 +8,7 @@ export interface RouteDatum {
     protected?: boolean;
     entityType?: string;
     paramId?: 'groupId' | 'dateId' | 'categoryId' | 'eventId';
+    flag?: string;
 }
 
 export const routes: RouteDatum[] = [
@@ -96,6 +98,12 @@ export const routes: RouteDatum[] = [
         path: '/create-event',
         page: lazy(() => import('./routes/CreateEvent')),
         protected: true,
+    },
+    {
+        path: '/you/are/an/admin',
+        page: Admin,
+        protected: true,
+        flag: 'admin_flag'
     },
     {
         path: '/',

@@ -12,6 +12,7 @@ import { cacheSaga } from './ducks/cache/sagas';
 import { authSaga } from './ducks/auth/sagas';
 import { Saga } from '@redux-saga/types';
 import { getEnv } from '../utils/getEnv';
+import { featureFlagsSaga } from './ducks/feature-flags';
 
 const sagaMiddleware = createSagaMiddleware();
 
@@ -33,7 +34,14 @@ export const configureStore = <AdditionalState>(
 
     const rootSaga = function* (): IterableIterator<AllEffect<any>> {
         yield all(
-            [userPropertiesSaga, setupSaga, cacheSaga, authSaga, ...additionalSagas].map((saga: Saga) => fork(saga)),
+            [
+                userPropertiesSaga,
+                setupSaga,
+                cacheSaga,
+                authSaga,
+                featureFlagsSaga,
+                ...additionalSagas,
+            ].map((saga: Saga) => fork(saga)),
         );
     };
 

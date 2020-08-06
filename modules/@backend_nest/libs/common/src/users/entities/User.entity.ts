@@ -89,6 +89,14 @@ export class UserEntity {
     valid: boolean;
 
     /**
+     * True if user is admin
+     */
+    @Column({
+        type: 'boolean',
+    })
+    admin: boolean;
+
+    /**
      * User Locale
      */
     @Column({

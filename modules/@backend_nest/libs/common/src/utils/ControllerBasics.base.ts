@@ -117,7 +117,7 @@ export class ControllerBasics<EntityType> {
      * @private
      */
     public async _serviceCall<ResType = any>(
-        promise: Promise<ServiceResponse<ResType>>,
+        promise: Promise<ServiceResponse<ResType>> | ServiceResponse<ResType>,
         errorStatus: StatusCodes,
         errorMessage?: string,
     ): Promise<ResType> {
