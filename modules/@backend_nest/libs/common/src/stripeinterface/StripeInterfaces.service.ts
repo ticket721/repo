@@ -4,6 +4,8 @@ import { StripeInterfacesRepository }               from '@lib/common/stripeinte
 import { StripeInterfaceEntity }                    from '@lib/common/stripeinterface/entities/StripeInterface.entity';
 import { ServiceResponse }                          from '@lib/common/utils/ServiceResponse.type';
 import { StripeService }                            from '@lib/common/stripe/Stripe.service';
+import { UserDto }                                  from '@lib/common/users/dto/User.dto';
+import { fromES }                                   from '@lib/common/utils/fromES.helper';
 
 /**
  * Service to CRUD StripeInterfaceEntities
@@ -18,10 +20,10 @@ export class StripeInterfacesService extends CRUDExtension<StripeInterfacesRepos
      */
     constructor(
         @InjectRepository(StripeInterfacesRepository)
-        stripeInterfacesRepository: StripeInterfacesRepository,
+            stripeInterfacesRepository: StripeInterfacesRepository,
         @InjectModel(StripeInterfaceEntity)
-        stripeInterfaceEntity: BaseModel<StripeInterfaceEntity>,
-        private readonly stripeService: StripeService
+            stripeInterfaceEntity: BaseModel<StripeInterfaceEntity>,
+        private readonly stripeService: StripeService,
     ) {
         super(
             stripeInterfaceEntity,
@@ -35,6 +37,67 @@ export class StripeInterfacesService extends CRUDExtension<StripeInterfacesRepos
                 return new StripeInterfaceEntity(r);
             },
         );
+    }
+
+    async recoverUserInterface(user: UserDto): Promise<ServiceResponse<StripeInterfaceEntity>> {
+        const esQuery = {
+            body: {
+                query: {
+                    bool: {
+                        must: {
+                            term: {
+                                owner: user.id
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
+        const esQueryResult = await this.searchElastic(esQuery);
+
+        if (esQueryResult.error) {
+            return {
+                error: esQueryResult.error,
+                response: null
+            }
+        }
+
+        if (esQueryResult.response.hits.total === 0) {
+            const newStripeInterface = await this.create({
+                owner: user.id,
+                payment_methods: [],
+                connect_account: null,
+                connect_account_current_deadline: null,
+                connect_account_currently_due: null,
+                connect_account_eventually_due: null,
+                connect_account_past_due: null,
+                connect_account_pending_verification: null,
+                connect_account_errors: null,
+                connect_account_external_accounts: null,
+                connect_account_name: null,
+                connect_account_type: null,
+                connect_account_disabled_reason: null,
+                connect_account_updated_at: null,
+            });
+
+            if (newStripeInterface.error) {
+                return {
+                    error: newStripeInterface.error,
+                    response: null
+                }
+            }
+
+            return {
+                error: null,
+                response: newStripeInterface.response
+            }
+        } else {
+            return {
+                error: null,
+                response: fromES<StripeInterfaceEntity>(esQueryResult.response.hits.hits[0])
+            }
+        }
     }
 
     // async createAccountToken(businessType: string): Promise<ServiceResponse<string>> {

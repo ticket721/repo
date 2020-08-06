@@ -57,6 +57,16 @@ export class StripeInterfaceEntity {
             this.owner = sie.owner ? sie.owner.toString() : sie.owner;
             this.payment_methods = sie.payment_methods;
             this.connect_account = sie.connect_account;
+            this.connect_account_current_deadline = sie.connect_account_current_deadline;
+            this.connect_account_currently_due = sie.connect_account_currently_due;
+            this.connect_account_eventually_due = sie.connect_account_eventually_due;
+            this.connect_account_past_due = sie.connect_account_past_due;
+            this.connect_account_pending_verification = sie.connect_account_pending_verification;
+            this.connect_account_errors = sie.connect_account_errors;
+            this.connect_account_external_accounts = sie.connect_account_external_accounts;
+            this.connect_account_name = sie.connect_account_name;
+            this.connect_account_type = sie.connect_account_type;
+            this.connect_account_disabled_reason = sie.connect_account_disabled_reason;
             this.connect_account_updated_at = sie.connect_account_updated_at;
             this.created_at = sie.created_at;
             this.updated_at = sie.updated_at;
@@ -95,24 +105,6 @@ export class StripeInterfaceEntity {
     })
         // tslint:disable-next-line:variable-name
     connect_account: string;
-
-    // /**
-    //  * Connect account id
-    //  */
-    // @Column({
-    //     type: 'text',
-    // })
-    //     // tslint:disable-next-line:variable-name
-    // connect_account_status: string;
-
-    // /**
-    //  * Connect account id
-    //  */
-    // @Column({
-    //     type: 'text',
-    // })
-    //     // tslint:disable-next-line:variable-name
-    // connect_account_business_type: string;
 
     @Column({
         type: 'timestamp',

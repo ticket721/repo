@@ -16,17 +16,17 @@ import SearchViewAllPage                                                from './
 import EventPage                                                        from './routes/Event';
 import TicketPage                                                       from './routes/Ticket';
 import TicketSelectionPage                                              from './routes/TicketSelection';
-import SearchPage                                                       from './routes/Search';
-import TagsPage                                                         from './routes/Tags';
-import WalletPage                                                       from './routes/Wallet';
-import CartPage                                                         from './routes/Cart';
-import ValidateRoutePage                                                from './routes/ValidateRoute';
-import StripeSetupPage                                                  from './routes/StripeSetup';
-import { useKeyboardVisibility }                                        from '@frontend/core/lib/utils/useKeyboardVisibility';
-import { UserContextGuard }                                             from '@frontend/core/lib/utils/UserContext';
-import DeepLinksListener                                                from './components/DeepLinksListener';
-import MediaQuery                                                       from 'react-responsive';
-import { FeatureFlag }                                                  from '@frontend/core/lib/components/FeatureFlag';
+import SearchPage                from './routes/Search';
+import TagsPage                  from './routes/Tags';
+import WalletPage                from './routes/Wallet';
+import CartPage                  from './routes/Cart';
+import ValidateRoutePage         from './routes/ValidateRoute';
+import StripeSetupPage           from './routes/StripeSetup';
+import { useKeyboardVisibility } from '@frontend/core/lib/utils/useKeyboardVisibility';
+import { UserContextGuard }      from '@frontend/core/lib/utils/UserContext';
+import DeepLinksListener         from './components/DeepLinksListener';
+import MediaQuery                from 'react-responsive';
+import { FeatureFlag, useFeatureFlag }           from '@frontend/core/lib/components/FeatureFlag';
 
 const TopNavWrapper = (props: { back: () => void }): JSX.Element => {
 
@@ -65,6 +65,11 @@ const MobileApp: React.FC = () => {
         }
     }, [history]);
 
+    const flags = {
+        stripe_interface_setup: useFeatureFlag('stripe_interface_setup'),
+        admin_flag: useFeatureFlag('admin_flag')
+    };
+
     return <Suspense fallback={<FullPageLoading/>}>
         <UserContextGuard>
             <AppContainer>
@@ -81,11 +86,31 @@ const MobileApp: React.FC = () => {
                 </MediaQuery>
                 <Switch>
 
-                    <FeatureFlag flag={'stripe_interface_setup'}>
-                        <ProtectedRoute path={'/stripe/setup'} exact={true}>
-                            <StripeSetupPage/>
-                        </ProtectedRoute>
-                    </FeatureFlag>
+                    {
+                        flags.stripe_interface_setup
+
+                            ?
+                            <ProtectedRoute path={'/stripe/setup'} exact={true}>
+                                <StripeSetupPage/>
+                            </ProtectedRoute>
+
+                            :
+                            null
+
+                    }
+
+                    {
+                        flags.admin_flag
+
+                            ?
+                            <ProtectedRoute path={'/you/are/an/admin'} exact={true}>
+                                <AdminRoutePage/>
+                            </ProtectedRoute>
+
+                            :
+                            null
+
+                    }
 
                     <Route path={'/login'} exact={true}>
                         <LoginPage/>
@@ -146,12 +171,6 @@ const MobileApp: React.FC = () => {
                     <Route path={'/validate-email'} exact={true}>
                         <ValidateRoutePage/>
                     </Route>
-
-                    <FeatureFlag flag={'admin_flag'}>
-                        <ProtectedRoute path={'/you/are/an/admin'} exact={true}>
-                            <AdminRoutePage/>
-                        </ProtectedRoute>
-                    </FeatureFlag>
 
                     <Redirect to={'/'}/>
                 </Switch>

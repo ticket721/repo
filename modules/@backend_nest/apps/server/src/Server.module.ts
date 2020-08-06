@@ -65,6 +65,7 @@ import { StripeModule }           from '@lib/common/stripe/Stripe.module';
 import { FeatureFlagsModule }     from '@lib/common/featureflags/FeatureFlags.module';
 import { FeatureFlagsController } from '@app/server/controllers/featureflags/FeatureFlags.controller';
 import { StripeInterfacesModule } from '@lib/common/stripeinterface/StripeInterfaces.module';
+import { StripeController }       from '@app/server/controllers/payment/stripe/Stripe.controller';
 
 @Module({
     imports: [
@@ -187,6 +188,7 @@ import { StripeInterfacesModule } from '@lib/common/stripeinterface/StripeInterf
         UsersController,
         GeolocController,
         FeatureFlagsController,
+        StripeController
     ],
     providers: [
         ServerService,

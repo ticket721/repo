@@ -7,9 +7,15 @@ import { AuthActionTypes, ISetToken } from '../auth';
 
 function* fetchFlags(action: ISetToken): IterableIterator<any> {
     if (action.token?.value) {
-        const flags = yield global.window.t721Sdk.featureFlags.fetch(action.token.value);
+        try {
+            const flags = yield global.window.t721Sdk.featureFlags.fetch(action.token.value);
 
-        yield put(SetFeatureFlags((flags as any).data.flags));
+            yield put(SetFeatureFlags((flags as any).data.flags));
+        } catch (e) {
+            console.error(e);
+            console.error('Unable to fetch Feature Flags');
+        }
+
     }
 }
 

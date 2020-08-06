@@ -84,7 +84,10 @@ import { usersMe, usersSetDeviceAddress } from './app/api/users';
 import { geolocClosestCity, geolocFuzzySearch }  from './app/api/geoloc';
 
 // FEATURE FLAGS
-import { featureFlagsFetch } from './app/api/feature-flags';
+import { featureFlagsFetch }           from './app/api/feature-flags';
+
+// PAYMENT
+import { paymentStripeFetchInterface } from './app/api/payment';
 
 export { FailedRegisterReport } from './app/api/authentication';
 
@@ -183,6 +186,8 @@ export class T721SDK {
         this.geoloc.fuzzySearch = this.geoloc.fuzzySearch.bind(this);
 
         this.featureFlags.fetch = this.featureFlags.fetch.bind(this);
+
+        this.payment.stripe.fetchInterface = this.payment.stripe.fetchInterface.bind(this);
     }
 
     connect(host: string, port: number, protocol: 'http' | 'https' = 'http') {
@@ -388,9 +393,15 @@ export class T721SDK {
     public geoloc = {
         closestCity: geolocClosestCity,
         fuzzySearch: geolocFuzzySearch,
-    }
+    };
 
     public featureFlags = {
         fetch: featureFlagsFetch
+    };
+
+    public payment = {
+        stripe: {
+            fetchInterface: paymentStripeFetchInterface
+        }
     }
 }

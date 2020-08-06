@@ -1,8 +1,8 @@
 import { SagaIterator } from '@redux-saga/types';
 import { takeEvery, put } from 'redux-saga/effects';
-import { AuthActionTypes, Token } from './types';
+import { AuthActionTypes, Token }                                              from './types';
 import { ILocalRegister, ILogout, SetErrors, SetLoading, SetToken } from './actions';
-import { LocalRegisterResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/authentication/dto/LocalRegisterResponse.dto';
+import { LocalRegisterResponseDto }                                            from '@common/sdk/lib/@backend_nest/apps/server/src/authentication/dto/LocalRegisterResponse.dto';
 import { LocalLoginResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/authentication/dto/LocalLoginResponse.dto';
 import { AxiosResponse } from 'axios';
 import { PushNotification } from '../notifications';
