@@ -42,7 +42,7 @@ export const ReadMore: React.FunctionComponent<ReadMoreProps> = (props: ReadMore
         <CardContainer removeBg={props.removeBg}>
             <H3>{props.title}</H3>
             <Text showText={show} source={props.text} />
-            {props.text.length > 180 && (
+            {props.text.length > 50 && (
                 <ReadMoreLabel onClick={() => setShow(!show)} readMoreColor={props.readMoreColor}>
                     {show ? props.hideLabel : props.showLabel}
                 </ReadMoreLabel>

@@ -70,6 +70,21 @@ const StyledTextarea = styled.div<RichTextProps>`
             color: black;
             font-family: ${(props) => props.theme.fontStack};
         }
+        .toolbar {
+            button {
+                background: ${(props) => props.theme.componentColorLight};
+                border: 1px solid ${(props) => props.theme.componentColorLight};
+            }
+            button:disabled,
+            button[disabled] {
+                background: ${(props) => props.theme.componentColorLighter};
+            }
+            select {
+                border: 1px solid ${(props) => props.theme.componentColorLight};
+                color: ${(props) => props.theme.textColorDark};
+                padding: 0 ${(props) => props.theme.biggerSpacing} 0 ${(props) => props.theme.smallSpacing};
+            }
+        }
     }
     .DraftEditor-root {
         height: 300px;
