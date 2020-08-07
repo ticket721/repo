@@ -60,9 +60,11 @@ const StyledTextarea = styled.div<RichTextProps>`
     transition: background-color 300ms ease;
 
     .editor {
+        z-index: 2;
         background-color: transparent;
         border-radius: 0px;
         border: none;
+        padding: 0 ${(props) => props.theme.biggerSpacing};
         padding-top: ${(props) => props.theme.smallSpacing};
         color: ${(props) => props.theme.textColor};
         font-family: ${(props) => props.theme.fontStack};
@@ -71,6 +73,7 @@ const StyledTextarea = styled.div<RichTextProps>`
             font-family: ${(props) => props.theme.fontStack};
         }
         .toolbar {
+            margin: 0;
             button {
                 background: ${(props) => props.theme.componentColorLight};
                 border: 1px solid ${(props) => props.theme.componentColorLight};
@@ -78,6 +81,10 @@ const StyledTextarea = styled.div<RichTextProps>`
             button:disabled,
             button[disabled] {
                 background: ${(props) => props.theme.componentColorLighter};
+            }
+            button:active,
+            button[class*="IconButton__isActive__"] {
+                background: ${(props) => props.theme.textColorDark};
             }
             select {
                 border: 1px solid ${(props) => props.theme.componentColorLight};
@@ -155,19 +162,27 @@ export const RichText: React.FunctionComponent<RichTextProps> = (props: RichText
             ? RichTextEditor.createEmptyValue()
             : RichTextEditor.createValueFromString(props.value, 'markdown'),
     );
+    const [count, setCount] = React.useState(props.value ? value.toString('markdown').length : 0);
 
     const onChange = (editorvalue: EditorValue) => {
         const text = editorvalue.toString('markdown');
-        console.log('TEXT : ', text);
-        if (props.maxChar && text.length > props.maxChar) {
+        setCount(text.length);
+        if ((props.maxChar && text.length <= props.maxChar) || !props.maxChar) {
+            setValue(editorvalue);
+            if (props.onChange) {
+                props.onChange(text);
+            }
+        } else {
             setValue(value);
-            return;
-        }
-        setValue(editorvalue);
-        if (props.onChange) {
-            props.onChange(text);
         }
     };
+
+    React.useEffect(() => {
+        if (props.maxChar && count > props.maxChar) {
+            setValue(value);
+        }
+    }, [count]);
+
     const toolbarConfig: ToolbarConfig = {
         display: [
             'INLINE_STYLE_BUTTONS',
