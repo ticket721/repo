@@ -1,5 +1,5 @@
 import { Plugins }             from '@capacitor/core';
-import { getEnv }              from '@frontend/core/lib/utils/getEnv';
+import { getEnv }              from './getEnv';
 import { useEffect, useState } from 'react';
 import { loadStripe }          from '@stripe/stripe-js';
 
@@ -19,13 +19,13 @@ export const useCustomStripe = (): StripeSDK => {
         Stripe.setPublishableKey({
             key: getEnv().REACT_APP_STRIPE_API_KEY
         })
-            .then(e => {
+            .then((e: Error) => {
                 setSDK({
                     platform: 'native',
                     stripe: Stripe
                 })
             })
-            .catch(e => {
+            .catch((e: Error) => {
                 console.warn(e);
                 loadStripe(getEnv().REACT_APP_STRIPE_API_KEY)
                     .then((stripe) => {

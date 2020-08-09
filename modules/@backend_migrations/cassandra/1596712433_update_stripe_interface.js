@@ -22,7 +22,9 @@ var migration1596712433 = {
                         country text,
                         currency text,
                         last4 text,
-                        name text
+                        name text,
+                        status text,
+                        fingerprint text
                     );`,
             params: []
         };

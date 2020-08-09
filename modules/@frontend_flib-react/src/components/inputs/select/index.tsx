@@ -3,103 +3,102 @@ import Select from 'react-select';
 import styled from '../../../config/styled';
 
 const customStyles = {
-    container: () => ({
-        position: 'relative' as 'relative',
-    }),
-    option: () => ({
-        backgroundColor: 'transparent',
-        color: 'rgba(255, 255, 255, 0.6)',
-        cursor: 'pointer',
-        fontSize: 14,
-        fontWeight: 500,
-        padding: 12,
-        transition: 'all 300ms ease',
-        display: 'flex',
-        alignItems: 'center',
+  container: () => ({
+    position: 'relative' as 'relative',
+  }),
+  option: () => ({
+    backgroundColor: 'transparent',
+    color: 'rgba(255, 255, 255, 0.6)',
+    cursor: 'pointer',
+    fontSize: 14,
+    fontWeight: 500,
+    padding: '20px 1.5rem',
+    transition: 'all 300ms ease',
+    display: 'flex',
+    alignItems: 'center',
 
-        ':hover': {
-            backgroundColor: 'rgba(255, 255, 255, 0.04)',
-            color: 'rgba(255, 255, 255, 0.9)',
-        },
-    }),
-    control: () => ({
-        display: 'flex',
-    }),
-    indicatorsContainer: () => ({
-        display: 'flex',
-        position: 'relative' as 'relative',
-        top: '-1px',
-        padding: 6,
+    ':hover': {
+      backgroundColor: 'rgba(255, 255, 255, 0.04)',
+      color: 'rgba(255, 255, 255, 0.9)',
+    },
+  }),
+  control: () => ({
+    display: 'flex',
+  }),
+  indicatorsContainer: () => ({
+    display: 'flex',
+    position: 'relative' as 'relative',
+    top: '-1px',
+    padding: 6,
 
-        '& > div': {
-            padding: 0,
-        },
-    }),
-    indicatorSeparator: () => ({
-        border: 'none',
-    }),
-    input: () => ({
-        color: 'rgba(255, 255, 255, 0.6)',
-        fontSize: 14,
-    }),
-    menu: () => ({
-        zIndex: 9999,
-        backgroundColor: '#262331',
-        borderRadius: 8,
-        marginTop: 8,
-        position: 'absolute' as 'absolute',
-        width: '100%',
-    }),
-    menuList: () => ({
-        maxHeight: 300,
-        overflow: 'auto',
-        padding: 0,
-    }),
-    noOptionsMessage: () => ({
-        color: 'rgba(255, 255, 255, 0.6)',
-        cursor: 'pointer',
-        fontSize: 14,
-        fontWeight: 500,
-        paddingBottom: 12,
-        paddingLeft: 24,
-        paddingRight: 24,
-        paddingTop: 12,
-    }),
-    placeholder: () => ({
-        color: 'rgba(255, 255, 255, 0.38)',
-        fontSize: '14px',
-        fontWeight: 500,
-        position: 'absolute' as 'absolute',
-    }),
-    valueContainer: () => ({
-        alignItems: 'center',
-        display: 'flex',
-        flex: 1,
-        paddingLeft: 8,
-        flexWrap: 'wrap' as 'wrap',
-    }),
-    singleValue: () => ({
-        fontSize: 14,
-        fontWeight: 500,
-        padding: 4,
-        opacity: 0.9,
-    }),
+    '& > div': {
+      padding: 0,
+    },
+  }),
+  indicatorSeparator: () => ({
+    border: 'none',
+  }),
+  input: () => ({
+    color: 'rgba(255, 255, 255, 0.6)',
+    fontSize: 14,
+  }),
+  menu: () => ({
+    zIndex: 9999,
+    backgroundColor: '#262331',
+    borderRadius: 8,
+    marginTop: 8,
+    position: 'absolute' as 'absolute',
+    width: '100%',
+  }),
+  menuList: () => ({
+    maxHeight: 300,
+    overflow: 'auto',
+    padding: 0,
+  }),
+  noOptionsMessage: () => ({
+    color: 'rgba(255, 255, 255, 0.6)',
+    cursor: 'pointer',
+    fontSize: 14,
+    fontWeight: 500,
+    paddingBottom: 12,
+    paddingLeft: 24,
+    paddingRight: 24,
+    paddingTop: 12,
+  }),
+  placeholder: () => ({
+    color: 'rgba(255, 255, 255, 0.38)',
+    fontSize: '14px',
+    fontWeight: 500,
+    position: 'absolute' as 'absolute',
+  }),
+  valueContainer: () => ({
+    padding: '1rem 1.5rem',
+    alignItems: 'center',
+    display: 'flex',
+    flex: 1,
+    flexWrap: 'wrap' as 'wrap',
+  }),
+  singleValue: () => ({
+    fontSize: 14,
+    fontWeight: 500,
+    opacity: 0.9,
+  }),
 };
 
 export interface SelectProps {
-    defaultValue?: object;
-    error?: string | undefined;
-    label?: string;
-    disabled?: boolean;
-    options: Array<object>;
-    placeholder?: string;
-    searchable?: boolean;
-    multiple?: boolean;
-    value?: Array<object>;
-    className?: string;
-    onChange?: (val: any) => void;
-    grouped?: boolean;
-    menu?: boolean;
+  defaultValue?: object;
+  error?: string | undefined;
+  label?: string;
+  disabled?: boolean;
+  options: Array<object>;
+  placeholder?: string;
+  searchable?: boolean;
+  multiple?: boolean;
+  value?: Array<object>;
+  className?: string;
+  onChange?: (val: any) => void;
+  grouped?: boolean;
+  menu?: boolean;
 }
 
 const StyledLabel = styled.label`
@@ -128,6 +127,7 @@ const Error = styled.span`
     font-weight: 500;
     left: 10px;
     position: absolute;
+    margin-left: ${props => props.theme.regularSpacing};
 `;
 
 const StyledInputContainer = styled.div<Partial<SelectProps>>`
@@ -175,24 +175,24 @@ const GroupLabel = styled.div`
 const formatGroupLabel = (data: any) => <GroupLabel>{data.label}</GroupLabel>;
 
 export const SelectInput: React.FunctionComponent<SelectProps> = (props: SelectProps): JSX.Element => {
-    return (
-        <StyledInputContainer label={props.label} className={props.className}>
-            {props.label && <StyledLabel>{props.label}</StyledLabel>}
-            <Select
-                isMulti={props.multiple}
-                isSearchable={props.searchable}
-                value={props.value}
-                defaultValue={props.defaultValue}
-                noOptionsMessage={() => 'No values available'}
-                options={props.options}
-                formatGroupLabel={props.grouped ? formatGroupLabel : undefined}
-                placeholder={props.placeholder}
-                styles={customStyles}
-                onChange={props.onChange}
-            />
-            {props.error && <Error>{props.error}</Error>}
-        </StyledInputContainer>
-    );
+  return (
+    <StyledInputContainer label={props.label} className={props.className}>
+      {props.label && <StyledLabel>{props.label}</StyledLabel>}
+      <Select
+        isMulti={props.multiple}
+        isSearchable={props.searchable}
+        value={props.value}
+        defaultValue={props.defaultValue}
+        noOptionsMessage={() => 'No values available'}
+        options={props.options}
+        formatGroupLabel={props.grouped ? formatGroupLabel : undefined}
+        placeholder={props.placeholder}
+        styles={customStyles}
+        onChange={props.onChange}
+      />
+      {props.error && <Error>{props.error}</Error>}
+    </StyledInputContainer>
+  );
 };
 
 export default SelectInput;

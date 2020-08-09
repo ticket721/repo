@@ -26,14 +26,13 @@ import { useKeyboardVisibility } from '@frontend/core/lib/utils/useKeyboardVisib
 import { UserContextGuard }      from '@frontend/core/lib/utils/UserContext';
 import DeepLinksListener         from './components/DeepLinksListener';
 import MediaQuery                from 'react-responsive';
-import { FeatureFlag, useFeatureFlag }           from '@frontend/core/lib/components/FeatureFlag';
+import { useFeatureFlag }           from '@frontend/core/lib/components/FeatureFlag';
 
 const TopNavWrapper = (props: { back: () => void }): JSX.Element => {
 
     const [scrolled, setScrolled] = useState(false);
 
     const setScrolledCallback = useCallback(() => {
-        console.log(scrolled, window.scrollY);
         if (!scrolled && window.scrollY !== 0) {
             setScrolled(true);
         } else if (scrolled && window.scrollY === 0) {

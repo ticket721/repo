@@ -4,12 +4,13 @@ import {
     Entity,
     GeneratedUUidColumn,
     UpdateDateColumn,
-} from '@iaminfinity/express-cassandra';
+}                from '@iaminfinity/express-cassandra';
+import { ECAAG } from '@lib/common/utils/ECAAG.helper';
 
 /**
  * Payment method from stripe
  */
-interface StripePaymentMethod {
+export interface StripePaymentMethod {
     /**
      * Type of payment method
      */
@@ -21,18 +22,20 @@ interface StripePaymentMethod {
     stripe_token: string;
 }
 
-interface ConnectAccountError {
+export interface ConnectAccountError {
     code: number;
     reason: string;
     requirement: string;
 }
 
-interface ConnectAccountExternalAccount {
+export interface ConnectAccountExternalAccount {
     id: string;
+    fingerprint: string;
     country: string;
     currency: string;
     last4: string;
     name: string;
+    status: 'new' | 'validated' | 'verified' | 'verification_failed' | 'errored';
 }
 
 /**
@@ -55,15 +58,15 @@ export class StripeInterfaceEntity {
         if (sie) {
             this.id = sie.id ? sie.id.toString() : sie.id;
             this.owner = sie.owner ? sie.owner.toString() : sie.owner;
-            this.payment_methods = sie.payment_methods;
+            this.payment_methods = ECAAG(sie.payment_methods);
             this.connect_account = sie.connect_account;
             this.connect_account_current_deadline = sie.connect_account_current_deadline;
-            this.connect_account_currently_due = sie.connect_account_currently_due;
-            this.connect_account_eventually_due = sie.connect_account_eventually_due;
-            this.connect_account_past_due = sie.connect_account_past_due;
-            this.connect_account_pending_verification = sie.connect_account_pending_verification;
-            this.connect_account_errors = sie.connect_account_errors;
-            this.connect_account_external_accounts = sie.connect_account_external_accounts;
+            this.connect_account_currently_due = ECAAG(sie.connect_account_currently_due);
+            this.connect_account_eventually_due = ECAAG(sie.connect_account_eventually_due);
+            this.connect_account_past_due = ECAAG(sie.connect_account_past_due);
+            this.connect_account_pending_verification = ECAAG(sie.connect_account_pending_verification);
+            this.connect_account_errors = ECAAG(sie.connect_account_errors);
+            this.connect_account_external_accounts = ECAAG(sie.connect_account_external_accounts);
             this.connect_account_name = sie.connect_account_name;
             this.connect_account_type = sie.connect_account_type;
             this.connect_account_disabled_reason = sie.connect_account_disabled_reason;
