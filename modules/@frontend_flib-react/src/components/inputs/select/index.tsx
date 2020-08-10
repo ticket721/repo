@@ -25,16 +25,6 @@ const customStyles = {
   control: () => ({
     display: 'flex',
   }),
-  indicatorsContainer: () => ({
-    display: 'flex',
-    position: 'relative' as 'relative',
-    top: '-1px',
-    padding: 6,
-
-    '& > div': {
-      padding: 0,
-    },
-  }),
   indicatorSeparator: () => ({
     border: 'none',
   }),
@@ -187,7 +177,9 @@ export const SelectInput: React.FunctionComponent<SelectProps> = (props: SelectP
         options={props.options}
         formatGroupLabel={props.grouped ? formatGroupLabel : undefined}
         placeholder={props.placeholder}
-        styles={customStyles}
+        styles={
+            customStyles
+        }
         onChange={props.onChange}
       />
       {props.error && <Error>{props.error}</Error>}
