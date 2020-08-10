@@ -6,7 +6,7 @@
     "dependencies": {
         "@capacitor/android": "2.0.1",
         "@capacitor/core": "2.0.1",
-        "@capacitor/ios": "2.0.1",
+        "@capacitor/ios": "2.4.0",
         "@frontend/core": "1.0.0",
         "@frontend/flib-react": "1.0.0",
         "@ionic/react": "5.0.7",
