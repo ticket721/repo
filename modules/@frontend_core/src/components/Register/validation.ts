@@ -20,5 +20,9 @@ export const registerValidationSchema = yup.object().shape({
             return true;
         })
         .required('password_required'),
+    passwordConfirmation: yup.string().when('password', {
+        is: (val) => (val && val.length > 0 ? true : false),
+        then: yup.string().oneOf([yup.ref('password')], 'different_password'),
+    }),
     username: yup.string().min(4, 'username_too_short').max(20, 'username_too_long').required('username_required'),
 });
