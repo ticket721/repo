@@ -1,0 +1,62 @@
+{
+    "name": "@ticket721contracts/metamarketplace",
+    "private": true,
+    "version": "1.0.0",
+    "description": "ticket marketplace using meta-transactions for its exchanges",
+    "directories": {
+        "test": "test"
+    },
+    "dependencies": {
+        "@openzeppelin/contracts": "2.3.0",
+        "@ticket721/e712": "0.2.4",
+        "truffle": "5.1.6"
+    },
+    "devDependencies": {
+        "@commitlint/cli": "8.2.0",
+        "@commitlint/config-conventional": "8.2.0",
+        "@htmlacademy/editorconfig-cli": "1.0.0",
+        "chai": "4.2.0",
+        "chai-as-promised": "7.1.1",
+        "conventional-changelog-cli": "2.0.31",
+        "coveralls": "3.0.9",
+        "ethers": "4.0.41",
+        "husky": "3.1.0",
+        "solhint": "2.3.0",
+        "solidity-coverage": "0.7.0-beta.3"
+    },
+    "editorconfig-cli": [
+        "package.json",
+        "truffle-config.js",
+        "contracts/**/*.sol",
+        "migrations/**/*.js"
+    ],
+    "scripts": {
+        "test:truffle": "truffle test",
+        "test:coverage": "truffle run coverage",
+        "test:editorconfig": "editorconfig-cli",
+        "test:lint": "solhint contracts/**/*.sol",
+        "coverage:upload": "cat ./coverage/lcov.info | coveralls",
+        "test": "npm run test:truffle",
+        "@lerna/postinstall": "echo '@contracts/metamarketplace has no postinstall'",
+        "@lerna/postclean": "echo '@contracts/metamarketplace has no postclean'"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/ticket721/ticketforge.git"
+    },
+    "keywords": [
+        "erc721"
+    ],
+    "author": "Iulian Rotaru",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/ticket721/ticketforge/issues"
+    },
+    "homepage": "https://github.com/ticket721/ticketforge#readme",
+    "husky": {
+        "hooks": {
+            "pre-commit": "editorconfig-cli",
+            "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+        }
+    }
+}
