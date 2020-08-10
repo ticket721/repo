@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Tags, Textarea, TextInput }  from '@frontend/flib-react/lib/components';
+import { Tags, RichText, TextInput }  from '@frontend/flib-react/lib/components';
 import styled                      from 'styled-components';
 import { EventCreationActions, EventCreationSteps } from '../../../../core/event_creation/EventCreationCore';
 import { useEventCreation }                         from '../../../../hooks/useEventCreation';
@@ -90,12 +90,15 @@ const GeneralInfoForm: React.FC<FormProps> = ({ onComplete }) => {
                 && t(eventCreationFormik.computeError('name'))
             }
             />
-            <Textarea
+            <RichText
             name='description'
             label={t('description_label')}
             placeholder={t('description_placeholder')}
-            maxChar={1000}
-            {...eventCreationFormik.getFieldProps('description', true)}
+            maxChar={10000}
+            value={eventCreationFormik.getFieldProps('description').value}
+            onChange={(value) => eventCreationFormik.setFieldValue('description', value)}
+            onBlur={eventCreationFormik.getFieldProps('description').onBlur}
+            onFocus={eventCreationFormik.getFieldProps('description').onFocus}
             error={
                 eventCreationFormik.computeError('description')
                 && t(eventCreationFormik.computeError('description'))
