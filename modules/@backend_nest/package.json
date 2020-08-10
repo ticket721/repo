@@ -47,7 +47,7 @@
         "dosojin": "file:../@public_dosojin",
         "dotenv": "8.2.0",
         "elasticsearch": "16.6.0",
-        "email-templates": "7.0.4",
+        "email-templates": "7.1.0",
         "nest-schedule": "0.6.4",
         "node-mailjet": "3.3.1",
         "passport": "0.4.1",
