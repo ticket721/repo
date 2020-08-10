@@ -9,6 +9,7 @@ import { StripeInterfaceEntity }                   from '@common/sdk/lib/@backen
 import { AppState }                                from '../../redux';
 import { StripeSetupCreateConnectAccountManager }  from './StripeSetupCreateConnectAccountManager';
 import { StripeSetupCreateExternalAccountManager } from './StripeSetupCreateExternalAccountManager';
+import { StripeSetupConnectAccountManager }        from './StripeSetupConnectAccountManager';
 
 const isConnectAccountCreated = (stripeInterface: StripeInterfaceEntity): boolean => {
     return !!stripeInterface.connect_account;
@@ -51,7 +52,7 @@ export const StripeSetupManager = (props: StripeSetupManagerProps): JSX.Element 
         if (!isConnectAccountLinkedToExternalAccount(stripeInterface)) {
             return <StripeSetupCreateExternalAccountManager user={props.user} stripeInterface={stripeInterface} forceFetchInterface={stripeInterfaceReq.force}/>;
         } else {
-            return <p>Connect account ready</p>;
+            return <StripeSetupConnectAccountManager user={props.user} stripeInterface={stripeInterface} forceFetchInterface={stripeInterfaceReq.force}/>;
         }
     }
 };
