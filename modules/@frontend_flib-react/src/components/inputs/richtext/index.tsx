@@ -17,7 +17,9 @@ export interface RichTextProps extends React.ComponentProps<any> {
     onFocus?: (
         eventOrPath: string | ChangeEvent<any>,
     ) => void | ((eventOrTextValue: string | ChangeEvent<any>) => void);
-    onBlur?: (eventOrPath: string | ChangeEvent<any>) => void | ((eventOrTextValue: string | ChangeEvent<any>) => void);
+    onBlur?: (
+        eventOrPath: string | ChangeEvent<any> | { target: { id: string; value: string } },
+    ) => void | ((eventOrTextValue: string | ChangeEvent<any>) => void);
 }
 
 const Error = styled.span`
@@ -83,7 +85,7 @@ const StyledTextarea = styled.div<RichTextProps>`
                 background: ${(props) => props.theme.componentColorLighter};
             }
             button:active,
-            button[class*="IconButton__isActive__"] {
+            button[class*='IconButton__isActive__'] {
                 background: ${(props) => props.theme.textColorDark};
             }
             select {
@@ -205,7 +207,17 @@ export const RichText: React.FunctionComponent<RichTextProps> = (props: RichText
     };
 
     return (
-        <StyledTextarea error={props.error} className={props.className}>
+        <StyledTextarea
+            error={props.error}
+            className={props.className}
+            onFocus={() => props.onFocus && props.onFocus(value.toString('markdown'))}
+            onBlur={() =>
+                props.onBlur &&
+                props.onBlur({
+                    target: { id: 'description', value: value.toString('markdown') },
+                })
+            }
+        >
             <LabelsContainer>
                 <StyledLabel htmlFor={props.name}>{props.label}</StyledLabel>
                 {props.maxChar && value.toString('markdown').length >= props.maxChar - 20 && (

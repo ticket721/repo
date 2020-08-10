@@ -78,6 +78,7 @@ const GeneralInfoForm: React.FC<FormProps> = ({ onComplete }) => {
         eventCreationFormik.values,
     ]);
 
+    console.log('FORM Value : ', eventCreationFormik.getFieldProps('description').value);
     return (
         <Form onSubmit={eventCreationFormik.handleSubmit}>
             <TextInput
@@ -97,6 +98,8 @@ const GeneralInfoForm: React.FC<FormProps> = ({ onComplete }) => {
             maxChar={900}
             value={eventCreationFormik.getFieldProps('description').value}
             onChange={(value) => eventCreationFormik.setFieldValue('description', value)}
+            onBlur={eventCreationFormik.getFieldProps('description').onBlur}
+            onFocus={eventCreationFormik.getFieldProps('description').onFocus}
             error={
                 eventCreationFormik.computeError('description')
                 && t(eventCreationFormik.computeError('description'))
