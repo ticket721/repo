@@ -93,7 +93,7 @@ export class AuthenticationTasks implements OnModuleInit {
         await job.progress(50);
         const validationLink = `${job.data.redirectUrl}?token=${encodeURIComponent(b64Encode(signature))}`;
         const res = await this.emailService.send({
-            template: 'passwordReset',
+            template: 'resetPassword',
             to: job.data.email,
             locale: job.data.locale,
             locals: {
