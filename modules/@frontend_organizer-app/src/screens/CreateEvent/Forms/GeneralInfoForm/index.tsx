@@ -78,7 +78,6 @@ const GeneralInfoForm: React.FC<FormProps> = ({ onComplete }) => {
         eventCreationFormik.values,
     ]);
 
-    console.log('FORM Value : ', eventCreationFormik.getFieldProps('description').value);
     return (
         <Form onSubmit={eventCreationFormik.handleSubmit}>
             <TextInput
