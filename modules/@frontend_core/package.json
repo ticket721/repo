@@ -51,7 +51,7 @@
         "@types/react-responsive": "8.0.2",
         "@types/styled-components": "5.1.0",
         "@types/uuid": "7.0.3",
-        "@types/yup": "0.28.0"
+        "@types/yup": "0.29.3"
     },
     "devDependencies": {
         "jest": "25.4.0",
