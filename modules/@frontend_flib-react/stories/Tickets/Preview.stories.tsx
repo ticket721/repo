@@ -9,7 +9,7 @@ const defaultTicket = {
     location: 'Philharmonie de Paris',
     address: '221 avenue Jean Jaurès, Paris',
     number: 12,
-    ticketType: '2 Days pass',
+    categoryName: '2 Days pass',
     startDate: '2020/02/14',
     endDate: '2020/20/15',
     startTime: '2:00PM',

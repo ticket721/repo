@@ -111,21 +111,30 @@ export class GroupService {
      * Internal utility to get the event controller from a category
      *
      * @param groupId
+     * @param categoryId
      * @param fields
      */
     async getGroupIDControllerFields<ResultType>(
         groupId: string,
+        categoryId: string,
         fields: string[],
     ): Promise<ServiceResponse<ResultType>> {
         const categoriesQuery = await this.categoriesService.searchElastic({
             body: {
                 query: {
                     bool: {
-                        must: {
-                            term: {
-                                group_id: groupId,
+                        must: [
+                            {
+                                term: {
+                                    group_id: groupId,
+                                },
                             },
-                        },
+                            {
+                                term: {
+                                    id: categoryId,
+                                },
+                            },
+                        ],
                     },
                 },
             },

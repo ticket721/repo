@@ -1,6 +1,7 @@
 import * as React from 'react';
 import styled from '../../../config/styled';
 import Select from '../../inputs/select';
+import Icon from '../../icon';
 
 interface Option {
     label: string;
@@ -18,6 +19,7 @@ export interface TicketQtyProps extends React.ComponentProps<any> {
     typeName: string;
     options: Option[];
     onChange: (opt: Option) => void;
+    onCancel?: () => void;
     initialOption: Option;
 }
 
@@ -72,19 +74,30 @@ const Container = styled.article<TicketQtyProps>`
     }
 `;
 
+const CancelIconButton = styled(Icon)`
+    padding: 9px;
+    color: ${(props) => props.theme.errorColor.hex} !important;
+    background-color: ${(props) => props.theme.componentColor};
+    margin-left: ${(props) => props.theme.regularSpacing};
+    border-radius: ${(props) => props.theme.defaultRadius};
+`;
+
 export const TicketQty: React.FunctionComponent<TicketQtyProps> = (props: TicketQtyProps): JSX.Element => {
     return (
         <Container selected={props.selected} gradient={props.gradient}>
             {props.title && <h4 className={'uppercase'}>{props.title}</h4>}
             <div className={'row jcsb'}>
                 <h3>{props.typeName}</h3>
-                <Select
-                    defaultValue={props.initialOption}
-                    options={props.options}
-                    menu
-                    searchable={false}
-                    onChange={props.onChange}
-                />
+                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                    <Select
+                        defaultValue={props.initialOption}
+                        options={props.options}
+                        menu
+                        searchable={false}
+                        onChange={props.onChange}
+                    />
+                    {props.onCancel ? <CancelIconButton icon={'close'} size={'14px'} onClick={props.onCancel} /> : null}
+                </div>
             </div>
             <h4>{props.price}</h4>
             <span>{props.fees}</span>

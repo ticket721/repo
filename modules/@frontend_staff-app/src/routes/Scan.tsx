@@ -1,3 +1,4 @@
-import Scan              from '../screens/Scan';
+import Scan                         from '../screens/Scan';
+import { InvisibleStatusBarMargin } from '@frontend/core/lib/utils/InvisibleStatusBarMargin';
 
-export default Scan;
+export default InvisibleStatusBarMargin(Scan);

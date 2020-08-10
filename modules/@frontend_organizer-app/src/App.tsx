@@ -1,6 +1,6 @@
 import React, {
-    Suspense,
-}                           from 'react';
+    Suspense
+} from 'react';
 import {
     Redirect,
     Route,
@@ -22,69 +22,83 @@ import { routes }           from './routes';
 import { FullPageLoading }  from '@frontend/flib-react/lib/components';
 import './core/event_creation/locales';
 import './shared/Translations/global';
+import { UserContextGuard } from '@frontend/core/lib/utils/UserContext';
+import { FeatureFlag }      from '@frontend/core/lib/components/FeatureFlag';
 
 const App: React.FC = () => {
-    const authState = useSelector(((state: AppState) => state.auth));
     const appStatus = useSelector(((state: AppState) => state.statuses.appStatus));
     const location = useLocation();
 
     return (
         <Suspense fallback={<FullPageLoading/>}>
-            <AppContainer>
-                <MediaQuery minDeviceWidth={1224}>
-                    {
-                        authState.user?.validated &&
-                        location.pathname !== '/register' && location.pathname !== '/login'
-
-                            ?
-                            <Navbar/>
-
-                            :
-                            null
-                    }
-                </MediaQuery>
-                <Suspense fallback={<FullPageLoading/>}>
-                    <Switch>
+            <UserContextGuard>
+                <AppContainer>
+                    <MediaQuery minDeviceWidth={1224}>
                         {
-                            appStatus === AppStatus.Ready
+                            location.pathname !== '/register' && location.pathname !== '/login'
 
                                 ?
-                                routes.map((route, idx) => {
-
-                                    if (route.protected) {
-                                        return <ProtectedRoute exact={true} path={route.path} key={idx}>
-                                            <PageWrapper>
-                                                {
-                                                    route.path.match(/^\/group\/:groupId/) ?
-                                                        <ProtectedByRights type={route.entityType} value={route.paramId}>
-                                                            <EventPageWrapper>
-                                                                <EventMenu/>
-                                                                <div>
-                                                                    <route.page/>
-                                                                </div>
-                                                          </EventPageWrapper>
-                                                        </ProtectedByRights>
-                                                    :
-                                                        <route.page/>
-                                                }
-                                            </PageWrapper>
-                                        </ProtectedRoute>;
-                                    }
-                                    return <Route exact={true} key={idx} path={route.path}>
-                                        <route.page/>
-                                    </Route>;
-                                })
+                                <Navbar/>
 
                                 :
                                 null
                         }
-                        <Redirect to={'/'}/>
-                    </Switch>
-                </Suspense>
-                <ToastStacker additionalLocales={[
-                    'organizer_error_notifications',
-                ]}/>
-            </AppContainer>
+                    </MediaQuery>
+                    <Suspense fallback={<FullPageLoading/>}>
+                        <Switch>
+                            {
+                                appStatus === AppStatus.Ready
+
+                                    ?
+                                    routes.map((route, idx) => {
+
+                                        let Page;
+
+                                        if (route.flag) {
+                                            Page = () => <FeatureFlag flag={route.flag}>
+                                                <route.page/>
+                                            </FeatureFlag>
+                                        } else {
+                                            Page = route.page;
+                                        }
+
+                                        if (route.protected) {
+
+                                            return <ProtectedRoute exact={true} path={route.path} key={idx}>
+                                                <PageWrapper>
+                                                    {
+                                                        route.path.match(/^\/group\/:groupId/) ?
+                                                            <ProtectedByRights type={route.entityType} value={route.paramId}>
+                                                                <EventPageWrapper>
+                                                                    <EventMenu/>
+                                                                    <div>
+                                                                        <Page/>
+                                                                    </div>
+                                                                </EventPageWrapper>
+                                                            </ProtectedByRights>
+                                                            :
+                                                            <Page/>
+                                                    }
+                                                </PageWrapper>
+                                            </ProtectedRoute>;
+
+                                        }
+                                        return <Route exact={true} key={idx} path={route.path}>
+                                            <Page/>
+                                        </Route>;
+                                    })
+
+                                    :
+                                    null
+                            }
+                            <Redirect to={'/'}/>
+                        </Switch>
+                    </Suspense>
+                    <ToastStacker additionalLocales={[
+                        'organizer_error_notifications',
+                    ]}/>
+                </AppContainer>
+            </UserContextGuard>
         </Suspense>
     );
 };

@@ -142,6 +142,7 @@ try {
                 provider,
                 t721config: get_config_sync(),
                 skipDryRun: true,
+                gasPrice: config.gas_price
             }
         },
         artifacts,

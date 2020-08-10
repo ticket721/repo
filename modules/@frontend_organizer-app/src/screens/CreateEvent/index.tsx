@@ -170,9 +170,9 @@ const CreateEvent: React.FC = () => {
                             onClick={() => global.window.t721Sdk.events.create.create(
                                 token,
                                 {completedActionSet: eventAcsetId}
-                            ).then(() => {
+                            ).then((event) => {
                                 dispatch(PushNotification(t('event_create_success'), 'success'));
-                                history.push('/')
+                                history.push('/group/' + event.data.event.group_id);
                             })
                                 .catch((e) => dispatch(PushNotification(e.message, 'error')))
                             }

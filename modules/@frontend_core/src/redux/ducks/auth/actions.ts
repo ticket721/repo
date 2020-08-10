@@ -47,41 +47,6 @@ export const SetToken = (token: Token): ISetToken => ({
     token,
 });
 
-export interface ISetUser extends Action<string> {
-    type: AuthActionTypes.SetUser;
-    username: string;
-    kind: string;
-    locale: string;
-    validated: boolean;
-    address: string;
-    uuid: string;
-}
-
-export const SetUser = (
-    username: string,
-    kind: string,
-    locale: string,
-    validated: boolean,
-    address: string,
-    uuid: string,
-): ISetUser => ({
-    type: AuthActionTypes.SetUser,
-    username,
-    kind,
-    locale,
-    validated,
-    address,
-    uuid,
-});
-
-export interface IGetUser extends Action<string> {
-    type: AuthActionTypes.GetUser;
-}
-
-export const GetUser = (): IGetUser => ({
-    type: AuthActionTypes.GetUser,
-});
-
 export interface ISetErrors extends Action<string> {
     type: AuthActionTypes.SetErrors;
     errors: AuthErrors;
@@ -122,8 +87,6 @@ export type AuthAction = ILocalRegister &
     ILocalLogin &
     ILogout &
     ISetToken &
-    ISetUser &
-    IGetUser &
     ISetErrors &
     IResetErrors &
     ISetLoading &

@@ -5,5 +5,5 @@ i18n.addResourceBundle('en', 'common', {
 });
 
 i18n.addResourceBundle('fr', 'common', {
-    retrying_in: 'touchez pour reessayer',
+    retrying_in: 'touchez pour réessayer',
 });

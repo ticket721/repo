@@ -7,5 +7,5 @@ COPY --from=DEPENDENCIES "/repo/modules/@backend_migrations/node_modules" "/repo
 
 WORKDIR "/repo/modules/@backend_migrations"
 
-CMD ["./migrate.sh"]
+CMD ["node", "./migrator.js", "up"]
 

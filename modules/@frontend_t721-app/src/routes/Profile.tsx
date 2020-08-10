@@ -1,5 +1,5 @@
 import { StatusBarMargin } from '@frontend/core/lib/utils/StatusBarMargin';
-import { NavbarMargin } from '@frontend/core/lib/utils/NavbarMargin';
+import { NavbarMargin }             from '@frontend/core/lib/utils/NavbarMargin';
 import ProfileRoot                  from '@frontend/core/lib/components/Profile/Root';
 import React, { useState }          from 'react';
 import { useSelector }              from 'react-redux';
@@ -10,6 +10,7 @@ import { ActionsSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/ser
 import { ArrowLink }                from '@frontend/flib-react/lib/components';
 import { useHistory }               from 'react-router';
 import { useTranslation }           from 'react-i18next';
+import { DesktopWarning }           from '../utils/DesktopWarning';
 
 
 const T721Profile: React.FC = (): JSX.Element => {
@@ -61,5 +62,5 @@ const T721Profile: React.FC = (): JSX.Element => {
 
 };
 
-export default StatusBarMargin(NavbarMargin(T721Profile));
+export default DesktopWarning(StatusBarMargin(NavbarMargin(T721Profile)));
 

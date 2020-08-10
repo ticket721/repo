@@ -6,11 +6,12 @@ metadata:
   region: eu-west-3
 
 managedNodeGroups:
-  - name: elassandra
+  - name: elassandra-3a
     instanceType: t2.medium
     minSize: 2
     maxSize: 2
     privateNetworking: true
+    availabilityZones: ["eu-west-3a"]
     iam:
       withAddonPolicies:
         imageBuilder: true
@@ -19,11 +20,12 @@ managedNodeGroups:
         certManager: true
         albIngress: true
         efs: true
-  - name: core
+  - name: core-3a
     instanceType: t2.small
-    minSize: 1
+    minSize: 2
     maxSize: 12
     privateNetworking: true
+    availabilityZones: ["eu-west-3a"]
     iam:
       withAddonPolicies:
         imageBuilder: true

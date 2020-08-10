@@ -9,6 +9,8 @@ import { useLazyRequest } from '../../hooks/useLazyRequest';
 import { useDeepEffect } from '../../hooks/useDeepEffect';
 import { AppState } from '../../redux/ducks';
 import { useParams } from 'react-router';
+import { FullPageLoading } from '@frontend/flib-react/lib/components';
+import { RightEntity } from '@common/sdk/lib/@backend_nest/libs/common/src/rights/entities/Right.entity';
 
 interface ProtectedByRightsProps {
     children: React.ReactNode;
@@ -19,7 +21,7 @@ interface ProtectedByRightsProps {
 const ProtectedByRights = ({ children, type, value }: ProtectedByRightsProps): JSX.Element => {
     const [uuid] = useState(v4() + '@protectedByRights');
     const token = useSelector((state: AppState): string => state.auth.token.value);
-    const [currentRights, setCurrentRights] = useState();
+    const [currentRights, setCurrentRights] = useState<RightEntity[]>(null);
     const params = useParams();
 
     const { lazyRequest, response: rights } = useLazyRequest<RightsSearchResponseDto>('rights.search', uuid);
@@ -44,7 +46,7 @@ const ProtectedByRights = ({ children, type, value }: ProtectedByRightsProps): J
     }, [rights.called, rights.loading]);
 
     if (rights.called && rights.loading) {
-        return <>Loading...</>;
+        return <FullPageLoading />;
     }
 
     if (currentRights && currentRights.length > 0) {

@@ -55,8 +55,12 @@ export const TicketDateCategoryList: React.FC<TicketDateCategoryListProps> = (pr
             id: {
                 $in: props.date.categories,
             },
+            $sort: [{
+                $field_name: 'created_at',
+                $order: 'asc'
+            }]
         }],
-        refreshRate: 100,
+        refreshRate: 5,
     }, `HomeEvent@${uuid}`);
 
     if (categories.response.loading) {

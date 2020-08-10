@@ -70,6 +70,11 @@ export interface NetworkConfig {
      * In-depth configuration depending on provided `type`
      */
     config: GanacheConfig | GethConfig | RemoteConfig;
+
+    /**
+     * Gas price to use in the ganache config
+     */
+    gas_price?: string;
 }
 
 /**
@@ -87,5 +92,6 @@ export const NetworkConfigGuard: Decoder<NetworkConfig> = object({
     headers: array(object({
         name: string(),
         value: string(),
-    }))
+    })),
+    gas_price: optional(string())
 });

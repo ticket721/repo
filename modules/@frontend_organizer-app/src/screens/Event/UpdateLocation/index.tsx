@@ -7,7 +7,8 @@ import { DatesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/serve
 import { useParams }              from 'react-router';
 import { LocationForm }           from './Form';
 import { MergedAppState }         from '../../../index';
-import { InputDateLocation }           from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
+import { InputDateLocation }      from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
+import { FullPageLoading }           from '@frontend/flib-react/lib/components';
 
 const UpdateLocation: React.FC = () => {
     const [ location, setLocation ] = useState<InputDateLocation>(null);
@@ -48,7 +49,7 @@ const UpdateLocation: React.FC = () => {
                 initialValues={location}/>
         )
     } else {
-        return (<span>Loading...</span>)
+        return <FullPageLoading/>
     }
 };
 

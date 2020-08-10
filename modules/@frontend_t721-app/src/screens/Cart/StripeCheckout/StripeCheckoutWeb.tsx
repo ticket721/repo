@@ -190,8 +190,9 @@ export const StripeCheckoutWeb: React.FC<StripeCheckoutWebProps> = (props: Strip
     const [closestExpiration, setClosestExpiration] = useState(getClosestExpiration(authorizationData));
     const [fullName, setFullName] = useState(null);
     const [cardNumber, setCardNumber] = useState(null);
-    const [cardCcv, setCardCcv] = useState(null);
-    const [cardExpiry, setCardExpiry] = useState(null);
+    const [cardNumberComplete, setCardNumberComplete] = useState(false);
+    const [cardCcvComplete, setCardCcvComplete] = useState(false);
+    const [cardExpiryComplete, setCardExpiryComplete] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const [t] = useTranslation('cart');
     const elements = useElements();
@@ -201,7 +202,7 @@ export const StripeCheckoutWeb: React.FC<StripeCheckoutWebProps> = (props: Strip
     const history = useHistory();
     const totalItems = getCartTotal(props.cart.tickets, ticketSelectionData.total.map(i => i.value));
     const serviceFeeItems = getServiceFees(t('synced_cart_processing_fees'), ticketSelectionData.fees, totalItems);
-    const submittable = isSubmittable(elements, fullName, cardNumber, cardCcv, cardExpiry);
+    const submittable = isSubmittable(elements, fullName, cardNumberComplete, cardCcvComplete, cardExpiryComplete);
 
     // Stripe Elements registration
     useDeepEffect(() => {
@@ -250,9 +251,11 @@ export const StripeCheckoutWeb: React.FC<StripeCheckoutWebProps> = (props: Strip
         });
         cardCvcElement.mount('#card-cvc-element');
 
+        cardNumberElement.on('change', (value: any) => setCardNumberComplete(value.complete));
+        cardExpiryElement.on('change', (value: any) => setCardExpiryComplete(value.complete));
+        cardCvcElement.on('change', (value: any) => setCardCcvComplete(value.complete));
+
         setCardNumber(cardNumberElement);
-        setCardExpiry(cardExpiryElement);
-        setCardCcv(cardCvcElement);
 
         return () => {
             if (elements) {
@@ -293,11 +296,11 @@ export const StripeCheckoutWeb: React.FC<StripeCheckoutWebProps> = (props: Strip
     }, [authorizationData]);
 
     // Callback to reset the cart completely
-    const forceResetCart = async () => {
+    const forceResetCart = useCallback(async () => {
         return (window as any).t721Sdk.actions.consumeUpdate(token, props.remoteCart.id, {
             consumed: true,
         });
-    };
+    }, [token, props.remoteCart]);
 
     // Callback to handle payment submission
     const handleSubmit = async () => {
@@ -339,10 +342,17 @@ export const StripeCheckoutWeb: React.FC<StripeCheckoutWebProps> = (props: Strip
 
     // Callback triggered when authorization expirations end
     const onExpirationComplete = useCallback(() => {
-        dispatch(SetTickets([]));
-        dispatch(PushNotification(t('cart_checkout_expired'), 'error'));
-        history.replace('/');
-    }, [dispatch, history, t]);
+        forceResetCart()
+            .then(() => {
+                dispatch(PushNotification(t('cart_checkout_expired'), 'error'));
+                history.replace('/');
+            })
+            .catch((e) => {
+                console.error(e);
+                dispatch(PushNotification(t('cart_checkout_expired'), 'error'));
+                history.replace('/');
+            });
+    }, [dispatch, history, t, forceResetCart]);
 
     useEffect(() => {
         if (closestExpiration === null) {

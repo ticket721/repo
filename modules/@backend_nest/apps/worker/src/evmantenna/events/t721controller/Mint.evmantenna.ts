@@ -75,9 +75,10 @@ export class MintT721ControllerEVMAntenna extends EVMEventControllerBase {
         const returnValues = JSON.parse(event.return_values);
 
         if (ticketEntity.group_id !== returnValues.group) {
-            throw new NestError(
+            this.loggerService.error(
                 `Invalid group id received from event: ticket got ${ticketEntity.group_id} and event gives ${returnValues.group}`,
             );
+            return;
         }
 
         const categoryEntityRes = await this.categoriesService.search({
@@ -93,16 +94,18 @@ export class MintT721ControllerEVMAntenna extends EVMEventControllerBase {
         const category: CategoryEntity = categoryEntityRes.response[0];
 
         if (toB32(category.category_name).toLowerCase() !== returnValues.category.toLowerCase()) {
-            throw new NestError(
+            this.loggerService.error(
                 `Invalid category name received from event: ticket got ${toB32(
                     category.category_name,
                 ).toLowerCase()} and event gives ${returnValues.category.toLowerCase()}`,
             );
+            return;
         }
         if (toAcceptedAddressFormat(ticketEntity.owner) !== toAcceptedAddressFormat(returnValues.owner)) {
-            throw new NestError(
+            this.loggerService.error(
                 `Invalid owner address received from event: ticket got ${ticketEntity.owner} and event gives ${returnValues.owner}`,
             );
+            return;
         }
 
         const controllerFieldsRes = await this.groupService.getCategoryControllerFields<[string]>(category, [
@@ -134,67 +137,67 @@ export class MintT721ControllerEVMAntenna extends EVMEventControllerBase {
         const receivedCode = encode(['uint256'], [decimalToHex(returnValues.code)]).toLowerCase();
 
         if (code !== receivedCode) {
-            throw new NestError(
+            this.loggerService.error(
                 `Invalid broadcasted authorization code: got ${receivedCode} but was expecting ${code}`,
             );
+        } else {
+            const authorizationDryUpdateRes = await this.authorizationsService.dryUpdate(
+                {
+                    id: ticketEntity.authorization,
+                    grantee: ticketEntity.owner,
+                    granter,
+                    mode: 'mint',
+                },
+                {
+                    consumed: true,
+                },
+            );
+
+            const ticketDryUpdateRes = await this.ticketsService.dryUpdate(
+                {
+                    id: ticketEntity.id,
+                },
+                {
+                    status: 'ready',
+                },
+            );
+
+            const authorizationRollbackDryUpdateRes = await this.authorizationsService.dryUpdate(
+                {
+                    id: ticketEntity.authorization,
+                    grantee: ticketEntity.owner,
+                    granter,
+                    mode: 'mint',
+                },
+                {
+                    consumed: false,
+                },
+            );
+
+            const ticketRollbackDryUpdateRes = await this.ticketsService.dryUpdate(
+                {
+                    id: ticketEntity.id,
+                },
+                {
+                    status: 'minting',
+                },
+            );
+
+            if (
+                authorizationDryUpdateRes.error ||
+                ticketDryUpdateRes.error ||
+                authorizationRollbackDryUpdateRes.error ||
+                ticketRollbackDryUpdateRes.error
+            ) {
+                throw new NestError(`Cannot create dry update payloads`);
+            }
+
+            append(authorizationDryUpdateRes.response, authorizationRollbackDryUpdateRes.response);
+
+            append(ticketDryUpdateRes.response, ticketRollbackDryUpdateRes.response);
+
+            this.loggerService.log(`Intercepted ticket blockchain incrustation for Ticket@${ticketEntity.id}`);
         }
-
-        const authorizationDryUpdateRes = await this.authorizationsService.dryUpdate(
-            {
-                id: ticketEntity.authorization,
-                grantee: ticketEntity.owner,
-                granter,
-                mode: 'mint',
-            },
-            {
-                consumed: true,
-            },
-        );
-
-        const ticketDryUpdateRes = await this.ticketsService.dryUpdate(
-            {
-                id: ticketEntity.id,
-            },
-            {
-                status: 'ready',
-            },
-        );
-
-        const authorizationRollbackDryUpdateRes = await this.authorizationsService.dryUpdate(
-            {
-                id: ticketEntity.authorization,
-                grantee: ticketEntity.owner,
-                granter,
-                mode: 'mint',
-            },
-            {
-                consumed: false,
-            },
-        );
-
-        const ticketRollbackDryUpdateRes = await this.ticketsService.dryUpdate(
-            {
-                id: ticketEntity.id,
-            },
-            {
-                status: 'minting',
-            },
-        );
-
-        if (
-            authorizationDryUpdateRes.error ||
-            ticketDryUpdateRes.error ||
-            authorizationRollbackDryUpdateRes.error ||
-            ticketRollbackDryUpdateRes.error
-        ) {
-            throw new NestError(`Cannot create dry update payloads`);
-        }
-
-        append(authorizationDryUpdateRes.response, authorizationRollbackDryUpdateRes.response);
-
-        append(ticketDryUpdateRes.response, ticketRollbackDryUpdateRes.response);
-
-        this.loggerService.log(`Intercepted ticket blockchain incrustation for Ticket@${ticketEntity.id}`);
     }
 
     /**

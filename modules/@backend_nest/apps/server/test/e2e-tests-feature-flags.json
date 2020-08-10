@@ -1,0 +1,8 @@
+{
+    "test_flag": {
+        "active": true
+    },
+    "test_flag_two": {
+        "active": false
+    }
+}

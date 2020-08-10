@@ -1,40 +1,74 @@
-import React                                           from 'react';
-import { useRequest }                                  from '@frontend/core/lib/hooks/useRequest';
-import { useSelector }                                 from 'react-redux';
-import { T721AppState }                                from '../../redux';
-import { useTranslation }                              from 'react-i18next';
-import { FullPageLoading }                             from '@frontend/flib-react/lib/components';
-import { DatesSearchResponseDto }                      from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
+import React                                      from 'react';
+import { useRequest }                             from '@frontend/core/lib/hooks/useRequest';
+import { useSelector }                            from 'react-redux';
+import { T721AppState }                           from '../../redux';
+import { useTranslation }                         from 'react-i18next';
+import { FullPageLoading }                        from '@frontend/flib-react/lib/components';
+import { DatesSearchResponseDto }                 from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
 import { checkFormatDate, formatDay, formatHour } from '@frontend/core/lib/utils/date';
-import TicketCard                                      from './TicketCard';
-import { Error }                                       from '@frontend/flib-react/lib/components';
-import { getImgPath }                                  from '@frontend/core/lib/utils/images';
+import { Error }                                  from '@frontend/flib-react/lib/components';
+import { getImgPath }                             from '@frontend/core/lib/utils/images';
+import { Ticket }                                 from '../../types/ticket';
+import { DateEntity }                             from '@backend/nest/libs/common/src/dates/entities/Date.entity';
+import { Tickets }                                from './Tickets';
+
+const formatDates = (tickets: Ticket[], dates: DateEntity[], globalDates: DateEntity[]): Ticket[] =>
+    tickets.map(ticket => {
+        let ticketDate;
+        let startDate;
+        let endDate;
+
+        if (ticket.ticketType === 'date') {
+            ticketDate = dates.find(date => date.id === ticket.entityId);
+            startDate = checkFormatDate(ticketDate.timestamps.event_begin);
+            endDate = checkFormatDate(ticketDate.timestamps.event_end);
+        } else {
+            const groupedDates = globalDates.filter(date => date.group_id === ticket.entityId);
+            const filteredDates = groupedDates.filter(date => checkFormatDate(date.timestamps.event_end).getTime() > Date.now());
+
+            if (filteredDates.length === 0) {
+                ticketDate =  groupedDates[0];
+            } else {
+                ticketDate = filteredDates[0];
+            }
+
+            startDate = checkFormatDate(ticketDate.timestamps.event_begin);
+            endDate = checkFormatDate(groupedDates[groupedDates.length - 1].timestamps.event_end);
+        }
+
+        return {
+            ...ticket,
+            name: ticketDate.metadata.name,
+            location: ticketDate.location.location_label,
+            startDate: formatDay(startDate),
+            startTime: formatHour(startDate),
+            endDate: formatDay(endDate),
+            endTime: formatHour(endDate),
+            gradients: ticketDate.metadata.signature_colors,
+            mainColor: ticketDate.metadata.signature_colors[0],
+            image: getImgPath(ticketDate.metadata.avatar),
+        }
+    });
 
 interface DatesFetcherProps {
     uuid: string;
-    entityType: 'id' | 'group_id';
-    entityId: string;
-    ticketId: string;
-    categoryName: string;
+    tickets: Ticket[],
 }
 
 export const DatesFetcher: React.FC<DatesFetcherProps> = (
     {
         uuid,
-        entityType,
-        entityId,
-        ticketId,
-        categoryName,
+        tickets,
     }: DatesFetcherProps) => {
     const token = useSelector((state: T721AppState) => state.auth.token.value);
     const [ t ] = useTranslation(['wallet', 'common']);
-    const { response: datesResp, force } = useRequest<DatesSearchResponseDto>({
+    const { response: datesResp, force: forceDatesReq } = useRequest<DatesSearchResponseDto>({
             method: 'dates.search',
             args: [
                 token,
                 {
-                    [entityType]: {
-                        $eq: entityId
+                    id: {
+                        $in: tickets.filter(ticket => ticket.ticketType === 'date').map(ticket => ticket.entityId),
                     },
                     $sort: [{
                         $field_name: 'timestamps.event_begin',
@@ -42,44 +76,42 @@ export const DatesFetcher: React.FC<DatesFetcherProps> = (
                     }]
                 }
             ],
-            refreshRate: 5,
+            refreshRate: 60,
         },
         uuid);
 
-    if (datesResp.error || datesResp.data?.dates?.length === 0) {
-        return (<Error message={t('fetch_error')} retryLabel={t('common:retrying_in')} onRefresh={force}/>);
-    }
+    const { response: globalDatesResp, force: forceGlobalDatesReq } = useRequest<DatesSearchResponseDto>({
+            method: 'dates.search',
+            args: [
+                token,
+                {
+                    group_id: {
+                        $in: tickets.filter(ticket => ticket.ticketType === 'global').map(ticket => ticket.entityId),
+                    },
+                    $sort: [{
+                        $field_name: 'timestamps.event_begin',
+                        $order: 'asc',
+                    }]
+                }
+            ],
+            refreshRate: 60,
+        },
+        uuid);
 
-    if (datesResp.loading) {
+    if (datesResp.loading || globalDatesResp.loading) {
         return <FullPageLoading/>;
     }
 
-    if (datesResp.data?.dates?.length > 0) {
-        const filteredDates = datesResp.data.dates.filter((date) => checkFormatDate(date.timestamps.event_end).getTime() > Date.now());
-        let defaultDate;
+    if (datesResp.error) {
+        return (<Error message={t('fetch_error')} retryLabel={t('common:retrying_in')} onRefresh={forceDatesReq}/>);
+    }
 
-        if (filteredDates.length === 0) {
-            defaultDate =  datesResp.data.dates[0];
-        } else {
-            defaultDate = filteredDates[0];
-        }
+    if (globalDatesResp.error) {
+        return (<Error message={t('fetch_error')} retryLabel={t('common:retrying_in')} onRefresh={forceGlobalDatesReq}/>);
+    }
 
-        const startDate = defaultDate.timestamps.event_begin;
-        const endDate = datesResp.data.dates[datesResp.data.dates.length - 1].timestamps.event_end;
-
-        return <TicketCard
-            ticket={{
-                name: defaultDate.metadata.name,
-                ticketId,
-                location: defaultDate.location.location_label,
-                ticketType: categoryName,
-                startDate: formatDay(checkFormatDate(startDate)),
-                endDate: formatDay(checkFormatDate(endDate)),
-                startTime: formatHour(checkFormatDate(startDate)),
-                endTime: formatHour(checkFormatDate(endDate)),
-                gradients: defaultDate.metadata.signature_colors,
-                mainColor: defaultDate.metadata.signature_colors[0],
-                image: getImgPath(defaultDate.metadata.avatar),
-            }}/>
+    if (datesResp.data?.dates?.length > 0 || globalDatesResp.data?.dates?.length > 0) {
+        return <Tickets
+            tickets={formatDates(tickets, datesResp.data.dates, globalDatesResp.data.dates)}/>
     }
 };

@@ -26,6 +26,10 @@ spec:
         chart: {{ .Chart.Name }}
     spec:
       serviceAccountName: {{ include "platform.fullname" . }}--platform--sa
+      volumes:
+        - name: t721app-config-well-known
+          configMap:
+            name: {{ template "platform.fullname" . }}--t721app-config-well-known--cfmp
       containers:
         - name: {{ template  "platform.fullname" . }}--t721app
           image: "{{ .Values.t721app.image.repository }}:{{ .Values.t721app.image.tag }}"
@@ -33,12 +37,6 @@ spec:
           env:
             - name: NODE_ENV
               value: production
-            - name: REACT_APP_ETHEREUM_URL
-              value: '{{ required "[t721app] Missing config.frontEthereumNode.url value" .Values.config.frontEthereumNode.url }}'
-            - name: REACT_APP_ETHEREUM_NETWORK_ID
-              value: '{{ required "[t721app] Missing config.frontEthereumNode.networkId value" .Values.config.frontEthereumNode.networkId }}'
-            - name: REACT_APP_ETHEREUM_HEADERS
-              value: '{{ required "[t721app] Missing config.t721app.frontEthereumNodeHeaders value" .Values.config.t721app.frontEthereumNodeHeaders }}'
             - name: REACT_APP_T721_SERVER_HOST
               value: '{{ required "[t721app] Missing config.serverEndpoint.host value" .Values.config.serverEndpoint.host }}'
             - name: REACT_APP_T721_SERVER_PORT
@@ -51,12 +49,27 @@ spec:
               value: '{{ required "[t721app] Missing config.t721app.publishableStripeApiKey value" .Values.config.t721app.publishableStripeApiKey }}'
             - name: REACT_APP_SEGMENT_API_KEY
               value: '{{ required "[t721app] Missing config.t721app.segmentApiKey value" .Values.config.t721app.segmentApiKey }}'
+            - name: REACT_APP_ITUNES_ID
+              value: '{{ required "[t721app] Missing config.t721app.itunesId value" .Values.config.t721app.itunesId }}'
             - name: REACT_APP_ETHERSCAN_URL
               value: '{{ required "[t721app] Missing config.etherscanUrl value" .Values.config.etherscanUrl }}'
+            - name: REACT_APP_APPSTORE_LINK
+              value: '{{ required "[t721app] Missing config.t721app.appStoreLink value" .Values.config.t721app.appStoreLink }}'
+            - name: REACT_APP_PLAYSTORE_LINK
+              value: '{{ required "[t721app] Missing config.t721app.playStoreLink value" .Values.config.t721app.playStoreLink }}'
+            - name: REACT_APP_SELF
+              value: '{{ required "[t721app] Missing config.t721app.self value" .Values.config.t721app.self }}'
           ports:
             - name: http
               containerPort: 5000
               protocol: TCP
+          volumeMounts:
+            - name: t721app-config-well-known
+              mountPath: /repo/modules/@frontend_t721-app/build/.well-known/apple-app-site-association
+              subPath: apple-app-site-association
+            - name: t721app-config-well-known
+              mountPath: /repo/modules/@frontend_t721-app/build/.well-known/assetlinks.json
+              subPath: assetlinks.json
           livenessProbe:
             httpGet:
               path: /

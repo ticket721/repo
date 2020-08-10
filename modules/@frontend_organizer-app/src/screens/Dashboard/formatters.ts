@@ -70,12 +70,13 @@ const formatPricesAndSeats = (categories: CategoryEntity[], events: EventDashboa
         const seatsCount: number = filteredCategories
             .map((category) => category.seats)
             .reduce((acc, seats) => acc + seats);
+        // console.log(filteredCategories);
         const sortedPrices: string[] = filteredCategories
             .map((category) => {
                 const T721TokenPrice = category.prices.filter((price) => price.currency === 'T721Token');
                 return T721TokenPrice[0].value;
             }).sort((priceA: string, priceB: string) => parseInt(priceA, 10) - parseInt(priceB, 10));
-
+        // console.log(sortedPrices);
         return {
             ...event,
             startPrice: sortedPrices[0],

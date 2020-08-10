@@ -7,23 +7,22 @@ import { DateItem }               from '../../components/EventSelection';
 import { useSelector }                      from 'react-redux';
 import { StaffAppState }                    from '../../redux';
 import { verifyMessage, BigNumber }         from 'ethers/utils';
-import { second }                           from '@frontend/core/lib/utils/date';
+import { minute }                           from '@frontend/core/lib/utils/date';
 import { useLazyRequest }                   from '@frontend/core/lib/hooks/useLazyRequest';
 import { v4 }                               from 'uuid';
 import { TicketsValidateTicketResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/tickets/dto/TicketsValidateTicketResponse.dto';
-import { PushNotification }            from '@frontend/core/lib/redux/ducks/notifications';
 import { useDispatch }                 from 'react-redux';
 import { useTranslation }              from 'react-i18next';
 import { useDeepEffect }               from '@frontend/core/lib/hooks/useDeepEffect';
 import './locales';
-import { CacheCore }                   from '@frontend/core/lib/cores/cache/CacheCore';
-import { UpdateItemData }              from '@frontend/core/lib/redux/ducks/cache';
 import { ScannerZone }                 from './ScannerZone';
 import { useRequest }                  from '@frontend/core/lib/hooks/useRequest';
 import { CategoriesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/categories/dto/CategoriesSearchResponse.dto';
 import { CategoriesFetcher }           from '../../components/Filters/CategoriesFetcher';
 import { Icon }                        from '@frontend/flib-react/lib/components';
 import { PushGuest }                   from '../../redux/ducks/current_event';
+import { UpdateItemError, UpdateItemData }             from '@frontend/core/lib/redux/ducks/cache';
+import { CacheCore }                   from '@frontend/core/lib/cores/cache/CacheCore';
 
 export type Status = 'error' | 'success' | 'verifying' | 'scanning';
 
@@ -61,6 +60,7 @@ export const Scanner: React.FC<ScannerProps> = ({ events, dates }: ScannerProps)
     const [ status, setStatus ] = useState<Status>('scanning');
     const [ timestampRange, setTimestampRange ] = useState<number[]>([]);
     const [ scannedTicket, setScannedTicket ] = useState<QrPayload>(null);
+    const [ statusTitle, setStatusTitle ] = useState<string>(null);
     const [ statusMsg, setStatusMsg ] = useState<string>(null);
     const [ filtersOpened, setFiltersOpened ] = useState<boolean>(false);
 
@@ -88,8 +88,8 @@ export const Scanner: React.FC<ScannerProps> = ({ events, dates }: ScannerProps)
         if (status === 'scanning' && data) {
             setStatus('verifying');
             const timestamps = [
-                new Date(Date.now() - 15 * second).getTime(),
-                new Date(Date.now() + 15 * second).getTime(),
+                new Date(Date.now() - 2 * minute).getTime(),
+                new Date(Date.now() + 2 * minute).getTime(),
             ];
             setTimestampRange(timestamps);
 
@@ -120,37 +120,64 @@ export const Scanner: React.FC<ScannerProps> = ({ events, dates }: ScannerProps)
                 });
             } else {
                 setStatus('error');
-                setStatusMsg('verify_errors:invalid_qrcode');
+                setStatusTitle(t('verify_errors:error_title', {count: 10}));
+                setStatusMsg(t('verify_errors:invalid_qrcode'));
+            }
+        }
+    };
+
+    const resetScannedTicket = () => {
+        if (status === 'error' || status === 'success') {
+            const itemKey = CacheCore.key('tickets.validate', [
+                token,
+                eventId,
+                {
+                    ticketId: new BigNumber(scannedTicket.ticketId).toString(),
+                    address: scannedTicket.address,
+                }
+            ]);
+            setTimestampRange([]);
+            setStatusTitle(null);
+            setStatusMsg(null);
+            setStatus('scanning');
+            setScannedTicket(null);
+            if (status === 'error') {
+                dispatch(UpdateItemError(itemKey, null));
+            } else {
+                dispatch(UpdateItemData(itemKey, null));
             }
         }
     };
 
     useDeepEffect(() => {
-        if (validationResp.error) {
+        if (validationResp.error && scannedTicket) {
             setStatus('error');
             switch (validationResp.error.response.data.message) {
                 case 'entity_not_found':
-                    setStatusMsg('verify_errors:ticket_not_found');
+                    setStatusTitle(t('verify_errors:error_title', {count: 1}));
+                    setStatusMsg(t('verify_errors:ticket_not_found'));
                     break;
                 case 'unauthorized_scan':
-                    setStatusMsg('verify_errors:invalid_event');
+                    setStatusTitle(t('verify_errors:error_title', {count: 3}));
+                    setStatusMsg(t('verify_errors:invalid_event'));
                     break;
                 default:
-                    dispatch(PushNotification(t('verify_errors:internal_server_error'), 'error'));
-                    setStatusMsg('retry');
+                    setStatusTitle(t('verify_errors:error_title', {count: 2}));
+                    setStatusMsg(t('internal_server_error'));
             }
         }
-    }, [validationResp.error]);
+    }, [validationResp.error, scannedTicket]);
 
     useDeepEffect(() => {
-        if (validationResp.data) {
+        if (validationResp.data && scannedTicket) {
             if (validationResp.data.info) {
                 if (
                     categoriesReq.response.data.categories
                     .findIndex(category => category.id === validationResp.data.info.category) === -1
                 ) {
                     setStatus('error');
-                    setStatusMsg('verify_errors:invalid_date');
+                    setStatusTitle(t('verify_errors:error_title', {count: 5}));
+                    setStatusMsg(t('verify_errors:invalid_date'));
                     return;
                 }
 
@@ -159,30 +186,35 @@ export const Scanner: React.FC<ScannerProps> = ({ events, dates }: ScannerProps)
                     filteredCategories.findIndex((category) => category.id === validationResp.data.info.category) === -1
                 ) {
                     setStatus('error');
-                    setStatusMsg('verify_errors:invalid_category');
+                    setStatusTitle(t('verify_errors:error_title', {count: 6}));
+                    setStatusMsg(t('verify_errors:invalid_category'));
                     return;
                 }
 
                 if (scannedTicket.timestamp < timestampRange[0]) {
                     setStatus('error');
-                    setStatusMsg('verify_errors:expired_qr');
+                    setStatusTitle(t('verify_errors:error_title', {count: 7}));
+                    setStatusMsg(t('verify_errors:expired_qr'));
                     return;
                 }
 
                 if (scannedTicket.timestamp > timestampRange[1]) {
                     setStatus('error');
-                    setStatusMsg('verify_errors:invalid_time_zone');
+                    setStatusTitle(t('verify_errors:error_title', {count: 8}));
+                    setStatusMsg(t('verify_errors:invalid_time_zone'));
                     return;
                 }
 
                 if (checkedGuests.findIndex(checkedGuest => checkedGuest.ticketId === validationResp.data.info.ticket) !== -1) {
                     setStatus('error');
-                    setStatusMsg('verify_errors:already_checked');
+                    setStatusTitle(t('verify_errors:error_title', {count: 9}));
+                    setStatusMsg(t('verify_errors:already_checked'));
                     return;
                 }
 
                 setStatus('success');
-                setStatusMsg(t('valid'));
+                setStatusTitle(t('valid'));
+                setStatusMsg(validationResp.data.info.username);
                 dispatch(PushGuest({
                     ticketId: validationResp.data.info.ticket,
                     email: validationResp.data.info.email,
@@ -192,11 +224,12 @@ export const Scanner: React.FC<ScannerProps> = ({ events, dates }: ScannerProps)
                 }));
             } else {
                 setStatus('error');
-                setStatusMsg('verify_errors:invalid_user');
+                setStatusTitle(t('verify_errors:error_title', {count: 4}));
+                setStatusMsg(t('verify_errors:invalid_user'));
                 return;
             }
         }
-    }, [validationResp.data]);
+    }, [validationResp.data, scannedTicket]);
 
     useEffect(() => {
         if (dateId && filteredCategories.length === 0) {
@@ -214,7 +247,7 @@ export const Scanner: React.FC<ScannerProps> = ({ events, dates }: ScannerProps)
 
     return (
         <ScannerWrapper>
-            <TopNavbar status={status} msg={t(statusMsg)} events={events} dates={dates}/>
+            <TopNavbar status={status} msg={statusTitle} events={events} dates={dates}/>
             {
                 dateId && !loaded ?
                     <FullPageLoading/> :
@@ -222,23 +255,13 @@ export const Scanner: React.FC<ScannerProps> = ({ events, dates }: ScannerProps)
             }
             <ScannerZone status={status}/>
             {
+                statusMsg ?
+                    <Msg>{statusMsg}</Msg> :
+                    null
+            }
+            {
                 status === 'error' || status === 'success' ?
-                    <TapToScan onClick={() => {
-                        if (status === 'error' || status === 'success') {
-                            setTimestampRange([]);
-                            setStatusMsg(null);
-                            setScannedTicket(null);
-                            setStatus('scanning');
-                            dispatch(UpdateItemData(CacheCore.key('tickets.validate', [
-                                token,
-                                eventId,
-                                {
-                                    ticketId: scannedTicket.ticketId,
-                                    address: scannedTicket.address,
-                                }
-                            ]), null));
-                        }
-                    }}>{t('scan_again')}</TapToScan> :
+                    <TapToScan onClick={resetScannedTicket}>{t('scan_again')}</TapToScan> :
                     null
             }
             {
@@ -266,7 +289,6 @@ export const Scanner: React.FC<ScannerProps> = ({ events, dates }: ScannerProps)
                         facingMode={'environment'}
                         style={{
                             'width': '100vw',
-                            'height': '100vh'
                         }}
                         showViewFinder={false} /> :
                     null
@@ -278,8 +300,19 @@ export const Scanner: React.FC<ScannerProps> = ({ events, dates }: ScannerProps)
 
 const ScannerWrapper = styled.div`
     section > section {
-        padding-top: 100vh !important;
+    padding-top: calc(100vh - constant(safe-area-inset-top)) !important;
+    padding-top: calc(100vh - env(safe-area-inset-top)) !important;
     }
+`;
+
+const Msg = styled.div`
+    position: absolute;
+    top: calc(19vh - 25vw + 3 * ${props => props.theme.doubleSpacing});
+    width: 100%;
+    text-align: center;
+    z-index: 1;
+    font-size: 24px;
+    font-weight: 500;
 `;
 
 const TapToScan = styled.div`

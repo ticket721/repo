@@ -42,6 +42,8 @@ import { User } from '@app/server/authentication/decorators/User.controller.deco
 import { PasswordChangeDto } from '@app/server/authentication/dto/PasswordChange.dto';
 import { ValidGuard } from '@app/server/authentication/guards/ValidGuard.guard';
 import parse from 'parse-duration';
+import { ResendValidationResponseDto } from '@app/server/authentication/dto/ResendValidationResponse.dto';
+import { ResendValidationInputDto } from '@app/server/authentication/dto/ResendValidationInput.dto';
 
 /**
  * Controller exposing the authentication routes
@@ -126,6 +128,39 @@ export class AuthenticationController {
     }
 
     /**
+     *
+     * [POST /authentication/resend-validation] : Generates a new validation email
+     */
+    @Post('/resend-validation')
+    @UseGuards(AuthGuard('jwt'))
+    @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.OK)
+    @ApiResponses([StatusCodes.OK, StatusCodes.InternalServerError, StatusCodes.Unauthorized])
+    async resendValidation(
+        @Body() body: ResendValidationInputDto,
+        @User() user: UserDto,
+    ): Promise<ResendValidationResponseDto> {
+        if (!user.valid) {
+            await this.mailingQueue.add(
+                '@@mailing/validationEmail',
+                {
+                    email: user.email,
+                    username: user.username,
+                    locale: user.locale,
+                    id: user.id,
+                    redirectUrl: body.redirectUrl || this.configService.get('VALIDATION_URL'),
+                } as EmailValidationTaskDto,
+                {
+                    attempts: 5,
+                    backoff: 5000,
+                },
+            );
+        }
+
+        return {};
+    }
+
+    /**
      * [POST /authentication/local/register] : Create a new local account
      */
     @Post('/local/register')
@@ -183,6 +218,7 @@ export class AuthenticationController {
                     username: resp.response.username,
                     locale: resp.response.locale,
                     id: resp.response.id,
+                    redirectUrl: body.redirectUrl || this.configService.get('VALIDATION_URL'),
                 } as EmailValidationTaskDto,
                 {
                     attempts: 5,
@@ -287,6 +323,7 @@ export class AuthenticationController {
                     username: resp.response.username,
                     locale: resp.response.locale,
                     id: resp.response.id,
+                    redirectUrl: body.redirectUrl || this.configService.get('VALIDATION_URL'),
                 } as EmailValidationTaskDto,
                 {
                     attempts: 5,
@@ -348,6 +385,7 @@ export class AuthenticationController {
                     id: resp.response.id,
                     email: resp.response.email,
                     locale: resp.response.locale,
+                    redirectUrl: body.redirectUrl || this.configService.get('RESET_PASSWORD_URL'),
                 } as ResetPasswordTaskDto,
                 {
                     attempts: 5,

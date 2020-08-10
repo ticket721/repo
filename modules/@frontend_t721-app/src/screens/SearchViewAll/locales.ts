@@ -9,7 +9,7 @@ i18n.addResourceBundle('en', 'search_view_all', {
     no_results: 'No results'
 });
 i18n.addResourceBundle('fr', 'search_view_all', {
-    searching_events_in: 'Resultats de recherche a',
+    searching_events_in: 'Resultats de recherche à',
     search_city: 'Rechercher une ville',
     use_current_location: 'Utiliser position actuelle',
     cancel: 'Annuler',

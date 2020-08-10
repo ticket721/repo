@@ -13,16 +13,40 @@ import { TicketsSearchResponseDto }         from '@common/sdk/lib/@backend_nest/
 import { useSelector }                      from 'react-redux';
 import { T721AppState }                     from '../../redux';
 import { v4 }                               from 'uuid';
-import { CategoryFetcher }                  from './CategoryFetcher';
-import Flicking                             from '@egjs/react-flicking';
+import { CategoriesFetcher }                from './CategoriesFetcher';
 import { useHistory }                       from 'react-router';
 import { UsersSetDeviceAddressResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/users/dto/UsersSetDeviceAddressResponse.dto';
+import { PasswordlessUserDto }              from '@common/sdk/lib/@backend_nest/apps/server/src/authentication/dto/PasswordlessUser.dto';
+import { UsersMeResponseDto }               from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/users/dto/UsersMeResponse.dto';
+import { Ticket }                           from '../../types/ticket';
+import { TicketEntity }                     from '@common/sdk/lib/@backend_nest/libs/common/src/tickets/entities/Ticket.entity';
 
-const Wallet: React.FC = () => {
+const formatTickets = (tickets: TicketEntity[]): Ticket[] =>
+    tickets.map(ticket => ({
+        name: null,
+        ticketId: ticket.id,
+        categoryId: ticket.category,
+        entityId: null,
+        ticketType: null,
+        location: null,
+        categoryName: null,
+        startDate: null,
+        startTime: null,
+        endDate: null,
+        endTime: null,
+        gradients: null,
+        mainColor: null,
+        image: null,
+    }));
+
+interface WalletProps {
+    user: PasswordlessUserDto;
+}
+
+const Wallet: React.FC<WalletProps> = (props: WalletProps) => {
     const history = useHistory();
-    const [ ticketIdx, setTicketIdx ] = useState<number>(0);
     const { t } = useTranslation(['wallet', 'common']);
-    const [ token, address ] = useSelector((state: T721AppState) => [ state.auth.token.value, state.auth.user.address ]);
+    const token = useSelector((state: T721AppState) => state.auth.token.value);
     const devicePk = useSelector((state: T721AppState) => state.deviceWallet.pk);
     const [uuid] = useState<string>(v4() + '@wallet');
 
@@ -34,7 +58,7 @@ const Wallet: React.FC = () => {
             token,
             {
                 owner: {
-                    $eq: address
+                    $eq: props.user.address
                 },
                 status: {
                     $ne: 'canceled',
@@ -45,7 +69,7 @@ const Wallet: React.FC = () => {
                 }]
             }
         ],
-        refreshRate: 5,
+        refreshRate: 60,
     },
     uuid);
 
@@ -62,12 +86,7 @@ const Wallet: React.FC = () => {
     }, [token, devicePk]);
 
     if (ticketsResp.loading) {
-        return (
-            <FullPageLoading
-                width={250}
-                height={250}
-            />
-        );
+        return  <FullPageLoading/>;
     }
 
     if (ticketsResp.error) {
@@ -75,60 +94,29 @@ const Wallet: React.FC = () => {
     }
 
     return (
-        <Container>
+        <div>
             <Title>
                 <h1>
                     {t('my_tickets')}
                 </h1>
             </Title>
-                {
-                    ticketsResp.data?.tickets?.length > 0 ?
-                        <TicketList>
-                            <Flicking
-                                classPrefix={'listing'}
-                                overflow={true}
-                                collectStatistics={false}
-                                gap={32}
-                                bound={true}
-                                onChange={(e) => setTicketIdx(e.index)}
-                            >
-                                {
-                                    ticketsResp.data.tickets.map((ticket) => (
-                                        <CategoryFetcher
-                                            key={ticket.id}
-                                            uuid={uuid}
-                                            categoryId={ticket.category}
-                                            ticketId={ticket.id}/>
-                                    ))
-                                }
-                            </Flicking>
-                            <Dots>
-                                {
-                                    ticketsResp.data.tickets.map((ticket, idx) => (
-                                        <Dot key={ticket.id} selected={idx === ticketIdx}/>
-                                    ))
-                                }
-                            </Dots>
-                        </TicketList> :
-                    null
-                }
             {
-                ticketsResp.data?.tickets?.length === 0 ?
+                ticketsResp.data?.tickets?.length > 0 ?
+                    <CategoriesFetcher
+                        uuid={uuid}
+                        tickets={formatTickets(ticketsResp.data.tickets)}
+                    /> :
                 <EmptyWallet>
                     <span>{t('empty_wallet')}</span>
                     <div onClick={() => history.push('/search')}>
                         <span>{t('return_to_search')}</span>
                         <Icon icon={'chevron'} size={'8px'} color={'#2143AB'}/>
                     </div>
-                </EmptyWallet> :
-                null
+                </EmptyWallet>
             }
-        </Container>
+        </div>
     );
 };
-
-const Container = styled.div`
-`;
 
 const Title = styled.div`
     font-weight: bold;
@@ -140,44 +128,6 @@ const Title = styled.div`
         margin-bottom: 0;
         text-align: center;
         font-size: 16px;
-    }
-`;
-
-const TicketList = styled.div`
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 0 ${props => props.theme.biggerSpacing};
-    overflow: hidden;
-    height: calc(100vh - 3 * ${props => props.theme.doubleSpacing});
-
-    .listing-viewport {
-        height: calc(100vh - 3 * ${props => props.theme.doubleSpacing}) !important;
-
-        .listing-camera {
-            display: flex;
-            align-items: center;
-        }
-    }
-`;
-
-const Dots = styled.div`
-    position: absolute;
-    bottom: ${props => props.theme.biggerSpacing};
-    left: 0;
-    display: flex;
-    justify-content: center;
-    width: 100%;
-`;
-
-const Dot = styled.div<{ selected: boolean }>`
-    width: ${props => props.theme.smallSpacing};
-    height: ${props => props.theme.smallSpacing};
-    border-radius: 8px;
-    background-color: ${props => props.selected ? props.theme.textColor : props.theme.componentColorLight};
-
-    :not(:last-child) {
-        margin-right: ${props => props.theme.smallSpacing};
     }
 `;
 
@@ -204,4 +154,28 @@ const EmptyWallet = styled.div`
     }
 `;
 
-export default Wallet;
+const UserFetcher = () => {
+    const token = useSelector((state: T721AppState) => state.auth.token.value);
+    const [uuid] = useState<string>(v4() + '@wallet');
+    const { t } = useTranslation(['wallet', 'common']);
+
+    const userReq = useRequest<UsersMeResponseDto>({
+        method: 'users.me',
+        args: [
+            token
+        ],
+        refreshRate: 10
+    }, uuid);
+
+    if (userReq.response.loading) {
+        return <FullPageLoading/>
+    }
+
+    if (userReq.response.error) {
+        return (<Error message={t('fetch_error')} retryLabel={t('common:retrying_in')} onRefresh={userReq.force}/>);
+    }
+
+    return <Wallet user={userReq.response.data.user}/>
+};
+
+export default UserFetcher;

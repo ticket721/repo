@@ -1,11 +1,11 @@
-import * as React from 'react';
+import React from 'react';
 import DatePicker, { registerLocale } from 'react-datepicker';
-import styled from '../../config/styled';
 import 'react-datepicker/dist/react-datepicker.css';
 import fr from 'date-fns/locale/fr';
 import es from 'date-fns/locale/es';
 import it from 'date-fns/locale/it';
-import Icon from '../icon';
+import { TextInput } from '../inputs/text';
+import styled from 'styled-components';
 
 registerLocale('es', es);
 registerLocale('fr', fr);
@@ -21,62 +21,63 @@ export interface CustomDatePickerProps extends React.ComponentProps<any> {
     onChange: (date: Date) => void;
     onChangeRaw?: (e: React.FocusEvent<HTMLInputElement>) => void;
     open?: boolean;
-    placeholderText?: string;
+    placeholder?: string;
     selected?: Date;
-    className?: string;
     error?: string;
+    selectsStart?: boolean;
+    selectsEnd?: boolean;
+    showTime?: boolean;
+    timeInputLabel?: string;
+    startDate?: Date;
+    endDate?: Date;
+    disabled?: boolean;
 }
 
-const StyledLabel = styled.label`
-    display: inline-flex;
-    transform: translateX(-12px);
-    transition: all 300ms ease;
+export const CustomDatePicker: React.FunctionComponent<CustomDatePickerProps> = (
+    props: CustomDatePickerProps,
+): JSX.Element => (
+    <DatePickerWrapper>
+        <Placeholder>{props.placeholder}</Placeholder>
+        <DatePicker
+            customInput={
+                <TextInput
+                    value={props.value}
+                    name={props.name}
+                    onChange={() => null}
+                    label={props.label}
+                    icon={'calendar'}
+                    error={props.error}
+                    disabled={props.disabled}
+                />
+            }
+            name={props.name}
+            dateFormat={props.dateFormat}
+            locale={props.locale}
+            minDate={props.minDate}
+            maxDate={props.maxDate}
+            startDate={props.startDate}
+            endDate={props.endDate}
+            onChange={props.onChange}
+            onChangeRaw={
+                props.onChangeRaw
+                    ? props.onChangeRaw
+                    : (e: any) => {
+                          e.preventDefault();
+                      }
+            }
+            open={props.open}
+            selected={props.selected}
+            shouldCloseOnSelect={!props.selectsStart && !props.selectsEnd && !props.showTime}
+            selectsStart={props.selectsStart}
+            selectsEnd={props.selectsEnd}
+            showTimeInput={props.showTime}
+            timeInputLabel={props.timeInputLabel + ':'}
+        />
+    </DatePickerWrapper>
+);
 
-    &::before {
-        background-color: ${(props) => props.theme.primaryColor.hex};
-        border-radius: 100%;
-        content: '';
-        display: inline-block;
-        height: 4px;
-        margin-right: 8px;
-        opacity: 0;
-        position: relative;
-        top: 2px;
-        transition: opacity 300ms ease;
-        width: 4px;
-    }
-`;
-
-const StyledInputContainer = styled.div`
+const DatePickerWrapper = styled.div`
     position: relative;
-    background-color: ${(props) => props.theme.componentColor};
-    border-radius: ${(props) => props.theme.defaultRadius};
-    display: flex;
-    flex-direction: column;
-    padding-top: ${(props) => props.theme.biggerSpacing};
-    transition: background-color 300ms ease;
-
-    &:hover {
-        background-color: ${(props) => props.theme.componentColorLight};
-    }
-
-    &:focus-within {
-        background-color: ${(props) => props.theme.componentColorLighter};
-
-        input {
-            &::placeholder {
-                color: ${(props) => props.theme.textColor};
-            }
-        }
-
-        ${StyledLabel} {
-            transform: translateX(0px);
-
-            &::before {
-                opacity: 1;
-            }
-        }
-    }
 
     .react-datepicker {
         background-color: #262626;
@@ -84,17 +85,14 @@ const StyledInputContainer = styled.div`
         color: ${(props) => props.theme.textColor};
         font-family: ${(props) => props.theme.fontStack};
 
+        &-wrapper {
+            width: 100%;
+        }
+
         &__navigation {
             outline: none;
-            height: 16px;
-            right: ${(props) => props.theme.biggerSpacing};
-            top: ${(props) => props.theme.biggerSpacing};
-            width: 16px;
-
-            &--previous {
-                left: auto;
-                right: 3.5rem;
-            }
+            height: 8px;
+            top: 14px;
         }
 
         &__triangle {
@@ -103,8 +101,8 @@ const StyledInputContainer = styled.div`
 
         &__current-month {
             color: ${(props) => props.theme.textColor};
-            font-size: 20px;
-            padding-left: 14px;
+            font-size: 16px;
+            text-align: center;
         }
 
         &__day-names {
@@ -112,28 +110,60 @@ const StyledInputContainer = styled.div`
         }
 
         &__month {
-            margin: 0 12px;
+            margin: ${(props) => props.theme.smallSpacing};
+        }
+
+        &__week {
+            height: 40px;
+            display: flex;
+            align-items: center;
         }
 
         &__day-name,
         &__day {
+            flex: 1;
             align-items: center;
             background-color: transparent;
-            border-radius: ${(props) => props.theme.defaultRadius};
-            color: ${(props) => props.theme.textColor};
             display: inline-flex;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 500;
             justify-content: center;
-            height: 40px;
+            height: 25px;
             line-height: 1em;
             text-align: auto;
             transition: background-color 300ms ease;
-            width: 40px;
+            width: 35px;
+        }
 
-            &--outside-month,
-            &--disabled {
+        &__day {
+            color: ${(props) => props.theme.textColor};
+            margin: 0;
+
+            &-name {
                 color: ${(props) => props.theme.textColorDarker};
+                height: auto;
+                padding: 1rem 0 0.5rem;
+            }
+
+            &--in-range {
+                border-radius: 0;
+                background-color: ${(props) => props.theme.primaryColorGradientEnd.hex};
+            }
+
+            &--in-selecting-range {
+                border-radius: 0;
+                background-color: ${(props) => props.theme.primaryColorGradientEnd.hex};
+            }
+
+            &--selected,
+            &--range-start,
+            &--range-end,
+            &--selecting-range-start,
+            &--selecting-range-end {
+                height: 40px;
+                font-size: 14px;
+                font-weight: 600;
+                border-radius: ${(props) => props.theme.defaultRadius};
             }
 
             &--selected {
@@ -144,23 +174,39 @@ const StyledInputContainer = styled.div`
                 );
             }
 
+            &--range-start {
+                background: linear-gradient(
+                    90deg,
+                    ${(props) => props.theme.primaryColor.hex},
+                    ${(props) => props.theme.primaryColorGradientEnd.hex}
+                );
+            }
+
+            &--range-end {
+                background: linear-gradient(
+                    270deg,
+                    ${(props) => props.theme.primaryColor.hex},
+                    ${(props) => props.theme.primaryColorGradientEnd.hex}
+                );
+            }
+
             &--today {
                 background-color: ${(props) => props.theme.componentColor};
                 border-radius: ${(props) => props.theme.defaultRadius};
             }
-        }
 
-        &__day {
-            &-name {
+            &--outside-month,
+            &--disabled {
                 color: ${(props) => props.theme.textColorDarker};
-                font-size: 13px;
-                height: auto;
-                padding: 1rem 0 0.5rem;
             }
 
             &:hover {
                 background-color: ${(props) => props.theme.componentColor};
                 border-radius: ${(props) => props.theme.defaultRadius};
+            }
+
+            &:focus {
+                outline: 0;
             }
         }
 
@@ -168,64 +214,38 @@ const StyledInputContainer = styled.div`
             background: ${(props) => props.theme.componentColor};
             border: none;
             border-radius: ${(props) => props.theme.defaultRadius};
-            padding: ${(props) => props.theme.biggerSpacing} 12px 0;
+            padding: ${(props) => props.theme.regularSpacing} 12px 0;
             text-align: left;
         }
 
-        &-wrapper {
-            background: url('assets/icons/icon--calendar.svg') 24px 16px/14px no-repeat;
-            padding-left: 24px;
+        &__input-time-container {
+            width: inherit;
+            margin: 0 ${(props) => props.theme.regularSpacing} ${(props) => props.theme.smallSpacing};
+        }
 
-            input {
-                font-size: 14px;
-                font-weight: 500;
+        &-time__input {
+            & > input {
+                width: inherit;
+                padding: ${(props) => props.theme.smallSpacing};
+                border-radius: ${(props) => props.theme.defaultRadius};
+                background-color: ${(props) => props.theme.componentColorLight};
+                text-align: center;
+
+                &::-webkit-calendar-picker-indicator {
+                    display: none;
+                }
             }
         }
     }
 `;
 
-const Error = styled.span`
-    top: 20px;
-    color: ${(props) => props.theme.errorColor.hex};
-    font-size: 13px;
-    font-weight: 500;
-    position: relative;
-`;
-
-const Calendar = styled(Icon)`
+const Placeholder = styled.span`
     position: absolute;
-    top: 52px;
-    left: 24px;
+    font-size: 14px;
+    font-weight: 500;
+    top: 53px;
+    left: 50px;
+    color: ${(props) => props.theme.textColorDarker};
 `;
-
-export const CustomDatePicker: React.FunctionComponent<CustomDatePickerProps> = (
-    props: CustomDatePickerProps,
-): JSX.Element => {
-    return (
-        <StyledInputContainer className={props.className}>
-            <StyledLabel>{props.label}</StyledLabel>
-            <Calendar icon={'calendar'} size={'16px'} />
-            <DatePicker
-                name={props.name}
-                dateFormat={props.dateFormat}
-                locale={props.locale}
-                minDate={props.minDate}
-                maxDate={props.maxDate}
-                onChange={props.onChange}
-                onChangeRaw={
-                    props.onChangeRaw
-                        ? props.onChangeRaw
-                        : (e: any) => {
-                              e.preventDefault();
-                          }
-                }
-                open={props.open}
-                placeholderText={props.placeholderText}
-                selected={props.selected}
-            />
-            {props.error && <Error>{props.error}</Error>}
-        </StyledInputContainer>
-    );
-};
 
 export default CustomDatePicker;

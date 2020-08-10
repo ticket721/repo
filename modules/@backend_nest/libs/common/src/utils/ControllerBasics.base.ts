@@ -117,7 +117,7 @@ export class ControllerBasics<EntityType> {
      * @private
      */
     public async _serviceCall<ResType = any>(
-        promise: Promise<ServiceResponse<ResType>>,
+        promise: Promise<ServiceResponse<ResType>> | ServiceResponse<ResType>,
         errorStatus: StatusCodes,
         errorMessage?: string,
     ): Promise<ResType> {
@@ -301,11 +301,20 @@ export class ControllerBasics<EntityType> {
      * Builds an ESQuery body
      *
      * @param query
+     * @param disableAutoSize
      * @private
      */
-    public _esQueryBuilder<CustomEntity = EntityType>(query: SortablePagedSearch): EsSearchOptionsStatic {
+    public _esQueryBuilder<CustomEntity = EntityType>(
+        query: SortablePagedSearch,
+        disableAutoSize?: boolean,
+    ): EsSearchOptionsStatic {
         let esQuery;
         try {
+            if (query.$page_size === undefined && query.$page_index === undefined && !disableAutoSize) {
+                query.$page_size = 10000;
+                query.$page_index = 0;
+            }
+
             esQuery = ESSearchBodyBuilder(query);
         } catch (e) {
             throw new HttpException(
@@ -340,7 +349,7 @@ export class ControllerBasics<EntityType> {
         service: CRUDExtension<Repository<CustomEntityType>, CustomEntityType>,
         query: SearchInputType<CustomEntityType>,
     ): Promise<ESCountReturn> {
-        const es: EsSearchOptionsStatic = this._esQueryBuilder(query);
+        const es: EsSearchOptionsStatic = this._esQueryBuilder(query, true);
 
         const countResults = await service.countElastic(es);
 

@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Button } from '@frontend/flib-react/lib/components';
 
 import { DateItem }     from '../index';
-import { day, hour }    from '@frontend/core/lib/utils/date';
 
 import { useTranslation }     from 'react-i18next';
 import './locales';
@@ -32,8 +31,8 @@ export const CreateDate: React.FC<CreateDateProps> = (props: CreateDateProps) =>
     const formik = useFormik({
         initialValues: {
             name: props.initialName,
-            eventBegin: new Date(Date.now() + hour),
-            eventEnd: new Date(Date.now() + day),
+            eventBegin: null,
+            eventEnd: null,
             location: props.initialLocation ?
                 props.initialLocation :
                 {

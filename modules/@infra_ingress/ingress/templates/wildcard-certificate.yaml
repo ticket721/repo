@@ -10,5 +10,10 @@ spec:
   issuerRef:
     name: {{ include "ingress.fullname" . }}--cluster-issuer
     kind: ClusterIssuer
+  {{ if eq .Values.domainExtension "" }}
+  dnsNames:
+    - "*.{{ .Values.baseDomain }}"
+  {{ else }}
   dnsNames:
     - "*.{{ .Values.domainExtension }}.{{ .Values.baseDomain }}"
+  {{ end }}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import {
     LinksContainer,
     ArrowLink,
@@ -14,14 +14,11 @@ import { AppState } from '../../../redux';
 import { ActivitiesList } from '../Activities/ActivitiesList';
 import { Logout } from '../../../redux/ducks/auth';
 import { useHistory } from 'react-router';
-import { getContract } from '../../../subspace/getContract';
 import { useTranslation } from 'react-i18next';
 import '../locales';
-
-// tslint:disable-next-line:no-var-requires
-const { observe, useSubspace } = require('@embarklabs/subspace-react');
-
-const ConnectedWalletHeader = observe(WalletHeader);
+import { TicketsCountResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/tickets/dto/TicketsCountResponse.dto';
+import { UserContext } from '../../../utils/UserContext';
+import { FeatureFlag } from '../../FeatureFlag';
 
 export interface ProfileRootProps {
     desktop?: boolean;
@@ -30,19 +27,15 @@ export interface ProfileRootProps {
 
 const ProfileRoot: React.FC<ProfileRootProps> = ({ desktop, extraButtons }: ProfileRootProps): JSX.Element => {
     const [uuid] = useState(v4());
-    const { token, userUuid, username, address } = useSelector((state: AppState) => ({
+    const { token } = useSelector((state: AppState) => ({
         token: state.auth.token?.value,
-        userUuid: state.auth.user?.uuid,
-        username: state.auth.user?.username,
-        address: state.auth.user?.address,
     }));
+    const user = useContext(UserContext);
     const dispatch = useDispatch();
     const history = useHistory();
-    const subspace = useSubspace();
-    const T721TokenContract = getContract(subspace, 't721token', 'T721Token', uuid);
-    const [t, i18n] = useTranslation('profile');
+    const [t, i18n] = useTranslation(['profile', 'common']);
 
-    const { response: activityResponse } = useRequest<MetadatasFetchResponseDto>(
+    const { response: activityResponse, force } = useRequest<MetadatasFetchResponseDto>(
         {
             method: 'metadatas.fetch',
             args: [
@@ -50,14 +43,14 @@ const ProfileRoot: React.FC<ProfileRootProps> = ({ desktop, extraButtons }: Prof
                 {
                     useReadRights: [
                         {
-                            id: userUuid,
+                            id: user.id,
                             type: 'user',
                             field: 'id',
                         },
                     ],
                     withLinks: [
                         {
-                            id: userUuid,
+                            id: user.id,
                             type: 'user',
                             field: 'id',
                         },
@@ -70,23 +63,41 @@ const ProfileRoot: React.FC<ProfileRootProps> = ({ desktop, extraButtons }: Prof
         uuid,
     );
 
-    if (T721TokenContract.loading) {
+    const tickets = useRequest<TicketsCountResponseDto>(
+        {
+            method: 'tickets.count',
+            args: [
+                token,
+                {
+                    owner: {
+                        $eq: user.address,
+                    },
+                    status: {
+                        $ne: 'canceled',
+                    },
+                },
+            ],
+            refreshRate: 50,
+        },
+        uuid,
+    );
+
+    if (tickets.response.loading) {
         return <FullPageLoading />;
     }
 
-    if (T721TokenContract.error) {
-        return <p>Unable to recover contracts</p>;
-    }
-
-    const $balance = T721TokenContract.contract.methods.balanceOf(address).track();
-
     return (
         <>
-            <ConnectedWalletHeader username={username} picture={'/favicon.ico'} balance={$balance} />
+            <WalletHeader
+                username={user.username}
+                picture={'/favicon.ico'}
+                tickets={tickets.response.error ? '?' : tickets.response.data.tickets.count}
+            />
             <ActivitiesList
                 loading={activityResponse.loading}
                 error={activityResponse.error}
                 data={activityResponse.data}
+                force={force}
                 limit={3}
                 link={desktop ? history.location.pathname + '?profile=activities' : 'profile/activities'}
             />
@@ -106,6 +117,14 @@ const ProfileRoot: React.FC<ProfileRootProps> = ({ desktop, extraButtons }: Prof
                         history.replace('/');
                     }}
                 />
+                <FeatureFlag flag={'admin_flag'}>
+                    <ArrowLink
+                        label={t('you_are_an_admin')}
+                        onClick={() => {
+                            history.push('/you/are/an/admin');
+                        }}
+                    />
+                </FeatureFlag>
             </LinksContainer>
         </>
     );

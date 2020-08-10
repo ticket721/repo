@@ -1,10 +1,8 @@
 import React from 'react';
 import {
     CustomDatePicker,
-    CustomTimePicker,
 } from '@frontend/flib-react/lib/components';
 import styled                            from 'styled-components';
-import { minute, compareDates, TimeScale }       from '@frontend/core/lib/utils/date';
 
 import { useTranslation }              from 'react-i18next';
 import { LocationInput }               from '@frontend/core/lib/components/LocationInput';
@@ -24,53 +22,6 @@ interface Props {
 const DateForm = ({ formik, formActions, className }: Props) => {
     const dispatch = useDispatch();
     const [ t, i18n ] = useTranslation(['date_form', 'vaildation', 'errors']);
-
-    const onDateChange = (dateType: 'eventBegin' | 'eventEnd', date: Date) => {
-        if (date.getTime() < Date.now()) {
-            return;
-        }
-
-        const finalDate: Date = new Date(
-            date.getFullYear(),
-            date.getMonth(),
-            date.getDate(),
-            formik.values[dateType].getHours(),
-            formik.values[dateType].getMinutes(),
-        );
-
-        formik.setFieldValue(dateType, new Date(finalDate.getTime()));
-
-        if (dateType === 'eventBegin') {
-            if (date.getTime() >= formik.values.eventEnd.getTime()) {
-                const minTime: Date = new Date();
-                minTime.setTime(finalDate.getTime() + 30 * minute);
-                formik.setFieldValue('eventEnd', minTime);
-            }
-        }
-    };
-
-    const onTimeChange = (dateType: 'eventBegin' | 'eventEnd', date: Date) => {
-        if (date.getTime() < Date.now()) {
-            return;
-        }
-
-        const finalDate: Date = new Date(
-            formik.values[dateType].getFullYear(),
-            formik.values[dateType].getMonth(),
-            formik.values[dateType].getDate(),
-            date.getHours(),
-            date.getMinutes()
-        );
-        formik.setFieldValue(dateType, new Date(finalDate.getTime()));
-
-        if (dateType === 'eventBegin') {
-            if (date.getTime() >= formik.values.eventEnd.getTime()) {
-                const minTime: Date = new Date();
-                minTime.setTime(finalDate.getTime() + 30 * minute);
-                formik.setFieldValue('eventEnd', minTime);
-            }
-        }
-    };
 
     const onLocationChange = (result: any) => {
         geocodeByAddress(result.description)
@@ -102,6 +53,12 @@ const DateForm = ({ formik, formActions, className }: Props) => {
     };
 
     const computeError = (field: string): string => {
+        if (field === 'location') {
+            return formik.touched.location && formik.errors.location?.label ?
+                'validation:' + formik.errors.location.label :
+                undefined;
+        }
+
         return formik.touched[field] && formik.errors[field] ?
             'validation:' + formik.errors[field] :
             undefined;
@@ -109,61 +66,51 @@ const DateForm = ({ formik, formActions, className }: Props) => {
 
     return (
         <Container className={className}>
-            <div className={'date-line-field date-container'}>
+            <DateRangeInput>
                 <CustomDatePicker
+                    placeholder={t('select_date')}
                     label={t('start_date_label')}
                     name={'startDate'}
-                    dateFormat={'iii, MMM do, yyyy'}
+                    dateFormat={'iii, MMM do, yyyy - HH:mm'}
                     minDate={new Date()}
                     selected={formik.values.eventBegin}
+                    startDate={formik.values.eventBegin}
+                    endDate={formik.values.eventEnd}
                     locale={i18n.language}
-                    onChange={(date: Date) => onDateChange('eventBegin', date)}
+                    onChange={(date: Date) => {
+                        formik.setFieldTouched('eventBegin');
+                        formik.setFieldValue('eventBegin', date)
+                    }}
+                    selectsStart
+                    showTime
+                    timeInputLabel={t('start_time_input_label')}
                     error={
                         computeError('eventBegin') &&
                         t(computeError('eventBegin'))
                     }/>
-                <CustomTimePicker
-                    label={t('start_time_label')}
-                    name={'startTime'}
-                    selected={formik.values.eventBegin}
-                    onChange={(date: Date) => onTimeChange('eventBegin', date)}
-                    error={
-                        computeError('eventBegin') &&
-                        t(computeError('eventBegin'))
-                    }/>
-            </div>
-            <DateEndContainer
-                className={'date-line-field date-container'}
-                disabled={!formik.values.eventBegin}>
                 <CustomDatePicker
+                    placeholder={t('select_date')}
                     disabled={!formik.values.eventBegin}
                     label={t('end_date_label')}
                     name={'endDate'}
-                    dateFormat={'iii, MMM do, yyyy'}
+                    dateFormat={'iii, MMM do, yyyy - HH:mm'}
                     minDate={formik.values.eventBegin}
                     selected={formik.values.eventEnd}
+                    startDate={formik.values.eventBegin}
+                    endDate={formik.values.eventEnd}
                     locale={i18n.language}
-                    onChange={(date: Date) => onDateChange('eventEnd', date)}
+                    onChange={(date: Date) => {
+                        formik.setFieldTouched('eventEnd');
+                        formik.setFieldValue('eventEnd', date)
+                    }}
+                    selectsEnd
+                    showTime
+                    timeInputLabel={t('end_time_input_label')}
                     error={
                         computeError('eventEnd') &&
                         t(computeError('eventEnd'))
                     }/>
-                <CustomTimePicker
-                    disabled={!formik.values.eventBegin}
-                    label={t('end_time_label')}
-                    name={'endTime'}
-                    minTime={compareDates(
-                        formik.values.eventBegin,
-                        formik.values.eventEnd,
-                        TimeScale.day
-                    ) ? new Date(formik.values.eventBegin.getTime() + 30 * minute) : undefined}
-                    selected={formik.values.eventEnd}
-                    onChange={(date: Date) => onTimeChange('eventEnd', date)}
-                    error={
-                        computeError('eventEnd') &&
-                        t(computeError('eventEnd'))
-                    }/>
-            </DateEndContainer>
+            </DateRangeInput>
             <LocationInput
                 googleApiKey={getEnv().REACT_APP_GOOGLE_PLACES_API_KEY}
                 name={'location'}
@@ -181,28 +128,20 @@ const DateForm = ({ formik, formActions, className }: Props) => {
     );
 };
 
-const DateEndContainer = styled.div<{ disabled: boolean }>`
-    opacity: ${props => props.disabled ? '0.3' : '1'};
+const Container = styled.div`
+    & .date-line-field {
+        margin-bottom: ${props => props.theme.biggerSpacing};
+    }
 `;
 
-const Container = styled.div`
-  & .date-line-field {
-      margin-bottom: ${props => props.theme.biggerSpacing};
-  }
+const DateRangeInput = styled.div`
+    display: flex;
+    flex-direction: column;
+    margin-bottom: ${props => props.theme.biggerSpacing};
 
-  & .date-container {
-      display: flex;
-      justify-content: space-between;
-
-      & > div:first-child {
-          width: calc(65% - ${props => props.theme.biggerSpacing});
-          margin-right: ${props => props.theme.biggerSpacing};
-      }
-
-      & > div:last-child {
-          width: 35%;
-      }
-  }
+    & > div:first-child {
+        margin-bottom: ${props => props.theme.regularSpacing};
+    }
 `;
 
 export default DateForm;

@@ -47,9 +47,9 @@ export const SyncedCartTicketCountDisplay: React.FC<SyncedCartTicketCountDisplay
 
     const imageUrl = getImgPath(dateEntity.metadata.avatar);
 
-    const options = [...(new Array(props.amount + 10))].map((v, idx: number) => ({
-        label: idx.toString(),
-        value: idx,
+    const options = [...(new Array(5))].map((v, idx: number) => ({
+        label: (idx + 1).toString(),
+        value: (idx + 1),
     }));
 
     return <CategoryQty
@@ -63,6 +63,7 @@ export const SyncedCartTicketCountDisplay: React.FC<SyncedCartTicketCountDisplay
         date={formatShort(new Date(dateEntity.timestamps.event_begin))}
         options={options}
         onChange={(option) => props.onChange(option.value)}
+        onCancel={() => props.onChange(0)}
     />;
 };
 

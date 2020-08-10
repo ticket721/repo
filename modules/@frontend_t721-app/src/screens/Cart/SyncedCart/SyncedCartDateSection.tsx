@@ -61,40 +61,45 @@ export const SyncedCartDateSection: React.FC<SyncedCartDateSectionProps> = (prop
         </Header>
         <Container>
             <EventInfos
-                pullUp
-                name={date.metadata.name}
-                location={date.location.location_label}
-                startDate={formatDay(new Date(date.timestamps.event_begin))}
-                endDate={formatDay(new Date(date.timestamps.event_end))}
-                startTime={formatHour(new Date(date.timestamps.event_begin))}
-                endTime={formatHour(new Date(date.timestamps.event_end))}
-                gradients={date.metadata.signature_colors}
-                mainColor={date.metadata.signature_colors[0]}
-                getDirections={t('get_directions')}
+              pullUp
+              name={date.metadata.name}
+              location={date.location.location_label}
+              startDate={formatDay(new Date(date.timestamps.event_begin))}
+              endDate={formatDay(new Date(date.timestamps.event_end))}
+              startTime={formatHour(new Date(date.timestamps.event_begin))}
+              endTime={formatHour(new Date(date.timestamps.event_end))}
+              gradients={date.metadata.signature_colors}
+              mainColor={date.metadata.signature_colors[0]}
+              getDirections={t('get_directions')}
             />
             <Border/>
             {
                 Object
-                    .keys(sortedCategories)
-                    .map((categoryId: string): JSX.Element =>
-                        <TicketQty
-                            options={[...new Array(sortedCategories[categoryId].length + 5)].map((u, i) => ({label: i.toString(), value: i}))}
-                            onChange={(opt) => {
-                                dispatch(
-                                    SetTickets(completeCartRecomputingOnDateTicketChange(props.convertedCart, props.date, categoryId, opt.value))
-                                )
-                            }}
-                            initialOption={{
-                                value: sortedCategories[categoryId].length,
-                                label: sortedCategories[categoryId].length.toString()
-                            }}
-                            key={categoryId}
-                            fees={`+ ${t('service_fees')}`}
-                            price={`${sortedCategories[categoryId][0].price} € / ${t('each')}`}
-                            ticketsLeft={sortedCategories[categoryId].length}
-                            typeName={sortedCategories[categoryId][0].category.display_name}
-                        />
-                    )
+                  .keys(sortedCategories)
+                  .map((categoryId: string): JSX.Element =>
+                    <TicketQty
+                      options={[...new Array(5)].map((u, i) => ({label: (i + 1).toString(), value: i + 1}))}
+                      onCancel={() => {
+                          dispatch(
+                            SetTickets(completeCartRecomputingOnDateTicketChange(props.convertedCart, props.date, categoryId, 0))
+                          )
+                      }}
+                      onChange={(opt) => {
+                          dispatch(
+                            SetTickets(completeCartRecomputingOnDateTicketChange(props.convertedCart, props.date, categoryId, opt.value))
+                          )
+                      }}
+                      initialOption={{
+                          value: sortedCategories[categoryId].length,
+                          label: sortedCategories[categoryId].length.toString()
+                      }}
+                      key={categoryId}
+                      fees={`+ ${t('service_fees')}`}
+                      price={`${sortedCategories[categoryId][0].price} € / ${t('each')}`}
+                      ticketsLeft={sortedCategories[categoryId].length}
+                      typeName={sortedCategories[categoryId][0].category.display_name}
+                    />
+                  )
             }
             <BorderGradient gradient={date.metadata.signature_colors}/>
         </Container>

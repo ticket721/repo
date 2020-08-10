@@ -55,7 +55,7 @@ const EndColumn = styled.div<LocationCardProps>`
 const Column = styled.div<LocationCardProps>`
     display: flex;
     flex-direction: column;
-    max-width: 85%;
+    max-width: calc(100% - ${(props) => props.theme.regularSpacing} - 12px);
     color: ${(props) => props.textColor};
 
     a {

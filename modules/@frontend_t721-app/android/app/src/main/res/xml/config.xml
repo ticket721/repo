@@ -6,5 +6,9 @@
     <param name="android-package" value="cordova.plugins.screenorientation.CDVOrientation"/>
   </feature>
 
+  <feature name="Brightness">
+    <param name="android-package" value="org.apache.cordova.plugin.Brightness.BrightnessPlugin"/>
+  </feature>
+
   
 </widget>

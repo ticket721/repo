@@ -16,4 +16,9 @@ export class ResetPasswordTaskDto {
      * id to use
      */
     id: string;
+
+    /**
+     * Redirection url
+     */
+    redirectUrl: string;
 }

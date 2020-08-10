@@ -266,6 +266,7 @@ describe('TxSeq Event Handler', function() {
             ]);
             const tx: TxEntity = {
                 transaction_hash: transactionHash,
+                real_transaction_hash: transactionHash,
                 confirmed: true,
                 status: true,
             } as TxEntity;
@@ -414,6 +415,7 @@ describe('TxSeq Event Handler', function() {
             ]);
             const tx: TxEntity = {
                 transaction_hash: transactionHash,
+                real_transaction_hash: transactionHash,
                 confirmed: true,
                 status: false,
             } as TxEntity;

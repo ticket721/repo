@@ -8,7 +8,11 @@ metadata:
   annotations:
     service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "tcp"
     service.beta.kubernetes.io/aws-load-balancer-proxy-protocol: "*"
+    {{ if eq .Values.domainExtension "" }}
+    external-dns.alpha.kubernetes.io/hostname: "*.{{ .Values.baseDomain }}"
+    {{ else }}
     external-dns.alpha.kubernetes.io/hostname: "*.{{ .Values.domainExtension }}.{{ .Values.baseDomain }}"
+    {{ end }}
 spec:
   type: LoadBalancer
   ports:

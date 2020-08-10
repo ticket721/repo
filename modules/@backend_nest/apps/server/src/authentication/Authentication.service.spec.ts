@@ -108,6 +108,7 @@ describe('Authentication Service', function() {
                     role: 'authenticated',
                     locale: 'en',
                     valid: false,
+                    admin: false,
                 },
                 error: null,
             };
@@ -128,6 +129,7 @@ describe('Authentication Service', function() {
                 role: 'authenticated',
                 locale: 'en',
                 valid: false,
+                admin: false,
             });
 
             verify(usersServiceMock.findByAddress(address)).called();
@@ -254,6 +256,7 @@ describe('Authentication Service', function() {
                     role: 'authenticated',
                     valid: false,
                     locale: 'en',
+                    admin: false,
                 },
                 error: null,
             };
@@ -274,6 +277,7 @@ describe('Authentication Service', function() {
                         password: null,
                         role: 'authenticated',
                         locale: 'en',
+                        admin: false,
                     }),
                 ),
             ).thenReturn(Promise.resolve(serviceResponse));
@@ -312,6 +316,7 @@ describe('Authentication Service', function() {
                         role: 'authenticated',
                         valid: false,
                         locale: 'en',
+                        admin: false,
                     }),
                     null,
                 ),
@@ -341,6 +346,7 @@ describe('Authentication Service', function() {
                 role: 'authenticated',
                 locale: 'en',
                 valid: false,
+                admin: false,
             });
 
             verify(
@@ -354,6 +360,7 @@ describe('Authentication Service', function() {
                         password: null,
                         role: 'authenticated',
                         locale: 'en',
+                        admin: false,
                     }),
                 ),
             ).called();
@@ -391,6 +398,7 @@ describe('Authentication Service', function() {
                         role: 'authenticated',
                         valid: false,
                         locale: 'en',
+                        admin: false,
                     } as UserDto),
                     null,
                 ),
@@ -422,6 +430,7 @@ describe('Authentication Service', function() {
                     role: 'authenticated',
                     valid: false,
                     locale: 'en',
+                    admin: false,
                 },
                 error: null,
             };
@@ -442,6 +451,7 @@ describe('Authentication Service', function() {
                         password: null,
                         role: 'authenticated',
                         locale: 'en',
+                        admin: false,
                     }),
                 ),
             ).thenReturn(Promise.resolve(serviceResponse));
@@ -480,6 +490,7 @@ describe('Authentication Service', function() {
                         role: 'authenticated',
                         valid: false,
                         locale: 'en',
+                        admin: false,
                     }),
                     null,
                 ),
@@ -511,6 +522,7 @@ describe('Authentication Service', function() {
                         password: null,
                         role: 'authenticated',
                         locale: 'en',
+                        admin: false,
                     }),
                 ),
             ).called();
@@ -549,6 +561,7 @@ describe('Authentication Service', function() {
                         role: 'authenticated',
                         valid: false,
                         locale: 'en',
+                        admin: false,
                     } as UserDto),
                     null,
                 ),
@@ -584,6 +597,7 @@ describe('Authentication Service', function() {
                         password: null,
                         role: 'authenticated',
                         locale: 'en',
+                        admin: false,
                     }),
                 ),
             ).thenReturn(
@@ -620,6 +634,7 @@ describe('Authentication Service', function() {
                         password: null,
                         role: 'authenticated',
                         locale: 'en',
+                        admin: false,
                     }),
                 ),
             ).called();
@@ -777,6 +792,7 @@ describe('Authentication Service', function() {
                     role: 'authenticated',
                     locale: 'en',
                     valid: false,
+                    admin: false,
                 },
                 error: null,
             };
@@ -823,6 +839,7 @@ describe('Authentication Service', function() {
                     role: 'authenticated',
                     locale: 'en',
                     valid: false,
+                    admin: false,
                 },
                 error: null,
             };
@@ -876,6 +893,7 @@ describe('Authentication Service', function() {
                     role: 'authenticated',
                     locale: 'en',
                     valid: false,
+                    admin: false,
                 },
                 error: null,
             };
@@ -940,6 +958,7 @@ describe('Authentication Service', function() {
                     role: 'authenticated',
                     locale: 'en',
                     valid: false,
+                    admin: false,
                 },
                 error: null,
             };
@@ -1032,6 +1051,7 @@ describe('Authentication Service', function() {
                     role: 'authenticated',
                     locale: 'en',
                     valid: false,
+                    admin: false,
                 },
                 error: null,
             };
@@ -1052,6 +1072,7 @@ describe('Authentication Service', function() {
                         password: anyString(),
                         role: 'authenticated',
                         locale: 'en',
+                        admin: false,
                     }),
                 ),
             ).thenReturn(Promise.resolve(serviceResponse));
@@ -1096,6 +1117,7 @@ describe('Authentication Service', function() {
                         role: 'authenticated',
                         locale: 'en',
                         valid: false,
+                        admin: false,
                     }),
                     null,
                 ),
@@ -1118,6 +1140,7 @@ describe('Authentication Service', function() {
                 role: 'authenticated',
                 valid: false,
                 locale: 'en',
+                admin: false,
             });
 
             verify(
@@ -1131,6 +1154,7 @@ describe('Authentication Service', function() {
                         password: anyString(),
                         role: 'authenticated',
                         locale: 'en',
+                        admin: false,
                     }),
                 ),
             ).called();
@@ -1169,6 +1193,7 @@ describe('Authentication Service', function() {
                         role: 'authenticated',
                         locale: 'en',
                         valid: false,
+                        admin: false,
                     } as UserDto),
                     null,
                 ),
@@ -1195,6 +1220,7 @@ describe('Authentication Service', function() {
                     role: 'authenticated',
                     locale: 'en',
                     valid: false,
+                    admin: false,
                 },
                 error: null,
             };
@@ -1215,6 +1241,7 @@ describe('Authentication Service', function() {
                         password: anyString(),
                         role: 'authenticated',
                         locale: 'en',
+                        admin: false,
                     }),
                 ),
             ).thenReturn(Promise.resolve(serviceResponse));
@@ -1259,6 +1286,7 @@ describe('Authentication Service', function() {
                         role: 'authenticated',
                         locale: 'en',
                         valid: false,
+                        admin: false,
                     }),
                     null,
                 ),
@@ -1283,6 +1311,7 @@ describe('Authentication Service', function() {
                         password: anyString(),
                         role: 'authenticated',
                         locale: 'en',
+                        admin: false,
                     }),
                 ),
             ).called();
@@ -1322,6 +1351,7 @@ describe('Authentication Service', function() {
                         role: 'authenticated',
                         locale: 'en',
                         valid: false,
+                        admin: false,
                     } as UserDto),
                     null,
                 ),
@@ -1348,6 +1378,7 @@ describe('Authentication Service', function() {
                     role: 'authenticated',
                     locale: 'en',
                     valid: false,
+                    admin: false,
                 },
                 error: null,
             };
@@ -1400,6 +1431,7 @@ describe('Authentication Service', function() {
                     role: 'authenticated',
                     locale: 'en',
                     valid: false,
+                    admin: false,
                 },
                 error: null,
             };
@@ -1437,6 +1469,7 @@ describe('Authentication Service', function() {
                     role: 'authenticated',
                     locale: 'en',
                     valid: false,
+                    admin: false,
                 },
                 error: null,
             };
@@ -1477,6 +1510,7 @@ describe('Authentication Service', function() {
                     role: 'authenticated',
                     locale: 'en',
                     valid: false,
+                    admin: false,
                 },
                 error: null,
             };
@@ -1652,6 +1686,7 @@ describe('Authentication Service', function() {
                         password: anyString(),
                         role: 'authenticated',
                         locale: 'en',
+                        admin: false,
                     }),
                 ),
             ).thenReturn(
@@ -1689,6 +1724,7 @@ describe('Authentication Service', function() {
                         password: anyString(),
                         role: 'authenticated',
                         locale: 'en',
+                        admin: false,
                     }),
                 ),
             ).called();
@@ -1721,6 +1757,7 @@ describe('Authentication Service', function() {
                     role: 'authenticated',
                     locale: 'en',
                     valid: false,
+                    admin: false,
                 },
                 error: null,
             };
@@ -1739,6 +1776,7 @@ describe('Authentication Service', function() {
                 role: 'authenticated',
                 locale: 'en',
                 valid: false,
+                admin: false,
             });
             verify(usersServiceMock.findByEmail(email)).called();
         });
@@ -1815,6 +1853,7 @@ describe('Authentication Service', function() {
                         address: '0x...',
                         valid: true,
                         locale: 'en',
+                        admin: false,
                     },
                 }),
             );
@@ -1833,6 +1872,7 @@ describe('Authentication Service', function() {
                 address: '0x...',
                 valid: true,
                 locale: 'en',
+                admin: false,
             });
         });
 
@@ -1925,6 +1965,7 @@ describe('Authentication Service', function() {
                 password: 'anypass',
                 type: 't721',
                 locale: 'fr',
+                admin: false,
             };
 
             when(usersServiceMock.findByEmail(email)).thenReturn(
@@ -2031,6 +2072,7 @@ describe('Authentication Service', function() {
                     password: 'anypass',
                     type: 't721',
                     locale: 'fr',
+                    admin: false,
                 },
                 error: null,
             };
@@ -2103,6 +2145,7 @@ describe('Authentication Service', function() {
                     type: 't721',
                     role: 'authenticated',
                     valid: true,
+                    admin: false,
                 },
             });
 
@@ -2148,6 +2191,7 @@ describe('Authentication Service', function() {
                     type: 't721',
                     role: 'authenticated',
                     valid: true,
+                    admin: false,
                 },
             });
 
@@ -2185,6 +2229,7 @@ describe('Authentication Service', function() {
                     role: 'authenticated',
                     locale: 'en',
                     valid: false,
+                    admin: false,
                 },
                 error: null,
             };
@@ -2211,6 +2256,7 @@ describe('Authentication Service', function() {
                     type: 't721',
                     role: 'authenticated',
                     valid: true,
+                    admin: false,
                 },
             });
 

@@ -1,16 +1,16 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useFormik } from 'formik';
 import { Button, TextInput, Icon, PasswordInput } from '@frontend/flib-react/lib/components';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
 import { AppState } from '../../redux/ducks';
-import { AuthState, LocalLogin, ResetSubmission } from '../../redux/ducks/auth';
+import { AuthState, LocalLogin } from '../../redux/ducks/auth';
 import styled from 'styled-components';
 import { loginValidationSchema } from './validation';
 import { useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
-
 import './locales';
+import { useDeepEffect } from '../../hooks/useDeepEffect';
 
 export interface LoginProps {
     onRegister?: () => void;
@@ -36,13 +36,9 @@ export const Login: React.FC<LoginProps> = (props: LoginProps) => {
 
     const { from }: any = history.location.state || { from: '/' };
 
-    useEffect(() => {
-        return () => dispatch(ResetSubmission());
-    }, []);
-
-    useEffect(() => {
+    useDeepEffect(() => {
         if (!auth.loading) {
-            if (auth.user?.validated || (auth.submit && !auth.errors && auth.token)) {
+            if (auth.submit && !auth.errors && auth.token) {
                 history.replace(from);
             } else {
                 if (auth.errors) {
@@ -50,7 +46,7 @@ export const Login: React.FC<LoginProps> = (props: LoginProps) => {
                 }
             }
         }
-    }, [auth.loading, auth.user]);
+    }, [auth]);
 
     return (
         <LoginWrapper mobile={isTabletOrMobile}>

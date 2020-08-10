@@ -131,6 +131,7 @@ describe('Authentication Controller', function() {
                         role: 'authenticated',
                         locale: 'en',
                         valid: false,
+                        admin: false,
                     },
                     error: null,
                 }),
@@ -159,6 +160,7 @@ describe('Authentication Controller', function() {
                 role: 'authenticated',
                 locale: 'en',
                 valid: false,
+                admin: false,
             });
             expect(res.token).toBeDefined();
 
@@ -210,6 +212,7 @@ describe('Authentication Controller', function() {
                         role: 'authenticated',
                         locale: 'en',
                         valid: false,
+                        admin: false,
                     },
                     error: null,
                 }),
@@ -238,6 +241,7 @@ describe('Authentication Controller', function() {
                 role: 'authenticated',
                 locale: 'en',
                 valid: false,
+                admin: false,
             });
             expect(res.token).toBeDefined();
 
@@ -759,6 +763,7 @@ describe('Authentication Controller', function() {
                         role: 'authenticated',
                         locale: 'en',
                         valid: false,
+                        admin: false,
                     },
                     error: null,
                 }),
@@ -786,6 +791,7 @@ describe('Authentication Controller', function() {
                 role: 'authenticated',
                 locale: 'en',
                 valid: false,
+                admin: false,
             });
             expect(res.token).toBeDefined();
 
@@ -819,6 +825,7 @@ describe('Authentication Controller', function() {
                         role: 'authenticated',
                         locale: 'en',
                         valid: false,
+                        admin: false,
                     },
                     error: null,
                 }),
@@ -846,6 +853,7 @@ describe('Authentication Controller', function() {
                 role: 'authenticated',
                 locale: 'en',
                 valid: false,
+                admin: false,
             });
             expect(res.token).toBeDefined();
 
@@ -1076,6 +1084,7 @@ describe('Authentication Controller', function() {
                 valid: true,
                 type: 't721',
                 locale: 'fr',
+                admin: false,
             };
 
             await expect(authenticationController.updatePassword(body, user)).rejects.toMatchObject({
@@ -1120,6 +1129,7 @@ describe('Authentication Controller', function() {
                 valid: true,
                 type: 't721',
                 locale: 'fr',
+                admin: false,
             };
 
             await expect(authenticationController.updatePassword(body, user)).rejects.toMatchObject({
@@ -1164,6 +1174,7 @@ describe('Authentication Controller', function() {
                 valid: true,
                 type: 't721',
                 locale: 'fr',
+                admin: false,
             };
 
             await expect(authenticationController.updatePassword(body, user)).rejects.toMatchObject({
@@ -1198,6 +1209,7 @@ describe('Authentication Controller', function() {
                         valid: true,
                         type: 't721',
                         locale: 'fr',
+                        admin: false,
                     },
                     error: null,
                 }),
@@ -1218,6 +1230,7 @@ describe('Authentication Controller', function() {
                 valid: true,
                 type: 't721',
                 locale: 'fr',
+                admin: false,
             };
 
             await expect(authenticationController.updatePassword(body, user)).resolves.toMatchObject({
@@ -1230,6 +1243,7 @@ describe('Authentication Controller', function() {
                 valid: true,
                 type: 't721',
                 locale: 'fr',
+                admin: false,
             });
         });
     });
@@ -1264,6 +1278,7 @@ describe('Authentication Controller', function() {
                 type: 't721',
                 address: '0x...',
                 role: 'authenticated',
+                admin: false,
             };
 
             when(authenticationServiceMock.validateUserEmail('123')).thenReturn(
@@ -1300,6 +1315,7 @@ describe('Authentication Controller', function() {
                 type: 't721',
                 address: '0x...',
                 role: 'authenticated',
+                admin: false,
             };
 
             when(jwtServiceMock.verifyAsync('test_token')).thenThrow(new NestError('jwt expired'));
@@ -1337,6 +1353,7 @@ describe('Authentication Controller', function() {
                 type: 't721',
                 address: '0x...',
                 role: 'authenticated',
+                admin: false,
             };
 
             when(jwtServiceMock.verifyAsync('test_token')).thenThrow(new NestError('invalid signature'));
@@ -1374,6 +1391,7 @@ describe('Authentication Controller', function() {
                 type: 't721',
                 address: '0x...',
                 role: 'authenticated',
+                admin: false,
             };
 
             when(jwtServiceMock.verifyAsync('test_token')).thenThrow(new NestError('unknown error'));
@@ -1411,6 +1429,7 @@ describe('Authentication Controller', function() {
                 type: 't721',
                 address: '0x...',
                 role: 'authenticated',
+                admin: false,
             };
 
             when(jwtServiceMock.verifyAsync('test_token')).thenReturn(
@@ -1510,6 +1529,7 @@ describe('Authentication Controller', function() {
                 type: 't721',
                 address: '0x...',
                 role: 'authenticated',
+                admin: false,
             };
 
             when(authenticationServiceMock.getUserIfEmailExists(email)).thenResolve({
@@ -1545,6 +1565,7 @@ describe('Authentication Controller', function() {
                 type: 't721',
                 address: '0x...',
                 role: 'authenticated',
+                admin: false,
             };
 
             when(authenticationServiceMock.getUserIfEmailExists(user.email)).thenResolve({
@@ -1724,6 +1745,7 @@ describe('Authentication Controller', function() {
                 type: 't721',
                 address: '0x...',
                 role: 'authenticated',
+                admin: false,
             };
 
             when(authenticationServiceMock.validateResetPassword(user.id, 'password')).thenReturn(

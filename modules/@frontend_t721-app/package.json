@@ -54,7 +54,9 @@
         "capacitor-stripe": "1.0.0-beta.4",
         "capacitor-plugin-ios-swipe-back": "silviokennecke/capacitor-plugin-ios-swipe-back#master",
         "cordova-res": "0.15.1",
-        "es6-promise-plugin": "4.2.2"
+        "es6-promise-plugin": "4.2.2",
+        "cordova-plugin-brightness": "0.2.0",
+        "@ionic-native/brightness": "5.27.0"
     },
     "resolutions": {
         "react-scripts/**/jest": "24.9.0"
@@ -67,7 +69,8 @@
         "test": "react-scripts test",
         "lint": "tslint --project .",
         "inject_segment_key": "sed -i -e \"s/__REACT_APP_SEGMENT_API_KEY__/${REACT_APP_SEGMENT_API_KEY}/g\" ./build/index.html",
-        "inject_env_and_serve": "yarn inject_env && yarn inject_segment_key && serve -l 5000 ./build",
+        "inject_itunes_id": "sed -i -e \"s/__REACT_APP_ITUNES_ID__/${REACT_APP_ITUNES_ID}/g\" ./build/index.html",
+        "inject_env_and_serve": "yarn inject_env && yarn inject_segment_key && yarn inject_itunes_id && serve -l 5000 ./build",
         "ionic:build:after": "yarn inject_env && yarn inject_segment_key",
         "resources": "cordova-res ios && cordova-res android && node scripts/resources.js",
         "@lerna/postinstall": "echo '@frontend/t721-app has no postinstall'",

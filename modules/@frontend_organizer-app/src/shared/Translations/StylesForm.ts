@@ -1,25 +1,29 @@
 import i18n from '@frontend/core/lib/utils/i18n';
 
-i18n.addResourceBundle('en', 'event_creation_styles', {
+i18n.addResourceBundle('en', 'event_styles', {
     drag_and_drop: 'Drag and drop an image',
     browse: 'or Browse to choose a file',
     image_recommendation: 'Use a high-quality image. Recommended size 2000x1000px (2:1)',
+    save_changes: 'Save Changes',
 });
 
 i18n.addResourceBundle('fr', 'event_creation_styles', {
     drag_and_drop: 'Déposez une image',
     browse: 'ou Sélectionnez un fichier',
     image_recommendation: 'Utilisez une image de bonne qualité. Recommandée: 2000x1000px (2:1)',
-});
-
-i18n.addResourceBundle('fr', 'react_dropzone_errors', {
-    'file-invalid-type': 'Invalid file type. Provide an image please',
-    'too-many-files': 'Please provide only one image',
+    save_changes: 'Valider les changements',
 });
 
 i18n.addResourceBundle('en', 'react_dropzone_errors', {
+    'file-invalid-type': 'Invalid file type. Provide an image please',
+    'too-many-files': 'Please provide only one image',
+    'file-too-large': 'File too large (max. 5MB)',
+});
+
+i18n.addResourceBundle('fr', 'react_dropzone_errors', {
     'file-invalid-type': 'Type de fichier invalide. Veuillez fournir une image',
     'too-many-files': 'Veuillez fournir une seule image',
+    'file-too-large': 'Fichier trop large (max. 5Mo)',
 });
 
 i18n.addResourceBundle('en', 'validation', {

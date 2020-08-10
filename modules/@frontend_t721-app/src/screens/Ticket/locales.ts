@@ -4,5 +4,5 @@ i18n.addResourceBundle('en', 'ticket', {
     fetch_error: 'Error occured during fetch',
 });
 i18n.addResourceBundle('fr', 'ticket', {
-    fetch_error: 'Error occured during fetch',
+    fetch_error: 'Une erreur est survenue',
 });

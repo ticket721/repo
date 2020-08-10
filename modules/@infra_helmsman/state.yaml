@@ -148,6 +148,11 @@ apps:
       hosts[2].paths[0].serviceName: "platform-staging--t721app--svc"
       hosts[2].paths[0].servicePort: "80"
 
+      hosts[3].name: "staff.staging.ticket721.com"
+      hosts[3].paths[0].route: "/"
+      hosts[3].paths[0].serviceName: "platform-staging--staff--svc"
+      hosts[3].paths[0].servicePort: "80"
+
       route53.keyId: "${CONFIG_STAGING_ROUTE53_KEY}"
       route53.hostedzone: "${CONFIG_STAGING_ROUTE53_HOSTEDZONE}"
       route53.region: "eu-west-3"
@@ -274,14 +279,17 @@ apps:
       config.serverEndpoint.port: "443"
       config.serverEndpoint.protocol: "https"
 
-      config.frontEthereumNode.url: "https://api.rockside.io/ethereum/ropsten/jsonrpc"
-      config.frontEthereumNode.networkId: "3"
-      config.organizer.frontEthereumNodeHeaders: '\{\\"Authorization\\": \\"Bearer ${CONFIG_STAGING_ORGANIZER_ROCKSIDE_TOKEN}\\"\}'
-      config.t721app.frontEthereumNodeHeaders: '\{\\"Authorization\\": \\"Bearer ${CONFIG_STAGING_T721APP_ROCKSIDE_TOKEN}\\"\}'
-
       config.organizer.segmentApiKey: "${CONFIG_STAGING_ORGANIZER_SEGMENT_API_KEY}"
       config.t721app.segmentApiKey: "${CONFIG_STAGING_T721APP_SEGMENT_API_KEY}"
+      config.staff.segmentApiKey: "${CONFIG_STAGING_STAFF_SEGMENT_API_KEY}"
+      config.staff.organizerUrl: "https://organizer.staging.ticket721.com"
       config.t721app.publishableStripeApiKey: "${CONFIG_STAGING_T721APP_PUBLISHABLE_STRIPE_API_KEY}"
+      config.t721app.itunesId: "${CONFIG_STAGING_T721APP_ITUNES_ID}"
+      config.t721app.appStoreLink: "${CONFIG_STAGING_T721APP_APPSTORE_LINK}"
+      config.t721app.playStoreLink: "${CONFIG_STAGING_T721APP_PLAYSTORE_LINK}"
+      config.t721app.self: "https://app.staging.ticket721.com"
+      config.staff.self: "https://staff.staging.ticket721.com"
+      config.organizer.self: "https://organizer.staging.ticket721.com"
       config.etherscanUrl: "${CONFIG_STAGING_ETHERSCAN_URL}"
 
       server.image.repository: "097558125954.dkr.ecr.eu-west-3.amazonaws.com/ticket721/server"
@@ -298,4 +306,7 @@ apps:
 
       t721app.image.repository: "097558125954.dkr.ecr.eu-west-3.amazonaws.com/ticket721/t721app"
       t721app.image.tag: "${TAG}"
+      
+      staff.image.repository: "097558125954.dkr.ecr.eu-west-3.amazonaws.com/ticket721/staff"
+      staff.image.tag: "${TAG}"
 

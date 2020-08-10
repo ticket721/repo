@@ -18,6 +18,7 @@ import {
     resetPassword,
     validateResetPassword,
     updatePassword,
+    resendValidation,
 } from './app/api/authentication';
 
 // ACTIONS
@@ -45,7 +46,7 @@ import {
     eventsCreateDatesConfiguration, eventsCreateImagesMetadata,
     eventsCreateModulesConfiguration,
     eventsCreateTextMetadata, eventsDeleteCategories, eventsDeleteDates,
-    eventsSearch, eventsStart, eventsUpdate, eventsWithdraw,
+    eventsSearch, eventsStart, eventsUpdate, /*eventsWithdraw, */
     eventsGuestlist
 } from './app/api/events';
 
@@ -80,8 +81,10 @@ import { ticketsSearch, ticketsCount, ticketsValidate } from './app/api/tickets'
 import { usersMe, usersSetDeviceAddress } from './app/api/users';
 
 // GEOLOC
+import { geolocClosestCity, geolocFuzzySearch }  from './app/api/geoloc';
 
-import { geolocClosestCity, geolocFuzzySearch } from './app/api/geoloc';
+// FEATURE FLAGS
+import { featureFlagsFetch } from './app/api/feature-flags';
 
 export { FailedRegisterReport } from './app/api/authentication';
 
@@ -107,6 +110,7 @@ export class T721SDK {
         this.validateEmail = this.validateEmail.bind(this);
         this.resetPassword = this.resetPassword.bind(this);
         this.validateResetPassword = this.validateResetPassword.bind(this);
+        this.resendValidation = this.resendValidation.bind(this);
 
         this.users.me = this.users.me.bind(this);
         this.users.setDeviceAddress = this.users.setDeviceAddress.bind(this);
@@ -141,7 +145,7 @@ export class T721SDK {
         this.events.addCategories = this.events.addCategories.bind(this);
         this.events.deleteDates = this.events.deleteDates.bind(this);
         this.events.addDates = this.events.addDates.bind(this);
-        this.events.withdraw = this.events.withdraw.bind(this);
+        // this.events.withdraw = this.events.withdraw.bind(this);
         this.events.guestlist = this.events.guestlist.bind(this);
 
         this.categories.create = this.categories.create.bind(this);
@@ -177,6 +181,8 @@ export class T721SDK {
 
         this.geoloc.closestCity = this.geoloc.closestCity.bind(this);
         this.geoloc.fuzzySearch = this.geoloc.fuzzySearch.bind(this);
+
+        this.featureFlags.fetch = this.featureFlags.fetch.bind(this);
     }
 
     connect(host: string, port: number, protocol: 'http' | 'https' = 'http') {
@@ -274,6 +280,7 @@ export class T721SDK {
     public validateEmail = validateEmail;
     public resetPassword = resetPassword;
     public validateResetPassword = validateResetPassword;
+    public resendValidation = resendValidation;
 
     public users = {
         me: usersMe,
@@ -317,7 +324,7 @@ export class T721SDK {
         addCategories: eventsAddCategories,
         deleteDates: eventsDeleteDates,
         addDates: eventsAddDates,
-        withdraw: eventsWithdraw,
+        // withdraw: eventsWithdraw,
         guestlist: eventsGuestlist
     };
 
@@ -381,5 +388,9 @@ export class T721SDK {
     public geoloc = {
         closestCity: geolocClosestCity,
         fuzzySearch: geolocFuzzySearch,
+    }
+
+    public featureFlags = {
+        fetch: featureFlagsFetch
     }
 }

@@ -2265,6 +2265,13 @@
   resolved "https://registry.yarnpkg.com/@icons/material/-/material-0.2.4.tgz#e90c9f71768b3736e76d7dd6783fc6c2afa88bc8"
   integrity sha512-QPcGmICAPbGLGb6F/yNf/KzKqvFx8z5qx3D1yFqVAjoFmXK35EgyW+cJ57Te3CNsmzblwtzakLGFqHPqrfb4Tw==
 
+"@ionic-native/brightness@5.27.0":
+  version "5.27.0"
+  resolved "https://registry.yarnpkg.com/@ionic-native/brightness/-/brightness-5.27.0.tgz#91dc8009464a987cb3524e50256f164b54d0ec33"
+  integrity sha512-yzU9BizpBfBFL/kJJmG0Hhct+lvn83H4VTMMdveQXWLiW5o3+VdvtUIiJsD83cpeH2ANYU7oax9/BQ53DjUOvg==
+  dependencies:
+    "@types/cordova" latest
+
 "@ionic-native/core@5.27.0":
   version "5.27.0"
   resolved "https://registry.yarnpkg.com/@ionic-native/core/-/core-5.27.0.tgz#2821f751992aaf9f4b8c5635d88d6718cba32074"
@@ -4759,7 +4766,7 @@
 
 "@rocksideio/rockside-wallet-sdk@ticket721/rockside-wallet-sdk-js#master":
   version "0.3.7"
-  resolved "https://codeload.github.com/ticket721/rockside-wallet-sdk-js/tar.gz/cf0e1a05f09e5eb4fd9d2c2f4f31d2b2ab58a8f4"
+  resolved "https://codeload.github.com/ticket721/rockside-wallet-sdk-js/tar.gz/0bba5055e5298aff682e5d823eeb4aeb23808142"
   dependencies:
     bip39 "^3.0.2"
     cross-fetch "^3.0.4"
@@ -11426,6 +11433,11 @@ copy-to-clipboard@^3.0.8:
   integrity sha512-i13qo6kIHTTpCm8/Wup+0b1mVWETvu2kIMzKoK8FpkLkFxlt0znUAHcMzox+T8sPlqtZXq3CulEjQHsYiGFJUw==
   dependencies:
     toggle-selection "^1.0.6"
+
+cordova-plugin-brightness@0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/cordova-plugin-brightness/-/cordova-plugin-brightness-0.2.0.tgz#af2b57d5f8054828a54f86bd6886d015d00293bc"
+  integrity sha512-ujW4v58jArPxPf8CjEppl9hM2/9jep1+nflzAOGoT4yc5UIuLja6j6+wxK2fv6+UWqVEWEKB3JkfnijVUl6HjQ==
 
 cordova-plugin-screen-orientation@3.0.2:
   version "3.0.2"

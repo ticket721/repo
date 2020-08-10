@@ -6,12 +6,13 @@ import { GetCity, GetDevice } from '../user_properties';
 import { SetupActionTypes } from './types';
 
 import { StartRefreshInterval } from '../cache';
-import { GetUser, SetToken } from '../auth';
+import { AuthActionTypes, ISetToken, SetToken } from '../auth';
 import { isExpired, isValidFormat, parseToken } from '../../../utils/token';
 import { T721SDK } from '@common/sdk';
 import { AppStatus, SetAppStatus } from '../statuses';
 import { PushNotification } from '../notifications';
 import { getEnv } from '../../../utils/getEnv';
+import { identifyUser } from '../../../utils/segment';
 
 function* startSaga(action: IStart): IterableIterator<any> {
     global.window.t721Sdk = new T721SDK();
@@ -34,32 +35,26 @@ function* handleUser(): IterableIterator<any> {
     if (localStorage.getItem('token')) {
         const token = parseToken(localStorage.getItem('token'));
         if (isValidFormat(token) && !isExpired(token)) {
-            try {
-                yield global.window.t721Sdk.users.me(token.value);
-                yield put(SetToken(token));
-                yield put(GetUser());
-            } catch (e) {
-                if (e.message === 'Network Error') {
-                    yield put(PushNotification('cannot_reach_server', 'error'));
-                } else {
-                    const errorData = e.response.data;
-                    if (errorData.statusCode === 401) {
-                        localStorage.removeItem('token');
-                        yield put(PushNotification('unauthorized_error', 'error'));
-                    } else {
-                        yield put(PushNotification('internal_server_error', 'error'));
-                    }
-                }
-            }
+            yield put(SetToken(token));
         } else {
             localStorage.removeItem('token');
             if (isExpired(token)) {
                 yield put(PushNotification('session_expired', 'warning'));
+                yield put(SetToken(null));
             }
         }
+    } else {
+        yield put(SetToken(null));
+    }
+}
+
+function* enableAnalytics(action: ISetToken): IterableIterator<any> {
+    if (action.token?.value) {
+        yield call(identifyUser, action.token.value);
     }
 }
 
 export function* setupSaga(): SagaIterator {
     yield takeEvery(SetupActionTypes.Start, startSaga);
+    yield takeEvery(AuthActionTypes.SetToken, enableAnalytics);
 }

@@ -28,7 +28,7 @@ const prevTicket: TicketInterface = {
     startDate: 'XXXX/XX/XX',
     startTime: 'X:XXam',
     ticketId: '',
-    ticketType: '<category>'
+    categoryName: '<category>'
 };
 
 const Overlap = styled.div`
@@ -77,7 +77,7 @@ export const ComponentsPreview: React.FC<ComponentsPreviewProps> = (props: Compo
 };
 
 const PreviewLabel = styled.span`
-    width: 100%:
+    width: 100%;
     height: 60px;
     line-height: 60px;
     margin-bottom: 15px;

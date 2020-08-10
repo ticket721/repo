@@ -17,7 +17,6 @@ const Toast = (props: ToastProps) => (
 const ToastContainer = styled.div`
     display: flex;
     align-items: center;
-    padding: 0 10px;
     color: rgba(255, 255, 255, 0.9);
     font-family: ${(props) => props.theme.fontStack};
     font-size: 14px;

@@ -1,3 +1,4 @@
-import Ticket from '../screens/Ticket';
+import Ticket             from '../screens/Ticket';
+import { DesktopWarning } from '../utils/DesktopWarning';
 
-export default Ticket;
+export default DesktopWarning(Ticket);

@@ -96,12 +96,13 @@ export class DatesController extends ControllerBasics<DateEntity> {
             status: {
                 $eq: 'live',
             },
+            parent_type: {
+                $eq: 'event',
+            },
         } as SortablePagedSearch);
 
         query.body.query.bool.must = [
-            {
-                term: query.body.query.bool.must.term,
-            },
+            ...query.body.query.bool.must,
             {
                 multi_match: {
                     fields: ['metadata.name^3', 'metadata.description'],
@@ -172,6 +173,9 @@ export class DatesController extends ControllerBasics<DateEntity> {
         const query = this._esQueryBuilder<DateEntity>({
             status: {
                 $eq: 'live',
+            },
+            parent_type: {
+                $eq: 'event',
             },
             'timestamps.event_begin': {
                 $gt: hour,
@@ -313,6 +317,7 @@ export class DatesController extends ControllerBasics<DateEntity> {
                 location_label: body.location.location_label,
                 assigned_city: closestCity(body.location.location).id,
             },
+            status: 'preview',
         });
 
         await this._serviceCall(

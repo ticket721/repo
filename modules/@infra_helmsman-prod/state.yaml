@@ -1,0 +1,311 @@
+settings:
+  kubeContext: "${CONTEXT}"
+  reverseDelete: true
+
+helmRepos:
+  stable: https://kubernetes-charts.storage.googleapis.com
+  common: https://kubernetes-charts-incubator.storage.googleapis.com/
+  incubator: https://kubernetes-charts-incubator.storage.googleapis.com/
+  jetstack: https://charts.jetstack.io
+
+namespaces:
+  production:
+  monitoring:
+  default:
+
+apps:
+
+#   ██████  ███████ ███████  █████  ██    ██ ██   ████████ 
+#   ██   ██ ██      ██      ██   ██ ██    ██ ██      ██    
+#   ██   ██ █████   █████   ███████ ██    ██ ██      ██ 
+#   ██   ██ ██      ██      ██   ██ ██    ██ ██      ██ 
+#   ██████  ███████ ██      ██   ██  ██████  ███████ ██ 
+
+  crds:
+    timeout: 1200
+    name: "crds"
+    description: "CRDs, collection of custom ressource definitions to install globally"
+    namespace: "default"
+    enabled: true
+    group: "critical"
+    chart: "../@infra_crds/crds"
+    version: "0.1.0"
+    valuesFile: "../@infra_crds/crds/values.yaml"
+    protected: false
+    wait: true
+    priority: -9
+    setString:
+      _global.namespace: "default"
+
+  cert-manager:
+    timeout: 1200
+    name: "cert-manager"
+    description: "Certifacte Manager, able to create valid certificates on-demand"
+    namespace: "default"
+    enabled: true
+    group: "critical"
+    chart: "../@infra_cert-manager/cert-manager"
+    version: "0.1.0"
+    valuesFile: "../@infra_cert-manager/cert-manager/values.yaml"
+    protected: false
+    wait: true
+    priority: -8
+    setString:
+      _global.namespace: "default"
+      route53.keySecret: "${CONFIG_PRODUCTION_ROUTE53_SECRET}"
+
+#   ███    ███  ██████  ███    ██ ██ ████████  ██████  ██████  ██ ███    ██  ██████ 
+#   ████  ████ ██    ██ ████   ██ ██    ██    ██    ██ ██   ██ ██ ████   ██ ██      
+#   ██ ████ ██ ██    ██ ██ ██  ██ ██    ██    ██    ██ ██████  ██ ██ ██  ██ ██   ███ 
+#   ██  ██  ██ ██    ██ ██  ██ ██ ██    ██    ██    ██ ██   ██ ██ ██  ██ ██ ██    ██ 
+#   ██      ██  ██████  ██   ████ ██    ██     ██████  ██   ██ ██ ██   ████  ██████  
+
+  ingress-monitoring:
+    timeout: 1200
+    name: "ingress-monitoring"
+    description: "Ingress, managing all incoming traffic and properly redirecting on services for the monitoring namespace"
+    namespace: "monitoring"
+    enabled: false
+    group: "critical"
+    chart: "../@infra_ingress/ingress"
+    version: "0.1.0"
+    valuesFile: "../@infra_ingress/ingress/values.yaml"
+    protected: false
+    wait: true
+    priority: 0
+    setString:
+      _global.namespace: "monitoring"
+
+      issuer.server: "${CONFIG_PRODUCTION_ACME_SERVER}"
+
+      baseDomain: "ticket721.com"
+      domainExtension: "monitoring"
+
+      hosts[0].name: "grafana.monitoring.ticket721.com"
+      hosts[0].paths[0].route: "/"
+      hosts[0].paths[0].serviceName: "prometheus-monitoring-grafana"
+      hosts[0].paths[0].servicePort: "80"
+
+      route53.keyId: "${CONFIG_PRODUCTION_ROUTE53_KEY}"
+      route53.hostedzone: "${CONFIG_PRODUCTION_ROUTE53_HOSTEDZONE}"
+      route53.region: "eu-west-3"
+
+  prometheus-monitoring:
+    timeout: 1200
+    name: "prometheus-monitoring"
+    description: "Prometheus gathers metrics about the cluster"
+    namespace: "monitoring"
+    enabled: false
+    group: "critical"
+    chart: "../@infra_prometheus/prometheus"
+    version: "0.1.0"
+    valuesFile: "../@infra_prometheus/prometheus/values.yaml"
+    protected: false
+    wait: true
+    priority: -1
+    setString:
+      _global.namespace: "monitoring"
+
+# prod
+
+  ingress:
+    timeout: 1200
+    name: "ingress"
+    description: "Ingress, managing all incoming traffic and properly redirecting on services for the staging namespace"
+    namespace: "production"
+    enabled: true
+    group: "critical"
+    chart: "../@infra_ingress/ingress"
+    version: "0.1.0"
+    valuesFile: "../@infra_ingress/ingress/values.yaml"
+    protected: false
+    wait: true
+    priority: 0
+    setString:
+      _global.namespace: "production"
+
+      issuer.server: "${CONFIG_PRODUCTION_ACME_SERVER}"
+
+      baseDomain: "ticket721.com"
+      domainExtension: ""
+
+      hosts[0].name: "api.ticket721.com"
+      hosts[0].paths[0].route: "/"
+      hosts[0].paths[0].serviceName: "platform--server--svc"
+      hosts[0].paths[0].servicePort: "80"
+
+      hosts[1].name: "organizer.ticket721.com"
+      hosts[1].paths[0].route: "/"
+      hosts[1].paths[0].serviceName: "platform--organizer--svc"
+      hosts[1].paths[0].servicePort: "80"
+
+      hosts[2].name: "app.ticket721.com"
+      hosts[2].paths[0].route: "/"
+      hosts[2].paths[0].serviceName: "platform--t721app--svc"
+      hosts[2].paths[0].servicePort: "80"
+
+      hosts[3].name: "staff.ticket721.com"
+      hosts[3].paths[0].route: "/"
+      hosts[3].paths[0].serviceName: "platform--staff--svc"
+      hosts[3].paths[0].servicePort: "80"
+
+      route53.keyId: "${CONFIG_PRODUCTION_ROUTE53_KEY}"
+      route53.hostedzone: "${CONFIG_PRODUCTION_ROUTE53_HOSTEDZONE}"
+      route53.region: "eu-west-3"
+
+  efs-provisioner:
+    timeout: 1200
+    name: "efs-provisioner"
+    description: "EFS Storage Provider, allowing pods to mount EFS volumes in the filesystem"
+    namespace: "production"
+    enabled: true
+    group: "critical"
+    chart: "../@infra_efs-provisioner/efs-provisioner"
+    version: "0.1.0"
+    valuesFile: "../@infra_efs-provisioner/efs-provisioner/values.yaml"
+    protected: false
+    wait: true
+    priority: -4
+    setString:
+      _global.namespace: "production"
+      "efs-provisioner.efsProvisioner.efsFileSystemId": "${CONFIG_PRODUCTION_EFS_ID}"
+      "efs-provisioner.efsProvisioner.awsRegion": "eu-west-3"
+
+  elassandra:
+    timeout: 1200
+    name: "elassandra"
+    description: "Elassandra, storage layer of the infrastructure"
+    namespace: "production"
+    enabled: true
+    group: "critical"
+    chart: "../@infra_elassandra/elassandra"
+    version: "1.0.0"
+    valuesFile: "../@infra_elassandra/elassandra/values.yaml"
+    protected: false
+    wait: true
+    priority: -3
+    setString:
+      _global.namespace: "production"
+
+  redis:
+    timeout: 1200
+    name: "redis"
+    description: "Redis, Storage layer for the distributed tasks"
+    namespace: "production"
+    enabled: true
+    group: "critical"
+    chart: "../@infra_redis/redis"
+    version: "0.1.0"
+    valuesFile: "../@infra_redis/redis/values.yaml"
+    protected: false
+    wait: true
+    priority: -2
+    setString:
+      _global.namespace: "production"
+
+  platform:
+    timeout: 2400
+    name: "platform"
+    description: "The Ticket721 Platform"
+    namespace: "production"
+    enabled: true
+    group: "critical"
+    chart: "../@infra_platform/platform"
+    version: "0.1.0"
+    valuesFile: "../@infra_platform/platform/values.yaml"
+    protected: false
+    wait: true
+    priority: -1
+    setString:
+      _global.namespace: "production"
+
+      server.fsName: "${CONFIG_PRODUCTION_EFS_ID}"
+
+      config.ticketScope: "ticket721_0"
+      config.artifact: "live_ropsten"
+
+      config.stripe.apiKey: "${CONFIG_PRODUCTION_STRIPE_APIKEY}"
+
+      config.cassandra.host: "elassandra-cassandra"
+      config.cassandra.port: "9042"
+
+      config.redirections.emailValidationUrl: "https://organizer.ticket721.com/validate-email"
+      config.redirections.passwordResetUrl: "https://organizer.ticket721.com/validate/password/reset"
+
+      config.elasticsearch.host: "elassandra-elasticsearch"
+      config.elasticsearch.port: "9200"
+      config.elasticsearch.protocol: "http"
+
+      config.ethereumNode.host: "api.rockside.io"
+      config.ethereumNode.port: "443"
+      config.ethereumNode.protocol: "https"
+      config.ethereumNode.network_id: "3"
+      config.ethereumNode.path: "/ethereum/ropsten/jsonrpc"
+      config.ethereumNode.headers: '\{"apikey": "${CONFIG_PRODUCTION_ROCKSIDE_APIKEY}"\}'
+
+      config.redis.host: "redis-master"
+      config.redis.port: "6379"
+
+      config.jwt.rounds: "9"
+      config.jwt.secret: "${CONFIG_PRODUCTION_JWT_SECRET}"
+      config.jwt.expiration: "30d"
+
+      config.txs.blockThreshold: "0"
+      config.txs.blockPollingRate: "1000"
+      config.txs.targetGasPrice: "15"
+      config.txs.gasLimit: "1000000"
+
+      config.globalConfig.blockNumberFetchingRate: "1000"
+      config.globalConfig.ethereumPriceFetchingRate: "1000"
+      config.globalConfig.binanceMock: "false"
+
+      config.bull.board: "true"
+
+      config.mailjet.apiKey: "${CONFIG_PRODUCTION_MAILJET_APIKEY}"
+      config.mailjet.apiSecret: "${CONFIG_PRODUCTION_MAILJET_APISECRET}"
+
+      config.rockside.baseUrl: "https://api.rockside.io"
+      config.rockside.apiKey: "${CONFIG_PRODUCTION_ROCKSIDE_APIKEY}"
+      config.rockside.network_id: "3"
+      config.rockside.network_name: "ropsten"
+      config.rockside.forwarder_address: "${CONFIG_PRODUCTION_FORWARDER_ADDRESS}"
+
+      config.googleGeocodingApiKey: "${CONFIG_PRODUCTION_GCLOUD_GEOLOC_APIKEY}"
+      config.serverEndpoint.host: "api.ticket721.com"
+      config.serverEndpoint.port: "443"
+      config.serverEndpoint.protocol: "https"
+
+      config.organizer.segmentApiKey: "${CONFIG_PRODUCTION_ORGANIZER_SEGMENT_API_KEY}"
+      config.t721app.segmentApiKey: "${CONFIG_PRODUCTION_T721APP_SEGMENT_API_KEY}"
+      config.staff.segmentApiKey: "${CONFIG_PRODUCTION_STAFF_SEGMENT_API_KEY}"
+      config.staff.organizerUrl: "https://organizer.ticket721.com"
+      config.t721app.publishableStripeApiKey: "${CONFIG_PRODUCTION_T721APP_PUBLISHABLE_STRIPE_API_KEY}"
+      config.t721app.iosAppId: "${CONFIG_PRODUCTION_T721APP_IOS_APPID}"
+      config.t721app.itunesId: "${CONFIG_PRODUCTION_T721APP_ITUNES_ID}"
+      config.t721app.androidAppId: "${CONFIG_PRODUCTION_T721APP_ANDROID_APPID}"
+      config.t721app.androidCertificateSignature: "${CONFIG_PRODUCTION_T721APP_ANDROID_CERTIFICATE_SIGNATURE}"
+      config.etherscanUrl: "${CONFIG_PRODUCTION_ETHERSCAN_URL}"
+      config.t721app.appStoreLink: "${CONFIG_PRODUCTION_T721APP_APPSTORE_LINK}"
+      config.t721app.playStoreLink: "${CONFIG_PRODUCTION_T721APP_PLAYSTORE_LINK}"
+      config.t721app.self: "https://app.ticket721.com"
+      config.staff.self: "https://staff.ticket721.com"
+      config.organizer.self: "https://organizer.ticket721.com"
+
+      server.image.repository: "097558125954.dkr.ecr.eu-west-3.amazonaws.com/ticket721/server"
+      server.image.tag: "${TAG}"
+
+      worker.image.repository: "097558125954.dkr.ecr.eu-west-3.amazonaws.com/ticket721/worker"
+      worker.image.tag: "${TAG}"
+
+      migrations.image.repository: "097558125954.dkr.ecr.eu-west-3.amazonaws.com/ticket721/migrations"
+      migrations.image.tag: "${TAG}"
+
+      organizer.image.repository: "097558125954.dkr.ecr.eu-west-3.amazonaws.com/ticket721/organizer"
+      organizer.image.tag: "${TAG}"
+
+      t721app.image.repository: "097558125954.dkr.ecr.eu-west-3.amazonaws.com/ticket721/t721app"
+      t721app.image.tag: "${TAG}"
+      
+      staff.image.repository: "097558125954.dkr.ecr.eu-west-3.amazonaws.com/ticket721/staff"
+      staff.image.tag: "${TAG}"
+

@@ -225,11 +225,11 @@ export const StripeCheckoutNative: React.FC<StripeCheckoutNativeProps> = (props:
     }, [authorizationData]);
 
     // Callback to reset the cart completely
-    const forceResetCart = async () => {
+    const forceResetCart = useCallback(async () => {
         return (window as any).t721Sdk.actions.consumeUpdate(token, props.remoteCart.id, {
             consumed: true,
         });
-    };
+    }, [token, props.remoteCart]);
 
     // Callback to handle payment submission
     const handleSubmit = async () => {
@@ -245,8 +245,6 @@ export const StripeCheckoutNative: React.FC<StripeCheckoutNativeProps> = (props:
                 exp_month: cardExpiry.slice(0, 2),
                 exp_year: cardExpiry.slice(3),
                 cvc: cardCcv,
-            },
-            billing_details: {
                 name: fullName,
             }
         });
@@ -275,10 +273,17 @@ export const StripeCheckoutNative: React.FC<StripeCheckoutNativeProps> = (props:
 
     // Callback triggered when authorization expirations end
     const onExpirationComplete = useCallback(() => {
-        dispatch(SetTickets([]));
-        dispatch(PushNotification(t('cart_checkout_expired'), 'error'));
-        history.replace('/');
-    }, [dispatch, history, t]);
+        forceResetCart()
+            .then(() => {
+                dispatch(PushNotification(t('cart_checkout_expired'), 'error'));
+                history.replace('/');
+            })
+            .catch((e) => {
+                console.error(e);
+                dispatch(PushNotification(t('cart_checkout_expired'), 'error'));
+                history.replace('/');
+            });
+    }, [dispatch, history, t, forceResetCart]);
 
     useEffect(() => {
         if (closestExpiration === null) {
@@ -293,7 +298,9 @@ export const StripeCheckoutNative: React.FC<StripeCheckoutNativeProps> = (props:
         <CreditCardWrapper>
             <div>
                 <TextInput
+                    autoComplete={'cc-number'}
                     label={t('cart_checkout_card_number')}
+                    inputMode={'numeric'}
                     placeholder={'ex: 4242 4242 4242 4242'}
                     options={{creditCard: true}}
                     name={'test'}
@@ -316,7 +323,9 @@ export const StripeCheckoutNative: React.FC<StripeCheckoutNativeProps> = (props:
                 }}>
                     <div>
                         <TextInput
+                            autoComplete={'cc-exp'}
                             label={t('cart_checkout_card_expiry')}
+                            inputMode={'numeric'}
                             placeholder={'ex: 02/42'}
                             options={{
                                 date: true,
@@ -335,7 +344,9 @@ export const StripeCheckoutNative: React.FC<StripeCheckoutNativeProps> = (props:
                     </div>
                     <div style={{marginLeft: theme.regularSpacing}}>
                         <TextInput
-                            label={t('cart_checkout_card_cvv')}
+                            autoComplete={'cc-csc'}
+                            label={t('cart_checkout_card_cvc')}
+                            inputMode={'numeric'}
                             placeholder={'ex: 242'}
                             options={{
                                 blocks: [3],

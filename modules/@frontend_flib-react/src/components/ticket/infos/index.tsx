@@ -38,6 +38,7 @@ const TicketHeaderInfos = styled.div`
         white-space: nowrap;
         color: ${(props) => props.theme.textColor};
         font-size: 1rem;
+        line-height: 1.2rem;
         text-transform: uppercase;
     }
 
@@ -93,7 +94,7 @@ export const PreviewInfos: React.FunctionComponent<PreviewInfosProps> = (props: 
         <Wrapper>
             <TicketHeaderInfos>
                 <h2>{props.ticket.name}</h2>
-                <h3>{props.ticket.ticketType}</h3>
+                <h3>{props.ticket.categoryName}</h3>
             </TicketHeaderInfos>
             <Separator bgColor={props.bgColor} />
             <PreviewContainer>

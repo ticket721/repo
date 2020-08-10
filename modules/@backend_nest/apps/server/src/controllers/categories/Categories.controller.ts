@@ -360,6 +360,12 @@ export class CategoriesController extends ControllerBasics<CategoryEntity> {
             newPrices = pricesResolverRes.response;
         }
 
+        if (body.seats !== undefined) {
+            if (body.seats < categoryEntity.reserved) {
+                body.seats = categoryEntity.reserved;
+            }
+        }
+
         await this._edit<CategoryEntity>(
             this.categoriesService,
             {

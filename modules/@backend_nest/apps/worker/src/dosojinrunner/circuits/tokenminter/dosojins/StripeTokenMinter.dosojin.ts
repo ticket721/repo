@@ -20,6 +20,113 @@ import { NestError } from '@lib/common/utils/NestError';
 import { StripeService } from '@lib/common/stripe/Stripe.service';
 
 /**
+ * Placeholder operation
+ */
+export class TokenMinterOperationPlaceholder extends Operation {
+    /**
+     * Deoendency Injection
+     *
+     * @param name
+     * @param dosojin
+     */
+    constructor(name: string, dosojin: Dosojin) {
+        super(name, dosojin);
+    }
+
+    /**
+     * Run Method
+     *
+     * @param gem
+     */
+    public async run(gem: Gem): Promise<Gem> {
+        gem.setRefreshTimer(1000);
+
+        return gem.setOperationStatus(OperationStatusNames.OperationComplete);
+    }
+
+    /**
+     * Dry Run Method
+     *
+     * @param gem
+     */
+    /* istanbul ignore next */
+    public async dryRun(gem: Gem): Promise<Gem> {
+        throw new NestError('unimplemented dry run');
+    }
+
+    /**
+     * Method to recover scopes
+     *
+     * @param gem
+     */
+    public async scopes(gem: Gem): Promise<string[]> {
+        return ['fiat_eur'];
+    }
+}
+
+/**
+ * Connector to perform final token minting checks
+ */
+// tslint:disable-next-line:max-classes-per-file
+export class MintingTransactionConnectorPlaceholder extends Connector<any> {
+    /**
+     * Run Method
+     *
+     * @param gem
+     */
+    public async run(gem: Gem): Promise<Gem> {
+        gem.setRefreshTimer(1000);
+
+        return gem.setConnectorStatus(TransferConnectorStatusNames.TransferComplete);
+    }
+
+    /**
+     * Dry Run Method
+     *
+     * @param gem
+     */
+    public async dryRun(gem: Gem): Promise<Gem> {
+        throw new NestError('unimplemented dry run');
+    }
+
+    /**
+     * Method to recover scopes
+     *
+     * @param gem
+     */
+    public async scopes(gem: Gem): Promise<string[]> {
+        return ['fiat_eur'];
+    }
+
+    /**
+     * Method to recover Connector Info
+     *
+     * @param gem
+     */
+    public async getConnectorInfo(gem: Gem): Promise<any> {
+        return null;
+    }
+
+    /**
+     * Method to set receptacle Info
+     *
+     * @param info
+     */
+    public async setReceptacleInfo(info: any): Promise<void> {
+        return;
+    }
+
+    /**
+     * Dependency Injection
+     *
+     * @param name
+     * @param dosojin
+     */
+    constructor(name: string, dosojin: Dosojin) {
+        super(name, dosojin);
+    }
+}
+/**
  * Extra State Arguments added by the TokenMinter Operation
  */
 export interface TokenMinterTx {
@@ -188,7 +295,7 @@ export class MintingTransactionConnector extends Connector<any> {
 
                 for (const event of events) {
                     if (
-                        event.transactionHash.toLowerCase() === tx.transaction_hash.toLowerCase() &&
+                        event.transactionHash.toLowerCase() === tx.real_transaction_hash.toLowerCase() &&
                         event.transactionIndex === tx.transaction_index
                     ) {
                         found = true;
@@ -358,25 +465,8 @@ export class StripeTokenMinterDosojin extends GenericStripeDosojin {
         configService: ConfigService,
     ) {
         super('StripeTokenMinter', stripeService.get());
-        this.addOperation(
-            new TokenMinterOperation(
-                'TokenMinterOperation',
-                this,
-                t721AdminService,
-                t721TokenService,
-                usersService,
-                txsService,
-            ),
-        );
-        this.addConnector(
-            new MintingTransactionConnector(
-                'MintingTransactionConnector',
-                this,
-                txsService,
-                t721TokenService,
-                usersService,
-            ),
-        );
+        this.addOperation(new TokenMinterOperationPlaceholder('TokenMinterOperation', this));
+        this.addConnector(new MintingTransactionConnectorPlaceholder('MintingTransactionConnector', this));
     }
 
     /**
