@@ -78,7 +78,7 @@
     "@types/react-test-renderer": "16.9.2",
     "@types/webpack": "4.41.13",
     "@types/html-webpack-plugin": "3.2.3",
-    "@types/react": "16.9.35",
+    "@types/react": "16.9.43",
     "cpx": "1.5.0",
     "file-loader": "6.0.0",
     "svgtofont": "1.6.0",
