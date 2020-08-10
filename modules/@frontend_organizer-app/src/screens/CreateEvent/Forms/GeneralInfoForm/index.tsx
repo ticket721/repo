@@ -94,7 +94,7 @@ const GeneralInfoForm: React.FC<FormProps> = ({ onComplete }) => {
             name='description'
             label={t('description_label')}
             placeholder={t('description_placeholder')}
-            maxChar={900}
+            maxChar={10000}
             value={eventCreationFormik.getFieldProps('description').value}
             onChange={(value) => eventCreationFormik.setFieldValue('description', value)}
             onBlur={eventCreationFormik.getFieldProps('description').onBlur}

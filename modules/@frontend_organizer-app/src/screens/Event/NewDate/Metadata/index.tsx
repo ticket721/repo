@@ -63,7 +63,7 @@ export const Metadata: React.FC<MetadataProps> = ({ formik }) => {
                     name='description'
                     label={t('description_label')}
                     placeholder={t('description_placeholder')}
-                    maxChar={900}
+                    maxChar={10000}
                     value={formik.getFieldProps('description').value}
                     onChange={(value) => formik.setFieldValue('description', value)}
                     error={
