@@ -22,7 +22,7 @@
         "zxcvbn-i18n": "1.0.2",
         "@ticket721/e712": "0.4.1",
         "ethereum-address": "0.0.4",
-        "ethers": "4.0.45",
+        "ethers": "5.0.7",
         "@hapi/joi": "17.1.0",
         "typescript": "3.8.3",
         "@types/jest": "25.1.3",
