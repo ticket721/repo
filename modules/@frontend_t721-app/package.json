@@ -43,7 +43,7 @@
         "rxjs": "6.5.5",
         "@capacitor/cli": "2.0.1",
         "react-scripts": "3.4.1",
-        "tslint": "6.0.0",
+        "tslint": "6.1.2",
         "react-countdown": "2.2.1",
         "@stripe/react-stripe-js": "1.1.2",
         "@stripe/stripe-js": "1.8.0",
