@@ -22,7 +22,7 @@
         "typescript": "3.8.3",
         "@types/jest": "25.1.3",
         "@types/node": "13.7.7",
-        "quick-score": "0.0.8"
+        "quick-score": "0.0.9"
     },
     "devDependencies": {
         "watch": "^1.0.2",
