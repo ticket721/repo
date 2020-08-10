@@ -83,6 +83,10 @@ export const routes: RouteDatum[] = [
         paramId: 'groupId'
     },
     {
+        path: '/reset-password',
+        page: lazy(() => import('./routes/ResetPassword')),
+    },
+    {
         path: '/login',
         page: lazy(() => import('./routes/Login')),
     },

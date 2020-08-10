@@ -65,15 +65,20 @@ export const Login: React.FC<LoginProps> = (props: LoginProps) => {
                             value={formik.values.email}
                             error={formik.touched['email'] ? t(formik.errors['email']) : undefined}
                         />
-                        <PasswordInput
-                            name={'password'}
-                            label={t('password_label')}
-                            placeholder={t('password_placeholder')}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            value={formik.values.password}
-                            error={formik.touched['password'] ? t(formik.errors['password']) : undefined}
-                        />
+                        <Line>
+                            <PasswordInput
+                                name={'password'}
+                                label={t('password_label')}
+                                placeholder={t('password_placeholder')}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                value={formik.values.password}
+                                error={formik.touched['password'] ? t(formik.errors['password']) : undefined}
+                            />
+                            <ForgetPasswordLink onClick={() => history.push('/reset-password')}>
+                                {t('forget_password')}
+                            </ForgetPasswordLink>
+                        </Line>
                     </Inputs>
                     <ActionsContainer>
                         <Button variant={'primary'} type={'submit'} title={t('login')} />
@@ -144,7 +149,7 @@ const Inputs = styled.div`
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    height: 200px;
+    height: 220px;
 `;
 
 const ActionsContainer = styled.div`
@@ -153,6 +158,22 @@ const ActionsContainer = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
+`;
+
+const Line = styled.div`
+    display: flex;
+    flex-direction: column;
+`;
+
+const ForgetPasswordLink = styled.button`
+    font-size: 11px;
+    line-height: 15px;
+    margin-top: 5px;
+    text-align: right;
+    cursor: pointer;
+    color: #ccc;
+    border: none;
+    outline: none;
 `;
 
 const SwitchToRegister = styled.span`

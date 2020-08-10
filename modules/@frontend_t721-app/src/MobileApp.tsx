@@ -7,6 +7,7 @@ import styled                                                           from 'st
 import { T721Navbar }                                                   from './components/NavBar';
 import AdminRoutePage                                                   from './routes/Admin';
 import LoginPage                                                        from './routes/Login';
+import ResetPasswordPage                                                from './routes/ResetPassword';
 import RegisterPage                                                     from './routes/Register';
 import HomePage                                                         from './routes/Home';
 import ProfileActivitiesPage                                            from './routes/Activities';
@@ -81,6 +82,10 @@ const MobileApp: React.FC = () => {
                 <Switch>
                     <Route path={'/login'} exact={true}>
                         <LoginPage/>
+                    </Route>
+
+                    <Route path={'/reset-password'} exact={true}>
+                        <ResetPasswordPage />
                     </Route>
 
                     <Route path={'/register'} exact={true}>

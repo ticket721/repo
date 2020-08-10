@@ -7,6 +7,7 @@ i18n.addResourceBundle('en', 'login', {
     password_placeholder: 'Password',
     login: 'Login',
     register_switch: 'First time using the app ? Register here !',
+    forget_password: 'Forget password ?',
 
     // errors
     email_required: 'email is required',
@@ -19,6 +20,7 @@ i18n.addResourceBundle('fr', 'login', {
     password_placeholder: 'Mot de passe',
     login: 'Connexion',
     register_switch: "Première fois que vous utilisez l'app ? Inscrivez vous ici !",
+    forget_password: 'Mot de passe oublié ?',
 
     // errors
     email_required: 'email requis',
