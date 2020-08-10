@@ -64,7 +64,7 @@ const StyledTextarea = styled.div<RichTextProps>`
         background-color: transparent;
         border-radius: 0px;
         border: none;
-        padding: 0 ${(props) => props.theme.biggerSpacing};
+        padding: ${(props) => props.theme.biggerSpacing};
         padding-top: ${(props) => props.theme.smallSpacing};
         color: ${(props) => props.theme.textColor};
         font-family: ${(props) => props.theme.fontStack};
