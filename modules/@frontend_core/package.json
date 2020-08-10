@@ -59,7 +59,7 @@
         "tslint": "6.0.0",
         "ts-jest": "25.4.0",
         "ts-loader": "^7.0.0",
-        "ts-mockito": "2.5.0"
+        "ts-mockito": "2.6.1"
     },
     "scripts": {
         "build": "rm -rf lib && tsc",
