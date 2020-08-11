@@ -7,9 +7,9 @@ const CtaMarginContainer = styled.div`
 `;
 
 export const CtaMargin = (Comp: React.ComponentType<any>): React.FC => {
-    return () => {
+    return (props: any = {}) => {
         return <CtaMarginContainer>
-                <Comp/>
+                <Comp {...props}/>
             </CtaMarginContainer>
     }
 };

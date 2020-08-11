@@ -29,9 +29,18 @@ var migration1596712433 = {
             params: []
         };
 
+        const stripe_interface_connect_account_capability_creation = {
+            query: `CREATE TYPE IF NOT EXISTS ticket721.connect_account_capability (
+                        name text,
+                        status text
+                    );`,
+            params: []
+        };
+
         const stripe_interface_fields_creation = {
             query: `ALTER TABLE ticket721.stripe_interface
              ADD (
+                 connect_account_capabilities list<frozen<ticket721.connect_account_capability>>,
                  connect_account_current_deadline timestamp,
                  connect_account_currently_due list<text>,
                  connect_account_past_due list<text>,
@@ -56,6 +65,9 @@ var migration1596712433 = {
 
             console.log('Stripe Interface Connect Account External Account Type Creation');
             await db.execute(stripe_interface_connect_account_external_account_creation.query, stripe_interface_connect_account_external_account_creation.params, { prepare: true });
+
+            console.log('Stripe Interface Connect Account Capability Type Creation');
+            await db.execute(stripe_interface_connect_account_capability_creation.query, stripe_interface_connect_account_capability_creation.params, { prepare: true });
 
             console.log('Stripe Interface Fields Creation');
             await db.execute(stripe_interface_fields_creation.query, stripe_interface_fields_creation.params, { prepare: true });
@@ -83,11 +95,18 @@ var migration1596712433 = {
             params: []
         };
 
+        const stripe_interface_connect_account_capability_creation = {
+            query: `DROP TYPE ticket721.connect_account_capability;`,
+            params: []
+        };
+
         const stripe_interface_fields_creation = {
             query: `ALTER TABLE ticket721.stripe_interface
             DROP (
+                connect_account_capabilities,
                 connect_account_current_deadline,
                 connect_account_currently_due,
+                connect_account_eventually_due,
                 connect_account_past_due,
                 connect_account_pending_verification,
                 connect_account_errors,
@@ -112,6 +131,9 @@ var migration1596712433 = {
 
             console.log('Stripe Interface Connect Account External Account Type Creation');
             await db.execute(stripe_interface_connect_account_external_account_creation.query, stripe_interface_connect_account_external_account_creation.params, { prepare: true });
+
+            console.log('Stripe Interface Connect Account Capability Type Creation');
+            await db.execute(stripe_interface_connect_account_capability_creation.query, stripe_interface_connect_account_capability_creation.params, { prepare: true });
 
         } catch (e) {
             return handler(e, false);

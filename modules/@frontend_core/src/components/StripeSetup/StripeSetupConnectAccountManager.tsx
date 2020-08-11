@@ -15,17 +15,27 @@ export interface StripeSetupConnectAccountManagerProps {
     forceFetchInterface: () => void;
 }
 
+const BalanceContainerPlaceholder = styled.div`
+  height: 30vh;
+`;
+
 const BalanceContainer = styled.div`
+  width: 100vw;
   height: 30vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  position: fixed;
+  top: 0;
+  z-index: 10;
+  background-color: #120f1a;
 `;
 
 const MenuContainer = styled.div`
   min-height: 70vh;
   background-color: ${props => props.theme.componentColor};
+  z-index: 1;
 `;
 
 const fakeBalance = {
@@ -207,7 +217,30 @@ const fusionBalances = (stripeBalances: any): BalanceCurrencyInfo[] => {
     }
 
     return Object.keys(currencies).map((currency: string): BalanceCurrencyInfo => currencies[currency]);
-}
+};
+
+const SectionHeader = styled.div`
+  background-color: ${props => props.theme.darkBg};
+  opacity: 0.75;
+  height: 50px;
+`;
+
+export const StripeSetupConnectAccountCapabilitiesManager: React.FC<any> = (props: any): JSX.Element => {
+    return <>
+            <SectionHeader>
+                <p>Lol</p>
+            </SectionHeader>
+        <p>
+            Content
+        </p>
+        <p>
+            Content
+        </p>
+        <p>
+            Content
+        </p>
+        </>
+};
 
 export const StripeSetupConnectAccountManager: React.FC<StripeSetupConnectAccountManagerProps> = (props: StripeSetupConnectAccountManagerProps): JSX.Element => {
 
@@ -215,8 +248,16 @@ export const StripeSetupConnectAccountManager: React.FC<StripeSetupConnectAccoun
         <BalanceContainer>
             <StripeSetupConnectAccountBalanceManager currencies={fusionBalances(fakeBalance)}/>
         </BalanceContainer>
+        <BalanceContainerPlaceholder/>
         <MenuContainer>
-            <p>Menu</p>
+            <StripeSetupConnectAccountCapabilitiesManager/>
+            <StripeSetupConnectAccountCapabilitiesManager/>
+            <StripeSetupConnectAccountCapabilitiesManager/>
+            <StripeSetupConnectAccountCapabilitiesManager/>
+            <StripeSetupConnectAccountCapabilitiesManager/>
+            <StripeSetupConnectAccountCapabilitiesManager/>
+            <StripeSetupConnectAccountCapabilitiesManager/>
+            <StripeSetupConnectAccountCapabilitiesManager/>
         </MenuContainer>
     </>;
 };

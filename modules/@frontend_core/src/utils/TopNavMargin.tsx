@@ -6,10 +6,10 @@ const TopNavMarginContainer = styled.div`
 `;
 
 export const TopNavMargin = (Comp: React.ComponentType<any>): React.FC => {
-    return () => {
+    return (props: any = {}) => {
         return (
             <TopNavMarginContainer>
-                <Comp />
+                <Comp {...props}/>
             </TopNavMarginContainer>
         );
     };

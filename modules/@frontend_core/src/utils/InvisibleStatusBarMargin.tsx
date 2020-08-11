@@ -7,11 +7,11 @@ const StatusBarPaddingContainer = styled.div`
 `;
 
 export const InvisibleStatusBarMargin = (Comp: React.ComponentType): React.FC => {
-    return () => {
+    return (props: any = {}) => {
         return (
             <>
                 <StatusBarPaddingContainer>
-                    <Comp />
+                    <Comp {...props}/>
                 </StatusBarPaddingContainer>
             </>
         );

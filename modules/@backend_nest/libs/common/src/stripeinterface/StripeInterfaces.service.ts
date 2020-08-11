@@ -1,14 +1,16 @@
 import { CRUDExtension }                            from '@lib/common/crud/CRUDExtension.base';
 import { BaseModel, InjectModel, InjectRepository } from '@iaminfinity/express-cassandra';
 import { StripeInterfacesRepository }                           from '@lib/common/stripeinterface/StripeInterfaces.repository';
-import { ConnectAccountExternalAccount, StripeInterfaceEntity } from '@lib/common/stripeinterface/entities/StripeInterface.entity';
+import {
+    ConnectAccountCapability,
+    ConnectAccountExternalAccount,
+    StripeInterfaceEntity,
+} from '@lib/common/stripeinterface/entities/StripeInterface.entity';
 import { ServiceResponse }                                      from '@lib/common/utils/ServiceResponse.type';
 import { StripeService }                            from '@lib/common/stripe/Stripe.service';
 import { UserDto }                                  from '@lib/common/users/dto/User.dto';
 import { fromES }                                   from '@lib/common/utils/fromES.helper';
-import Stripe                                       from "stripe";
-import { HttpException }                            from '@nestjs/common';
-import { StatusCodes }                              from '@lib/common/utils/codes.value';
+import Stripe                                       from 'stripe';
 import { SECOND }                                   from '@lib/common/utils/time';
 
 /**
@@ -72,6 +74,7 @@ export class StripeInterfacesService extends CRUDExtension<StripeInterfacesRepos
                 owner: user.id,
                 payment_methods: [],
                 connect_account: null,
+                connect_account_capabilities: null,
                 connect_account_current_deadline: null,
                 connect_account_currently_due: null,
                 connect_account_eventually_due: null,
@@ -158,6 +161,15 @@ export class StripeInterfacesService extends CRUDExtension<StripeInterfacesRepos
         return (Date.now() - lastUpdate.getTime() >= 5 * SECOND);
     }
 
+    static convertCapabilities(capabilities: Stripe.Account.Capabilities): ConnectAccountCapability[] {
+        return Object
+            .keys(capabilities)
+            .map((capabilityName: string) => ({
+                name: capabilityName,
+                status: capabilities[capabilityName]
+            }));
+    }
+
     async updateAccountInfos(stripeInterface: StripeInterfaceEntity, force: boolean = false): Promise<ServiceResponse<StripeInterfaceEntity>> {
         if (stripeInterface.connect_account) {
 
@@ -178,6 +190,7 @@ export class StripeInterfacesService extends CRUDExtension<StripeInterfacesRepos
 
                 const newValues: Partial<StripeInterfaceEntity> = {
                     connect_account: account.id,
+                    connect_account_capabilities: StripeInterfacesService.convertCapabilities(account.capabilities),
                     connect_account_current_deadline: account.requirements.current_deadline ? new Date(account.requirements.current_deadline) : null,
                     connect_account_currently_due: account.requirements.currently_due,
                     connect_account_eventually_due: account.requirements.eventually_due,

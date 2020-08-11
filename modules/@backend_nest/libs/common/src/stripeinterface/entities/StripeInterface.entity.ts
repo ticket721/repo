@@ -38,6 +38,11 @@ export interface ConnectAccountExternalAccount {
     status: 'new' | 'validated' | 'verified' | 'verification_failed' | 'errored';
 }
 
+export interface ConnectAccountCapability {
+    name: string;
+    status: string;
+}
+
 /**
  * Right Entity
  */
@@ -60,6 +65,7 @@ export class StripeInterfaceEntity {
             this.owner = sie.owner ? sie.owner.toString() : sie.owner;
             this.payment_methods = ECAAG(sie.payment_methods);
             this.connect_account = sie.connect_account;
+            this.connect_account_capabilities = ECAAG(sie.connect_account_capabilities);
             this.connect_account_current_deadline = sie.connect_account_current_deadline;
             this.connect_account_currently_due = ECAAG(sie.connect_account_currently_due);
             this.connect_account_eventually_due = ECAAG(sie.connect_account_eventually_due);
@@ -108,6 +114,16 @@ export class StripeInterfaceEntity {
     })
         // tslint:disable-next-line:variable-name
     connect_account: string;
+
+    /**
+     * List of available payment methods
+     */
+    @Column({
+        type: 'list',
+        typeDef: '<frozen<connect_account_capability>>',
+    })
+        // tslint:disable-next-line:variable-name
+    connect_account_capabilities: ConnectAccountCapability[];
 
     @Column({
         type: 'timestamp',
