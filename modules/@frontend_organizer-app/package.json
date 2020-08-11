@@ -62,7 +62,6 @@
         "build:prod": "react-scripts build",
         "test": "react-scripts test",
         "cypress:run": "cypress run",
-        "cypres:record": "cypress run --record",
         "lint": "tslint --project .",
         "inject_env_and_serve": "yarn inject_env && yarn inject_segment_key && serve -l 5000 ./build",
         "@lerna/postinstall": "echo '@frontend/organizer-app has no postinstall'",
