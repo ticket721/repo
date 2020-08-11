@@ -13,21 +13,6 @@
 [submodule "modules/erc2280"]
 	path = modules/@public_erc2280
 	url = git@github.com:ticket721/erc2280
-[submodule "contracts/contracts_modules/ticketforge"]
-	path = modules/@contracts_ticketforge
-	url = git@github.com:ticket721/ticketforge
-[submodule "contracts/contracts_modules/metamarketplace"]
-	path = modules/@contracts_metamarketplace
-	url = git@github.com:ticket721/metamarketplace
-[submodule "contracts/contracts_modules/t721controller"]
-	path = modules/@contracts_t721controller
-	url = git@github.com:ticket721/t721controller
-[submodule "contracts/contracts_modules/t721token"]
-	path = modules/@contracts_t721token
-	url = git@github.com:ticket721/t721token
-[submodule "contracts/contracts_modules/t721admin"]
-	path = modules/@contracts_t721admin
-	url = git@github.com:ticket721/t721admin
 [submodule "modules/dosojin"]
 	path = modules/@public_dosojin
 	url = git@github.com:ticket721/dosojin

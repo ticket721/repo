@@ -20,6 +20,10 @@ const check_keyspaces = async () => {
         await client.execute(query);
         console.log("Created Keyspace ticket721");
 
+    } else {
+
+        console.log("Keyspace Setup: nothing to do");
+
     }
 
     await client.shutdown();

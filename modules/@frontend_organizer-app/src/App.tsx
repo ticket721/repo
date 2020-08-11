@@ -23,6 +23,7 @@ import { FullPageLoading }  from '@frontend/flib-react/lib/components';
 import './core/event_creation/locales';
 import './shared/Translations/global';
 import { UserContextGuard } from '@frontend/core/lib/utils/UserContext';
+import { FeatureFlag }      from '@frontend/core/lib/components/FeatureFlag';
 
 const App: React.FC = () => {
     const appStatus = useSelector(((state: AppState) => state.statuses.appStatus));
@@ -51,7 +52,18 @@ const App: React.FC = () => {
                                     ?
                                     routes.map((route, idx) => {
 
+                                        let Page;
+
+                                        if (route.flag) {
+                                            Page = () => <FeatureFlag flag={route.flag}>
+                                                <route.page/>
+                                            </FeatureFlag>
+                                        } else {
+                                            Page = route.page;
+                                        }
+
                                         if (route.protected) {
+
                                             return <ProtectedRoute exact={true} path={route.path} key={idx}>
                                                 <PageWrapper>
                                                     {
@@ -60,18 +72,19 @@ const App: React.FC = () => {
                                                                 <EventPageWrapper>
                                                                     <EventMenu/>
                                                                     <div>
-                                                                        <route.page/>
+                                                                        <Page/>
                                                                     </div>
                                                                 </EventPageWrapper>
                                                             </ProtectedByRights>
                                                             :
-                                                            <route.page/>
+                                                            <Page/>
                                                     }
                                                 </PageWrapper>
                                             </ProtectedRoute>;
+
                                         }
                                         return <Route exact={true} key={idx} path={route.path}>
-                                            <route.page/>
+                                            <Page/>
                                         </Route>;
                                     })
 

@@ -10,10 +10,14 @@ const messages = {
     generalInformation: 'General informations',
 }
 
-describe('Login', () => {
+describe('Home', () => {
     beforeEach(() => {
         cy.server();
         cy.route('GET', 'users/me', me).as('me');
+        cy.route('POST', 'rights/search', rightsResponse.event).as('event-right');
+        cy.route('POST', 'events/search', eventsResponse).as('events-search');
+        cy.route('POST', 'dates/search', datesResponse).as('dates-search');
+        cy.route('POST', 'categories/search', categoriesResponse).as('categories-search');
         cy.login();
         cy.visit('/');
     });
@@ -30,7 +34,7 @@ describe('Login', () => {
     it('open drawer', () => {
         cy.get('div > section > div > h3').contains(user.username).click();
 
-        cy.url().should('be', '/create-event?profile=root');
+        cy.url().should('be', '/?profile=root');
     })
 
     it('no events', () => {
@@ -40,11 +44,6 @@ describe('Login', () => {
         });
     })
     it('load events', () => {
-        cy.route('POST', 'rights/search', rightsResponse.event).as('event-right');
-        cy.route('POST', 'events/search', eventsResponse).as('events-search');
-        cy.route('POST', 'dates/search', datesResponse).as('dates-search');
-        cy.route('POST', 'categories/search', categoriesResponse).as('categories-search');
-
         cy.wait('@events-search').then(xhrE => {
             cy.wait('@dates-search').then(xhrD => {
                 cy.wait('@categories-search').then(xhrC => {

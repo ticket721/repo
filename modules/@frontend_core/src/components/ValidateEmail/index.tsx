@@ -9,6 +9,7 @@ import { useSelector } from 'react-redux';
 import { AppState } from '@frontend-core/redux';
 import { v4 } from 'uuid';
 import { useDeepEffect } from '../../hooks/useDeepEffect';
+import { getEnv } from '../../utils/getEnv';
 
 const isElapsed = (elapsed: number, multiplicator: number): boolean => {
     return elapsed > multiplicator * 10;
@@ -49,7 +50,7 @@ export const ValidateEmail: React.FC = () => {
 
     const resendEmail = () => {
         if (!lazyResendEmail.response.called) {
-            lazyResendEmail.lazyRequest([token.value, multiplicator], {
+            lazyResendEmail.lazyRequest([token.value, `${getEnv().REACT_APP_SELF}/validate-email`, multiplicator], {
                 force: true,
             });
             setLastCalled(multiplicator);
@@ -82,6 +83,7 @@ export const ValidateEmail: React.FC = () => {
                     loadingState={lazyResendEmail.response.loading}
                     onClick={resendEmail}
                 />
+                {multiplicator > 1 ? <MaybeSpam>{t('maybe_spam')}</MaybeSpam> : null}
             </ValidateEmailContainer>
         </div>
     );
@@ -112,4 +114,11 @@ const MessageFirstLine = styled.span`
 
 const MailIcon = styled(Icon)`
     margin-bottom: 40px;
+`;
+
+const MaybeSpam = styled.span`
+    margin-top: ${(props) => props.theme.regularSpacing};
+    font-size: 12px;
+    color: ${(props) => props.theme.textColorDark};
+    text-align: center;
 `;

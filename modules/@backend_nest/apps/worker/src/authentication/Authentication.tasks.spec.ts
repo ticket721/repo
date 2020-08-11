@@ -4,7 +4,6 @@ import { Job, JobOptions } from 'bull';
 import { AuthenticationTasks } from '@app/worker/authentication/Authentication.tasks';
 import { EmailService } from '@lib/common/email/Email.service';
 import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@lib/common/config/Config.service';
 import { getQueueToken } from '@nestjs/bull';
 import { OutrospectionService } from '@lib/common/outrospection/Outrospection.service';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
@@ -25,7 +24,6 @@ const context: {
     authenticationTasks: AuthenticationTasks;
     emailServiceMock: EmailService;
     jwtServiceMock: JwtService;
-    configServiceMock: ConfigService;
     mailingQueueMock: QueueMock;
     outrospectionServiceMock: OutrospectionService;
     shutdownServiceMock: ShutdownService;
@@ -33,7 +31,6 @@ const context: {
     authenticationTasks: null,
     emailServiceMock: null,
     jwtServiceMock: null,
-    configServiceMock: null,
     mailingQueueMock: null,
     outrospectionServiceMock: null,
     shutdownServiceMock: null,
@@ -43,7 +40,6 @@ describe('Authentication Tasks', function() {
     beforeEach(async function() {
         context.emailServiceMock = mock(EmailService);
         context.jwtServiceMock = mock(JwtService);
-        context.configServiceMock = mock(ConfigService);
         context.mailingQueueMock = mock(QueueMock);
         context.outrospectionServiceMock = mock(OutrospectionService);
         context.shutdownServiceMock = mock(ShutdownService);
@@ -57,10 +53,6 @@ describe('Authentication Tasks', function() {
                 {
                     provide: JwtService,
                     useValue: instance(context.jwtServiceMock),
-                },
-                {
-                    provide: ConfigService,
-                    useValue: instance(context.configServiceMock),
                 },
                 {
                     provide: getQueueToken('mailing'),
@@ -87,24 +79,22 @@ describe('Authentication Tasks', function() {
             const authenticationTasks: AuthenticationTasks = context.authenticationTasks;
             const emailServiceMock: EmailService = context.emailServiceMock;
             const jwtServiceMock: JwtService = context.jwtServiceMock;
-            const mailingQueueMock: QueueMock = context.mailingQueueMock;
-            const configServiceMock: ConfigService = context.configServiceMock;
 
             const email = 'iulian@t721.com';
             const locale = 'en';
             const username = 'mortimr';
             const id = '0';
+            const validationUrl = 'https://ticket721.com';
 
             const payload = {
                 email,
                 locale,
                 username,
                 id,
+                redirectUrl: validationUrl,
             };
 
             const signature = 'signature';
-
-            const validationUrl = 'https://ticket721.com';
 
             const emailPayload = {
                 to: email,
@@ -127,8 +117,6 @@ describe('Authentication Tasks', function() {
                 ),
             ).thenReturn(Promise.resolve(signature));
 
-            when(configServiceMock.get('VALIDATION_URL')).thenReturn(validationUrl);
-
             when(emailServiceMock.send(deepEqual(emailPayload))).thenReturn(
                 Promise.resolve({
                     error: null,
@@ -139,8 +127,6 @@ describe('Authentication Tasks', function() {
             await authenticationTasks.validationEmail(instance(jobMock) as Job);
 
             verify(emailServiceMock.send(deepEqual(emailPayload))).called();
-
-            verify(configServiceMock.get('VALIDATION_URL')).called();
 
             verify(
                 jwtServiceMock.signAsync(
@@ -161,24 +147,23 @@ describe('Authentication Tasks', function() {
             const authenticationTasks: AuthenticationTasks = context.authenticationTasks;
             const emailServiceMock: EmailService = context.emailServiceMock;
             const jwtServiceMock: JwtService = context.jwtServiceMock;
-            const mailingQueueMock: QueueMock = context.mailingQueueMock;
-            const configServiceMock: ConfigService = context.configServiceMock;
 
             const email = 'iulian@t721.com';
             const locale = 'en';
             const username = 'mortimr';
             const id = '0';
 
+            const validationUrl = 'https://ticket721.com';
+
             const payload = {
                 email,
                 locale,
                 username,
                 id,
+                redirectUrl: validationUrl,
             };
 
             const signature = 'signature';
-
-            const validationUrl = 'https://ticket721.com';
 
             const emailPayload = {
                 to: email,
@@ -201,8 +186,6 @@ describe('Authentication Tasks', function() {
                 ),
             ).thenReturn(Promise.resolve(signature));
 
-            when(configServiceMock.get('VALIDATION_URL')).thenReturn(validationUrl);
-
             when(emailServiceMock.send(deepEqual(emailPayload))).thenReturn(
                 Promise.resolve({
                     error: 'unexpected_error',
@@ -215,8 +198,6 @@ describe('Authentication Tasks', function() {
             });
 
             verify(emailServiceMock.send(deepEqual(emailPayload))).called();
-
-            verify(configServiceMock.get('VALIDATION_URL')).called();
 
             verify(
                 jwtServiceMock.signAsync(
@@ -239,23 +220,23 @@ describe('Authentication Tasks', function() {
             const authenticationTasks: AuthenticationTasks = context.authenticationTasks;
             const emailServiceMock: EmailService = context.emailServiceMock;
             const jwtServiceMock: JwtService = context.jwtServiceMock;
-            const configServiceMock: ConfigService = context.configServiceMock;
 
             const email = 'iulian@t721.com';
             const locale = 'en';
             const username = 'mortimr';
             const id = '0';
 
+            const validationUrl = 'https://ticket721.com';
+
             const payload = {
                 email,
                 locale,
                 username,
                 id,
+                redirectUrl: validationUrl,
             };
 
             const signature = 'signature';
-
-            const validationUrl = 'https://ticket721.com';
 
             const emailPayload = {
                 to: email,
@@ -278,8 +259,6 @@ describe('Authentication Tasks', function() {
                 ),
             ).thenResolve(signature);
 
-            when(configServiceMock.get('RESET_PASSWORD_URL')).thenReturn(validationUrl);
-
             when(emailServiceMock.send(deepEqual(emailPayload))).thenReturn(
                 Promise.resolve({
                     error: null,
@@ -290,8 +269,6 @@ describe('Authentication Tasks', function() {
             await authenticationTasks.resetPasswordEmail(instance(jobMock) as Job);
 
             verify(emailServiceMock.send(deepEqual(emailPayload))).called();
-
-            verify(configServiceMock.get('RESET_PASSWORD_URL')).called();
 
             verify(
                 jwtServiceMock.signAsync(
@@ -312,23 +289,23 @@ describe('Authentication Tasks', function() {
             const authenticationTasks: AuthenticationTasks = context.authenticationTasks;
             const emailServiceMock: EmailService = context.emailServiceMock;
             const jwtServiceMock: JwtService = context.jwtServiceMock;
-            const configServiceMock: ConfigService = context.configServiceMock;
 
             const email = 'iulian@t721.com';
             const locale = 'en';
             const username = 'mortimr';
             const id = '0';
 
+            const validationUrl = 'https://ticket721.com';
+
             const payload = {
                 email,
                 locale,
                 username,
                 id,
+                redirectUrl: validationUrl,
             };
 
             const signature = 'signature';
-
-            const validationUrl = 'https://ticket721.com';
 
             const emailPayload = {
                 to: email,
@@ -351,8 +328,6 @@ describe('Authentication Tasks', function() {
                 ),
             ).thenReturn(Promise.resolve(signature));
 
-            when(configServiceMock.get('RESET_PASSWORD_URL')).thenReturn(validationUrl);
-
             when(emailServiceMock.send(deepEqual(emailPayload))).thenReturn(
                 Promise.resolve({
                     error: 'unexpected_error',
@@ -365,8 +340,6 @@ describe('Authentication Tasks', function() {
             });
 
             verify(emailServiceMock.send(deepEqual(emailPayload))).called();
-
-            verify(configServiceMock.get('RESET_PASSWORD_URL')).called();
 
             verify(
                 jwtServiceMock.signAsync(

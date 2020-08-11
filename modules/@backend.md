@@ -63,7 +63,7 @@ The smart contracts are now live, and all the required artifacts are now stored 
 To setup the database tables, run the following command
 
 ```
-cd modules/@backend_migrations && env CASSANDRA_HOSTS=127.0.0.1 CASSANDRA_PORT=32702 ELASTICSEARCH_HOST=127.0.0.1:32610 ./migrate.sh
+cd modules/@backend_migrations && env CASSANDRA_HOSTS=127.0.0.1 CASSANDRA_PORT=32702 ELASTICSEARCH_HOST=127.0.0.1:32610 CASSANDRA_KEYSPACE=ticket721 node ./migrator.js up
 ```
 
 ### 5. Starting the backend stack
@@ -115,7 +115,7 @@ ________________________________________________________________________________
 |____________________________________________________________________________________________|
 | $> cd modules/@backend_migrations && \                                                     |
 |    env CASSANDRA_HOSTS=127.0.0.1 CASSANDRA_PORT=32702 ELASTICSEARCH_HOST=127.0.0.1:32610 \ |
-|    ./migrate.sh                                                                            |
+|    CASSANDRA_KEYSPACE=ticket721 node ./migrator.js up                                      |
 |                                                                                            |
 |                                                                                            |
 |                                                                                            |

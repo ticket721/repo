@@ -81,8 +81,10 @@ import { ticketsSearch, ticketsCount, ticketsValidate } from './app/api/tickets'
 import { usersMe, usersSetDeviceAddress } from './app/api/users';
 
 // GEOLOC
+import { geolocClosestCity, geolocFuzzySearch }  from './app/api/geoloc';
 
-import { geolocClosestCity, geolocFuzzySearch } from './app/api/geoloc';
+// FEATURE FLAGS
+import { featureFlagsFetch } from './app/api/feature-flags';
 
 export { FailedRegisterReport } from './app/api/authentication';
 
@@ -179,6 +181,8 @@ export class T721SDK {
 
         this.geoloc.closestCity = this.geoloc.closestCity.bind(this);
         this.geoloc.fuzzySearch = this.geoloc.fuzzySearch.bind(this);
+
+        this.featureFlags.fetch = this.featureFlags.fetch.bind(this);
     }
 
     connect(host: string, port: number, protocol: 'http' | 'https' = 'http') {
@@ -384,5 +388,9 @@ export class T721SDK {
     public geoloc = {
         closestCity: geolocClosestCity,
         fuzzySearch: geolocFuzzySearch,
+    }
+
+    public featureFlags = {
+        fetch: featureFlagsFetch
     }
 }

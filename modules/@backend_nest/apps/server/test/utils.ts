@@ -310,7 +310,7 @@ export const runMigrations = async (cassandraPort: number, elasticSearchPort: nu
         const current_dir = process.cwd();
         process.chdir('../@backend_migrations');
         const proc = spawn(`env`, [
-            ...`CASSANDRA_HOSTS=127.0.0.1 ELASTICSEARCH_HOST=127.0.0.1:${elasticSearchPort} CASSANDRA_PORT=${cassandraPort} ./migrate.sh`.split(
+            ...`CASSANDRA_HOSTS=127.0.0.1 ELASTICSEARCH_HOST=127.0.0.1:${elasticSearchPort} CASSANDRA_PORT=${cassandraPort} CASSANDRA_KEYSPACE=ticket721 node ./migrator.js up`.split(
                 ' ',
             ),
         ]);
@@ -596,6 +596,22 @@ export const waitForActionSet = async (
     return actionSet.data.actionsets[0];
 };
 
+export const admin_setAdmin = async (user: string): Promise<void> => {
+    const client = new CassandraDriver.Client({
+        contactPoints: ['localhost'],
+        keyspace: 'ticket721',
+        protocolOptions: {
+            port: 32702,
+        },
+        queryOptions: {
+            consistency: 1,
+        },
+    });
+
+    const query = `UPDATE ticket721.user SET admin=true where id=${user};`;
+
+    await client.execute(query);
+};
 export const admin_addRight = async (
     user: string,
     entity: string,

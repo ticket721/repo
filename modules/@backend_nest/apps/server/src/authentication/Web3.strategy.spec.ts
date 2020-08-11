@@ -68,6 +68,7 @@ describe('Web3 Strategy', function() {
                         role: 'authenticated',
                         locale: 'en',
                         valid: false,
+                        admin: false,
                     },
                     error: null,
                 }),
@@ -103,6 +104,7 @@ describe('Web3 Strategy', function() {
                 role: 'authenticated',
                 locale: 'en',
                 valid: false,
+                admin: false,
             });
 
             verify(authenticationServiceMock.validateWeb3User(timestamp, login_signature.hex)).called();
@@ -402,6 +404,7 @@ describe('Web3 Strategy', function() {
                         role: 'authenticated',
                         locale: 'en',
                         valid: false,
+                        admin: false,
                     },
                     error: null,
                 }),
@@ -468,6 +471,7 @@ describe('Web3 Strategy', function() {
                         role: 'authenticated',
                         locale: 'en',
                         valid: false,
+                        admin: false,
                     },
                     error: null,
                 }),
@@ -537,6 +541,7 @@ describe('Web3 Strategy', function() {
                         role: 'authenticated',
                         locale: 'en',
                         valid: false,
+                        admin: false,
                     },
                     error: null,
                 }),

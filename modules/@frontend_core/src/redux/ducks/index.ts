@@ -15,6 +15,7 @@ import { authInitialState, AuthReducer, AuthState } from './auth';
 import { notificationsInitialState, NotificationsReducer, NotificationsState } from './notifications';
 import { Reducer } from 'redux';
 import { combineReducers } from 'redux';
+import { featureFlagsInitialState, FeatureFlagsReducer, FeatureFlagsState } from './feature-flags';
 
 export const history = createMemoryHistory();
 
@@ -25,6 +26,7 @@ export interface SpecificState {
     cache: CacheState;
     auth: AuthState;
     notifications: NotificationsState;
+    featureflags: FeatureFlagsState;
 }
 
 export type AppState = SpecificState;
@@ -43,6 +45,7 @@ export const rootReducer = <AdditionalState>(additionalReducer?: AdditionalReduc
         cache: CacheReducer,
         auth: AuthReducer,
         notifications: NotificationsReducer,
+        featureflags: FeatureFlagsReducer,
     });
 
 export const initialState = <AdditionalState>(additionalState?: AdditionalState): AppState & AdditionalState => ({
@@ -53,4 +56,5 @@ export const initialState = <AdditionalState>(additionalState?: AdditionalState)
     cache: cacheInitialState,
     auth: authInitialState,
     notifications: notificationsInitialState,
+    featureflags: featureFlagsInitialState,
 });

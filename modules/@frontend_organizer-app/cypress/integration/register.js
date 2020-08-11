@@ -32,6 +32,7 @@ describe('Register', () => {
         cy.get('input[name=email]').should('exist');
         cy.get('input[name=password]').should('exist');
         cy.get('input[name=username]').should('exist');
+        cy.get('input[name=passwordConfirmation]').should('exist');
         cy.get('button[name=Register]').should('exist');
     })
     it('visit login', function () {
@@ -51,6 +52,7 @@ describe('Register', () => {
         cy.get('input[name=email]').type(email);
         cy.get('input[name=username]').type(username);
         cy.get('input[name=password]').type(`${password}{enter}`);
+        cy.get('input[name=passwordConfirmation]').type(`${password}{enter}`);
 
         cy.url().should('be', '/');
         cy.contains('.Toastify__toast', messages.success);
@@ -62,6 +64,7 @@ describe('Register', () => {
         const { email, password } = user;
         cy.get('input[name=email]').type(`${email}`);
         cy.get('input[name=password]').type(`${password}`);
+        cy.get('input[name=passwordConfirmation]').type(`${password}`);
         cy.get('input[name=username]').type(`username{enter}`);
 
         cy.wait('@used_email').then((xhr) => {
@@ -75,6 +78,7 @@ describe('Register', () => {
         const { username, password } = user;
         cy.get('input[name=email]').type(`toto@gmail.com`);
         cy.get('input[name=password]').type(`${password}`);
+        cy.get('input[name=passwordConfirmation]').type(`${password}`);
         cy.get('input[name=username]').type(`${username}{enter}`);
 
         cy.wait('@used_username').then((xhr) => {
@@ -105,6 +109,7 @@ describe('Register', () => {
     it('fields required', function () {
         cy.get('input[name=email]').type('{enter}')
         cy.get('input[name=password]').type('{enter}')
+        cy.get('input[name=passwordConfirmation]').type('{enter}')
         cy.get('input[name=username]').type('{enter}')
 
         cy.url().should('be', '/register')

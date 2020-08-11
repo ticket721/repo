@@ -45,6 +45,8 @@ spec:
               value: '{{ required "[organizer] Missing config.googleGeocodingApiKey value" .Values.config.googleGeocodingApiKey }}'
             - name: REACT_APP_SEGMENT_API_KEY
               value: '{{ required "[organizer] Missing config.organizer.segmentApiKey value" .Values.config.organizer.segmentApiKey }}'
+            - name: REACT_APP_SELF
+              value: '{{ required "[organizer] Missing config.organizer.self value" .Values.config.organizer.self }}'
           ports:
             - name: http
               containerPort: 5000

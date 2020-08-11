@@ -18,6 +18,7 @@ import { useTranslation } from 'react-i18next';
 import '../locales';
 import { TicketsCountResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/tickets/dto/TicketsCountResponse.dto';
 import { UserContext } from '../../../utils/UserContext';
+import { FeatureFlag } from '../../FeatureFlag';
 
 export interface ProfileRootProps {
     desktop?: boolean;
@@ -116,6 +117,14 @@ const ProfileRoot: React.FC<ProfileRootProps> = ({ desktop, extraButtons }: Prof
                         history.replace('/');
                     }}
                 />
+                <FeatureFlag flag={'admin_flag'}>
+                    <ArrowLink
+                        label={t('you_are_an_admin')}
+                        onClick={() => {
+                            history.push('/you/are/an/admin');
+                        }}
+                    />
+                </FeatureFlag>
             </LinksContainer>
         </>
     );

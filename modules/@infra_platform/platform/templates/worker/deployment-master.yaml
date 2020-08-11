@@ -41,6 +41,8 @@ spec:
               value: "{{ .Values.config.cassandra.port }}"
             - name: ELASTICSEARCH_HOST
               value: "{{ .Values.config.elasticsearch.host }}:{{ .Values.config.elasticsearch.port }}"
+            - name: CASSANDRA_KEYSPACE
+              value: ticket721
           image: "{{ .Values.migrations.image.repository }}:{{ .Values.migrations.image.tag }}"
           imagePullPolicy: {{ .Values.migrations.image.pullPolicy }}
       containers:

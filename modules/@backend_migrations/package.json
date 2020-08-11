@@ -8,8 +8,8 @@
         "@lerna/postclean": "echo '@backend/migrations has no postclean'",
         "cassandra-migrate-up": "cd cassandra && cassandra-migrate up -o ./options.js -n",
         "cassandra-migrate-down": "cd cassandra && cassandra-migrate down -o ./options.js -n",
-        "elastic-migrate-up": "cd elasticsearch && elastic-migrate up",
-        "elastic-migrate-down": "cd elasticsearch && elastic-migrate down"
+        "elasticsearch-migrate-up": "cd elasticsearch && elastic-migrate up",
+        "elasticsearch-migrate-down": "cd elasticsearch && elastic-migrate down"
     },
     "author": "Iulian Rotaru",
     "license": "MIT",

@@ -320,6 +320,7 @@ export class MintingTasks implements OnModuleInit {
 
         const controllerIdRes = await this.groupService.getGroupIDControllerFields<[string]>(
             authorizations[0].groupId,
+            authorizations[0].categoryId,
             ['id'],
         );
 

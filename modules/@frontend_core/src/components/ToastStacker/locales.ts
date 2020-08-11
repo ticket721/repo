@@ -24,7 +24,7 @@ i18n.addResourceBundle('en', 'success_notifications', {
     successfully_registered: 'successfully registered',
 });
 i18n.addResourceBundle('fr', 'success_notifications', {
-    successfully_registered: 'inscription réussite',
+    successfully_registered: 'inscription réussie',
 });
 
 i18n.addResourceBundle('en', 'info_notifications', {});

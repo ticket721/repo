@@ -53,8 +53,8 @@ const NewDate = (): JSX.Element => {
 
     const formik = useFormik({
         initialValues: {
-            eventBegin: new Date(),
-            eventEnd: new Date(),
+            eventBegin: null,
+            eventEnd:null,
             location: { lon: null, lat: null, label: ''},
             name: '',
             description: '',

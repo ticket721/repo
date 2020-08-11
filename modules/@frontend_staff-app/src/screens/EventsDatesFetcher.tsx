@@ -41,6 +41,9 @@ export const EventsDatesFetcher: React.FC<EventsDatesFetcherProps> = ({ children
             {
                 group_id: {
                     $in: entities
+                },
+                parent_type: {
+                    $eq: 'event'
                 }
             }
         ],
@@ -74,7 +77,7 @@ export const EventsDatesFetcher: React.FC<EventsDatesFetcherProps> = ({ children
                     }))}
                     dates={formatDateItems(datesReq.response.data.dates)}/>
             </DropdownContainer>
-            <div onClick={() => setFilterOpened(true)}>
+            <div onClick={() => dateName ? setFilterOpened(true) : null}>
                 <Icon icon={'filter'} size={'12px'} color={'#FFF'}/>
             </div>
         </FiltersContainer>

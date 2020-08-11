@@ -1,0 +1,62 @@
+{
+    "name": "@ticket721contracts/t721admin",
+    "private": true,
+    "version": "1.0.0",
+    "description": "contract able to issue t721tokens and help recover refract accounts",
+    "directories": {
+        "test": "test"
+    },
+    "dependencies": {
+        "@openzeppelin/contracts": "2.3.0",
+        "truffle": "5.1.6",
+        "ethers": "4.0.41",
+        "@ticket721/e712": "0.2.4"
+    },
+    "devDependencies": {
+        "@commitlint/cli": "8.2.0",
+        "@commitlint/config-conventional": "8.2.0",
+        "@htmlacademy/editorconfig-cli": "1.0.0",
+        "chai": "4.2.0",
+        "chai-as-promised": "7.1.1",
+        "conventional-changelog-cli": "2.0.31",
+        "coveralls": "3.0.9",
+        "husky": "3.1.0",
+        "solhint": "2.3.0",
+        "solidity-coverage": "0.7.1"
+    },
+    "editorconfig-cli": [
+        "package.json",
+        "truffle-config.js",
+        "contracts/**/*.sol",
+        "migrations/**/*.js"
+    ],
+    "scripts": {
+        "test:truffle": "truffle test",
+        "test:coverage": "truffle run coverage",
+        "test:editorconfig": "editorconfig-cli",
+        "test:lint": "solhint contracts/**/*.sol",
+        "coverage:upload": "cat ./coverage/lcov.info | coveralls",
+        "test": "npm run test:truffle",
+        "@lerna/postinstall": "echo '@contracts/t721admin has no postinstall'",
+        "@lerna/postclean": "echo '@contracts/t721admin has no postclean'"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/ticket721/t721admin.git"
+    },
+    "keywords": [
+        "erc721"
+    ],
+    "author": "Iulian Rotaru",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/ticket721/t721admin/issues"
+    },
+    "homepage": "https://github.com/ticket721/t721admin#readme",
+    "husky": {
+        "hooks": {
+            "pre-commit": "editorconfig-cli",
+            "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+        }
+    }
+}

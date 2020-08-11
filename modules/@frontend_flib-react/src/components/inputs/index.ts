@@ -5,4 +5,5 @@ export * from './select';
 export * from './text';
 export * from './password';
 export * from './textarea';
+export * from './richtext';
 export * from './toggle';

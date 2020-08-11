@@ -27,6 +27,9 @@ spec:
     spec:
       serviceAccountName: {{ include "platform.fullname" . }}--platform--sa
       volumes:
+        - name: server-config-feature-flags
+          configMap:
+            name: {{ template "platform.fullname" . }}--server-config-feature-flags--cfmp
         - name: server-config
           configMap:
             name: {{ template "platform.fullname" . }}--server-config-master--cfmp
@@ -45,6 +48,8 @@ spec:
               value: "{{ .Values.config.cassandra.port }}"
             - name: ELASTICSEARCH_HOST
               value: "{{ .Values.config.elasticsearch.host }}:{{ .Values.config.elasticsearch.port }}"
+            - name: CASSANDRA_KEYSPACE
+              value: ticket721
           image: "{{ .Values.migrations.image.repository }}:{{ .Values.migrations.image.tag }}"
           imagePullPolicy: {{ .Values.migrations.image.pullPolicy }}
       containers:
@@ -59,6 +64,9 @@ spec:
               memory: "512Mi"
               cpu: "250m"
           volumeMounts:
+            - name: server-config-feature-flags
+              mountPath: /config/feature-flags.json
+              subPath: feature-flags.json
             - name: server-config
               mountPath: /config/production.env
               subPath: production.env

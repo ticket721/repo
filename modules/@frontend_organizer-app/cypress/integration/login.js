@@ -51,7 +51,6 @@ describe('Login', () => {
         cy.get('input[name=password]').type(`${password}{enter}`);
 
         cy.url().should('be', '/');
-        cy.get('h3').should('contain', username);
     })
 
     it('invalid email format', function () {

@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "platform.fullname" . }}--t721app-config-well-known--cfmp
+  namespace: {{ .Release.Namespace }}
+  labels:
+    name: {{ include "platform.fullname" . }}--t721app-config-well-known--cfmp
+    chart: {{ .Chart.Name }}
+data:
+  apple-app-site-association: |-
+    {
+      "applinks": {
+        "apps": [],
+        "details": [
+        {
+          "appID": "{{ .Values.config.t721app.iosAppId }}",
+          "paths": ["*"]
+        }
+        ]
+      }
+    }
+  assetlinks.json: |-
+    [{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target" : {
+        "namespace": "android_app",
+        "package_name": "{{ .Values.config.t721app.androidAppId }}",
+        "sha256_cert_fingerprints": ["{{ .Values.config.t721app.androidCertificateSignature }}"]
+      }
+    }]

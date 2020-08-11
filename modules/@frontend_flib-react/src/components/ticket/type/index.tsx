@@ -140,14 +140,21 @@ const renderer = (
 
 const descRenderer = (
     saleEndsInLabel: string,
-    { hours, minutes, seconds, completed }: { hours: number; minutes: number; seconds: number; completed: boolean },
+    {
+        days,
+        hours,
+        minutes,
+        seconds,
+        completed,
+    }: { days: number; hours: number; minutes: number; seconds: number; completed: boolean },
 ) => {
     if (completed) {
         return null;
     } else {
         return (
             <CountdownText>
-                {saleEndsInLabel} <NumberText>{hours}</NumberText>h <NumberText>{minutes}</NumberText>m
+                {saleEndsInLabel} <NumberText>{days}</NumberText>d <NumberText>{hours}</NumberText>h{' '}
+                <NumberText>{minutes}</NumberText>m
             </CountdownText>
         );
     }

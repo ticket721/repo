@@ -57,7 +57,7 @@ describe('Event Page Loads', () => {
         cy.visit(`/group/${eventsResponse.events[0].id}/date/${eventsResponse.events[0].dates[0]}/general-infos`);
 
         cy.get(`input[value="${eventsResponse.events[0].name}"]`).should('exist');
-        cy.get('textarea[name=description]').should('contain', datesResponse.dates[0].metadata.description);
+        cy.get('div > .editor').should('contain', datesResponse.dates[0].metadata.description);
         cy.get('div[id=tags]').within(($tags) => {
             datesResponse.dates[0].metadata.tags.forEach(tag => {
                 cy.get('div').should('contain', tag);
@@ -75,6 +75,9 @@ describe('Event Page Loads', () => {
 
     it('categories loads', () => {
         cy.visit(`/group/${eventsResponse.events[0].id}/date/${eventsResponse.events[0].dates[0]}/category/${eventsResponse.events[0].categories[0]}`);
+        cy.route('POST', 'events/search', eventsResponse).as('events-search');
+        cy.route('POST', 'dates/search', datesResponse).as('dates-search');
+        cy.route('POST', 'categories/search', categoriesResponse).as('categories-search');
 
         cy.get(`input[value="${categoriesResponse.categories[0].display_name}"]`).should('exist');
         cy.get(`input[value="${categoriesResponse.categories[0].prices[0].value / 100}"]`).should('exist');
@@ -103,6 +106,9 @@ describe('Event Page Loads', () => {
 
     it('global categories loads', () => {
         cy.visit(`/group/${eventsResponse.events[0].id}/event/${eventsResponse.events[0].id}/category/${eventsResponse.events[0].categories[0]}`);
+        cy.route('POST', 'events/search', eventsResponse).as('events-search');
+        cy.route('POST', 'dates/search', datesResponse).as('dates-search');
+        cy.route('POST', 'categories/search', categoriesResponse).as('categories-search');
 
         cy.get(`input[value="${categoriesResponse.categories[0].display_name}"]`).should('exist');
         cy.get(`input[value="${categoriesResponse.categories[0].prices[0].value / 100}"]`).should('exist');
@@ -147,7 +153,6 @@ describe('Event Page Update', () => {
 
         cy.get(`input[value="${eventsResponse.events[0].name}"]`).type('{selectall}{del}COLDPLAY TOUR{enter}');
         cy.get('button[name="Save Changes"]').should('not.be.disabled').click();
-        cy.contains('.Toastify__toast', messages.success);
     })
     it('update Location', () => {
         cy.visit(`/group/${eventsResponse.events[0].id}/date/${eventsResponse.events[0].dates[0]}/location`);
@@ -156,15 +161,13 @@ describe('Event Page Update', () => {
         cy.get(`input[value="${datesResponse.dates[0].location.location_label}"]`).type('{selectall}{del}Stade de France{downarrow}{enter}');
         cy.get('div').contains('Stade de France, Saint-Denis, France').click();
         cy.get('button[name="Save Changes"]').should('not.be.disabled').click();
-        cy.contains('.Toastify__toast', messages.success);
     })
     it('update categories', () => {
         cy.visit(`/group/${eventsResponse.events[0].id}/date/${eventsResponse.events[0].dates[0]}/category/${eventsResponse.events[0].categories[0]}`);
         cy.route('PUT', `categories/undefined`, categoriesUpdate).as('update-categories');
 
-        cy.get(`input[value="${categoriesResponse.categories[0].display_name}"]`).type('{selectall}{del}SUPER VIP{enter}');
+        cy.get(`input[name="name"]`).type('{selectall}{del}SUPER VIP{enter}');
         cy.get('button[name="Save Changes"]').should('not.be.disabled').click();
-        cy.contains('.Toastify__toast', messages.success);
     })
     it('update global categories', () => {
         cy.visit(`/group/${eventsResponse.events[0].id}/event/${eventsResponse.events[0].id}/category/${eventsResponse.events[0].categories[0]}`);
@@ -173,7 +176,6 @@ describe('Event Page Update', () => {
         cy.get(`input[value="${categoriesResponse.categories[0].seats}"]`).type('{selectall}{del}500{enter}');
 
         cy.get('button[name="Save Changes"]').should('not.be.disabled').click();
-        cy.contains('.Toastify__toast', messages.success);
     })
     // it('create category', () => {
     //     cy.visit(`/group/${eventsResponse.events[0].id}/date/${eventsResponse.events[0].dates[0]}/category`);

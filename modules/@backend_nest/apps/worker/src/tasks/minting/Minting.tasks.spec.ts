@@ -408,7 +408,9 @@ describe('Minting Tasks', function() {
             });
             when(context.t721AdminServiceMock.get()).thenResolve(t721AdminInstance);
             when(context.ticketforgeServiceMock.get()).thenResolve(ticketForgeInstance);
-            when(context.groupServiceMock.getGroupIDControllerFields(groupId, deepEqual(['id']))).thenResolve({
+            when(
+                context.groupServiceMock.getGroupIDControllerFields(groupId, categoryOneId, deepEqual(['id'])),
+            ).thenResolve({
                 error: null,
                 response: [controllerAddress],
             });
@@ -521,7 +523,9 @@ describe('Minting Tasks', function() {
             ).once();
             verify(context.t721AdminServiceMock.get()).once();
             verify(context.ticketforgeServiceMock.get()).once();
-            verify(context.groupServiceMock.getGroupIDControllerFields(groupId, deepEqual(['id']))).once();
+            verify(
+                context.groupServiceMock.getGroupIDControllerFields(groupId, categoryOneId, deepEqual(['id'])),
+            ).once();
             // => generateTickets
             verify(context.ticketsServiceMock.predictTickets(deepEqual(ticketsPredictionInput))).once();
             // <= ticketMintingTransactionSequenceBuilderTask
@@ -872,7 +876,9 @@ describe('Minting Tasks', function() {
             });
             when(context.t721AdminServiceMock.get()).thenResolve(t721AdminInstance);
             when(context.ticketforgeServiceMock.get()).thenResolve(ticketForgeInstance);
-            when(context.groupServiceMock.getGroupIDControllerFields(groupId, deepEqual(['id']))).thenResolve({
+            when(
+                context.groupServiceMock.getGroupIDControllerFields(groupId, categoryOneId, deepEqual(['id'])),
+            ).thenResolve({
                 error: null,
                 response: [controllerAddress],
             });
@@ -1011,7 +1017,9 @@ describe('Minting Tasks', function() {
             ).once();
             verify(context.t721AdminServiceMock.get()).once();
             verify(context.ticketforgeServiceMock.get()).once();
-            verify(context.groupServiceMock.getGroupIDControllerFields(groupId, deepEqual(['id']))).once();
+            verify(
+                context.groupServiceMock.getGroupIDControllerFields(groupId, categoryOneId, deepEqual(['id'])),
+            ).once();
             // => generateTickets
             verify(context.ticketsServiceMock.predictTickets(deepEqual(ticketsPredictionInput))).once();
             // <= ticketMintingTransactionSequenceBuilderTask
@@ -1325,7 +1333,9 @@ describe('Minting Tasks', function() {
             });
             when(context.t721AdminServiceMock.get()).thenResolve(t721AdminInstance);
             when(context.ticketforgeServiceMock.get()).thenResolve(ticketForgeInstance);
-            when(context.groupServiceMock.getGroupIDControllerFields(groupId, deepEqual(['id']))).thenResolve({
+            when(
+                context.groupServiceMock.getGroupIDControllerFields(groupId, categoryOneId, deepEqual(['id'])),
+            ).thenResolve({
                 error: null,
                 response: [controllerAddress],
             });
@@ -1438,7 +1448,9 @@ describe('Minting Tasks', function() {
             ).once();
             verify(context.t721AdminServiceMock.get()).once();
             verify(context.ticketforgeServiceMock.get()).once();
-            verify(context.groupServiceMock.getGroupIDControllerFields(groupId, deepEqual(['id']))).once();
+            verify(
+                context.groupServiceMock.getGroupIDControllerFields(groupId, categoryOneId, deepEqual(['id'])),
+            ).once();
             // => generateTickets
             verify(context.ticketsServiceMock.predictTickets(deepEqual(ticketsPredictionInput))).once();
             // <= ticketMintingTransactionSequenceBuilderTask
@@ -1723,7 +1735,9 @@ describe('Minting Tasks', function() {
             });
             when(context.t721AdminServiceMock.get()).thenResolve(t721AdminInstance);
             when(context.ticketforgeServiceMock.get()).thenResolve(ticketForgeInstance);
-            when(context.groupServiceMock.getGroupIDControllerFields(groupId, deepEqual(['id']))).thenResolve({
+            when(
+                context.groupServiceMock.getGroupIDControllerFields(groupId, categoryOneId, deepEqual(['id'])),
+            ).thenResolve({
                 error: null,
                 response: [controllerAddress],
             });
@@ -1836,7 +1850,9 @@ describe('Minting Tasks', function() {
             ).once();
             verify(context.t721AdminServiceMock.get()).once();
             verify(context.ticketforgeServiceMock.get()).once();
-            verify(context.groupServiceMock.getGroupIDControllerFields(groupId, deepEqual(['id']))).once();
+            verify(
+                context.groupServiceMock.getGroupIDControllerFields(groupId, categoryOneId, deepEqual(['id'])),
+            ).once();
             // => generateTickets
             verify(context.ticketsServiceMock.predictTickets(deepEqual(ticketsPredictionInput))).once();
             // <= ticketMintingTransactionSequenceBuilderTask
@@ -3780,7 +3796,9 @@ describe('Minting Tasks', function() {
             });
             when(context.t721AdminServiceMock.get()).thenResolve(t721AdminInstance);
             when(context.ticketforgeServiceMock.get()).thenResolve(ticketForgeInstance);
-            when(context.groupServiceMock.getGroupIDControllerFields(groupId, deepEqual(['id']))).thenResolve({
+            when(
+                context.groupServiceMock.getGroupIDControllerFields(groupId, categoryOneId, deepEqual(['id'])),
+            ).thenResolve({
                 error: 'unexpected_error',
                 response: null,
             });
@@ -3826,7 +3844,9 @@ describe('Minting Tasks', function() {
             ).once();
             verify(context.t721AdminServiceMock.get()).once();
             verify(context.ticketforgeServiceMock.get()).once();
-            verify(context.groupServiceMock.getGroupIDControllerFields(groupId, deepEqual(['id']))).once();
+            verify(
+                context.groupServiceMock.getGroupIDControllerFields(groupId, categoryOneId, deepEqual(['id'])),
+            ).once();
         });
 
         it('should fail on ticket prediction error', async function() {
@@ -4090,7 +4110,9 @@ describe('Minting Tasks', function() {
             });
             when(context.t721AdminServiceMock.get()).thenResolve(t721AdminInstance);
             when(context.ticketforgeServiceMock.get()).thenResolve(ticketForgeInstance);
-            when(context.groupServiceMock.getGroupIDControllerFields(groupId, deepEqual(['id']))).thenResolve({
+            when(
+                context.groupServiceMock.getGroupIDControllerFields(groupId, categoryOneId, deepEqual(['id'])),
+            ).thenResolve({
                 error: null,
                 response: [controllerAddress],
             });
@@ -4141,7 +4163,9 @@ describe('Minting Tasks', function() {
             ).once();
             verify(context.t721AdminServiceMock.get()).once();
             verify(context.ticketforgeServiceMock.get()).once();
-            verify(context.groupServiceMock.getGroupIDControllerFields(groupId, deepEqual(['id']))).once();
+            verify(
+                context.groupServiceMock.getGroupIDControllerFields(groupId, categoryOneId, deepEqual(['id'])),
+            ).once();
             // => generateTickets
             verify(context.ticketsServiceMock.predictTickets(deepEqual(ticketsPredictionInput))).once();
         });
@@ -4407,7 +4431,9 @@ describe('Minting Tasks', function() {
             });
             when(context.t721AdminServiceMock.get()).thenResolve(t721AdminInstance);
             when(context.ticketforgeServiceMock.get()).thenResolve(ticketForgeInstance);
-            when(context.groupServiceMock.getGroupIDControllerFields(groupId, deepEqual(['id']))).thenResolve({
+            when(
+                context.groupServiceMock.getGroupIDControllerFields(groupId, categoryOneId, deepEqual(['id'])),
+            ).thenResolve({
                 error: null,
                 response: [controllerAddress],
             });
@@ -4463,7 +4489,9 @@ describe('Minting Tasks', function() {
             ).once();
             verify(context.t721AdminServiceMock.get()).once();
             verify(context.ticketforgeServiceMock.get()).once();
-            verify(context.groupServiceMock.getGroupIDControllerFields(groupId, deepEqual(['id']))).once();
+            verify(
+                context.groupServiceMock.getGroupIDControllerFields(groupId, categoryOneId, deepEqual(['id'])),
+            ).once();
             // => generateTickets
             verify(context.ticketsServiceMock.predictTickets(deepEqual(ticketsPredictionInput))).once();
             // <= ticketMintingTransactionSequenceBuilderTask
@@ -4731,7 +4759,9 @@ describe('Minting Tasks', function() {
             });
             when(context.t721AdminServiceMock.get()).thenResolve(t721AdminInstance);
             when(context.ticketforgeServiceMock.get()).thenResolve(ticketForgeInstance);
-            when(context.groupServiceMock.getGroupIDControllerFields(groupId, deepEqual(['id']))).thenResolve({
+            when(
+                context.groupServiceMock.getGroupIDControllerFields(groupId, categoryOneId, deepEqual(['id'])),
+            ).thenResolve({
                 error: null,
                 response: [controllerAddress],
             });
@@ -4787,7 +4817,9 @@ describe('Minting Tasks', function() {
             ).once();
             verify(context.t721AdminServiceMock.get()).once();
             verify(context.ticketforgeServiceMock.get()).once();
-            verify(context.groupServiceMock.getGroupIDControllerFields(groupId, deepEqual(['id']))).once();
+            verify(
+                context.groupServiceMock.getGroupIDControllerFields(groupId, categoryOneId, deepEqual(['id'])),
+            ).once();
             // => generateTickets
             verify(context.ticketsServiceMock.predictTickets(deepEqual(ticketsPredictionInput))).once();
             // <= ticketMintingTransactionSequenceBuilderTask
@@ -5055,7 +5087,9 @@ describe('Minting Tasks', function() {
             });
             when(context.t721AdminServiceMock.get()).thenResolve(t721AdminInstance);
             when(context.ticketforgeServiceMock.get()).thenResolve(ticketForgeInstance);
-            when(context.groupServiceMock.getGroupIDControllerFields(groupId, deepEqual(['id']))).thenResolve({
+            when(
+                context.groupServiceMock.getGroupIDControllerFields(groupId, categoryOneId, deepEqual(['id'])),
+            ).thenResolve({
                 error: null,
                 response: [controllerAddress],
             });
@@ -5128,7 +5162,9 @@ describe('Minting Tasks', function() {
             ).once();
             verify(context.t721AdminServiceMock.get()).once();
             verify(context.ticketforgeServiceMock.get()).once();
-            verify(context.groupServiceMock.getGroupIDControllerFields(groupId, deepEqual(['id']))).once();
+            verify(
+                context.groupServiceMock.getGroupIDControllerFields(groupId, categoryOneId, deepEqual(['id'])),
+            ).once();
             // => generateTickets
             verify(context.ticketsServiceMock.predictTickets(deepEqual(ticketsPredictionInput))).once();
             // <= ticketMintingTransactionSequenceBuilderTask
@@ -5398,7 +5434,9 @@ describe('Minting Tasks', function() {
             });
             when(context.t721AdminServiceMock.get()).thenResolve(t721AdminInstance);
             when(context.ticketforgeServiceMock.get()).thenResolve(ticketForgeInstance);
-            when(context.groupServiceMock.getGroupIDControllerFields(groupId, deepEqual(['id']))).thenResolve({
+            when(
+                context.groupServiceMock.getGroupIDControllerFields(groupId, categoryOneId, deepEqual(['id'])),
+            ).thenResolve({
                 error: null,
                 response: [controllerAddress],
             });
@@ -5485,7 +5523,9 @@ describe('Minting Tasks', function() {
             ).once();
             verify(context.t721AdminServiceMock.get()).once();
             verify(context.ticketforgeServiceMock.get()).once();
-            verify(context.groupServiceMock.getGroupIDControllerFields(groupId, deepEqual(['id']))).once();
+            verify(
+                context.groupServiceMock.getGroupIDControllerFields(groupId, categoryOneId, deepEqual(['id'])),
+            ).once();
             // => generateTickets
             verify(context.ticketsServiceMock.predictTickets(deepEqual(ticketsPredictionInput))).once();
             // <= ticketMintingTransactionSequenceBuilderTask
@@ -5766,7 +5806,9 @@ describe('Minting Tasks', function() {
             });
             when(context.t721AdminServiceMock.get()).thenResolve(t721AdminInstance);
             when(context.ticketforgeServiceMock.get()).thenResolve(ticketForgeInstance);
-            when(context.groupServiceMock.getGroupIDControllerFields(groupId, deepEqual(['id']))).thenResolve({
+            when(
+                context.groupServiceMock.getGroupIDControllerFields(groupId, categoryOneId, deepEqual(['id'])),
+            ).thenResolve({
                 error: null,
                 response: [controllerAddress],
             });
@@ -5866,7 +5908,9 @@ describe('Minting Tasks', function() {
             ).once();
             verify(context.t721AdminServiceMock.get()).once();
             verify(context.ticketforgeServiceMock.get()).once();
-            verify(context.groupServiceMock.getGroupIDControllerFields(groupId, deepEqual(['id']))).once();
+            verify(
+                context.groupServiceMock.getGroupIDControllerFields(groupId, categoryOneId, deepEqual(['id'])),
+            ).once();
             // => generateTickets
             verify(context.ticketsServiceMock.predictTickets(deepEqual(ticketsPredictionInput))).once();
             // <= ticketMintingTransactionSequenceBuilderTask
@@ -6157,7 +6201,9 @@ describe('Minting Tasks', function() {
             });
             when(context.t721AdminServiceMock.get()).thenResolve(t721AdminInstance);
             when(context.ticketforgeServiceMock.get()).thenResolve(ticketForgeInstance);
-            when(context.groupServiceMock.getGroupIDControllerFields(groupId, deepEqual(['id']))).thenResolve({
+            when(
+                context.groupServiceMock.getGroupIDControllerFields(groupId, categoryOneId, deepEqual(['id'])),
+            ).thenResolve({
                 error: null,
                 response: [controllerAddress],
             });
@@ -6270,7 +6316,9 @@ describe('Minting Tasks', function() {
             ).once();
             verify(context.t721AdminServiceMock.get()).once();
             verify(context.ticketforgeServiceMock.get()).once();
-            verify(context.groupServiceMock.getGroupIDControllerFields(groupId, deepEqual(['id']))).once();
+            verify(
+                context.groupServiceMock.getGroupIDControllerFields(groupId, categoryOneId, deepEqual(['id'])),
+            ).once();
             // => generateTickets
             verify(context.ticketsServiceMock.predictTickets(deepEqual(ticketsPredictionInput))).once();
             // <= ticketMintingTransactionSequenceBuilderTask

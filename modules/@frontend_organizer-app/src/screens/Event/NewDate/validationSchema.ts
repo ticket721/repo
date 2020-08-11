@@ -5,7 +5,7 @@ const name = yup.string()
   .max(50, 'name_too_long')
   .required('name_required');
 const description = yup.string()
-  .max(1000)
+  .max(10000)
   .required('description_required');
 const tags = yup.array().of(
   yup.string()
@@ -20,8 +20,8 @@ export const textMetadataValidationSchema = yup.object().shape({
 });
 
 export const completeDateValidation = yup.object().shape({
-  eventBegin: yup.date().min(new Date(), 'Cannot be a past date').required('you need to provide a start date'),
-  eventEnd: yup.date().min(new Date(), 'Cannot be a past date').required('you need to provide an end date'),
+  eventBegin: yup.date().min(new Date(), 'past_date_forbidden').required('date_required'),
+  eventEnd: yup.date().min(yup.ref('eventBegin'), 'end_must_be_gt_start').required('date_required'),
   location: yup.object().shape({
     lat: yup.number(),
     lon: yup.number(),

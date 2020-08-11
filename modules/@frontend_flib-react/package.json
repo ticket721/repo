@@ -35,6 +35,9 @@
   },
   "homepage": "https://github.com/ticket721/flib#readme",
   "dependencies": {
+    "react-rte": "0.16.1",
+    "react-markdown": "4.3.1",
+    "@types/react-rte": "0.16.1",
     "@egjs/react-flicking": "3.2.2",
     "@sambego/storybook-state": "2.0.1",
     "@types/cleave.js": "1.4.2",
@@ -56,6 +59,7 @@
     "react-dropzone": "11.0.1",
     "react-router": "5.2.0",
     "react-router-dom": "5.2.0",
+    "react-select": "3.1.0",
     "react-visibility-sensor": "5.1.1",
     "slugify": "1.4.0",
     "styled-components": "5.1.0",
