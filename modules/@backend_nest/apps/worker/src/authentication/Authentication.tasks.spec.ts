@@ -240,7 +240,7 @@ describe('Authentication Tasks', function() {
 
             const emailPayload = {
                 to: email,
-                template: 'passwordReset',
+                template: 'resetPassword',
                 locale,
                 locals: {
                     validationLink: `${validationUrl}?token=${encodeURIComponent(b64Encode(signature))}`,
@@ -309,7 +309,7 @@ describe('Authentication Tasks', function() {
 
             const emailPayload = {
                 to: email,
-                template: 'passwordReset',
+                template: 'resetPassword',
                 locale,
                 locals: {
                     validationLink: `${validationUrl}?token=${encodeURIComponent(b64Encode(signature))}`,
