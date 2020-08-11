@@ -42,7 +42,7 @@
         "react-i18next": "11.3.3",
         "rxjs": "6.5.5",
         "@capacitor/cli": "2.0.1",
-        "react-scripts": "3.4.1",
+        "react-scripts": "3.4.2",
         "tslint": "6.0.0",
         "react-countdown": "2.2.1",
         "@stripe/react-stripe-js": "1.1.2",
