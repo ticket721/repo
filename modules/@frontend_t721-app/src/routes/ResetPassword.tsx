@@ -1,6 +1,6 @@
 import { ResetPassword }   from '@frontend/core/lib/components';
-import { StatusBarMargin } from '@frontend/core/lib/utils/StatusBarMargin';
-import { NavbarMargin }    from '@frontend/core/lib/utils/NavbarMargin';
+import { InvisibleStatusBarMargin } from '@frontend/core/lib/utils/InvisibleStatusBarMargin';
+import { TopNavMargin }             from '@frontend/core/lib/utils/TopNavMargin';
 import { DesktopWarning }  from '../utils/DesktopWarning';
 
-export default DesktopWarning(StatusBarMargin(NavbarMargin(ResetPassword)));
+export default DesktopWarning(InvisibleStatusBarMargin(TopNavMargin(ResetPassword)));

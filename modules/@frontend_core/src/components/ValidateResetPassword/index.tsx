@@ -34,7 +34,7 @@ export const ValidateResetPassword = () => {
         },
         validationSchema: validateResetPasswordValidationSchema,
         onSubmit: async (values) => {
-            validateResetPassword([b64Decode(parsedQuery.get('token')), values.password]);
+            validateResetPassword([b64Decode(parsedQuery.get('token')), values.password], { force: true });
         },
     });
     const isTabletOrMobile = useMediaQuery({ maxWidth: 1224 });
@@ -42,7 +42,7 @@ export const ValidateResetPassword = () => {
     useEffect(() => {
         if (response.data && response.called) {
             dispatch(PushNotification(t('password_confirmed'), 'success'));
-            history.push('/login');
+            history.replace('/login');
         }
     }, [response.data, response.called]);
 
@@ -94,7 +94,15 @@ export const ValidateResetPassword = () => {
                         />
                     </Inputs>
                     <ActionsContainer>
-                        <Button variant={'primary'} type={'submit'} title={t('reset_password')} />
+                        <Button
+                            variant={
+                                formik.values.password.length === 0 || formik.values.passwordConfirmation.length === 0
+                                    ? 'disabled'
+                                    : 'primary'
+                            }
+                            type={'submit'}
+                            title={t('reset_password')}
+                        />
                     </ActionsContainer>
                 </Form>
             </ValidateResetPasswordContainer>

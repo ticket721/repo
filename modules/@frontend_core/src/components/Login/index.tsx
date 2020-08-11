@@ -75,7 +75,12 @@ export const Login: React.FC<LoginProps> = (props: LoginProps) => {
                                 value={formik.values.password}
                                 error={formik.touched['password'] ? t(formik.errors['password']) : undefined}
                             />
-                            <ForgetPasswordLink onClick={() => history.push('/reset-password')}>
+                            <ForgetPasswordLink
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    history.push('/reset-password');
+                                }}
+                            >
                                 {t('forget_password')}
                             </ForgetPasswordLink>
                         </Line>

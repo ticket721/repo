@@ -85,7 +85,7 @@ const MobileApp: React.FC = () => {
                         <LoginPage/>
                     </Route>
 
-                    <Route path={'/reset-password'} exact={true}>
+                    <Route path={'/reset/password'} exact={true}>
                         <ResetPasswordPage />
                     </Route>
                     <Route path={'/validate-password'} exact={true}>

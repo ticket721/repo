@@ -4,7 +4,6 @@ import { v4 } from 'uuid';
 import { useDispatch } from 'react-redux';
 import { Button, TextInput, Icon } from '@frontend/flib-react/lib/components';
 import { ResetPasswordResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/authentication/dto/ResetPasswordResponse.dto';
-import { useHistory } from 'react-router';
 import styled from 'styled-components';
 import { resetPasswordValidationSchema } from './validation';
 import { useTranslation } from 'react-i18next';
@@ -16,7 +15,6 @@ import { PushNotification } from '../../redux/ducks/notifications';
 
 export const ResetPassword = () => {
     const [t] = useTranslation('reset_password');
-    const history = useHistory();
     const dispatch = useDispatch();
     const [uuid] = useState<string>(v4() + '@reset-password');
     const { lazyRequest: resetPassword, response } = useLazyRequest<ResetPasswordResponseDto>('resetPassword', uuid);
@@ -26,7 +24,7 @@ export const ResetPassword = () => {
         },
         validationSchema: resetPasswordValidationSchema,
         onSubmit: async (value) => {
-            resetPassword([value.email.toLowerCase(), `${getEnv().REACT_APP_SELF}/validate-password`]);
+            resetPassword([value.email.toLowerCase(), `${getEnv().REACT_APP_SELF}/validate-password`], { force: true });
         },
     });
     const isTabletOrMobile = useMediaQuery({ maxWidth: 1224 });
@@ -44,7 +42,7 @@ export const ResetPassword = () => {
                     <Icon icon={'ticket721'} size={'40px'} color={'#fff'} />
                 </IconContainer>
                 <Form onSubmit={formik.handleSubmit}>
-                    <span>{t('description')}</span>
+                    <Description>{t('description')}</Description>
                     <Inputs>
                         <TextInput
                             name={'email'}
@@ -57,14 +55,11 @@ export const ResetPassword = () => {
                         />
                     </Inputs>
                     <ActionsContainer>
-                        <Button variant={'primary'} type={'submit'} title={t('send_reset_email')} />
-                        <GoBack
-                            onClick={() => {
-                                history.replace('/login');
-                            }}
-                        >
-                            {t('go_back')}
-                        </GoBack>
+                        <Button
+                            variant={formik.values.email.length < 3 ? 'disabled' : 'primary'}
+                            type={'submit'}
+                            title={t('send_reset_email')}
+                        />
                     </ActionsContainer>
                 </Form>
             </ResetPasswordContainer>
@@ -99,6 +94,11 @@ const ResetPasswordContainer = styled.div`
     border-radius: 15px;
 `;
 
+const Description = styled.span`
+    font-size: 12px;
+    color: ${(props) => props.theme.textColorDark};
+`;
+
 const IconContainer = styled.div`
     margin: 10px 0 5px;
 `;
@@ -126,14 +126,4 @@ const ActionsContainer = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
-`;
-
-const GoBack = styled.span`
-    font-size: 11px;
-    line-height: 15px;
-    margin-top: 5px;
-    text-decoration: underline;
-    text-align: center;
-    cursor: pointer;
-    color: #ccc;
 `;
