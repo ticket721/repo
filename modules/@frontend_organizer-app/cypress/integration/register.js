@@ -53,7 +53,6 @@ describe('Register', () => {
         cy.get('input[name=password]').type(`${password}{enter}`);
 
         cy.url().should('be', '/');
-        // cy.get('span').should('contain', messages.emailSent);
         cy.contains('.Toastify__toast', messages.success);
     })
 
