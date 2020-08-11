@@ -32,10 +32,10 @@ export const ResetPassword = () => {
     const isTabletOrMobile = useMediaQuery({ maxWidth: 1224 });
 
     useEffect(() => {
-        if (response.data) {
+        if (response.data && response.called) {
             dispatch(PushNotification(t('email_sent'), 'success'));
         }
-    }, [response.data]);
+    }, [response.data, response.called]);
 
     return (
         <ResetPasswordWrapper mobile={isTabletOrMobile}>

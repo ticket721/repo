@@ -17,5 +17,9 @@ export class ValidateResetPasswordInputDto {
     /**
      * User Password
      */
+    @ApiProperty({
+        description: 'New user password',
+    })
+    @IsString()
     password: string;
 }

@@ -40,21 +40,21 @@ export const ValidateResetPassword = () => {
     const isTabletOrMobile = useMediaQuery({ maxWidth: 1224 });
 
     useEffect(() => {
-        if (response.data) {
-            dispatch(PushNotification(t('email_confirmed'), 'success'));
-            history.push('/');
+        if (response.data && response.called) {
+            dispatch(PushNotification(t('password_confirmed'), 'success'));
+            history.push('/login');
         }
-    }, [response.data]);
+    }, [response.data, response.called]);
 
     useEffect(() => {
-        if (response.error) {
+        if (response.error && response.called) {
             console.log(response.error);
             if (response.error.statusCode === 500) {
                 dispatch(PushNotification(t('internal_server_error'), 'error'));
             }
             dispatch(PushNotification(t(response.error), 'error'));
         }
-    }, [response.error]);
+    }, [response.error, response.called]);
 
     return (
         <ValidateResetPasswordWrapper mobile={isTabletOrMobile}>

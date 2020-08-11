@@ -7,6 +7,7 @@ i18n.addResourceBundle('en', 'validate_reset_password', {
     password_confirmation_label: 'Password confirmation',
     different_password: 'both password need to be the same',
     reset_password: 'Change password',
+    password_confirmed: 'Password successfully changed',
 
     // errors
     password_required: 'password is required',
@@ -20,6 +21,7 @@ i18n.addResourceBundle('fr', 'validate_reset_password', {
     password_placeholder: 'Mot de passe',
     password_confirmation_label: 'Confirmation du mot de passe',
     reset_password: 'Modifier le mot de passse',
+    password_confirmed: 'Mot de passe modifié avec succès',
 
     // errors
     password_required: 'mot de passe requis',
