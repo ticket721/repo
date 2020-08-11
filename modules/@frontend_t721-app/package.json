@@ -56,7 +56,9 @@
         "cordova-res": "0.15.1",
         "es6-promise-plugin": "4.2.2",
         "cordova-plugin-brightness": "0.2.0",
-        "@ionic-native/brightness": "5.27.0"
+        "@ionic-native/brightness": "5.27.0",
+        "cordova-plugin-inappbrowser": "4.0.0",
+        "@ionic-native/in-app-browser": "5.27.0"
     },
     "resolutions": {
         "react-scripts/**/jest": "24.9.0"

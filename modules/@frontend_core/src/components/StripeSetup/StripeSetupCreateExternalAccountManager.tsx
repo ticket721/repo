@@ -16,6 +16,12 @@ import './StripeSetupCreateExternalAccountManager.locales';
 import { useTranslation }                        from 'react-i18next';
 import { CtaMargin }                             from '../../utils/CtaMargin';
 import { TopNavMargin }                          from '../../utils/TopNavMargin';
+import { InvisibleStatusBarMargin }              from '../../utils/InvisibleStatusBarMargin';
+import axios, { Method }                         from 'axios';
+import { getEnv }                                from '../../utils/getEnv';
+import qs                                        from 'qs';
+
+const StripeNativeEndpointUrl = 'https://api.stripe.com/v1';
 
 export interface StripeSetupManagerCreateExternalAccountProps {
     user: PasswordlessUserDto;
@@ -71,6 +77,35 @@ const canCreateAccount = (...args: any[]): boolean => {
     return args.filter((elem) => !elem).length === 0;
 };
 
+const createBankAccountPlaceholder = (
+    name: string,
+    country: string,
+    currency: string,
+    iban: string,
+    routingNumber: string,
+): Promise<any> => {
+
+    const options = {
+        method: 'post' as Method,
+        headers: {
+            'content-type': 'application/x-www-form-urlencoded',
+            'authorization': `Bearer ${getEnv().REACT_APP_STRIPE_API_KEY}`
+        },
+        data: qs.stringify({
+            bank_account: {
+                country,
+                account_holder_name: name,
+                currency,
+                account_number: iban,
+                routing_number: routingNumber,
+            }
+        }),
+        url: `${StripeNativeEndpointUrl}/tokens`,
+    };
+
+    return axios(options);
+};
+
 const generateBankAccountToken = async (
     stripe: StripeSDK,
     dispatch: Dispatch,
@@ -108,20 +143,15 @@ const generateBankAccountToken = async (
 
             try {
 
-                const { bank_account, error } = await stripe.stripe.createBankAccountToken({
-                    country,
-                    account_holder_name: name,
-                    currency,
-                    account_number: iban,
-                    routing_number: routingNumber,
-                });
+                const res = await createBankAccountPlaceholder(
+                   name,
+                   country,
+                   currency,
+                   iban,
+                   routingNumber
+                );
 
-                if (error) {
-                    dispatch(PushNotification(error.message, 'error'));
-                    throw error;
-                }
-
-                return bank_account;
+                return res.data;
 
             } catch (e) {
                 dispatch(PushNotification(e.message, 'error'));
@@ -134,122 +164,125 @@ const generateBankAccountToken = async (
 export const StripeSetupCreateExternalAccountManager: React.FC<StripeSetupManagerCreateExternalAccountProps> =
     CtaMargin(
         TopNavMargin(
-            (props: StripeSetupManagerCreateExternalAccountProps): JSX.Element => {
+            InvisibleStatusBarMargin(
+                (props: StripeSetupManagerCreateExternalAccountProps): JSX.Element => {
 
-                const [name, setName] = useState(undefined);
-                const [country, setCountry] = useState(undefined);
-                const [currency, setCurrency] = useState(undefined);
-                const [iban, setIban] = useState(undefined);
-                const [routingNumber, setRoutingNumber] = useState(undefined);
-                const stripe = useCustomStripe();
-                const dispatch = useDispatch();
-                const token = useSelector((state: AppState) => state.auth.token?.value);
-                const [uuid] = useState(v4());
-                const addExternalAccountLazyRequest = useLazyRequest('payment.stripe.addExternalAccount', uuid);
-                const [called, setCalled] = useState(false);
-                const [t] = useTranslation('stripe_setup_create_external_account_manager');
+                    const [name, setName] = useState(undefined);
+                    const [country, setCountry] = useState(undefined);
+                    const [currency, setCurrency] = useState(undefined);
+                    const [iban, setIban] = useState(undefined);
+                    const [routingNumber, setRoutingNumber] = useState(undefined);
+                    const stripe = useCustomStripe();
+                    const dispatch = useDispatch();
+                    const token = useSelector((state: AppState) => state.auth.token?.value);
+                    const [uuid] = useState(v4());
+                    const addExternalAccountLazyRequest = useLazyRequest('payment.stripe.addExternalAccount', uuid);
+                    const [called, setCalled] = useState(false);
+                    const [t] = useTranslation('stripe_setup_create_external_account_manager');
 
-                const createBankAccountToken = async () => {
-                    setCalled(true);
-                    try {
-                        const bankAccountToken = await generateBankAccountToken(stripe, dispatch, name, country, currency, iban, routingNumber);
+                    const createBankAccountToken = async () => {
+                        setCalled(true);
+                        try {
+                            console.log(name, country, currency, iban, routingNumber, 'ok');
+                            const bankAccountToken = await generateBankAccountToken(stripe, dispatch, name, country, currency, iban, routingNumber);
 
-                        if (!addExternalAccountLazyRequest.response.called) {
-                            addExternalAccountLazyRequest.lazyRequest([
-                                token,
-                                {
-                                    bank_account_token: bankAccountToken.id,
-                                },
-                            ]);
-                        }
-                    } catch (e) {
-                        setCalled(false);
-                    }
-
-                };
-
-                useDeepEffect(() => {
-                    if (called) {
-
-                        if (addExternalAccountLazyRequest.response.called &&
-                            !addExternalAccountLazyRequest.response.loading) {
-                            if (addExternalAccountLazyRequest.response.error) {
-                                setCalled(false);
-                                dispatch(PushNotification(addExternalAccountLazyRequest.response.error.message, 'error'));
-                            } else {
-                                props.forceFetchInterface();
+                            if (!addExternalAccountLazyRequest.response.called) {
+                                addExternalAccountLazyRequest.lazyRequest([
+                                    token,
+                                    {
+                                        bank_account_token: bankAccountToken.id,
+                                    },
+                                ]);
                             }
+                        } catch (e) {
+                            setCalled(false);
                         }
 
-                    }
+                    };
 
-                }, [
-                    called,
-                    addExternalAccountLazyRequest.response,
-                ]);
+                    useDeepEffect(() => {
+                        if (called) {
 
-                return <Container>
-                    <Title>{t('title')}</Title>
-                    <ContentContainer>
-                        <Description>{t('description')}</Description>
-                    </ContentContainer>
-                    <BankAccountForm>
-                        <InputContainer>
-                            <TextInput
-                                name={'account_holder'}
-                                label={t('account_holder_label')}
-                                placeholder={t('account_holder_placeholder')}
-                                onChange={(ev) => setName(ev.target.value)}
-                            />
-                        </InputContainer>
-                        <InputContainer>
-                            <SelectInput
-                                label={t('country_label')}
-                                options={CountriesOptions}
-                                placeholder={t('country_placeholder')}
-                                onChange={(opt) => setCountry(opt.value)}
-                            />
-                        </InputContainer>
-                        <InputContainer>
-                            <SelectInput
-                                label={t('currency_label')}
-                                options={CurrenciesOptions}
-                                placeholder={t('currency_placeholder')}
-                                onChange={(opt) => setCurrency(opt.value)}
-                            />
-                        </InputContainer>
-                        <InputContainer>
-                            <TextInput
-                                name={'account_number'}
-                                label={t('account_number_label')}
-                                options={{
-                                    blocks: [4, 4, 4, 4, 4, 4, 4],
-                                    uppercase: true,
-                                }}
-                                placeholder={t('account_number_placeholder')}
-                                onChange={(ev) => setIban(ev.target.value.split(' ').join(''))}
-                            />
-                        </InputContainer>
-                        <InputContainer>
-                            <TextInput
-                                name={'routing_number'}
-                                label={t('routing_number_label')}
-                                options={{
-                                    blocks: [9],
-                                    uppercase: true,
-                                }}
-                                placeholder={t('routing_number_placeholder')}
-                                onChange={(ev) => setRoutingNumber(ev.target.value === '' ? undefined : ev.target.value)}
-                            />
-                        </InputContainer>
-                    </BankAccountForm>
-                    <FullButtonCta
-                        loading={called}
-                        show={canCreateAccount(name, country, currency, iban)}
-                        ctaLabel={called ? t('adding_bank_account') : t('add_bank_account')}
-                        onClick={createBankAccountToken}
-                    />
-                </Container>;
-            }
+                            if (addExternalAccountLazyRequest.response.called &&
+                                !addExternalAccountLazyRequest.response.loading) {
+                                if (addExternalAccountLazyRequest.response.error) {
+                                    setCalled(false);
+                                    dispatch(PushNotification(addExternalAccountLazyRequest.response.error.message, 'error'));
+                                } else {
+                                    props.forceFetchInterface();
+                                }
+                            }
+
+                        }
+
+                    }, [
+                        called,
+                        addExternalAccountLazyRequest.response,
+                    ]);
+
+                    return <Container>
+                        <Title>{t('title')}</Title>
+                        <ContentContainer>
+                            <Description>{t('description')}</Description>
+                        </ContentContainer>
+                        <BankAccountForm>
+                            <InputContainer>
+                                <TextInput
+                                    name={'account_holder'}
+                                    label={t('account_holder_label')}
+                                    placeholder={t('account_holder_placeholder')}
+                                    onChange={(ev) => setName(ev.target.value)}
+                                />
+                            </InputContainer>
+                            <InputContainer>
+                                <SelectInput
+                                    label={t('country_label')}
+                                    options={CountriesOptions}
+                                    placeholder={t('country_placeholder')}
+                                    onChange={(opt) => setCountry(opt.value)}
+                                />
+                            </InputContainer>
+                            <InputContainer>
+                                <SelectInput
+                                    label={t('currency_label')}
+                                    options={CurrenciesOptions}
+                                    placeholder={t('currency_placeholder')}
+                                    onChange={(opt) => setCurrency(opt.value)}
+                                />
+                            </InputContainer>
+                            <InputContainer>
+                                <TextInput
+                                    name={'account_number'}
+                                    label={t('account_number_label')}
+                                    options={{
+                                        blocks: [4, 4, 4, 4, 4, 4, 4],
+                                        uppercase: true,
+                                    }}
+                                    placeholder={t('account_number_placeholder')}
+                                    onChange={(ev) => setIban(ev.target.value.split(' ').join(''))}
+                                />
+                            </InputContainer>
+                            <InputContainer>
+                                <TextInput
+                                    name={'routing_number'}
+                                    label={t('routing_number_label')}
+                                    options={{
+                                        blocks: [9],
+                                        uppercase: true,
+                                    }}
+                                    placeholder={t('routing_number_placeholder')}
+                                    onChange={(ev) => setRoutingNumber(ev.target.value === '' || !ev.target.value ? undefined : ev.target.value)}
+                                />
+                            </InputContainer>
+                        </BankAccountForm>
+                        <FullButtonCta
+                            loading={called}
+                            show={canCreateAccount(name, country, currency, iban)}
+                            ctaLabel={called ? t('adding_bank_account') : t('add_bank_account')}
+                            onClick={createBankAccountToken}
+                        />
+                    </Container>;
+                }
+            )
         )
     );

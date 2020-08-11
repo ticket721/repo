@@ -23,7 +23,7 @@ export interface StripePaymentMethod {
 }
 
 export interface ConnectAccountError {
-    code: number;
+    code: string;
     reason: string;
     requirement: string;
 }

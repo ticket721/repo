@@ -19,6 +19,7 @@ import { useTranslation }           from 'react-i18next';
 import './StripeSetupCreateConnectAccountManager.locales';
 import { CtaMargin }                from '../../utils/CtaMargin';
 import { TopNavMargin }             from '../../utils/TopNavMargin';
+import { InvisibleStatusBarMargin } from '../../utils/InvisibleStatusBarMargin';
 
 const StripeServiceAgreementUrl = 'https://stripe.com/legal';
 const StripeConnectedAccountAgreementUrl = 'https://stripe.com/connect-account/legal';
@@ -160,121 +161,123 @@ const generateAccountToken = async (stripe: StripeSDK, selection: string, dispat
 export const StripeSetupCreateConnectAccountManager: React.FC<StripeSetupCreateConnectAccountManagerProps> =
     CtaMargin(
         TopNavMargin(
-            (props: StripeSetupCreateConnectAccountManagerProps): JSX.Element => {
+            InvisibleStatusBarMargin(
+                (props: StripeSetupCreateConnectAccountManagerProps): JSX.Element => {
 
-                const [selection, setSelection] = useState(null);
-                const theme = useTheme() as Theme;
-                const stripe = useCustomStripe();
-                const dispatch = useDispatch();
-                const token = useSelector((state: AppState) => state.auth.token?.value);
-                const [uuid] = useState(v4());
-                const createStripeInterfaceLazyRequest = useLazyRequest('payment.stripe.createInterface', uuid);
-                const [called, setCalled] = useState(false);
-                const [t] = useTranslation('stripe_setup_create_connect_account_manager');
+                    const [selection, setSelection] = useState(null);
+                    const theme = useTheme() as Theme;
+                    const stripe = useCustomStripe();
+                    const dispatch = useDispatch();
+                    const token = useSelector((state: AppState) => state.auth.token?.value);
+                    const [uuid] = useState(v4());
+                    const createStripeInterfaceLazyRequest = useLazyRequest('payment.stripe.createInterface', uuid);
+                    const [called, setCalled] = useState(false);
+                    const [t] = useTranslation('stripe_setup_create_connect_account_manager');
 
-                const createAccountToken = async () => {
-                    setCalled(true);
-                    try {
-                        const accountToken = await generateAccountToken(stripe, selection, dispatch);
-                        if (!createStripeInterfaceLazyRequest.response.called) {
-                            createStripeInterfaceLazyRequest.lazyRequest([
-                                token,
-                                {
-                                    account_token: accountToken.id
+                    const createAccountToken = async () => {
+                        setCalled(true);
+                        try {
+                            const accountToken = await generateAccountToken(stripe, selection, dispatch);
+                            if (!createStripeInterfaceLazyRequest.response.called) {
+                                createStripeInterfaceLazyRequest.lazyRequest([
+                                    token,
+                                    {
+                                        account_token: accountToken.id
+                                    }
+                                ]);
+                            }
+                        } catch (e) {
+                            setCalled(false);
+                        }
+                    };
+
+                    useDeepEffect(() => {
+                        if (called) {
+
+                            if (createStripeInterfaceLazyRequest.response.called &&
+                                !createStripeInterfaceLazyRequest.response.loading) {
+                                if (createStripeInterfaceLazyRequest.response.error) {
+                                    setCalled(false);
+                                    dispatch(PushNotification(createStripeInterfaceLazyRequest.response.error.message, 'error'))
+                                } else {
+                                    props.forceFetchInterface();
                                 }
-                            ]);
-                        }
-                    } catch (e) {
-                        setCalled(false);
-                    }
-                };
-
-                useDeepEffect(() => {
-                    if (called) {
-
-                        if (createStripeInterfaceLazyRequest.response.called &&
-                            !createStripeInterfaceLazyRequest.response.loading) {
-                            if (createStripeInterfaceLazyRequest.response.error) {
-                                setCalled(false);
-                                dispatch(PushNotification(createStripeInterfaceLazyRequest.response.error.message, 'error'))
-                            } else {
-                                props.forceFetchInterface();
                             }
+
                         }
 
-                    }
+                    }, [
+                        called,
+                        createStripeInterfaceLazyRequest.response
+                    ]);
 
-                }, [
-                    called,
-                    createStripeInterfaceLazyRequest.response
-                ]);
+                    const items = [{
+                        value: 'individual',
+                        title: t('individual')
+                    }, {
+                        value: 'company',
+                        title: t('company')
+                    }, {
+                        value: 'non_profit',
+                        title: t('non_profit')
+                    }];
 
-                const items = [{
-                    value: 'individual',
-                    title: t('individual')
-                }, {
-                    value: 'company',
-                    title: t('company')
-                }, {
-                    value: 'non_profit',
-                    title: t('non_profit')
-                }];
+                    return <>
+                        <Container>
+                            <Title>
+                                {t('title')}
+                            </Title>
+                            <ContentContainer>
+                                <Description>
+                                    {t('description_first')}
+                                </Description>
+                                <Description>
+                                    {t('description_second')}
+                                </Description>
+                            </ContentContainer>
+                        </Container>
+                        <ListContainer>
+                            <ul className={'row'}>
+                                {
+                                    items.map(item => (
+                                        <Item
+                                            key={item.value}
+                                            className={selection === item.value ? 'selected' : ''}
+                                            onClick={() => {
+                                                setSelection(item.value)
+                                            }}
+                                        >
+                                            <h2>{item.title}</h2>
+                                            <CheckIcon icon={'check'} size={'12px'} color={theme.primaryColor.hex}/>
+                                        </Item>
+                                    ))
+                                }
+                            </ul>
+                        </ListContainer>
+                        {
+                            selection !== null
 
-                return <>
-                    <Container>
-                        <Title>
-                            {t('title')}
-                        </Title>
-                        <ContentContainer>
-                            <Description>
-                                {t('description_first')}
-                            </Description>
-                            <Description>
-                                {t('description_second')}
-                            </Description>
-                        </ContentContainer>
-                    </Container>
-                    <ListContainer>
-                        <ul className={'row'}>
-                            {
-                                items.map(item => (
-                                    <Item
-                                        key={item.value}
-                                        className={selection === item.value ? 'selected' : ''}
-                                        onClick={() => {
-                                            setSelection(item.value)
-                                        }}
-                                    >
-                                        <h2>{item.title}</h2>
-                                        <CheckIcon icon={'check'} size={'12px'} color={theme.primaryColor.hex}/>
-                                    </Item>
-                                ))
-                            }
-                        </ul>
-                    </ListContainer>
-                    {
-                        selection !== null
+                                ?
+                                <Agreement>
+                                    {t('agreement_first_part')}
+                                    <a href={StripeServiceAgreementUrl}>{t('services_agreement')}</a>
+                                    {t('agreement_second_part')}
+                                    <a href={StripeConnectedAccountAgreementUrl}>{t('stripe_connected_account_agreement')}</a>
+                                    .
+                                </Agreement>
 
-                            ?
-                            <Agreement>
-                                {t('agreement_first_part')}
-                                <a href={StripeServiceAgreementUrl}>{t('services_agreement')}</a>
-                                {t('agreement_second_part')}
-                                <a href={StripeConnectedAccountAgreementUrl}>{t('stripe_connected_account_agreement')}</a>
-                                .
-                            </Agreement>
-
-                            :
-                            null
-                    }
-                    <FullButtonCta
-                        show={selection !== null && !!stripe?.stripe}
-                        ctaLabel={called ? t('creating_account') : t('create_account')}
-                        onClick={createAccountToken}
-                        loading={called}
-                    />
-                </>
-            }
+                                :
+                                null
+                        }
+                        <FullButtonCta
+                            show={selection !== null && !!stripe?.stripe}
+                            ctaLabel={called ? t('creating_account') : t('create_account')}
+                            onClick={createAccountToken}
+                            loading={called}
+                        />
+                    </>
+                }
+            )
         )
     );
 

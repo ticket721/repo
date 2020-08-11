@@ -17,6 +17,10 @@ import { PaymentStripeCreateStripeInterfaceResponseDto } from '@app/server/contr
 import { StripeService }                                 from '@lib/common/stripe/Stripe.service';
 import { PaymentStripeAddExternalAccountInputDto }       from '@app/server/controllers/payment/stripe/dto/PaymentStripeAddExternalAccountInput.dto';
 import { PaymentStripeAddExternalAccountResponseDto }    from '@app/server/controllers/payment/stripe/dto/PaymentStripeAddExternalAccountResponse.dto';
+import { PaymentStripeGenerateOnboardingUrlInputDto }    from '@app/server/controllers/payment/stripe/dto/PaymentStripeGenerateOnboardingUrlInput.dto';
+import { PaymentStripeGenerateOnboardingUrlResponseDto } from '@app/server/controllers/payment/stripe/dto/PaymentStripeGenerateOnboardingUrlResponse.dto';
+import { PaymentStripeGenerateUpdateUrlInputDto }        from '@app/server/controllers/payment/stripe/dto/PaymentStripeGenerateUpdateUrlInput.dto';
+import { PaymentStripeGenerateUpdateUrlResponseDto }     from '@app/server/controllers/payment/stripe/dto/PaymentStripeGenerateUpdateUrlResponse.dto';
 
 @Injectable()
 @ApiBearerAuth()
@@ -105,4 +109,53 @@ export class StripeController extends ControllerBasics<StripeInterfaceEntity> {
 
     }
 
+    @Post('/onboarding')
+    @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
+    @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.OK)
+    @Roles('authenticated')
+    @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized, StatusCodes.InternalServerError, StatusCodes.BadRequest])
+    async generateOnboardingUrl(@Body() body: PaymentStripeGenerateOnboardingUrlInputDto, @User() user: UserDto): Promise<PaymentStripeGenerateOnboardingUrlResponseDto> {
+
+        const stripeInterface = await this._serviceCall(
+            this.stripeInterfacesService.recoverUserInterface(user),
+            StatusCodes.InternalServerError
+        );
+
+        const onboardingUrl = await this._serviceCall(
+            this.stripeInterfacesService.generateOnboardingUrl(stripeInterface, body.refresh_url, body.return_url),
+            StatusCodes.InternalServerError
+        );
+
+        return {
+            url: onboardingUrl.url,
+            expires_at: onboardingUrl.expires_at,
+            created: onboardingUrl.created
+        }
+    }
+    
+    @Post('/update')
+    @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
+    @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.OK)
+    @Roles('authenticated')
+    @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized, StatusCodes.InternalServerError, StatusCodes.BadRequest])
+    async generateUpdateUrl(@Body() body: PaymentStripeGenerateUpdateUrlInputDto, @User() user: UserDto): Promise<PaymentStripeGenerateUpdateUrlResponseDto> {
+
+        const stripeInterface = await this._serviceCall(
+            this.stripeInterfacesService.recoverUserInterface(user),
+            StatusCodes.InternalServerError
+        );
+
+        const updateUrl = await this._serviceCall(
+            this.stripeInterfacesService.generateUpdateUrl(stripeInterface, body.refresh_url, body.return_url),
+            StatusCodes.InternalServerError
+        );
+
+        return {
+            url: updateUrl.url,
+            expires_at: updateUrl.expires_at,
+            created: updateUrl.created
+        }
+    }
 }

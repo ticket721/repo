@@ -9,7 +9,7 @@ var migration1596712433 = {
 
         const stripe_interface_connect_account_error_creation = {
             query: `CREATE TYPE IF NOT EXISTS ticket721.connect_account_error (
-                        code int,
+                        code text,
                         reason text,
                         requirement text
                     );`,

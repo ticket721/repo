@@ -16,17 +16,18 @@ import SearchViewAllPage                                                from './
 import EventPage                                                        from './routes/Event';
 import TicketPage                                                       from './routes/Ticket';
 import TicketSelectionPage                                              from './routes/TicketSelection';
-import SearchPage                from './routes/Search';
-import TagsPage                  from './routes/Tags';
-import WalletPage                from './routes/Wallet';
-import CartPage                  from './routes/Cart';
-import ValidateRoutePage         from './routes/ValidateRoute';
-import StripeSetupPage           from './routes/StripeSetup';
-import { useKeyboardVisibility } from '@frontend/core/lib/utils/useKeyboardVisibility';
-import { UserContextGuard }      from '@frontend/core/lib/utils/UserContext';
-import DeepLinksListener         from './components/DeepLinksListener';
-import MediaQuery                from 'react-responsive';
-import { useFeatureFlag }           from '@frontend/core/lib/components/FeatureFlag';
+import CloseRedirect                                                    from './routes/CloseRedirect';
+import SearchPage                                                       from './routes/Search';
+import TagsPage                                                         from './routes/Tags';
+import WalletPage                                                       from './routes/Wallet';
+import CartPage                                                         from './routes/Cart';
+import ValidateRoutePage                                                from './routes/ValidateRoute';
+import StripeSetupPage                                                  from './routes/StripeSetup';
+import { useKeyboardVisibility }                                        from '@frontend/core/lib/utils/useKeyboardVisibility';
+import { UserContextGuard }                                             from '@frontend/core/lib/utils/UserContext';
+import DeepLinksListener                                                from './components/DeepLinksListener';
+import MediaQuery                                                       from 'react-responsive';
+import { useFeatureFlag }                                               from '@frontend/core/lib/components/FeatureFlag';
 
 const TopNavWrapper = (props: { back: () => void }): JSX.Element => {
 
@@ -66,7 +67,7 @@ const MobileApp: React.FC = () => {
 
     const flags = {
         stripe_interface_setup: useFeatureFlag('stripe_interface_setup'),
-        admin_flag: useFeatureFlag('admin_flag')
+        admin_flag: useFeatureFlag('admin_flag'),
     };
 
     return <Suspense fallback={<FullPageLoading/>}>
@@ -74,7 +75,7 @@ const MobileApp: React.FC = () => {
             <AppContainer>
                 <MediaQuery maxDeviceWidth={1224}>
                     {
-                        location.pathname.lastIndexOf('/') !== 0
+                        location.pathname.lastIndexOf('/') !== 0 && location.pathname.indexOf('/_/') !== 0
 
                             ?
                             <TopNavWrapper back={goBackOrHome}/>
@@ -110,6 +111,10 @@ const MobileApp: React.FC = () => {
                             null
 
                     }
+
+                    <Route path={'/_/redirect/close'} exact={true}>
+                        <CloseRedirect/>
+                    </Route>
 
                     <Route path={'/login'} exact={true}>
                         <LoginPage/>

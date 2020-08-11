@@ -1,9 +1,20 @@
-import { PasswordlessUserDto }   from '@common/sdk/lib/@backend_nest/apps/server/src/authentication/dto/PasswordlessUser.dto';
-import { StripeInterfaceEntity } from '@common/sdk/lib/@backend_nest/libs/common/src/stripeinterface/entities/StripeInterface.entity';
-import React, { useState }       from 'react';
-import styled                    from 'styled-components';
-import { Button, SelectInput }   from '@frontend/flib-react/lib/components';
-import { useTranslation }        from 'react-i18next';
+import { PasswordlessUserDto }                             from '@common/sdk/lib/@backend_nest/apps/server/src/authentication/dto/PasswordlessUser.dto';
+import { StripeInterfaceEntity, ConnectAccountCapability } from '@common/sdk/lib/@backend_nest/libs/common/src/stripeinterface/entities/StripeInterface.entity';
+import React, { useState }     from 'react';
+import styled, { useTheme }    from 'styled-components';
+import { Button, SelectInput, Icon } from '@frontend/flib-react/lib/components';
+import { useTranslation }           from 'react-i18next';
+import { Theme }                    from '@frontend/flib-react/lib/config/theme';
+import './StripeSetupConnectAccountCapabilitiesManager.locales';
+import './StripeSetupConnectAccountRequirementsManager.locales';
+import { v4 }                       from 'uuid';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppState }                 from '../../redux';
+import { useLazyRequest }           from '../../hooks/useLazyRequest';
+import { getEnv }                   from '../../utils/getEnv';
+import { useDeepEffect }            from '../../hooks/useDeepEffect';
+import { open }                     from '../../utils/inAppBrowser';
+import { PushNotification }         from '../../redux/ducks/notifications';
 
 // tslint:disable-next-line
 const getSymbolFromCurrency = require('currency-symbol-map');
@@ -16,12 +27,17 @@ export interface StripeSetupConnectAccountManagerProps {
 }
 
 const BalanceContainerPlaceholder = styled.div`
-  height: 30vh;
+  height: calc(30vh + env(safe-area-inset-top));
+  height: calc(30vh + constant(safe-area-inset-top));
+  margin-top: - env(safe-area-inset-top);
+  margin-top: - constant(safe-area-inset-top);
+  background-color: red;
 `;
 
 const BalanceContainer = styled.div`
   width: 100vw;
-  height: 30vh;
+  height: calc(30vh + env(safe-area-inset-top));
+  height: calc(30vh + constant(safe-area-inset-top));
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -30,10 +46,14 @@ const BalanceContainer = styled.div`
   top: 0;
   z-index: 10;
   background-color: #120f1a;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
 `;
 
 const MenuContainer = styled.div`
-  min-height: 70vh;
+  min-height: calc(70vh - env(safe-area-inset-top));
+  min-height: calc(70vh - constant(safe-area-inset-top));
+  padding-bottom: calc(16px + env(safe-area-inset-bottom));
+  padding-bottom: calc(16px + constant(safe-area-inset-bottom));
   background-color: ${props => props.theme.componentColor};
   z-index: 1;
 `;
@@ -87,7 +107,7 @@ interface StripeSetupConnectAccountBalanceManagerProps {
 
 const BalanceTextContainer = styled.div`
   width: 100%;
-  height: 100%;
+  height: 15vh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -221,44 +241,350 @@ const fusionBalances = (stripeBalances: any): BalanceCurrencyInfo[] => {
 
 const SectionHeader = styled.div`
   background-color: ${props => props.theme.darkBg};
-  opacity: 0.75;
   height: 50px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  
+  & > span {
+    font-size: 18px;
+    font-weight: 500;
+    margin-left: ${props => props.theme.regularSpacing};
+  }
 `;
 
-export const StripeSetupConnectAccountCapabilitiesManager: React.FC<any> = (props: any): JSX.Element => {
-    return <>
-            <SectionHeader>
-                <p>Lol</p>
-            </SectionHeader>
-        <p>
-            Content
-        </p>
-        <p>
-            Content
-        </p>
-        <p>
-            Content
-        </p>
-        </>
+interface SectionElementContainerProps {
+    clickable?: boolean;
+}
+
+const SectionElementContainer = styled.div<SectionElementContainerProps>`
+  max-width: 500px;
+  background-color: ${props => props.theme.componentColor};
+  padding: ${props => props.theme.regularSpacing}; 
+  margin: ${props => props.theme.regularSpacing}; 
+  border-radius: ${props => props.theme.defaultRadius};
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  cursor: ${props => props.clickable ? 'pointer' : 'default'};
+`;
+
+const CapabilityTitle = styled.h3`
+  font-size: 16px;
+  font-weight: 400;
+`;
+
+interface StatusTextProps {
+    color: string;
+}
+
+const StatusText = styled.h3<StatusTextProps>`
+  font-size: 16px;
+  font-weight: 400;
+  color: ${props => props.color};
+`;
+
+const FieldTitle = styled.h4`
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  opacity: 0.3;
+  margin-bottom: 4px;
+`;
+
+const FieldContainer = styled.div`
+
+`;
+
+const FieldsContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+`;
+
+export interface StripeSetupConnectAccountCapabilitiesManagerProps {
+    capabilities: ConnectAccountCapability[];
+}
+
+const CapabilitiesStatusMapping = {
+    inactive: 'error',
+    active: 'success',
+    pending: 'warning'
 };
+
+const colorFromStatus = (theme: Theme, status: string): string => {
+    switch (status) {
+        case 'warning': return theme.warningColor.hex;
+        case 'success': return theme.successColor.hex;
+        case 'error': return theme.errorColor.hex;
+        default: return theme.textColor;
+    }
+};
+
+const StatusIcon = (props: {status: string}): JSX.Element => {
+    let char;
+
+    switch (props.status) {
+        case 'warning': {
+            char = '○';
+            break ;
+        }
+        case 'error': {
+            char = '⦿';
+            break ;
+        }
+        case 'success': {
+            char = '✔';
+            break ;
+        }
+        default: {
+            char = '⦾';
+            break ;
+        }
+    }
+
+    return <span style={{fontSize: 16, marginLeft: 5}}>{char}</span>;
+}
+
+export const StripeSetupConnectAccountCapabilitiesManager: React.FC<StripeSetupConnectAccountCapabilitiesManagerProps> = (props: StripeSetupConnectAccountCapabilitiesManagerProps): JSX.Element => {
+
+    const [t] = useTranslation('stripe_setup_capabilities');
+    const theme = useTheme() as Theme;
+
+    const elements = props.capabilities.map((cap: ConnectAccountCapability, idx: number) => <SectionElementContainer key={`${cap.name}${idx}`}>
+        <FieldsContainer>
+            <FieldContainer>
+                <FieldTitle>
+                    {t('name')}
+                </FieldTitle>
+                <CapabilityTitle>
+                    {t(`name__${cap.name}`)}
+                </CapabilityTitle>
+            </FieldContainer>
+            <FieldContainer>
+                <FieldTitle>
+                    {t('status')}
+                </FieldTitle>
+                <StatusText color={colorFromStatus(theme, CapabilitiesStatusMapping[cap.status])}>
+                    {t(`status__${cap.status}`)}
+                    <StatusIcon status={CapabilitiesStatusMapping[cap.status]}/>
+                </StatusText>
+            </FieldContainer>
+        </FieldsContainer>
+    </SectionElementContainer>);
+
+    return <>
+        <SectionHeader>
+            <span>{t('title')}</span>
+        </SectionHeader>
+        {
+            elements
+        }
+    </>
+};
+
+export interface StripeSetupConnectAccountRequirementsManagerProps {
+    stripeInterface: StripeInterfaceEntity;
+    forceRefresh: () => void;
+}
+
+const RequirementsStatusMapping = {
+    connect_account_currently_due: 'error',
+    connect_account_eventually_due: 'warning',
+    connect_account_past_due: 'warning',
+    connect_account_pending_verification: 'warning',
+}
+
+const isAccountReady = (stripeInterface: StripeInterfaceEntity): boolean => {
+    return !stripeInterface.connect_account_disabled_reason;
+}
+
+export const StripeSetupConnectAccountRequirementsManager: React.FC<StripeSetupConnectAccountRequirementsManagerProps> = (props: StripeSetupConnectAccountRequirementsManagerProps): JSX.Element => {
+
+    const [t] = useTranslation('stripe_setup_requirements');
+    const theme = useTheme() as Theme;
+    const [uuid, setUUID] = useState(v4());
+    const { token } = useSelector((state: AppState) => ({ token: state.auth.token?.value }));
+    const generateOnboardingUrlLazyRequest = useLazyRequest('payment.stripe.generateOnboardingUrl', uuid);
+    const generateUpdateUrlLazyRequest = useLazyRequest('payment.stripe.generateUpdateUrl', uuid);
+    const [called, setCalled] = useState(false);
+    const dispatch = useDispatch();
+
+    const onOnboardingClick = () => {
+        setCalled(true);
+        generateOnboardingUrlLazyRequest.lazyRequest([
+            token, {
+                refresh_url: `${getEnv().REACT_APP_SELF}/_/redirect/close?message=account_link_refresh`,
+                return_url: `${getEnv().REACT_APP_SELF}/_/redirect/close?message=account_link_return`
+            },
+            uuid /* tick to ensure each cache is new */
+        ], {
+            force: true
+        })
+    };
+
+    const onUpdateClick = () => {
+        setCalled(true);
+        generateUpdateUrlLazyRequest.lazyRequest([
+            token, {
+                refresh_url: `${getEnv().REACT_APP_SELF}/_/redirect/close?message=account_link_refresh`,
+                return_url: `${getEnv().REACT_APP_SELF}/_/redirect/close?message=account_link_return`
+            },
+            uuid /* tick to ensure each cache is new */
+        ], {
+            force: true
+        })
+    };
+
+    useDeepEffect(() => {
+
+        if (called && generateUpdateUrlLazyRequest.response.called) {
+            if (generateUpdateUrlLazyRequest.response.data) {
+                const url = (generateUpdateUrlLazyRequest.response.data as any).url;
+
+                open(url, 'Stripe', props.forceRefresh)
+                    .then(() => {
+                        console.log(`Opened ${url}`);
+                    })
+                    .catch((e: Error) => {
+                        dispatch(PushNotification(e.message, 'error'));
+                    });
+                setCalled(false);
+                setUUID(v4());
+
+            } else if (generateUpdateUrlLazyRequest.response.error) {
+                dispatch(PushNotification(generateUpdateUrlLazyRequest.response.error.message, 'error'));
+            }
+        }
+
+    }, [called, generateUpdateUrlLazyRequest.response, props]);
+
+    useDeepEffect(() => {
+
+        if (called && generateOnboardingUrlLazyRequest.response.called) {
+            if (generateOnboardingUrlLazyRequest.response.data) {
+                const url = (generateOnboardingUrlLazyRequest.response.data as any).url;
+
+                open(url, 'Stripe', props.forceRefresh)
+                    .then(() => {
+                        console.log(`Opened ${url}`);
+                    })
+                    .catch((e: Error) => {
+                        console.error(e);
+                    });
+                setCalled(false);
+                setUUID(v4());
+
+            } else if (generateOnboardingUrlLazyRequest.response.error) {
+                dispatch(PushNotification(generateOnboardingUrlLazyRequest.response.error.message, 'error'));
+            }
+        }
+
+    }, [called, generateOnboardingUrlLazyRequest.response, props]);
+
+    if (isAccountReady(props.stripeInterface)) {
+        return <>
+            <SectionHeader>
+                <span>{t('title')}</span>
+            </SectionHeader>
+            <SectionElementContainer onClick={onUpdateClick}>
+                <FieldsContainer>
+                    <FieldContainer>
+                        <FieldTitle>
+                            {t(`document_ready`)}
+                        </FieldTitle>
+                        <CapabilityTitle>
+                            Up to date
+                        </CapabilityTitle>
+                    </FieldContainer>
+                    <FieldContainer>
+                        <FieldTitle>
+                            {t('status')}
+                        </FieldTitle>
+                        <StatusText color={colorFromStatus(theme, 'success')}>
+                            {t(`status_ready`)}
+                            <StatusIcon status={'success'}/>
+                        </StatusText>
+                    </FieldContainer>
+                </FieldsContainer>
+                <FieldsContainer style={{marginTop: 12, justifyContent: 'flex-end'}}>
+                <span style={{fontSize: 14, opacity: 0.4}}>
+                    {t(`click_to_update`)}
+                </span>
+                </FieldsContainer>
+            </SectionElementContainer>
+        </>;
+    }
+
+    const reason = `connect_account_${props.stripeInterface.connect_account_disabled_reason.split('.')[1]}`;
+    const requirements = props.stripeInterface[reason];
+
+    return <>
+        <SectionHeader>
+            <span>{t('title')}</span>
+        </SectionHeader>
+        <SectionElementContainer onClick={onOnboardingClick}>
+            <FieldsContainer>
+                <FieldContainer>
+                    <FieldTitle>
+                        {t(`document__${reason}`)}
+                    </FieldTitle>
+                    <CapabilityTitle>
+                        {requirements.length} missing
+                    </CapabilityTitle>
+                </FieldContainer>
+                <FieldContainer>
+                    <FieldTitle>
+                        {t('status')}
+                    </FieldTitle>
+                    <StatusText color={colorFromStatus(theme, RequirementsStatusMapping[reason])}>
+                        {t(`status__${reason}`)}
+                        <StatusIcon status={RequirementsStatusMapping[reason]}/>
+                    </StatusText>
+                </FieldContainer>
+            </FieldsContainer>
+            <FieldsContainer style={{marginTop: 12, justifyContent: 'flex-end'}}>
+                <span style={{fontSize: 14, opacity: 0.4}}>
+                    {t(`click_to_fill`)}
+
+                </span>
+            </FieldsContainer>
+        </SectionElementContainer>
+    </>
+};
+
+const GlobalContainer = styled.div`
+  height: 100vh;
+`;
+
+interface VeilContainerProps {
+    visible: boolean;
+}
+
+const VeilContainer = styled.div<VeilContainerProps>`
+  opacity: ${props => props.visible ? '1' : '0.3'};
+`;
+
+const RefreshIcon = styled(Icon)`
+  position: fixed;
+  top: calc(16px + env(safe-area-inset-top));
+  top: calc(16px + constant(safe-area-inset-top));
+  right: 24px;
+  z-index: 10000;
+`;
 
 export const StripeSetupConnectAccountManager: React.FC<StripeSetupConnectAccountManagerProps> = (props: StripeSetupConnectAccountManagerProps): JSX.Element => {
 
-    return <>
+    return <GlobalContainer>
         <BalanceContainer>
             <StripeSetupConnectAccountBalanceManager currencies={fusionBalances(fakeBalance)}/>
         </BalanceContainer>
+        <RefreshIcon color={'white'} icon={'refresh'} size={16} onClick={props.forceFetchInterface}/>
         <BalanceContainerPlaceholder/>
         <MenuContainer>
-            <StripeSetupConnectAccountCapabilitiesManager/>
-            <StripeSetupConnectAccountCapabilitiesManager/>
-            <StripeSetupConnectAccountCapabilitiesManager/>
-            <StripeSetupConnectAccountCapabilitiesManager/>
-            <StripeSetupConnectAccountCapabilitiesManager/>
-            <StripeSetupConnectAccountCapabilitiesManager/>
-            <StripeSetupConnectAccountCapabilitiesManager/>
-            <StripeSetupConnectAccountCapabilitiesManager/>
+            <StripeSetupConnectAccountRequirementsManager stripeInterface={props.stripeInterface} forceRefresh={props.forceFetchInterface}/>
+            <VeilContainer visible={isAccountReady(props.stripeInterface)}>
+                <StripeSetupConnectAccountCapabilitiesManager capabilities={props.stripeInterface.connect_account_capabilities || []}/>
+            </VeilContainer>
         </MenuContainer>
-    </>;
+    </GlobalContainer>;
 };
 

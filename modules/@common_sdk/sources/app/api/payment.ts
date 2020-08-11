@@ -7,6 +7,10 @@ import { PaymentStripeCreateStripeInterfaceResponseDto } from '@app/server/contr
 import { PaymentStripeAddExternalAccountInputDto }       from '@app/server/controllers/payment/stripe/dto/PaymentStripeAddExternalAccountInput.dto';
 // tslint:disable-next-line:max-line-length
 import { PaymentStripeAddExternalAccountResponseDto }    from '@app/server/controllers/payment/stripe/dto/PaymentStripeAddExternalAccountResponse.dto';
+import { PaymentStripeGenerateOnboardingUrlInputDto }    from '@app/server/controllers/payment/stripe/dto/PaymentStripeGenerateOnboardingUrlInput.dto';
+import { PaymentStripeGenerateOnboardingUrlResponseDto } from '@app/server/controllers/payment/stripe/dto/PaymentStripeGenerateOnboardingUrlResponse.dto';
+import { PaymentStripeGenerateUpdateUrlInputDto }        from '@app/server/controllers/payment/stripe/dto/PaymentStripeGenerateUpdateUrlInput.dto';
+import { PaymentStripeGenerateUpdateUrlResponseDto }     from '@app/server/controllers/payment/stripe/dto/PaymentStripeGenerateUpdateUrlResponse.dto';
 
 export async function paymentStripeFetchInterface(
     token: string
@@ -44,4 +48,31 @@ export async function paymentStripeAddExternalAccount(
         'Content-Type': 'application/json',
     }, query);
 }
+
+export async function paymentStripeGenerateOnboardingUrl(
+    token: string,
+    query: PaymentStripeGenerateOnboardingUrlInputDto
+): Promise<AxiosResponse<PaymentStripeGenerateOnboardingUrlResponseDto>> {
+
+    const self: T721SDK = this;
+
+    return self.post<PaymentStripeGenerateOnboardingUrlInputDto>('/payment/stripe/onboarding', {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+    }, query);
+}
+
+export async function paymentStripeGenerateUpdateUrl(
+    token: string,
+    query: PaymentStripeGenerateUpdateUrlInputDto
+): Promise<AxiosResponse<PaymentStripeGenerateUpdateUrlResponseDto>> {
+
+    const self: T721SDK = this;
+
+    return self.post<PaymentStripeGenerateUpdateUrlInputDto>('/payment/stripe/update', {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+    }, query);
+}
+
 

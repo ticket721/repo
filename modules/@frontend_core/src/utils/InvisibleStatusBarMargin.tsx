@@ -6,7 +6,7 @@ const StatusBarPaddingContainer = styled.div`
     padding-top: env(safe-area-inset-top);
 `;
 
-export const InvisibleStatusBarMargin = (Comp: React.ComponentType): React.FC => {
+export const InvisibleStatusBarMargin = (Comp: React.ComponentType<any>): React.FC => {
     return (props: any = {}) => {
         return (
             <>

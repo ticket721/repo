@@ -2279,6 +2279,13 @@
   dependencies:
     "@types/cordova" latest
 
+"@ionic-native/in-app-browser@5.27.0":
+  version "5.27.0"
+  resolved "https://registry.yarnpkg.com/@ionic-native/in-app-browser/-/in-app-browser-5.27.0.tgz#42bb1c5570b4828ff3bb9a0c2b50bc2bc194281c"
+  integrity sha512-qk7O0wvUN96DklhAxiEmmZu30+jfnvIDPeTaFek1Fq0xHrCjkZnkv31zWRKKUrgDk+wslrSEvs6hplvBERLfMQ==
+  dependencies:
+    "@types/cordova" latest
+
 "@ionic-native/screen-orientation@5.27.0":
   version "5.27.0"
   resolved "https://registry.yarnpkg.com/@ionic-native/screen-orientation/-/screen-orientation-5.27.0.tgz#d74b49b5f09ef18afc0194639ca7dd2c7f371cbe"
@@ -11459,6 +11466,11 @@ cordova-plugin-brightness@0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/cordova-plugin-brightness/-/cordova-plugin-brightness-0.2.0.tgz#af2b57d5f8054828a54f86bd6886d015d00293bc"
   integrity sha512-ujW4v58jArPxPf8CjEppl9hM2/9jep1+nflzAOGoT4yc5UIuLja6j6+wxK2fv6+UWqVEWEKB3JkfnijVUl6HjQ==
+
+cordova-plugin-inappbrowser@4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/cordova-plugin-inappbrowser/-/cordova-plugin-inappbrowser-4.0.0.tgz#081e125b3ece05e30dd00e5f9396160926832a2a"
+  integrity sha512-w2LZzdF3R4G/EqVZ9aWch9Pksk76uw6/S5wFP1sgn7zjsSDpJBb/JhazLnioN1NZmZiCUBbROv1S4+9JCkeCgA==
 
 cordova-plugin-screen-orientation@3.0.2:
   version "3.0.2"

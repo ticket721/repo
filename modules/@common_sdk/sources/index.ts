@@ -87,7 +87,12 @@ import { geolocClosestCity, geolocFuzzySearch }  from './app/api/geoloc';
 import { featureFlagsFetch }           from './app/api/feature-flags';
 
 // PAYMENT
-import { paymentStripeAddExternalAccount, paymentStripeCreateInterface, paymentStripeFetchInterface } from './app/api/payment';
+import {
+    paymentStripeAddExternalAccount,
+    paymentStripeCreateInterface,
+    paymentStripeFetchInterface,
+    paymentStripeGenerateOnboardingUrl, paymentStripeGenerateUpdateUrl,
+} from './app/api/payment';
 
 export { FailedRegisterReport } from './app/api/authentication';
 
@@ -190,6 +195,8 @@ export class T721SDK {
         this.payment.stripe.fetchInterface = this.payment.stripe.fetchInterface.bind(this);
         this.payment.stripe.createInterface = this.payment.stripe.createInterface.bind(this);
         this.payment.stripe.addExternalAccount = this.payment.stripe.addExternalAccount.bind(this);
+        this.payment.stripe.generateOnboardingUrl = this.payment.stripe.generateOnboardingUrl.bind(this);
+        this.payment.stripe.generateUpdateUrl = this.payment.stripe.generateUpdateUrl.bind(this);
     }
 
     connect(host: string, port: number, protocol: 'http' | 'https' = 'http') {
@@ -406,6 +413,8 @@ export class T721SDK {
             fetchInterface: paymentStripeFetchInterface,
             createInterface: paymentStripeCreateInterface,
             addExternalAccount: paymentStripeAddExternalAccount,
+            generateOnboardingUrl: paymentStripeGenerateOnboardingUrl,
+            generateUpdateUrl: paymentStripeGenerateUpdateUrl,
         }
     }
 }

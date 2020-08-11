@@ -52,7 +52,9 @@
         "@types/styled-components": "5.1.0",
         "@types/uuid": "7.0.3",
         "@types/yup": "0.28.0",
-        "currency-symbol-map": "4.0.4"
+        "currency-symbol-map": "4.0.4",
+        "cordova-plugin-inappbrowser": "4.0.0",
+        "@ionic-native/in-app-browser": "5.27.0"
     },
     "devDependencies": {
         "jest": "25.4.0",

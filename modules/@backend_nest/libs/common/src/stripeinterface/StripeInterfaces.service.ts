@@ -341,4 +341,62 @@ export class StripeInterfacesService extends CRUDExtension<StripeInterfacesRepos
         return this.updateAccountInfos(stripeInterfaceRes.response, true);
     }
 
+    async generateOnboardingUrl(stripeInterface: StripeInterfaceEntity, refreshUrl: string, returnUrl: string): Promise<ServiceResponse<Stripe.AccountLink>> {
+        if (!stripeInterface.connect_account) {
+            return {
+                error: 'connect_account_not_created',
+                response: null
+            }
+        }
+
+        const stripe = this.stripeService.get();
+
+        try {
+            const accountLink = await stripe.accountLinks.create({
+                account: stripeInterface.connect_account,
+                failure_url: refreshUrl,
+                success_url: returnUrl,
+                type: 'custom_account_verification'
+            });
+            return {
+                error: null,
+                response: accountLink
+            }
+        } catch (e) {
+            return {
+                error: e.message,
+                response: null
+            }
+        }
+    }
+
+    async generateUpdateUrl(stripeInterface: StripeInterfaceEntity, refreshUrl: string, returnUrl: string): Promise<ServiceResponse<Stripe.AccountLink>> {
+        if (!stripeInterface.connect_account) {
+            return {
+                error: 'connect_account_not_created',
+                response: null
+            }
+        }
+
+        const stripe = this.stripeService.get();
+
+        try {
+            const accountLink = await stripe.accountLinks.create({
+                account: stripeInterface.connect_account,
+                failure_url: refreshUrl,
+                success_url: returnUrl,
+                type: 'custom_account_update'
+            });
+            return {
+                error: null,
+                response: accountLink
+            }
+        } catch (e) {
+            return {
+                error: e.message,
+                response: null
+            }
+        }
+    }
+
 }
