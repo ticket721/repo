@@ -8,6 +8,7 @@ import { T721Navbar }                                                   from './
 import AdminRoutePage                                                   from './routes/Admin';
 import LoginPage                                                        from './routes/Login';
 import ResetPasswordPage                                                from './routes/ResetPassword';
+import ValidateResetPassword                                            from './routes/ValidateResetPassword';
 import RegisterPage                                                     from './routes/Register';
 import HomePage                                                         from './routes/Home';
 import ProfileActivitiesPage                                            from './routes/Activities';
@@ -86,6 +87,9 @@ const MobileApp: React.FC = () => {
 
                     <Route path={'/reset-password'} exact={true}>
                         <ResetPasswordPage />
+                    </Route>
+                    <Route path={'/validate-password'} exact={true}>
+                        <ValidateResetPassword />
                     </Route>
 
                     <Route path={'/register'} exact={true}>

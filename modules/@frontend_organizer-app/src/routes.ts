@@ -95,6 +95,10 @@ export const routes: RouteDatum[] = [
         page: lazy(() => import('./routes/Register')),
     },
     {
+        path: '/validate-password',
+        page: lazy(() => import('./routes/ValidateResetPassword')),
+    },
+    {
         path: '/validate-email',
         page: lazy(() => import('./routes/ValidateRoute')),
     },
