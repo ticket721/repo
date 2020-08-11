@@ -5,7 +5,7 @@ const name = yup.string()
   .max(50, 'name_too_long')
   .required('name_required');
 const description = yup.string()
-  .max(1000)
+  .max(10000)
   .required('description_required');
 const tags = yup.array().of(
   yup.string()

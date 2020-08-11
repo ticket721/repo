@@ -25,6 +25,7 @@ export const Register: React.FC<RegisterProps> = (props: RegisterProps) => {
         initialValues: {
             email: '',
             password: '',
+            passwordConfirmation: '',
             username: '',
         },
         validationSchema: registerValidationSchema,
@@ -76,6 +77,19 @@ export const Register: React.FC<RegisterProps> = (props: RegisterProps) => {
                             error={
                                 formik.touched['password'] && formik.errors['password']
                                     ? t('password_feedback:' + formik.errors['password'])
+                                    : undefined
+                            }
+                        />
+                        <PasswordInput
+                            name={'passwordConfirmation'}
+                            label={t('password_confirmation_label')}
+                            placeholder={t('password_placeholder')}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            value={formik.values.passwordConfirmation}
+                            error={
+                                formik.touched['passwordConfirmation'] && formik.errors['passwordConfirmation']
+                                    ? t('different_password')
                                     : undefined
                             }
                         />
@@ -154,7 +168,7 @@ const Inputs = styled.div`
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    height: 345px;
+    height: 445px;
 `;
 
 const ActionsContainer = styled.div`
