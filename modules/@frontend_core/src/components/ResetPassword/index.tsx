@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useFormik } from 'formik';
 import { v4 } from 'uuid';
+import { useDispatch } from 'react-redux';
 import { Button, TextInput, Icon } from '@frontend/flib-react/lib/components';
 import { ResetPasswordResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/authentication/dto/ResetPasswordResponse.dto';
 import { useHistory } from 'react-router';
@@ -10,12 +11,14 @@ import { useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
 import './locales';
 import { useLazyRequest } from '../../hooks/useLazyRequest';
-import { useDeepEffect } from '../../hooks/useDeepEffect';
+import { getEnv } from '../../utils/getEnv';
+import { PushNotification } from '../../redux/ducks/notifications';
 
 export const ResetPassword = () => {
     const [t] = useTranslation('reset_password');
     const history = useHistory();
-    const [uuid] = useState<string>(v4());
+    const dispatch = useDispatch();
+    const [uuid] = useState<string>(v4() + '@reset-password');
     const { lazyRequest: resetPassword, response } = useLazyRequest<ResetPasswordResponseDto>('resetPassword', uuid);
     const formik = useFormik({
         initialValues: {
@@ -23,18 +26,16 @@ export const ResetPassword = () => {
         },
         validationSchema: resetPasswordValidationSchema,
         onSubmit: async (value) => {
-            resetPassword([value.email.toLowerCase()]);
+            resetPassword([value.email.toLowerCase(), `${getEnv().REACT_APP_SELF}/validate-password`]);
         },
     });
     const isTabletOrMobile = useMediaQuery({ maxWidth: 1224 });
 
-    useDeepEffect(() => {
+    useEffect(() => {
         if (response.data) {
-            console.log('validationToken :', response.data.validationToken);
-        } else if (response.error) {
-            console.log('oupsi');
+            dispatch(PushNotification(t('email_sent'), 'success'));
         }
-    }, [response]);
+    }, [response.data]);
 
     return (
         <ResetPasswordWrapper mobile={isTabletOrMobile}>

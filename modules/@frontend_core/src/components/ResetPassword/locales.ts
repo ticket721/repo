@@ -6,7 +6,7 @@ i18n.addResourceBundle('en', 'reset_password', {
     go_back: 'Go back',
     send_reset_email: 'Send password reset email',
     description: "Enter your user account's verified email address and we will send you a password reset link.",
-    email_sent_success: 'Email sent successfully',
+    email_sent: 'Email sent successfully',
 
     // errors
     email_required: 'email is required',
@@ -19,7 +19,7 @@ i18n.addResourceBundle('fr', 'reset_password', {
     send_reset_email: "Envoyer l'email de réinitialisation",
     description:
         'Entrez votre email de compte verifié et nous vous enverrons un lien pour réinitialiser votre mot de passe.',
-    email_sent_success: 'Email envoyé avec succès',
+    email_sent: 'Email envoyé avec succès',
 
     // errors
     email_required: 'email requis',

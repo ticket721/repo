@@ -3,28 +3,27 @@ import { getPasswordStrength, PasswordStrengthReport } from '@common/global';
 
 export const validateResetPasswordValidationSchema = yup.object().shape({
     password: yup
-      .string()
-      .test('password-validation', 'password_too_weak', function (password: string) {
-          const { path, createError } = this;
+        .string()
+        .test('password-validation', 'password_too_weak', function (password: string) {
+            const { path, createError } = this;
 
-          if (password !== undefined) {
-              const report: PasswordStrengthReport = getPasswordStrength(password);
-              if (report.score < 3) {
-                  return createError({
-                      path,
-                      message: report.feedback.warning || report.feedback.suggestions[0],
-                  });
-              }
-          }
-          return true;
-      })
-      .required('password_required'),
+            if (password !== undefined) {
+                const report: PasswordStrengthReport = getPasswordStrength(password);
+                if (report.score < 3) {
+                    return createError({
+                        path,
+                        message: report.feedback.warning || report.feedback.suggestions[0],
+                    });
+                }
+            }
+            return true;
+        })
+        .required('password_required'),
     passwordConfirmation: yup
-      .string()
-      .when('password', {
-          is: (val) => (val && val.length > 0 ? true : false),
-          then: yup.string().oneOf([yup.ref('password')], 'different_password'),
-      })
-      .required('password_confirmation_required'),
-
+        .string()
+        .when('password', {
+            is: (val) => (val && val.length > 0 ? true : false),
+            then: yup.string().oneOf([yup.ref('password')], 'different_password'),
+        })
+        .required('password_confirmation_required'),
 });

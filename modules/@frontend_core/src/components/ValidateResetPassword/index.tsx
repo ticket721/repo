@@ -15,13 +15,15 @@ import { useDispatch } from 'react-redux';
 import { PushNotification } from '../../redux/ducks/notifications';
 import './locales';
 
-
 export const ValidateResetPassword = () => {
     const [t] = useTranslation('validate_reset_password');
     const history = useHistory();
     const dispatch = useDispatch();
     const [uuid] = useState<string>(v4() + '@validate-reset-password');
-    const { lazyRequest: resetPassword, response } = useLazyRequest<ValidateResetPasswordResponseDto>('validateResetPassword', uuid);
+    const { lazyRequest: validateResetPassword, response } = useLazyRequest<ValidateResetPasswordResponseDto>(
+        'validateResetPassword',
+        uuid,
+    );
 
     const parsedQuery = new URLSearchParams(history.location.search);
 
@@ -31,8 +33,8 @@ export const ValidateResetPassword = () => {
             passwordConfirmation: '',
         },
         validationSchema: validateResetPasswordValidationSchema,
-        onSubmit: async (value) => {
-            resetPassword([b64Decode(parsedQuery.get('token')), value.password]);
+        onSubmit: async (values) => {
+            validateResetPassword([b64Decode(parsedQuery.get('token')), values.password]);
         },
     });
     const isTabletOrMobile = useMediaQuery({ maxWidth: 1224 });
@@ -51,7 +53,6 @@ export const ValidateResetPassword = () => {
                 dispatch(PushNotification(t('internal_server_error'), 'error'));
             }
             dispatch(PushNotification(t(response.error), 'error'));
-            history.push('/login');
         }
     }, [response.error]);
 
@@ -65,31 +66,31 @@ export const ValidateResetPassword = () => {
                     <span>{t('description')}</span>
                     <Inputs>
                         <PasswordInput
-                          name={'password'}
-                          label={t('password_label')}
-                          placeholder={t('password_placeholder')}
-                          score={getPasswordStrength(formik.values.password).score}
-                          onChange={formik.handleChange}
-                          onBlur={formik.handleBlur}
-                          value={formik.values.password}
-                          error={
-                              formik.touched['password'] && formik.errors['password']
-                                ? t('password_feedback:' + formik.errors['password'])
-                                : undefined
-                          }
+                            name={'password'}
+                            label={t('password_label')}
+                            placeholder={t('password_placeholder')}
+                            score={getPasswordStrength(formik.values.password).score}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            value={formik.values.password}
+                            error={
+                                formik.touched['password'] && formik.errors['password']
+                                    ? t('password_feedback:' + formik.errors['password'])
+                                    : undefined
+                            }
                         />
                         <PasswordInput
-                          name={'passwordConfirmation'}
-                          label={t('password_confirmation_label')}
-                          placeholder={t('password_placeholder')}
-                          onChange={formik.handleChange}
-                          onBlur={formik.handleBlur}
-                          value={formik.values.passwordConfirmation}
-                          error={
-                              formik.touched['passwordConfirmation'] && formik.errors['passwordConfirmation']
-                                ? t('different_password')
-                                : undefined
-                          }
+                            name={'passwordConfirmation'}
+                            label={t('password_confirmation_label')}
+                            placeholder={t('password_placeholder')}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            value={formik.values.passwordConfirmation}
+                            error={
+                                formik.touched['passwordConfirmation'] && formik.errors['passwordConfirmation']
+                                    ? t('different_password')
+                                    : undefined
+                            }
                         />
                     </Inputs>
                     <ActionsContainer>

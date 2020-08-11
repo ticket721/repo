@@ -1,7 +1,7 @@
 import i18n from '../../utils/i18n';
 
 i18n.addResourceBundle('en', 'validate_reset_password', {
-    description: "Enter your new password",
+    description: 'Enter your new password',
     password_label: 'password',
     password_placeholder: 'Password',
     password_confirmation_label: 'Password confirmation',
@@ -14,8 +14,7 @@ i18n.addResourceBundle('en', 'validate_reset_password', {
 });
 
 i18n.addResourceBundle('fr', 'validate_reset_password', {
-    description:
-      'Entrez votre nouveau mot de passe',
+    description: 'Entrez votre nouveau mot de passe',
     different_password: 'les mots de passe doivent être identiques',
     password_label: 'mot de passe',
     password_placeholder: 'Mot de passe',
