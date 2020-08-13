@@ -24,7 +24,8 @@ var migration1596712433 = {
                         last4 text,
                         name text,
                         status text,
-                        fingerprint text
+                        fingerprint text,
+                        default_for_currency boolean
                     );`,
             params: []
         };

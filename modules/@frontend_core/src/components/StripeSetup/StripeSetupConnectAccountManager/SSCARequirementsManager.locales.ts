@@ -1,4 +1,4 @@
-import i18n  from '../../utils/i18n';
+import i18n  from '../../../utils/i18n';
 
 i18n.addResourceBundle('en', 'stripe_setup_requirements', {
     title: 'Requirements',

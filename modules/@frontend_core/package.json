@@ -54,7 +54,8 @@
         "@types/yup": "0.28.0",
         "currency-symbol-map": "4.0.4",
         "cordova-plugin-inappbrowser": "4.0.0",
-        "@ionic-native/in-app-browser": "5.27.0"
+        "@ionic-native/in-app-browser": "5.27.0",
+        "framer-motion": "2.4.1"
     },
     "devDependencies": {
         "jest": "25.4.0",

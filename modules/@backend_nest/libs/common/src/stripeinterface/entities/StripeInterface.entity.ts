@@ -36,6 +36,7 @@ export interface ConnectAccountExternalAccount {
     last4: string;
     name: string;
     status: 'new' | 'validated' | 'verified' | 'verification_failed' | 'errored';
+    default_for_currency: boolean;
 }
 
 export interface ConnectAccountCapability {

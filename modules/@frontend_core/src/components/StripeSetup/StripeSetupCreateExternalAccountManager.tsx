@@ -1,9 +1,9 @@
 import { PasswordlessUserDto }                   from '@common/sdk/lib/@backend_nest/apps/server/src/authentication/dto/PasswordlessUser.dto';
 import { StripeInterfaceEntity }                 from '@common/sdk/lib/@backend_nest/libs/common/src/stripeinterface/entities/StripeInterface.entity';
 import styled                                    from 'styled-components';
-import { Dispatch }                              from 'redux';
-import React, { useState }                       from 'react';
-import { useDispatch, useSelector }              from 'react-redux';
+import { Dispatch }                 from 'redux';
+import React, { useState }          from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { AppState }                              from '@frontend-core/redux';
 import { v4 }                                    from 'uuid';
 import { Country }                               from '../../utils/countries';
@@ -27,6 +27,7 @@ export interface StripeSetupManagerCreateExternalAccountProps {
     user: PasswordlessUserDto;
     stripeInterface: StripeInterfaceEntity;
     forceFetchInterface: () => void;
+    onDone?: () => void;
 }
 
 const Container = styled.div`
@@ -210,6 +211,9 @@ export const StripeSetupCreateExternalAccountManager: React.FC<StripeSetupManage
                                     dispatch(PushNotification(addExternalAccountLazyRequest.response.error.message, 'error'));
                                 } else {
                                     props.forceFetchInterface();
+                                    if (props.onDone) {
+                                        props.onDone();
+                                    }
                                 }
                             }
 

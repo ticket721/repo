@@ -1,0 +1,11 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "e2e tests",
+            "type": "shell",
+            "command": "yarn test:server:e2e",
+            "problemMatcher": []
+        }
+    ]
+}

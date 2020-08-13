@@ -4,7 +4,7 @@ export { AxiosResponse } from 'axios';
 
 // APP
 import { getAPIInfos } from './app/app';
-import request         from 'supertest';
+import request from 'supertest';
 
 // AUTHENTICATION
 import {
@@ -18,11 +18,17 @@ import {
     resetPassword,
     validateResetPassword,
     updatePassword,
-    resendValidation,
+    resendValidation
 } from './app/api/authentication';
 
 // ACTIONS
-import { actionsConsumeUpdate, actionsCreate, actionsSearch, actionsCount, actionsUpdate } from './app/api/actions';
+import {
+    actionsConsumeUpdate,
+    actionsCreate,
+    actionsSearch,
+    actionsCount,
+    actionsUpdate
+} from './app/api/actions';
 
 // IMAGES
 import { uploadImage } from './app/api/images';
@@ -36,17 +42,26 @@ import {
     datesFuzzySearch,
     datesHomeSearch,
     datesSearch,
-    datesUpdate,
+    datesUpdate
 } from './app/api/dates';
 
 // EVENTS
 import {
-    eventsAddCategories, eventsAddDates, eventsCount,
-    eventsCreate, eventsCreateAdminsConfiguration, eventsCreateCategoriesConfiguration,
-    eventsCreateDatesConfiguration, eventsCreateImagesMetadata,
+    eventsAddCategories,
+    eventsAddDates,
+    eventsCount,
+    eventsCreate,
+    eventsCreateAdminsConfiguration,
+    eventsCreateCategoriesConfiguration,
+    eventsCreateDatesConfiguration,
+    eventsCreateImagesMetadata,
     eventsCreateModulesConfiguration,
-    eventsCreateTextMetadata, eventsDeleteCategories, eventsDeleteDates,
-    eventsSearch, eventsStart, eventsUpdate, /*eventsWithdraw, */
+    eventsCreateTextMetadata,
+    eventsDeleteCategories,
+    eventsDeleteDates,
+    eventsSearch,
+    eventsStart,
+    eventsUpdate /*eventsWithdraw, */,
     eventsGuestlist
 } from './app/api/events';
 
@@ -57,7 +72,12 @@ import { txsCount, txsInfos, txsSearch, txsSubscribe } from './app/api/txs';
 import { contractsFetch } from './app/api/contracts';
 
 // CATEGORIES
-import { categoriesCount, categoriesCreate, categoriesSearch, categoriesUpdate } from './app/api/categories';
+import {
+    categoriesCount,
+    categoriesCreate,
+    categoriesSearch,
+    categoriesUpdate
+} from './app/api/categories';
 
 // RIGHTS
 import { rightsSearch } from './app/api/rights';
@@ -69,29 +89,40 @@ import { metadatasFetch } from './app/api/metadatas';
 import { cartModulesConfiguration, cartTicketSelections } from './app/api/cart';
 
 // CHECKOUT
-import { checkoutCartCommitStripe, checkoutResolveCartWithPaymentIntent } from './app/api/checkout';
+import {
+    checkoutCartCommitStripe,
+    checkoutResolveCartWithPaymentIntent
+} from './app/api/checkout';
 
 // DOSOJIN
 import { dosojinSearch, dosojinCount } from './app/api/dosojin';
 
 // TICKETS
-import { ticketsSearch, ticketsCount, ticketsValidate } from './app/api/tickets';
+import {
+    ticketsSearch,
+    ticketsCount,
+    ticketsValidate
+} from './app/api/tickets';
 
 // USERS
 import { usersMe, usersSetDeviceAddress } from './app/api/users';
 
 // GEOLOC
-import { geolocClosestCity, geolocFuzzySearch }  from './app/api/geoloc';
+import { geolocClosestCity, geolocFuzzySearch } from './app/api/geoloc';
 
 // FEATURE FLAGS
-import { featureFlagsFetch }           from './app/api/feature-flags';
+import { featureFlagsFetch } from './app/api/feature-flags';
 
 // PAYMENT
 import {
     paymentStripeAddExternalAccount,
     paymentStripeCreateInterface,
     paymentStripeFetchInterface,
-    paymentStripeGenerateOnboardingUrl, paymentStripeGenerateUpdateUrl,
+    paymentStripeGenerateOnboardingUrl,
+    paymentStripeGenerateUpdateUrl,
+    paymentStripeRemoveExternalAccount,
+    paymentStripeSetDefaultExternalAccount,
+    paymentStripeFetchBalance
 } from './app/api/payment';
 
 export { FailedRegisterReport } from './app/api/authentication';
@@ -101,7 +132,6 @@ interface HTTPHeader {
 }
 
 export class T721SDK {
-
     public host: string;
     public port: number;
     public protocol: 'http' | 'https';
@@ -139,12 +169,24 @@ export class T721SDK {
         this.dates.update = this.dates.update.bind(this);
 
         this.events.create.create = this.events.create.create.bind(this);
-        this.events.create.textMetadata = this.events.create.textMetadata.bind(this);
-        this.events.create.modulesConfiguration = this.events.create.modulesConfiguration.bind(this);
-        this.events.create.datesConfiguration = this.events.create.datesConfiguration.bind(this);
-        this.events.create.categoriesConfiguration = this.events.create.categoriesConfiguration.bind(this);
-        this.events.create.imagesMetadata = this.events.create.imagesMetadata.bind(this);
-        this.events.create.adminsConfiguration = this.events.create.adminsConfiguration.bind(this);
+        this.events.create.textMetadata = this.events.create.textMetadata.bind(
+            this
+        );
+        this.events.create.modulesConfiguration = this.events.create.modulesConfiguration.bind(
+            this
+        );
+        this.events.create.datesConfiguration = this.events.create.datesConfiguration.bind(
+            this
+        );
+        this.events.create.categoriesConfiguration = this.events.create.categoriesConfiguration.bind(
+            this
+        );
+        this.events.create.imagesMetadata = this.events.create.imagesMetadata.bind(
+            this
+        );
+        this.events.create.adminsConfiguration = this.events.create.adminsConfiguration.bind(
+            this
+        );
         this.events.search = this.events.search.bind(this);
         this.events.count = this.events.count.bind(this);
         this.events.start = this.events.start.bind(this);
@@ -175,10 +217,16 @@ export class T721SDK {
         this.metadatas.fetch = this.metadatas.fetch.bind(this);
 
         this.cart.ticketSelections = this.cart.ticketSelections.bind(this);
-        this.cart.modulesConfiguration = this.cart.modulesConfiguration.bind(this);
+        this.cart.modulesConfiguration = this.cart.modulesConfiguration.bind(
+            this
+        );
 
-        this.checkout.cart.commit.stripe = this.checkout.cart.commit.stripe.bind(this);
-        this.checkout.cart.resolve.paymentIntent = this.checkout.cart.resolve.paymentIntent.bind(this);
+        this.checkout.cart.commit.stripe = this.checkout.cart.commit.stripe.bind(
+            this
+        );
+        this.checkout.cart.resolve.paymentIntent = this.checkout.cart.resolve.paymentIntent.bind(
+            this
+        );
 
         this.dosojin.search = this.dosojin.search.bind(this);
         this.dosojin.count = this.dosojin.count.bind(this);
@@ -192,11 +240,30 @@ export class T721SDK {
 
         this.featureFlags.fetch = this.featureFlags.fetch.bind(this);
 
-        this.payment.stripe.fetchInterface = this.payment.stripe.fetchInterface.bind(this);
-        this.payment.stripe.createInterface = this.payment.stripe.createInterface.bind(this);
-        this.payment.stripe.addExternalAccount = this.payment.stripe.addExternalAccount.bind(this);
-        this.payment.stripe.generateOnboardingUrl = this.payment.stripe.generateOnboardingUrl.bind(this);
-        this.payment.stripe.generateUpdateUrl = this.payment.stripe.generateUpdateUrl.bind(this);
+        this.payment.stripe.fetchInterface = this.payment.stripe.fetchInterface.bind(
+            this
+        );
+        this.payment.stripe.fetchBalance = this.payment.stripe.fetchBalance.bind(
+            this
+        );
+        this.payment.stripe.createInterface = this.payment.stripe.createInterface.bind(
+            this
+        );
+        this.payment.stripe.addExternalAccount = this.payment.stripe.addExternalAccount.bind(
+            this
+        );
+        this.payment.stripe.removeExternalAccount = this.payment.stripe.removeExternalAccount.bind(
+            this
+        );
+        this.payment.stripe.generateOnboardingUrl = this.payment.stripe.generateOnboardingUrl.bind(
+            this
+        );
+        this.payment.stripe.generateUpdateUrl = this.payment.stripe.generateUpdateUrl.bind(
+            this
+        );
+        this.payment.stripe.setDefaultExternalAccount = this.payment.stripe.setDefaultExternalAccount.bind(
+            this
+        );
     }
 
     connect(host: string, port: number, protocol: 'http' | 'https' = 'http') {
@@ -207,8 +274,8 @@ export class T721SDK {
             baseURL: `${this.protocol}://${this.host}:${this.port.toString()}`,
             timeout: 30000,
             headers: {
-                Accept: 'application/json, multipart/form-data, text/plain, */*',
-            },
+                Accept: 'application/json, multipart/form-data, text/plain, */*'
+            }
         });
     }
 
@@ -218,68 +285,72 @@ export class T721SDK {
             baseURL: res.url,
             timeout: 30000,
             headers: {
-                Accept: 'application/json, multipart/form-data, text/plain, */*',
-            },
+                Accept: 'application/json, multipart/form-data, text/plain, */*'
+            }
         });
     }
 
     async get(route: string, headers: HTTPHeader): Promise<AxiosResponse> {
-
         if (this.axios) {
             return this.axios({
                 method: 'get',
                 headers,
-                url: route,
+                url: route
             });
         } else {
             throw new Error(`Client not connected`);
         }
-
     }
 
-    async post<Body>(route: string, headers: HTTPHeader, body: Body): Promise<AxiosResponse> {
-
+    async post<Body>(
+        route: string,
+        headers: HTTPHeader,
+        body: Body
+    ): Promise<AxiosResponse> {
         if (this.axios) {
             return this.axios({
                 method: 'post',
                 headers,
                 data: body,
-                url: route,
+                url: route
             });
         } else {
             throw new Error(`Client not connected`);
         }
-
     }
 
-    async put<Body>(route: string, headers: HTTPHeader, body: Body): Promise<AxiosResponse> {
-
+    async put<Body>(
+        route: string,
+        headers: HTTPHeader,
+        body: Body
+    ): Promise<AxiosResponse> {
         if (this.axios) {
             return this.axios({
                 method: 'put',
                 headers,
                 data: body,
-                url: route,
+                url: route
             });
         } else {
             throw new Error(`Client not connected`);
         }
-
     }
 
-    async delete<Body>(route: string, headers: HTTPHeader, body: Body): Promise<AxiosResponse> {
-
+    async delete<Body>(
+        route: string,
+        headers: HTTPHeader,
+        body: Body
+    ): Promise<AxiosResponse> {
         if (this.axios) {
             return this.axios({
                 method: 'delete',
                 headers,
                 data: body,
-                url: route,
+                url: route
             });
         } else {
             throw new Error(`Client not connected`);
         }
-
     }
 
     public getApiInfos = getAPIInfos;
@@ -306,7 +377,7 @@ export class T721SDK {
         count: actionsCount,
         update: actionsUpdate,
         create: actionsCreate,
-        consumeUpdate: actionsConsumeUpdate,
+        consumeUpdate: actionsConsumeUpdate
     };
 
     public dates = {
@@ -317,7 +388,7 @@ export class T721SDK {
         count: datesCount,
         addCategories: datesAddCategories,
         deleteCategories: datesDeleteCategories,
-        update: datesUpdate,
+        update: datesUpdate
     };
 
     public events = {
@@ -330,7 +401,7 @@ export class T721SDK {
             datesConfiguration: eventsCreateDatesConfiguration,
             categoriesConfiguration: eventsCreateCategoriesConfiguration,
             imagesMetadata: eventsCreateImagesMetadata,
-            adminsConfiguration: eventsCreateAdminsConfiguration,
+            adminsConfiguration: eventsCreateAdminsConfiguration
         },
         update: eventsUpdate,
         start: eventsStart,
@@ -343,54 +414,54 @@ export class T721SDK {
     };
 
     public rights = {
-        search: rightsSearch,
+        search: rightsSearch
     };
 
     public categories = {
         search: categoriesSearch,
         count: categoriesCount,
         create: categoriesCreate,
-        update: categoriesUpdate,
+        update: categoriesUpdate
     };
 
     public images = {
-        upload: uploadImage,
+        upload: uploadImage
     };
 
     public txs = {
         search: txsSearch,
         count: txsCount,
         subscribe: txsSubscribe,
-        infos: txsInfos,
+        infos: txsInfos
     };
 
     public contracts = {
-        fetch: contractsFetch,
+        fetch: contractsFetch
     };
 
     public metadatas = {
-        fetch: metadatasFetch,
+        fetch: metadatasFetch
     };
 
     public cart = {
         ticketSelections: cartTicketSelections,
-        modulesConfiguration: cartModulesConfiguration,
+        modulesConfiguration: cartModulesConfiguration
     };
 
     public checkout = {
         cart: {
             commit: {
-                stripe: checkoutCartCommitStripe,
+                stripe: checkoutCartCommitStripe
             },
             resolve: {
-                paymentIntent: checkoutResolveCartWithPaymentIntent,
-            },
-        },
+                paymentIntent: checkoutResolveCartWithPaymentIntent
+            }
+        }
     };
 
     public dosojin = {
         search: dosojinSearch,
-        count: dosojinCount,
+        count: dosojinCount
     };
 
     public tickets = {
@@ -401,7 +472,7 @@ export class T721SDK {
 
     public geoloc = {
         closestCity: geolocClosestCity,
-        fuzzySearch: geolocFuzzySearch,
+        fuzzySearch: geolocFuzzySearch
     };
 
     public featureFlags = {
@@ -411,10 +482,13 @@ export class T721SDK {
     public payment = {
         stripe: {
             fetchInterface: paymentStripeFetchInterface,
+            fetchBalance: paymentStripeFetchBalance,
             createInterface: paymentStripeCreateInterface,
             addExternalAccount: paymentStripeAddExternalAccount,
+            removeExternalAccount: paymentStripeRemoveExternalAccount,
+            setDefaultExternalAccount: paymentStripeSetDefaultExternalAccount,
             generateOnboardingUrl: paymentStripeGenerateOnboardingUrl,
-            generateUpdateUrl: paymentStripeGenerateUpdateUrl,
+            generateUpdateUrl: paymentStripeGenerateUpdateUrl
         }
-    }
+    };
 }
