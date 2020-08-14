@@ -23,7 +23,7 @@ export const StatusBarMargin = (Comp: React.ComponentType): React.FC => {
             <>
                 <StatusBarMarginContainer />
                 <StatusBarPaddingContainer>
-                    <Comp {...props}/>
+                    <Comp {...props} />
                 </StatusBarPaddingContainer>
             </>
         );

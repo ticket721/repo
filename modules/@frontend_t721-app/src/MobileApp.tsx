@@ -92,7 +92,7 @@ const MobileApp: React.FC = () => {
 
                         {flags.stripe_interface_setup ? (
                                 <ProtectedRoute
-                                    path={'/stripe/setup'}
+                                    path={'/stripe/connect'}
                                     exact={true}
                                 >
                                     <StripeSetupPage />

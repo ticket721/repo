@@ -1,25 +1,25 @@
-import { PasswordlessUserDto }                   from '@common/sdk/lib/@backend_nest/apps/server/src/authentication/dto/PasswordlessUser.dto';
-import { StripeInterfaceEntity }                 from '@common/sdk/lib/@backend_nest/libs/common/src/stripeinterface/entities/StripeInterface.entity';
-import styled                                    from 'styled-components';
-import { Dispatch }                 from 'redux';
-import React, { useState }          from 'react';
+import { PasswordlessUserDto } from '@common/sdk/lib/@backend_nest/apps/server/src/authentication/dto/PasswordlessUser.dto';
+import { StripeInterfaceEntity } from '@common/sdk/lib/@backend_nest/libs/common/src/stripeinterface/entities/StripeInterface.entity';
+import styled from 'styled-components';
+import { Dispatch } from 'redux';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState }                              from '@frontend-core/redux';
-import { v4 }                                    from 'uuid';
-import { Country }                               from '../../utils/countries';
-import { PushNotification }                      from '../../redux/ducks/notifications';
-import { StripeSDK, useCustomStripe }            from '../../utils/useCustomStripe';
-import { useLazyRequest }                        from '../../hooks/useLazyRequest';
-import { useDeepEffect }                         from '../../hooks/useDeepEffect';
+import { AppState } from '@frontend-core/redux';
+import { v4 } from 'uuid';
+import { Country } from '../../utils/countries';
+import { PushNotification } from '../../redux/ducks/notifications';
+import { StripeSDK, useCustomStripe } from '../../utils/useCustomStripe';
+import { useLazyRequest } from '../../hooks/useLazyRequest';
+import { useDeepEffect } from '../../hooks/useDeepEffect';
 import { FullButtonCta, SelectInput, TextInput } from '@frontend/flib-react/lib/components';
 import './StripeSetupCreateExternalAccountManager.locales';
-import { useTranslation }                        from 'react-i18next';
-import { CtaMargin }                             from '../../utils/CtaMargin';
-import { TopNavMargin }                          from '../../utils/TopNavMargin';
-import { InvisibleStatusBarMargin }              from '../../utils/InvisibleStatusBarMargin';
-import axios, { Method }                         from 'axios';
-import { getEnv }                                from '../../utils/getEnv';
-import qs                                        from 'qs';
+import { useTranslation } from 'react-i18next';
+import { CtaMargin } from '../../utils/CtaMargin';
+import { TopNavMargin } from '../../utils/TopNavMargin';
+import { InvisibleStatusBarMargin } from '../../utils/InvisibleStatusBarMargin';
+import axios, { Method } from 'axios';
+import { getEnv } from '../../utils/getEnv';
+import qs from 'qs';
 
 const StripeNativeEndpointUrl = 'https://api.stripe.com/v1';
 
@@ -31,48 +31,51 @@ export interface StripeSetupManagerCreateExternalAccountProps {
 }
 
 const Container = styled.div`
-  padding: ${props => props.theme.regularSpacing};
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+    padding: ${(props) => props.theme.regularSpacing};
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 `;
 
 const ContentContainer = styled.div`
-  margin-top: ${props => props.theme.regularSpacing};
+    margin-top: ${(props) => props.theme.regularSpacing};
 `;
 
-const Title = styled.h1`
-
-`;
+const Title = styled.h1``;
 
 const Description = styled.p`
-  margin-bottom: ${props => props.theme.regularSpacing};
+    margin-bottom: ${(props) => props.theme.regularSpacing};
 `;
 
 const InputContainer = styled.div`
-  padding: ${props => props.theme.regularSpacing} 0px;
+    padding: ${(props) => props.theme.regularSpacing} 0px;
 `;
 
 const BankAccountForm = styled.form`
-  width: 100%;
-  max-width: 500px;
+    width: 100%;
+    max-width: 500px;
 `;
 
-const CountriesOptions = Object.keys(Country).filter((countryOrNum: string) => {
-    return (isNaN(parseInt(countryOrNum, 10)))
-}).map((key: string) => ({
-    value: Country[key],
-    label: key.replace( /([A-Z])/g, ' $1' )
-}));
+const CountriesOptions = Object.keys(Country)
+    .filter((countryOrNum: string) => {
+        return isNaN(parseInt(countryOrNum, 10));
+    })
+    .map((key: string) => ({
+        value: Country[key],
+        label: key.replace(/([A-Z])/g, ' $1'),
+    }));
 
-const CurrenciesOptions = [{
-    label: 'EURO',
-    value: 'EUR',
-}, {
-    label: 'USD',
-    value: 'USD',
-}];
+const CurrenciesOptions = [
+    {
+        label: 'EURO',
+        value: 'EUR',
+    },
+    {
+        label: 'USD',
+        value: 'USD',
+    },
+];
 
 const canCreateAccount = (...args: any[]): boolean => {
     return args.filter((elem) => !elem).length === 0;
@@ -85,12 +88,11 @@ const createBankAccountPlaceholder = (
     iban: string,
     routingNumber: string,
 ): Promise<any> => {
-
     const options = {
         method: 'post' as Method,
         headers: {
             'content-type': 'application/x-www-form-urlencoded',
-            'authorization': `Bearer ${getEnv().REACT_APP_STRIPE_API_KEY}`
+            authorization: `Bearer ${getEnv().REACT_APP_STRIPE_API_KEY}`,
         },
         data: qs.stringify({
             bank_account: {
@@ -99,7 +101,7 @@ const createBankAccountPlaceholder = (
                 currency,
                 account_number: iban,
                 routing_number: routingNumber,
-            }
+            },
         }),
         url: `${StripeNativeEndpointUrl}/tokens`,
     };
@@ -117,9 +119,7 @@ const generateBankAccountToken = async (
     routingNumber: string,
 ): Promise<any> => {
     switch (stripe.platform) {
-
-        case 'web' : {
-
+        case 'web': {
             try {
                 const { token, error } = await stripe.stripe.createToken('bank_account', {
                     country,
@@ -134,26 +134,16 @@ const generateBankAccountToken = async (
                 }
 
                 return token;
-
             } catch (e) {
                 dispatch(PushNotification(e.message, 'error'));
                 throw e;
             }
         }
         case 'native': {
-
             try {
-
-                const res = await createBankAccountPlaceholder(
-                   name,
-                   country,
-                   currency,
-                   iban,
-                   routingNumber
-                );
+                const res = await createBankAccountPlaceholder(name, country, currency, iban, routingNumber);
 
                 return res.data;
-
             } catch (e) {
                 dispatch(PushNotification(e.message, 'error'));
                 throw e;
@@ -162,69 +152,72 @@ const generateBankAccountToken = async (
     }
 };
 
-export const StripeSetupCreateExternalAccountManager: React.FC<StripeSetupManagerCreateExternalAccountProps> =
-    CtaMargin(
-        TopNavMargin(
-            InvisibleStatusBarMargin(
-                (props: StripeSetupManagerCreateExternalAccountProps): JSX.Element => {
+export const StripeSetupCreateExternalAccountManager: React.FC<StripeSetupManagerCreateExternalAccountProps> = CtaMargin(
+    TopNavMargin(
+        InvisibleStatusBarMargin(
+            (props: StripeSetupManagerCreateExternalAccountProps): JSX.Element => {
+                const [name, setName] = useState(undefined);
+                const [country, setCountry] = useState(undefined);
+                const [currency, setCurrency] = useState(undefined);
+                const [iban, setIban] = useState(undefined);
+                const [routingNumber, setRoutingNumber] = useState(undefined);
+                const stripe = useCustomStripe();
+                const dispatch = useDispatch();
+                const token = useSelector((state: AppState) => state.auth.token?.value);
+                const [uuid] = useState(v4());
+                const addExternalAccountLazyRequest = useLazyRequest('payment.stripe.addExternalAccount', uuid);
+                const [called, setCalled] = useState(false);
+                const [t] = useTranslation('stripe_setup_create_external_account_manager');
 
-                    const [name, setName] = useState(undefined);
-                    const [country, setCountry] = useState(undefined);
-                    const [currency, setCurrency] = useState(undefined);
-                    const [iban, setIban] = useState(undefined);
-                    const [routingNumber, setRoutingNumber] = useState(undefined);
-                    const stripe = useCustomStripe();
-                    const dispatch = useDispatch();
-                    const token = useSelector((state: AppState) => state.auth.token?.value);
-                    const [uuid] = useState(v4());
-                    const addExternalAccountLazyRequest = useLazyRequest('payment.stripe.addExternalAccount', uuid);
-                    const [called, setCalled] = useState(false);
-                    const [t] = useTranslation('stripe_setup_create_external_account_manager');
+                const createBankAccountToken = async () => {
+                    setCalled(true);
+                    try {
+                        const bankAccountToken = await generateBankAccountToken(
+                            stripe,
+                            dispatch,
+                            name,
+                            country,
+                            currency,
+                            iban,
+                            routingNumber,
+                        );
 
-                    const createBankAccountToken = async () => {
-                        setCalled(true);
-                        try {
-                            console.log(name, country, currency, iban, routingNumber, 'ok');
-                            const bankAccountToken = await generateBankAccountToken(stripe, dispatch, name, country, currency, iban, routingNumber);
-
-                            if (!addExternalAccountLazyRequest.response.called) {
-                                addExternalAccountLazyRequest.lazyRequest([
-                                    token,
-                                    {
-                                        bank_account_token: bankAccountToken.id,
-                                    },
-                                ]);
-                            }
-                        } catch (e) {
-                            setCalled(false);
+                        if (!addExternalAccountLazyRequest.response.called) {
+                            addExternalAccountLazyRequest.lazyRequest([
+                                token,
+                                {
+                                    bank_account_token: bankAccountToken.id,
+                                },
+                            ]);
                         }
+                    } catch (e) {
+                        setCalled(false);
+                    }
+                };
 
-                    };
-
-                    useDeepEffect(() => {
-                        if (called) {
-
-                            if (addExternalAccountLazyRequest.response.called &&
-                                !addExternalAccountLazyRequest.response.loading) {
-                                if (addExternalAccountLazyRequest.response.error) {
-                                    setCalled(false);
-                                    dispatch(PushNotification(addExternalAccountLazyRequest.response.error.message, 'error'));
-                                } else {
-                                    props.forceFetchInterface();
-                                    if (props.onDone) {
-                                        props.onDone();
-                                    }
+                useDeepEffect(() => {
+                    if (called) {
+                        if (
+                            addExternalAccountLazyRequest.response.called &&
+                            !addExternalAccountLazyRequest.response.loading
+                        ) {
+                            if (addExternalAccountLazyRequest.response.error) {
+                                setCalled(false);
+                                dispatch(
+                                    PushNotification(addExternalAccountLazyRequest.response.error.message, 'error'),
+                                );
+                            } else {
+                                props.forceFetchInterface();
+                                if (props.onDone) {
+                                    props.onDone();
                                 }
                             }
-
                         }
+                    }
+                }, [called, addExternalAccountLazyRequest.response]);
 
-                    }, [
-                        called,
-                        addExternalAccountLazyRequest.response,
-                    ]);
-
-                    return <Container>
+                return (
+                    <Container>
                         <Title>{t('title')}</Title>
                         <ContentContainer>
                             <Description>{t('description')}</Description>
@@ -275,7 +268,11 @@ export const StripeSetupCreateExternalAccountManager: React.FC<StripeSetupManage
                                         uppercase: true,
                                     }}
                                     placeholder={t('routing_number_placeholder')}
-                                    onChange={(ev) => setRoutingNumber(ev.target.value === '' || !ev.target.value ? undefined : ev.target.value)}
+                                    onChange={(ev) =>
+                                        setRoutingNumber(
+                                            ev.target.value === '' || !ev.target.value ? undefined : ev.target.value,
+                                        )
+                                    }
                                 />
                             </InputContainer>
                         </BankAccountForm>
@@ -285,8 +282,9 @@ export const StripeSetupCreateExternalAccountManager: React.FC<StripeSetupManage
                             ctaLabel={called ? t('adding_bank_account') : t('add_bank_account')}
                             onClick={createBankAccountToken}
                         />
-                    </Container>;
-                }
-            )
-        )
-    );
+                    </Container>
+                );
+            },
+        ),
+    ),
+);

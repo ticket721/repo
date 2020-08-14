@@ -85,9 +85,7 @@ const formatAmount = (locale: string, currency: string, amount: number): string 
     return new Intl.NumberFormat(locale, { style: 'currency', currency }).format(amount / 100);
 };
 
-export const SSCABalanceManager: React.FC<SSCABalanceManagerProps> = (
-    props: SSCABalanceManagerProps,
-): JSX.Element => {
+export const SSCABalanceManager: React.FC<SSCABalanceManagerProps> = (props: SSCABalanceManagerProps): JSX.Element => {
     const [currency, setCurrency] = useState(recoverHighestBalance(props.currencies));
     const [, i18n] = useTranslation('language');
 

@@ -121,7 +121,7 @@ const ProfileRoot: React.FC<ProfileRootProps> = ({ desktop, extraButtons }: Prof
                     <ArrowLink
                         label={t('receive_money_with_stripe')}
                         onClick={() => {
-                            history.push('/stripe/setup');
+                            history.push('/stripe/connect');
                         }}
                     />
                 </FeatureFlag>

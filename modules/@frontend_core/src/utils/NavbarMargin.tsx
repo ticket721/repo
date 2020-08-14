@@ -10,7 +10,7 @@ export const NavbarMargin = (Comp: React.ComponentType): React.FC => {
     return (props: any = {}) => {
         return (
             <NavbarMarginContainer>
-                <Comp {...props}/>
+                <Comp {...props} />
             </NavbarMarginContainer>
         );
     };

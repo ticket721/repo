@@ -1,8 +1,8 @@
-import { useHistory }       from 'react-router';
-import { useTranslation }   from 'react-i18next';
+import { useHistory } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import './locales';
 import React, { useEffect } from 'react';
-import { useDispatch }      from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { PushNotification } from '../../redux/ducks/notifications';
 
 export const CloseRedirect = () => {
@@ -13,10 +13,21 @@ export const CloseRedirect = () => {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        dispatch(PushNotification(t(message), 'success'))
+        dispatch(PushNotification(t(message), 'success'));
     }, []);
 
-    return <div style={{height: '100vh', width: '100vw', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
-        <p>{t('close_safely')}</p>
-    </div>
-}
+    return (
+        <div
+            style={{
+                height: '100vh',
+                width: '100vw',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+            }}
+        >
+            <p>{t('close_safely')}</p>
+        </div>
+    );
+};

@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
-import { Error, FullPageLoading }                  from '@frontend/flib-react/lib/components';
-import { PasswordlessUserDto }                     from '@common/sdk/lib/@backend_nest/apps/server/src/authentication/dto/PasswordlessUser.dto';
-import { useRequest }                              from '../../hooks/useRequest';
-import { v4 }                                      from 'uuid';
-import { useSelector }                             from 'react-redux';
-import { PaymentStripeFetchInterfaceResponseDto }  from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/payment/stripe/dto/PaymentStripeFetchInterfaceResponse.dto';
-import { StripeInterfaceEntity }                   from '@common/sdk/lib/@backend_nest/libs/common/src/stripeinterface/entities/StripeInterface.entity';
-import { AppState }                                from '../../redux';
-import { StripeSetupCreateConnectAccountManager }  from './StripeSetupCreateConnectAccountManager';
+import { Error, FullPageLoading } from '@frontend/flib-react/lib/components';
+import { PasswordlessUserDto } from '@common/sdk/lib/@backend_nest/apps/server/src/authentication/dto/PasswordlessUser.dto';
+import { useRequest } from '../../hooks/useRequest';
+import { v4 } from 'uuid';
+import { useSelector } from 'react-redux';
+import { PaymentStripeFetchInterfaceResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/payment/stripe/dto/PaymentStripeFetchInterfaceResponse.dto';
+import { StripeInterfaceEntity } from '@common/sdk/lib/@backend_nest/libs/common/src/stripeinterface/entities/StripeInterface.entity';
+import { AppState } from '../../redux';
+import { StripeSetupCreateConnectAccountManager } from './StripeSetupCreateConnectAccountManager';
 import { StripeSetupCreateExternalAccountManager } from './StripeSetupCreateExternalAccountManager';
-import { StripeSetupConnectAccountManager }        from './StripeSetupConnectAccountManager';
+import { StripeSetupConnectAccountManager } from './StripeSetupConnectAccountManager';
 import { PaymentStripeFetchBalanceResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/payment/stripe/dto/PaymentStripeFetchBalanceResponse.dto';
 
 const isConnectAccountCreated = (stripeInterface: StripeInterfaceEntity): boolean => {

@@ -1,4 +1,4 @@
 import { StripeSetup }              from '@frontend/core/lib/components/StripeSetup';
-import React                        from 'react';
+import { DesktopWarning } from '../utils/DesktopWarning';
 
-export default StripeSetup;
+export default DesktopWarning(StripeSetup());

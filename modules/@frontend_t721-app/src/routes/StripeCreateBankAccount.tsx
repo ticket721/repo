@@ -1,3 +1,4 @@
 import { StripeCreateBankAccount }              from '@frontend/core/lib/components/StripeSetup';
+import DekstopWarning from './StripeCreateBankAccount';
 
-export default StripeCreateBankAccount;
+export default DekstopWarning(StripeCreateBankAccount);

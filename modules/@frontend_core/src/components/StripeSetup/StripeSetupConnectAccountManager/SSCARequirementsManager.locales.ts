@@ -1,4 +1,4 @@
-import i18n  from '../../../utils/i18n';
+import i18n from '../../../utils/i18n';
 
 i18n.addResourceBundle('en', 'stripe_setup_requirements', {
     title: 'Requirements',
@@ -15,8 +15,10 @@ i18n.addResourceBundle('en', 'stripe_setup_requirements', {
     document__connect_account_past_due: 'Due Documents',
     document__connect_account_pending_verification: 'Verifications',
     document_ready: 'Due Documents',
-    click_to_fill: 'Click to fill missing information >'
+    click_to_fill: 'Click to fill missing information >',
+    missing: 'missing',
 });
+
 i18n.addResourceBundle('fr', 'stripe_setup_requirements', {
     title: 'Pré-requis',
     status: 'status',
@@ -24,13 +26,14 @@ i18n.addResourceBundle('fr', 'stripe_setup_requirements', {
     status__connect_account_eventually_due: 'Action requise',
     status__connect_account_past_due: 'Action requise',
     status__connect_account_pending_verification: 'Validation en cours',
-    status_ready: 'Pret',
-    up_to_date: 'A jour',
-    click_to_update: 'Cliquez pour mettre a jour vos documents >',
-    document__connect_account_currently_due: 'Documents necessaires',
-    document__connect_account_eventually_due: 'Documents necessaires',
-    document__connect_account_past_due: 'Documents necessaires',
-    document__connect_account_pending_verification: 'Verifications',
-    document_ready: 'Documents necessaires',
-    click_to_fill: 'Cliquez pour fournir les documents >'
+    status_ready: 'Prêt',
+    up_to_date: 'À jour',
+    click_to_update: 'Cliquez pour mettre à jour vos documents >',
+    document__connect_account_currently_due: 'Documents nécessaires',
+    document__connect_account_eventually_due: 'Documents nécessaires',
+    document__connect_account_past_due: 'Documents nécessaires',
+    document__connect_account_pending_verification: 'Vérifications',
+    document_ready: 'Documents nécessaires',
+    click_to_fill: 'Cliquez pour fournir les documents >',
+    missing: 'manquant',
 });

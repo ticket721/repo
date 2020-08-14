@@ -1,5 +1,5 @@
 import styled, { keyframes } from 'styled-components';
-import { motion, MotionProps, useTransform, useSpring } from 'framer-motion';
+import { motion, MotionProps, useTransform, useMotionValue } from 'framer-motion';
 import React, { PropsWithChildren, useState } from 'react';
 import { Icon } from '@frontend/flib-react/lib/components';
 // tslint:disable-next-line
@@ -33,7 +33,7 @@ export const SectionElementContainer = styled.div<SectionElementContainerProps>`
     cursor: ${(props) => (props.clickable ? 'pointer' : 'default')};
 `;
 
-const DraggableSectionElementContainer = styled(motion.div) <SectionElementContainerProps & MotionProps>`
+const DraggableSectionElementContainer = styled(motion.div)<SectionElementContainerProps & MotionProps>`
     max-width: 500px;
     background-color: #24232c;
     padding: ${(props) => props.theme.regularSpacing};
@@ -50,7 +50,7 @@ interface DefaultButtonProps {
     transitionable: boolean;
 }
 
-const DefaultButton = styled(motion.div) <DefaultButtonProps & MotionProps>`
+const DefaultButton = styled(motion.div)<DefaultButtonProps & MotionProps>`
     position: absolute;
     right: 66px;
     top: 0;
@@ -86,7 +86,7 @@ interface CloseButtonProps {
     transitionable: boolean;
 }
 
-const CloseButton = styled(motion.div) <CloseButtonProps & MotionProps>`
+const CloseButton = styled(motion.div)<CloseButtonProps & MotionProps>`
     position: absolute;
     right: 0;
     top: 0;
@@ -130,13 +130,13 @@ export interface DragToActionSelectionElementContainerProps {
 export const DragToActionSelectionElementContainer: React.FC<PropsWithChildren<
     DragToActionSelectionElementContainerProps
 >> = (props: PropsWithChildren<DragToActionSelectionElementContainerProps>): JSX.Element => {
-    const x = useSpring(0, { stiffness: 1000, damping: 1000, mass: 1 });
+    const x = useMotionValue(0);
     const [transitionable, setTransitionable] = useState(true);
     const [startDragPos, setStartDragPos] = useState(0);
 
     const setStartPos = () => {
         setStartDragPos(x.get());
-    }
+    };
 
     const toggleOnRelease = () => {
         if (startDragPos > -66) {
@@ -144,7 +144,7 @@ export const DragToActionSelectionElementContainer: React.FC<PropsWithChildren<
         } else {
             x.set(0);
         }
-    }
+    };
 
     const toggle = () => {
         if (transitionable) {
@@ -154,7 +154,7 @@ export const DragToActionSelectionElementContainer: React.FC<PropsWithChildren<
                 x.set(0);
             }
         }
-    }
+    };
 
     const removeOpacityInput = [-50, -20];
     const removeOpacityOutput = [props.default ? 0.5 : 1, 0];
@@ -184,17 +184,17 @@ export const DragToActionSelectionElementContainer: React.FC<PropsWithChildren<
                 {props.loadingDefault ? (
                     <LoaderIcon icon={'loader'} size={'20px'} color={'white)'} />
                 ) : (
-                        <span>{getSymbolFromCurrency(props.currency)}</span>
-                    )}
+                    <span>{getSymbolFromCurrency(props.currency)}</span>
+                )}
                 {props.default ? (
                     <p style={{ position: 'absolute', textAlign: 'center' }}>default</p>
                 ) : (
-                        <p style={{ position: 'absolute' }}>
-                            make
-                            <br />
+                    <p style={{ position: 'absolute' }}>
+                        make
+                        <br />
                         default
-                        </p>
-                    )}
+                    </p>
+                )}
             </DefaultButton>
             <CloseButton
                 transitionable={transitionable}
@@ -208,8 +208,8 @@ export const DragToActionSelectionElementContainer: React.FC<PropsWithChildren<
                 {props.loadingDelete ? (
                     <LoaderIcon icon={'loader'} size={'20px'} color={'white)'} />
                 ) : (
-                        <Icon icon={'close'} color={'white'} size={'20px'} />
-                    )}
+                    <Icon icon={'close'} color={'white'} size={'20px'} />
+                )}
             </CloseButton>
             <DraggableSectionElementContainer
                 clickable={true}
@@ -221,22 +221,22 @@ export const DragToActionSelectionElementContainer: React.FC<PropsWithChildren<
                     }, 100);
                 }}
                 onDragStart={() => {
-                setStartPos();
-                setTransitionable(false);
-            }}
+                    setStartPos();
+                    setTransitionable(false);
+                }}
                 style={{
-                x,
-            }}
+                    x,
+                }}
                 drag={'x'}
                 dragElastic={0.1}
                 dragConstraints={{
-                left: -132,
-                right: 0,
-            }}
+                    left: -132,
+                    right: 0,
+                }}
             >
-            {props.children}
+                {props.children}
             </DraggableSectionElementContainer>
-        </div >
+        </div>
     );
 };
 

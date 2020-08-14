@@ -1,18 +1,14 @@
 import { PasswordlessUserDto } from '@common/sdk/lib/@backend_nest/apps/server/src/authentication/dto/PasswordlessUser.dto';
-import {
-    StripeInterfaceEntity
-} from '@common/sdk/lib/@backend_nest/libs/common/src/stripeinterface/entities/StripeInterface.entity';
-import React from 'react';
+import { StripeInterfaceEntity } from '@common/sdk/lib/@backend_nest/libs/common/src/stripeinterface/entities/StripeInterface.entity';
+import React, { useContext } from 'react';
 import styled from 'styled-components';
 import { Icon } from '@frontend/flib-react/lib/components';
-import {
-    SSCABalanceManager,
-    BalanceCurrencyInfo,
-} from './SSCABalanceManager';
+import { SSCABalanceManager, BalanceCurrencyInfo } from './SSCABalanceManager';
 import { SSCARequirementsManager } from './SSCARequirementsManager';
 import { SSCACapabilitiesManager } from './SSCACapabilitiesManager';
 import { isAccountReady } from './isAccountReady';
 import { SSCAExternalAccountListManager } from './SSCAExternalAccountListManager';
+import { StripeContext } from '../index';
 
 const BalanceContainerPlaceholder = styled.div`
     height: calc(30vh + env(safe-area-inset-top));
@@ -21,7 +17,11 @@ const BalanceContainerPlaceholder = styled.div`
     margin-top: -constant(safe-area-inset-top);
 `;
 
-const BalanceContainer = styled.div`
+interface BalanceContainerPlaceholderProps {
+    extraTopMargin: number;
+}
+
+const BalanceContainer = styled.div<BalanceContainerPlaceholderProps>`
     width: 100vw;
     height: calc(30vh + env(safe-area-inset-top));
     height: calc(30vh + constant(safe-area-inset-top));
@@ -30,7 +30,7 @@ const BalanceContainer = styled.div`
     align-items: center;
     justify-content: center;
     position: fixed;
-    top: 0;
+    top: ${(props) => props.extraTopMargin}px;
     z-index: 10;
     background-color: #120f1a;
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
@@ -48,6 +48,16 @@ const MenuContainer = styled.div`
 `;
 
 const fusionBalances = (stripeBalances: any): BalanceCurrencyInfo[] => {
+    if (stripeBalances === null) {
+        return [
+            {
+                currency: 'eur',
+                amount: 0,
+                pending: 0,
+            },
+        ];
+    }
+
     const currencies: { [key: string]: BalanceCurrencyInfo } = {};
 
     for (const availableCurrency of stripeBalances.available) {
@@ -88,10 +98,16 @@ interface VeilContainerProps {
 const VeilContainer = styled.div<VeilContainerProps>`
     z-index: 1000;
     opacity: ${(props) => (props.visible ? '1' : '0.3')};
+    pointer-events: ${(props) => (props.visible ? 'all' : 'none')};
 `;
 
-const RefreshIcon = styled(Icon)`
+interface RefreshIconProps {
+    extraTopMargin: number;
+}
+
+const RefreshIcon = styled(Icon)<RefreshIconProps>`
     position: fixed;
+    margin-top: ${(props) => props.extraTopMargin}px;
     top: calc(16px + env(safe-area-inset-top));
     top: calc(16px + constant(safe-area-inset-top));
     right: 24px;
@@ -108,13 +124,20 @@ export interface StripeSetupConnectAccountManagerProps {
 export const StripeSetupConnectAccountManager: React.FC<StripeSetupConnectAccountManagerProps> = (
     props: StripeSetupConnectAccountManagerProps,
 ): JSX.Element => {
-    console.log(props.balance);
+    const stripeOptions = useContext(StripeContext);
+
     return (
         <GlobalContainer>
-            <BalanceContainer>
+            <BalanceContainer extraTopMargin={stripeOptions.marginTop}>
                 <SSCABalanceManager currencies={fusionBalances(props.balance)} />
             </BalanceContainer>
-            <RefreshIcon color={'white'} icon={'refresh'} size={16} onClick={props.forceFetchInterface} />
+            <RefreshIcon
+                color={'white'}
+                icon={'refresh'}
+                size={16}
+                onClick={props.forceFetchInterface}
+                extraTopMargin={stripeOptions.marginTop}
+            />
             <BalanceContainerPlaceholder />
             <MenuContainer>
                 <SSCARequirementsManager
@@ -122,12 +145,10 @@ export const StripeSetupConnectAccountManager: React.FC<StripeSetupConnectAccoun
                     forceRefresh={props.forceFetchInterface}
                 />
                 <VeilContainer visible={isAccountReady(props.stripeInterface)}>
-                    <SSCACapabilitiesManager
-                        capabilities={props.stripeInterface.connect_account_capabilities || []}
-                    />
-                    <SSCAExternalAccountListManager 
+                    <SSCACapabilitiesManager capabilities={props.stripeInterface.connect_account_capabilities || []} />
+                    <SSCAExternalAccountListManager
                         external_accounts={props.stripeInterface.connect_account_external_accounts}
-                    forceRefresh={props.forceFetchInterface}
+                        forceRefresh={props.forceFetchInterface}
                     />
                 </VeilContainer>
             </MenuContainer>

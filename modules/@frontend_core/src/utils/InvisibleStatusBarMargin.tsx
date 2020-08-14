@@ -11,7 +11,7 @@ export const InvisibleStatusBarMargin = (Comp: React.ComponentType<any>): React.
         return (
             <>
                 <StatusBarPaddingContainer>
-                    <Comp {...props}/>
+                    <Comp {...props} />
                 </StatusBarPaddingContainer>
             </>
         );

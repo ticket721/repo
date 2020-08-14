@@ -15,7 +15,6 @@ function* fetchFlags(action: ISetToken): IterableIterator<any> {
             console.error(e);
             console.error('Unable to fetch Feature Flags');
         }
-
     }
 }
 

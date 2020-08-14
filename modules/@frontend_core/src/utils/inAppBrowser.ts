@@ -10,12 +10,12 @@ export const open = async (url: string, windowName: string, onEnd?: () => void):
             url,
             windowName,
             presentationStyle: 'popover',
-            toolbarColor: 'red'
+            toolbarColor: 'red',
         });
         if (onEnd) {
             Plugins.Browser.addListener('browserFinished', onEnd);
         }
-        return ;
+        return;
     } else {
         return window.location.replace(url);
     }

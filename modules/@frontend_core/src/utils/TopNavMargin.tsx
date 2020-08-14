@@ -9,7 +9,7 @@ export const TopNavMargin = (Comp: React.ComponentType<any>): React.FC => {
     return (props: any = {}) => {
         return (
             <TopNavMarginContainer>
-                <Comp {...props}/>
+                <Comp {...props} />
             </TopNavMarginContainer>
         );
     };

@@ -136,7 +136,7 @@ export const SSCARequirementsManager: React.FC<SSCARequirementsManagerProps> = (
                     <FieldsContainer>
                         <FieldContainer>
                             <FieldTitle>{t(`document_ready`)}</FieldTitle>
-                            <RequirementTitle>Up to date</RequirementTitle>
+                            <RequirementTitle>{t('up_to_date')}</RequirementTitle>
                         </FieldContainer>
                         <FieldContainer>
                             <FieldTitle>{t('status')}</FieldTitle>
@@ -166,7 +166,9 @@ export const SSCARequirementsManager: React.FC<SSCARequirementsManagerProps> = (
                 <FieldsContainer>
                     <FieldContainer>
                         <FieldTitle>{t(`document__${reason}`)}</FieldTitle>
-                        <RequirementTitle>{requirements.length} missing</RequirementTitle>
+                        <RequirementTitle>
+                            {requirements.length} {t('missing')}
+                        </RequirementTitle>
                     </FieldContainer>
                     <FieldContainer>
                         <FieldTitle>{t('status')}</FieldTitle>
