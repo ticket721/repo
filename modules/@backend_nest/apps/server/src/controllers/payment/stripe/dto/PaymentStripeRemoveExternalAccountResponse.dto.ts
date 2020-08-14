@@ -4,4 +4,3 @@ export class PaymentStripeRemoveExternalAccountResponseDto {
     // tslint:disable-next-line:variable-name
     stripe_interface: StripeInterfaceEntity;
 }
-

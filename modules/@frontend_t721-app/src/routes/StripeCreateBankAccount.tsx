@@ -1,4 +1,4 @@
-import { StripeCreateBankAccount }              from '@frontend/core/lib/components/StripeSetup';
-import DekstopWarning from './StripeCreateBankAccount';
+import { StripeCreateBankAccount } from '@frontend/core/lib/components/StripeSetup';
+import { DesktopWarning } from '../utils/DesktopWarning';
 
-export default DekstopWarning(StripeCreateBankAccount);
+export default DesktopWarning(StripeCreateBankAccount);

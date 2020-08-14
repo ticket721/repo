@@ -4,4 +4,3 @@ export class PaymentStripeGenerateOnboardingUrlResponseDto {
     expires_at: number;
     url: string;
 }
-

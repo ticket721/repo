@@ -12,7 +12,6 @@ import { UserDto } from '@lib/common/users/dto/User.dto';
 import { fromES } from '@lib/common/utils/fromES.helper';
 import Stripe from 'stripe';
 import { SECOND } from '@lib/common/utils/time';
-import { eq } from 'lodash';
 
 /**
  * Service to CRUD StripeInterfaceEntities
@@ -332,13 +331,9 @@ export class StripeInterfacesService extends CRUDExtension<StripeInterfacesRepos
         const stripeInterface: StripeInterfaceEntity = stripeInterfaceRes.response;
 
         try {
-            const deleteResult = await stripe.accounts.updateExternalAccount(
-                stripeInterface.connect_account,
-                externalAccountId,
-                {
-                    default_for_currency: true,
-                },
-            );
+            await stripe.accounts.updateExternalAccount(stripeInterface.connect_account, externalAccountId, {
+                default_for_currency: true,
+            });
         } catch (e) {
             return {
                 error: e.message,
@@ -364,10 +359,7 @@ export class StripeInterfacesService extends CRUDExtension<StripeInterfacesRepos
         const stripeInterface: StripeInterfaceEntity = stripeInterfaceRes.response;
 
         try {
-            const deleteResult = await stripe.accounts.deleteExternalAccount(
-                stripeInterface.connect_account,
-                externalAccountId,
-            );
+            await stripe.accounts.deleteExternalAccount(stripeInterface.connect_account, externalAccountId);
         } catch (e) {
             return {
                 error: e.message,

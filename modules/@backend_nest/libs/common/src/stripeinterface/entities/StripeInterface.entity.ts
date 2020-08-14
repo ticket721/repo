@@ -4,7 +4,7 @@ import {
     Entity,
     GeneratedUUidColumn,
     UpdateDateColumn,
-}                from '@iaminfinity/express-cassandra';
+} from '@iaminfinity/express-cassandra';
 import { ECAAG } from '@lib/common/utils/ECAAG.helper';
 
 /**
@@ -104,7 +104,7 @@ export class StripeInterfaceEntity {
         type: 'list',
         typeDef: '<frozen<stripe_payment_method>>',
     })
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     payment_methods: StripePaymentMethod[];
 
     /**
@@ -113,7 +113,7 @@ export class StripeInterfaceEntity {
     @Column({
         type: 'text',
     })
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     connect_account: string;
 
     /**
@@ -123,73 +123,73 @@ export class StripeInterfaceEntity {
         type: 'list',
         typeDef: '<frozen<connect_account_capability>>',
     })
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     connect_account_capabilities: ConnectAccountCapability[];
 
     @Column({
         type: 'timestamp',
     })
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     connect_account_current_deadline: Date;
 
     @Column({
         type: 'list',
-        typeDef: '<text>'
+        typeDef: '<text>',
     })
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     connect_account_currently_due: string[];
 
     @Column({
         type: 'list',
-        typeDef: '<text>'
+        typeDef: '<text>',
     })
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     connect_account_eventually_due: string[];
 
     @Column({
         type: 'list',
-        typeDef: '<text>'
+        typeDef: '<text>',
     })
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     connect_account_past_due: string[];
 
     @Column({
         type: 'list',
-        typeDef: '<text>'
+        typeDef: '<text>',
     })
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     connect_account_pending_verification: string[];
 
     @Column({
         type: 'list',
-        typeDef: '<frozen<connect_account_error>>'
+        typeDef: '<frozen<connect_account_error>>',
     })
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     connect_account_errors: ConnectAccountError[];
 
     @Column({
         type: 'list',
-        typeDef: '<frozen<connect_account_external_account>>'
+        typeDef: '<frozen<connect_account_external_account>>',
     })
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     connect_account_external_accounts: ConnectAccountExternalAccount[];
 
     @Column({
-        type: 'text'
+        type: 'text',
     })
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     connect_account_name: string;
 
     @Column({
-        type: 'text'
+        type: 'text',
     })
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     connect_account_type: string;
 
     @Column({
-        type: 'text'
+        type: 'text',
     })
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     connect_account_disabled_reason: string;
 
     /**
@@ -198,20 +198,20 @@ export class StripeInterfaceEntity {
     @Column({
         type: 'timestamp',
     })
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     connect_account_updated_at: Date;
 
     /**
      * Creation timestamp
      */
     @CreateDateColumn()
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     created_at: Date;
 
     /**
      * Update timestamp
      */
     @UpdateDateColumn()
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     updated_at: Date;
 }

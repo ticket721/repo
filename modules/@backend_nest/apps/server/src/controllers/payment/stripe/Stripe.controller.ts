@@ -26,7 +26,6 @@ import { PaymentStripeFetchInterfaceResponseDto } from '@app/server/controllers/
 import { StripeInterfaceEntity } from '@lib/common/stripeinterface/entities/StripeInterface.entity';
 import { PaymentStripeCreateStripeInterfaceInputDto } from '@app/server/controllers/payment/stripe/dto/PaymentStripeCreateStripeInterfaceInput.dto';
 import { PaymentStripeCreateStripeInterfaceResponseDto } from '@app/server/controllers/payment/stripe/dto/PaymentStripeCreateStripeInterfaceResponse.dto';
-import { StripeService } from '@lib/common/stripe/Stripe.service';
 import { PaymentStripeAddExternalAccountInputDto } from '@app/server/controllers/payment/stripe/dto/PaymentStripeAddExternalAccountInput.dto';
 import { PaymentStripeAddExternalAccountResponseDto } from '@app/server/controllers/payment/stripe/dto/PaymentStripeAddExternalAccountResponse.dto';
 import { PaymentStripeGenerateOnboardingUrlInputDto } from '@app/server/controllers/payment/stripe/dto/PaymentStripeGenerateOnboardingUrlInput.dto';
@@ -79,8 +78,8 @@ export class StripeController extends ControllerBasics<StripeInterfaceEntity> {
 
         if (!stripeInterface.connect_account) {
             return {
-                balance: null
-            }
+                balance: null,
+            };
         }
 
         const balance = await this._serviceCall(
