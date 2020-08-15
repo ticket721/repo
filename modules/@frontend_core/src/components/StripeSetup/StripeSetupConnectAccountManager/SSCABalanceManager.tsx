@@ -12,6 +12,7 @@ export interface BalanceCurrencyInfo {
 }
 
 interface SSCABalanceManagerProps {
+    name: string;
     currencies: BalanceCurrencyInfo[];
 }
 
@@ -26,6 +27,11 @@ const BalanceTextContainer = styled.div`
 const BalanceAvailableText = styled.h1`
     margin-bottom: ${(props) => props.theme.smallSpacing};
     font-size: 30px;
+`;
+
+const AccountNameText = styled.p`
+    margin-bottom: ${(props) => props.theme.smallSpacing};
+    text-transform: uppercase;
 `;
 
 interface BalancePendingTextProps {
@@ -57,6 +63,11 @@ const BalanceCurrency = styled(SelectInput)`
     max-width: 200px;
     width: 40%;
     height: 50px;
+    font-size: 12px;
+
+    & [class$='SingleValue'] {
+        font-size: 12px;
+    }
 `;
 
 const recoverHighestBalance = (balances: BalanceCurrencyInfo[]): string => {
@@ -107,6 +118,7 @@ export const SSCABalanceManager: React.FC<SSCABalanceManagerProps> = (props: SSC
         <>
             <div style={{ height: '48px' }} />
             <BalanceTextContainer>
+                <AccountNameText>{props.name}</AccountNameText>
                 <BalanceAvailableText>
                     {formatAmount(i18n.language, currency, getCurrency(currency, props.currencies).amount)}
                 </BalanceAvailableText>

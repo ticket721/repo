@@ -37,6 +37,7 @@ const ListContainer = styled.section`
     flex-wrap: wrap;
     justify-content: space-between;
     width: 100%;
+    max-width: 500px;
     h2 {
         font-weight: 300;
         font-size: 16px;
@@ -76,17 +77,25 @@ const Item = styled.li`
 `;
 
 const Container = styled.div`
-    padding: ${(props) => props.theme.regularSpacing};
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 `;
 
 const ContentContainer = styled.div`
     margin-top: ${(props) => props.theme.regularSpacing};
+    max-width: 500px;
 `;
 
-const Title = styled.h1``;
+const Title = styled.h1`
+    padding: ${(props) => props.theme.regularSpacing};
+`;
 
 const Description = styled.p`
+    padding: ${(props) => props.theme.regularSpacing};
     margin-bottom: ${(props) => props.theme.regularSpacing};
+    max-width: 500px;
 `;
 
 const Agreement = styled.p`
@@ -159,7 +168,7 @@ export const StripeSetupCreateConnectAccountManager: React.FC<StripeSetupCreateC
                 const dispatch = useDispatch();
                 const token = useSelector((state: AppState) => state.auth.token?.value);
                 const [uuid] = useState(v4());
-                const createStripeInterfaceLazyRequest = useLazyRequest('payment.stripe.createInterface', uuid);
+                const createStripeInterfaceLazyRequest = useLazyRequest('payment.stripe.createConnectAccount', uuid);
                 const [called, setCalled] = useState(false);
                 const [t] = useTranslation('stripe_setup_create_connect_account_manager');
 
@@ -218,37 +227,38 @@ export const StripeSetupCreateConnectAccountManager: React.FC<StripeSetupCreateC
                         <Container>
                             <Title>{t('title')}</Title>
                             <ContentContainer>
-                                <Description>{t('description_first')}</Description>
-                                <Description>{t('description_second')}</Description>
+                                <Description>{t('description')}</Description>
                             </ContentContainer>
+                            <ListContainer>
+                                <ul className={'row'}>
+                                    {items.map((item) => (
+                                        <Item
+                                            key={item.value}
+                                            className={selection === item.value ? 'selected' : ''}
+                                            onClick={() => {
+                                                setSelection(item.value);
+                                            }}
+                                        >
+                                            <h2>{item.title}</h2>
+                                            <CheckIcon icon={'check'} size={'12px'} color={theme.primaryColor.hex} />
+                                        </Item>
+                                    ))}
+                                </ul>
+                            </ListContainer>
+                            <div style={{ maxWidth: 500 }}>
+                                {selection !== null ? (
+                                    <Agreement>
+                                        {t('agreement_first_part')}
+                                        <a href={StripeServiceAgreementUrl}>{t('services_agreement')}</a>
+                                        {t('agreement_second_part')}
+                                        <a href={StripeConnectedAccountAgreementUrl}>
+                                            {t('stripe_connected_account_agreement')}
+                                        </a>
+                                        .
+                                    </Agreement>
+                                ) : null}
+                            </div>
                         </Container>
-                        <ListContainer>
-                            <ul className={'row'}>
-                                {items.map((item) => (
-                                    <Item
-                                        key={item.value}
-                                        className={selection === item.value ? 'selected' : ''}
-                                        onClick={() => {
-                                            setSelection(item.value);
-                                        }}
-                                    >
-                                        <h2>{item.title}</h2>
-                                        <CheckIcon icon={'check'} size={'12px'} color={theme.primaryColor.hex} />
-                                    </Item>
-                                ))}
-                            </ul>
-                        </ListContainer>
-                        {selection !== null ? (
-                            <Agreement>
-                                {t('agreement_first_part')}
-                                <a href={StripeServiceAgreementUrl}>{t('services_agreement')}</a>
-                                {t('agreement_second_part')}
-                                <a href={StripeConnectedAccountAgreementUrl}>
-                                    {t('stripe_connected_account_agreement')}
-                                </a>
-                                .
-                            </Agreement>
-                        ) : null}
                         <FullButtonCta
                             show={selection !== null && !!stripe?.stripe}
                             ctaLabel={called ? t('creating_account') : t('create_account')}

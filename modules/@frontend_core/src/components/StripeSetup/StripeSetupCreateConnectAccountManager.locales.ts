@@ -1,9 +1,7 @@
 import i18n from '../../utils/i18n';
 
 i18n.addResourceBundle('en', 'stripe_setup_create_connect_account_manager', {
-    description_first:
-        'Stripe is our payment processor and partner. In order for you to receive funds in a legal manner we need to create a Stripe Connect account for you.',
-    description_second:
+    description:
         'To start creating your Stripe Connect account, you need to select your business type from the list below.',
     title: 'Business type',
     services_agreement: 'Services Agreement',
@@ -17,9 +15,7 @@ i18n.addResourceBundle('en', 'stripe_setup_create_connect_account_manager', {
     create_account: 'Create Account',
 });
 i18n.addResourceBundle('fr', 'stripe_setup_create_connect_account_manager', {
-    description_first:
-        'Stripe est notre outil de paiement et partenaire. Pour pouvoir recevoir des fonds de façon légale, vous devez créer un compte Stripe Connect.',
-    description_second:
+    description:
         'Pour commencer la création de votre compte Stripe Connect, sélectionnez votre type de business dans la liste suivante.',
     title: 'Type de business',
     services_agreement: 'Accord de Services',

@@ -2,8 +2,6 @@ import { AxiosResponse } from 'axios';
 import { T721SDK } from '../../index';
 import { PaymentStripeFetchInterfaceResponseDto } from '@app/server/controllers/payment/stripe/dto/PaymentStripeFetchInterfaceResponse.dto';
 // tslint:disable-next-line:max-line-length
-import { PaymentStripeCreateStripeInterfaceInputDto } from '@app/server/controllers/payment/stripe/dto/PaymentStripeCreateStripeInterfaceInput.dto';
-import { PaymentStripeCreateStripeInterfaceResponseDto } from '@app/server/controllers/payment/stripe/dto/PaymentStripeCreateStripeInterfaceResponse.dto';
 import { PaymentStripeAddExternalAccountInputDto } from '@app/server/controllers/payment/stripe/dto/PaymentStripeAddExternalAccountInput.dto';
 // tslint:disable-next-line:max-line-length
 import { PaymentStripeAddExternalAccountResponseDto } from '@app/server/controllers/payment/stripe/dto/PaymentStripeAddExternalAccountResponse.dto';
@@ -16,6 +14,9 @@ import { PaymentStripeRemoveExternalAccountResponseDto } from '@app/server/contr
 import { PaymentStripeSetDefaultExternalAccountInputDto } from '@app/server/controllers/payment/stripe/dto/PaymentStripeSetDefaultExternalAccountInput.dto';
 import { PaymentStripeSetDefaultExternalAccountResponseDto } from '@app/server/controllers/payment/stripe/dto/PaymentStripeSetDefaultExternalAccountResponse.dto';
 import { PaymentStripeFetchBalanceResponseDto } from '@app/server/controllers/payment/stripe/dto/PaymentStripeFetchBalanceResponse.dto';
+import { PaymentStripeCreateInterfaceResponseDto } from '@app/server/controllers/payment/stripe/dto/PaymentStripeCreateInterfaceResponse.dto';
+import { PaymentStripeCreateConnectAccountInputDto } from '@app/server/controllers/payment/stripe/dto/PaymentStripeCreateConnectAccountInput.dto';
+import { PaymentStripeCreateConnectAccountResponseDto } from '@app/server/controllers/payment/stripe/dto/PaymentStripeCreateConnectAccountResponse.dto';
 
 export async function paymentStripeFetchInterface(
     token: string
@@ -27,13 +28,23 @@ export async function paymentStripeFetchInterface(
     });
 }
 
+export async function paymentStripeCreateInterface(
+    token: string
+): Promise<AxiosResponse<PaymentStripeCreateInterfaceResponseDto>> {
+    const self: T721SDK = this;
+
+    return self.post('/payment/stripe', {
+        Authorization: `Bearer ${token}`,
+    }, null);
+}
+
 export async function paymentStripeFetchBalance(
     token: string
 ): Promise<AxiosResponse<PaymentStripeFetchBalanceResponseDto>> {
     const self: T721SDK = this;
 
     return self.get(
-        '/payment/stripe/balance',
+        '/payment/stripe/connect-account/balance',
         {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -41,14 +52,14 @@ export async function paymentStripeFetchBalance(
     );
 }
 
-export async function paymentStripeCreateInterface(
+export async function paymentStripeCreateConnectAccount(
     token: string,
-    query: PaymentStripeCreateStripeInterfaceInputDto
-): Promise<AxiosResponse<PaymentStripeCreateStripeInterfaceResponseDto>> {
+    query: PaymentStripeCreateConnectAccountInputDto
+): Promise<AxiosResponse<PaymentStripeCreateConnectAccountResponseDto>> {
     const self: T721SDK = this;
 
-    return self.post<PaymentStripeCreateStripeInterfaceInputDto>(
-        '/payment/stripe',
+    return self.post<PaymentStripeCreateConnectAccountInputDto>(
+        '/payment/stripe/connect-account',
         {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -64,7 +75,7 @@ export async function paymentStripeAddExternalAccount(
     const self: T721SDK = this;
 
     return self.post<PaymentStripeAddExternalAccountInputDto>(
-        '/payment/stripe/external-account',
+        '/payment/stripe/connect-account/external-account',
         {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -80,7 +91,7 @@ export async function paymentStripeRemoveExternalAccount(
     const self: T721SDK = this;
 
     return self.delete<PaymentStripeRemoveExternalAccountInputDto>(
-        '/payment/stripe/external-account',
+        '/payment/stripe/connect-account/external-account',
         {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -96,7 +107,7 @@ export async function paymentStripeSetDefaultExternalAccount(
     const self: T721SDK = this;
 
     return self.put<PaymentStripeSetDefaultExternalAccountInputDto>(
-        '/payment/stripe/external-account/default',
+        '/payment/stripe/connect-account/external-account/default',
         {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -112,7 +123,7 @@ export async function paymentStripeGenerateOnboardingUrl(
     const self: T721SDK = this;
 
     return self.post<PaymentStripeGenerateOnboardingUrlInputDto>(
-        '/payment/stripe/onboarding',
+        '/payment/stripe/connect-account/onboarding',
         {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -128,7 +139,7 @@ export async function paymentStripeGenerateUpdateUrl(
     const self: T721SDK = this;
 
     return self.post<PaymentStripeGenerateUpdateUrlInputDto>(
-        '/payment/stripe/update',
+        '/payment/stripe/connect-account/update',
         {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json'

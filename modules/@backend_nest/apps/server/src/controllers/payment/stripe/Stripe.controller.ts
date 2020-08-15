@@ -24,8 +24,8 @@ import { UserDto } from '@lib/common/users/dto/User.dto';
 import { StripeInterfacesService } from '@lib/common/stripeinterface/StripeInterfaces.service';
 import { PaymentStripeFetchInterfaceResponseDto } from '@app/server/controllers/payment/stripe/dto/PaymentStripeFetchInterfaceResponse.dto';
 import { StripeInterfaceEntity } from '@lib/common/stripeinterface/entities/StripeInterface.entity';
-import { PaymentStripeCreateStripeInterfaceInputDto } from '@app/server/controllers/payment/stripe/dto/PaymentStripeCreateStripeInterfaceInput.dto';
-import { PaymentStripeCreateStripeInterfaceResponseDto } from '@app/server/controllers/payment/stripe/dto/PaymentStripeCreateStripeInterfaceResponse.dto';
+import { PaymentStripeCreateConnectAccountInputDto } from '@app/server/controllers/payment/stripe/dto/PaymentStripeCreateConnectAccountInput.dto';
+import { PaymentStripeCreateConnectAccountResponseDto } from '@app/server/controllers/payment/stripe/dto/PaymentStripeCreateConnectAccountResponse.dto';
 import { PaymentStripeAddExternalAccountInputDto } from '@app/server/controllers/payment/stripe/dto/PaymentStripeAddExternalAccountInput.dto';
 import { PaymentStripeAddExternalAccountResponseDto } from '@app/server/controllers/payment/stripe/dto/PaymentStripeAddExternalAccountResponse.dto';
 import { PaymentStripeGenerateOnboardingUrlInputDto } from '@app/server/controllers/payment/stripe/dto/PaymentStripeGenerateOnboardingUrlInput.dto';
@@ -64,7 +64,24 @@ export class StripeController extends ControllerBasics<StripeInterfaceEntity> {
         };
     }
 
-    @Get('/balance')
+    @Post('/')
+    @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
+    @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.OK)
+    @Roles('authenticated')
+    @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized, StatusCodes.InternalServerError, StatusCodes.BadRequest])
+    async create(@User() user: UserDto): Promise<PaymentStripeFetchInterfaceResponseDto> {
+        const stripeInterface = await this._serviceCall(
+            this.stripeInterfacesService.createStripeInterface(user),
+            StatusCodes.InternalServerError,
+        );
+
+        return {
+            stripe_interface: stripeInterface,
+        };
+    }
+
+    @Get('/connect-account/balance')
     @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
     @UseFilters(new HttpExceptionFilter())
     @HttpCode(StatusCodes.OK)
@@ -76,7 +93,7 @@ export class StripeController extends ControllerBasics<StripeInterfaceEntity> {
             StatusCodes.InternalServerError,
         );
 
-        if (!stripeInterface.connect_account) {
+        if (!stripeInterface?.connect_account) {
             return {
                 balance: null,
             };
@@ -92,16 +109,16 @@ export class StripeController extends ControllerBasics<StripeInterfaceEntity> {
         };
     }
 
-    @Post('/')
+    @Post('/connect-account')
     @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
     @UseFilters(new HttpExceptionFilter())
     @HttpCode(StatusCodes.OK)
     @Roles('authenticated')
     @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized, StatusCodes.InternalServerError, StatusCodes.BadRequest])
-    async createStripeInterface(
-        @Body() body: PaymentStripeCreateStripeInterfaceInputDto,
+    async createConnectAccount(
+        @Body() body: PaymentStripeCreateConnectAccountInputDto,
         @User() user: UserDto,
-    ): Promise<PaymentStripeCreateStripeInterfaceResponseDto> {
+    ): Promise<PaymentStripeCreateConnectAccountResponseDto> {
         const connectAccount = await this._serviceCall(
             this.stripeInterfacesService.createAccount(user, body.account_token),
             StatusCodes.InternalServerError,
@@ -117,7 +134,7 @@ export class StripeController extends ControllerBasics<StripeInterfaceEntity> {
         };
     }
 
-    @Post('/external-account')
+    @Post('/connect-account/external-account')
     @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
     @UseFilters(new HttpExceptionFilter())
     @HttpCode(StatusCodes.OK)
@@ -152,7 +169,7 @@ export class StripeController extends ControllerBasics<StripeInterfaceEntity> {
         };
     }
 
-    @Put('/external-account/default')
+    @Put('/connect-account/external-account/default')
     @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
     @UseFilters(new HttpExceptionFilter())
     @HttpCode(StatusCodes.OK)
@@ -187,7 +204,7 @@ export class StripeController extends ControllerBasics<StripeInterfaceEntity> {
         };
     }
 
-    @Delete('/external-account')
+    @Delete('/connect-account/external-account')
     @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
     @UseFilters(new HttpExceptionFilter())
     @HttpCode(StatusCodes.OK)
@@ -222,7 +239,7 @@ export class StripeController extends ControllerBasics<StripeInterfaceEntity> {
         };
     }
 
-    @Post('/onboarding')
+    @Post('/connect-account/onboarding')
     @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
     @UseFilters(new HttpExceptionFilter())
     @HttpCode(StatusCodes.OK)
@@ -249,7 +266,7 @@ export class StripeController extends ControllerBasics<StripeInterfaceEntity> {
         };
     }
 
-    @Post('/update')
+    @Post('/connect-account/update')
     @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
     @UseFilters(new HttpExceptionFilter())
     @HttpCode(StatusCodes.OK)

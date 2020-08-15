@@ -11,6 +11,7 @@ import { StripeSetupCreateConnectAccountManager } from './StripeSetupCreateConne
 import { StripeSetupCreateExternalAccountManager } from './StripeSetupCreateExternalAccountManager';
 import { StripeSetupConnectAccountManager } from './StripeSetupConnectAccountManager';
 import { PaymentStripeFetchBalanceResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/payment/stripe/dto/PaymentStripeFetchBalanceResponse.dto';
+import { StripeSetupCreateStripeInterfaceManager } from './StripeSetupCreateStripeInterfaceManager';
 
 const isConnectAccountCreated = (stripeInterface: StripeInterfaceEntity): boolean => {
     return !!stripeInterface.connect_account;
@@ -56,7 +57,7 @@ export const StripeSetupManager = (props: StripeSetupManagerProps): JSX.Element 
         );
     }
 
-    if (stripeInterfaceReq.response.error || !stripeInterfaceReq.response.data.stripe_interface) {
+    if (stripeInterfaceReq.response.error) {
         return (
             <Error
                 message={'cannot fetch stripe interface'}
@@ -73,6 +74,12 @@ export const StripeSetupManager = (props: StripeSetupManagerProps): JSX.Element 
         stripeInterfaceReq.force();
         stripeBalanceReq.force();
     };
+
+    console.log(stripeInterface);
+
+    if (!stripeInterface) {
+        return <StripeSetupCreateStripeInterfaceManager forceFetchInterface={force} />;
+    }
 
     if (!isConnectAccountCreated(stripeInterface)) {
         return (

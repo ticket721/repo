@@ -1,130 +1,165 @@
 {
-	"folders": [
-		{
-			"name": "@backend/email-templates",
-			"path": "modules/@backend_email-templates"
-		},
-		{
-			"name": "@backend/migrations",
-			"path": "modules/@backend_migrations"
-		},
-		{
-			"name": "@backend/nest",
-			"path": "modules/@backend_nest"
-		},
-		{
-			"name": "@backend/simulation",
-			"path": "modules/@backend_simulation"
-		},
-		{
-			"name": "@common/geoloc",
-			"path": "modules/@common_geoloc"
-		},
-		{
-			"name": "@common/global",
-			"path": "modules/@common_global"
-		},
-		{
-			"name": "@common/sdk",
-			"path": "modules/@common_sdk"
-		},
-		{
-			"name": "@contracts/dev",
-			"path": "modules/@contracts_dev"
-		},
-		{
-			"name": "@contracts/metamarketplace",
-			"path": "modules/@contracts_metamarketplace"
-		},
-		{
-			"name": "@contracts/minter_management",
-			"path": "modules/@contracts_minter_management"
-		},
-		{
-			"name": "@contracts/t721admin",
-			"path": "modules/@contracts_t721admin"
-		},
-		{
-			"name": "@contracts/t721controller",
-			"path": "modules/@contracts_t721controller"
-		},
-		{
-			"name": "@contracts/t721token",
-			"path": "modules/@contracts_t721token"
-		},
-		{
-			"name": "@contracts/ticketforge",
-			"path": "modules/@contracts_ticketforge"
-		},
-		{
-			"name": "@frontend/core",
-			"path": "modules/@frontend_core"
-		},
-		{
-			"name": "@frontend/flib-react",
-			"path": "modules/@frontend_flib-react"
-		},
-		{
-			"name": "@frontend/organizer-app",
-			"path": "modules/@frontend_organizer-app"
-		},
-		{
-			"name": "@frontend/staff-app",
-			"path": "modules/@frontend_staff-app"
-		},
-		{
-			"name": "@frontend/t721-app",
-			"path": "modules/@frontend_t721-app"
-		},
-		{
-			"name": "@infra/cert-manager",
-			"path": "modules/@infra_cert-manager"
-		},
-		{
-			"name": "@infra/cluster",
-			"path": "modules/@infra_cluster"
-		},
-		{
-			"name": "@infra/crds",
-			"path": "modules/@infra_crds"
-		},
-		{
-			"name": "@infra/efs-provisioner",
-			"path": "modules/@infra_efs-provisioner"
-		},
-		{
-			"name": "@infra/elassandra",
-			"path": "modules/@infra_elassandra"
-		},
-		{
-			"name": "@infra/helmsman",
-			"path": "modules/@infra_helmsman"
-		},
-		{
-			"name": "@infra/helmsman-prod",
-			"path": "modules/@infra_helmsman-prod"
-		},
-		{
-			"name": "@infra/ingress",
-			"path": "modules/@infra_ingress"
-		},
-		{
-			"name": "@infra/platform",
-			"path": "modules/@infra_platform"
-		},
-		{
-			"name": "@infra/prometheus",
-			"path": "modules/@infra_prometheus"
-		},
-		{
-			"name": "@infra/redis",
-			"path": "modules/@infra_redis"
-		},
-		{
-			"name": "@repo",
-			"path": "."
-		}
-	],
-	"settings": {
-	}
+  "folders": [
+    {
+      "name": "@backend/email-templates",
+      "path": "modules/@backend_email-templates"
+    },
+    {
+      "name": "@backend/migrations",
+      "path": "modules/@backend_migrations"
+    },
+    {
+      "name": "@backend/nest",
+      "path": "modules/@backend_nest"
+    },
+    {
+      "name": "@backend/simulation",
+      "path": "modules/@backend_simulation"
+    },
+    {
+      "name": "@common/geoloc",
+      "path": "modules/@common_geoloc"
+    },
+    {
+      "name": "@common/global",
+      "path": "modules/@common_global"
+    },
+    {
+      "name": "@common/sdk",
+      "path": "modules/@common_sdk"
+    },
+    {
+      "name": "@contracts/dev",
+      "path": "modules/@contracts_dev"
+    },
+    {
+      "name": "@contracts/metamarketplace",
+      "path": "modules/@contracts_metamarketplace"
+    },
+    {
+      "name": "@contracts/minter_management",
+      "path": "modules/@contracts_minter_management"
+    },
+    {
+      "name": "@contracts/t721admin",
+      "path": "modules/@contracts_t721admin"
+    },
+    {
+      "name": "@contracts/t721controller",
+      "path": "modules/@contracts_t721controller"
+    },
+    {
+      "name": "@contracts/t721token",
+      "path": "modules/@contracts_t721token"
+    },
+    {
+      "name": "@contracts/ticketforge",
+      "path": "modules/@contracts_ticketforge"
+    },
+    {
+      "name": "@frontend/core",
+      "path": "modules/@frontend_core"
+    },
+    {
+      "name": "@frontend/flib-react",
+      "path": "modules/@frontend_flib-react"
+    },
+    {
+      "name": "@frontend/organizer-app",
+      "path": "modules/@frontend_organizer-app"
+    },
+    {
+      "name": "@frontend/staff-app",
+      "path": "modules/@frontend_staff-app"
+    },
+    {
+      "name": "@frontend/t721-app",
+      "path": "modules/@frontend_t721-app"
+    },
+    {
+      "name": "@infra/cert-manager",
+      "path": "modules/@infra_cert-manager"
+    },
+    {
+      "name": "@infra/cluster",
+      "path": "modules/@infra_cluster"
+    },
+    {
+      "name": "@infra/crds",
+      "path": "modules/@infra_crds"
+    },
+    {
+      "name": "@infra/efs-provisioner",
+      "path": "modules/@infra_efs-provisioner"
+    },
+    {
+      "name": "@infra/elassandra",
+      "path": "modules/@infra_elassandra"
+    },
+    {
+      "name": "@infra/helmsman",
+      "path": "modules/@infra_helmsman"
+    },
+    {
+      "name": "@infra/helmsman-prod",
+      "path": "modules/@infra_helmsman-prod"
+    },
+    {
+      "name": "@infra/ingress",
+      "path": "modules/@infra_ingress"
+    },
+    {
+      "name": "@infra/platform",
+      "path": "modules/@infra_platform"
+    },
+    {
+      "name": "@infra/prometheus",
+      "path": "modules/@infra_prometheus"
+    },
+    {
+      "name": "@infra/redis",
+      "path": "modules/@infra_redis"
+    },
+    {
+      "name": "@repo",
+      "path": "."
+    }
+  ],
+  "settings": {
+    "github-actions.workflows.pinned.refresh.interval": 10,
+    "github-actions.workflows.pinned.workflows": [
+      ".github/workflows/continuous_integration.yml"
+    ],
+    "github-actions.workflows.pinned.refresh.enabled": true,
+    "jest.disabledWorkspaceFolders": [
+      "@backend/email-templates",
+      "@backend/migrations",
+      "@backend/simulation",
+      "@common/sdk",
+      "@contracts/dev",
+      "@contracts/metamarketplace",
+      "@contracts/minter_management",
+      "@contracts/t721admin",
+      "@contracts/t721controller",
+      "@contracts/t721token",
+      "@contracts/ticketforge",
+      "@frontend/core",
+      "@frontend/flib-react",
+      "@frontend/organizer-app",
+      "@frontend/staff-app",
+      "@frontend/t721-app",
+      "@infra/cert-manager",
+      "@infra/cluster",
+      "@infra/crds",
+      "@infra/efs-provisioner",
+      "@infra/elassandra",
+      "@infra/helmsman",
+      "@infra/helmsman-prod",
+      "@infra/ingress",
+      "@infra/platform",
+      "@infra/prometheus",
+      "@infra/redis",
+      "@repo",
+    ]
+  }
 }

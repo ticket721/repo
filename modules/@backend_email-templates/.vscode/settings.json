@@ -1,0 +1,5 @@
+{
+    "jest.autoEnable": false,
+    "jest.enableSnapshotUpdateMessages": false,
+    "jest.runAllTestsFirst": false
+}

@@ -11,8 +11,8 @@ import { SSCAExternalAccountListManager } from './SSCAExternalAccountListManager
 import { StripeContext } from '../index';
 
 const BalanceContainerPlaceholder = styled.div`
-    height: calc(30vh + env(safe-area-inset-top));
-    height: calc(30vh + constant(safe-area-inset-top));
+    height: calc(250px + env(safe-area-inset-top));
+    height: calc(250px + constant(safe-area-inset-top));
     margin-top: -env(safe-area-inset-top);
     margin-top: -constant(safe-area-inset-top);
 `;
@@ -23,8 +23,8 @@ interface BalanceContainerPlaceholderProps {
 
 const BalanceContainer = styled.div<BalanceContainerPlaceholderProps>`
     width: 100vw;
-    height: calc(30vh + env(safe-area-inset-top));
-    height: calc(30vh + constant(safe-area-inset-top));
+    height: calc(250px + env(safe-area-inset-top));
+    height: calc(250px + constant(safe-area-inset-top));
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -37,8 +37,8 @@ const BalanceContainer = styled.div<BalanceContainerPlaceholderProps>`
 `;
 
 const MenuContainer = styled.div`
-    min-height: calc(70vh - env(safe-area-inset-top));
-    min-height: calc(70vh - constant(safe-area-inset-top));
+    min-height: calc(100vh - 250px - env(safe-area-inset-top));
+    min-height: calc(100vh - 250px - constant(safe-area-inset-top));
     width: 100vw;
     max-width: 500px;
     padding-bottom: calc(16px + env(safe-area-inset-bottom));
@@ -129,7 +129,10 @@ export const StripeSetupConnectAccountManager: React.FC<StripeSetupConnectAccoun
     return (
         <GlobalContainer>
             <BalanceContainer extraTopMargin={stripeOptions.marginTop}>
-                <SSCABalanceManager currencies={fusionBalances(props.balance)} />
+                <SSCABalanceManager
+                    currencies={fusionBalances(props.balance)}
+                    name={props.stripeInterface.connect_account_name}
+                />
             </BalanceContainer>
             <RefreshIcon
                 color={'white'}

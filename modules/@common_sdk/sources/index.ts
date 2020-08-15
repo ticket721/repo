@@ -122,7 +122,8 @@ import {
     paymentStripeGenerateUpdateUrl,
     paymentStripeRemoveExternalAccount,
     paymentStripeSetDefaultExternalAccount,
-    paymentStripeFetchBalance
+    paymentStripeFetchBalance,
+    paymentStripeCreateConnectAccount
 } from './app/api/payment';
 
 export { FailedRegisterReport } from './app/api/authentication';
@@ -247,6 +248,9 @@ export class T721SDK {
             this
         );
         this.payment.stripe.createInterface = this.payment.stripe.createInterface.bind(
+            this
+        );
+        this.payment.stripe.createConnectAccount = this.payment.stripe.createConnectAccount.bind(
             this
         );
         this.payment.stripe.addExternalAccount = this.payment.stripe.addExternalAccount.bind(
@@ -484,6 +488,7 @@ export class T721SDK {
             fetchInterface: paymentStripeFetchInterface,
             fetchBalance: paymentStripeFetchBalance,
             createInterface: paymentStripeCreateInterface,
+            createConnectAccount: paymentStripeCreateConnectAccount,
             addExternalAccount: paymentStripeAddExternalAccount,
             removeExternalAccount: paymentStripeRemoveExternalAccount,
             setDefaultExternalAccount: paymentStripeSetDefaultExternalAccount,

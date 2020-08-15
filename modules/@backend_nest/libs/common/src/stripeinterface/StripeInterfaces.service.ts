@@ -45,6 +45,51 @@ export class StripeInterfacesService extends CRUDExtension<StripeInterfacesRepos
         );
     }
 
+    async createStripeInterface(user: UserDto): Promise<ServiceResponse<StripeInterfaceEntity>> {
+        const stripeInterfaceCollisionCheck = await this.recoverUserInterface(user);
+
+        if (stripeInterfaceCollisionCheck.error) {
+            return stripeInterfaceCollisionCheck;
+        }
+
+        if (stripeInterfaceCollisionCheck.response !== null) {
+            return {
+                error: 'user_already_has_connect_account',
+                response: null,
+            };
+        }
+
+        const newStripeInterface = await this.create({
+            owner: user.id,
+            payment_methods: [],
+            connect_account: null,
+            connect_account_capabilities: null,
+            connect_account_current_deadline: null,
+            connect_account_currently_due: null,
+            connect_account_eventually_due: null,
+            connect_account_past_due: null,
+            connect_account_pending_verification: null,
+            connect_account_errors: null,
+            connect_account_external_accounts: null,
+            connect_account_name: null,
+            connect_account_type: null,
+            connect_account_disabled_reason: null,
+            connect_account_updated_at: null,
+        });
+
+        if (newStripeInterface.error) {
+            return {
+                error: newStripeInterface.error,
+                response: null,
+            };
+        }
+
+        return {
+            error: null,
+            response: newStripeInterface.response,
+        };
+    }
+
     async recoverUserInterface(user: UserDto): Promise<ServiceResponse<StripeInterfaceEntity>> {
         const esQuery = {
             body: {
@@ -70,38 +115,13 @@ export class StripeInterfacesService extends CRUDExtension<StripeInterfacesRepos
         }
 
         if (esQueryResult.response.hits.total === 0) {
-            const newStripeInterface = await this.create({
-                owner: user.id,
-                payment_methods: [],
-                connect_account: null,
-                connect_account_capabilities: null,
-                connect_account_current_deadline: null,
-                connect_account_currently_due: null,
-                connect_account_eventually_due: null,
-                connect_account_past_due: null,
-                connect_account_pending_verification: null,
-                connect_account_errors: null,
-                connect_account_external_accounts: null,
-                connect_account_name: null,
-                connect_account_type: null,
-                connect_account_disabled_reason: null,
-                connect_account_updated_at: null,
-            });
-
-            if (newStripeInterface.error) {
-                return {
-                    error: newStripeInterface.error,
-                    response: null,
-                };
-            }
-
             return {
                 error: null,
-                response: newStripeInterface.response,
+                response: null,
             };
-        } else {
-            return this.updateAccountInfos(fromES<StripeInterfaceEntity>(esQueryResult.response.hits.hits[0]));
         }
+
+        return this.updateAccountInfos(fromES<StripeInterfaceEntity>(esQueryResult.response.hits.hits[0]));
     }
 
     async recoverBalance(stripeInterface: StripeInterfaceEntity): Promise<ServiceResponse<Stripe.Balance>> {
@@ -184,6 +204,32 @@ export class StripeInterfacesService extends CRUDExtension<StripeInterfacesRepos
         }));
     }
 
+    static recoverConnectAccountName(acc: Stripe.Account): string {
+        let entityDependentName: string = 'Stripe Connect';
+
+        if (!acc.business_type) {
+            return entityDependentName;
+        }
+
+        switch (acc.business_type) {
+            case 'individual': {
+                if (acc.individual.first_name && acc.individual.last_name) {
+                    entityDependentName = `${acc.individual.first_name} ${acc.individual.last_name}`;
+                }
+                break;
+            }
+            case 'government_entity':
+            case 'non_profit':
+            case 'company': {
+                if (acc.company.name) {
+                    entityDependentName = acc.company.name;
+                }
+            }
+        }
+
+        return entityDependentName;
+    }
+
     async updateAccountInfos(
         stripeInterface: StripeInterfaceEntity,
         force: boolean = false,
@@ -226,7 +272,7 @@ export class StripeInterfacesService extends CRUDExtension<StripeInterfacesRepos
                             default_for_currency: !!value.default_for_currency,
                         }),
                     ),
-                    connect_account_name: 'ok',
+                    connect_account_name: StripeInterfacesService.recoverConnectAccountName(account),
                     connect_account_type: account.business_type,
                     connect_account_disabled_reason: account.requirements.disabled_reason,
                     connect_account_updated_at: new Date(Date.now()),

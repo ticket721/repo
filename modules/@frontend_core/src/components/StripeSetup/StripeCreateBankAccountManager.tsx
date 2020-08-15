@@ -8,7 +8,7 @@ import { PaymentStripeFetchInterfaceResponseDto } from '@common/sdk/lib/@backend
 import { StripeInterfaceEntity } from '@common/sdk/lib/@backend_nest/libs/common/src/stripeinterface/entities/StripeInterface.entity';
 import { AppState } from '../../redux';
 import { StripeSetupCreateExternalAccountManager } from './StripeSetupCreateExternalAccountManager';
-import { useHistory } from 'react-router';
+import { useHistory, Redirect } from 'react-router';
 
 const isConnectAccountCreated = (stripeInterface: StripeInterfaceEntity): boolean => {
     return !!stripeInterface.connect_account;
@@ -36,7 +36,7 @@ export const StripeCreateBankAccountManager = (props: StripeCreateBankAccountMan
         return <FullPageLoading />;
     }
 
-    if (stripeInterfaceReq.response.error || !stripeInterfaceReq.response.data.stripe_interface) {
+    if (stripeInterfaceReq.response.error) {
         return (
             <Error
                 message={'cannot fetch stripe interface'}
@@ -48,6 +48,10 @@ export const StripeCreateBankAccountManager = (props: StripeCreateBankAccountMan
 
     const stripeInterface: StripeInterfaceEntity = stripeInterfaceReq.response.data.stripe_interface;
 
+    if (!stripeInterface) {
+        return <Redirect to={'/stripe/connect'} push={false} />;
+    }
+
     if (isConnectAccountCreated(stripeInterface)) {
         return (
             <StripeSetupCreateExternalAccountManager
@@ -58,6 +62,6 @@ export const StripeCreateBankAccountManager = (props: StripeCreateBankAccountMan
             />
         );
     } else {
-        return <p>You have no connected account</p>;
+        return <Redirect to={'/stripe/connect'} push={false} />;
     }
 };

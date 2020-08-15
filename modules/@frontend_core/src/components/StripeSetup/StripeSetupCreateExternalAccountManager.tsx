@@ -40,6 +40,7 @@ const Container = styled.div`
 
 const ContentContainer = styled.div`
     margin-top: ${(props) => props.theme.regularSpacing};
+    max-width: 500px;
 `;
 
 const Title = styled.h1``;
