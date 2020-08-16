@@ -167,24 +167,31 @@ export class StripeInterfacesService extends CRUDExtension<StripeInterfacesRepos
             };
         }
 
-        const connectAccount = await stripe.accounts.create({
-            type: 'custom',
-            email: user.email,
-            requested_capabilities: ['card_payments', 'transfers'],
-            account_token: accountToken,
-            settings: {
-                payouts: {
-                    schedule: {
-                        interval: 'manual',
+        try {
+            const connectAccount = await stripe.accounts.create({
+                type: 'custom',
+                email: user.email,
+                requested_capabilities: ['card_payments', 'transfers'],
+                account_token: accountToken,
+                settings: {
+                    payouts: {
+                        schedule: {
+                            interval: 'manual',
+                        },
                     },
                 },
-            },
-        });
+            });
 
-        return {
-            error: null,
-            response: connectAccount,
-        };
+            return {
+                error: null,
+                response: connectAccount,
+            };
+        } catch (e) {
+            return {
+                error: 'cannot_create_account',
+                response: null,
+            };
+        }
     }
 
     static shouldUpdateAccountInfos(stripeInterface: StripeInterfaceEntity): boolean {
