@@ -10,7 +10,7 @@ import { CategoryFetcher }          from './CategoryFetcher';
 import { Error, FullPageLoading }   from '@frontend/flib-react/lib/components';
 import { checkFormatDate }          from '@frontend/core/lib/utils/date';
 
-const Ticket: React.FC = () => {
+const TicketFetcher: React.FC = () => {
     const { id } = useParams();
     const [ t ] = useTranslation(['ticket', 'common']);
     const token = useSelector((state: T721AppState) => state.auth.token.value);
@@ -49,4 +49,4 @@ const Ticket: React.FC = () => {
     }
 };
 
-export default Ticket;
+export default TicketFetcher;

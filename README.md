@@ -68,7 +68,7 @@ In order for you to properly use the monorepo, you will have to install `lerna` 
 Simply run the following command to get started
 
 ```
-t721cli repo_depencies
+t721cli repo_dependencies
 ```
 
 ### First time cloning ?

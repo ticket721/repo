@@ -13,31 +13,13 @@ import { TicketsSearchResponseDto }         from '@common/sdk/lib/@backend_nest/
 import { useSelector }                      from 'react-redux';
 import { T721AppState }                     from '../../redux';
 import { v4 }                               from 'uuid';
-import { CategoriesFetcher }                from './CategoriesFetcher';
 import { useHistory }                       from 'react-router';
 import { UsersSetDeviceAddressResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/users/dto/UsersSetDeviceAddressResponse.dto';
 import { PasswordlessUserDto }              from '@common/sdk/lib/@backend_nest/apps/server/src/authentication/dto/PasswordlessUser.dto';
 import { UsersMeResponseDto }               from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/users/dto/UsersMeResponse.dto';
-import { Ticket }                           from '../../types/ticket';
-import { TicketEntity }                     from '@common/sdk/lib/@backend_nest/libs/common/src/tickets/entities/Ticket.entity';
-
-const formatTickets = (tickets: TicketEntity[]): Ticket[] =>
-    tickets.map(ticket => ({
-        name: null,
-        ticketId: ticket.id,
-        categoryId: ticket.category,
-        entityId: null,
-        ticketType: null,
-        location: null,
-        categoryName: null,
-        startDate: null,
-        startTime: null,
-        endDate: null,
-        endTime: null,
-        gradients: null,
-        mainColor: null,
-        image: null,
-    }));
+import { Page } from 'framer';
+import { CategoryFetcher } from './tempoFetchers/CategoryFetcher';
+import { checkFormatDate } from '@frontend/core/lib/utils/date';
 
 interface WalletProps {
     user: PasswordlessUserDto;
@@ -102,10 +84,34 @@ const Wallet: React.FC<WalletProps> = (props: WalletProps) => {
             </Title>
             {
                 ticketsResp.data?.tickets?.length > 0 ?
-                    <CategoriesFetcher
-                        uuid={uuid}
-                        tickets={formatTickets(ticketsResp.data.tickets)}
-                    /> :
+                <TicketList>
+                    <Page
+                    width={'100vw'}
+                    height={'calc(100vh - 96px)'}
+                    alignment={'center'}
+                    gap={10}
+                    paddingRight={24}
+                    paddingLeft={24}
+                    defaultEffect={'coverflow'}>
+                        {
+                            ticketsResp.data.tickets.map(ticket =>
+                                <CategoryFetcher
+                                key={ticket.id}
+                                ticketId={ticket.id}
+                                categoryId={ticket.category}
+                                transactionHash={ticket.transaction_hash}
+                                purchasedDate={checkFormatDate(ticket.updated_at)}/>
+                            )
+                        }
+                    </Page>
+                    {/* <Dots>
+                        {
+                            tickets.map((ticket, idx) => (
+                                <Dot key={ticket.ticketId} selected={idx === ticketIdx}/>
+                            ))
+                        }
+                    </Dots> */}
+                </TicketList> :
                 <EmptyWallet>
                     <span>{t('empty_wallet')}</span>
                     <div onClick={() => history.push('/search')}>
@@ -130,6 +136,30 @@ const Title = styled.div`
         font-size: 16px;
     }
 `;
+
+const TicketList = styled.div`
+    height: 100vh;
+`;
+
+// const Dots = styled.div`
+//     position: absolute;
+//     bottom: ${props => props.theme.biggerSpacing};
+//     left: 0;
+//     display: flex;
+//     justify-content: center;
+//     width: 100%;
+// `;
+
+// const Dot = styled.div<{ selected: boolean }>`
+//     width: ${props => props.theme.smallSpacing};
+//     height: ${props => props.theme.smallSpacing};
+//     border-radius: 8px;
+//     background-color: ${props => props.selected ? props.theme.textColor : props.theme.componentColorLight};
+
+//     :not(:last-child) {
+//         margin-right: ${props => props.theme.smallSpacing};
+//     }
+// `;
 
 const EmptyWallet = styled.div`
     display: flex;
@@ -164,7 +194,7 @@ const UserFetcher = () => {
         args: [
             token
         ],
-        refreshRate: 10
+        refreshRate: 30
     }, uuid);
 
     if (userReq.response.loading) {

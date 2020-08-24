@@ -26,6 +26,7 @@ import { UserContextGuard }                                             from '@f
 import DeepLinksListener                                                from './components/DeepLinksListener';
 import MediaQuery                                                       from 'react-responsive';
 import { FeatureFlag }                                                  from '@frontend/core/lib/components/FeatureFlag';
+import { useNavigation, AnimatePresence } from 'framer';
 
 const TopNavWrapper = (props: { back: () => void }): JSX.Element => {
 
@@ -54,11 +55,12 @@ const MobileApp: React.FC = () => {
 
     const location = useLocation();
     const history = useHistory();
+    const nav = useNavigation();
     const keyboardIsVisible = useKeyboardVisibility();
 
     const goBackOrHome = useCallback(() => {
         if (history.length > 2) {
-            history.goBack();
+            nav.goBack();
         } else {
             history.replace('/');
         }
@@ -78,75 +80,77 @@ const MobileApp: React.FC = () => {
                             null
                     }
                 </MediaQuery>
-                <Switch>
-                    <Route path={'/login'} exact={true}>
-                        <LoginPage/>
-                    </Route>
-
-                    <Route path={'/register'} exact={true}>
-                        <RegisterPage/>
-                    </Route>
-
-                    <Route path={'/'} exact={true}>
-                        <HomePage/>
-                    </Route>
-
-                    <ProtectedRoute path={'/profile/activities'} exact={true}>
-                        <ProfileActivitiesPage/>
-                    </ProtectedRoute>
-
-                    <ProtectedRoute path={'/profile/language'} exact={true}>
-                        <ProfileLanguagePage/>
-                    </ProtectedRoute>
-
-                    <ProtectedRoute path={'/profile'} exact={true}>
-                        <ProfilePage/>
-                    </ProtectedRoute>
-
-                    <ProtectedRoute path={'/cart/checkout'} exact={true}>
-                        <CartPage/>
-                    </ProtectedRoute>
-
-                    <Route path={'/search/events/:query'} exact={true}>
-                        <SearchViewAllPage/>
-                    </Route>
-
-                    <Route path={'/event/:id/selection'} exact={true}>
-                        <TicketSelectionPage/>
-                    </Route>
-
-                    <Route path={'/event/:id'} exact={true}>
-                        <EventPage/>
-                    </Route>
-
-                    <Route path={'/search'} exact={true}>
-                        <SearchPage/>
-                    </Route>
-
-                    <Route path={'/tags'} exact={true}>
-                        <TagsPage/>
-                    </Route>
-
-                    <ProtectedRoute path={'/ticket/:id'} exact={true}>
-                        <TicketPage/>
-                    </ProtectedRoute>
-
-                    <ProtectedRoute path={'/wallet'} exact={true}>
-                        <WalletPage/>
-                    </ProtectedRoute>
-
-                    <Route path={'/validate-email'} exact={true}>
-                        <ValidateRoutePage/>
-                    </Route>
-
-                    <FeatureFlag flag={'admin_flag'}>
-                        <Route path={'/you/are/an/admin'} exact={true}>
-                            <AdminRoutePage/>
+                <AnimatePresence>
+                    <Switch>
+                        <Route path={'/login'} exact={true}>
+                            <LoginPage/>
                         </Route>
-                    </FeatureFlag>
 
-                    <Redirect to={'/'}/>
-                </Switch>
+                        <Route path={'/register'} exact={true}>
+                            <RegisterPage/>
+                        </Route>
+
+                        <Route path={'/'} exact={true}>
+                            <HomePage/>
+                        </Route>
+
+                        <ProtectedRoute path={'/profile/activities'} exact={true}>
+                            <ProfileActivitiesPage/>
+                        </ProtectedRoute>
+
+                        <ProtectedRoute path={'/profile/language'} exact={true}>
+                            <ProfileLanguagePage/>
+                        </ProtectedRoute>
+
+                        <ProtectedRoute path={'/profile'} exact={true}>
+                            <ProfilePage/>
+                        </ProtectedRoute>
+
+                        <ProtectedRoute path={'/cart/checkout'} exact={true}>
+                            <CartPage/>
+                        </ProtectedRoute>
+
+                        <Route path={'/search/events/:query'} exact={true}>
+                            <SearchViewAllPage/>
+                        </Route>
+
+                        <Route path={'/event/:id/selection'} exact={true}>
+                            <TicketSelectionPage/>
+                        </Route>
+
+                        <Route path={'/event/:id'} exact={true}>
+                            <EventPage/>
+                        </Route>
+
+                        <Route path={'/search'} exact={true}>
+                            <SearchPage/>
+                        </Route>
+
+                        <Route path={'/tags'} exact={true}>
+                            <TagsPage/>
+                        </Route>
+
+                        <ProtectedRoute path={'/ticket/:id'} exact={true}>
+                            <TicketPage/>
+                        </ProtectedRoute>
+
+                        <ProtectedRoute path={'/wallet'} exact={true}>
+                            <WalletPage/>
+                        </ProtectedRoute>
+
+                        <Route path={'/validate-email'} exact={true}>
+                            <ValidateRoutePage/>
+                        </Route>
+
+                        <FeatureFlag flag={'admin_flag'}>
+                            <Route path={'/you/are/an/admin'} exact={true}>
+                                <AdminRoutePage/>
+                            </Route>
+                        </FeatureFlag>
+
+                        <Redirect to={'/'}/>
+                    </Switch>
+                </AnimatePresence>
                 <MediaQuery maxDeviceWidth={1224}>
                     <T721Navbar visible={location.pathname.lastIndexOf('/') === 0 && !keyboardIsVisible}/>
                 </MediaQuery>

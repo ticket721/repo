@@ -23,6 +23,8 @@
         "@types/qrcode.react": "1.0.1",
         "connected-react-router": "6.8.0",
         "ethers": "4.0.45",
+        "framer": "1.2.5",
+        "framer-motion": "2.5.1",
         "ionicons": "5.0.0",
         "react": "16.13.1",
         "formik": "2.1.4",

@@ -3,33 +3,75 @@ import styled                  from 'styled-components';
 import { TicketHeader }        from '@frontend/flib-react/lib/components/ticket';
 import TicketPreview           from '@frontend/flib-react/lib/components/ticket/infos';
 import { useTranslation }      from 'react-i18next';
-import { Ticket }              from '../../../types/ticket';
 import './locales';
 import { useHistory }     from 'react-router';
+import { Frame } from 'framer';
+import { formatDay, formatHour } from '@frontend/core/lib/utils/date';
+import { DateItem, CategoryItem } from '../interfaces';
+import { useNavigation } from 'framer';
+import { TicketDetails } from '../../Ticket/TicketDetails';
 
 interface TicketCardProps {
-    ticket: Ticket
+    ticketId: string;
+    transactionHash: string;
+    category: CategoryItem;
+    dates: DateItem[];
+    currentDateIdx: number;
 }
 
-const TicketCard = ({ ticket }: TicketCardProps) => {
+const TicketCard = ({
+    ticketId,
+    transactionHash,
+    category,
+    dates,
+    currentDateIdx,
+}: TicketCardProps) => {
     const history = useHistory();
+    const nav = useNavigation();
     const [t] = useTranslation('ticket');
 
     return (
-        <Container onClick={() => history.push(`/ticket/${ticket.ticketId}`)}>
-            <TicketHeader cover={ticket.image}/>
+        <TicketFrame
+        width={'100%'}
+        height={'fit-content'}
+        backgroundColor={'transparent'}
+        onTap={() => nav.overlay(
+            <TicketDetails 
+            name={dates[currentDateIdx].name}
+            image={dates[currentDateIdx].imageId}
+            dateId={dates[currentDateIdx].id}
+            dates={dates}
+            colors={dates[currentDateIdx].colors}
+            categoryName={category.name}
+            ticketId={ticketId}
+            transactionHash={transactionHash}
+            price={category.price}
+            purchasedDate={category.purchasedDate}/>)
+        }>
+            <TicketHeader cover={dates[currentDateIdx].imageId}/>
             <PullUp>
-                <TicketPreview ticket={ticket} addonsPurchased={t('no_addons')}/>
+                <TicketPreview ticket={{
+                    ticketId,
+                    name: dates[currentDateIdx].name,
+                    mainColor: dates[currentDateIdx].colors[0],
+                    gradients: dates[currentDateIdx].colors,
+                    location: dates[currentDateIdx].location,
+                    categoryName: category.name,
+                    startDate: formatDay(dates[currentDateIdx].startDate),
+                    endDate: formatDay(dates[currentDateIdx].endDate),
+                    startTime: formatHour(dates[currentDateIdx].startDate),
+                    endTime: formatHour(dates[currentDateIdx].endDate),
+                    image: dates[currentDateIdx].imageId,
+                }} addonsPurchased={t('no_addons')}/>
             </PullUp>
-        </Container>
+        </TicketFrame>
     );
 };
 
-const Container = styled.div`
+const TicketFrame = styled(Frame)`
     border-bottom-left-radius: ${props => props.theme.smallSpacing};
     border-bottom-right-radius: ${props => props.theme.smallSpacing};
     overflow: hidden;
-    width: calc(100vw - ${props => props.theme.biggerSpacing} * 3 - ${props => props.theme.smallSpacing});
 `;
 
 const PullUp = styled.div`

@@ -26,6 +26,7 @@ import { DynamicQrCode }                   from '../DynamicQrCode';
 import { keccak256 }          from 'ethers/utils';
 import { getEnv }                          from '@frontend/core/lib/utils/getEnv';
 import { decimalToHex }                    from '@common/global/lib/utils';
+import { useNavigation } from 'framer';
 
 interface EventDate {
     id: string;
@@ -50,6 +51,7 @@ export interface TicketDetailsProps {
 
 export const TicketDetails: React.FC<TicketDetailsProps> = (props: TicketDetailsProps) => {
     const history = useHistory();
+    const nav = useNavigation();
     const [ t ] = useTranslation('ticket_details');
     const seconds = useSelector((state: T721AppState) => state.deviceWallet.seconds);
     const dispatch = useDispatch();
@@ -96,7 +98,8 @@ export const TicketDetails: React.FC<TicketDetailsProps> = (props: TicketDetails
                         variant={'custom'}
                         gradients={props.colors}
                         title={t('event_link')}
-                        onClick={() => history.push('/event/' + props.dateId)}/>
+                        onClick={() => 
+                        history.push('/event/' + props.dateId)}/>
                     </EventLink>
                 </Banner>
                 <DateTimeCard

@@ -10,7 +10,7 @@ import { Error }                                  from '@frontend/flib-react/lib
 import { getImgPath }                             from '@frontend/core/lib/utils/images';
 import { Ticket }                                 from '../../types/ticket';
 import { DateEntity }                             from '@backend/nest/libs/common/src/dates/entities/Date.entity';
-import { Tickets }                                from './Tickets';
+// import { Tickets }                                from './Tickets';
 
 const formatDates = (tickets: Ticket[], dates: DateEntity[], globalDates: DateEntity[]): Ticket[] =>
     tickets.map(ticket => {
@@ -110,8 +110,8 @@ export const DatesFetcher: React.FC<DatesFetcherProps> = (
         return (<Error message={t('fetch_error')} retryLabel={t('common:retrying_in')} onRefresh={forceGlobalDatesReq}/>);
     }
 
-    if (datesResp.data?.dates?.length > 0 || globalDatesResp.data?.dates?.length > 0) {
-        return <Tickets
-            tickets={formatDates(tickets, datesResp.data.dates, globalDatesResp.data.dates)}/>
-    }
+    // if (datesResp.data?.dates?.length > 0 || globalDatesResp.data?.dates?.length > 0) {
+    //     return <Tickets
+    //         tickets={formatDates(tickets, datesResp.data.dates, globalDatesResp.data.dates)}/>
+    // }
 };
