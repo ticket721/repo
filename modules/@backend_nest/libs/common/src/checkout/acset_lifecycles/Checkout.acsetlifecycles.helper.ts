@@ -35,11 +35,11 @@ export class CheckoutAcsetlifecycleHelper implements ActionSetLifecyclesBase {
         const inputData: CheckoutResolve = actionSet.actions[0].data as CheckoutResolve;
 
         // TODO remove this to prevent transaction creation
-        // await this.mintingQueue.add('ticketMintingTransactionSequenceBuilderTask', {
-        //     cartActionSetId: inputData.cartId,
-        //     checkoutActionSetId: actionSet.id,
-        //     gemOrderId: inputData.stripe?.gemOrderId,
-        // } as TicketMintingTransactionSequenceBuilderTaskInput);
+        await this.mintingQueue.add('ticketMintingTransactionSequenceBuilderTask', {
+            cartActionSetId: inputData.cartId,
+            checkoutActionSetId: actionSet.id,
+            gemOrderId: inputData.stripe?.gemOrderId,
+        } as TicketMintingTransactionSequenceBuilderTaskInput);
 
         return {
             response: null,
