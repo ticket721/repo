@@ -8,8 +8,8 @@ export class NestError extends Error {
      * @param message
      */
     constructor(message?: string) {
-        console.warn(`[ ${new Date(Date.now()).toISOString()} | NestError ] ${message}`);
-
         super(message);
+        console.warn(`[ ${new Date(Date.now()).toISOString()} | NestError ] ${message}`);
+        console.warn(this.stack);
     }
 }
