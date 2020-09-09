@@ -12,6 +12,7 @@ import { UserDto } from '@lib/common/users/dto/User.dto';
 import { fromES } from '@lib/common/utils/fromES.helper';
 import Stripe from 'stripe';
 import { SECOND } from '@lib/common/utils/time';
+import { TimeToolService } from '../toolbox/Time.tool.service';
 
 /**
  * Service to CRUD StripeInterfaceEntities
@@ -30,6 +31,7 @@ export class StripeInterfacesService extends CRUDExtension<StripeInterfacesRepos
         @InjectModel(StripeInterfaceEntity)
         stripeInterfaceEntity: BaseModel<StripeInterfaceEntity>,
         private readonly stripeService: StripeService,
+        private readonly timeToolService: TimeToolService
     ) {
         super(
             stripeInterfaceEntity,
@@ -194,14 +196,14 @@ export class StripeInterfacesService extends CRUDExtension<StripeInterfacesRepos
         }
     }
 
-    static shouldUpdateAccountInfos(stripeInterface: StripeInterfaceEntity): boolean {
+    shouldUpdateAccountInfos(stripeInterface: StripeInterfaceEntity): boolean {
         if (!stripeInterface.connect_account_updated_at) {
             return true;
         }
 
         const lastUpdate = new Date(stripeInterface.connect_account_updated_at);
 
-        return Date.now() - lastUpdate.getTime() >= 5 * SECOND;
+        return this.timeToolService.now().getTime() - lastUpdate.getTime() >= 5 * SECOND;
     }
 
     static convertCapabilities(capabilities: Stripe.Account.Capabilities): ConnectAccountCapability[] {
@@ -242,7 +244,7 @@ export class StripeInterfacesService extends CRUDExtension<StripeInterfacesRepos
         force: boolean = false,
     ): Promise<ServiceResponse<StripeInterfaceEntity>> {
         if (stripeInterface.connect_account) {
-            if (force || StripeInterfacesService.shouldUpdateAccountInfos(stripeInterface)) {
+            if (force || this.shouldUpdateAccountInfos(stripeInterface)) {
                 const stripe = this.stripeService.get();
 
                 let account: Stripe.Account;

@@ -3,9 +3,13 @@ import { ExpressCassandraModule } from '@iaminfinity/express-cassandra';
 import { StripeInterfaceEntity } from '@lib/common/stripeinterface/entities/StripeInterface.entity';
 import { StripeInterfacesRepository } from '@lib/common/stripeinterface/StripeInterfaces.repository';
 import { StripeInterfacesService } from '@lib/common/stripeinterface/StripeInterfaces.service';
+import { ToolBoxModule } from '../toolbox/ToolBox.module';
 
 @Module({
-    imports: [ExpressCassandraModule.forFeature([StripeInterfaceEntity, StripeInterfacesRepository])],
+    imports: [
+        ExpressCassandraModule.forFeature([StripeInterfaceEntity, StripeInterfacesRepository]),
+        ToolBoxModule
+    ],
     providers: [StripeInterfacesService],
     exports: [StripeInterfacesService],
 })

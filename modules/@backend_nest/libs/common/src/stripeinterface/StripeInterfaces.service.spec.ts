@@ -9,6 +9,8 @@ import { getModelToken } from '@iaminfinity/express-cassandra/dist/utils/cassand
 import { StripeInterfaceEntity } from './entities/StripeInterface.entity';
 import { UserDto } from '../users/dto/User.dto';
 import { ESSearchReturn } from '../utils/ESSearchReturn.type';
+import { TimeToolService } from '../toolbox/Time.tool.service';
+import { SECOND } from '../utils/time';
 
 class StripeInterfaceEntityMock {
     public _properties = null;
@@ -25,12 +27,14 @@ describe('StripeInterfaces Service', function() {
         stripeInterfacesRepositoryMock: StripeInterfacesRepository;
         stripeServiceMock: StripeService;
         stripeMock: Stripe;
+        timeToolServiceMock: TimeToolService;
     } = {
         stripeInterfacesService: null,
         stripeInterfaceEntityMock: null,
         stripeInterfacesRepositoryMock: null,
         stripeServiceMock: null,
         stripeMock: null,
+        timeToolServiceMock: null
     };
 
     beforeEach(async function() {
@@ -44,6 +48,7 @@ describe('StripeInterfaces Service', function() {
         context.stripeServiceMock = mock(StripeService);
         context.stripeMock = mock(Stripe);
         when(context.stripeServiceMock.get()).thenReturn(instance(context.stripeMock));
+        context.timeToolServiceMock = mock(TimeToolService);
 
         const app = await Test.createTestingModule({
             providers: [
@@ -59,6 +64,10 @@ describe('StripeInterfaces Service', function() {
                     provide: StripeService,
                     useValue: instance(context.stripeServiceMock),
                 },
+                {
+                    provide: TimeToolService,
+                    useValue: instance(context.timeToolServiceMock)
+                },
                 StripeInterfacesService,
             ],
         }).compile();
@@ -67,6 +76,7 @@ describe('StripeInterfaces Service', function() {
     });
 
     describe('createStripeInterface', function() {
+
         it('should properly create a stripe interface', async function() {
             const spiedService = spy(context.stripeInterfacesService);
 
@@ -784,22 +794,174 @@ describe('StripeInterfaces Service', function() {
         });
     });
 
-    describe('static shouldUpdateAccountInfos', function() {
-        it('should be a placeholder', async function() {
-            console.log('hi');
+    describe('shouldUpdateAccountInfos', function() {
+        it('should return false if last update soon enough', async function() {
+            const date = new Date(Date.now());
+
+            const stripeInterface: StripeInterfaceEntity = {
+                connect_account_updated_at: date
+            } as StripeInterfaceEntity;
+
+            when(context.timeToolServiceMock.now()).thenReturn(date);
+
+            expect(context.stripeInterfacesService.shouldUpdateAccountInfos(stripeInterface)).toEqual(false)
+
+            verify(context.timeToolServiceMock.now()).once();
+
         });
+
+        it('should return true if last update not soon enough', async function() {
+            const date = new Date(Date.now());
+
+            const stripeInterface: StripeInterfaceEntity = {
+                connect_account_updated_at: new Date(date.getTime() - 6 * SECOND)
+            } as StripeInterfaceEntity;
+
+            when(context.timeToolServiceMock.now()).thenReturn(date);
+
+            expect(context.stripeInterfacesService.shouldUpdateAccountInfos(stripeInterface)).toEqual(true)
+
+            verify(context.timeToolServiceMock.now()).once();
+
+        });
+
+        it('should return true if never fetched', async function() {
+
+            const stripeInterface: StripeInterfaceEntity = {
+                connect_account_updated_at: null
+            } as StripeInterfaceEntity;
+
+            expect(context.stripeInterfacesService.shouldUpdateAccountInfos(stripeInterface)).toEqual(true)
+
+            verify(context.timeToolServiceMock.now()).never();
+
+        });
+
+
     });
 
     describe('static convertCapabilities', function() {
-        it('should be a placeholder', async function() {
-            console.log('hi');
+        it('should convert from stripe format to ConnectAccountCapability', async function() {
+            const stripeCapabilities: Stripe.Account.Capabilities = {
+                'card_issuing': 'inactive',
+                'card_payments': 'active',
+                'transfers': 'pending'
+            }
+
+            expect(StripeInterfacesService.convertCapabilities(stripeCapabilities)).toEqual([
+                {
+                    name: 'card_issuing',
+                    status: 'inactive'
+                },
+                {
+                    name: 'card_payments',
+                    status: 'active'
+                },
+                {
+                    name: 'transfers',
+                    status: 'pending'
+                }
+            ])
         });
     });
 
     describe('static recoverConnectAccountName', function() {
-        it('should be a placeholder', async function() {
-            console.log('hi');
+        it('should recover default name', async function() {
+
+            const stripeAccount: Stripe.Account = {
+                business_type: null
+            } as Stripe.Account;
+
+            expect(StripeInterfacesService.recoverConnectAccountName(stripeAccount))
+            .toEqual('Stripe Connect');
+
         });
+
+        it('should recover individual without name', async function() {
+
+            const stripeAccount: Stripe.Account = {
+                business_type: 'individual',
+                individual: {
+
+                }
+            } as Stripe.Account;
+
+            expect(StripeInterfacesService.recoverConnectAccountName(stripeAccount))
+            .toEqual('Stripe Connect');
+
+        });
+
+        it('should recover individual name', async function() {
+
+            const stripeAccount: Stripe.Account = {
+                business_type: 'individual',
+                individual: {
+                    first_name: 'Jean',
+                    last_name: 'Test'
+                }
+            } as Stripe.Account;
+
+            expect(StripeInterfacesService.recoverConnectAccountName(stripeAccount))
+            .toEqual('Jean Test');
+
+        });
+
+        it('should recover company without name', async function() {
+
+            const stripeAccount: Stripe.Account = {
+                business_type: 'company',
+                company: {
+
+                }
+            } as Stripe.Account;
+
+            expect(StripeInterfacesService.recoverConnectAccountName(stripeAccount))
+            .toEqual('Stripe Connect');
+
+        });
+
+        it('should recover company name', async function() {
+
+            const stripeAccount: Stripe.Account = {
+                business_type: 'company',
+                company: {
+                    name: 'Company Inc.'
+                }
+            } as Stripe.Account;
+
+            expect(StripeInterfacesService.recoverConnectAccountName(stripeAccount))
+            .toEqual('Company Inc.');
+
+        });
+
+        it('should recover gov name', async function() {
+
+            const stripeAccount: Stripe.Account = {
+                business_type: 'government_entity',
+                company: {
+                    name: 'Government Name'
+                }
+            } as Stripe.Account;
+
+            expect(StripeInterfacesService.recoverConnectAccountName(stripeAccount))
+            .toEqual('Government Name');
+
+        });
+
+        it('should recover non profit name', async function() {
+
+            const stripeAccount: Stripe.Account = {
+                business_type: 'non_profit',
+                company: {
+                    name: 'Non Profit'
+                }
+            } as Stripe.Account;
+
+            expect(StripeInterfacesService.recoverConnectAccountName(stripeAccount))
+            .toEqual('Non Profit');
+
+        });
+
     });
 
     describe('updateAccountInfos', function() {
