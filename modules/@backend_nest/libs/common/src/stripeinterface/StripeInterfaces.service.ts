@@ -284,7 +284,7 @@ export class StripeInterfacesService extends CRUDExtension<StripeInterfacesRepos
                     connect_account_name: StripeInterfacesService.recoverConnectAccountName(account),
                     connect_account_type: account.business_type,
                     connect_account_disabled_reason: account.requirements.disabled_reason,
-                    connect_account_updated_at: new Date(Date.now()),
+                    connect_account_updated_at: this.timeToolService.now(),
                 };
 
                 const accountUpdate = await this.update(
