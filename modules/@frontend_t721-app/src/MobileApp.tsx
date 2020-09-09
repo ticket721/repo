@@ -15,17 +15,17 @@ import ProfilePage                                                      from './
 import SearchViewAllPage                                                from './routes/SearchViewAll';
 import EventPage                                                        from './routes/Event';
 import TicketPage                                                       from './routes/Ticket';
-import TicketSelectionPage                                              from './routes/TicketSelection';
-import SearchPage                                                       from './routes/Search';
-import TagsPage                                                         from './routes/Tags';
-import WalletPage                                                       from './routes/Wallet';
-import CartPage                                                         from './routes/Cart';
-import ValidateRoutePage                                                from './routes/ValidateRoute';
-import { useKeyboardVisibility }                                        from '@frontend/core/lib/utils/useKeyboardVisibility';
-import { UserContextGuard }                                             from '@frontend/core/lib/utils/UserContext';
-import DeepLinksListener                                                from './components/DeepLinksListener';
-import MediaQuery                                                       from 'react-responsive';
-import { FeatureFlag }                                                  from '@frontend/core/lib/components/FeatureFlag';
+import TicketSelectionPage       from './routes/TicketSelection';
+import SearchPage                from './routes/Search';
+import TagsPage                  from './routes/Tags';
+import WalletPage                from './routes/Wallet';
+import CartPage                  from './routes/Cart';
+import ValidateRoutePage         from './routes/ValidateRoute';
+import { useKeyboardVisibility } from '@frontend/core/lib/utils/useKeyboardVisibility';
+import { UserContextGuard }      from '@frontend/core/lib/utils/UserContext';
+import DeepLinksListener         from './components/DeepLinksListener';
+import MediaQuery                from 'react-responsive';
+import { useFlag }               from '@frontend/core/lib/utils/useFlag';
 
 const TopNavWrapper = (props: { back: () => void }): JSX.Element => {
 
@@ -55,6 +55,7 @@ const MobileApp: React.FC = () => {
     const location = useLocation();
     const history = useHistory();
     const keyboardIsVisible = useKeyboardVisibility();
+    const adminFlag = useFlag('admin_flag');
 
     const goBackOrHome = useCallback(() => {
         if (history.length > 2) {
@@ -139,11 +140,17 @@ const MobileApp: React.FC = () => {
                         <ValidateRoutePage/>
                     </Route>
 
-                    <FeatureFlag flag={'admin_flag'}>
-                        <Route path={'/you/are/an/admin'} exact={true}>
-                            <AdminRoutePage/>
-                        </Route>
-                    </FeatureFlag>
+                    {
+                        adminFlag
+
+                            ?
+                            <Route path={'/you/are/an/admin'} exact={true}>
+                                <AdminRoutePage/>
+                            </Route>
+
+                            :
+                            null
+                    }
 
                     <Redirect to={'/'}/>
                 </Switch>
