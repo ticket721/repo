@@ -964,6 +964,58 @@ describe('StripeInterfaces Service', function() {
 
     });
 
+    describe('static containsExternalAccountFingerprint', function() {
+        it('should return false for no accounts', async function() {
+
+            const fingerprint = 'fingerprint';
+
+            const stripeInterface: StripeInterfaceEntity = {
+            } as StripeInterfaceEntity;
+
+            expect(StripeInterfacesService.containsExternalAccountFingerprint(stripeInterface, fingerprint))
+            .toEqual(false);
+        });
+
+        it('should return false for no accounts found', async function() {
+
+            const fingerprint = 'fingerprint';
+
+            const stripeInterface: StripeInterfaceEntity = {
+                connect_account_external_accounts: [
+                    {
+                        fingerprint: 'not_the_fingerprint'
+                    },
+                    {
+                        fingerprint: 'still_not_the_fingerprint'
+                    }
+                ]
+            } as StripeInterfaceEntity;
+
+            expect(StripeInterfacesService.containsExternalAccountFingerprint(stripeInterface, fingerprint))
+            .toEqual(false);
+        });
+
+        it('should return true for account found', async function() {
+
+            const fingerprint = 'fingerprint';
+
+            const stripeInterface: StripeInterfaceEntity = {
+                connect_account_external_accounts: [
+                    {
+                        fingerprint: 'fingerprint'
+                    },
+                    {
+                        fingerprint: 'still_not_the_fingerprint'
+                    }
+                ]
+            } as StripeInterfaceEntity;
+
+            expect(StripeInterfacesService.containsExternalAccountFingerprint(stripeInterface, fingerprint))
+            .toEqual(true);
+        });
+
+    });
+
     describe('updateAccountInfos', function() {
         it('should be a placeholder', async function() {
             console.log('hi');
@@ -971,11 +1023,6 @@ describe('StripeInterfaces Service', function() {
     });
 
     describe('bindAccountToUserInterface', function() {
-        it('should be a placeholder', async function() {
-            console.log('hi');
-        });
-    });
-    describe('static containsExternalAccountFingerprint', function() {
         it('should be a placeholder', async function() {
             console.log('hi');
         });

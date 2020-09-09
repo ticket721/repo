@@ -362,11 +362,7 @@ export class StripeInterfacesService extends CRUDExtension<StripeInterfacesRepos
             stripeInterface.connect_account_external_accounts &&
             stripeInterface.connect_account_external_accounts.length
         ) {
-            for (const account of stripeInterface.connect_account_external_accounts) {
-                if (account.fingerprint === fingerprint) {
-                    return true;
-                }
-            }
+            return stripeInterface.connect_account_external_accounts.find((extacc: ConnectAccountExternalAccount): boolean => extacc.fingerprint === fingerprint) !== undefined;
         }
         return false;
     }
