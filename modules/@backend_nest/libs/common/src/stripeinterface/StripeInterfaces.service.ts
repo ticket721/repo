@@ -393,7 +393,7 @@ export class StripeInterfacesService extends CRUDExtension<StripeInterfacesRepos
             };
         }
 
-        return this.updateAccountInfos(stripeInterfaceRes.response, true);
+        return this.updateAccountInfos(stripeInterface, true);
     }
 
     async removeExternalAccountFromUserInterface(

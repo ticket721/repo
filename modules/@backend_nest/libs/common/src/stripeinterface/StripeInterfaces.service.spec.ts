@@ -1906,15 +1906,375 @@ describe('StripeInterfaces Service', function () {
     });
 
     describe('setDefaultExternalAccountOnUserInterface', function () {
-        it('should be a placeholder', async function () {
-            console.log('hi');
+
+        it('should properly set default account', async function () {
+
+            const user: UserDto = {
+                id: 'user_id'
+            } as UserDto;
+
+            const externalAccountId = 'account_id';
+
+            const now = new Date(Date.now());
+
+            const stripeInterface: StripeInterfaceEntity = {
+                id: 'stripe_interface_id',
+                connect_account: 'connect_account_id',
+                connect_account_updated_at: new Date(now.getTime() - 6 * SECOND)
+            } as StripeInterfaceEntity;
+
+            const spiedService = spy(context.stripeInterfacesService);
+
+            const accountsMock = mock(Stripe.AccountsResource);
+
+            when(spiedService.recoverUserInterface(deepEqual(user))).thenResolve({
+                error: null,
+                response: stripeInterface
+            });
+
+            when(context.stripeMock.accounts).thenReturn(instance(accountsMock));
+
+            when(accountsMock.updateExternalAccount(stripeInterface.connect_account, externalAccountId, deepEqual({
+                default_for_currency: true
+            }))).thenResolve(null);
+
+            when(spiedService.updateAccountInfos(deepEqual(stripeInterface), true)).thenResolve({
+                error: null,
+                response: stripeInterface
+            });
+
+            const res = await context.stripeInterfacesService.setDefaultExternalAccountOnUserInterface(
+                user,
+                externalAccountId
+            );
+
+            expect(res.error).toEqual(null);
+            expect(res.response).toEqual(stripeInterface);
+
+            verify(spiedService.recoverUserInterface(deepEqual(user))).times(1);
+
+            verify(context.stripeMock.accounts).times(1);
+
+            verify(accountsMock.updateExternalAccount(stripeInterface.connect_account, externalAccountId, deepEqual({
+                default_for_currency: true
+            }))).times(1);
+
+            verify(spiedService.updateAccountInfos(deepEqual(stripeInterface), true)).times(1);
+
         });
+
+        it('should fail on interface recovery error', async function () {
+
+            const user: UserDto = {
+                id: 'user_id'
+            } as UserDto;
+
+            const externalAccountId = 'account_id';
+
+            const spiedService = spy(context.stripeInterfacesService);
+
+            when(spiedService.recoverUserInterface(deepEqual(user))).thenResolve({
+                error: 'unexpected_error',
+                response: null
+            });
+
+            const res = await context.stripeInterfacesService.setDefaultExternalAccountOnUserInterface(
+                user,
+                externalAccountId
+            );
+
+            expect(res.error).toEqual('unexpected_error');
+            expect(res.response).toEqual(null);
+
+            verify(spiedService.recoverUserInterface(deepEqual(user))).times(1);
+
+        });
+
+        it('should fail on stripe account update error', async function () {
+
+            const user: UserDto = {
+                id: 'user_id'
+            } as UserDto;
+
+            const externalAccountId = 'account_id';
+
+            const now = new Date(Date.now());
+
+            const stripeInterface: StripeInterfaceEntity = {
+                id: 'stripe_interface_id',
+                connect_account: 'connect_account_id',
+                connect_account_updated_at: new Date(now.getTime() - 6 * SECOND)
+            } as StripeInterfaceEntity;
+
+            const spiedService = spy(context.stripeInterfacesService);
+
+            const accountsMock = mock(Stripe.AccountsResource);
+
+            when(spiedService.recoverUserInterface(deepEqual(user))).thenResolve({
+                error: null,
+                response: stripeInterface
+            });
+
+            when(context.stripeMock.accounts).thenReturn(instance(accountsMock));
+
+            when(accountsMock.updateExternalAccount(stripeInterface.connect_account, externalAccountId, deepEqual({
+                default_for_currency: true
+            }))).thenReject(new Error('Unable to update account'));
+
+            const res = await context.stripeInterfacesService.setDefaultExternalAccountOnUserInterface(
+                user,
+                externalAccountId
+            );
+
+            expect(res.error).toEqual('Unable to update account');
+            expect(res.response).toEqual(null);
+
+            verify(spiedService.recoverUserInterface(deepEqual(user))).times(1);
+
+            verify(context.stripeMock.accounts).times(1);
+
+            verify(accountsMock.updateExternalAccount(stripeInterface.connect_account, externalAccountId, deepEqual({
+                default_for_currency: true
+            }))).times(1);
+
+        });
+
+        it('should fail on account update error', async function () {
+
+            const user: UserDto = {
+                id: 'user_id'
+            } as UserDto;
+
+            const externalAccountId = 'account_id';
+
+            const now = new Date(Date.now());
+
+            const stripeInterface: StripeInterfaceEntity = {
+                id: 'stripe_interface_id',
+                connect_account: 'connect_account_id',
+                connect_account_updated_at: new Date(now.getTime() - 6 * SECOND)
+            } as StripeInterfaceEntity;
+
+            const spiedService = spy(context.stripeInterfacesService);
+
+            const accountsMock = mock(Stripe.AccountsResource);
+
+            when(spiedService.recoverUserInterface(deepEqual(user))).thenResolve({
+                error: null,
+                response: stripeInterface
+            });
+
+            when(context.stripeMock.accounts).thenReturn(instance(accountsMock));
+
+            when(accountsMock.updateExternalAccount(stripeInterface.connect_account, externalAccountId, deepEqual({
+                default_for_currency: true
+            }))).thenResolve(null);
+
+            when(spiedService.updateAccountInfos(deepEqual(stripeInterface), true)).thenResolve({
+                error: 'unexpected_error',
+                response: null
+            });
+
+            const res = await context.stripeInterfacesService.setDefaultExternalAccountOnUserInterface(
+                user,
+                externalAccountId
+            );
+
+            expect(res.error).toEqual('unexpected_error');
+            expect(res.response).toEqual(null);
+
+            verify(spiedService.recoverUserInterface(deepEqual(user))).times(1);
+
+            verify(context.stripeMock.accounts).times(1);
+
+            verify(accountsMock.updateExternalAccount(stripeInterface.connect_account, externalAccountId, deepEqual({
+                default_for_currency: true
+            }))).times(1);
+
+            verify(spiedService.updateAccountInfos(deepEqual(stripeInterface), true)).times(1);
+
+        });
+
     });
 
     describe('removeExternalAccountFromUserInterface', function () {
-        it('should be a placeholder', async function () {
-            console.log('hi');
+
+        it('should properly remove external account from user', async function () {
+
+            const user: UserDto = {
+                id: 'user_id'
+            } as UserDto;
+
+            const externalAccountId = 'account_id';
+
+            const now = new Date(Date.now());
+
+            const stripeInterface: StripeInterfaceEntity = {
+                id: 'stripe_interface_id',
+                connect_account: 'connect_account_id',
+                connect_account_updated_at: new Date(now.getTime() - 6 * SECOND)
+            } as StripeInterfaceEntity;
+
+            const spiedService = spy(context.stripeInterfacesService);
+
+            const accountsMock = mock(Stripe.AccountsResource);
+
+            when(spiedService.recoverUserInterface(deepEqual(user))).thenResolve({
+                error: null,
+                response: stripeInterface
+            });
+
+            when(context.stripeMock.accounts).thenReturn(instance(accountsMock));
+
+            when(accountsMock.deleteExternalAccount(stripeInterface.connect_account, externalAccountId)).thenResolve(null);
+
+            when(spiedService.updateAccountInfos(deepEqual(stripeInterface), true)).thenResolve({
+                error: null,
+                response: stripeInterface
+            });
+
+            const res = await context.stripeInterfacesService.removeExternalAccountFromUserInterface(
+                user,
+                externalAccountId
+            );
+
+            expect(res.error).toEqual(null);
+            expect(res.response).toEqual(stripeInterface);
+
+            verify(spiedService.recoverUserInterface(deepEqual(user))).times(1);
+
+            verify(context.stripeMock.accounts).times(1);
+
+            verify(accountsMock.deleteExternalAccount(stripeInterface.connect_account, externalAccountId)).times(1);
+
+            verify(spiedService.updateAccountInfos(deepEqual(stripeInterface), true)).times(1);
+
         });
+
+        it('should fail on interface recovery error', async function () {
+
+            const user: UserDto = {
+                id: 'user_id'
+            } as UserDto;
+
+            const externalAccountId = 'account_id';
+
+            const spiedService = spy(context.stripeInterfacesService);
+
+            when(spiedService.recoverUserInterface(deepEqual(user))).thenResolve({
+                error: 'unexpected_error',
+                response: null
+            });
+
+            const res = await context.stripeInterfacesService.removeExternalAccountFromUserInterface(
+                user,
+                externalAccountId
+            );
+
+            expect(res.error).toEqual('unexpected_error');
+            expect(res.response).toEqual(null);
+
+            verify(spiedService.recoverUserInterface(deepEqual(user))).times(1);
+
+        });
+
+        it('should fail on stripe account update error', async function () {
+
+            const user: UserDto = {
+                id: 'user_id'
+            } as UserDto;
+
+            const externalAccountId = 'account_id';
+
+            const now = new Date(Date.now());
+
+            const stripeInterface: StripeInterfaceEntity = {
+                id: 'stripe_interface_id',
+                connect_account: 'connect_account_id',
+                connect_account_updated_at: new Date(now.getTime() - 6 * SECOND)
+            } as StripeInterfaceEntity;
+
+            const spiedService = spy(context.stripeInterfacesService);
+
+            const accountsMock = mock(Stripe.AccountsResource);
+
+            when(spiedService.recoverUserInterface(deepEqual(user))).thenResolve({
+                error: null,
+                response: stripeInterface
+            });
+
+            when(context.stripeMock.accounts).thenReturn(instance(accountsMock));
+
+            when(accountsMock.deleteExternalAccount(stripeInterface.connect_account, externalAccountId)).thenReject(new Error('Unable to update account'));
+
+            const res = await context.stripeInterfacesService.removeExternalAccountFromUserInterface(
+                user,
+                externalAccountId
+            );
+
+            expect(res.error).toEqual('Unable to update account');
+            expect(res.response).toEqual(null);
+
+            verify(spiedService.recoverUserInterface(deepEqual(user))).times(1);
+
+            verify(context.stripeMock.accounts).times(1);
+
+            verify(accountsMock.deleteExternalAccount(stripeInterface.connect_account, externalAccountId)).times(1);
+
+        });
+
+        it('should fail on account update error', async function () {
+
+            const user: UserDto = {
+                id: 'user_id'
+            } as UserDto;
+
+            const externalAccountId = 'account_id';
+
+            const now = new Date(Date.now());
+
+            const stripeInterface: StripeInterfaceEntity = {
+                id: 'stripe_interface_id',
+                connect_account: 'connect_account_id',
+                connect_account_updated_at: new Date(now.getTime() - 6 * SECOND)
+            } as StripeInterfaceEntity;
+
+            const spiedService = spy(context.stripeInterfacesService);
+
+            const accountsMock = mock(Stripe.AccountsResource);
+
+            when(spiedService.recoverUserInterface(deepEqual(user))).thenResolve({
+                error: null,
+                response: stripeInterface
+            });
+
+            when(context.stripeMock.accounts).thenReturn(instance(accountsMock));
+
+            when(accountsMock.deleteExternalAccount(stripeInterface.connect_account, externalAccountId)).thenResolve(null);
+
+            when(spiedService.updateAccountInfos(deepEqual(stripeInterface), true)).thenResolve({
+                error: 'unexpected_error',
+                response: null
+            });
+
+            const res = await context.stripeInterfacesService.removeExternalAccountFromUserInterface(
+                user,
+                externalAccountId
+            );
+
+            expect(res.error).toEqual('unexpected_error');
+            expect(res.response).toEqual(null);
+
+            verify(spiedService.recoverUserInterface(deepEqual(user))).times(1);
+
+            verify(context.stripeMock.accounts).times(1);
+
+            verify(accountsMock.deleteExternalAccount(stripeInterface.connect_account, externalAccountId)).times(1);
+
+            verify(spiedService.updateAccountInfos(deepEqual(stripeInterface), true)).times(1);
+
+        });
+
     });
 
     describe('addExternalAccountToUserInterface', function () {
