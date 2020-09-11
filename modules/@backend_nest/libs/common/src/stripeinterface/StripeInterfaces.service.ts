@@ -24,6 +24,7 @@ export class StripeInterfacesService extends CRUDExtension<StripeInterfacesRepos
      * @param stripeInterfacesRepository
      * @param stripeInterfaceEntity
      * @param stripeService
+     * @param timeToolService
      */
     constructor(
         @InjectRepository(StripeInterfacesRepository)

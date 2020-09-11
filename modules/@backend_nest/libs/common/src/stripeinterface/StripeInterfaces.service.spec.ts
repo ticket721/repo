@@ -1108,8 +1108,8 @@ describe('StripeInterfaces Service', function () {
             when(context.stripeMock.accounts).thenReturn(instance(accountResourceMock));
             when(accountResourceMock.retrieve('connect_account_id')).thenResolve(stripeAccount);
             when(spiedService.update(deepEqual({
-                id: stripeInterface.id
-            }), deepEqual(resultInterface)
+                    id: stripeInterface.id
+                }), deepEqual(resultInterface)
             )).thenResolve({
                 error: null,
                 response: null
@@ -1127,8 +1127,8 @@ describe('StripeInterfaces Service', function () {
             verify(context.stripeMock.accounts).once();
             verify(accountResourceMock.retrieve('connect_account_id')).once();
             verify(spiedService.update(deepEqual({
-                id: stripeInterface.id
-            }), deepEqual(resultInterface)
+                    id: stripeInterface.id
+                }), deepEqual(resultInterface)
             )).once();
         });
 
@@ -1222,8 +1222,8 @@ describe('StripeInterfaces Service', function () {
             when(context.stripeMock.accounts).thenReturn(instance(accountResourceMock));
             when(accountResourceMock.retrieve('connect_account_id')).thenResolve(stripeAccount);
             when(spiedService.update(deepEqual({
-                id: stripeInterface.id
-            }), deepEqual(resultInterface)
+                    id: stripeInterface.id
+                }), deepEqual(resultInterface)
             )).thenResolve({
                 error: null,
                 response: null
@@ -1241,8 +1241,8 @@ describe('StripeInterfaces Service', function () {
             verify(context.stripeMock.accounts).once();
             verify(accountResourceMock.retrieve('connect_account_id')).once();
             verify(spiedService.update(deepEqual({
-                id: stripeInterface.id
-            }), deepEqual(resultInterface)
+                    id: stripeInterface.id
+                }), deepEqual(resultInterface)
             )).once();
         });
 
@@ -1534,9 +1534,375 @@ describe('StripeInterfaces Service', function () {
     });
 
     describe('bindAccountToUserInterface', function () {
-        it('should be a placeholder', async function () {
-            console.log('hi');
+
+        it('should properly save connect account for user', async function () {
+
+            const now = new Date(Date.now());
+
+            const stripeInterface: StripeInterfaceEntity = {
+                id: 'stripe_interface_id',
+                connect_account: 'connect_account_id',
+                connect_account_updated_at: new Date(now.getTime() - 6 * SECOND)
+            } as StripeInterfaceEntity;
+
+            const stripeAccount: Stripe.Account = {
+                id: 'connect_account_id',
+                capabilities: {
+                    transfers: 'active'
+                },
+                business_type: 'individual',
+                individual: {
+                    first_name: 'Jean',
+                    last_name: 'Argent'
+                },
+                requirements: {
+                    disabled_reason: 'currently_due',
+                    current_deadline: now.getTime(),
+                    currently_due: [
+                        'document'
+                    ],
+                    eventually_due: [
+                        'document'
+                    ],
+                    past_due: [
+                        'document'
+                    ],
+                    pending_verification: [
+                        'document'
+                    ],
+                    errors: [],
+                } as Stripe.Account.Requirements,
+                external_accounts: {
+                    data: [
+                        {
+                            id: 'ext_account_id',
+                            country: 'FR',
+                            last4: '4444',
+                            object: 'bank',
+                            bank_name: 'The Bank',
+                            currency: 'eur',
+                            status: 'new',
+                            fingerprint: 'fingerprint',
+                            default_for_currency: true
+                        } as any
+                    ]
+                }
+            } as Stripe.Account;
+
+            const user: UserDto = {
+                id: 'user_id'
+            } as UserDto;
+
+            const spiedService = spy(context.stripeInterfacesService);
+
+            when(spiedService.recoverUserInterface(deepEqual(user))).thenResolve({
+                error: null,
+                response: stripeInterface
+            });
+
+            when(spiedService.update(deepEqual({
+                id: stripeInterface.id
+            }), deepEqual({
+                connect_account: stripeAccount.id
+            }))).thenResolve({
+                error: null,
+                response: null
+            });
+
+            when(spiedService.updateAccountInfos(deepEqual({
+                ...stripeInterface,
+                connect_account: stripeAccount.id
+            }), true)).thenResolve({
+                error: null,
+                response: {
+                    ...stripeInterface,
+                    connect_account: stripeAccount.id
+                }
+            });
+
+            const res = await context.stripeInterfacesService.bindAccountToUserInterface(user, stripeAccount);
+
+            expect(res.error).toEqual(null);
+            expect(res.response).toEqual({
+                ...stripeInterface,
+                connect_account: stripeAccount.id
+            });
+
+            verify(spiedService.recoverUserInterface(deepEqual(user))).times(1);
+
+            verify(spiedService.update(deepEqual({
+                id: stripeInterface.id
+            }), deepEqual({
+                connect_account: stripeAccount.id
+            }))).times(1);
+
+            verify(spiedService.updateAccountInfos(deepEqual({
+                ...stripeInterface,
+                connect_account: stripeAccount.id
+            }), true)).times(1);
+
         });
+
+        it('should fail on interface fetch error', async function () {
+
+            const now = new Date(Date.now());
+
+            const stripeAccount: Stripe.Account = {
+                id: 'connect_account_id',
+                capabilities: {
+                    transfers: 'active'
+                },
+                business_type: 'individual',
+                individual: {
+                    first_name: 'Jean',
+                    last_name: 'Argent'
+                },
+                requirements: {
+                    disabled_reason: 'currently_due',
+                    current_deadline: now.getTime(),
+                    currently_due: [
+                        'document'
+                    ],
+                    eventually_due: [
+                        'document'
+                    ],
+                    past_due: [
+                        'document'
+                    ],
+                    pending_verification: [
+                        'document'
+                    ],
+                    errors: [],
+                } as Stripe.Account.Requirements,
+                external_accounts: {
+                    data: [
+                        {
+                            id: 'ext_account_id',
+                            country: 'FR',
+                            last4: '4444',
+                            object: 'bank',
+                            bank_name: 'The Bank',
+                            currency: 'eur',
+                            status: 'new',
+                            fingerprint: 'fingerprint',
+                            default_for_currency: true
+                        } as any
+                    ]
+                }
+            } as Stripe.Account;
+
+            const user: UserDto = {
+                id: 'user_id'
+            } as UserDto;
+
+            const spiedService = spy(context.stripeInterfacesService);
+
+            when(spiedService.recoverUserInterface(deepEqual(user))).thenResolve({
+                error: 'unexpected_error',
+                response: null
+            });
+
+
+            const res = await context.stripeInterfacesService.bindAccountToUserInterface(user, stripeAccount);
+
+            expect(res.error).toEqual('unexpected_error');
+            expect(res.response).toEqual(null);
+
+            verify(spiedService.recoverUserInterface(deepEqual(user))).times(1);
+
+        });
+
+        it('should fail on update error', async function () {
+
+            const now = new Date(Date.now());
+
+            const stripeInterface: StripeInterfaceEntity = {
+                id: 'stripe_interface_id',
+                connect_account: 'connect_account_id',
+                connect_account_updated_at: new Date(now.getTime() - 6 * SECOND)
+            } as StripeInterfaceEntity;
+
+            const stripeAccount: Stripe.Account = {
+                id: 'connect_account_id',
+                capabilities: {
+                    transfers: 'active'
+                },
+                business_type: 'individual',
+                individual: {
+                    first_name: 'Jean',
+                    last_name: 'Argent'
+                },
+                requirements: {
+                    disabled_reason: 'currently_due',
+                    current_deadline: now.getTime(),
+                    currently_due: [
+                        'document'
+                    ],
+                    eventually_due: [
+                        'document'
+                    ],
+                    past_due: [
+                        'document'
+                    ],
+                    pending_verification: [
+                        'document'
+                    ],
+                    errors: [],
+                } as Stripe.Account.Requirements,
+                external_accounts: {
+                    data: [
+                        {
+                            id: 'ext_account_id',
+                            country: 'FR',
+                            last4: '4444',
+                            object: 'bank',
+                            bank_name: 'The Bank',
+                            currency: 'eur',
+                            status: 'new',
+                            fingerprint: 'fingerprint',
+                            default_for_currency: true
+                        } as any
+                    ]
+                }
+            } as Stripe.Account;
+
+            const user: UserDto = {
+                id: 'user_id'
+            } as UserDto;
+
+            const spiedService = spy(context.stripeInterfacesService);
+
+            when(spiedService.recoverUserInterface(deepEqual(user))).thenResolve({
+                error: null,
+                response: stripeInterface
+            });
+
+            when(spiedService.update(deepEqual({
+                id: stripeInterface.id
+            }), deepEqual({
+                connect_account: stripeAccount.id
+            }))).thenResolve({
+                error: 'unexpected_error',
+                response: null
+            });
+
+            const res = await context.stripeInterfacesService.bindAccountToUserInterface(user, stripeAccount);
+
+            expect(res.error).toEqual('unexpected_error');
+            expect(res.response).toEqual(null);
+
+            verify(spiedService.recoverUserInterface(deepEqual(user))).times(1);
+
+            verify(spiedService.update(deepEqual({
+                id: stripeInterface.id
+            }), deepEqual({
+                connect_account: stripeAccount.id
+            }))).times(1);
+
+        });
+
+        it('should fail on account update error', async function () {
+
+            const now = new Date(Date.now());
+
+            const stripeInterface: StripeInterfaceEntity = {
+                id: 'stripe_interface_id',
+                connect_account: 'connect_account_id',
+                connect_account_updated_at: new Date(now.getTime() - 6 * SECOND)
+            } as StripeInterfaceEntity;
+
+            const stripeAccount: Stripe.Account = {
+                id: 'connect_account_id',
+                capabilities: {
+                    transfers: 'active'
+                },
+                business_type: 'individual',
+                individual: {
+                    first_name: 'Jean',
+                    last_name: 'Argent'
+                },
+                requirements: {
+                    disabled_reason: 'currently_due',
+                    current_deadline: now.getTime(),
+                    currently_due: [
+                        'document'
+                    ],
+                    eventually_due: [
+                        'document'
+                    ],
+                    past_due: [
+                        'document'
+                    ],
+                    pending_verification: [
+                        'document'
+                    ],
+                    errors: [],
+                } as Stripe.Account.Requirements,
+                external_accounts: {
+                    data: [
+                        {
+                            id: 'ext_account_id',
+                            country: 'FR',
+                            last4: '4444',
+                            object: 'bank',
+                            bank_name: 'The Bank',
+                            currency: 'eur',
+                            status: 'new',
+                            fingerprint: 'fingerprint',
+                            default_for_currency: true
+                        } as any
+                    ]
+                }
+            } as Stripe.Account;
+
+            const user: UserDto = {
+                id: 'user_id'
+            } as UserDto;
+
+            const spiedService = spy(context.stripeInterfacesService);
+
+            when(spiedService.recoverUserInterface(deepEqual(user))).thenResolve({
+                error: null,
+                response: stripeInterface
+            });
+
+            when(spiedService.update(deepEqual({
+                id: stripeInterface.id
+            }), deepEqual({
+                connect_account: stripeAccount.id
+            }))).thenResolve({
+                error: null,
+                response: null
+            });
+
+            when(spiedService.updateAccountInfos(deepEqual({
+                ...stripeInterface,
+                connect_account: stripeAccount.id
+            }), true)).thenResolve({
+                error: 'unexpected_error',
+                response: null
+            });
+
+            const res = await context.stripeInterfacesService.bindAccountToUserInterface(user, stripeAccount);
+
+            expect(res.error).toEqual('unexpected_error');
+            expect(res.response).toEqual(null);
+
+            verify(spiedService.recoverUserInterface(deepEqual(user))).times(1);
+
+            verify(spiedService.update(deepEqual({
+                id: stripeInterface.id
+            }), deepEqual({
+                connect_account: stripeAccount.id
+            }))).times(1);
+
+            verify(spiedService.updateAccountInfos(deepEqual({
+                ...stripeInterface,
+                connect_account: stripeAccount.id
+            }), true)).times(1);
+
+        });
+
     });
 
     describe('setDefaultExternalAccountOnUserInterface', function () {
