@@ -2277,21 +2277,260 @@ describe('StripeInterfaces Service', function () {
 
     });
 
+    describe('generateOnboardingUrl', function () {
+
+        it('should properly create onboarding url', async function () {
+
+            const now = new Date(Date.now());
+
+            const stripeInterface: StripeInterfaceEntity = {
+                id: 'stripe_interface_id',
+                connect_account: 'connect_account_id',
+                connect_account_updated_at: new Date(now.getTime() - 6 * SECOND)
+            } as StripeInterfaceEntity;
+
+            const refreshUrl = 'https://refresh.url';
+            const returnUrl = 'https://return.url';
+
+            const accountsLinksMock = mock(Stripe.AccountLinksResource);
+
+            const accountLink: Stripe.AccountLink = {
+                object: 'account_link',
+                created: 0,
+                expires_at: 0,
+                url: 'https://onboarding.url'
+            }
+
+            when(context.stripeMock.accountLinks).thenReturn(instance(accountsLinksMock));
+
+            when(accountsLinksMock.create(deepEqual({
+                account: stripeInterface.connect_account,
+                failure_url: refreshUrl,
+                success_url: returnUrl,
+                type: 'custom_account_verification'
+            }))).thenResolve(accountLink)
+
+            const res = await context.stripeInterfacesService.generateOnboardingUrl(
+                stripeInterface,
+                refreshUrl,
+                returnUrl
+            );
+
+            expect(res.error).toEqual(null);
+            expect(res.response).toEqual(accountLink);
+
+            verify(context.stripeMock.accountLinks).times(1);
+
+            verify(accountsLinksMock.create(deepEqual({
+                account: stripeInterface.connect_account,
+                failure_url: refreshUrl,
+                success_url: returnUrl,
+                type: 'custom_account_verification'
+            }))).times(1);
+        });
+
+        it('should fail on interface not set', async function () {
+
+            const stripeInterface: StripeInterfaceEntity = {
+                id: 'stripe_interface_id',
+                connect_account: null
+            } as StripeInterfaceEntity;
+
+            const refreshUrl = 'https://refresh.url';
+            const returnUrl = 'https://return.url';
+
+            const res = await context.stripeInterfacesService.generateOnboardingUrl(
+                stripeInterface,
+                refreshUrl,
+                returnUrl
+            );
+
+            expect(res.error).toEqual('connect_account_not_created');
+            expect(res.response).toEqual(null);
+
+        });
+
+        it('should fail on generation error', async function () {
+
+            const now = new Date(Date.now());
+
+            const stripeInterface: StripeInterfaceEntity = {
+                id: 'stripe_interface_id',
+                connect_account: 'connect_account_id',
+                connect_account_updated_at: new Date(now.getTime() - 6 * SECOND)
+            } as StripeInterfaceEntity;
+
+            const refreshUrl = 'https://refresh.url';
+            const returnUrl = 'https://return.url';
+
+            const accountsLinksMock = mock(Stripe.AccountLinksResource);
+
+            const accountLink: Stripe.AccountLink = {
+                object: 'account_link',
+                created: 0,
+                expires_at: 0,
+                url: 'https://onboarding.url'
+            }
+
+            when(context.stripeMock.accountLinks).thenReturn(instance(accountsLinksMock));
+
+            when(accountsLinksMock.create(deepEqual({
+                account: stripeInterface.connect_account,
+                failure_url: refreshUrl,
+                success_url: returnUrl,
+                type: 'custom_account_verification'
+            }))).thenReject(new Error('Failed url creation'))
+
+            const res = await context.stripeInterfacesService.generateOnboardingUrl(
+                stripeInterface,
+                refreshUrl,
+                returnUrl
+            );
+
+            expect(res.error).toEqual('Failed url creation');
+            expect(res.response).toEqual(null);
+
+            verify(context.stripeMock.accountLinks).times(1);
+
+            verify(accountsLinksMock.create(deepEqual({
+                account: stripeInterface.connect_account,
+                failure_url: refreshUrl,
+                success_url: returnUrl,
+                type: 'custom_account_verification'
+            }))).times(1);
+        });
+        
+    });
+
+    describe('generateUpdateUrl', function () {
+        
+        it('should properly create onboarding url', async function () {
+
+            const now = new Date(Date.now());
+
+            const stripeInterface: StripeInterfaceEntity = {
+                id: 'stripe_interface_id',
+                connect_account: 'connect_account_id',
+                connect_account_updated_at: new Date(now.getTime() - 6 * SECOND)
+            } as StripeInterfaceEntity;
+
+            const refreshUrl = 'https://refresh.url';
+            const returnUrl = 'https://return.url';
+
+            const accountsLinksMock = mock(Stripe.AccountLinksResource);
+
+            const accountLink: Stripe.AccountLink = {
+                object: 'account_link',
+                created: 0,
+                expires_at: 0,
+                url: 'https://onboarding.url'
+            }
+
+            when(context.stripeMock.accountLinks).thenReturn(instance(accountsLinksMock));
+
+            when(accountsLinksMock.create(deepEqual({
+                account: stripeInterface.connect_account,
+                failure_url: refreshUrl,
+                success_url: returnUrl,
+                type: 'custom_account_update'
+            }))).thenResolve(accountLink)
+
+            const res = await context.stripeInterfacesService.generateUpdateUrl(
+                stripeInterface,
+                refreshUrl,
+                returnUrl
+            );
+
+            expect(res.error).toEqual(null);
+            expect(res.response).toEqual(accountLink);
+
+            verify(context.stripeMock.accountLinks).times(1);
+
+            verify(accountsLinksMock.create(deepEqual({
+                account: stripeInterface.connect_account,
+                failure_url: refreshUrl,
+                success_url: returnUrl,
+                type: 'custom_account_update'
+            }))).times(1);
+        });
+
+        it('should fail on interface not set', async function () {
+
+            const stripeInterface: StripeInterfaceEntity = {
+                id: 'stripe_interface_id',
+                connect_account: null
+            } as StripeInterfaceEntity;
+
+            const refreshUrl = 'https://refresh.url';
+            const returnUrl = 'https://return.url';
+
+            const res = await context.stripeInterfacesService.generateUpdateUrl(
+                stripeInterface,
+                refreshUrl,
+                returnUrl
+            );
+
+            expect(res.error).toEqual('connect_account_not_created');
+            expect(res.response).toEqual(null);
+
+        });
+
+        it('should fail on generation error', async function () {
+
+            const now = new Date(Date.now());
+
+            const stripeInterface: StripeInterfaceEntity = {
+                id: 'stripe_interface_id',
+                connect_account: 'connect_account_id',
+                connect_account_updated_at: new Date(now.getTime() - 6 * SECOND)
+            } as StripeInterfaceEntity;
+
+            const refreshUrl = 'https://refresh.url';
+            const returnUrl = 'https://return.url';
+
+            const accountsLinksMock = mock(Stripe.AccountLinksResource);
+
+            const accountLink: Stripe.AccountLink = {
+                object: 'account_link',
+                created: 0,
+                expires_at: 0,
+                url: 'https://onboarding.url'
+            }
+
+            when(context.stripeMock.accountLinks).thenReturn(instance(accountsLinksMock));
+
+            when(accountsLinksMock.create(deepEqual({
+                account: stripeInterface.connect_account,
+                failure_url: refreshUrl,
+                success_url: returnUrl,
+                type: 'custom_account_update'
+            }))).thenReject(new Error('Failed url creation'))
+
+            const res = await context.stripeInterfacesService.generateUpdateUrl(
+                stripeInterface,
+                refreshUrl,
+                returnUrl
+            );
+
+            expect(res.error).toEqual('Failed url creation');
+            expect(res.response).toEqual(null);
+
+            verify(context.stripeMock.accountLinks).times(1);
+
+            verify(accountsLinksMock.create(deepEqual({
+                account: stripeInterface.connect_account,
+                failure_url: refreshUrl,
+                success_url: returnUrl,
+                type: 'custom_account_update'
+            }))).times(1);
+        });
+        
+    });
+
     describe('addExternalAccountToUserInterface', function () {
         it('should be a placeholder', async function () {
             console.log('hi');
         });
     });
 
-    describe('generateOnboardingUrl', function () {
-        it('should be a placeholder', async function () {
-            console.log('hi');
-        });
-    });
-
-    describe('generateUpdateUrl', function () {
-        it('should be a placeholder', async function () {
-            console.log('hi');
-        });
-    });
 });
