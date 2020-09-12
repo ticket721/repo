@@ -32,7 +32,7 @@ export class StripeInterfacesService extends CRUDExtension<StripeInterfacesRepos
         @InjectModel(StripeInterfaceEntity)
         stripeInterfaceEntity: BaseModel<StripeInterfaceEntity>,
         private readonly stripeService: StripeService,
-        private readonly timeToolService: TimeToolService
+        private readonly timeToolService: TimeToolService,
     ) {
         super(
             stripeInterfaceEntity,
@@ -363,7 +363,11 @@ export class StripeInterfacesService extends CRUDExtension<StripeInterfacesRepos
             stripeInterface.connect_account_external_accounts &&
             stripeInterface.connect_account_external_accounts.length
         ) {
-            return stripeInterface.connect_account_external_accounts.find((extacc: ConnectAccountExternalAccount): boolean => extacc.fingerprint === fingerprint) !== undefined;
+            return (
+                stripeInterface.connect_account_external_accounts.find(
+                    (extacc: ConnectAccountExternalAccount): boolean => extacc.fingerprint === fingerprint,
+                ) !== undefined
+            );
         }
         return false;
     }

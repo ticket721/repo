@@ -6,10 +6,7 @@ import { StripeInterfacesService } from '@lib/common/stripeinterface/StripeInter
 import { ToolBoxModule } from '../toolbox/ToolBox.module';
 
 @Module({
-    imports: [
-        ExpressCassandraModule.forFeature([StripeInterfaceEntity, StripeInterfacesRepository]),
-        ToolBoxModule
-    ],
+    imports: [ExpressCassandraModule.forFeature([StripeInterfaceEntity, StripeInterfacesRepository]), ToolBoxModule],
     providers: [StripeInterfacesService],
     exports: [StripeInterfacesService],
 })
