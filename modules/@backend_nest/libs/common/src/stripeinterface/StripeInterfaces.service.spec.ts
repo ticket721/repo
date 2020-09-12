@@ -5,9 +5,9 @@ import { mock, when, instance, spy, deepEqual, verify } from 'ts-mockito';
 import { StripeService } from '../stripe/Stripe.service';
 import Stripe from 'stripe';
 import { Test } from '@nestjs/testing';
-import { getModelToken } from '@iaminfinity/express-cassandra/dist/utils/cassandra-orm.utils';
-import { StripeInterfaceEntity } from './entities/StripeInterface.entity';
-import { UserDto } from '../users/dto/User.dto';
+import { getModelToken }                                        from '@iaminfinity/express-cassandra/dist/utils/cassandra-orm.utils';
+import { ConnectAccountExternalAccount, StripeInterfaceEntity } from './entities/StripeInterface.entity';
+import { UserDto }                                              from '../users/dto/User.dto';
 import { ESSearchReturn } from '../utils/ESSearchReturn.type';
 import { TimeToolService } from '../toolbox/Time.tool.service';
 import { SECOND } from '../utils/time';
@@ -2490,13 +2490,6 @@ describe('StripeInterfaces Service', function () {
 
             const accountsLinksMock = mock(Stripe.AccountLinksResource);
 
-            const accountLink: Stripe.AccountLink = {
-                object: 'account_link',
-                created: 0,
-                expires_at: 0,
-                url: 'https://onboarding.url'
-            }
-
             when(context.stripeMock.accountLinks).thenReturn(instance(accountsLinksMock));
 
             when(accountsLinksMock.create(deepEqual({
@@ -2528,9 +2521,361 @@ describe('StripeInterfaces Service', function () {
     });
 
     describe('addExternalAccountToUserInterface', function () {
-        it('should be a placeholder', async function () {
-            console.log('hi');
+
+        it('should properly add bank account', async function () {
+
+            const now = new Date(Date.now());
+
+            const stripeInterface: StripeInterfaceEntity = {
+                id: 'stripe_interface_id',
+                connect_account: 'connect_account_id',
+                connect_account_updated_at: new Date(now.getTime() - 6 * SECOND)
+            } as StripeInterfaceEntity;
+
+            const user: UserDto = {
+                id: 'user_id'
+            } as UserDto;
+
+            const bankAccountId = 'bank_account_id';
+
+            const bankAccountToken: Stripe.Token = {
+                id: bankAccountId,
+                used: false,
+                bank_account: {
+                    fingerprint: 'fingerprint'
+                } as Stripe.BankAccount
+            } as Stripe.Token;
+
+            const tokensMock = mock(Stripe.TokensResource);
+            const accountsMock = mock(Stripe.AccountsResource);
+
+            const spiedService = spy(context.stripeInterfacesService);
+
+            when(context.stripeMock.tokens).thenReturn(instance(tokensMock));
+            when(tokensMock.retrieve(bankAccountId)).thenResolve(bankAccountToken)
+            when(spiedService.recoverUserInterface(deepEqual(user))).thenResolve({
+                error: null,
+                response: stripeInterface
+            });
+            when(context.stripeMock.accounts).thenReturn(instance(accountsMock));
+            when(accountsMock.createExternalAccount(stripeInterface.connect_account, deepEqual({
+                external_account: bankAccountId
+            }))).thenResolve(null);
+            when(spiedService.updateAccountInfos(deepEqual(stripeInterface), true)).thenResolve({
+                error: null,
+                response: stripeInterface
+            });
+
+            const res = await context.stripeInterfacesService.addExternalAccountToUserInterface(user, bankAccountId);
+
+            expect(res.error).toEqual(null);
+            expect(res.response).toEqual(stripeInterface);
+
+            verify(context.stripeMock.tokens).times(1);
+            verify(tokensMock.retrieve(bankAccountId)).times(1);
+            verify(spiedService.recoverUserInterface(deepEqual(user))).times(1);
+            verify(context.stripeMock.accounts).times(1);
+            verify(accountsMock.createExternalAccount(stripeInterface.connect_account, deepEqual({
+                external_account: bankAccountId
+            }))).times(1);
+            verify(spiedService.updateAccountInfos(deepEqual(stripeInterface), true)).times(1);
         });
+
+        it('should fail on consumed token', async function () {
+
+            const user: UserDto = {
+                id: 'user_id'
+            } as UserDto;
+
+            const bankAccountId = 'bank_account_id';
+
+            const bankAccountToken: Stripe.Token = {
+                id: bankAccountId,
+                used: true,
+                bank_account: {
+                    fingerprint: 'fingerprint'
+                } as Stripe.BankAccount
+            } as Stripe.Token;
+
+            const tokensMock = mock(Stripe.TokensResource);
+
+            when(context.stripeMock.tokens).thenReturn(instance(tokensMock));
+            when(tokensMock.retrieve(bankAccountId)).thenResolve(bankAccountToken)
+
+            const res = await context.stripeInterfacesService.addExternalAccountToUserInterface(user, bankAccountId);
+
+            expect(res.error).toEqual('bank_account_token_already_used');
+            expect(res.response).toEqual(null);
+
+            verify(context.stripeMock.tokens).times(1);
+            verify(tokensMock.retrieve(bankAccountId)).times(1);
+        });
+
+        it('should fail on token retrieve error', async function () {
+
+            const user: UserDto = {
+                id: 'user_id'
+            } as UserDto;
+
+            const bankAccountId = 'bank_account_id';
+
+            const tokensMock = mock(Stripe.TokensResource);
+
+            when(context.stripeMock.tokens).thenReturn(instance(tokensMock));
+            when(tokensMock.retrieve(bankAccountId)).thenReject(new Error('Cannot retrieve token'))
+
+            const res = await context.stripeInterfacesService.addExternalAccountToUserInterface(user, bankAccountId);
+
+            expect(res.error).toEqual('Cannot retrieve token');
+            expect(res.response).toEqual(null);
+
+            verify(context.stripeMock.tokens).times(1);
+            verify(tokensMock.retrieve(bankAccountId)).times(1);
+        });
+
+        it('should fail on interface retrieve error', async function () {
+
+            const user: UserDto = {
+                id: 'user_id'
+            } as UserDto;
+
+            const bankAccountId = 'bank_account_id';
+
+            const bankAccountToken: Stripe.Token = {
+                id: bankAccountId,
+                used: false,
+                bank_account: {
+                    fingerprint: 'fingerprint'
+                } as Stripe.BankAccount
+            } as Stripe.Token;
+
+            const tokensMock = mock(Stripe.TokensResource);
+
+            const spiedService = spy(context.stripeInterfacesService);
+
+            when(context.stripeMock.tokens).thenReturn(instance(tokensMock));
+            when(tokensMock.retrieve(bankAccountId)).thenResolve(bankAccountToken)
+            when(spiedService.recoverUserInterface(deepEqual(user))).thenResolve({
+                error: 'unexpected_error',
+                response: null
+            });
+
+            const res = await context.stripeInterfacesService.addExternalAccountToUserInterface(user, bankAccountId);
+
+            expect(res.error).toEqual('unexpected_error');
+            expect(res.response).toEqual(null);
+
+            verify(context.stripeMock.tokens).times(1);
+            verify(tokensMock.retrieve(bankAccountId)).times(1);
+            verify(spiedService.recoverUserInterface(deepEqual(user))).times(1);
+        });
+
+        it('should fail on interface not set error', async function () {
+
+            const now = new Date(Date.now());
+
+            const stripeInterface: StripeInterfaceEntity = {
+                id: 'stripe_interface_id',
+                connect_account: null,
+                connect_account_updated_at: new Date(now.getTime() - 6 * SECOND)
+            } as StripeInterfaceEntity;
+
+            const user: UserDto = {
+                id: 'user_id'
+            } as UserDto;
+
+            const bankAccountId = 'bank_account_id';
+
+            const bankAccountToken: Stripe.Token = {
+                id: bankAccountId,
+                used: false,
+                bank_account: {
+                    fingerprint: 'fingerprint'
+                } as Stripe.BankAccount
+            } as Stripe.Token;
+
+            const tokensMock = mock(Stripe.TokensResource);
+
+            const spiedService = spy(context.stripeInterfacesService);
+
+            when(context.stripeMock.tokens).thenReturn(instance(tokensMock));
+            when(tokensMock.retrieve(bankAccountId)).thenResolve(bankAccountToken)
+            when(spiedService.recoverUserInterface(deepEqual(user))).thenResolve({
+                error: null,
+                response: stripeInterface
+            });
+
+            const res = await context.stripeInterfacesService.addExternalAccountToUserInterface(user, bankAccountId);
+
+            expect(res.error).toEqual('account_not_created');
+            expect(res.response).toEqual(null);
+
+            verify(context.stripeMock.tokens).times(1);
+            verify(tokensMock.retrieve(bankAccountId)).times(1);
+            verify(spiedService.recoverUserInterface(deepEqual(user))).times(1);
+        });
+
+        it('should fail on account already added', async function () {
+
+            const now = new Date(Date.now());
+
+            const stripeInterface: StripeInterfaceEntity = {
+                id: 'stripe_interface_id',
+                connect_account: 'connect_account_id',
+                connect_account_updated_at: new Date(now.getTime() - 6 * SECOND),
+                connect_account_external_accounts: [{
+                    fingerprint: 'fingerprint'
+                } as ConnectAccountExternalAccount]
+            } as StripeInterfaceEntity;
+
+            const user: UserDto = {
+                id: 'user_id'
+            } as UserDto;
+
+            const bankAccountId = 'bank_account_id';
+
+            const bankAccountToken: Stripe.Token = {
+                id: bankAccountId,
+                used: false,
+                bank_account: {
+                    fingerprint: 'fingerprint'
+                } as Stripe.BankAccount
+            } as Stripe.Token;
+
+            const tokensMock = mock(Stripe.TokensResource);
+
+            const spiedService = spy(context.stripeInterfacesService);
+
+            when(context.stripeMock.tokens).thenReturn(instance(tokensMock));
+            when(tokensMock.retrieve(bankAccountId)).thenResolve(bankAccountToken)
+            when(spiedService.recoverUserInterface(deepEqual(user))).thenResolve({
+                error: null,
+                response: stripeInterface
+            });
+
+            const res = await context.stripeInterfacesService.addExternalAccountToUserInterface(user, bankAccountId);
+
+            expect(res.error).toEqual('bank_account_already_added');
+            expect(res.response).toEqual(null);
+
+            verify(context.stripeMock.tokens).times(1);
+            verify(tokensMock.retrieve(bankAccountId)).times(1);
+            verify(spiedService.recoverUserInterface(deepEqual(user))).times(1);
+        });
+
+        it('should fail on bank account addition error', async function () {
+
+            const now = new Date(Date.now());
+
+            const stripeInterface: StripeInterfaceEntity = {
+                id: 'stripe_interface_id',
+                connect_account: 'connect_account_id',
+                connect_account_updated_at: new Date(now.getTime() - 6 * SECOND)
+            } as StripeInterfaceEntity;
+
+            const user: UserDto = {
+                id: 'user_id'
+            } as UserDto;
+
+            const bankAccountId = 'bank_account_id';
+
+            const bankAccountToken: Stripe.Token = {
+                id: bankAccountId,
+                used: false,
+                bank_account: {
+                    fingerprint: 'fingerprint'
+                } as Stripe.BankAccount
+            } as Stripe.Token;
+
+            const tokensMock = mock(Stripe.TokensResource);
+            const accountsMock = mock(Stripe.AccountsResource);
+
+            const spiedService = spy(context.stripeInterfacesService);
+
+            when(context.stripeMock.tokens).thenReturn(instance(tokensMock));
+            when(tokensMock.retrieve(bankAccountId)).thenResolve(bankAccountToken)
+            when(spiedService.recoverUserInterface(deepEqual(user))).thenResolve({
+                error: null,
+                response: stripeInterface
+            });
+            when(context.stripeMock.accounts).thenReturn(instance(accountsMock));
+            when(accountsMock.createExternalAccount(stripeInterface.connect_account, deepEqual({
+                external_account: bankAccountId
+            }))).thenReject(new Error('Cannot add bank account'));
+
+            const res = await context.stripeInterfacesService.addExternalAccountToUserInterface(user, bankAccountId);
+
+            expect(res.error).toEqual('Cannot add bank account');
+            expect(res.response).toEqual(null);
+
+            verify(context.stripeMock.tokens).times(1);
+            verify(tokensMock.retrieve(bankAccountId)).times(1);
+            verify(spiedService.recoverUserInterface(deepEqual(user))).times(1);
+            verify(context.stripeMock.accounts).times(1);
+            verify(accountsMock.createExternalAccount(stripeInterface.connect_account, deepEqual({
+                external_account: bankAccountId
+            }))).times(1);
+        });
+
+        it('should fail on interface update error', async function () {
+
+            const now = new Date(Date.now());
+
+            const stripeInterface: StripeInterfaceEntity = {
+                id: 'stripe_interface_id',
+                connect_account: 'connect_account_id',
+                connect_account_updated_at: new Date(now.getTime() - 6 * SECOND)
+            } as StripeInterfaceEntity;
+
+            const user: UserDto = {
+                id: 'user_id'
+            } as UserDto;
+
+            const bankAccountId = 'bank_account_id';
+
+            const bankAccountToken: Stripe.Token = {
+                id: bankAccountId,
+                used: false,
+                bank_account: {
+                    fingerprint: 'fingerprint'
+                } as Stripe.BankAccount
+            } as Stripe.Token;
+
+            const tokensMock = mock(Stripe.TokensResource);
+            const accountsMock = mock(Stripe.AccountsResource);
+
+            const spiedService = spy(context.stripeInterfacesService);
+
+            when(context.stripeMock.tokens).thenReturn(instance(tokensMock));
+            when(tokensMock.retrieve(bankAccountId)).thenResolve(bankAccountToken)
+            when(spiedService.recoverUserInterface(deepEqual(user))).thenResolve({
+                error: null,
+                response: stripeInterface
+            });
+            when(context.stripeMock.accounts).thenReturn(instance(accountsMock));
+            when(accountsMock.createExternalAccount(stripeInterface.connect_account, deepEqual({
+                external_account: bankAccountId
+            }))).thenResolve(null);
+            when(spiedService.updateAccountInfos(deepEqual(stripeInterface), true)).thenResolve({
+                error: 'unexpected_error',
+                response: null
+            });
+
+            const res = await context.stripeInterfacesService.addExternalAccountToUserInterface(user, bankAccountId);
+
+            expect(res.error).toEqual('unexpected_error');
+            expect(res.response).toEqual(null);
+
+            verify(context.stripeMock.tokens).times(1);
+            verify(tokensMock.retrieve(bankAccountId)).times(1);
+            verify(spiedService.recoverUserInterface(deepEqual(user))).times(1);
+            verify(context.stripeMock.accounts).times(1);
+            verify(accountsMock.createExternalAccount(stripeInterface.connect_account, deepEqual({
+                external_account: bankAccountId
+            }))).times(1);
+            verify(spiedService.updateAccountInfos(deepEqual(stripeInterface), true)).times(1);
+        });
+
     });
 
 });

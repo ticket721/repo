@@ -463,7 +463,7 @@ export class StripeInterfacesService extends CRUDExtension<StripeInterfacesRepos
 
         if (
             StripeInterfacesService.containsExternalAccountFingerprint(
-                stripeInterfaceRes.response,
+                stripeInterface,
                 bankAccount.bank_account.fingerprint,
             )
         ) {
@@ -484,7 +484,7 @@ export class StripeInterfacesService extends CRUDExtension<StripeInterfacesRepos
             };
         }
 
-        return this.updateAccountInfos(stripeInterfaceRes.response, true);
+        return this.updateAccountInfos(stripeInterface, true);
     }
 
     async generateOnboardingUrl(
