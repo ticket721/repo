@@ -31,6 +31,7 @@ import CartPage from './routes/Cart';
 import ValidateRoutePage from './routes/ValidateRoute';
 import StripeSetupPage from './routes/StripeSetup';
 import StripeCreateBankAccountPage from './routes/StripeCreateBankAccount';
+import StripeWithdrawPage from './routes/StripeWithdraw';
 import { useKeyboardVisibility } from '@frontend/core/lib/utils/useKeyboardVisibility';
 import { UserContextGuard } from '@frontend/core/lib/utils/UserContext';
 import DeepLinksListener from './components/DeepLinksListener';
@@ -106,6 +107,15 @@ const MobileApp: React.FC = () => {
                                 >
                                     <StripeCreateBankAccountPage />
                                 </ProtectedRoute>
+                        ) : null}
+
+                        {flags.stripe_interface_setup ? (
+                            <ProtectedRoute
+                                path={'/stripe/withdraw'}
+                                exact={true}
+                            >
+                                <StripeWithdrawPage />
+                            </ProtectedRoute>
                         ) : null}
 
                         {flags.admin_flag ? (

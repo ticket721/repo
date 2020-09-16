@@ -587,6 +587,7 @@ describe('StripeInterfaces Service', function() {
             const accountToken = 'tok_skdjhskjdfhksjhfd';
             const stripeTokenMock = mock(Stripe.TokensResource);
             const stripeAccountMock = mock(Stripe.AccountsResource);
+            const currency = 'eur';
             const token: Stripe.Token = {
                 id: accountToken,
                 object: 'token',
@@ -622,6 +623,7 @@ describe('StripeInterfaces Service', function() {
                         email: user.email,
                         requested_capabilities: ['card_payments', 'transfers'],
                         account_token: accountToken,
+                        default_currency: currency,
                         settings: {
                             payouts: {
                                 schedule: {
@@ -633,7 +635,7 @@ describe('StripeInterfaces Service', function() {
                 ),
             ).thenResolve(resultingAccount);
 
-            const res = await context.stripeInterfacesService.createAccount(user, accountToken);
+            const res = await context.stripeInterfacesService.createAccount(user, accountToken, currency);
 
             expect(res.error).toEqual(null);
             expect(res.response).toEqual(resultingAccount);
@@ -648,6 +650,7 @@ describe('StripeInterfaces Service', function() {
                         email: user.email,
                         requested_capabilities: ['card_payments', 'transfers'],
                         account_token: accountToken,
+                        default_currency: currency,
                         settings: {
                             payouts: {
                                 schedule: {
@@ -668,10 +671,11 @@ describe('StripeInterfaces Service', function() {
 
             const accountToken = 'tok_skdjhskjdfhksjhfd';
             const stripeTokenMock = mock(Stripe.TokensResource);
+            const currency = 'eur';
             when(context.stripeMock.tokens).thenReturn(instance(stripeTokenMock));
             when(stripeTokenMock.retrieve(accountToken)).thenReject(new Error('Cannot retrieve token'));
 
-            const res = await context.stripeInterfacesService.createAccount(user, accountToken);
+            const res = await context.stripeInterfacesService.createAccount(user, accountToken, currency);
 
             expect(res.error).toEqual('cannot_find_token');
             expect(res.response).toEqual(null);
@@ -686,6 +690,7 @@ describe('StripeInterfaces Service', function() {
                 email: 'test@test.com',
             } as UserDto;
 
+            const currency = 'eur';
             const accountToken = 'tok_skdjhskjdfhksjhfd';
             const stripeTokenMock = mock(Stripe.TokensResource);
             const token: Stripe.Token = {
@@ -701,7 +706,7 @@ describe('StripeInterfaces Service', function() {
             when(context.stripeMock.tokens).thenReturn(instance(stripeTokenMock));
             when(stripeTokenMock.retrieve(accountToken)).thenResolve(token);
 
-            const res = await context.stripeInterfacesService.createAccount(user, accountToken);
+            const res = await context.stripeInterfacesService.createAccount(user, accountToken, currency);
 
             expect(res.error).toEqual('token_already_used');
             expect(res.response).toEqual(null);
@@ -716,6 +721,7 @@ describe('StripeInterfaces Service', function() {
                 email: 'test@test.com',
             } as UserDto;
 
+            const currency = 'eur';
             const accountToken = 'tok_skdjhskjdfhksjhfd';
             const stripeTokenMock = mock(Stripe.TokensResource);
             const stripeAccountMock = mock(Stripe.AccountsResource);
@@ -729,21 +735,6 @@ describe('StripeInterfaces Service', function() {
                 used: false,
             };
 
-            const resultingAccount: Stripe.Account = {
-                id: 'acc_sdljfskjdfskdjf',
-                object: 'account',
-                business_profile: null,
-                business_type: null,
-                charges_enabled: true,
-                country: 'FR',
-                default_currency: 'eur',
-                details_submitted: false,
-                email: user.email,
-                payouts_enabled: true,
-                settings: null,
-                type: 'custom',
-            };
-
             when(context.stripeMock.tokens).thenReturn(instance(stripeTokenMock));
             when(context.stripeMock.accounts).thenReturn(instance(stripeAccountMock));
             when(stripeTokenMock.retrieve(accountToken)).thenResolve(token);
@@ -754,6 +745,7 @@ describe('StripeInterfaces Service', function() {
                         email: user.email,
                         requested_capabilities: ['card_payments', 'transfers'],
                         account_token: accountToken,
+                        default_currency: currency,
                         settings: {
                             payouts: {
                                 schedule: {
@@ -765,7 +757,7 @@ describe('StripeInterfaces Service', function() {
                 ),
             ).thenReject(new Error('Cannot create account'));
 
-            const res = await context.stripeInterfacesService.createAccount(user, accountToken);
+            const res = await context.stripeInterfacesService.createAccount(user, accountToken, currency);
 
             expect(res.error).toEqual('cannot_create_account');
             expect(res.response).toEqual(null);
@@ -780,6 +772,7 @@ describe('StripeInterfaces Service', function() {
                         email: user.email,
                         requested_capabilities: ['card_payments', 'transfers'],
                         account_token: accountToken,
+                        default_currency: currency,
                         settings: {
                             payouts: {
                                 schedule: {

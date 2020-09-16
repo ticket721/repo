@@ -5,6 +5,9 @@ import { StripeInterfacesRepository } from '@lib/common/stripeinterface/StripeIn
 import { StripeInterfacesService } from '@lib/common/stripeinterface/StripeInterfaces.service';
 import { ToolBoxModule } from '../toolbox/ToolBox.module';
 
+/**
+ * Stripe Interfaces utilities
+ */
 @Module({
     imports: [ExpressCassandraModule.forFeature([StripeInterfaceEntity, StripeInterfacesRepository]), ToolBoxModule],
     providers: [StripeInterfacesService],

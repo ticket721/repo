@@ -123,7 +123,7 @@ import {
     paymentStripeRemoveExternalAccount,
     paymentStripeSetDefaultExternalAccount,
     paymentStripeFetchBalance,
-    paymentStripeCreateConnectAccount
+    paymentStripeCreateConnectAccount, paymentStripePayout, paymentStripeTransactions,
 } from './app/api/payment';
 
 export { FailedRegisterReport } from './app/api/authentication';
@@ -266,6 +266,12 @@ export class T721SDK {
             this
         );
         this.payment.stripe.setDefaultExternalAccount = this.payment.stripe.setDefaultExternalAccount.bind(
+            this
+        );
+        this.payment.stripe.payout = this.payment.stripe.payout.bind(
+            this
+        );
+        this.payment.stripe.transactions = this.payment.stripe.transactions.bind(
             this
         );
     }
@@ -493,7 +499,9 @@ export class T721SDK {
             removeExternalAccount: paymentStripeRemoveExternalAccount,
             setDefaultExternalAccount: paymentStripeSetDefaultExternalAccount,
             generateOnboardingUrl: paymentStripeGenerateOnboardingUrl,
-            generateUpdateUrl: paymentStripeGenerateUpdateUrl
+            generateUpdateUrl: paymentStripeGenerateUpdateUrl,
+            payout: paymentStripePayout,
+            transactions: paymentStripeTransactions
         }
     };
 }

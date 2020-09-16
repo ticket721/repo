@@ -6,17 +6,21 @@ import { PaymentStripeAddExternalAccountInputDto } from '@app/server/controllers
 // tslint:disable-next-line:max-line-length
 import { PaymentStripeAddExternalAccountResponseDto } from '@app/server/controllers/payment/stripe/dto/PaymentStripeAddExternalAccountResponse.dto';
 import { PaymentStripeGenerateOnboardingUrlInputDto } from '@app/server/controllers/payment/stripe/dto/PaymentStripeGenerateOnboardingUrlInput.dto';
-import { PaymentStripeGenerateOnboardingUrlResponseDto } from '@app/server/controllers/payment/stripe/dto/PaymentStripeGenerateOnboardingUrlResponse.dto';
-import { PaymentStripeGenerateUpdateUrlInputDto } from '@app/server/controllers/payment/stripe/dto/PaymentStripeGenerateUpdateUrlInput.dto';
-import { PaymentStripeGenerateUpdateUrlResponseDto } from '@app/server/controllers/payment/stripe/dto/PaymentStripeGenerateUpdateUrlResponse.dto';
-import { PaymentStripeRemoveExternalAccountInputDto } from '@app/server/controllers/payment/stripe/dto/PaymentStripeRemoveExternalAccountInput.dto';
-import { PaymentStripeRemoveExternalAccountResponseDto } from '@app/server/controllers/payment/stripe/dto/PaymentStripeRemoveExternalAccountResponse.dto';
-import { PaymentStripeSetDefaultExternalAccountInputDto } from '@app/server/controllers/payment/stripe/dto/PaymentStripeSetDefaultExternalAccountInput.dto';
+import { PaymentStripeGenerateOnboardingUrlResponseDto }     from '@app/server/controllers/payment/stripe/dto/PaymentStripeGenerateOnboardingUrlResponse.dto';
+import { PaymentStripeGenerateUpdateUrlInputDto }            from '@app/server/controllers/payment/stripe/dto/PaymentStripeGenerateUpdateUrlInput.dto';
+import { PaymentStripeGenerateUpdateUrlResponseDto }         from '@app/server/controllers/payment/stripe/dto/PaymentStripeGenerateUpdateUrlResponse.dto';
+import { PaymentStripeRemoveExternalAccountInputDto }        from '@app/server/controllers/payment/stripe/dto/PaymentStripeRemoveExternalAccountInput.dto';
+import { PaymentStripeRemoveExternalAccountResponseDto }     from '@app/server/controllers/payment/stripe/dto/PaymentStripeRemoveExternalAccountResponse.dto';
+import { PaymentStripeSetDefaultExternalAccountInputDto }    from '@app/server/controllers/payment/stripe/dto/PaymentStripeSetDefaultExternalAccountInput.dto';
 import { PaymentStripeSetDefaultExternalAccountResponseDto } from '@app/server/controllers/payment/stripe/dto/PaymentStripeSetDefaultExternalAccountResponse.dto';
-import { PaymentStripeFetchBalanceResponseDto } from '@app/server/controllers/payment/stripe/dto/PaymentStripeFetchBalanceResponse.dto';
-import { PaymentStripeCreateInterfaceResponseDto } from '@app/server/controllers/payment/stripe/dto/PaymentStripeCreateInterfaceResponse.dto';
-import { PaymentStripeCreateConnectAccountInputDto } from '@app/server/controllers/payment/stripe/dto/PaymentStripeCreateConnectAccountInput.dto';
-import { PaymentStripeCreateConnectAccountResponseDto } from '@app/server/controllers/payment/stripe/dto/PaymentStripeCreateConnectAccountResponse.dto';
+import { PaymentStripeFetchBalanceResponseDto }              from '@app/server/controllers/payment/stripe/dto/PaymentStripeFetchBalanceResponse.dto';
+import { PaymentStripeCreateInterfaceResponseDto }           from '@app/server/controllers/payment/stripe/dto/PaymentStripeCreateInterfaceResponse.dto';
+import { PaymentStripeCreateConnectAccountInputDto }         from '@app/server/controllers/payment/stripe/dto/PaymentStripeCreateConnectAccountInput.dto';
+import { PaymentStripeCreateConnectAccountResponseDto }      from '@app/server/controllers/payment/stripe/dto/PaymentStripeCreateConnectAccountResponse.dto';
+import { PaymentStripePayoutInputDto }                       from '@app/server/controllers/payment/stripe/dto/PaymentStripePayoutInput.dto';
+import { PaymentStripePayoutResponseDto }                    from '@app/server/controllers/payment/stripe/dto/PaymentStripePayoutResponse.dto';
+import { PaymentStripeTransactionsInputDto }                 from '@app/server/controllers/payment/stripe/dto/PaymentStripeTransactionsInput.dto';
+import { PaymentStripeTransactionsResponseDto }              from '@app/server/controllers/payment/stripe/dto/PaymentStripeTransactionsResponse.dto';
 
 export async function paymentStripeFetchInterface(
     token: string
@@ -140,6 +144,38 @@ export async function paymentStripeGenerateUpdateUrl(
 
     return self.post<PaymentStripeGenerateUpdateUrlInputDto>(
         '/payment/stripe/connect-account/update',
+        {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        },
+        query
+    );
+}
+
+export async function paymentStripePayout(
+    token: string,
+    query: PaymentStripePayoutInputDto
+): Promise<AxiosResponse<PaymentStripePayoutResponseDto>> {
+    const self: T721SDK = this;
+
+    return self.post<PaymentStripePayoutInputDto>(
+        '/payment/stripe/connect-account/payout',
+        {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        },
+        query
+    );
+}
+
+export async function paymentStripeTransactions(
+    token: string,
+    query: PaymentStripeTransactionsInputDto
+): Promise<AxiosResponse<PaymentStripeTransactionsResponseDto>> {
+    const self: T721SDK = this;
+
+    return self.post<PaymentStripeTransactionsInputDto>(
+        '/payment/stripe/connect-account/transactions',
         {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json'

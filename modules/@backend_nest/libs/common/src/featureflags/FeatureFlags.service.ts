@@ -13,6 +13,9 @@ export interface Flag {
      */
     active: boolean;
 
+    /**
+     * Whitelisted IDs
+     */
     whitelist?: string[];
 }
 

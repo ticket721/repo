@@ -5,6 +5,20 @@ import { Icon } from '@frontend/flib-react/lib/components';
 // tslint:disable-next-line
 const getSymbolFromCurrency = require('currency-symbol-map');
 
+export const SectionWithLinkHeader = styled.div`
+    background-color: ${(props) => props.theme.darkBg};
+    height: 50px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    & > span {
+        font-size: 18px;
+        font-weight: 500;
+        margin: ${(props) => props.theme.regularSpacing};
+    }
+`;
+
 export const SectionHeader = styled.div`
     background-color: ${(props) => props.theme.darkBg};
     height: 50px;
@@ -228,6 +242,7 @@ export const DragToActionSelectionElementContainer: React.FC<PropsWithChildren<
                     x,
                 }}
                 drag={'x'}
+                dragDirectionLock={true}
                 dragElastic={0.1}
                 dragConstraints={{
                     left: -132,

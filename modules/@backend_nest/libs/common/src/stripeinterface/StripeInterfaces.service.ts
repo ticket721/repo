@@ -28,9 +28,9 @@ export class StripeInterfacesService extends CRUDExtension<StripeInterfacesRepos
      */
     constructor(
         @InjectRepository(StripeInterfacesRepository)
-        stripeInterfacesRepository: StripeInterfacesRepository,
+            stripeInterfacesRepository: StripeInterfacesRepository,
         @InjectModel(StripeInterfaceEntity)
-        stripeInterfaceEntity: BaseModel<StripeInterfaceEntity>,
+            stripeInterfaceEntity: BaseModel<StripeInterfaceEntity>,
         private readonly stripeService: StripeService,
         private readonly timeToolService: TimeToolService,
     ) {
@@ -48,6 +48,11 @@ export class StripeInterfacesService extends CRUDExtension<StripeInterfacesRepos
         );
     }
 
+    /**
+     * Creates a stripe interface and links it to provided user
+     *
+     * @param user
+     */
     async createStripeInterface(user: UserDto): Promise<ServiceResponse<StripeInterfaceEntity>> {
         const stripeInterfaceCollisionCheck = await this.recoverUserInterface(user);
 
@@ -93,6 +98,11 @@ export class StripeInterfacesService extends CRUDExtension<StripeInterfacesRepos
         };
     }
 
+    /**
+     * Recovers a Stripe Interface from a user
+     *
+     * @param user
+     */
     async recoverUserInterface(user: UserDto): Promise<ServiceResponse<StripeInterfaceEntity>> {
         const esQuery = {
             body: {
@@ -127,6 +137,11 @@ export class StripeInterfacesService extends CRUDExtension<StripeInterfacesRepos
         return this.updateAccountInfos(fromES<StripeInterfaceEntity>(esQueryResult.response.hits.hits[0]));
     }
 
+    /**
+     * Recover the current balance from Stripe API
+     *
+     * @param stripeInterface
+     */
     async recoverBalance(stripeInterface: StripeInterfaceEntity): Promise<ServiceResponse<Stripe.Balance>> {
         const stripe = this.stripeService.get();
 
@@ -149,7 +164,14 @@ export class StripeInterfacesService extends CRUDExtension<StripeInterfacesRepos
         }
     }
 
-    async createAccount(user: UserDto, accountToken: string): Promise<ServiceResponse<Stripe.Account>> {
+    /**
+     * Create a Stripe Connect Account for a user
+     *
+     * @param user
+     * @param accountToken
+     * @param currency
+     */
+    async createAccount(user: UserDto, accountToken: string, currency: string): Promise<ServiceResponse<Stripe.Account>> {
         const stripe = this.stripeService.get();
 
         let tokenInfo: Stripe.Token;
@@ -176,6 +198,7 @@ export class StripeInterfacesService extends CRUDExtension<StripeInterfacesRepos
                 email: user.email,
                 requested_capabilities: ['card_payments', 'transfers'],
                 account_token: accountToken,
+                default_currency: currency,
                 settings: {
                     payouts: {
                         schedule: {
@@ -190,6 +213,7 @@ export class StripeInterfacesService extends CRUDExtension<StripeInterfacesRepos
                 response: connectAccount,
             };
         } catch (e) {
+            console.log(e);
             return {
                 error: 'cannot_create_account',
                 response: null,
@@ -197,6 +221,11 @@ export class StripeInterfacesService extends CRUDExtension<StripeInterfacesRepos
         }
     }
 
+    /**
+     * Returns true if Stripe Connect Account infos can be updated
+     *
+     * @param stripeInterface
+     */
     shouldUpdateAccountInfos(stripeInterface: StripeInterfaceEntity): boolean {
         if (!stripeInterface.connect_account_updated_at) {
             return true;
@@ -207,6 +236,11 @@ export class StripeInterfacesService extends CRUDExtension<StripeInterfacesRepos
         return this.timeToolService.now().getTime() - lastUpdate.getTime() >= 5 * SECOND;
     }
 
+    /**
+     * Convert Capabilities from Stripe format to database format
+     *
+     * @param capabilities
+     */
     static convertCapabilities(capabilities: Stripe.Account.Capabilities): ConnectAccountCapability[] {
         return Object.keys(capabilities).map((capabilityName: string) => ({
             name: capabilityName,
@@ -214,6 +248,11 @@ export class StripeInterfacesService extends CRUDExtension<StripeInterfacesRepos
         }));
     }
 
+    /**
+     * Extracts the appropriate name from the Connect Account depending on account type
+     *
+     * @param acc
+     */
     static recoverConnectAccountName(acc: Stripe.Account): string {
         let entityDependentName: string = 'Stripe Connect';
 
@@ -223,7 +262,7 @@ export class StripeInterfacesService extends CRUDExtension<StripeInterfacesRepos
 
         switch (acc.business_type) {
             case 'individual': {
-                if (acc.individual.first_name && acc.individual.last_name) {
+                if (acc.individual && acc.individual.first_name && acc.individual.last_name) {
                     entityDependentName = `${acc.individual.first_name} ${acc.individual.last_name}`;
                 }
                 break;
@@ -231,7 +270,7 @@ export class StripeInterfacesService extends CRUDExtension<StripeInterfacesRepos
             case 'government_entity':
             case 'non_profit':
             case 'company': {
-                if (acc.company.name) {
+                if (acc.company && acc.company.name) {
                     entityDependentName = acc.company.name;
                 }
             }
@@ -240,6 +279,12 @@ export class StripeInterfacesService extends CRUDExtension<StripeInterfacesRepos
         return entityDependentName;
     }
 
+    /**
+     * Update account infos from Stripe APIs
+     *
+     * @param stripeInterface
+     * @param force
+     */
     async updateAccountInfos(
         stripeInterface: StripeInterfaceEntity,
         force: boolean = false,
@@ -253,6 +298,7 @@ export class StripeInterfacesService extends CRUDExtension<StripeInterfacesRepos
                 try {
                     account = await stripe.accounts.retrieve(stripeInterface.connect_account);
                 } catch (e) {
+                    console.error(e);
                     return {
                         error: 'cannot_recover_account',
                         response: null,
@@ -323,6 +369,12 @@ export class StripeInterfacesService extends CRUDExtension<StripeInterfacesRepos
         };
     }
 
+    /**
+     * Link Stripe Connect Account to user
+     *
+     * @param user
+     * @param account
+     */
     async bindAccountToUserInterface(
         user: UserDto,
         account: Stripe.Account,
@@ -358,6 +410,12 @@ export class StripeInterfacesService extends CRUDExtension<StripeInterfacesRepos
         );
     }
 
+    /**
+     * Checks if another External Account with given fingerprint is already present
+     *
+     * @param stripeInterface
+     * @param fingerprint
+     */
     static containsExternalAccountFingerprint(stripeInterface: StripeInterfaceEntity, fingerprint: string): boolean {
         if (
             stripeInterface.connect_account_external_accounts &&
@@ -372,6 +430,12 @@ export class StripeInterfacesService extends CRUDExtension<StripeInterfacesRepos
         return false;
     }
 
+    /**
+     * Changes the default External Account for a given currency
+     *
+     * @param user
+     * @param externalAccountId
+     */
     async setDefaultExternalAccountOnUserInterface(
         user: UserDto,
         externalAccountId: string,
@@ -400,6 +464,12 @@ export class StripeInterfacesService extends CRUDExtension<StripeInterfacesRepos
         return this.updateAccountInfos(stripeInterface, true);
     }
 
+    /**
+     * Removes an External Account from a Stripe Connect Account
+     *
+     * @param user
+     * @param externalAccountId
+     */
     async removeExternalAccountFromUserInterface(
         user: UserDto,
         externalAccountId: string,
@@ -426,6 +496,12 @@ export class StripeInterfacesService extends CRUDExtension<StripeInterfacesRepos
         return this.updateAccountInfos(stripeInterfaceRes.response, true);
     }
 
+    /**
+     * Add an External Account to a user interface
+     *
+     * @param user
+     * @param bankAccountToken
+     */
     async addExternalAccountToUserInterface(
         user: UserDto,
         bankAccountToken: string,
@@ -491,6 +567,13 @@ export class StripeInterfacesService extends CRUDExtension<StripeInterfacesRepos
         return this.updateAccountInfos(stripeInterface, true);
     }
 
+    /**
+     * Generates an url to follow to complete KYC
+     *
+     * @param stripeInterface
+     * @param refreshUrl
+     * @param returnUrl
+     */
     async generateOnboardingUrl(
         stripeInterface: StripeInterfaceEntity,
         refreshUrl: string,
@@ -524,6 +607,13 @@ export class StripeInterfacesService extends CRUDExtension<StripeInterfacesRepos
         }
     }
 
+    /**
+     * Generates an url to follow to update KYC info
+     *
+     * @param stripeInterface
+     * @param refreshUrl
+     * @param returnUrl
+     */
     async generateUpdateUrl(
         stripeInterface: StripeInterfaceEntity,
         refreshUrl: string,
@@ -554,6 +644,85 @@ export class StripeInterfacesService extends CRUDExtension<StripeInterfacesRepos
                 error: e.message,
                 response: null,
             };
+        }
+    }
+
+    async payout(
+        stripeInterface: StripeInterfaceEntity,
+        amount: number,
+        destination: string,
+        currency: string
+    ): Promise<ServiceResponse<Stripe.Payout>> {
+
+        if (!stripeInterface.connect_account) {
+            return {
+                error: 'connect_account_not_created',
+                response: null,
+            };
+        }
+
+        const stripe = this.stripeService.get();
+
+        try {
+            const payout = await stripe.payouts.create({
+                amount,
+                destination,
+                currency
+            }, {
+                stripeAccount: stripeInterface.connect_account
+            })
+            return {
+                error: null,
+                response: payout
+            }
+        } catch (e) {
+            console.error(e);
+            return {
+                error: e.message,
+                response: null
+            }
+        }
+
+    }
+
+    async transactions(
+        stripeInterface: StripeInterfaceEntity,
+        limit: number,
+        startingAfter: string
+    ): Promise<ServiceResponse<Stripe.ApiList<Stripe.BalanceTransaction>>> {
+
+        if (!stripeInterface.connect_account) {
+            return {
+                error: 'connect_account_not_created',
+                response: null,
+            };
+        }
+
+        const stripe = this.stripeService.get();
+
+        try {
+
+            const params: Stripe.BalanceTransactionListParams = {
+                limit
+            };
+
+            if (startingAfter !== null) {
+                params.starting_after = startingAfter
+            }
+
+            const balanceTransactions = await stripe.balanceTransactions.list(params, {
+                stripeAccount: stripeInterface.connect_account
+            })
+            return {
+                error: null,
+                response: balanceTransactions
+            }
+        } catch (e) {
+            console.error(e);
+            return {
+                error: e.message,
+                response: null
+            }
         }
     }
 }

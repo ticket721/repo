@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import React, { useState } from 'react';
 import {
-    SectionHeader,
+    SectionWithLinkHeader,
     FieldsContainer,
     FieldContainer,
     FieldTitle,
@@ -155,7 +155,7 @@ export const SSCAExternalAccountListManager: React.FC<SSCAExternalAccountListMan
 
     return (
         <>
-            <SectionHeader>
+            <SectionWithLinkHeader>
                 <span>{t('title')}</span>
                 <AddIcon
                     icon={'plus'}
@@ -163,7 +163,7 @@ export const SSCAExternalAccountListManager: React.FC<SSCAExternalAccountListMan
                     color={'white'}
                     onClick={() => history.push('/stripe/create-bank-account')}
                 />
-            </SectionHeader>
+            </SectionWithLinkHeader>
             {bankAccounts}
         </>
     );

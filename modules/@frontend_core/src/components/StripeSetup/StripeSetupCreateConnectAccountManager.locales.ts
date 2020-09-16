@@ -1,9 +1,9 @@
 import i18n from '../../utils/i18n';
 
 i18n.addResourceBundle('en', 'stripe_setup_create_connect_account_manager', {
-    description:
-        'To start creating your Stripe Connect account, you need to select your business type from the list below.',
-    title: 'Business type',
+    title: 'Account creation',
+    type_title: 'Account type',
+    currency_title: 'Default currency',
     services_agreement: 'Services Agreement',
     stripe_connected_account_agreement: 'Stripe Connected Account Agreement',
     agreement_first_part: 'By registering your account, you agree to our ',
@@ -15,9 +15,9 @@ i18n.addResourceBundle('en', 'stripe_setup_create_connect_account_manager', {
     create_account: 'Create Account',
 });
 i18n.addResourceBundle('fr', 'stripe_setup_create_connect_account_manager', {
-    description:
-        'Pour commencer la création de votre compte Stripe Connect, sélectionnez votre type de business dans la liste suivante.',
-    title: 'Type de business',
+    title: 'Création de compte',
+    type_title: 'Type de compte',
+    currency_title: 'Monnaie par defaut',
     services_agreement: 'Accord de Services',
     stripe_connected_account_agreement: 'Contract de compte Stripe Connect',
     agreement_first_part: 'En enregistrant votre compte, vous acceptez notre ',

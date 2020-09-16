@@ -22,25 +22,83 @@ export interface StripePaymentMethod {
     stripe_token: string;
 }
 
+/**
+ * Error linked to the Connect Account status
+ */
 export interface ConnectAccountError {
+    /**
+     * Error code
+     */
     code: string;
+
+    /**
+     * Detailed description and reason
+     */
     reason: string;
+
+    /**
+     * Requirement linked to the error
+     */
     requirement: string;
 }
 
+/**
+ * External Account linked to the Stripe Account
+ */
 export interface ConnectAccountExternalAccount {
+    /**
+     * ID of the External Account
+     */
     id: string;
+
+    /**
+     * Unique fingerprint of the External Account
+     */
     fingerprint: string;
+
+    /**
+     * Country of the External Account
+     */
     country: string;
+
+    /**
+     * Main currency of the External Account
+     */
     currency: string;
+
+    /**
+     * Last 4 digits used to identify the account
+     */
     last4: string;
+
+    /**
+     * Name of the External Account
+     */
     name: string;
+
+    /**
+     * Status of the External Account
+     */
     status: 'new' | 'validated' | 'verified' | 'verification_failed' | 'errored';
+
+    /**
+     * True if account is default recipient when withdrawing in same currency
+     */
     default_for_currency: boolean;
 }
 
+/**
+ * Connect Account capability and status
+ */
 export interface ConnectAccountCapability {
+    /**
+     * Name of the capability
+     */
     name: string;
+
+    /**
+     * Status of the caoability
+     */
     status: string;
 }
 
@@ -117,7 +175,7 @@ export class StripeInterfaceEntity {
     connect_account: string;
 
     /**
-     * List of available payment methods
+     * List of account capabilities and statuses
      */
     @Column({
         type: 'list',
@@ -126,12 +184,18 @@ export class StripeInterfaceEntity {
     // tslint:disable-next-line:variable-name
     connect_account_capabilities: ConnectAccountCapability[];
 
+    /**
+     * Date of requirement deadline
+     */
     @Column({
         type: 'timestamp',
     })
     // tslint:disable-next-line:variable-name
     connect_account_current_deadline: Date;
 
+    /**
+     * Currently due requirements
+     */
     @Column({
         type: 'list',
         typeDef: '<text>',
@@ -139,6 +203,9 @@ export class StripeInterfaceEntity {
     // tslint:disable-next-line:variable-name
     connect_account_currently_due: string[];
 
+    /**
+     * Eventually due requirements
+     */
     @Column({
         type: 'list',
         typeDef: '<text>',
@@ -146,6 +213,9 @@ export class StripeInterfaceEntity {
     // tslint:disable-next-line:variable-name
     connect_account_eventually_due: string[];
 
+    /**
+     * Past due requirements
+     */
     @Column({
         type: 'list',
         typeDef: '<text>',
@@ -153,6 +223,9 @@ export class StripeInterfaceEntity {
     // tslint:disable-next-line:variable-name
     connect_account_past_due: string[];
 
+    /**
+     * Pending document verifications
+     */
     @Column({
         type: 'list',
         typeDef: '<text>',
@@ -160,6 +233,9 @@ export class StripeInterfaceEntity {
     // tslint:disable-next-line:variable-name
     connect_account_pending_verification: string[];
 
+    /**
+     * Errors on the account
+     */
     @Column({
         type: 'list',
         typeDef: '<frozen<connect_account_error>>',
@@ -167,6 +243,9 @@ export class StripeInterfaceEntity {
     // tslint:disable-next-line:variable-name
     connect_account_errors: ConnectAccountError[];
 
+    /**
+     * External accounts used for withdraws
+     */
     @Column({
         type: 'list',
         typeDef: '<frozen<connect_account_external_account>>',
@@ -174,18 +253,27 @@ export class StripeInterfaceEntity {
     // tslint:disable-next-line:variable-name
     connect_account_external_accounts: ConnectAccountExternalAccount[];
 
+    /**
+     * Display name of the account
+     */
     @Column({
         type: 'text',
     })
     // tslint:disable-next-line:variable-name
     connect_account_name: string;
 
+    /**
+     * Account type
+     */
     @Column({
         type: 'text',
     })
     // tslint:disable-next-line:variable-name
     connect_account_type: string;
 
+    /**
+     * Disabled reason. Empty if nothing disabling
+     */
     @Column({
         type: 'text',
     })

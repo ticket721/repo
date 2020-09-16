@@ -1,25 +1,26 @@
 import { PasswordlessUserDto } from '@common/sdk/lib/@backend_nest/apps/server/src/authentication/dto/PasswordlessUser.dto';
 import { StripeInterfaceEntity } from '@common/sdk/lib/@backend_nest/libs/common/src/stripeinterface/entities/StripeInterface.entity';
-import styled, { useTheme } from 'styled-components';
-import { FullButtonCta, Icon } from '@frontend/flib-react/lib/components';
-import axios, { Method } from 'axios';
+import styled, { useTheme }                 from 'styled-components';
+import { FullButtonCta, Icon, SelectInput } from '@frontend/flib-react/lib/components';
+import axios, { Method }                    from 'axios';
 import { getEnv } from '../../utils/getEnv';
 import qs from 'qs';
 import { StripeSDK, useCustomStripe } from '../../utils/useCustomStripe';
 import { Dispatch } from 'redux';
 import { PushNotification } from '../../redux/ducks/notifications';
 import React, { useState } from 'react';
-import { Theme } from '@frontend/flib-react/lib/config/theme';
+import { Theme }                    from '@frontend/flib-react/lib/config/theme';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from '../../redux';
-import { v4 } from 'uuid';
-import { useLazyRequest } from '../../hooks/useLazyRequest';
-import { useDeepEffect } from '../../hooks/useDeepEffect';
-import { useTranslation } from 'react-i18next';
+import { AppState }                 from '../../redux';
+import { v4 }                       from 'uuid';
+import { useLazyRequest }           from '../../hooks/useLazyRequest';
+import { useDeepEffect }            from '../../hooks/useDeepEffect';
+import { useTranslation }           from 'react-i18next';
 import './StripeSetupCreateConnectAccountManager.locales';
-import { CtaMargin } from '../../utils/CtaMargin';
-import { TopNavMargin } from '../../utils/TopNavMargin';
+import { CtaMargin }                from '../../utils/CtaMargin';
+import { TopNavMargin }             from '../../utils/TopNavMargin';
 import { InvisibleStatusBarMargin } from '../../utils/InvisibleStatusBarMargin';
+import { currencies, symbolOf }     from '@common/global';
 
 const StripeServiceAgreementUrl = 'https://stripe.com/legal';
 const StripeConnectedAccountAgreementUrl = 'https://stripe.com/connect-account/legal';
@@ -42,6 +43,21 @@ const ListContainer = styled.section`
         font-weight: 300;
         font-size: 16px;
     }
+`;
+
+const SubTitleContainer = styled.div`
+  text-align: start;
+  margin-top: ${props => props.theme.regularSpacing};
+  padding: ${props => props.theme.regularSpacing};
+  width: 100%;
+`;
+
+const SubTitle = styled.span`
+  margin: 0;
+  text-transform: uppercase;
+  font-size: 14px;
+  font-weight: 500;
+  opacity: 0.6;
 `;
 
 const CheckIcon = styled(Icon)`
@@ -83,23 +99,14 @@ const Container = styled.div`
     align-items: center;
 `;
 
-const ContentContainer = styled.div`
-    margin-top: ${(props) => props.theme.regularSpacing};
-    max-width: 500px;
-`;
-
 const Title = styled.h1`
     padding: ${(props) => props.theme.regularSpacing};
-`;
-
-const Description = styled.p`
-    padding: ${(props) => props.theme.regularSpacing};
-    margin-bottom: ${(props) => props.theme.regularSpacing};
-    max-width: 500px;
+    margin: 0;
 `;
 
 const Agreement = styled.p`
     margin: ${(props) => props.theme.regularSpacing};
+    margin-top: ${(props) => props.theme.bigSpacing};
     font-size: 12px;
 
     a {
@@ -158,11 +165,27 @@ const generateAccountToken = async (stripe: StripeSDK, selection: string, dispat
     }
 };
 
+const CurrencySelectInput = styled(SelectInput)`
+  width: 100%;
+`
+
+const CurrencySelectInputContainer = styled.div`
+  width: 100%;
+  padding-left: ${props => props.theme.regularSpacing};
+  padding-right: ${props => props.theme.regularSpacing};
+`;
+
+const currenciesSelectOptions = currencies.map((curr: any) => ({
+    label: `${curr.description} (${symbolOf(curr.code)})`,
+    value: curr.code.toLowerCase()
+}));
+
 export const StripeSetupCreateConnectAccountManager: React.FC<StripeSetupCreateConnectAccountManagerProps> = CtaMargin(
     TopNavMargin(
         InvisibleStatusBarMargin(
             (props: StripeSetupCreateConnectAccountManagerProps): JSX.Element => {
                 const [selection, setSelection] = useState(null);
+                const [currency, setCurrency] = useState(null);
                 const theme = useTheme() as Theme;
                 const stripe = useCustomStripe();
                 const dispatch = useDispatch();
@@ -181,6 +204,7 @@ export const StripeSetupCreateConnectAccountManager: React.FC<StripeSetupCreateC
                                 token,
                                 {
                                     account_token: accountToken.id,
+                                    currency,
                                 },
                             ]);
                         }
@@ -226,9 +250,9 @@ export const StripeSetupCreateConnectAccountManager: React.FC<StripeSetupCreateC
                     <>
                         <Container>
                             <Title>{t('title')}</Title>
-                            <ContentContainer>
-                                <Description>{t('description')}</Description>
-                            </ContentContainer>
+                            <SubTitleContainer>
+                                <SubTitle>{t('type_title')}</SubTitle>
+                            </SubTitleContainer>
                             <ListContainer>
                                 <ul className={'row'}>
                                     {items.map((item) => (
@@ -245,8 +269,21 @@ export const StripeSetupCreateConnectAccountManager: React.FC<StripeSetupCreateC
                                     ))}
                                 </ul>
                             </ListContainer>
+                            {selection !== null ? (
+                                <>
+                                    <SubTitleContainer>
+                                        <SubTitle>{t('currency_title')}</SubTitle>
+                                    </SubTitleContainer>
+                                    <CurrencySelectInputContainer>
+                                        <CurrencySelectInput
+                                            options={currenciesSelectOptions}
+                                            onChange={(opt: any) => setCurrency(opt.value)}
+                                        />
+                                    </CurrencySelectInputContainer>
+                                </>
+                            ) : null}
                             <div style={{ maxWidth: 500 }}>
-                                {selection !== null ? (
+                                {selection !== null && currency !== null ? (
                                     <Agreement>
                                         {t('agreement_first_part')}
                                         <a href={StripeServiceAgreementUrl}>{t('services_agreement')}</a>
@@ -260,7 +297,7 @@ export const StripeSetupCreateConnectAccountManager: React.FC<StripeSetupCreateC
                             </div>
                         </Container>
                         <FullButtonCta
-                            show={selection !== null && !!stripe?.stripe}
+                            show={selection !== null && currency !== null && !!stripe?.stripe}
                             ctaLabel={called ? t('creating_account') : t('create_account')}
                             onClick={createAccountToken}
                             loading={called}

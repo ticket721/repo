@@ -118,6 +118,12 @@ export const routes: RouteDatum[] = [
         flag: 'stripe_interface_setup'
     },
     {
+        path: '/stripe/withdraw',
+        page: lazy(() => import('./routes/StripeWithdraw')),
+        protected: true,
+        flag: 'stripe_interface_setup'
+    },
+    {
         path: '/_/redirect/close',
         page: lazy(() => import('./routes/CloseRedirect')),
     },

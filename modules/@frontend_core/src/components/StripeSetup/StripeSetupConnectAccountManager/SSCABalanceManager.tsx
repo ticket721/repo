@@ -1,9 +1,9 @@
-import styled from 'styled-components';
+import styled                  from 'styled-components';
 import { Button, SelectInput } from '@frontend/flib-react/lib/components';
-import { useTranslation } from 'react-i18next';
-import React, { useState } from 'react';
-// tslint:disable-next-line
-const getSymbolFromCurrency = require('currency-symbol-map');
+import { useTranslation }      from 'react-i18next';
+import React, { useState }     from 'react';
+import { useHistory }          from 'react-router';
+import { symbolOf }            from '@common/global';
 
 export interface BalanceCurrencyInfo {
     amount: number;
@@ -93,24 +93,25 @@ const getCurrency = (currency: string, balances: BalanceCurrencyInfo[]): Balance
 };
 
 const formatAmount = (locale: string, currency: string, amount: number): string => {
-    return new Intl.NumberFormat(locale, { style: 'currency', currency }).format(amount / 100);
+    return (amount / 100).toLocaleString();
 };
 
 export const SSCABalanceManager: React.FC<SSCABalanceManagerProps> = (props: SSCABalanceManagerProps): JSX.Element => {
     const [currency, setCurrency] = useState(recoverHighestBalance(props.currencies));
     const [, i18n] = useTranslation('language');
+    const history = useHistory();
 
     const currenciesOptions = props.currencies.length
         ? props.currencies.map((curr: BalanceCurrencyInfo) => ({
-              label: `${getSymbolFromCurrency(curr.currency)} ${curr.currency.toUpperCase()}`,
-              value: curr.currency,
-          }))
+            label: `${symbolOf(curr.currency)} ${curr.currency.toUpperCase()}`,
+            value: curr.currency,
+        }))
         : [
-              {
-                  label: `${getSymbolFromCurrency('eur')} EUR`,
-                  value: 'eur',
-              },
-          ];
+            {
+                label: `${symbolOf('eur')} EUR`,
+                value: 'eur',
+            },
+        ];
 
     const selectedIdx = currenciesOptions.findIndex((opt: any) => opt.value === currency);
 
@@ -120,10 +121,10 @@ export const SSCABalanceManager: React.FC<SSCABalanceManagerProps> = (props: SSC
             <BalanceTextContainer>
                 <AccountNameText>{props.name}</AccountNameText>
                 <BalanceAvailableText>
-                    {formatAmount(i18n.language, currency, getCurrency(currency, props.currencies).amount)}
+                    {formatAmount(i18n.language, currency, getCurrency(currency, props.currencies).amount)}{' '}{symbolOf(currency)}
                 </BalanceAvailableText>
                 <BalancePendingText visible={true}>
-                    {formatAmount(i18n.language, currency, getCurrency(currency, props.currencies).pending)} pending
+                    {formatAmount(i18n.language, currency, getCurrency(currency, props.currencies).pending)}{' '}{symbolOf(currency)} pending
                 </BalancePendingText>
             </BalanceTextContainer>
             <BalanceButtonsContainer>
@@ -133,7 +134,9 @@ export const SSCABalanceManager: React.FC<SSCABalanceManagerProps> = (props: SSC
                     searchable={false}
                     onChange={(curr: any) => setCurrency(curr.value)}
                 />
-                <BalanceButton title={'Withdraw'} variant={'disabled'} />
+                <BalanceButton title={'Withdraw'} variant={'primary'}
+                               onClick={() => history.push('/stripe/withdraw')}
+                />
             </BalanceButtonsContainer>
         </>
     );
