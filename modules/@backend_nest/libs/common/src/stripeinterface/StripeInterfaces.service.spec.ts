@@ -2895,4 +2895,339 @@ describe('StripeInterfaces Service', function() {
             verify(spiedService.updateAccountInfos(deepEqual(stripeInterface), true)).times(1);
         });
     });
+
+    describe('payout', function() {
+        it('should properly trigger a payout', async function() {
+            const now = new Date(Date.now());
+
+            const stripeInterface: StripeInterfaceEntity = {
+                id: 'stripe_interface_id',
+                connect_account: 'connect_account_id',
+                connect_account_updated_at: new Date(now.getTime() - 6 * SECOND),
+            } as StripeInterfaceEntity;
+
+            const amount = 123;
+
+            const destination = 'bk_lksjhdljsakhdlakjsd';
+
+            const currency = 'eur';
+
+            const payoutsMock = mock(Stripe.PayoutsResource);
+
+            const payout: Stripe.Payout = {
+                id: 'po_akjshdkajshd',
+                object: 'payout',
+                amount: 123,
+                arrival_date: 1234,
+                automatic: false,
+                balance_transaction: 'btx',
+                created: 1234,
+                currency: 'eur',
+                description: 'payout',
+                destination: 'bk_apapapapapa',
+                failure_balance_transaction: 'fbt',
+                failure_code: 'fc',
+                failure_message: 'fc',
+                livemode: false,
+                metadata: {},
+                method: 'meth',
+                source_type: 'st',
+                statement_descriptor: 'stde',
+                status: 'status',
+                type: 'bank_account',
+            };
+
+            when(context.stripeMock.payouts).thenReturn(instance(payoutsMock));
+
+            when(
+                payoutsMock.create(
+                    deepEqual({
+                        amount,
+                        destination,
+                        currency,
+                    }),
+                    deepEqual({
+                        stripeAccount: 'connect_account_id',
+                    }),
+                ),
+            ).thenResolve(payout);
+
+            const res = await context.stripeInterfacesService.payout(stripeInterface, amount, destination, currency);
+
+            expect(res.response).toEqual(payout);
+            expect(res.error).toEqual(null);
+
+            verify(context.stripeMock.payouts).times(1);
+
+            verify(
+                payoutsMock.create(
+                    deepEqual({
+                        amount,
+                        destination,
+                        currency,
+                    }),
+                    deepEqual({
+                        stripeAccount: 'connect_account_id',
+                    }),
+                ),
+            ).times(1);
+        });
+
+        it('should fail on invalid interface', async function() {
+            const stripeInterface: StripeInterfaceEntity = {
+                id: 'stripe_interface_id',
+                connect_account: null,
+            } as StripeInterfaceEntity;
+
+            const amount = 123;
+
+            const destination = 'bk_lksjhdljsakhdlakjsd';
+
+            const currency = 'eur';
+
+            const res = await context.stripeInterfacesService.payout(stripeInterface, amount, destination, currency);
+
+            expect(res.response).toEqual(null);
+            expect(res.error).toEqual('connect_account_not_created');
+        });
+
+        it('should fail on payout error', async function() {
+            const now = new Date(Date.now());
+
+            const stripeInterface: StripeInterfaceEntity = {
+                id: 'stripe_interface_id',
+                connect_account: 'connect_account_id',
+                connect_account_updated_at: new Date(now.getTime() - 6 * SECOND),
+            } as StripeInterfaceEntity;
+
+            const amount = 123;
+
+            const destination = 'bk_lksjhdljsakhdlakjsd';
+
+            const currency = 'eur';
+
+            const payoutsMock = mock(Stripe.PayoutsResource);
+
+            when(context.stripeMock.payouts).thenReturn(instance(payoutsMock));
+
+            when(
+                payoutsMock.create(
+                    deepEqual({
+                        amount,
+                        destination,
+                        currency,
+                    }),
+                    deepEqual({
+                        stripeAccount: 'connect_account_id',
+                    }),
+                ),
+            ).thenReject(new Error('Cannot create payout'));
+
+            const res = await context.stripeInterfacesService.payout(stripeInterface, amount, destination, currency);
+
+            expect(res.response).toEqual(null);
+            expect(res.error).toEqual('Error: Cannot create payout');
+
+            verify(context.stripeMock.payouts).times(1);
+
+            verify(
+                payoutsMock.create(
+                    deepEqual({
+                        amount,
+                        destination,
+                        currency,
+                    }),
+                    deepEqual({
+                        stripeAccount: 'connect_account_id',
+                    }),
+                ),
+            ).times(1);
+        });
+    });
+
+    describe('transactions', function() {
+        it('should properly retrieve transactions', async function() {
+            const limit = 10;
+
+            const starting_after = 'tx_akjsdh';
+
+            const now = new Date(Date.now());
+
+            const stripeInterface: StripeInterfaceEntity = {
+                id: 'stripe_interface_id',
+                connect_account: 'connect_account_id',
+                connect_account_updated_at: new Date(now.getTime() - 6 * SECOND),
+            } as StripeInterfaceEntity;
+
+            const balanceTransactionMock = mock(Stripe.BalanceTransactionsResource);
+
+            const transactions: Stripe.ApiList<Stripe.BalanceTransaction> = {
+                data: [
+                    {
+                        id: 'btx_aljsdlakjsdlk',
+                        object: 'balance_transaction',
+                    } as Stripe.BalanceTransaction,
+                ],
+                has_more: false,
+                url: 'url',
+                object: 'list',
+            };
+
+            when(context.stripeMock.balanceTransactions).thenReturn(instance(balanceTransactionMock));
+
+            when(
+                balanceTransactionMock.list(
+                    deepEqual({
+                        limit,
+                        starting_after,
+                    }),
+                    deepEqual({
+                        stripeAccount: stripeInterface.connect_account,
+                    }),
+                ),
+            ).thenResolve(transactions);
+
+            const res = await context.stripeInterfacesService.transactions(stripeInterface, limit, starting_after);
+
+            expect(res.response).toEqual(transactions);
+            expect(res.error).toEqual(null);
+
+            verify(context.stripeMock.balanceTransactions).times(1);
+
+            verify(
+                balanceTransactionMock.list(
+                    deepEqual({
+                        limit,
+                        starting_after,
+                    }),
+                    deepEqual({
+                        stripeAccount: stripeInterface.connect_account,
+                    }),
+                ),
+            ).times(1);
+        });
+
+        it('should properly retrieve transactions without starting parameter', async function() {
+            const limit = 10;
+
+            const starting_after = null;
+
+            const now = new Date(Date.now());
+
+            const stripeInterface: StripeInterfaceEntity = {
+                id: 'stripe_interface_id',
+                connect_account: 'connect_account_id',
+                connect_account_updated_at: new Date(now.getTime() - 6 * SECOND),
+            } as StripeInterfaceEntity;
+
+            const balanceTransactionMock = mock(Stripe.BalanceTransactionsResource);
+
+            const transactions: Stripe.ApiList<Stripe.BalanceTransaction> = {
+                data: [
+                    {
+                        id: 'btx_aljsdlakjsdlk',
+                        object: 'balance_transaction',
+                    } as Stripe.BalanceTransaction,
+                ],
+                has_more: false,
+                url: 'url',
+                object: 'list',
+            };
+
+            when(context.stripeMock.balanceTransactions).thenReturn(instance(balanceTransactionMock));
+
+            when(
+                balanceTransactionMock.list(
+                    deepEqual({
+                        limit,
+                    }),
+                    deepEqual({
+                        stripeAccount: stripeInterface.connect_account,
+                    }),
+                ),
+            ).thenResolve(transactions);
+
+            const res = await context.stripeInterfacesService.transactions(stripeInterface, limit, starting_after);
+
+            expect(res.response).toEqual(transactions);
+            expect(res.error).toEqual(null);
+
+            verify(context.stripeMock.balanceTransactions).times(1);
+
+            verify(
+                balanceTransactionMock.list(
+                    deepEqual({
+                        limit,
+                    }),
+                    deepEqual({
+                        stripeAccount: stripeInterface.connect_account,
+                    }),
+                ),
+            ).times(1);
+        });
+
+        it('should fail on invalid stripe interface', async function() {
+            const limit = 10;
+
+            const starting_after = 'tx_akjsdh';
+
+            const stripeInterface: StripeInterfaceEntity = {
+                id: 'stripe_interface_id',
+            } as StripeInterfaceEntity;
+
+            const res = await context.stripeInterfacesService.transactions(stripeInterface, limit, starting_after);
+
+            expect(res.response).toEqual(null);
+            expect(res.error).toEqual('connect_account_not_created');
+        });
+
+        it('should fail on transaction fetch error', async function() {
+            const limit = 10;
+
+            const starting_after = 'tx_akjsdh';
+
+            const now = new Date(Date.now());
+
+            const stripeInterface: StripeInterfaceEntity = {
+                id: 'stripe_interface_id',
+                connect_account: 'connect_account_id',
+                connect_account_updated_at: new Date(now.getTime() - 6 * SECOND),
+            } as StripeInterfaceEntity;
+
+            const balanceTransactionMock = mock(Stripe.BalanceTransactionsResource);
+
+            when(context.stripeMock.balanceTransactions).thenReturn(instance(balanceTransactionMock));
+
+            when(
+                balanceTransactionMock.list(
+                    deepEqual({
+                        limit,
+                        starting_after,
+                    }),
+                    deepEqual({
+                        stripeAccount: stripeInterface.connect_account,
+                    }),
+                ),
+            ).thenReject(new Error('Cannot fetch transactions'));
+
+            const res = await context.stripeInterfacesService.transactions(stripeInterface, limit, starting_after);
+
+            expect(res.response).toEqual(null);
+            expect(res.error).toEqual('Error: Cannot fetch transactions');
+
+            verify(context.stripeMock.balanceTransactions).times(1);
+
+            verify(
+                balanceTransactionMock.list(
+                    deepEqual({
+                        limit,
+                        starting_after,
+                    }),
+                    deepEqual({
+                        stripeAccount: stripeInterface.connect_account,
+                    }),
+                ),
+            ).times(1);
+        });
+    });
 });

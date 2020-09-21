@@ -1,4 +1,4 @@
-import { IsNumber, IsOptional, IsString }   from 'class-validator';
+import { IsNumber, IsOptional, IsString } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 /**
@@ -18,6 +18,6 @@ export class PaymentStripeTransactionsInputDto {
     @ApiPropertyOptional()
     @IsString()
     @IsOptional()
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     starting_after?: string;
 }

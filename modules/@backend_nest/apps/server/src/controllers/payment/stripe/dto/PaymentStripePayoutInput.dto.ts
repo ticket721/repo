@@ -1,5 +1,5 @@
 import { IsNumber, IsString } from 'class-validator';
-import { ApiProperty }        from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 
 /**
  * Data model requirement when triggering a payout

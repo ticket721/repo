@@ -13,6 +13,7 @@ import { fromES } from '@lib/common/utils/fromES.helper';
 import Stripe from 'stripe';
 import { SECOND } from '@lib/common/utils/time';
 import { TimeToolService } from '../toolbox/Time.tool.service';
+import { NestError } from '@lib/common/utils/NestError';
 
 /**
  * Service to CRUD StripeInterfaceEntities
@@ -28,9 +29,9 @@ export class StripeInterfacesService extends CRUDExtension<StripeInterfacesRepos
      */
     constructor(
         @InjectRepository(StripeInterfacesRepository)
-            stripeInterfacesRepository: StripeInterfacesRepository,
+        stripeInterfacesRepository: StripeInterfacesRepository,
         @InjectModel(StripeInterfaceEntity)
-            stripeInterfaceEntity: BaseModel<StripeInterfaceEntity>,
+        stripeInterfaceEntity: BaseModel<StripeInterfaceEntity>,
         private readonly stripeService: StripeService,
         private readonly timeToolService: TimeToolService,
     ) {
@@ -171,7 +172,11 @@ export class StripeInterfacesService extends CRUDExtension<StripeInterfacesRepos
      * @param accountToken
      * @param currency
      */
-    async createAccount(user: UserDto, accountToken: string, currency: string): Promise<ServiceResponse<Stripe.Account>> {
+    async createAccount(
+        user: UserDto,
+        accountToken: string,
+        currency: string,
+    ): Promise<ServiceResponse<Stripe.Account>> {
         const stripe = this.stripeService.get();
 
         let tokenInfo: Stripe.Token;
@@ -647,13 +652,20 @@ export class StripeInterfacesService extends CRUDExtension<StripeInterfacesRepos
         }
     }
 
+    /**
+     * Generates a payout to an external account
+     *
+     * @param stripeInterface
+     * @param amount
+     * @param destination
+     * @param currency
+     */
     async payout(
         stripeInterface: StripeInterfaceEntity,
         amount: number,
         destination: string,
-        currency: string
+        currency: string,
     ): Promise<ServiceResponse<Stripe.Payout>> {
-
         if (!stripeInterface.connect_account) {
             return {
                 error: 'connect_account_not_created',
@@ -664,33 +676,40 @@ export class StripeInterfacesService extends CRUDExtension<StripeInterfacesRepos
         const stripe = this.stripeService.get();
 
         try {
-            const payout = await stripe.payouts.create({
-                amount,
-                destination,
-                currency
-            }, {
-                stripeAccount: stripeInterface.connect_account
-            })
+            const payout = await stripe.payouts.create(
+                {
+                    amount,
+                    destination,
+                    currency,
+                },
+                {
+                    stripeAccount: stripeInterface.connect_account,
+                },
+            );
             return {
                 error: null,
-                response: payout
-            }
+                response: payout,
+            };
         } catch (e) {
-            console.error(e);
             return {
-                error: e.message,
-                response: null
-            }
+                error: new NestError(e).message,
+                response: null,
+            };
         }
-
     }
 
+    /**
+     * Method to retrieve transaction list
+     *
+     * @param stripeInterface
+     * @param limit
+     * @param startingAfter
+     */
     async transactions(
         stripeInterface: StripeInterfaceEntity,
         limit: number,
-        startingAfter: string
+        startingAfter: string,
     ): Promise<ServiceResponse<Stripe.ApiList<Stripe.BalanceTransaction>>> {
-
         if (!stripeInterface.connect_account) {
             return {
                 error: 'connect_account_not_created',
@@ -701,28 +720,26 @@ export class StripeInterfacesService extends CRUDExtension<StripeInterfacesRepos
         const stripe = this.stripeService.get();
 
         try {
-
             const params: Stripe.BalanceTransactionListParams = {
-                limit
+                limit,
             };
 
             if (startingAfter !== null) {
-                params.starting_after = startingAfter
+                params.starting_after = startingAfter;
             }
 
             const balanceTransactions = await stripe.balanceTransactions.list(params, {
-                stripeAccount: stripeInterface.connect_account
-            })
+                stripeAccount: stripeInterface.connect_account,
+            });
             return {
                 error: null,
-                response: balanceTransactions
-            }
+                response: balanceTransactions,
+            };
         } catch (e) {
-            console.error(e);
             return {
-                error: e.message,
-                response: null
-            }
+                error: new NestError(e).message,
+                response: null,
+            };
         }
     }
 }
