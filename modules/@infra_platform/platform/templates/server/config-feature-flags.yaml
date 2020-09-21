@@ -11,5 +11,8 @@ data:
     {
       "admin_flag": {
         "active": false
+      },
+      "stripe_interface_setup": {
+        "active": false
       }
     }

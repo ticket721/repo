@@ -31,7 +31,8 @@ import CartPage from './routes/Cart';
 import ValidateRoutePage from './routes/ValidateRoute';
 import StripeSetupPage from './routes/StripeSetup';
 import StripeCreateBankAccountPage from './routes/StripeCreateBankAccount';
-import StripeWithdrawPage from './routes/StripeWithdraw';
+import StripeWithdrawPage        from './routes/StripeWithdraw';
+import StripeTransactionsPage        from './routes/StripeTransactions';
 import { useKeyboardVisibility } from '@frontend/core/lib/utils/useKeyboardVisibility';
 import { UserContextGuard } from '@frontend/core/lib/utils/UserContext';
 import DeepLinksListener from './components/DeepLinksListener';
@@ -115,6 +116,15 @@ const MobileApp: React.FC = () => {
                                 exact={true}
                             >
                                 <StripeWithdrawPage />
+                            </ProtectedRoute>
+                        ) : null}
+
+                        {flags.stripe_interface_setup ? (
+                            <ProtectedRoute
+                                path={'/stripe/transactions'}
+                                exact={true}
+                            >
+                                <StripeTransactionsPage />
                             </ProtectedRoute>
                         ) : null}
 

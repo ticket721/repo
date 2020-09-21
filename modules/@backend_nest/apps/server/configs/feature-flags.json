@@ -3,9 +3,6 @@
         "active": false
     },
     "stripe_interface_setup": {
-        "active": false,
-        "whitelist": [
-            "f5c84e66-3940-434f-8597-c031c39545eb"
-        ]
+        "active": false
     }
 }

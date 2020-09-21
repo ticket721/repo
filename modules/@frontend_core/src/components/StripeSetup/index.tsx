@@ -4,6 +4,8 @@ import { FullPageLoading }                from '@frontend/flib-react/lib/compone
 import { StripeSetupManager }             from './StripeSetupManager';
 import { StripeCreateBankAccountManager } from './StripeCreateBankAccountManager';
 import { StripeWithdrawManager }          from './StripeWithdrawManager';
+import { StripeTransactionsManager }      from './StripeTransactionsManager';
+import { useScrollReset }                 from '../../hooks/useScrollReset';
 
 export const StripeContext = React.createContext({
     marginTop: 0,
@@ -22,7 +24,7 @@ export const StripeSetup = (marginTop: number = 0): React.FC => {
             return (
                 <>
                     <StripeContext.Provider value={options}>
-                        <StripeSetupManager user={user} />
+                        <StripeSetupManager user={user}/>
                     </StripeContext.Provider>
                 </>
             );
@@ -30,7 +32,7 @@ export const StripeSetup = (marginTop: number = 0): React.FC => {
             return (
                 <>
                     <StripeContext.Provider value={options}>
-                        <FullPageLoading />
+                        <FullPageLoading/>
                     </StripeContext.Provider>
                 </>
             );
@@ -39,21 +41,34 @@ export const StripeSetup = (marginTop: number = 0): React.FC => {
 };
 
 export const StripeCreateBankAccount = (): JSX.Element => {
+    useScrollReset();
     const user = useContext(UserContext);
 
     if (user) {
-        return <StripeCreateBankAccountManager user={user} />;
+        return <StripeCreateBankAccountManager user={user}/>;
     } else {
-        return <FullPageLoading />;
+        return <FullPageLoading/>;
     }
 };
 
 export const StripeWithdraw = (): JSX.Element => {
+    useScrollReset();
     const user = useContext(UserContext);
 
     if (user) {
-        return <StripeWithdrawManager user={user} />;
+        return <StripeWithdrawManager user={user}/>;
     } else {
-        return <FullPageLoading />;
+        return <FullPageLoading/>;
     }
-}
+};
+
+export const StripeTransactions = (): JSX.Element => {
+    useScrollReset();
+    const user = useContext(UserContext);
+
+    if (user) {
+        return <StripeTransactionsManager/>;
+    } else {
+        return <FullPageLoading/>;
+    }
+};

@@ -124,6 +124,12 @@ export const routes: RouteDatum[] = [
         flag: 'stripe_interface_setup'
     },
     {
+        path: '/stripe/transactions',
+        page: lazy(() => import('./routes/StripeTransactions')),
+        protected: true,
+        flag: 'stripe_interface_setup'
+    },
+    {
         path: '/_/redirect/close',
         page: lazy(() => import('./routes/CloseRedirect')),
     },
