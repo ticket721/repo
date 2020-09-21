@@ -1,13 +1,13 @@
 import React from 'react';
 import { Error, FullPageLoading } from '@frontend/flib-react/lib/components';
 import { PasswordlessUserDto } from '@common/sdk/lib/@backend_nest/apps/server/src/authentication/dto/PasswordlessUser.dto';
-import { StripeInterfaceEntity }                   from '@common/sdk/lib/@backend_nest/libs/common/src/stripeinterface/entities/StripeInterface.entity';
-import { StripeSetupCreateConnectAccountManager }  from './StripeSetupCreateConnectAccountManager';
+import { StripeInterfaceEntity } from '@common/sdk/lib/@backend_nest/libs/common/src/stripeinterface/entities/StripeInterface.entity';
+import { StripeSetupCreateConnectAccountManager } from './StripeSetupCreateConnectAccountManager';
 import { StripeSetupCreateExternalAccountManager } from './StripeSetupCreateExternalAccountManager';
-import { StripeSetupConnectAccountManager }        from './StripeSetupConnectAccountManager';
+import { StripeSetupConnectAccountManager } from './StripeSetupConnectAccountManager';
 import { StripeSetupCreateStripeInterfaceManager } from './StripeSetupCreateStripeInterfaceManager';
-import { useStripeInterface }                      from '../../hooks/useStripeInterface';
-import { useStripeBalance }                        from '../../hooks/useStripeBalance';
+import { useStripeInterface } from '../../hooks/useStripeInterface';
+import { useStripeBalance } from '../../hooks/useStripeBalance';
 
 const isConnectAccountCreated = (stripeInterface: StripeInterfaceEntity): boolean => {
     return !!stripeInterface.connect_account;
@@ -22,7 +22,6 @@ export interface StripeSetupManagerProps {
 }
 
 export const StripeSetupManager = (props: StripeSetupManagerProps): JSX.Element => {
-
     const stripeInterfaceReq = useStripeInterface();
     const stripeBalanceReq = useStripeBalance();
 

@@ -1,26 +1,26 @@
 import { PasswordlessUserDto } from '@common/sdk/lib/@backend_nest/apps/server/src/authentication/dto/PasswordlessUser.dto';
 import { StripeInterfaceEntity } from '@common/sdk/lib/@backend_nest/libs/common/src/stripeinterface/entities/StripeInterface.entity';
-import styled, { useTheme }                 from 'styled-components';
+import styled, { useTheme } from 'styled-components';
 import { FullButtonCta, Icon, SelectInput } from '@frontend/flib-react/lib/components';
-import axios, { Method }                    from 'axios';
+import axios, { Method } from 'axios';
 import { getEnv } from '../../utils/getEnv';
 import qs from 'qs';
 import { StripeSDK, useCustomStripe } from '../../utils/useCustomStripe';
 import { Dispatch } from 'redux';
 import { PushNotification } from '../../redux/ducks/notifications';
 import React, { useState } from 'react';
-import { Theme }                    from '@frontend/flib-react/lib/config/theme';
+import { Theme } from '@frontend/flib-react/lib/config/theme';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState }                 from '../../redux';
-import { v4 }                       from 'uuid';
-import { useLazyRequest }           from '../../hooks/useLazyRequest';
-import { useDeepEffect }            from '../../hooks/useDeepEffect';
-import { useTranslation }           from 'react-i18next';
+import { AppState } from '../../redux';
+import { v4 } from 'uuid';
+import { useLazyRequest } from '../../hooks/useLazyRequest';
+import { useDeepEffect } from '../../hooks/useDeepEffect';
+import { useTranslation } from 'react-i18next';
 import './StripeSetupCreateConnectAccountManager.locales';
-import { CtaMargin }                from '../../utils/CtaMargin';
-import { TopNavMargin }             from '../../utils/TopNavMargin';
+import { CtaMargin } from '../../utils/CtaMargin';
+import { TopNavMargin } from '../../utils/TopNavMargin';
 import { InvisibleStatusBarMargin } from '../../utils/InvisibleStatusBarMargin';
-import { currencies, symbolOf }     from '@common/global';
+import { currencies, symbolOf } from '@common/global';
 
 const StripeServiceAgreementUrl = 'https://stripe.com/legal';
 const StripeConnectedAccountAgreementUrl = 'https://stripe.com/connect-account/legal';
@@ -46,18 +46,18 @@ const ListContainer = styled.section`
 `;
 
 const SubTitleContainer = styled.div`
-  text-align: start;
-  margin-top: ${props => props.theme.regularSpacing};
-  padding: ${props => props.theme.regularSpacing};
-  width: 100%;
+    text-align: start;
+    margin-top: ${(props) => props.theme.regularSpacing};
+    padding: ${(props) => props.theme.regularSpacing};
+    width: 100%;
 `;
 
 const SubTitle = styled.span`
-  margin: 0;
-  text-transform: uppercase;
-  font-size: 14px;
-  font-weight: 500;
-  opacity: 0.6;
+    margin: 0;
+    text-transform: uppercase;
+    font-size: 14px;
+    font-weight: 500;
+    opacity: 0.6;
 `;
 
 const CheckIcon = styled(Icon)`
@@ -166,18 +166,18 @@ const generateAccountToken = async (stripe: StripeSDK, selection: string, dispat
 };
 
 const CurrencySelectInput = styled(SelectInput)`
-  width: 100%;
-`
+    width: 100%;
+`;
 
 const CurrencySelectInputContainer = styled.div`
-  width: 100%;
-  padding-left: ${props => props.theme.regularSpacing};
-  padding-right: ${props => props.theme.regularSpacing};
+    width: 100%;
+    padding-left: ${(props) => props.theme.regularSpacing};
+    padding-right: ${(props) => props.theme.regularSpacing};
 `;
 
 const currenciesSelectOptions = currencies.map((curr: any) => ({
     label: `${curr.description} (${symbolOf(curr.code)})`,
-    value: curr.code.toLowerCase()
+    value: curr.code.toLowerCase(),
 }));
 
 export const StripeSetupCreateConnectAccountManager: React.FC<StripeSetupCreateConnectAccountManagerProps> = CtaMargin(

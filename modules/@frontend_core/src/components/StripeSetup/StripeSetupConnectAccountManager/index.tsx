@@ -1,15 +1,15 @@
-import { PasswordlessUserDto }                     from '@common/sdk/lib/@backend_nest/apps/server/src/authentication/dto/PasswordlessUser.dto';
-import { StripeInterfaceEntity }                   from '@common/sdk/lib/@backend_nest/libs/common/src/stripeinterface/entities/StripeInterface.entity';
-import React, { useContext }                       from 'react';
-import styled                                      from 'styled-components';
-import { Icon }                                    from '@frontend/flib-react/lib/components';
+import { PasswordlessUserDto } from '@common/sdk/lib/@backend_nest/apps/server/src/authentication/dto/PasswordlessUser.dto';
+import { StripeInterfaceEntity } from '@common/sdk/lib/@backend_nest/libs/common/src/stripeinterface/entities/StripeInterface.entity';
+import React, { useContext } from 'react';
+import styled from 'styled-components';
+import { Icon } from '@frontend/flib-react/lib/components';
 import { SSCABalanceManager, BalanceCurrencyInfo } from './SSCABalanceManager';
-import { SSCARequirementsManager }                 from './SSCARequirementsManager';
-import { SSCACapabilitiesManager }                 from './SSCACapabilitiesManager';
-import { isAccountReady }                          from './isAccountReady';
-import { SSCAExternalAccountListManager }          from './SSCAExternalAccountListManager';
-import { StripeContext }                           from '../index';
-import { SSCATransactionListListManager }          from './SSCATransactionListManager';
+import { SSCARequirementsManager } from './SSCARequirementsManager';
+import { SSCACapabilitiesManager } from './SSCACapabilitiesManager';
+import { isAccountReady } from './isAccountReady';
+import { SSCAExternalAccountListManager } from './SSCAExternalAccountListManager';
+import { StripeContext } from '../index';
+import { SSCATransactionListListManager } from './SSCATransactionListManager';
 
 const BalanceContainerPlaceholder = styled.div`
     height: calc(250px + env(safe-area-inset-top));
@@ -154,7 +154,7 @@ export const StripeSetupConnectAccountManager: React.FC<StripeSetupConnectAccoun
                         external_accounts={props.stripeInterface.connect_account_external_accounts}
                         forceRefresh={props.forceFetchInterface}
                     />
-                    <SSCATransactionListListManager/>
+                    <SSCATransactionListListManager />
                 </VeilContainer>
             </MenuContainer>
         </GlobalContainer>

@@ -1,11 +1,11 @@
-import React, { useContext, useState }    from 'react';
-import { UserContext }                    from '../../utils/UserContext';
-import { FullPageLoading }                from '@frontend/flib-react/lib/components';
-import { StripeSetupManager }             from './StripeSetupManager';
+import React, { useContext, useState } from 'react';
+import { UserContext } from '../../utils/UserContext';
+import { FullPageLoading } from '@frontend/flib-react/lib/components';
+import { StripeSetupManager } from './StripeSetupManager';
 import { StripeCreateBankAccountManager } from './StripeCreateBankAccountManager';
-import { StripeWithdrawManager }          from './StripeWithdrawManager';
-import { StripeTransactionsManager }      from './StripeTransactionsManager';
-import { useScrollReset }                 from '../../hooks/useScrollReset';
+import { StripeWithdrawManager } from './StripeWithdrawManager';
+import { StripeTransactionsManager } from './StripeTransactionsManager';
+import { useScrollReset } from '../../hooks/useScrollReset';
 
 export const StripeContext = React.createContext({
     marginTop: 0,
@@ -24,7 +24,7 @@ export const StripeSetup = (marginTop: number = 0): React.FC => {
             return (
                 <>
                     <StripeContext.Provider value={options}>
-                        <StripeSetupManager user={user}/>
+                        <StripeSetupManager user={user} />
                     </StripeContext.Provider>
                 </>
             );
@@ -32,7 +32,7 @@ export const StripeSetup = (marginTop: number = 0): React.FC => {
             return (
                 <>
                     <StripeContext.Provider value={options}>
-                        <FullPageLoading/>
+                        <FullPageLoading />
                     </StripeContext.Provider>
                 </>
             );
@@ -45,9 +45,9 @@ export const StripeCreateBankAccount = (): JSX.Element => {
     const user = useContext(UserContext);
 
     if (user) {
-        return <StripeCreateBankAccountManager user={user}/>;
+        return <StripeCreateBankAccountManager user={user} />;
     } else {
-        return <FullPageLoading/>;
+        return <FullPageLoading />;
     }
 };
 
@@ -56,9 +56,9 @@ export const StripeWithdraw = (): JSX.Element => {
     const user = useContext(UserContext);
 
     if (user) {
-        return <StripeWithdrawManager user={user}/>;
+        return <StripeWithdrawManager />;
     } else {
-        return <FullPageLoading/>;
+        return <FullPageLoading />;
     }
 };
 
@@ -67,8 +67,8 @@ export const StripeTransactions = (): JSX.Element => {
     const user = useContext(UserContext);
 
     if (user) {
-        return <StripeTransactionsManager/>;
+        return <StripeTransactionsManager />;
     } else {
-        return <FullPageLoading/>;
+        return <FullPageLoading />;
     }
 };

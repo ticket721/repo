@@ -1,9 +1,9 @@
-import styled                  from 'styled-components';
+import styled from 'styled-components';
 import { Button, SelectInput } from '@frontend/flib-react/lib/components';
-import { useTranslation }      from 'react-i18next';
-import React, { useState }     from 'react';
-import { useHistory }          from 'react-router';
-import { symbolOf }            from '@common/global';
+import { useTranslation } from 'react-i18next';
+import React, { useState } from 'react';
+import { useHistory } from 'react-router';
+import { symbolOf } from '@common/global';
 
 export interface BalanceCurrencyInfo {
     amount: number;
@@ -103,15 +103,15 @@ export const SSCABalanceManager: React.FC<SSCABalanceManagerProps> = (props: SSC
 
     const currenciesOptions = props.currencies.length
         ? props.currencies.map((curr: BalanceCurrencyInfo) => ({
-            label: `${symbolOf(curr.currency)} ${curr.currency.toUpperCase()}`,
-            value: curr.currency,
-        }))
+              label: `${symbolOf(curr.currency)} ${curr.currency.toUpperCase()}`,
+              value: curr.currency,
+          }))
         : [
-            {
-                label: `${symbolOf('eur')} EUR`,
-                value: 'eur',
-            },
-        ];
+              {
+                  label: `${symbolOf('eur')} EUR`,
+                  value: 'eur',
+              },
+          ];
 
     const selectedIdx = currenciesOptions.findIndex((opt: any) => opt.value === currency);
 
@@ -121,10 +121,12 @@ export const SSCABalanceManager: React.FC<SSCABalanceManagerProps> = (props: SSC
             <BalanceTextContainer>
                 <AccountNameText>{props.name}</AccountNameText>
                 <BalanceAvailableText>
-                    {formatAmount(i18n.language, currency, getCurrency(currency, props.currencies).amount)}{' '}{symbolOf(currency)}
+                    {formatAmount(i18n.language, currency, getCurrency(currency, props.currencies).amount)}{' '}
+                    {symbolOf(currency)}
                 </BalanceAvailableText>
                 <BalancePendingText visible={true}>
-                    {formatAmount(i18n.language, currency, getCurrency(currency, props.currencies).pending)}{' '}{symbolOf(currency)} pending
+                    {formatAmount(i18n.language, currency, getCurrency(currency, props.currencies).pending)}{' '}
+                    {symbolOf(currency)} pending
                 </BalancePendingText>
             </BalanceTextContainer>
             <BalanceButtonsContainer>
@@ -134,8 +136,10 @@ export const SSCABalanceManager: React.FC<SSCABalanceManagerProps> = (props: SSC
                     searchable={false}
                     onChange={(curr: any) => setCurrency(curr.value)}
                 />
-                <BalanceButton title={'Withdraw'} variant={'primary'}
-                               onClick={() => history.push('/stripe/withdraw')}
+                <BalanceButton
+                    title={'Withdraw'}
+                    variant={'primary'}
+                    onClick={() => history.push('/stripe/withdraw')}
                 />
             </BalanceButtonsContainer>
         </>

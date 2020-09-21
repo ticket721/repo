@@ -1,5 +1,5 @@
-import * as React            from 'react';
-import styled                from '../../../config/styled';
+import * as React from 'react';
+import styled from '../../../config/styled';
 import { TicketSingleProps } from '../../ticket/single';
 
 const Container = styled.article<TicketSingleProps>`
@@ -28,40 +28,39 @@ const Container = styled.article<TicketSingleProps>`
 `;
 
 export interface SelectableComponentListElementProps extends React.ComponentProps<any> {
-  color?: string;
-  gradient?: string[];
-  selected?: boolean;
-  onSelection: () => void;
-  style?: any;
+    color?: string;
+    gradient?: string[];
+    selected?: boolean;
+    onSelection: () => void;
+    style?: any;
 }
 
-export const SelectableComponentListElement: React.FunctionComponent<SelectableComponentListElementProps> =
-  (props: SelectableComponentListElementProps): JSX.Element => {
+export const SelectableComponentListElement: React.FunctionComponent<SelectableComponentListElementProps> = (
+    props: SelectableComponentListElementProps,
+): JSX.Element => {
     return (
-      <Container
-        style={props.style}
-        selected={props.selected}
-        resale={props.resale}
-        gradient={props.gradient}
-        onClick={props.onSelection}
-      >
-        {
-          props.children
-        }
-      </Container>
+        <Container
+            style={props.style}
+            selected={props.selected}
+            resale={props.resale}
+            gradient={props.gradient}
+            onClick={props.onSelection}
+        >
+            {props.children}
+        </Container>
     );
-  };
+};
 
 export interface SelectableComponentListProps extends React.ComponentProps<any> {
-  color?: string;
-  gradient?: string[];
-  elements: any[];
-  render: (element: any, idx: number) => JSX.Element;
+    color?: string;
+    gradient?: string[];
+    elements: any[];
+    render: (element: any, idx: number) => JSX.Element;
 }
 
 export default SelectableComponentListElement;
 
 SelectableComponentListElement.defaultProps = {
-  color: '#079CF0',
-  gradient: ['#079CF0', '#2143AB'],
+    color: '#079CF0',
+    gradient: ['#079CF0', '#2143AB'],
 };
