@@ -40,17 +40,11 @@ spec:
           persistentVolumeClaim:
             claimName: {{ include "platform.fullname" . }}--server--pvc
       initContainers:
-        - name: {{ include "platform.fullname" . }}--server-migrations
-          env:
-            - name: CASSANDRA_HOSTS
-              value: "{{ .Values.config.cassandra.host }}"
-            - name: CASSANDRA_PORT
-              value: "{{ .Values.config.cassandra.port }}"
-            - name: ELASTICSEARCH_HOST
-              value: "{{ .Values.config.elasticsearch.host }}:{{ .Values.config.elasticsearch.port }}"
-            - name: CASSANDRA_KEYSPACE
-              value: ticket721
-          image: "{{ .Values.migrations.image.repository }}:{{ .Values.migrations.image.tag }}"
+        - name: {{ include "platform.fullname" . }}--server-master-wfj
+          image: "groundnuty/k8s-wait-for:v1.3"
+          args:
+            - "job"
+            - "{{ include "platform.fullname" . }}--migration-job"
           imagePullPolicy: {{ .Values.migrations.image.pullPolicy }}
       containers:
         - name: {{ template  "platform.fullname" . }}--server
