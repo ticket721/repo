@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useEffect }                 from 'react';
+import React, { Suspense, useEffect }                       from 'react';
 import { Switch, useLocation, withRouter, Redirect, Route } from 'react-router-dom';
 import { FullPageLoading }                                  from '@frontend/flib-react/lib/components';
 import ProtectedRoute                                       from '@frontend/core/lib/components/ProtectedRoute';
@@ -8,17 +8,17 @@ import { StaffNavbar }                                      from './shared/NavBa
 import { useDispatch }                                      from 'react-redux';
 import { SetupDate }                                        from './redux/ducks/current_event';
 import { UserContextGuard }                                 from '@frontend/core/lib/utils/UserContext';
-import { FeatureFlag }                                      from '@frontend/core/lib/components/FeatureFlag';
-
-const LoginPage = lazy(() => import('./routes/Login'));
-const ScanPage = lazy(() => import('./routes/Scan'));
-const GuestListPage = lazy(() => import('./routes/GuestList'));
-const StatsPage = lazy(() => import('./routes/Stats'));
-const AdminPage = lazy(() => import('./routes/Admin'));
+import LoginPage                                            from './routes/Login';
+import ScanPage                                             from './routes/Scan';
+import GuestListPage                                        from './routes/GuestList';
+import StatsPage                                            from './routes/Stats';
+import AdminPage                                            from './routes/Admin';
+import { useFlag }                                          from '@frontend/core/lib/utils/useFlag';
 
 const App: React.FC = () => {
     const dispatch = useDispatch();
     const location = useLocation();
+    const adminFlag = useFlag('admin_flag');
 
     // eslint-disable-next-line
     useEffect(() => void dispatch(SetupDate()), []);
@@ -28,6 +28,19 @@ const App: React.FC = () => {
             <AppContainer>
                 <Suspense fallback={<FullPageLoading/>}>
                     <Switch>
+
+                        {
+                            adminFlag
+
+                                ?
+                                <Route path={'/you/are/an/admin'} exact={true}>
+                                    <AdminPage/>
+                                </Route>
+
+                                :
+                                null
+                        }
+
                         <Route path={'/login'} exact={true}>
                             <LoginPage/>
                         </Route>
@@ -43,12 +56,6 @@ const App: React.FC = () => {
                         <ProtectedRoute path={'/ticket/scanner'} exact={true}>
                             <ScanPage/>
                         </ProtectedRoute>
-
-                        <FeatureFlag flag={'admin_flag'}>
-                            <Route path={'/you/are/an/admin'} exact={true}>
-                                <AdminPage/>
-                            </Route>
-                        </FeatureFlag>
 
                         <Redirect to={'/stats'}/>
                     </Switch>

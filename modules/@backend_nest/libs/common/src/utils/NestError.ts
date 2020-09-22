@@ -9,7 +9,6 @@ export class NestError extends Error {
      */
     constructor(message?: string) {
         super(message);
-
         console.warn(`[ ${new Date(Date.now()).toISOString()} | NestError ] ${message}`);
         console.warn(this.stack);
     }

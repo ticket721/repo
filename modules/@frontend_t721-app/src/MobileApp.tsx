@@ -1,43 +1,31 @@
-import React, { useEffect, useState, Suspense, useCallback } from 'react';
-import {
-    Route,
-    Switch,
-    useHistory,
-    useLocation,
-    withRouter,
-    Redirect
-} from 'react-router-dom';
-import { TopNav, FullPageLoading } from '@frontend/flib-react/lib/components';
-import ProtectedRoute from '@frontend/core/lib/components/ProtectedRoute';
-import ToastStacker from '@frontend/core/lib/components/ToastStacker';
-import styled from 'styled-components';
-import { T721Navbar } from './components/NavBar';
-import AdminRoutePage from './routes/Admin';
-import LoginPage from './routes/Login';
-import RegisterPage from './routes/Register';
-import HomePage from './routes/Home';
-import ProfileActivitiesPage from './routes/Activities';
-import ProfileLanguagePage from './routes/Language';
-import ProfilePage from './routes/Profile';
-import SearchViewAllPage from './routes/SearchViewAll';
-import EventPage from './routes/Event';
-import TicketPage from './routes/Ticket';
-import TicketSelectionPage from './routes/TicketSelection';
-import CloseRedirect from './routes/CloseRedirect';
-import SearchPage from './routes/Search';
-import TagsPage from './routes/Tags';
-import WalletPage from './routes/Wallet';
-import CartPage from './routes/Cart';
-import ValidateRoutePage from './routes/ValidateRoute';
-import StripeSetupPage from './routes/StripeSetup';
-import StripeCreateBankAccountPage from './routes/StripeCreateBankAccount';
-import StripeWithdrawPage        from './routes/StripeWithdraw';
-import StripeTransactionsPage        from './routes/StripeTransactions';
+import React, { useEffect, useState, Suspense, useCallback }            from 'react';
+import { Route, Switch, useHistory, useLocation, withRouter, Redirect } from 'react-router-dom';
+import { TopNav, FullPageLoading }                                      from '@frontend/flib-react/lib/components';
+import ProtectedRoute                                                   from '@frontend/core/lib/components/ProtectedRoute';
+import ToastStacker                                                     from '@frontend/core/lib/components/ToastStacker';
+import styled                                                           from 'styled-components';
+import { T721Navbar }                                                   from './components/NavBar';
+import AdminRoutePage                                                   from './routes/Admin';
+import LoginPage                                                        from './routes/Login';
+import RegisterPage                                                     from './routes/Register';
+import HomePage                                                         from './routes/Home';
+import ProfileActivitiesPage                                            from './routes/Activities';
+import ProfileLanguagePage                                              from './routes/Language';
+import ProfilePage                                                      from './routes/Profile';
+import SearchViewAllPage                                                from './routes/SearchViewAll';
+import EventPage                                                        from './routes/Event';
+import TicketPage                                                       from './routes/Ticket';
+import TicketSelectionPage       from './routes/TicketSelection';
+import SearchPage                from './routes/Search';
+import TagsPage                  from './routes/Tags';
+import WalletPage                from './routes/Wallet';
+import CartPage                  from './routes/Cart';
+import ValidateRoutePage         from './routes/ValidateRoute';
 import { useKeyboardVisibility } from '@frontend/core/lib/utils/useKeyboardVisibility';
-import { UserContextGuard } from '@frontend/core/lib/utils/UserContext';
-import DeepLinksListener from './components/DeepLinksListener';
-import MediaQuery from 'react-responsive';
-import { useFeatureFlag } from '@frontend/core/lib/components/FeatureFlag';
+import { UserContextGuard }      from '@frontend/core/lib/utils/UserContext';
+import DeepLinksListener         from './components/DeepLinksListener';
+import MediaQuery                from 'react-responsive';
+import { useFlag }               from '@frontend/core/lib/utils/useFlag';
 
 const TopNavWrapper = (props: { back: () => void }): JSX.Element => {
     const [scrolled, setScrolled] = useState(false);
@@ -66,6 +54,7 @@ const MobileApp: React.FC = () => {
     const location = useLocation();
     const history = useHistory();
     const keyboardIsVisible = useKeyboardVisibility();
+    const adminFlag = useFlag('admin_flag');
 
     const goBackOrHome = useCallback(() => {
         if (history.length > 2) {

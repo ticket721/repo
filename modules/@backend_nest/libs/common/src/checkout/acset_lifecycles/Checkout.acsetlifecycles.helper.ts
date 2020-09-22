@@ -34,6 +34,7 @@ export class CheckoutAcsetlifecycleHelper implements ActionSetLifecyclesBase {
     public async onComplete(actionSet: ActionSet): Promise<ServiceResponse<void>> {
         const inputData: CheckoutResolve = actionSet.actions[0].data as CheckoutResolve;
 
+        // TODO remove this to prevent transaction creation
         await this.mintingQueue.add('ticketMintingTransactionSequenceBuilderTask', {
             cartActionSetId: inputData.cartId,
             checkoutActionSetId: actionSet.id,

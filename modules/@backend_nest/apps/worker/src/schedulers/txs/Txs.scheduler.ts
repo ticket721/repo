@@ -122,14 +122,14 @@ export class TxsScheduler implements OnModuleInit, OnModuleDestroy {
                             parsed.logs = txReceipt.logs.map(
                                 (log: any): Log => ({
                                     address: toAcceptedAddressFormat(log.address),
-                                    block_hash: log.block_hash.toLowerCase(),
-                                    block_number: log.block_number,
+                                    block_hash: log.blockHash.toLowerCase(),
+                                    block_number: log.blockNumber,
                                     data: log.data.toLowerCase(),
                                     log_index: log.logIndex,
                                     removed: log.removed || false,
                                     topics: log.topics.map((topic: string): string => topic.toLowerCase()),
-                                    transaction_hash: log.transaction_hash.toLowerCase(),
-                                    transaction_index: log.transaction_index,
+                                    transaction_hash: log.transactionHash.toLowerCase(),
+                                    transaction_index: log.transactionIndex,
                                     id: log.id,
                                 }),
                             );
@@ -260,14 +260,14 @@ export class TxsScheduler implements OnModuleInit, OnModuleDestroy {
                         parsed.logs = txReceipt.logs.map(
                             (log: any): Log => ({
                                 address: toAcceptedAddressFormat(log.address),
-                                block_hash: log.block_hash.toLowerCase(),
-                                block_number: log.block_number,
+                                block_hash: log.blockHash.toLowerCase(),
+                                block_number: log.blockNumber,
                                 data: log.data.toLowerCase(),
                                 log_index: log.logIndex,
                                 removed: log.removed || false,
                                 topics: log.topics.map((topic: string): string => topic.toLowerCase()),
-                                transaction_hash: log.transaction_hash.toLowerCase(),
-                                transaction_index: log.transaction_index,
+                                transaction_hash: log.transactionHash.toLowerCase(),
+                                transaction_index: log.transactionIndex,
                                 id: log.id,
                             }),
                         );
