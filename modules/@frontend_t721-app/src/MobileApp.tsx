@@ -15,17 +15,22 @@ import ProfilePage                                                      from './
 import SearchViewAllPage                                                from './routes/SearchViewAll';
 import EventPage                                                        from './routes/Event';
 import TicketPage                                                       from './routes/Ticket';
-import TicketSelectionPage       from './routes/TicketSelection';
-import SearchPage                from './routes/Search';
-import TagsPage                  from './routes/Tags';
-import WalletPage                from './routes/Wallet';
-import CartPage                  from './routes/Cart';
-import ValidateRoutePage         from './routes/ValidateRoute';
-import { useKeyboardVisibility } from '@frontend/core/lib/utils/useKeyboardVisibility';
-import { UserContextGuard }      from '@frontend/core/lib/utils/UserContext';
-import DeepLinksListener         from './components/DeepLinksListener';
-import MediaQuery                from 'react-responsive';
-import { useFlag }               from '@frontend/core/lib/utils/useFlag';
+import TicketSelectionPage                                              from './routes/TicketSelection';
+import SearchPage                                                       from './routes/Search';
+import TagsPage                                                         from './routes/Tags';
+import WalletPage                                                       from './routes/Wallet';
+import CartPage                                                         from './routes/Cart';
+import ValidateRoutePage                                                from './routes/ValidateRoute';
+import CloseRedirectPage                                                from './routes/CloseRedirect';
+import StripeSetupPage                                                  from './routes/StripeSetup';
+import StripeTransactionsPage                                           from './routes/StripeTransactions';
+import StripeWithdrawPage                                               from './routes/StripeWithdraw';
+import StripeCreateBankAccountPage                                      from './routes/StripeCreateBankAccount';
+import { useKeyboardVisibility }                                        from '@frontend/core/lib/utils/useKeyboardVisibility';
+import { UserContextGuard }                                             from '@frontend/core/lib/utils/UserContext';
+import DeepLinksListener                                                from './components/DeepLinksListener';
+import MediaQuery                                                       from 'react-responsive';
+import { useFlag }                                                      from '@frontend/core/lib/utils/useFlag';
 
 const TopNavWrapper = (props: { back: () => void }): JSX.Element => {
     const [scrolled, setScrolled] = useState(false);
@@ -40,21 +45,20 @@ const TopNavWrapper = (props: { back: () => void }): JSX.Element => {
 
     useEffect(() => {
         window.addEventListener('scroll', setScrolledCallback, {
-            passive: true
+            passive: true,
         });
         return () => {
             window.removeEventListener('scroll', setScrolledCallback);
         };
     }, [setScrolledCallback]);
 
-    return <TopNav label={''} onPress={props.back} scrolled={scrolled} />;
+    return <TopNav label={''} onPress={props.back} scrolled={scrolled}/>;
 };
 
 const MobileApp: React.FC = () => {
     const location = useLocation();
     const history = useHistory();
     const keyboardIsVisible = useKeyboardVisibility();
-    const adminFlag = useFlag('admin_flag');
 
     const goBackOrHome = useCallback(() => {
         if (history.length > 2) {
@@ -65,38 +69,38 @@ const MobileApp: React.FC = () => {
     }, [history]);
 
     const flags = {
-        stripe_interface_setup: useFeatureFlag('stripe_interface_setup'),
-        admin_flag: useFeatureFlag('admin_flag')
+        stripe_interface_setup: useFlag('stripe_interface_setup'),
+        admin_flag: useFlag('admin_flag'),
     };
 
     return (
-        <Suspense fallback={<FullPageLoading />}>
+        <Suspense fallback={<FullPageLoading/>}>
             <UserContextGuard>
                 <AppContainer>
                     <MediaQuery maxDeviceWidth={1224}>
                         {location.pathname.lastIndexOf('/') !== 0 &&
                         location.pathname.indexOf('/_/') !== 0 ? (
-                            <TopNavWrapper back={goBackOrHome} />
+                            <TopNavWrapper back={goBackOrHome}/>
                         ) : null}
                     </MediaQuery>
                     <Switch>
 
                         {flags.stripe_interface_setup ? (
-                                <ProtectedRoute
-                                    path={'/stripe/connect'}
-                                    exact={true}
-                                >
-                                    <StripeSetupPage />
-                                </ProtectedRoute>
+                            <ProtectedRoute
+                                path={'/stripe/connect'}
+                                exact={true}
+                            >
+                                <StripeSetupPage/>
+                            </ProtectedRoute>
                         ) : null}
 
                         {flags.stripe_interface_setup ? (
-                                <ProtectedRoute
-                                    path={'/stripe/create-bank-account'}
-                                    exact={true}
-                                >
-                                    <StripeCreateBankAccountPage />
-                                </ProtectedRoute>
+                            <ProtectedRoute
+                                path={'/stripe/create-bank-account'}
+                                exact={true}
+                            >
+                                <StripeCreateBankAccountPage/>
+                            </ProtectedRoute>
                         ) : null}
 
                         {flags.stripe_interface_setup ? (
@@ -104,7 +108,7 @@ const MobileApp: React.FC = () => {
                                 path={'/stripe/withdraw'}
                                 exact={true}
                             >
-                                <StripeWithdrawPage />
+                                <StripeWithdrawPage/>
                             </ProtectedRoute>
                         ) : null}
 
@@ -113,7 +117,7 @@ const MobileApp: React.FC = () => {
                                 path={'/stripe/transactions'}
                                 exact={true}
                             >
-                                <StripeTransactionsPage />
+                                <StripeTransactionsPage/>
                             </ProtectedRoute>
                         ) : null}
 
@@ -122,78 +126,78 @@ const MobileApp: React.FC = () => {
                                 path={'/you/are/an/admin'}
                                 exact={true}
                             >
-                                <AdminRoutePage />
+                                <AdminRoutePage/>
                             </ProtectedRoute>
                         ) : null}
 
                         <Route path={'/_/redirect/close'} exact={true}>
-                            <CloseRedirect />
+                            <CloseRedirectPage/>
                         </Route>
 
                         <Route path={'/login'} exact={true}>
-                            <LoginPage />
+                            <LoginPage/>
                         </Route>
 
                         <Route path={'/register'} exact={true}>
-                            <RegisterPage />
+                            <RegisterPage/>
                         </Route>
 
                         <Route path={'/'} exact={true}>
-                            <HomePage />
+                            <HomePage/>
                         </Route>
 
                         <ProtectedRoute
                             path={'/profile/activities'}
                             exact={true}
                         >
-                            <ProfileActivitiesPage />
+                            <ProfileActivitiesPage/>
                         </ProtectedRoute>
 
                         <ProtectedRoute path={'/profile/language'} exact={true}>
-                            <ProfileLanguagePage />
+                            <ProfileLanguagePage/>
                         </ProtectedRoute>
 
                         <ProtectedRoute path={'/profile'} exact={true}>
-                            <ProfilePage />
+                            <ProfilePage/>
                         </ProtectedRoute>
 
                         <ProtectedRoute path={'/cart/checkout'} exact={true}>
-                            <CartPage />
+                            <CartPage/>
                         </ProtectedRoute>
 
                         <Route path={'/search/events/:query'} exact={true}>
-                            <SearchViewAllPage />
+                            <SearchViewAllPage/>
                         </Route>
 
                         <Route path={'/event/:id/selection'} exact={true}>
-                            <TicketSelectionPage />
+                            <TicketSelectionPage/>
                         </Route>
 
                         <Route path={'/event/:id'} exact={true}>
-                            <EventPage />
+                            <EventPage/>
                         </Route>
 
                         <Route path={'/search'} exact={true}>
-                            <SearchPage />
+                            <SearchPage/>
                         </Route>
 
                         <Route path={'/tags'} exact={true}>
-                            <TagsPage />
+                            <TagsPage/>
                         </Route>
 
                         <ProtectedRoute path={'/ticket/:id'} exact={true}>
-                            <TicketPage />
+                            <TicketPage/>
                         </ProtectedRoute>
 
                         <ProtectedRoute path={'/wallet'} exact={true}>
-                            <WalletPage />
+                            <WalletPage/>
                         </ProtectedRoute>
 
                         <Route path={'/validate-email'} exact={true}>
-                            <ValidateRoutePage />
+                            <ValidateRoutePage/>
                         </Route>
 
-                        <Redirect to={'/'} />
+                        <Redirect to={'/'}/>
                     </Switch>
                     <MediaQuery maxDeviceWidth={1224}>
                         <T721Navbar
@@ -203,10 +207,10 @@ const MobileApp: React.FC = () => {
                             }
                         />
                     </MediaQuery>
-                    <ToastStacker additionalLocales={[]} />
+                    <ToastStacker additionalLocales={[]}/>
                 </AppContainer>
             </UserContextGuard>
-            <DeepLinksListener />
+            <DeepLinksListener/>
         </Suspense>
     );
 };
