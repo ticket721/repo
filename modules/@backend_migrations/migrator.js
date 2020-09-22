@@ -63,7 +63,7 @@ const main = async () => {
         case 'down': {
 
             command = 'down';
-            tasks = config.reverse();
+            tasks = [...config].reverse();
 
             break ;
         }
@@ -71,7 +71,8 @@ const main = async () => {
 
     for (const task of tasks) {
         console.log();
-        process.stdout.write(`running [${task.type}][${task.name}][${task.timestamp}][${command}] `);
+        const idx = config.findIndex(_task => task.type === _task.type && task.name === _task.name && task.timestamp === _task.timestamp);
+        process.stdout.write(`running [${idx + 1}][${task.type}][${task.name}][${task.timestamp}][${command}] `);
         const taskRes = spawnSync('npm', ['run', `${task.type}-migrate-${command}`, task.timestamp], {
             cwd: task.type
         });

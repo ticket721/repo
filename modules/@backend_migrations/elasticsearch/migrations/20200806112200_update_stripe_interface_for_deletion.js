@@ -29,14 +29,14 @@ class M20200806112200_update_stripe_interface_for_deletion extends ElasticMigrat
             "stripe_interface": {
                 "discover": ".*",
                 "properties": {
-                    // "connect_account_business_type": {
-                    //     type: 'keyword',
-                    //     index: true
-                    // },
-                    // "connect_account_status": {
-                    //     type: 'keyword',
-                    //     index: true
-                    // }
+                    "connect_account_business_type": {
+                        type: 'keyword',
+                        index: true
+                    },
+                    "connect_account_status": {
+                        type: 'keyword',
+                        index: true
+                    }
                 }
             }
         });

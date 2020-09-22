@@ -280,6 +280,11 @@ describe('StripeInterfaces Service', function() {
                             },
                         },
                     },
+                    sort: {
+                        created_at: {
+                            order: 'asc',
+                        },
+                    },
                 },
             };
 
@@ -362,6 +367,11 @@ describe('StripeInterfaces Service', function() {
                             },
                         },
                     },
+                    sort: {
+                        created_at: {
+                            order: 'asc',
+                        },
+                    },
                 },
             };
 
@@ -420,6 +430,11 @@ describe('StripeInterfaces Service', function() {
                                     owner: user.id,
                                 },
                             },
+                        },
+                    },
+                    sort: {
+                        created_at: {
+                            order: 'asc',
                         },
                     },
                 },

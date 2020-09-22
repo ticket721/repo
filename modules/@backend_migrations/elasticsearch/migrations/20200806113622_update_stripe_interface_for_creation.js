@@ -27,7 +27,7 @@ class M20200806113622_update_stripe_interface_for_creation extends ElasticMigrat
         await this.createIndex('ticket721_stripe_interface', 'ticket721');
         await this.putMapping('ticket721_stripe_interface', 'stripe_interface', {
             "stripe_interface": {
-                "discover": "^((?!(connect_account_current_deadline|connect_account_currently_due|connect_account_eventually_due|connect_account_past_due|connect_account_pending_verification|connect_account_errors|connect_account_disabled_reason|connect_account_external_accounts|connect_account_name|connect_account_type)).*)",
+                "discover": "^((?!(connect_account_current_deadline|connect_account_currently_due|connect_account_eventually_due|connect_account_past_due|connect_account_pending_verification|connect_account_errors|connect_account_disabled_reason|connect_account_external_accounts|connect_account_name|connect_account_type|connect_account_capabilities)).*)",
                 "properties": {}
             }
         });

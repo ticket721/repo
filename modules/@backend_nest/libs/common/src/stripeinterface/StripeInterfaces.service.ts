@@ -116,6 +116,11 @@ export class StripeInterfacesService extends CRUDExtension<StripeInterfacesRepos
                         },
                     },
                 },
+                sort: {
+                    created_at: {
+                        order: 'asc',
+                    },
+                },
             },
         };
 
