@@ -2,16 +2,12 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/modules/@contracts_metamarketplace" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/modules/@contracts_t721admin" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/modules/@contracts_t721controller" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/modules/@contracts_t721token" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/modules/@contracts_ticketforge" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/modules/@public_dosojin" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/modules/@public_e712" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/modules/@public_erc2280" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/modules/@public_ethvtx" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/modules/@public_test-geth" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/modules/@public_vaultereum" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/node_modules/dosojin" vcs="Git" />
   </component>
 </project>

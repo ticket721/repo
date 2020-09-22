@@ -10,6 +10,9 @@ data:
   feature-flags.json: |-
     {
       "admin_flag": {
-        "active": true
+        "active": false
+      },
+      "stripe_interface_setup": {
+        "active": false
       }
     }

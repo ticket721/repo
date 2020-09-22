@@ -15,24 +15,27 @@ import ProfilePage                                                      from './
 import SearchViewAllPage                                                from './routes/SearchViewAll';
 import EventPage                                                        from './routes/Event';
 import TicketPage                                                       from './routes/Ticket';
-import TicketSelectionPage       from './routes/TicketSelection';
-import SearchPage                from './routes/Search';
-import TagsPage                  from './routes/Tags';
-import WalletPage                from './routes/Wallet';
-import CartPage                  from './routes/Cart';
-import ValidateRoutePage         from './routes/ValidateRoute';
-import { useKeyboardVisibility } from '@frontend/core/lib/utils/useKeyboardVisibility';
-import { UserContextGuard }      from '@frontend/core/lib/utils/UserContext';
-import DeepLinksListener         from './components/DeepLinksListener';
-import MediaQuery                from 'react-responsive';
-import { useFlag }               from '@frontend/core/lib/utils/useFlag';
+import TicketSelectionPage                                              from './routes/TicketSelection';
+import SearchPage                                                       from './routes/Search';
+import TagsPage                                                         from './routes/Tags';
+import WalletPage                                                       from './routes/Wallet';
+import CartPage                                                         from './routes/Cart';
+import ValidateRoutePage                                                from './routes/ValidateRoute';
+import CloseRedirectPage                                                from './routes/CloseRedirect';
+import StripeSetupPage                                                  from './routes/StripeSetup';
+import StripeTransactionsPage                                           from './routes/StripeTransactions';
+import StripeWithdrawPage                                               from './routes/StripeWithdraw';
+import StripeCreateBankAccountPage                                      from './routes/StripeCreateBankAccount';
+import { useKeyboardVisibility }                                        from '@frontend/core/lib/utils/useKeyboardVisibility';
+import { UserContextGuard }                                             from '@frontend/core/lib/utils/UserContext';
+import DeepLinksListener                                                from './components/DeepLinksListener';
+import MediaQuery                                                       from 'react-responsive';
+import { useFlag }                                                      from '@frontend/core/lib/utils/useFlag';
 
 const TopNavWrapper = (props: { back: () => void }): JSX.Element => {
-
     const [scrolled, setScrolled] = useState(false);
 
     const setScrolledCallback = useCallback(() => {
-        console.log(scrolled, window.scrollY);
         if (!scrolled && window.scrollY !== 0) {
             setScrolled(true);
         } else if (scrolled && window.scrollY === 0) {
@@ -41,7 +44,9 @@ const TopNavWrapper = (props: { back: () => void }): JSX.Element => {
     }, [scrolled]);
 
     useEffect(() => {
-        window.addEventListener('scroll', setScrolledCallback, { passive: true });
+        window.addEventListener('scroll', setScrolledCallback, {
+            passive: true,
+        });
         return () => {
             window.removeEventListener('scroll', setScrolledCallback);
         };
@@ -51,11 +56,9 @@ const TopNavWrapper = (props: { back: () => void }): JSX.Element => {
 };
 
 const MobileApp: React.FC = () => {
-
     const location = useLocation();
     const history = useHistory();
     const keyboardIsVisible = useKeyboardVisibility();
-    const adminFlag = useFlag('admin_flag');
 
     const goBackOrHome = useCallback(() => {
         if (history.length > 2) {
@@ -65,108 +68,156 @@ const MobileApp: React.FC = () => {
         }
     }, [history]);
 
-    return <Suspense fallback={<FullPageLoading/>}>
-        <UserContextGuard>
-            <AppContainer>
-                <MediaQuery maxDeviceWidth={1224}>
-                    {
-                        location.pathname.lastIndexOf('/') !== 0
+    const flags = {
+        stripe_interface_setup: useFlag('stripe_interface_setup'),
+        admin_flag: useFlag('admin_flag'),
+    };
 
-                            ?
+    return (
+        <Suspense fallback={<FullPageLoading/>}>
+            <UserContextGuard>
+                <AppContainer>
+                    <MediaQuery maxDeviceWidth={1224}>
+                        {location.pathname.lastIndexOf('/') !== 0 &&
+                        location.pathname.indexOf('/_/') !== 0 ? (
                             <TopNavWrapper back={goBackOrHome}/>
+                        ) : null}
+                    </MediaQuery>
+                    <Switch>
 
-                            :
-                            null
-                    }
-                </MediaQuery>
-                <Switch>
-                    <Route path={'/login'} exact={true}>
-                        <LoginPage/>
-                    </Route>
+                        {flags.stripe_interface_setup ? (
+                            <ProtectedRoute
+                                path={'/stripe/connect'}
+                                exact={true}
+                            >
+                                <StripeSetupPage/>
+                            </ProtectedRoute>
+                        ) : null}
 
-                    <Route path={'/register'} exact={true}>
-                        <RegisterPage/>
-                    </Route>
+                        {flags.stripe_interface_setup ? (
+                            <ProtectedRoute
+                                path={'/stripe/create-bank-account'}
+                                exact={true}
+                            >
+                                <StripeCreateBankAccountPage/>
+                            </ProtectedRoute>
+                        ) : null}
 
-                    <Route path={'/'} exact={true}>
-                        <HomePage/>
-                    </Route>
+                        {flags.stripe_interface_setup ? (
+                            <ProtectedRoute
+                                path={'/stripe/withdraw'}
+                                exact={true}
+                            >
+                                <StripeWithdrawPage/>
+                            </ProtectedRoute>
+                        ) : null}
 
-                    <ProtectedRoute path={'/profile/activities'} exact={true}>
-                        <ProfileActivitiesPage/>
-                    </ProtectedRoute>
+                        {flags.stripe_interface_setup ? (
+                            <ProtectedRoute
+                                path={'/stripe/transactions'}
+                                exact={true}
+                            >
+                                <StripeTransactionsPage/>
+                            </ProtectedRoute>
+                        ) : null}
 
-                    <ProtectedRoute path={'/profile/language'} exact={true}>
-                        <ProfileLanguagePage/>
-                    </ProtectedRoute>
-
-                    <ProtectedRoute path={'/profile'} exact={true}>
-                        <ProfilePage/>
-                    </ProtectedRoute>
-
-                    <ProtectedRoute path={'/cart/checkout'} exact={true}>
-                        <CartPage/>
-                    </ProtectedRoute>
-
-                    <Route path={'/search/events/:query'} exact={true}>
-                        <SearchViewAllPage/>
-                    </Route>
-
-                    <Route path={'/event/:id/selection'} exact={true}>
-                        <TicketSelectionPage/>
-                    </Route>
-
-                    <Route path={'/event/:id'} exact={true}>
-                        <EventPage/>
-                    </Route>
-
-                    <Route path={'/search'} exact={true}>
-                        <SearchPage/>
-                    </Route>
-
-                    <Route path={'/tags'} exact={true}>
-                        <TagsPage/>
-                    </Route>
-
-                    <ProtectedRoute path={'/ticket/:id'} exact={true}>
-                        <TicketPage/>
-                    </ProtectedRoute>
-
-                    <ProtectedRoute path={'/wallet'} exact={true}>
-                        <WalletPage/>
-                    </ProtectedRoute>
-
-                    <Route path={'/validate-email'} exact={true}>
-                        <ValidateRoutePage/>
-                    </Route>
-
-                    {
-                        adminFlag
-
-                            ?
-                            <Route path={'/you/are/an/admin'} exact={true}>
+                        {flags.admin_flag ? (
+                            <ProtectedRoute
+                                path={'/you/are/an/admin'}
+                                exact={true}
+                            >
                                 <AdminRoutePage/>
-                            </Route>
+                            </ProtectedRoute>
+                        ) : null}
 
-                            :
-                            null
-                    }
+                        <Route path={'/_/redirect/close'} exact={true}>
+                            <CloseRedirectPage/>
+                        </Route>
 
-                    <Redirect to={'/'}/>
-                </Switch>
-                <MediaQuery maxDeviceWidth={1224}>
-                    <T721Navbar visible={location.pathname.lastIndexOf('/') === 0 && !keyboardIsVisible}/>
-                </MediaQuery>
-                <ToastStacker additionalLocales={[]}/>
-            </AppContainer>
-        </UserContextGuard>
-        <DeepLinksListener/>
-    </Suspense>;
+                        <Route path={'/login'} exact={true}>
+                            <LoginPage/>
+                        </Route>
+
+                        <Route path={'/register'} exact={true}>
+                            <RegisterPage/>
+                        </Route>
+
+                        <Route path={'/'} exact={true}>
+                            <HomePage/>
+                        </Route>
+
+                        <ProtectedRoute
+                            path={'/profile/activities'}
+                            exact={true}
+                        >
+                            <ProfileActivitiesPage/>
+                        </ProtectedRoute>
+
+                        <ProtectedRoute path={'/profile/language'} exact={true}>
+                            <ProfileLanguagePage/>
+                        </ProtectedRoute>
+
+                        <ProtectedRoute path={'/profile'} exact={true}>
+                            <ProfilePage/>
+                        </ProtectedRoute>
+
+                        <ProtectedRoute path={'/cart/checkout'} exact={true}>
+                            <CartPage/>
+                        </ProtectedRoute>
+
+                        <Route path={'/search/events/:query'} exact={true}>
+                            <SearchViewAllPage/>
+                        </Route>
+
+                        <Route path={'/event/:id/selection'} exact={true}>
+                            <TicketSelectionPage/>
+                        </Route>
+
+                        <Route path={'/event/:id'} exact={true}>
+                            <EventPage/>
+                        </Route>
+
+                        <Route path={'/search'} exact={true}>
+                            <SearchPage/>
+                        </Route>
+
+                        <Route path={'/tags'} exact={true}>
+                            <TagsPage/>
+                        </Route>
+
+                        <ProtectedRoute path={'/ticket/:id'} exact={true}>
+                            <TicketPage/>
+                        </ProtectedRoute>
+
+                        <ProtectedRoute path={'/wallet'} exact={true}>
+                            <WalletPage/>
+                        </ProtectedRoute>
+
+                        <Route path={'/validate-email'} exact={true}>
+                            <ValidateRoutePage/>
+                        </Route>
+
+                        <Redirect to={'/'}/>
+                    </Switch>
+                    <MediaQuery maxDeviceWidth={1224}>
+                        <T721Navbar
+                            visible={
+                                location.pathname.lastIndexOf('/') === 0 &&
+                                !keyboardIsVisible
+                            }
+                        />
+                    </MediaQuery>
+                    <ToastStacker additionalLocales={[]}/>
+                </AppContainer>
+            </UserContextGuard>
+            <DeepLinksListener/>
+        </Suspense>
+    );
 };
 
 const AppContainer = styled.div`
-  width: 100%;
-  height: 100%;
+    width: 100%;
+    height: 100%;
 `;
 
 export default withRouter(MobileApp);

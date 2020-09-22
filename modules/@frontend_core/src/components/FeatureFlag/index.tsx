@@ -9,11 +9,17 @@ export interface FeatureFlagProps {
 export const FeatureFlag: React.FC<PropsWithChildren<FeatureFlagProps>> = (
     props: PropsWithChildren<FeatureFlagProps>,
 ): JSX.Element => {
-    const flagData = useSelector((state: AppState) => state.featureflags[props.flag]);
+    const flagValue = useFeatureFlag(props.flag);
 
-    if (!flagData || !flagData.active) {
+    if (!flagValue) {
         return null;
     } else {
         return <>{props.children}</>;
     }
+};
+
+export const useFeatureFlag = (flag: string): boolean => {
+    const flagData = useSelector((state: AppState) => state.featureflags[flag]);
+
+    return flagData && flagData.active;
 };

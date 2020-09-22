@@ -63,5 +63,20 @@ module.exports = [
         type: 'elasticsearch',
         name: 'user_admin_flag',
         timestamp: '20200804131159'
+    },
+    {
+        type: 'elasticsearch',
+        name: 'update_stripe_interface_for_deletion',
+        timestamp: '20200806112200'
+    },
+    {
+        type: 'cassandra',
+        name: 'update_stripe_interface',
+        timestamp: '1596712433'
+    },
+    {
+        type: 'elasticsearch',
+        name: 'update_stripe_interface_for_creation',
+        timestamp: '20200806113622'
     }
 ];

@@ -1,0 +1,5 @@
+{
+    "jest.runAllTestsFirst": false,
+    "jest.enableInlineErrorMessages": true,
+    "jest.autoEnable": false
+}

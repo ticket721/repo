@@ -3,9 +3,9 @@ import { FullPageLoading }      from '@frontend/flib-react/lib/components';
 import { CartState }            from '../../../redux/ducks/cart';
 import { Elements }             from '@stripe/react-stripe-js';
 import { ActionSetEntity }      from '@common/sdk/lib/@backend_nest/libs/common/src/actionsets/entities/ActionSet.entity';
-import { useCustomStripe }      from '../../../utils/useCustomStripe';
 import { StripeCheckoutWeb }    from './StripeCheckoutWeb';
 import { StripeCheckoutNative } from './StripeCheckoutNative';
+import { useCustomStripe }      from '@frontend/core/lib/utils/useCustomStripe';
 
 export interface StripeCheckoutProps {
     remoteCart: ActionSetEntity;

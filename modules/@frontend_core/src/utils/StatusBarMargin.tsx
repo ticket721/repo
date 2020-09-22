@@ -18,12 +18,12 @@ const StatusBarPaddingContainer = styled.div`
 `;
 
 export const StatusBarMargin = (Comp: React.ComponentType): React.FC => {
-    return () => {
+    return (props: any = {}) => {
         return (
             <>
                 <StatusBarMarginContainer />
                 <StatusBarPaddingContainer>
-                    <Comp />
+                    <Comp {...props} />
                 </StatusBarPaddingContainer>
             </>
         );

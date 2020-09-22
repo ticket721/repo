@@ -209,6 +209,7 @@ export const GlobalStyles = createGlobalStyle<{ theme: Theme }>`
 
   .Toastify__toast-container {
       padding: ${(props) => props.theme.regularSpacing};
+      z-index: 1000000;
   }
 
   .Toastify__toast {

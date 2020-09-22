@@ -1,19 +1,19 @@
 import { CartState, SetTickets }                   from '../../../redux/ducks/cart';
-import { StripeSDK }                               from '../../../utils/useCustomStripe';
 import styled, { useTheme }                        from 'styled-components';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation }                          from 'react-i18next';
-import { useDispatch, useSelector }                from 'react-redux';
-import { T721AppState }                            from '../../../redux';
-import { Theme }                                   from '@frontend/flib-react/lib/config/theme';
-import { useHistory }                              from 'react-router';
-import { getCartTotal, getServiceFees }            from '../SyncedCart/types';
-import { useDeepEffect }                           from '@frontend/core/lib/hooks/useDeepEffect';
-import { PushNotification }                        from '@frontend/core/lib/redux/ducks/notifications';
-import Countdown                                   from 'react-countdown';
-import { PurchaseTotal, TextInput }                from '@frontend/flib-react/lib/components';
-import { PayCta }                                  from './PayCta';
-import { ActionSetEntity }                         from '@common/sdk/lib/@backend_nest/libs/common/src/actionsets/entities/ActionSet.entity';
+import { useDispatch, useSelector }     from 'react-redux';
+import { T721AppState }                 from '../../../redux';
+import { Theme }                        from '@frontend/flib-react/lib/config/theme';
+import { useHistory }                   from 'react-router';
+import { getCartTotal, getServiceFees } from '../SyncedCart/types';
+import { useDeepEffect }                from '@frontend/core/lib/hooks/useDeepEffect';
+import { PushNotification }             from '@frontend/core/lib/redux/ducks/notifications';
+import Countdown                        from 'react-countdown';
+import { PurchaseTotal, TextInput }     from '@frontend/flib-react/lib/components';
+import { PayCta }                       from './PayCta';
+import { ActionSetEntity }              from '@common/sdk/lib/@backend_nest/libs/common/src/actionsets/entities/ActionSet.entity';
+import { StripeSDK }                    from '@frontend/core/lib/utils/useCustomStripe';
 
 export interface StripeCheckoutNativeProps {
     remoteCart: ActionSetEntity;
