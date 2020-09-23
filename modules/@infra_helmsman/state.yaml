@@ -290,6 +290,7 @@ apps:
       config.t721app.self: "https://app.staging.ticket721.com"
       config.staff.self: "https://staff.staging.ticket721.com"
       config.organizer.self: "https://organizer.staging.ticket721.com"
+      config.organizer.publishableStripeApiKey: "${CONFIG_STAGING_ORGANIZER_PUBLISHABLE_STRIPE_API_KEY}"
       config.etherscanUrl: "${CONFIG_STAGING_ETHERSCAN_URL}"
 
       server.image.repository: "097558125954.dkr.ecr.eu-west-3.amazonaws.com/ticket721/server"

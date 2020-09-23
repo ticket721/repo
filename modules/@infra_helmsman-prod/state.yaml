@@ -290,6 +290,7 @@ apps:
       config.t721app.self: "https://app.ticket721.com"
       config.staff.self: "https://staff.ticket721.com"
       config.organizer.self: "https://organizer.ticket721.com"
+      config.organizer.publishableStripeApiKey: "${CONFIG_PRODUCTION_ORGANIZER_PUBLISHABLE_STRIPE_API_KEY}"
 
       server.image.repository: "097558125954.dkr.ecr.eu-west-3.amazonaws.com/ticket721/server"
       server.image.tag: "${TAG}"
