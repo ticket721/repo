@@ -54,6 +54,9 @@ export class ConfigService {
      * @param key
      */
     get(key: string): string {
+        if (this.envConfig[key] === undefined) {
+            throw new NestError(`Env value undefined for ${key}`);
+        }
         return this.envConfig[key];
     }
 

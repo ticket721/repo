@@ -72,7 +72,32 @@ export const Config: Joi.ObjectSchema = Joi.object({
     }),
 
     IMAGE_MAX_SIZE: Joi.number().required(),
-    IMAGE_SERVE_DIRECTORY: Joi.string().required(),
+
+    IMAGE_SERVE_DIRECTORY: Joi.string().required().when('NODE_ENV', {
+        is: 'production',
+        then: Joi.optional(),
+        otherwise: Joi.required(),
+    }),
+    IMAGE_S3_REGION: Joi.string().required().when('NODE_ENV', {
+        is: 'production',
+        then: Joi.required(),
+        otherwise: Joi.optional(),
+    }),
+    IMAGE_S3_ACCESS_KEY_ID: Joi.string().required().when('NODE_ENV', {
+        is: 'production',
+        then: Joi.required(),
+        otherwise: Joi.optional(),
+    }),
+    IMAGE_S3_SECRET_ACCESS_KEY: Joi.string().required().when('NODE_ENV', {
+        is: 'production',
+        then: Joi.required(),
+        otherwise: Joi.optional(),
+    }),
+    IMAGE_S3_BUCKET_NAME: Joi.string().required().when('NODE_ENV', {
+        is: 'production',
+        then: Joi.required(),
+        otherwise: Joi.optional(),
+    }),
 
     GLOBAL_CONFIG_BLOCK_NUMBER_FETCHING_RATE: Joi.number().required(),
     GLOBAL_CONFIG_ETHEREUM_PRICE_FETCHING_RATE: Joi.number().required(),
