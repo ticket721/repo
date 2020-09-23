@@ -78,5 +78,10 @@ module.exports = [
         type: 'elasticsearch',
         name: 'update_stripe_interface_for_creation',
         timestamp: '20200806113622'
+    },
+    {
+        type: 'cassandra',
+        name: 'update_image_format',
+        timestamp: '1600892344'
     }
 ];

@@ -7,24 +7,27 @@ import { FSModule }             from '@lib/common/fs/FS.module';
 
 @Module({
     imports: [
-        ... (process.env.NODE_ENV === 'production'
+        ...(process.env.NODE_ENV === 'production'
 
                 ?
                 [
                     ConfigModule,
-                    FSModule
                 ]
 
                 :
                 [
                     ConfigModule,
+                    FSModule
                 ]
         )
     ],
     providers: [{
         provide: FilestoreService,
-        useClass: process.env.NODE_ENV === 'production' ? TestFileStoreService : S3FileStoreService
-    }]
+        useClass: process.env.NODE_ENV === 'production' ? S3FileStoreService : TestFileStoreService
+    }],
+    exports: [
+        FilestoreService
+    ]
 })
 export class FilestoreModule {
 }

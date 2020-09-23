@@ -7,5 +7,5 @@ export interface FileObject {
 
 @Injectable()
 export abstract class FilestoreService {
-    abstract async save(name: string, content: Buffer): Promise<ServiceResponse<FileObject>>;
+    abstract async save(content: Buffer, contentType?: string): Promise<ServiceResponse<FileObject>>;
 }

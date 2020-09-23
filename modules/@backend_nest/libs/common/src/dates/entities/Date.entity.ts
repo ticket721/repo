@@ -12,8 +12,7 @@ import {
     IsHexColor,
     IsNumber,
     IsOptional,
-    IsString,
-    IsUUID,
+    IsString, IsUrl,
     ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
@@ -37,7 +36,7 @@ export class DateMetadata {
     /**
      * Date avatar
      */
-    @IsUUID()
+    @IsUrl()
     @IsOptional()
     avatar: string;
 

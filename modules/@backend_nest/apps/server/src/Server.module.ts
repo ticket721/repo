@@ -55,17 +55,18 @@ import { MetadatasModule } from '@lib/common/metadatas/Metadatas.module';
 import { AuthorizationsModule } from '@lib/common/authorizations/Authorizations.module';
 import { CheckoutModule } from '@lib/common/checkout/Checkout.module';
 import { CartModule } from '@lib/common/cart/Cart.module';
-import { RocksideModule } from '@lib/common/rockside/Rockside.module';
-import { TicketsController } from '@app/server/controllers/tickets/Tickets.controller';
-import { TicketsModule } from '@lib/common/tickets/Tickets.module';
-import { UsersController } from '@app/server/controllers/users/Users.controller';
-import { toHeaderFormat } from '@lib/common/utils/toHeaderFormat';
-import { GeolocController } from '@app/server/controllers/geoloc/Geoloc.controller';
-import { StripeModule } from '@lib/common/stripe/Stripe.module';
-import { FeatureFlagsModule } from '@lib/common/featureflags/FeatureFlags.module';
+import { RocksideModule }         from '@lib/common/rockside/Rockside.module';
+import { TicketsController }      from '@app/server/controllers/tickets/Tickets.controller';
+import { TicketsModule }          from '@lib/common/tickets/Tickets.module';
+import { UsersController }        from '@app/server/controllers/users/Users.controller';
+import { toHeaderFormat }         from '@lib/common/utils/toHeaderFormat';
+import { GeolocController }       from '@app/server/controllers/geoloc/Geoloc.controller';
+import { StripeModule }           from '@lib/common/stripe/Stripe.module';
+import { FeatureFlagsModule }     from '@lib/common/featureflags/FeatureFlags.module';
 import { FeatureFlagsController } from '@app/server/controllers/featureflags/FeatureFlags.controller';
 import { StripeInterfacesModule } from '@lib/common/stripeinterface/StripeInterfaces.module';
-import { StripeController } from '@app/server/controllers/payment/stripe/Stripe.controller';
+import { StripeController }       from '@app/server/controllers/payment/stripe/Stripe.controller';
+import { FilestoreModule }        from '@lib/common/filestore/Filestore.module';
 
 @Module({
     imports: [
@@ -115,6 +116,7 @@ import { StripeController } from '@app/server/controllers/payment/stripe/Stripe.
         FSModule,
         ShutdownModule,
         ToolBoxModule,
+        FilestoreModule,
 
         FeatureFlagsModule,
 
@@ -130,8 +132,8 @@ import { StripeController } from '@app/server/controllers/payment/stripe/Stripe.
                 host: configService.get('ETHEREUM_NODE_HOST'),
                 port: configService.get('ETHEREUM_NODE_PORT'),
                 protocol: configService.get('ETHEREUM_NODE_PROTOCOL'),
-                headers: toHeaderFormat(JSON.parse(configService.get('ETHEREUM_NODE_HEADERS') || '{}')),
-                path: configService.get('ETHEREUM_NODE_PATH'),
+                headers: toHeaderFormat(JSON.parse(configService.get('ETHEREUM_NODE_HEADERS', '{}'))),
+                path: configService.get('ETHEREUM_NODE_PATH', null),
             }),
             inject: [ConfigService],
         }),
@@ -146,9 +148,6 @@ import { StripeController } from '@app/server/controllers/payment/stripe/Stripe.
                 blockThreshold: parseInt(configService.get('TXS_BLOCK_THRESHOLD'), 10),
                 blockPollingRefreshRate: parseInt(configService.get('TXS_BLOCK_POLLING_REFRESH_RATE'), 10),
                 ethereumNetworkId: parseInt(configService.get('ETHEREUM_NODE_NETWORK_ID'), 10),
-                ethereumMtxDomainName: configService.get('ETHEREUM_MTX_DOMAIN_NAME'),
-                ethereumMtxVersion: configService.get('ETHEREUM_MTX_VERSION'),
-                ethereumMtxRelayAdmin: configService.get('VAULT_ETHEREUM_ASSIGNED_ADMIN'),
                 targetGasPrice: parseInt(configService.get('TXS_TARGET_GAS_PRICE'), 10),
             }),
             inject: [ConfigService],

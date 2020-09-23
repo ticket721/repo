@@ -78,6 +78,11 @@ export const Config: Joi.ObjectSchema = Joi.object({
         then: Joi.optional(),
         otherwise: Joi.required(),
     }),
+    IMAGE_SERVE_PREFIX: Joi.string().required().when('NODE_ENV', {
+        is: 'production',
+        then: Joi.optional(),
+        otherwise: Joi.required(),
+    }),
     IMAGE_S3_REGION: Joi.string().required().when('NODE_ENV', {
         is: 'production',
         then: Joi.required(),

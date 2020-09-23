@@ -52,10 +52,15 @@ export class ConfigService {
      * from the environment and not from a file.
      *
      * @param key
+     * @param fallback
      */
-    get(key: string): string {
+    get(key: string, fallback?: string): string {
         if (this.envConfig[key] === undefined) {
-            throw new NestError(`Env value undefined for ${key}`);
+            if (fallback === undefined) {
+                throw new NestError(`Env value undefined for ${key}`);
+            } else {
+                return fallback;
+            }
         }
         return this.envConfig[key];
     }

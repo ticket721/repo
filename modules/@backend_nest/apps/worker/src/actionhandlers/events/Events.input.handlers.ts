@@ -299,7 +299,7 @@ export class EventsInputHandlers implements OnModuleInit {
      */
     imagesMetadataValidator = Joi.object<EventsCreateImagesMetadata>({
         avatar: Joi.string()
-            .uuid()
+            .uri()
             .optional(),
         signatureColors: Joi.array()
             .items(Joi.string().regex(/^#[A-Fa-f0-9]{6}/))
@@ -352,21 +352,6 @@ export class EventsInputHandlers implements OnModuleInit {
             }
 
             case undefined: {
-                const avatarQuery = await this.imagesService.search({
-                    id: data.avatar,
-                });
-
-                if (avatarQuery.error || avatarQuery.response.length === 0) {
-                    actionset.action.setError({
-                        details: error,
-                        error: 'cannot_find_image',
-                    });
-                    actionset.action.setStatus('error');
-                    actionset.setStatus('input:error');
-                    await progress(100);
-                    return [actionset, true];
-                }
-
                 actionset.next();
 
                 break;
