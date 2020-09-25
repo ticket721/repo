@@ -1889,15 +1889,15 @@ jobs:
   #    | $$   /$$  \ $$| $$        | $$
   #    | $$$$|  $$$$$$/| $$$$$$$$ /$$$$
   #    |____/ \______/ |________/|____/
-#
-#    @frontend_core - build, lint, format check & tests
-#
-#    Recovers required dependencies from cache
-#    Builds sources to verify everything still transpiles properly
-#    Lints sources to verify everything is formatted properly
-#    Runs prettier norm checker to verify everything is formatted properly
-#    Runs unitary tests to verify logic is kept
-#
+  #
+  #    @frontend_core - build, lint, format check & tests
+  #
+  #    Recovers required dependencies from cache
+  #    Builds sources to verify everything still transpiles properly
+  #    Lints sources to verify everything is formatted properly
+  #    Runs prettier norm checker to verify everything is formatted properly
+  #    Runs unitary tests to verify logic is kept
+  #
 
     frontend-core:
         name: "[S2] [@frontend/core] build, lint, format check & tests"

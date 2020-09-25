@@ -52,48 +52,11 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     form.getHeaders(),
                 );
 
-                expect(imageUploadRes.data.ids.length).toEqual(1);
+                expect(imageUploadRes.data.urls.length).toEqual(1);
 
                 cleanImage(image);
             });
 
-            test('should upload image twice', async function() {
-                const {
-                    sdk,
-                    token,
-                    user,
-                    password,
-                }: {
-                    sdk: T721SDK;
-                    token: string;
-                    user: PasswordlessUserDto;
-                    password: string;
-                } = await getSDKAndUser(getCtx);
-
-                const image = await generateImage();
-
-                const form = new FormData();
-
-                form.append('images', fs.readFileSync(image), {
-                    filename: 'avatar.png',
-                });
-
-                const imageUploadOneRes: AxiosResponse<ImagesUploadResponseDto> = await sdk.images.upload(
-                    token,
-                    form.getBuffer(),
-                    form.getHeaders(),
-                );
-
-                const imageUploadTwoRes: AxiosResponse<ImagesUploadResponseDto> = await sdk.images.upload(
-                    token,
-                    form.getBuffer(),
-                    form.getHeaders(),
-                );
-
-                expect(imageUploadOneRes.data.ids).toEqual(imageUploadTwoRes.data.ids);
-
-                cleanImage(image);
-            });
         });
     };
 }
