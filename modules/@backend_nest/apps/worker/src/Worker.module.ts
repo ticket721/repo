@@ -10,7 +10,6 @@ import { UsersRepository } from '@lib/common/users/Users.repository';
 import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
 import { ActionSetsRepository } from '@lib/common/actionsets/ActionSets.repository';
 import { UsersModule } from '@lib/common/users/Users.module';
-import { ImagesModule } from '@lib/common/images/Images.module';
 import { ActionSetsModule } from '@lib/common/actionsets/ActionSets.module';
 import { DatesModule } from '@lib/common/dates/Dates.module';
 import { EventsModule } from '@lib/common/events/Events.module';
@@ -82,7 +81,6 @@ import { StripeModule } from '@lib/common/stripe/Stripe.module';
 
         // Cassandra Table Modules & Utils
         UsersModule,
-        ImagesModule,
         ActionSetsModule,
         DatesModule,
         RightsModule,

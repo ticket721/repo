@@ -4,7 +4,6 @@ import { Injectable, OnModuleInit } from '@nestjs/common';
 import Joi from '@hapi/joi';
 import { City, closestCity, Coordinates } from '@common/geoloc';
 import { serialize } from '@common/global';
-import { ImagesService } from '@lib/common/images/Images.service';
 import { ChecksRunnerUtil } from '@lib/common/actionsets/helper/ChecksRunner.util';
 import { EventCreationActions } from '@lib/common/events/acset_builders/EventCreate.acsetbuilder.helper';
 
@@ -217,9 +216,8 @@ export class EventsInputHandlers implements OnModuleInit {
      * Dependency Injection
      *
      * @param actionSetsService
-     * @param imagesService
      */
-    constructor(private readonly actionSetsService: ActionSetsService, private readonly imagesService: ImagesService) {}
+    constructor(private readonly actionSetsService: ActionSetsService) {}
 
     /**
      * events/textMetadata dynamic argument checker

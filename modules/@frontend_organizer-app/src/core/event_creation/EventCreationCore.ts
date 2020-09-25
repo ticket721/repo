@@ -2,7 +2,6 @@ import { ActionSetEntity } from '@common/sdk/lib/@backend_nest/libs/common/src/a
 import { default as get }  from 'lodash.get';
 import { AcsetCore }       from '@frontend/core/lib/cores/acset/AcsetCore';
 import '@frontend/core/lib/utils/window';
-import { ImageEntity }     from '@common/sdk/lib/@backend_nest/libs/common/src/images/entities/Image.entity';
 
 export enum EventCreationActions {
     TextMetadata = 'textMetadata',
@@ -151,7 +150,7 @@ export abstract class EventCreationCore {
         }
     };
 
-    public static uploadImages = async (token: string, data: FormData, headers: any): Promise<ImageEntity[]> => {
+    public static uploadImages = async (token: string, data: FormData, headers: any): Promise<string[]> => {
         try {
             if (!global.window.t721Sdk) {
                 throw Error('t721sdk_undefined');
@@ -159,7 +158,7 @@ export abstract class EventCreationCore {
 
             const imageUploadResp = await global.window.t721Sdk.images.upload(token, data, headers);
 
-            return imageUploadResp.data.ids;
+            return imageUploadResp.data.urls;
         } catch (e) {
             if (e.response.data.statusCode === 400) {
                 throw Error(e.response.data.message);

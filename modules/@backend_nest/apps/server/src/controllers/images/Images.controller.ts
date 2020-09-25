@@ -17,7 +17,6 @@ import { StatusCodes } from '@lib/common/utils/codes.value';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { ImagesUploadResponseDto } from '@app/server/controllers/images/dto/ImagesUploadResponse.dto';
 import { ImagesUploadInputDto } from '@app/server/controllers/images/dto/ImagesUploadInput.dto';
-import { ImagesService } from '@lib/common/images/Images.service';
 import { ConfigService }       from '@lib/common/config/Config.service';
 import { FSService }           from '@lib/common/fs/FS.service';
 import { HttpExceptionFilter } from '@app/server/utils/HttpException.filter';
@@ -36,14 +35,12 @@ export class ImagesController {
     /**
      * Dependency Injection
      *
-     * @param imagesService
      * @param configService
      * @param fsService
      * @param uuidToolService
      * @param fileStoreService
      */
     constructor(
-        private readonly imagesService: ImagesService,
         private readonly configService: ConfigService,
         private readonly fsService: FSService,
         private readonly uuidToolService: UUIDToolService,

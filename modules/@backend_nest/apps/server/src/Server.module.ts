@@ -29,7 +29,6 @@ import { DatesController } from '@app/server/controllers/dates/Dates.controller'
 import { EventsModule } from '@lib/common/events/Events.module';
 import { EventsController } from '@app/server/controllers/events/Events.controller';
 import { ImagesController } from '@app/server/controllers/images/Images.controller';
-import { ImagesModule } from '@lib/common/images/Images.module';
 import { FSModule } from '@lib/common/fs/FS.module';
 import { CurrenciesModule } from '@lib/common/currencies/Currencies.module';
 import { TxsModule } from '@lib/common/txs/Txs.module';
@@ -91,7 +90,6 @@ import { FilestoreModule }        from '@lib/common/filestore/Filestore.module';
 
         // Cassandra Table Modules & Utils
         UsersModule,
-        ImagesModule,
         Web3TokensModule,
         ActionSetsModule,
         DatesModule,

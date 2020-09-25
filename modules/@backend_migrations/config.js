@@ -80,6 +80,11 @@ module.exports = [
         timestamp: '20200806113622'
     },
     {
+        type: 'elasticsearch',
+        name: 'update_image_format',
+        timestamp: '20200925140804'
+    },
+    {
         type: 'cassandra',
         name: 'update_image_format',
         timestamp: '1600892344'
