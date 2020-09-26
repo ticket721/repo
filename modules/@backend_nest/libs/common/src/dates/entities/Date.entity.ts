@@ -12,7 +12,8 @@ import {
     IsHexColor,
     IsNumber,
     IsOptional,
-    IsString, IsUrl,
+    IsString,
+    IsUrl,
     ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';

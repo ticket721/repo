@@ -56,7 +56,6 @@ export default function(getCtx: () => { ready: Promise<void> }) {
 
                 cleanImage(image);
             });
-
         });
     };
 }

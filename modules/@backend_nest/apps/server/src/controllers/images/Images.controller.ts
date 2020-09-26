@@ -17,13 +17,11 @@ import { StatusCodes } from '@lib/common/utils/codes.value';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { ImagesUploadResponseDto } from '@app/server/controllers/images/dto/ImagesUploadResponse.dto';
 import { ImagesUploadInputDto } from '@app/server/controllers/images/dto/ImagesUploadInput.dto';
-import { ConfigService }       from '@lib/common/config/Config.service';
-import { FSService }           from '@lib/common/fs/FS.service';
+import { ConfigService } from '@lib/common/config/Config.service';
 import { HttpExceptionFilter } from '@app/server/utils/HttpException.filter';
-import { UUIDToolService }     from '@lib/common/toolbox/UUID.tool.service';
-import { ApiResponses }        from '@app/server/utils/ApiResponses.controller.decorator';
-import { ValidGuard }          from '@app/server/authentication/guards/ValidGuard.guard';
-import { FilestoreService }    from '@lib/common/filestore/Filestore.service';
+import { ApiResponses } from '@app/server/utils/ApiResponses.controller.decorator';
+import { ValidGuard } from '@app/server/authentication/guards/ValidGuard.guard';
+import { FilestoreService } from '@lib/common/filestore/Filestore.service';
 
 /**
  * Image controller to upload images
@@ -36,16 +34,9 @@ export class ImagesController {
      * Dependency Injection
      *
      * @param configService
-     * @param fsService
-     * @param uuidToolService
      * @param fileStoreService
      */
-    constructor(
-        private readonly configService: ConfigService,
-        private readonly fsService: FSService,
-        private readonly uuidToolService: UUIDToolService,
-        private readonly fileStoreService: FilestoreService
-    ) {}
+    constructor(private readonly configService: ConfigService, private readonly fileStoreService: FilestoreService) {}
 
     /**
      * Upload Image(s)
