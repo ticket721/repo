@@ -36,9 +36,6 @@ spec:
         - name: server-secret
           secret:
             secretName: {{ template "platform.fullname" . }}--server-secret--sec
-        - name: images-folder
-          persistentVolumeClaim:
-            claimName: {{ include "platform.fullname" . }}--server--pvc
       initContainers:
         - name: {{ include "platform.fullname" . }}--server-master-wfj
           image: "groundnuty/k8s-wait-for:v1.3"
@@ -67,8 +64,6 @@ spec:
             - name: server-secret
               mountPath: /config/production.secret.env
               subPath: production.secret.env
-            - name: images-folder
-              mountPath: /repo/modules/@backend_nest/images
           env:
             - name: CONFIG_PATH
               value: /config/

@@ -162,7 +162,7 @@ apps:
     name: "efs-provisioner-staging"
     description: "EFS Storage Provider, allowing pods to mount EFS volumes in the filesystem"
     namespace: "staging"
-    enabled: true
+    enabled: false
     group: "critical"
     chart: "../@infra_efs-provisioner/efs-provisioner"
     version: "0.1.0"
@@ -172,8 +172,6 @@ apps:
     priority: -4
     setString:
       _global.namespace: "staging"
-      "efs-provisioner.efsProvisioner.efsFileSystemId": "${CONFIG_STAGING_EFS_ID}"
-      "efs-provisioner.efsProvisioner.awsRegion": "eu-west-3"
 
   elassandra-staging:
     timeout: 1200
@@ -222,8 +220,6 @@ apps:
     priority: -1
     setString:
       _global.namespace: "staging"
-
-      server.fsName: "${CONFIG_STAGING_EFS_ID}"
 
       config.ticketScope: "ticket721_0"
       config.artifact: "live_ropsten"
