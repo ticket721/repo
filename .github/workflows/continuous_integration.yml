@@ -2186,6 +2186,10 @@ jobs:
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           run: ./helm_prepare.sh
 
+        - name: "Run any command oh helmsman to test if working"
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
+          run: cd modules/@infra_helmsman/ && helmsman --show-diff -f ./state.yaml
+
         - name: "Helmsman on staging infra (dry-run)"
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           run: ./helmsman.dryrun.staging.sh
