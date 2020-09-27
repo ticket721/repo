@@ -2164,10 +2164,6 @@ jobs:
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           run: curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.18.0/bin/linux/amd64/kubectl && chmod +x kubectl && sudo mv ./kubectl /usr/local/bin/kubectl
 
-        - name: "Setup Helmsman"
-          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-          run: curl -L https://github.com/Praqma/helmsman/releases/download/v3.4.1/helmsman_3.4.1_linux_amd64.tar.gz | tar zx && chmod +x helmsman && sudo mv ./helmsman /usr/local/bin/helmsman && helmsman
-
         - name: "Setup kubeconfig"
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           run: aws eks update-kubeconfig --name ${CONFIG_STAGING_CLUSTER_NAME} && kubectl get pod
@@ -2177,6 +2173,10 @@ jobs:
             AWS_USER_ID: ${{ secrets.AWS_USER_ID }}
             AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
             CONFIG_STAGING_CLUSTER_NAME: ${{ secrets.CONFIG_STAGING_CLUSTER_NAME }}
+
+        - name: "Setup Helmsman"
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
+          run: curl -L https://github.com/Praqma/helmsman/releases/download/v3.4.1/helmsman_3.4.1_linux_amd64.tar.gz | tar zx && chmod +x helmsman && sudo mv ./helmsman /usr/local/bin/helmsman && helmsman
 
         - name: "Setup Helm + Helm Diff"
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
