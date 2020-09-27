@@ -172,6 +172,8 @@ apps:
     priority: -4
     setString:
       _global.namespace: "staging"
+      "efs-provisioner.efsProvisioner.efsFileSystemId": "EFS_ID"
+      "efs-provisioner.efsProvisioner.awsRegion": "eu-west-3"
 
   elassandra-staging:
     timeout: 1200
