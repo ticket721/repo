@@ -2156,13 +2156,13 @@ jobs:
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           run: yarn setup:submodules:clone
 
-        - name: "Setup Helmsman"
-          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-          run: curl -L https://github.com/Praqma/helmsman/releases/download/v3.4.1/helmsman_3.4.1_linux_amd64.tar.gz | tar zx && chmod +x helmsman && sudo mv ./helmsman /usr/local/bin/helmsman && helmsman
-
         - name: "Setup aws CLI"
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           uses: chrislennon/action-aws-cli@v1.1
+
+        - name: "Setup Helmsman"
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
+          run: curl -L https://github.com/Praqma/helmsman/releases/download/v3.4.1/helmsman_3.4.1_linux_amd64.tar.gz | tar zx && chmod +x helmsman && sudo mv ./helmsman /usr/local/bin/helmsman && helmsman
 
         - name: "Setup kubectl"
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
