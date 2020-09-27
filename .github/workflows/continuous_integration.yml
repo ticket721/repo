@@ -2180,15 +2180,11 @@ jobs:
 
         - name: "Setup Helmsman"
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-          run: curl -L https://github.com/Praqma/helmsman/releases/download/v3.4.2/helmsman_3.4.2_linux_amd64.tar.gz | tar zx && chmod +x helmsman && sudo mv ./helmsman /usr/local/bin/helmsman
+          run: curl -L https://github.com/Praqma/helmsman/releases/download/v3.4.4/helmsman_3.4.4_linux_amd64.tar.gz | tar zx && chmod +x helmsman && sudo mv ./helmsman /usr/local/bin/helmsman
 
         - name: "Fetch Helm Repos and Dependencies"
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           run: ./helm_prepare.sh
-
-        - name: "Run any command oh helmsman to test if working"
-          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-          run: cd modules/@infra_helmsman/ && helmsman --show-diff -f ./state.yaml
 
         - name: "Helmsman on staging infra (dry-run)"
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
