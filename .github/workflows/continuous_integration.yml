@@ -2123,7 +2123,7 @@ jobs:
 
     infra-dry-run:
       name: "[S3] infra (staging) dry run"
-      needs: [global, geoloc, sdk, server, server-e2e, flib-react, frontend-organizer-app, frontend-t721-app, frontend-staff-app, frontend-core]
+      # needs: [global, geoloc, sdk, server, server-e2e, flib-react, frontend-organizer-app, frontend-t721-app, frontend-staff-app, frontend-core]
       runs-on: ubuntu-latest
       steps:
 
@@ -2174,13 +2174,13 @@ jobs:
             AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
             CONFIG_STAGING_CLUSTER_NAME: ${{ secrets.CONFIG_STAGING_CLUSTER_NAME }}
 
-        - name: "Setup Helm + Helm Diff"
-          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-          run: curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/v3.3.1/scripts/get-helm-3 | bash && helm plugin install https://github.com/databus23/helm-diff --version v3.1.1 && helm version
-
         - name: "Setup Helmsman"
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           run: curl -L https://github.com/Praqma/helmsman/releases/download/v3.4.1/helmsman_3.4.1_linux_amd64.tar.gz | tar zx && chmod +x helmsman && sudo mv ./helmsman /usr/local/bin/helmsman && helmsman
+
+        - name: "Setup Helm + Helm Diff"
+          if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
+          run: curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/v3.3.1/scripts/get-helm-3 | bash && helm plugin install https://github.com/databus23/helm-diff --version v3.1.1 && helm version
 
         - name: "Fetch Helm Repos and Dependencies"
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
