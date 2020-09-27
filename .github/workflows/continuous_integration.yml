@@ -2170,7 +2170,7 @@ jobs:
 
         - name: "Setup kubeconfig"
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-          run: aws eks update-kubeconfig --name ${CONFIG_STAGING_CLUSTER_NAME}
+          run: aws eks update-kubeconfig --name ${CONFIG_STAGING_CLUSTER_NAME} && kubectl get pod
           env:
             AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
             AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
