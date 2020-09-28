@@ -20,9 +20,9 @@ var migration1600892344 = {
                         await db.execute(`UPDATE ticket721.date SET metadata={
                                                                     name: '${date.metadata.name}',
                                                                     description: '${date.metadata.description}',
-                                                                    tags: [${date.metadata.tags.map(t => `'${t}'`).join(',')}],
+                                                                    tags: [${date.metadata.tags ? date.metadata.tags.map(t => `'${t}'`).join(',') : ''}],
                                                                     avatar: 'https://ticket721.s3.eu-west-3.amazonaws.com/public/placeholder.png',
-                                                                    signature_colors: [${date.metadata.signature_colors.map(sc => `'${sc}'`).join(',')}]
+                                                                    signature_colors: [${date.metadata.signature_colors ? date.metadata.signature_colors.map(sc => `'${sc}'`).join(',') : ''}]
                                           } WHERE id=${date.id};`, [], { prepare: true })
                     }
 
