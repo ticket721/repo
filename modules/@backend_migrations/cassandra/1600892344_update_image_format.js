@@ -18,7 +18,7 @@ var migration1600892344 = {
 
                         console.log(`Updating date ${date.id}`);
                         await db.execute(`UPDATE ticket721.date SET metadata={
-                                                                    name: '${date.metadata.name}',
+                                                                    name: '${date.metadata.name.replace("'", "''")}',
                                                                     description: '${date.metadata.description.replace("'", "''")}',
                                                                     tags: [${date.metadata.tags ? date.metadata.tags.map(t => `'${t.replace("'", "''")}'`).join(',') : ''}],
                                                                     avatar: 'https://ticket721.s3.eu-west-3.amazonaws.com/public/placeholder.png',
