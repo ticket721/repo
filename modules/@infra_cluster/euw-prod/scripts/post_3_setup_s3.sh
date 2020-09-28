@@ -24,5 +24,13 @@ aws s3api put-bucket-policy --bucket ticket721 --policy '{
          ]
      }';
 aws s3api put-object --bucket ticket721 --key public/
+aws s3api put-bucket-cors --bucket ticket721 --cors-configuration '{
+       "CORSRules": [
+         {
+           "AllowedMethods": ["GET"],
+           "AllowedOrigins": ["*"]
+         }
+       ]
+     }'
 
 

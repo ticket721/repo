@@ -50,9 +50,6 @@ data:
 
     EMAIL_TEMPLATE_PATH=../@backend_email-templates
 
-    IMAGE_MAX_SIZE=5
-    IMAGE_SERVE_DIRECTORY=./images
-
     GLOBAL_CONFIG_BLOCK_NUMBER_FETCHING_RATE={{ required "[worker] Missing config.globalConfig.blockNumberFetchingRate value" .Values.config.globalConfig.blockNumberFetchingRate }}
     GLOBAL_CONFIG_ETHEREUM_PRICE_FETCHING_RATE={{ required "[worker] Missing config.globalConfig.ethereumPriceFetchingRate value" .Values.config.globalConfig.ethereumPriceFetchingRate }}
     GLOBAL_CONFIG_BINANCE_MOCK={{ required "[worker] Missing config.globalConfig.binanceMock value" .Values.config.globalConfig.binanceMock }}
