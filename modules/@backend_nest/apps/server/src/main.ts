@@ -40,13 +40,15 @@ async function main() {
 
     app.use(json({ limit: '6mb' }));
 
-    app.use(
-        '/static',
-        cors(),
-        express.static(configService.get('IMAGE_SERVE_DIRECTORY'), {
-            extensions: ['png', 'jpg', 'gif', 'svg', 'bmp'],
-        }),
-    );
+    if (process.env.NODE_ENV !== 'production') {
+        app.use(
+            '/static',
+            cors(),
+            express.static(configService.get('IMAGE_SERVE_DIRECTORY'), {
+                extensions: ['png', 'jpg', 'gif', 'svg', 'bmp'],
+            }),
+        );
+    }
 
     const options = new DocumentBuilder()
         .setTitle('T721 API')

@@ -3,7 +3,7 @@ import { TxsRepository } from '@lib/common/txs/Txs.repository';
 import { GlobalConfigService } from '@lib/common/globalconfig/GlobalConfig.service';
 import { Web3Service } from '@lib/common/web3/Web3.service';
 import { T721AdminService } from '@lib/common/contracts/T721Admin.service';
-import { anything, deepEqual, instance, mock, spy, verify, when } from 'ts-mockito';
+import { deepEqual, instance, mock, spy, verify, when } from 'ts-mockito';
 import { EsSearchOptionsStatic } from '@iaminfinity/express-cassandra/dist/orm/interfaces/externals/express-cassandra.interface';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from '@iaminfinity/express-cassandra/dist/utils/cassandra-orm.utils';
@@ -54,9 +54,6 @@ describe('Txs Service', function() {
             blockThreshold: 2,
             blockPollingRefreshRate: 1000,
             ethereumNetworkId: 2702,
-            ethereumMtxDomainName: 'Refract Wallet',
-            ethereumMtxVersion: '0',
-            ethereumMtxRelayAdmin: 'admin_0',
             targetGasPrice: 150,
         };
         context.globalConfigServiceMock = mock(GlobalConfigService);

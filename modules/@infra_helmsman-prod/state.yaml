@@ -275,22 +275,30 @@ apps:
       config.serverEndpoint.port: "443"
       config.serverEndpoint.protocol: "https"
 
+      config.organizer.self: "https://organizer.ticket721.com"
       config.organizer.segmentApiKey: "${CONFIG_PRODUCTION_ORGANIZER_SEGMENT_API_KEY}"
+      config.organizer.publishableStripeApiKey: "${CONFIG_PRODUCTION_ORGANIZER_PUBLISHABLE_STRIPE_API_KEY}"
+
       config.t721app.segmentApiKey: "${CONFIG_PRODUCTION_T721APP_SEGMENT_API_KEY}"
-      config.staff.segmentApiKey: "${CONFIG_PRODUCTION_STAFF_SEGMENT_API_KEY}"
-      config.staff.organizerUrl: "https://organizer.ticket721.com"
       config.t721app.publishableStripeApiKey: "${CONFIG_PRODUCTION_T721APP_PUBLISHABLE_STRIPE_API_KEY}"
       config.t721app.iosAppId: "${CONFIG_PRODUCTION_T721APP_IOS_APPID}"
       config.t721app.itunesId: "${CONFIG_PRODUCTION_T721APP_ITUNES_ID}"
       config.t721app.androidAppId: "${CONFIG_PRODUCTION_T721APP_ANDROID_APPID}"
       config.t721app.androidCertificateSignature: "${CONFIG_PRODUCTION_T721APP_ANDROID_CERTIFICATE_SIGNATURE}"
-      config.etherscanUrl: "${CONFIG_PRODUCTION_ETHERSCAN_URL}"
       config.t721app.appStoreLink: "${CONFIG_PRODUCTION_T721APP_APPSTORE_LINK}"
       config.t721app.playStoreLink: "${CONFIG_PRODUCTION_T721APP_PLAYSTORE_LINK}"
       config.t721app.self: "https://app.ticket721.com"
+
+      config.staff.segmentApiKey: "${CONFIG_PRODUCTION_STAFF_SEGMENT_API_KEY}"
+      config.staff.organizerUrl: "https://organizer.ticket721.com"
       config.staff.self: "https://staff.ticket721.com"
-      config.organizer.self: "https://organizer.ticket721.com"
-      config.organizer.publishableStripeApiKey: "${CONFIG_PRODUCTION_ORGANIZER_PUBLISHABLE_STRIPE_API_KEY}"
+
+      config.etherscanUrl: "${CONFIG_PRODUCTION_ETHERSCAN_URL}"
+
+      config.s3.region: "${CONFIG_PRODUCTION_IMAGE_S3_REGION}"
+      config.s3.accessKeyId: "${CONFIG_PRODUCTION_IMAGE_S3_ACCESS_KEY_ID}"
+      config.s3.secretAccessKey: "${CONFIG_PRODUCTION_IMAGE_S3_SECRET_ACCESS_KEY}"
+      config.s3.bucketName: "${CONFIG_PRODUCTION_IMAGE_S3_BUCKET_NAME}"
 
       server.image.repository: "097558125954.dkr.ecr.eu-west-3.amazonaws.com/ticket721/server"
       server.image.tag: "${TAG}"

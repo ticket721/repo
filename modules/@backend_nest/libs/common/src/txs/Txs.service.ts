@@ -30,21 +30,6 @@ export interface TxsServiceOptions {
     ethereumNetworkId: number;
 
     /**
-     * Domain Name for the Meta Transactions
-     */
-    ethereumMtxDomainName: string;
-
-    /**
-     * Version for the Meta Transactions
-     */
-    ethereumMtxVersion: string;
-
-    /**
-     * Admin to use to relay the MetaTransactions
-     */
-    ethereumMtxRelayAdmin: string;
-
-    /**
      * Amount of euros to spend at most for a transaction
      */
     targetGasPrice: number;

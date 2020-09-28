@@ -114,15 +114,15 @@ jobs:
 
         - name: "Setup aws CLI"
           if: steps.wait-for-build.outputs.conclusion == 'success'
-          uses: chrislennon/action-aws-cli@v1.1
+          run: curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-2.0.30.zip" -o "awscliv2.zip" && unzip awscliv2.zip && sudo ./aws/install && aws --version
 
         - name: "Setup kubectl"
           if: steps.wait-for-build.outputs.conclusion == 'success'
-          run: curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.18.0/bin/linux/amd64/kubectl && chmod +x kubectl && sudo mv ./kubectl /usr/local/bin/kubectl
+          run: curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.19.2/bin/linux/amd64/kubectl && chmod +x kubectl && sudo mv ./kubectl /usr/local/bin/kubectl
 
         - name: "Setup kubeconfig"
           if: steps.wait-for-build.outputs.conclusion == 'success'
-          run: aws eks update-kubeconfig --name ${CONFIG_PRODUCTION_CLUSTER_NAME}
+          run: aws eks update-kubeconfig --name ${CONFIG_STAGING_CLUSTER_NAME} && kubectl get pod && chmod 600 ~/.kube/config
           env:
             AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
             AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -132,11 +132,11 @@ jobs:
 
         - name: "Setup Helm + Helm Diff"
           if: steps.wait-for-build.outputs.conclusion == 'success'
-          run: curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash && helm plugin install https://github.com/databus23/helm-diff --version master
+          run: curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/v3.3.1/scripts/get-helm-3 | bash && helm plugin install https://github.com/databus23/helm-diff --version v3.1.1 && helm version
 
         - name: "Setup Helmsman"
           if: steps.wait-for-build.outputs.conclusion == 'success'
-          run: curl -L https://github.com/Praqma/helmsman/releases/download/v3.4.2/helmsman_3.4.2_linux_amd64.tar.gz | tar zx && chmod +x helmsman && sudo mv ./helmsman /usr/local/bin/helmsman
+          run: curl -L https://github.com/Praqma/helmsman/releases/download/v3.4.1/helmsman_3.4.1_linux_amd64.tar.gz | tar zx && chmod +x helmsman && sudo mv ./helmsman /usr/local/bin/helmsman && helmsman --verbose
 
         - name: "Fetch Helm Repos and Dependencies"
           if: steps.wait-for-build.outputs.conclusion == 'success'
@@ -169,6 +169,10 @@ jobs:
             CONFIG_PRODUCTION_T721APP_ITUNES_ID: ${{ secrets.CONFIG_PRODUCTION_T721APP_ITUNES_ID }}
             CONFIG_PRODUCTION_T721APP_APPSTORE_LINK: ${{ secrets.CONFIG_PRODUCTION_T721APP_APPSTORE_LINK }}
             CONFIG_PRODUCTION_T721APP_PLAYSTORE_LINK: ${{ secrets.CONFIG_PRODUCTION_T721APP_PLAYSTORE_LINK }}
+            CONFIG_PRODUCTION_IMAGE_S3_REGION: ${{ secrets.CONFIG_PRODUCTION_IMAGE_S3_REGION }}
+            CONFIG_PRODUCTION_IMAGE_S3_ACCESS_KEY_ID: ${{ secrets.CONFIG_PRODUCTION_IMAGE_S3_ACCESS_KEY_ID }}
+            CONFIG_PRODUCTION_IMAGE_S3_SECRET_ACCESS_KEY: ${{ secrets.CONFIG_PRODUCTION_IMAGE_S3_SECRET_ACCESS_KEY }}
+            CONFIG_PRODUCTION_IMAGE_S3_BUCKET_NAME: ${{ secrets.CONFIG_PRODUCTION_IMAGE_S3_BUCKET_NAME }}
 
             AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
             AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -202,6 +206,10 @@ jobs:
             CONFIG_PRODUCTION_T721APP_ITUNES_ID: ${{ secrets.CONFIG_PRODUCTION_T721APP_ITUNES_ID }}
             CONFIG_PRODUCTION_T721APP_APPSTORE_LINK: ${{ secrets.CONFIG_PRODUCTION_T721APP_APPSTORE_LINK }}
             CONFIG_PRODUCTION_T721APP_PLAYSTORE_LINK: ${{ secrets.CONFIG_PRODUCTION_T721APP_PLAYSTORE_LINK }}
+            CONFIG_PRODUCTION_IMAGE_S3_REGION: ${{ secrets.CONFIG_PRODUCTION_IMAGE_S3_REGION }}
+            CONFIG_PRODUCTION_IMAGE_S3_ACCESS_KEY_ID: ${{ secrets.CONFIG_PRODUCTION_IMAGE_S3_ACCESS_KEY_ID }}
+            CONFIG_PRODUCTION_IMAGE_S3_SECRET_ACCESS_KEY: ${{ secrets.CONFIG_PRODUCTION_IMAGE_S3_SECRET_ACCESS_KEY }}
+            CONFIG_PRODUCTION_IMAGE_S3_BUCKET_NAME: ${{ secrets.CONFIG_PRODUCTION_IMAGE_S3_BUCKET_NAME }}
 
             AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
             AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

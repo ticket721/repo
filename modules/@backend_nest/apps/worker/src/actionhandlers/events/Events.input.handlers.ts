@@ -4,7 +4,6 @@ import { Injectable, OnModuleInit } from '@nestjs/common';
 import Joi from '@hapi/joi';
 import { City, closestCity, Coordinates } from '@common/geoloc';
 import { serialize } from '@common/global';
-import { ImagesService } from '@lib/common/images/Images.service';
 import { ChecksRunnerUtil } from '@lib/common/actionsets/helper/ChecksRunner.util';
 import { EventCreationActions } from '@lib/common/events/acset_builders/EventCreate.acsetbuilder.helper';
 
@@ -217,9 +216,8 @@ export class EventsInputHandlers implements OnModuleInit {
      * Dependency Injection
      *
      * @param actionSetsService
-     * @param imagesService
      */
-    constructor(private readonly actionSetsService: ActionSetsService, private readonly imagesService: ImagesService) {}
+    constructor(private readonly actionSetsService: ActionSetsService) {}
 
     /**
      * events/textMetadata dynamic argument checker
@@ -299,7 +297,7 @@ export class EventsInputHandlers implements OnModuleInit {
      */
     imagesMetadataValidator = Joi.object<EventsCreateImagesMetadata>({
         avatar: Joi.string()
-            .uuid()
+            .uri()
             .optional(),
         signatureColors: Joi.array()
             .items(Joi.string().regex(/^#[A-Fa-f0-9]{6}/))
@@ -352,21 +350,6 @@ export class EventsInputHandlers implements OnModuleInit {
             }
 
             case undefined: {
-                const avatarQuery = await this.imagesService.search({
-                    id: data.avatar,
-                });
-
-                if (avatarQuery.error || avatarQuery.response.length === 0) {
-                    actionset.action.setError({
-                        details: error,
-                        error: 'cannot_find_image',
-                    });
-                    actionset.action.setStatus('error');
-                    actionset.setStatus('input:error');
-                    await progress(100);
-                    return [actionset, true];
-                }
-
                 actionset.next();
 
                 break;

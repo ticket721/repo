@@ -14,6 +14,8 @@ spec:
       containers:
         - name: {{ include "platform.fullname" . }}--migration-job
           env:
+            - name: VERBOSE
+              value: "true"
             - name: CASSANDRA_HOSTS
               value: "{{ .Values.config.cassandra.host }}"
             - name: CASSANDRA_PORT

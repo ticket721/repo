@@ -11,7 +11,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useLazyRequest }           from '@frontend/core/lib/hooks/useLazyRequest';
 import { MergedAppState }           from '../../../index';
 import { EventCreationCore }        from '../../../core/event_creation/EventCreationCore';
-import { ImageEntity }              from '@common/sdk/lib/@backend_nest/libs/common/src/images/entities/Image.entity';
 import { PushNotification }         from '@frontend/core/lib/redux/ducks/notifications';
 import { getImgPath }               from '@frontend/core/lib/utils/images';
 import { ColorPickers }             from '../../../components/ColorPickers';
@@ -69,9 +68,9 @@ export const StylesForm: React.FC<StylesFormProps> = (props: StylesFormProps) =>
         setLoadingImg(true);
         files.forEach((file) => formData.append('images', file));
         EventCreationCore.uploadImages(token, formData, {})
-            .then((ids: ImageEntity[]) => {
+            .then((urls: string[]) => {
                 formik.setFieldTouched('avatar');
-                formik.setFieldValue('avatar', ids[0].id);
+                formik.setFieldValue('avatar', urls[0]);
             }).catch((error) => {
             dispatch(PushNotification(t('error_notifications:' + error.message), 'error'));
         });

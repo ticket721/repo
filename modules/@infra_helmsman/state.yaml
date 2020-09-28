@@ -162,7 +162,7 @@ apps:
     name: "efs-provisioner-staging"
     description: "EFS Storage Provider, allowing pods to mount EFS volumes in the filesystem"
     namespace: "staging"
-    enabled: true
+    enabled: false
     group: "critical"
     chart: "../@infra_efs-provisioner/efs-provisioner"
     version: "0.1.0"
@@ -172,7 +172,7 @@ apps:
     priority: -4
     setString:
       _global.namespace: "staging"
-      "efs-provisioner.efsProvisioner.efsFileSystemId": "${CONFIG_STAGING_EFS_ID}"
+      "efs-provisioner.efsProvisioner.efsFileSystemId": "EFS_ID"
       "efs-provisioner.efsProvisioner.awsRegion": "eu-west-3"
 
   elassandra-staging:
@@ -222,8 +222,6 @@ apps:
     priority: -1
     setString:
       _global.namespace: "staging"
-
-      server.fsName: "${CONFIG_STAGING_EFS_ID}"
 
       config.ticketScope: "ticket721_0"
       config.artifact: "live_ropsten"
@@ -279,19 +277,27 @@ apps:
       config.serverEndpoint.port: "443"
       config.serverEndpoint.protocol: "https"
 
-      config.organizer.segmentApiKey: "${CONFIG_STAGING_ORGANIZER_SEGMENT_API_KEY}"
       config.t721app.segmentApiKey: "${CONFIG_STAGING_T721APP_SEGMENT_API_KEY}"
-      config.staff.segmentApiKey: "${CONFIG_STAGING_STAFF_SEGMENT_API_KEY}"
-      config.staff.organizerUrl: "https://organizer.staging.ticket721.com"
       config.t721app.publishableStripeApiKey: "${CONFIG_STAGING_T721APP_PUBLISHABLE_STRIPE_API_KEY}"
       config.t721app.itunesId: "${CONFIG_STAGING_T721APP_ITUNES_ID}"
       config.t721app.appStoreLink: "${CONFIG_STAGING_T721APP_APPSTORE_LINK}"
       config.t721app.playStoreLink: "${CONFIG_STAGING_T721APP_PLAYSTORE_LINK}"
       config.t721app.self: "https://app.staging.ticket721.com"
+
+      config.staff.segmentApiKey: "${CONFIG_STAGING_STAFF_SEGMENT_API_KEY}"
+      config.staff.organizerUrl: "https://organizer.staging.ticket721.com"
       config.staff.self: "https://staff.staging.ticket721.com"
+
       config.organizer.self: "https://organizer.staging.ticket721.com"
       config.organizer.publishableStripeApiKey: "${CONFIG_STAGING_ORGANIZER_PUBLISHABLE_STRIPE_API_KEY}"
+      config.organizer.segmentApiKey: "${CONFIG_STAGING_ORGANIZER_SEGMENT_API_KEY}"
+
       config.etherscanUrl: "${CONFIG_STAGING_ETHERSCAN_URL}"
+
+      config.s3.region: "${CONFIG_STAGING_IMAGE_S3_REGION}"
+      config.s3.accessKeyId: "${CONFIG_STAGING_IMAGE_S3_ACCESS_KEY_ID}"
+      config.s3.secretAccessKey: "${CONFIG_STAGING_IMAGE_S3_SECRET_ACCESS_KEY}"
+      config.s3.bucketName: "${CONFIG_STAGING_IMAGE_S3_BUCKET_NAME}"
 
       server.image.repository: "097558125954.dkr.ecr.eu-west-3.amazonaws.com/ticket721/server"
       server.image.tag: "${TAG}"

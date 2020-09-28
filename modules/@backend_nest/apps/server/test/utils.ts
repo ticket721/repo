@@ -668,7 +668,7 @@ export const createEventWithUltraVIP = async (token: string, sdk: T721SDK): Prom
         form.getHeaders(),
     );
 
-    const avatarId = imageUploadRes.data.ids[0].id;
+    const avatarId = imageUploadRes.data.urls[0];
 
     await sdk.events.create.imagesMetadata(token, actionSetId, {
         avatar: avatarId,
@@ -913,7 +913,7 @@ export const editEventActionSet = async (token: string, sdk: T721SDK, actionSetI
         form.getHeaders(),
     );
 
-    const avatarId = imageUploadRes.data.ids[0].id;
+    const avatarId = imageUploadRes.data.urls[0];
 
     await sdk.events.create.imagesMetadata(token, actionSetId, {
         avatar: avatarId,
@@ -971,7 +971,7 @@ export const createEventActionSet = async (token: string, sdk: T721SDK): Promise
         form.getHeaders(),
     );
 
-    const avatarId = imageUploadRes.data.ids[0].id;
+    const avatarId = imageUploadRes.data.urls[0];
 
     await sdk.events.create.imagesMetadata(token, actionSetId, {
         avatar: avatarId,
@@ -1119,7 +1119,7 @@ export const createLostEvent = async (token: string, sdk: T721SDK): Promise<Even
         form.getHeaders(),
     );
 
-    const avatarId = imageUploadRes.data.ids[0].id;
+    const avatarId = imageUploadRes.data.urls[0];
 
     await sdk.events.create.imagesMetadata(token, actionSetId, {
         avatar: avatarId,
@@ -1275,7 +1275,7 @@ export const createFuzzyEvent = async (token: string, sdk: T721SDK): Promise<Eve
         form.getHeaders(),
     );
 
-    const avatarId = imageUploadRes.data.ids[0].id;
+    const avatarId = imageUploadRes.data.urls[0];
 
     await sdk.events.create.imagesMetadata(token, actionSetId, {
         avatar: avatarId,
@@ -1431,7 +1431,7 @@ export const createEvent = async (token: string, sdk: T721SDK): Promise<EventDto
         form.getHeaders(),
     );
 
-    const avatarId = imageUploadRes.data.ids[0].id;
+    const avatarId = imageUploadRes.data.urls[0];
 
     await sdk.events.create.imagesMetadata(token, actionSetId, {
         avatar: avatarId,
@@ -1583,7 +1583,7 @@ export const createExpensiveEvent = async (token: string, sdk: T721SDK): Promise
         form.getHeaders(),
     );
 
-    const avatarId = imageUploadRes.data.ids[0].id;
+    const avatarId = imageUploadRes.data.urls[0];
 
     await sdk.events.create.imagesMetadata(token, actionSetId, {
         avatar: avatarId,
@@ -1735,7 +1735,7 @@ export const createLimitedEvent = async (token: string, sdk: T721SDK): Promise<E
         form.getHeaders(),
     );
 
-    const avatarId = imageUploadRes.data.ids[0].id;
+    const avatarId = imageUploadRes.data.urls[0];
 
     await sdk.events.create.imagesMetadata(token, actionSetId, {
         avatar: avatarId,

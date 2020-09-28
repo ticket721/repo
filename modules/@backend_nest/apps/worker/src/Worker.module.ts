@@ -10,7 +10,6 @@ import { UsersRepository } from '@lib/common/users/Users.repository';
 import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
 import { ActionSetsRepository } from '@lib/common/actionsets/ActionSets.repository';
 import { UsersModule } from '@lib/common/users/Users.module';
-import { ImagesModule } from '@lib/common/images/Images.module';
 import { ActionSetsModule } from '@lib/common/actionsets/ActionSets.module';
 import { DatesModule } from '@lib/common/dates/Dates.module';
 import { EventsModule } from '@lib/common/events/Events.module';
@@ -82,7 +81,6 @@ import { StripeModule } from '@lib/common/stripe/Stripe.module';
 
         // Cassandra Table Modules & Utils
         UsersModule,
-        ImagesModule,
         ActionSetsModule,
         DatesModule,
         RightsModule,
@@ -123,8 +121,8 @@ import { StripeModule } from '@lib/common/stripe/Stripe.module';
                 host: configService.get('ETHEREUM_NODE_HOST'),
                 port: configService.get('ETHEREUM_NODE_PORT'),
                 protocol: configService.get('ETHEREUM_NODE_PROTOCOL'),
-                headers: toHeaderFormat(JSON.parse(configService.get('ETHEREUM_NODE_HEADERS') || '{}')),
-                path: configService.get('ETHEREUM_NODE_PATH'),
+                headers: toHeaderFormat(JSON.parse(configService.get('ETHEREUM_NODE_HEADERS', '{}'))),
+                path: configService.get('ETHEREUM_NODE_PATH', null),
             }),
             inject: [ConfigService],
         }),
@@ -139,9 +137,6 @@ import { StripeModule } from '@lib/common/stripe/Stripe.module';
                 blockThreshold: parseInt(configService.get('TXS_BLOCK_THRESHOLD'), 10),
                 blockPollingRefreshRate: parseInt(configService.get('TXS_BLOCK_POLLING_REFRESH_RATE'), 10),
                 ethereumNetworkId: parseInt(configService.get('ETHEREUM_NODE_NETWORK_ID'), 10),
-                ethereumMtxDomainName: configService.get('ETHEREUM_MTX_DOMAIN_NAME'),
-                ethereumMtxVersion: configService.get('ETHEREUM_MTX_VERSION'),
-                ethereumMtxRelayAdmin: configService.get('VAULT_ETHEREUM_ASSIGNED_ADMIN'),
                 targetGasPrice: parseInt(configService.get('TXS_TARGET_GAS_PRICE'), 10),
             }),
             inject: [ConfigService],
