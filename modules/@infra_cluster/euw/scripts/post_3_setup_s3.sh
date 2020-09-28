@@ -24,5 +24,13 @@ aws s3api put-bucket-policy --bucket ticket721-staging --policy '{
          ]
      }';
 aws s3api put-object --bucket ticket721-staging --key public/
+aws s3api put-bucket-cors --bucket ticket721-staging --cors-configuration '{
+       "CORSRules": [
+         {
+           "AllowedMethods": ["GET"],
+           "AllowedOrigins": ["*"]
+         }
+       ]
+     }'
 
 
