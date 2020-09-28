@@ -289,6 +289,7 @@ apps:
       config.staff.self: "https://staff.staging.ticket721.com"
 
       config.organizer.self: "https://organizer.staging.ticket721.com"
+      config.organizer.publishableStripeApiKey: "${CONFIG_STAGING_ORGANIZER_PUBLISHABLE_STRIPE_API_KEY}"
       config.organizer.segmentApiKey: "${CONFIG_STAGING_ORGANIZER_SEGMENT_API_KEY}"
 
       config.etherscanUrl: "${CONFIG_STAGING_ETHERSCAN_URL}"

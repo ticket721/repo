@@ -277,6 +277,7 @@ apps:
 
       config.organizer.self: "https://organizer.ticket721.com"
       config.organizer.segmentApiKey: "${CONFIG_PRODUCTION_ORGANIZER_SEGMENT_API_KEY}"
+      config.organizer.publishableStripeApiKey: "${CONFIG_PRODUCTION_ORGANIZER_PUBLISHABLE_STRIPE_API_KEY}"
 
       config.t721app.segmentApiKey: "${CONFIG_PRODUCTION_T721APP_SEGMENT_API_KEY}"
       config.t721app.publishableStripeApiKey: "${CONFIG_PRODUCTION_T721APP_PUBLISHABLE_STRIPE_API_KEY}"

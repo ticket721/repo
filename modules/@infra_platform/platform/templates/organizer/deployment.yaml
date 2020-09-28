@@ -39,6 +39,8 @@ spec:
               value: '{{ required "[organizer] Missing config.serverEndpoint.port value" .Values.config.serverEndpoint.port }}'
             - name: REACT_APP_T721_SERVER_PROTOCOL
               value: '{{ required "[organizer] Missing config.serverEndpoint.protocol value" .Values.config.serverEndpoint.protocol }}'
+            - name: REACT_APP_STRIPE_API_KEY
+              value: '{{ required "[organizer] Missing config.organizer.publishableStripeApiKey value" .Values.config.organizer.publishableStripeApiKey }}'
             - name: REACT_APP_ARTIFACT_PATH
               value: '../../artifacts/{{ required "[organizer] Missing config.artifact value" .Values.config.artifact }}'
             - name: REACT_APP_GOOGLE_PLACES_API_KEY
