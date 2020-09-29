@@ -47,11 +47,11 @@ export function serialize(text: string): string {
 
 export function isValidDateRange(begin: Date, end: Date): boolean {
     if (!begin || !end) return false;
-    return (end.getTime() > begin.getTime());
+    return (end.getTime() >= begin.getTime());
 }
 
 export function isFutureDateRange(begin: Date, end: Date): boolean {
-    return (isValidDateRange(begin, end) && (begin.getTime() > Date.now()));
+    return (isValidDateRange(begin, end) && (begin.getTime() >= Date.now()));
 }
 
 export function toHex(data: string): string {

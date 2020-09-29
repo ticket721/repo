@@ -77,7 +77,7 @@ const MobileApp: React.FC = () => {
         <Suspense fallback={<FullPageLoading/>}>
             <UserContextGuard>
                 <AppContainer>
-                    <MediaQuery maxDeviceWidth={1224}>
+                    <MediaQuery maxWidth={1224}>
                         {location.pathname.lastIndexOf('/') !== 0 &&
                         location.pathname.indexOf('/_/') !== 0 ? (
                             <TopNavWrapper back={goBackOrHome}/>
@@ -199,7 +199,7 @@ const MobileApp: React.FC = () => {
 
                         <Redirect to={'/'}/>
                     </Switch>
-                    <MediaQuery maxDeviceWidth={1224}>
+                    <MediaQuery maxWidth={1224}>
                         <T721Navbar
                             visible={
                                 location.pathname.lastIndexOf('/') === 0 &&

@@ -125,6 +125,15 @@ describe('Utils', function () {
 
         });
 
+        it('equal dates', function() {
+
+            const begin = new Date(Date.now() - 1000 * 120);
+            const end = new Date(Date.now() - 1000 * 120);
+
+            expect(isValidDateRange(begin, end)).toBeTruthy();
+
+        });
+
     });
     describe('isFutureDateRange', function() {
 
@@ -154,6 +163,15 @@ describe('Utils', function () {
 
             const begin = new Date(Date.now() + 1000 * 60);
             const end = new Date(Date.now() + 1000 * 120);
+
+            expect(isFutureDateRange(begin, end)).toBeTruthy();
+
+        });
+
+        it('is same futur date twice', function() {
+
+            const begin = new Date(Date.now() + 1000 * 60);
+            const end = new Date(Date.now() + 1000 * 60);
 
             expect(isFutureDateRange(begin, end)).toBeTruthy();
 

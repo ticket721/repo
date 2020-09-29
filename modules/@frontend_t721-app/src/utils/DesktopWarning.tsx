@@ -36,10 +36,10 @@ const StoreButton = styled.img`
 const DesktopWarningComponent: React.FC = (props: any): JSX.Element => {
 
     return <>
-        <MediaQuery maxDeviceWidth={1224}>
+        <MediaQuery maxWidth={1224}>
             {props.children}
         </MediaQuery>
-        <MediaQuery minDeviceWidth={1224}>
+        <MediaQuery minWidth={1224}>
             <DesktopWarningContainer>
                 <div style={{display: 'flex', flexDirection: 'row'}}>
                     <DesktopWarningIllustrationImg src={DesktopWarningIllustration} height={'10%'}/>
