@@ -1,4 +1,3 @@
 import { StripeSetup }              from '@frontend/core/lib/components/StripeSetup';
-import { DesktopWarning } from '../utils/DesktopWarning';
 
-export default DesktopWarning(StripeSetup());
+export default StripeSetup();
