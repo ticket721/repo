@@ -19,6 +19,7 @@ import '../locales';
 import { TicketsCountResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/tickets/dto/TicketsCountResponse.dto';
 import { UserContext } from '../../../utils/UserContext';
 import { FeatureFlag } from '../../FeatureFlag';
+import { getEnv } from '../../../utils/getEnv';
 
 export interface ProfileRootProps {
     desktop?: boolean;
@@ -108,6 +109,12 @@ const ProfileRoot: React.FC<ProfileRootProps> = ({ desktop, extraButtons }: Prof
                     currentLanguage={t(i18n.language.slice(0, 2))}
                     onClick={() => {
                         history.push(desktop ? history.location.pathname + '?profile=language' : 'profile/language');
+                    }}
+                />
+                <ArrowLink
+                    label={t('report_bug')}
+                    onClick={() => {
+                        window.location = getEnv().REACT_APP_BUG_REPORT_LINK;
                     }}
                 />
                 <ArrowLink

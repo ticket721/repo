@@ -293,6 +293,7 @@ apps:
       config.organizer.segmentApiKey: "${CONFIG_STAGING_ORGANIZER_SEGMENT_API_KEY}"
 
       config.etherscanUrl: "${CONFIG_STAGING_ETHERSCAN_URL}"
+      config.bugReportLink: "${CONFIG_BUG_REPORT_LINK}"
 
       config.s3.region: "${CONFIG_STAGING_IMAGE_S3_REGION}"
       config.s3.accessKeyId: "${CONFIG_STAGING_IMAGE_S3_ACCESS_KEY_ID}"
