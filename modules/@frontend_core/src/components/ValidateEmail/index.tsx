@@ -40,7 +40,15 @@ export const ValidateEmail: React.FC = () => {
     }, [elapsed]);
 
     useDeepEffect(() => {
+        console.log(
+            'loading',
+            lazyResendEmail.response.loading,
+            lazyResendEmail.response.called,
+            lastCalled,
+            multiplicator,
+        );
         if (!lazyResendEmail.response.loading && lazyResendEmail.response.called && lastCalled === multiplicator) {
+            console.log('resetting uuid');
             setUUID(v4());
             setElapsed(0);
             setMultiplicator(multiplicator + 1);
