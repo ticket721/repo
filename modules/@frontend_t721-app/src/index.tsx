@@ -23,7 +23,6 @@ import { searchInitialState, SearchReducer }                               from 
 import { cartInitialState, CartReducer, cartSaga }                         from './redux/ducks/cart';
 import { deviceWalletInitialState, DeviceWalletReducer, deviceWalletSaga } from './redux/ducks/device_wallet';
 import MediaQuery                                                          from 'react-responsive';
-import { getEnv }                                                          from '@frontend/core/lib/utils/getEnv';
 import styled                                                              from 'styled-components';
 import phone                     from './phone.png';
 import { FullPageLoading, Icon } from '@frontend/flib-react/lib/components';
@@ -45,24 +44,39 @@ const store: Store<T721AppState> = configureStore<any>({
     deviceWalletSaga,
 ]);
 
-const Inception = styled.iframe`
+interface ScaleOffsetProps {
+    scale: number;
+    offsetX: number;
+    offsetY: number;
+}
+
+const Inception = styled.iframe<ScaleOffsetProps>`
+  transform: scale(${props => props.scale});
+  transform-origin: bottom right;
   position: absolute;
   margin: 0;
-  bottom: 196px;
-  right: 185px;
+  bottom: ${props => props.offsetY}px;
+  right: ${props => props.offsetX}px;
   margin-right: 100px;
 `;
 
 const Info = styled.p`
   font-family: 'Gordita', Arial, Helvetica, sans-serif;
+  color: ${props => props.theme.textColor};
   font-size: 18px;
   opacity: 0.3;
   font-weight: 100;
-  margin: 0;
+  margin: ${props => props.theme.regularSpacing};
   margin-left: 100px;
 `
 
-const Phone = styled.img`
+interface ScaleProps {
+    scale: number;
+}
+
+const Phone = styled.img<ScaleProps>`
+  transform: scale(${props => props.scale});
+  transform-origin: bottom right;
   position: absolute;
   bottom: 0;
   right: 0;
@@ -77,7 +91,17 @@ const T721Icon = styled(Icon)`
 
 const Explanation = styled.h1`
   font-family: 'Gordita', Arial, Helvetica, sans-serif;
-  margin: 0;
+  color: ${props => props.theme.textColor};
+  margin: ${props => props.theme.regularSpacing};
+  margin-left: 100px;
+  max-width: 600px;
+  font-weight: 200;
+`;
+
+const Warning = styled.h2`
+  font-family: 'Gordita', Arial, Helvetica, sans-serif;
+  color: ${props => props.theme.textColor};
+  margin: ${props => props.theme.regularSpacing};
   margin-left: 100px;
   max-width: 600px;
   font-weight: 200;
@@ -92,6 +116,9 @@ const HandPhoneGlobalStyled = createGlobalStyle`
 const HandHoldingPhone = () => {
 
     const [t] = useTranslation('handphone')
+    const scale = window.innerHeight * 0.9 / 894;
+    const offsetX = 185 * scale;
+    const offsetY = 196 * scale;
 
     return <>
         <HandPhoneGlobalStyled/>
@@ -107,14 +134,19 @@ const HandHoldingPhone = () => {
                 }}
             >
                 <Explanation>{t('not_available')}</Explanation>
+                <Warning>{t('warning')}</Warning>
                 <Info>( {t('lend')} )</Info>
             </div>
             <Phone
+                scale={scale}
                 src={phone}
                 width={598}
             />
             <Inception
-                src={`${getEnv().REACT_APP_SELF}${window.location.pathname}`}
+                scale={scale}
+                offsetX={offsetX}
+                offsetY={offsetY}
+                src={`${window.location.href}`}
                 seamless
                 width={332}
                 height={660}

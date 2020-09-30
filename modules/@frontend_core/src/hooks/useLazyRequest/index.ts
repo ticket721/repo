@@ -55,6 +55,12 @@ export const useLazyRequest = <ReturnType>(method: string, initialUuid: string):
         };
     }, [args, initialUuid]);
 
+    useDeepEffect(() => {
+        return () => {
+            setCalled(false);
+        };
+    }, [initialUuid]);
+
     return {
         response,
         lazyRequest,
