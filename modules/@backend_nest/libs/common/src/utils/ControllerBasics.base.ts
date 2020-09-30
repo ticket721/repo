@@ -124,7 +124,6 @@ export class ControllerBasics<EntityType> {
         const res = await promise;
 
         if (res.error) {
-            console.log('error', res.error);
             throw new HttpException(
                 {
                     status: errorStatus,

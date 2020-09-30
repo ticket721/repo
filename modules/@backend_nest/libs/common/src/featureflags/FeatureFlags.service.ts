@@ -12,6 +12,11 @@ export interface Flag {
      * True if feature should be displayed
      */
     active: boolean;
+
+    /**
+     * Whitelisted IDs
+     */
+    whitelist?: string[];
 }
 
 /**
@@ -41,11 +46,19 @@ export class FeatureFlagsService {
      * @param config
      */
     public computeFlags(user: UserDto, config: Flags): Flags {
-        // Admins should have all flags always active
-        if (user.admin) {
-            for (const key of Object.keys(config)) {
+        for (const key of Object.keys(config)) {
+            // Admins should have all flags always active
+            if (user.admin) {
                 config[key].active = true;
             }
+
+            // Specific users can be targeted by flags
+            if (config[key].whitelist && config[key].whitelist.indexOf(user.id) !== -1) {
+                config[key].active = true;
+            }
+
+            // Clean up data we don;t want to send back
+            delete config[key].whitelist;
         }
 
         return config;

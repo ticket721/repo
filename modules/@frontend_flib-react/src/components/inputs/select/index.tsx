@@ -12,7 +12,7 @@ const customStyles = {
         cursor: 'pointer',
         fontSize: 14,
         fontWeight: 500,
-        padding: 12,
+        padding: '20px 1.5rem',
         transition: 'all 300ms ease',
         display: 'flex',
         alignItems: 'center',
@@ -24,16 +24,6 @@ const customStyles = {
     }),
     control: () => ({
         display: 'flex',
-    }),
-    indicatorsContainer: () => ({
-        display: 'flex',
-        position: 'relative' as 'relative',
-        top: '-1px',
-        padding: 6,
-
-        '& > div': {
-            padding: 0,
-        },
     }),
     indicatorSeparator: () => ({
         border: 'none',
@@ -72,16 +62,15 @@ const customStyles = {
         position: 'absolute' as 'absolute',
     }),
     valueContainer: () => ({
+        padding: '1rem 1.5rem',
         alignItems: 'center',
         display: 'flex',
         flex: 1,
-        paddingLeft: 8,
         flexWrap: 'wrap' as 'wrap',
     }),
     singleValue: () => ({
         fontSize: 14,
         fontWeight: 500,
-        padding: 4,
         opacity: 0.9,
     }),
 };
@@ -128,6 +117,7 @@ const Error = styled.span`
     font-weight: 500;
     left: 10px;
     position: absolute;
+    margin-left: ${(props) => props.theme.regularSpacing};
 `;
 
 const StyledInputContainer = styled.div<Partial<SelectProps>>`

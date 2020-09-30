@@ -1,7 +1,6 @@
 import { deepEqual, instance, mock, when } from 'ts-mockito';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ActionSetsService } from '@lib/common/actionsets/ActionSets.service';
-import { ImagesService } from '@lib/common/images/Images.service';
 import {
     EventsCreateImagesMetadata,
     EventsInputHandlers,
@@ -11,28 +10,21 @@ import { ActionSet } from '@lib/common/actionsets/helper/ActionSet.class';
 
 const context: {
     actionSetsServiceMock: ActionSetsService;
-    imagesServiceMock: ImagesService;
     eventsInputHandler: EventsInputHandlers;
 } = {
     actionSetsServiceMock: null,
-    imagesServiceMock: null,
     eventsInputHandler: null,
 };
 
 describe('Event Input Handlers', function() {
     beforeEach(async function() {
         context.actionSetsServiceMock = mock(ActionSetsService);
-        context.imagesServiceMock = mock(ImagesService);
 
         const module: TestingModule = await Test.createTestingModule({
             providers: [
                 {
                     provide: ActionSetsService,
                     useValue: instance(context.actionSetsServiceMock),
-                },
-                {
-                    provide: ImagesService,
-                    useValue: instance(context.imagesServiceMock),
                 },
                 EventsInputHandlers,
             ],
@@ -4188,31 +4180,9 @@ describe('Event Input Handlers', function() {
             const dispatched_at = created_at;
 
             const imagesMetadata: EventsCreateImagesMetadata = {
-                avatar: 'ec677b12-d420-43a6-a597-ef84bf09f845',
+                avatar: 'https://ticket721.s3.testurl/public/image-id',
                 signatureColors: ['#ff00ff', '#00ff00'],
             };
-
-            when(
-                context.imagesServiceMock.search(
-                    deepEqual({
-                        id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
-                    }),
-                ),
-            ).thenResolve({
-                error: null,
-                response: [
-                    {
-                        id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
-                        mimetype: 'type',
-                        size: 10000,
-                        encoding: 'encoding',
-                        hash: 'hash',
-                        links: 0,
-                        created_at,
-                        updated_at,
-                    },
-                ],
-            });
 
             const actionSetEntity: ActionSetEntity = {
                 id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
@@ -4262,169 +4232,6 @@ describe('Event Input Handlers', function() {
                 links: [],
                 current_action: 0,
                 current_status: 'complete',
-                name: '@event/creation',
-                created_at,
-                updated_at,
-                dispatched_at,
-            });
-        });
-
-        it('should fail on avatar empty res', async function() {
-            const created_at = new Date(Date.now());
-            const updated_at = created_at;
-            const dispatched_at = created_at;
-
-            const imagesMetadata = {
-                avatar: 'ec677b12-d420-43a6-a597-ef84bf09f845',
-                signatureColors: ['#ff00ff', '#00ff00'],
-            };
-
-            when(
-                context.imagesServiceMock.search(
-                    deepEqual({
-                        id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
-                    }),
-                ),
-            ).thenResolve({
-                error: null,
-                response: [],
-            });
-
-            const actionSetEntity: ActionSetEntity = {
-                id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
-                consumed: false,
-                actions: [
-                    {
-                        status: 'waiting',
-                        name: '@events/imagesMetadata',
-                        data: JSON.stringify(imagesMetadata),
-                        type: 'input',
-                        error: null,
-                        private: false,
-                    },
-                ],
-                links: [],
-                current_action: 0,
-                current_status: 'input:waiting',
-                name: '@event/creation',
-                created_at,
-                updated_at,
-                dispatched_at,
-            };
-
-            const actionSet: ActionSet = new ActionSet().load(actionSetEntity);
-            const progress = async (p: number) => {};
-
-            const [resActionSet, update] = await context.eventsInputHandler.imagesMetadataHandler(
-                context.eventsInputHandler.imagesMetadataFields,
-                actionSet,
-                progress,
-            );
-
-            expect(update).toEqual(true);
-            expect(resActionSet.raw).toEqual({
-                id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
-                consumed: false,
-                actions: [
-                    {
-                        status: 'error',
-                        name: '@events/imagesMetadata',
-                        data: JSON.stringify(imagesMetadata),
-                        type: 'input',
-                        error: '{"error":"cannot_find_image"}',
-                        private: false,
-                    },
-                ],
-                links: [],
-                current_action: 0,
-                current_status: 'input:error',
-                name: '@event/creation',
-                created_at,
-                updated_at,
-                dispatched_at,
-            });
-        });
-
-        it('should fail on avatar error res', async function() {
-            const created_at = new Date(Date.now());
-            const updated_at = created_at;
-            const dispatched_at = created_at;
-
-            const imagesMetadata = {
-                avatar: 'ec677b12-d420-43a6-a597-ef84bf09f845',
-                signatureColors: ['#ff00ff', '#00ff00'],
-            };
-
-            when(
-                context.imagesServiceMock.search(
-                    deepEqual({
-                        id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
-                    }),
-                ),
-            ).thenResolve({
-                error: 'unexpected_error',
-                response: [
-                    {
-                        id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
-                        mimetype: 'type',
-                        size: 10000,
-                        encoding: 'encoding',
-                        hash: 'hash',
-                        links: 0,
-                        created_at,
-                        updated_at,
-                    },
-                ],
-            });
-
-            const actionSetEntity: ActionSetEntity = {
-                id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
-                consumed: false,
-                actions: [
-                    {
-                        status: 'waiting',
-                        name: '@events/imagesMetadata',
-                        data: JSON.stringify(imagesMetadata),
-                        type: 'input',
-                        error: null,
-                        private: false,
-                    },
-                ],
-                links: [],
-                current_action: 0,
-                current_status: 'input:waiting',
-                name: '@event/creation',
-                created_at,
-                updated_at,
-                dispatched_at,
-            };
-
-            const actionSet: ActionSet = new ActionSet().load(actionSetEntity);
-            const progress = async (p: number) => {};
-
-            const [resActionSet, update] = await context.eventsInputHandler.imagesMetadataHandler(
-                context.eventsInputHandler.imagesMetadataFields,
-                actionSet,
-                progress,
-            );
-
-            expect(update).toEqual(true);
-            expect(resActionSet.raw).toEqual({
-                id: 'ec677b12-d420-43a6-a597-ef84bf09f845',
-                consumed: false,
-                actions: [
-                    {
-                        status: 'error',
-                        name: '@events/imagesMetadata',
-                        data: JSON.stringify(imagesMetadata),
-                        type: 'input',
-                        error: '{"error":"cannot_find_image"}',
-                        private: false,
-                    },
-                ],
-                links: [],
-                current_action: 0,
-                current_status: 'input:error',
                 name: '@event/creation',
                 created_at,
                 updated_at,
@@ -4545,7 +4352,7 @@ describe('Event Input Handlers', function() {
                         data: JSON.stringify(imagesMetadata),
                         type: 'input',
                         error:
-                            '{"details":{"_original":{"avatar":"abcd"},"details":[{"message":"\\"avatar\\" must be a valid GUID","path":["avatar"],"type":"string.guid","context":{"label":"avatar","value":"abcd","key":"avatar"}}]},"error":"validation_error"}',
+                            '{"details":{"_original":{"avatar":"abcd"},"details":[{"message":"\\"avatar\\" must be a valid uri","path":["avatar"],"type":"string.uri","context":{"label":"avatar","value":"abcd","key":"avatar"}}]},"error":"validation_error"}',
                         private: false,
                     },
                 ],

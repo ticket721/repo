@@ -106,6 +106,34 @@ export const routes: RouteDatum[] = [
         flag: 'admin_flag'
     },
     {
+        path: '/stripe/connect',
+        page: lazy(() => import('./routes/StripeSetup')),
+        protected: true,
+        flag: 'stripe_interface_setup'
+    },
+    {
+        path: '/stripe/create-bank-account',
+        page: lazy(() => import('./routes/StripeCreateBankAccount')),
+        protected: true,
+        flag: 'stripe_interface_setup'
+    },
+    {
+        path: '/stripe/withdraw',
+        page: lazy(() => import('./routes/StripeWithdraw')),
+        protected: true,
+        flag: 'stripe_interface_setup'
+    },
+    {
+        path: '/stripe/transactions',
+        page: lazy(() => import('./routes/StripeTransactions')),
+        protected: true,
+        flag: 'stripe_interface_setup'
+    },
+    {
+        path: '/_/redirect/close',
+        page: lazy(() => import('./routes/CloseRedirect')),
+    },
+    {
         path: '/',
         page: lazy(() => import('./routes/Dashboard')),
         protected: true,

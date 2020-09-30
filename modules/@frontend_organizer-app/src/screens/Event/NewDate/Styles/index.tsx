@@ -5,9 +5,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import { DropError, FilesUploader} from '@frontend/flib-react/lib/components';
 import { AppState }                from '@frontend/core/src/redux/ducks';
 import { PushNotification }        from '@frontend/core/lib/redux/ducks/notifications';
-import {
-    ImageEntity
-}                                  from '@common/sdk/lib/@backend_nest/libs/common/src/images/entities/Image.entity';
 import { getImgPath }              from '@frontend/core/lib/utils/images';
 import '../../../../shared/Translations/StylesForm';
 import '../../../../shared/Translations/global';
@@ -30,9 +27,9 @@ export const Styles: React.FC<StylesProps> = ({ formik }) => {
         const formData = new FormData();
         files.forEach((file) => formData.append('images', file));
         EventCreationCore.uploadImages(token, formData, {})
-            .then((ids: ImageEntity[]) => {
+            .then((urls: string[]) => {
                 formik.setFieldTouched('avatar');
-                formik.setFieldValue('avatar', ids[0].id);
+                formik.setFieldValue('avatar', urls[0]);
             }).catch((error) => {
             dispatch(PushNotification(t('error_notifications:' + error.message), 'error'));
         });

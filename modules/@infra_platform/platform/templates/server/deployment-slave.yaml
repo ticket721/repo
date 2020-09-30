@@ -36,21 +36,12 @@ spec:
         - name: server-secret
           secret:
             secretName: {{ template "platform.fullname" . }}--server-secret--sec
-        - name: images-folder
-          persistentVolumeClaim:
-            claimName: {{ include "platform.fullname" . }}--server--pvc
       initContainers:
-        - name: {{ include "platform.fullname" . }}--server-migrations
-          env:
-            - name: CASSANDRA_HOSTS
-              value: "{{ .Values.config.cassandra.host }}"
-            - name: CASSANDRA_PORT
-              value: "{{ .Values.config.cassandra.port }}"
-            - name: ELASTICSEARCH_HOST
-              value: "{{ .Values.config.elasticsearch.host }}:{{ .Values.config.elasticsearch.port }}"
-            - name: CASSANDRA_KEYSPACE
-              value: ticket721
-          image: "{{ .Values.migrations.image.repository }}:{{ .Values.migrations.image.tag }}"
+        - name: {{ include "platform.fullname" . }}--server-slave-wfj
+          image: "groundnuty/k8s-wait-for:v1.3"
+          args:
+            - "job"
+            - "{{ include "platform.fullname" . }}--migration-job"
           imagePullPolicy: {{ .Values.migrations.image.pullPolicy }}
       containers:
         - name: {{ template  "platform.fullname" . }}--server
@@ -73,8 +64,6 @@ spec:
             - name: server-secret
               mountPath: /config/production.secret.env
               subPath: production.secret.env
-            - name: images-folder
-              mountPath: /repo/modules/@backend_nest/images
           env:
             - name: CONFIG_PATH
               value: /config/
@@ -88,7 +77,15 @@ spec:
             httpGet:
               path: /
               port: http
+            timeoutSeconds: 10
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 30
           readinessProbe:
             httpGet:
               path: /
               port: http
+            timeoutSeconds: 10
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 30

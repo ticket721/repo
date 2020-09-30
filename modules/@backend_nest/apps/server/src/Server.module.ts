@@ -29,7 +29,6 @@ import { DatesController } from '@app/server/controllers/dates/Dates.controller'
 import { EventsModule } from '@lib/common/events/Events.module';
 import { EventsController } from '@app/server/controllers/events/Events.controller';
 import { ImagesController } from '@app/server/controllers/images/Images.controller';
-import { ImagesModule } from '@lib/common/images/Images.module';
 import { FSModule } from '@lib/common/fs/FS.module';
 import { CurrenciesModule } from '@lib/common/currencies/Currencies.module';
 import { TxsModule } from '@lib/common/txs/Txs.module';
@@ -64,6 +63,9 @@ import { GeolocController } from '@app/server/controllers/geoloc/Geoloc.controll
 import { StripeModule } from '@lib/common/stripe/Stripe.module';
 import { FeatureFlagsModule } from '@lib/common/featureflags/FeatureFlags.module';
 import { FeatureFlagsController } from '@app/server/controllers/featureflags/FeatureFlags.controller';
+import { StripeInterfacesModule } from '@lib/common/stripeinterface/StripeInterfaces.module';
+import { StripeController } from '@app/server/controllers/payment/stripe/Stripe.controller';
+import { FilestoreModule } from '@lib/common/filestore/Filestore.module';
 
 @Module({
     imports: [
@@ -88,7 +90,6 @@ import { FeatureFlagsController } from '@app/server/controllers/featureflags/Fea
 
         // Cassandra Table Modules & Utils
         UsersModule,
-        ImagesModule,
         Web3TokensModule,
         ActionSetsModule,
         DatesModule,
@@ -104,6 +105,7 @@ import { FeatureFlagsController } from '@app/server/controllers/featureflags/Fea
         CheckoutModule,
         CartModule,
         StripeModule.register(),
+        StripeInterfacesModule,
 
         // User Management Modules
         AuthenticationModule,
@@ -112,6 +114,7 @@ import { FeatureFlagsController } from '@app/server/controllers/featureflags/Fea
         FSModule,
         ShutdownModule,
         ToolBoxModule,
+        FilestoreModule,
 
         FeatureFlagsModule,
 
@@ -127,8 +130,8 @@ import { FeatureFlagsController } from '@app/server/controllers/featureflags/Fea
                 host: configService.get('ETHEREUM_NODE_HOST'),
                 port: configService.get('ETHEREUM_NODE_PORT'),
                 protocol: configService.get('ETHEREUM_NODE_PROTOCOL'),
-                headers: toHeaderFormat(JSON.parse(configService.get('ETHEREUM_NODE_HEADERS') || '{}')),
-                path: configService.get('ETHEREUM_NODE_PATH'),
+                headers: toHeaderFormat(JSON.parse(configService.get('ETHEREUM_NODE_HEADERS', '{}'))),
+                path: configService.get('ETHEREUM_NODE_PATH', null),
             }),
             inject: [ConfigService],
         }),
@@ -143,9 +146,6 @@ import { FeatureFlagsController } from '@app/server/controllers/featureflags/Fea
                 blockThreshold: parseInt(configService.get('TXS_BLOCK_THRESHOLD'), 10),
                 blockPollingRefreshRate: parseInt(configService.get('TXS_BLOCK_POLLING_REFRESH_RATE'), 10),
                 ethereumNetworkId: parseInt(configService.get('ETHEREUM_NODE_NETWORK_ID'), 10),
-                ethereumMtxDomainName: configService.get('ETHEREUM_MTX_DOMAIN_NAME'),
-                ethereumMtxVersion: configService.get('ETHEREUM_MTX_VERSION'),
-                ethereumMtxRelayAdmin: configService.get('VAULT_ETHEREUM_ASSIGNED_ADMIN'),
                 targetGasPrice: parseInt(configService.get('TXS_TARGET_GAS_PRICE'), 10),
             }),
             inject: [ConfigService],
@@ -185,6 +185,7 @@ import { FeatureFlagsController } from '@app/server/controllers/featureflags/Fea
         UsersController,
         GeolocController,
         FeatureFlagsController,
+        StripeController,
     ],
     providers: [
         ServerService,

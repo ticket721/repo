@@ -51,9 +51,6 @@ describe('Txs Scheduler', function() {
             blockThreshold: 2,
             blockPollingRefreshRate: 1000,
             ethereumNetworkId: 2702,
-            ethereumMtxDomainName: 'Refract Wallet',
-            ethereumMtxVersion: '0',
-            ethereumMtxRelayAdmin: 'admin_0',
             targetGasPrice: 150,
         };
         context.outrospectionService = mock(OutrospectionService);

@@ -1,0 +1,30 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "platform.fullname" . }}--migration-job
+  labels:
+    app: {{ include "platform.fullname" . }}--migration-job
+    name: {{ include "platform.fullname" . }}--migration-job
+    chart: {{ .Chart.Name }}
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+spec:
+  template:
+    spec:
+      containers:
+        - name: {{ include "platform.fullname" . }}--migration-job
+          env:
+            - name: VERBOSE
+              value: "true"
+            - name: CASSANDRA_HOSTS
+              value: "{{ .Values.config.cassandra.host }}"
+            - name: CASSANDRA_PORT
+              value: "{{ .Values.config.cassandra.port }}"
+            - name: ELASTICSEARCH_HOST
+              value: "{{ .Values.config.elasticsearch.host }}:{{ .Values.config.elasticsearch.port }}"
+            - name: CASSANDRA_KEYSPACE
+              value: ticket721
+          image: "{{ .Values.migrations.image.repository }}:{{ .Values.migrations.image.tag }}"
+          imagePullPolicy: {{ .Values.migrations.image.pullPolicy }}
+      restartPolicy: Never
+  backoffLimit: 4

@@ -5,11 +5,11 @@ const TopNavMarginContainer = styled.div`
     margin-top: 48px;
 `;
 
-export const TopNavMargin = (Comp: React.ComponentType): React.FC => {
-    return () => {
+export const TopNavMargin = (Comp: React.ComponentType<any>): React.FC => {
+    return (props: any = {}) => {
         return (
             <TopNavMarginContainer>
-                <Comp />
+                <Comp {...props} />
             </TopNavMarginContainer>
         );
     };

@@ -62,6 +62,7 @@ const CtaContainer = styled.div<FullButtonCtaProps>`
 
   button {
     margin: 0;
+    max-width: 500px;
   }
 `;
 

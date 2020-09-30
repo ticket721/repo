@@ -14,7 +14,6 @@ import { ComponentsPreview } from './ComponentsPreview';
 
 import { useDispatch, useSelector }                    from 'react-redux';
 import { MergedAppState }                              from '../../../../index';
-import { ImageEntity }                                 from '@common/sdk/lib/@backend_nest/libs/common/src/images/entities/Image.entity';
 import { PushNotification }                            from '@frontend/core/lib/redux/ducks/notifications';
 
 import { useTranslation } from 'react-i18next';
@@ -53,11 +52,11 @@ const StylesForm: React.FC<FormProps> = ({ onComplete }) => {
         const formData = new FormData();
         files.forEach((file) => formData.append('images', file));
         EventCreationCore.uploadImages(token, formData, {})
-            .then((ids: ImageEntity[]) => {
+            .then((urls: string[]) => {
                 eventCreationFormik.setFieldTouched('avatar');
                 eventCreationFormik.update({
                     ...eventCreationFormik.values,
-                    avatar: ids[0].id
+                    avatar: urls[0]
                 });
             }).catch((error) => {
                 dispatch(PushNotification(t('error_notifications:' + error.message), 'error'));

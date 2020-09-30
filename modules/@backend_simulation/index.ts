@@ -84,7 +84,7 @@ export const createEvent = async (user: UserDto, sdk: T721SDK, token: string, ev
     await waitForAction(sdk, token, id);
     console.log('Create Event - Text Metadata: OK.');
 
-    let avatarId = null;
+    let avatarUrl = null;
 
     {
         const form = new FormData();
@@ -101,7 +101,7 @@ export const createEvent = async (user: UserDto, sdk: T721SDK, token: string, ev
         );
         console.log('Create Event - Avatar Upload: OK.');
 
-        avatarId = res.data.ids[0].id;
+        avatarUrl = res.data.urls[0];
 
     }
 
@@ -110,7 +110,7 @@ export const createEvent = async (user: UserDto, sdk: T721SDK, token: string, ev
         token,
         id,
         {
-            avatar: avatarId,
+            avatar: avatarUrl,
             signatureColors: infos.images.signatureColors
         },
     );

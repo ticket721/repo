@@ -30,7 +30,7 @@ export class FSService {
      * @param path
      * @param content
      */
-    writeFile(path: string, content: string): void {
+    writeFile(path: string, content: string | Buffer): void {
         return fs.writeFileSync(path, content);
     }
 

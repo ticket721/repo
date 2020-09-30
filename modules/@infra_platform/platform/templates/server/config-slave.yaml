@@ -50,7 +50,10 @@ data:
     EMAIL_TEMPLATE_PATH=../@backend_email-templates
 
     IMAGE_MAX_SIZE=5
-    IMAGE_SERVE_DIRECTORY=/repo/modules/@backend_nest/images
+    IMAGE_S3_REGION={{ required "[server] Missing config.s3.region value" .Values.config.s3.region }}
+    IMAGE_S3_ACCESS_KEY_ID={{ required "[server] Missing config.s3.accessKeyId value" .Values.config.s3.accessKeyId }}
+    IMAGE_S3_SECRET_ACCESS_KEY={{ required "[server] Missing config.s3.secretAccessKey value" .Values.config.s3.secretAccessKey }}
+    IMAGE_S3_BUCKET_NAME={{ required "[server] Missing config.s3.bucketName value" .Values.config.s3.bucketName }}
 
     GLOBAL_CONFIG_BLOCK_NUMBER_FETCHING_RATE={{ required "[server] Missing config.globalConfig.blockNumberFetchingRate value" .Values.config.globalConfig.blockNumberFetchingRate }}
     GLOBAL_CONFIG_ETHEREUM_PRICE_FETCHING_RATE={{ required "[server] Missing config.globalConfig.ethereumPriceFetchingRate value" .Values.config.globalConfig.ethereumPriceFetchingRate }}

@@ -8,3 +8,4 @@ export * from './user-header';
 export * from './full-button-cta';
 export * from './double-button-cta';
 export * from './border';
+export * from './selectable-component-list';

@@ -41,7 +41,7 @@ export const LoginNavbar: React.FC<LoginNavbarProps> = (props: LoginNavbarProps)
                 },
             },
         ],
-        refreshRate: 3,
+        refreshRate: 20,
     }, `LoginNavbar@${uuid}`);
 
     let cartBadge = false;

@@ -70,9 +70,6 @@ export const Config: Joi.ObjectSchema = Joi.object({
         otherwise: Joi.optional(),
     }),
 
-    IMAGE_MAX_SIZE: Joi.number().required(),
-    IMAGE_SERVE_DIRECTORY: Joi.string().required(),
-
     GLOBAL_CONFIG_BLOCK_NUMBER_FETCHING_RATE: Joi.number().required(),
     GLOBAL_CONFIG_ETHEREUM_PRICE_FETCHING_RATE: Joi.number().required(),
     GLOBAL_CONFIG_BINANCE_MOCK: Joi.boolean().default('true'),

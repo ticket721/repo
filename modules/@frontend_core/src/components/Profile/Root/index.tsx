@@ -19,6 +19,7 @@ import '../locales';
 import { TicketsCountResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/tickets/dto/TicketsCountResponse.dto';
 import { UserContext } from '../../../utils/UserContext';
 import { FeatureFlag } from '../../FeatureFlag';
+import { getEnv } from '../../../utils/getEnv';
 
 export interface ProfileRootProps {
     desktop?: boolean;
@@ -111,12 +112,26 @@ const ProfileRoot: React.FC<ProfileRootProps> = ({ desktop, extraButtons }: Prof
                     }}
                 />
                 <ArrowLink
+                    label={t('report_bug')}
+                    onClick={() => {
+                        window.location = getEnv().REACT_APP_BUG_REPORT_LINK;
+                    }}
+                />
+                <ArrowLink
                     label={t('log_out')}
                     onClick={() => {
                         dispatch(Logout());
                         history.replace('/');
                     }}
                 />
+                <FeatureFlag flag={'stripe_interface_setup'}>
+                    <ArrowLink
+                        label={t('receive_money_with_stripe')}
+                        onClick={() => {
+                            history.push('/stripe/connect');
+                        }}
+                    />
+                </FeatureFlag>
                 <FeatureFlag flag={'admin_flag'}>
                     <ArrowLink
                         label={t('you_are_an_admin')}
