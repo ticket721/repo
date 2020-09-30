@@ -51,6 +51,16 @@ const StyledCard = styled.div`
     & > img {
         width: 100%;
     }
+
+    @media screen and (max-width: 1400px) {
+        width: calc((100vw - 100px - ${props => props.theme.doubleSpacing}) / 2);
+        height: calc((100vw - 100px - ${props => props.theme.doubleSpacing}) / 4);
+    }
+
+    @media screen and (max-width: 800px) {
+        width: calc(100vw - 100px);
+        height: calc((100vw - 100px) / 2);
+    }
 `;
 
 const Content = styled.div`
