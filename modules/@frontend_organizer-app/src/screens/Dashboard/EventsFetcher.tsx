@@ -137,11 +137,25 @@ const Cards = styled.div`
     & > div {
         width: fit-content;
         margin-bottom: ${props => props.theme.doubleSpacing};
+        margin-right: ${props => props.theme.doubleSpacing};
     }
 
-    & > div:nth-child(3n+2) {
-        margin-left: ${props => props.theme.doubleSpacing};
-        margin-right: ${props => props.theme.doubleSpacing};
+    @media screen and (min-width: 1400px) {
+        & > div:nth-child(3n+3) {
+            margin-right: 0;
+        }
+    }
+
+    @media screen and (max-width: 1400px) {
+        & > div:nth-child(2n+2) {
+            margin-right: 0;
+        }
+    }
+
+    @media screen and (max-width: 800px) {
+        & > div {
+            margin-right: 0;
+        }
     }
 `;
 
