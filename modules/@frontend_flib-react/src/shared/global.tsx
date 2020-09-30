@@ -84,6 +84,11 @@ export const GlobalStyles = createGlobalStyle<{ theme: Theme }>`
     ${masterReset}
   }
 
+  ::-webkit-scrollbar {
+    width: 0px;  /* Remove scrollbar space */
+    background: transparent;  /* Optional: just make scrollbar invisible */
+  }
+
   html {
     box-sizing: border-box;
   }

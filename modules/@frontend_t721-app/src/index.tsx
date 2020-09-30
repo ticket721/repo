@@ -75,8 +75,8 @@ const Loading = styled.div<ScaleOffsetProps>`
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  width: 332px;
-  height: 660px;
+  width: 334px;
+  height: 662px;
   background-color: ${props => props.theme.darkBg};
 `;
 
@@ -172,8 +172,8 @@ const HandHoldingPhone = () => {
 
     const [t] = useTranslation('handphone')
     const scale = window.innerHeight * 0.9 / 894;
-    const offsetX = 185 * scale;
-    const offsetY = 196 * scale;
+    const offsetX = 183 * scale;
+    const offsetY = 194 * scale;
 
     return <>
         <HandPhoneGlobalStyled/>
@@ -221,8 +221,8 @@ const HandHoldingPhone = () => {
                 offsetY={offsetY}
                 src={`${window.location.href}`}
                 seamless
-                width={332}
-                height={660}
+                width={334}
+                height={662}
                 frameBorder={0}
             />
         </ThemeProvider>
