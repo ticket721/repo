@@ -1,5 +1,5 @@
-import React, { Suspense } from 'react';
-import ReactDOM            from 'react-dom';
+import React, { Suspense, useEffect, useState } from 'react';
+import ReactDOM                                 from 'react-dom';
 import './index.css';
 import './native';
 import './routes/locales';
@@ -48,6 +48,7 @@ interface ScaleOffsetProps {
     scale: number;
     offsetX: number;
     offsetY: number;
+    loaded: boolean;
 }
 
 const Inception = styled.iframe<ScaleOffsetProps>`
@@ -58,7 +59,53 @@ const Inception = styled.iframe<ScaleOffsetProps>`
   bottom: ${props => props.offsetY}px;
   right: ${props => props.offsetX}px;
   margin-right: 100px;
+  opacity: ${props => props.loaded ? '1' : '0'};
 `;
+
+const Loading = styled.div<ScaleOffsetProps>`
+  transform: scale(${props => props.scale});
+  transform-origin: bottom right;
+  position: absolute;
+  margin: 0;
+  bottom: ${props => props.offsetY}px;
+  right: ${props => props.offsetX}px;
+  margin-right: 100px;
+  opacity: ${props => props.loaded ? '0' : 1};
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 332px;
+  height: 660px;
+  background-color: ${props => props.theme.darkBg};
+`;
+
+const LoadingIcon = styled(Icon)`
+@keyframes rotating {
+  from {
+    -ms-transform: rotate(0deg);
+    -moz-transform: rotate(0deg);
+    -webkit-transform: rotate(0deg);
+    -o-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  to {
+    -ms-transform: rotate(360deg);
+    -moz-transform: rotate(360deg);
+    -webkit-transform: rotate(360deg);
+    -o-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+
+  animation: rotating 1s ease-in-out infinite;
+`;
+
+const LoadingText = styled.p`
+  font-family: 'Gordita', Arial, Helvetica, sans-serif;
+  color: ${props => props.theme.textColor};
+  font-size: 18px;
+`
 
 const Info = styled.p`
   font-family: 'Gordita', Arial, Helvetica, sans-serif;
@@ -115,6 +162,14 @@ const HandPhoneGlobalStyled = createGlobalStyle`
 
 const HandHoldingPhone = () => {
 
+    const [loaded, setLoaded] = useState(false);
+
+    useEffect(() => {
+        setTimeout(() => {
+            setLoaded(true);
+        }, 1500);
+    }, []);
+
     const [t] = useTranslation('handphone')
     const scale = window.innerHeight * 0.9 / 894;
     const offsetX = 185 * scale;
@@ -142,7 +197,25 @@ const HandHoldingPhone = () => {
                 src={phone}
                 width={598}
             />
+            {
+                loaded
+
+                    ?
+                    null
+
+                    :
+                    <Loading
+                        loaded={loaded}
+                        scale={scale}
+                        offsetX={offsetX}
+                        offsetY={offsetY}
+                    >
+                        <LoadingIcon icon={'loader'} size={'30px'} color={'white'}/>
+                        <LoadingText>Loading device simulator</LoadingText>
+                    </Loading>
+            }
             <Inception
+                loaded={loaded}
                 scale={scale}
                 offsetX={offsetX}
                 offsetY={offsetY}
