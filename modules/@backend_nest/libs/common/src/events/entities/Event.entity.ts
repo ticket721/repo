@@ -27,6 +27,7 @@ export class EventEntity {
         if (e) {
             this.id = e.id ? e.id.toString() : e.id;
             this.group_id = e.group_id;
+            this.owner = e.owner ? e.owner.toString() : e.owner;
             this.name = e.name;
             this.address = e.address;
             this.controller = e.controller;
@@ -42,6 +43,15 @@ export class EventEntity {
      */
     @GeneratedUUidColumn()
     id: string;
+
+    /**
+     * Name of the Date
+     */
+    @Column({
+        type: 'uuid',
+    })
+    // tslint:disable-next-line:variable-name
+    owner: string;
 
     /**
      * Name of the Date

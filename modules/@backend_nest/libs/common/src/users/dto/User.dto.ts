@@ -1,3 +1,5 @@
+import { Purchase } from '@lib/common/users/entities/Purchases.type';
+
 /**
  * Complete User data type
  */
@@ -6,6 +8,18 @@ export class UserDto {
      * Unique identifier
      */
     id: string;
+
+    /**
+     * Current purchase process
+     */
+    // tslint:disable-next-line:variable-name
+    current_purchase: Purchase;
+
+    /**
+     * Past purchases
+     */
+    // tslint:disable-next-line:variable-name
+    past_purchases: Purchase[];
 
     /**
      * Unique email

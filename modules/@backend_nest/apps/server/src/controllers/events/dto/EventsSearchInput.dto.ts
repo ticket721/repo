@@ -18,6 +18,14 @@ export class EventsSearchInputDto implements SearchInputType<EventEntity> {
     id: SearchableField<string>;
 
     /**
+     * Searchable field to search by owner
+     */
+    @ApiPropertyOptional()
+    @IsOptional()
+    // tslint:disable-next-line:variable-name
+    owner: SearchableField<string>;
+
+    /**
      * Searchable field to search by group_id
      */
     @ApiPropertyOptional()
