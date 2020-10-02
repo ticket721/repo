@@ -33,7 +33,7 @@ const App: React.FC = () => {
         <Suspense fallback={<FullPageLoading/>}>
             <UserContextGuard>
                 <AppContainer>
-                    <MediaQuery minWidth={1224}>
+                    <MediaQuery minDeviceWidth={1224}>
                         {
                             location.pathname !== '/register' && location.pathname !== '/login'
 
