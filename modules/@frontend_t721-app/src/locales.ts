@@ -9,13 +9,13 @@ i18n.addResourceBundle('fr', 'common', {
 });
 
 i18n.addResourceBundle('en', 'handphone', {
-    not_available: 'Sorry, the desktop version is still under development :(',
-    lend: 'we lend you this phone in the meantime',
-    warning: '⚠️ You will need to install the app on your phone to access your events ⚠️'
+    use_this: 'Yes, this phone actually works.',
+    warning: '⚠️ Don\'t forget to install the app on your own phone, else you won\'t be able to show your ticket to enter your event ! ⚠️',
+    loading_simulator: 'Loading device simulator ...'
 });
 
 i18n.addResourceBundle('fr', 'handphone', {
-    not_available: 'Désolé, la version desktop est toujours en développement :(',
-    lend: 'nous vous prêtons ce téléphone en attendant',
-    warning: '⚠️ Vous devez installer l\'application sur votre téléphone pour accéder à vos événements ⚠️'
+    use_this: 'Oui, ce téléphone fonctionne vraiment.',
+    warning: '⚠️ N\'oubliez pas d\'installer l\'application sur votre propre téléphone, sinon vous ne pourrez pas montrer votre ticket le jour de l\'événement ! ⚠️',
+    loading_simulator: 'Chargement du simulateur de téléphone ...'
 });
