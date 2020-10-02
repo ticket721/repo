@@ -64,6 +64,8 @@ export class UsersService {
                 .save(
                     this.usersRepository.create({
                         ...user,
+                        current_purchase: null,
+                        past_purchases: [],
                         valid: false,
                     }),
                 )

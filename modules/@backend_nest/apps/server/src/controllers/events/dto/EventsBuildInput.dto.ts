@@ -1,5 +1,6 @@
-import { IsString } from 'class-validator';
+import { IsObject } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { EventCreationPayload } from '@common/global';
 
 /**
  * Data input for event building. Requires a completed @event/creation action set
@@ -13,6 +14,6 @@ export class EventsBuildInputDto {
         description: 'Complete ActionSet ID to consume',
     })
     @ApiProperty()
-    @IsString()
-    completedActionSet: string;
+    @IsObject()
+    eventPayload: EventCreationPayload;
 }

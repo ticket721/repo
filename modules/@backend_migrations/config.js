@@ -88,5 +88,20 @@ module.exports = [
         type: 'cassandra',
         name: 'update_image_format',
         timestamp: '1600892344'
-    }
+    },
+    {
+        type: 'elasticsearch',
+        name: 'pre_the_great_refactoring',
+        timestamp: '20201001131232'
+    },
+    {
+        type: 'cassandra',
+        name: 'the_great_refactoring',
+        timestamp: '1601551889'
+    },
+    {
+        type: 'elasticsearch',
+        name: 'post_the_great_refactoring',
+        timestamp: '20201001131552'
+    },
 ];
