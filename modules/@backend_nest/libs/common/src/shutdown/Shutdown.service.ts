@@ -33,6 +33,15 @@ export class ShutdownService {
      * @param msg
      */
     shutdownWithMessage(msg: string) {
+        /* istanbul ignore next */
+        if (this === undefined) {
+            console.error(msg);
+            console.error(
+                'ShutdownService: Emergency exit, ShutdownModule was not able to initialize and triggered a manual process exit',
+            );
+            process.exit(1);
+        }
+
         this.winstonLoggerService.log(msg);
         this.shutdown();
     }
@@ -43,6 +52,16 @@ export class ShutdownService {
      * @param error
      */
     shutdownWithError(error: Error) {
+        /* istanbul ignore next */
+        if (this === undefined) {
+            console.error(error.message);
+            console.error(error.stack);
+            console.error(
+                'ShutdownService: Emergency exit, ShutdownModule was not able to initialize and triggered a manual process exit',
+            );
+            process.exit(1);
+        }
+
         this.winstonLoggerService.error(error);
         this.shutdown();
     }
@@ -51,6 +70,14 @@ export class ShutdownService {
      * Simply trigegrs the shutdown
      */
     shutdown() {
+        /* istanbul ignore next */
+        if (this === undefined) {
+            console.error(
+                'ShutdownService: Emergency exit, ShutdownModule was not able to initialize and triggered a manual process exit',
+            );
+            process.exit(1);
+        }
+
         ShutdownService.shutdownFunction();
     }
 }
