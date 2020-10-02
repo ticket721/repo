@@ -22,7 +22,6 @@ import Crypto from 'crypto';
 import { TicketEntity } from '@lib/common/tickets/entities/Ticket.entity';
 import { TicketsSearchResponseDto } from '@app/server/controllers/tickets/dto/TicketsSearchResponse.dto';
 import { NestError } from '@lib/common/utils/NestError';
-import { EventEntity } from '@lib/common/events/entities/Event.entity';
 import { CategoriesSearchResponseDto } from '@app/server/controllers/categories/dto/CategoriesSearchResponse.dto';
 import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
 
@@ -794,7 +793,8 @@ export const createEventWithUltraVIP = async (token: string, sdk: T721SDK): Prom
     });
 
     const eventEntityRes = await sdk.events.create.create(token, {
-        completedActionSet: actionSetId,
+        //completedActionSet: actionSetId,
+        eventPayload: null,
     });
 
     return eventEntityRes.data.event;
@@ -1231,7 +1231,7 @@ export const createLostEvent = async (token: string, sdk: T721SDK): Promise<Even
     });
 
     const eventEntityRes = await sdk.events.create.create(token, {
-        completedActionSet: actionSetId,
+        eventPayload: null,
     });
 
     await sdk.events.start(token, {
@@ -1387,7 +1387,7 @@ export const createFuzzyEvent = async (token: string, sdk: T721SDK): Promise<Eve
     });
 
     const eventEntityRes = await sdk.events.create.create(token, {
-        completedActionSet: actionSetId,
+        eventPayload: null,
     });
 
     await sdk.events.start(token, {
@@ -1543,7 +1543,7 @@ export const createEvent = async (token: string, sdk: T721SDK): Promise<EventDto
     });
 
     const eventEntityRes = await sdk.events.create.create(token, {
-        completedActionSet: actionSetId,
+        eventPayload: null,
     });
 
     return eventEntityRes.data.event;
@@ -1695,7 +1695,7 @@ export const createExpensiveEvent = async (token: string, sdk: T721SDK): Promise
     });
 
     const eventEntityRes = await sdk.events.create.create(token, {
-        completedActionSet: actionSetId,
+        eventPayload: null,
     });
 
     return eventEntityRes.data.event;
@@ -1847,7 +1847,7 @@ export const createLimitedEvent = async (token: string, sdk: T721SDK): Promise<E
     });
 
     const eventEntityRes = await sdk.events.create.create(token, {
-        completedActionSet: actionSetId,
+        eventPayload: null,
     });
 
     return eventEntityRes.data.event;
