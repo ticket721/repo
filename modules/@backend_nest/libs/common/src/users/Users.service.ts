@@ -64,15 +64,7 @@ export class UsersService {
                 .save(
                     this.usersRepository.create({
                         ...user,
-                        current_purchase: {
-                            products: [],
-                            payment: null,
-                            created_at: new Date(),
-                            closed_at: null,
-                            payment_interface: null,
-                            price: 0,
-                            currency: 'FREE',
-                        },
+                        current_purchase: null,
                         past_purchases: [],
                         valid: false,
                     }),

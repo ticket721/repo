@@ -693,6 +693,7 @@ describe('Controller Basics', function() {
 
             const query: EventEntity = {
                 address: 'mdr',
+                owner: user.id,
                 categories: [],
                 controller: 'event',
                 created_at: undefined,
@@ -818,6 +819,7 @@ describe('Controller Basics', function() {
 
             const query: EventEntity = {
                 address: 'mdr',
+                owner: user.id,
                 categories: [],
                 controller: 'event',
                 created_at: undefined,
@@ -948,6 +950,7 @@ describe('Controller Basics', function() {
 
             const query: EventEntity = {
                 address: 'mdr',
+                owner: user.id,
                 categories: [],
                 controller: 'event',
                 created_at: undefined,

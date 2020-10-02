@@ -77,6 +77,8 @@ describe('Users Service', function() {
                     locale: 'en',
                     valid: false,
                     admin: false,
+                    past_purchases: [],
+                    current_purchase: null,
                 };
             };
 
@@ -103,6 +105,8 @@ describe('Users Service', function() {
                 locale: 'en',
                 valid: false,
                 admin: false,
+                past_purchases: [],
+                current_purchase: null,
             });
         });
 
@@ -152,6 +156,8 @@ describe('Users Service', function() {
                     locale: 'en',
                     valid: false,
                     admin: false,
+                    past_purchases: [],
+                    current_purchase: null,
                 };
             };
 
@@ -793,6 +799,20 @@ describe('Users Service', function() {
                 admin: false,
             } as Partial<UserEntity>;
 
+            const created_real_args = {
+                username,
+                email,
+                password: hashedp,
+                device_address: finalAddress,
+                address: toAcceptedAddressFormat(finalAddress),
+                type: 't721',
+                locale: 'en',
+                valid: false,
+                admin: false,
+                past_purchases: [],
+                current_purchase: null,
+            } as Partial<UserEntity>;
+
             const entity = {
                 ...create_args,
                 id: '0',
@@ -808,12 +828,12 @@ describe('Users Service', function() {
                 };
             };
 
-            when(usersRepositoryMock.create(deepEqual(create_args))).thenReturn(entity);
+            when(usersRepositoryMock.create(deepEqual(created_real_args))).thenReturn(entity);
             when(usersRepositoryMock.save(deepEqual(entity))).thenCall(injected_cb);
 
             const res = await usersService.create(create_args as CreateUserServiceInputDto);
 
-            verify(usersRepositoryMock.create(deepEqual(create_args))).called();
+            verify(usersRepositoryMock.create(deepEqual(created_real_args))).called();
             verify(usersRepositoryMock.save(deepEqual(entity))).called();
 
             expect(res.error).toEqual(null);
@@ -841,6 +861,21 @@ describe('Users Service', function() {
                 admin: false,
             } as Partial<UserEntity>;
 
+            const created_real_args = {
+                username,
+                email,
+                password: hashedp,
+                device_address: finalAddress,
+                address: toAcceptedAddressFormat(finalAddress),
+                type: 't721',
+                role: 'authenticated',
+                locale: 'en',
+                valid: false,
+                admin: false,
+                past_purchases: [],
+                current_purchase: null,
+            } as Partial<UserEntity>;
+
             const entity = {
                 ...create_args,
                 id: '0',
@@ -850,12 +885,12 @@ describe('Users Service', function() {
                 throw new NestError('Unexpected internal error');
             };
 
-            when(usersRepositoryMock.create(deepEqual(create_args))).thenReturn(entity);
+            when(usersRepositoryMock.create(deepEqual(created_real_args))).thenReturn(entity);
             when(usersRepositoryMock.save(deepEqual(entity))).thenCall(injected_cb);
 
             const res = await usersService.create(create_args as CreateUserServiceInputDto);
 
-            verify(usersRepositoryMock.create(deepEqual(create_args))).called();
+            verify(usersRepositoryMock.create(deepEqual(created_real_args))).called();
             verify(usersRepositoryMock.save(deepEqual(entity))).called();
 
             expect(res.error).toEqual('unexpected_error');
@@ -964,6 +999,8 @@ describe('Users Service', function() {
                     locale: 'en',
                     valid: false,
                     admin: false,
+                    past_purchases: [],
+                    current_purchase: null,
                 };
             };
 
@@ -1008,6 +1045,8 @@ describe('Users Service', function() {
                 locale: 'en',
                 valid: false,
                 admin: false,
+                past_purchases: [],
+                current_purchase: null,
             });
         });
 

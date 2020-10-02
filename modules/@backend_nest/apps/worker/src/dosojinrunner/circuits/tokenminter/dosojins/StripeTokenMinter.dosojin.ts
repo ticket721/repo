@@ -11,13 +11,13 @@ import { Injectable } from '@nestjs/common';
 import { T721AdminService } from '@lib/common/contracts/T721Admin.service';
 import { UsersService } from '@lib/common/users/Users.service';
 import { TokenMinterArguments } from '@app/worker/dosojinrunner/circuits/tokenminter/TokenMinter.circuit';
-import { UserEntity } from '@lib/common/users/entities/User.entity';
 import { TxsService } from '@lib/common/txs/Txs.service';
 import { ConfigService } from '@lib/common/config/Config.service';
 import { TxEntity } from '@lib/common/txs/entities/Tx.entity';
 import { T721TokenService } from '@lib/common/contracts/T721Token.service';
 import { NestError } from '@lib/common/utils/NestError';
 import { StripeService } from '@lib/common/stripe/Stripe.service';
+import { UserDto } from '@lib/common/users/dto/User.dto';
 
 /**
  * Placeholder operation
@@ -185,7 +185,7 @@ export class TokenMinterOperation extends Operation {
             return gem;
         }
 
-        const user: UserEntity = creditedUser.response;
+        const user: UserDto = creditedUser.response;
 
         const userAddress = user.address;
         const amount = gem.gemPayload.values['fiat_eur'].toString();
