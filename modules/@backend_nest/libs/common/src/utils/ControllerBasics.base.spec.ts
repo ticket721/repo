@@ -694,9 +694,10 @@ describe('Controller Basics', function() {
             const query: EventEntity = {
                 address: 'mdr',
                 owner: user.id,
-                categories: [],
                 controller: 'event',
                 created_at: undefined,
+                avatar: 'avatar',
+                description: 'description',
                 dates: [],
                 group_id: 'dcba',
                 id: 'abcd',
@@ -799,30 +800,13 @@ describe('Controller Basics', function() {
                 entity_value: 'abcd',
             } as RightEntity;
 
-            const entityQuery = {
-                body: {
-                    query: {
-                        bool: {
-                            must: {
-                                terms: {
-                                    id: ['abcd'],
-                                },
-                            },
-                        },
-                    },
-                },
-            };
-
-            const entity = {
-                id: 'abcd',
-            };
-
             const query: EventEntity = {
                 address: 'mdr',
                 owner: user.id,
-                categories: [],
                 controller: 'event',
                 created_at: undefined,
+                avatar: 'avatar',
+                description: 'description',
                 dates: [],
                 group_id: 'dcba',
                 id: 'abcd',
@@ -919,20 +903,6 @@ describe('Controller Basics', function() {
                 entity_value: 'abcd',
             } as RightEntity;
 
-            const entityQuery = {
-                body: {
-                    query: {
-                        bool: {
-                            must: {
-                                terms: {
-                                    id: ['abcd'],
-                                },
-                            },
-                        },
-                    },
-                },
-            };
-
             when(rightsServiceMock.searchElastic(deepEqual(rightsQuery))).thenResolve({
                 error: null,
                 response: {
@@ -951,9 +921,10 @@ describe('Controller Basics', function() {
             const query: EventEntity = {
                 address: 'mdr',
                 owner: user.id,
-                categories: [],
                 controller: 'event',
                 created_at: undefined,
+                avatar: 'avatar',
+                description: 'description',
                 dates: [],
                 group_id: 'dcba',
                 id: 'abcd',
@@ -1029,30 +1000,6 @@ describe('Controller Basics', function() {
                 },
             };
 
-            const right = {
-                entity_type: entityName,
-                grantee_id: user.id,
-                entity_value: 'abcd',
-            } as RightEntity;
-
-            const entityQuery = {
-                body: {
-                    query: {
-                        bool: {
-                            must: {
-                                terms: {
-                                    id: ['abcd'],
-                                },
-                            },
-                        },
-                    },
-                },
-            };
-
-            const entity = {
-                id: 'abcd',
-            };
-
             when(rightsServiceMock.searchElastic(deepEqual(rightsQuery))).thenResolve({
                 error: 'unexpected_error',
                 response: null,
@@ -1108,24 +1055,6 @@ describe('Controller Basics', function() {
                 grantee_id: user.id,
                 entity_value: 'abcd',
             } as RightEntity;
-
-            const entityQuery = {
-                body: {
-                    query: {
-                        bool: {
-                            must: {
-                                terms: {
-                                    id: ['abcd'],
-                                },
-                            },
-                        },
-                    },
-                },
-            };
-
-            const entity = {
-                id: 'abcd',
-            };
 
             when(rightsServiceMock.searchElastic(deepEqual(rightsQuery))).thenResolve({
                 error: null,

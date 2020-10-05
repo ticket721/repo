@@ -47,29 +47,19 @@ export default {
                 name: 'pre-VIP Tickets',
                 saleBegin: new Date(Date.now()),
                 saleEnd: new Date(Date.now() + 23 * HOUR),
-                resaleBegin: new Date(Date.now()),
-                resaleEnd: new Date(Date.now() + 23 * HOUR),
                 seats: 5,
-                currencies: [
-                    {
-                        currency: 'Fiat',
-                        price: '1000'
-                    }
-                ]
+                price: 1000,
+                currency: 'eur',
+                dates: [0, 1]
             },
             {
                 name: 'VIP Tickets',
                 saleBegin: new Date(Date.now() + HOUR),
                 saleEnd: new Date(Date.now() + 23 * HOUR),
-                resaleBegin: new Date(Date.now() + HOUR),
-                resaleEnd: new Date(Date.now() + 23 * HOUR),
                 seats: 100,
-                currencies: [
-                    {
-                        currency: 'Fiat',
-                        price: '20000'
-                    }
-                ]
+                price: 20000,
+                currency: 'eur',
+                dates: [1, 2]
             }
         ],
         dates: [
@@ -78,43 +68,25 @@ export default {
                     name: 'Regular Tickets',
                     saleBegin: new Date(Date.now() + 30 * SECOND),
                     saleEnd: new Date(Date.now() + 23 * HOUR),
-                    resaleBegin: new Date(Date.now() + HOUR),
-                    resaleEnd: new Date(Date.now() + 23 * HOUR),
                     seats: 200,
-                    currencies: [
-                        {
-                            currency: 'Fiat',
-                            price: '10000'
-                        }
-                    ]
+                    price: 10000,
+                    currency: 'eur',
                 },
                 {
                     name: 'Super Tickets',
                     saleBegin: new Date(Date.now() + HOUR),
                     saleEnd: new Date(Date.now() + 23 * HOUR),
-                    resaleBegin: new Date(Date.now() + HOUR),
-                    resaleEnd: new Date(Date.now() + 23 * HOUR),
                     seats: 200,
-                    currencies: [
-                        {
-                            currency: 'Fiat',
-                            price: '15000'
-                        }
-                    ]
+                    price: 15000,
+                    currency: 'eur',
                 },
                 {
                     name: 'Hyper Tickets',
                     saleBegin: new Date(Date.now() + 30 * SECOND),
                     saleEnd: new Date(Date.now() + 31 * SECOND),
-                    resaleBegin: new Date(Date.now() + HOUR),
-                    resaleEnd: new Date(Date.now() + 23 * HOUR),
                     seats: 200,
-                    currencies: [
-                        {
-                            currency: 'Fiat',
-                            price: '30000'
-                        }
-                    ]
+                    price: 30000,
+                    currency: 'eur',
                 }
             ],
             [
@@ -122,43 +94,25 @@ export default {
                     name: 'Regular Tickets',
                     saleBegin: new Date(Date.now() + 30 * SECOND),
                     saleEnd: new Date(Date.now() + 23 * HOUR),
-                    resaleBegin: new Date(Date.now() + HOUR),
-                    resaleEnd: new Date(Date.now() + 23 * HOUR),
                     seats: 200,
-                    currencies: [
-                        {
-                            currency: 'Fiat',
-                            price: '10000'
-                        }
-                    ]
+                    price: 10000,
+                    currency: 'eur'
                 },
                 {
                     name: 'Super Tickets',
                     saleBegin: new Date(Date.now() + HOUR),
                     saleEnd: new Date(Date.now() + 23 * HOUR),
-                    resaleBegin: new Date(Date.now() + HOUR),
-                    resaleEnd: new Date(Date.now() + 23 * HOUR),
                     seats: 200,
-                    currencies: [
-                        {
-                            currency: 'Fiat',
-                            price: '15000'
-                        }
-                    ]
+                    price: 15000,
+                    currency: 'eur'
                 },
                 {
                     name: 'Hyper Tickets',
                     saleBegin: new Date(Date.now() + 30 * SECOND),
                     saleEnd: new Date(Date.now() + 31 * SECOND),
-                    resaleBegin: new Date(Date.now() + HOUR),
-                    resaleEnd: new Date(Date.now() + 23 * HOUR),
                     seats: 200,
-                    currencies: [
-                        {
-                            currency: 'Fiat',
-                            price: '30000'
-                        }
-                    ]
+                    price: 30000,
+                    currency: 'eur'
                 }
             ],
             [
@@ -166,43 +120,25 @@ export default {
                     name: 'Regular Tickets',
                     saleBegin: new Date(Date.now() + 30 * SECOND),
                     saleEnd: new Date(Date.now() + 23 * HOUR),
-                    resaleBegin: new Date(Date.now() + HOUR),
-                    resaleEnd: new Date(Date.now() + 23 * HOUR),
                     seats: 200,
-                    currencies: [
-                        {
-                            currency: 'Fiat',
-                            price: '10000'
-                        }
-                    ]
+                    price: 10000,
+                    currency: 'eur'
                 },
                 {
                     name: 'Super Tickets',
                     saleBegin: new Date(Date.now() + HOUR),
                     saleEnd: new Date(Date.now() + 23 * HOUR),
-                    resaleBegin: new Date(Date.now() + HOUR),
-                    resaleEnd: new Date(Date.now() + 23 * HOUR),
                     seats: 200,
-                    currencies: [
-                        {
-                            currency: 'Fiat',
-                            price: '15000'
-                        }
-                    ]
+                    price: 15000,
+                    currency: 'eur'
                 },
                 {
                     name: 'Hyper Tickets',
                     saleBegin: new Date(Date.now() + 30 * SECOND),
                     saleEnd: new Date(Date.now() + 31 * SECOND),
-                    resaleBegin: new Date(Date.now() + HOUR),
-                    resaleEnd: new Date(Date.now() + 23 * HOUR),
                     seats: 200,
-                    currencies: [
-                        {
-                            currency: 'Fiat',
-                            price: '30000'
-                        }
-                    ]
+                    price: 30000,
+                    currency: 'eur'
                 }
             ]
         ]

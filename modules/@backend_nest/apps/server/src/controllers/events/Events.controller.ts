@@ -1,15 +1,4 @@
-import {
-    Body,
-    Controller,
-    Delete,
-    HttpCode,
-    HttpException,
-    Param,
-    Post,
-    Put,
-    UseFilters,
-    UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpException, Param, Post, UseFilters, UseGuards } from '@nestjs/common';
 import { Roles, RolesGuard } from '@app/server/authentication/guards/RolesGuard.guard';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
@@ -23,23 +12,11 @@ import { EventEntity } from '@lib/common/events/entities/Event.entity';
 import { StatusCodes } from '@lib/common/utils/codes.value';
 import { EventsBuildResponseDto } from '@app/server/controllers/events/dto/EventsBuildResponse.dto';
 import { EventsBuildInputDto } from '@app/server/controllers/events/dto/EventsBuildInput.dto';
-import { checkEvent, uuidEq } from '@common/global';
+import { checkEvent, getT721ControllerGroupID, toAcceptedAddressFormat } from '@common/global';
 import { DatesService } from '@lib/common/dates/Dates.service';
 import { DateEntity } from '@lib/common/dates/entities/Date.entity';
 import { HttpExceptionFilter } from '@app/server/utils/HttpException.filter';
-import { EventsStartInputDto } from '@app/server/controllers/events/dto/EventsStartInput.dto';
-import { EventsStartResponseDto } from '@app/server/controllers/events/dto/EventsStartResponse.dto';
-import { EventsUpdateInputDto } from '@app/server/controllers/events/dto/EventsUpdateInput.dto';
-import { EventsUpdateResponseDto } from '@app/server/controllers/events/dto/EventsUpdateResponse.dto';
 import { CategoriesService } from '@lib/common/categories/Categories.service';
-import { EventsAddDatesInputDto } from '@app/server/controllers/events/dto/EventsAddDatesInput.dto';
-import { EventsDeleteDatesInputDto } from '@app/server/controllers/events/dto/EventsDeleteDatesInput.dto';
-import { EventsAddCategoriesInputDto } from '@app/server/controllers/events/dto/EventsAddCategoriesInput.dto';
-import { EventsDeleteCategoriesInputDto } from '@app/server/controllers/events/dto/EventsDeleteCategoriesInput.dto';
-import { EventsDeleteCategoriesResponseDto } from '@app/server/controllers/events/dto/EventsDeleteCategoriesResponse.dto';
-import { EventsAddCategoriesResponseDto } from '@app/server/controllers/events/dto/EventsAddCategoriesResponse.dto';
-import { EventsAddDatesResponseDto } from '@app/server/controllers/events/dto/EventsAddDatesResponse.dto';
-import { EventsDeleteDatesResponseDto } from '@app/server/controllers/events/dto/EventsDeleteDatesResponse.dto';
 import { RightsService } from '@lib/common/rights/Rights.service';
 import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
 import { ApiResponses } from '@app/server/utils/ApiResponses.controller.decorator';
@@ -51,6 +28,8 @@ import { EventsGuestlistInputDto } from '@app/server/controllers/events/dto/Even
 import { EventsGuestlistResponseDto, GuestInfos } from '@app/server/controllers/events/dto/EventsGuestlistResponse.dto';
 import { SearchInputType } from '@lib/common/utils/SearchInput.type';
 import { MetadataEntity } from '@lib/common/metadatas/entities/Metadata.entity';
+import { UUIDToolService } from '@lib/common/toolbox/UUID.tool.service';
+import { RocksideCreateEOAResponse, RocksideService } from '@lib/common/rockside/Rockside.service';
 
 /**
  * Events controller to create and fetch events
@@ -67,6 +46,8 @@ export class EventsController extends ControllerBasics<EventEntity> {
      * @param categoriesService
      * @param rightsService
      * @param metadatasService
+     * @param uuidToolsService
+     * @param rocksideService
      */
     constructor(
         private readonly eventsService: EventsService,
@@ -74,6 +55,8 @@ export class EventsController extends ControllerBasics<EventEntity> {
         private readonly categoriesService: CategoriesService,
         private readonly rightsService: RightsService,
         private readonly metadatasService: MetadatasService,
+        private readonly uuidToolsService: UUIDToolService,
+        private readonly rocksideService: RocksideService,
     ) {
         super();
     }
@@ -116,72 +99,72 @@ export class EventsController extends ControllerBasics<EventEntity> {
         };
     }
 
-    /**
-     * Starts a preview event and its dates
-     *
-     * @param body
-     * @param user
-     */
-    @Post('/start')
-    @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
-    @UseFilters(new HttpExceptionFilter())
-    @HttpCode(StatusCodes.OK)
-    @Roles('authenticated')
-    @ApiResponses([
-        StatusCodes.OK,
-        StatusCodes.NotFound,
-        StatusCodes.Unauthorized,
-        StatusCodes.BadRequest,
-        StatusCodes.InternalServerError,
-    ])
-    async start(@Body() body: EventsStartInputDto, @User() user: UserDto): Promise<EventsStartResponseDto> {
-        const eventEntity = await this._authorizeOne(
-            this.rightsService,
-            this.eventsService,
-            user,
-            {
-                id: body.event,
-            },
-            'group_id',
-            ['admin'],
-        );
-
-        if (!body.dates) {
-            body.dates = eventEntity.dates;
-        } else {
-            for (const date of body.dates) {
-                if (
-                    eventEntity.dates.findIndex((value: string): boolean => {
-                        return uuidEq(value, date);
-                    }) === -1
-                ) {
-                    throw new HttpException(
-                        {
-                            status: StatusCodes.BadRequest,
-                            message: 'specified_date_not_in_event',
-                        },
-                        StatusCodes.BadRequest,
-                    );
-                }
-            }
-        }
-
-        for (const date of body.dates) {
-            await this._edit<DateEntity>(
-                this.datesService,
-                {
-                    id: date,
-                },
-                {
-                    status: 'live',
-                },
-            );
-        }
-
-        return {
-            event: eventEntity,
-        };
-    }
+    // /**
+    //  * Starts a preview event and its dates
+    //  *
+    //  * @param body
+    //  * @param user
+    //  */
+    // @Post('/start')
+    // @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
+    // @UseFilters(new HttpExceptionFilter())
+    // @HttpCode(StatusCodes.OK)
+    // @Roles('authenticated')
+    // @ApiResponses([
+    //     StatusCodes.OK,
+    //     StatusCodes.NotFound,
+    //     StatusCodes.Unauthorized,
+    //     StatusCodes.BadRequest,
+    //     StatusCodes.InternalServerError,
+    // ])
+    // async start(@Body() body: EventsStartInputDto, @User() user: UserDto): Promise<EventsStartResponseDto> {
+    //     const eventEntity = await this._authorizeOne(
+    //         this.rightsService,
+    //         this.eventsService,
+    //         user,
+    //         {
+    //             id: body.event,
+    //         },
+    //         'group_id',
+    //         ['admin'],
+    //     );
+    //
+    //     if (!body.dates) {
+    //         body.dates = eventEntity.dates;
+    //     } else {
+    //         for (const date of body.dates) {
+    //             if (
+    //                 eventEntity.dates.findIndex((value: string): boolean => {
+    //                     return uuidEq(value, date);
+    //                 }) === -1
+    //             ) {
+    //                 throw new HttpException(
+    //                     {
+    //                         status: StatusCodes.BadRequest,
+    //                         message: 'specified_date_not_in_event',
+    //                     },
+    //                     StatusCodes.BadRequest,
+    //                 );
+    //             }
+    //         }
+    //     }
+    //
+    //     for (const date of body.dates) {
+    //         await this._edit<DateEntity>(
+    //             this.datesService,
+    //             {
+    //                 id: date,
+    //             },
+    //             {
+    //                 status: 'live',
+    //             },
+    //         );
+    //     }
+    //
+    //     return {
+    //         event: eventEntity,
+    //     };
+    // }
 
     /**
      * Converts a completed actionset into an Event entity. In preview mode.
@@ -209,536 +192,564 @@ export class EventsController extends ControllerBasics<EventEntity> {
             };
         }
 
+        // Generate Event ID
+        const eventId = this.uuidToolsService.generate();
+
+        // Generate Ethereum Identity
+        const rocksideEOA = await this._serviceCall<RocksideCreateEOAResponse>(
+            this.rocksideService.createEOA(),
+            StatusCodes.InternalServerError,
+        );
+
+        // Compoute address and groupId
+        const eventAddress = toAcceptedAddressFormat(rocksideEOA.address);
+        const groupId = getT721ControllerGroupID(eventId, eventAddress);
+
+        const event = await this._crudCall<EventEntity>(
+            this.eventsService.create({
+                id: eventId,
+                group_id: groupId,
+                owner: user.id,
+                name: body.eventPayload.textMetadata.name,
+                avatar: body.eventPayload.imagesMetadata.avatar,
+                description: body.eventPayload.textMetadata.description,
+                address: eventAddress,
+                controller: eventAddress,
+                dates: [],
+            }),
+            StatusCodes.InternalServerError,
+        );
+
         return {
             error: null,
-            event: null,
+            event,
         };
     }
 
-    /**
-     * Edits an Event Entity
-     *
-     * @param body
-     * @param eventId
-     * @param user
-     */
-    @Put('/:eventId')
-    @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
-    @UseFilters(new HttpExceptionFilter())
-    @HttpCode(StatusCodes.OK)
-    @Roles('authenticated')
-    @ApiResponses([StatusCodes.OK, StatusCodes.NotFound, StatusCodes.Unauthorized, StatusCodes.InternalServerError])
-    async update(
-        @Body() body: EventsUpdateInputDto,
-        @Param('eventId') eventId: string,
-        @User() user: UserDto,
-    ): Promise<EventsUpdateResponseDto> {
-        const event: EventEntity = await this._authorizeOne(
-            this.rightsService,
-            this.eventsService,
-            user,
-            {
-                id: eventId,
-            },
-            'group_id',
-            ['route_update_metadata'],
-        );
-
-        await this._edit<EventEntity>(
-            this.eventsService,
-            {
-                id: eventId,
-            },
-            body,
-        );
-
-        await this._serviceCall(
-            this.metadatasService.attach(
-                'history',
-                'update',
-                [
-                    {
-                        type: 'event',
-                        id: event.id,
-                        field: 'id',
-                        rightId: event.group_id,
-                        rightField: 'group_id',
-                    },
-                ],
-                [
-                    {
-                        type: 'event',
-                        id: event.group_id,
-                        field: 'group_id',
-                    },
-                ],
-                [],
-                {
-                    date: {
-                        at: new Date(Date.now()),
-                    },
-                },
-                user,
-                this.eventsService,
-            ),
-            StatusCodes.InternalServerError,
-        );
-
-        return {
-            event: {
-                ...event,
-                ...body,
-            },
-        };
-    }
-
-    /**
-     * Deletes a category from the event
-     *
-     * @param body
-     * @param eventId
-     * @param user
-     */
-    @Delete('/:eventId/categories')
-    @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
-    @UseFilters(new HttpExceptionFilter())
-    @HttpCode(StatusCodes.OK)
-    @Roles('authenticated')
-    @ApiResponses([StatusCodes.OK, StatusCodes.NotFound, StatusCodes.Unauthorized, StatusCodes.InternalServerError])
-    async deleteCategories(
-        @Body() body: EventsDeleteCategoriesInputDto,
-        @Param('eventId') eventId: string,
-        @User() user: UserDto,
-    ): Promise<EventsDeleteCategoriesResponseDto> {
-        const entity: EventEntity = await this._authorizeOne(
-            this.rightsService,
-            this.eventsService,
-            user,
-            {
-                id: eventId,
-            },
-            'group_id',
-            ['route_delete_categories'],
-        );
-
-        const finalCategories: string[] = [];
-
-        for (const category of entity.categories) {
-            if (body.categories.findIndex((catToDelete: string): boolean => uuidEq(catToDelete, category)) === -1) {
-                finalCategories.push(category);
-            }
-        }
-
-        if (finalCategories.length !== entity.categories.length - body.categories.length) {
-            throw new HttpException(
-                {
-                    status: StatusCodes.NotFound,
-                    message: 'categories_not_found',
-                },
-                StatusCodes.NotFound,
-            );
-        }
-
-        await this._edit<EventEntity>(
-            this.eventsService,
-            {
-                id: entity.id,
-            },
-            {
-                categories: finalCategories,
-            },
-        );
-
-        for (const category of body.categories) {
-            await this._unbind<CategoryEntity>(this.categoriesService, category);
-        }
-
-        await this._serviceCall(
-            this.metadatasService.attach(
-                'history',
-                'delete_categories',
-                [
-                    {
-                        type: 'event',
-                        id: entity.id,
-                        field: 'id',
-                        rightId: entity.group_id,
-                        rightField: 'group_id',
-                    },
-                ],
-                [
-                    {
-                        type: 'event',
-                        id: entity.group_id,
-                        field: 'group_id',
-                    },
-                ],
-                [],
-                {
-                    date: {
-                        at: new Date(Date.now()),
-                    },
-                },
-                user,
-                this.eventsService,
-            ),
-            StatusCodes.InternalServerError,
-        );
-
-        return {
-            event: {
-                ...entity,
-                categories: finalCategories,
-            },
-        };
-    }
-
-    /**
-     * Adds a category to the event
-     *
-     * @param body
-     * @param eventId
-     * @param user
-     */
-    @Post('/:eventId/categories')
-    @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
-    @UseFilters(new HttpExceptionFilter())
-    @HttpCode(StatusCodes.Created)
-    @Roles('authenticated')
-    @ApiResponses([
-        StatusCodes.Created,
-        StatusCodes.NotFound,
-        StatusCodes.Unauthorized,
-        StatusCodes.InternalServerError,
-    ])
-    async addCategories(
-        @Body() body: EventsAddCategoriesInputDto,
-        @Param('eventId') eventId: string,
-        @User() user: UserDto,
-    ): Promise<EventsAddCategoriesResponseDto> {
-        const eventEntity: EventEntity = await this._authorizeOne(
-            this.rightsService,
-            this.eventsService,
-            user,
-            {
-                id: eventId,
-            },
-            'group_id',
-            ['route_add_categories'],
-        );
-
-        for (const categoryId of body.categories) {
-            if (eventEntity.categories.findIndex((ec: string): boolean => uuidEq(ec, categoryId)) !== -1) {
-                throw new HttpException(
-                    {
-                        status: StatusCodes.Conflict,
-                        message: 'category_already_in_event',
-                    },
-                    StatusCodes.Conflict,
-                );
-            }
-
-            const category: CategoryEntity = await this._getOne<CategoryEntity>(this.categoriesService, {
-                id: categoryId,
-            });
-
-            if (this.categoriesService.isBound(category)) {
-                throw new HttpException(
-                    {
-                        status: StatusCodes.BadRequest,
-                        message: 'category_already_bound',
-                    },
-                    StatusCodes.BadRequest,
-                );
-            }
-
-            if (category.group_id !== eventEntity.group_id) {
-                throw new HttpException(
-                    {
-                        status: StatusCodes.BadRequest,
-                        message: 'group_id_not_matching',
-                    },
-                    StatusCodes.BadRequest,
-                );
-            }
-
-            eventEntity.categories.push(categoryId);
-        }
-
-        await this._edit<EventEntity>(
-            this.eventsService,
-            {
-                id: eventId,
-            },
-            {
-                categories: eventEntity.categories,
-            },
-        );
-
-        for (const categoryId of body.categories) {
-            await this._bind<CategoryEntity>(this.categoriesService, categoryId, 'event', eventId);
-        }
-
-        await this._serviceCall(
-            this.metadatasService.attach(
-                'history',
-                'add_categories',
-                [
-                    {
-                        type: 'event',
-                        id: eventEntity.id,
-                        field: 'id',
-                        rightId: eventEntity.group_id,
-                        rightField: 'group_id',
-                    },
-                ],
-                [
-                    {
-                        type: 'event',
-                        id: eventEntity.group_id,
-                        field: 'group_id',
-                    },
-                ],
-                [],
-                {
-                    date: {
-                        at: new Date(Date.now()),
-                    },
-                },
-                user,
-                this.eventsService,
-            ),
-            StatusCodes.InternalServerError,
-        );
-
-        return {
-            event: eventEntity,
-        };
-    }
-
-    /**
-     * Deletes a date from an event
-     *
-     * @param body
-     * @param eventId
-     * @param user
-     */
-    @Delete('/:eventId/dates')
-    @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
-    @UseFilters(new HttpExceptionFilter())
-    @HttpCode(StatusCodes.OK)
-    @Roles('authenticated')
-    @ApiResponses([StatusCodes.OK, StatusCodes.NotFound, StatusCodes.Unauthorized, StatusCodes.InternalServerError])
-    async deleteDates(
-        @Body() body: EventsDeleteDatesInputDto,
-        @Param('eventId') eventId: string,
-        @User() user: UserDto,
-    ): Promise<EventsDeleteDatesResponseDto> {
-        const entity: EventEntity = await this._authorizeOne(
-            this.rightsService,
-            this.eventsService,
-            user,
-            {
-                id: eventId,
-            },
-            'group_id',
-            ['route_delete_dates'],
-        );
-
-        const finalDates: string[] = [];
-
-        for (const date of entity.dates) {
-            if (body.dates.findIndex((did: string): boolean => uuidEq(did, date)) === -1) {
-                finalDates.push(date);
-            }
-        }
-
-        if (finalDates.length === entity.dates.length) {
-            throw new HttpException(
-                {
-                    status: StatusCodes.NotFound,
-                    message: 'dates_not_found',
-                },
-                StatusCodes.NotFound,
-            );
-        }
-
-        await this._edit<EventEntity>(
-            this.eventsService,
-            {
-                id: eventId,
-            },
-            {
-                dates: finalDates,
-            },
-        );
-
-        for (const date of body.dates) {
-            await this._unbind<DateEntity>(this.datesService, date);
-        }
-
-        await this._serviceCall(
-            this.metadatasService.attach(
-                'history',
-                'delete_dates',
-                [
-                    {
-                        type: 'event',
-                        id: entity.id,
-                        field: 'id',
-                        rightId: entity.group_id,
-                        rightField: 'group_id',
-                    },
-                ],
-                [
-                    {
-                        type: 'event',
-                        id: entity.group_id,
-                        field: 'group_id',
-                    },
-                ],
-                [],
-                {
-                    date: {
-                        at: new Date(Date.now()),
-                    },
-                },
-                user,
-                this.eventsService,
-            ),
-            StatusCodes.InternalServerError,
-        );
-
-        return {
-            event: {
-                ...entity,
-                dates: finalDates,
-            },
-        };
-    }
-
-    /**
-     * Adds a date to the event
-     *
-     * @param body
-     * @param eventId
-     * @param user
-     */
-    @Post('/:eventId/dates')
-    @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
-    @UseFilters(new HttpExceptionFilter())
-    @HttpCode(StatusCodes.Created)
-    @Roles('authenticated')
-    @ApiResponses([
-        StatusCodes.Created,
-        StatusCodes.NotFound,
-        StatusCodes.Unauthorized,
-        StatusCodes.InternalServerError,
-    ])
-    async addDates(
-        @Body() body: EventsAddDatesInputDto,
-        @Param('eventId') eventId: string,
-        @User() user: UserDto,
-    ): Promise<EventsAddDatesResponseDto> {
-        const eventEntity: EventEntity = await this._authorizeOne(
-            this.rightsService,
-            this.eventsService,
-            user,
-            {
-                id: eventId,
-            },
-            'group_id',
-            ['route_add_dates'],
-        );
-
-        for (const dateId of body.dates) {
-            if (eventEntity.dates.findIndex((ec: string): boolean => uuidEq(ec, dateId)) !== -1) {
-                throw new HttpException(
-                    {
-                        status: StatusCodes.Conflict,
-                        message: 'date_already_in_event',
-                    },
-                    StatusCodes.Conflict,
-                );
-            }
-
-            const date: DateEntity = await this._getOne<DateEntity>(this.datesService, {
-                id: dateId,
-            });
-
-            if (this.datesService.isBound(date)) {
-                throw new HttpException(
-                    {
-                        status: StatusCodes.BadRequest,
-                        message: 'date_already_bound',
-                    },
-                    StatusCodes.BadRequest,
-                );
-            }
-
-            if (date.group_id !== eventEntity.group_id) {
-                throw new HttpException(
-                    {
-                        status: StatusCodes.BadRequest,
-                        message: 'group_id_not_matching',
-                    },
-                    StatusCodes.BadRequest,
-                );
-            }
-
-            eventEntity.dates.push(dateId);
-        }
-
-        await this._edit<EventEntity>(
-            this.eventsService,
-            {
-                id: eventId,
-            },
-            {
-                dates: eventEntity.dates,
-            },
-        );
-
-        for (const dateId of body.dates) {
-            await this._bind<DateEntity>(this.datesService, dateId, 'event', eventId);
-        }
-
-        await this._serviceCall(
-            this.metadatasService.attach(
-                'history',
-                'delete_dates',
-                [
-                    {
-                        type: 'event',
-                        id: eventEntity.id,
-                        field: 'id',
-                        rightId: eventEntity.group_id,
-                        rightField: 'group_id',
-                    },
-                ],
-                [
-                    {
-                        type: 'event',
-                        id: eventEntity.group_id,
-                        field: 'group_id',
-                    },
-                ],
-                [],
-                {
-                    date: {
-                        at: new Date(Date.now()),
-                    },
-                },
-                user,
-                this.eventsService,
-            ),
-            StatusCodes.InternalServerError,
-        );
-
-        return {
-            event: eventEntity,
-        };
-    }
+    // /**
+    //  * Edits an Event Entity
+    //  *
+    //  * @param body
+    //  * @param eventId
+    //  * @param user
+    //  */
+    // @Put('/:eventId')
+    // @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
+    // @UseFilters(new HttpExceptionFilter())
+    // @HttpCode(StatusCodes.OK)
+    // @Roles('authenticated')
+    // @ApiResponses([StatusCodes.OK, StatusCodes.NotFound, StatusCodes.Unauthorized, StatusCodes.InternalServerError])
+    // async update(
+    //     @Body() body: EventsUpdateInputDto,
+    //     @Param('eventId') eventId: string,
+    //     @User() user: UserDto,
+    // ): Promise<EventsUpdateResponseDto> {
+    //     const event: EventEntity = await this._authorizeOne(
+    //         this.rightsService,
+    //         this.eventsService,
+    //         user,
+    //         {
+    //             id: eventId,
+    //         },
+    //         'group_id',
+    //         ['route_update_metadata'],
+    //     );
+    //
+    //     await this._edit<EventEntity>(
+    //         this.eventsService,
+    //         {
+    //             id: eventId,
+    //         },
+    //         body,
+    //     );
+    //
+    //     await this._serviceCall(
+    //         this.metadatasService.attach(
+    //             'history',
+    //             'update',
+    //             [
+    //                 {
+    //                     type: 'event',
+    //                     id: event.id,
+    //                     field: 'id',
+    //                     rightId: event.group_id,
+    //                     rightField: 'group_id',
+    //                 },
+    //             ],
+    //             [
+    //                 {
+    //                     type: 'event',
+    //                     id: event.group_id,
+    //                     field: 'group_id',
+    //                 },
+    //             ],
+    //             [],
+    //             {
+    //                 date: {
+    //                     at: new Date(Date.now()),
+    //                 },
+    //             },
+    //             user,
+    //             this.eventsService,
+    //         ),
+    //         StatusCodes.InternalServerError,
+    //     );
+    //
+    //     return {
+    //         event: {
+    //             ...event,
+    //             ...body,
+    //         },
+    //     };
+    // }
+    //
+    // /**
+    //  * Deletes a category from the event
+    //  *
+    //  * @param body
+    //  * @param eventId
+    //  * @param user
+    //  */
+    // @Delete('/:eventId/categories')
+    // @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
+    // @UseFilters(new HttpExceptionFilter())
+    // @HttpCode(StatusCodes.OK)
+    // @Roles('authenticated')
+    // @ApiResponses([StatusCodes.OK, StatusCodes.NotFound, StatusCodes.Unauthorized, StatusCodes.InternalServerError])
+    // async deleteCategories(
+    //     @Body() body: EventsDeleteCategoriesInputDto,
+    //     @Param('eventId') eventId: string,
+    //     @User() user: UserDto,
+    // ): Promise<EventsDeleteCategoriesResponseDto> {
+    //     const entity: EventEntity = await this._authorizeOne(
+    //         this.rightsService,
+    //         this.eventsService,
+    //         user,
+    //         {
+    //             id: eventId,
+    //         },
+    //         'group_id',
+    //         ['route_delete_categories'],
+    //     );
+    //
+    //     const finalCategories: string[] = [];
+    //
+    //     for (const category of entity.categories) {
+    //         if (body.categories.findIndex((catToDelete: string): boolean => uuidEq(catToDelete, category)) === -1) {
+    //             finalCategories.push(category);
+    //         }
+    //     }
+    //
+    //     if (finalCategories.length !== entity.categories.length - body.categories.length) {
+    //         throw new HttpException(
+    //             {
+    //                 status: StatusCodes.NotFound,
+    //                 message: 'categories_not_found',
+    //             },
+    //             StatusCodes.NotFound,
+    //         );
+    //     }
+    //
+    //     await this._edit<EventEntity>(
+    //         this.eventsService,
+    //         {
+    //             id: entity.id,
+    //         },
+    //         {
+    //             categories: finalCategories,
+    //         },
+    //     );
+    //
+    //     for (const category of body.categories) {
+    //         await this._unbind<CategoryEntity>(this.categoriesService, category);
+    //     }
+    //
+    //     await this._serviceCall(
+    //         this.metadatasService.attach(
+    //             'history',
+    //             'delete_categories',
+    //             [
+    //                 {
+    //                     type: 'event',
+    //                     id: entity.id,
+    //                     field: 'id',
+    //                     rightId: entity.group_id,
+    //                     rightField: 'group_id',
+    //                 },
+    //             ],
+    //             [
+    //                 {
+    //                     type: 'event',
+    //                     id: entity.group_id,
+    //                     field: 'group_id',
+    //                 },
+    //             ],
+    //             [],
+    //             {
+    //                 date: {
+    //                     at: new Date(Date.now()),
+    //                 },
+    //             },
+    //             user,
+    //             this.eventsService,
+    //         ),
+    //         StatusCodes.InternalServerError,
+    //     );
+    //
+    //     return {
+    //         event: {
+    //             ...entity,
+    //             categories: finalCategories,
+    //         },
+    //     };
+    // }
+    //
+    // /**
+    //  * Adds a category to the event
+    //  *
+    //  * @param body
+    //  * @param eventId
+    //  * @param user
+    //  */
+    // @Post('/:eventId/categories')
+    // @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
+    // @UseFilters(new HttpExceptionFilter())
+    // @HttpCode(StatusCodes.Created)
+    // @Roles('authenticated')
+    // @ApiResponses([
+    //     StatusCodes.Created,
+    //     StatusCodes.NotFound,
+    //     StatusCodes.Unauthorized,
+    //     StatusCodes.InternalServerError,
+    // ])
+    // async addCategories(
+    //     @Body() body: EventsAddCategoriesInputDto,
+    //     @Param('eventId') eventId: string,
+    //     @User() user: UserDto,
+    // ): Promise<EventsAddCategoriesResponseDto> {
+    //     const eventEntity: EventEntity = await this._authorizeOne(
+    //         this.rightsService,
+    //         this.eventsService,
+    //         user,
+    //         {
+    //             id: eventId,
+    //         },
+    //         'group_id',
+    //         ['route_add_categories'],
+    //     );
+    //
+    //     for (const categoryId of body.categories) {
+    //         if (eventEntity.categories.findIndex((ec: string): boolean => uuidEq(ec, categoryId)) !== -1) {
+    //             throw new HttpException(
+    //                 {
+    //                     status: StatusCodes.Conflict,
+    //                     message: 'category_already_in_event',
+    //                 },
+    //                 StatusCodes.Conflict,
+    //             );
+    //         }
+    //
+    //         const category: CategoryEntity = await this._getOne<CategoryEntity>(this.categoriesService, {
+    //             id: categoryId,
+    //         });
+    //
+    //         if (this.categoriesService.isBound(category)) {
+    //             throw new HttpException(
+    //                 {
+    //                     status: StatusCodes.BadRequest,
+    //                     message: 'category_already_bound',
+    //                 },
+    //                 StatusCodes.BadRequest,
+    //             );
+    //         }
+    //
+    //         if (category.group_id !== eventEntity.group_id) {
+    //             throw new HttpException(
+    //                 {
+    //                     status: StatusCodes.BadRequest,
+    //                     message: 'group_id_not_matching',
+    //                 },
+    //                 StatusCodes.BadRequest,
+    //             );
+    //         }
+    //
+    //         eventEntity.categories.push(categoryId);
+    //     }
+    //
+    //     await this._edit<EventEntity>(
+    //         this.eventsService,
+    //         {
+    //             id: eventId,
+    //         },
+    //         {
+    //             categories: eventEntity.categories,
+    //         },
+    //     );
+    //
+    //     for (const categoryId of body.categories) {
+    //         await this._bind<CategoryEntity>(this.categoriesService, categoryId, 'event', eventId);
+    //     }
+    //
+    //     await this._serviceCall(
+    //         this.metadatasService.attach(
+    //             'history',
+    //             'add_categories',
+    //             [
+    //                 {
+    //                     type: 'event',
+    //                     id: eventEntity.id,
+    //                     field: 'id',
+    //                     rightId: eventEntity.group_id,
+    //                     rightField: 'group_id',
+    //                 },
+    //             ],
+    //             [
+    //                 {
+    //                     type: 'event',
+    //                     id: eventEntity.group_id,
+    //                     field: 'group_id',
+    //                 },
+    //             ],
+    //             [],
+    //             {
+    //                 date: {
+    //                     at: new Date(Date.now()),
+    //                 },
+    //             },
+    //             user,
+    //             this.eventsService,
+    //         ),
+    //         StatusCodes.InternalServerError,
+    //     );
+    //
+    //     return {
+    //         event: eventEntity,
+    //     };
+    // }
+    //
+    // /**
+    //  * Deletes a date from an event
+    //  *
+    //  * @param body
+    //  * @param eventId
+    //  * @param user
+    //  */
+    // @Delete('/:eventId/dates')
+    // @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
+    // @UseFilters(new HttpExceptionFilter())
+    // @HttpCode(StatusCodes.OK)
+    // @Roles('authenticated')
+    // @ApiResponses([StatusCodes.OK, StatusCodes.NotFound, StatusCodes.Unauthorized, StatusCodes.InternalServerError])
+    // async deleteDates(
+    //     @Body() body: EventsDeleteDatesInputDto,
+    //     @Param('eventId') eventId: string,
+    //     @User() user: UserDto,
+    // ): Promise<EventsDeleteDatesResponseDto> {
+    //     const entity: EventEntity = await this._authorizeOne(
+    //         this.rightsService,
+    //         this.eventsService,
+    //         user,
+    //         {
+    //             id: eventId,
+    //         },
+    //         'group_id',
+    //         ['route_delete_dates'],
+    //     );
+    //
+    //     const finalDates: string[] = [];
+    //
+    //     for (const date of entity.dates) {
+    //         if (body.dates.findIndex((did: string): boolean => uuidEq(did, date)) === -1) {
+    //             finalDates.push(date);
+    //         }
+    //     }
+    //
+    //     if (finalDates.length === entity.dates.length) {
+    //         throw new HttpException(
+    //             {
+    //                 status: StatusCodes.NotFound,
+    //                 message: 'dates_not_found',
+    //             },
+    //             StatusCodes.NotFound,
+    //         );
+    //     }
+    //
+    //     await this._edit<EventEntity>(
+    //         this.eventsService,
+    //         {
+    //             id: eventId,
+    //         },
+    //         {
+    //             dates: finalDates,
+    //         },
+    //     );
+    //
+    //     for (const date of body.dates) {
+    //         await this._unbind<DateEntity>(this.datesService, date);
+    //     }
+    //
+    //     await this._serviceCall(
+    //         this.metadatasService.attach(
+    //             'history',
+    //             'delete_dates',
+    //             [
+    //                 {
+    //                     type: 'event',
+    //                     id: entity.id,
+    //                     field: 'id',
+    //                     rightId: entity.group_id,
+    //                     rightField: 'group_id',
+    //                 },
+    //             ],
+    //             [
+    //                 {
+    //                     type: 'event',
+    //                     id: entity.group_id,
+    //                     field: 'group_id',
+    //                 },
+    //             ],
+    //             [],
+    //             {
+    //                 date: {
+    //                     at: new Date(Date.now()),
+    //                 },
+    //             },
+    //             user,
+    //             this.eventsService,
+    //         ),
+    //         StatusCodes.InternalServerError,
+    //     );
+    //
+    //     return {
+    //         event: {
+    //             ...entity,
+    //             dates: finalDates,
+    //         },
+    //     };
+    // }
+    //
+    // /**
+    //  * Adds a date to the event
+    //  *
+    //  * @param body
+    //  * @param eventId
+    //  * @param user
+    //  */
+    // @Post('/:eventId/dates')
+    // @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
+    // @UseFilters(new HttpExceptionFilter())
+    // @HttpCode(StatusCodes.Created)
+    // @Roles('authenticated')
+    // @ApiResponses([
+    //     StatusCodes.Created,
+    //     StatusCodes.NotFound,
+    //     StatusCodes.Unauthorized,
+    //     StatusCodes.InternalServerError,
+    // ])
+    // async addDates(
+    //     @Body() body: EventsAddDatesInputDto,
+    //     @Param('eventId') eventId: string,
+    //     @User() user: UserDto,
+    // ): Promise<EventsAddDatesResponseDto> {
+    //     const eventEntity: EventEntity = await this._authorizeOne(
+    //         this.rightsService,
+    //         this.eventsService,
+    //         user,
+    //         {
+    //             id: eventId,
+    //         },
+    //         'group_id',
+    //         ['route_add_dates'],
+    //     );
+    //
+    //     for (const dateId of body.dates) {
+    //         if (eventEntity.dates.findIndex((ec: string): boolean => uuidEq(ec, dateId)) !== -1) {
+    //             throw new HttpException(
+    //                 {
+    //                     status: StatusCodes.Conflict,
+    //                     message: 'date_already_in_event',
+    //                 },
+    //                 StatusCodes.Conflict,
+    //             );
+    //         }
+    //
+    //         const date: DateEntity = await this._getOne<DateEntity>(this.datesService, {
+    //             id: dateId,
+    //         });
+    //
+    //         if (this.datesService.isBound(date)) {
+    //             throw new HttpException(
+    //                 {
+    //                     status: StatusCodes.BadRequest,
+    //                     message: 'date_already_bound',
+    //                 },
+    //                 StatusCodes.BadRequest,
+    //             );
+    //         }
+    //
+    //         if (date.group_id !== eventEntity.group_id) {
+    //             throw new HttpException(
+    //                 {
+    //                     status: StatusCodes.BadRequest,
+    //                     message: 'group_id_not_matching',
+    //                 },
+    //                 StatusCodes.BadRequest,
+    //             );
+    //         }
+    //
+    //         eventEntity.dates.push(dateId);
+    //     }
+    //
+    //     await this._edit<EventEntity>(
+    //         this.eventsService,
+    //         {
+    //             id: eventId,
+    //         },
+    //         {
+    //             dates: eventEntity.dates,
+    //         },
+    //     );
+    //
+    //     for (const dateId of body.dates) {
+    //         await this._bind<DateEntity>(this.datesService, dateId, 'event', eventId);
+    //     }
+    //
+    //     await this._serviceCall(
+    //         this.metadatasService.attach(
+    //             'history',
+    //             'delete_dates',
+    //             [
+    //                 {
+    //                     type: 'event',
+    //                     id: eventEntity.id,
+    //                     field: 'id',
+    //                     rightId: eventEntity.group_id,
+    //                     rightField: 'group_id',
+    //                 },
+    //             ],
+    //             [
+    //                 {
+    //                     type: 'event',
+    //                     id: eventEntity.group_id,
+    //                     field: 'group_id',
+    //                 },
+    //             ],
+    //             [],
+    //             {
+    //                 date: {
+    //                     at: new Date(Date.now()),
+    //                 },
+    //             },
+    //             user,
+    //             this.eventsService,
+    //         ),
+    //         StatusCodes.InternalServerError,
+    //     );
+    //
+    //     return {
+    //         event: eventEntity,
+    //     };
+    // }
 
     // /**
     //  * Withdraw tokens from the t721controller

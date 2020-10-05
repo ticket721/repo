@@ -38,29 +38,19 @@ export default {
                 name: 'Regular Tickets',
                 saleBegin: new Date(Date.now() + 30 * SECOND),
                 saleEnd: new Date(Date.now() + 23 * HOUR),
-                resaleBegin: new Date(Date.now() + HOUR),
-                resaleEnd: new Date(Date.now() + 23 * HOUR),
-                seats: 0,
-                currencies: [
-                    {
-                        currency: 'Fiat',
-                        price: '10000'
-                    }
-                ]
+                seats: 10,
+                currency: 'eur',
+                price: 10000,
+                dates: [0, 1]
             },
             {
                 name: 'Regular+ Tickets',
                 saleBegin: new Date(Date.now() + 30 * SECOND),
                 saleEnd: new Date(Date.now() + 23 * HOUR),
-                resaleBegin: new Date(Date.now() + HOUR),
-                resaleEnd: new Date(Date.now() + 23 * HOUR),
                 seats: 20,
-                currencies: [
-                    {
-                        currency: 'Fiat',
-                        price: '10000'
-                    }
-                ]
+                currency: 'eur',
+                price: 10000,
+                dates: [0, 1]
             }
 
         ],
@@ -70,15 +60,9 @@ export default {
                     name: 'Regular Tickets',
                     saleBegin: new Date(Date.now() + 30 * SECOND),
                     saleEnd: new Date(Date.now() + 23 * HOUR),
-                    resaleBegin: new Date(Date.now() + HOUR),
-                    resaleEnd: new Date(Date.now() + 23 * HOUR),
-                    seats: 0,
-                    currencies: [
-                        {
-                            currency: 'Fiat',
-                            price: '10000'
-                        }
-                    ]
+                    seats: 10,
+                    currency: 'eur',
+                    price: 10000
                 }
             ],
             []

@@ -27,15 +27,10 @@ export default {
                 name: 'VIP Tickets',
                 saleBegin: new Date(Date.now() + 30 * SECOND),
                 saleEnd: new Date(Date.now() + 23 * HOUR),
-                resaleBegin: new Date(Date.now() + 30 * SECOND),
-                resaleEnd: new Date(Date.now() + 23 * HOUR),
                 seats: 100,
-                currencies: [
-                    {
-                        currency: 'Fiat',
-                        price: '20000'
-                    }
-                ]
+                price: 20000,
+                currency: 'eur',
+                dates: [0]
             }
         ],
         dates: [
@@ -44,15 +39,9 @@ export default {
                     name: 'Regular Tickets',
                     saleBegin: new Date(Date.now() + HOUR),
                     saleEnd: new Date(Date.now() + 23 * HOUR),
-                    resaleBegin: new Date(Date.now() + HOUR),
-                    resaleEnd: new Date(Date.now() + 23 * HOUR),
                     seats: 200,
-                    currencies: [
-                        {
-                            currency: 'Fiat',
-                            price: '10000'
-                        }
-                    ]
+                    price: 20000,
+                    currency: 'eur'
                 }
             ],
         ]

@@ -28,11 +28,12 @@ export class EventEntity {
             this.id = e.id ? e.id.toString() : e.id;
             this.group_id = e.group_id;
             this.owner = e.owner ? e.owner.toString() : e.owner;
+            this.avatar = e.avatar;
             this.name = e.name;
+            this.description = e.description;
             this.address = e.address;
             this.controller = e.controller;
             this.dates = ECAAG<string>(e.dates);
-            this.categories = ECAAG<string>(e.categories);
             this.created_at = e.created_at;
             this.updated_at = e.updated_at;
         }
@@ -45,13 +46,31 @@ export class EventEntity {
     id: string;
 
     /**
-     * Name of the Date
+     * ID of the owner
      */
     @Column({
         type: 'uuid',
     })
     // tslint:disable-next-line:variable-name
     owner: string;
+
+    /**
+     * Image of the event
+     */
+    @Column({
+        type: 'text',
+    })
+    // tslint:disable-next-line:variable-name
+    avatar: string;
+
+    /**
+     * Description of the event
+     */
+    @Column({
+        type: 'text',
+    })
+    // tslint:disable-next-line:variable-name
+    description: string;
 
     /**
      * Name of the Date
@@ -94,15 +113,6 @@ export class EventEntity {
         typeDef: '<uuid>',
     })
     dates: string[];
-
-    /**
-     * Ticket categories that are cross-dates
-     */
-    @Column({
-        type: 'list',
-        typeDef: '<uuid>',
-    })
-    categories: string[];
 
     /**
      * Creation timestamp
