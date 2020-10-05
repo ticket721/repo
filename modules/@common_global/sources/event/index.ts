@@ -297,7 +297,7 @@ export const checkEvent = (event: EventCreationPayload): ErrorNode => {
 
         categories[categoryIdx].saleBegin = noStringDate(categories[categoryIdx].saleBegin);
         categories[categoryIdx].saleEnd = noStringDate(categories[categoryIdx].saleEnd);
-        
+
         if (categories[categoryIdx].saleBegin.getTime() > categories[categoryIdx].saleEnd.getTime()) {
 
             return quickError('categoryEntity.saleEndBeforeStart', {
