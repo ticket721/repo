@@ -12,11 +12,11 @@ describe('Event Entity', function() {
             const rawEventEntity = {
                 id: 'abcd',
                 group_id: 'abcd',
+                owner: 'abcd',
                 name: 'event name',
                 address: '0xaddress',
                 controller: 'controller name',
                 dates: [],
-                categories: [],
                 created_at: new Date(),
                 updated_at: new Date(),
             } as EventEntity;
@@ -31,10 +31,10 @@ describe('Event Entity', function() {
                 id: null,
                 group_id: 'abcd',
                 name: 'event name',
+                owner: null,
                 address: '0xaddress',
                 controller: 'controller name',
                 dates: [],
-                categories: [],
                 created_at: new Date(),
                 updated_at: new Date(),
             } as EventEntity;

@@ -1,5 +1,5 @@
 import Joi          from '@hapi/joi';
-import {set, get}   from 'lodash';
+import { set, get } from 'lodash';
 import { symbolOf } from '../currency';
 
 export interface CategoryCreationPayload {
@@ -37,9 +37,9 @@ const CategoryCreationPayloadChecker = Joi.object<CategoryCreationPayload>({
     dates: Joi
         .array()
         .items(
-            Joi.number()
+            Joi.number(),
         )
-        .required()
+        .required(),
 });
 
 export interface DateLocationPayload {
@@ -57,8 +57,8 @@ const DateLocationPayloadChecker = Joi.object<DateLocationPayload>({
         .required(),
     label: Joi
         .string()
-        .required()
-})
+        .required(),
+});
 
 export interface DateCreationPayload {
     online: boolean;
@@ -89,8 +89,8 @@ const DateCreationPayloadChecker = Joi.object<DateCreationPayload>({
         .date()
         .required(),
     location: DateLocationPayloadChecker
-        .required()
-})
+        .required(),
+});
 
 export interface EventTextMetadataPayload {
     name: string;
@@ -134,9 +134,11 @@ const EventTextMetadataPayloadChecker = Joi.object<EventTextMetadataPayload>({
         .optional(),
     email: Joi
         .string()
-        .email()
+        .email({
+            tlds: { allow: false },
+        })
         .optional(),
-})
+});
 
 export interface EventImagesMetadataPayload {
     avatar: string;
@@ -153,7 +155,7 @@ const EventImagesMetadataPayloadChecker = Joi.object<EventImagesMetadataPayload>
         .min(2)
         .max(2)
         .required(),
-})
+});
 
 export interface EventCreationPayload {
     textMetadata: EventTextMetadataPayload;
@@ -166,8 +168,8 @@ const EventCreationPayloadChecker = Joi.object({
     textMetadata: EventTextMetadataPayloadChecker.required(),
     imagesMetadata: EventImagesMetadataPayloadChecker.required(),
     datesConfiguration: Joi.array().items(DateCreationPayloadChecker).required(),
-    categoriesConfiguration: Joi.array().items(CategoryCreationPayloadChecker).required()
-})
+    categoriesConfiguration: Joi.array().items(CategoryCreationPayloadChecker).required(),
+});
 
 export interface PayloadError {
     type: string;
@@ -180,6 +182,7 @@ export interface ErrorLeaf {
 
 export interface ErrorNode {
     [key: string]: (ErrorNode | ErrorLeaf);
+
     [key: number]: (ErrorNode | ErrorLeaf);
 }
 
@@ -199,10 +202,10 @@ const generateErrorFromJoiError = (error: Joi.ValidationError): ErrorNode => {
                 reasons: [
                     {
                         type: err.type,
-                        context: err.context
-                    }
-                ]
-            })
+                        context: err.context,
+                    },
+                ],
+            });
 
         } else {
 
@@ -211,26 +214,26 @@ const generateErrorFromJoiError = (error: Joi.ValidationError): ErrorNode => {
                     ...value.reasons,
                     {
                         type: err.type,
-                        context: err.context
-                    }
-                ]
-            })
+                        context: err.context,
+                    },
+                ],
+            });
         }
     }
 
     return response;
-}
+};
 
 const quickError = (code: string, context: any, path: string): ErrorNode => {
     return set({}, path, {
         reasons: [
             {
                 type: code,
-                context
-            }
-        ]
+                context,
+            },
+        ],
     });
-}
+};
 
 const getFurthestDate = (dates: DateCreationPayload[], category: CategoryCreationPayload): Date => {
     let date = dates[category.dates[0]].eventEnd;
@@ -242,13 +245,20 @@ const getFurthestDate = (dates: DateCreationPayload[], category: CategoryCreatio
     }
 
     return date;
+};
+
+const noStringDate = (date: Date | string): Date => {
+    if (typeof date === 'string') {
+        return new Date(date);
+    }
+    return date;
 }
 
 export const checkEvent = (event: EventCreationPayload): ErrorNode => {
 
     // General Check
     const {
-        error
+        error,
     } = EventCreationPayloadChecker.validate(event);
 
     if (error) {
@@ -260,7 +270,7 @@ export const checkEvent = (event: EventCreationPayload): ErrorNode => {
             limit: 1,
             value: [],
             label: 'datesConfiguration',
-            key: 'datesConfiguration'
+            key: 'datesConfiguration',
         }, 'datesConfiguration');
     }
 
@@ -269,10 +279,13 @@ export const checkEvent = (event: EventCreationPayload): ErrorNode => {
     // Logical Date Checks
     for (let dateIdx = 0; dateIdx < event.datesConfiguration.length; ++dateIdx) {
 
+        dates[dateIdx].eventBegin = noStringDate(dates[dateIdx].eventBegin);
+        dates[dateIdx].eventEnd = noStringDate(dates[dateIdx].eventEnd);
+
         if (dates[dateIdx].eventBegin.getTime() > dates[dateIdx].eventEnd.getTime()) {
             return quickError('dateEntity.endBeforeStart', {
                 end: dates[dateIdx].eventEnd,
-                start: dates[dateIdx].eventBegin
+                start: dates[dateIdx].eventBegin,
             }, `datesConfiguration.${dateIdx}.eventEnd`);
         }
 
@@ -282,6 +295,9 @@ export const checkEvent = (event: EventCreationPayload): ErrorNode => {
 
     for (let categoryIdx = 0; categoryIdx < event.categoriesConfiguration.length; ++categoryIdx) {
 
+        categories[categoryIdx].saleBegin = noStringDate(categories[categoryIdx].saleBegin);
+        categories[categoryIdx].saleEnd = noStringDate(categories[categoryIdx].saleEnd);
+        
         if (categories[categoryIdx].saleBegin.getTime() > categories[categoryIdx].saleEnd.getTime()) {
 
             return quickError('categoryEntity.saleEndBeforeStart', {
@@ -295,16 +311,14 @@ export const checkEvent = (event: EventCreationPayload): ErrorNode => {
             const dateValue = categories[categoryIdx].dates[dateIdx];
             if (dateValue >= dates.length) {
 
-                return quickError('categoryEntity.invalidDateIndex', {
-                }, `categoriesConfiguration.${categoryIdx}.dates.${dateIdx}`);
+                return quickError('categoryEntity.invalidDateIndex', {}, `categoriesConfiguration.${categoryIdx}.dates.${dateIdx}`);
 
             }
         }
 
         if (categories[categoryIdx].dates.length === 0) {
 
-            return quickError('categoryEntity.noDateLinked', {
-            }, `categoriesConfiguration.${categoryIdx}.dates`);
+            return quickError('categoryEntity.noDateLinked', {}, `categoriesConfiguration.${categoryIdx}.dates`);
 
         }
 
@@ -314,7 +328,7 @@ export const checkEvent = (event: EventCreationPayload): ErrorNode => {
 
             return quickError('categoryEntity.saleEndAfterLastEventEnd', {
                 eventEnd: furthestDate,
-                saleEnd: categories[categoryIdx].saleEnd
+                saleEnd: categories[categoryIdx].saleEnd,
             }, `categoriesConfiguration.${categoryIdx}.saleEnd`);
 
         }
@@ -322,11 +336,11 @@ export const checkEvent = (event: EventCreationPayload): ErrorNode => {
         if (symbolOf(categories[categoryIdx].currency) === undefined && categories[categoryIdx].currency !== 'FREE') {
 
             return quickError('categoryEntity.invalidCurrency', {
-                currency: categories[categoryIdx].currency
+                currency: categories[categoryIdx].currency,
             }, `categoriesConfiguration.${categoryIdx}.currency`);
         }
 
     }
 
     return null;
-}
+};

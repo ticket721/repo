@@ -8,6 +8,11 @@ export class EventDto {
     id: string;
 
     /**
+     * Event Owner ID
+     */
+    owner: string;
+
+    /**
      * Event Group ID
      */
     // tslint:disable-next-line:variable-name
@@ -22,11 +27,6 @@ export class EventDto {
      * Unique ID of the Dates
      */
     dates: string[];
-
-    /**
-     * Ticket categories that are cross-dates
-     */
-    categories: string[];
 
     /**
      * Name of the event

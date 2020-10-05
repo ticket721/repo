@@ -42,10 +42,20 @@ var migration1601551889 = {
             params: []
         };
 
+        const event_owner_field_deletion = {
+            query: `ALTER TABLE ticket721.event
+             DROP (
+                categories
+             );`,
+            params: []
+        };
+
         const event_owner_field_creation = {
             query: `ALTER TABLE ticket721.event
              ADD (
-                owner uuid
+                owner uuid,
+                avatar text,
+                description text
              );`,
             params: []
         };
@@ -62,6 +72,9 @@ var migration1601551889 = {
 
             console.log('User cart & transaction field creation');
             await db.execute(user_payments_cart_field_creation.query, user_payments_cart_field_creation.params, { prepare: true });
+
+            console.log('Event owner field deletion');
+            await db.execute(event_owner_field_deletion.query, event_owner_field_deletion.params, { prepare: true });
 
             console.log('Event owner field creation');
             await db.execute(event_owner_field_creation.query, event_owner_field_creation.params, { prepare: true });
@@ -99,7 +112,31 @@ var migration1601551889 = {
             params: []
         };
 
+        const event_owner_field_deletion = {
+            query: `ALTER TABLE ticket721.event
+             ADD (
+                categories list<uuid>
+             );`,
+            params: []
+        };
+
+        const event_owner_field_creation = {
+            query: `ALTER TABLE ticket721.event
+              DROP (
+                owner,
+                avatar,
+                description
+             );`,
+            params: []
+        };
+
         try {
+
+            console.log('Event owner field creation');
+            await db.execute(event_owner_field_creation.query, event_owner_field_creation.params, { prepare: true });
+
+            console.log('Event owner field deletion');
+            await db.execute(event_owner_field_deletion.query, event_owner_field_deletion.params, { prepare: true });
 
             console.log('User cart & transaction field creation');
             await db.execute(user_payments_cart_field_creation.query, user_payments_cart_field_creation.params, { prepare: true });

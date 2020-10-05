@@ -26,14 +26,14 @@ export class UserEntity {
 
     @Column({
         type: 'frozen',
-        typeDef: '<ticket721.purchase>',
+        typeDef: '<purchase>',
     })
     // tslint:disable-next-line:variable-name
     current_purchase: Purchase;
 
     @Column({
         type: 'list',
-        typeDef: '<frozen<ticket721.purchase>>',
+        typeDef: '<frozen<purchase>>',
     })
     // tslint:disable-next-line:variable-name
     past_purchases: Purchase[];
