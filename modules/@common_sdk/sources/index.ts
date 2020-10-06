@@ -51,12 +51,6 @@ import {
     eventsAddDates,
     eventsCount,
     eventsCreate,
-    eventsCreateAdminsConfiguration,
-    eventsCreateCategoriesConfiguration,
-    eventsCreateDatesConfiguration,
-    eventsCreateImagesMetadata,
-    eventsCreateModulesConfiguration,
-    eventsCreateTextMetadata,
     eventsDeleteCategories,
     eventsDeleteDates,
     eventsSearch,
@@ -87,15 +81,6 @@ import { metadatasFetch } from './app/api/metadatas';
 
 // CART
 import { cartModulesConfiguration, cartTicketSelections } from './app/api/cart';
-
-// CHECKOUT
-import {
-    checkoutCartCommitStripe,
-    checkoutResolveCartWithPaymentIntent
-} from './app/api/checkout';
-
-// DOSOJIN
-import { dosojinSearch, dosojinCount } from './app/api/dosojin';
 
 // TICKETS
 import {
@@ -170,24 +155,6 @@ export class T721SDK {
         this.dates.update = this.dates.update.bind(this);
 
         this.events.create.create = this.events.create.create.bind(this);
-        this.events.create.textMetadata = this.events.create.textMetadata.bind(
-            this
-        );
-        this.events.create.modulesConfiguration = this.events.create.modulesConfiguration.bind(
-            this
-        );
-        this.events.create.datesConfiguration = this.events.create.datesConfiguration.bind(
-            this
-        );
-        this.events.create.categoriesConfiguration = this.events.create.categoriesConfiguration.bind(
-            this
-        );
-        this.events.create.imagesMetadata = this.events.create.imagesMetadata.bind(
-            this
-        );
-        this.events.create.adminsConfiguration = this.events.create.adminsConfiguration.bind(
-            this
-        );
         this.events.search = this.events.search.bind(this);
         this.events.count = this.events.count.bind(this);
         this.events.start = this.events.start.bind(this);
@@ -196,7 +163,6 @@ export class T721SDK {
         this.events.addCategories = this.events.addCategories.bind(this);
         this.events.deleteDates = this.events.deleteDates.bind(this);
         this.events.addDates = this.events.addDates.bind(this);
-        // this.events.withdraw = this.events.withdraw.bind(this);
         this.events.guestlist = this.events.guestlist.bind(this);
 
         this.categories.create = this.categories.create.bind(this);
@@ -221,16 +187,6 @@ export class T721SDK {
         this.cart.modulesConfiguration = this.cart.modulesConfiguration.bind(
             this
         );
-
-        this.checkout.cart.commit.stripe = this.checkout.cart.commit.stripe.bind(
-            this
-        );
-        this.checkout.cart.resolve.paymentIntent = this.checkout.cart.resolve.paymentIntent.bind(
-            this
-        );
-
-        this.dosojin.search = this.dosojin.search.bind(this);
-        this.dosojin.count = this.dosojin.count.bind(this);
 
         this.tickets.search = this.tickets.search.bind(this);
         this.tickets.count = this.tickets.count.bind(this);
@@ -406,12 +362,6 @@ export class T721SDK {
         count: eventsCount,
         create: {
             create: eventsCreate,
-            textMetadata: eventsCreateTextMetadata,
-            modulesConfiguration: eventsCreateModulesConfiguration,
-            datesConfiguration: eventsCreateDatesConfiguration,
-            categoriesConfiguration: eventsCreateCategoriesConfiguration,
-            imagesMetadata: eventsCreateImagesMetadata,
-            adminsConfiguration: eventsCreateAdminsConfiguration
         },
         update: eventsUpdate,
         start: eventsStart,
@@ -456,22 +406,6 @@ export class T721SDK {
     public cart = {
         ticketSelections: cartTicketSelections,
         modulesConfiguration: cartModulesConfiguration
-    };
-
-    public checkout = {
-        cart: {
-            commit: {
-                stripe: checkoutCartCommitStripe
-            },
-            resolve: {
-                paymentIntent: checkoutResolveCartWithPaymentIntent
-            }
-        }
-    };
-
-    public dosojin = {
-        search: dosojinSearch,
-        count: dosojinCount
     };
 
     public tickets = {

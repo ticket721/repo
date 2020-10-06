@@ -75,7 +75,8 @@ describe('checkEvent', function() {
                 facebook: 'https://facebook.com/ticket721',
                 linkedIn: 'https://linkedin.com/ticket721',
                 website: 'https://ticket721.com',
-                email: 'contact@ticket721.com'
+                email: 'contact@ticket721.com',
+                instagram: 'ticket721'
             },
             imagesMetadata: {
                 avatar: 'https://ticket721.s3.eu-west-3.amazonaws.com/public/placeholder.png',
@@ -146,7 +147,8 @@ describe('checkEvent', function() {
                 facebook: 'https://facebook.com/ticket721',
                 linkedIn: 'https://linkedin.com/ticket721',
                 website: 'https://ticket721.com',
-                email: 'contact@ticket721.com'
+                email: 'contact@ticket721.com',
+                instagram: 'ticket721'
             },
             imagesMetadata: {
                 avatar: 'https://ticket721.s3.eu-west-3.amazonaws.com/public/placeholder.png',
@@ -195,7 +197,8 @@ describe('checkEvent', function() {
                 facebook: 'https://facebook.com/ticket721',
                 linkedIn: 'https://linkedin.com/ticket721',
                 website: 'https://ticket721.com',
-                email: 'contact@ticket721.com'
+                email: 'contact@ticket721.com',
+                instagram: 'ticket721'
             },
             imagesMetadata: {
                 avatar: 'https://ticket721.s3.eu-west-3.amazonaws.com/public/placeholder.png',
@@ -268,7 +271,8 @@ describe('checkEvent', function() {
                 facebook: 'https://facebook.com/ticket721',
                 linkedIn: 'https://linkedin.com/ticket721',
                 website: 'https://ticket721.com',
-                email: 'contact@ticket721.com'
+                email: 'contact@ticket721.com',
+                instagram: 'ticket721'
             },
             imagesMetadata: {
                 avatar: 'https://ticket721.s3.eu-west-3.amazonaws.com/public/placeholder.png',
@@ -341,7 +345,8 @@ describe('checkEvent', function() {
                 facebook: 'https://facebook.com/ticket721',
                 linkedIn: 'https://linkedin.com/ticket721',
                 website: 'https://ticket721.com',
-                email: 'contact@ticket721.com'
+                email: 'contact@ticket721.com',
+                instagram: 'ticket721'
             },
             imagesMetadata: {
                 avatar: 'https://ticket721.s3.eu-west-3.amazonaws.com/public/placeholder.png',
@@ -414,7 +419,8 @@ describe('checkEvent', function() {
                 facebook: 'https://facebook.com/ticket721',
                 linkedIn: 'https://linkedin.com/ticket721',
                 website: 'https://ticket721.com',
-                email: 'contact@ticket721.com'
+                email: 'contact@ticket721.com',
+                instagram: 'ticket721'
             },
             imagesMetadata: {
                 avatar: 'https://ticket721.s3.eu-west-3.amazonaws.com/public/placeholder.png',
@@ -487,7 +493,8 @@ describe('checkEvent', function() {
                 facebook: 'https://facebook.com/ticket721',
                 linkedIn: 'https://linkedin.com/ticket721',
                 website: 'https://ticket721.com',
-                email: 'contact@ticket721.com'
+                email: 'contact@ticket721.com',
+                instagram: 'ticket721'
             },
             imagesMetadata: {
                 avatar: 'https://ticket721.s3.eu-west-3.amazonaws.com/public/placeholder.png',
@@ -560,7 +567,8 @@ describe('checkEvent', function() {
                 facebook: 'https://facebook.com/ticket721',
                 linkedIn: 'https://linkedin.com/ticket721',
                 website: 'https://ticket721.com',
-                email: 'contact@ticket721.com'
+                email: 'contact@ticket721.com',
+                instagram: 'ticket721'
             },
             imagesMetadata: {
                 avatar: 'https://ticket721.s3.eu-west-3.amazonaws.com/public/placeholder.png',

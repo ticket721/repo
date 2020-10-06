@@ -9,6 +9,7 @@ import { ECAAG } from '@lib/common/utils/ECAAG.helper';
 import {
     ArrayMinSize,
     IsDateString,
+    IsEmail,
     IsHexColor,
     IsNumber,
     IsOptional,
@@ -42,18 +43,69 @@ export class DateMetadata {
     avatar: string;
 
     /**
-     * Date category tags
-     */
-    @IsString({ each: true })
-    tags: string[];
-
-    /**
      * Date signature colors
      */
     @IsHexColor({ each: true })
     @ArrayMinSize(2)
     // tslint:disable-next-line:variable-name
     signature_colors: string[];
+
+    /**
+     * Twitter
+     */
+    @IsString()
+    @IsOptional()
+    twitter?: string;
+
+    /**
+     * Spotify
+     */
+    @IsString()
+    @IsOptional()
+    spotify?: string;
+
+    /**
+     * Website
+     */
+    @IsUrl()
+    @IsOptional()
+    website?: string;
+
+    /**
+     * Facebook
+     */
+    @IsUrl()
+    @IsOptional()
+    facebook?: string;
+
+    /**
+     * Email
+     */
+    @IsEmail()
+    @IsOptional()
+    email?: string;
+
+    /**
+     * LinkedIn
+     */
+    @IsUrl()
+    @IsOptional()
+    // tslint:disable-next-line:variable-name
+    linked_in?: string;
+
+    /**
+     * TikTok
+     */
+    @IsString()
+    @IsOptional()
+    tiktok?: string;
+
+    /**
+     * Instagram
+     */
+    @IsString()
+    @IsOptional()
+    instagram?: string;
 }
 
 /**
@@ -178,8 +230,36 @@ export class DateLocation {
                         cql_collection: 'singleton',
                         type: 'text',
                     },
-                    tags: {
-                        cql_collection: 'list',
+                    twitter: {
+                        cql_collection: 'singleton',
+                        type: 'text',
+                    },
+                    email: {
+                        cql_collection: 'singleton',
+                        type: 'text',
+                    },
+                    website: {
+                        cql_collection: 'singleton',
+                        type: 'text',
+                    },
+                    facebook: {
+                        cql_collection: 'singleton',
+                        type: 'text',
+                    },
+                    linked_in: {
+                        cql_collection: 'singleton',
+                        type: 'text',
+                    },
+                    tiktok: {
+                        cql_collection: 'singleton',
+                        type: 'text',
+                    },
+                    instagram: {
+                        cql_collection: 'singleton',
+                        type: 'text',
+                    },
+                    spotify: {
+                        cql_collection: 'singleton',
                         type: 'text',
                     },
                 },
@@ -210,14 +290,12 @@ export class DateEntity {
         if (d) {
             this.id = d.id ? d.id.toString() : d.id;
             this.group_id = d.group_id;
+            this.event = d.event ? d.event.toString() : d.event;
             this.status = d.status;
             this.categories = ECAAG(d.categories);
             this.location = d.location;
             this.timestamps = d.timestamps;
             this.metadata = d.metadata;
-            this.metadata.tags = ECAAG(this.metadata.tags);
-            this.parent_id = d.parent_id ? d.parent_id.toString() : d.parent_id;
-            this.parent_type = d.parent_type;
             this.created_at = d.created_at;
             this.updated_at = d.updated_at;
         }
@@ -283,22 +361,12 @@ export class DateEntity {
     metadata: DateMetadata;
 
     /**
-     * Id of parent entity
+     * Event UUID
      */
     @Column({
         type: 'uuid',
     })
-    // tslint:disable-next-line:variable-name
-    parent_id: string;
-
-    /**
-     * Type of parent entity
-     */
-    @Column({
-        type: 'text',
-    })
-    // tslint:disable-next-line:variable-name
-    parent_type: string;
+    event: string;
 
     /**
      * Creation timestamp

@@ -2,13 +2,6 @@ import { AxiosResponse }            from 'axios';
 import { T721SDK }                  from '../../index';
 import { EventsSearchInputDto }     from '@app/server/controllers/events/dto/EventsSearchInput.dto';
 import { EventsSearchResponseDto }  from '@app/server/controllers/events/dto/EventsSearchResponse.dto';
-import {
-    EventsCreateAdminsConfiguration,
-    EventsCreateCategoriesConfiguration,
-    EventsCreateDatesConfiguration, EventsCreateImagesMetadata,
-    EventsCreateModulesConfiguration,
-    EventsCreateTextMetadata,
-}                                            from '@app/worker/actionhandlers/events/Events.input.handlers';
 import { ActionsUpdateResponseDto }          from '@app/server/controllers/actionsets/dto/ActionsUpdateResponse.dto';
 import { actionsUpdate}                      from './actions';
 import { EventsBuildResponseDto }            from '@app/server/controllers/events/dto/EventsBuildResponse.dto';
@@ -67,103 +60,6 @@ export async function eventsCreate(
         'Content-Type': 'application/json',
     }, query);
 }
-
-export async function eventsCreateTextMetadata(
-    token: string,
-    actionset: string,
-    query: EventsCreateTextMetadata,
-): Promise<AxiosResponse<ActionsUpdateResponseDto>> {
-
-    return (actionsUpdate.bind(this))(
-        token,
-        actionset,
-        {
-            data: query,
-            action_idx: 0,
-        },
-    );
-}
-
-export async function eventsCreateImagesMetadata(
-    token: string,
-    actionset: string,
-    query: EventsCreateImagesMetadata,
-): Promise<AxiosResponse<ActionsUpdateResponseDto>> {
-
-    return (actionsUpdate.bind(this))(
-        token,
-        actionset,
-        {
-            data: query,
-            action_idx: 1,
-        },
-    );
-}
-
-export async function eventsCreateModulesConfiguration(
-    token: string,
-    actionset: string,
-    query: EventsCreateModulesConfiguration,
-): Promise<AxiosResponse<ActionsUpdateResponseDto>> {
-
-    return (actionsUpdate.bind(this))(
-        token,
-        actionset,
-        {
-            data: query,
-            action_idx: 2,
-        },
-    );
-}
-
-export async function eventsCreateDatesConfiguration(
-    token: string,
-    actionset: string,
-    query: EventsCreateDatesConfiguration,
-): Promise<AxiosResponse<ActionsUpdateResponseDto>> {
-
-    return (actionsUpdate.bind(this))(
-        token,
-        actionset,
-        {
-            data: query,
-            action_idx: 3,
-        },
-    );
-}
-
-export async function eventsCreateCategoriesConfiguration(
-    token: string,
-    actionset: string,
-    query: EventsCreateCategoriesConfiguration,
-): Promise<AxiosResponse<ActionsUpdateResponseDto>> {
-
-    return (actionsUpdate.bind(this))(
-        token,
-        actionset,
-        {
-            data: query,
-            action_idx: 4,
-        },
-    );
-}
-
-export async function eventsCreateAdminsConfiguration(
-    token: string,
-    actionset: string,
-    query: EventsCreateAdminsConfiguration,
-): Promise<AxiosResponse<ActionsUpdateResponseDto>> {
-
-    return (actionsUpdate.bind(this))(
-        token,
-        actionset,
-        {
-            data: query,
-            action_idx: 5,
-        },
-    );
-}
-
 export async function eventsStart(
     token: string,
     query: EventsStartInputDto

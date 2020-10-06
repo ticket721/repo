@@ -99,8 +99,10 @@ export interface EventTextMetadataPayload {
     website?: string;
     facebook?: string;
     email?: string;
-    linkedIn?: string;
+    linked_in?: string;
     tiktok?: string;
+    instagram?: string;
+    spotify?: string;
 }
 
 const EventTextMetadataPayloadChecker = Joi.object<EventTextMetadataPayload>({
@@ -114,6 +116,9 @@ const EventTextMetadataPayloadChecker = Joi.object<EventTextMetadataPayload>({
         .max(10000)
         .allow('')
         .required(),
+    instagram: Joi
+        .string()
+        .optional(),
     twitter: Joi
         .string()
         .optional(),
@@ -124,11 +129,15 @@ const EventTextMetadataPayloadChecker = Joi.object<EventTextMetadataPayload>({
         .string()
         .uri()
         .optional(),
+    spotify: Joi
+        .string()
+        .uri()
+        .optional(),
     facebook: Joi
         .string()
         .uri()
         .optional(),
-    linkedIn: Joi
+    linked_in: Joi
         .string()
         .uri()
         .optional(),
