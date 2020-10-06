@@ -73,7 +73,7 @@ describe('checkEvent', function() {
                 description: 'This is my test event !',
                 twitter: 'ticket721',
                 facebook: 'https://facebook.com/ticket721',
-                linkedIn: 'https://linkedin.com/ticket721',
+                linked_in: 'https://linkedin.com/ticket721',
                 website: 'https://ticket721.com',
                 email: 'contact@ticket721.com',
                 instagram: 'ticket721'
@@ -145,7 +145,7 @@ describe('checkEvent', function() {
                 description: 'This is my test event !',
                 twitter: 'ticket721',
                 facebook: 'https://facebook.com/ticket721',
-                linkedIn: 'https://linkedin.com/ticket721',
+                linked_in: 'https://linkedin.com/ticket721',
                 website: 'https://ticket721.com',
                 email: 'contact@ticket721.com',
                 instagram: 'ticket721'
@@ -195,7 +195,7 @@ describe('checkEvent', function() {
                 description: 'This is my test event !',
                 twitter: 'ticket721',
                 facebook: 'https://facebook.com/ticket721',
-                linkedIn: 'https://linkedin.com/ticket721',
+                linked_in: 'https://linkedin.com/ticket721',
                 website: 'https://ticket721.com',
                 email: 'contact@ticket721.com',
                 instagram: 'ticket721'
@@ -269,7 +269,7 @@ describe('checkEvent', function() {
                 description: 'This is my test event !',
                 twitter: 'ticket721',
                 facebook: 'https://facebook.com/ticket721',
-                linkedIn: 'https://linkedin.com/ticket721',
+                linked_in: 'https://linkedin.com/ticket721',
                 website: 'https://ticket721.com',
                 email: 'contact@ticket721.com',
                 instagram: 'ticket721'
@@ -343,7 +343,7 @@ describe('checkEvent', function() {
                 description: 'This is my test event !',
                 twitter: 'ticket721',
                 facebook: 'https://facebook.com/ticket721',
-                linkedIn: 'https://linkedin.com/ticket721',
+                linked_in: 'https://linkedin.com/ticket721',
                 website: 'https://ticket721.com',
                 email: 'contact@ticket721.com',
                 instagram: 'ticket721'
@@ -417,7 +417,7 @@ describe('checkEvent', function() {
                 description: 'This is my test event !',
                 twitter: 'ticket721',
                 facebook: 'https://facebook.com/ticket721',
-                linkedIn: 'https://linkedin.com/ticket721',
+                linked_in: 'https://linkedin.com/ticket721',
                 website: 'https://ticket721.com',
                 email: 'contact@ticket721.com',
                 instagram: 'ticket721'
@@ -491,7 +491,7 @@ describe('checkEvent', function() {
                 description: 'This is my test event !',
                 twitter: 'ticket721',
                 facebook: 'https://facebook.com/ticket721',
-                linkedIn: 'https://linkedin.com/ticket721',
+                linked_in: 'https://linkedin.com/ticket721',
                 website: 'https://ticket721.com',
                 email: 'contact@ticket721.com',
                 instagram: 'ticket721'
@@ -565,7 +565,7 @@ describe('checkEvent', function() {
                 description: 'This is my test event !',
                 twitter: 'ticket721',
                 facebook: 'https://facebook.com/ticket721',
-                linkedIn: 'https://linkedin.com/ticket721',
+                linked_in: 'https://linkedin.com/ticket721',
                 website: 'https://ticket721.com',
                 email: 'contact@ticket721.com',
                 instagram: 'ticket721'
