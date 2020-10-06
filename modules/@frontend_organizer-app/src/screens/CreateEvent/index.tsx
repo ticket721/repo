@@ -1,53 +1,59 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import styled                                           from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 
 import '@frontend/core/lib/utils/window';
 import { MergedAppState }           from '../../index';
-import { InitEventAcset }           from '../../redux/ducks/event_creation';
 import { OrganizerState }           from '../../redux/ducks';
 
 import { Button } from '@frontend/flib-react/lib/components';
 
-import GeneralInfoForm     from './Forms/GeneralInfoForm';
-import StylesForm          from './Forms/StylesForm';
-import DatesForm           from './Forms/DatesForm';
-import CategoriesForm      from './Forms/CategoriesForm';
+import { GeneralInfoForm }     from './Forms/GeneralInfoForm';
+// import StylesForm          from './Forms/StylesForm';
+// import DatesForm           from './Forms/DatesForm';
+// import CategoriesForm      from './Forms/CategoriesForm';
 
 import { useTranslation }                from 'react-i18next';
 import './locales';
 import { ResetEventCreateForm }          from './ResetEventCreateForm';
-import { ActionSetStatus, ActionStatus } from '@common/sdk/lib/@backend_nest/libs/common/src/actionsets/entities/ActionSet.entity';
 import { PushNotification }              from '@frontend/core/lib/redux/ducks/notifications';
 import { useHistory }                    from 'react-router';
 import { FullPageLoading }                from '@frontend/flib-react/lib/components';
+import { Formik, FormikHelpers, useFormikContext } from 'formik';
+import { Persist } from 'formik-persist';
+import { checkEvent, EventCreationPayload } from '@common/global';
 
 export interface FormProps {
-    onComplete: (valid: boolean) => void;
+    onComplete: () => void;
 }
+
+const initialValues: EventCreationPayload = {
+    textMetadata: {
+        name: '',
+        description: '',
+    },
+    imagesMetadata: {
+        avatar: '',
+        signatureColors: ['', ''],
+    },
+    datesConfiguration: [],
+    categoriesConfiguration: [],
+};
 
 const CreateEvent: React.FC = () => {
     const [ t ] = useTranslation('create_event');
-    const FormRefs = [
-        useRef(null),
-        useRef(null),
-        useRef(null),
-    ];
+
+    const formik = useFormikContext<EventCreationPayload>();
+    const themeFormRef = useRef(null);
+    const datesFormRef = useRef(null);
+    const categoriesFormRef = useRef(null);
 
     const [ stepIdx, setStepIdx ] = useState<number>(null);
     const [ loadingForms, setLoadingForms ] = useState<boolean[]>([false, false, false, false]);
 
     const dispatch = useDispatch();
     const history = useHistory();
-    const [ token, eventAcsetId, actionsStatuses, currentActionIdx, acsetStatus ]:
-        [ string, string, Array<ActionStatus>, number, ActionSetStatus ] =
-        useSelector((state: MergedAppState) => [
-            state.auth.token.value,
-            state.eventCreation.acsetId,
-            state.eventCreation.actionsStatuses,
-            state.eventCreation.currentActionIdx,
-            state.eventCreation.acsetStatus,
-        ]);
+    const token: string = useSelector((state: MergedAppState) => state.auth.token.value);
 
     const datesLength = useSelector((state: OrganizerState) => state.eventCreation.datesConfiguration.dates.length);
 
@@ -58,132 +64,67 @@ const CreateEvent: React.FC = () => {
                 loadingState
         ));
 
-    useEffect(() => {
-        if (eventAcsetId && stepIdx === null && actionsStatuses.length > 0) {
-            setStepIdx(actionsStatuses.lastIndexOf('complete') + 1);
-        }
-    }, [
-        eventAcsetId,
-        stepIdx,
-        actionsStatuses,
-        dispatch
-    ]);
-
-    useEffect(() => {
-        if (actionsStatuses.lastIndexOf('complete') === 1) {
-            global.window.t721Sdk.actions.update(token, eventAcsetId, {
-                data: {},
-            }).then(() => {
-                console.log('complete module');
-            });
-        }
-
-        if (actionsStatuses.lastIndexOf('complete') === 4) {
-            global.window.t721Sdk.actions.update(token, eventAcsetId, {
-                data: {
-                    admins: [],
-                },
-            }).then(() => {
-                console.log('complete admins');
-            });
-        }
-    }, [
-        actionsStatuses,
-        eventAcsetId,
-        token,
-    ]);
-
-    useEffect(() => {
-        dispatch(InitEventAcset());
-        setStepIdx(null);
-    }, [dispatch]);
-
-    if (!acsetStatus) {
-        return <FullPageLoading/>;
-    }
-
     return (
         <Container>
         {
-            eventAcsetId &&
-            <Forms>
-                <FormWrapper>
-                    <Title>{t('general_infos_title')}</Title>
-                    <Description>{t('general_infos_description')}<br/>{t('general_infos__tags_description')}</Description>
-                    <GeneralInfoForm onComplete={(valid) => handleLoadingState(0, valid)}/>
+            <Formik
+            initialValues={initialValues}
+            onSubmit={(eventPayload: EventCreationPayload, { resetForm }) => {
+                global.window.t721Sdk.events.create.create(
+                    token,
                     {
-                        stepIdx === 0 ?
-                            <Button
-                            variant={actionsStatuses[0] === 'complete' ? 'primary' : 'disabled'}
-                            loadingState={loadingForms[0] && actionsStatuses[0] !== 'complete'}
-                            title={loadingForms[0] && actionsStatuses[0] !== 'complete' ? t('loading_btn') : t('next_step_btn')}
-                            onClick={() => setStepIdx(1)}/> :
-                            null
+                        eventPayload,
                     }
-                </FormWrapper>
-                { stepIdx >= 1 && (
-                    <FormWrapper ref={FormRefs[0]} disabled={currentActionIdx < 1}>
-                        <Title>{t('styles_title')}</Title>
-                        <Description>{t('styles_description')}</Description>
-                        <StylesForm onComplete={(valid) => handleLoadingState(1, valid)}/>
-                        {
-                            stepIdx === 1 ?
-                                <Button
-                                variant={actionsStatuses[2] === 'complete' ? 'primary' : 'disabled'}
-                                loadingState={loadingForms[1] && actionsStatuses[2] !== 'complete'}
-                                title={loadingForms[1] && actionsStatuses[2] !== 'complete' ? t('loading_btn') : t('next_step_btn')}
-                                onClick={() => setStepIdx(3)}/> :
-                                null
-                        }
-                    </FormWrapper>
-                )}
-                { stepIdx >= 3 && (
-                    <FormWrapper ref={FormRefs[1]} disabled={currentActionIdx < 3}>
-                        <Title>{t('dates_title')} {
-                            datesLength > 0 ?
-                            <span className={'date-quantity'}>
-                                - {datesLength} date{datesLength > 1 ? 's' : null}
-                            </span> :
-                                null
-                        }</Title>
-                        <Description>{t('dates_description')}</Description>
-                        <DatesForm onComplete={(valid) => handleLoadingState(2, valid)}/>
-                        {
-                            stepIdx === 3 ?
-                                <Button
-                                variant={actionsStatuses[3] === 'complete' ? 'primary' : 'disabled'}
-                                loadingState={loadingForms[2] && actionsStatuses[3] !== 'complete'}
-                                title={loadingForms[2] && actionsStatuses[3] !== 'complete' ? t('loading_btn') : t('next_step_btn')}
-                                onClick={() => setStepIdx(4)}/> :
-                                null
-                        }
-                    </FormWrapper>
-                )}
-                {stepIdx >= 4 && (
-                    <FormWrapper ref={FormRefs[2]} disabled={currentActionIdx < 4}>
-                        <Title>{t('categories_title')}</Title>
-                        <CategoriesForm onComplete={(valid) => handleLoadingState(3, valid)}/>
+                ).then((event) => {
+                    dispatch(PushNotification(t('event_create_success'), 'success'));
+                    history.push('/group/' + event.data.event.group_id);
+                })
+                    .catch((e) => dispatch(PushNotification(e.message, 'error')))
+                resetForm();
+            }}
+            validateOnBlur={true}
+            validate={(eventPayload: EventCreationPayload) => {
+                console.log('errors:', checkEvent(eventPayload));
+                return checkEvent(eventPayload);
+            }}>
+                { props =>
+                    <Form>
+                        <StepWrapper>
+                            <Title>{t('general_infos_title')}</Title>
+                            <Description>{t('general_infos_description')}</Description>
+                            <GeneralInfoForm onComplete={() => console.log('complete first step')}/>
+                        </StepWrapper>
+                        {/* <StepWrapper ref={themeFormRef}>
+                            <Title>{t('styles_title')}</Title>
+                            <Description>{t('styles_description')}</Description>
+                            <StylesForm onComplete={(valid) => handleLoadingState(1, valid)}/>
+                        </StepWrapper>
+                        <StepWrapper ref={datesFormRef}>
+                            <Title>{t('dates_title')} {
+                                datesLength > 0 ?
+                                <span className={'date-quantity'}>
+                                    - {datesLength} date{datesLength > 1 ? 's' : null}
+                                </span> :
+                                    null
+                            }</Title>
+                            <Description>{t('dates_description')}</Description>
+                            <DatesForm onComplete={(valid) => handleLoadingState(2, valid)}/>
+                        </StepWrapper>
+                        <StepWrapper ref={categoriesFormRef}>
+                            <Title>{t('categories_title')}</Title>
+                            <CategoriesForm onComplete={(valid) => handleLoadingState(3, valid)}/>
+                        </StepWrapper> */}
                         <SubmitButton
-                            variant={acsetStatus === 'complete' ? 'primary' : 'disabled'}
-                            loadingState={loadingForms[3] && actionsStatuses[5] !== 'complete'}
-                            title={loadingForms[3] && actionsStatuses[5] !== 'complete' ? t('loading_btn') : t('create_event_btn')}
-                            onClick={() => global.window.t721Sdk.events.create.create(
-                                token,
-                                {completedActionSet: eventAcsetId}
-                            ).then((event) => {
-                                dispatch(PushNotification(t('event_create_success'), 'success'));
-                                history.push('/group/' + event.data.event.group_id);
-                            })
-                                .catch((e) => dispatch(PushNotification(e.message, 'error')))
-                            }
+                            variant={'primary'}
+                            title={t('create_event_btn')}
                         />
-                    </FormWrapper>
-                )}
-                <ResetEventCreateForm
-                token={token}
-                eventAcsetId={eventAcsetId}
-                onReset={() => setStepIdx(0)}/>
-            </Forms>
+                        <ResetEventCreateForm
+                        token={token}
+                        onReset={() => props.resetForm()}/>
+                        <Persist name={'event-creation'} />
+                    </Form>
+                }
+            </Formik>
         }
         </Container>
     )
@@ -196,7 +137,7 @@ const Container = styled.div`
     width: 100%;
 `;
 
-const Forms = styled.div`
+const Form = styled.form`
     display: flex;
     justify-content: center;
     align-items: center;
@@ -204,7 +145,7 @@ const Forms = styled.div`
     width: 600px;
 `;
 
-const FormWrapper = styled.div<{ disabled?: boolean }>`
+const StepWrapper = styled.div<{ disabled?: boolean }>`
     width: 100%;
     margin: 50px 0;
     min-height: 65vh;

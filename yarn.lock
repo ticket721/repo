@@ -15457,6 +15457,14 @@ formidable@^1.2.0:
   resolved "https://registry.yarnpkg.com/formidable/-/formidable-1.2.2.tgz#bf69aea2972982675f00865342b982986f6b8dd9"
   integrity sha512-V8gLm+41I/8kguQ4/o1D3RIHRmhYFG4pnNyonvua+40rqcEmT4+V71yaZ3B457xbbgCsCfjSPi65u/W6vK1U5Q==
 
+formik-persist@1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/formik-persist/-/formik-persist-1.1.0.tgz#fbd2f11db4cb882a0c6f83646028f603bb43511d"
+  integrity sha512-tZyyghHinnoqptYVD8vfkN8rg8sFKIuc1INFpuspTXffq1H8eeI1aYFiyoq2gNE1qIVJfPy+bzUItx/9qyO8Hw==
+  dependencies:
+    lodash.debounce "^4.0.8"
+    react-fast-compare "^2.0.1"
+
 formik@2.1.4:
   version "2.1.4"
   resolved "https://registry.yarnpkg.com/formik/-/formik-2.1.4.tgz#8deef07ec845ea98f75e03da4aad7aab4ac46570"
@@ -20709,11 +20717,6 @@ lodash@4.17.15, "lodash@>=3.5 <5", lodash@^4.0.1, lodash@^4.15.0, lodash@^4.17.1
   version "4.17.15"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.15.tgz#b447f6670a0455bbfeedd11392eff330ea097548"
   integrity sha512-8xOcRHvCjnocdS5cpwXQXVzmmh5e5+saE2QGoeQmbKmRS6J3VQppPOIt0MnmE+4xlZoumy0GPG0D0MVIQbNA1A==
-
-lodash@^4.17.20:
-  version "4.17.20"
-  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.20.tgz#b44a9b6297bcb698f1c51a3545a2b3b368d59c52"
-  integrity sha512-PlhdFcillOINfeV7Ni6oF1TAEayyZBoZ8bcshTHqOYJYlrqzRK5hagpagky5o4HfCzzd1TRkXPMFq6cKk9rGmA==
 
 log-driver@^1.2.7:
   version "1.2.7"

@@ -2,8 +2,15 @@ import * as React from 'react';
 import styled from '../../config/styled';
 import '../../../static/t721-icons/t721-icons.css';
 
+interface IconGradient {
+    hexCodes: string[];
+    angle: number;
+}
+
+export type IconColor = string | IconGradient;
+
 export interface IconProps extends React.ComponentProps<any> {
-    color?: string;
+    color?: IconColor;
     icon: string;
     size: string;
     onClick?: () => void;
@@ -26,9 +33,26 @@ export const Icon: React.FunctionComponent<IconProps & { className?: string }> =
 const IconSpan = styled.span<IconProps>`
     display: block;
     flex-shrink: 0;
-    color: ${(props) => (props.color ? props.color : props.theme.primaryColor.hex)} !important;
     font-size: ${(props) => props.size};
     transition: all 300ms ease;
+    color: ${(props) => (
+        props.color
+            ?
+            typeof props.color === 'string'
+                ?
+                props.color
+                :
+                props.color.hexCodes[0]
+            :
+        props.theme.primaryColor.hex)} !important;
+    ${props => props.color && typeof props.color !== 'string' ?
+        `
+        background: -webkit-linear-gradient(${props.color.angle}deg, ${props.color.hexCodes.join(',')});
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        ` :
+        null
+    }
 `;
 
 Icon.defaultProps = {

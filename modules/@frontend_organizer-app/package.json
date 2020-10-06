@@ -28,6 +28,7 @@
         "colorthief": "2.3.0",
         "connected-react-router": "6.8.0",
         "formik": "2.1.4",
+        "formik-persist": "1.1.0",
         "ionicons": "5.0.0",
         "node-vibrant": "3.1.2",
         "react": "16.13.1",
