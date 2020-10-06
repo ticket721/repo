@@ -40,9 +40,6 @@ import { ContractsController } from '@app/server/controllers/contracts/Contracts
 import { BinanceModule, BinanceModuleBuildOptions } from '@lib/common/binance/Binance.module';
 import { OutrospectionModule } from '@lib/common/outrospection/Outrospection.module';
 import { EmailModule } from '@lib/common/email/Email.module';
-import { DosojinController } from '@app/server/controllers/dosojin/Dosojin.controller';
-import { GemOrdersModule } from '@lib/common/gemorders/GemOrders.module';
-import { CheckoutController } from '@app/server/controllers/checkout/Checkout.controller';
 import { ToolBoxModule } from '@lib/common/toolbox/ToolBox.module';
 import { CategoriesModule } from '@lib/common/categories/Categories.module';
 import { RightsModule } from '@lib/common/rights/Rights.module';
@@ -51,8 +48,6 @@ import { RightsController } from '@app/server/controllers/rights/Rights.controll
 import { ServerController } from '@app/server/controllers/server/Server.controller';
 import { MetadatasController } from '@app/server/controllers/metadatas/Metadatas.controller';
 import { MetadatasModule } from '@lib/common/metadatas/Metadatas.module';
-import { AuthorizationsModule } from '@lib/common/authorizations/Authorizations.module';
-import { CheckoutModule } from '@lib/common/checkout/Checkout.module';
 import { CartModule } from '@lib/common/cart/Cart.module';
 import { RocksideModule } from '@lib/common/rockside/Rockside.module';
 import { TicketsController } from '@app/server/controllers/tickets/Tickets.controller';
@@ -96,13 +91,10 @@ import { FilestoreModule } from '@lib/common/filestore/Filestore.module';
         CategoriesModule,
         RightsModule,
         EventsModule,
-        GemOrdersModule,
         MetadatasModule,
-        AuthorizationsModule,
         CurrenciesModule,
         TicketsModule,
 
-        CheckoutModule,
         CartModule,
         StripeModule.register(),
         StripeInterfacesModule,
@@ -176,8 +168,6 @@ import { FilestoreModule } from '@lib/common/filestore/Filestore.module';
         EventsController,
         TxsController,
         ContractsController,
-        DosojinController,
-        CheckoutController,
         CategoriesController,
         RightsController,
         MetadatasController,

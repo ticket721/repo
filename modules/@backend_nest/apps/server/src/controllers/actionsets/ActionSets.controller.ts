@@ -20,7 +20,6 @@ import { ActionsCreateInputDto } from '@app/server/controllers/actionsets/dto/Ac
 import { ActionsCreateResponseDto } from '@app/server/controllers/actionsets/dto/ActionsCreateResponse.dto';
 import { RightsService } from '@lib/common/rights/Rights.service';
 import { ApiResponses } from '@app/server/utils/ApiResponses.controller.decorator';
-import { EventCreateAcsetBuilderArgs } from '@lib/common/events/acset_builders/EventCreate.acsetbuilder.helper';
 import { ValidGuard } from '@app/server/authentication/guards/ValidGuard.guard';
 import { ActionsConsumeUpdateInputDto } from '@app/server/controllers/actionsets/dto/ActionsConsumeUpdateInput.dto';
 import { ActionsConsumeUpdateResponseDto } from '@app/server/controllers/actionsets/dto/ActionsConsumeUpdateResponse.dto';
@@ -223,7 +222,7 @@ export class ActionSetsController extends ControllerBasics<ActionSetEntity> {
     @Roles('authenticated')
     @ApiResponses([StatusCodes.Created, StatusCodes.BadRequest])
     async createActions(@Body() body: ActionsCreateInputDto, @User() user: UserDto): Promise<ActionsCreateResponseDto> {
-        const response: CRUDResponse<ActionSetEntity> = await this.actionSetsService.build<EventCreateAcsetBuilderArgs>(
+        const response: CRUDResponse<ActionSetEntity> = await this.actionSetsService.build<any>(
             body.name,
             user,
             body.arguments,

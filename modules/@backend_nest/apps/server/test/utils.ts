@@ -634,1223 +634,1239 @@ export const admin_addRight = async (
 };
 
 export const createEventWithUltraVIP = async (token: string, sdk: T721SDK): Promise<EventDto> => {
-    const initialArgument = {};
+    // const initialArgument = {};
+    //
+    // const actionSetName = 'event_create';
+    //
+    // const eventCreationActionSetRes = await sdk.actions.create(token, {
+    //     name: actionSetName,
+    //     arguments: initialArgument,
+    // });
+    //
+    // const actionSetId = eventCreationActionSetRes.data.actionset.id;
+    //
+    // await sdk.events.create.textMetadata(token, actionSetId, {
+    //     name: 'myEvent',
+    //     description: 'This is my event',
+    //     tags: ['test', 'event'],
+    // });
+    //
+    // await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+    //     return as.current_action === 1;
+    // });
+    //
+    // const form = new FormData();
+    //
+    // form.append('images', fs.readFileSync(__dirname + '/../src/controllers/events/test_resources/test_avatar.png'), {
+    //     filename: 'avatar.png',
+    // });
+    //
+    // const imageUploadRes: AxiosResponse<ImagesUploadResponseDto> = await sdk.images.upload(
+    //     token,
+    //     form.getBuffer(),
+    //     form.getHeaders(),
+    // );
+    //
+    // const avatarId = imageUploadRes.data.urls[0];
+    //
+    // await sdk.events.create.imagesMetadata(token, actionSetId, {
+    //     avatar: avatarId,
+    //     signatureColors: ['#ff0000', '#00ff00'],
+    // });
+    //
+    // await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+    //     return as.current_action === 2;
+    // });
+    //
+    // await sdk.events.create.modulesConfiguration(token, actionSetId, {});
+    //
+    // await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+    //     return as.current_action === 3;
+    // });
+    //
+    // await sdk.events.create.datesConfiguration(token, actionSetId, {
+    //     dates: [
+    //         {
+    //             name: 'first date',
+    //             eventBegin: new Date(Date.now() + 1000000),
+    //             eventEnd: new Date(Date.now() + 2000000),
+    //             location: {
+    //                 lat: 40.75901,
+    //                 lon: -73.984474,
+    //                 label: 'Times Square',
+    //             },
+    //         },
+    //         {
+    //             name: 'second date',
+    //             eventBegin: new Date(Date.now() + 1000000),
+    //             eventEnd: new Date(Date.now() + 2000000),
+    //             location: {
+    //                 lat: 40.75901,
+    //                 lon: -73.984474,
+    //                 label: 'Times Square',
+    //             },
+    //         },
+    //     ],
+    // });
+    //
+    // await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+    //     return as.current_action === 4;
+    // });
+    //
+    // await sdk.events.create.categoriesConfiguration(token, actionSetId, {
+    //     global: [
+    //         {
+    //             name: 'VIP Tickets',
+    //             saleBegin: new Date(Date.now() - 1000000),
+    //             saleEnd: new Date(Date.now() + 23 * 1000000),
+    //             resaleBegin: new Date(Date.now() - 1000000),
+    //             resaleEnd: new Date(Date.now() + 23 * 1000000),
+    //             seats: 100,
+    //             currencies: [
+    //                 {
+    //                     currency: 'Fiat',
+    //                     price: '200',
+    //                 },
+    //             ],
+    //         },
+    //         {
+    //             name: 'Ultra VIP Tickets',
+    //             saleBegin: new Date(Date.now() - 1000000),
+    //             saleEnd: new Date(Date.now() + 23 * 1000000),
+    //             resaleBegin: new Date(Date.now() - 1000000),
+    //             resaleEnd: new Date(Date.now() + 23 * 1000000),
+    //             seats: 2,
+    //             currencies: [
+    //                 {
+    //                     currency: 'Fiat',
+    //                     price: '200',
+    //                 },
+    //             ],
+    //         },
+    //     ],
+    //     dates: [
+    //         [
+    //             {
+    //                 name: 'Regular Tickets',
+    //                 saleBegin: new Date(Date.now() - 1000000),
+    //                 saleEnd: new Date(Date.now() + 23 * 1000000),
+    //                 resaleBegin: new Date(Date.now() - 1000000),
+    //                 resaleEnd: new Date(Date.now() + 23 * 1000000),
+    //                 seats: 200,
+    //                 currencies: [
+    //                     {
+    //                         currency: 'Fiat',
+    //                         price: '200',
+    //                     },
+    //                 ],
+    //             },
+    //         ],
+    //         [
+    //             {
+    //                 name: 'Regular Tickets',
+    //                 saleBegin: new Date(Date.now() - 1000000),
+    //                 saleEnd: new Date(Date.now() + 23 * 1000000),
+    //                 resaleBegin: new Date(Date.now() - 1000000),
+    //                 resaleEnd: new Date(Date.now() + 23 * 1000000),
+    //                 seats: 200,
+    //                 currencies: [
+    //                     {
+    //                         currency: 'Fiat',
+    //                         price: '200',
+    //                     },
+    //                 ],
+    //             },
+    //         ],
+    //     ],
+    // });
+    //
+    // await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+    //     return as.current_action === 5;
+    // });
+    //
+    // await sdk.events.create.adminsConfiguration(token, actionSetId, {
+    //     admins: [],
+    // });
+    //
+    // await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+    //     return as.current_status === 'complete';
+    // });
+    //
+    // const eventEntityRes = await sdk.events.create.create(token, {
+    //     //completedActionSet: actionSetId,
+    //     eventPayload: null,
+    // });
+    //
+    // return eventEntityRes.data.event;
 
-    const actionSetName = 'event_create';
-
-    const eventCreationActionSetRes = await sdk.actions.create(token, {
-        name: actionSetName,
-        arguments: initialArgument,
-    });
-
-    const actionSetId = eventCreationActionSetRes.data.actionset.id;
-
-    await sdk.events.create.textMetadata(token, actionSetId, {
-        name: 'myEvent',
-        description: 'This is my event',
-        tags: ['test', 'event'],
-    });
-
-    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-        return as.current_action === 1;
-    });
-
-    const form = new FormData();
-
-    form.append('images', fs.readFileSync(__dirname + '/../src/controllers/events/test_resources/test_avatar.png'), {
-        filename: 'avatar.png',
-    });
-
-    const imageUploadRes: AxiosResponse<ImagesUploadResponseDto> = await sdk.images.upload(
-        token,
-        form.getBuffer(),
-        form.getHeaders(),
-    );
-
-    const avatarId = imageUploadRes.data.urls[0];
-
-    await sdk.events.create.imagesMetadata(token, actionSetId, {
-        avatar: avatarId,
-        signatureColors: ['#ff0000', '#00ff00'],
-    });
-
-    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-        return as.current_action === 2;
-    });
-
-    await sdk.events.create.modulesConfiguration(token, actionSetId, {});
-
-    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-        return as.current_action === 3;
-    });
-
-    await sdk.events.create.datesConfiguration(token, actionSetId, {
-        dates: [
-            {
-                name: 'first date',
-                eventBegin: new Date(Date.now() + 1000000),
-                eventEnd: new Date(Date.now() + 2000000),
-                location: {
-                    lat: 40.75901,
-                    lon: -73.984474,
-                    label: 'Times Square',
-                },
-            },
-            {
-                name: 'second date',
-                eventBegin: new Date(Date.now() + 1000000),
-                eventEnd: new Date(Date.now() + 2000000),
-                location: {
-                    lat: 40.75901,
-                    lon: -73.984474,
-                    label: 'Times Square',
-                },
-            },
-        ],
-    });
-
-    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-        return as.current_action === 4;
-    });
-
-    await sdk.events.create.categoriesConfiguration(token, actionSetId, {
-        global: [
-            {
-                name: 'VIP Tickets',
-                saleBegin: new Date(Date.now() - 1000000),
-                saleEnd: new Date(Date.now() + 23 * 1000000),
-                resaleBegin: new Date(Date.now() - 1000000),
-                resaleEnd: new Date(Date.now() + 23 * 1000000),
-                seats: 100,
-                currencies: [
-                    {
-                        currency: 'Fiat',
-                        price: '200',
-                    },
-                ],
-            },
-            {
-                name: 'Ultra VIP Tickets',
-                saleBegin: new Date(Date.now() - 1000000),
-                saleEnd: new Date(Date.now() + 23 * 1000000),
-                resaleBegin: new Date(Date.now() - 1000000),
-                resaleEnd: new Date(Date.now() + 23 * 1000000),
-                seats: 2,
-                currencies: [
-                    {
-                        currency: 'Fiat',
-                        price: '200',
-                    },
-                ],
-            },
-        ],
-        dates: [
-            [
-                {
-                    name: 'Regular Tickets',
-                    saleBegin: new Date(Date.now() - 1000000),
-                    saleEnd: new Date(Date.now() + 23 * 1000000),
-                    resaleBegin: new Date(Date.now() - 1000000),
-                    resaleEnd: new Date(Date.now() + 23 * 1000000),
-                    seats: 200,
-                    currencies: [
-                        {
-                            currency: 'Fiat',
-                            price: '200',
-                        },
-                    ],
-                },
-            ],
-            [
-                {
-                    name: 'Regular Tickets',
-                    saleBegin: new Date(Date.now() - 1000000),
-                    saleEnd: new Date(Date.now() + 23 * 1000000),
-                    resaleBegin: new Date(Date.now() - 1000000),
-                    resaleEnd: new Date(Date.now() + 23 * 1000000),
-                    seats: 200,
-                    currencies: [
-                        {
-                            currency: 'Fiat',
-                            price: '200',
-                        },
-                    ],
-                },
-            ],
-        ],
-    });
-
-    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-        return as.current_action === 5;
-    });
-
-    await sdk.events.create.adminsConfiguration(token, actionSetId, {
-        admins: [],
-    });
-
-    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-        return as.current_status === 'complete';
-    });
-
-    const eventEntityRes = await sdk.events.create.create(token, {
-        //completedActionSet: actionSetId,
-        eventPayload: null,
-    });
-
-    return eventEntityRes.data.event;
+    return null;
 };
 
 export const editEventActionSet = async (token: string, sdk: T721SDK, actionSetId: string): Promise<string> => {
-    await sdk.events.create.adminsConfiguration(token, actionSetId, {
-        admins: [],
-    });
+    // await sdk.events.create.adminsConfiguration(token, actionSetId, {
+    //     admins: [],
+    // });
+    //
+    // await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+    //     return as.current_status === 'complete';
+    // });
+    //
+    // await sdk.events.create.categoriesConfiguration(token, actionSetId, {
+    //     global: [
+    //         {
+    //             name: 'VIP Tickets',
+    //             saleBegin: new Date(Date.now() - 1000000),
+    //             saleEnd: new Date(Date.now() + 23 * 1000000),
+    //             resaleBegin: new Date(Date.now() - 1000000),
+    //             resaleEnd: new Date(Date.now() + 23 * 1000000),
+    //             seats: 100,
+    //             currencies: [
+    //                 {
+    //                     currency: 'Fiat',
+    //                     price: '200',
+    //                 },
+    //             ],
+    //         },
+    //     ],
+    //     dates: [
+    //         [
+    //             {
+    //                 name: 'Regular Tickets',
+    //                 saleBegin: new Date(Date.now() - 1000000),
+    //                 saleEnd: new Date(Date.now() + 23 * 1000000),
+    //                 resaleBegin: new Date(Date.now() - 1000000),
+    //                 resaleEnd: new Date(Date.now() + 23 * 1000000),
+    //                 seats: 200,
+    //                 currencies: [
+    //                     {
+    //                         currency: 'Fiat',
+    //                         price: '200',
+    //                     },
+    //                 ],
+    //             },
+    //         ],
+    //         [
+    //             {
+    //                 name: 'Regular Tickets',
+    //                 saleBegin: new Date(Date.now() - 1000000),
+    //                 saleEnd: new Date(Date.now() + 23 * 1000000),
+    //                 resaleBegin: new Date(Date.now() - 1000000),
+    //                 resaleEnd: new Date(Date.now() + 23 * 1000000),
+    //                 seats: 200,
+    //                 currencies: [
+    //                     {
+    //                         currency: 'Fiat',
+    //                         price: '200',
+    //                     },
+    //                 ],
+    //             },
+    //         ],
+    //     ],
+    // });
+    //
+    // await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+    //     return as.current_status === 'complete';
+    // });
+    //
+    // await sdk.events.create.datesConfiguration(token, actionSetId, {
+    //     dates: [
+    //         {
+    //             name: 'first date',
+    //             eventBegin: new Date(Date.now() + 1000000),
+    //             eventEnd: new Date(Date.now() + 2000000),
+    //             location: {
+    //                 lat: 40.75901,
+    //                 lon: -73.984474,
+    //                 label: 'Times Square',
+    //             },
+    //         },
+    //         {
+    //             name: 'second date',
+    //             eventBegin: new Date(Date.now() + 1000000),
+    //             eventEnd: new Date(Date.now() + 2000000),
+    //             location: {
+    //                 lat: 40.75901,
+    //                 lon: -73.984474,
+    //                 label: 'Times Square',
+    //             },
+    //         },
+    //     ],
+    // });
+    //
+    // await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+    //     return as.current_status === 'complete';
+    // });
+    //
+    // await sdk.events.create.modulesConfiguration(token, actionSetId, {});
+    //
+    // await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+    //     return as.current_status === 'complete';
+    // });
+    //
+    // const form = new FormData();
+    //
+    // form.append('images', fs.readFileSync(__dirname + '/../src/controllers/events/test_resources/test_avatar.png'), {
+    //     filename: 'avatar.png',
+    // });
+    //
+    // const imageUploadRes: AxiosResponse<ImagesUploadResponseDto> = await sdk.images.upload(
+    //     token,
+    //     form.getBuffer(),
+    //     form.getHeaders(),
+    // );
+    //
+    // const avatarId = imageUploadRes.data.urls[0];
+    //
+    // await sdk.events.create.imagesMetadata(token, actionSetId, {
+    //     avatar: avatarId,
+    //     signatureColors: ['#ffff00', '#00ff00'],
+    // });
+    //
+    // await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+    //     return as.current_status === 'complete';
+    // });
+    //
+    // await sdk.events.create.textMetadata(token, actionSetId, {
+    //     name: 'myEvent',
+    //     description: 'This is my event',
+    //     tags: ['test', 'event'],
+    // });
+    //
+    // await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+    //     return as.current_status === 'complete';
+    // });
+    //
+    // return actionSetId;
 
-    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-        return as.current_status === 'complete';
-    });
-
-    await sdk.events.create.categoriesConfiguration(token, actionSetId, {
-        global: [
-            {
-                name: 'VIP Tickets',
-                saleBegin: new Date(Date.now() - 1000000),
-                saleEnd: new Date(Date.now() + 23 * 1000000),
-                resaleBegin: new Date(Date.now() - 1000000),
-                resaleEnd: new Date(Date.now() + 23 * 1000000),
-                seats: 100,
-                currencies: [
-                    {
-                        currency: 'Fiat',
-                        price: '200',
-                    },
-                ],
-            },
-        ],
-        dates: [
-            [
-                {
-                    name: 'Regular Tickets',
-                    saleBegin: new Date(Date.now() - 1000000),
-                    saleEnd: new Date(Date.now() + 23 * 1000000),
-                    resaleBegin: new Date(Date.now() - 1000000),
-                    resaleEnd: new Date(Date.now() + 23 * 1000000),
-                    seats: 200,
-                    currencies: [
-                        {
-                            currency: 'Fiat',
-                            price: '200',
-                        },
-                    ],
-                },
-            ],
-            [
-                {
-                    name: 'Regular Tickets',
-                    saleBegin: new Date(Date.now() - 1000000),
-                    saleEnd: new Date(Date.now() + 23 * 1000000),
-                    resaleBegin: new Date(Date.now() - 1000000),
-                    resaleEnd: new Date(Date.now() + 23 * 1000000),
-                    seats: 200,
-                    currencies: [
-                        {
-                            currency: 'Fiat',
-                            price: '200',
-                        },
-                    ],
-                },
-            ],
-        ],
-    });
-
-    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-        return as.current_status === 'complete';
-    });
-
-    await sdk.events.create.datesConfiguration(token, actionSetId, {
-        dates: [
-            {
-                name: 'first date',
-                eventBegin: new Date(Date.now() + 1000000),
-                eventEnd: new Date(Date.now() + 2000000),
-                location: {
-                    lat: 40.75901,
-                    lon: -73.984474,
-                    label: 'Times Square',
-                },
-            },
-            {
-                name: 'second date',
-                eventBegin: new Date(Date.now() + 1000000),
-                eventEnd: new Date(Date.now() + 2000000),
-                location: {
-                    lat: 40.75901,
-                    lon: -73.984474,
-                    label: 'Times Square',
-                },
-            },
-        ],
-    });
-
-    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-        return as.current_status === 'complete';
-    });
-
-    await sdk.events.create.modulesConfiguration(token, actionSetId, {});
-
-    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-        return as.current_status === 'complete';
-    });
-
-    const form = new FormData();
-
-    form.append('images', fs.readFileSync(__dirname + '/../src/controllers/events/test_resources/test_avatar.png'), {
-        filename: 'avatar.png',
-    });
-
-    const imageUploadRes: AxiosResponse<ImagesUploadResponseDto> = await sdk.images.upload(
-        token,
-        form.getBuffer(),
-        form.getHeaders(),
-    );
-
-    const avatarId = imageUploadRes.data.urls[0];
-
-    await sdk.events.create.imagesMetadata(token, actionSetId, {
-        avatar: avatarId,
-        signatureColors: ['#ffff00', '#00ff00'],
-    });
-
-    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-        return as.current_status === 'complete';
-    });
-
-    await sdk.events.create.textMetadata(token, actionSetId, {
-        name: 'myEvent',
-        description: 'This is my event',
-        tags: ['test', 'event'],
-    });
-
-    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-        return as.current_status === 'complete';
-    });
-
-    return actionSetId;
+    return null;
 };
 
 export const createEventActionSet = async (token: string, sdk: T721SDK): Promise<string> => {
-    const initialArgument = {};
+    // const initialArgument = {};
+    //
+    // const actionSetName = 'event_create';
+    //
+    // const eventCreationActionSetRes = await sdk.actions.create(token, {
+    //     name: actionSetName,
+    //     arguments: initialArgument,
+    // });
+    //
+    // const actionSetId = eventCreationActionSetRes.data.actionset.id;
+    //
+    // await sdk.events.create.textMetadata(token, actionSetId, {
+    //     name: 'myEvent',
+    //     description: 'This is my event',
+    //     tags: ['test', 'event'],
+    // });
+    //
+    // await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+    //     return as.current_action === 1;
+    // });
+    //
+    // const form = new FormData();
+    //
+    // form.append('images', fs.readFileSync(__dirname + '/../src/controllers/events/test_resources/test_avatar.png'), {
+    //     filename: 'avatar.png',
+    // });
+    //
+    // const imageUploadRes: AxiosResponse<ImagesUploadResponseDto> = await sdk.images.upload(
+    //     token,
+    //     form.getBuffer(),
+    //     form.getHeaders(),
+    // );
+    //
+    // const avatarId = imageUploadRes.data.urls[0];
+    //
+    // await sdk.events.create.imagesMetadata(token, actionSetId, {
+    //     avatar: avatarId,
+    //     signatureColors: ['#ff0000', '#00ff00'],
+    // });
+    //
+    // await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+    //     return as.current_action === 2;
+    // });
+    //
+    // await sdk.events.create.modulesConfiguration(token, actionSetId, {});
+    //
+    // await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+    //     return as.current_action === 3;
+    // });
+    //
+    // await sdk.events.create.datesConfiguration(token, actionSetId, {
+    //     dates: [
+    //         {
+    //             name: 'first date',
+    //             eventBegin: new Date(Date.now() + 1000000),
+    //             eventEnd: new Date(Date.now() + 2000000),
+    //             location: {
+    //                 lat: 40.75901,
+    //                 lon: -73.984474,
+    //                 label: 'Times Square',
+    //             },
+    //         },
+    //         {
+    //             name: 'second date',
+    //             eventBegin: new Date(Date.now() + 1000000),
+    //             eventEnd: new Date(Date.now() + 2000000),
+    //             location: {
+    //                 lat: 40.75901,
+    //                 lon: -73.984474,
+    //                 label: 'Times Square',
+    //             },
+    //         },
+    //     ],
+    // });
+    //
+    // await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+    //     return as.current_action === 4;
+    // });
+    //
+    // await sdk.events.create.categoriesConfiguration(token, actionSetId, {
+    //     global: [
+    //         {
+    //             name: 'VIP Tickets',
+    //             saleBegin: new Date(Date.now() - 1000000),
+    //             saleEnd: new Date(Date.now() + 23 * 1000000),
+    //             resaleBegin: new Date(Date.now() - 1000000),
+    //             resaleEnd: new Date(Date.now() + 23 * 1000000),
+    //             seats: 100,
+    //             currencies: [
+    //                 {
+    //                     currency: 'Fiat',
+    //                     price: '200',
+    //                 },
+    //             ],
+    //         },
+    //     ],
+    //     dates: [
+    //         [
+    //             {
+    //                 name: 'Regular Tickets',
+    //                 saleBegin: new Date(Date.now() - 1000000),
+    //                 saleEnd: new Date(Date.now() + 23 * 1000000),
+    //                 resaleBegin: new Date(Date.now() - 1000000),
+    //                 resaleEnd: new Date(Date.now() + 23 * 1000000),
+    //                 seats: 200,
+    //                 currencies: [
+    //                     {
+    //                         currency: 'Fiat',
+    //                         price: '200',
+    //                     },
+    //                 ],
+    //             },
+    //         ],
+    //         [
+    //             {
+    //                 name: 'Regular Tickets',
+    //                 saleBegin: new Date(Date.now() - 1000000),
+    //                 saleEnd: new Date(Date.now() + 23 * 1000000),
+    //                 resaleBegin: new Date(Date.now() - 1000000),
+    //                 resaleEnd: new Date(Date.now() + 23 * 1000000),
+    //                 seats: 200,
+    //                 currencies: [
+    //                     {
+    //                         currency: 'Fiat',
+    //                         price: '200',
+    //                     },
+    //                 ],
+    //             },
+    //         ],
+    //     ],
+    // });
+    //
+    // await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+    //     return as.current_action === 5;
+    // });
+    //
+    // await sdk.events.create.adminsConfiguration(token, actionSetId, {
+    //     admins: [],
+    // });
+    //
+    // await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+    //     return as.current_status === 'complete';
+    // });
+    //
+    // return actionSetId;
 
-    const actionSetName = 'event_create';
-
-    const eventCreationActionSetRes = await sdk.actions.create(token, {
-        name: actionSetName,
-        arguments: initialArgument,
-    });
-
-    const actionSetId = eventCreationActionSetRes.data.actionset.id;
-
-    await sdk.events.create.textMetadata(token, actionSetId, {
-        name: 'myEvent',
-        description: 'This is my event',
-        tags: ['test', 'event'],
-    });
-
-    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-        return as.current_action === 1;
-    });
-
-    const form = new FormData();
-
-    form.append('images', fs.readFileSync(__dirname + '/../src/controllers/events/test_resources/test_avatar.png'), {
-        filename: 'avatar.png',
-    });
-
-    const imageUploadRes: AxiosResponse<ImagesUploadResponseDto> = await sdk.images.upload(
-        token,
-        form.getBuffer(),
-        form.getHeaders(),
-    );
-
-    const avatarId = imageUploadRes.data.urls[0];
-
-    await sdk.events.create.imagesMetadata(token, actionSetId, {
-        avatar: avatarId,
-        signatureColors: ['#ff0000', '#00ff00'],
-    });
-
-    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-        return as.current_action === 2;
-    });
-
-    await sdk.events.create.modulesConfiguration(token, actionSetId, {});
-
-    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-        return as.current_action === 3;
-    });
-
-    await sdk.events.create.datesConfiguration(token, actionSetId, {
-        dates: [
-            {
-                name: 'first date',
-                eventBegin: new Date(Date.now() + 1000000),
-                eventEnd: new Date(Date.now() + 2000000),
-                location: {
-                    lat: 40.75901,
-                    lon: -73.984474,
-                    label: 'Times Square',
-                },
-            },
-            {
-                name: 'second date',
-                eventBegin: new Date(Date.now() + 1000000),
-                eventEnd: new Date(Date.now() + 2000000),
-                location: {
-                    lat: 40.75901,
-                    lon: -73.984474,
-                    label: 'Times Square',
-                },
-            },
-        ],
-    });
-
-    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-        return as.current_action === 4;
-    });
-
-    await sdk.events.create.categoriesConfiguration(token, actionSetId, {
-        global: [
-            {
-                name: 'VIP Tickets',
-                saleBegin: new Date(Date.now() - 1000000),
-                saleEnd: new Date(Date.now() + 23 * 1000000),
-                resaleBegin: new Date(Date.now() - 1000000),
-                resaleEnd: new Date(Date.now() + 23 * 1000000),
-                seats: 100,
-                currencies: [
-                    {
-                        currency: 'Fiat',
-                        price: '200',
-                    },
-                ],
-            },
-        ],
-        dates: [
-            [
-                {
-                    name: 'Regular Tickets',
-                    saleBegin: new Date(Date.now() - 1000000),
-                    saleEnd: new Date(Date.now() + 23 * 1000000),
-                    resaleBegin: new Date(Date.now() - 1000000),
-                    resaleEnd: new Date(Date.now() + 23 * 1000000),
-                    seats: 200,
-                    currencies: [
-                        {
-                            currency: 'Fiat',
-                            price: '200',
-                        },
-                    ],
-                },
-            ],
-            [
-                {
-                    name: 'Regular Tickets',
-                    saleBegin: new Date(Date.now() - 1000000),
-                    saleEnd: new Date(Date.now() + 23 * 1000000),
-                    resaleBegin: new Date(Date.now() - 1000000),
-                    resaleEnd: new Date(Date.now() + 23 * 1000000),
-                    seats: 200,
-                    currencies: [
-                        {
-                            currency: 'Fiat',
-                            price: '200',
-                        },
-                    ],
-                },
-            ],
-        ],
-    });
-
-    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-        return as.current_action === 5;
-    });
-
-    await sdk.events.create.adminsConfiguration(token, actionSetId, {
-        admins: [],
-    });
-
-    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-        return as.current_status === 'complete';
-    });
-
-    return actionSetId;
+    return null;
 };
 
 export const createLostEvent = async (token: string, sdk: T721SDK): Promise<EventDto> => {
-    const initialArgument = {};
+    // const initialArgument = {};
+    //
+    // const actionSetName = 'event_create';
+    //
+    // const eventCreationActionSetRes = await sdk.actions.create(token, {
+    //     name: actionSetName,
+    //     arguments: initialArgument,
+    // });
+    //
+    // const actionSetId = eventCreationActionSetRes.data.actionset.id;
+    //
+    // await sdk.events.create.textMetadata(token, actionSetId, {
+    //     name: 'myEvent',
+    //     description: 'This is my event',
+    //     tags: ['test', 'event'],
+    // });
+    //
+    // await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+    //     return as.current_action === 1;
+    // });
+    //
+    // const form = new FormData();
+    //
+    // form.append('images', fs.readFileSync(__dirname + '/../src/controllers/events/test_resources/test_avatar.png'), {
+    //     filename: 'avatar.png',
+    // });
+    //
+    // const imageUploadRes: AxiosResponse<ImagesUploadResponseDto> = await sdk.images.upload(
+    //     token,
+    //     form.getBuffer(),
+    //     form.getHeaders(),
+    // );
+    //
+    // const avatarId = imageUploadRes.data.urls[0];
+    //
+    // await sdk.events.create.imagesMetadata(token, actionSetId, {
+    //     avatar: avatarId,
+    //     signatureColors: ['#ff0000', '#00ff00'],
+    // });
+    //
+    // await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+    //     return as.current_action === 2;
+    // });
+    //
+    // await sdk.events.create.modulesConfiguration(token, actionSetId, {});
+    //
+    // await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+    //     return as.current_action === 3;
+    // });
+    //
+    // await sdk.events.create.datesConfiguration(token, actionSetId, {
+    //     dates: [
+    //         {
+    //             name: 'first date',
+    //             eventBegin: new Date(Date.now() + 1000000),
+    //             eventEnd: new Date(Date.now() + 2000000),
+    //             location: {
+    //                 lat: 0,
+    //                 lon: 0,
+    //                 label: 'Times Square',
+    //             },
+    //         },
+    //         {
+    //             name: 'second date',
+    //             eventBegin: new Date(Date.now() + 1000000),
+    //             eventEnd: new Date(Date.now() + 2000000),
+    //             location: {
+    //                 lat: 0.001,
+    //                 lon: 0.001,
+    //                 label: 'Times Square',
+    //             },
+    //         },
+    //     ],
+    // });
+    //
+    // await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+    //     return as.current_action === 4;
+    // });
+    //
+    // await sdk.events.create.categoriesConfiguration(token, actionSetId, {
+    //     global: [
+    //         {
+    //             name: 'VIP Tickets',
+    //             saleBegin: new Date(Date.now() - 1000000),
+    //             saleEnd: new Date(Date.now() + 23 * 1000000),
+    //             resaleBegin: new Date(Date.now() - 1000000),
+    //             resaleEnd: new Date(Date.now() + 23 * 1000000),
+    //             seats: 100,
+    //             currencies: [
+    //                 {
+    //                     currency: 'Fiat',
+    //                     price: '200',
+    //                 },
+    //             ],
+    //         },
+    //     ],
+    //     dates: [
+    //         [
+    //             {
+    //                 name: 'Regular Tickets',
+    //                 saleBegin: new Date(Date.now() - 1000000),
+    //                 saleEnd: new Date(Date.now() + 23 * 1000000),
+    //                 resaleBegin: new Date(Date.now() - 1000000),
+    //                 resaleEnd: new Date(Date.now() + 23 * 1000000),
+    //                 seats: 200,
+    //                 currencies: [
+    //                     {
+    //                         currency: 'Fiat',
+    //                         price: '200',
+    //                     },
+    //                 ],
+    //             },
+    //         ],
+    //         [
+    //             {
+    //                 name: 'Regular Tickets',
+    //                 saleBegin: new Date(Date.now() - 1000000),
+    //                 saleEnd: new Date(Date.now() + 23 * 1000000),
+    //                 resaleBegin: new Date(Date.now() - 1000000),
+    //                 resaleEnd: new Date(Date.now() + 23 * 1000000),
+    //                 seats: 200,
+    //                 currencies: [
+    //                     {
+    //                         currency: 'Fiat',
+    //                         price: '200',
+    //                     },
+    //                 ],
+    //             },
+    //         ],
+    //     ],
+    // });
+    //
+    // await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+    //     return as.current_action === 5;
+    // });
+    //
+    // await sdk.events.create.adminsConfiguration(token, actionSetId, {
+    //     admins: [],
+    // });
+    //
+    // await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+    //     return as.current_status === 'complete';
+    // });
+    //
+    // const eventEntityRes = await sdk.events.create.create(token, {
+    //     eventPayload: null,
+    // });
+    //
+    // await sdk.events.start(token, {
+    //     event: eventEntityRes.data.event.id,
+    // });
+    //
+    // return eventEntityRes.data.event;
 
-    const actionSetName = 'event_create';
-
-    const eventCreationActionSetRes = await sdk.actions.create(token, {
-        name: actionSetName,
-        arguments: initialArgument,
-    });
-
-    const actionSetId = eventCreationActionSetRes.data.actionset.id;
-
-    await sdk.events.create.textMetadata(token, actionSetId, {
-        name: 'myEvent',
-        description: 'This is my event',
-        tags: ['test', 'event'],
-    });
-
-    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-        return as.current_action === 1;
-    });
-
-    const form = new FormData();
-
-    form.append('images', fs.readFileSync(__dirname + '/../src/controllers/events/test_resources/test_avatar.png'), {
-        filename: 'avatar.png',
-    });
-
-    const imageUploadRes: AxiosResponse<ImagesUploadResponseDto> = await sdk.images.upload(
-        token,
-        form.getBuffer(),
-        form.getHeaders(),
-    );
-
-    const avatarId = imageUploadRes.data.urls[0];
-
-    await sdk.events.create.imagesMetadata(token, actionSetId, {
-        avatar: avatarId,
-        signatureColors: ['#ff0000', '#00ff00'],
-    });
-
-    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-        return as.current_action === 2;
-    });
-
-    await sdk.events.create.modulesConfiguration(token, actionSetId, {});
-
-    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-        return as.current_action === 3;
-    });
-
-    await sdk.events.create.datesConfiguration(token, actionSetId, {
-        dates: [
-            {
-                name: 'first date',
-                eventBegin: new Date(Date.now() + 1000000),
-                eventEnd: new Date(Date.now() + 2000000),
-                location: {
-                    lat: 0,
-                    lon: 0,
-                    label: 'Times Square',
-                },
-            },
-            {
-                name: 'second date',
-                eventBegin: new Date(Date.now() + 1000000),
-                eventEnd: new Date(Date.now() + 2000000),
-                location: {
-                    lat: 0.001,
-                    lon: 0.001,
-                    label: 'Times Square',
-                },
-            },
-        ],
-    });
-
-    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-        return as.current_action === 4;
-    });
-
-    await sdk.events.create.categoriesConfiguration(token, actionSetId, {
-        global: [
-            {
-                name: 'VIP Tickets',
-                saleBegin: new Date(Date.now() - 1000000),
-                saleEnd: new Date(Date.now() + 23 * 1000000),
-                resaleBegin: new Date(Date.now() - 1000000),
-                resaleEnd: new Date(Date.now() + 23 * 1000000),
-                seats: 100,
-                currencies: [
-                    {
-                        currency: 'Fiat',
-                        price: '200',
-                    },
-                ],
-            },
-        ],
-        dates: [
-            [
-                {
-                    name: 'Regular Tickets',
-                    saleBegin: new Date(Date.now() - 1000000),
-                    saleEnd: new Date(Date.now() + 23 * 1000000),
-                    resaleBegin: new Date(Date.now() - 1000000),
-                    resaleEnd: new Date(Date.now() + 23 * 1000000),
-                    seats: 200,
-                    currencies: [
-                        {
-                            currency: 'Fiat',
-                            price: '200',
-                        },
-                    ],
-                },
-            ],
-            [
-                {
-                    name: 'Regular Tickets',
-                    saleBegin: new Date(Date.now() - 1000000),
-                    saleEnd: new Date(Date.now() + 23 * 1000000),
-                    resaleBegin: new Date(Date.now() - 1000000),
-                    resaleEnd: new Date(Date.now() + 23 * 1000000),
-                    seats: 200,
-                    currencies: [
-                        {
-                            currency: 'Fiat',
-                            price: '200',
-                        },
-                    ],
-                },
-            ],
-        ],
-    });
-
-    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-        return as.current_action === 5;
-    });
-
-    await sdk.events.create.adminsConfiguration(token, actionSetId, {
-        admins: [],
-    });
-
-    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-        return as.current_status === 'complete';
-    });
-
-    const eventEntityRes = await sdk.events.create.create(token, {
-        eventPayload: null,
-    });
-
-    await sdk.events.start(token, {
-        event: eventEntityRes.data.event.id,
-    });
-
-    return eventEntityRes.data.event;
+    return null;
 };
 
 export const createFuzzyEvent = async (token: string, sdk: T721SDK): Promise<EventDto> => {
-    const initialArgument = {};
+    // const initialArgument = {};
+    //
+    // const actionSetName = 'event_create';
+    //
+    // const eventCreationActionSetRes = await sdk.actions.create(token, {
+    //     name: actionSetName,
+    //     arguments: initialArgument,
+    // });
+    //
+    // const actionSetId = eventCreationActionSetRes.data.actionset.id;
+    //
+    // await sdk.events.create.textMetadata(token, actionSetId, {
+    //     name: 'Fuzzy',
+    //     description: 'My Event',
+    //     tags: ['test', 'event'],
+    // });
+    //
+    // await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+    //     return as.current_action === 1;
+    // });
+    //
+    // const form = new FormData();
+    //
+    // form.append('images', fs.readFileSync(__dirname + '/../src/controllers/events/test_resources/test_avatar.png'), {
+    //     filename: 'avatar.png',
+    // });
+    //
+    // const imageUploadRes: AxiosResponse<ImagesUploadResponseDto> = await sdk.images.upload(
+    //     token,
+    //     form.getBuffer(),
+    //     form.getHeaders(),
+    // );
+    //
+    // const avatarId = imageUploadRes.data.urls[0];
+    //
+    // await sdk.events.create.imagesMetadata(token, actionSetId, {
+    //     avatar: avatarId,
+    //     signatureColors: ['#ff0000', '#00ff00'],
+    // });
+    //
+    // await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+    //     return as.current_action === 2;
+    // });
+    //
+    // await sdk.events.create.modulesConfiguration(token, actionSetId, {});
+    //
+    // await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+    //     return as.current_action === 3;
+    // });
+    //
+    // await sdk.events.create.datesConfiguration(token, actionSetId, {
+    //     dates: [
+    //         {
+    //             name: 'fuzzy',
+    //             eventBegin: new Date(Date.now() + 1000000),
+    //             eventEnd: new Date(Date.now() + 2000000),
+    //             location: {
+    //                 lat: 40.75901,
+    //                 lon: -73.984474,
+    //                 label: 'Times Square',
+    //             },
+    //         },
+    //         {
+    //             name: 'fuzzy',
+    //             eventBegin: new Date(Date.now() + 1000000),
+    //             eventEnd: new Date(Date.now() + 2000000),
+    //             location: {
+    //                 lat: 40.75901,
+    //                 lon: -73.984474,
+    //                 label: 'Times Square',
+    //             },
+    //         },
+    //     ],
+    // });
+    //
+    // await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+    //     return as.current_action === 4;
+    // });
+    //
+    // await sdk.events.create.categoriesConfiguration(token, actionSetId, {
+    //     global: [
+    //         {
+    //             name: 'VIP Tickets',
+    //             saleBegin: new Date(Date.now() - 1000000),
+    //             saleEnd: new Date(Date.now() + 23 * 1000000),
+    //             resaleBegin: new Date(Date.now() - 1000000),
+    //             resaleEnd: new Date(Date.now() + 23 * 1000000),
+    //             seats: 100,
+    //             currencies: [
+    //                 {
+    //                     currency: 'Fiat',
+    //                     price: '200',
+    //                 },
+    //             ],
+    //         },
+    //     ],
+    //     dates: [
+    //         [
+    //             {
+    //                 name: 'Regular Tickets',
+    //                 saleBegin: new Date(Date.now() - 1000000),
+    //                 saleEnd: new Date(Date.now() + 23 * 1000000),
+    //                 resaleBegin: new Date(Date.now() - 1000000),
+    //                 resaleEnd: new Date(Date.now() + 23 * 1000000),
+    //                 seats: 200,
+    //                 currencies: [
+    //                     {
+    //                         currency: 'Fiat',
+    //                         price: '200',
+    //                     },
+    //                 ],
+    //             },
+    //         ],
+    //         [
+    //             {
+    //                 name: 'Regular Tickets',
+    //                 saleBegin: new Date(Date.now() - 1000000),
+    //                 saleEnd: new Date(Date.now() + 23 * 1000000),
+    //                 resaleBegin: new Date(Date.now() - 1000000),
+    //                 resaleEnd: new Date(Date.now() + 23 * 1000000),
+    //                 seats: 200,
+    //                 currencies: [
+    //                     {
+    //                         currency: 'Fiat',
+    //                         price: '200',
+    //                     },
+    //                 ],
+    //             },
+    //         ],
+    //     ],
+    // });
+    //
+    // await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+    //     return as.current_action === 5;
+    // });
+    //
+    // await sdk.events.create.adminsConfiguration(token, actionSetId, {
+    //     admins: [],
+    // });
+    //
+    // await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+    //     return as.current_status === 'complete';
+    // });
+    //
+    // const eventEntityRes = await sdk.events.create.create(token, {
+    //     eventPayload: null,
+    // });
+    //
+    // await sdk.events.start(token, {
+    //     event: eventEntityRes.data.event.id,
+    // });
+    //
+    // return eventEntityRes.data.event;
 
-    const actionSetName = 'event_create';
-
-    const eventCreationActionSetRes = await sdk.actions.create(token, {
-        name: actionSetName,
-        arguments: initialArgument,
-    });
-
-    const actionSetId = eventCreationActionSetRes.data.actionset.id;
-
-    await sdk.events.create.textMetadata(token, actionSetId, {
-        name: 'Fuzzy',
-        description: 'My Event',
-        tags: ['test', 'event'],
-    });
-
-    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-        return as.current_action === 1;
-    });
-
-    const form = new FormData();
-
-    form.append('images', fs.readFileSync(__dirname + '/../src/controllers/events/test_resources/test_avatar.png'), {
-        filename: 'avatar.png',
-    });
-
-    const imageUploadRes: AxiosResponse<ImagesUploadResponseDto> = await sdk.images.upload(
-        token,
-        form.getBuffer(),
-        form.getHeaders(),
-    );
-
-    const avatarId = imageUploadRes.data.urls[0];
-
-    await sdk.events.create.imagesMetadata(token, actionSetId, {
-        avatar: avatarId,
-        signatureColors: ['#ff0000', '#00ff00'],
-    });
-
-    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-        return as.current_action === 2;
-    });
-
-    await sdk.events.create.modulesConfiguration(token, actionSetId, {});
-
-    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-        return as.current_action === 3;
-    });
-
-    await sdk.events.create.datesConfiguration(token, actionSetId, {
-        dates: [
-            {
-                name: 'fuzzy',
-                eventBegin: new Date(Date.now() + 1000000),
-                eventEnd: new Date(Date.now() + 2000000),
-                location: {
-                    lat: 40.75901,
-                    lon: -73.984474,
-                    label: 'Times Square',
-                },
-            },
-            {
-                name: 'fuzzy',
-                eventBegin: new Date(Date.now() + 1000000),
-                eventEnd: new Date(Date.now() + 2000000),
-                location: {
-                    lat: 40.75901,
-                    lon: -73.984474,
-                    label: 'Times Square',
-                },
-            },
-        ],
-    });
-
-    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-        return as.current_action === 4;
-    });
-
-    await sdk.events.create.categoriesConfiguration(token, actionSetId, {
-        global: [
-            {
-                name: 'VIP Tickets',
-                saleBegin: new Date(Date.now() - 1000000),
-                saleEnd: new Date(Date.now() + 23 * 1000000),
-                resaleBegin: new Date(Date.now() - 1000000),
-                resaleEnd: new Date(Date.now() + 23 * 1000000),
-                seats: 100,
-                currencies: [
-                    {
-                        currency: 'Fiat',
-                        price: '200',
-                    },
-                ],
-            },
-        ],
-        dates: [
-            [
-                {
-                    name: 'Regular Tickets',
-                    saleBegin: new Date(Date.now() - 1000000),
-                    saleEnd: new Date(Date.now() + 23 * 1000000),
-                    resaleBegin: new Date(Date.now() - 1000000),
-                    resaleEnd: new Date(Date.now() + 23 * 1000000),
-                    seats: 200,
-                    currencies: [
-                        {
-                            currency: 'Fiat',
-                            price: '200',
-                        },
-                    ],
-                },
-            ],
-            [
-                {
-                    name: 'Regular Tickets',
-                    saleBegin: new Date(Date.now() - 1000000),
-                    saleEnd: new Date(Date.now() + 23 * 1000000),
-                    resaleBegin: new Date(Date.now() - 1000000),
-                    resaleEnd: new Date(Date.now() + 23 * 1000000),
-                    seats: 200,
-                    currencies: [
-                        {
-                            currency: 'Fiat',
-                            price: '200',
-                        },
-                    ],
-                },
-            ],
-        ],
-    });
-
-    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-        return as.current_action === 5;
-    });
-
-    await sdk.events.create.adminsConfiguration(token, actionSetId, {
-        admins: [],
-    });
-
-    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-        return as.current_status === 'complete';
-    });
-
-    const eventEntityRes = await sdk.events.create.create(token, {
-        eventPayload: null,
-    });
-
-    await sdk.events.start(token, {
-        event: eventEntityRes.data.event.id,
-    });
-
-    return eventEntityRes.data.event;
+    return null;
 };
 
 export const createEvent = async (token: string, sdk: T721SDK): Promise<EventDto> => {
-    const initialArgument = {};
+    // const initialArgument = {};
+    //
+    // const actionSetName = 'event_create';
+    //
+    // const eventCreationActionSetRes = await sdk.actions.create(token, {
+    //     name: actionSetName,
+    //     arguments: initialArgument,
+    // });
+    //
+    // const actionSetId = eventCreationActionSetRes.data.actionset.id;
+    //
+    // await sdk.events.create.textMetadata(token, actionSetId, {
+    //     name: 'myEvent',
+    //     description: 'This is my event',
+    //     tags: ['test', 'event'],
+    // });
+    //
+    // await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+    //     return as.current_action === 1;
+    // });
+    //
+    // const form = new FormData();
+    //
+    // form.append('images', fs.readFileSync(__dirname + '/../src/controllers/events/test_resources/test_avatar.png'), {
+    //     filename: 'avatar.png',
+    // });
+    //
+    // const imageUploadRes: AxiosResponse<ImagesUploadResponseDto> = await sdk.images.upload(
+    //     token,
+    //     form.getBuffer(),
+    //     form.getHeaders(),
+    // );
+    //
+    // const avatarId = imageUploadRes.data.urls[0];
+    //
+    // await sdk.events.create.imagesMetadata(token, actionSetId, {
+    //     avatar: avatarId,
+    //     signatureColors: ['#ff0000', '#00ff00'],
+    // });
+    //
+    // await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+    //     return as.current_action === 2;
+    // });
+    //
+    // await sdk.events.create.modulesConfiguration(token, actionSetId, {});
+    //
+    // await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+    //     return as.current_action === 3;
+    // });
+    //
+    // await sdk.events.create.datesConfiguration(token, actionSetId, {
+    //     dates: [
+    //         {
+    //             name: 'first date',
+    //             eventBegin: new Date(Date.now() + 1000000),
+    //             eventEnd: new Date(Date.now() + 2000000),
+    //             location: {
+    //                 lat: 40.75901,
+    //                 lon: -73.984474,
+    //                 label: 'Times Square',
+    //             },
+    //         },
+    //         {
+    //             name: 'second date',
+    //             eventBegin: new Date(Date.now() + 1000000),
+    //             eventEnd: new Date(Date.now() + 2000000),
+    //             location: {
+    //                 lat: 40.75901,
+    //                 lon: -73.984474,
+    //                 label: 'Times Square',
+    //             },
+    //         },
+    //     ],
+    // });
+    //
+    // await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+    //     return as.current_action === 4;
+    // });
+    //
+    // await sdk.events.create.categoriesConfiguration(token, actionSetId, {
+    //     global: [
+    //         {
+    //             name: 'VIP Tickets',
+    //             saleBegin: new Date(Date.now() - 1000000),
+    //             saleEnd: new Date(Date.now() + 23 * 1000000),
+    //             resaleBegin: new Date(Date.now() + 1000000),
+    //             resaleEnd: new Date(Date.now() + 23 * 1000000),
+    //             seats: 100,
+    //             currencies: [
+    //                 {
+    //                     currency: 'Fiat',
+    //                     price: '200',
+    //                 },
+    //             ],
+    //         },
+    //     ],
+    //     dates: [
+    //         [
+    //             {
+    //                 name: 'Regular Tickets',
+    //                 saleBegin: new Date(Date.now() - 1000000),
+    //                 saleEnd: new Date(Date.now() + 23 * 1000000),
+    //                 resaleBegin: new Date(Date.now() + 1000000),
+    //                 resaleEnd: new Date(Date.now() + 23 * 1000000),
+    //                 seats: 200,
+    //                 currencies: [
+    //                     {
+    //                         currency: 'Fiat',
+    //                         price: '200',
+    //                     },
+    //                 ],
+    //             },
+    //         ],
+    //         [
+    //             {
+    //                 name: 'Regular Tickets',
+    //                 saleBegin: new Date(Date.now() - 1000000),
+    //                 saleEnd: new Date(Date.now() + 23 * 1000000),
+    //                 resaleBegin: new Date(Date.now() + 1000000),
+    //                 resaleEnd: new Date(Date.now() + 23 * 1000000),
+    //                 seats: 200,
+    //                 currencies: [
+    //                     {
+    //                         currency: 'Fiat',
+    //                         price: '200',
+    //                     },
+    //                 ],
+    //             },
+    //         ],
+    //     ],
+    // });
+    //
+    // await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+    //     return as.current_action === 5;
+    // });
+    //
+    // await sdk.events.create.adminsConfiguration(token, actionSetId, {
+    //     admins: [],
+    // });
+    //
+    // await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+    //     return as.current_status === 'complete';
+    // });
+    //
+    // const eventEntityRes = await sdk.events.create.create(token, {
+    //     eventPayload: null,
+    // });
+    //
+    // return eventEntityRes.data.event;
 
-    const actionSetName = 'event_create';
-
-    const eventCreationActionSetRes = await sdk.actions.create(token, {
-        name: actionSetName,
-        arguments: initialArgument,
-    });
-
-    const actionSetId = eventCreationActionSetRes.data.actionset.id;
-
-    await sdk.events.create.textMetadata(token, actionSetId, {
-        name: 'myEvent',
-        description: 'This is my event',
-        tags: ['test', 'event'],
-    });
-
-    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-        return as.current_action === 1;
-    });
-
-    const form = new FormData();
-
-    form.append('images', fs.readFileSync(__dirname + '/../src/controllers/events/test_resources/test_avatar.png'), {
-        filename: 'avatar.png',
-    });
-
-    const imageUploadRes: AxiosResponse<ImagesUploadResponseDto> = await sdk.images.upload(
-        token,
-        form.getBuffer(),
-        form.getHeaders(),
-    );
-
-    const avatarId = imageUploadRes.data.urls[0];
-
-    await sdk.events.create.imagesMetadata(token, actionSetId, {
-        avatar: avatarId,
-        signatureColors: ['#ff0000', '#00ff00'],
-    });
-
-    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-        return as.current_action === 2;
-    });
-
-    await sdk.events.create.modulesConfiguration(token, actionSetId, {});
-
-    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-        return as.current_action === 3;
-    });
-
-    await sdk.events.create.datesConfiguration(token, actionSetId, {
-        dates: [
-            {
-                name: 'first date',
-                eventBegin: new Date(Date.now() + 1000000),
-                eventEnd: new Date(Date.now() + 2000000),
-                location: {
-                    lat: 40.75901,
-                    lon: -73.984474,
-                    label: 'Times Square',
-                },
-            },
-            {
-                name: 'second date',
-                eventBegin: new Date(Date.now() + 1000000),
-                eventEnd: new Date(Date.now() + 2000000),
-                location: {
-                    lat: 40.75901,
-                    lon: -73.984474,
-                    label: 'Times Square',
-                },
-            },
-        ],
-    });
-
-    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-        return as.current_action === 4;
-    });
-
-    await sdk.events.create.categoriesConfiguration(token, actionSetId, {
-        global: [
-            {
-                name: 'VIP Tickets',
-                saleBegin: new Date(Date.now() - 1000000),
-                saleEnd: new Date(Date.now() + 23 * 1000000),
-                resaleBegin: new Date(Date.now() + 1000000),
-                resaleEnd: new Date(Date.now() + 23 * 1000000),
-                seats: 100,
-                currencies: [
-                    {
-                        currency: 'Fiat',
-                        price: '200',
-                    },
-                ],
-            },
-        ],
-        dates: [
-            [
-                {
-                    name: 'Regular Tickets',
-                    saleBegin: new Date(Date.now() - 1000000),
-                    saleEnd: new Date(Date.now() + 23 * 1000000),
-                    resaleBegin: new Date(Date.now() + 1000000),
-                    resaleEnd: new Date(Date.now() + 23 * 1000000),
-                    seats: 200,
-                    currencies: [
-                        {
-                            currency: 'Fiat',
-                            price: '200',
-                        },
-                    ],
-                },
-            ],
-            [
-                {
-                    name: 'Regular Tickets',
-                    saleBegin: new Date(Date.now() - 1000000),
-                    saleEnd: new Date(Date.now() + 23 * 1000000),
-                    resaleBegin: new Date(Date.now() + 1000000),
-                    resaleEnd: new Date(Date.now() + 23 * 1000000),
-                    seats: 200,
-                    currencies: [
-                        {
-                            currency: 'Fiat',
-                            price: '200',
-                        },
-                    ],
-                },
-            ],
-        ],
-    });
-
-    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-        return as.current_action === 5;
-    });
-
-    await sdk.events.create.adminsConfiguration(token, actionSetId, {
-        admins: [],
-    });
-
-    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-        return as.current_status === 'complete';
-    });
-
-    const eventEntityRes = await sdk.events.create.create(token, {
-        eventPayload: null,
-    });
-
-    return eventEntityRes.data.event;
+    return null;
 };
 
 export const createExpensiveEvent = async (token: string, sdk: T721SDK): Promise<EventDto> => {
-    const initialArgument = {};
+    // const initialArgument = {};
+    //
+    // const actionSetName = 'event_create';
+    //
+    // const eventCreationActionSetRes = await sdk.actions.create(token, {
+    //     name: actionSetName,
+    //     arguments: initialArgument,
+    // });
+    //
+    // const actionSetId = eventCreationActionSetRes.data.actionset.id;
+    //
+    // await sdk.events.create.textMetadata(token, actionSetId, {
+    //     name: 'myEvent',
+    //     description: 'This is my event',
+    //     tags: ['test', 'event'],
+    // });
+    //
+    // await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+    //     return as.current_action === 1;
+    // });
+    //
+    // const form = new FormData();
+    //
+    // form.append('images', fs.readFileSync(__dirname + '/../src/controllers/events/test_resources/test_avatar.png'), {
+    //     filename: 'avatar.png',
+    // });
+    //
+    // const imageUploadRes: AxiosResponse<ImagesUploadResponseDto> = await sdk.images.upload(
+    //     token,
+    //     form.getBuffer(),
+    //     form.getHeaders(),
+    // );
+    //
+    // const avatarId = imageUploadRes.data.urls[0];
+    //
+    // await sdk.events.create.imagesMetadata(token, actionSetId, {
+    //     avatar: avatarId,
+    //     signatureColors: ['#ff0000', '#00ff00'],
+    // });
+    //
+    // await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+    //     return as.current_action === 2;
+    // });
+    //
+    // await sdk.events.create.modulesConfiguration(token, actionSetId, {});
+    //
+    // await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+    //     return as.current_action === 3;
+    // });
+    //
+    // await sdk.events.create.datesConfiguration(token, actionSetId, {
+    //     dates: [
+    //         {
+    //             name: 'first date',
+    //             eventBegin: new Date(Date.now() + 1000000),
+    //             eventEnd: new Date(Date.now() + 2000000),
+    //             location: {
+    //                 lat: 40.75901,
+    //                 lon: -73.984474,
+    //                 label: 'Times Square',
+    //             },
+    //         },
+    //         {
+    //             name: 'second date',
+    //             eventBegin: new Date(Date.now() + 1000000),
+    //             eventEnd: new Date(Date.now() + 2000000),
+    //             location: {
+    //                 lat: 40.75901,
+    //                 lon: -73.984474,
+    //                 label: 'Times Square',
+    //             },
+    //         },
+    //     ],
+    // });
+    //
+    // await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+    //     return as.current_action === 4;
+    // });
+    //
+    // await sdk.events.create.categoriesConfiguration(token, actionSetId, {
+    //     global: [
+    //         {
+    //             name: 'VIP Tickets',
+    //             saleBegin: new Date(Date.now() - 1000000),
+    //             saleEnd: new Date(Date.now() + 23 * 1000000),
+    //             resaleBegin: new Date(Date.now() + 1000000),
+    //             resaleEnd: new Date(Date.now() + 23 * 1000000),
+    //             seats: 100,
+    //             currencies: [
+    //                 {
+    //                     currency: 'Fiat',
+    //                     price: '10000',
+    //                 },
+    //             ],
+    //         },
+    //     ],
+    //     dates: [
+    //         [
+    //             {
+    //                 name: 'Regular Tickets',
+    //                 saleBegin: new Date(Date.now() - 1000000),
+    //                 saleEnd: new Date(Date.now() + 23 * 1000000),
+    //                 resaleBegin: new Date(Date.now() + 1000000),
+    //                 resaleEnd: new Date(Date.now() + 23 * 1000000),
+    //                 seats: 200,
+    //                 currencies: [
+    //                     {
+    //                         currency: 'Fiat',
+    //                         price: '10000',
+    //                     },
+    //                 ],
+    //             },
+    //         ],
+    //         [
+    //             {
+    //                 name: 'Regular Tickets',
+    //                 saleBegin: new Date(Date.now() - 1000000),
+    //                 saleEnd: new Date(Date.now() + 23 * 1000000),
+    //                 resaleBegin: new Date(Date.now() + 1000000),
+    //                 resaleEnd: new Date(Date.now() + 23 * 1000000),
+    //                 seats: 200,
+    //                 currencies: [
+    //                     {
+    //                         currency: 'Fiat',
+    //                         price: '10000',
+    //                     },
+    //                 ],
+    //             },
+    //         ],
+    //     ],
+    // });
+    //
+    // await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+    //     return as.current_action === 5;
+    // });
+    //
+    // await sdk.events.create.adminsConfiguration(token, actionSetId, {
+    //     admins: [],
+    // });
+    //
+    // await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+    //     return as.current_status === 'complete';
+    // });
+    //
+    // const eventEntityRes = await sdk.events.create.create(token, {
+    //     eventPayload: null,
+    // });
+    //
+    // return eventEntityRes.data.event;
 
-    const actionSetName = 'event_create';
-
-    const eventCreationActionSetRes = await sdk.actions.create(token, {
-        name: actionSetName,
-        arguments: initialArgument,
-    });
-
-    const actionSetId = eventCreationActionSetRes.data.actionset.id;
-
-    await sdk.events.create.textMetadata(token, actionSetId, {
-        name: 'myEvent',
-        description: 'This is my event',
-        tags: ['test', 'event'],
-    });
-
-    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-        return as.current_action === 1;
-    });
-
-    const form = new FormData();
-
-    form.append('images', fs.readFileSync(__dirname + '/../src/controllers/events/test_resources/test_avatar.png'), {
-        filename: 'avatar.png',
-    });
-
-    const imageUploadRes: AxiosResponse<ImagesUploadResponseDto> = await sdk.images.upload(
-        token,
-        form.getBuffer(),
-        form.getHeaders(),
-    );
-
-    const avatarId = imageUploadRes.data.urls[0];
-
-    await sdk.events.create.imagesMetadata(token, actionSetId, {
-        avatar: avatarId,
-        signatureColors: ['#ff0000', '#00ff00'],
-    });
-
-    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-        return as.current_action === 2;
-    });
-
-    await sdk.events.create.modulesConfiguration(token, actionSetId, {});
-
-    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-        return as.current_action === 3;
-    });
-
-    await sdk.events.create.datesConfiguration(token, actionSetId, {
-        dates: [
-            {
-                name: 'first date',
-                eventBegin: new Date(Date.now() + 1000000),
-                eventEnd: new Date(Date.now() + 2000000),
-                location: {
-                    lat: 40.75901,
-                    lon: -73.984474,
-                    label: 'Times Square',
-                },
-            },
-            {
-                name: 'second date',
-                eventBegin: new Date(Date.now() + 1000000),
-                eventEnd: new Date(Date.now() + 2000000),
-                location: {
-                    lat: 40.75901,
-                    lon: -73.984474,
-                    label: 'Times Square',
-                },
-            },
-        ],
-    });
-
-    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-        return as.current_action === 4;
-    });
-
-    await sdk.events.create.categoriesConfiguration(token, actionSetId, {
-        global: [
-            {
-                name: 'VIP Tickets',
-                saleBegin: new Date(Date.now() - 1000000),
-                saleEnd: new Date(Date.now() + 23 * 1000000),
-                resaleBegin: new Date(Date.now() + 1000000),
-                resaleEnd: new Date(Date.now() + 23 * 1000000),
-                seats: 100,
-                currencies: [
-                    {
-                        currency: 'Fiat',
-                        price: '10000',
-                    },
-                ],
-            },
-        ],
-        dates: [
-            [
-                {
-                    name: 'Regular Tickets',
-                    saleBegin: new Date(Date.now() - 1000000),
-                    saleEnd: new Date(Date.now() + 23 * 1000000),
-                    resaleBegin: new Date(Date.now() + 1000000),
-                    resaleEnd: new Date(Date.now() + 23 * 1000000),
-                    seats: 200,
-                    currencies: [
-                        {
-                            currency: 'Fiat',
-                            price: '10000',
-                        },
-                    ],
-                },
-            ],
-            [
-                {
-                    name: 'Regular Tickets',
-                    saleBegin: new Date(Date.now() - 1000000),
-                    saleEnd: new Date(Date.now() + 23 * 1000000),
-                    resaleBegin: new Date(Date.now() + 1000000),
-                    resaleEnd: new Date(Date.now() + 23 * 1000000),
-                    seats: 200,
-                    currencies: [
-                        {
-                            currency: 'Fiat',
-                            price: '10000',
-                        },
-                    ],
-                },
-            ],
-        ],
-    });
-
-    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-        return as.current_action === 5;
-    });
-
-    await sdk.events.create.adminsConfiguration(token, actionSetId, {
-        admins: [],
-    });
-
-    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-        return as.current_status === 'complete';
-    });
-
-    const eventEntityRes = await sdk.events.create.create(token, {
-        eventPayload: null,
-    });
-
-    return eventEntityRes.data.event;
+    return null;
 };
 
 export const createLimitedEvent = async (token: string, sdk: T721SDK): Promise<EventDto> => {
-    const initialArgument = {};
+    // const initialArgument = {};
+    //
+    // const actionSetName = 'event_create';
+    //
+    // const eventCreationActionSetRes = await sdk.actions.create(token, {
+    //     name: actionSetName,
+    //     arguments: initialArgument,
+    // });
+    //
+    // const actionSetId = eventCreationActionSetRes.data.actionset.id;
+    //
+    // await sdk.events.create.textMetadata(token, actionSetId, {
+    //     name: 'myEvent',
+    //     description: 'This is my event',
+    //     tags: ['test', 'event'],
+    // });
+    //
+    // await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+    //     return as.current_action === 1;
+    // });
+    //
+    // const form = new FormData();
+    //
+    // form.append('images', fs.readFileSync(__dirname + '/../src/controllers/events/test_resources/test_avatar.png'), {
+    //     filename: 'avatar.png',
+    // });
+    //
+    // const imageUploadRes: AxiosResponse<ImagesUploadResponseDto> = await sdk.images.upload(
+    //     token,
+    //     form.getBuffer(),
+    //     form.getHeaders(),
+    // );
+    //
+    // const avatarId = imageUploadRes.data.urls[0];
+    //
+    // await sdk.events.create.imagesMetadata(token, actionSetId, {
+    //     avatar: avatarId,
+    //     signatureColors: ['#ff0000', '#00ff00'],
+    // });
+    //
+    // await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+    //     return as.current_action === 2;
+    // });
+    //
+    // await sdk.events.create.modulesConfiguration(token, actionSetId, {});
+    //
+    // await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+    //     return as.current_action === 3;
+    // });
+    //
+    // await sdk.events.create.datesConfiguration(token, actionSetId, {
+    //     dates: [
+    //         {
+    //             name: 'first date',
+    //             eventBegin: new Date(Date.now() + 1000000),
+    //             eventEnd: new Date(Date.now() + 2000000),
+    //             location: {
+    //                 lat: 40.75901,
+    //                 lon: -73.984474,
+    //                 label: 'Times Square',
+    //             },
+    //         },
+    //         {
+    //             name: 'second date',
+    //             eventBegin: new Date(Date.now() + 1000000),
+    //             eventEnd: new Date(Date.now() + 2000000),
+    //             location: {
+    //                 lat: 40.75901,
+    //                 lon: -73.984474,
+    //                 label: 'Times Square',
+    //             },
+    //         },
+    //     ],
+    // });
+    //
+    // await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+    //     return as.current_action === 4;
+    // });
+    //
+    // await sdk.events.create.categoriesConfiguration(token, actionSetId, {
+    //     global: [
+    //         {
+    //             name: 'VIP Tickets',
+    //             saleBegin: new Date(Date.now() - 1000000),
+    //             saleEnd: new Date(Date.now() + 23 * 1000000),
+    //             resaleBegin: new Date(Date.now() + 1000000),
+    //             resaleEnd: new Date(Date.now() + 23 * 1000000),
+    //             seats: 3,
+    //             currencies: [
+    //                 {
+    //                     currency: 'Fiat',
+    //                     price: '10000',
+    //                 },
+    //             ],
+    //         },
+    //     ],
+    //     dates: [
+    //         [
+    //             {
+    //                 name: 'Regular Tickets',
+    //                 saleBegin: new Date(Date.now() - 1000000),
+    //                 saleEnd: new Date(Date.now() + 23 * 1000000),
+    //                 resaleBegin: new Date(Date.now() + 1000000),
+    //                 resaleEnd: new Date(Date.now() + 23 * 1000000),
+    //                 seats: 200,
+    //                 currencies: [
+    //                     {
+    //                         currency: 'Fiat',
+    //                         price: '10000',
+    //                     },
+    //                 ],
+    //             },
+    //         ],
+    //         [
+    //             {
+    //                 name: 'Regular Tickets',
+    //                 saleBegin: new Date(Date.now() - 1000000),
+    //                 saleEnd: new Date(Date.now() + 23 * 1000000),
+    //                 resaleBegin: new Date(Date.now() + 1000000),
+    //                 resaleEnd: new Date(Date.now() + 23 * 1000000),
+    //                 seats: 200,
+    //                 currencies: [
+    //                     {
+    //                         currency: 'Fiat',
+    //                         price: '10000',
+    //                     },
+    //                 ],
+    //             },
+    //         ],
+    //     ],
+    // });
+    //
+    // await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+    //     return as.current_action === 5;
+    // });
+    //
+    // await sdk.events.create.adminsConfiguration(token, actionSetId, {
+    //     admins: [],
+    // });
+    //
+    // await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+    //     return as.current_status === 'complete';
+    // });
+    //
+    // const eventEntityRes = await sdk.events.create.create(token, {
+    //     eventPayload: null,
+    // });
+    //
+    // return eventEntityRes.data.event;
 
-    const actionSetName = 'event_create';
-
-    const eventCreationActionSetRes = await sdk.actions.create(token, {
-        name: actionSetName,
-        arguments: initialArgument,
-    });
-
-    const actionSetId = eventCreationActionSetRes.data.actionset.id;
-
-    await sdk.events.create.textMetadata(token, actionSetId, {
-        name: 'myEvent',
-        description: 'This is my event',
-        tags: ['test', 'event'],
-    });
-
-    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-        return as.current_action === 1;
-    });
-
-    const form = new FormData();
-
-    form.append('images', fs.readFileSync(__dirname + '/../src/controllers/events/test_resources/test_avatar.png'), {
-        filename: 'avatar.png',
-    });
-
-    const imageUploadRes: AxiosResponse<ImagesUploadResponseDto> = await sdk.images.upload(
-        token,
-        form.getBuffer(),
-        form.getHeaders(),
-    );
-
-    const avatarId = imageUploadRes.data.urls[0];
-
-    await sdk.events.create.imagesMetadata(token, actionSetId, {
-        avatar: avatarId,
-        signatureColors: ['#ff0000', '#00ff00'],
-    });
-
-    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-        return as.current_action === 2;
-    });
-
-    await sdk.events.create.modulesConfiguration(token, actionSetId, {});
-
-    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-        return as.current_action === 3;
-    });
-
-    await sdk.events.create.datesConfiguration(token, actionSetId, {
-        dates: [
-            {
-                name: 'first date',
-                eventBegin: new Date(Date.now() + 1000000),
-                eventEnd: new Date(Date.now() + 2000000),
-                location: {
-                    lat: 40.75901,
-                    lon: -73.984474,
-                    label: 'Times Square',
-                },
-            },
-            {
-                name: 'second date',
-                eventBegin: new Date(Date.now() + 1000000),
-                eventEnd: new Date(Date.now() + 2000000),
-                location: {
-                    lat: 40.75901,
-                    lon: -73.984474,
-                    label: 'Times Square',
-                },
-            },
-        ],
-    });
-
-    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-        return as.current_action === 4;
-    });
-
-    await sdk.events.create.categoriesConfiguration(token, actionSetId, {
-        global: [
-            {
-                name: 'VIP Tickets',
-                saleBegin: new Date(Date.now() - 1000000),
-                saleEnd: new Date(Date.now() + 23 * 1000000),
-                resaleBegin: new Date(Date.now() + 1000000),
-                resaleEnd: new Date(Date.now() + 23 * 1000000),
-                seats: 3,
-                currencies: [
-                    {
-                        currency: 'Fiat',
-                        price: '10000',
-                    },
-                ],
-            },
-        ],
-        dates: [
-            [
-                {
-                    name: 'Regular Tickets',
-                    saleBegin: new Date(Date.now() - 1000000),
-                    saleEnd: new Date(Date.now() + 23 * 1000000),
-                    resaleBegin: new Date(Date.now() + 1000000),
-                    resaleEnd: new Date(Date.now() + 23 * 1000000),
-                    seats: 200,
-                    currencies: [
-                        {
-                            currency: 'Fiat',
-                            price: '10000',
-                        },
-                    ],
-                },
-            ],
-            [
-                {
-                    name: 'Regular Tickets',
-                    saleBegin: new Date(Date.now() - 1000000),
-                    saleEnd: new Date(Date.now() + 23 * 1000000),
-                    resaleBegin: new Date(Date.now() + 1000000),
-                    resaleEnd: new Date(Date.now() + 23 * 1000000),
-                    seats: 200,
-                    currencies: [
-                        {
-                            currency: 'Fiat',
-                            price: '10000',
-                        },
-                    ],
-                },
-            ],
-        ],
-    });
-
-    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-        return as.current_action === 5;
-    });
-
-    await sdk.events.create.adminsConfiguration(token, actionSetId, {
-        admins: [],
-    });
-
-    await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-        return as.current_status === 'complete';
-    });
-
-    const eventEntityRes = await sdk.events.create.create(token, {
-        eventPayload: null,
-    });
-
-    return eventEntityRes.data.event;
+    return null;
 };
 
 let stripeMock: Stripe;

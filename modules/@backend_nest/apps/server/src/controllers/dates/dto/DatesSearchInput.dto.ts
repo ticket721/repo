@@ -32,6 +32,14 @@ export class DatesSearchInputDto implements SearchInputType<DateEntity> {
     group_id: SearchableField<string>;
 
     /**
+     * Searchable field to search by event
+     */
+    @ApiPropertyOptional()
+    @IsOptional()
+    // tslint:disable-next-line:variable-name
+    event: SearchableField<string>;
+
+    /**
      * Searchable field to search by status
      */
     @ApiPropertyOptional()

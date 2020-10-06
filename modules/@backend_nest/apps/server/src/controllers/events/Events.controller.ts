@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, HttpException, Param, Post, UseFilters, UseGuards } from '@nestjs/common';
+import { Body, Controller, HttpCode, Post, UseFilters, UseGuards } from '@nestjs/common';
 import { Roles, RolesGuard } from '@app/server/authentication/guards/RolesGuard.guard';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
@@ -16,18 +16,11 @@ import { checkEvent, getT721ControllerGroupID, toAcceptedAddressFormat } from '@
 import { DatesService } from '@lib/common/dates/Dates.service';
 import { DateEntity } from '@lib/common/dates/entities/Date.entity';
 import { HttpExceptionFilter } from '@app/server/utils/HttpException.filter';
-import { CategoriesService } from '@lib/common/categories/Categories.service';
 import { RightsService } from '@lib/common/rights/Rights.service';
-import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
 import { ApiResponses } from '@app/server/utils/ApiResponses.controller.decorator';
-import { MetadatasService } from '@lib/common/metadatas/Metadatas.service';
 import { ValidGuard } from '@app/server/authentication/guards/ValidGuard.guard';
 import { EventsCountInputDto } from '@app/server/controllers/events/dto/EventsCountInput.dto';
 import { EventsCountResponseDto } from '@app/server/controllers/events/dto/EventsCountResponse.dto';
-import { EventsGuestlistInputDto } from '@app/server/controllers/events/dto/EventsGuestlistInput.dto';
-import { EventsGuestlistResponseDto, GuestInfos } from '@app/server/controllers/events/dto/EventsGuestlistResponse.dto';
-import { SearchInputType } from '@lib/common/utils/SearchInput.type';
-import { MetadataEntity } from '@lib/common/metadatas/entities/Metadata.entity';
 import { UUIDToolService } from '@lib/common/toolbox/UUID.tool.service';
 import { RocksideCreateEOAResponse, RocksideService } from '@lib/common/rockside/Rockside.service';
 
@@ -43,18 +36,14 @@ export class EventsController extends ControllerBasics<EventEntity> {
      *
      * @param eventsService
      * @param datesService
-     * @param categoriesService
      * @param rightsService
-     * @param metadatasService
      * @param uuidToolsService
      * @param rocksideService
      */
     constructor(
         private readonly eventsService: EventsService,
         private readonly datesService: DatesService,
-        private readonly categoriesService: CategoriesService,
         private readonly rightsService: RightsService,
-        private readonly metadatasService: MetadatasService,
         private readonly uuidToolsService: UUIDToolService,
         private readonly rocksideService: RocksideService,
     ) {
@@ -201,9 +190,50 @@ export class EventsController extends ControllerBasics<EventEntity> {
             StatusCodes.InternalServerError,
         );
 
-        // Compoute address and groupId
+        // Compute address and groupId
         const eventAddress = toAcceptedAddressFormat(rocksideEOA.address);
         const groupId = getT721ControllerGroupID(eventId, eventAddress);
+
+        const dates: DateEntity[] = [];
+
+        for (const date of body.eventPayload.datesConfiguration) {
+            dates.push(
+                await this._crudCall(
+                    this.datesService.createEventDate(
+                        {
+                            group_id: groupId,
+                            status: 'preview',
+                            categories: [],
+                            location: {
+                                location: date.location,
+                                location_label: null,
+                                assigned_city: null,
+                            },
+                            timestamps: {
+                                event_begin: new Date(date.eventBegin),
+                                event_end: new Date(date.eventEnd),
+                            },
+                            metadata: {
+                                name: date.name,
+                                description: body.eventPayload.textMetadata.name,
+                                avatar: body.eventPayload.imagesMetadata.avatar,
+                                signature_colors: body.eventPayload.imagesMetadata.signatureColors,
+                                twitter: body.eventPayload.textMetadata.twitter,
+                                spotify: body.eventPayload.textMetadata.spotify,
+                                website: body.eventPayload.textMetadata.website,
+                                facebook: body.eventPayload.textMetadata.facebook,
+                                email: body.eventPayload.textMetadata.email,
+                                linked_in: body.eventPayload.textMetadata.linked_in,
+                                tiktok: body.eventPayload.textMetadata.tiktok,
+                                instagram: body.eventPayload.textMetadata.instagram,
+                            },
+                        },
+                        eventId,
+                    ),
+                    StatusCodes.InternalServerError,
+                ),
+            );
+        }
 
         const event = await this._crudCall<EventEntity>(
             this.eventsService.create({
@@ -215,7 +245,7 @@ export class EventsController extends ControllerBasics<EventEntity> {
                 description: body.eventPayload.textMetadata.description,
                 address: eventAddress,
                 controller: eventAddress,
-                dates: [],
+                dates: dates.map((date: DateEntity): string => date.id),
             }),
             StatusCodes.InternalServerError,
         );
@@ -849,161 +879,161 @@ export class EventsController extends ControllerBasics<EventEntity> {
     //     };
     // }
 
-    /**
-     * Recover guest list for one of multiple dates of an event
-     *
-     * @param body
-     * @param eventId
-     * @param user
-     */
-    @Post('/:eventId/guestlist')
-    @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
-    @UseFilters(new HttpExceptionFilter())
-    @HttpCode(StatusCodes.Created)
-    @Roles('authenticated')
-    @ApiResponses([
-        StatusCodes.Created,
-        StatusCodes.NotFound,
-        StatusCodes.Unauthorized,
-        StatusCodes.InternalServerError,
-    ])
-    async guestlist(
-        @Body() body: EventsGuestlistInputDto,
-        @Param('eventId') eventId: string,
-        @User() user: UserDto,
-    ): Promise<EventsGuestlistResponseDto> {
-        const eventEntity: EventEntity = await this._authorizeOne(
-            this.rightsService,
-            this.eventsService,
-            user,
-            {
-                id: eventId,
-            },
-            'group_id',
-            ['owner'],
-        );
-
-        let dateIds: string[];
-
-        const dates = await this._search<DateEntity>(this.datesService, {
-            group_id: {
-                $eq: eventEntity.group_id,
-            },
-            parent_type: {
-                $eq: 'event',
-            },
-            parent_id: {
-                $eq: eventEntity.id,
-            },
-        } as SearchInputType<DateEntity>);
-
-        if (body.dateIds.length === 0) {
-            dateIds = dates.map((d: DateEntity) => d.id);
-        } else {
-            for (const date of body.dateIds) {
-                if (dates.findIndex((d: DateEntity): boolean => d.id === date) === -1) {
-                    throw new HttpException(
-                        {
-                            status: StatusCodes.Forbidden,
-                            message: 'date_id_not_in_event',
-                        },
-                        StatusCodes.Forbidden,
-                    );
-                }
-            }
-            dateIds = body.dateIds;
-        }
-
-        let ownerships: GuestInfos[] = [];
-
-        const dateCategoryEntities = await this._search<CategoryEntity>(this.categoriesService, {
-            parent_type: {
-                $eq: 'date',
-            },
-            parent_id: {
-                $in: [...dateIds],
-            },
-        } as SearchInputType<CategoryEntity>);
-
-        const globalCategoryEntities = await this._search<CategoryEntity>(this.categoriesService, {
-            parent_type: {
-                $eq: 'event',
-            },
-            parent_id: {
-                $eq: eventEntity.id,
-            },
-        } as SearchInputType<CategoryEntity>);
-
-        for (const dateCategory of dateCategoryEntities) {
-            ownerships = [
-                ...ownerships,
-                ...(
-                    await this._search<MetadataEntity>(this.metadatasService, {
-                        class_name: {
-                            $eq: 'ownership',
-                        },
-                        type_name: {
-                            $eq: 'ticket',
-                        },
-                        bool_: {
-                            $eq: {
-                                valid: true,
-                            },
-                        },
-                        str_: {
-                            $eq: {
-                                categoryId: dateCategory.id,
-                            },
-                        },
-                    } as any)
-                ).map(
-                    (m: MetadataEntity): GuestInfos => ({
-                        address: m.str_.address,
-                        category: m.str_.categoryId,
-                        username: m.str_.username,
-                        ticket: m.str_.ticket,
-                        email: m.str_.email,
-                    }),
-                ),
-            ];
-        }
-
-        for (const globalCategory of globalCategoryEntities) {
-            ownerships = [
-                ...ownerships,
-                ...(
-                    await this._search<MetadataEntity>(this.metadatasService, {
-                        class_name: {
-                            $eq: 'ownership',
-                        },
-                        type_name: {
-                            $eq: 'ticket',
-                        },
-                        bool_: {
-                            $eq: {
-                                valid: true,
-                            },
-                        },
-                        str_: {
-                            $eq: {
-                                categoryId: globalCategory.id,
-                            },
-                        },
-                    } as any)
-                ).map(
-                    (m: MetadataEntity): GuestInfos => ({
-                        address: m.str_.address,
-                        category: m.str_.categoryId,
-                        username: m.str_.username,
-                        ticket: m.str_.ticket,
-                        email: m.str_.email,
-                    }),
-                ),
-            ];
-        }
-
-        return {
-            guests: ownerships,
-        };
-    }
+    // /**
+    //  * Recover guest list for one of multiple dates of an event
+    //  *
+    //  * @param body
+    //  * @param eventId
+    //  * @param user
+    //  */
+    // @Post('/:eventId/guestlist')
+    // @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
+    // @UseFilters(new HttpExceptionFilter())
+    // @HttpCode(StatusCodes.Created)
+    // @Roles('authenticated')
+    // @ApiResponses([
+    //     StatusCodes.Created,
+    //     StatusCodes.NotFound,
+    //     StatusCodes.Unauthorized,
+    //     StatusCodes.InternalServerError,
+    // ])
+    // async guestlist(
+    //     @Body() body: EventsGuestlistInputDto,
+    //     @Param('eventId') eventId: string,
+    //     @User() user: UserDto,
+    // ): Promise<EventsGuestlistResponseDto> {
+    //     const eventEntity: EventEntity = await this._authorizeOne(
+    //         this.rightsService,
+    //         this.eventsService,
+    //         user,
+    //         {
+    //             id: eventId,
+    //         },
+    //         'group_id',
+    //         ['owner'],
+    //     );
+    //
+    //     let dateIds: string[];
+    //
+    //     const dates = await this._search<DateEntity>(this.datesService, {
+    //         group_id: {
+    //             $eq: eventEntity.group_id,
+    //         },
+    //         parent_type: {
+    //             $eq: 'event',
+    //         },
+    //         parent_id: {
+    //             $eq: eventEntity.id,
+    //         },
+    //     } as SearchInputType<DateEntity>);
+    //
+    //     if (body.dateIds.length === 0) {
+    //         dateIds = dates.map((d: DateEntity) => d.id);
+    //     } else {
+    //         for (const date of body.dateIds) {
+    //             if (dates.findIndex((d: DateEntity): boolean => d.id === date) === -1) {
+    //                 throw new HttpException(
+    //                     {
+    //                         status: StatusCodes.Forbidden,
+    //                         message: 'date_id_not_in_event',
+    //                     },
+    //                     StatusCodes.Forbidden,
+    //                 );
+    //             }
+    //         }
+    //         dateIds = body.dateIds;
+    //     }
+    //
+    //     let ownerships: GuestInfos[] = [];
+    //
+    //     const dateCategoryEntities = await this._search<CategoryEntity>(this.categoriesService, {
+    //         parent_type: {
+    //             $eq: 'date',
+    //         },
+    //         parent_id: {
+    //             $in: [...dateIds],
+    //         },
+    //     } as SearchInputType<CategoryEntity>);
+    //
+    //     const globalCategoryEntities = await this._search<CategoryEntity>(this.categoriesService, {
+    //         parent_type: {
+    //             $eq: 'event',
+    //         },
+    //         parent_id: {
+    //             $eq: eventEntity.id,
+    //         },
+    //     } as SearchInputType<CategoryEntity>);
+    //
+    //     for (const dateCategory of dateCategoryEntities) {
+    //         ownerships = [
+    //             ...ownerships,
+    //             ...(
+    //                 await this._search<MetadataEntity>(this.metadatasService, {
+    //                     class_name: {
+    //                         $eq: 'ownership',
+    //                     },
+    //                     type_name: {
+    //                         $eq: 'ticket',
+    //                     },
+    //                     bool_: {
+    //                         $eq: {
+    //                             valid: true,
+    //                         },
+    //                     },
+    //                     str_: {
+    //                         $eq: {
+    //                             categoryId: dateCategory.id,
+    //                         },
+    //                     },
+    //                 } as any)
+    //             ).map(
+    //                 (m: MetadataEntity): GuestInfos => ({
+    //                     address: m.str_.address,
+    //                     category: m.str_.categoryId,
+    //                     username: m.str_.username,
+    //                     ticket: m.str_.ticket,
+    //                     email: m.str_.email,
+    //                 }),
+    //             ),
+    //         ];
+    //     }
+    //
+    //     for (const globalCategory of globalCategoryEntities) {
+    //         ownerships = [
+    //             ...ownerships,
+    //             ...(
+    //                 await this._search<MetadataEntity>(this.metadatasService, {
+    //                     class_name: {
+    //                         $eq: 'ownership',
+    //                     },
+    //                     type_name: {
+    //                         $eq: 'ticket',
+    //                     },
+    //                     bool_: {
+    //                         $eq: {
+    //                             valid: true,
+    //                         },
+    //                     },
+    //                     str_: {
+    //                         $eq: {
+    //                             categoryId: globalCategory.id,
+    //                         },
+    //                     },
+    //                 } as any)
+    //             ).map(
+    //                 (m: MetadataEntity): GuestInfos => ({
+    //                     address: m.str_.address,
+    //                     category: m.str_.categoryId,
+    //                     username: m.str_.username,
+    //                     ticket: m.str_.ticket,
+    //                     email: m.str_.email,
+    //                 }),
+    //             ),
+    //         ];
+    //     }
+    //
+    //     return {
+    //         guests: ownerships,
+    //     };
+    // }
 }
