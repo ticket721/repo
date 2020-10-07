@@ -1,18 +1,12 @@
 import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
-import { IsDateString, IsHexadecimal, IsNumber, IsString, Length, ValidateNested } from 'class-validator';
-import { InputPrice } from '@lib/common/currencies/Currencies.service';
-import { Type } from 'class-transformer';
+import { IsDateString, IsHexadecimal, IsNumber, IsString, Length } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 /**
  * Data model required when creating a category
  */
 export class CategoriesCreateInputDto
-    implements
-        Pick<
-            CategoryEntity,
-            'group_id' | 'display_name' | 'sale_begin' | 'sale_end' | 'resale_begin' | 'resale_end' | 'seats'
-        > {
+    implements Pick<CategoryEntity, 'group_id' | 'display_name' | 'sale_begin' | 'sale_end' | 'seats'> {
     /**
      * Group ID of the category
      */
@@ -53,36 +47,6 @@ export class CategoriesCreateInputDto
     @IsDateString()
     // tslint:disable-next-line:variable-name
     sale_end: Date;
-
-    /**
-     * Resale start date of the category
-     */
-    @ApiProperty({
-        description: 'Begin date of the resales',
-    })
-    @IsDateString()
-    // tslint:disable-next-line:variable-name
-    resale_begin: Date;
-
-    /**
-     * Resale end date of the category
-     */
-    @ApiProperty({
-        description: 'End date of the resales',
-    })
-    @IsDateString()
-    // tslint:disable-next-line:variable-name
-    resale_end: Date;
-
-    /**
-     * Prices of the category
-     */
-    @ApiProperty({
-        description: 'Prices of the category tickets',
-    })
-    @ValidateNested({ each: true })
-    @Type(() => InputPrice)
-    prices: InputPrice[];
 
     /**
      * Available seats of the category

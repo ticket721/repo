@@ -37,7 +37,6 @@ import { GlobalConfigScheduler } from '@app/worker/schedulers/globalconfig/Globa
 import { EVMEventSetsModule } from '@lib/common/evmeventsets/EVMEventSets.module';
 import { CategoriesModule } from '@lib/common/categories/Categories.module';
 import { RightsModule } from '@lib/common/rights/Rights.module';
-import { CartInputHandlers } from '@app/worker/actionhandlers/cart/Cart.input.handlers';
 import { ToolBoxModule } from '@lib/common/toolbox/ToolBox.module';
 import { MintingModule } from '@lib/common/minting/Minting.module';
 import { CartModule } from '@lib/common/cart/Cart.module';
@@ -139,9 +138,6 @@ import { StripeModule } from '@lib/common/stripe/Stripe.module';
     ],
     controllers: [StatusController],
     providers: [
-        // ActionSet Input Handlers
-        CartInputHandlers,
-
         // ActionSet Event Handlers
         TxSeqEventHandlers,
 

@@ -17,6 +17,7 @@ describe('Event Entity', function() {
                 address: '0xaddress',
                 controller: 'controller name',
                 dates: [],
+                status: 'preview',
                 created_at: new Date(),
                 updated_at: new Date(),
             } as EventEntity;
@@ -35,6 +36,7 @@ describe('Event Entity', function() {
                 address: '0xaddress',
                 controller: 'controller name',
                 dates: [],
+                status: 'preview',
                 created_at: new Date(),
                 updated_at: new Date(),
             } as EventEntity;

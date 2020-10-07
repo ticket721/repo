@@ -23,6 +23,9 @@ import { EventsCountInputDto } from '@app/server/controllers/events/dto/EventsCo
 import { EventsCountResponseDto } from '@app/server/controllers/events/dto/EventsCountResponse.dto';
 import { UUIDToolService } from '@lib/common/toolbox/UUID.tool.service';
 import { RocksideCreateEOAResponse, RocksideService } from '@lib/common/rockside/Rockside.service';
+import { closestCity } from '@common/geoloc';
+import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
+import { CategoriesService } from '@lib/common/categories/Categories.service';
 
 /**
  * Events controller to create and fetch events
@@ -36,6 +39,7 @@ export class EventsController extends ControllerBasics<EventEntity> {
      *
      * @param eventsService
      * @param datesService
+     * @param categoriesService
      * @param rightsService
      * @param uuidToolsService
      * @param rocksideService
@@ -43,6 +47,7 @@ export class EventsController extends ControllerBasics<EventEntity> {
     constructor(
         private readonly eventsService: EventsService,
         private readonly datesService: DatesService,
+        private readonly categoriesService: CategoriesService,
         private readonly rightsService: RightsService,
         private readonly uuidToolsService: UUIDToolService,
         private readonly rocksideService: RocksideService,
@@ -155,6 +160,110 @@ export class EventsController extends ControllerBasics<EventEntity> {
     //     };
     // }
 
+    private async createDates(body: EventsBuildInputDto, event: EventEntity): Promise<DateEntity[]> {
+        const dates: DateEntity[] = [];
+
+        for (const date of body.eventPayload.datesConfiguration) {
+            const dateEntity = await this._crudCall(
+                this.datesService.createDate({
+                    group_id: event.group_id,
+                    status: 'preview',
+                    categories: [],
+                    location: {
+                        location: {
+                            lat: date.location.lat,
+                            lon: date.location.lon,
+                        },
+                        location_label: date.location.label,
+                        assigned_city: closestCity(date.location).id,
+                    },
+                    timestamps: {
+                        event_begin: new Date(date.eventBegin),
+                        event_end: new Date(date.eventEnd),
+                    },
+                    metadata: {
+                        name: date.name,
+                        description: body.eventPayload.textMetadata.name,
+                        avatar: body.eventPayload.imagesMetadata.avatar,
+                        signature_colors: body.eventPayload.imagesMetadata.signatureColors,
+                        twitter: body.eventPayload.textMetadata.twitter,
+                        spotify: body.eventPayload.textMetadata.spotify,
+                        website: body.eventPayload.textMetadata.website,
+                        facebook: body.eventPayload.textMetadata.facebook,
+                        email: body.eventPayload.textMetadata.email,
+                        linked_in: body.eventPayload.textMetadata.linked_in,
+                        tiktok: body.eventPayload.textMetadata.tiktok,
+                        instagram: body.eventPayload.textMetadata.instagram,
+                    },
+                }),
+                StatusCodes.InternalServerError,
+            );
+
+            await this._crudCall(this.eventsService.addDate(event.id, dateEntity), StatusCodes.InternalServerError);
+
+            dates.push({
+                ...dateEntity,
+                event: event.id,
+            });
+        }
+
+        return dates;
+    }
+
+    private static interfaceFromCurrencyAndPrice(currency: string, price: number): 'stripe' | 'none' {
+        switch (currency) {
+            case 'FREE': {
+                return 'none';
+            }
+            default: {
+                return 'stripe';
+            }
+        }
+    }
+
+    private async createCategories(
+        body: EventsBuildInputDto,
+        event: EventEntity,
+        dates: DateEntity[],
+    ): Promise<CategoryEntity[]> {
+        const categories: CategoryEntity[] = [];
+
+        for (const category of body.eventPayload.categoriesConfiguration) {
+            const categoryId = this.uuidToolsService.generate();
+
+            const categoryEntity = await this._crudCall(
+                this.categoriesService.create({
+                    id: categoryId,
+                    group_id: event.group_id,
+                    category_name: categoryId,
+                    display_name: category.name,
+                    sale_begin: category.saleBegin,
+                    sale_end: category.saleEnd,
+                    price: category.price,
+                    currency: category.currency,
+                    interface: EventsController.interfaceFromCurrencyAndPrice(category.currency, category.price),
+                    seats: category.seats,
+                    status: 'preview',
+                }),
+                StatusCodes.InternalServerError,
+            );
+
+            for (const dateIdx of category.dates) {
+                await this._crudCall(
+                    this.datesService.addCategory(dates[dateIdx].id, categoryEntity),
+                    StatusCodes.InternalServerError,
+                );
+            }
+
+            categories.push({
+                ...categoryEntity,
+                dates: category.dates.map((idx: number) => dates[idx].id),
+            });
+        }
+
+        return categories;
+    }
+
     /**
      * Converts a completed actionset into an Event entity. In preview mode.
      *
@@ -194,50 +303,10 @@ export class EventsController extends ControllerBasics<EventEntity> {
         const eventAddress = toAcceptedAddressFormat(rocksideEOA.address);
         const groupId = getT721ControllerGroupID(eventId, eventAddress);
 
-        const dates: DateEntity[] = [];
-
-        for (const date of body.eventPayload.datesConfiguration) {
-            dates.push(
-                await this._crudCall(
-                    this.datesService.createEventDate(
-                        {
-                            group_id: groupId,
-                            status: 'preview',
-                            categories: [],
-                            location: {
-                                location: date.location,
-                                location_label: null,
-                                assigned_city: null,
-                            },
-                            timestamps: {
-                                event_begin: new Date(date.eventBegin),
-                                event_end: new Date(date.eventEnd),
-                            },
-                            metadata: {
-                                name: date.name,
-                                description: body.eventPayload.textMetadata.name,
-                                avatar: body.eventPayload.imagesMetadata.avatar,
-                                signature_colors: body.eventPayload.imagesMetadata.signatureColors,
-                                twitter: body.eventPayload.textMetadata.twitter,
-                                spotify: body.eventPayload.textMetadata.spotify,
-                                website: body.eventPayload.textMetadata.website,
-                                facebook: body.eventPayload.textMetadata.facebook,
-                                email: body.eventPayload.textMetadata.email,
-                                linked_in: body.eventPayload.textMetadata.linked_in,
-                                tiktok: body.eventPayload.textMetadata.tiktok,
-                                instagram: body.eventPayload.textMetadata.instagram,
-                            },
-                        },
-                        eventId,
-                    ),
-                    StatusCodes.InternalServerError,
-                ),
-            );
-        }
-
         const event = await this._crudCall<EventEntity>(
             this.eventsService.create({
                 id: eventId,
+                status: 'preview',
                 group_id: groupId,
                 owner: user.id,
                 name: body.eventPayload.textMetadata.name,
@@ -245,14 +314,20 @@ export class EventsController extends ControllerBasics<EventEntity> {
                 description: body.eventPayload.textMetadata.description,
                 address: eventAddress,
                 controller: eventAddress,
-                dates: dates.map((date: DateEntity): string => date.id),
+                dates: [],
             }),
             StatusCodes.InternalServerError,
         );
 
+        const dates: DateEntity[] = await this.createDates(body, event);
+        await this.createCategories(body, event, dates);
+
         return {
             error: null,
-            event,
+            event: {
+                ...event,
+                dates: dates.map((date: DateEntity) => date.id),
+            },
         };
     }
 

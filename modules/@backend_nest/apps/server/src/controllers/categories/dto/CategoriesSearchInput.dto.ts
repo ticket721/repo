@@ -3,7 +3,6 @@ import { IsOptional } from 'class-validator';
 import { SearchableField } from '@lib/common/utils/SearchableField.type';
 import { SearchInputType } from '@lib/common/utils/SearchInput.type';
 import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
-import { Price } from '@lib/common/currencies/Currencies.service';
 import { Sort } from '@lib/common/utils/Sort.type';
 
 /**
@@ -17,6 +16,46 @@ export class CategoriesSearchInputDto implements SearchInputType<CategoryEntity>
     @IsOptional()
     // tslint:disable-next-line:variable-name
     id: SearchableField<string>;
+
+    /**
+     * Searchable field to search by status
+     */
+    @ApiPropertyOptional()
+    @IsOptional()
+    // tslint:disable-next-line:variable-name
+    status: SearchableField<'preview' | 'live'>;
+
+    /**
+     * Searchable field to search by id
+     */
+    @ApiPropertyOptional()
+    @IsOptional()
+    // tslint:disable-next-line:variable-name
+    dates: SearchableField<string[]>;
+
+    /**
+     * Searchable field to search by id
+     */
+    @ApiPropertyOptional()
+    @IsOptional()
+    // tslint:disable-next-line:variable-name
+    price: SearchableField<number>;
+
+    /**
+     * Searchable field to search by id
+     */
+    @ApiPropertyOptional()
+    @IsOptional()
+    // tslint:disable-next-line:variable-name
+    currency: SearchableField<string>;
+
+    /**
+     * Searchable field to search by id
+     */
+    @ApiPropertyOptional()
+    @IsOptional()
+    // tslint:disable-next-line:variable-name
+    interface: SearchableField<'stripe' | 'none'>;
 
     /**
      * Searchable field to search by group_id
@@ -59,68 +98,12 @@ export class CategoriesSearchInputDto implements SearchInputType<CategoryEntity>
     sale_end: SearchableField<Date>;
 
     /**
-     * Searchable field to search by resale_begin
-     */
-    @ApiPropertyOptional()
-    @IsOptional()
-    // tslint:disable-next-line:variable-name
-    resale_begin: SearchableField<Date>;
-
-    /**
-     * Searchable field to search by resale_end
-     */
-    @ApiPropertyOptional()
-    @IsOptional()
-    // tslint:disable-next-line:variable-name
-    resale_end: SearchableField<Date>;
-
-    /**
-     * Searchable field to search by scope
-     */
-    @ApiPropertyOptional()
-    @IsOptional()
-    // tslint:disable-next-line:variable-name
-    scope: SearchableField<string>;
-
-    /**
-     * Searchable field to search by prices
-     */
-    @ApiPropertyOptional()
-    @IsOptional()
-    // tslint:disable-next-line:variable-name
-    prices: SearchableField<Price[]>;
-
-    /**
      * Searchable field to search by seats
      */
     @ApiPropertyOptional()
     @IsOptional()
     // tslint:disable-next-line:variable-name
     seats: SearchableField<number>;
-
-    /**
-     * Searchable field to search by reserved
-     */
-    @ApiPropertyOptional()
-    @IsOptional()
-    // tslint:disable-next-line:variable-name
-    reserved: SearchableField<number>;
-
-    /**
-     * Searchable field to search by parent_id
-     */
-    @ApiPropertyOptional()
-    @IsOptional()
-    // tslint:disable-next-line:variable-name
-    parent_id: SearchableField<string>;
-
-    /**
-     * Searchable field to search by parent_type
-     */
-    @ApiPropertyOptional()
-    @IsOptional()
-    // tslint:disable-next-line:variable-name
-    parent_type: SearchableField<string>;
 
     /**
      * Searchable field to search by created_at

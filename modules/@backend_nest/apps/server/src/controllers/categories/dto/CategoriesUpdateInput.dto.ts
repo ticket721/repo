@@ -1,17 +1,12 @@
 import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
-import { InputPrice } from '@lib/common/currencies/Currencies.service';
 import { IsDateString, IsNumber, IsString, ValidateIf, ValidateNested } from 'class-validator';
-import { Type } from 'class-transformer';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
 /**
  * Data model returned when updating a category
  */
 export class CategoriesUpdateInputDto
-    implements
-        Partial<
-            Pick<CategoryEntity, 'display_name' | 'sale_begin' | 'sale_end' | 'resale_begin' | 'resale_end' | 'seats'>
-        > {
+    implements Partial<Pick<CategoryEntity, 'display_name' | 'sale_begin' | 'sale_end' | 'seats' | 'price'>> {
     /**
      * Edits the display name
      */
@@ -71,12 +66,11 @@ export class CategoriesUpdateInputDto
      * Edits the category prices
      */
     @ApiPropertyOptional({
-        description: 'Edits the prices of the category',
+        description: 'Edits the price of the category',
     })
     @ValidateNested({ each: true })
-    @Type(() => InputPrice)
     @ValidateIf((_, v) => v !== undefined)
-    prices?: InputPrice[];
+    price?: number;
 
     /**
      * Edits the available seat count

@@ -33,6 +33,7 @@ export class EventEntity {
             this.description = e.description;
             this.address = e.address;
             this.controller = e.controller;
+            this.status = e.status;
             this.dates = ECAAG<string>(e.dates);
             this.created_at = e.created_at;
             this.updated_at = e.updated_at;
@@ -53,6 +54,15 @@ export class EventEntity {
     })
     // tslint:disable-next-line:variable-name
     owner: string;
+
+    /**
+     * Category visibility status
+     */
+    @Column({
+        type: 'text',
+    })
+    // tslint:disable-next-line:variable-name
+    status: 'preview' | 'live';
 
     /**
      * Image of the event

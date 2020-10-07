@@ -1966,19 +1966,20 @@ export const getMocks = (): [Stripe, Stripe.PaymentIntentsResource, Stripe.Payou
 };
 
 export const gemFail = async (sdk: T721SDK, token: string, id: string, body: any): Promise<void> => {
-    const gemReq = await sdk.dosojin.search(token, {
-        id: {
-            $eq: id,
-        },
-    });
-
-    if (gemReq.data.gemOrders.length === 0) {
-        throw new NestError('Cannot find gem');
-    }
-
-    const gem = gemReq.data.gemOrders[0].gem;
-
-    expect(gem.error_info).toMatchObject(body);
+    // const gemReq = await sdk.dosojin.search(token, {
+    //     id: {
+    //         $eq: id,
+    //     },
+    // });
+    //
+    // if (gemReq.data.gemOrders.length === 0) {
+    //     throw new NestError('Cannot find gem');
+    // }
+    //
+    // const gem = gemReq.data.gemOrders[0].gem;
+    //
+    // expect(gem.error_info).toMatchObject(body);
+    expect(true).toEqual(false);
 };
 
 export const getPIFromCart = async (sdk: T721SDK, token: string, cart: string): Promise<string> => {

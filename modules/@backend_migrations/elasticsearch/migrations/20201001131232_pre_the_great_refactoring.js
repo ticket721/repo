@@ -5,6 +5,7 @@ class M20201001131232_the_great_refactoring extends ElasticMigration {
         await this.removeIndex('ticket721_user');
         await this.removeIndex('ticket721_event');
         await this.removeIndex('ticket721_date');
+        await this.removeIndex('ticket721_category');
     }
 
     async down() {
@@ -107,6 +108,20 @@ class M20201001131232_the_great_refactoring extends ElasticMigration {
             }
         });
         await this.putSettings('ticket721_date',
+            {
+                index: {
+                    synchronous_refresh: true
+                }
+            }
+        );
+
+        await this.createIndex('ticket721_category', 'ticket721');
+        await this.putMapping('ticket721_category', 'category', {
+            "category": {
+                "discover": ".*"
+            }
+        });
+        await this.putSettings('ticket721_category',
             {
                 index: {
                     synchronous_refresh: true

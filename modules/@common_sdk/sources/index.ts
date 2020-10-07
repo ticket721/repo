@@ -79,9 +79,6 @@ import { rightsSearch } from './app/api/rights';
 // METADATAS
 import { metadatasFetch } from './app/api/metadatas';
 
-// CART
-import { cartModulesConfiguration, cartTicketSelections } from './app/api/cart';
-
 // TICKETS
 import {
     ticketsSearch,
@@ -182,11 +179,6 @@ export class T721SDK {
         this.contracts.fetch = this.contracts.fetch.bind(this);
 
         this.metadatas.fetch = this.metadatas.fetch.bind(this);
-
-        this.cart.ticketSelections = this.cart.ticketSelections.bind(this);
-        this.cart.modulesConfiguration = this.cart.modulesConfiguration.bind(
-            this
-        );
 
         this.tickets.search = this.tickets.search.bind(this);
         this.tickets.count = this.tickets.count.bind(this);
@@ -401,11 +393,6 @@ export class T721SDK {
 
     public metadatas = {
         fetch: metadatasFetch
-    };
-
-    public cart = {
-        ticketSelections: cartTicketSelections,
-        modulesConfiguration: cartModulesConfiguration
     };
 
     public tickets = {

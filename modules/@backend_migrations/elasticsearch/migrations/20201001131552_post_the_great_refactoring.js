@@ -134,12 +134,27 @@ class M20201001131552_post_the_great_refactoring extends ElasticMigration {
                 }
             }
         );
+
+        await this.createIndex('ticket721_category', 'ticket721');
+        await this.putMapping('ticket721_category', 'category', {
+            "category": {
+                "discover": ".*"
+            }
+        });
+        await this.putSettings('ticket721_category',
+            {
+                index: {
+                    synchronous_refresh: true
+                }
+            }
+        );
     }
 
     async down() {
         await this.removeIndex('ticket721_user');
         await this.removeIndex('ticket721_event');
         await this.removeIndex('ticket721_date');
+        await this.removeIndex('ticket721_category');
     }
 }
 
