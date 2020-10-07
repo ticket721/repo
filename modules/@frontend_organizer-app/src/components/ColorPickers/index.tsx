@@ -13,9 +13,10 @@ import './locales';
 import '@frontend/core/lib/components/ToastStacker/locales';
 
 export interface ColorPickersProps {
+    name?: string;
     srcImage?: string;
-    colors: string[];
-    onColorsChange: (palette: string[]) => void;
+    value: [string, string];
+    onChange: (palette: [string, string]) => void;
 }
 
 export const ColorPickers: React.FC<ColorPickersProps> = (props: ColorPickersProps) => {
@@ -27,10 +28,10 @@ export const ColorPickers: React.FC<ColorPickersProps> = (props: ColorPickersPro
         Vibrant.from(src)
             .getPalette()
             .then((palette) => {
-                if (!props.colors || props.colors.length === 0) {
-                    props.onColorsChange([
+                if (!props.value || (props.value[0] === '' && props.value[1] === '')) {
+                    props.onChange([
                         palette.Vibrant.getHex(),
-                        palette.Muted.getHex(),
+                        palette.Muted.getHex()
                     ]);
                 }
 
@@ -45,12 +46,6 @@ export const ColorPickers: React.FC<ColorPickersProps> = (props: ColorPickersPro
             });
     };
 
-    const updateColor = (updateIdx: number, updatedColor: ColorResult) => {
-        props.onColorsChange(props.colors.map((color: string, idx: number) =>
-            updateIdx === idx ? updatedColor.hex : color
-        ));
-    };
-
     useEffect(() => {
         if (props.srcImage) {
             generatePresetColors(props.srcImage);
@@ -59,15 +54,15 @@ export const ColorPickers: React.FC<ColorPickersProps> = (props: ColorPickersPro
     }, [props.srcImage]);
 
     return (
-        <Colors>
+        <Colors id={props.name}>
             <ColorPicker
                 label={t('primary_color')}
                 presetLabel={t('color_suggestions')}
                 presetColors={presetColors}
-                color={props.colors[0]}
-                handleChange={(color: ColorResult) => updateColor(0, color)}
+                color={props.value[0]}
+                handleChange={(color: ColorResult) => props.onChange([color.hex, props.value[1]])}
             />
-            <div onClick={() => props.onColorsChange([props.colors[1], props.colors[0]])}>
+            <div onClick={() => props.onChange([props.value[1], props.value[0]])}>
                 <Icon
                     icon={'swap'}
                     size={'22px'}
@@ -77,8 +72,8 @@ export const ColorPickers: React.FC<ColorPickersProps> = (props: ColorPickersPro
                 label={t('secondary_color')}
                 presetLabel={t('color_suggestions')}
                 presetColors={presetColors}
-                color={props.colors[1]}
-                handleChange={(color: ColorResult) => updateColor(1, color)}
+                color={props.value[1]}
+                handleChange={(color: ColorResult) => props.onChange([props.value[0], color.hex])}
             />
         </Colors>
     );

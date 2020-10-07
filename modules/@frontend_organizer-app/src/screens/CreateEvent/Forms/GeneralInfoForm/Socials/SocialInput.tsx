@@ -20,11 +20,17 @@ export const SocialInput: React.FC<SocialInputProps> = ({ name, color, options, 
 
     const [ field, meta, helper ] = useField<string>({ name: `textMetadata.${name}` });
 
+    useEffect(() => {
+        if (field.value === undefined || field.value === null) {
+            helper.setValue('');
+        }
+    }, [field.value]);
+
     return (
         <SocialInputContainer>
             <TextInput
             {...field}
-            value={field.value === undefined || field.value === null ? '' : field.value}
+            value={field.value === undefined ? '' : field.value}
             onChange={options ? (e) => helper.setValue(e.target.value.substring(options.prefix.length)) :
                 field.onChange
             }

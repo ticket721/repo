@@ -157,7 +157,7 @@ const Disclaimer = styled.p`
     color: ${(props) => props.theme.textColorDarker};
     font-size: 14px;
     font-weight: 500;
-    padding-top: ${(props) => props.theme.regularSpacing};
+    padding-top: ${(props) => props.theme.smallSpacing};
 `;
 
 const ErrorMsg = styled(Disclaimer)`

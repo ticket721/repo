@@ -1,5 +1,5 @@
 import React from 'react';
-import { RichText, TextInput }  from '@frontend/flib-react/lib/components';
+import { RichText, Textarea, TextInput }  from '@frontend/flib-react/lib/components';
 import styled                      from 'styled-components';
 
 import { useTranslation } from 'react-i18next';
@@ -11,22 +11,11 @@ import { useField } from 'formik';
 import { SocialSection } from './Socials/SocialSection';
 import { evaluateError } from '../../../../utils/extractError';
 
-export const GeneralInfoForm: React.FC<FormProps> = ({ onComplete }: FormProps) => {
+export const GeneralInfoForm: React.FC = () => {
     const [ t ] = useTranslation('general_infos');
 
     const [nameField, nameMeta] = useField<string>({ name: 'textMetadata.name' });
     const [descField, descMeta] = useField<string>({ name: 'textMetadata.description' });
-
-    useDeepEffect(() => {
-        if ((nameMeta.touched && !nameMeta.error) && (descMeta.touched && !descMeta.error)) {
-            onComplete();
-        }
-    }, [
-        nameMeta.touched,
-        nameMeta.error,
-        descMeta.touched,
-        descMeta.error,
-    ]);
 
     return (
         <GeneralInfos>
@@ -36,7 +25,7 @@ export const GeneralInfoForm: React.FC<FormProps> = ({ onComplete }: FormProps) 
             placeholder={t('name_placeholder')}
             error={evaluateError(nameMeta)}
             />
-            <RichText
+            <Textarea
             {...descField}
             label={t('description_label')}
             placeholder={t('description_placeholder')}

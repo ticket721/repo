@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled                                           from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -9,7 +9,7 @@ import { OrganizerState }           from '../../redux/ducks';
 import { Button } from '@frontend/flib-react/lib/components';
 
 import { GeneralInfoForm }     from './Forms/GeneralInfoForm';
-// import StylesForm          from './Forms/StylesForm';
+import { StylesForm }          from './Forms/StylesForm';
 // import DatesForm           from './Forms/DatesForm';
 // import CategoriesForm      from './Forms/CategoriesForm';
 
@@ -43,14 +43,13 @@ const initialValues: EventCreationPayload = {
 const CreateEvent: React.FC = () => {
     const [ t ] = useTranslation('create_event');
 
-    const formik = useFormikContext<EventCreationPayload>();
     const themeFormRef = useRef(null);
     const datesFormRef = useRef(null);
     const categoriesFormRef = useRef(null);
 
     const [ stepIdx, setStepIdx ] = useState<number>(null);
     const [ loadingForms, setLoadingForms ] = useState<boolean[]>([false, false, false, false]);
-
+    const [ validSteps, setValidSteps ] = useState<string[]>([]);
     const dispatch = useDispatch();
     const history = useHistory();
     const token: string = useSelector((state: MergedAppState) => state.auth.token.value);
@@ -64,6 +63,7 @@ const CreateEvent: React.FC = () => {
                 loadingState
         ));
 
+console.log('validSteps:', validSteps);
     return (
         <Container>
         {
@@ -82,9 +82,18 @@ const CreateEvent: React.FC = () => {
                     .catch((e) => dispatch(PushNotification(e.message, 'error')))
                 resetForm();
             }}
-            validateOnBlur={true}
+            validateOnMount={true}
             validate={(eventPayload: EventCreationPayload) => {
-                console.log('errors:', checkEvent(eventPayload));
+                const errors = checkEvent(eventPayload);
+                const errorKeys = Object.keys(errors);
+                const eventCreationKeys = Object.keys(eventPayload);
+console.log('payload:', eventPayload);
+console.log('errors:', errors);
+                setValidSteps(
+                    eventCreationKeys.filter(
+                        (step: string) => errorKeys.findIndex((key: string) => key === step) === -1
+                    )
+                );
                 return checkEvent(eventPayload);
             }}>
                 { props =>
@@ -92,13 +101,14 @@ const CreateEvent: React.FC = () => {
                         <StepWrapper>
                             <Title>{t('general_infos_title')}</Title>
                             <Description>{t('general_infos_description')}</Description>
-                            <GeneralInfoForm onComplete={() => console.log('complete first step')}/>
+                            <GeneralInfoForm/>
                         </StepWrapper>
-                        {/* <StepWrapper ref={themeFormRef}>
+                        <StepWrapper disabled={validSteps.findIndex((step: string) => step === 'textMetadata') === -1} ref={themeFormRef}>
                             <Title>{t('styles_title')}</Title>
                             <Description>{t('styles_description')}</Description>
-                            <StylesForm onComplete={(valid) => handleLoadingState(1, valid)}/>
+                            <StylesForm disabled={validSteps.findIndex((step: string) => step === 'textMetadata') === -1}/>
                         </StepWrapper>
+                        {/*
                         <StepWrapper ref={datesFormRef}>
                             <Title>{t('dates_title')} {
                                 datesLength > 0 ?

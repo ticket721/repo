@@ -16,6 +16,8 @@ import spotifyPic from '../../../../../media/images/social/spotify.svg';
 
 import { SocialInput } from './SocialInput';
 import { SocialBtn } from './SocialBtn';
+import { useFormikContext } from 'formik';
+import { EventCreationPayload } from '@common/global';
 
 interface SocialItem {
     name: string;
@@ -25,6 +27,7 @@ interface SocialItem {
 
 export const SocialSection: React.FC = () => {
     const [ t ] = useTranslation('socials');
+    const formikCtx = useFormikContext<EventCreationPayload>();
 
     const socialItems: SocialItem[] = [
         {
@@ -85,7 +88,7 @@ export const SocialSection: React.FC = () => {
         const checkedItems: SocialItem[] = [];
 
         for (let i = 0; i < socialItems.length; ++i) {
-            if (JSON.parse(localStorage.getItem('event-creation')).values.textMetadata[socialItems[i].name]) {
+            if (JSON.parse(localStorage.getItem('event-creation')).values.textMetadata[socialItems[i].name] !== undefined) {
                 checkedItems.push(socialItems[i]);
             }
         }
